@@ -1,9 +1,7 @@
-import React, { memo,useContext } from 'react';
-import {
- View, Text, TouchableOpacity, StyleSheet, Image,
- } from 'react-native';
+import React, {memo, useContext} from 'react';
+import {View, Text, TouchableOpacity, StyleSheet, Image} from 'react-native';
 
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 
 import LinearGradient from 'react-native-linear-gradient';
 import FastImage from 'react-native-fast-image';
@@ -12,7 +10,7 @@ import images from '../Constants/ImagePath';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import ReservationStatus from '../Constants/ReservationStatus';
-import { getSportName } from '../utils';
+import {getSportName} from '../utils';
 
 function GameCard({
   data,
@@ -51,10 +49,10 @@ function GameCard({
 
   return (
     <TouchableOpacity
-      
       activeOpacity={0.7}
-      style={[styles.mainContainer, { width: wp(cardWidth) }]}>
-      <View style={[styles.backgroundView, { width: wp(cardWidth) }]}>
+      style={[styles.mainContainer, {width: wp(cardWidth)}]}
+    >
+      <View style={[styles.backgroundView, {width: wp(cardWidth)}]}>
         <LinearGradient
           colors={
             data?.status === ReservationStatus.cancelled
@@ -63,9 +61,10 @@ function GameCard({
           }
           style={
             data?.status === ReservationStatus.offered
-              ? [styles.colorView, { opacity: 0.7 }]
+              ? [styles.colorView, {opacity: 0.7}]
               : styles.colorView
-          }>
+          }
+        >
           <View style={styles.dateView}>
             <Text style={styles.dateMonthText}>
               {months[new Date(data?.start_datetime * 1000).getMonth()]}
@@ -76,9 +75,14 @@ function GameCard({
           </View>
         </LinearGradient>
         <View style={styles.eventText}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <Text style={styles.eventTitle}>{getSportName(data,authContext)}</Text>
-            <TouchableOpacity style={{ marginRight: 7, marginBottom: 5 }} onPress={onPress}>
+          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+            <Text style={styles.eventTitle}>
+              {getSportName(data, authContext)}
+            </Text>
+            <TouchableOpacity
+              style={{marginRight: 7, marginBottom: 5}}
+              onPress={onPress}
+            >
               {/* eslint-disable-next-line no-nested-ternary */}
               {showSelectionCheckBox ? (
                 isSelected ? (
@@ -112,7 +116,7 @@ function GameCard({
               <View style={styles.leftGameView}>
                 {data?.home_team?.thumbnail ? (
                   <Image
-                    source={{ uri: data?.home_team?.thumbnail }}
+                    source={{uri: data?.home_team?.thumbnail}}
                     style={styles.profileImage}
                   />
                 ) : (
@@ -129,7 +133,7 @@ function GameCard({
               <View style={styles.leftGameView}>
                 {data?.home_team?.thumbnail ? (
                   <Image
-                    source={{ uri: data?.home_team?.thumbnail }}
+                    source={{uri: data?.home_team?.thumbnail}}
                     style={styles.profileImage}
                   />
                 ) : (
@@ -153,7 +157,7 @@ function GameCard({
                 </Text>
                 {data?.away_team?.thumbnail ? (
                   <Image
-                    source={{ uri: data?.away_team?.thumbnail }}
+                    source={{uri: data?.away_team?.thumbnail}}
                     style={styles.profileImage}
                   />
                 ) : (
@@ -170,7 +174,7 @@ function GameCard({
                 </Text>
                 {data?.away_team?.thumbnail ? (
                   <Image
-                    source={{ uri: data?.away_team?.thumbnail }}
+                    source={{uri: data?.away_team?.thumbnail}}
                     style={styles.profileImage}
                   />
                 ) : (
@@ -193,10 +197,10 @@ const styles = StyleSheet.create({
     backgroundColor: colors.whiteColor,
     borderRadius: 8,
     marginBottom: 15,
-    
+
     elevation: 2,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1.5 },
+    shadowOffset: {width: 0, height: 1.5},
     shadowOpacity: 0.16,
     shadowRadius: 5,
     justifyContent: 'center',

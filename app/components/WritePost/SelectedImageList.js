@@ -1,43 +1,48 @@
-import React, { useRef, useState } from 'react';
-import {
-  StyleSheet, View, Text, TouchableOpacity, Image,
-} from 'react-native';
+import React, {useRef, useState} from 'react';
+import {StyleSheet, View, Text, TouchableOpacity, Image} from 'react-native';
 import FastImage from 'react-native-fast-image';
-import {
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 
 import Video from 'react-native-video';
-import fonts from '../../Constants/Fonts'
-import colors from '../../Constants/Colors'
-import images from '../../Constants/ImagePath'
+import fonts from '../../Constants/Fonts';
+import colors from '../../Constants/Colors';
+import images from '../../Constants/ImagePath';
 
 function SelectedImageList({
-  data, onItemPress, itemNumber, totalItemNumber, isClose = true, isCounter = true,
+  data,
+  onItemPress,
+  itemNumber,
+  totalItemNumber,
+  isClose = true,
+  isCounter = true,
 }) {
   const [showExtraButtons, setShowExtraButtons] = useState(false);
   const videoPlayerRef = useRef();
   return (
     <View style={styles.uploadedImage}>
-      {(data?.type?.split('/')[0] || data?.mime?.split('/')[0]) === 'image' && <FastImage
-         onLoadEnd={() => setShowExtraButtons(true)}
-        style={styles.uploadedImage}
-        source={{ uri: data.path || data.thumbnail }}
-        resizeMode={FastImage.resizeMode.cover}
-      />}
-      {(data?.type?.split('/')[0] || data?.mime?.split('/')[0]) === 'video'
-      && <View>
-        <View style={{
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          zIndex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-          position: 'absolute',
-        }}>
-          <FastImage
+      {(data?.type?.split('/')[0] || data?.mime?.split('/')[0]) === 'image' && (
+        <FastImage
+          onLoadEnd={() => setShowExtraButtons(true)}
+          style={styles.uploadedImage}
+          source={{uri: data.path || data.thumbnail}}
+          resizeMode={FastImage.resizeMode.cover}
+        />
+      )}
+      {(data?.type?.split('/')[0] || data?.mime?.split('/')[0]) === 'video' && (
+        <View>
+          <View
+            style={{
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              zIndex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+              position: 'absolute',
+            }}
+          >
+            <FastImage
               source={images.videoPlayBtn}
               tintColor={'white'}
               resizeMode={'contain'}
@@ -45,31 +50,37 @@ function SelectedImageList({
                 height: 30,
                 width: 30,
                 zIndex: 1,
-              }}/>
-        </View>
-        <Video
+              }}
+            />
+          </View>
+          <Video
             ref={videoPlayerRef}
             paused={true}
             muted={true}
-             source={{ uri: data.path || data.thumbnail }}
+            source={{uri: data.path || data.thumbnail}}
             style={styles.uploadedImage}
             resizeMode={'cover'}
             onLoad={() => {
               setShowExtraButtons(true);
               videoPlayerRef.current.seek(0);
             }}
-        />
-      </View>}
-      {isClose && showExtraButtons && <TouchableOpacity style={styles.cancelBtnView} onPress={onItemPress}>
-        <Image source={images.cancelImage} style={styles.cancelImageStyle} />
-      </TouchableOpacity>}
-      {isCounter && showExtraButtons && <View style={styles.lengthViewStyle}>
-        <Text style={styles.lengthTextStyle}>
-          {itemNumber}
-          {'/'}
-          {totalItemNumber}
-        </Text>
-      </View>}
+          />
+        </View>
+      )}
+      {isClose && showExtraButtons && (
+        <TouchableOpacity style={styles.cancelBtnView} onPress={onItemPress}>
+          <Image source={images.cancelImage} style={styles.cancelImageStyle} />
+        </TouchableOpacity>
+      )}
+      {isCounter && showExtraButtons && (
+        <View style={styles.lengthViewStyle}>
+          <Text style={styles.lengthTextStyle}>
+            {itemNumber}
+            {'/'}
+            {totalItemNumber}
+          </Text>
+        </View>
+      )}
     </View>
   );
 }
@@ -116,7 +127,6 @@ const styles = StyleSheet.create({
     height: wp('30%'),
     marginVertical: '1%',
     width: wp('30%'),
-
   },
 });
 

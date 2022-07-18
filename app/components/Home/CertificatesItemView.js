@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  Text,
-  View,
-  StyleSheet,
-  Image,
-} from 'react-native';
+import {Text, View, StyleSheet, Image} from 'react-native';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
@@ -15,12 +10,16 @@ export default function CertificatesItemView({
   profileImage,
 }) {
   return (
-
     <View>
-      <Image source={certificateImage} style={[styles.profileImage, profileImage]} resizeMode={'cover'} />
-      <Text style={[styles.teamTitleTextStyle, teamTitleTextStyle]}>{certificateName}</Text>
+      <Image
+        source={certificateImage}
+        style={[styles.profileImage, profileImage]}
+        resizeMode={'cover'}
+      />
+      <Text style={[styles.teamTitleTextStyle, teamTitleTextStyle]}>
+        {certificateName}
+      </Text>
     </View>
-
   );
 }
 const styles = StyleSheet.create({

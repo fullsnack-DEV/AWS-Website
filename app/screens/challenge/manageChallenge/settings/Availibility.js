@@ -39,7 +39,8 @@ export default function Availibility({navigation, route}) {
           style={styles.saveButtonStyle}
           onPress={() => {
             onSavePressed();
-          }}>
+          }}
+        >
           Save
         </Text>
       ),
@@ -70,14 +71,13 @@ export default function Availibility({navigation, route}) {
     };
     setloading(true);
 
-    const registerdPlayerData = authContext?.entity?.obj?.registered_sports?.filter(
-      (obj) => {
+    const registerdPlayerData =
+      authContext?.entity?.obj?.registered_sports?.filter((obj) => {
         if (obj.sport === sportName && obj.sport_type === sportType) {
           return null;
         }
         return obj;
-      },
-    );
+      });
 
     let selectedSport = authContext?.entity?.obj?.registered_sports?.filter(
       (obj) => obj?.sport === sportName && obj?.sport_type === sportType,
@@ -193,13 +193,15 @@ export default function Availibility({navigation, route}) {
             justifyContent: 'space-between',
             margin: 15,
             marginTop: 35,
-          }}>
+          }}
+        >
           <Text
             style={{
               fontSize: 16,
               fontFamily: fonts.RRegular,
               color: colors.lightBlackColor,
-            }}>
+            }}
+          >
             {strings.AvailibilitySubTitle}
           </Text>
           <ToggleView

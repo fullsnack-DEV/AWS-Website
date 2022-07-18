@@ -117,7 +117,8 @@ export default function SignupScreen({navigation}) {
         <TouchableOpacity
           onPress={() => {
             navigation.pop();
-          }}>
+          }}
+        >
           <Image
             source={images.backArrow}
             style={{
@@ -140,7 +141,8 @@ export default function SignupScreen({navigation}) {
                 authContext.showNetworkAlert();
               }
             }
-          }}>
+          }}
+        >
           {strings.signUp}
         </Text>
       ),
@@ -419,7 +421,8 @@ export default function SignupScreen({navigation}) {
       /> */}
       <LinearGradient
         colors={[colors.themeColor1, colors.themeColor3]}
-        style={styles.mainContainer}>
+        style={styles.mainContainer}
+      >
         <ActivityLoader visible={loading} />
         <FastImage
           resizeMode={'stretch'}
@@ -486,7 +489,8 @@ export default function SignupScreen({navigation}) {
                     justifyContent: 'center',
                     marginLeft: wp('5%'),
                     top: 10,
-                  }}>
+                  }}
+                >
                   {hidePassword ? (
                     <Text style={styles.passwordEyes}>SHOW</Text>
                   ) : (
@@ -513,7 +517,8 @@ export default function SignupScreen({navigation}) {
                   alignItems: 'center',
                   justifyContent: 'center',
                   marginLeft: wp('5%'),
-                }}>
+                }}
+              >
                 {hideConfirmPassword ? (
                   <Text style={styles.passwordEyes}>SHOW</Text>
                 ) : (
@@ -567,7 +572,8 @@ export default function SignupScreen({navigation}) {
             <TouchableOpacity
               hitSlop={getHitSlop(15)}
               onPress={() => navigation.navigate('LoginScreen')}
-              style={styles.alreadyView}>
+              style={styles.alreadyView}
+            >
               <Text style={styles.alreadyMemberText}>
                 {strings.alreadyMember}
                 <Text> </Text>
@@ -575,7 +581,8 @@ export default function SignupScreen({navigation}) {
                   style={{
                     textDecorationLine: 'underline',
                     fontFamily: fonts.RBold,
-                  }}>
+                  }}
+                >
                   Log In
                 </Text>
               </Text>

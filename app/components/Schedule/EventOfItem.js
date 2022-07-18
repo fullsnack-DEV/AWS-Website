@@ -1,42 +1,43 @@
 import React from 'react';
-import {
-  FlatList,
-  StyleSheet, View, Text, Image,
-} from 'react-native';
+import {FlatList, StyleSheet, View, Text, Image} from 'react-native';
 
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 
-function EventOfItem({
-  eventOfText,
-  refereeList,
-}) {
+function EventOfItem({eventOfText, refereeList}) {
   return (
     <View style={styles.containerStyle}>
-
-      <View style={{
-        backgroundColor: colors.whiteColor,
-        flexDirection: 'row',
-        alignItems: 'center',
-      }}>
+      <View
+        style={{
+          backgroundColor: colors.whiteColor,
+          flexDirection: 'row',
+          alignItems: 'center',
+        }}
+      >
         <Text style={styles.eventOfTextStyle}>{eventOfText}</Text>
         <FlatList
-                data={refereeList}
-                scrollEnabled={false}
-                horizontal={true}
-                showsHorizontalScrollIndicator={false}
-                renderItem={ ({ item }) => (
-                  <View style={styles.eventImageViewStyle}>
-                    <Image source={item?.thumbnail ? { uri: item?.thumbnail } : images.profilePlaceHolder } style={styles.eventImageStyle} resizeMode={'cover'} />
-                  </View>
-                )}
-                style={{ backgroundColor: colors.whiteColor }}
-                keyExtractor={(itemValue, index) => index.toString() }
-
+          data={refereeList}
+          scrollEnabled={false}
+          horizontal={true}
+          showsHorizontalScrollIndicator={false}
+          renderItem={({item}) => (
+            <View style={styles.eventImageViewStyle}>
+              <Image
+                source={
+                  item?.thumbnail
+                    ? {uri: item?.thumbnail}
+                    : images.profilePlaceHolder
+                }
+                style={styles.eventImageStyle}
+                resizeMode={'cover'}
               />
+            </View>
+          )}
+          style={{backgroundColor: colors.whiteColor}}
+          keyExtractor={(itemValue, index) => index.toString()}
+        />
       </View>
-
     </View>
   );
 }
@@ -52,7 +53,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: fonts.RLight,
     color: colors.lightBlackColor,
-
   },
   eventImageViewStyle: {
     height: 30,

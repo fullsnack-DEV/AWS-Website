@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable consistent-return */
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 import ReservationStatus from '../../Constants/ReservationStatus';
@@ -88,7 +88,8 @@ export default function ChallengeStatusTitle({
           {isOfferExpired() ? (
             <View>
               <Text
-                style={[styles.statusTitleText, { color: colors.googleColor }]}>
+                style={[styles.statusTitleText, {color: colors.googleColor}]}
+              >
                 {challengeObj?.challenger === challengeObj?.invited_by
                   ? 'EXPIRED'
                   : 'INVITE TO CHALLENGE EXPIRED'}
@@ -110,7 +111,8 @@ export default function ChallengeStatusTitle({
           {isOfferExpired() ? (
             <View>
               <Text
-                style={[styles.statusTitleText, { color: colors.googleColor }]}>
+                style={[styles.statusTitleText, {color: colors.googleColor}]}
+              >
                 {challengeObj?.challenger === challengeObj?.invited_by
                   ? 'EXPIRED'
                   : 'INVITE TO CHALLENGE EXPIRED'}
@@ -127,45 +129,43 @@ export default function ChallengeStatusTitle({
           )}
         </View>
       )}
-      {isSender
-        && (status === RefereeReservationStatus.approved) && (
+      {isSender && status === RefereeReservationStatus.approved && (
+        <View>
+          <Text style={[styles.statusTitleText, {color: colors.greeColor}]}>
+            APPROVED
+          </Text>
+        </View>
+      )}
+      {!isSender && status === RefereeReservationStatus.approved && (
+        <View>
+          <Text style={[styles.statusTitleText, {color: colors.greeColor}]}>
+            APPROVED
+          </Text>
+        </View>
+      )}
+      {isSender &&
+        (status === ReservationStatus.accepted ||
+          status === ReservationStatus.restored ||
+          status === ReservationStatus.requestcancelled) && (
           <View>
-            <Text style={[styles.statusTitleText, { color: colors.greeColor }]}>
-              APPROVED
+            <Text style={[styles.statusTitleText, {color: colors.greeColor}]}>
+              CONFIRMED
             </Text>
           </View>
         )}
-      {!isSender
-        && (status === RefereeReservationStatus.approved) && (
+      {!isSender &&
+        (status === ReservationStatus.accepted ||
+          status === ReservationStatus.restored ||
+          status === ReservationStatus.requestcancelled) && (
           <View>
-            <Text style={[styles.statusTitleText, { color: colors.greeColor }]}>
-              APPROVED
+            <Text style={[styles.statusTitleText, {color: colors.greeColor}]}>
+              CONFIRMED
             </Text>
           </View>
-        )}
-      {isSender
-        && (status === ReservationStatus.accepted
-          || status === ReservationStatus.restored
-          || status === ReservationStatus.requestcancelled) && (
-            <View>
-              <Text style={[styles.statusTitleText, { color: colors.greeColor }]}>
-                CONFIRMED
-              </Text>
-            </View>
-        )}
-      {!isSender
-        && (status === ReservationStatus.accepted
-          || status === ReservationStatus.restored
-          || status === ReservationStatus.requestcancelled) && (
-            <View>
-              <Text style={[styles.statusTitleText, { color: colors.greeColor }]}>
-                CONFIRMED
-              </Text>
-            </View>
         )}
       {status === ReservationStatus.completed && (
         <View>
-          <Text style={[styles.statusTitleText, { color: colors.blueColorCard }]}>
+          <Text style={[styles.statusTitleText, {color: colors.blueColorCard}]}>
             COMPLETED
           </Text>
         </View>
@@ -173,7 +173,7 @@ export default function ChallengeStatusTitle({
 
       {isSender && status === ReservationStatus.declined && (
         <View>
-          <Text style={[styles.statusTitleText, { color: colors.googleColor }]}>
+          <Text style={[styles.statusTitleText, {color: colors.googleColor}]}>
             {challengeObj?.challenger === challengeObj?.invited_by
               ? 'DECLINED'
               : 'INVITE TO CHALLENGE DECLINED'}
@@ -182,7 +182,7 @@ export default function ChallengeStatusTitle({
       )}
       {!isSender && status === ReservationStatus.declined && (
         <View>
-          <Text style={[styles.statusTitleText, { color: colors.googleColor }]}>
+          <Text style={[styles.statusTitleText, {color: colors.googleColor}]}>
             {challengeObj?.challenger === challengeObj?.invited_by
               ? 'DECLINED'
               : 'INVITE TO CHALLENGE DECLINED'}
@@ -192,7 +192,7 @@ export default function ChallengeStatusTitle({
 
       {isSender && status === ReservationStatus.cancelled && (
         <View>
-          <Text style={[styles.statusTitleText, { color: colors.googleColor }]}>
+          <Text style={[styles.statusTitleText, {color: colors.googleColor}]}>
             {challengeObj?.challenger === challengeObj?.invited_by
               ? 'CANCELLED'
               : 'INVITE TO CHALLENGE CANCELLED'}
@@ -201,7 +201,7 @@ export default function ChallengeStatusTitle({
       )}
       {!isSender && status === ReservationStatus.cancelled && (
         <View>
-          <Text style={[styles.statusTitleText, { color: colors.googleColor }]}>
+          <Text style={[styles.statusTitleText, {color: colors.googleColor}]}>
             {challengeObj?.challenger === challengeObj?.invited_by
               ? 'CANCELLED'
               : 'INVITE TO CHALLENGE CANCELLED'}
@@ -236,15 +236,14 @@ export default function ChallengeStatusTitle({
           {isOfferExpired() ? (
             <View>
               <Text
-                style={[styles.statusTitleText, { color: colors.googleColor }]}>
+                style={[styles.statusTitleText, {color: colors.googleColor}]}
+              >
                 ALTERATION REQUEST EXPIRED
               </Text>
             </View>
           ) : (
             <View>
-              <Text style={styles.statusTitleText}>
-                ALTERATION · AWAITING
-              </Text>
+              <Text style={styles.statusTitleText}>ALTERATION · AWAITING</Text>
             </View>
           )}
         </View>
@@ -254,7 +253,8 @@ export default function ChallengeStatusTitle({
           {isOfferExpired() ? (
             <View>
               <Text
-                style={[styles.statusTitleText, { color: colors.googleColor }]}>
+                style={[styles.statusTitleText, {color: colors.googleColor}]}
+              >
                 ALTERATION REQUEST EXPIRED
               </Text>
             </View>

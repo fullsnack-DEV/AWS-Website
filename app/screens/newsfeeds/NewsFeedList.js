@@ -202,7 +202,8 @@ const NewsFeedList = ({
             fontFamily: fonts.RLight,
             textAlign: 'center',
             padding: 15,
-          }}>
+          }}
+        >
           {noDataFoundText}
         </Text>
       );
@@ -213,7 +214,8 @@ const NewsFeedList = ({
   return (
     <View
       onStartShouldSetResponderCapture={onStartShouldSetResponderCapture}
-      style={{flex: 1}}>
+      style={{flex: 1}}
+    >
       <FlatList
         viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
         onScroll={onFeedScroll}

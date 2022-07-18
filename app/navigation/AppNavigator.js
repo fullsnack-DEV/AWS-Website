@@ -389,7 +389,8 @@ const AppNavigator = ({navigation}) => {
             return (
               <LinearGradient
                 colors={[colors.yellowColor, colors.assistTextColor]}
-                style={styles.profileTabBorder}>
+                style={styles.profileTabBorder}
+              >
                 <View style={styles.profileImageCover}>
                   <Image
                     source={{uri: authContext?.entity?.obj?.thumbnail}}
@@ -404,7 +405,8 @@ const AppNavigator = ({navigation}) => {
               style={[
                 styles.profileTabBorder,
                 {backgroundColor: colors.whiteColor},
-              ]}>
+              ]}
+            >
               <Image
                 source={{uri: authContext?.entity?.obj?.thumbnail}}
                 style={[styles.profileTabImg, {height: 27, width: 27}]}
@@ -425,7 +427,8 @@ const AppNavigator = ({navigation}) => {
             return (
               <LinearGradient
                 colors={[colors.yellowColor, colors.assistTextColor]}
-                style={styles.profileTabBorder}>
+                style={styles.profileTabBorder}
+              >
                 <View style={styles.profileImageCover}>
                   <Image
                     source={{uri: authContext?.entity?.obj?.thumbnail}}
@@ -440,7 +443,8 @@ const AppNavigator = ({navigation}) => {
               style={[
                 styles.profileTabBorder,
                 {backgroundColor: colors.whiteColor},
-              ]}>
+              ]}
+            >
               <Image
                 source={{uri: authContext?.entity?.obj?.thumbnail}}
                 style={styles.profileTabImg}
@@ -466,7 +470,8 @@ const AppNavigator = ({navigation}) => {
             return (
               <LinearGradient
                 colors={[colors.yellowColor, colors.assistTextColor]}
-                style={styles.profileTabBorder}>
+                style={styles.profileTabBorder}
+              >
                 <View style={styles.profileImageCover}>
                   <Image
                     source={{uri: authContext?.entity?.obj?.thumbnail}}
@@ -481,7 +486,8 @@ const AppNavigator = ({navigation}) => {
               style={[
                 styles.profileTabBorder,
                 {backgroundColor: colors.whiteColor},
-              ]}>
+              ]}
+            >
               <Image
                 source={{uri: authContext?.entity?.obj?.thumbnail}}
                 style={styles.profileTabImg}
@@ -537,7 +543,8 @@ const AppNavigator = ({navigation}) => {
           // height: heightPercentageToDP(9),
           // marginTop: 7,
         },
-      }}>
+      }}
+    >
       <Tab.Screen
         name="Local Home"
         component={LocalHomeNavigator}

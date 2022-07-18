@@ -25,7 +25,8 @@ export default function UserNotFoundScreen({route}) {
             route.params.memberObj.thumbnail
               ? {uri: route.params.memberObj.thumbnail}
               : images.profilePlaceHolder
-          }></Image>
+          }
+        ></Image>
         <Text style={styles.emailText}>{route.params.memberObj.email}</Text>
 
         <TCBorderButton

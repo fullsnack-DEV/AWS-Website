@@ -1,9 +1,9 @@
-import { Text, View, StyleSheet } from 'react-native';
+import {Text, View, StyleSheet} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import FastImage from 'react-native-fast-image';
 import React from 'react';
 import colors from '../Constants/Colors';
-import { widthPercentageToDP as wp } from '../utils';
+import {widthPercentageToDP as wp} from '../utils';
 import images from '../Constants/ImagePath';
 import fonts from '../Constants/Fonts';
 
@@ -13,44 +13,50 @@ const TCTeamVS = ({
   firstTeamProfilePic,
   secondTeamProfilePic,
 }) => (
-  <View style={{ ...styles.teamVsSContainer }}>
+  <View style={{...styles.teamVsSContainer}}>
     <View style={styles.leftTeamContainer}>
       <LinearGradient
-                    colors={[colors.themeColor, colors.yellowColor]}
-                    style={{ ...styles.teamLogoContainer, marginRight: wp(2) }}
-                >
+        colors={[colors.themeColor, colors.yellowColor]}
+        style={{...styles.teamLogoContainer, marginRight: wp(2)}}
+      >
         <View style={styles.teamInnerLogoContainer}>
           <FastImage
-                            resizeMode={'cover'}
-                            source={firstTeamProfilePic ? { uri: firstTeamProfilePic } : images.teamPlaceholder }
-                            style={{ height: 18, width: 18, borderRadius: 50 }}
-                        />
+            resizeMode={'cover'}
+            source={
+              firstTeamProfilePic
+                ? {uri: firstTeamProfilePic}
+                : images.teamPlaceholder
+            }
+            style={{height: 18, width: 18, borderRadius: 50}}
+          />
         </View>
       </LinearGradient>
-      <Text style={{ ...styles.teamTextContainer }}>
-        {firstTeamName ?? ''}
-      </Text>
+      <Text style={{...styles.teamTextContainer}}>{firstTeamName ?? ''}</Text>
     </View>
     <Text style={styles.vsText}>VS</Text>
     <View style={styles.rightTeamContainer}>
-      <Text style={{ ...styles.teamTextContainer, textAlign: 'right' }}>
+      <Text style={{...styles.teamTextContainer, textAlign: 'right'}}>
         {secondTeamName ?? ''}
       </Text>
       <LinearGradient
-                    colors={[colors.blueGradiantStart, colors.blueGradiantEnd]}
-                    style={{ ...styles.teamLogoContainer, marginLeft: wp(2) }}
-                >
-        <View style={{ ...styles.teamInnerLogoContainer }}>
+        colors={[colors.blueGradiantStart, colors.blueGradiantEnd]}
+        style={{...styles.teamLogoContainer, marginLeft: wp(2)}}
+      >
+        <View style={{...styles.teamInnerLogoContainer}}>
           <FastImage
-                            resizeMode={'cover'}
-                            source={secondTeamProfilePic ? { uri: secondTeamProfilePic } : images.teamPlaceholder }
-                            style={{ height: 18, width: 18, borderRadius: 50 }}
-                        />
+            resizeMode={'cover'}
+            source={
+              secondTeamProfilePic
+                ? {uri: secondTeamProfilePic}
+                : images.teamPlaceholder
+            }
+            style={{height: 18, width: 18, borderRadius: 50}}
+          />
         </View>
       </LinearGradient>
     </View>
   </View>
-)
+);
 const styles = StyleSheet.create({
   teamVsSContainer: {
     flex: 1,
@@ -103,6 +109,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RLight,
     color: colors.lightBlackColor,
   },
-})
+});
 
 export default TCTeamVS;

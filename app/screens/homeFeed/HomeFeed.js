@@ -300,7 +300,14 @@ const HomeFeed = ({
         );
       }
     },
-    [authContext, createPostAfterUpload, currentUserData?.entity_type, currentUserData?.group_id, currentUserData?.user_id, imageUploadContext],
+    [
+      authContext,
+      createPostAfterUpload,
+      currentUserData?.entity_type,
+      currentUserData?.group_id,
+      currentUserData?.user_id,
+      imageUploadContext,
+    ],
   );
 
   const onEndReached = () => {

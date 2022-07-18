@@ -1,24 +1,18 @@
 /* eslint-disable no-underscore-dangle */
-import React, { memo, useContext } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  Image,
-} from 'react-native';
+import React, {memo, useContext} from 'react';
+import {View, Text, TouchableOpacity, StyleSheet, Image} from 'react-native';
 
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 
 import LinearGradient from 'react-native-linear-gradient';
 import images from '../Constants/ImagePath';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import ReservationStatus from '../Constants/ReservationStatus';
-import { getSportName } from '../utils';
+import {getSportName} from '../utils';
 import AuthContext from '../auth/context';
 
-function TCRecentMatchCard({ data, onPress, cardWidth = '86%' }) {
+function TCRecentMatchCard({data, onPress, cardWidth = '86%'}) {
   const months = [
     'Jan',
     'Feb',
@@ -73,8 +67,7 @@ function TCRecentMatchCard({ data, onPress, cardWidth = '86%' }) {
   // );
   return (
     <TouchableOpacity onPress={onPress}>
-
-      <View style={[styles.backgroundView, { width: wp(cardWidth) }]}>
+      <View style={[styles.backgroundView, {width: wp(cardWidth)}]}>
         <LinearGradient
           colors={
             data?.status === ReservationStatus.cancelled
@@ -83,9 +76,10 @@ function TCRecentMatchCard({ data, onPress, cardWidth = '86%' }) {
           }
           style={
             data?.status === ReservationStatus.offered
-              ? [styles.colorView, { opacity: 0.7 }]
+              ? [styles.colorView, {opacity: 0.7}]
               : styles.colorView
-          }>
+          }
+        >
           <View style={styles.dateView}>
             <Text style={styles.dateMonthText}>
               {months[new Date(data?.start_datetime * 1000).getMonth()]}
@@ -96,7 +90,9 @@ function TCRecentMatchCard({ data, onPress, cardWidth = '86%' }) {
           </View>
         </LinearGradient>
         <View style={styles.eventText}>
-          <Text style={styles.eventTitle}>{getSportName(data, authContext)}</Text>
+          <Text style={styles.eventTitle}>
+            {getSportName(data, authContext)}
+          </Text>
           <View style={styles.bottomView}>
             <Text style={styles.eventTimeLocation}>
               {formatAMPM(new Date(data?.start_datetime * 1000))} -{' '}
@@ -112,7 +108,7 @@ function TCRecentMatchCard({ data, onPress, cardWidth = '86%' }) {
               <View style={styles.leftGameView}>
                 {data?.home_team?.thumbnail ? (
                   <Image
-                    source={{ uri: data?.home_team?.thumbnail }}
+                    source={{uri: data?.home_team?.thumbnail}}
                     style={styles.profileImage}
                   />
                 ) : (
@@ -129,7 +125,7 @@ function TCRecentMatchCard({ data, onPress, cardWidth = '86%' }) {
               <View style={styles.leftGameView}>
                 {data?.home_team?.thumbnail ? (
                   <Image
-                    source={{ uri: data?.home_team?.thumbnail }}
+                    source={{uri: data?.home_team?.thumbnail}}
                     style={styles.profileImage}
                   />
                 ) : (
@@ -155,7 +151,7 @@ function TCRecentMatchCard({ data, onPress, cardWidth = '86%' }) {
                 </Text>
                 {data?.away_team?.thumbnail ? (
                   <Image
-                    source={{ uri: data?.away_team.thumbnail }}
+                    source={{uri: data?.away_team.thumbnail}}
                     style={styles.profileImage}
                   />
                 ) : (
@@ -172,7 +168,7 @@ function TCRecentMatchCard({ data, onPress, cardWidth = '86%' }) {
                 </Text>
                 {data?.away_team?.thumbnail ? (
                   <Image
-                    source={{ uri: data?.away_team?.thumbnail }}
+                    source={{uri: data?.away_team?.thumbnail}}
                     style={styles.profileImage}
                   />
                 ) : (
@@ -216,7 +212,7 @@ const styles = StyleSheet.create({
     height: 102,
     // 183
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 5 },
+    shadowOffset: {width: 0, height: 5},
     shadowOpacity: 0.2,
     shadowRadius: 5,
     width: wp('86%'),
@@ -284,11 +280,9 @@ const styles = StyleSheet.create({
     color: colors.googleColor,
   },
   scoreView: {
-
-      fontSize: 20,
-      fontFamily: fonts.RLight,
-      color: colors.googleColor,
-
+    fontSize: 20,
+    fontFamily: fonts.RLight,
+    color: colors.googleColor,
   },
 
   profileImage: {

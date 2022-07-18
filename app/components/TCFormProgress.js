@@ -20,7 +20,8 @@ export default function TCFormProgress({
           height: 5,
         },
         props,
-      ]}>
+      ]}
+    >
       <LinearGradient
         colors={[colors.themeColor1, colors.themeColor3]}
         style={[
@@ -30,7 +31,8 @@ export default function TCFormProgress({
             width: (Dimensions.get('window').width / totalSteps) * curruentStep,
             height: 5,
           },
-        ]}></LinearGradient>
+        ]}
+      ></LinearGradient>
     </View>
   );
 }

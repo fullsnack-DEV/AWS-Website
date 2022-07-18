@@ -1,14 +1,10 @@
-import React, { memo } from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-} from 'react-native';
+import React, {memo} from 'react';
+import {StyleSheet, View, Text} from 'react-native';
 
-import ImageButton from './WritePost/ImageButton'
-import colors from '../Constants/Colors'
-import fonts from '../Constants/Fonts'
-import images from '../Constants/ImagePath'
+import ImageButton from './WritePost/ImageButton';
+import colors from '../Constants/Colors';
+import fonts from '../Constants/Fonts';
+import images from '../Constants/ImagePath';
 // import TCPopupMessage from './TCPopupMessage';
 
 function TCEditHeader({
@@ -29,37 +25,61 @@ function TCEditHeader({
 }) {
   return (
     <View style={[styles.containerStyle, containerStyle]}>
-      <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
         <Text style={[styles.textStyle, textStyle]}>{title}</Text>
         {/* <TCPopupMessage
               visible={true}
               message={'this tc warning message'}
               arrowFromLeft={85}
           /> */}
-        {iconImage && <ImageButton style={[{
-          height: 32,
-          width: 32,
-        }, iconStyle]} source={iconImage} onImagePress={onIconPress} />}
-        {subTitle && <Text style={[styles.subTitleTextStyle, subTitleTextStyle]}>{subTitle}</Text>}
-        {showNextArrow && <ImageButton source={images.nextArrow}
-        style={{
-          paddingTop: 2,
-          width: 20,
-          height: 20,
-          flexDirection: 'row',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-      imageStyle={ { width: 8, height: 13 }}
-      onImagePress={onNextArrowPress}/>
-      }
+        {iconImage && (
+          <ImageButton
+            style={[
+              {
+                height: 32,
+                width: 32,
+              },
+              iconStyle,
+            ]}
+            source={iconImage}
+            onImagePress={onIconPress}
+          />
+        )}
+        {subTitle && (
+          <Text style={[styles.subTitleTextStyle, subTitleTextStyle]}>
+            {subTitle}
+          </Text>
+        )}
+        {showNextArrow && (
+          <ImageButton
+            source={images.nextArrow}
+            style={{
+              paddingTop: 2,
+              width: 20,
+              height: 20,
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+            imageStyle={{width: 8, height: 13}}
+            onImagePress={onNextArrowPress}
+          />
+        )}
       </View>
-      {showEditButton
-      && <ImageButton source={images.editPencil}
-      style={[styles.imageContainerStyle, imageContainerStyle]}
-      imageStyle={ [styles.imageStyle, imageStyle]}
-      onImagePress={onEditPress}/>
-      }
+      {showEditButton && (
+        <ImageButton
+          source={images.editPencil}
+          style={[styles.imageContainerStyle, imageContainerStyle]}
+          imageStyle={[styles.imageStyle, imageStyle]}
+          onImagePress={onEditPress}
+        />
+      )}
     </View>
   );
 }
@@ -89,7 +109,8 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   imageStyle: {
-    height: 20, width: 18,
+    height: 20,
+    width: 18,
   },
 });
 

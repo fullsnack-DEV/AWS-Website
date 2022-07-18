@@ -1,7 +1,5 @@
 import React from 'react';
-import {
-  View, Text, StyleSheet, Image, TouchableOpacity,
-} from 'react-native';
+import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
 
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
@@ -14,40 +12,49 @@ export default function UserInfoGroupItem({
   entityType = 'club',
   onGroupPress,
 }) {
-  let logoImage = images.clubC
-  let placeholder = images.clubPlaceholderSmall
+  let logoImage = images.clubC;
+  let placeholder = images.clubPlaceholderSmall;
   switch (entityType) {
     case 'team':
-      placeholder = images.teamPlaceholderSmall
-      logoImage = images.teamT
+      placeholder = images.teamPlaceholderSmall;
+      logoImage = images.teamT;
       break;
     case 'league':
-      placeholder = images.teamPlaceholderSmall
-      logoImage = images.clubC
+      placeholder = images.teamPlaceholderSmall;
+      logoImage = images.clubC;
       break;
     default:
   }
 
   return (
-    <TouchableOpacity onPress={ onGroupPress } style={{ width: 55, height: 'auto', marginLeft: 26 }}>
+    <TouchableOpacity
+      onPress={onGroupPress}
+      style={{width: 55, height: 'auto', marginLeft: 26}}
+    >
       <View style={styles.imageContainerStyle}>
-        <Image style={styles.placeHolderImage}
-        source={placeholder}>
-        </Image>
+        <Image style={styles.placeHolderImage} source={placeholder}></Image>
         <View style={styles.placeholderTextContainer}>
-          <Text style={styles.placeholderText}>{title.charAt(0).toUpperCase()}</Text>
+          <Text style={styles.placeholderText}>
+            {title.charAt(0).toUpperCase()}
+          </Text>
         </View>
         <TCImage
-        containerStyle={styles.mainImageStyle}
-        resizeMode={'contain'}
-        imageStyle={styles.mainImageStyle}
-        source={imageData}/>
+          containerStyle={styles.mainImageStyle}
+          resizeMode={'contain'}
+          imageStyle={styles.mainImageStyle}
+          source={imageData}
+        />
         <View style={styles.logoContainerStyle}>
-          <Image
-        style={styles.logoImageStyle} source={logoImage}/>
+          <Image style={styles.logoImageStyle} source={logoImage} />
         </View>
       </View>
-      <Text style={styles.titleStyle} ellipsizeMode={'middle'} numberOfLines={ 2 }>{title}</Text>
+      <Text
+        style={styles.titleStyle}
+        ellipsizeMode={'middle'}
+        numberOfLines={2}
+      >
+        {title}
+      </Text>
     </TouchableOpacity>
   );
 }
@@ -58,7 +65,7 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 25,
     shadowColor: colors.blackColor,
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: {width: 0, height: 3},
     shadowOpacity: 0.26,
     shadowRadius: 3,
     elevation: 3,
@@ -102,7 +109,7 @@ const styles = StyleSheet.create({
     height: 15,
     borderRadius: 7.5,
     shadowColor: colors.blackColor,
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: {width: 0, height: 3},
     shadowOpacity: 0.16,
     shadowRadius: 3,
     elevation: 3,
@@ -124,4 +131,4 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
     textAlign: 'center',
   },
-})
+});

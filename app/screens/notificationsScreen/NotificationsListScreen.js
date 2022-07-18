@@ -854,7 +854,8 @@ function NotificationsListScreen({navigation}) {
       <AppleStyleSwipeableRow
         onPress={() => onDelete({item})}
         color={colors.darkThemeColor}
-        image={images.deleteIcon}>
+        image={images.deleteIcon}
+      >
         {notificationComponentType(item)}
       </AppleStyleSwipeableRow>
     );
@@ -867,7 +868,8 @@ function NotificationsListScreen({navigation}) {
         <AppleStyleSwipeableRow
           onPress={() => onDelete({item})}
           color={colors.darkThemeColor}
-          image={images.deleteIcon}>
+          image={images.deleteIcon}
+        >
           {notificationComponentType(item)}
         </AppleStyleSwipeableRow>
       );
@@ -876,7 +878,8 @@ function NotificationsListScreen({navigation}) {
       <AppleStyleSwipeableRow
         onPress={() => onDelete({item})}
         color={colors.darkThemeColor}
-        image={images.deleteIcon}>
+        image={images.deleteIcon}
+      >
         <NotificationItem
           data={item}
           onPressFirstEntity={openHomePage}
@@ -911,7 +914,8 @@ function NotificationsListScreen({navigation}) {
         <TouchableWithoutFeedback
           onPress={() => {
             actionSheet.current.show();
-          }}>
+          }}
+        >
           <Image source={images.vertical3Dot} style={styles.headerRightImg} />
         </TouchableWithoutFeedback>
       ),
@@ -976,10 +980,9 @@ function NotificationsListScreen({navigation}) {
           );
 
           console.log('todayNotifications:=>', todayNotifications);
-
           const array = [
             {
-              data:[...pendingReqNotification],
+              data: [...pendingReqNotification],
               section: strings.pendingrequests,
               type: 'request',
             },
@@ -1055,13 +1058,15 @@ function NotificationsListScreen({navigation}) {
               disabled={section !== strings.pendingrequests}
               onPress={() => {
                 navigation.navigate('PendingRequestScreen');
-              }}>
+              }}
+            >
               <View
                 style={{
                   flex: 1,
                   flexDirection: 'row',
                   justifyContent: 'space-between',
-                }}>
+                }}
+              >
                 <Text style={styles.header}>{section}</Text>
                 {section === strings.pendingrequests && (
                   <Image source={images.nextArrow} style={styles.nextArrow} />
@@ -1080,7 +1085,8 @@ function NotificationsListScreen({navigation}) {
             flex: 1,
             alignItems: 'center',
             justifyContent: 'center',
-          }}>
+          }}
+        >
           <Text style={styles.noEventText}>No Notification</Text>
           <Text style={styles.dataNotFoundText}>
             New notification will appear here.
@@ -1113,7 +1119,8 @@ function NotificationsListScreen({navigation}) {
         backdropTransitionOutTiming={800}
         style={{
           margin: 0,
-        }}>
+        }}
+      >
         <View
           style={{
             width: '100%',
@@ -1129,14 +1136,16 @@ function NotificationsListScreen({navigation}) {
             shadowOpacity: 0.5,
             shadowRadius: 5,
             elevation: 15,
-          }}>
+          }}
+        >
           <View
             style={{
               flexDirection: 'row',
               paddingHorizontal: 15,
               justifyContent: 'center',
               alignItems: 'center',
-            }}>
+            }}
+          >
             <Text
               style={{
                 alignSelf: 'center',
@@ -1144,7 +1153,8 @@ function NotificationsListScreen({navigation}) {
                 fontSize: 16,
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
-              }}>
+              }}
+            >
               Respond to invite to create team
             </Text>
           </View>
@@ -1179,7 +1189,6 @@ function NotificationsListScreen({navigation}) {
   );
 }
 const styles = StyleSheet.create({
- 
   headerRightImg: {
     height: 15,
     marginRight: 20,

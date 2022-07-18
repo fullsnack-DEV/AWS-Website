@@ -1,7 +1,5 @@
 import React from 'react';
-import {
- Text, View, StyleSheet, Image, TouchableOpacity,
- } from 'react-native';
+import {Text, View, StyleSheet, Image, TouchableOpacity} from 'react-native';
 import _ from 'lodash';
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
@@ -22,7 +20,7 @@ export default function PlayInProfileViewSection({
 }) {
   return (
     <View style={styles.topViewContainer}>
-      <View style={{ flexDirection: 'row' }}>
+      <View style={{flexDirection: 'row'}}>
         <View style={styles.profileView}>
           <Image source={profileImage} style={styles.profileImage} />
         </View>
@@ -34,7 +32,8 @@ export default function PlayInProfileViewSection({
           {isPatch && (
             <LinearGradient
               colors={[colors.themeColor, colors.darkThemeColor]}
-              style={styles.patchStyle}>
+              style={styles.patchStyle}
+            >
               <Text style={styles.patchText}>
                 {patchType === 'club'
                   ? 'Looking for club!'
@@ -49,18 +48,20 @@ export default function PlayInProfileViewSection({
               <FastImage
                 resizeMode={'contain'}
                 source={images.SettingPrivacy}
-                style={{ width: 40, height: 40 }}
+                style={{width: 40, height: 40}}
               />
             </TouchableOpacity>
           ) : (
             <TouchableOpacity
               style={styles.messageBtnStyle}
-              onPress={onMessageButtonPress}>
+              onPress={onMessageButtonPress}
+            >
               <Text
                 style={[
                   styles.detailBtnTextStyle,
-                  { color: colors.lightBlackColor },
-                ]}>
+                  {color: colors.lightBlackColor},
+                ]}
+              >
                 {strings.message}
               </Text>
             </TouchableOpacity>
@@ -91,7 +92,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: {width: 0, height: 3},
     shadowOpacity: 0.5,
     shadowRadius: 4,
     elevation: 3,
@@ -133,7 +134,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     justifyContent: 'center',
     shadowColor: colors.blackColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.16,
     shadowRadius: 1,
     elevation: 10,

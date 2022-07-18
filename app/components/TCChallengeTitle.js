@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import {StyleSheet, View, Text} from 'react-native';
 
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
@@ -30,7 +30,8 @@ function TCChallengeTitle({
               fontFamily: fonts.RRegular,
               fontSize: 14,
               color: colors.darkThemeColor,
-            }}>
+            }}
+          >
             {'  new'}
           </Text>
         )}
@@ -40,7 +41,8 @@ function TCChallengeTitle({
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'center',
-        }}>
+        }}
+      >
         <Text style={[styles.valueText, valueStyle]}>{value}</Text>
         <Text style={styles.staticValueText}>{staticValueText}</Text>
         {tooltipText !== '' && (
@@ -52,8 +54,9 @@ function TCChallengeTitle({
         )}
         {isEdit && (
           <Text
-            style={{ color: colors.themeColor, marginLeft: 10 }}
-            onPress={onEditPress}>
+            style={{color: colors.themeColor, marginLeft: 10}}
+            onPress={onEditPress}
+          >
             Edit
           </Text>
         )}

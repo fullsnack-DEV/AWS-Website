@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import {View, Text, StyleSheet} from 'react-native';
 
 import moment from 'moment';
 
@@ -20,50 +20,50 @@ export default function ReservationCard({
   // onPressGameCard = () => {},
 }) {
   console.log('reservation data:=>', data);
-//  const authContext = useContext(AuthContext);
+  //  const authContext = useContext(AuthContext);
 
-//   const isPendingButtonOrDetailButton = () => {
-//     if (data.game) {
-//       if (data.status === RefereeReservationStatus.offered) {
-//         if (data.expiry_datetime < new Date().getTime() / 1000) {
-//           return false;
-//         }
-//         if (data.initiated_by === authContext.entity.uid) {
-//           return false;
-//         }
-//         return true;
-//       }
-//       if (data.status === RefereeReservationStatus.changeRequest) {
-//         if (data.expiry_datetime < new Date().getTime() / 1000) {
-//           return false;
-//         }
-//         if (data.requested_by === authContext.entity.uid) {
-//           return false;
-//         }
-//         return true;
-//       }
-//       return false;
-//     }
-//     if (data.status === ReservationStatus.offered) {
-//       if (data.offer_expiry < new Date().getTime() / 1000) {
-//         return false;
-//       }
-//       if (data.invited_by === authContext.entity.uid) {
-//         return false;
-//       }
-//       return true;
-//     }
-//     if (data.status === ReservationStatus.changeRequest) {
-//       if (data.offer_expiry < new Date().getTime() / 1000) {
-//         return false;
-//       }
-//       if (data.change_requested_by === authContext.entity.uid) {
-//         return false;
-//       }
-//       return true;
-//     }
-//     return false;
-//   };
+  //   const isPendingButtonOrDetailButton = () => {
+  //     if (data.game) {
+  //       if (data.status === RefereeReservationStatus.offered) {
+  //         if (data.expiry_datetime < new Date().getTime() / 1000) {
+  //           return false;
+  //         }
+  //         if (data.initiated_by === authContext.entity.uid) {
+  //           return false;
+  //         }
+  //         return true;
+  //       }
+  //       if (data.status === RefereeReservationStatus.changeRequest) {
+  //         if (data.expiry_datetime < new Date().getTime() / 1000) {
+  //           return false;
+  //         }
+  //         if (data.requested_by === authContext.entity.uid) {
+  //           return false;
+  //         }
+  //         return true;
+  //       }
+  //       return false;
+  //     }
+  //     if (data.status === ReservationStatus.offered) {
+  //       if (data.offer_expiry < new Date().getTime() / 1000) {
+  //         return false;
+  //       }
+  //       if (data.invited_by === authContext.entity.uid) {
+  //         return false;
+  //       }
+  //       return true;
+  //     }
+  //     if (data.status === ReservationStatus.changeRequest) {
+  //       if (data.offer_expiry < new Date().getTime() / 1000) {
+  //         return false;
+  //       }
+  //       if (data.change_requested_by === authContext.entity.uid) {
+  //         return false;
+  //       }
+  //       return true;
+  //     }
+  //     return false;
+  //   };
   const isOfferExpired = () => {
     if (data.game) {
       if (data.status === RefereeReservationStatus.offered) {
@@ -95,7 +95,8 @@ export default function ReservationCard({
     return false;
   };
   const getDayTimeDifferent = (sDate, eDate) => {
-    let delta = Math.abs(new Date(sDate).getTime() - new Date(eDate).getTime()) / 1000;
+    let delta =
+      Math.abs(new Date(sDate).getTime() - new Date(eDate).getTime()) / 1000;
 
     const days = Math.floor(delta / 86400);
     delta -= days * 86400;
@@ -114,26 +115,31 @@ export default function ReservationCard({
       <ReservationNumber
         reservationNumber={data?.reservation_id || data?.challenge_id}
       />
-      <ReservationStatusView data={data} onClick={onPressButon}/>
+      <ReservationStatusView data={data} onClick={onPressButon} />
 
       {data?.referee_id && <RefereeEntityView data={data} />}
       {data?.scorekeeper_id && <ScorekeeperEntityView data={data} />}
-      {!data?.referee_id && !data?.scorekeeper_id && <TeamEntityView data={data} />}
+      {!data?.referee_id && !data?.scorekeeper_id && (
+        <TeamEntityView data={data} />
+      )}
 
       <View style={styles.timeView}>
-        <Text style={[styles.timeLocationText, { marginLeft: 10, flex: 0.5 }]}>
-          {moment(new Date(data?.start_datetime * 1000)).format(
-            'hh:mm a',
-          )}{' '}
-          -{' '}
+        <Text style={[styles.timeLocationText, {marginLeft: 10, flex: 0.5}]}>
+          {moment(new Date(data?.start_datetime * 1000)).format('hh:mm a')} -{' '}
           {moment(new Date(data?.end_datetime * 1000)).format('hh:mm a')}
         </Text>
         <Text
           style={[
             styles.timeLocationText,
-            { marginRight: 5, marginLeft: 5, color: colors.lightgrayColor },
-          ]}>|</Text>
-        <Text style={[styles.timeLocationText, { marginRight: 0, flex: 0.5 }]} numberOfLines={1}>
+            {marginRight: 5, marginLeft: 5, color: colors.lightgrayColor},
+          ]}
+        >
+          |
+        </Text>
+        <Text
+          style={[styles.timeLocationText, {marginRight: 0, flex: 0.5}]}
+          numberOfLines={1}
+        >
           {data?.game?.city ?? data?.city}
         </Text>
       </View>
@@ -144,7 +150,8 @@ export default function ReservationCard({
       )} */}
       {isOfferExpired() && (
         <Text style={styles.expiryText}>
-          Respond within {getDayTimeDifferent(
+          Respond within{' '}
+          {getDayTimeDifferent(
             (data.offer_expiry || data.expiry_datetime) * 1000,
             new Date().getTime(),
           )}
@@ -174,7 +181,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     backgroundColor: colors.creamColor,
-     width: '92%',
+    width: '92%',
     height: 25,
     borderRadius: 5,
     alignSelf: 'center',
@@ -186,7 +193,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.whiteColor,
     width: '92%',
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 5 },
+    shadowOffset: {width: 0, height: 5},
     shadowOpacity: 0.3,
     shadowRadius: 5,
     borderRadius: 5,

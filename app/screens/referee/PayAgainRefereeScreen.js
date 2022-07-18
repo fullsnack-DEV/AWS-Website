@@ -1,12 +1,10 @@
-import React, { useEffect, useState, useContext } from 'react';
-import {
-  StyleSheet, View, Text, Alert,
-} from 'react-native';
+import React, {useEffect, useState, useContext} from 'react';
+import {StyleSheet, View, Text, Alert} from 'react-native';
 
-import { useIsFocused } from '@react-navigation/native';
+import {useIsFocused} from '@react-navigation/native';
 import AuthContext from '../../auth/context';
-import { payAgainAlterReferee, payAgainReferee } from '../../api/Challenge';
-import { paymentMethods } from '../../api/Users';
+import {payAgainAlterReferee, payAgainReferee} from '../../api/Challenge';
+import {paymentMethods} from '../../api/Users';
 import ReservationStatus from '../../Constants/ReservationStatus';
 import strings from '../../Constants/String';
 import fonts from '../../Constants/Fonts';
@@ -19,25 +17,28 @@ import MatchFeesCard from '../../components/challenge/MatchFeesCard';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import * as Utility from '../../utils';
 
-export default function PayAgainRefereeScreen({ navigation, route }) {
+export default function PayAgainRefereeScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
   const [loading, setloading] = useState(false);
   const [reservationObj, setReservationObj] = useState();
-  const [sorceScreen, setSourceScreen] = useState()
+  const [sorceScreen, setSourceScreen] = useState();
   const [defaultCard, setDefaultCard] = useState();
 
   useEffect(() => {
     if (isFocused) {
-      const { body, comeFrom } = route.params ?? {};
+      const {body, comeFrom} = route.params ?? {};
       setSourceScreen(comeFrom);
-      setReservationObj(body)
-      console.log('Body Object of pay again referee screen: ', JSON.stringify(body));
+      setReservationObj(body);
+      console.log(
+        'Body Object of pay again referee screen: ',
+        JSON.stringify(body),
+      );
       // getFeeDetail();
       if (route?.params?.paymentMethod) {
         setDefaultCard(route?.params?.paymentMethod);
       } else {
-        getPaymentMethods(body?.source)
+        getPaymentMethods(body?.source);
       }
     }
   }, [isFocused]);
@@ -62,37 +63,45 @@ export default function PayAgainRefereeScreen({ navigation, route }) {
       });
   };
   const payAgainForRefereeRequest = () => {
-    setloading(true)
-    const bodyParams = {}
+    setloading(true);
+    const bodyParams = {};
     if (defaultCard) {
       bodyParams.source = defaultCard.id;
-      bodyParams.payment_method_type = 'card'
+      bodyParams.payment_method_type = 'card';
       console.log('body params::', bodyParams);
       if (sorceScreen === ReservationStatus.pendingrequestpayment) {
-        payAgainAlterReferee(reservationObj.reservation_id, bodyParams, authContext).then(() => {
-          setloading(false)
-          navigation.navigate('NotificationsListScreen')
-        }).catch((e) => {
-          setloading(false)
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
-        })
+        payAgainAlterReferee(
+          reservationObj.reservation_id,
+          bodyParams,
+          authContext,
+        )
+          .then(() => {
+            setloading(false);
+            navigation.navigate('NotificationsListScreen');
+          })
+          .catch((e) => {
+            setloading(false);
+            setTimeout(() => {
+              Alert.alert(strings.alertmessagetitle, e.message);
+            }, 10);
+          });
       } else {
-        payAgainReferee(reservationObj.reservation_id, bodyParams, authContext).then(() => {
-          setloading(false)
-          navigation.navigate('NotificationsListScreen')
-        }).catch((e) => {
-          setloading(false)
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
-        })
+        payAgainReferee(reservationObj.reservation_id, bodyParams, authContext)
+          .then(() => {
+            setloading(false);
+            navigation.navigate('NotificationsListScreen');
+          })
+          .catch((e) => {
+            setloading(false);
+            setTimeout(() => {
+              Alert.alert(strings.alertmessagetitle, e.message);
+            }, 10);
+          });
       }
     } else {
-      Alert.alert(strings.selectPaymentText)
+      Alert.alert(strings.selectPaymentText);
     }
-  }
+  };
 
   //   const getFeeDetail = () => {
   //     console.log('FEE CALLED:');
@@ -157,15 +166,15 @@ export default function PayAgainRefereeScreen({ navigation, route }) {
         <TCLabel title={'Payment Method'} />
         <View>
           <TCTouchableLabel
-           title={
-            defaultCard && defaultCard?.card?.brand
-              ? Utility.capitalize(defaultCard?.card?.brand)
-              : strings.addOptionMessage
-          }
-          subTitle={
-            (defaultCard && defaultCard?.card?.last4)
-            ?? defaultCard?.card?.last4
-          }
+            title={
+              defaultCard && defaultCard?.card?.brand
+                ? Utility.capitalize(defaultCard?.card?.brand)
+                : strings.addOptionMessage
+            }
+            subTitle={
+              (defaultCard && defaultCard?.card?.last4) ??
+              defaultCard?.card?.last4
+            }
             showNextArrow={true}
             onPress={() => {
               navigation.navigate('PaymentMethodsScreen', {
@@ -187,12 +196,12 @@ export default function PayAgainRefereeScreen({ navigation, route }) {
           also agree to pay the total amount shown above.
         </Text>
       </View>
-      <View style={{ flex: 1 }} />
-      <View style={{ marginBottom: 10 }}>
+      <View style={{flex: 1}} />
+      <View style={{marginBottom: 10}}>
         <TCGradientButton
           title={strings.confirmAndPayTitle}
           onPress={() => {
-            payAgainForRefereeRequest()
+            payAgainForRefereeRequest();
           }}
         />
       </View>

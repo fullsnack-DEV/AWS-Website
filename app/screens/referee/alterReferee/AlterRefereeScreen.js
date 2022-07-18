@@ -102,7 +102,7 @@ export default function AlterRefereeScreen({navigation, route}) {
     entity = authContext.entity;
 
     console.log('reservationObjreservationObj:=>', reservationObj);
-    if(isFocused){
+    if (isFocused) {
       if (reservationObj.length > 0) {
         setIsPendingRequestPayment(true);
         for (let i = 0; i < reservationObj.length; i++) {
@@ -114,7 +114,7 @@ export default function AlterRefereeScreen({navigation, route}) {
             } else {
               setbodyParams(reservationObj[0]);
             }
-  
+
             if (
               (reservationObj[0]?.game?.away_team?.group_id ??
                 reservationObj[0]?.game?.away_team?.user_id) === entity.uid
@@ -146,7 +146,7 @@ export default function AlterRefereeScreen({navigation, route}) {
           });
         }
         console.log('challenge Object::', reservationObj[0]);
-  
+
         console.log('Payment Object::', paymentCard);
       } else {
         if (isOld === false) {
@@ -157,7 +157,7 @@ export default function AlterRefereeScreen({navigation, route}) {
         } else {
           setbodyParams(reservationObj);
         }
-  
+
         if (
           (reservationObj?.game?.away_team?.group_id ??
             reservationObj?.game?.away_team?.user_id) === entity.uid
@@ -186,7 +186,7 @@ export default function AlterRefereeScreen({navigation, route}) {
           });
         }
         console.log('challenge Object::', reservationObj);
-  
+
         console.log('Payment Object::', paymentCard);
       }
       getPaymentMethods(reservationObj[0] ?? reservationObj);
@@ -645,7 +645,7 @@ export default function AlterRefereeScreen({navigation, route}) {
     }
     return reservationObject?.referee;
   };
-  
+
   const acceptDeclineRefereeReservation = (
     reservationID,
     callerID,
@@ -728,7 +728,8 @@ export default function AlterRefereeScreen({navigation, route}) {
             <TouchableOpacity onPress={() => console.log('OK')}>
               <LinearGradient
                 colors={[colors.yellowColor, colors.themeColor]}
-                style={styles.containerStyle}>
+                style={styles.containerStyle}
+              >
                 <Text style={styles.buttonText}>
                   Please edit the reservation details below before you send the
                   alteration request.
@@ -743,7 +744,8 @@ export default function AlterRefereeScreen({navigation, route}) {
               alignItems: 'flex-end',
               marginLeft: 15,
               marginRight: 15,
-            }}>
+            }}
+          >
             <ReservationNumber reservationNumber={bodyParams?.reservation_id} />
           </View>
 
@@ -754,7 +756,8 @@ export default function AlterRefereeScreen({navigation, route}) {
               justifyContent: 'space-between',
               margin: 15,
               marginBottom: 0,
-            }}>
+            }}
+          >
             <View style={styles.challengerView}>
               <View style={styles.teamView}>
                 <Image source={images.reqIcon} style={styles.reqOutImage} />
@@ -813,7 +816,8 @@ export default function AlterRefereeScreen({navigation, route}) {
                     fontSize: 16,
                     color: colors.lightBlackColor,
                     width: '80%',
-                  }}>
+                  }}
+                >
                   {`${bodyParams?.referee?.first_name} ${bodyParams?.referee?.last_name}`}
                 </Text>
               </View>
@@ -868,7 +872,7 @@ export default function AlterRefereeScreen({navigation, route}) {
           {bodyParams?.referee?.user_id !== entity.uid &&
             bodyParams.status ===
               RefereeReservationStatus.pendingrequestpayment && (
-                <TCGradientButton
+              <TCGradientButton
                 title={strings.tryToPayText}
                 onPress={() => {
                   navigation.navigate('PayAgainRefereeScreen', {
@@ -882,7 +886,7 @@ export default function AlterRefereeScreen({navigation, route}) {
           {bodyParams?.referee?.user_id === entity.uid &&
             bodyParams.status ===
               RefereeReservationStatus.pendingrequestpayment && (
-                <TCGradientButton
+              <TCGradientButton
                 title={strings.restorePreviousText}
                 onPress={() => {
                   let callerId = '';
@@ -912,14 +916,16 @@ export default function AlterRefereeScreen({navigation, route}) {
                     flexDirection: 'row',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                  }}>
+                  }}
+                >
                   <Title text={'Game'} />
 
                   {!isPendingRequestPayment && (
                     <TouchableOpacity
                       style={styles.editTouchArea}
                       hitSlop={getHitSlop(15)}
-                      onPress={() => navigation.navigate('RefereeSelectMatch')}>
+                      onPress={() => navigation.navigate('RefereeSelectMatch')}
+                    >
                       <Image
                         source={images.editSection}
                         style={styles.editButton}
@@ -952,7 +958,7 @@ export default function AlterRefereeScreen({navigation, route}) {
                         bodyParams?.timestamp &&
                         moment(bodyParams?.game?.start_datetime * 1000).format(
                           'MMM DD, YYYY',
-                      )
+                        )
                       }
                       titleStyle={{
                         alignSelf: 'flex-start',
@@ -1049,13 +1055,15 @@ export default function AlterRefereeScreen({navigation, route}) {
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-              }}>
+              }}
+            >
               <Text
                 style={{
                   fontFamily: fonts.RRegular,
                   fontSize: 16,
                   color: colors.lightBlackColor,
-                }}>
+                }}
+              >
                 {_.startCase(bodyParams?.chief_referee ? 'Chief' : 'Assistant')}{' '}
                 Referee
               </Text>
@@ -1075,7 +1083,7 @@ export default function AlterRefereeScreen({navigation, route}) {
               title={'Refund Policy'}
               value={bodyParams?.refund_policy}
               tooltipText={
-              '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the match fee and service fee are not refunded.'
+                '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the match fee and service fee are not refunded.'
               }
               tooltipHeight={heightPercentageToDP('18%')}
               tooltipWidth={widthPercentageToDP('50%')}
@@ -1090,7 +1098,8 @@ export default function AlterRefereeScreen({navigation, route}) {
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-              }}>
+              }}
+            >
               <TCLabel
                 title={
                   checkSenderForPayment(bodyParams) === 'sender'
@@ -1102,7 +1111,8 @@ export default function AlterRefereeScreen({navigation, route}) {
               <TouchableOpacity
                 onPress={() => {
                   navigation.navigate('RefereeSelectMatch');
-                }}></TouchableOpacity>
+                }}
+              ></TouchableOpacity>
             </View>
             {!isPendingRequestPayment && (
               <TouchableOpacity
@@ -1114,7 +1124,8 @@ export default function AlterRefereeScreen({navigation, route}) {
                     editableAlter: true,
                     body: bodyParams,
                   })
-                }>
+                }
+              >
                 <Image source={images.editSection} style={styles.editButton} />
               </TouchableOpacity>
             )}
@@ -1130,10 +1141,10 @@ export default function AlterRefereeScreen({navigation, route}) {
             bodyParams?.total_game_fee > 0) ||
             (bodyParams?.total_game_fee > 0 &&
               checkSenderForPayment(bodyParams) === 'sender')) && (
-                <View style={styles.contentContainer}>
-                  <Title text={'Payment Method'} />
-                  <View style={{marginTop: 10}}>
-                    <TCTouchableLabel
+            <View style={styles.contentContainer}>
+              <Title text={'Payment Method'} />
+              <View style={{marginTop: 10}}>
+                <TCTouchableLabel
                   title={
                     defaultCard
                       ? Utility.capitalize(defaultCard.card.brand)
@@ -1147,8 +1158,8 @@ export default function AlterRefereeScreen({navigation, route}) {
                     });
                   }}
                 />
-                  </View>
-                </View>
+              </View>
+            </View>
           )}
 
           {editPayment && (
@@ -1164,7 +1175,8 @@ export default function AlterRefereeScreen({navigation, route}) {
                 <Text style={styles.diffenceAmount}>{`$${parseFloat(
                   bodyParams?.total_game_fee - oldVersion?.total_game_fee,
                 ).toFixed(2)} ${
-                  bodyParams.currency_type.toUpperCase() || strings.defaultCurrency
+                  bodyParams.currency_type.toUpperCase() ||
+                  strings.defaultCurrency
                 }`}</Text>
                 {/* <Text style={styles.diffenceAmount}>{checkSenderOrReceiver(bodyParams) === 'sender' ? `$${bodyParams.total_charges - oldVersion.total_charges} CAD` : `$${bodyParams.total_payout - oldVersion.total_payout} CAD`}</Text> */}
               </View>
@@ -1214,7 +1226,7 @@ export default function AlterRefereeScreen({navigation, route}) {
                       total_service_fee1: paymentCard?.total_service_fee1,
                       total_service_fee2: paymentCard?.total_service_fee2,
                       international_card_fee:
-                      paymentCard?.international_card_fee,
+                        paymentCard?.international_card_fee,
                       total_stripe_fee: paymentCard?.total_stripe_fee,
                       total_payout: paymentCard?.total_payout,
                       total_amount: paymentCard?.total_amount,

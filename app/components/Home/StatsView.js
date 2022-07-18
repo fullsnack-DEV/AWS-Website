@@ -1,10 +1,6 @@
 import React from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-} from 'react-native';
-import colors from '../../Constants/Colors'
+import {StyleSheet, View, Text} from 'react-native';
+import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import ProgressBarCircle from './ProgressBarCircle';
 import WinProgressView from './WinProgressView';
@@ -38,25 +34,25 @@ export default function StatsView({
           <Text style={styles.totalGameCounterText}>{totalGameCounter}</Text>
         </View>
         <WinProgressView
-            titleText={winTitle}
-            percentageCount={winPercentage}
-            progress={winProgress}
-            prgressColor={winProgressColor}
-            percentageTextStyle={winPercentageTextStyle}
+          titleText={winTitle}
+          percentageCount={winPercentage}
+          progress={winProgress}
+          prgressColor={winProgressColor}
+          percentageTextStyle={winPercentageTextStyle}
         />
         <WinProgressView
-            titleText={drawTitle}
-            percentageCount={drawPercentage}
-            progress={drawProgress}
-            prgressColor={drawProgressColor}
-            percentageTextStyle={drawPercentageTextStyle}
+          titleText={drawTitle}
+          percentageCount={drawPercentage}
+          progress={drawProgress}
+          prgressColor={drawProgressColor}
+          percentageTextStyle={drawPercentageTextStyle}
         />
         <WinProgressView
-            titleText={lossTitle}
-            percentageCount={lossPercentage}
-            progress={lossProgress}
-            prgressColor={lossProgressColor}
-            percentageTextStyle={lossPercentageTextStyle}
+          titleText={lossTitle}
+          percentageCount={lossPercentage}
+          progress={lossProgress}
+          prgressColor={lossProgressColor}
+          percentageTextStyle={lossPercentageTextStyle}
         />
       </View>
       <ProgressBarCircle
@@ -76,7 +72,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     elevation: 5,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.5,
     shadowRadius: 5,
     marginTop: 10,

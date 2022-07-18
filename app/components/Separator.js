@@ -1,9 +1,9 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import colors from '../Constants/Colors'
+import {StyleSheet, View} from 'react-native';
+import colors from '../Constants/Colors';
 
 function Separator() {
-  return <View style={ styles.separatorLine }></View>;
+  return <View style={styles.separatorLine}></View>;
 }
 
 const styles = StyleSheet.create({

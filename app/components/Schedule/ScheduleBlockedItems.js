@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import {StyleSheet, View, Text} from 'react-native';
 import moment from 'moment';
 import LinearGradient from 'react-native-linear-gradient';
 import fonts from '../../Constants/Fonts';
@@ -11,7 +11,8 @@ export default function ScheduleBlockedItems({
   allDay = false,
   selected,
 }) {
-  const getTimeFormat = (dateValue) => moment(new Date(dateValue * 1000)).format('hh:mm A');
+  const getTimeFormat = (dateValue) =>
+    moment(new Date(dateValue * 1000)).format('hh:mm A');
   return (
     <>
       {selected ? (
@@ -28,11 +29,15 @@ export default function ScheduleBlockedItems({
             alignItems: 'center',
             justifyContent: 'center',
             shadowColor: colors.googleColor,
-            shadowOffset: { width: 0, height: 2 },
+            shadowOffset: {width: 0, height: 2},
             shadowOpacity: 0.5,
             shadowRadius: 2,
-          }}>
-          <Text style={[styles.fieldValue, { color: colors.whiteColor }]} numberOfLines={3}>
+          }}
+        >
+          <Text
+            style={[styles.fieldValue, {color: colors.whiteColor}]}
+            numberOfLines={3}
+          >
             {allDay
               ? 'All day'
               : `${getTimeFormat(startDate)} - ${getTimeFormat(endDate)}`}
@@ -51,11 +56,12 @@ export default function ScheduleBlockedItems({
             alignItems: 'center',
             justifyContent: 'center',
             shadowColor: colors.googleColor,
-            shadowOffset: { width: 0, height: 2 },
+            shadowOffset: {width: 0, height: 2},
             shadowOpacity: 0.5,
             shadowRadius: 2,
             elevation: 1,
-          }}>
+          }}
+        >
           <Text style={styles.fieldValue} numberOfLines={3}>
             {allDay
               ? 'All day'

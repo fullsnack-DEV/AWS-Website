@@ -1,108 +1,136 @@
-import React, {
-  useState, useContext,
-} from 'react';
-import {
-  Text, View, StyleSheet, Image, SafeAreaView, Alert,
-} from 'react-native';
-import {
-  ScrollView,
-} from 'react-native-gesture-handler';
-import AuthContext from '../../../auth/context'
+import React, {useState, useContext} from 'react';
+import {Text, View, StyleSheet, Image, SafeAreaView, Alert} from 'react-native';
+import {ScrollView} from 'react-native-gesture-handler';
+import AuthContext from '../../../auth/context';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import images from '../../../Constants/ImagePath';
-import colors from '../../../Constants/Colors'
-import fonts from '../../../Constants/Fonts'
+import colors from '../../../Constants/Colors';
+import fonts from '../../../Constants/Fonts';
 import strings from '../../../Constants/String';
 import TCProfileView from '../../../components/TCProfileView';
 import TCBorderButton from '../../../components/TCBorderButton';
-import { connectProfile } from '../../../api/Groups';
+import {connectProfile} from '../../../api/Groups';
 
-export default function UserFoundScreen({ navigation, route }) {
-  const {
- signUpObj,
-    memberObj,
-    groupID,
- } = route?.params
-  const authContext = useContext(AuthContext)
+export default function UserFoundScreen({navigation, route}) {
+  const {signUpObj, memberObj, groupID} = route?.params;
+  const authContext = useContext(AuthContext);
   const [loading, setloading] = useState(false);
-const entity = authContext?.entity?.obj
+  const entity = authContext?.entity?.obj;
 
+  const getLocation = (entityType) => {
+    let locationString = '';
 
-const getLocation=(entityType)=>{
-  let locationString = ''
-
- if(entityType === 'team'){
-  locationString = entity?.city
-  if(entity?.state_abbr){
-    locationString = `${locationString  }, ${  entity?.state_abbr}`
-  }
-  if(entity?.country){
-    locationString = `${locationString  }, ${  entity?.country}`
-  }
- }else{
-  locationString = signUpObj?.city
-  if(signUpObj?.state_abbr){
-    locationString = `${locationString  }, ${  signUpObj?.state_abbr}`
-  }
-  if(signUpObj?.country){
-    locationString = `${locationString  }, ${  signUpObj?.country}`
-  }
- }
-return locationString
-}
-  console.log('signup:=>',signUpObj);
-  console.log('member:=>',memberObj);
+    if (entityType === 'team') {
+      locationString = entity?.city;
+      if (entity?.state_abbr) {
+        locationString = `${locationString}, ${entity?.state_abbr}`;
+      }
+      if (entity?.country) {
+        locationString = `${locationString}, ${entity?.country}`;
+      }
+    } else {
+      locationString = signUpObj?.city;
+      if (signUpObj?.state_abbr) {
+        locationString = `${locationString}, ${signUpObj?.state_abbr}`;
+      }
+      if (signUpObj?.country) {
+        locationString = `${locationString}, ${signUpObj?.country}`;
+      }
+    }
+    return locationString;
+  };
+  console.log('signup:=>', signUpObj);
+  console.log('member:=>', memberObj);
 
   const connectMemberProfile = () => {
-    setloading(true)
-    connectProfile(groupID, memberObj?.user_id, authContext).then((response) => {
-      
+    setloading(true);
+    connectProfile(groupID, memberObj?.user_id, authContext)
+      .then((response) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, response.messages);
+        }, 10);
 
-      setloading(false);
-      setTimeout(() => {
-        Alert.alert(strings.alertmessagetitle, response.messages);
-      }, 10);
-
-      navigation.goBack();
-    })
+        navigation.goBack();
+      })
       .catch((e) => {
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
-  }
+  };
   return (
     <View style={styles.mainContainer}>
       <Image style={styles.background} source={images.orangeLayer} />
       <Image style={styles.background} source={images.entityCreatedBG} />
       <ActivityLoader visible={loading} />
-      <SafeAreaView style={{ flex: 1 }}>
-        <ScrollView style={{ flex: 1 }}>
-          <View style={{
-            marginTop: 100,
-          }}>
+      <SafeAreaView style={{flex: 1}}>
+        <ScrollView style={{flex: 1}}>
+          <View
+            style={{
+              marginTop: 100,
+            }}
+          >
             <View style={styles.topContainer}>
-              <Text style={styles.foundUserText}>We found a user whose e-mail account is</Text>
+              <Text style={styles.foundUserText}>
+                We found a user whose e-mail account is
+              </Text>
 
               {/* <Image source={ memberObj.thumbnail ? { uri: memberObj.thumbnail } : images.profilePlaceHolder } style={ styles.profileImage } /> */}
-              <TCProfileView image={signUpObj?.thumbnail ? { uri: signUpObj?.thumbnail } : images.profilePlaceHolder } style={ styles.profileImage} name={`${signUpObj?.first_name} ${signUpObj?.last_name}`} location={getLocation('user')} color={colors.whiteColor}/>
+              <TCProfileView
+                image={
+                  signUpObj?.thumbnail
+                    ? {uri: signUpObj?.thumbnail}
+                    : images.profilePlaceHolder
+                }
+                style={styles.profileImage}
+                name={`${signUpObj?.first_name} ${signUpObj?.last_name}`}
+                location={getLocation('user')}
+                color={colors.whiteColor}
+              />
               <Text style={styles.emailText}>{memberObj.email}</Text>
             </View>
             <View style={styles.deviderView}></View>
             <View style={styles.topContainer}>
-              <Text style={styles.connectProfileText}>Would you like to connect this user’s account to {`${signUpObj.first_name}'s`} profile in your team?</Text>
-              <TCProfileView image={entity?.thumbnail ? { uri: entity?.thumbnail } : images.teamPH } style={ styles.profileImage} name={`${entity?.group_name}`} location={getLocation('team')} color={colors.whiteColor}/>
+              <Text style={styles.connectProfileText}>
+                Would you like to connect this user’s account to{' '}
+                {`${signUpObj.first_name}'s`} profile in your team?
+              </Text>
+              <TCProfileView
+                image={
+                  entity?.thumbnail ? {uri: entity?.thumbnail} : images.teamPH
+                }
+                style={styles.profileImage}
+                name={`${entity?.group_name}`}
+                location={getLocation('team')}
+                color={colors.whiteColor}
+              />
 
               <Image source={images.chain} style={styles.fileButton}></Image>
 
-              <TCProfileView image={memberObj?.thumbnail ? { uri: memberObj.thumbnail } : images.profilePlaceHolder } style={ styles.profileImage} name={`${memberObj?.first_name} ${memberObj?.last_name}`} location={getLocation('user')} color={colors.whiteColor}/>
+              <TCProfileView
+                image={
+                  memberObj?.thumbnail
+                    ? {uri: memberObj.thumbnail}
+                    : images.profilePlaceHolder
+                }
+                style={styles.profileImage}
+                name={`${memberObj?.first_name} ${memberObj?.last_name}`}
+                location={getLocation('user')}
+                color={colors.whiteColor}
+              />
 
               {/* <Text style={styles.userEmail}>{memberObj.email}</Text> */}
-
             </View>
-            <View style={{ marginBottom: 100 }}/>
-            <TCBorderButton title={strings.connectProfile} borderColor={colors.whiteColor} marginTop={20} onPress={() => connectMemberProfile()} fontSize={16}/>
+            <View style={{marginBottom: 100}} />
+            <TCBorderButton
+              title={strings.connectProfile}
+              borderColor={colors.whiteColor}
+              marginTop={20}
+              onPress={() => connectMemberProfile()}
+              fontSize={16}
+            />
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -126,7 +154,6 @@ const styles = StyleSheet.create({
     margin: 20,
     alignSelf: 'center',
     alignItems: 'center',
-
   },
   foundUserText: {
     color: colors.whiteColor,
@@ -189,5 +216,4 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     alignSelf: 'center',
   },
-
-})
+});

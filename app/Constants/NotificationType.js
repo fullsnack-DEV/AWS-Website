@@ -6,7 +6,7 @@ const NotificationType = {
   inviteToConnectProfile: 'inviteToConnectProfile',
   invitePlayerToJoingame: 'inviteUserToJoingame',
   inviteToDoubleTeam: 'inviteToDoubleTeam',
-  inviteToEvent:'inviteToEvent',
+  inviteToEvent: 'inviteToEvent',
   // Challenge notificaton
   challengeOffered: 'challengeOffered',
   challengeAltered: 'challengeAltered',
@@ -16,13 +16,15 @@ const NotificationType = {
   scorekeeperRequest: 'scorekeeperRequest',
   changeScorekeeperRequest: 'changeScorekeeperRequest',
 
-  gameCancelled:'gameCancelled',
-  gameAccepted:'gameAccepted',
+  gameCancelled: 'gameCancelled',
+  gameAccepted: 'gameAccepted',
   initialChallengePaymentFail: 'initialChallengePaymentFail',
   alterChallengePaymentFail: 'alterChallengePaymentFail',
   challengeAwaitingPaymentPaid: 'challengeAwaitingPaymentPaid',
-  gameAutoCanceledDueToInitialPaymentFailed: 'gameAutoCanceledDueToInitialPaymentFailed',
-  gameAutoRestoredDueToAlterPaymentFailed: 'gameAutoRestoredDueToAlterPaymentFailed',
+  gameAutoCanceledDueToInitialPaymentFailed:
+    'gameAutoCanceledDueToInitialPaymentFailed',
+  gameAutoRestoredDueToAlterPaymentFailed:
+    'gameAutoRestoredDueToAlterPaymentFailed',
   gameCanceledDuringAwaitingPayment: 'gameCanceledDuringAwaitingPayment',
   gameRestoredDuringAwaitingPayment: 'gameRestoredDuringAwaitingPayment',
 
@@ -31,22 +33,34 @@ const NotificationType = {
   refereeReservationAccepted: 'refereeReservationAccepted',
   refereeReservationInitialPaymentFail: 'refereeReservationInitialPaymentFail',
   refereeReservationAlterPaymentFail: 'refereeReservationAlterPaymentFail',
-  refereeReservationAwaitingPaymentPaid: 'refereeReservationAwaitingPaymentPaid',
-  refereeReservationAutoCanceledDueToInitialPaymentFailed: 'refereeReservationAutoCanceledDueToInitialPaymentFailed',
-  refereeReservationAutoRestoredDueToAlterPaymentFailed: 'refereeReservationAutoRestoredDueToAlterPaymentFailed',
-  refereeReservationCanceledDuringAwaitingPayment: 'refereeReservationCanceledDuringAwaitingPayment',
-  refereeReservationRestoredDuringAwaitingPayment: 'refereeReservationRestoredDuringAwaitingPayment',
+  refereeReservationAwaitingPaymentPaid:
+    'refereeReservationAwaitingPaymentPaid',
+  refereeReservationAutoCanceledDueToInitialPaymentFailed:
+    'refereeReservationAutoCanceledDueToInitialPaymentFailed',
+  refereeReservationAutoRestoredDueToAlterPaymentFailed:
+    'refereeReservationAutoRestoredDueToAlterPaymentFailed',
+  refereeReservationCanceledDuringAwaitingPayment:
+    'refereeReservationCanceledDuringAwaitingPayment',
+  refereeReservationRestoredDuringAwaitingPayment:
+    'refereeReservationRestoredDuringAwaitingPayment',
 
-  scorekeeperReservationApproved : 'refereeReservationApproved',
+  scorekeeperReservationApproved: 'refereeReservationApproved',
   scorekeeperReservationCancelled: 'scorekeeperReservationCancelled',
   scorekeeperReservationAccepted: 'scorekeeperReservationAccepted',
-  scorekeeperReservationInitialPaymentFail: 'scorekeeperReservationInitialPaymentFail',
-  scorekeeperReservationAlterPaymentFail: 'scorekeeperReservationAlterPaymentFail',
-  scorekeeperReservationAwaitingPaymentPaid: 'scorekeeperReservationAwaitingPaymentPaid',
-  scorekeeperReservationAutoCanceledDueToInitialPaymentFailed: 'scorekeeperReservationAutoCanceledDueToInitialPaymentFailed',
-  scorekeeperReservationAutoRestoredDueToAlterPaymentFailed: 'scorekeeperReservationAutoRestoredDueToAlterPaymentFailed',
-  scorekeeperReservationCanceledDuringAwaitingPayment: 'scorekeeperReservationCanceledDuringAwaitingPayment',
-  scorekeeperReservationRestoredDuringAwaitingPayment: 'scorekeeperReservationRestoredDuringAwaitingPayment',
+  scorekeeperReservationInitialPaymentFail:
+    'scorekeeperReservationInitialPaymentFail',
+  scorekeeperReservationAlterPaymentFail:
+    'scorekeeperReservationAlterPaymentFail',
+  scorekeeperReservationAwaitingPaymentPaid:
+    'scorekeeperReservationAwaitingPaymentPaid',
+  scorekeeperReservationAutoCanceledDueToInitialPaymentFailed:
+    'scorekeeperReservationAutoCanceledDueToInitialPaymentFailed',
+  scorekeeperReservationAutoRestoredDueToAlterPaymentFailed:
+    'scorekeeperReservationAutoRestoredDueToAlterPaymentFailed',
+  scorekeeperReservationCanceledDuringAwaitingPayment:
+    'scorekeeperReservationCanceledDuringAwaitingPayment',
+  scorekeeperReservationRestoredDuringAwaitingPayment:
+    'scorekeeperReservationRestoredDuringAwaitingPayment',
   clap: 'clap',
   tagged: 'tagged',
   comment: 'comment',
@@ -55,10 +69,10 @@ const NotificationType = {
 
   // request for basic info
 
-  sendBasicInfoToMember : 'sendBasicInfoToMember',
+  sendBasicInfoToMember: 'sendBasicInfoToMember',
   deleted: 'deleted',
   accepted: 'accepted',
   declined: 'declined',
 };
 
-export default NotificationType
+export default NotificationType;

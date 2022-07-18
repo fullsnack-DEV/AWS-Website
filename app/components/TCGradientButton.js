@@ -22,20 +22,23 @@ const TCGradientButton = ({
   <TouchableOpacity
     disabled={disabled || isDisabled}
     onPress={onPress}
-    style={[styles.outerContainerStyle, outerContainerStyle, props]}>
+    style={[styles.outerContainerStyle, outerContainerStyle, props]}
+  >
     <LinearGradient
       colors={
         isDisabled
           ? [colors.grayBackgroundColor, colors.grayBackgroundColor]
           : [endGradientColor, startGradientColor]
       }
-      style={[styles.containerStyle, style]}>
+      style={[styles.containerStyle, style]}
+    >
       <Text
         style={[
           styles.buttonText,
           {color: isDisabled ? colors.blocklightgraycolor : colors.whiteColor},
           textStyle,
-        ]}>
+        ]}
+      >
         {title}
       </Text>
       {rightIcon && (

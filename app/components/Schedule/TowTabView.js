@@ -1,13 +1,6 @@
 import React from 'react';
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  Text,
-} from 'react-native';
-import {
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
+import {View, StyleSheet, TouchableOpacity, Text} from 'react-native';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
@@ -24,7 +17,13 @@ export default function TwoTabView({
         onPress={onFirstTabPress}
         style={styles.activeEventPricacy}
       >
-        <Text style={indexCounter === 0 ? styles.activeEventPrivacyText : styles.inactiveEventPrivacyText}>
+        <Text
+          style={
+            indexCounter === 0
+              ? styles.activeEventPrivacyText
+              : styles.inactiveEventPrivacyText
+          }
+        >
           {firstTabTitle}
         </Text>
       </TouchableOpacity>
@@ -33,7 +32,13 @@ export default function TwoTabView({
         onPress={onSecondTabPress}
         style={styles.activeEventPricacy}
       >
-        <Text style={indexCounter === 1 ? styles.activeEventPrivacyText : styles.inactiveEventPrivacyText}>
+        <Text
+          style={
+            indexCounter === 1
+              ? styles.activeEventPrivacyText
+              : styles.inactiveEventPrivacyText
+          }
+        >
           {secondTabTitle}
         </Text>
       </TouchableOpacity>

@@ -15,8 +15,8 @@ function PRNotificationInviteCell({
   onAccept,
   onDecline,
   disabled = false,
-  isTrash=false,
-  entityType = 'user'
+  isTrash = false,
+  entityType = 'user',
 }) {
   const [dataDictionary, setDataDictionary] = useState();
 
@@ -27,7 +27,7 @@ function PRNotificationInviteCell({
   }, []);
 
   return (
-    <View style={{backgroundColor: colors.whiteColor,flex:1}}>
+    <View style={{backgroundColor: colors.whiteColor, flex: 1}}>
       {dataDictionary && (
         <TouchableOpacity onPress={onPress}>
           <View style={styles.viewFirstStyle}>
@@ -38,44 +38,46 @@ function PRNotificationInviteCell({
               intialChar={dataDictionary.firstTitle.charAt(0).toUpperCase()}
             />
             <View style={styles.textContentStyle}>
-              <View style={{flex:0.6}}>
+              <View style={{flex: 0.6}}>
                 <Text style={styles.textContainerStyle}>
                   <Text style={styles.boldTextStyle}>
                     {`${dataDictionary.firstTitle} `}
                   </Text>
                   <Text>{`${dataDictionary.text} `}</Text>
-                  {!isTrash && <Text style={styles.timeStyle}>
-                    {dataDictionary.notificationTime}
-                  </Text>}
+                  {!isTrash && (
+                    <Text style={styles.timeStyle}>
+                      {dataDictionary.notificationTime}
+                    </Text>
+                  )}
                 </Text>
                 {isTrash && entityType === 'user' && (
                   <Text style={styles.timeStyle}>
                     {(NotificationType.deleted && 'Deleted') ||
-                    (NotificationType.accepted && 'Accepted') ||
-                    (NotificationType.declined && 'declined')}
-                    <Text>
-                      {' '}{dataDictionary.notificationTime}
-                    </Text>
+                      (NotificationType.accepted && 'Accepted') ||
+                      (NotificationType.declined && 'declined')}
+                    <Text> {dataDictionary.notificationTime}</Text>
                   </Text>
-              )} 
+                )}
                 {isTrash && entityType === 'group' && (
                   <Text style={styles.timeStyle}>
                     {(NotificationType.deleted && 'Deleted') ||
-                    (NotificationType.accepted && 'Accepted') ||
-                    (NotificationType.declined && 'Declined')}
+                      (NotificationType.accepted && 'Accepted') ||
+                      (NotificationType.declined && 'Declined')}
                     <Text>
-                      {' '}by {item.activities[0].remove_by?.data?.full_name}{' '}
+                      {' '}
+                      by {item.activities[0].remove_by?.data?.full_name}{' '}
                       {dataDictionary.notificationTime}
                     </Text>
                   </Text>
-              )}
+                )}
               </View>
               <View
                 style={
                   disabled
                     ? [styles.viewSecondStyle, {opacity: 0.5}]
                     : styles.viewSecondStyle
-                }>
+                }
+              >
                 <TCGradientButton
                   textStyle={styles.btnTextStyle}
                   outerContainerStyle={styles.acceptBtnStyle}
@@ -88,12 +90,14 @@ function PRNotificationInviteCell({
                 <TouchableOpacity
                   style={styles.declineBtnStyle}
                   onPress={onDecline}
-                  disabled={disabled}>
+                  disabled={disabled}
+                >
                   <Text
                     style={[
                       styles.btnTextStyle,
                       {color: colors.lightBlackColor},
-                    ]}>
+                    ]}
+                  >
                     {strings.decline}
                   </Text>
                 </TouchableOpacity>
@@ -117,7 +121,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   viewFirstStyle: {
-    flex:1,
+    flex: 1,
     flexDirection: 'row',
     justifyContent: 'flex-start',
   },
@@ -140,7 +144,7 @@ const styles = StyleSheet.create({
   viewSecondStyle: {
     flexDirection: 'row',
     alignItems: 'center',
-    flex:0.4
+    flex: 0.4,
   },
 
   acceptBtnStyle: {
@@ -165,11 +169,11 @@ const styles = StyleSheet.create({
     height: 25,
     borderRadius: 5,
     justifyContent: 'center',
-    marginLeft:5,
+    marginLeft: 5,
 
-    backgroundColor:colors.whiteColor,
+    backgroundColor: colors.whiteColor,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.3,
     shadowRadius: 1,
     elevation: 3,

@@ -1,7 +1,5 @@
 import React from 'react';
-import {
-  StyleSheet, View, Text,
-} from 'react-native';
+import {StyleSheet, View, Text} from 'react-native';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
@@ -9,9 +7,7 @@ import {
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
-function EventTimeItem({
-  from, fromTime, to, toTime, repeat, repeatTime,
-}) {
+function EventTimeItem({from, fromTime, to, toTime, repeat, repeatTime}) {
   return (
     <View style={styles.containerStyle}>
       <View style={styles.timeValueStyle}>

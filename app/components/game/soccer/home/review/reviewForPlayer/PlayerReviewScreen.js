@@ -1,17 +1,19 @@
-import React, {
-  useState, useEffect, useLayoutEffect, useContext,
-} from 'react';
+import React, {useState, useEffect, useLayoutEffect, useContext} from 'react';
 import {
   Alert,
-  ScrollView, StyleSheet, View, Text,
-  TouchableOpacity, Image,
+  ScrollView,
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
 } from 'react-native';
 import _ from 'lodash';
 import FastImage from 'react-native-fast-image';
 import fonts from '../../../../../../Constants/Fonts';
 
-import { STAR_COLOR } from '../../../../../../utils';
-import { addPlayerReview } from '../../../../../../api/Games';
+import {STAR_COLOR} from '../../../../../../utils';
+import {addPlayerReview} from '../../../../../../api/Games';
 import TCInnerLoader from '../../../../../TCInnerLoader';
 import images from '../../../../../../Constants/ImagePath';
 import colors from '../../../../../../Constants/Colors';
@@ -25,13 +27,18 @@ import Header from '../../../../../Home/Header';
 
 const QUSTIONS = [
   // { attrName: 'ontime', desc: 'Did the players arrive at the match place on time?' },
-  { attrName: 'manner', desc: 'Did the players keep good manners for the other players, officials and spectators during the match?' },
+  {
+    attrName: 'manner',
+    desc: 'Did the players keep good manners for the other players, officials and spectators during the match?',
+  },
   // { attrName: 'punctuality', desc: 'Did the players respect the referees and their decisions?' },
-]
-export default function PlayerReviewScreen({ navigation, route }) {
+];
+export default function PlayerReviewScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
-  const [sliderAttributesForPlayer, setSliderAttributesForPlayer] = useState([]);
+  const [sliderAttributesForPlayer, setSliderAttributesForPlayer] = useState(
+    [],
+  );
   const [gameData] = useState(route?.params?.gameData);
   const [reviewsData, setReviewsData] = useState({
     comment: '',
@@ -40,9 +47,12 @@ export default function PlayerReviewScreen({ navigation, route }) {
   });
 
   useEffect(() => {
-    console.log('Review Attribute::=>', route?.params?.sliderAttributesForPlayer);
+    console.log(
+      'Review Attribute::=>',
+      route?.params?.sliderAttributesForPlayer,
+    );
     console.log('Review Attribute::=>', route?.params?.starAttributesForPlayer);
-    loadSliderAttributes(route?.params?.sliderAttributesForPlayer)
+    loadSliderAttributes(route?.params?.sliderAttributesForPlayer);
     loadStarAttributes(route?.params?.starAttributesForPlayer);
   }, []);
 
@@ -59,25 +69,31 @@ export default function PlayerReviewScreen({ navigation, route }) {
   const loadSliderAttributes = (attributes) => {
     setLoading(true);
     setSliderAttributesForPlayer([...attributes]);
-    const attr = {}
-    attributes.map((item) => { attr[item] = 0; return true; })
+    const attr = {};
+    attributes.map((item) => {
+      attr[item] = 0;
+      return true;
+    });
     let reviews = _.cloneDeep(reviewsData);
-    reviews = { ...reviews, ...attr };
+    reviews = {...reviews, ...attr};
 
-    setReviewsData({ ...reviews });
+    setReviewsData({...reviews});
     setLoading(false);
-  }
+  };
 
   const loadStarAttributes = (attributes) => {
     setLoading(true);
-    const attr = {}
-    attributes.map((item) => { attr[item] = 0; return true; })
+    const attr = {};
+    attributes.map((item) => {
+      attr[item] = 0;
+      return true;
+    });
     let reviews = _.cloneDeep(reviewsData);
-    reviews = { ...reviews, ...attr };
+    reviews = {...reviews, ...attr};
 
-    setReviewsData({ ...reviews });
+    setReviewsData({...reviews});
     setLoading(false);
-  }
+  };
 
   const isValidReview = () => {
     const exceptKey = ['comment', 'attachments', 'tagged'];
@@ -87,136 +103,157 @@ export default function PlayerReviewScreen({ navigation, route }) {
 
     Object.keys(reviews).map((key) => {
       if (!exceptKey.includes(key) && isValid && Number(reviews?.[key]) <= 0) {
-        isValid = false
+        isValid = false;
       }
       return key;
     });
     return isValid;
-  }
+  };
   const createReview = () => {
     console.log('Review Data::=>', reviewsData);
     if (!isValidReview()) {
-      Alert.alert('Please, complete all ratings before moving to the next.')
+      Alert.alert('Please, complete all ratings before moving to the next.');
     } else {
       console.log('route?.params?.gameData?.game_id::=>', gameData);
       setLoading(true);
-      addPlayerReview(route?.params?.userData?.profile?.user_id, gameData?.game_id, reviewsData, authContext)
+      addPlayerReview(
+        route?.params?.userData?.profile?.user_id,
+        gameData?.game_id,
+        reviewsData,
+        authContext,
+      )
         .then(() => {
           setLoading(false);
-          navigation.goBack()
+          navigation.goBack();
         })
         .catch((error) => {
           setLoading(false);
-          setTimeout(() => Alert.alert('TownsCup', error?.message), 100)
-          navigation.goBack()
-        })
+          setTimeout(() => Alert.alert('TownsCup', error?.message), 100);
+          navigation.goBack();
+        });
     }
-  }
+  };
 
   const setTeamReview = (key = '', value = '') => {
     if (reviewsData[key] !== value) {
       const reviews = _.cloneDeep(reviewsData);
 
       reviews[key] = value;
-      setReviewsData({ ...reviews });
+      setReviewsData({...reviews});
       console.log(`reviews::${JSON.stringify(reviews)}`);
     }
-  }
+  };
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{flex: 1}}>
       <Header
-          leftComponent={
-            <TouchableOpacity onPress={() => navigation.goBack()}>
-              <Image source={images.backArrow} style={styles.backImageStyle} />
-            </TouchableOpacity>
-          }
-          centerComponent={
-            <Text style={styles.eventTextStyle}>Leave a player review</Text>
-          }
-          rightComponent={
-            <Text onPress={createReview} style={styles.nextButtonStyle}>
-              {'Done'}
-            </Text>
-          }
-
+        leftComponent={
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Image source={images.backArrow} style={styles.backImageStyle} />
+          </TouchableOpacity>
+        }
+        centerComponent={
+          <Text style={styles.eventTextStyle}>Leave a player review</Text>
+        }
+        rightComponent={
+          <Text onPress={createReview} style={styles.nextButtonStyle}>
+            {'Done'}
+          </Text>
+        }
       />
       {/* Seperator */}
-      <View style={styles.headerSeperator}/>
-      <TCInnerLoader visible={loading} size={35}/>
+      <View style={styles.headerSeperator} />
+      <TCInnerLoader visible={loading} size={35} />
       {!loading && (
         <ScrollView>
           <TCKeyboardView>
             <View style={styles.mainContainer}>
               {/* Title */}
-              <Text style={styles.titleText}>Please, rate the performance of {route?.params?.userData?.profile?.first_name} {route?.params?.userData?.profile?.last_name} and leave a review for the player.</Text>
+              <Text style={styles.titleText}>
+                Please, rate the performance of{' '}
+                {route?.params?.userData?.profile?.first_name}{' '}
+                {route?.params?.userData?.profile?.last_name} and leave a review
+                for the player.
+              </Text>
 
               {/*  Logo Container */}
               <View style={styles.logoContainer}>
-
                 {/* Image */}
                 <View style={styles.imageContainer}>
                   <FastImage
-               source={route?.params?.userData?.profile?.thumbnail ? { uri: route?.params?.userData?.profile?.thumbnail } : images.teamPlaceholder}
-               resizeMode={'contain'}
-               style={{ height: 50, width: 50 }}
-          />
+                    source={
+                      route?.params?.userData?.profile?.thumbnail
+                        ? {uri: route?.params?.userData?.profile?.thumbnail}
+                        : images.teamPlaceholder
+                    }
+                    resizeMode={'contain'}
+                    style={{height: 50, width: 50}}
+                  />
                 </View>
 
                 {/*    Team name */}
-                <Text style={styles.teamName}>{route?.params?.userData?.profile?.first_name} {route?.params?.userData?.profile?.last_name}</Text>
+                <Text style={styles.teamName}>
+                  {route?.params?.userData?.profile?.first_name}{' '}
+                  {route?.params?.userData?.profile?.last_name}
+                </Text>
 
                 {/*    Country Name */}
-                <Text style={styles.countryName}>{route?.params?.userData?.profile?.country}</Text>
-
+                <Text style={styles.countryName}>
+                  {route?.params?.userData?.profile?.country}
+                </Text>
               </View>
 
               {/* Seperator */}
-              <View style={styles.seperator}/>
+              <View style={styles.seperator} />
 
               {/*  Rate Performance */}
 
               <View style={styles.mainContainerRate}>
-
                 {/*    Title */}
-                <Text style={styles.titleText}>Rate performance <Text style={{ color: colors.redDelColor }}>*</Text></Text>
+                <Text style={styles.titleText}>
+                  Rate performance{' '}
+                  <Text style={{color: colors.redDelColor}}>*</Text>
+                </Text>
 
                 {/* Ratings */}
                 <View style={styles.rateSection}>
-
                   {/* Poor Excellent Section */}
-                  <View style={{ ...styles.poorExcellentSection }}>
-                    <View style={{ flex: 0.3 }}/>
+                  <View style={{...styles.poorExcellentSection}}>
+                    <View style={{flex: 0.3}} />
                     <View style={styles.poorExcellentChildSection}>
                       <Text style={styles.poorExcellenceText}>Poor</Text>
                       <Text>Excellent</Text>
                     </View>
-                    <View style={{ flex: 0.1 }}/>
+                    <View style={{flex: 0.1}} />
                   </View>
 
                   {/*    Rating Slider */}
-                  {sliderAttributesForPlayer.map((item, index) => (<View key={index}>
-                    <TCAttributeRatingWithSlider
-            selectedTrackColors={
-              [colors.yellowColor, colors.themeColor]
-            }
-                setTeamReview={setTeamReview}
-                title={item}
-                rating={reviewsData[item]}
-            />
-                  </View>))}
+                  {sliderAttributesForPlayer.map((item, index) => (
+                    <View key={index}>
+                      <TCAttributeRatingWithSlider
+                        selectedTrackColors={[
+                          colors.yellowColor,
+                          colors.themeColor,
+                        ]}
+                        setTeamReview={setTeamReview}
+                        title={item}
+                        rating={reviewsData[item]}
+                      />
+                    </View>
+                  ))}
                 </View>
 
                 {/* Questions */}
                 {QUSTIONS.map((item, index) => (
-                  <View style={{ marginVertical: 5 }} key={index}>
+                  <View style={{marginVertical: 5}} key={index}>
                     <Text style={styles.questionText}>{item.desc}</Text>
                     <TCRatingStarSlider
-            currentRating={reviewsData[item.attrName]}
-            onPress={(star) => {
-              setTeamReview(item.attrName, star)
-            }}
-              style={{ alignSelf: 'flex-end' }}
-              starColor={STAR_COLOR.YELLOW}/>
+                      currentRating={reviewsData[item.attrName]}
+                      onPress={(star) => {
+                        setTeamReview(item.attrName, star);
+                      }}
+                      style={{alignSelf: 'flex-end'}}
+                      starColor={STAR_COLOR.YELLOW}
+                    />
                   </View>
                 ))}
               </View>
@@ -225,31 +262,33 @@ export default function PlayerReviewScreen({ navigation, route }) {
               <View style={styles.leaveReviewContainer}>
                 <Text style={styles.titleText}>Leave a review</Text>
                 <TCInputBox
-          onChangeText={(value) => setTeamReview('comment', value)}
-          value={reviewsData?.comment ?? ''}
-          multiline={true}
-          placeHolderText={`Describe what you thought and felt about ${route?.params?.userData?.profile?.first_name} ${route?.params?.userData?.profile?.last_name} while watching or playing the game.`}
-          textInputStyle={{ fontSize: 16, color: colors.userPostTimeColor }}
-          style={{
-            height: 120,
-            marginVertical: 10,
-            alignItems: 'flex-start',
-            padding: 15,
-          }}
-      />
+                  onChangeText={(value) => setTeamReview('comment', value)}
+                  value={reviewsData?.comment ?? ''}
+                  multiline={true}
+                  placeHolderText={`Describe what you thought and felt about ${route?.params?.userData?.profile?.first_name} ${route?.params?.userData?.profile?.last_name} while watching or playing the game.`}
+                  textInputStyle={{
+                    fontSize: 16,
+                    color: colors.userPostTimeColor,
+                  }}
+                  style={{
+                    height: 120,
+                    marginVertical: 10,
+                    alignItems: 'flex-start',
+                    padding: 15,
+                  }}
+                />
               </View>
 
               {/*  Footer */}
               <Text style={styles.footerText}>
-                (<Text style={{ color: colors.redDelColor }}>*</Text> required)
+                (<Text style={{color: colors.redDelColor}}>*</Text> required)
               </Text>
-
             </View>
           </TCKeyboardView>
-        </ScrollView>)
-      }
+        </ScrollView>
+      )}
     </View>
-  )
+  );
 }
 const styles = StyleSheet.create({
   nextButtonStyle: {
@@ -267,7 +306,7 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 6,
     elevation: 13,
@@ -301,9 +340,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: fonts.RLight,
   },
-  leaveReviewContainer: {
-
-  },
+  leaveReviewContainer: {},
   mainContainer: {
     flex: 1,
     padding: 15,

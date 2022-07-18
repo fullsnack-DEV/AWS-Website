@@ -59,7 +59,12 @@ function TrashScreen({navigation, route}) {
             <PRNotificationInviteCell
               item={item}
               isTrash={true}
-              entityType={authContext.entity.role === 'user' || authContext.entity.role === 'player' ? 'user' : 'group'} // user or group
+              entityType={
+                authContext.entity.role === 'user' ||
+                authContext.entity.role === 'player'
+                  ? 'user'
+                  : 'group'
+              } // user or group
               disabled={true}
               selectedEntity={selectedEntity}
               onPressFirstEntity={openHomePage}
@@ -70,7 +75,12 @@ function TrashScreen({navigation, route}) {
             <PRNotificationDetailMessageItem
               item={item}
               isTrash={true}
-              entityType={authContext.entity.role === 'user' || authContext.entity.role === 'player' ? 'user' : 'group'} // user or group
+              entityType={
+                authContext.entity.role === 'user' ||
+                authContext.entity.role === 'player'
+                  ? 'user'
+                  : 'group'
+              } // user or group
               disabled={true}
               selectedEntity={selectedEntity}
               onPressFirstEntity={openHomePage}
@@ -84,7 +94,12 @@ function TrashScreen({navigation, route}) {
         <NotificationItem
           data={item}
           isTrash={true}
-          entityType={authContext.entity.role === 'user' || authContext.entity.role === 'player' ? 'user' : 'group'} // user or group
+          entityType={
+            authContext.entity.role === 'user' ||
+            authContext.entity.role === 'player'
+              ? 'user'
+              : 'group'
+          } // user or group
           onPressFirstEntity={openHomePage}
           onPressSecondEntity={openHomePage}
           onPressCard={() => {}}

@@ -67,7 +67,7 @@ export default function CreateEventScreen({navigation, route}) {
   const eventPostedList = [
     {value: 0, text: 'Schedule only'},
     {value: 1, text: 'Schedule & posts'},
-  ]
+  ];
   const actionSheet = useRef();
   const actionSheetWithDelete = useRef();
   const isFocused = useIsFocused();
@@ -104,7 +104,7 @@ export default function CreateEventScreen({navigation, route}) {
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
   const [visibleWhoModal, setVisibleWhoModal] = useState(false);
   const [sportsSelection, setSportsSelection] = useState();
-  const [selectedSport,setSelectedSport] = useState();
+  const [selectedSport, setSelectedSport] = useState();
 
   const [whoOpetion, setWhoOpetion] = useState();
   const [whoCanJoinOpetion, setWhoCanJoinOpetion] = useState({
@@ -184,9 +184,7 @@ export default function CreateEventScreen({navigation, route}) {
   const handleStartDatePress = (date) => {
     console.log('Date::=>', new Date(new Date(date).getTime()));
     setEventStartdateTime(
-      toggle
-        ? new Date(date).setHours(0, 0, 0, 0)
-        : new Date(date),
+      toggle ? new Date(date).setHours(0, 0, 0, 0) : new Date(date),
     );
     setEventEnddateTime(
       toggle
@@ -240,26 +238,41 @@ export default function CreateEventScreen({navigation, route}) {
                   style: 'cancel',
                 },
                 {
-                  text: 'Quit', 
-                  onPress: () => navigation.goBack()
+                  text: 'Quit',
+                  onPress: () => navigation.goBack(),
                 },
               ],
               {cancelable: false},
             );
-            
-          }}>
+          }}
+        >
           <Image source={images.backArrow} style={styles.backImageStyle} />
         </TouchableOpacity>
       ),
       headerRight: () => (
         <TouchableOpacity
           style={{padding: 2, marginRight: 15}}
-          onPress={onDonePress}>
+          onPress={onDonePress}
+        >
           <Text>Done</Text>
         </TouchableOpacity>
       ),
     });
-  }, [navigation, backgroundThumbnail, eventTitle, eventDescription, sportsSelection,selectedSport, maxAttendees, minAttendees, locationDetail, eventFee, refundPolicy, eventPosted, route?.params]);
+  }, [
+    navigation,
+    backgroundThumbnail,
+    eventTitle,
+    eventDescription,
+    sportsSelection,
+    selectedSport,
+    maxAttendees,
+    minAttendees,
+    locationDetail,
+    eventFee,
+    refundPolicy,
+    eventPosted,
+    route?.params,
+  ]);
 
   useEffect(() => {
     if (isFocused) {
@@ -324,7 +337,6 @@ export default function CreateEventScreen({navigation, route}) {
       })
       .catch(() => {
         setloading(false);
-       
       });
   }, [authContext]);
 
@@ -349,8 +361,6 @@ export default function CreateEventScreen({navigation, route}) {
     return new Date(dt.getTime() + dt.getTimezoneOffset() * 60000);
   };
 
-
-
   const getSports = () => {
     let sportArr = [];
     authContext.sports.map((item) => {
@@ -367,10 +377,9 @@ export default function CreateEventScreen({navigation, route}) {
     <TouchableOpacity
       style={styles.listItem}
       onPress={() => {
-       
         setSelectedSport(item);
-        
-      }}>
+      }}
+    >
       <View
         style={{
           padding: 20,
@@ -378,7 +387,8 @@ export default function CreateEventScreen({navigation, route}) {
           flexDirection: 'row',
           justifyContent: 'space-between',
           marginRight: 15,
-        }}>
+        }}
+      >
         <Text style={styles.languageList}>
           {getSportName(item, authContext)}
         </Text>
@@ -410,7 +420,8 @@ export default function CreateEventScreen({navigation, route}) {
           setTimeout(() => {
             setVisibleWhoModal(false);
           }, 300);
-        }}>
+        }}
+      >
         <View
           style={{
             padding: 20,
@@ -418,13 +429,14 @@ export default function CreateEventScreen({navigation, route}) {
             flexDirection: 'row',
             justifyContent: 'space-between',
             marginRight: 15,
-          }}>
+          }}
+        >
           <Text style={styles.languageList}>{item.text}</Text>
           <View style={styles.checkbox}>
             {(whoOpetion === 'see' && whoCanSeeOpetion.value === item?.value) ||
             (whoOpetion === 'join' &&
               whoCanJoinOpetion.value === item?.value) ? (
-                <Image
+              <Image
                 source={images.radioCheckYellow}
                 style={styles.checkboxImg}
               />
@@ -445,11 +457,13 @@ export default function CreateEventScreen({navigation, route}) {
           marginBottom: 15,
 
           marginRight: 15,
-        }}>
+        }}
+      >
         <TouchableOpacity
           onPress={() => {
             setEventPosted(item);
-          }}>
+          }}
+        >
           <Image
             source={
               eventPosted.value === item.value
@@ -637,32 +651,39 @@ export default function CreateEventScreen({navigation, route}) {
       return false;
     }
 
-   if(Number(minAttendees) > 0 && Number(maxAttendees) > 0){
-    if (Number(minAttendees) === 0) {
-      Alert.alert(
-        strings.appName,
-        'Please enter valid minimum attendees number(0 not allowed).',
-      );
-      return false;
+    if (Number(minAttendees) > 0 && Number(maxAttendees) > 0) {
+      if (Number(minAttendees) === 0) {
+        Alert.alert(
+          strings.appName,
+          'Please enter valid minimum attendees number(0 not allowed).',
+        );
+        return false;
+      }
+      if (Number(maxAttendees) === 0) {
+        Alert.alert(
+          strings.appName,
+          'Please enter valid maximum attendees number(0 not allowed).',
+        );
+        return false;
+      }
+      if (Number(minAttendees) > Number(maxAttendees)) {
+        Alert.alert(strings.appName, 'Please enter valid attendees number.');
+        return false;
+      }
     }
-    if (Number(maxAttendees) === 0) {
-      Alert.alert(
-        strings.appName,
-        'Please enter valid maximum attendees number(0 not allowed).',
-      );
-      return false;
-    }
-    if (Number(minAttendees) > Number(maxAttendees)) {
-      Alert.alert(strings.appName, 'Please enter valid attendees number.');
-      return false;
-    }
-   }
-
-   
-    
 
     return true;
-  }, [eventDescription, eventEndDateTime, eventStartDateTime, eventTitle, locationDetail?.venue_detail, locationDetail?.venue_name, maxAttendees, minAttendees, sportsSelection]);
+  }, [
+    eventDescription,
+    eventEndDateTime,
+    eventStartDateTime,
+    eventTitle,
+    locationDetail?.venue_detail,
+    locationDetail?.venue_name,
+    maxAttendees,
+    minAttendees,
+    sportsSelection,
+  ]);
 
   const createEventDone = (data) => {
     const entity = authContext.entity;
@@ -706,7 +727,6 @@ export default function CreateEventScreen({navigation, route}) {
           setloading(false);
           navigation.navigate('ScheduleScreen');
         }, 1000);
-       
       })
       .catch((e) => {
         setloading(false);
@@ -717,7 +737,7 @@ export default function CreateEventScreen({navigation, route}) {
 
   const onDonePress = () => {
     if (checkValidation()) {
-       setloading(true);
+      setloading(true);
       const entity = authContext.entity;
       const entityRole = entity.role === 'user' ? 'users' : 'groups';
       const data = [
@@ -766,7 +786,7 @@ export default function CreateEventScreen({navigation, route}) {
           ],
 
           location: {
-            location_name:  searchLocation,
+            location_name: searchLocation,
             latitude: locationDetail.lat,
             longitude: locationDetail.lng,
             venue_name: locationDetail.venue_name,
@@ -795,9 +815,8 @@ export default function CreateEventScreen({navigation, route}) {
         }
       }
 
-      console.log('create event',data);
+      console.log('create event', data);
 
-      
       if (backgroundImageChanged) {
         const imageArray = [];
         imageArray.push({path: backgroundThumbnail});
@@ -823,8 +842,7 @@ export default function CreateEventScreen({navigation, route}) {
             setTimeout(() => {
               Alert.alert(strings.appName, e.messages);
             }, 0.1);
-          })
-          
+          });
       } else {
         createEventDone(data);
       }
@@ -867,7 +885,8 @@ export default function CreateEventScreen({navigation, route}) {
               <TouchableOpacity
                 onPress={() => {
                   setVisibleSportsModal(true);
-                }}>
+                }}
+              >
                 <TextInput
                   placeholder={strings.sportPlaceholder}
                   style={styles.textInputStyle}
@@ -890,8 +909,11 @@ export default function CreateEventScreen({navigation, route}) {
               value={eventDescription}
             />
 
-            <EventItemRender title={strings.timeTitle} isRequired={true} headerTextStyle={{marginBottom:15}}>
-             
+            <EventItemRender
+              title={strings.timeTitle}
+              isRequired={true}
+              headerTextStyle={{marginBottom: 15}}
+            >
               <EventTimeSelectItem
                 title={strings.starts}
                 toggle={!toggle}
@@ -950,7 +972,6 @@ export default function CreateEventScreen({navigation, route}) {
               />
               {selectWeekMonth !== 'Never' && (
                 <EventTimeSelectItem
-
                   title={strings.until}
                   toggle={!toggle}
                   date={
@@ -1064,7 +1085,8 @@ export default function CreateEventScreen({navigation, route}) {
                 onPress={() => {
                   setWhoOpetion('join');
                   setVisibleWhoModal(true);
-                }}>
+                }}
+              >
                 <View style={styles.dropContainer}>
                   <Text style={styles.textInputDropStyle}>
                     {whoCanJoinOpetion.text}
@@ -1089,7 +1111,8 @@ export default function CreateEventScreen({navigation, route}) {
                           isSelected: !isAll,
                         }));
                         setGroupsJoinList([...groups]);
-                      }}>
+                      }}
+                    >
                       <Image
                         source={
                           isAll ? images.orangeCheckBox : images.uncheckWhite
@@ -1150,15 +1173,27 @@ export default function CreateEventScreen({navigation, route}) {
               <Text style={styles.headerTextStyle}>
                 {strings.refundPolicyTitle}
               </Text>
-              <Text style={{fontSize:14,fontFamily:fonts.RBold,marginTop:15}}>
+              <Text
+                style={{fontSize: 14, fontFamily: fonts.RBold, marginTop: 15}}
+              >
                 {'Primary Refund Policy'}
               </Text>
               <Text style={[styles.subTitleText, {marginTop: 10}]}>
                 Attendees must be refunded if the event is canceled or
-                rescheduled. 
-                <Text style={{fontSize:12, fontFamily:fonts.RRegular,textDecorationLine:'underline'}}>{'\n'}Read payment policy for more information.</Text>
+                rescheduled.
+                <Text
+                  style={{
+                    fontSize: 12,
+                    fontFamily: fonts.RRegular,
+                    textDecorationLine: 'underline',
+                  }}
+                >
+                  {'\n'}Read payment policy for more information.
+                </Text>
               </Text>
-              <Text style={{fontSize:14,fontFamily:fonts.RBold,marginTop:15}}>
+              <Text
+                style={{fontSize: 14, fontFamily: fonts.RBold, marginTop: 15}}
+              >
                 {'Additional Refund Policy'}
               </Text>
               <TextInput
@@ -1170,7 +1205,6 @@ export default function CreateEventScreen({navigation, route}) {
                 textAlignVertical={'center'}
                 placeholderTextColor={colors.userPostTimeColor}
               />
-              
             </View>
 
             <View style={styles.containerStyle}>
@@ -1191,7 +1225,8 @@ export default function CreateEventScreen({navigation, route}) {
                 onPress={() => {
                   setWhoOpetion('see');
                   setVisibleWhoModal(true);
-                }}>
+                }}
+              >
                 <View style={styles.dropContainer}>
                   <Text style={styles.textInputDropStyle}>
                     {whoCanSeeOpetion.text}
@@ -1216,7 +1251,8 @@ export default function CreateEventScreen({navigation, route}) {
                           isSelected: !isAll,
                         }));
                         setGroupsSeeList([...groups]);
-                      }}>
+                      }}
+                    >
                       <Image
                         source={
                           isAll ? images.orangeCheckBox : images.uncheckWhite
@@ -1289,7 +1325,8 @@ export default function CreateEventScreen({navigation, route}) {
         backdropTransitionOutTiming={10}
         style={{
           margin: 0,
-        }}>
+        }}
+      >
         <View
           style={{
             width: '100%',
@@ -1305,18 +1342,21 @@ export default function CreateEventScreen({navigation, route}) {
             shadowOpacity: 0.5,
             shadowRadius: 5,
             elevation: 15,
-          }}>
+          }}
+        >
           <View
             style={{
               flexDirection: 'row',
               paddingHorizontal: 15,
               justifyContent: 'space-between',
               alignItems: 'center',
-            }}>
+            }}
+          >
             <TouchableOpacity
               hitSlop={getHitSlop(15)}
               style={styles.closeButton}
-              onPress={() => setVisibleSportsModal(false)}>
+              onPress={() => setVisibleSportsModal(false)}
+            >
               <Image source={images.cancelImage} style={styles.closeButton} />
             </TouchableOpacity>
             <Text
@@ -1326,7 +1366,8 @@ export default function CreateEventScreen({navigation, route}) {
                 fontSize: 16,
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
-              }}>
+              }}
+            >
               Sports
             </Text>
 
@@ -1337,12 +1378,16 @@ export default function CreateEventScreen({navigation, route}) {
                 fontSize: 16,
                 fontFamily: fonts.RRegular,
                 color: colors.lightBlackColor,
-              }} onPress={()=>{
+              }}
+              onPress={() => {
                 setSportsSelection(selectedSport);
                 setTimeout(() => {
                   setVisibleSportsModal(false);
                 }, 300);
-              }}>Apply</Text>
+              }}
+            >
+              Apply
+            </Text>
           </View>
           <View style={styles.separatorLine} />
           <FlatList
@@ -1366,8 +1411,8 @@ export default function CreateEventScreen({navigation, route}) {
         backdropTransitionOutTiming={10}
         style={{
           margin: 0,
-          
-        }}>
+        }}
+      >
         <View
           style={{
             width: '100%',
@@ -1383,21 +1428,24 @@ export default function CreateEventScreen({navigation, route}) {
             shadowOpacity: 0.5,
             shadowRadius: 5,
             elevation: 15,
-          }}>
+          }}
+        >
           <View
             style={{
               flexDirection: 'row',
               paddingHorizontal: 15,
               justifyContent: 'space-between',
               alignItems: 'center',
-            }}>
+            }}
+          >
             <TouchableOpacity
               hitSlop={getHitSlop(15)}
               style={styles.closeButton}
-              onPress={() => setVisibleWhoModal(false)}>
+              onPress={() => setVisibleWhoModal(false)}
+            >
               <Image source={images.cancelImage} style={styles.closeButton} />
             </TouchableOpacity>
-           
+
             <Text
               style={{
                 alignSelf: 'center',
@@ -1405,7 +1453,8 @@ export default function CreateEventScreen({navigation, route}) {
                 fontSize: 16,
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
-              }}>
+              }}
+            >
               Privacy Setting
             </Text>
 
@@ -1416,13 +1465,18 @@ export default function CreateEventScreen({navigation, route}) {
                 fontSize: 16,
                 fontFamily: fonts.RRegular,
                 color: colors.themeColor,
-              }}></Text>
+              }}
+            ></Text>
           </View>
           <View style={styles.separatorLine} />
           <FlatList
             ItemSeparatorComponent={() => <TCThinDivider width="92%" />}
             showsVerticalScrollIndicator={false}
-            data={['user','player'].includes(authContext.entity.role) ? whoCanDataSourceUser : whoCanDataSourceGroup}
+            data={
+              ['user', 'player'].includes(authContext.entity.role)
+                ? whoCanDataSourceUser
+                : whoCanDataSourceGroup
+            }
             keyExtractor={(item, index) => index.toString()}
             renderItem={renderWhoCan}
           />
@@ -1491,7 +1545,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
-   
   },
   checkboxImg: {
     width: wp('5.5%'),
@@ -1570,14 +1623,14 @@ const styles = StyleSheet.create({
     height: 15,
     marginLeft: 5,
     resizeMode: 'contain',
-    tintColor:colors.blackColor
+    tintColor: colors.blackColor,
   },
 
   separatorLine: {
     alignSelf: 'center',
     backgroundColor: colors.grayColor,
     height: 0.5,
-   
+
     width: wp('100%'),
   },
 

@@ -1,47 +1,51 @@
-import React, { memo } from 'react';
-import {
-View, Text, StyleSheet, TouchableOpacity,
-} from 'react-native';
+import React, {memo} from 'react';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 
 import LinearGradient from 'react-native-linear-gradient';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import TCEntityView from './TCEntityView';
 
-function TCEntityListPlaceholder({ cardWidth = '86%', placeholderText = '',buttonText = '',onPress }) {
+function TCEntityListPlaceholder({
+  cardWidth = '86%',
+  placeholderText = '',
+  buttonText = '',
+  onPress,
+}) {
   return (
-    <View style={[styles.backgroundView, { width: wp(cardWidth) }]}>
+    <View style={[styles.backgroundView, {width: wp(cardWidth)}]}>
       <View
         style={{
           flexDirection: 'row',
           justifyContent: 'space-between',
           marginLeft: 15,
           marginRight: 15,
-        }}>
-        <View style={{ marginBottom: 15 }}>
-          <TCEntityView showStar={true} placeholder={true}/>
+        }}
+      >
+        <View style={{marginBottom: 15}}>
+          <TCEntityView showStar={true} placeholder={true} />
         </View>
-        <View style={{ marginBottom: 15 }}>
-          <TCEntityView showStar={true} placeholder={true}/>
+        <View style={{marginBottom: 15}}>
+          <TCEntityView showStar={true} placeholder={true} />
         </View>
-        <View style={{ marginBottom: 15 }}>
-          <TCEntityView showStar={true} placeholder={true}/>
+        <View style={{marginBottom: 15}}>
+          <TCEntityView showStar={true} placeholder={true} />
         </View>
-        <View style={{ marginBottom: 15 }}>
-          <TCEntityView showStar={true} placeholder={true}/>
+        <View style={{marginBottom: 15}}>
+          <TCEntityView showStar={true} placeholder={true} />
         </View>
       </View>
       <LinearGradient
         colors={[colors.whiteColor, colors.whiteColor]}
-        style={styles.overlayStyle}>
+        style={styles.overlayStyle}
+      >
         <Text style={styles.placeholderTextStyle}>{placeholderText}</Text>
-       
+
         <TouchableOpacity onPress={onPress}>
           <Text style={styles.startTitle}>{buttonText}</Text>
         </TouchableOpacity>
-       
       </LinearGradient>
     </View>
   );
@@ -75,7 +79,7 @@ const styles = StyleSheet.create({
     color: colors.googleColor,
     textAlign: 'center',
   },
-  
+
   startTitle: {
     fontSize: 20,
     fontFamily: fonts.RMedium,

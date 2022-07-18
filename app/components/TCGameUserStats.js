@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import {View, Text, StyleSheet} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import colors from '../Constants/Colors';
-import { heightPercentageToDP as hp } from '../utils';
+import {heightPercentageToDP as hp} from '../utils';
 import fonts from '../Constants/Fonts';
 import images from '../Constants/ImagePath';
 
@@ -15,23 +15,19 @@ const TCGameUserStats = ({
 }) => (
   <View style={styles.mainContainer}>
     <FastImage
-        resizeMode={'contain'}
-        source={profilePic}
-          style={styles.profilePic}
-      />
-    <Text style={styles.nameText}>
-      {name}
-    </Text>
+      resizeMode={'contain'}
+      source={profilePic}
+      style={styles.profilePic}
+    />
+    <Text style={styles.nameText}>{name}</Text>
     <FastImage
-          resizeMode={'contain'}
-          source={rightIconImage}
-          style={styles.rightIconImage}
-      />
-    <Text style={{ ...styles.countText, color: countTextColor }}>
-      {count}
-    </Text>
+      resizeMode={'contain'}
+      source={rightIconImage}
+      style={styles.rightIconImage}
+    />
+    <Text style={{...styles.countText, color: countTextColor}}>{count}</Text>
   </View>
-)
+);
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -43,7 +39,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     elevation: 10,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 0 },
+    shadowOffset: {width: 0, height: 0},
     shadowOpacity: 0.5,
     shadowRadius: 0.8,
     alignItems: 'center',
@@ -60,7 +56,7 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
   },
   rightIconImage: {
-    flex: 0.10,
+    flex: 0.1,
     height: 30,
     width: 30,
   },
@@ -70,5 +66,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RBold,
   },
-})
+});
 export default TCGameUserStats;

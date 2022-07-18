@@ -267,7 +267,8 @@ const AccountNavigator = () => (
       // headerTitle: true,
       gestureEnabled: false,
       headerBackTitleVisible: false,
-    }}>
+    }}
+  >
     <Stack.Screen
       name="AccountScreen"
       component={AccountScreen}
@@ -2089,21 +2090,21 @@ const AccountNavigator = () => (
       }}
     />
     <Stack.Screen
-         name="TrashScreen"
-         component={TrashScreen}
-         options={{
-           title: 'Trash',
-           headerTintColor: colors.blackColor,
-           headerTitleStyle: {
-             fontWeight: '500',
-           },
-           headerStyle: {
-             backgroundColor: colors.whiteColor,
-             borderBottomColor: colors.grayColor,
-             borderBottomWidth: 0.3,
-           },
-         }}
-        />
+      name="TrashScreen"
+      component={TrashScreen}
+      options={{
+        title: 'Trash',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
     <Stack.Screen
       name="PendingRequestScreen"
       component={PendingRequestScreen}

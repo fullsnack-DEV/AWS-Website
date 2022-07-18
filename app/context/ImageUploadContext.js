@@ -33,85 +33,79 @@ const imageUploadReducer = (state, action) => {
 const removeUploadingData = (dispatch) => (id) => {
   dispatch({type: 'removeUploadingData', payload: id});
 };
-const uploadData = (dispatch) => (
-  authContext,
-  dataParams,
-  imageArray,
-  callBack,
-) => {
-  console.log('imageArrayimageArray',imageArray);
-  const currentImagesDataUploadID = `IMAGE_UPLOAD_${new Date().getTime()}`;
-  const obj = {id: currentImagesDataUploadID, dataArray: [...imageArray]};
-  dispatch({type: 'createUploadingData', payload: obj});
-  let cancelToken = {};
-  const setData = (key, value) => {
-    dispatch({
-      type: 'setUploadingData',
-      payload: {id: currentImagesDataUploadID, key, value},
-    });
-  };
-  const progressStatus = (completed, total) => {
-    setData('doneUploadCount', completed < total ? completed + 1 : total);
-  };
+const uploadData =
+  (dispatch) => (authContext, dataParams, imageArray, callBack) => {
+    console.log('imageArrayimageArray', imageArray);
+    const currentImagesDataUploadID = `IMAGE_UPLOAD_${new Date().getTime()}`;
+    const obj = {id: currentImagesDataUploadID, dataArray: [...imageArray]};
+    dispatch({type: 'createUploadingData', payload: obj});
+    let cancelToken = {};
+    const setData = (key, value) => {
+      dispatch({
+        type: 'setUploadingData',
+        payload: {id: currentImagesDataUploadID, key, value},
+      });
+    };
+    const progressStatus = (completed, total) => {
+      setData('doneUploadCount', completed < total ? completed + 1 : total);
+    };
 
-  const cancelRequest = (axiosTokenSource) => {
-    cancelToken = {...axiosTokenSource};
-    setData('cancelRequest', cancelToken);
-  };
-  setData('totalUploadCount', imageArray?.length ?? 1);
+    const cancelRequest = (axiosTokenSource) => {
+      cancelToken = {...axiosTokenSource};
+      setData('cancelRequest', cancelToken);
+    };
+    setData('totalUploadCount', imageArray?.length ?? 1);
 
-  uploadImages(imageArray, authContext, progressStatus, cancelRequest)
-    .then((responses) => {
-      console.log('responsesresponsesresponsesresponses',responses);
-      const attachments = [];
-      responses.map((item, index) => {
-        const objAttachment = {
-          type: item.type,
-          url: item.fullImage,
-          thumbnail: item.thumbnail,
-          media_height: item.height,
-          media_width: item.width,
-        };
-        console.log('item.height',item.height);
-        console.log('item.width',item.width);
-        if (item.type === 'video') {
-          if (imageArray.length === 1) {
-            objAttachment.duration = imageArray[index].duration;
-            objAttachment.is_short =
-              imageArray[index].duration < 30000 && item.height > item.width;
-          } else {
-            objAttachment.duration = imageArray[index].duration;
+    uploadImages(imageArray, authContext, progressStatus, cancelRequest)
+      .then((responses) => {
+        console.log('responsesresponsesresponsesresponses', responses);
+        const attachments = [];
+        responses.map((item, index) => {
+          const objAttachment = {
+            type: item.type,
+            url: item.fullImage,
+            thumbnail: item.thumbnail,
+            media_height: item.height,
+            media_width: item.width,
+          };
+          console.log('item.height', item.height);
+          console.log('item.width', item.width);
+          if (item.type === 'video') {
+            if (imageArray.length === 1) {
+              objAttachment.duration = imageArray[index].duration;
+              objAttachment.is_short =
+                imageArray[index].duration < 30000 && item.height > item.width;
+            } else {
+              objAttachment.duration = imageArray[index].duration;
+            }
           }
-        }
-        console.log('objAttachment',objAttachment);
-        attachments.push(objAttachment);
-      });
+          console.log('objAttachment', objAttachment);
+          attachments.push(objAttachment);
+        });
 
-      const dParams = {...dataParams};
-      dParams.attachments = [...dataParams?.attachments, ...attachments];
-      dispatch({
-        type: 'removeUploadingData',
-        payload: currentImagesDataUploadID,
+        const dParams = {...dataParams};
+        dParams.attachments = [...dataParams?.attachments, ...attachments];
+        dispatch({
+          type: 'removeUploadingData',
+          payload: currentImagesDataUploadID,
+        });
+        callBack(dParams);
+      })
+      .catch(() => {
+        dispatch({
+          type: 'removeUploadingData',
+          payload: currentImagesDataUploadID,
+        });
       });
-      callBack(dParams);
-    })
-    .catch(() => {
-      dispatch({
-        type: 'removeUploadingData',
-        payload: currentImagesDataUploadID,
-      });
-    });
-};
-export const {
-  Provider: ImageUploadProvider,
-  Context: ImageUploadContext,
-} = CreateDataContext(
-  imageUploadReducer,
-  {
-    removeUploadingData,
-    uploadData,
-  },
-  {
-    uploadingData: [],
-  },
-);
+  };
+export const {Provider: ImageUploadProvider, Context: ImageUploadContext} =
+  CreateDataContext(
+    imageUploadReducer,
+    {
+      removeUploadingData,
+      uploadData,
+    },
+    {
+      uploadingData: [],
+    },
+  );

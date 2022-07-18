@@ -1,6 +1,5 @@
 import Config from 'react-native-config';
 
-
 // AsyncConstants
 export const authToken = 'authToken';
 export const token_details = 'token_details';
@@ -109,7 +108,7 @@ export const gameData = {
     following_count: 4,
   },
   pause_datetime: 0,
- 
+
   gameId: 'da7f9ff0-c5e5-40bc-a0b2-137eb1c97317',
   game_id: 'da7f9ff0-c5e5-40bc-a0b2-137eb1c97317',
   start_datetime: 1630414600,

@@ -1,7 +1,5 @@
-import React, { useState } from 'react';
-import {
-  StyleSheet, View, Text, TouchableOpacity, Image,
-} from 'react-native';
+import React, {useState} from 'react';
+import {StyleSheet, View, Text, TouchableOpacity, Image} from 'react-native';
 import Video from 'react-native-video';
 import {
   widthPercentageToDP as wp,
@@ -10,29 +8,25 @@ import {
 import FastImage from 'react-native-fast-image';
 import images from '../../Constants/ImagePath';
 
-import colors from '../../Constants/Colors'
-import fonts from '../../Constants/Fonts'
+import colors from '../../Constants/Colors';
+import fonts from '../../Constants/Fonts';
 
-function MultipleVideoWithLoader({ data }) {
+function MultipleVideoWithLoader({data}) {
   const [mute, setMute] = useState(true);
   const [play, setPlay] = useState(false);
   const [videoLoad, setVideoLoad] = useState(false);
 
   return (
     <View style={styles.singleImageDisplayStyle}>
-      <View
-        style={styles.singleImageDisplayStyle}>
-        <Image
-          style={styles.loadimageStyle}
-          source={images.imageLoadingGIF}
-        />
+      <View style={styles.singleImageDisplayStyle}>
+        <Image style={styles.loadimageStyle} source={images.imageLoadingGIF} />
         <Text style={styles.loadingTextStyle}>Loading...</Text>
       </View>
       <Video
         paused={!play}
         muted={!mute}
-        source={{ uri: data.url }}
-        style={[styles.singleImageDisplayStyle, { position: 'absolute' }]}
+        source={{uri: data.url}}
+        style={[styles.singleImageDisplayStyle, {position: 'absolute'}]}
         resizeMode={'contain'}
         onLoad={() => {
           setVideoLoad(true);
@@ -44,22 +38,24 @@ function MultipleVideoWithLoader({ data }) {
             <TouchableOpacity
               onPress={() => {
                 setMute(!mute);
-              }}>
+              }}
+            >
               <FastImage
-                  resizeMode={'contain'}
-                  tintColor={'white'}
+                resizeMode={'contain'}
+                tintColor={'white'}
                 style={styles.imageStyle}
                 source={mute ? images.unmute : images.mute}
               />
             </TouchableOpacity>
           </View>
-          <View style={[styles.pauseMuteStyle, { right: wp('13.5%') }]}>
+          <View style={[styles.pauseMuteStyle, {right: wp('13.5%')}]}>
             <TouchableOpacity
               onPress={() => {
                 setPlay(!play);
-              }}>
+              }}
+            >
               <FastImage
-                  tintColor={'white'}
+                tintColor={'white'}
                 resizeMode={'contain'}
                 style={styles.playPauseImageStyle}
                 source={play ? images.videoPauseButton : images.videoPlayButton}

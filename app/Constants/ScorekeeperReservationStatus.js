@@ -12,4 +12,4 @@ const ScorekeeperReservationStatus = {
   requestcancelled: 'requestcancelled',
 };
 
-export default ScorekeeperReservationStatus
+export default ScorekeeperReservationStatus;

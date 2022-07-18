@@ -1,41 +1,43 @@
-import React, {
+import React from 'react';
+import {Text, View, StyleSheet, Image} from 'react-native';
 
-} from 'react';
-import {
-  Text,
-  View,
-  StyleSheet,
-  Image,
-
-} from 'react-native';
-
-import colors from '../Constants/Colors'
-import fonts from '../Constants/Fonts'
+import colors from '../Constants/Colors';
+import fonts from '../Constants/Fonts';
 
 export default function TCSearchProfileView({
   image,
   name,
   location,
   type = 'large',
-  color = colors.lightBlackColor, ...Props
+  color = colors.lightBlackColor,
+  ...Props
 }) {
   return (
-
     <View style={[styles.topViewContainer, Props]}>
       <View style={styles.profileView}>
-        <Image source={image} style={ styles.profileImage } />
+        <Image source={image} style={styles.profileImage} />
       </View>
       <View style={styles.topTextContainer}>
-        {type === 'medium' && name && <Text style={[styles.mediumNameText, { color }]} numberOfLines={1}>{name}</Text>}
-        {type === 'large' && name && <Text style={[styles.nameText, { color }]} numberOfLines={1}>{name}</Text>}
-        {location && <Text style={[styles.locationText, { color }]} numberOfLines={1}>{location}</Text>}
+        {type === 'medium' && name && (
+          <Text style={[styles.mediumNameText, {color}]} numberOfLines={1}>
+            {name}
+          </Text>
+        )}
+        {type === 'large' && name && (
+          <Text style={[styles.nameText, {color}]} numberOfLines={1}>
+            {name}
+          </Text>
+        )}
+        {location && (
+          <Text style={[styles.locationText, {color}]} numberOfLines={1}>
+            {location}
+          </Text>
+        )}
       </View>
     </View>
-
   );
 }
 const styles = StyleSheet.create({
-
   profileImage: {
     alignSelf: 'center',
     height: 40,
@@ -48,7 +50,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     // justifyContent: 'center',
     // width: 200,
-
   },
   profileView: {
     backgroundColor: colors.whiteColor,
@@ -58,7 +59,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: {width: 0, height: 3},
     shadowOpacity: 0.5,
     shadowRadius: 4,
     elevation: 3,
@@ -69,7 +70,7 @@ const styles = StyleSheet.create({
   nameText: {
     fontSize: 20,
     fontFamily: fonts.RMedium,
-   // width: 200,
+    // width: 200,
   },
   mediumNameText: {
     fontSize: 16,
@@ -79,5 +80,4 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: fonts.RLight,
   },
-
 });

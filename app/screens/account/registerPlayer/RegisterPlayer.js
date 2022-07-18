@@ -43,7 +43,7 @@ export default function RegisterPlayer({navigation}) {
     console.log('authContext.sports', authContext.sports);
     authContext.sports.map((item) => {
       sportArr = [...sportArr, ...item.format];
-      console.log('sportArrsportArr',sportArr);
+      console.log('sportArrsportArr', sportArr);
       return null;
     });
     setSportsData([...sportArr]);
@@ -58,14 +58,16 @@ export default function RegisterPlayer({navigation}) {
         setTimeout(() => {
           setVisibleSportsModal(false);
         }, 300);
-      }}>
+      }}
+    >
       <View
         style={{
           padding: 20,
           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'space-between',
-        }}>
+        }}
+      >
         <Text style={styles.languageList}>
           {getSportName(item, authContext)}
         </Text>
@@ -136,7 +138,8 @@ export default function RegisterPlayer({navigation}) {
         backdropTransitionOutTiming={800}
         style={{
           margin: 0,
-        }}>
+        }}
+      >
         <View
           style={{
             width: '100%',
@@ -152,18 +155,21 @@ export default function RegisterPlayer({navigation}) {
             shadowOpacity: 0.5,
             shadowRadius: 5,
             elevation: 15,
-          }}>
+          }}
+        >
           <View
             style={{
               flexDirection: 'row',
               paddingHorizontal: 15,
               justifyContent: 'space-between',
               alignItems: 'center',
-            }}>
+            }}
+          >
             <TouchableOpacity
               hitSlop={getHitSlop(15)}
               style={styles.closeButton}
-              onPress={() => setVisibleSportsModal(false)}>
+              onPress={() => setVisibleSportsModal(false)}
+            >
               <Image source={images.cancelImage} style={styles.closeButton} />
             </TouchableOpacity>
             <Text
@@ -173,7 +179,8 @@ export default function RegisterPlayer({navigation}) {
                 fontSize: 16,
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
-              }}>
+              }}
+            >
               Sports
             </Text>
 
@@ -184,7 +191,8 @@ export default function RegisterPlayer({navigation}) {
                 fontSize: 16,
                 fontFamily: fonts.RRegular,
                 color: colors.themeColor,
-              }}></Text>
+              }}
+            ></Text>
           </View>
           <View style={styles.separatorLine} />
           <FlatList

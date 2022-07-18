@@ -16,13 +16,13 @@ import {
   TouchableWithoutFeedback,
   Platform,
 } from 'react-native';
-import { Calendar } from 'react-native-toggle-calendar';
+import {Calendar} from 'react-native-toggle-calendar';
 import moment from 'moment';
 import CalendarDayComponent from './CalendarDayComponent';
 import CalendarHeaderComponent from './CalendarHeaderComponent';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
-import { getHitSlop } from '../../utils';
+import {getHitSlop} from '../../utils';
 
 const selectedCalendarDate = moment();
 // const minimumDate = moment().add(-1, 'day'); // one day before for midnight check-in usecase
@@ -84,13 +84,13 @@ class EventAgendaSection extends React.Component {
             dayComponent={CalendarDayComponent}
             calendarHeaderComponent={CalendarHeaderComponent}
             headerData={this.state.calendarHeaderData}
-            style={ styles.calendar}
+            style={styles.calendar}
             onPressArrowLeft={this.onPressArrowLeft}
             onPressArrowRight={this.onPressArrowRight}
             markedDates={this.props.calendarMarkedDates}
             horizontal={this.props.horizontal}
             onPressListView={this.props.onPressListView}
-            onPressGridView={ this.props.onPressGridView}
+            onPressGridView={this.props.onPressGridView}
             onDayPress={this.props.onDayPress}
             showPastDatesInHorizontal={1}
             horizontalEndReachedThreshold={100}
@@ -99,26 +99,32 @@ class EventAgendaSection extends React.Component {
             disableWeekScroll={true}
             // loading={this.state.calendarLoading}
           />
-          {!this.props.onKnobPress && <View style={styles.knobContainer}>
-
-          </View>}
-          {this.props.onKnobPress && <TouchableWithoutFeedback
-            hitSlop={Platform.OS === 'ios' ? getHitSlop(15) : getHitSlop(30)}
-            onPress={this.props.onKnobPress}>
-            <View style={styles.knobContainer}>
-              <View style={styles.knobView}>
-                <Image
-                  source={
-                    this.props.horizontal
-                      ? images.dropDownArrow
-                      : images.dropDownArrow
-                  }
-                  style={this.props.horizontal ? styles.knobImageOrange : styles.knobImage }
-                />
+          {!this.props.onKnobPress && (
+            <View style={styles.knobContainer}></View>
+          )}
+          {this.props.onKnobPress && (
+            <TouchableWithoutFeedback
+              hitSlop={Platform.OS === 'ios' ? getHitSlop(15) : getHitSlop(30)}
+              onPress={this.props.onKnobPress}
+            >
+              <View style={styles.knobContainer}>
+                <View style={styles.knobView}>
+                  <Image
+                    source={
+                      this.props.horizontal
+                        ? images.dropDownArrow
+                        : images.dropDownArrow
+                    }
+                    style={
+                      this.props.horizontal
+                        ? styles.knobImageOrange
+                        : styles.knobImage
+                    }
+                  />
+                </View>
               </View>
-            </View>
-          </TouchableWithoutFeedback>}
-
+            </TouchableWithoutFeedback>
+          )}
         </SafeAreaView>
       </>
     );
@@ -131,7 +137,7 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: colors.grayBackgroundColor,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.3,
     shadowRadius: 2,
     elevation: 1,
@@ -144,7 +150,7 @@ const styles = StyleSheet.create({
     height: 22,
     backgroundColor: colors.whiteColor,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.3,
     shadowRadius: 2,
     elevation: 1,
@@ -157,7 +163,7 @@ const styles = StyleSheet.create({
     height: 15,
     width: 15,
     marginTop: 5,
-    transform: [{ rotate: '180deg' }],
+    transform: [{rotate: '180deg'}],
   },
   knobImageOrange: {
     resizeMode: 'contain',

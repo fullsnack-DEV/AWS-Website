@@ -17,7 +17,8 @@ const TopHeader = ({title, selectWeekMonth, setSelectWeekMonth}) => (
       flexDirection: 'row',
       paddingVertical: 5,
       paddingHorizontal: 15,
-    }}>
+    }}
+  >
     <View style={styles.totalGameViewStyle}>
       <Text style={styles.totalGameTextStyle}>{title}</Text>
     </View>
@@ -30,9 +31,8 @@ const TopHeader = ({title, selectWeekMonth, setSelectWeekMonth}) => (
   </View>
 );
 
-const RDMChartView = ({RDMData,name}) => {
-
-    console.log('RDM CHART',RDMData,name);
+const RDMChartView = ({RDMData, name}) => {
+  console.log('RDM CHART', RDMData, name);
   const [selectWeekMonth, setSelectWeekMonth] = useState(
     monthsSelectionData[3]?.value,
   );
@@ -56,7 +56,10 @@ const RDMChartView = ({RDMData,name}) => {
       </View>
 
       <View style={{padding: 15}}>
-        <TCTextTableView leftTitle={'Total Matches'} rightTitle={RDMData?.total_games} />
+        <TCTextTableView
+          leftTitle={'Total Matches'}
+          rightTitle={RDMData?.total_games}
+        />
 
         <TCTextTableView
           leftTitle={'RDMs'}

@@ -51,7 +51,8 @@ function PRNotificationTeamInvite({
                   disabled
                     ? [styles.viewSecondStyle, {opacity: 0.5}]
                     : styles.viewSecondStyle
-                }>
+                }
+              >
                 <TCGradientButton
                   textStyle={styles.btnTextStyle}
                   style={styles.acceptButtonInnerStyle}

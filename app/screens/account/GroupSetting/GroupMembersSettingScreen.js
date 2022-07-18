@@ -89,11 +89,13 @@ export default function GroupMembersSettingScreen({navigation, route}) {
       style={styles.listContainer}
       onPress={() => {
         handleOpetions(item.key);
-      }}>
+      }}
+    >
       <View
         style={{
           flexDirection: 'row',
-        }}>
+        }}
+      >
         <Text style={styles.listItems}>{item.key}</Text>
         {item.key === 'Recruiting Player' && (
           <Text style={styles.currencyTypeStyle}>
@@ -119,7 +121,8 @@ export default function GroupMembersSettingScreen({navigation, route}) {
               color: colors.lightBlackColor,
               textAlign: 'center',
               fontFamily: fonts.RBold,
-            }}>
+            }}
+          >
             Settings
           </Text>
         }

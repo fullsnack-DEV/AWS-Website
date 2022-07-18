@@ -1,14 +1,11 @@
 import React from 'react';
-import {
-  StyleSheet, Text, View,
+import {StyleSheet, Text, View} from 'react-native';
+import colors from '../Constants/Colors';
+import fonts from '../Constants/Fonts';
 
-} from 'react-native';
-import colors from '../Constants/Colors'
-import fonts from '../Constants/Fonts'
-
-export default function TCNoDataView({ title, style }) {
+export default function TCNoDataView({title, style}) {
   return (
-    <View style={[styles.noDataPlaceholderView, { ...style }]}>
+    <View style={[styles.noDataPlaceholderView, {...style}]}>
       <Text style={styles.noDataPlaceholder}>{title}</Text>
     </View>
   );

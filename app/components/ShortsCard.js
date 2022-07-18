@@ -1,9 +1,7 @@
-import React, { memo } from 'react';
-import {
- StyleSheet, View, Text,
- } from 'react-native';
+import React, {memo} from 'react';
+import {StyleSheet, View, Text} from 'react-native';
 
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 import Video from 'react-native-video';
 import LinearGradient from 'react-native-linear-gradient';
 import colors from '../Constants/Colors';
@@ -15,18 +13,21 @@ function millisToMinutesAndSeconds(millis) {
   return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 }
 
-function ShortsCard({ onPress, cardItem }) {
+function ShortsCard({onPress, cardItem}) {
   const json = JSON.parse(cardItem.object) ?? {};
-  console.log('json?.attachments?.[0]?.thumbnail:=>', json?.attachments?.[0]?.thumbnail);
+  console.log(
+    'json?.attachments?.[0]?.thumbnail:=>',
+    json?.attachments?.[0]?.thumbnail,
+  );
   return (
-    <TouchableOpacity onPress={() => onPress({ cardItem }) }>
+    <TouchableOpacity onPress={() => onPress({cardItem})}>
       <View>
         <Video
-        source={{ uri: json?.attachments?.[0]?.thumbnail }}
-        style={styles.shortView}
-        resizeMode={'cover'}
-        paused={true}
-      />
+          source={{uri: json?.attachments?.[0]?.thumbnail}}
+          style={styles.shortView}
+          resizeMode={'cover'}
+          paused={true}
+        />
         <View style={styles.durationContainer}>
           <Text style={styles.durationLable}>
             {millisToMinutesAndSeconds(json?.attachments?.[0]?.duration)}
@@ -34,16 +35,16 @@ function ShortsCard({ onPress, cardItem }) {
         </View>
         <LinearGradient
           colors={['rgba(0,0,0,0.0)', 'rgba(0,0,0,0.3)']}
-          style={styles.overlayStyle}>
+          style={styles.overlayStyle}
+        >
           <Text style={styles.entityLable} numberOfLines={2}>
             {cardItem?.actor?.data?.entity_type === 'player'
-            ? cardItem?.actor?.data?.full_name
-            : cardItem?.actor?.data?.group_name}
+              ? cardItem?.actor?.data?.full_name
+              : cardItem?.actor?.data?.group_name}
           </Text>
           <Text style={styles.viewsLable}>121 views</Text>
         </LinearGradient>
       </View>
-
     </TouchableOpacity>
   );
 }
@@ -61,7 +62,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     fontSize: 12,
     color: colors.whiteColor,
-
   },
   entityLable: {
     fontFamily: fonts.RBold,

@@ -1,16 +1,7 @@
-import React, {
-  useEffect, useState, useContext,
-} from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  Image,
-  FlatList,
-
-} from 'react-native';
+import React, {useEffect, useState, useContext} from 'react';
+import {StyleSheet, View, Text, Image, FlatList} from 'react-native';
 import moment from 'moment';
-import { useIsFocused } from '@react-navigation/native';
+import {useIsFocused} from '@react-navigation/native';
 
 import strings from '../../../Constants/String';
 import fonts from '../../../Constants/Fonts';
@@ -31,7 +22,7 @@ import ReservationNumber from '../../../components/reservations/ReservationNumbe
 
 let entity = {};
 
-export default function CurruentReservationScreen({ route }) {
+export default function CurruentReservationScreen({route}) {
   const authContext = useContext(AuthContext);
 
   const isFocused = useIsFocused();
@@ -42,7 +33,7 @@ export default function CurruentReservationScreen({ route }) {
   useEffect(() => {
     entity = authContext.entity;
 
-    const { body } = route.params ?? {}
+    const {body} = route.params ?? {};
 
     setbodyParams(body);
 
@@ -62,7 +53,8 @@ export default function CurruentReservationScreen({ route }) {
 
   // eslint-disable-next-line consistent-return
   const getTimeDifferent = (sDate, eDate) => {
-    let delta = Math.abs(new Date(sDate).getTime() - new Date(eDate).getTime()) / 1000;
+    let delta =
+      Math.abs(new Date(sDate).getTime() - new Date(eDate).getTime()) / 1000;
 
     const days = Math.floor(delta / 86400);
     delta -= days * 86400;
@@ -75,44 +67,48 @@ export default function CurruentReservationScreen({ route }) {
 
     return `${hours} hours ${minutes} minutes`;
   };
-  const renderSecureReferee = ({ item, index }) => (
+  const renderSecureReferee = ({item, index}) => (
     <TCInfoImageField
-        title={
-          index === 0 ? `Referee ${index + 1} (Chief)` : `Referee ${index + 1}`
-        }
-        name={
-          homeTeam
-          && awayTeam
-          && ((item.responsible_team_id === 'none' && 'None')
-            || (item.responsible_team_id === (homeTeam.group_id ?? homeTeam.user_id)
-              ? homeTeam.group_name || `${homeTeam.first_name} ${homeTeam.last_name}`
-              : awayTeam.group_name || `${awayTeam.first_name} ${awayTeam.last_name}`))
-        }
-        marginLeft={30}
-      />
+      title={
+        index === 0 ? `Referee ${index + 1} (Chief)` : `Referee ${index + 1}`
+      }
+      name={
+        homeTeam &&
+        awayTeam &&
+        ((item.responsible_team_id === 'none' && 'None') ||
+          (item.responsible_team_id === (homeTeam.group_id ?? homeTeam.user_id)
+            ? homeTeam.group_name ||
+              `${homeTeam.first_name} ${homeTeam.last_name}`
+            : awayTeam.group_name ||
+              `${awayTeam.first_name} ${awayTeam.last_name}`))
+      }
+      marginLeft={30}
+    />
   );
 
-  const renderSecureScorekeeper = ({ item, index }) => (
+  const renderSecureScorekeeper = ({item, index}) => (
     <TCInfoImageField
-        title={`Scorekeeper ${index + 1}`}
-        name={
-          homeTeam
-          && awayTeam
-          && ((item.responsible_team_id === 'none' && 'None')
-            || (item.responsible_team_id === (homeTeam.group_id ?? awayTeam.user_id)
-              ? homeTeam.group_name || `${homeTeam.first_name} ${homeTeam.last_name}`
-              : awayTeam.group_name || `${awayTeam.first_name} ${awayTeam.last_name}`))
-        }
-        marginLeft={30}
-      />
+      title={`Scorekeeper ${index + 1}`}
+      name={
+        homeTeam &&
+        awayTeam &&
+        ((item.responsible_team_id === 'none' && 'None') ||
+          (item.responsible_team_id === (homeTeam.group_id ?? awayTeam.user_id)
+            ? homeTeam.group_name ||
+              `${homeTeam.first_name} ${homeTeam.last_name}`
+            : awayTeam.group_name ||
+              `${awayTeam.first_name} ${awayTeam.last_name}`))
+      }
+      marginLeft={30}
+    />
   );
 
   // eslint-disable-next-line consistent-return
   const checkSenderOrReceiver = (challengeObj) => {
     if (!challengeObj.userChallenge) {
       if (
-        challengeObj.status === ReservationStatus.pendingpayment
-        || challengeObj.status === ReservationStatus.pendingrequestpayment
+        challengeObj.status === ReservationStatus.pendingpayment ||
+        challengeObj.status === ReservationStatus.pendingrequestpayment
       ) {
         if (challengeObj.invited_by === entity.uid) {
           return 'sender';
@@ -137,8 +133,8 @@ export default function CurruentReservationScreen({ route }) {
     }
     console.log('challenge for user to user');
     if (
-      challengeObj.status === ReservationStatus.pendingpayment
-      || challengeObj.status === ReservationStatus.pendingrequestpayment
+      challengeObj.status === ReservationStatus.pendingpayment ||
+      challengeObj.status === ReservationStatus.pendingrequestpayment
     ) {
       if (challengeObj.invited_by === entity.uid) {
         return 'sender';
@@ -164,17 +160,17 @@ export default function CurruentReservationScreen({ route }) {
 
   return (
     <TCKeyboardView>
-
       {homeTeam && awayTeam && bodyParams && (
         <View>
-          <ReservationNumber reservationNumber={bodyParams.challenge_id}/>
+          <ReservationNumber reservationNumber={bodyParams.challenge_id} />
           <View
-              style={{
-                flex: 1,
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                margin: 15,
-              }}>
+            style={{
+              flex: 1,
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              margin: 15,
+            }}
+          >
             <View style={styles.challengerView}>
               <View style={styles.teamView}>
                 <Image source={images.requestOut} style={styles.reqOutImage} />
@@ -183,13 +179,17 @@ export default function CurruentReservationScreen({ route }) {
 
               <View style={styles.teamView}>
                 <Image
-                    source={images.teamPlaceholder}
-                    style={styles.teamImage}
-                  />
+                  source={images.teamPlaceholder}
+                  style={styles.teamImage}
+                />
                 <Text style={styles.teamNameText}>
-                  {bodyParams?.invited_by === (bodyParams?.home_team?.group_id ?? bodyParams?.home_team?.user_id)
-                    ? bodyParams.home_team.group_name || `${bodyParams.home_team.first_name} ${bodyParams.home_team.last_name}`
-                    : bodyParams.away_team.group_name || `${bodyParams.away_team.first_name} ${bodyParams.away_team.last_name}`}
+                  {bodyParams?.invited_by ===
+                  (bodyParams?.home_team?.group_id ??
+                    bodyParams?.home_team?.user_id)
+                    ? bodyParams.home_team.group_name ||
+                      `${bodyParams.home_team.first_name} ${bodyParams.home_team.last_name}`
+                    : bodyParams.away_team.group_name ||
+                      `${bodyParams.away_team.first_name} ${bodyParams.away_team.last_name}`}
                 </Text>
               </View>
             </View>
@@ -201,19 +201,24 @@ export default function CurruentReservationScreen({ route }) {
 
               <View style={styles.teamView}>
                 <Image
-                    source={images.teamPlaceholder}
-                    style={styles.teamImage}
-                  />
+                  source={images.teamPlaceholder}
+                  style={styles.teamImage}
+                />
                 <Text
-                    style={{
-                      marginLeft: 5,
-                      fontFamily: fonts.RMedium,
-                      fontSize: 16,
-                      color: colors.lightBlackColor,
-                    }}>
-                  {bodyParams.invited_by === (bodyParams.home_team.group_id ?? bodyParams.home_team.user_id)
-                    ? bodyParams.away_team.group_name || `${bodyParams.away_team.first_name} ${bodyParams.away_team.last_name}`
-                    : bodyParams.home_team.group_name || `${bodyParams.home_team.first_name} ${bodyParams.home_team.last_name}`}
+                  style={{
+                    marginLeft: 5,
+                    fontFamily: fonts.RMedium,
+                    fontSize: 16,
+                    color: colors.lightBlackColor,
+                  }}
+                >
+                  {bodyParams.invited_by ===
+                  (bodyParams.home_team.group_id ??
+                    bodyParams.home_team.user_id)
+                    ? bodyParams.away_team.group_name ||
+                      `${bodyParams.away_team.first_name} ${bodyParams.away_team.last_name}`
+                    : bodyParams.home_team.group_name ||
+                      `${bodyParams.home_team.first_name} ${bodyParams.home_team.last_name}`}
                 </Text>
               </View>
             </View>
@@ -223,64 +228,66 @@ export default function CurruentReservationScreen({ route }) {
           {bodyParams && (
             <View>
               <View style={styles.editableView}>
-                <TCLabel
-                    title={`Match · ${bodyParams.sport}`}
-
-                  />
-
+                <TCLabel title={`Match · ${bodyParams.sport}`} />
               </View>
               <TCInfoImageField
-                  title={'Home'}
-                  name={bodyParams.home_team.group_name || `${bodyParams.home_team.first_name} ${bodyParams.home_team.last_name}`}
-                  marginLeft={30}
-                />
+                title={'Home'}
+                name={
+                  bodyParams.home_team.group_name ||
+                  `${bodyParams.home_team.first_name} ${bodyParams.home_team.last_name}`
+                }
+                marginLeft={30}
+              />
               <TCThinDivider />
               <TCInfoImageField
-                  title={'Away'}
-                  name={bodyParams.away_team.group_name || `${bodyParams.away_team.first_name} ${bodyParams.away_team.last_name}`}
-                  marginLeft={30}
-                />
+                title={'Away'}
+                name={
+                  bodyParams.away_team.group_name ||
+                  `${bodyParams.away_team.first_name} ${bodyParams.away_team.last_name}`
+                }
+                marginLeft={30}
+              />
               <TCThinDivider />
               <TCInfoField
-                  title={'Time'}
-                  value={`${getDateFormat(
-                    bodyParams.start_datetime * 1000,
-                  )} -\n${getDateFormat(
-                    bodyParams.end_datetime * 1000,
-                  )}\n${getTimeDifferent(
-                    new Date(bodyParams.start_datetime * 1000),
-                    new Date(bodyParams.end_datetime * 1000),
-                  )}`}
-                  marginLeft={30}
-                  titleStyle={{ fontSize: 16 }}
-                />
+                title={'Time'}
+                value={`${getDateFormat(
+                  bodyParams.start_datetime * 1000,
+                )} -\n${getDateFormat(
+                  bodyParams.end_datetime * 1000,
+                )}\n${getTimeDifferent(
+                  new Date(bodyParams.start_datetime * 1000),
+                  new Date(bodyParams.end_datetime * 1000),
+                )}`}
+                marginLeft={30}
+                titleStyle={{fontSize: 16}}
+              />
               <TCThinDivider />
               <TCInfoField
-                  title={'Venue'}
-                  value={bodyParams.venue.title}
-                  marginLeft={30}
-                  titleStyle={{ fontSize: 16 }}
-                />
+                title={'Venue'}
+                value={bodyParams.venue.title}
+                marginLeft={30}
+                titleStyle={{fontSize: 16}}
+              />
               <TCThinDivider />
               <TCInfoField
-                  title={'Address'}
-                  value={bodyParams.venue.address}
-                  marginLeft={30}
-                  titleStyle={{ fontSize: 16 }}
-                />
+                title={'Address'}
+                value={bodyParams.venue.address}
+                marginLeft={30}
+                titleStyle={{fontSize: 16}}
+              />
               <EventMapView
-                  coordinate={{
-                    latitude: bodyParams.venue.lat,
-                    longitude: bodyParams.venue.long,
-                  }}
-                  region={{
-                    latitude: bodyParams.venue.lat,
-                    longitude: bodyParams.venue.long,
-                    latitudeDelta: 0.0922,
-                    longitudeDelta: 0.0421,
-                  }}
-                  style={styles.map}
-                />
+                coordinate={{
+                  latitude: bodyParams.venue.lat,
+                  longitude: bodyParams.venue.long,
+                }}
+                region={{
+                  latitude: bodyParams.venue.lat,
+                  longitude: bodyParams.venue.long,
+                  latitudeDelta: 0.0922,
+                  longitudeDelta: 0.0421,
+                }}
+                style={styles.map}
+              />
               <TCThickDivider marginTop={20} />
             </View>
           )}
@@ -288,29 +295,25 @@ export default function CurruentReservationScreen({ route }) {
           {bodyParams && (
             <View>
               <View style={styles.editableView}>
-                <TCLabel
-                    title={'Responsibility  to Secure Venue'}
-
-                  />
-
+                <TCLabel title={'Responsibility  to Secure Venue'} />
               </View>
 
               <View style={styles.viewContainer}>
                 <View style={styles.fieldValue}>
                   <Image
-                      source={
-                        // eslint-disable-next-line no-nested-ternary
-                        bodyParams.home_team.group_name
-                        === bodyParams.responsible_to_secure_venue
-                          ? bodyParams.home_team.thumbnail
-                            ? { uri: bodyParams.home_team.thumbnail }
-                            : images.teamPlaceholder
-                          : bodyParams.away_team.thumbnail
-                            ? { uri: bodyParams.away_team.thumbnail }
-                            : images.teamPlaceholder
-                      }
-                      style={styles.imageView}
-                    />
+                    source={
+                      // eslint-disable-next-line no-nested-ternary
+                      bodyParams.home_team.group_name ===
+                      bodyParams.responsible_to_secure_venue
+                        ? bodyParams.home_team.thumbnail
+                          ? {uri: bodyParams.home_team.thumbnail}
+                          : images.teamPlaceholder
+                        : bodyParams.away_team.thumbnail
+                        ? {uri: bodyParams.away_team.thumbnail}
+                        : images.teamPlaceholder
+                    }
+                    style={styles.imageView}
+                  />
                   <Text style={styles.teamNameText} numberOfLines={1}>
                     {bodyParams.responsible_to_secure_venue}
                   </Text>
@@ -324,69 +327,57 @@ export default function CurruentReservationScreen({ route }) {
             <View>
               <View style={styles.editableView}>
                 <TCLabel title={'Rules'} />
-
               </View>
               <Text style={styles.rulesText}>{bodyParams.special_rule}</Text>
-
             </View>
           )}
           <TCThickDivider marginTop={20} />
           <View>
             <View style={styles.editableView}>
-              <TCLabel
-                  title={'Responsibility to Secure Referees'}
-
-                />
-
+              <TCLabel title={'Responsibility to Secure Referees'} />
             </View>
             {bodyParams && (
               <FlatList
-                  data={bodyParams.referee}
-                  renderItem={renderSecureReferee}
-                  keyExtractor={(item, index) => index.toString()}
-                  ItemSeparatorComponent={() => <TCThinDivider />}
-                />
+                data={bodyParams.referee}
+                renderItem={renderSecureReferee}
+                keyExtractor={(item, index) => index.toString()}
+                ItemSeparatorComponent={() => <TCThinDivider />}
+              />
             )}
           </View>
           <TCThickDivider marginTop={10} />
           <View>
             <View style={styles.editableView}>
-              <TCLabel
-                  title={'Responsibility to Secure ScoreKeeper'}
-
-                />
-
+              <TCLabel title={'Responsibility to Secure ScoreKeeper'} />
             </View>
             {bodyParams && (
               <FlatList
-                  data={bodyParams.scorekeeper}
-                  renderItem={renderSecureScorekeeper}
-                  keyExtractor={(item, index) => index.toString()}
-                  ItemSeparatorComponent={() => <TCThinDivider />}
-                />
+                data={bodyParams.scorekeeper}
+                renderItem={renderSecureScorekeeper}
+                keyExtractor={(item, index) => index.toString()}
+                ItemSeparatorComponent={() => <TCThinDivider />}
+              />
             )}
           </View>
           <TCThickDivider marginTop={10} />
           <View style={styles.editableView}>
             <TCLabel
-                title={
-                  checkSenderOrReceiver(bodyParams) === 'sender'
-                    ? 'Payment'
-                    : 'Earning'
-                }
-
-              />
-
+              title={
+                checkSenderOrReceiver(bodyParams) === 'sender'
+                  ? 'Payment'
+                  : 'Earning'
+              }
+            />
           </View>
 
           <MatchFeesCard
-              challengeObj={bodyParams}
-              senderOrReceiver={
-                checkSenderOrReceiver(bodyParams) === 'sender'
-                  ? 'sender'
-                  : 'receiver'
-              }
-            />
+            challengeObj={bodyParams}
+            senderOrReceiver={
+              checkSenderOrReceiver(bodyParams) === 'sender'
+                ? 'sender'
+                : 'receiver'
+            }
+          />
           <Text style={styles.responsibilityNote}>
             These match fee doesn’t include the{' '}
             <Text style={styles.responsibilityNoteMedium}>
@@ -399,20 +390,19 @@ export default function CurruentReservationScreen({ route }) {
             The match place, referees and scorekeepers should be secured by the
             team who has charge of them at its own expense.
           </Text>
-          {checkSenderOrReceiver(bodyParams) === 'sender'
-              && bodyParams.status === ReservationStatus.offered
-              && bodyParams.offer_expiry < new Date().getTime() && (
-                <View>
-                  <TCBorderButton
-                    title={strings.calcelRequest}
-                    textColor={colors.grayColor}
-                    borderColor={colors.grayColor}
-                    height={40}
-                    shadow={true}
-                  />
-                </View>
-          )}
-
+          {checkSenderOrReceiver(bodyParams) === 'sender' &&
+            bodyParams.status === ReservationStatus.offered &&
+            bodyParams.offer_expiry < new Date().getTime() && (
+              <View>
+                <TCBorderButton
+                  title={strings.calcelRequest}
+                  textColor={colors.grayColor}
+                  borderColor={colors.grayColor}
+                  height={40}
+                  shadow={true}
+                />
+              </View>
+            )}
         </View>
       )}
     </TCKeyboardView>

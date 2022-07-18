@@ -213,7 +213,8 @@ export default function ChooseGenderScreen({navigation, route}) {
                   console.log('error', error);
                   // …
                 });
-            }}>
+            }}
+          >
             Next
           </Text>
         ) : (
@@ -223,7 +224,8 @@ export default function ChooseGenderScreen({navigation, route}) {
         <TouchableOpacity
           onPress={() => {
             navigation.pop();
-          }}>
+          }}
+        >
           <Image
             source={images.backArrow}
             style={{
@@ -356,7 +358,8 @@ export default function ChooseGenderScreen({navigation, route}) {
         paddingHorizontal: 5,
         justifyContent: 'center',
         alignItems: 'center',
-      }}>
+      }}
+    >
       <TouchableOpacity
         style={{
           borderColor: colors.whiteColor,
@@ -367,7 +370,8 @@ export default function ChooseGenderScreen({navigation, route}) {
           alignItems: 'center',
           justifyContent: 'center',
         }}
-        onPress={onRadioPress}>
+        onPress={onRadioPress}
+      >
         {isSelected && (
           <View
             style={{
@@ -375,7 +379,8 @@ export default function ChooseGenderScreen({navigation, route}) {
               width: 13,
               borderRadius: 50,
               backgroundColor: colors.whiteColor,
-            }}></View>
+            }}
+          ></View>
         )}
       </TouchableOpacity>
     </View>
@@ -404,7 +409,8 @@ export default function ChooseGenderScreen({navigation, route}) {
   return (
     <LinearGradient
       colors={[colors.themeColor1, colors.themeColor3]}
-      style={styles.mainContainer}>
+      style={styles.mainContainer}
+    >
       <ActivityLoader visible={loading} />
       <View style={{flex: 1}}>
         <FastImage
@@ -425,7 +431,8 @@ export default function ChooseGenderScreen({navigation, route}) {
           height={hp('22%')}
           width={wp('75%')}
           overlayColor={'transparent'}
-          skipAndroidStatusBar={true}>
+          skipAndroidStatusBar={true}
+        >
           <Text style={styles.whyAskingText}>
             {strings.whyAskingGenderText}
           </Text>
@@ -474,7 +481,8 @@ export default function ChooseGenderScreen({navigation, route}) {
             // justifyContent: 'flex-end',
             // marginBottom: 100,
             bottom: 16,
-          }}>
+          }}
+        >
           <Text style={styles.canNotChangeGender}>
             {strings.canNotChangeGender}
           </Text>

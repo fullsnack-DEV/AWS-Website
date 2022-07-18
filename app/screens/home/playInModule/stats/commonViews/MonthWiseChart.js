@@ -3,16 +3,15 @@
 /* eslint-disable no-extend-native */
 /* eslint-disable no-multi-assign */
 /* eslint-disable import/no-extraneous-dependencies */
-import React, {useEffect,useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {FlatList, StyleSheet, Text, View} from 'react-native';
 import StatsSelectionView from '../../../../../components/Home/StatsSelectionView';
 
 import colors from '../../../../../Constants/Colors';
 import fonts from '../../../../../Constants/Fonts';
 import strings from '../../../../../Constants/String';
-import { getMaxFromRange } from '../../../../../utils';
+import {getMaxFromRange} from '../../../../../utils';
 import {monthsSelectionData} from '../../../../../utils/constant';
-
 
 export default function MonthWiseChart({
   gameChartData,
@@ -20,11 +19,13 @@ export default function MonthWiseChart({
   setSelectMonth,
 }) {
   console.log('gameChartData', gameChartData);
-const [maxValue,setMaxValue] = useState()
+  const [maxValue, setMaxValue] = useState();
   useEffect(() => {
-    const maxArray = gameChartData?.map((o) => { return o.value; });
+    const maxArray = gameChartData?.map((o) => {
+      return o.value;
+    });
     const max_of_array = Math.max.apply(Math, maxArray);
-    setMaxValue(getMaxFromRange(max_of_array))
+    setMaxValue(getMaxFromRange(max_of_array));
 
     console.log('maxmax', max_of_array);
   }, [gameChartData]);
@@ -39,7 +40,8 @@ const [maxValue,setMaxValue] = useState()
           alignItems: 'center',
           marginLeft: 15,
           marginRight: 15,
-        }}>
+        }}
+      >
         <Text style={styles.textRegularStyle}>{item.month_name}</Text>
         <View
           style={{
@@ -47,10 +49,12 @@ const [maxValue,setMaxValue] = useState()
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'space-between',
-          }}>
+          }}
+        >
           <View
             style={{
-              flex: item?.value > 0 ? (item?.value * 100 / maxValue) /100 : 0.01,
+              flex:
+                item?.value > 0 ? (item?.value * 100) / maxValue / 100 : 0.01,
               marginLeft: 15,
               marginRight: 15,
               height: 8,
@@ -82,7 +86,8 @@ const [maxValue,setMaxValue] = useState()
           flexDirection: 'row',
           paddingVertical: 5,
           paddingHorizontal: 15,
-        }}>
+        }}
+      >
         <View style={styles.totalGameViewStyle}>
           <Text style={styles.totalGameTextStyle}>{'Monthly Matches'}</Text>
         </View>

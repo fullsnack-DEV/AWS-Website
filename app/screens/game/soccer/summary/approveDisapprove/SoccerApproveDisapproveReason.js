@@ -1,2 +1,2 @@
-const SoccerApproveDisapproveConfirmation = () => <> </>
+const SoccerApproveDisapproveConfirmation = () => <> </>;
 export default SoccerApproveDisapproveConfirmation;

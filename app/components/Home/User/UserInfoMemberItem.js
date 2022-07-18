@@ -1,29 +1,29 @@
 import React from 'react';
-import {
-  View, Text, StyleSheet, TouchableOpacity,
-} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
 import images from '../../../Constants/ImagePath';
 import TCImage from '../../TCImage';
 
-export default function UserInfoMemberItem({
-  title,
-  imageData,
-  onMemberPress,
-}) {
+export default function UserInfoMemberItem({title, imageData, onMemberPress}) {
   return (
-    <TouchableOpacity onPress={ onMemberPress } style={{ width: 55, height: 'auto', marginLeft: 26 }}>
+    <TouchableOpacity
+      onPress={onMemberPress}
+      style={{width: 55, height: 'auto', marginLeft: 26}}
+    >
       <View style={styles.imageContainerStyle}>
         <TCImage
-        containerStyle={styles.mainImageStyle}
-        resizeMode={'cover'}
-        imageStyle={styles.mainImageStyle}
-        defaultSource={images.profilePlaceHolder}
-        source={imageData}/>
+          containerStyle={styles.mainImageStyle}
+          resizeMode={'cover'}
+          imageStyle={styles.mainImageStyle}
+          defaultSource={images.profilePlaceHolder}
+          source={imageData}
+        />
       </View>
-      <Text style={styles.titleStyle} numberOfLines={ 2 }>{title}</Text>
+      <Text style={styles.titleStyle} numberOfLines={2}>
+        {title}
+      </Text>
     </TouchableOpacity>
   );
 }
@@ -49,4 +49,4 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
     textAlign: 'center',
   },
-})
+});

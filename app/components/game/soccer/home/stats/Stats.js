@@ -1,35 +1,54 @@
-import React, {
- Fragment, useState, useEffect, useCallback,
-} from 'react';
-import {
-  View, StyleSheet, FlatList, Text,
-} from 'react-native';
-import { useIsFocused } from '@react-navigation/native';
+import React, {Fragment, useState, useEffect, useCallback} from 'react';
+import {View, StyleSheet, FlatList, Text} from 'react-native';
+import {useIsFocused} from '@react-navigation/native';
 import colors from '../../../../../Constants/Colors';
 import TCSwitcher from '../../../../TCSwitcher';
-import { heightPercentageToDP as hp } from '../../../../../utils';
+import {heightPercentageToDP as hp} from '../../../../../utils';
 import fonts from '../../../../../Constants/Fonts';
 import images from '../../../../../Constants/ImagePath';
 import TCGameUserStats from '../../../../TCGameUserStats';
 import TCInnerLoader from '../../../../TCInnerLoader';
 import TCGameCard from '../../../../TCGameCard';
 import Rivalry from './Rivalry';
-import { soccerGamePlayStatsImage } from '../../../../../utils/gameUtils';
+import {soccerGamePlayStatsImage} from '../../../../../utils/gameUtils';
 
-const SECTIONS = ['Goal', 'Assist', 'Yellow Card', 'Red Card', 'Injured', 'Rivalry', 'Previous Game'];
+const SECTIONS = [
+  'Goal',
+  'Assist',
+  'Yellow Card',
+  'Red Card',
+  'Injured',
+  'Rivalry',
+  'Previous Game',
+];
 const SECTION_IMAGE_AND_COLOR = {
-  Goal: { rightIconImage: soccerGamePlayStatsImage.goal, countTextColor: colors.themeColor, emptyListMessage: 'No goal found' },
-  Assist: { rightIconImage: soccerGamePlayStatsImage.assist, countTextColor: colors.themeColor, emptyListMessage: 'No assist found' },
-  'Yellow Card': { rightIconImage: soccerGamePlayStatsImage.yc, countTextColor: colors.yellowColor, emptyListMessage: 'No yellow card found' },
-  'Red Card': { rightIconImage: soccerGamePlayStatsImage.rc, countTextColor: colors.redDelColor, emptyListMessage: 'No red card found' },
-  Injured: { rightIconImage: '', countTextColor: colors.redDelColor, emptyListMessage: 'No injured found' },
-}
-const Stats = ({
-  gameData,
-  getGameStatsData,
-  homeTeamName,
-  awayTeamName,
-}) => {
+  Goal: {
+    rightIconImage: soccerGamePlayStatsImage.goal,
+    countTextColor: colors.themeColor,
+    emptyListMessage: 'No goal found',
+  },
+  Assist: {
+    rightIconImage: soccerGamePlayStatsImage.assist,
+    countTextColor: colors.themeColor,
+    emptyListMessage: 'No assist found',
+  },
+  'Yellow Card': {
+    rightIconImage: soccerGamePlayStatsImage.yc,
+    countTextColor: colors.yellowColor,
+    emptyListMessage: 'No yellow card found',
+  },
+  'Red Card': {
+    rightIconImage: soccerGamePlayStatsImage.rc,
+    countTextColor: colors.redDelColor,
+    emptyListMessage: 'No red card found',
+  },
+  Injured: {
+    rightIconImage: '',
+    countTextColor: colors.redDelColor,
+    emptyListMessage: 'No injured found',
+  },
+};
+const Stats = ({gameData, getGameStatsData, homeTeamName, awayTeamName}) => {
   const isFocused = useIsFocused();
   const [loading, setLoading] = useState(true);
   const [selectedTeamTab, setSelectedTeamTab] = useState(0);
@@ -39,109 +58,152 @@ const Stats = ({
     if (isFocused) {
       if (gameData?.game_id) {
         setLoading(true);
-        getGameStatsData(gameData?.game_id).then((res) => {
-          setGameStatsData(res?.payload);
-        })
+        getGameStatsData(gameData?.game_id)
+          .then((res) => {
+            setGameStatsData(res?.payload);
+          })
           .catch((error) => console.log(error))
           .finally(() => setLoading(false));
       }
     }
-  }, [isFocused])
+  }, [isFocused]);
 
-  const getSectionData = useCallback((sectionName, statsData) => {
-    const teamName = selectedTeamTab === 0 ? 'home_team' : 'away_team'
-    let data;
-    if (sectionName === 'Goal') {
-      data = statsData[teamName]?.goal ?? [];
-    } else if (sectionName === 'Assist') {
-      data = statsData[teamName]?.assist_goal ?? [];
-    } else if (sectionName === 'Yellow Card') {
-      data = statsData[teamName]?.yc ?? [];
-    } else if (sectionName === 'Red Card') {
-      data = statsData[teamName]?.rc ?? [];
-    } else if (sectionName === 'Injured') {
-      data = statsData[teamName]?.injured ?? [];
-    }
-    data = data && data.map((obj) => ({ ...obj, type: sectionName, ...SECTION_IMAGE_AND_COLOR[sectionName] }))
-    return data;
-  }, [selectedTeamTab])
-
-  const renderSingleSection = useCallback(({ item }) => (
-    <TCGameUserStats
-          name={item?.by ? item?.by?.full_name ?? `${item?.by?.first_name ?? ''} ${item?.by?.last_name ?? ''}` : 'No Specific Player'}
-          profilePic={item?.full_image ? { uri: item?.full_image } : images.profilePlaceHolder}
-          count={item?.count}
-          rightIconImage={item?.rightIconImage}
-          countTextColor={item?.countColor}
-      />
-  ), []);
-
-  const renderSections = useCallback(({ item }) => {
-    let SectionData;
-    let renderSection = renderSingleSection;
-    const stats = gameStatsData?.stats?.gameStats ?? null;
-    if (stats) {
-      SectionData = getSectionData(item, stats);
-      if (item === 'Rivalry') SectionData = gameStatsData?.stats?.rivarly;
-      if (item === 'Previous Game') {
-        SectionData = gameStatsData?.games;
-        renderSection = renderPreviousGame
+  const getSectionData = useCallback(
+    (sectionName, statsData) => {
+      const teamName = selectedTeamTab === 0 ? 'home_team' : 'away_team';
+      let data;
+      if (sectionName === 'Goal') {
+        data = statsData[teamName]?.goal ?? [];
+      } else if (sectionName === 'Assist') {
+        data = statsData[teamName]?.assist_goal ?? [];
+      } else if (sectionName === 'Yellow Card') {
+        data = statsData[teamName]?.yc ?? [];
+      } else if (sectionName === 'Red Card') {
+        data = statsData[teamName]?.rc ?? [];
+      } else if (sectionName === 'Injured') {
+        data = statsData[teamName]?.injured ?? [];
       }
-    }
-    return (
-      <View style={styles.subContainer}>
-        <Text style={styles.sectionTitle}>
-          {item}
-        </Text>
-        {item === 'Rivalry' ? (
-          <Rivalry gameData={gameData} rivalryData={SectionData}/>
-        ) : (
-          <FlatList
+      data =
+        data &&
+        data.map((obj) => ({
+          ...obj,
+          type: sectionName,
+          ...SECTION_IMAGE_AND_COLOR[sectionName],
+        }));
+      return data;
+    },
+    [selectedTeamTab],
+  );
+
+  const renderSingleSection = useCallback(
+    ({item}) => (
+      <TCGameUserStats
+        name={
+          item?.by
+            ? item?.by?.full_name ??
+              `${item?.by?.first_name ?? ''} ${item?.by?.last_name ?? ''}`
+            : 'No Specific Player'
+        }
+        profilePic={
+          item?.full_image ? {uri: item?.full_image} : images.profilePlaceHolder
+        }
+        count={item?.count}
+        rightIconImage={item?.rightIconImage}
+        countTextColor={item?.countColor}
+      />
+    ),
+    [],
+  );
+
+  const renderSections = useCallback(
+    ({item}) => {
+      let SectionData;
+      let renderSection = renderSingleSection;
+      const stats = gameStatsData?.stats?.gameStats ?? null;
+      if (stats) {
+        SectionData = getSectionData(item, stats);
+        if (item === 'Rivalry') SectionData = gameStatsData?.stats?.rivarly;
+        if (item === 'Previous Game') {
+          SectionData = gameStatsData?.games;
+          renderSection = renderPreviousGame;
+        }
+      }
+      return (
+        <View style={styles.subContainer}>
+          <Text style={styles.sectionTitle}>{item}</Text>
+          {item === 'Rivalry' ? (
+            <Rivalry gameData={gameData} rivalryData={SectionData} />
+          ) : (
+            <FlatList
               listKey={item}
-              keyExtractor={({ index }) => index?.toString()}
-              ListEmptyComponent={<Text style={styles.emptySectionListItem}>{SECTION_IMAGE_AND_COLOR[item]?.emptyListMessage}</Text>}
+              keyExtractor={({index}) => index?.toString()}
+              ListEmptyComponent={
+                <Text style={styles.emptySectionListItem}>
+                  {SECTION_IMAGE_AND_COLOR[item]?.emptyListMessage}
+                </Text>
+              }
               data={SectionData ?? []}
               renderItem={renderSection}
             />
-        )}
-      </View>
-    )
-  }, [gameData, gameStatsData?.games, gameStatsData?.stats?.gameStats, gameStatsData?.stats?.rivarly, getSectionData, renderSingleSection])
+          )}
+        </View>
+      );
+    },
+    [
+      gameData,
+      gameStatsData?.games,
+      gameStatsData?.stats?.gameStats,
+      gameStatsData?.stats?.rivarly,
+      getSectionData,
+      renderSingleSection,
+    ],
+  );
 
-  const renderPreviousGame = ({ item }) => (
-    <View style={{ marginVertical: 5 }}>
+  const renderPreviousGame = ({item}) => (
+    <View style={{marginVertical: 5}}>
       <TCGameCard data={item} />
     </View>
-
-  )
+  );
 
   return (
-    <View style={{ ...styles.mainContainer, backgroundColor: loading ? colors.whiteColor : colors.grayBackgroundColor }}>
-
+    <View
+      style={{
+        ...styles.mainContainer,
+        backgroundColor: loading
+          ? colors.whiteColor
+          : colors.grayBackgroundColor,
+      }}
+    >
       {/*  Team Switcher */}
       <Fragment>
-        <View style={{
-          ...styles.subContainer, marginBottom: 0, paddingVertical: 0,
-        }}>
+        <View
+          style={{
+            ...styles.subContainer,
+            marginBottom: 0,
+            paddingVertical: 0,
+          }}
+        >
           <TCSwitcher
-              tabs={[homeTeamName, awayTeamName]}
-              onTabPress={(tabIndex) => setSelectedTeamTab(tabIndex)}
-              selectedTab={selectedTeamTab}
-            />
+            tabs={[homeTeamName, awayTeamName]}
+            onTabPress={(tabIndex) => setSelectedTeamTab(tabIndex)}
+            selectedTab={selectedTeamTab}
+          />
         </View>
-        <TCInnerLoader visible={loading} size={50}/>
-        {!loading
-        && <FlatList
+        <TCInnerLoader visible={loading} size={50} />
+        {!loading && (
+          <FlatList
             listKey={'parentSection'}
-            keyExtractor={({ index }) => index?.toString()}
-          scrollEnabled={false}
-          style={{ flex: 1 }}
+            keyExtractor={({index}) => index?.toString()}
+            scrollEnabled={false}
+            style={{flex: 1}}
             data={SECTIONS}
-          renderItem={renderSections}/>}
+            renderItem={renderSections}
+          />
+        )}
       </Fragment>
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -165,6 +227,6 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginTop: 10,
   },
-})
+});
 
 export default Stats;

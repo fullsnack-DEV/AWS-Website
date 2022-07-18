@@ -1,22 +1,18 @@
 import React from 'react';
-import {
-  StyleSheet, View, Text,
-} from 'react-native';
-import {
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
+import {StyleSheet, View, Text} from 'react-native';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
-function EventBlockTimeTableView({
-  blockText, blockZoneTime,
-}) {
+function EventBlockTimeTableView({blockText, blockZoneTime}) {
   return (
     <View style={styles.containerStyle}>
       <View style={styles.blockZoneView}>
         <Text style={styles.blockedZoneText}>{blockText}</Text>
       </View>
-      <Text style={[styles.blockZoneTimeStyle, { fontSize: 16 }]}>{blockZoneTime}</Text>
+      <Text style={[styles.blockZoneTimeStyle, {fontSize: 16}]}>
+        {blockZoneTime}
+      </Text>
     </View>
   );
 }

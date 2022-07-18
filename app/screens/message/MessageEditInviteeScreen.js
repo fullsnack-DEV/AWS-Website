@@ -142,76 +142,91 @@ const MessageEditInviteeScreen = ({navigation, route}) => {
     setLeaguesData([...leagueData]);
     setLoading(false);
   };
-  const Item = useCallback(({item, onPress, style, isChecked,isDisabled = false}) => {
-    const customData = item?.customData ? JSON.parse(item.customData) : {};
-    const entityType = _.get(customData, ['entity_type'], '');
-    const fullName = customData?.full_name ?? customData?.group_name;
-    const fullImage = _.get(customData, ['full_image'], '');
-    const city = _.get(customData, ['city'], '');
-    const placeHolderImage =
-      entityType === 'player' ? images.profilePlaceHolder : images.groupUsers;
-    const finalImage = fullImage ? {uri: fullImage} : placeHolderImage;
-    return (
-      <TouchableOpacity onPress={onPress} style={[styles.listItems, style]} disabled ={isDisabled}>
-        <View
-          colors={
-            isChecked
-              ? [colors.greenGradientStart, colors.greenGradientEnd]
-              : [colors.offwhite, colors.offwhite]
-          }
-          style={[styles.listItems, {padding: 10,opacity : isDisabled ? 0.5 : 1}]}>
+  const Item = useCallback(
+    ({item, onPress, style, isChecked, isDisabled = false}) => {
+      const customData = item?.customData ? JSON.parse(item.customData) : {};
+      const entityType = _.get(customData, ['entity_type'], '');
+      const fullName = customData?.full_name ?? customData?.group_name;
+      const fullImage = _.get(customData, ['full_image'], '');
+      const city = _.get(customData, ['city'], '');
+      const placeHolderImage =
+        entityType === 'player' ? images.profilePlaceHolder : images.groupUsers;
+      const finalImage = fullImage ? {uri: fullImage} : placeHolderImage;
+      return (
+        <TouchableOpacity
+          onPress={onPress}
+          style={[styles.listItems, style]}
+          disabled={isDisabled}
+        >
           <View
-            style={{
-              flexDirection: 'row',
-            }}>
-            <View style={styles.imageMainContainer}>
-              <FastImage
-                resizeMode={'cover'}
-                source={finalImage}
-                style={styles.imageContainer}
-              />
-            </View>
+            colors={
+              isChecked
+                ? [colors.greenGradientStart, colors.greenGradientEnd]
+                : [colors.offwhite, colors.offwhite]
+            }
+            style={[
+              styles.listItems,
+              {padding: 10, opacity: isDisabled ? 0.5 : 1},
+            ]}
+          >
             <View
               style={{
                 flexDirection: 'row',
-                justifyContent: 'space-between',
-                flex: 1,
-              }}>
+              }}
+            >
+              <View style={styles.imageMainContainer}>
+                <FastImage
+                  resizeMode={'cover'}
+                  source={finalImage}
+                  style={styles.imageContainer}
+                />
+              </View>
               <View
                 style={{
-                  flex: 3,
-                  justifyContent: 'center',
-                  marginLeft: hp(1),
-                }}>
-                <TCGroupNameBadge
-                  textStyle={{...styles.title, color: colors.lightBlackColor}}
-                  groupType={entityType}
-                  name={fullName}
-                />
-                <Text
-                  style={{...styles.subTitle, color: colors.lightBlackColor}}>
-                  {city}
-                </Text>
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  flex: 1,
+                }}
+              >
+                <View
+                  style={{
+                    flex: 3,
+                    justifyContent: 'center',
+                    marginLeft: hp(1),
+                  }}
+                >
+                  <TCGroupNameBadge
+                    textStyle={{...styles.title, color: colors.lightBlackColor}}
+                    groupType={entityType}
+                    name={fullName}
+                  />
+                  <Text
+                    style={{...styles.subTitle, color: colors.lightBlackColor}}
+                  >
+                    {city}
+                  </Text>
+                </View>
+                {isChecked ? (
+                  <Image
+                    source={images.yellowCheckBox}
+                    resizeMode={'contain'}
+                    style={styles.checkboxImg}
+                  />
+                ) : (
+                  <Image
+                    source={images.messageCheckboxBorder}
+                    resizeMode={'contain'}
+                    style={styles.checkboxImg}
+                  />
+                )}
               </View>
-              {isChecked ? (
-                <Image
-                  source={images.yellowCheckBox}
-                  resizeMode={'contain'}
-                  style={styles.checkboxImg}
-                />
-              ) : (
-                <Image
-                  source={images.messageCheckboxBorder}
-                  resizeMode={'contain'}
-                  style={styles.checkboxImg}
-                />
-              )}
             </View>
           </View>
-        </View>
-      </TouchableOpacity>
-    );
-  }, []);
+        </TouchableOpacity>
+      );
+    },
+    [],
+  );
 
   const toggleSelection = useCallback(
     (isChecked, user) => {
@@ -239,7 +254,7 @@ const MessageEditInviteeScreen = ({navigation, route}) => {
 
   const renderSelectedContactList = useCallback(
     ({item}) => {
-      console.log('IIIIII',item);
+      console.log('IIIIII', item);
       const customData =
         item && item.customData ? JSON.parse(item.customData) : {};
       const entityType = _.get(customData, ['entity_type'], '');
@@ -250,8 +265,8 @@ const MessageEditInviteeScreen = ({navigation, route}) => {
           ? QB.chat.DIALOG_TYPE.CHAT
           : QB.chat.DIALOG_TYPE.GROUP_CHAT;
 
-          const temp = existingMembers.filter((obj)=> obj.id === item.id)
-          const isExistingUser = temp.length > 0;
+      const temp = existingMembers.filter((obj) => obj.id === item.id);
+      const isExistingUser = temp.length > 0;
 
       return (
         <View style={styles.selectedContactInnerView}>
@@ -264,14 +279,17 @@ const MessageEditInviteeScreen = ({navigation, route}) => {
                   style={styles.selectedContactImage}
                 />
               </View>
-              {!isExistingUser && <TouchableOpacity
-                style={styles.selectedContactButtonView}
-                onPress={() => toggleSelection(true, item)}>
-                <Image
-                  source={images.cancelWhite}
-                  style={styles.deSelectedContactImage}
-                />
-              </TouchableOpacity>}
+              {!isExistingUser && (
+                <TouchableOpacity
+                  style={styles.selectedContactButtonView}
+                  onPress={() => toggleSelection(true, item)}
+                >
+                  <Image
+                    source={images.cancelWhite}
+                    style={styles.deSelectedContactImage}
+                  />
+                </TouchableOpacity>
+              )}
             </View>
             <Text
               ellipsizeMode={'tail'}
@@ -282,7 +300,8 @@ const MessageEditInviteeScreen = ({navigation, route}) => {
                 fontFamily: fonts.RBold,
                 textAlign: 'center',
                 width: 50,
-              }}>
+              }}
+            >
               {fullName}
             </Text>
           </View>
@@ -295,7 +314,7 @@ const MessageEditInviteeScreen = ({navigation, route}) => {
   const renderItem = useCallback(
     ({item}) => {
       const isChecked = selectedInvitees.some((val) => val.id === item.id);
-      const temp = existingMembers.filter((obj)=> obj.id === item.id)
+      const temp = existingMembers.filter((obj) => obj.id === item.id);
       const isExistingUser = temp.length > 0;
       return (
         <Item
@@ -316,7 +335,8 @@ const MessageEditInviteeScreen = ({navigation, route}) => {
           textAlign: 'center',
           marginTop: hp(2),
           color: colors.userPostTimeColor,
-        }}>
+        }}
+      >
         No Records Found
       </Text>
     ),
@@ -470,7 +490,8 @@ const MessageEditInviteeScreen = ({navigation, route}) => {
             alignItems: 'center',
             flexDirection: 'row',
             height: 45,
-          }}>
+          }}
+        >
           {TAB_ITEMS.map((item, index) => (
             <TouchableOpacity
               activeOpacity={1}
@@ -484,14 +505,16 @@ const MessageEditInviteeScreen = ({navigation, route}) => {
               onPress={() => {
                 setCurrentTab(index);
                 setSearchText('');
-              }}>
+              }}
+            >
               <View
                 style={{
                   width: '100%',
                   height: 43,
                   alignItems: 'center',
                   justifyContent: 'center',
-                }}>
+                }}
+              >
                 <Text
                   style={{
                     width: '100%',
@@ -504,7 +527,8 @@ const MessageEditInviteeScreen = ({navigation, route}) => {
                       currentTab === index
                         ? colors.darkYellowColor
                         : colors.lightBlackColor,
-                  }}>
+                  }}
+                >
                   {item}
                 </Text>
               </View>
@@ -541,7 +565,8 @@ const MessageEditInviteeScreen = ({navigation, route}) => {
           backgroundColor: colors.grayBackgroundColor,
           width: '100%',
           padding: 15,
-        }}>
+        }}
+      >
         <TextInput
           autoFocus={true}
           value={searchText}

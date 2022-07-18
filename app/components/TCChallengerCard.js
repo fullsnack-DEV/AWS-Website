@@ -8,7 +8,7 @@ import AuthContext from '../auth/context';
 import images from '../Constants/ImagePath';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
-import { getSportName} from '../utils';
+import {getSportName} from '../utils';
 
 const TCChallengerCard = ({
   data = {full_name: 'Towns Cup'},
@@ -73,7 +73,8 @@ const TCChallengerCard = ({
               justifyContent: 'space-between',
               marginRight: 10,
               marginLeft: 10,
-            }}>
+            }}
+          >
             <Image
               source={
                 data?.thumbnail

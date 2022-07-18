@@ -1,30 +1,30 @@
-import React, { Component } from 'react';
-import {
-  Animated, StyleSheet, View, I18nManager,
-  Image,
-} from 'react-native';
+import React, {Component} from 'react';
+import {Animated, StyleSheet, View, I18nManager, Image} from 'react-native';
 
-import { RectButton } from 'react-native-gesture-handler';
+import {RectButton} from 'react-native-gesture-handler';
 
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 
 export default class AppleStyleSwipeableRow extends Component {
   onPress = () => {
-    this.close()
-    this.props.onPress()
-  }
+    this.close();
+    this.props.onPress();
+  };
 
   renderRightAction = (text, color, x, progress) => {
-    const { style } = this.props;
+    const {style} = this.props;
     const trans = progress.interpolate({
       inputRange: [0, 1],
       outputRange: [x, 0],
     });
     return (
-      <Animated.View style={{ flex: 1, transform: [{ translateX: trans }], ...style }}>
+      <Animated.View
+        style={{flex: 1, transform: [{translateX: trans}], ...style}}
+      >
         <RectButton
-          style={[styles.rightAction, { backgroundColor: color }]}
-          onPress={this.onPress}>
+          style={[styles.rightAction, {backgroundColor: color}]}
+          onPress={this.onPress}
+        >
           {/* <Text style={styles.actionText}>{text}</Text> */}
           <Image source={this.props.image} style={styles.deleteImgContainer} />
         </RectButton>
@@ -37,7 +37,8 @@ export default class AppleStyleSwipeableRow extends Component {
       style={{
         width: 70,
         flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
-      }}>
+      }}
+    >
       {this.renderRightAction('', this.props.color, 0, progress)}
     </View>
   );
@@ -51,13 +52,14 @@ export default class AppleStyleSwipeableRow extends Component {
   };
 
   render() {
-    const { children } = this.props;
+    const {children} = this.props;
     return (
       <Swipeable
         ref={this.updateRef}
         friction={2}
         rightThreshold={40}
-        renderRightActions={this.renderRightActions}>
+        renderRightActions={this.renderRightActions}
+      >
         {children}
       </Swipeable>
     );
@@ -83,6 +85,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     // marginBottom: 30,
     // backgroundColor: 'yellow',
-
   },
 });

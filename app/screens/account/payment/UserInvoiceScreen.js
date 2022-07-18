@@ -1,18 +1,14 @@
 /* eslint-disable array-callback-return */
 /* eslint-disable consistent-return */
-import React, {
- useState, useEffect, useContext, useCallback,
- } from 'react';
-import {
- View, StyleSheet, FlatList, Alert,
- } from 'react-native';
+import React, {useState, useEffect, useContext, useCallback} from 'react';
+import {View, StyleSheet, FlatList, Alert} from 'react-native';
 
-import { useIsFocused } from '@react-navigation/native';
+import {useIsFocused} from '@react-navigation/native';
 
 import AuthContext from '../../../auth/context';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 
-import { getMemberInvoice } from '../../../api/Invoice';
+import {getMemberInvoice} from '../../../api/Invoice';
 
 import InvoiceAmount from '../../../components/invoice/InvoiceAmount';
 import TCTabView from '../../../components/TCTabView';
@@ -20,7 +16,7 @@ import TopFilterBar from '../../../components/invoice/TopFilterBar';
 import UserInvoiceView from '../../../components/invoice/UserInvoiceView';
 import strings from '../../../Constants/String';
 
-export default function UserInvoiceScreen({ navigation }) {
+export default function UserInvoiceScreen({navigation}) {
   const [loading, setloading] = useState(false);
 
   const authContext = useContext(AuthContext);
@@ -64,14 +60,17 @@ export default function UserInvoiceScreen({ navigation }) {
     }
   }, [authContext, isFocused]);
 
-  const renderUserInvoiceView = ({ item }) => {
+  const renderUserInvoiceView = ({item}) => {
     console.log('item', item);
     return (
       <UserInvoiceView
         data={item}
         onPressCard={() => {
           // navigation.navigate('InvoiceDetailScreen')
-          navigation.navigate('TeamInvoiceDetailScreen', { from: 'user', invoiceObj: item })
+          navigation.navigate('TeamInvoiceDetailScreen', {
+            from: 'user',
+            invoiceObj: item,
+          });
         }}
       />
     );
@@ -89,8 +88,9 @@ export default function UserInvoiceScreen({ navigation }) {
       }
       if (status === 'Open') {
         return invoiceList.filter(
-          (obj) => obj.invoice_status === 'Unpaid'
-            || obj.invoice_status === 'Partially Paid',
+          (obj) =>
+            obj.invoice_status === 'Unpaid' ||
+            obj.invoice_status === 'Partially Paid',
         );
       }
     },
@@ -116,7 +116,7 @@ export default function UserInvoiceScreen({ navigation }) {
         secondTabTitle={`Paid (${memberListByFilter('Paid').length})`}
         thirdTabTitle={`All (${memberListByFilter('All').length})`}
         indexCounter={tabNumber}
-        eventPrivacyContianer={{ width: 100 }}
+        eventPrivacyContianer={{width: 100}}
         onFirstTabPress={() => setTabNumber(0)}
         onSecondTabPress={() => setTabNumber(1)}
         onThirdTabPress={() => setTabNumber(2)}
@@ -124,9 +124,9 @@ export default function UserInvoiceScreen({ navigation }) {
 
       <FlatList
         data={
-          (tabNumber === 0 && memberListByFilter('Open'))
-          || (tabNumber === 1 && memberListByFilter('Paid'))
-          || (tabNumber === 2 && memberListByFilter('All'))
+          (tabNumber === 0 && memberListByFilter('Open')) ||
+          (tabNumber === 1 && memberListByFilter('Paid')) ||
+          (tabNumber === 2 && memberListByFilter('All'))
         }
         renderItem={renderUserInvoiceView}
         keyExtractor={(item, index) => index.toString()}

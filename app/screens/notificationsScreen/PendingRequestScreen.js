@@ -616,7 +616,8 @@ function PendingRequestScreen({navigation}) {
       <AppleStyleSwipeableRow
         onPress={() => onDelete({item})}
         color={colors.darkThemeColor}
-        image={images.deleteIcon}>
+        image={images.deleteIcon}
+      >
         {notificationComponentType(item)}
       </AppleStyleSwipeableRow>
     );

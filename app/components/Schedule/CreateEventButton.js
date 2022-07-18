@@ -1,9 +1,5 @@
 import React from 'react';
-import {
-  Image,
-  StyleSheet,
-  TouchableOpacity,
-} from 'react-native';
+import {Image, StyleSheet, TouchableOpacity} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import colors from '../../Constants/Colors';
 
@@ -17,11 +13,15 @@ function CreateEventButton({
   outerContainerStyle,
 }) {
   return (
-    <TouchableOpacity onPress={onPress} style={[styles.outerContainerStyle, outerContainerStyle]}>
+    <TouchableOpacity
+      onPress={onPress}
+      style={[styles.outerContainerStyle, outerContainerStyle]}
+    >
       <LinearGradient
-       colors={[startGradientColor, endGradientColor]}
-       style={[styles.containerStyle, style]}>
-        <Image source={source} style={[styles.imageStyle, imageStyle]}/>
+        colors={[startGradientColor, endGradientColor]}
+        style={[styles.containerStyle, style]}
+      >
+        <Image source={source} style={[styles.imageStyle, imageStyle]} />
       </LinearGradient>
     </TouchableOpacity>
   );

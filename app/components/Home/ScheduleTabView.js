@@ -1,14 +1,7 @@
 import React from 'react';
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  Text,
-} from 'react-native';
+import {View, StyleSheet, TouchableOpacity, Text} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import {
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
@@ -23,25 +16,61 @@ export default function ScheduleTabView({
   return (
     <View style={[styles.eventPrivacyContianer, eventPrivacyContianer]}>
       <LinearGradient
-          colors={[indexCounter === 0 ? colors.orangeColor : colors.whiteColor, indexCounter === 0 ? colors.yellowColor : colors.whiteColor]}
-          style={indexCounter === 0 ? styles.activeEventPricacy : styles.inactiveEventPricacy}>
+        colors={[
+          indexCounter === 0 ? colors.orangeColor : colors.whiteColor,
+          indexCounter === 0 ? colors.yellowColor : colors.whiteColor,
+        ]}
+        style={
+          indexCounter === 0
+            ? styles.activeEventPricacy
+            : styles.inactiveEventPricacy
+        }
+      >
         <TouchableOpacity
           onPress={onFirstTabPress}
-          style={indexCounter === 0 ? styles.activeEventPricacy : styles.inactiveEventPricacy}
+          style={
+            indexCounter === 0
+              ? styles.activeEventPricacy
+              : styles.inactiveEventPricacy
+          }
         >
-          <Text style={indexCounter === 0 ? styles.activeEventPrivacyText : styles.inactiveEventPrivacyText}>
+          <Text
+            style={
+              indexCounter === 0
+                ? styles.activeEventPrivacyText
+                : styles.inactiveEventPrivacyText
+            }
+          >
             {firstTabTitle}
           </Text>
         </TouchableOpacity>
       </LinearGradient>
       <LinearGradient
-          colors={[indexCounter === 1 ? colors.orangeColor : colors.whiteColor, indexCounter === 1 ? colors.yellowColor : colors.whiteColor]}
-          style={indexCounter === 1 ? styles.activeEventPricacy : styles.inactiveEventPricacy}>
+        colors={[
+          indexCounter === 1 ? colors.orangeColor : colors.whiteColor,
+          indexCounter === 1 ? colors.yellowColor : colors.whiteColor,
+        ]}
+        style={
+          indexCounter === 1
+            ? styles.activeEventPricacy
+            : styles.inactiveEventPricacy
+        }
+      >
         <TouchableOpacity
           onPress={onSecondTabPress}
-          style={indexCounter === 1 ? styles.activeEventPricacy : styles.inactiveEventPricacy}
+          style={
+            indexCounter === 1
+              ? styles.activeEventPricacy
+              : styles.inactiveEventPricacy
+          }
         >
-          <Text style={indexCounter === 1 ? styles.activeEventPrivacyText : styles.inactiveEventPrivacyText}>
+          <Text
+            style={
+              indexCounter === 1
+                ? styles.activeEventPrivacyText
+                : styles.inactiveEventPrivacyText
+            }
+          >
             {secondTabTitle}
           </Text>
         </TouchableOpacity>

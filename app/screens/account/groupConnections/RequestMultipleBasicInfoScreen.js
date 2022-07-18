@@ -19,13 +19,11 @@ import TCThickDivider from '../../../components/TCThickDivider';
 import {getGroupMembers, sendBasicInfoRequest} from '../../../api/Groups';
 import MemberProfile from '../../../components/groupConnections/MemberProfile';
 
-
 export default function RequestMultipleBasicInfoScreen({navigation, route}) {
   const [loading, setloading] = useState(false);
   const authContext = useContext(AuthContext);
   const [players, setPlayers] = useState([]);
   const [searchPlayers, setSearchPlayers] = useState([]);
-
 
   const [selectedList, setSelectedList] = useState([]);
 
@@ -41,7 +39,7 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
           obj.isChecked = false;
           return obj;
         });
-        console.log('result:=>',response.payload);
+        console.log('result:=>', response.payload);
         setPlayers(result);
         setSearchPlayers(result);
       })
@@ -53,21 +51,18 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
       });
   }, []);
 
-
-
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <Text style={styles.sendButtonStyle} onPress={() => sendRequestForBasicInfo()}>
+        <Text
+          style={styles.sendButtonStyle}
+          onPress={() => sendRequestForBasicInfo()}
+        >
           Send
         </Text>
       ),
     });
-  }, [navigation, selectedList,searchPlayers]);
-
- 
-
-
+  }, [navigation, selectedList, searchPlayers]);
 
   const selectPlayer = ({item, index}) => {
     players[index].isChecked = !item.isChecked;
@@ -99,7 +94,6 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
     });
   };
 
-  
   const listEmptyComponent = () => (
     <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
       <Text
@@ -107,7 +101,8 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
           fontFamily: fonts.RRegular,
           color: colors.grayColor,
           fontSize: 26,
-        }}>
+        }}
+      >
         No Players
       </Text>
     </View>
@@ -116,41 +111,42 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
   const ItemSeparatorComponent = useCallback(() => <TCThinDivider />, []);
   const searchFilterFunction = (text) => {
     const result = players.filter(
-      (x) => x?.first_name?.toLowerCase().includes(text.toLowerCase())
-        || x?.last_name?.toLowerCase().includes(text.toLowerCase()),
+      (x) =>
+        x?.first_name?.toLowerCase().includes(text.toLowerCase()) ||
+        x?.last_name?.toLowerCase().includes(text.toLowerCase()),
     );
-    if(text.length > 0){
-        setPlayers(result);
-    }else{
-        setPlayers(searchPlayers);
+    if (text.length > 0) {
+      setPlayers(result);
+    } else {
+      setPlayers(searchPlayers);
     }
-    
   };
 
+  const sendRequestForBasicInfo = () => {
+    if (selectedList.length > 0) {
+      setloading(true);
 
-  const sendRequestForBasicInfo=()=>{
-        if(selectedList.length > 0){
-            setloading(true)
-    
-    sendBasicInfoRequest(route?.params?.groupID,selectedList ,authContext).then((response)=>{
-      setloading(false);
-            setTimeout(() => {
-              Alert.alert(strings.alertmessagetitle, `Requests for basic info were sent to ${selectedList?.length} members.`);
-            }, 10);
-      console.log('sendBasicInfoRequest',response);
-    
-      }) .catch((e) => {
-            setloading(false);
-            setTimeout(() => {
-              Alert.alert(strings.alertmessagetitle, e.message);
-            }, 10);
-          });
-        }else{
-            Alert.alert(strings.alertmessagetitle, 'Please select members first.');
- 
-        }
+      sendBasicInfoRequest(route?.params?.groupID, selectedList, authContext)
+        .then((response) => {
+          setloading(false);
+          setTimeout(() => {
+            Alert.alert(
+              strings.alertmessagetitle,
+              `Requests for basic info were sent to ${selectedList?.length} members.`,
+            );
+          }, 10);
+          console.log('sendBasicInfoRequest', response);
+        })
+        .catch((e) => {
+          setloading(false);
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
+    } else {
+      Alert.alert(strings.alertmessagetitle, 'Please select members first.');
     }
-    
+  };
 
   return (
     <View style={styles.mainContainer}>
@@ -166,8 +162,7 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
         width={'90%'}
         alignSelf="center"
         onChangeText={(text) => {
-           
-            searchFilterFunction(text)
+          searchFilterFunction(text);
         }}
       />
       <TCTags
@@ -193,7 +188,6 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
         keyExtractor={(item, index) => index.toString()}
         ItemSeparatorComponent={ItemSeparatorComponent}
         renderItem={renderPlayer}
-        
         ListEmptyComponent={listEmptyComponent}
       />
     </View>

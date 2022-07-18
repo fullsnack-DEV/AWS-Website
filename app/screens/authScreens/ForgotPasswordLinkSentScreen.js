@@ -1,11 +1,9 @@
 import React from 'react';
-import {
-  View, Text, StyleSheet,
-} from 'react-native';
+import {View, Text, StyleSheet} from 'react-native';
 
 import {
-
-  heightPercentageToDP as hp, widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 
 import LinearGradient from 'react-native-linear-gradient';
@@ -16,22 +14,27 @@ import TCButton from '../../components/TCButton';
 import strings from '../../Constants/String';
 import images from '../../Constants/ImagePath';
 
-export default function ForgotPasswordLinkSentScreen({ navigation }) {
+export default function ForgotPasswordLinkSentScreen({navigation}) {
   return (
     <LinearGradient
-          colors={[colors.themeColor1, colors.themeColor3]}
-          style={styles.mainContainer}>
-      <FastImage resizeMode={'stretch'} style={ styles.background } source={ images.loginBg } />
-      <View style={ styles.textContainer }>
-        <Text style={ styles.checkEmailText }>{strings.checkEmailText}</Text>
-        <Text style={ styles.resetText }>{strings.checkEmailDescText}</Text>
+      colors={[colors.themeColor1, colors.themeColor3]}
+      style={styles.mainContainer}
+    >
+      <FastImage
+        resizeMode={'stretch'}
+        style={styles.background}
+        source={images.loginBg}
+      />
+      <View style={styles.textContainer}>
+        <Text style={styles.checkEmailText}>{strings.checkEmailText}</Text>
+        <Text style={styles.resetText}>{strings.checkEmailDescText}</Text>
       </View>
       <TCButton
         title={'LOG IN'}
-        onPress={ () => {
+        onPress={() => {
           navigation.navigate('LoginScreen');
-        } }
-        extraStyle={ { bottom: hp('4%'), position: 'absolute' } }
+        }}
+        extraStyle={{bottom: hp('4%'), position: 'absolute'}}
       />
     </LinearGradient>
   );
@@ -47,7 +50,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
     fontSize: 25,
     textAlign: 'left',
-
   },
   mainContainer: {
     flex: 1,
@@ -61,7 +63,6 @@ const styles = StyleSheet.create({
     marginRight: 20,
     marginTop: 10,
     textAlign: 'center',
-
   },
   textContainer: {
     alignItems: 'center',

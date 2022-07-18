@@ -18,7 +18,7 @@ export default function GameRules({navigation, route}) {
   const [comeFrom] = useState(route?.params?.comeFrom);
   const [sportName] = useState(route?.params?.sportName);
   const [sportType] = useState(route?.params?.sportType);
-  
+
   const authContext = useContext(AuthContext);
 
   const [loading, setloading] = useState(false);
@@ -41,7 +41,8 @@ export default function GameRules({navigation, route}) {
           style={styles.saveButtonStyle}
           onPress={() => {
             onSavePressed();
-          }}>
+          }}
+        >
           Save
         </Text>
       ),
@@ -57,14 +58,13 @@ export default function GameRules({navigation, route}) {
       special_rules: specialRules,
     };
     setloading(true);
-    const registerdPlayerData = authContext?.entity?.obj?.registered_sports?.filter(
-      (obj) => {
+    const registerdPlayerData =
+      authContext?.entity?.obj?.registered_sports?.filter((obj) => {
         if (obj.sport === sportName && obj.sport_type === sportType) {
           return null;
         }
         return obj;
-      },
-    );
+      });
 
     let selectedSport = authContext?.entity?.obj?.registered_sports?.filter(
       (obj) => obj?.sport === sportName && obj?.sport_type === sportType,

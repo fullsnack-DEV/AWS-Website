@@ -7,9 +7,10 @@ const GAME_HOME = {
   soccer: 'SoccerHome',
   tennis: 'TennisHome',
   tennis_double: 'TennisHome',
-}
+};
 
-const getGameHomeScreen = (sportName) => GAME_HOME[sportName?.split(' ').join('_').toLowerCase()];
+const getGameHomeScreen = (sportName) =>
+  GAME_HOME[sportName?.split(' ').join('_').toLowerCase()];
 
 // Soccer
 const soccerGameStats = {
@@ -19,14 +20,14 @@ const soccerGameStats = {
   pause: 'paused',
   gameStart: '',
   gameEnd: '',
-}
+};
 
 const soccerGamePlayerStatusStats = {
   yc: 'received a yellow card',
   rc: 'received a red card',
   in: 'was in',
   out: 'was out',
-}
+};
 
 const soccerGamePlayStats = {
   goal: 'scored a goal',
@@ -46,7 +47,7 @@ const soccerGamePlayStats = {
   unforcedError: 'was unforced error',
   footFault: 'was foot fault',
   winner: 'was winner',
-}
+};
 
 const soccerGamePlayStatsImage = {
   goal: images.gameGoal,
@@ -66,7 +67,7 @@ const soccerGamePlayStatsImage = {
   footFault: images.gameGoal,
   winner: images.gameGoal,
   assist: images.assistBy,
-}
+};
 
 const tennisGamePlayStatsImage = {
   score: images.tennisScore,
@@ -81,7 +82,7 @@ const tennisGamePlayStatsImage = {
   footFault: images.tennisFootFault,
   winner: images.tennisWinner,
   assist: images.assistBy,
-}
+};
 
 // Tennis
 const tennisGameStats = {
@@ -95,7 +96,7 @@ const tennisGameStats = {
   gameEnd: 'Game ended',
   gameResume: 'Game resumed',
   gamePause: 'Game paused',
-}
+};
 
 const tennisGamePlayStats = {
   score: 'scored a point',
@@ -109,76 +110,76 @@ const tennisGamePlayStats = {
   unforcedError: 'was unforced error',
   footFault: 'was foot fault',
   winner: 'was winner',
-}
-const getGameDateTimeInHMSformat = (date = new Date()) => moment(new Date(date * 1000)).format('hh:mm A')
+};
+const getGameDateTimeInHMSformat = (date = new Date()) =>
+  moment(new Date(date * 1000)).format('hh:mm A');
 
 const checkReviewExpired = (date) => {
- // const expiryDate = moment(date * 1000).add(REVIEW_EXPIRY_DAYS, 'days');
+  // const expiryDate = moment(date * 1000).add(REVIEW_EXPIRY_DAYS, 'days');
 
   const expiryDate = moment(date * 1000);
   if (new Date(expiryDate).getTime() > new Date().getTime()) {
-    return false
+    return false;
   }
 
-  return true
-}
+  return true;
+};
 
 const reviewExpiredDate = (date) => {
- // const expiryDate = moment(date * 1000).add(REVIEW_EXPIRY_DAYS, 'days');
-  
-  const  expiryDate = moment(date * 1000);
+  // const expiryDate = moment(date * 1000).add(REVIEW_EXPIRY_DAYS, 'days');
+
+  const expiryDate = moment(date * 1000);
   const thenDate = moment(expiryDate);
   const currentDate = moment(new Date());
   const diff = moment.duration(thenDate.diff(currentDate));
   return `${diff.days()}d ${diff.hours()}h ${diff.minutes()}m`;
-
-  
-}
+};
 
 const getDiffDays = (date) => {
   const thenDate = moment(date);
   const currentDate = moment(new Date());
   const diff = moment.duration(thenDate.diff(currentDate));
   return diff.days();
-}
+};
 const getGameDateTimeInDHMformat = (date) => {
   const thenDate = moment(date * 1000);
   const currentDate = moment(new Date());
   const diff = moment.duration(thenDate.diff(currentDate));
   return `${diff.days()}d ${diff.hours()}h ${diff.minutes()}m`;
-}
+};
 const getGameFromToDateDiff = (fromDate, thenDate) => {
   const tDate = moment(thenDate * 1000);
   const fDate = moment(fromDate * 1000);
   const diff = moment.duration(tDate.diff(fDate));
   let date = '';
   if (diff.days() === 0 && diff.hours() === 0) {
-    date = `${diff.minutes()}m`
+    date = `${diff.minutes()}m`;
   } else if (diff.days() === 0 && diff.hours() !== 0 && diff.minutes() !== 0) {
-    date = `${diff.hours()}h ${diff.minutes()}m`
+    date = `${diff.hours()}h ${diff.minutes()}m`;
   } else if (diff.days() === 0 && diff.hours() !== 0 && diff.minutes() === 0) {
-    date = `${diff.hours()}h`
+    date = `${diff.hours()}h`;
   } else if (diff.days() !== 0 && diff.hours() === 0 && diff.minutes() === 0) {
-    date = `${diff.days()}d`
+    date = `${diff.days()}d`;
   } else {
-    date = `${diff.days()}d ${diff.hours()}h ${diff.minutes()}m`
+    date = `${diff.days()}d ${diff.hours()}h ${diff.minutes()}m`;
   }
   return date;
-}
+};
 
-const getGameTimeAgo = (date) => moment
-  .utc(new Date(date * 1000))
-  .local()
-  .startOf('seconds')
-  .fromNow()
+const getGameTimeAgo = (date) =>
+  moment
+    .utc(new Date(date * 1000))
+    .local()
+    .startOf('seconds')
+    .fromNow();
 
 const getGameConvertMinsToTime = (mins = 101) => {
   const hours = Math.floor(mins / 60);
   const minutes = mins % 60;
   let hrMin = `${hours}h ${minutes}m`;
   if (hours === 0) hrMin = `${minutes}m`;
-  return hrMin
-}
+  return hrMin;
+};
 
 const getNumberSuffix = (num) => {
   const j = num % 10,
@@ -193,7 +194,7 @@ const getNumberSuffix = (num) => {
     return `${num}rd`;
   }
   return `${num}th`;
-}
+};
 export {
   REVIEW_EXPIRY_DAYS,
   checkReviewExpired,
@@ -204,12 +205,10 @@ export {
   soccerGamePlayStats,
   soccerGamePlayStatsImage,
   soccerGamePlayerStatusStats,
-
   // Tennis
   tennisGameStats,
   tennisGamePlayStats,
   tennisGamePlayStatsImage,
-
   getGameDateTimeInHMSformat,
   getGameDateTimeInDHMformat,
   getGameTimeAgo,
@@ -217,5 +216,4 @@ export {
   getNumberSuffix,
   getGameFromToDateDiff,
   getGameHomeScreen,
-
-}
+};

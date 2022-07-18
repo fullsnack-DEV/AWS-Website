@@ -6,7 +6,8 @@ import strings from '../Constants/String';
 // eslint-disable-next-line import/no-cycle
 import * as Utility from './index';
 
-const makeElasticAPIRequest = async ({ method, url, data }) => NetInfo.fetch().then(async (netStat) => {
+const makeElasticAPIRequest = async ({method, url, data}) =>
+  NetInfo.fetch().then(async (netStat) => {
     if (!netStat || !netStat.isConnected) {
       throw new Error(strings.networkConnectivityErrorMessage);
     } else {
@@ -18,14 +19,12 @@ const makeElasticAPIRequest = async ({ method, url, data }) => NetInfo.fetch().t
     }
   });
 
-const globalElasticApiCall = async ({
- method, url, data,
- }) => {
-   console.log('dadadada',data);
+const globalElasticApiCall = async ({method, url, data}) => {
+  console.log('dadadada', data);
   const elasticCredential = await Utility.getStorage('appSetting');
   console.log('elasticCredential', elasticCredential);
 
-  const URL = `${elasticCredential?.elastic?.host}${url}`
+  const URL = `${elasticCredential?.elastic?.host}${url}`;
 
   console.log('FUll url : =>', URL);
   const options = {
@@ -45,7 +44,10 @@ const globalElasticApiCall = async ({
     console.log('Elastic API Opetions:=>', options);
     const response = await axios(options);
 
-    console.log('RESPONSE ELASTIC ::', response?.data?.hits?.hits.map((item) => item?._source));
+    console.log(
+      'RESPONSE ELASTIC ::',
+      response?.data?.hits?.hits.map((item) => item?._source),
+    );
     return response?.data?.hits?.hits?.map((item) => item?._source);
   } catch (error) {
     console.log('SERVER ELASTIC ERROR ::--->', error.response.status);
@@ -56,7 +58,7 @@ const globalElasticApiCall = async ({
     if (error.response) {
       // Request made and server responded
       if (error.response.status === 404) {
-        return []
+        return [];
       }
       console.log(error.response.data);
       console.log(error.response.status);

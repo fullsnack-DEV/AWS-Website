@@ -1,14 +1,10 @@
-import React, {
-  useEffect, useState, useContext,
-} from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import {
   View,
   Text,
   Image,
-
   Platform,
   ImageBackground,
-
   Alert,
   StyleSheet,
 } from 'react-native';
@@ -18,33 +14,32 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import colors from '../../Constants/Colors'
-import fonts from '../../Constants/Fonts'
-import AuthContext from '../../auth/context'
-import {
-  getGroupDetails,
-} from '../../api/Groups';
+import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
+import colors from '../../Constants/Colors';
+import fonts from '../../Constants/Fonts';
+import AuthContext from '../../auth/context';
+import {getGroupDetails} from '../../api/Groups';
 
 import images from '../../Constants/ImagePath';
 import strings from '../../Constants/String';
 
-export default function AccountHeader({ authEntity, entityRole }) {
+export default function AccountHeader({authEntity, entityRole}) {
   const [parentGroup, setParentGroup] = useState(null);
-  const authContext = useContext(AuthContext)
+  const authContext = useContext(AuthContext);
   useEffect(() => {
     getParentClub();
     console.log('AUTH DATA::', authEntity);
-  }, [])
+  }, []);
   const getParentClub = (item) => {
     console.log('Account header');
-    getGroupDetails(item.group_id, authContext).then((response) => {
-      if (response.payload.club !== undefined) {
-        setParentGroup(response.payload.club);
-      } else {
-        setParentGroup(null);
-      }
-    })
+    getGroupDetails(item.group_id, authContext)
+      .then((response) => {
+        if (response.payload.club !== undefined) {
+          setParentGroup(response.payload.club);
+        } else {
+          setParentGroup(null);
+        }
+      })
       .catch((e) => {
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
@@ -53,43 +48,49 @@ export default function AccountHeader({ authEntity, entityRole }) {
   };
 
   return (
-
     <>
       {parentGroup !== null && (
         <>
           <TouchableWithoutFeedback
-                style={{
-                  flexDirection: 'row',
-                  padding: 15,
-                  marginTop: Platform.OS === 'ios' ? 50 : 0,
-                }}>
+            style={{
+              flexDirection: 'row',
+              padding: 15,
+              marginTop: Platform.OS === 'ios' ? 50 : 0,
+            }}
+          >
             <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    alignContent: 'center',
-                  }}>
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                alignContent: 'center',
+              }}
+            >
               <Image source={images.clubLable} style={styles.clubLableView} />
 
               <Image
-                      source={parentGroup.thumbnail ? { uri: parentGroup.thumbnail } : images.club_ph}
-                      style={styles.clubLable}
-                    />
+                source={
+                  parentGroup.thumbnail
+                    ? {uri: parentGroup.thumbnail}
+                    : images.club_ph
+                }
+                style={styles.clubLable}
+              />
 
               <View
-                    style={{
-                      flexDirection: 'row',
-                      alignSelf: 'center',
-                    }}>
+                style={{
+                  flexDirection: 'row',
+                  alignSelf: 'center',
+                }}
+              >
                 <Text style={styles.clubNameText}>
                   {parentGroup.group_name}
                 </Text>
 
                 <View style={styles.identityViewTop}>
                   <ImageBackground
-                        source={images.clubSqure}
-                        style={styles.badgeCounter}
-                      />
+                    source={images.clubSqure}
+                    style={styles.badgeCounter}
+                  />
                   <Text style={styles.badgeCounter}>C</Text>
                 </View>
               </View>
@@ -101,9 +102,13 @@ export default function AccountHeader({ authEntity, entityRole }) {
       {entityRole === 'user' && (
         <View style={styles.profileView}>
           <Image
-                  source={authEntity.obj.thumbnail ? { uri: authEntity.thumbnail } : images.profilePlaceHolder}
-                  style={styles.profileImg}
-                />
+            source={
+              authEntity.obj.thumbnail
+                ? {uri: authEntity.thumbnail}
+                : images.profilePlaceHolder
+            }
+            style={styles.profileImg}
+          />
           <Text style={styles.nameText}>{authEntity.full_name}</Text>
           <Text style={styles.locationText}>
             {authEntity.city}, {authEntity.state_abbr}
@@ -113,21 +118,26 @@ export default function AccountHeader({ authEntity, entityRole }) {
       {entityRole === 'team' && (
         <View style={styles.profileView}>
           <Image
-                  source={authEntity.thumbnail ? { uri: authEntity.thumbnail } : images.team_ph}
-                  style={styles.profileImgGroup}
-                />
+            source={
+              authEntity.thumbnail
+                ? {uri: authEntity.thumbnail}
+                : images.team_ph
+            }
+            style={styles.profileImgGroup}
+          />
           <View
-                style={{
-                  flexDirection: 'row',
-                  alignSelf: 'center',
-                  paddingLeft: 30,
-                }}>
+            style={{
+              flexDirection: 'row',
+              alignSelf: 'center',
+              paddingLeft: 30,
+            }}
+          >
             <Text style={styles.nameText}>{authEntity.group_name}</Text>
             <View style={styles.identityView}>
               <ImageBackground
-                    source={images.teamSqure}
-                    style={styles.badgeCounter}
-                  />
+                source={images.teamSqure}
+                style={styles.badgeCounter}
+              />
               <Text style={styles.badgeCounter}>T</Text>
             </View>
           </View>
@@ -140,22 +150,27 @@ export default function AccountHeader({ authEntity, entityRole }) {
       {entityRole === 'club' && (
         <View style={styles.profileView}>
           <Image
-                  source={authEntity.thumbnail ? { uri: authEntity.thumbnail } : images.club_ph}
-                  style={styles.profileImgGroup}
-                />
+            source={
+              authEntity.thumbnail
+                ? {uri: authEntity.thumbnail}
+                : images.club_ph
+            }
+            style={styles.profileImgGroup}
+          />
           <View
-                style={{
-                  flexDirection: 'row',
-                  alignSelf: 'center',
-                  paddingLeft: 30,
-                }}>
+            style={{
+              flexDirection: 'row',
+              alignSelf: 'center',
+              paddingLeft: 30,
+            }}
+          >
             <Text style={styles.nameText}>{authEntity.group_name}</Text>
 
             <View style={styles.identityView}>
               <ImageBackground
-                    source={images.clubSqure}
-                    style={styles.badgeCounter}
-                  />
+                source={images.clubSqure}
+                style={styles.badgeCounter}
+              />
               <Text style={styles.badgeCounter}>C</Text>
             </View>
           </View>
@@ -166,13 +181,11 @@ export default function AccountHeader({ authEntity, entityRole }) {
         </View>
       )}
       <View style={styles.separatorLine}></View>
-
     </>
   );
 }
 
 const styles = StyleSheet.create({
-
   badgeCounter: {
     alignSelf: 'center',
     color: colors.whiteColor,
@@ -273,12 +286,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.whiteColor,
   },
-  profileView: { height: 150, marginTop: Platform.OS === 'ios' ? 50 : 0 },
+  profileView: {height: 150, marginTop: Platform.OS === 'ios' ? 50 : 0},
   separatorLine: {
     alignSelf: 'center',
     backgroundColor: colors.lightgrayColor,
     height: 0.5,
     width: wp('90%'),
   },
-
 });

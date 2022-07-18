@@ -1,15 +1,7 @@
 import React from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
+import {StyleSheet, View, Text} from 'react-native';
 
-} from 'react-native';
-
-import {
-  widthPercentageToDP as wp,
-
-} from 'react-native-responsive-screen';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 
 import FastImage from 'react-native-fast-image';
 import colors from '../../../../../Constants/Colors';
@@ -23,73 +15,79 @@ import {
   getGameTimeAgo,
 } from '../../../../../utils/gameUtils';
 
-export default function TennisGameScoreLeft(
-  {
-    gameData,
-    editor = false,
-    recordData,
-  },
-) {
+export default function TennisGameScoreLeft({
+  gameData,
+  editor = false,
+  recordData,
+}) {
   return (
     <View>
       <View>
-        <View
-              style={ styles.headerView }>
-          <View style={ styles.leftView }>
-            <View style={{ width: '22%' }}>
+        <View style={styles.headerView}>
+          <View style={styles.leftView}>
+            <View style={{width: '22%'}}>
               <FastImage
-                  source={gameData?.home_team?.thumbnail ? { uri: gameData?.home_team?.thumbnail } : images.profilePlaceHolder }
-                    style={ styles.leftProfileImg }
-                />
+                source={
+                  gameData?.home_team?.thumbnail
+                    ? {uri: gameData?.home_team?.thumbnail}
+                    : images.profilePlaceHolder
+                }
+                style={styles.leftProfileImg}
+              />
             </View>
-            <Text style={ styles.leftPlayerText } numberOfLines={ 3 }>
+            <Text style={styles.leftPlayerText} numberOfLines={3}>
               {gameData?.home_team?.group_name ?? ''}
-              <Text style={{ fontFamily: fonts.RMedium }}>
-                {' '}{tennisGamePlayStats[recordData?.verb]}
+              <Text style={{fontFamily: fonts.RMedium}}>
+                {' '}
+                {tennisGamePlayStats[recordData?.verb]}
               </Text>
             </Text>
-            <View style={{ width: '25%', alignItems: 'flex-end', right: 10 }}>
+            <View style={{width: '25%', alignItems: 'flex-end', right: 10}}>
               <View style={styles.gameRecordButton}>
                 <FastImage
-                    resizeMode={'contain'}
-                      source={ tennisGamePlayStatsImage[recordData?.verb] }
-                      style={ styles.gameRecordImg }
-                  />
+                  resizeMode={'contain'}
+                  source={tennisGamePlayStatsImage[recordData?.verb]}
+                  style={styles.gameRecordImg}
+                />
               </View>
             </View>
           </View>
-          <View style={ styles.rightBlankView }>
-            <Text style={ { fontFamily: fonts.RBold, fontSize: 12 } }>
+          <View style={styles.rightBlankView}>
+            <Text style={{fontFamily: fonts.RBold, fontSize: 12}}>
               {getGameConvertMinsToTime(recordData?.minutes ?? 0)}
             </Text>
             <Text
-                  style={ {
-                    fontFamily: fonts.RLight,
-                    fontSize: 12,
-                    color: colors.darkGrayColor,
-                  } }>
+              style={{
+                fontFamily: fonts.RLight,
+                fontSize: 12,
+                color: colors.darkGrayColor,
+              }}
+            >
               {getGameDateTimeInHMSformat(recordData?.timestamp)}
             </Text>
           </View>
         </View>
-
       </View>
       {editor && (
-        <View style={ styles.editorView }>
+        <View style={styles.editorView}>
           <View
-                  style={ {
-                    width: '100%',
-                    justifyContent: 'space-around',
-                    alignItems: 'space-around',
-                  } }>
-            <Text style={ styles.recordedBy }>
-              Recorded by {`${recordData?.recorded_by?.first_name } ${ recordData?.recorded_by?.last_name}` ?? ''} ({getGameTimeAgo(recordData?.timestamp)})
+            style={{
+              width: '100%',
+              justifyContent: 'space-around',
+              alignItems: 'space-around',
+            }}
+          >
+            <Text style={styles.recordedBy}>
+              Recorded by{' '}
+              {`${recordData?.recorded_by?.first_name} ${recordData?.recorded_by?.last_name}` ??
+                ''}{' '}
+              ({getGameTimeAgo(recordData?.timestamp)})
             </Text>
           </View>
         </View>
       )}
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -107,7 +105,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
     justifyContent: 'center',
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.5,
     shadowRadius: 3,
     width: 20,

@@ -138,7 +138,8 @@ const TCUserFollowUnfollowList = ({
               width: 75,
               borderWidth: 1,
               borderColor: colors.yellowColor,
-            }}>
+            }}
+          >
             <TCInnerLoader allowMargin={true} size={20} visible={loading} />
           </View>
         )}
@@ -169,7 +170,8 @@ const TCUserFollowUnfollowList = ({
           />
         </View>
         <View
-          style={{flex: 0.6, paddingVertical: 10, justifyContent: 'center'}}>
+          style={{flex: 0.6, paddingVertical: 10, justifyContent: 'center'}}
+        >
           <Text style={{fontSize: 16, fontFamily: fonts.RMedium}}>{title}</Text>
           <View style={{flexDirection: 'row'}}>
             <Text
@@ -177,14 +179,16 @@ const TCUserFollowUnfollowList = ({
                 fontSize: 14,
                 fontFamily: fonts.RRegular,
                 color: colors.userPostTimeColor,
-              }}>
+              }}
+            >
               {subTitle !== '' ? `${subTitle} ` : ''}
               {statusTitle !== '' && (
                 <Text
                   style={{
                     color: statusColor ?? colors.userPostTimeColor,
                     fontFamily: fonts.RBold,
-                  }}>{`${statusTitle} `}</Text>
+                  }}
+                >{`${statusTitle} `}</Text>
               )}
             </Text>
           </View>
@@ -194,7 +198,8 @@ const TCUserFollowUnfollowList = ({
             <TouchableOpacity
               onPress={onThreeDotPress}
               style={{alignSelf: 'flex-end', right: 10}}
-              hitSlop={getHitSlop(15)}>
+              hitSlop={getHitSlop(15)}
+            >
               <Image source={images.vertical3Dot} style={styles.threedot} />
             </TouchableOpacity>
           ) : (

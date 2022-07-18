@@ -1,18 +1,7 @@
-import React, { useState, useContext } from 'react';
-import {
-  View,
-  FlatList,
-  Alert,
-  ActivityIndicator,
-} from 'react-native';
-import {
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
-import {
-  createReaction,
-  deletePost,
-  getNewsFeed,
-} from '../../api/NewsFeeds';
+import React, {useState, useContext} from 'react';
+import {View, FlatList, Alert, ActivityIndicator} from 'react-native';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import {createReaction, deletePost, getNewsFeed} from '../../api/NewsFeeds';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import colors from '../../Constants/Colors';
 import AuthContext from '../../auth/context';
@@ -35,9 +24,12 @@ export default function RefereeReviewerList({
       uid: item.actor.id,
       backButtonVisible: true,
       menuBtnVisible: false,
-      role: item.actor.data.entity_type === 'player' ? 'user' : item.actor.data.entity_type,
-    })
-  }
+      role:
+        item.actor.data.entity_type === 'player'
+          ? 'user'
+          : item.actor.data.entity_type,
+    });
+  };
 
   return (
     <View>
@@ -54,25 +46,29 @@ export default function RefereeReviewerList({
             }}
           />
         )}
-        ListFooterComponent={() => (
-          !footerLoading ? <View
-            style={{
-              height: hp(10),
-            }}
-          /> : <ActivityIndicator
-            size={'small'}
-            color={ colors.blackColor }
-            style={{ alignSelf: 'center', marginBottom: hp(10) }}
-          />
-        )}
+        ListFooterComponent={() =>
+          !footerLoading ? (
+            <View
+              style={{
+                height: hp(10),
+              }}
+            />
+          ) : (
+            <ActivityIndicator
+              size={'small'}
+              color={colors.blackColor}
+              style={{alignSelf: 'center', marginBottom: hp(10)}}
+            />
+          )
+        }
         showsVerticalScrollIndicator={false}
-        renderItem={({ item, key }) => (
+        renderItem={({item, key}) => (
           <RefereeReviewItem
             key={key}
             item={item}
             navigation={navigation}
             caller_id={userID}
-            onImageProfilePress={() => onProfilePress(item) }
+            onImageProfilePress={() => onProfilePress(item)}
             onLikePress={() => {
               const bodyParams = {
                 reaction_type: 'clap',
@@ -84,7 +80,7 @@ export default function RefereeReviewerList({
                   setData(response.payload.results);
                 })
                 .catch((e) => {
-                  Alert.alert('', e.messages)
+                  Alert.alert('', e.messages);
                 });
             }}
             onDeletePost={() => {
@@ -100,7 +96,7 @@ export default function RefereeReviewerList({
                 })
                 .catch((e) => {
                   setloading(false);
-                  Alert.alert('', e.messages)
+                  Alert.alert('', e.messages);
                 });
             }}
           />
@@ -116,7 +112,7 @@ export default function RefereeReviewerList({
               setPullRefresh(false);
             })
             .catch((e) => {
-              Alert.alert('', e.messages)
+              Alert.alert('', e.messages);
               setPullRefresh(false);
             });
         }}

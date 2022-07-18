@@ -11,29 +11,40 @@ import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 
-function EventBackgroundPhoto({imageURL, isEdit = false, onPress,isPreview= false,isImage=true}) {
+function EventBackgroundPhoto({
+  imageURL,
+  isEdit = false,
+  onPress,
+  isPreview = false,
+  isImage = true,
+}) {
   return (
     <ImageBackground
       source={imageURL}
-      style={[styles.bgStyle,{height: isImage ? 200 : 150}]}>
-      {!isPreview && <View>
-        {!isEdit && (
-          <View style={{marginBottom: 15}}>
-            <Text style={styles.featuredImageStyle}>FEATURED PHOTO</Text>
-            <Text style={styles.imageStyleText}>At least 1284x2778 pixels</Text>
-          </View>
-        )}
-        <TouchableOpacity style={styles.uploadPhoto} onPress={onPress}>
-          <FastImage
-            source={images.choosePic}
-            resizeMode={'cover'}
-            style={{height: 15, width: 15}}
-          />
-          <Text style={styles.uploadPhotoStyles}>
-            {isEdit ? 'Edit photo' : 'Upload photo'}
-          </Text>
-        </TouchableOpacity>
-      </View>}
+      style={[styles.bgStyle, {height: isImage ? 200 : 150}]}
+    >
+      {!isPreview && (
+        <View>
+          {!isEdit && (
+            <View style={{marginBottom: 15}}>
+              <Text style={styles.featuredImageStyle}>FEATURED PHOTO</Text>
+              <Text style={styles.imageStyleText}>
+                At least 1284x2778 pixels
+              </Text>
+            </View>
+          )}
+          <TouchableOpacity style={styles.uploadPhoto} onPress={onPress}>
+            <FastImage
+              source={images.choosePic}
+              resizeMode={'cover'}
+              style={{height: 15, width: 15}}
+            />
+            <Text style={styles.uploadPhotoStyles}>
+              {isEdit ? 'Edit photo' : 'Upload photo'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </ImageBackground>
   );
 }
@@ -69,7 +80,7 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     marginLeft: 5,
   },
-  bgStyle:{
+  bgStyle: {
     resizeMode: 'contain',
     height: 200,
     width: '100%',
@@ -77,7 +88,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: colors.textFieldBackground,
     marginBottom: 15,
-  }
+  },
 });
 
 export default EventBackgroundPhoto;

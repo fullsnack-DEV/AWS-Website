@@ -17,7 +17,7 @@ export default function EntityGallaryScreen({navigation, route}) {
 
   const [currentUserData] = useState(route?.params?.currentUserData);
 
-console.log('currentUserData',currentUserData);
+  console.log('currentUserData', currentUserData);
 
   const authContext = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
@@ -74,12 +74,11 @@ console.log('currentUserData',currentUserData);
       <AllInOneGallery
         isAdmin={authContext.entity.uid === currentUserData.group_id}
         ref={galleryRef}
-        entity_type={currentUserData?.entity_type ?? authContext.entity?.role
-        }
+        entity_type={currentUserData?.entity_type ?? authContext.entity?.role}
         entity_id={route?.params?.uid ?? authContext.entity?.uid}
         onAddPhotoPress={(pickImages) => {
           navigation.navigate('WritePostScreen', {
-            comeFrom:'HomeScreen',
+            comeFrom: 'HomeScreen',
             postData: currentUserData,
             onPressDone: callthis,
             selectedImageList: pickImages,

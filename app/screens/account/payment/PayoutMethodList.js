@@ -1,16 +1,12 @@
-import React, {
- useState, useEffect, useContext, useMemo,
- } from 'react';
-import {
- View, StyleSheet, Alert, Text, FlatList,
- } from 'react-native';
+import React, {useState, useEffect, useContext, useMemo} from 'react';
+import {View, StyleSheet, Alert, Text, FlatList} from 'react-native';
 
-import { useIsFocused } from '@react-navigation/native';
+import {useIsFocused} from '@react-navigation/native';
 
 import AuthContext from '../../../auth/context';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import AppleStyleSwipeableRow from '../../../components/notificationComponent/AppleStyleSwipeableRow';
-import { payoutMethods, deletePayoutMethod } from '../../../api/Users';
+import {payoutMethods, deletePayoutMethod} from '../../../api/Users';
 import strings from '../../../Constants/String';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
@@ -18,7 +14,7 @@ import images from '../../../Constants/ImagePath';
 import TCTouchableLabel from '../../../components/TCTouchableLabel';
 import TCInnerLoader from '../../../components/TCInnerLoader';
 
-export default function PayoutMethodList({ navigation }) {
+export default function PayoutMethodList({navigation}) {
   const [loading, setloading] = useState(false);
   const [firstTimeLoad, setFirstTimeLoad] = useState(true);
   const authContext = useContext(AuthContext);
@@ -39,7 +35,8 @@ export default function PayoutMethodList({ navigation }) {
     }
   }, [isFocused]);
 
-  const getPaymentMethods = () => new Promise((resolve, reject) => {
+  const getPaymentMethods = () =>
+    new Promise((resolve, reject) => {
       payoutMethods(authContext)
         .then((response) => {
           console.log('payout method:=>', response);
@@ -87,62 +84,68 @@ export default function PayoutMethodList({ navigation }) {
           },
         },
       ],
-      { cancelable: true },
+      {cancelable: true},
     );
   };
 
-  const renderCard = ({ item }) => (
+  const renderCard = ({item}) => (
     <AppleStyleSwipeableRow
       onPress={() => onDeleteCard(item)}
       color={colors.redDelColor}
-      image={images.deleteIcon}>
+      image={images.deleteIcon}
+    >
       <View style={styles.paymentCardRow}>
-
-        <View style={{ flexDirection: 'row' }}>
+        <View style={{flexDirection: 'row'}}>
           <Text
-              style={{
-                fontFamily: fonts.RRegular,
-                fontSize: 16,
-                color: colors.lightBlackColor,
-              }}>
+            style={{
+              fontFamily: fonts.RRegular,
+              fontSize: 16,
+              color: colors.lightBlackColor,
+            }}
+          >
             {item.bank_name.toUpperCase()}
           </Text>
 
           <Text
-              style={{
-                fontFamily: fonts.RRegular,
-                fontSize: 16,
-                color: colors.lightBlackColor,
-              }}>
+            style={{
+              fontFamily: fonts.RRegular,
+              fontSize: 16,
+              color: colors.lightBlackColor,
+            }}
+          >
             {strings.endingin}
           </Text>
           <Text
-              style={{
-                fontFamily: fonts.RRegular,
-                fontSize: 16,
-                color: colors.lightBlackColor,
-              }}>
+            style={{
+              fontFamily: fonts.RRegular,
+              fontSize: 16,
+              color: colors.lightBlackColor,
+            }}
+          >
             {item.last4}
           </Text>
         </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <Text
-              style={{
-                fontFamily: fonts.RRegular,
-                fontSize: 16,
-                color: colors.lightBlackColor,
-              }}>{'Currency Type : '}
+            style={{
+              fontFamily: fonts.RRegular,
+              fontSize: 16,
+              color: colors.lightBlackColor,
+            }}
+          >
+            {'Currency Type : '}
           </Text>
           <Text
-              style={{
-                marginLeft: 0,
-                fontFamily: fonts.RRegular,
-                fontSize: 16,
-                color: colors.themeColor,
-              }}>{`${item.currency.toUpperCase()}`}
+            style={{
+              marginLeft: 0,
+              fontFamily: fonts.RRegular,
+              fontSize: 16,
+              color: colors.themeColor,
+            }}
+          >
+            {`${item.currency.toUpperCase()}`}
           </Text>
         </View>
-
       </View>
     </AppleStyleSwipeableRow>
   );
@@ -157,7 +160,7 @@ export default function PayoutMethodList({ navigation }) {
   );
 
   const renderFooter = () => (
-    <View style={{ marginBottom: 5 }}>
+    <View style={{marginBottom: 5}}>
       {cards.length < 1 ? (
         <TCTouchableLabel
           title={strings.addPayoutMessage}
@@ -183,13 +186,14 @@ export default function PayoutMethodList({ navigation }) {
           color: colors.lightBlackColor,
           fontFamily: fonts.RRegular,
           fontSize: 20,
-        }}>
+        }}
+      >
         {strings.selectPayoutMethod}
       </Text>
       <TCInnerLoader visible={firstTimeLoad} size={50} />
       {!firstTimeLoad && (
         <FlatList
-          style={{ marginTop: 15 }}
+          style={{marginTop: 15}}
           data={cards}
           renderItem={renderCard}
           keyExtractor={(item) => item.id}
@@ -213,7 +217,7 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     marginRight: 15,
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: -2 },
+    shadowOffset: {width: 0, height: -2},
     shadowOpacity: 0.3,
     shadowRadius: 3,
     borderRadius: 10,

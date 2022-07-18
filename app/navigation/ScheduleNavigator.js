@@ -201,7 +201,8 @@ const ScheduleNavigator = () => (
       // headerTitle: true,
       gestureEnabled: false,
       headerBackTitleVisible: false,
-    }}>
+    }}
+  >
     {/* Accounts screens */}
 
     <Stack.Screen
@@ -1849,21 +1850,21 @@ const ScheduleNavigator = () => (
       }}
     />
     <Stack.Screen
-         name="TrashScreen"
-         component={TrashScreen}
-         options={{
-           title: 'Trash',
-           headerTintColor: colors.blackColor,
-           headerTitleStyle: {
-             fontWeight: '500',
-           },
-           headerStyle: {
-             backgroundColor: colors.whiteColor,
-             borderBottomColor: colors.grayColor,
-             borderBottomWidth: 0.3,
-           },
-         }}
-        />
+      name="TrashScreen"
+      component={TrashScreen}
+      options={{
+        title: 'Trash',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
     <Stack.Screen
       name="PendingRequestScreen"
       component={PendingRequestScreen}
@@ -2500,7 +2501,6 @@ const ScheduleNavigator = () => (
         },
       }}
     />
-    
   </Stack.Navigator>
 );
 

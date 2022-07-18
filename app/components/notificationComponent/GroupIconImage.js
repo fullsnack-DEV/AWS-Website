@@ -1,7 +1,5 @@
 import React from 'react';
-import {
-  View, StyleSheet, Image, Text,
-} from 'react-native';
+import {View, StyleSheet, Image, Text} from 'react-native';
 
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
@@ -21,8 +19,9 @@ function GroupIconImage({
             currentState === 'Active'
               ? styles.placeholderViewActive
               : styles.placeholderViewInActive
-          }>
-          <Image source={{ uri: entityImg }} style={styles.entityImg} />
+          }
+        >
+          <Image source={{uri: entityImg}} style={styles.entityImg} />
         </View>
       ) : (
         <View
@@ -30,7 +29,8 @@ function GroupIconImage({
             currentState === 'Active'
               ? styles.placeholderViewActive
               : styles.placeholderViewInActive
-          }>
+          }
+        >
           <Image source={placeholderImage} style={styles.entityImg} />
           <Text style={styles.oneCharacterText}>
             {entityName.charAt(0).toUpperCase()}
@@ -39,7 +39,13 @@ function GroupIconImage({
       )}
       {unreadCount > 0 && (
         <View style={styles.badgeView}>
-          <Text style={unreadCount > 99 ? styles.ovalBadgeView : styles.badgeCounter}>{unreadCount > 99 ? '99+' : unreadCount}</Text>
+          <Text
+            style={
+              unreadCount > 99 ? styles.ovalBadgeView : styles.badgeCounter
+            }
+          >
+            {unreadCount > 99 ? '99+' : unreadCount}
+          </Text>
         </View>
       )}
     </View>

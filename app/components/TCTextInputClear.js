@@ -31,18 +31,20 @@ const TCTextInputClear = ({
           onChangeText={onChangeText}
           value={value}
         />
-        {value?.length > 0 && <TouchableOpacity onPress={onPressClear}>
-          <Image
-            source={images.cancelWhite}
-            style={{
-              height: 10,
-              width: 10,
-              resizeMode: 'contain',
-              tintColor: colors.lightBlackColor,
-              alignSelf: 'baseline',
-            }}
-          />
-        </TouchableOpacity>}
+        {value?.length > 0 && (
+          <TouchableOpacity onPress={onPressClear}>
+            <Image
+              source={images.cancelWhite}
+              style={{
+                height: 10,
+                width: 10,
+                resizeMode: 'contain',
+                tintColor: colors.lightBlackColor,
+                alignSelf: 'baseline',
+              }}
+            />
+          </TouchableOpacity>
+        )}
       </View>
     ) : (
       <View style={styles.detailsSingleContainer}>
@@ -54,18 +56,19 @@ const TCTextInputClear = ({
           onChangeText={onChangeText}
           value={value}
         />
-        {value?.length > 0 && <TouchableOpacity onPress={onPressClear}>
-          <Image
-            source={images.cancelWhite}
-            style={{
-              height: 10,
-              width: 10,
-              resizeMode: 'contain',
-              tintColor: colors.lightBlackColor,
-
-            }}
-          />
-        </TouchableOpacity>}
+        {value?.length > 0 && (
+          <TouchableOpacity onPress={onPressClear}>
+            <Image
+              source={images.cancelWhite}
+              style={{
+                height: 10,
+                width: 10,
+                resizeMode: 'contain',
+                tintColor: colors.lightBlackColor,
+              }}
+            />
+          </TouchableOpacity>
+        )}
       </View>
     )}
   </>
@@ -113,7 +116,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.offwhite,
     borderRadius: 5,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
     elevation: 3,

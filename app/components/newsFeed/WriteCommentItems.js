@@ -1,19 +1,17 @@
 import React from 'react';
-import {
-  StyleSheet, View, Text, TouchableOpacity,
-} from 'react-native';
+import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import FastImage from 'react-native-fast-image';
 import images from '../../Constants/ImagePath';
-import { commentPostTimeCalculate } from '../../Constants/LoaderImages';
+import {commentPostTimeCalculate} from '../../Constants/LoaderImages';
 
-import colors from '../../Constants/Colors'
-import fonts from '../../Constants/Fonts'
+import colors from '../../Constants/Colors';
+import fonts from '../../Constants/Fonts';
 
-function WriteCommentItems({ data, onProfilePress }) {
+function WriteCommentItems({data, onProfilePress}) {
   let commentTime = '';
   if (data && data.created_at) {
     commentTime = data.created_at;
@@ -31,38 +29,51 @@ function WriteCommentItems({ data, onProfilePress }) {
   }
 
   return (
-    <View style={ styles.mainContainer }>
+    <View style={styles.mainContainer}>
       <TouchableOpacity onPress={() => onProfilePress(data)}>
         <FastImage
-        style={ styles.background }
-        source={ !userProfile ? images.profilePlaceHolder : { uri: userProfile } }
-        resizeMode={ 'cover' }
-      />
+          style={styles.background}
+          source={!userProfile ? images.profilePlaceHolder : {uri: userProfile}}
+          resizeMode={'cover'}
+        />
       </TouchableOpacity>
-      <View style={ styles.userNameView }>
-        <View style={ styles.userCommentTextStyle }>
-          <Text style={ styles.userNameTxt }>
-            {userName}{' '} <Text style={ styles.commentTextStyle }>{commentText} </Text>
+      <View style={styles.userNameView}>
+        <View style={styles.userCommentTextStyle}>
+          <Text style={styles.userNameTxt}>
+            {userName}{' '}
+            <Text style={styles.commentTextStyle}>{commentText} </Text>
           </Text>
-          <TouchableOpacity style={{ flex: 0.1, alignSelf: 'flex-start' }}>
+          <TouchableOpacity style={{flex: 0.1, alignSelf: 'flex-start'}}>
             <FastImage
-                style={styles.commentImage}
-                source={images.unlikeImage}
-                resizeMode={'contain'}
+              style={styles.commentImage}
+              source={images.unlikeImage}
+              resizeMode={'contain'}
             />
           </TouchableOpacity>
         </View>
-        <View style={{ flexDirection: 'row' }}>
-          <Text style={ styles.activeTimeAgoTxt }>
+        <View style={{flexDirection: 'row'}}>
+          <Text style={styles.activeTimeAgoTxt}>
             {commentPostTimeCalculate(commentTime)}
           </Text>
           <TouchableOpacity>
-            <Text style={{ ...styles.activeTimeAgoTxt, marginLeft: 10, fontFamily: fonts.RBold }}>
+            <Text
+              style={{
+                ...styles.activeTimeAgoTxt,
+                marginLeft: 10,
+                fontFamily: fonts.RBold,
+              }}
+            >
               99 Likes
             </Text>
           </TouchableOpacity>
           <TouchableOpacity>
-            <Text style={{ ...styles.activeTimeAgoTxt, marginLeft: 10, fontFamily: fonts.RBold }}>
+            <Text
+              style={{
+                ...styles.activeTimeAgoTxt,
+                marginLeft: 10,
+                fontFamily: fonts.RBold,
+              }}
+            >
               Reply
             </Text>
           </TouchableOpacity>

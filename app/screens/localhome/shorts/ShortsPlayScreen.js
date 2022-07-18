@@ -1,13 +1,9 @@
 /* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable no-promise-executor-return */
-import React, {
- useEffect, useRef, useState, useCallback,
- } from 'react';
-import {
- View, FlatList, StatusBar,
-} from 'react-native';
+import React, {useEffect, useRef, useState, useCallback} from 'react';
+import {View, FlatList, StatusBar} from 'react-native';
 
-import { useIsFocused } from '@react-navigation/native';
+import {useIsFocused} from '@react-navigation/native';
 import colors from '../../../Constants/Colors';
 
 import ShortsVideoView from '../../../components/shorts/ShortsVideoView';
@@ -16,7 +12,7 @@ const viewabilityConfig = {
   itemVisiblePercentThreshold: 50,
 };
 
-function ShortsPlayScreen({ route }) {
+function ShortsPlayScreen({route}) {
   const [caller_id] = useState(route?.params?.caller_id);
   const [currentPage] = useState(route?.params?.currentPage);
   const [shorts] = useState(route?.params?.shorts);
@@ -51,31 +47,34 @@ function ShortsPlayScreen({ route }) {
     }
   }, [isFocused]);
 
-  const renderShortsVideo = useCallback(({ item: multiAttachItem, index }) => (
-    <ShortsVideoView
-      onclosePress={handleCloseButton}
-      multiAttachItem={multiAttachItem}
-      index={index}
-      caller_id={caller_id}
-      curruentViewIndex={curruentViewIndex}
-    />
-  ), [caller_id, closeButtonVisible, curruentViewIndex]);
+  const renderShortsVideo = useCallback(
+    ({item: multiAttachItem, index}) => (
+      <ShortsVideoView
+        onclosePress={handleCloseButton}
+        multiAttachItem={multiAttachItem}
+        index={index}
+        caller_id={caller_id}
+        curruentViewIndex={curruentViewIndex}
+      />
+    ),
+    [caller_id, closeButtonVisible, curruentViewIndex],
+  );
 
-  const onViewableItemsChanged = useCallback(({ viewableItems }) => {
+  const onViewableItemsChanged = useCallback(({viewableItems}) => {
     if (viewableItems && viewableItems.length > 0) {
       setCurruentViewIndex(viewableItems[0].index);
     }
   }, []);
-  const keyExtractor = useCallback((item, index) => index.toString(), [])
+  const keyExtractor = useCallback((item, index) => index.toString(), []);
 
-const handleCloseButton = (toggleValue) => {
-setCloseButtonVisible(toggleValue)
-}
+  const handleCloseButton = (toggleValue) => {
+    setCloseButtonVisible(toggleValue);
+  };
 
   return (
-    <View style={{ backgroundColor: colors.blackColor, flex: 1 }}>
+    <View style={{backgroundColor: colors.blackColor, flex: 1}}>
       <FlatList
-      bounces={false}
+        bounces={false}
         nestedScrollEnabled={true}
         showsVerticalScrollIndicator={false}
         ref={carouselRef}
@@ -88,7 +87,7 @@ setCloseButtonVisible(toggleValue)
         onViewableItemsChanged={onViewableItemsChanged}
         keyExtractor={keyExtractor}
         onMomentumScrollEnd={() => {
-          setCloseButtonVisible(false)
+          setCloseButtonVisible(false);
         }}
         onScrollToIndexFailed={() => {
           const wait = new Promise((resolve) => setTimeout(resolve, 200));

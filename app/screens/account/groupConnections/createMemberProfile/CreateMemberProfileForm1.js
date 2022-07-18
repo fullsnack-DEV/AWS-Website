@@ -188,7 +188,8 @@ export default function CreateMemberProfileForm1({navigation, route}) {
                 });
               }
             }
-          }}>
+          }}
+        >
           Next
         </Text>
       ),
@@ -213,7 +214,8 @@ export default function CreateMemberProfileForm1({navigation, route}) {
 
   // Email input format validation
   const ValidateEmail = (emailAddress) => {
-    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    const re =
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(String(emailAddress).toLowerCase());
   };
 
@@ -363,7 +365,8 @@ export default function CreateMemberProfileForm1({navigation, route}) {
         />
         <TouchableOpacity
           style={styles.choosePhoto}
-          onPress={() => onProfileImageClicked()}>
+          onPress={() => onProfileImageClicked()}
+        >
           <Image source={images.certificateUpload} style={styles.choosePhoto} />
         </TouchableOpacity>
       </View>
@@ -403,7 +406,8 @@ export default function CreateMemberProfileForm1({navigation, route}) {
         <FlatList
           data={phoneNumber}
           renderItem={renderPhoneNumber}
-          keyExtractor={(item, index) => index.toString()}></FlatList>
+          keyExtractor={(item, index) => index.toString()}
+        ></FlatList>
       </View>
       {phoneNumber?.length < 5 && (
         <TCMessageButton
@@ -432,14 +436,16 @@ export default function CreateMemberProfileForm1({navigation, route}) {
           navigation.navigate('SearchLocationScreen', {
             comeFrom: 'CreateMemberProfileForm1',
           })
-        }>
+        }
+      >
         <TextInput
           placeholder={strings.searchCityPlaceholder}
           placeholderTextColor={colors.userPostTimeColor}
           style={[styles.matchFeeTxt, {marginBottom: 5}]}
           value={location}
           editable={false}
-          pointerEvents="none"></TextInput>
+          pointerEvents="none"
+        ></TextInput>
       </TouchableOpacity>
 
       <View>

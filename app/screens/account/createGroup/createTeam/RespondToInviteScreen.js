@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, {useState, useContext} from 'react';
 import {
   StyleSheet,
   View,
@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 
 import TCInfoField from '../../../../components/TCInfoField';
-import { getGroupRequest } from '../../../../api/Groups';
+import {getGroupRequest} from '../../../../api/Groups';
 
 import AuthContext from '../../../../auth/context';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
@@ -21,10 +21,10 @@ import TCFormProgress from '../../../../components/TCFormProgress';
 import TCThinDivider from '../../../../components/TCThinDivider';
 import TCPlayerImageInfo from '../../../../components/TCPlayerImageInfo';
 import TCSmallButton from '../../../../components/TCSmallButton';
-import { getSportName, widthPercentageToDP } from '../../../../utils';
+import {getSportName, widthPercentageToDP} from '../../../../utils';
 import TeamStatus from './TeamStatus';
 
-export default function RespondToInviteScreen({ navigation, route }) {
+export default function RespondToInviteScreen({navigation, route}) {
   const [teamObject] = useState(route?.params?.teamObject);
   const authContext = useContext(AuthContext);
   // eslint-disable-next-line no-unused-vars
@@ -97,7 +97,8 @@ export default function RespondToInviteScreen({ navigation, route }) {
       <TCFormProgress totalSteps={3} curruentStep={3} />
       <ScrollView
         style={styles.mainContainer}
-        showsVerticalScrollIndicator={false}>
+        showsVerticalScrollIndicator={false}
+      >
         <ActivityLoader visible={loading} />
 
         <TCLabel title={strings.invitetocreateteam} />
@@ -145,8 +146,8 @@ export default function RespondToInviteScreen({ navigation, route }) {
             <TCInfoField
               title={'Members’ gender'}
               value={
-                teamObject?.gender?.charAt(0)?.toUpperCase()
-                + teamObject?.gender?.slice(1)
+                teamObject?.gender?.charAt(0)?.toUpperCase() +
+                teamObject?.gender?.slice(1)
               }
               marginLeft={25}
             />
@@ -177,7 +178,7 @@ export default function RespondToInviteScreen({ navigation, route }) {
           {teamObject?.descriptions}
         </Text>
 
-        <View style={{ flex: 1 }} />
+        <View style={{flex: 1}} />
       </ScrollView>
       {teamObject?.status !== TeamStatus.new ? (
         <Text
@@ -187,14 +188,15 @@ export default function RespondToInviteScreen({ navigation, route }) {
             fontSize: 20,
             fontFamily: fonts.RRegular,
             color: colors.lightBlackColor,
-          }}>
+          }}
+        >
           {getStatusMessage()}
         </Text>
       ) : (
         <SafeAreaView>
           <TCLabel
             title={strings.whouldYouLikeToAccept}
-            style={{ marginBottom: 15 }}
+            style={{marginBottom: 15}}
           />
 
           <View style={styles.bottomButtonContainer}>
@@ -205,19 +207,19 @@ export default function RespondToInviteScreen({ navigation, route }) {
                 borderWidth: 1,
                 borderRadious: 80,
               }}
-              textStyle={{ color: colors.userPostTimeColor }}
+              textStyle={{color: colors.userPostTimeColor}}
               title={strings.declineTitle}
               onPress={() => {
                 onAcceptDecline('decline', teamObject?.group_id);
               }}
-              style={{ width: widthPercentageToDP('45%') }}
+              style={{width: widthPercentageToDP('45%')}}
             />
             <TCSmallButton
               title={strings.acceptTitle}
               onPress={() => {
                 onAcceptDecline('accept', teamObject?.group_id);
               }}
-              style={{ width: widthPercentageToDP('45%') }}
+              style={{width: widthPercentageToDP('45%')}}
             />
           </View>
         </SafeAreaView>

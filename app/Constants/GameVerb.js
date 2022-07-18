@@ -28,4 +28,4 @@ const GameVerb = {
   SetEndMannually: 'setEndMannually',
 };
 
-export default GameVerb
+export default GameVerb;

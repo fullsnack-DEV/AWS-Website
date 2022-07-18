@@ -1,14 +1,18 @@
 import React, {
-    useCallback, Fragment, useContext, useEffect, useState, useMemo, useRef,
+  useCallback,
+  Fragment,
+  useContext,
+  useEffect,
+  useState,
+  useMemo,
+  useRef,
 } from 'react';
-import {
-    Image, StyleSheet, Text, View,
-} from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import {Image, StyleSheet, Text, View} from 'react-native';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors';
-import { getScreenWidth, getTaggedText } from '../../../utils';
+import {getScreenWidth, getTaggedText} from '../../../utils';
 import fonts from '../../../Constants/Fonts';
 import TagView from '../TagView';
 import AuthContext from '../../../auth/context';
@@ -18,233 +22,282 @@ import TaggedModal from '../../modals/TaggedModal';
 import LikersModal from '../../modals/LikersModal';
 
 const FeedAbsoluteBottomView = ({
-    videoMetaData,
-    feedItem = {},
-    feedSubItem = {},
-    isLandscape,
-    navigation,
-    onLikePress,
-    readMore,
-    setReadMore,
-    showParent,
-    currentTime,
-    setCurrentTime,
-    paused,
-    setPaused,
-    videoPlayerRef,
-    currentViewIndex,
-    shareActionSheetRef,
-    screenInsets,
-    updateCommentCount,
+  videoMetaData,
+  feedItem = {},
+  feedSubItem = {},
+  isLandscape,
+  navigation,
+  onLikePress,
+  readMore,
+  setReadMore,
+  showParent,
+  currentTime,
+  setCurrentTime,
+  paused,
+  setPaused,
+  videoPlayerRef,
+  currentViewIndex,
+  shareActionSheetRef,
+  screenInsets,
+  updateCommentCount,
 }) => {
-    const taggedModalRef = useRef(null);
-    const likersModalRef = useRef(null);
-    const commentModalRef = useRef(null);
-    const [slidingStatus, setSlidingStatus] = useState(false);
-    const authContext = useContext(AuthContext);
-    const [like, setLike] = useState(false);
-    const [likeCount, setLikeCount] = useState(0);
-    const [commentCount, setCommentCount] = useState(0);
-    const videoDuration = Math.floor(videoMetaData?.duration ?? 0)
-    useEffect(() => {
-        if (feedItem) {
-            let filterLike = []
-            setLikeCount(feedItem?.reaction_counts?.clap ?? 0)
-            setCommentCount(feedItem?.reaction_counts?.comment ?? 0)
-            if (feedItem?.own_reactions?.clap !== undefined) {
-                filterLike = feedItem?.own_reactions.clap?.filter((clapItem) => clapItem.user_id === authContext?.entity?.uid);
-                if (filterLike?.length > 0) setLike(true);
-                else setLike(false);
-            } else {
-                setLike(false);
-            }
-        }
-    }, [authContext?.entity?.uid, feedItem])
+  const taggedModalRef = useRef(null);
+  const likersModalRef = useRef(null);
+  const commentModalRef = useRef(null);
+  const [slidingStatus, setSlidingStatus] = useState(false);
+  const authContext = useContext(AuthContext);
+  const [like, setLike] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
+  const [commentCount, setCommentCount] = useState(0);
+  const videoDuration = Math.floor(videoMetaData?.duration ?? 0);
+  useEffect(() => {
+    if (feedItem) {
+      let filterLike = [];
+      setLikeCount(feedItem?.reaction_counts?.clap ?? 0);
+      setCommentCount(feedItem?.reaction_counts?.comment ?? 0);
+      if (feedItem?.own_reactions?.clap !== undefined) {
+        filterLike = feedItem?.own_reactions.clap?.filter(
+          (clapItem) => clapItem.user_id === authContext?.entity?.uid,
+        );
+        if (filterLike?.length > 0) setLike(true);
+        else setLike(false);
+      } else {
+        setLike(false);
+      }
+    }
+  }, [authContext?.entity?.uid, feedItem]);
 
-    const onCommentButtonPress = useCallback(() => {
-        commentModalRef.current.open();
-    }, []);
+  const onCommentButtonPress = useCallback(() => {
+    commentModalRef.current.open();
+  }, []);
 
-    const onTaggedPress = useCallback(() => {
-        taggedModalRef.current.open();
-    }, [])
+  const onTaggedPress = useCallback(() => {
+    taggedModalRef.current.open();
+  }, []);
 
-    const taggedText = useMemo(() => getTaggedText(feedSubItem?.format_tagged_data), [feedSubItem]);
+  const taggedText = useMemo(
+    () => getTaggedText(feedSubItem?.format_tagged_data),
+    [feedSubItem],
+  );
 
-    const renderBottomButtons = useMemo(() => !readMore && (
-      <View style={{ ...styles.commentShareLikeView, width: getScreenWidth({ isLandscape, screenInsets }) }}>
-
-        {/* Comment And Share Button Button */}
-        <View style={{
-                flexDirection: 'row',
-                justifyContent: 'flex-start',
-                alignItems: 'center',
-                paddingLeft: 25,
-                width: getScreenWidth({
-                    isLandscape, avoidScreenInsets: false, screenInsets, portraitWidth: 70,
-                }),
-        }}>
+  const renderBottomButtons = useMemo(
+    () =>
+      !readMore && (
+        <View
+          style={{
+            ...styles.commentShareLikeView,
+            width: getScreenWidth({isLandscape, screenInsets}),
+          }}
+        >
+          {/* Comment And Share Button Button */}
           <View
-                    style={{
-                        flexDirection: 'row',
-                        marginRight: 20,
-                    }}>
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'flex-start',
+              alignItems: 'center',
+              paddingLeft: 25,
+              width: getScreenWidth({
+                isLandscape,
+                avoidScreenInsets: false,
+                screenInsets,
+                portraitWidth: 70,
+              }),
+            }}
+          >
+            <View
+              style={{
+                flexDirection: 'row',
+                marginRight: 20,
+              }}
+            >
+              <TouchableOpacity
+                onPress={onCommentButtonPress}
+                style={{
+                  ...styles.imageTouchStyle,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                }}
+              >
+                <Image
+                  style={[styles.commentImage, {top: 2}]}
+                  source={images.feedViewCommentButton}
+                  resizeMode={'cover'}
+                />
+                <Text style={styles.commentlengthStyle}>
+                  {commentCount > 0 ? commentCount : ''}
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Share Button */}
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <TouchableOpacity
+                onPress={() => {
+                  shareActionSheetRef.current.show();
+                }}
+                style={styles.imageTouchStyle}
+              >
+                <Image
+                  style={styles.commentImage}
+                  source={images.feedViewShareButton}
+                  resizeMode={'contain'}
+                />
+              </TouchableOpacity>
+              <Text style={styles.commentlengthStyle}>{''}</Text>
+            </View>
+          </View>
+
+          {/* Like Button */}
+          <View
+            style={{
+              paddingRight: 25,
+              width: getScreenWidth({
+                isLandscape,
+                screenInsets,
+                portraitWidth: 30,
+              }),
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+            }}
+          >
             <TouchableOpacity
-                        onPress={onCommentButtonPress}
-                        style={{
-                            ...styles.imageTouchStyle,
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                        }}>
-              <Image
-                            style={[styles.commentImage, { top: 2 }]}
-                            source={images.feedViewCommentButton}
-                            resizeMode={'cover'}
-                        />
-              <Text style={styles.commentlengthStyle}>
-                {commentCount > 0 ? commentCount : ''}
+              onPress={() => {
+                likersModalRef.current.open();
+              }}
+            >
+              <Text
+                style={[
+                  styles.commentlengthStyle,
+                  {
+                    marginRight: 5,
+                    color: like === true ? '#FF8A01' : colors.whiteColor,
+                  },
+                ]}
+              >
+                {likeCount === 0 ? '' : likeCount}
               </Text>
             </TouchableOpacity>
-          </View>
-
-          {/* Share Button */}
-          <View
-                    style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                    }}>
             <TouchableOpacity
-                        onPress={() => {
-                            shareActionSheetRef.current.show();
-                        }}
-                        style={styles.imageTouchStyle}>
-              <Image
-                            style={styles.commentImage}
-                            source={images.feedViewShareButton}
-                            resizeMode={'contain'}
-                        />
+              onPress={() => {
+                setLike(!like);
+                if (like) setLikeCount((val) => val - 1);
+                else setLikeCount((val) => val + 1);
+                onLikePress();
+              }}
+              style={styles.imageTouchStyle}
+            >
+              {like === true ? (
+                <Image
+                  style={styles.commentImage}
+                  source={images.feedViewLikeButton}
+                  resizeMode={'contain'}
+                />
+              ) : (
+                <Image
+                  style={styles.commentImage}
+                  source={images.feedViewUnLike}
+                  resizeMode={'contain'}
+                />
+              )}
             </TouchableOpacity>
-            <Text style={styles.commentlengthStyle}>{''}</Text>
           </View>
         </View>
+      ),
+    [
+      commentCount,
+      isLandscape,
+      like,
+      likeCount,
+      onCommentButtonPress,
+      onLikePress,
+      readMore,
+      screenInsets,
+      shareActionSheetRef,
+    ],
+  );
 
-        {/* Like Button */}
+  const renderThumb = useCallback(
+    () => (
+      <View
+        style={{
+          elevation: 5,
+          shadowColor: colors.googleColor,
+          shadowOffset: {width: 0, height: 2},
+          shadowOpacity: 0.5,
+          shadowRadius: 5,
+          borderRadius: 50,
+          backgroundColor: colors.whiteColor,
+          height: slidingStatus ? 30 : 10,
+          width: slidingStatus ? 30 : 10,
+        }}
+      />
+    ),
+    [slidingStatus],
+  );
+
+  const secondsToHms = (date) => {
+    let hDisplay = '';
+    let mDisplay = '0';
+    let sDisplay = '00';
+
+    const d = Number(date);
+
+    const h = Math.floor(d / 3600);
+    // eslint-disable-next-line no-mixed-operators
+    const m = Math.floor((d % 3600) / 60);
+    const s = Math.floor((d % 3600) % 60);
+
+    // Hour
+    if (h > 0 && h?.toString()?.length === 1) hDisplay = `0${h}`;
+    if (h > 0 && h?.toString()?.length > 1) hDisplay = `${h}`;
+
+    // Minuites
+    if (m > 0 && m?.toString()?.length === 1) mDisplay = `0${m}`;
+    if (m > 0 && m?.toString()?.length > 1) mDisplay = `${m}`;
+
+    // Seconds
+    if (s > 0 && s?.toString()?.length === 1) sDisplay = `0${s}`;
+    if (s > 0 && s?.toString()?.length > 1) sDisplay = `${s}`;
+
+    return `${hDisplay}${hDisplay ? ':' : ''}${mDisplay}:${sDisplay}`;
+  };
+
+  const renderSeekBar = useMemo(
+    () =>
+      videoDuration ? (
         <View
-                style={{
-                    paddingRight: 25,
-                    width: getScreenWidth({ isLandscape, screenInsets, portraitWidth: 30 }),
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'flex-end',
-                }}>
-          <TouchableOpacity onPress={() => {
-              likersModalRef.current.open()
-          }}>
-            <Text
-                    style={[
-                        styles.commentlengthStyle,
-                        {
-                            marginRight: 5,
-                            color: like === true ? '#FF8A01' : colors.whiteColor,
-                        },
-                    ]}>
-              {likeCount === 0 ? '' : likeCount}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-                    onPress={() => {
-                        setLike(!like);
-                        if (like) setLikeCount((val) => val - 1);
-                        else setLikeCount((val) => val + 1);
-                        onLikePress()
-                    }}
-                    style={styles.imageTouchStyle}>
-            {like === true ? (
-              <Image
-                            style={styles.commentImage}
-                            source={images.feedViewLikeButton}
-                            resizeMode={'contain'}
-                        />
-                    ) : (
-                      <Image
-                          style={styles.commentImage}
-                            source={images.feedViewUnLike}
-                            resizeMode={'contain'}
-                        />
-                    )}
-          </TouchableOpacity>
-        </View>
-      </View>
-    ), [commentCount, isLandscape, like, likeCount, onCommentButtonPress, onLikePress, readMore, screenInsets, shareActionSheetRef])
-
-    const renderThumb = useCallback(() => (
-      <View
+          pointerEvents={showParent && !readMore ? 'auto' : 'none'}
+          style={{
+            opacity: showParent && !readMore ? 1 : 0,
+            paddingHorizontal: 25,
+            height: 50,
+            width: getScreenWidth({isLandscape, screenInsets}),
+            justifyContent: 'center',
+            alignItems: 'center',
+            flexDirection: 'row',
+            zIndex: 10,
+          }}
+        >
+          <Text
             style={{
-                elevation: 5,
-                shadowColor: colors.googleColor,
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.5,
-                shadowRadius: 5,
-                borderRadius: 50,
-                backgroundColor: colors.whiteColor,
-                height: slidingStatus ? 30 : 10,
-                width: slidingStatus ? 30 : 10,
-            }}/>
-    ), [slidingStatus]);
-
-    const secondsToHms = (date) => {
-        let hDisplay = '';
-        let mDisplay = '0';
-        let sDisplay = '00';
-
-        const d = Number(date);
-
-        const h = Math.floor(d / 3600);
-        // eslint-disable-next-line no-mixed-operators
-        const m = Math.floor(d % 3600 / 60);
-        const s = Math.floor(d % 3600 % 60);
-
-        // Hour
-        if (h > 0 && h?.toString()?.length === 1) hDisplay = `0${h}`
-        if (h > 0 && h?.toString()?.length > 1) hDisplay = `${h}`
-
-        // Minuites
-        if (m > 0 && m?.toString()?.length === 1) mDisplay = `0${m}`
-        if (m > 0 && m?.toString()?.length > 1) mDisplay = `${m}`
-
-        // Seconds
-        if (s > 0 && s?.toString()?.length === 1) sDisplay = `0${s}`
-        if (s > 0 && s?.toString()?.length > 1) sDisplay = `${s}`
-
-        return `${hDisplay}${hDisplay ? ':' : ''}${mDisplay}:${sDisplay}`;
-    }
-
-    const renderSeekBar = useMemo(() => (videoDuration ? (
-      <View
-            pointerEvents={showParent && !readMore ? 'auto' : 'none'}
-            style={{
-                opacity: (showParent && !readMore) ? 1 : 0,
-                paddingHorizontal: 25,
-                height: 50,
-                width: getScreenWidth({ isLandscape, screenInsets }),
-                justifyContent: 'center',
-                alignItems: 'center',
-                flexDirection: 'row',
-                zIndex: 10,
-            }}>
-        <Text style={{
-                textAlign: 'left',
-                fontSize: 12,
-                marginRight: 15,
-                color: colors.whiteColor,
-        }}>
-          {currentTime > videoDuration
+              textAlign: 'left',
+              fontSize: 12,
+              marginRight: 15,
+              color: colors.whiteColor,
+            }}
+          >
+            {currentTime > videoDuration
               ? secondsToHms(videoDuration?.toFixed(0))
-              : secondsToHms(Math.ceil(currentTime?.toFixed(0)))
-          }
-        </Text>
-        <MultiSlider
+              : secondsToHms(Math.ceil(currentTime?.toFixed(0)))}
+          </Text>
+          <MultiSlider
             smoothSnapped={true}
             markerOffsetX={3}
             max={videoDuration}
@@ -253,125 +306,139 @@ const FeedAbsoluteBottomView = ({
             customMarkerLeft={renderThumb}
             values={[currentTime]}
             sliderLength={getScreenWidth({
-                isLandscape, avoidScreenInsets: false, screenInsets, portraitWidth: 65, landscapeWidth: 80,
+              isLandscape,
+              avoidScreenInsets: false,
+              screenInsets,
+              portraitWidth: 65,
+              landscapeWidth: 80,
             })}
-            selectedStyle={{ backgroundColor: colors.whiteColor }}
-            trackStyle={{ backgroundColor: colors.userPostTimeColor }}
+            selectedStyle={{backgroundColor: colors.whiteColor}}
+            trackStyle={{backgroundColor: colors.userPostTimeColor}}
             onValuesChange={(values) => setCurrentTime(values?.[0])}
             onValuesChangeStart={() => {
-                if (!paused) setPaused(true)
-                setSlidingStatus(true);
+              if (!paused) setPaused(true);
+              setSlidingStatus(true);
             }}
             onValuesChangeFinish={(values) => {
-                if (paused) setPaused(false)
-                setSlidingStatus(false);
-                if (videoPlayerRef?.current?.seek) videoPlayerRef.current.seek(values?.[0])
+              if (paused) setPaused(false);
+              setSlidingStatus(false);
+              if (videoPlayerRef?.current?.seek)
+                videoPlayerRef.current.seek(values?.[0]);
             }}
-         />
-        <Text style={{
-                fontSize: 12,
-                marginLeft: 15,
-                color: colors.whiteColor,
-                textAlign: 'right',
-
-        }}>
-          {videoDuration ? secondsToHms(videoDuration) : null}
-        </Text>
-      </View>
-    ) : null), [currentTime, isLandscape, paused, readMore, renderThumb, screenInsets, setCurrentTime, setPaused, showParent, videoDuration, videoPlayerRef])
-
-    return (
-      <Fragment>
-        <View
-            pointerEvents={showParent ? 'auto' : 'none'}
+          />
+          <Text
             style={{
-                position: 'absolute',
-                bottom: 0,
-                width: getScreenWidth({ isLandscape, screenInsets }),
-                opacity: showParent ? 1 : 0,
-            }}>
-          <View style={{ justifyContent: 'flex-end' }}>
+              fontSize: 12,
+              marginLeft: 15,
+              color: colors.whiteColor,
+              textAlign: 'right',
+            }}
+          >
+            {videoDuration ? secondsToHms(videoDuration) : null}
+          </Text>
+        </View>
+      ) : null,
+    [
+      currentTime,
+      isLandscape,
+      paused,
+      readMore,
+      renderThumb,
+      screenInsets,
+      setCurrentTime,
+      setPaused,
+      showParent,
+      videoDuration,
+      videoPlayerRef,
+    ],
+  );
 
-            {/* Render Description with read more functionality */}
-            {!readMore && !isLandscape && (
-              <View style={{ paddingVertical: 5, paddingHorizontal: 10 }}>
-                <FeedDescriptionSection
-                    readMore={readMore}
-                    setReadMore={setReadMore}
-                    navigation={navigation}
-                    tagData={feedSubItem?.format_tagged_data}
-                    descriptions={feedSubItem?.text}
-                    isLandscape={isLandscape}
-                    descriptionTxt={{ color: colors.whiteColor }}
-                   />
-              </View>
-            )}
+  return (
+    <Fragment>
+      <View
+        pointerEvents={showParent ? 'auto' : 'none'}
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          width: getScreenWidth({isLandscape, screenInsets}),
+          opacity: showParent ? 1 : 0,
+        }}
+      >
+        <View style={{justifyContent: 'flex-end'}}>
+          {/* Render Description with read more functionality */}
+          {!readMore && !isLandscape && (
+            <View style={{paddingVertical: 5, paddingHorizontal: 10}}>
+              <FeedDescriptionSection
+                readMore={readMore}
+                setReadMore={setReadMore}
+                navigation={navigation}
+                tagData={feedSubItem?.format_tagged_data}
+                descriptions={feedSubItem?.text}
+                isLandscape={isLandscape}
+                descriptionTxt={{color: colors.whiteColor}}
+              />
+            </View>
+          )}
 
-            {/*  Render Tagged Text */}
-            {!isLandscape && !readMore && taggedText !== '' && (
-              <TouchableOpacity onPress={onTaggedPress}>
-                <TagView
-                  source={images.tagGreenImage}
-                  tagText={taggedText}
-                />
-              </TouchableOpacity>
-            )}
+          {/*  Render Tagged Text */}
+          {!isLandscape && !readMore && taggedText !== '' && (
+            <TouchableOpacity onPress={onTaggedPress}>
+              <TagView source={images.tagGreenImage} tagText={taggedText} />
+            </TouchableOpacity>
+          )}
 
-            {/*  Render Video Player Seek Bar */}
-            {feedSubItem?.attachments?.[currentViewIndex]?.type === 'video' && renderSeekBar}
-          </View>
-
-          {/* Bottom Buttons */}
-          {renderBottomButtons}
-
+          {/*  Render Video Player Seek Bar */}
+          {feedSubItem?.attachments?.[currentViewIndex]?.type === 'video' &&
+            renderSeekBar}
         </View>
 
-        <TaggedModal
-            navigation={navigation}
-            taggedModalRef={taggedModalRef}
-            taggedData={feedSubItem?.format_tagged_data}
-        />
+        {/* Bottom Buttons */}
+        {renderBottomButtons}
+      </View>
 
-        <LikersModal
-              likersModalRef={likersModalRef}
-              navigation={navigation}
-        />
+      <TaggedModal
+        navigation={navigation}
+        taggedModalRef={taggedModalRef}
+        taggedData={feedSubItem?.format_tagged_data}
+      />
 
-        <CommentModal
-            commentModalRef={commentModalRef}
-            navigation={navigation}
-            item={feedItem}
-            updateCommentCount={(updatedCommentData) => {
-                setCommentCount(updatedCommentData?.count)
-                updateCommentCount(updatedCommentData);
-            }}
-        />
-      </Fragment>
-    )
-}
+      <LikersModal likersModalRef={likersModalRef} navigation={navigation} />
+
+      <CommentModal
+        commentModalRef={commentModalRef}
+        navigation={navigation}
+        item={feedItem}
+        updateCommentCount={(updatedCommentData) => {
+          setCommentCount(updatedCommentData?.count);
+          updateCommentCount(updatedCommentData);
+        }}
+      />
+    </Fragment>
+  );
+};
 
 const styles = StyleSheet.create({
-    commentImage: {
-        height: 22,
-        width: 22,
-        alignSelf: 'flex-end',
-    },
-    commentShareLikeView: {
-        flexDirection: 'row',
-        marginBottom: 25,
-        alignSelf: 'center',
-    },
-    commentlengthStyle: {
-        alignSelf: 'center',
-        color: colors.whiteColor,
-        fontFamily: fonts.RMedium,
-        fontSize: 14,
-        marginLeft: 5,
-    },
-    imageTouchStyle: {
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
+  commentImage: {
+    height: 22,
+    width: 22,
+    alignSelf: 'flex-end',
+  },
+  commentShareLikeView: {
+    flexDirection: 'row',
+    marginBottom: 25,
+    alignSelf: 'center',
+  },
+  commentlengthStyle: {
+    alignSelf: 'center',
+    color: colors.whiteColor,
+    fontFamily: fonts.RMedium,
+    fontSize: 14,
+    marginLeft: 5,
+  },
+  imageTouchStyle: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
 
 export default FeedAbsoluteBottomView;

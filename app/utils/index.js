@@ -911,7 +911,7 @@ export const getSportImage = (sportName, type, authContext) => {
 };
 
 export const getGamesList = async (eventsList) => {
-  console.log('eventsListeventsList',eventsList);
+  console.log('eventsListeventsList', eventsList);
   const promiseArr = [];
   let userIDs = [];
   let groupIDs = [];
@@ -933,7 +933,7 @@ export const getGamesList = async (eventsList) => {
   userIDs = [...new Set(userIDs)];
   groupIDs = [...new Set(groupIDs)];
 
-  console.log('dfdasfadsfdsfas',userIDs,groupIDs);
+  console.log('dfdasfadsfdsfas', userIDs, groupIDs);
 
   if (userIDs.length > 0) {
     const userQuery = {
@@ -1034,7 +1034,7 @@ export const getGamesList = async (eventsList) => {
           }
         }
       }
-      console.log('custom eventsListeventsList',eventsList);
+      console.log('custom eventsListeventsList', eventsList);
       return eventsList;
     });
   }
@@ -1091,14 +1091,11 @@ export const validatedName = (name) => {
   return false;
 };
 
-
 // Input format 2h 30m
-export const getHoursMinutesFromString = (timeString) =>{
-
-  const arr = timeString.split(' ')
+export const getHoursMinutesFromString = (timeString) => {
+  const arr = timeString.split(' ');
   return {
     hour: arr[0].slice(0, -1),
-    minute:  arr[1].slice(0, -1)
-  }
-
-}
+    minute: arr[1].slice(0, -1),
+  };
+};

@@ -1,15 +1,7 @@
 import React from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-
-} from 'react-native';
+import {StyleSheet, View, Text} from 'react-native';
 import FastImage from 'react-native-fast-image';
-import {
-  widthPercentageToDP as wp,
-
-} from 'react-native-responsive-screen';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 
 import images from '../../../../../Constants/ImagePath';
 import colors from '../../../../../Constants/Colors';
@@ -29,58 +21,71 @@ export default function TennisGameScoreRight({
 }) {
   return (
     <View>
-      <View style={{ ...styles.headerView }}>
-        <View style={ styles.leftBlankView }>
+      <View style={{...styles.headerView}}>
+        <View style={styles.leftBlankView}>
           <Text
-            style={ { fontFamily: fonts.RBold, fontSize: 12, textAlign: 'right' } }>
+            style={{fontFamily: fonts.RBold, fontSize: 12, textAlign: 'right'}}
+          >
             {getGameConvertMinsToTime(recordData?.minutes ?? 0)}
           </Text>
           <Text
-            style={ {
+            style={{
               fontFamily: fonts.RLight,
               fontSize: 12,
               color: colors.darkGrayColor,
-            } }>
+            }}
+          >
             {getGameDateTimeInHMSformat(recordData?.timestamp)}
           </Text>
         </View>
-        <View style={ styles.rightView }>
-          <View style={{
-            width: '20%',
-            alignItems: 'flex-start',
-            left: 10,
-          }}>
+        <View style={styles.rightView}>
+          <View
+            style={{
+              width: '20%',
+              alignItems: 'flex-start',
+              left: 10,
+            }}
+          >
             <View style={styles.gameRecordButton}>
               <FastImage
-              source={ tennisGamePlayStatsImage[recordData?.verb] }
-              style={ [styles.gameRecordImg, { height: 16, width: 16 }] }
-            />
+                source={tennisGamePlayStatsImage[recordData?.verb]}
+                style={[styles.gameRecordImg, {height: 16, width: 16}]}
+              />
             </View>
           </View>
-          <Text style={ styles.rightPlayerText } numberOfLines={ 3 }>
+          <Text style={styles.rightPlayerText} numberOfLines={3}>
             {gameData?.away_team?.group_name ?? ''}
-            <Text style={{ fontFamily: fonts.RMedium }}>
-              {' '}{tennisGamePlayStats[recordData?.verb]}
+            <Text style={{fontFamily: fonts.RMedium}}>
+              {' '}
+              {tennisGamePlayStats[recordData?.verb]}
             </Text>
           </Text>
-          <View style={{ width: '22%' }}>
+          <View style={{width: '22%'}}>
             <FastImage
-                source={gameData?.away_team?.thumbnail ? { uri: gameData?.away_team?.thumbnail } : images.profilePlaceHolder }
-              style={ styles.rightProfileImg }
+              source={
+                gameData?.away_team?.thumbnail
+                  ? {uri: gameData?.away_team?.thumbnail}
+                  : images.profilePlaceHolder
+              }
+              style={styles.rightProfileImg}
             />
           </View>
         </View>
       </View>
       {editor && (
-        <View style={ styles.editorView }>
+        <View style={styles.editorView}>
           <View
-            style={ {
+            style={{
               width: '100%',
               justifyContent: 'space-around',
               alignItems: 'space-around',
-            } }>
-            <Text style={ styles.recordedBy }>
-              Recorded by {`${recordData?.recorded_by?.first_name } ${ recordData?.recorded_by?.last_name}` ?? ''} ({getGameTimeAgo(recordData?.timestamp)})
+            }}
+          >
+            <Text style={styles.recordedBy}>
+              Recorded by{' '}
+              {`${recordData?.recorded_by?.first_name} ${recordData?.recorded_by?.last_name}` ??
+                ''}{' '}
+              ({getGameTimeAgo(recordData?.timestamp)})
             </Text>
           </View>
         </View>
@@ -104,7 +109,7 @@ const styles = StyleSheet.create({
     height: 20,
     justifyContent: 'center',
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.5,
     shadowRadius: 3,
     width: 20,
@@ -121,7 +126,6 @@ const styles = StyleSheet.create({
     marginVertical: 15,
     justifyContent: 'flex-end',
     width: '100%',
-
   },
   leftBlankView: {
     marginRight: 10,

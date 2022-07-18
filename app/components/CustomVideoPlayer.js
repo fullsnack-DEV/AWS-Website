@@ -14,7 +14,7 @@ const CustomVideoPlayer = ({
   onPlayerStatusChanged = () => {},
   onClick = () => {},
 }) => {
-  console.log('sourceURLsourceURL',sourceURL);
+  console.log('sourceURLsourceURL', sourceURL);
   const videoPlayerRef = useRef();
   // const [videoMetaData, setVideoMetaData] = useState(null);
   const [duration, setDuration] = useState(0);
@@ -31,9 +31,10 @@ const CustomVideoPlayer = ({
     else setShouldVideoScroll(false);
   }, [playerState]);
 
-  useEffect(() => onPlayerStatusChanged(shouldVideoScroll), [
-    shouldVideoScroll,
-  ]);
+  useEffect(
+    () => onPlayerStatusChanged(shouldVideoScroll),
+    [shouldVideoScroll],
+  );
   const onSeek = (seek) => {
     if (!shouldVideoScroll) setShouldVideoScroll(true);
     videoPlayerRef.current.seek(seek);
@@ -81,7 +82,7 @@ const CustomVideoPlayer = ({
     <View style={{...containerStyle}}>
       <Video
         focusable={true}
-        source={{uri: sourceURL,type: 'mp4'}}
+        source={{uri: sourceURL, type: 'mp4'}}
         ref={videoPlayerRef}
         style={{
           ...styles.mediaPlayer,

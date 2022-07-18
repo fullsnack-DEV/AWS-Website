@@ -1,11 +1,9 @@
 /* eslint-disable import/no-extraneous-dependencies */
 
-import React, { memo } from 'react';
-import {
-StyleSheet, View, Image,
-} from 'react-native';
-import { PieChart as SVGPieChart } from 'react-native-svg-charts';
-import { Defs, LinearGradient, Stop } from 'react-native-svg';
+import React, {memo} from 'react';
+import {StyleSheet, View, Image} from 'react-native';
+import {PieChart as SVGPieChart} from 'react-native-svg-charts';
+import {Defs, LinearGradient, Stop} from 'react-native-svg';
 import colors from '../Constants/Colors';
 import images from '../Constants/ImagePath';
 
@@ -18,18 +16,18 @@ const TCRoundChart = ({
     looser: 3,
   },
 }) => {
-     data = Object.keys(gameStatsData)
-      ?.filter((item) => ['winner', 'draw', 'looser']?.includes(item))
-      ?.map((item) => ({
-        key: item,
-        value:
-          gameStatsData[item] !== 0
-            ? (100 * gameStatsData[item]) / gameStatsData.total_games
-            : 0,
-        svg: { fill: `url(#${item})` },
-      }));
+  data = Object.keys(gameStatsData)
+    ?.filter((item) => ['winner', 'draw', 'looser']?.includes(item))
+    ?.map((item) => ({
+      key: item,
+      value:
+        gameStatsData[item] !== 0
+          ? (100 * gameStatsData[item]) / gameStatsData.total_games
+          : 0,
+      svg: {fill: `url(#${item})`},
+    }));
 
-  const GradientView = ({ keyName }) => {
+  const GradientView = ({keyName}) => {
     let startColor = colors.googleColor;
     let endColor = colors.googleColor;
     if (keyName === 'winner') {
@@ -52,24 +50,27 @@ const TCRoundChart = ({
     );
   };
   return (
-    <View style={{ margin: 10, marginLeft: 15 }}>
+    <View style={{margin: 10, marginLeft: 15}}>
       <View style={styles.containerStyle}>
-        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{alignItems: 'center', justifyContent: 'center'}}>
           <SVGPieChart
-            style={{ height: 80, width: 80 }}
+            style={{height: 80, width: 80}}
             data={
-              data?.filter((item) => item?.value === 0)?.length === 3 ? [
-                {
-                  key: 'nullData',
-                  value: 100,
-                  svg: { fill: colors.lightgrayColor },
-                },
-            ] : data
+              data?.filter((item) => item?.value === 0)?.length === 3
+                ? [
+                    {
+                      key: 'nullData',
+                      value: 100,
+                      svg: {fill: colors.lightgrayColor},
+                    },
+                  ]
+                : data
             }
             spacing={0}
             radius={35}
             outerRadius={35}
-            innerRadius={30}>
+            innerRadius={30}
+          >
             <GradientView keyName={'looser'} />
             <GradientView keyName={'draw'} />
             <GradientView keyName={'winner'} />
@@ -79,11 +80,12 @@ const TCRoundChart = ({
               style={{
                 flexDirection: 'row',
                 shadowColor: colors.googleColor,
-                shadowOffset: { width: 0, height: 5 },
+                shadowOffset: {width: 0, height: 5},
                 shadowOpacity: 0.2,
                 shadowRadius: 5,
                 elevation: 5,
-              }}>
+              }}
+            >
               <Image
                 source={images.soccerBackground}
                 style={{
@@ -109,7 +111,7 @@ const TCRoundChart = ({
       </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   containerStyle: {

@@ -14,7 +14,8 @@ export default function MonthHeader({monthYear = new Date()}) {
           hitSlop={getHitSlop(15)}
           onPress={() => {
             console.log('prev press');
-          }}>
+          }}
+        >
           <Image
             style={[styles.icon, styles.leftIcon]}
             source={images.calNextArrow}
@@ -27,7 +28,8 @@ export default function MonthHeader({monthYear = new Date()}) {
           hitSlop={getHitSlop(15)}
           onPress={() => {
             console.log('next press');
-          }}>
+          }}
+        >
           <Image
             style={[styles.icon, styles.leftIcon]}
             source={images.calPrevArrow}
@@ -47,7 +49,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.whiteColor,
   },
   mainContainer: {
-    flex:1,
+    flex: 1,
     elevation: 5,
     shadowOpacity: 0.16,
     shadowColor: colors.googleColor,
@@ -59,8 +61,8 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
-    marginLeft:15,
-    marginRight:15
+    marginLeft: 15,
+    marginRight: 15,
   },
 
   leftIcon: {

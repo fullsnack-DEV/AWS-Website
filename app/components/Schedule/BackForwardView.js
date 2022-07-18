@@ -1,17 +1,13 @@
 import React from 'react';
-import {
-  View,
-  StyleSheet,
-  Text,
-  Image,
-  TouchableOpacity,
-} from 'react-native';
+import {View, StyleSheet, Text, Image, TouchableOpacity} from 'react-native';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 
 export default function BackForwardView({
-  textValue, onBackArrowPress, onForwardArrowPress,
+  textValue,
+  onBackArrowPress,
+  onForwardArrowPress,
 }) {
   return (
     <View style={styles.containerStyle}>

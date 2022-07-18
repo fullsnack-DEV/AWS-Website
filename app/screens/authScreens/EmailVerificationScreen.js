@@ -52,7 +52,8 @@ export default function EmailVerificationScreen({navigation, route}) {
         <TouchableOpacity
           onPress={() => {
             navigation.pop();
-          }}>
+          }}
+        >
           <Image
             source={images.backArrow}
             style={{
@@ -300,7 +301,8 @@ export default function EmailVerificationScreen({navigation, route}) {
   return (
     <LinearGradient
       colors={[colors.themeColor1, colors.themeColor3]}
-      style={styles.mainContainer}>
+      style={styles.mainContainer}
+    >
       <ActivityLoader visible={loading} />
       <FastImage
         resizeMode={'stretch'}
@@ -314,7 +316,8 @@ export default function EmailVerificationScreen({navigation, route}) {
             fontFamily: fonts.RBold,
             color: colors.whiteColor,
             marginBottom: 25,
-          }}>
+          }}
+        >
           Please verify your email.
         </Text>
         <Text style={{fontSize: 16, color: 'white', fontFamily: fonts.RMedium}}>
@@ -335,7 +338,8 @@ export default function EmailVerificationScreen({navigation, route}) {
       <TouchableOpacity
         onPress={resend}
         disabled={timer !== 0}
-        style={{alignItems: 'center'}}>
+        style={{alignItems: 'center'}}
+      >
         <Text
           style={{
             width: '85%',
@@ -344,7 +348,8 @@ export default function EmailVerificationScreen({navigation, route}) {
             textDecorationLine: 'underline',
             fontSize: 13,
             fontWeight: '700',
-          }}>
+          }}
+        >
           {timer !== 0
             ? `YOU CAN SEND VERIFICATION EMAIL AGAIN AFTER ${timer} SECONDS.`
             : 'SEND VERIFICATION EMAIL AGAIN'}
@@ -364,13 +369,15 @@ export default function EmailVerificationScreen({navigation, route}) {
             alignSelf: 'center',
             marginTop: '10%',
             height: 50,
-          }}>
+          }}
+        >
           <Text
             style={{
               fontSize: 15,
               fontFamily: fonts.RBold,
               color: colors.darkYellowColor,
-            }}>
+            }}
+          >
             {' '}
             I’VE VERIFIED MY EMAIL ADDRESS
           </Text>

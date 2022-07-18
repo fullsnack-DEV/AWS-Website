@@ -42,7 +42,8 @@ function NotificationItem({
                   entityType: dataDictionary.entityType,
                   entityId: dataDictionary.entityId,
                 });
-              }}>
+              }}
+            >
               <TCProfileImage
                 entityType={dataDictionary.entityType}
                 source={{uri: dataDictionary.imgName}}
@@ -60,7 +61,8 @@ function NotificationItem({
                       entityType: dataDictionary.entityType,
                       entityId: dataDictionary.entityId,
                     });
-                  }}>
+                  }}
+                >
                   <Text style={styles.boldTextStyle}>
                     {`${dataDictionary.firstTitle} `}
                   </Text>
@@ -73,35 +75,36 @@ function NotificationItem({
                         entityType: dataDictionary.entityType1,
                         entityId: dataDictionary.entityId1,
                       });
-                    }}>
+                    }}
+                  >
                     <Text
-                      style={
-                        styles.boldTextStyle
-                      }>{`${dataDictionary.secondTitle} `}</Text>
+                      style={styles.boldTextStyle}
+                    >{`${dataDictionary.secondTitle} `}</Text>
                   </TouchableWithoutFeedback>
                 )}
                 <Text>{`${dataDictionary.text} `}</Text>
-                {!isTrash && <Text style={styles.timeStyle}>
-                  {dataDictionary.notificationTime}
-                </Text>}
+                {!isTrash && (
+                  <Text style={styles.timeStyle}>
+                    {dataDictionary.notificationTime}
+                  </Text>
+                )}
               </Text>
               {isTrash && entityType === 'user' && (
                 <Text style={styles.timeStyle}>
                   {(NotificationType.deleted && 'Deleted') ||
                     (NotificationType.accepted && 'Accepted') ||
                     (NotificationType.declined && 'declined')}{' '}
-                  <Text>
-                    {dataDictionary.notificationTime}
-                  </Text>
+                  <Text>{dataDictionary.notificationTime}</Text>
                 </Text>
-              )} 
+              )}
               {isTrash && entityType === 'group' && (
                 <Text style={styles.timeStyle}>
                   {(NotificationType.deleted && 'Deleted') ||
                     (NotificationType.accepted && 'Accepted') ||
                     (NotificationType.declined && 'Declined')}
                   <Text>
-                    {' '}by {data.activities[0].remove_by?.data?.full_name}{' '}
+                    {' '}
+                    by {data.activities[0].remove_by?.data?.full_name}{' '}
                     {dataDictionary.notificationTime}
                   </Text>
                 </Text>

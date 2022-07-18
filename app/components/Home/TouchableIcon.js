@@ -1,16 +1,14 @@
 import React from 'react';
-import {
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-} from 'react-native';
+import {StyleSheet, TouchableOpacity, Image} from 'react-native';
 
-export default function TouchableIcon({
-  source, onItemPress, imageStyle,
-}) {
+export default function TouchableIcon({source, onItemPress, imageStyle}) {
   return (
     <TouchableOpacity style={styles.containerStyle} onPress={onItemPress}>
-      <Image source={source} resizeMode={'contain'} style={[styles.imageStyle, imageStyle]} />
+      <Image
+        source={source}
+        resizeMode={'contain'}
+        style={[styles.imageStyle, imageStyle]}
+      />
     </TouchableOpacity>
   );
 }

@@ -1,5 +1,5 @@
 /* eslint-disable no-nested-ternary */
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   StyleSheet,
   View,
@@ -24,23 +24,23 @@ import TCThickDivider from '../../../components/TCThickDivider';
 import images from '../../../Constants/ImagePath';
 import TCChallengeTitle from '../../../components/TCChallengeTitle';
 // import SecureRefereeView from '../../../components/SecureRefereeView';
-import { getNumberSuffix } from '../../../utils/gameUtils';
+import {getNumberSuffix} from '../../../utils/gameUtils';
 import EventMapView from '../../../components/Schedule/EventMapView';
 import RefereeAgreementView from '../../../components/challenge/RefereeAgreementView';
 import ScorekeeperAgreementView from '../../../components/challenge/ScorekeeperAgreementView';
 import TCGameDetailRules from '../../../components/TCGameDetailRules';
 
 const entity = {};
-export default function CurruentReservationView({ reservationObj }) {
+export default function CurruentReservationView({reservationObj}) {
   const [challengeObj] = useState(reservationObj);
-  const [isMore,setIsMore] = useState(false);
+  const [isMore, setIsMore] = useState(false);
 
   const [moreButtonReferee, setMoreButtonReferee] = useState();
   const [moreButtonScorekeeper, setMoreButtonScorekeeper] = useState();
   const getChallenger = () => {
     if (
-      challengeObj?.challenger === challengeObj?.home_team?.user_id
-      || challengeObj?.challenger === challengeObj?.home_team?.group_id
+      challengeObj?.challenger === challengeObj?.home_team?.user_id ||
+      challengeObj?.challenger === challengeObj?.home_team?.group_id
     ) {
       return challengeObj?.home_team;
     }
@@ -49,20 +49,20 @@ export default function CurruentReservationView({ reservationObj }) {
 
   const getChallengee = () => {
     if (
-      challengeObj?.challengee === challengeObj?.home_team?.user_id
-      || challengeObj?.challengee === challengeObj?.home_team?.group_id
+      challengeObj?.challengee === challengeObj?.home_team?.user_id ||
+      challengeObj?.challengee === challengeObj?.home_team?.group_id
     ) {
       return challengeObj?.home_team;
     }
     return challengeObj?.away_team;
   };
 
-  const renderPeriod = ({ item, index }) => (
+  const renderPeriod = ({item, index}) => (
     <>
       <TCChallengeTitle
-        containerStyle={{ marginLeft: 25, marginTop: 5, marginBottom: 5 }}
+        containerStyle={{marginLeft: 25, marginTop: 5, marginBottom: 5}}
         title={'Interval'}
-        titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
+        titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
         value={item.interval}
         valueStyle={{
           fontFamily: fonts.RBold,
@@ -73,9 +73,9 @@ export default function CurruentReservationView({ reservationObj }) {
         staticValueText={'min.'}
       />
       <TCChallengeTitle
-        containerStyle={{ marginLeft: 25, marginTop: 5, marginBottom: 5 }}
+        containerStyle={{marginLeft: 25, marginTop: 5, marginBottom: 5}}
         title={`${getNumberSuffix(index + 2)} Period`}
-        titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
+        titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
         value={item.period}
         valueStyle={{
           fontFamily: fonts.RBold,
@@ -88,12 +88,12 @@ export default function CurruentReservationView({ reservationObj }) {
     </>
   );
 
-  const renderOverTime = ({ item, index }) => (
+  const renderOverTime = ({item, index}) => (
     <>
       <TCChallengeTitle
-        containerStyle={{ marginLeft: 25, marginTop: 5, marginBottom: 5 }}
+        containerStyle={{marginLeft: 25, marginTop: 5, marginBottom: 5}}
         title={'Interval'}
-        titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
+        titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
         value={item.interval}
         valueStyle={{
           fontFamily: fonts.RBold,
@@ -104,9 +104,9 @@ export default function CurruentReservationView({ reservationObj }) {
         staticValueText={'min.'}
       />
       <TCChallengeTitle
-        containerStyle={{ marginLeft: 25, marginTop: 5, marginBottom: 5 }}
+        containerStyle={{marginLeft: 25, marginTop: 5, marginBottom: 5}}
         title={`${getNumberSuffix(index + 1)} Over time`}
-        titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
+        titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
         value={item.overTime}
         valueStyle={{
           fontFamily: fonts.RBold,
@@ -148,24 +148,25 @@ export default function CurruentReservationView({ reservationObj }) {
 
   return (
     <SafeAreaView>
-
       <View>
         <Text
-            style={[
-              styles.challengeNumberStyle,
-              {
-                marginTop: 0,
-              },
-            ]}>
+          style={[
+            styles.challengeNumberStyle,
+            {
+              marginTop: 0,
+            },
+          ]}
+        >
           Request No.{`${challengeObj?.challenge_id}`}
         </Text>
         <View
-              style={{
-                flex: 1,
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                margin: 15,
-              }}>
+          style={{
+            flex: 1,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            margin: 15,
+          }}
+        >
           <View style={styles.challengerView}>
             <View style={styles.teamView}>
               <Image source={images.reqIcon} style={styles.reqOutImage} />
@@ -175,20 +176,20 @@ export default function CurruentReservationView({ reservationObj }) {
             <View style={styles.teamView}>
               <View style={styles.profileView}>
                 <Image
-                      source={
-                        getChallenger()?.thumbnail
-                          ? { uri: getChallenger()?.thumbnail }
-                          : images.teamPlaceholder
-                      }
-                      style={styles.profileImage}
-                    />
+                  source={
+                    getChallenger()?.thumbnail
+                      ? {uri: getChallenger()?.thumbnail}
+                      : images.teamPlaceholder
+                  }
+                  style={styles.profileImage}
+                />
               </View>
               <Text style={styles.teamNameText}>
                 {getChallenger()?.group_id
-                      ? `${getChallenger()?.group_name}`
-                      : `${getChallenger()?.first_name} ${
-                        getChallenger()?.last_name
-                        }`}
+                  ? `${getChallenger()?.group_name}`
+                  : `${getChallenger()?.first_name} ${
+                      getChallenger()?.last_name
+                    }`}
               </Text>
             </View>
           </View>
@@ -201,20 +202,20 @@ export default function CurruentReservationView({ reservationObj }) {
             <View style={styles.teamView}>
               <View style={styles.profileView}>
                 <Image
-                      source={
-                        getChallengee()?.thumbnail
-                          ? { uri: getChallengee()?.thumbnail }
-                          : images.teamPlaceholder
-                      }
-                      style={styles.profileImage}
-                    />
+                  source={
+                    getChallengee()?.thumbnail
+                      ? {uri: getChallengee()?.thumbnail}
+                      : images.teamPlaceholder
+                  }
+                  style={styles.profileImage}
+                />
               </View>
               <Text style={styles.teamNameText}>
                 {getChallengee()?.group_id
-                      ? `${getChallengee()?.group_name}`
-                      : `${getChallengee()?.first_name} ${
-                        getChallengee()?.last_name
-                        }`}
+                  ? `${getChallengee()?.group_name}`
+                  : `${getChallengee()?.first_name} ${
+                      getChallengee()?.last_name
+                    }`}
               </Text>
             </View>
           </View>
@@ -222,18 +223,14 @@ export default function CurruentReservationView({ reservationObj }) {
 
         <TCThickDivider marginTop={15} />
         <View>
-          <TCChallengeTitle
-            title={'Home & Away'}
-            isEdit={false}
-
-          />
+          <TCChallengeTitle title={'Home & Away'} isEdit={false} />
           <View style={styles.teamContainer}>
             <Text style={styles.homeLableStyle}>Home</Text>
             <View style={styles.teamViewStyle}>
               <Image
                 source={
                   challengeObj?.home_team?.thumbnail
-                    ? { uri: challengeObj?.home_team?.thumbnail }
+                    ? {uri: challengeObj?.home_team?.thumbnail}
                     : challengeObj?.home_team?.user_challenge === true
                     ? images.profilePlaceHolder
                     : images.teamPlaceholder
@@ -243,8 +240,8 @@ export default function CurruentReservationView({ reservationObj }) {
 
               <View style={styles.teamTextContainer}>
                 <Text style={styles.teamNameLable}>
-                  {challengeObj?.home_team?.full_name
-                    || challengeObj?.home_team?.group_name}
+                  {challengeObj?.home_team?.full_name ||
+                    challengeObj?.home_team?.group_name}
                 </Text>
                 <Text style={styles.locationLable}>
                   {`${challengeObj?.home_team?.city}, ${challengeObj?.home_team?.state_abbr}`}
@@ -259,7 +256,7 @@ export default function CurruentReservationView({ reservationObj }) {
               <Image
                 source={
                   challengeObj?.away_team?.thumbnail
-                    ? { uri: challengeObj?.away_team?.thumbnail }
+                    ? {uri: challengeObj?.away_team?.thumbnail}
                     : challengeObj?.away_team?.user_challenge === true
                     ? images.profilePlaceHolder
                     : images.teamPlaceholder
@@ -269,8 +266,8 @@ export default function CurruentReservationView({ reservationObj }) {
 
               <View style={styles.teamTextContainer}>
                 <Text style={styles.teamNameLable}>
-                  {challengeObj?.away_team?.full_name
-                    ?? challengeObj?.away_team?.group_name}
+                  {challengeObj?.away_team?.full_name ??
+                    challengeObj?.away_team?.group_name}
                 </Text>
                 <Text style={styles.locationLable}>
                   {`${challengeObj?.away_team?.city}, ${challengeObj?.away_team?.state_abbr}`}
@@ -281,89 +278,81 @@ export default function CurruentReservationView({ reservationObj }) {
           <TCThickDivider marginTop={20} />
         </View>
 
-        {challengeObj?.sport?.toLowerCase() === 'tennis' ? <View>
-          <TCGameDetailRules
+        {challengeObj?.sport?.toLowerCase() === 'tennis' ? (
+          <View>
+            <TCGameDetailRules
               gameRules={challengeObj?.score_rules}
-              isMore = {isMore}
-              onPressMoreLess={()=>{
-                setIsMore(!isMore)
+              isMore={isMore}
+              onPressMoreLess={() => {
+                setIsMore(!isMore);
               }}
             />
-          <TCThickDivider marginTop={20} />
-        </View> :  <View>
-          <TCChallengeTitle
-          title={'Game Duration'}
-          isEdit={false}
+            <TCThickDivider marginTop={20} />
+          </View>
+        ) : (
+          <View>
+            <TCChallengeTitle title={'Game Duration'} isEdit={false} />
+            <TCChallengeTitle
+              containerStyle={{marginLeft: 25, marginTop: 15, marginBottom: 5}}
+              title={'1st period'}
+              titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
+              value={challengeObj?.game_duration?.first_period}
+              valueStyle={{
+                fontFamily: fonts.RBold,
+                fontSize: 16,
+                color: colors.greenColorCard,
+                marginRight: 2,
+              }}
+              staticValueText={'min.'}
+            />
 
-        />
-          <TCChallengeTitle
-          containerStyle={{ marginLeft: 25, marginTop: 15, marginBottom: 5 }}
-          title={'1st period'}
-          titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
-          value={challengeObj?.game_duration?.first_period}
-          valueStyle={{
-            fontFamily: fonts.RBold,
-            fontSize: 16,
-            color: colors.greenColorCard,
-            marginRight: 2,
-          }}
-          staticValueText={'min.'}
-        />
+            <FlatList
+              data={challengeObj?.game_duration?.period}
+              renderItem={renderPeriod}
+              keyExtractor={(item, index) => index.toString()}
+              style={{marginBottom: 15}}
+            />
+            {challengeObj?.game_duration?.period?.length > 0 && (
+              <Text style={styles.normalTextStyle}>
+                {strings.gameDurationTitle2}
+              </Text>
+            )}
 
-          <FlatList
-          data={challengeObj?.game_duration?.period}
-          renderItem={renderPeriod}
-          keyExtractor={(item, index) => index.toString()}
-          style={{ marginBottom: 15 }}
-        />
-          {challengeObj?.game_duration?.period?.length > 0 && (
-            <Text style={styles.normalTextStyle}>
-              {strings.gameDurationTitle2}
-            </Text>
+            <FlatList
+              data={challengeObj?.game_duration?.overtime}
+              renderItem={renderOverTime}
+              keyExtractor={(item, index) => index.toString()}
+              style={{marginBottom: 15}}
+            />
+            <TCThickDivider marginTop={20} />
+          </View>
         )}
 
-          <FlatList
-          data={challengeObj?.game_duration?.overtime}
-          renderItem={renderOverTime}
-          keyExtractor={(item, index) => index.toString()}
-          style={{ marginBottom: 15 }}
-        />
-          <TCThickDivider marginTop={20} />
-        </View>}
-
         <View>
-          <TCChallengeTitle
-            title={'Date & Time'}
-            isEdit={false}
-
-          />
+          <TCChallengeTitle title={'Date & Time'} isEdit={false} />
 
           <View>
             <View style={styles.dateTimeValue}>
               <Text style={styles.dateTimeText}>Start </Text>
               <Text style={styles.dateTimeText}>
-                {moment(
-                  new Date(
-                    challengeObj?.start_datetime * 1000,
-                  ),
-                ).format('MMM DD, YYYY hh:mm a')}
+                {moment(new Date(challengeObj?.start_datetime * 1000)).format(
+                  'MMM DD, YYYY hh:mm a',
+                )}
               </Text>
             </View>
             <View style={styles.dateTimeValue}>
               <Text style={styles.dateTimeText}>End </Text>
               <Text style={styles.dateTimeText}>
-                {moment(
-                  new Date(
-                    challengeObj?.end_datetime * 1000,
-                  ),
-                ).format('MMM DD, YYYY hh:mm a')}
+                {moment(new Date(challengeObj?.end_datetime * 1000)).format(
+                  'MMM DD, YYYY hh:mm a',
+                )}
               </Text>
             </View>
             <View style={styles.dateTimeValue}>
               <Text style={styles.dateTimeText}> </Text>
               <Text style={styles.timeZoneText}>
                 Time zone{' '}
-                <Text style={{ fontFamily: fonts.RRegular }}>Vancouver</Text>
+                <Text style={{fontFamily: fonts.RRegular}}>Vancouver</Text>
               </Text>
             </View>
           </View>
@@ -385,11 +374,7 @@ export default function CurruentReservationView({ reservationObj }) {
         </View>
 
         <View>
-          <TCChallengeTitle
-            title={'Venue'}
-            isEdit={false}
-
-          />
+          <TCChallengeTitle title={'Venue'} isEdit={false} />
 
           <View style={styles.venueContainer}>
             <Text style={styles.venueTitle}>{challengeObj?.venue?.name}</Text>
@@ -411,12 +396,11 @@ export default function CurruentReservationView({ reservationObj }) {
           title={'Type of Game'}
           value={challengeObj?.game_type}
           tooltipText={
-          'The game result has an effect on TC points of the challengee and you.'
+            'The game result has an effect on TC points of the challengee and you.'
           }
           tooltipHeight={hp('6%')}
           tooltipWidth={wp('50%')}
           isEdit={false}
-
         />
         <TCThickDivider />
 
@@ -431,18 +415,13 @@ export default function CurruentReservationView({ reservationObj }) {
             marginRight: 2,
           }}
           isEdit={false}
-
         />
         <TCThickDivider />
 
-        <TCChallengeTitle
-          title={'Game Rules'}
-          isEdit={false}
-
-        />
+        <TCChallengeTitle title={'Game Rules'} isEdit={false} />
         <Text style={styles.rulesTitle}>General Rules</Text>
         <Text style={styles.rulesDetail}>{challengeObj?.general_rules}</Text>
-        <View style={{ marginBottom: 10 }} />
+        <View style={{marginBottom: 10}} />
         <Text style={styles.rulesTitle}>Special Rules</Text>
         <Text style={styles.rulesDetail}>{challengeObj?.special_rules}</Text>
         <TCThickDivider marginTop={20} />
@@ -472,20 +451,19 @@ export default function CurruentReservationView({ reservationObj }) {
         /> */}
 
         <RefereeAgreementView
-            teamA={getChallenger()?.group_name ?? getChallenger()?.full_name}
-            teamB={getChallengee()?.group_name ?? getChallengee()?.full_name}
-            numberOfReferee={
-              challengeObj?.responsible_for_referee?.who_secure?.length ?? 0
-            }
-            agreementOpetion={challengeObj?.min_referee === 0 ? 1 : 2}
-            moreButtonVisible={true}
-            morePressed={(value) => {
-              setMoreButtonReferee(value)
-            }}
+          teamA={getChallenger()?.group_name ?? getChallenger()?.full_name}
+          teamB={getChallengee()?.group_name ?? getChallengee()?.full_name}
+          numberOfReferee={
+            challengeObj?.responsible_for_referee?.who_secure?.length ?? 0
+          }
+          agreementOpetion={challengeObj?.min_referee === 0 ? 1 : 2}
+          moreButtonVisible={true}
+          morePressed={(value) => {
+            setMoreButtonReferee(value);
+          }}
           isMore={moreButtonReferee}
           isEdit={false}
-
-          />
+        />
 
         <TCThickDivider />
 
@@ -511,54 +489,48 @@ export default function CurruentReservationView({ reservationObj }) {
         /> */}
 
         <ScorekeeperAgreementView
-            teamA={getChallenger()?.group_name ?? getChallenger()?.full_name}
-            teamB={getChallengee()?.group_name ?? getChallengee()?.full_name}
-            numberOfScorekeeper={
-              challengeObj?.responsible_for_scorekeeper?.who_secure?.length ?? 0
-            }
-            agreementOpetion={challengeObj?.min_scorekeeper === 0 ? 1 : 2}
-            moreButtonVisible={true}
-            morePressed={(value) => {
-              setMoreButtonScorekeeper(value)
-            }}
+          teamA={getChallenger()?.group_name ?? getChallenger()?.full_name}
+          teamB={getChallengee()?.group_name ?? getChallengee()?.full_name}
+          numberOfScorekeeper={
+            challengeObj?.responsible_for_scorekeeper?.who_secure?.length ?? 0
+          }
+          agreementOpetion={challengeObj?.min_scorekeeper === 0 ? 1 : 2}
+          moreButtonVisible={true}
+          morePressed={(value) => {
+            setMoreButtonScorekeeper(value);
+          }}
           isMore={moreButtonScorekeeper}
-
           isEdit={false}
-
-          />
+        />
         <TCThickDivider />
 
         <TCChallengeTitle
-        title={'Refund Policy'}
-        value={challengeObj?.refund_policy}
-        tooltipText={
-        '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the match fee and service fee are not refunded.'
-        }
-        tooltipHeight={hp('18%')}
-        tooltipWidth={wp('50%')}
-        isEdit={false}
-
-      />
+          title={'Refund Policy'}
+          value={challengeObj?.refund_policy}
+          tooltipText={
+            '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the match fee and service fee are not refunded.'
+          }
+          tooltipHeight={hp('18%')}
+          tooltipWidth={wp('50%')}
+          isEdit={false}
+        />
         <TCThickDivider />
         <TCChallengeTitle
           title={
             challengeObj?.challenger === entity.uid ? 'Payment' : 'Earning'
           }
           isEdit={false}
-
         />
         <GameFeeCard
-          feeObject={
-             {
-              total_game_fee: challengeObj?.total_game_fee,
-              total_service_fee1: challengeObj?.total_service_fee1,
-              total_service_fee2: challengeObj?.total_service_fee2,
-              international_card_fee: challengeObj?.international_card_fee,
-              total_stripe_fee: challengeObj?.total_stripe_fee,
-              total_payout: challengeObj?.total_payout,
-              total_amount: challengeObj?.total_amount,
-          }
-          }
+          feeObject={{
+            total_game_fee: challengeObj?.total_game_fee,
+            total_service_fee1: challengeObj?.total_service_fee1,
+            total_service_fee2: challengeObj?.total_service_fee2,
+            international_card_fee: challengeObj?.international_card_fee,
+            total_stripe_fee: challengeObj?.total_stripe_fee,
+            total_payout: challengeObj?.total_payout,
+            total_amount: challengeObj?.total_amount,
+          }}
           currency={challengeObj?.game_fee?.currency_type}
           isChallenger={challengeObj?.challenger === entity.uid}
         />
@@ -579,7 +551,6 @@ export default function CurruentReservationView({ reservationObj }) {
            marginTop: 15,
          }}
        /> */}
-
     </SafeAreaView>
   );
 }
@@ -612,7 +583,7 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
     borderRadius: 20,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.4,
     shadowRadius: 1,
   },
@@ -708,7 +679,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RMedium,
     fontSize: 16,
     color: colors.lightBlackColor,
-  width: '80%',
+    width: '80%',
   },
   reqOutImage: {
     width: 20,
@@ -729,7 +700,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: {width: 0, height: 3},
     shadowOpacity: 0.5,
     shadowRadius: 4,
     elevation: 3,

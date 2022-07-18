@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  Text,
-} from 'react-native';
+import {View, StyleSheet, TouchableOpacity, Text} from 'react-native';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -22,25 +17,55 @@ export default function TabView({
     <View style={styles.eventPrivacyContianer}>
       <TouchableOpacity
         onPress={onFirstTabPress}
-        style={indexCounter === 0 ? styles.activeEventPricacy : styles.inactiveEventPricacy}
+        style={
+          indexCounter === 0
+            ? styles.activeEventPricacy
+            : styles.inactiveEventPricacy
+        }
       >
-        <Text style={indexCounter === 0 ? styles.activeEventPrivacyText : styles.inactiveEventPrivacyText}>
+        <Text
+          style={
+            indexCounter === 0
+              ? styles.activeEventPrivacyText
+              : styles.inactiveEventPrivacyText
+          }
+        >
           {'All'}
         </Text>
       </TouchableOpacity>
       <TouchableOpacity
         onPress={onSecondTabPress}
-        style={indexCounter === 1 ? styles.activeEventPricacy : styles.inactiveEventPricacy}
+        style={
+          indexCounter === 1
+            ? styles.activeEventPricacy
+            : styles.inactiveEventPricacy
+        }
       >
-        <Text style={indexCounter === 1 ? styles.activeEventPrivacyText : styles.inactiveEventPrivacyText}>
+        <Text
+          style={
+            indexCounter === 1
+              ? styles.activeEventPrivacyText
+              : styles.inactiveEventPrivacyText
+          }
+        >
           {'From me'}
         </Text>
       </TouchableOpacity>
       <TouchableOpacity
         onPress={onThirdTabPress}
-        style={indexCounter === 2 ? styles.activeEventPricacy : styles.inactiveEventPricacy}
+        style={
+          indexCounter === 2
+            ? styles.activeEventPricacy
+            : styles.inactiveEventPricacy
+        }
       >
-        <Text style={indexCounter === 2 ? styles.activeEventPrivacyText : styles.inactiveEventPrivacyText}>
+        <Text
+          style={
+            indexCounter === 2
+              ? styles.activeEventPrivacyText
+              : styles.inactiveEventPrivacyText
+          }
+        >
           {'Tagged'}
         </Text>
       </TouchableOpacity>

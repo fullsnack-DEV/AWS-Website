@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, StyleSheet, View } from 'react-native';
+import {Text, StyleSheet, View} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
@@ -12,69 +12,106 @@ const TCWinningRangeChart = ({
   drawCount = 0,
   teamTwoCount = 0,
 }) => {
-  const GradiantContainer = ({ gradiantColor, style }) => (<LinearGradient
-          colors={gradiantColor}
-          style={{ ...styles.gradiantIndicator, ...style }}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-  />)
+  const GradiantContainer = ({gradiantColor, style}) => (
+    <LinearGradient
+      colors={gradiantColor}
+      style={{...styles.gradiantIndicator, ...style}}
+      start={{x: 0, y: 0}}
+      end={{x: 1, y: 0}}
+    />
+  );
 
   return (
     <View style={styles.container}>
       <Text style={styles.headingTitle}>
         {heading} games
-        <Text style={{ fontFamily: fonts.RBold }}>{` ${totalCount}`}</Text>
+        <Text style={{fontFamily: fonts.RBold}}>{` ${totalCount}`}</Text>
       </Text>
-      {totalCount > 0 ? <View style={styles.mainContainer}>
-        {/* Team One */}
-        <View style={{ ...styles.singleColumnContainer, width: `${(100 * teamOneCount) / totalCount}%` }}>
-          <GradiantContainer
-            gradiantColor={[colors.themeColor, colors.yellowColor]}
+      {totalCount > 0 ? (
+        <View style={styles.mainContainer}>
+          {/* Team One */}
+          <View
             style={{
-              borderTopRightRadius: teamTwoCount === 0 && drawCount === 0 ? 15 : 0,
-              borderBottomRightRadius: teamTwoCount === 0 && drawCount === 0 ? 15 : 0,
-              borderTopLeftRadius: 15,
-              borderBottomLeftRadius: 15,
+              ...styles.singleColumnContainer,
+              width: `${(100 * teamOneCount) / totalCount}%`,
             }}
-        />
-          <TCTextGradiant
-            textStyle={{ ...styles.bottomText, textAlign: 'left' }}
-            text={`${teamOneCount} (${Math.floor((100 * teamOneCount) / totalCount)}%)`}
-            colors={[colors.themeColor, colors.yellowColor]}
+          >
+            <GradiantContainer
+              gradiantColor={[colors.themeColor, colors.yellowColor]}
+              style={{
+                borderTopRightRadius:
+                  teamTwoCount === 0 && drawCount === 0 ? 15 : 0,
+                borderBottomRightRadius:
+                  teamTwoCount === 0 && drawCount === 0 ? 15 : 0,
+                borderTopLeftRadius: 15,
+                borderBottomLeftRadius: 15,
+              }}
             />
-        </View>
-        {/*  Draw */}
-        <View style={{ ...styles.singleColumnContainer, width: `${(100 * drawCount) / totalCount}%` }}>
-          <GradiantContainer
-                gradiantColor={[colors.greenGradientEnd, colors.greenGradientStart]}
-                style={{
-                  borderTopRightRadius: teamTwoCount === 0 ? 15 : 0,
-                  borderBottomRightRadius: teamTwoCount === 0 ? 15 : 0,
-                  borderTopLeftRadius: teamOneCount === 0 ? 15 : 0,
-                  borderBottomLeftRadius: teamOneCount === 0 ? 15 : 0,
-                }}
-          />
-          <Text style={{ ...styles.bottomText, textAlign: 'right' }}>
-            {`${drawCount} (${Math.floor((100 * drawCount) / totalCount)}%)`}
-          </Text>
-        </View>
-        {/*  Team Two */}
-        <View style={{ ...styles.singleColumnContainer, width: `${(100 * teamTwoCount) / totalCount}%` }}>
-          <GradiantContainer
-                gradiantColor={[colors.blueGradiantEnd, colors.blueGradiantStart]}
-                style={{
-                  borderTopLeftRadius: teamOneCount === 0 && drawCount === 0 ? 15 : 0,
-                  borderBottomLeftRadius: teamOneCount === 0 && drawCount === 0 ? 15 : 0,
-                  borderTopRightRadius: 15,
-                  borderBottomRightRadius: 15,
-                }}
+            <TCTextGradiant
+              textStyle={{...styles.bottomText, textAlign: 'left'}}
+              text={`${teamOneCount} (${Math.floor(
+                (100 * teamOneCount) / totalCount,
+              )}%)`}
+              colors={[colors.themeColor, colors.yellowColor]}
             />
-          <Text style={{ ...styles.bottomText, textAlign: 'right' }}>
-            {`${teamTwoCount} (${Math.floor((100 * teamTwoCount) / totalCount)}%)`}
-          </Text>
+          </View>
+          {/*  Draw */}
+          <View
+            style={{
+              ...styles.singleColumnContainer,
+              width: `${(100 * drawCount) / totalCount}%`,
+            }}
+          >
+            <GradiantContainer
+              gradiantColor={[
+                colors.greenGradientEnd,
+                colors.greenGradientStart,
+              ]}
+              style={{
+                borderTopRightRadius: teamTwoCount === 0 ? 15 : 0,
+                borderBottomRightRadius: teamTwoCount === 0 ? 15 : 0,
+                borderTopLeftRadius: teamOneCount === 0 ? 15 : 0,
+                borderBottomLeftRadius: teamOneCount === 0 ? 15 : 0,
+              }}
+            />
+            <Text style={{...styles.bottomText, textAlign: 'right'}}>
+              {`${drawCount} (${Math.floor((100 * drawCount) / totalCount)}%)`}
+            </Text>
+          </View>
+          {/*  Team Two */}
+          <View
+            style={{
+              ...styles.singleColumnContainer,
+              width: `${(100 * teamTwoCount) / totalCount}%`,
+            }}
+          >
+            <GradiantContainer
+              gradiantColor={[colors.blueGradiantEnd, colors.blueGradiantStart]}
+              style={{
+                borderTopLeftRadius:
+                  teamOneCount === 0 && drawCount === 0 ? 15 : 0,
+                borderBottomLeftRadius:
+                  teamOneCount === 0 && drawCount === 0 ? 15 : 0,
+                borderTopRightRadius: 15,
+                borderBottomRightRadius: 15,
+              }}
+            />
+            <Text style={{...styles.bottomText, textAlign: 'right'}}>
+              {`${teamTwoCount} (${Math.floor(
+                (100 * teamTwoCount) / totalCount,
+              )}%)`}
+            </Text>
+          </View>
         </View>
-      </View> : <View style={{ ...styles.singleColumnContainer, width: '100%', marginTop: 30 }}>
-        <GradiantContainer
+      ) : (
+        <View
+          style={{
+            ...styles.singleColumnContainer,
+            width: '100%',
+            marginTop: 30,
+          }}
+        >
+          <GradiantContainer
             gradiantColor={[colors.veryLightGray, colors.veryLightGray]}
             style={{
               borderTopRightRadius: 15,
@@ -82,12 +119,12 @@ const TCWinningRangeChart = ({
               borderTopLeftRadius: 15,
               borderBottomLeftRadius: 15,
             }}
-        />
-      </View>}
-
+          />
+        </View>
+      )}
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -108,8 +145,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
   },
-  singleColumnContainer: {
-  },
+  singleColumnContainer: {},
   gradiantIndicator: {
     height: 10,
     marginHorizontal: 1.5,
@@ -120,5 +156,5 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
   },
-})
+});
 export default TCWinningRangeChart;

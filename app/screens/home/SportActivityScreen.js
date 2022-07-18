@@ -1,12 +1,6 @@
 /* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable array-callback-return */
-import React, {
-  useContext,
-  useCallback,
- 
-  useEffect,
-  useState,
-} from 'react';
+import React, {useContext, useCallback, useEffect, useState} from 'react';
 import {
   View,
   StyleSheet,
@@ -17,7 +11,6 @@ import {
   TouchableWithoutFeedback,
   Alert,
 } from 'react-native';
-
 
 import {useIsFocused} from '@react-navigation/native';
 import * as Utility from '../../utils';
@@ -39,8 +32,6 @@ export default function SportActivityScreen({navigation}) {
   const [userObject, setUserObject] = useState();
 
   console.log('authContext', authContext.entity.obj);
-
-
 
   useEffect(() => {
     if (isFocused) {
@@ -67,7 +58,8 @@ export default function SportActivityScreen({navigation}) {
         style={styles.listContainer}
         onPress={() => {
           navigation.navigate('ActivitySettingScreen', {sport: item});
-        }}>
+        }}
+      >
         <View style={{flexDirection: 'row'}}>
           <Text style={styles.listItems}>
             {Utility.getSportName(item, authContext)}
@@ -87,7 +79,9 @@ export default function SportActivityScreen({navigation}) {
           <Text style={styles.listTitle}>Playing</Text>
           <FlatList
             showsHorizontalScrollIndicator={false}
-            data={userObject?.registered_sports?.filter((obj) => obj.is_active).sort((a, b) => a.sport.localeCompare(b.sport))}
+            data={userObject?.registered_sports
+              ?.filter((obj) => obj.is_active)
+              .sort((a, b) => a.sport.localeCompare(b.sport))}
             keyExtractor={keyExtractor}
             renderItem={renderSports}
           />
@@ -99,7 +93,9 @@ export default function SportActivityScreen({navigation}) {
           <Text style={styles.listTitle}>Refereeing</Text>
           <FlatList
             showsHorizontalScrollIndicator={false}
-            data={userObject?.referee_data?.filter((obj) => obj.is_active).sort((a, b) => a.sport.localeCompare(b.sport))}
+            data={userObject?.referee_data
+              ?.filter((obj) => obj.is_active)
+              .sort((a, b) => a.sport.localeCompare(b.sport))}
             keyExtractor={keyExtractor}
             renderItem={renderSports}
           />
@@ -111,7 +107,9 @@ export default function SportActivityScreen({navigation}) {
           <Text style={styles.listTitle}>Scorekeepering</Text>
           <FlatList
             showsHorizontalScrollIndicator={false}
-            data={userObject?.scorekeeper_data?.filter((obj) => obj.is_active).sort((a, b) => a.sport.localeCompare(b.sport))}
+            data={userObject?.scorekeeper_data
+              ?.filter((obj) => obj.is_active)
+              .sort((a, b) => a.sport.localeCompare(b.sport))}
             keyExtractor={keyExtractor}
             renderItem={renderSports}
           />
@@ -122,7 +120,8 @@ export default function SportActivityScreen({navigation}) {
         <TouchableWithoutFeedback
           onPress={() => {
             navigation.navigate('DeactivatedSportsListScreen');
-          }}>
+          }}
+        >
           <View style={{flexDirection: 'row'}}>
             <Text style={styles.listItemsTitle}>
               Deactivated Sports Acitivies
@@ -131,8 +130,6 @@ export default function SportActivityScreen({navigation}) {
           </View>
         </TouchableWithoutFeedback>
       </View>
-
-      
     </ScrollView>
   );
 }
@@ -149,7 +146,6 @@ const styles = StyleSheet.create({
   listDeactivateContainer: {
     marginRight: 15,
   },
-
 
   listItems: {
     flex: 1,

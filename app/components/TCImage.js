@@ -1,8 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Image,
-} from 'react-native';
+import {View, Image} from 'react-native';
 
 import FastImage from 'react-native-fast-image';
 
@@ -14,21 +11,20 @@ export default function TCImage({
   resizeMode,
 }) {
   return (
-    <View style={ containerStyle }>
+    <View style={containerStyle}>
       <Image
-        style={ [{
- position: 'absolute',
-width: '100%',
-        height: 200,
-}, imageStyle] }
-        source={ defaultSource }
-         resizeMode={ resizeMode }
+        style={[
+          {
+            position: 'absolute',
+            width: '100%',
+            height: 200,
+          },
+          imageStyle,
+        ]}
+        source={defaultSource}
+        resizeMode={resizeMode}
       />
-      <FastImage
-          style={ imageStyle }
-          source={ source }
-          resizeMode={ resizeMode}
-        />
+      <FastImage style={imageStyle} source={source} resizeMode={resizeMode} />
     </View>
   );
 }

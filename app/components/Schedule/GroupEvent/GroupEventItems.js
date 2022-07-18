@@ -31,7 +31,8 @@ export default function GroupEventItems({
       </View>
       <TouchableOpacity
         style={styles.touchCheckBoxStyle}
-        onPress={onCheckBoxPress}>
+        onPress={onCheckBoxPress}
+      >
         <Image
           source={checkBoxImage}
           style={styles.checkBoxImageStyle}
@@ -71,7 +72,6 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 14,
-    
   },
   eventTextStyle: {
     marginLeft: 10,
@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
   },
   groupImageStyle: {
-    marginLeft:6,
+    marginLeft: 6,
     width: 18,
     height: 18,
     alignSelf: 'center',

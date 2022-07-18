@@ -1,4 +1,4 @@
-import { View } from 'react-native';
+import {View} from 'react-native';
 import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import ShimmerPlaceholder from 'react-native-shimmer-placeholder';
@@ -34,7 +34,6 @@ export const ShimmerView = ({
     shimmerWidthPercent={0.5}
     shimmerColors={colors}
     width={width}
-
-    style={{ borderRadius, marginVertical, ...style }}
+    style={{borderRadius, marginVertical, ...style}}
   />
 );

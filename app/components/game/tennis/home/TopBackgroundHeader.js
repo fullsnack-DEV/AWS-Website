@@ -20,16 +20,16 @@ import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
 import moment from 'moment';
 import ActionSheet from 'react-native-actionsheet';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import Header from '../../../Home/Header';
 import images from '../../../../Constants/ImagePath';
 import colors from '../../../../Constants/Colors';
 import fonts from '../../../../Constants/Fonts';
-import { widthPercentageToDP as wp } from '../../../../utils';
+import {widthPercentageToDP as wp} from '../../../../utils';
 import GameStatus from '../../../../Constants/GameStatus';
 import ActivityLoader from '../../../loader/ActivityLoader';
 import AuthContext from '../../../../auth/context';
-import { getChallengeDetail } from '../../../../screens/challenge/ChallengeUtility';
+import {getChallengeDetail} from '../../../../screens/challenge/ChallengeUtility';
 
 const updating = false;
 let lastDistance = null;
@@ -57,7 +57,7 @@ const TopBackgroundHeader = ({
   }, [gameData]);
 
   const onReachedEnd = useCallback(
-    ({ nativeEvent: e }) => {
+    ({nativeEvent: e}) => {
       const offset = e?.contentOffset?.y;
       const height = e?.layoutMeasurement?.height;
       const total = offset + height;
@@ -95,44 +95,45 @@ const TopBackgroundHeader = ({
   const renderForeground = () => (
     <LinearGradient
       colors={['transparent', 'rgba(0,0,0,0.4)']}
-      style={styles.topImageInnerContainer}>
+      style={styles.topImageInnerContainer}
+    >
       {renderTopHeader}
       <Text style={styles.vsTextStyle}>VS</Text>
       <View style={styles.topHeaderAbsoluteContainer}>
         <View style={styles.teamVsSContainer}>
           <View style={styles.leftTeamContainer}>
-            <View style={{ ...styles.teamLogoContainer, marginRight: wp(2) }}>
+            <View style={{...styles.teamLogoContainer, marginRight: wp(2)}}>
               <FastImage
                 resizeMode={'cover'}
                 source={
                   gameData?.home_team?.thumbnail
-                    ? { uri: gameData?.home_team?.thumbnail }
+                    ? {uri: gameData?.home_team?.thumbnail}
                     : images.profilePlaceHolder
                 }
-                style={{ height: 22, width: 22, borderRadius: 50 }}
+                style={{height: 22, width: 22, borderRadius: 50}}
               />
             </View>
-            <Text style={{ ...styles.teamTextContainer }}>
+            <Text style={{...styles.teamTextContainer}}>
               {gameData?.user_challenge
                 ? gameData?.home_team?.full_name
                 : gameData?.home_team?.group_name}
             </Text>
           </View>
           <View style={styles.rightTeamContainer}>
-            <Text style={{ ...styles.teamTextContainer, textAlign: 'right' }}>
+            <Text style={{...styles.teamTextContainer, textAlign: 'right'}}>
               {gameData?.user_challenge
                 ? gameData?.away_team?.full_name
                 : gameData?.away_team?.group_name}
             </Text>
-            <View style={{ ...styles.teamLogoContainer, marginLeft: wp(2) }}>
+            <View style={{...styles.teamLogoContainer, marginLeft: wp(2)}}>
               <FastImage
                 resizeMode={'cover'}
                 source={
                   gameData?.away_team?.thumbnail
-                    ? { uri: gameData?.away_team?.thumbnail }
+                    ? {uri: gameData?.away_team?.thumbnail}
                     : images.profilePlaceHolder
                 }
-                style={{ height: 22, width: 22, borderRadius: 50 }}
+                style={{height: 22, width: 22, borderRadius: 50}}
               />
             </View>
           </View>
@@ -149,7 +150,8 @@ const TopBackgroundHeader = ({
               marginHorizontal: 5,
               paddingRight: 5,
               borderLeftWidth: 1,
-            }}>
+            }}
+          >
             <Text style={styles.bottomInfoText}>
               {moment(new Date(gameData?.start_datetime * 1000 ?? '')).format(
                 'MMM DD , hh:mm a',
@@ -175,7 +177,8 @@ const TopBackgroundHeader = ({
             ...styles.topCloseHeaderText,
             fontFamily: fonts.RMedium,
             color,
-          }}>
+          }}
+        >
           {teamNumber === 1 ? firstTeamScore : secondTeamScore ?? 0}
         </Text>
       );
@@ -189,17 +192,15 @@ const TopBackgroundHeader = ({
 
   const goToChallengeDetail = useCallback(
     (data) => {
-      
-        setloading(true);
-        getChallengeDetail(data?.challenge_id, authContext)
-          .then((obj) => {
-            setloading(false);
-            navigation.navigate(obj.screenName, {
-              challengeObj: obj.challengeObj || obj.challengeObj[0],
-            });
-          })
-          .catch(() => setloading(false));
-      
+      setloading(true);
+      getChallengeDetail(data?.challenge_id, authContext)
+        .then((obj) => {
+          setloading(false);
+          navigation.navigate(obj.screenName, {
+            challengeObj: obj.challengeObj || obj.challengeObj[0],
+          });
+        })
+        .catch(() => setloading(false));
     },
     [authContext, navigation],
   );
@@ -218,8 +219,8 @@ const TopBackgroundHeader = ({
           style: 'destructive',
           onPress: () => {
             if (
-              gameData?.status === GameStatus.accepted
-              || gameData?.status === GameStatus.reset
+              gameData?.status === GameStatus.accepted ||
+              gameData?.status === GameStatus.reset
             ) {
               Alert.alert('Game not started yet.');
             } else if (gameData?.status === GameStatus.ended) {
@@ -230,7 +231,7 @@ const TopBackgroundHeader = ({
           },
         },
       ],
-      { cancelable: false },
+      {cancelable: false},
     );
   }, [gameData?.status, resetGameDetail]);
 
@@ -239,10 +240,10 @@ const TopBackgroundHeader = ({
     if (onBackPress) onBackPress();
   }, [navigation, onBackPress]);
 
-  const onScroll = useCallback((e) => (onEndReached ? onReachedEnd(e) : null), [
-    onEndReached,
-    onReachedEnd,
-  ]);
+  const onScroll = useCallback(
+    (e) => (onEndReached ? onReachedEnd(e) : null),
+    [onEndReached, onReachedEnd],
+  );
 
   // const renderTopHeader = useMemo(
   //   () => (
@@ -284,15 +285,14 @@ const TopBackgroundHeader = ({
   //   [handleGoBack, headerTitleShown, isAdmin, onThreeDorPress],
   // );
 
-
   const renderTopHeader = useMemo(
     () => (
       <SafeAreaView>
-        <View style={{flexDirection:'row',justifyContent:'space-between'}}>
+        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
           <TouchableOpacity onPress={handleGoBack}>
             <Image
               source={images.backArrow}
-              style={{ height: 22, width: 16, tintColor: colors.whiteColor }}
+              style={{height: 22, width: 16, tintColor: colors.whiteColor}}
             />
           </TouchableOpacity>
           <View style={styles.headerCenterStyle}>
@@ -300,8 +300,9 @@ const TopBackgroundHeader = ({
               <Text style={styles.headerCenterTextStyle}>Match</Text>
             )}
           </View>
-          {isAdmin && <TouchableOpacity onPress={onThreeDorPress}>
-            <Image
+          {isAdmin && (
+            <TouchableOpacity onPress={onThreeDorPress}>
+              <Image
                 source={images.threeDotIcon}
                 style={{
                   height: 22,
@@ -310,7 +311,8 @@ const TopBackgroundHeader = ({
                   resizeMode: 'contain',
                 }}
               />
-          </TouchableOpacity>}
+            </TouchableOpacity>
+          )}
         </View>
       </SafeAreaView>
     ),
@@ -321,12 +323,12 @@ const TopBackgroundHeader = ({
     () => (
       <Header
         barStyle={'light-content'}
-        safeAreaStyle={{ position: 'absolute'}}
+        safeAreaStyle={{position: 'absolute'}}
         leftComponent={
           <TouchableOpacity onPress={handleGoBack}>
             <Image
               source={images.backArrow}
-              style={{ height: 22, width: 16, tintColor: colors.whiteColor }}
+              style={{height: 22, width: 16, tintColor: colors.whiteColor}}
             />
           </TouchableOpacity>
         }
@@ -350,7 +352,7 @@ const TopBackgroundHeader = ({
                 }}
               />
             </TouchableOpacity>
-        )
+          )
         }
       />
     ),
@@ -359,7 +361,7 @@ const TopBackgroundHeader = ({
 
   const renderStickyHeader = useCallback(
     () => (
-      <View style={{ backgroundColor: colors.blackColor }}>
+      <View style={{backgroundColor: colors.blackColor}}>
         <FastImage
           source={bgImage}
           resizeMode={'cover'}
@@ -368,7 +370,7 @@ const TopBackgroundHeader = ({
         />
         <Header
           barStyle={'light-content'}
-          safeAreaStyle={{ position: 'absolute' }}
+          safeAreaStyle={{position: 'absolute'}}
           centerComponent={
             <View style={styles.closeHeaderCenterStyle}>
               <View
@@ -376,14 +378,15 @@ const TopBackgroundHeader = ({
                   ...styles.teamLogoContainer,
                   height: 25,
                   width: 25,
-                }}>
+                }}
+              >
                 <FastImage
                   source={
                     gameData?.home_team?.thumbnail
-                      ? { uri: gameData?.home_team?.thumbnail }
+                      ? {uri: gameData?.home_team?.thumbnail}
                       : images.profilePlaceHolder
                   }
-                  style={{ height: 17.5, width: 17.5, borderRadius: 50 }}
+                  style={{height: 17.5, width: 17.5, borderRadius: 50}}
                 />
               </View>
               <View
@@ -391,7 +394,8 @@ const TopBackgroundHeader = ({
                   flexDirection: 'row',
                   justifyContent: 'center',
                   alignItems: 'center',
-                }}>
+                }}
+              >
                 {getScoreText(homeTeamMatchPoint, awayTeamMatchPoint, 1)}
                 <Text style={styles.topCloseHeaderText}>:</Text>
                 {getScoreText(homeTeamMatchPoint, awayTeamMatchPoint, 2)}
@@ -402,14 +406,15 @@ const TopBackgroundHeader = ({
                   height: 25,
                   width: 25,
                   marginRight: wp(2),
-                }}>
+                }}
+              >
                 <FastImage
                   source={
                     gameData?.away_team?.thumbnail
-                      ? { uri: gameData?.away_team?.thumbnail }
+                      ? {uri: gameData?.away_team?.thumbnail}
                       : images.profilePlaceHolder
                   }
-                  style={{ height: 17.5, width: 17.5, borderRadius: 50 }}
+                  style={{height: 17.5, width: 17.5, borderRadius: 50}}
                 />
               </View>
             </View>
@@ -438,9 +443,9 @@ const TopBackgroundHeader = ({
   );
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{flex: 1}}>
       <ActivityLoader visible={loading} />
-      
+
       <ParallaxScrollView
         onScroll={onScroll}
         bounces={false}
@@ -450,12 +455,14 @@ const TopBackgroundHeader = ({
         parallaxHeaderHeight={200}
         stickyHeaderHeight={Platform.OS === 'ios' ? 0 : 0}
         fadeOutForeground={false}
-        onChangeHeaderVisibility={(isShown) => isShown !== headerTitleShown && setHeaderTitleShown(isShown)
+        onChangeHeaderVisibility={(isShown) =>
+          isShown !== headerTitleShown && setHeaderTitleShown(isShown)
         }
         renderFixedHeader={renderFixedHeader}
         renderStickyHeader={renderStickyHeader}
         renderForeground={renderForeground}
-        renderBackground={renderBackground}>
+        renderBackground={renderBackground}
+      >
         {useMemo(() => {
           let destructiveButtonIndex = null;
           const options = [];
@@ -472,7 +479,7 @@ const TopBackgroundHeader = ({
           const onItemPress = (index) => {
             const item = options[index];
             if (item === 'Game Reservation Details') {
-              console.log('Game Reservation Details',gameData);
+              console.log('Game Reservation Details', gameData);
               goToChallengeDetail(gameData);
             } else if (item === 'Winner & Stats') {
               alert('Winner & Stats');
@@ -481,8 +488,6 @@ const TopBackgroundHeader = ({
             }
           };
           return (
-          
-             
             <ActionSheet
               ref={threeDotActionSheet}
               options={options}
@@ -490,8 +495,6 @@ const TopBackgroundHeader = ({
               destructiveButtonIndex={destructiveButtonIndex}
               onPress={onItemPress}
             />
-           
-           
           );
         }, [gameData, goToChallengeDetail, resetMatch])}
         {children}
@@ -526,7 +529,7 @@ const styles = StyleSheet.create({
   },
   vsTextStyle: {
     fontSize: 24,
-    textAlign:'center',
+    textAlign: 'center',
     fontFamily: fonts.RMedium,
     color: colors.whiteColor,
   },

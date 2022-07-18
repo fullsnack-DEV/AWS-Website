@@ -1,15 +1,11 @@
-import React, { memo } from 'react';
-import {
- View, Text, TouchableOpacity, StyleSheet, Image,
- } from 'react-native';
+import React, {memo} from 'react';
+import {View, Text, TouchableOpacity, StyleSheet, Image} from 'react-native';
 
 import images from '../Constants/ImagePath';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 
-function TCLookingForEntityView({
- onPress, showStar = false, data, sport,
- }) {
+function TCLookingForEntityView({onPress, showStar = false, data, sport}) {
   let sportObj = data?.registered_sports?.filter(
     (o) => o?.sport_name?.toLowerCase() === sport?.toLowerCase(),
   );
@@ -29,25 +25,26 @@ function TCLookingForEntityView({
           <Image
             source={
               data?.thumbnail
-                ? { uri: data?.thumbnail }
+                ? {uri: data?.thumbnail}
                 : images.profilePlaceHolder
             }
             style={styles.profileImage}
           />
         </View>
-        <View style={{ flexDirection: 'column', marginLeft: 5 }}>
+        <View style={{flexDirection: 'column', marginLeft: 5}}>
           <Text style={styles.entityName} numberOfLines={2}>
             {data?.full_name}
           </Text>
           <Text style={styles.locationText} numberOfLines={1}>
             {data?.city}
-            {sportObj?.length === 1
-              ? ` · ${sportObj?.[0]?.sport_name}`
-              : ''}
+            {sportObj?.length === 1 ? ` · ${sportObj?.[0]?.sport_name}` : ''}
           </Text>
           {showStar && (
             <Text style={styles.starPoints} numberOfLines={1}>
-              ★ 5.0 {sportObj?.length === 1 && sportObj?.[0]?.setting ? ` · ${sportObj?.[0]?.setting?.game_fee?.fee} CAD` : ''}
+              ★ 5.0{' '}
+              {sportObj?.length === 1 && sportObj?.[0]?.setting
+                ? ` · ${sportObj?.[0]?.setting?.game_fee?.fee} CAD`
+                : ''}
             </Text>
           )}
         </View>
@@ -64,7 +61,7 @@ const styles = StyleSheet.create({
     width: 40,
     borderRadius: 80,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 5 },
+    shadowOffset: {width: 0, height: 5},
     shadowOpacity: 0.2,
     shadowRadius: 5,
     alignItems: 'center',
@@ -82,7 +79,7 @@ const styles = StyleSheet.create({
     width: 36,
     borderRadius: 80,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 5 },
+    shadowOffset: {width: 0, height: 5},
     shadowOpacity: 0.2,
     shadowRadius: 5,
   },

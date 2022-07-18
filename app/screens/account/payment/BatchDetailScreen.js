@@ -22,11 +22,11 @@ import {
 
 import moment from 'moment';
 import ActionSheet from 'react-native-actionsheet';
-import { Modalize } from 'react-native-modalize';
-import { Portal } from 'react-native-portalize';
+import {Modalize} from 'react-native-modalize';
+import {Portal} from 'react-native-portalize';
 
 import AuthContext from '../../../auth/context';
-import { getGroupMembers } from '../../../api/Groups';
+import {getGroupMembers} from '../../../api/Groups';
 import {
   createBatchInvoice,
   cancelBatchInvoice,
@@ -42,13 +42,13 @@ import images from '../../../Constants/ImagePath';
 import BatchDetailView from '../../../components/invoice/BatchDetailView';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import TCThinDivider from '../../../components/TCThinDivider';
-import { heightPercentageToDP } from '../../../utils';
+import {heightPercentageToDP} from '../../../utils';
 import strings from '../../../Constants/String';
 import InvoiceTypeSelection from '../../../components/invoice/InvoiceTypeSelection';
 
 let entity = {};
-export default function BatchDetailScreen({ navigation, route }) {
-  const [from] = useState( route?.params?.from);
+export default function BatchDetailScreen({navigation, route}) {
+  const [from] = useState(route?.params?.from);
   const [batchData] = useState(route?.params?.batchData);
   console.log('Batch data:=>', batchData);
   const [loading, setloading] = useState(false);
@@ -72,9 +72,8 @@ export default function BatchDetailScreen({ navigation, route }) {
   const [selectedRecipient, setSelectedRecipient] = useState([]);
   const [selectInvoiceType, setSelectInvoiceType] = useState('Open Invoices');
 
-  const [selectedActionSheetOpetion, setSelectedActionSheetOpetion] = useState(
-    0,
-  );
+  const [selectedActionSheetOpetion, setSelectedActionSheetOpetion] =
+    useState(0);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -86,7 +85,8 @@ export default function BatchDetailScreen({ navigation, route }) {
           <TouchableOpacity
             onPress={() => {
               batchActionsheet.current.show();
-            }}>
+            }}
+          >
             <Image
               source={images.threeDotIcon}
               style={styles.townsCupthreeDotIcon}
@@ -142,12 +142,13 @@ export default function BatchDetailScreen({ navigation, route }) {
       });
   }, [authContext, batchData?.invoice_group, recipientData]);
 
-  const renderBatchDetailView = ({ item }) => {
+  const renderBatchDetailView = ({item}) => {
     console.log('item', item);
     return (
       <BatchDetailView
         data={item}
-        onPressCard={() => navigation.navigate('TeamInvoiceDetailScreen', {
+        onPressCard={() =>
+          navigation.navigate('TeamInvoiceDetailScreen', {
             from,
             invoiceObj: item,
           })
@@ -170,8 +171,9 @@ export default function BatchDetailScreen({ navigation, route }) {
       }
       if (status === 'Open') {
         return batchData?.invoices.filter(
-          (obj) => obj.invoice_status === 'Unpaid'
-            || obj?.invoice_status === 'Partially Paid',
+          (obj) =>
+            obj.invoice_status === 'Unpaid' ||
+            obj?.invoice_status === 'Partially Paid',
         );
       }
     },
@@ -211,7 +213,8 @@ export default function BatchDetailScreen({ navigation, route }) {
       <View style={styles.headerButtonStyle}>
         <Text
           style={styles.cancelText}
-          onPress={() => resendModalRef.current.close()}>
+          onPress={() => resendModalRef.current.close()}
+        >
           Cancel
         </Text>
 
@@ -230,9 +233,10 @@ export default function BatchDetailScreen({ navigation, route }) {
                   setloading(true);
 
                   const body = {};
-                  body.type = (selectInvoiceType === 'Open Invoices' && 'open')
-                    || (selectInvoiceType === 'Paid Invoices' && 'paid')
-                    || (selectInvoiceType === 'All Invoices' && 'All');
+                  body.type =
+                    (selectInvoiceType === 'Open Invoices' && 'open') ||
+                    (selectInvoiceType === 'Paid Invoices' && 'paid') ||
+                    (selectInvoiceType === 'All Invoices' && 'All');
                   body.email_sent = false;
 
                   resendBatchInvoice(batchData.invoice_group, body, authContext)
@@ -276,7 +280,8 @@ export default function BatchDetailScreen({ navigation, route }) {
                 }
               }
             }
-          }}>
+          }}
+        >
           Send
         </Text>
       </View>
@@ -293,7 +298,8 @@ export default function BatchDetailScreen({ navigation, route }) {
           onPress={() => {
             setSelectedRecipient([]);
             recipientModalRef.current.close();
-          }}>
+          }}
+        >
           Cancel
         </Text>
 
@@ -345,10 +351,11 @@ export default function BatchDetailScreen({ navigation, route }) {
                     },
                   },
                 ],
-                { cancelable: false },
+                {cancelable: false},
               );
             }
-          }}>
+          }}
+        >
           Done
         </Text>
       </View>
@@ -357,7 +364,7 @@ export default function BatchDetailScreen({ navigation, route }) {
     </View>
   );
 
-  const renderRecipients = ({ item, index }) => (
+  const renderRecipients = ({item, index}) => (
     <>
       <View style={styles.recipientContainer}>
         <View style={styles.profileContainer}>
@@ -365,7 +372,7 @@ export default function BatchDetailScreen({ navigation, route }) {
             <Image
               source={
                 item?.thumbnail && item?.thumbnail !== ''
-                  ? { uri: item?.thumbnail }
+                  ? {uri: item?.thumbnail}
                   : images.profilePlaceHolder
               }
               style={styles.profileImgStyle}
@@ -389,7 +396,8 @@ export default function BatchDetailScreen({ navigation, route }) {
               newRecipientData[index] = tempObj;
               setNewRecipientData([...newRecipientData]);
             }
-          }}>
+          }}
+        >
           <Image
             source={
               item?.selected ? images.orangeCheckBox : images.uncheckEditor
@@ -434,7 +442,8 @@ export default function BatchDetailScreen({ navigation, route }) {
         <View
           style={{
             margin: 15,
-          }}>
+          }}
+        >
           <Text style={styles.dateView}>
             {`Due : ${moment(batchData?.due_date * 1000).format(
               'ddd, MMM DD, YYYY',
@@ -458,7 +467,7 @@ export default function BatchDetailScreen({ navigation, route }) {
           secondTabTitle={`Paid (${batchListByFilter('Paid').length})`}
           thirdTabTitle={`All (${batchListByFilter('All').length})`}
           indexCounter={tabNumber}
-          eventPrivacyContianer={{ width: 100 }}
+          eventPrivacyContianer={{width: 100}}
           onFirstTabPress={() => setTabNumber(0)}
           onSecondTabPress={() => setTabNumber(1)}
           onThirdTabPress={() => setTabNumber(2)}
@@ -466,9 +475,9 @@ export default function BatchDetailScreen({ navigation, route }) {
 
         <FlatList
           data={
-            (tabNumber === 0 && batchListByFilter('Open'))
-            || (tabNumber === 1 && batchListByFilter('Paid'))
-            || (tabNumber === 2 && batchListByFilter('All'))
+            (tabNumber === 0 && batchListByFilter('Open')) ||
+            (tabNumber === 1 && batchListByFilter('Paid')) ||
+            (tabNumber === 2 && batchListByFilter('All'))
           }
           renderItem={renderBatchDetailView}
           keyExtractor={(item, index) => index.toString()}
@@ -505,7 +514,7 @@ export default function BatchDetailScreen({ navigation, route }) {
         <Modalize
           withHandle={false}
           adjustToContentHeight={true}
-          overlayStyle={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+          overlayStyle={{backgroundColor: 'rgba(0,0,0,0.5)'}}
           snapPoint={heightPercentageToDP(50)}
           modalStyle={{
             flex: 1,
@@ -513,13 +522,14 @@ export default function BatchDetailScreen({ navigation, route }) {
             borderTopRightRadius: 25,
             borderTopLeftRadius: 25,
             shadowColor: colors.blackColor,
-            shadowOffset: { width: 0, height: -2 },
+            shadowOffset: {width: 0, height: -2},
             shadowOpacity: 0.3,
             shadowRadius: 10,
             elevation: 10,
           }}
           HeaderComponent={ModalHeader}
-          ref={resendModalRef}>
+          ref={resendModalRef}
+        >
           <View>
             {selectedActionSheetOpetion === 0 && (
               <View>
@@ -531,13 +541,14 @@ export default function BatchDetailScreen({ navigation, route }) {
                     marginLeft: 15,
                     marginRight: 15,
                     flexDirection: 'row',
-                  }}>
+                  }}
+                >
                   <Text>Send to</Text>
                   <InvoiceTypeSelection
                     dataSource={[
-                      { label: 'Open Invoices', value: 'Open Invoices' },
-                      { label: 'Paid Invoices', value: 'Paid Invoices' },
-                      { label: 'All Invoices', value: 'All Invoices' },
+                      {label: 'Open Invoices', value: 'Open Invoices'},
+                      {label: 'Paid Invoices', value: 'Paid Invoices'},
+                      {label: 'All Invoices', value: 'All Invoices'},
                     ]}
                     value={selectInvoiceType}
                     onValueChange={(value) => {
@@ -559,13 +570,15 @@ export default function BatchDetailScreen({ navigation, route }) {
                     marginLeft: 15,
                     marginRight: 15,
                     flexDirection: 'row',
-                  }}>
+                  }}
+                >
                   <Text
                     style={
                       selectedRecipient.length > 0
                         ? styles.totalRecipient
                         : styles.recipientText
-                    }>
+                    }
+                  >
                     {selectedRecipient.length > 0
                       ? `${selectedRecipient.length} Recipients`
                       : 'Add Recipients'}
@@ -582,14 +595,16 @@ export default function BatchDetailScreen({ navigation, route }) {
               style={{
                 margin: 15,
                 backgroundColor: colors.lightGrayBackground,
-              }}>
-              <View style={{ margin: 15 }}>
+              }}
+            >
+              <View style={{margin: 15}}>
                 <Text
                   style={{
                     fontFamily: fonts.RLight,
                     fontSize: 16,
                     color: colors.lightBlackColor,
-                  }}>
+                  }}
+                >
                   Invoice Title
                 </Text>
                 <Text
@@ -597,17 +612,19 @@ export default function BatchDetailScreen({ navigation, route }) {
                     fontFamily: fonts.RMedium,
                     fontSize: 16,
                     color: colors.lightBlackColor,
-                  }}>
+                  }}
+                >
                   {batchData?.invoice_title}
                 </Text>
               </View>
-              <View style={{ margin: 15 }}>
+              <View style={{margin: 15}}>
                 <Text
                   style={{
                     fontFamily: fonts.RLight,
                     fontSize: 16,
                     color: colors.lightBlackColor,
-                  }}>
+                  }}
+                >
                   Invoice Description
                 </Text>
                 <Text
@@ -615,17 +632,19 @@ export default function BatchDetailScreen({ navigation, route }) {
                     fontFamily: fonts.RRegular,
                     fontSize: 16,
                     color: colors.lightBlackColor,
-                  }}>
+                  }}
+                >
                   {batchData?.invoice_description}
                 </Text>
               </View>
-              <View style={{ margin: 15 }}>
+              <View style={{margin: 15}}>
                 <Text
                   style={{
                     fontFamily: fonts.RLight,
                     fontSize: 16,
                     color: colors.lightBlackColor,
-                  }}>
+                  }}
+                >
                   Invoice Amount
                 </Text>
                 <Text
@@ -633,17 +652,19 @@ export default function BatchDetailScreen({ navigation, route }) {
                     fontFamily: fonts.RMedium,
                     fontSize: 20,
                     color: colors.lightBlackColor,
-                  }}>
+                  }}
+                >
                   ${batchData?.invoice_total}
                 </Text>
               </View>
-              <View style={{ margin: 15 }}>
+              <View style={{margin: 15}}>
                 <Text
                   style={{
                     fontFamily: fonts.RLight,
                     fontSize: 16,
                     color: colors.lightBlackColor,
-                  }}>
+                  }}
+                >
                   Due at
                 </Text>
                 <Text
@@ -651,7 +672,8 @@ export default function BatchDetailScreen({ navigation, route }) {
                     fontFamily: fonts.RMedium,
                     fontSize: 16,
                     color: colors.lightBlackColor,
-                  }}>
+                  }}
+                >
                   {moment(batchData?.due_date * 1000).format(
                     'ddd, MMM DD, YYYY',
                   )}
@@ -666,7 +688,7 @@ export default function BatchDetailScreen({ navigation, route }) {
         <Modalize
           withHandle={false}
           adjustToContentHeight={true}
-          overlayStyle={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+          overlayStyle={{backgroundColor: 'rgba(0,0,0,0.5)'}}
           snapPoint={heightPercentageToDP(50)}
           modalStyle={{
             flex: 1,
@@ -674,13 +696,14 @@ export default function BatchDetailScreen({ navigation, route }) {
             borderTopRightRadius: 25,
             borderTopLeftRadius: 25,
             shadowColor: colors.blackColor,
-            shadowOffset: { width: 0, height: -2 },
+            shadowOffset: {width: 0, height: -2},
             shadowOpacity: 0.3,
             shadowRadius: 10,
             elevation: 10,
           }}
           HeaderComponent={RecipientsModalHeader}
-          ref={recipientModalRef}>
+          ref={recipientModalRef}
+        >
           <View>
             <View>
               {selectedActionSheetOpetion === 2 && (
@@ -691,7 +714,8 @@ export default function BatchDetailScreen({ navigation, route }) {
                     color: colors.lightBlackColor,
                     margin: 15,
                     marginTop: 0,
-                  }}>
+                  }}
+                >
                   Choose recipients of the invoices that you want to cancel.
                 </Text>
               )}
@@ -704,13 +728,15 @@ export default function BatchDetailScreen({ navigation, route }) {
                   marginLeft: 15,
                   marginRight: 15,
                   flexDirection: 'row',
-                }}>
+                }}
+              >
                 <Text
                   style={{
                     fontFamily: fonts.RRegular,
                     fontSize: 16,
                     color: colors.lightBlackColor,
-                  }}>
+                  }}
+                >
                   All
                 </Text>
                 {/* <Image source={images.orangeCheckBox} style={styles.checkButton} /> */}
@@ -719,7 +745,7 @@ export default function BatchDetailScreen({ navigation, route }) {
                     setRecipientAllData(!recipientAllData);
                     if (selectedActionSheetOpetion === 1) {
                       const result = addNewList.map((el) => {
-                        const o = { ...el };
+                        const o = {...el};
                         o.selected = !recipientAllData;
                         return o;
                       });
@@ -727,13 +753,14 @@ export default function BatchDetailScreen({ navigation, route }) {
                     }
                     if (selectedActionSheetOpetion === 2) {
                       const result = newRecipientData.map((el) => {
-                        const o = { ...el };
+                        const o = {...el};
                         o.selected = !recipientAllData;
                         return o;
                       });
                       setNewRecipientData([...result]);
                     }
-                  }}>
+                  }}
+                >
                   <Image
                     source={
                       recipientAllData
@@ -747,19 +774,20 @@ export default function BatchDetailScreen({ navigation, route }) {
               <TCThinDivider width={'92%'} />
             </View>
 
-            <View style={{ margin: 15 }}>
+            <View style={{margin: 15}}>
               <Text
                 style={{
                   fontFamily: fonts.RRegular,
                   fontSize: 16,
                   color: colors.lightBlackColor,
-                }}>
+                }}
+              >
                 Members
               </Text>
               <FlatList
                 data={
-                  (selectedActionSheetOpetion === 2 && newRecipientData)
-                  || (selectedActionSheetOpetion === 1 && addNewList)
+                  (selectedActionSheetOpetion === 2 && newRecipientData) ||
+                  (selectedActionSheetOpetion === 1 && addNewList)
                 }
                 renderItem={renderRecipients}
                 keyExtractor={(item, index) => index.toString()}
@@ -887,7 +915,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 64,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
     elevation: 3,

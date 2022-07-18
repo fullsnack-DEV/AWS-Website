@@ -393,7 +393,8 @@ export default function CreateTeamForm3({navigation, route}) {
       <TCFormProgress totalSteps={3} curruentStep={3} />
       <ScrollView
         style={styles.mainContainer}
-        showsVerticalScrollIndicator={false}>
+        showsVerticalScrollIndicator={false}
+      >
         <ActivityLoader visible={loading} />
 
         <TCLabel title={strings.photoUploadTitle} />
@@ -419,8 +420,8 @@ export default function CreateTeamForm3({navigation, route}) {
 
         {createTeamForm2?.sport?.toLowerCase() ===
           'Tennis Double'.toLowerCase() && (
-            <View>
-              <TCPlayerImageInfo
+          <View>
+            <TCPlayerImageInfo
               title={'Players'}
               player1Image={createTeamForm2?.player1?.thumbnail}
               player2Image={createTeamForm2?.player2?.thumbnail}
@@ -430,8 +431,8 @@ export default function CreateTeamForm3({navigation, route}) {
               marginRight={25}
               marginTop={10}
             />
-              <TCThinDivider marginTop={10} marginBottom={5} />
-            </View>
+            <TCThinDivider marginTop={10} marginBottom={5} />
+          </View>
         )}
 
         <TCInfoField
@@ -450,8 +451,8 @@ export default function CreateTeamForm3({navigation, route}) {
 
         {createTeamForm2?.sport?.toLowerCase() !==
           'Tennis Double'.toLowerCase() && (
-            <View>
-              <TCInfoField
+          <View>
+            <TCInfoField
               title={'Members’ gender'}
               value={
                 createTeamForm2?.gender?.charAt(0)?.toUpperCase() +
@@ -459,17 +460,17 @@ export default function CreateTeamForm3({navigation, route}) {
               }
               marginLeft={25}
             />
-              <TCThinDivider marginTop={5} marginBottom={3} />
+            <TCThinDivider marginTop={5} marginBottom={3} />
 
-              <TCInfoField
+            <TCInfoField
               title={'Members’ ages'}
               value={`Min ${createTeamForm2?.min_age ?? 'N/A'} Max ${
                 createTeamForm2?.max_age ?? 'N/A'
               }`}
               marginLeft={25}
             />
-              <TCThinDivider marginTop={5} marginBottom={3} />
-            </View>
+            <TCThinDivider marginTop={5} marginBottom={3} />
+          </View>
         )}
 
         <TCInfoField

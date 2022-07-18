@@ -92,7 +92,7 @@ const PlayInReviewsView = ({currentUserData}) => {
     //   <TCThickDivider marginVertical={15}/>
     // </View>
     <View>
-      <ActivityLoader visible={loading}/>
+      <ActivityLoader visible={loading} />
       <UserReviewSection
         isTeamReviewSection={true}
         loading={loading}

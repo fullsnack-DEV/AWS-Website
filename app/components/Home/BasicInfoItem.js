@@ -1,25 +1,18 @@
-import React, { memo } from 'react';
-import {
-  Text,
-  View,
-  StyleSheet,
-} from 'react-native';
+import React, {memo} from 'react';
+import {Text, View, StyleSheet} from 'react-native';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
-const BasicInfoItem = ({
-  title,
-  value,
-  titleStyle,
-  valueStyle,
-  fieldView,
-}) => (
-  <View style={{ ...styles.fieldView, ...fieldView }}>
-    <Text style={[styles.fieldTitle, titleStyle]} numberOfLines={2}>{title}</Text>
-    <Text style={[styles.fieldValue, valueStyle]} numberOfLines={3} >{value}</Text>
+const BasicInfoItem = ({title, value, titleStyle, valueStyle, fieldView}) => (
+  <View style={{...styles.fieldView, ...fieldView}}>
+    <Text style={[styles.fieldTitle, titleStyle]} numberOfLines={2}>
+      {title}
+    </Text>
+    <Text style={[styles.fieldValue, valueStyle]} numberOfLines={3}>
+      {value}
+    </Text>
   </View>
-
-  )
+);
 const styles = StyleSheet.create({
   fieldView: {
     flex: 1,
@@ -42,4 +35,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default memo(BasicInfoItem)
+export default memo(BasicInfoItem);

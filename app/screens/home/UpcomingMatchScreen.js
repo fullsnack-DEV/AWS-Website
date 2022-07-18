@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, {useContext} from 'react';
 import {
   StyleSheet,
   Text,
@@ -7,11 +7,11 @@ import {
 } from 'react-native';
 import moment from 'moment';
 import UpcomingMatchItems from '../../components/Home/UpcomingMatchItems';
-import colors from '../../Constants/Colors'
+import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import AuthContext from '../../auth/context';
-import { getEventById } from '../../api/Schedule';
-import { getGameHomeScreen } from '../../utils/gameUtils';
+import {getEventById} from '../../api/Schedule';
+import {getGameHomeScreen} from '../../utils/gameUtils';
 
 export default function UpcomingMatchScreen({
   sportsData,
@@ -20,7 +20,7 @@ export default function UpcomingMatchScreen({
   comeFrom = '',
   onItemPress,
 }) {
-  const authContext = useContext(AuthContext)
+  const authContext = useContext(AuthContext);
   let filterData = [];
   let dataNotFound = true;
   if (sportsData) {
@@ -35,7 +35,7 @@ export default function UpcomingMatchScreen({
         nextDay: '[Tomorrow]',
         nextWeek: '[Future]',
         sameElse: '[Future]',
-      })
+      });
       if (dateText === 'Today') {
         todayData.push(item_filter);
         dataNotFound = false;
@@ -49,62 +49,80 @@ export default function UpcomingMatchScreen({
         dataNotFound = false;
       }
       return null;
-    })
-    filterData = []
-    if (todayData?.length > 0) filterData.push({ title: 'Today', data: todayData })
-    if (tomorrowData?.length > 0) filterData.push({ title: 'Tomorrow', data: tomorrowData })
-    if (futureData?.length > 0) filterData.push({ title: 'Future', data: futureData })
+    });
+    filterData = [];
+    if (todayData?.length > 0)
+      filterData.push({title: 'Today', data: todayData});
+    if (tomorrowData?.length > 0)
+      filterData.push({title: 'Tomorrow', data: tomorrowData});
+    if (futureData?.length > 0)
+      filterData.push({title: 'Future', data: futureData});
   }
 
   const onGameCardClick = (item) => {
     if (comeFrom !== 'UserScoreboardScreen') {
-      onItemPress()
+      onItemPress();
     }
-        setTimeout(() => {
-      const entity = authContext.entity
+    setTimeout(() => {
+      const entity = authContext.entity;
       if (item?.game_id) {
         if (item?.sport) {
           const gameHome = getGameHomeScreen(item?.sport);
           navigation.navigate(gameHome, {
             gameId: item?.game_id,
-          })
+          });
         }
       } else {
-        getEventById(entity.role === 'user' ? 'users' : 'groups', entity.uid || entity.auth.user_id, item.cal_id, authContext).then((response) => {
-          navigation.navigate('EventScreen', { data: response.payload, gameData: item });
-        }).catch((e) => {
-          console.log('Error :-', e);
-        })
+        getEventById(
+          entity.role === 'user' ? 'users' : 'groups',
+          entity.uid || entity.auth.user_id,
+          item.cal_id,
+          authContext,
+        )
+          .then((response) => {
+            navigation.navigate('EventScreen', {
+              data: response.payload,
+              gameData: item,
+            });
+          })
+          .catch((e) => {
+            console.log('Error :-', e);
+          });
       }
-    }, 1000)
-  }
+    }, 1000);
+  };
   return (
-    <KeyboardAvoidingView style={ styles.mainContainer }>
-      {dataNotFound
-        ? <Text style={styles.dataNotFoundText}>Data Not Found!</Text>
-        : <SectionList
-          renderItem={ ({ item }) => {
+    <KeyboardAvoidingView style={styles.mainContainer}>
+      {dataNotFound ? (
+        <Text style={styles.dataNotFoundText}>Data Not Found!</Text>
+      ) : (
+        <SectionList
+          renderItem={({item}) => {
             let isAssistantReferee = false;
-            const myRefereeData = item?.referees?.filter((refereeItem) => refereeItem?.referee_id === authContext?.entity?.uid);
-            if (myRefereeData?.length > 0 && !myRefereeData?.[0]?.chief_referee) isAssistantReferee = true;
+            const myRefereeData = item?.referees?.filter(
+              (refereeItem) =>
+                refereeItem?.referee_id === authContext?.entity?.uid,
+            );
+            if (myRefereeData?.length > 0 && !myRefereeData?.[0]?.chief_referee)
+              isAssistantReferee = true;
             return (
               <UpcomingMatchItems
-                    data={item}
-                    // onThreeDotPress={() => {}}
-                    onItemPress={() => onGameCardClick(item)}
-                    showEventNumbers={showEventNumbers}
-                    showAssistReferee={isAssistantReferee}
-                />
-            )
-          } }
-          renderSectionHeader={ ({ section: { title } }) => (
-            <Text style={ styles.sectionHeader }>{title}</Text>
-          ) }
+                data={item}
+                // onThreeDotPress={() => {}}
+                onItemPress={() => onGameCardClick(item)}
+                showEventNumbers={showEventNumbers}
+                showAssistReferee={isAssistantReferee}
+              />
+            );
+          }}
+          renderSectionHeader={({section: {title}}) => (
+            <Text style={styles.sectionHeader}>{title}</Text>
+          )}
           sections={filterData}
           keyExtractor={(item, index) => index.toString()}
           bounces={false}
         />
-      }
+      )}
     </KeyboardAvoidingView>
   );
 }

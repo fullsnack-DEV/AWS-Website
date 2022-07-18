@@ -288,7 +288,8 @@ const NewsFeedPostItems = memo(
           <TouchableOpacity
             activeOpacity={1}
             onPress={onImageProfilePress}
-            style={styles.imageMainContainer}>
+            style={styles.imageMainContainer}
+          >
             <Image
               style={styles.background}
               source={
@@ -303,7 +304,8 @@ const NewsFeedPostItems = memo(
             <Text
               numberOfLines={1}
               style={styles.userNameTxt}
-              onPress={onImageProfilePress}>
+              onPress={onImageProfilePress}
+            >
               {item?.actor?.data?.full_name}
             </Text>
             <Text style={styles.activeTimeAgoTxt}>
@@ -317,7 +319,8 @@ const NewsFeedPostItems = memo(
               style={styles.dotImageTouchStyle}
               onPress={() => {
                 actionSheet.current.show();
-              }}>
+              }}
+            >
               <Image
                 style={styles.dotImageStyle}
                 source={images.threeDotIcon}
@@ -421,11 +424,13 @@ const NewsFeedPostItems = memo(
                   myItem?.post_type === 'repost'
                     ? styles.mainRepostContainer
                     : styles.mainContainer
-                }>
+                }
+              >
                 <TouchableOpacity
                   activeOpacity={1}
                   onPress={onImageProfilePress}
-                  style={styles.imageMainContainer}>
+                  style={styles.imageMainContainer}
+                >
                   <Image
                     style={styles.background}
                     source={
@@ -440,7 +445,8 @@ const NewsFeedPostItems = memo(
                   <Text
                     numberOfLines={1}
                     style={styles.userNameTxt}
-                    onPress={onImageProfilePress}>
+                    onPress={onImageProfilePress}
+                  >
                     {myData?.actor?.data?.full_name}
                   </Text>
                   <Text style={styles.activeTimeAgoTxt}>
@@ -454,7 +460,8 @@ const NewsFeedPostItems = memo(
                     style={styles.dotImageTouchStyle}
                     onPress={() => {
                       actionSheet.current.show();
-                    }}>
+                    }}
+                  >
                     <Image
                       style={styles.dotImageStyle}
                       source={images.threeDotIcon}
@@ -489,14 +496,16 @@ const NewsFeedPostItems = memo(
                 alignItems: 'center',
 
                 flex: 1,
-              }}>
+              }}
+            >
               <TouchableOpacity
                 onPress={onWriteCommentPress}
                 style={{
                   flexDirection: 'row',
                   marginRight: 25,
                   flex: 0.5,
-                }}>
+                }}
+              >
                 <View style={styles.imageTouchStyle}>
                   <Image
                     style={styles.commentImage}
@@ -514,10 +523,12 @@ const NewsFeedPostItems = memo(
                   flexDirection: 'row',
                   alignItems: 'center',
                   flex: 0.5,
-                }}>
+                }}
+              >
                 <TouchableOpacity
                   onPress={() => shareActionSheet.current.show()}
-                  style={styles.imageTouchStyle}>
+                  style={styles.imageTouchStyle}
+                >
                   <Image
                     style={styles.commentImage}
                     source={images.shareImage}
@@ -535,13 +546,15 @@ const NewsFeedPostItems = memo(
                 justifyContent: 'flex-end',
                 alignItems: 'center',
                 marginLeft: 20,
-              }}>
+              }}
+            >
               <TouchableOpacity
                 style={{marginRight: 5}}
                 onPress={() => {
                   console.log('Like obj:=>', item);
                   likersModalRef.current.open();
-                }}>
+                }}
+              >
                 <Text
                   style={[
                     styles.commentlengthStyle,
@@ -549,13 +562,15 @@ const NewsFeedPostItems = memo(
                       color:
                         like === true ? '#FF8A01' : colors.reactionCountColor,
                     },
-                  ]}>
+                  ]}
+                >
                   {likeCount <= 0 ? '' : likeCount}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={onNewsFeedLikePress}
-                style={styles.imageTouchStyle}>
+                style={styles.imageTouchStyle}
+              >
                 <Image
                   style={styles.commentImage}
                   source={like ? images.likeImage : images.unlikeImage}

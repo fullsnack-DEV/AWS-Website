@@ -1,21 +1,17 @@
-import React, { useLayoutEffect } from 'react';
-import {
-  View, StyleSheet, Image, Text,
- TouchableOpacity,
-} from 'react-native';
+import React, {useLayoutEffect} from 'react';
+import {View, StyleSheet, Image, Text, TouchableOpacity} from 'react-native';
 
 import images from '../../../Constants/ImagePath';
-import colors from '../../../Constants/Colors'
-import fonts from '../../../Constants/Fonts'
+import colors from '../../../Constants/Colors';
+import fonts from '../../../Constants/Fonts';
 
-export default function ConnectionReqSentScreen({ navigation, route }) {
+export default function ConnectionReqSentScreen({navigation, route}) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
         <TouchableOpacity onPress={() => navigation.popToTop()}>
-          <Image source={images.backArrow} style={styles.backStyle}/>
+          <Image source={images.backArrow} style={styles.backStyle} />
         </TouchableOpacity>
-
       ),
     });
   }, [navigation]);
@@ -24,14 +20,17 @@ export default function ConnectionReqSentScreen({ navigation, route }) {
     <View style={styles.mainContainer}>
       <Image style={styles.background} source={images.orangeLayer} />
       <Image style={styles.background} source={images.bgImage} />
-      <View style={styles.imageContainer}>
-
-      </View>
+      <View style={styles.imageContainer}></View>
       <View style={styles.mailContainer}>
-        <Image source={images.challengeSentPlane} style={styles.rotateImage}/>
+        <Image source={images.challengeSentPlane} style={styles.rotateImage} />
         <Text style={styles.invitationText}>Connection request sent</Text>
 
-        <Text style={styles.infoText}>When {route.params.memberObj.first_name} {route.params.memberObj.last_name} accepts the request, the user’s account will be connected to the member’s profile created in your group.</Text>
+        <Text style={styles.infoText}>
+          When {route.params.memberObj.first_name}{' '}
+          {route.params.memberObj.last_name} accepts the request, the user’s
+          account will be connected to the member’s profile created in your
+          group.
+        </Text>
       </View>
     </View>
   );
@@ -93,4 +92,4 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     tintColor: colors.whiteColor,
   },
-})
+});

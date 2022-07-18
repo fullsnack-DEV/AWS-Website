@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import React,{useContext} from 'react';
+import React, {useContext} from 'react';
 import {
   Text,
   View,
@@ -25,8 +25,7 @@ const GroupMembership = ({
   let typeImage = '';
   const authContext = useContext(AuthContext);
 
-
-  if(groupData?.group?.entity_type === 'team'){
+  if (groupData?.group?.entity_type === 'team') {
     const a = {
       ...groupData.group,
       positions: groupData?.positions,
@@ -37,18 +36,15 @@ const GroupMembership = ({
       is_member: groupData?.is_member,
       is_coach: groupData?.is_coach,
       note: groupData?.note,
-      user_id : groupData?.user_id
-    }
-    groupData = a
+      user_id: groupData?.user_id,
+    };
+    groupData = a;
   }
 
   if (groupData.entity_type === 'player') typeImage = '';
   else if (groupData.entity_type === 'club') typeImage = images.clubC;
   else if (groupData.entity_type === 'team') typeImage = images.teamT;
   else if (groupData.entity_type === 'league') typeImage = images.clubC;
-
-
-
 
   return (
     <>
@@ -65,8 +61,7 @@ const GroupMembership = ({
             />
           </View>
           <View style={styles.topTextContainer}>
-            <View
-              style={{flexDirection: 'row', alignItems:'center'}}>
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
               <Text style={styles.nameText} numberOfLines={5}>
                 {groupData.group_name}
               </Text>
@@ -88,7 +83,8 @@ const GroupMembership = ({
             </View>
           </View>
         </View>
-        {(edit || groupData.group_id === switchID) && authContext.entity.role === groupData?.entity_type ? (
+        {(edit || groupData.group_id === switchID) &&
+        authContext.entity.role === groupData?.entity_type ? (
           <TouchableWithoutFeedback onPress={onEditPressed}>
             <Image source={images.editSection} style={styles.editImage} />
           </TouchableWithoutFeedback>
@@ -98,7 +94,11 @@ const GroupMembership = ({
         <>
           <TCInfoField
             title={'Position'}
-            value={groupData?.positions?.length && groupData?.positions[0] !== '' ? groupData.positions.join(', ') : 'N/A'}
+            value={
+              groupData?.positions?.length && groupData?.positions[0] !== ''
+                ? groupData.positions.join(', ')
+                : 'N/A'
+            }
             marginLeft={25}
             marginTop={30}
           />
@@ -123,7 +123,6 @@ const GroupMembership = ({
       {/* {groupData.note ? (
         <Text style={styles.groupDescriptionText}>{groupData.note}</Text>
       ) : null} */}
-      
     </>
   );
 };

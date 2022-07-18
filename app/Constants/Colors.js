@@ -111,7 +111,7 @@ const colors = {
   refereeHomeDividerColor: '#D0D0D0',
   blackOpacityColor: 'rgba(0,0,0,0.8)',
   blackLightOpacityColor: 'rgba(0,0,0,0.0)',
-opacityThemeColor: 'rgba(255,78,0,0.5)',
+  opacityThemeColor: 'rgba(255,78,0,0.5)',
   whiteOpacityColor: 'rgba(255,255,255,0.5)',
   navyBlue: '#3E6FB0',
   darkThemeColor: '#FF3B00',
@@ -127,11 +127,10 @@ opacityThemeColor: 'rgba(255,78,0,0.5)',
   skyColorCard: '#08D5D5',
   lightGreenColorCard: '#ABDE00',
   lightYellowColorCard: '#FFCE01',
-lightGrayBackground: '#F8F8F8',
+  lightGrayBackground: '#F8F8F8',
   completeTextColor: '#00c168',
   messageSenderColor: '#FFD798',
   modalHandleColor: '#DADBDA',
   textFieldBackground: '#f5f5f5',
-
 };
 export default colors;

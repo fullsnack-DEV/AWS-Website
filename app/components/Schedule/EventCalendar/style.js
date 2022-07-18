@@ -1,13 +1,11 @@
 // @flow
-import { StyleSheet } from 'react-native'
+import {StyleSheet} from 'react-native';
 
-const calendarHeight = 1300
+const calendarHeight = 1300;
 // const eventPaddingLeft = 4
-const leftMargin = 50 - 1
+const leftMargin = 50 - 1;
 
-export default function styleConstructor(
-  theme = {},
-) {
+export default function styleConstructor(theme = {}) {
   const style = {
     container: {
       flex: 1,
@@ -98,6 +96,6 @@ export default function styleConstructor(
       fontWeight: '500',
       ...theme.timeLabel,
     },
-  }
-  return StyleSheet.create(style)
+  };
+  return StyleSheet.create(style);
 }

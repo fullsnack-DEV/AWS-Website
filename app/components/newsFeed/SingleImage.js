@@ -26,7 +26,7 @@ function SingleImage({
   const defaultScreenWidth = Dimensions.get('window').width - 30;
   const defaultLandscapHeight = 250;
   const defaultPortraitHeight = 450;
-  const itemData = JSON.parse(item.object)
+  const itemData = JSON.parse(item.object);
 
   const uploadImageURL =
     data &&
@@ -73,12 +73,12 @@ function SingleImage({
         styles.mainContainer,
         {
           height:
-          itemData?.post_type === 'repost'
+            itemData?.post_type === 'repost'
               ? getImageDimention().height - 30
               : getImageDimention().height,
-         
         },
-      ]}>
+      ]}
+    >
       <View
         style={[
           styles.uploadedImage,
@@ -86,12 +86,12 @@ function SingleImage({
             borderWidth: 1,
             borderColor: colors.lightgrayColor,
             height:
-            itemData?.post_type === 'repost'
-              ? getImageDimention().height - 30
-              : getImageDimention().height,
-          
+              itemData?.post_type === 'repost'
+                ? getImageDimention().height - 30
+                : getImageDimention().height,
           },
-        ]}>
+        ]}
+      >
         <FastImage
           style={styles.imageStyle}
           source={images.imageLoadingGIF}
@@ -104,12 +104,13 @@ function SingleImage({
           if (uploadImageURL) {
             toggleModal();
           }
-        }}>
+        }}
+      >
         <FastImage
           style={{
             ...styles.uploadedImage,
             height:
-            itemData?.post_type === 'repost'
+              itemData?.post_type === 'repost'
                 ? getImageDimention().height - 30
                 : getImageDimention().height,
             width: itemData?.post_type === 'repost' ? wp('88%') : wp('96%'),
@@ -143,7 +144,7 @@ const styles = StyleSheet.create({
     shadowRadius: 15,
     elevation: 2,
     height: wp('91%'),
-    
+
     marginVertical: '1%',
     alignItems: 'center',
     alignSelf: 'center',

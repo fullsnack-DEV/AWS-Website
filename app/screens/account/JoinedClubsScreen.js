@@ -1,8 +1,9 @@
-import React, {
-  useEffect, useState, useContext,
-} from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import {
-  View, Text, Image, TouchableWithoutFeedback,
+  View,
+  Text,
+  Image,
+  TouchableWithoutFeedback,
   FlatList,
   ScrollView,
   StyleSheet,
@@ -13,68 +14,70 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
-import AuthContext from '../../auth/context'
-import { getJoinedGroups } from '../../api/Groups';
+import AuthContext from '../../auth/context';
+import {getJoinedGroups} from '../../api/Groups';
 
 import images from '../../Constants/ImagePath';
-import fonts from '../../Constants/Fonts'
-import colors from '../../Constants/Colors'
+import fonts from '../../Constants/Fonts';
+import colors from '../../Constants/Colors';
 import strings from '../../Constants/String';
 
 export default function JoinedClubsScreen() {
-  const authContext = useContext(AuthContext)
+  const authContext = useContext(AuthContext);
   const [clubList, setClubList] = useState([]);
 
   useEffect(() => {
-    getJoinedGroups('club', authContext).then((response) => {
-      setClubList(response.payload);
-    }).catch((e) => {
-      setTimeout(() => {
-        Alert.alert(strings.alertmessagetitle, e.message);
-      }, 10);
-    });
+    getJoinedGroups('club', authContext)
+      .then((response) => {
+        setClubList(response.payload);
+      })
+      .catch((e) => {
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
   }, [authContext]);
 
   return (
-    <ScrollView style={ styles.mainContainer }>
+    <ScrollView style={styles.mainContainer}>
       <FlatList
-        data={ clubList }
-        renderItem={ ({ item }) => (
+        data={clubList}
+        renderItem={({item}) => (
           <TouchableWithoutFeedback
-            style={ styles.listContainer }
-            onPress={ () => {
+            style={styles.listContainer}
+            onPress={() => {
               console.log('Pressed club..');
-            } }>
+            }}
+          >
             <View>
               {item.full_image ? (
                 <Image
-                  source={ { uri: item.full_image } }
-                  style={ styles.entityImg }
+                  source={{uri: item.full_image}}
+                  style={styles.entityImg}
                 />
               ) : (
-                <Image source={ images.club_ph } style={ styles.entityImg } />
+                <Image source={images.club_ph} style={styles.entityImg} />
               )}
             </View>
 
-            <View style={ styles.textContainer }>
-              <Text style={ styles.entityNameText }>{item.group_name}</Text>
+            <View style={styles.textContainer}>
+              <Text style={styles.entityNameText}>{item.group_name}</Text>
 
-              <Text style={ styles.entityLocationText }>
+              <Text style={styles.entityLocationText}>
                 {item.city}, {item.state_abbr}, {item.country}
               </Text>
             </View>
           </TouchableWithoutFeedback>
-        ) }
+        )}
         // ItemSeparatorComponent={() => (
         //   <View style={styles.separatorLine}></View>
         // )}
-        scrollEnabled={ false }
+        scrollEnabled={false}
       />
     </ScrollView>
   );
 }
 const styles = StyleSheet.create({
-
   entityImg: {
     alignSelf: 'center',
     borderColor: colors.whiteColor,

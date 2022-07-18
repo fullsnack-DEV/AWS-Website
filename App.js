@@ -1,9 +1,7 @@
-import React, {
- useState, useEffect, useMemo, useCallback,
-} from 'react';
+import React, {useState, useEffect, useMemo, useCallback} from 'react';
 import NetInfo from '@react-native-community/netinfo';
-import { Alert, StatusBar } from 'react-native';
-import { decode, encode } from 'base-64';
+import {Alert, StatusBar} from 'react-native';
+import {decode, encode} from 'base-64';
 
 // import firebase from '@react-native-firebase/app';
 import Orientation from 'react-native-orientation';
@@ -15,7 +13,7 @@ import NavigationMainContainer from './NavigationMainContainer';
 // import { firebaseConfig } from './app/utils/constant';
 import * as Utility from './app/utils';
 import strings from './app/Constants/String';
-import { ImageUploadProvider } from './app/context/GetContexts';
+import {ImageUploadProvider} from './app/context/GetContexts';
 import CommonAlert from './app/screens/account/commonScreen/CommonAlert';
 
 console.disableYellowBox = true;
@@ -39,28 +37,27 @@ export default function App() {
     await Utility.setStorage('tokenData', token);
   }, []);
 
-
-// useEffect(() => {
-//   axios({
-//     method: 'get',
-//     url: `${Config.BASE_URL}/app/settings`,
-//     withCredentials: true,
-//     headers: {
-//       Accept: 'application/json',
-//       setting_token: '3c5a5976-4831-41b3-a0cb-1aeb9d2e2c1c',
-//     },
-//   }).then((setting) => {
-//     console.log('response:=>', setting);
-//     setQBCredential(setting.data.payload.app)
-//         QB.settings
-//           .init({
-//             appId: setting.data.payload.app.quickblox.appId,
-//             authKey: setting.data.payload.app.quickblox.authKey,
-//             authSecret: setting.data.payload.app.quickblox.authSecret,
-//             accountKey: setting.data.payload.app.quickblox.accountKey,
-//           })
-//   });
-// }, []);
+  // useEffect(() => {
+  //   axios({
+  //     method: 'get',
+  //     url: `${Config.BASE_URL}/app/settings`,
+  //     withCredentials: true,
+  //     headers: {
+  //       Accept: 'application/json',
+  //       setting_token: '3c5a5976-4831-41b3-a0cb-1aeb9d2e2c1c',
+  //     },
+  //   }).then((setting) => {
+  //     console.log('response:=>', setting);
+  //     setQBCredential(setting.data.payload.app)
+  //         QB.settings
+  //           .init({
+  //             appId: setting.data.payload.app.quickblox.appId,
+  //             authKey: setting.data.payload.app.quickblox.authKey,
+  //             authSecret: setting.data.payload.app.quickblox.authSecret,
+  //             accountKey: setting.data.payload.app.quickblox.accountKey,
+  //           })
+  //   });
+  // }, []);
 
   if (!global.btoa) {
     global.btoa = encode;
@@ -92,20 +89,19 @@ export default function App() {
     StatusBar.setBackgroundColor('white');
     Orientation.lockToPortrait();
 
-
     const QBSetting = {
-            accountKey: 'aaaaa',
-            appId: '1111111',
-            authKey: 'sdsdsdsdsdsd',
-            authSecret: 'sfdfdfd',
-          };
+      accountKey: 'aaaaa',
+      appId: '1111111',
+      authKey: 'sdsdsdsdsdsd',
+      authSecret: 'sfdfdfd',
+    };
 
-          QB.settings
-            .init(QBSetting)
-            .then(() => {})
-            .catch(() => {
-              // Some error occured, look at the exception message for more details
-            });
+    QB.settings
+      .init(QBSetting)
+      .then(() => {})
+      .catch(() => {
+        // Some error occured, look at the exception message for more details
+      });
 
     // getQBSetting().then(async (setting) => {
     //   console.log('App QB Setting:=>', setting);
@@ -150,7 +146,7 @@ export default function App() {
   }, []);
 
   const updateAuth = useCallback((e) => {
-    setEntity({ ...e });
+    setEntity({...e});
   }, []);
 
   const showAlert = (alertStuff) => {
@@ -177,7 +173,17 @@ export default function App() {
       showNetworkAlert,
       showAlert,
     }),
-    [role, user, entity, QBCredential, sports, tokenData, setTokenData, updateAuth, networkConnected],
+    [
+      role,
+      user,
+      entity,
+      QBCredential,
+      sports,
+      tokenData,
+      setTokenData,
+      updateAuth,
+      networkConnected,
+    ],
   );
 
   return (

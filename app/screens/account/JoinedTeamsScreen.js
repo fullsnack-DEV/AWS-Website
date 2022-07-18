@@ -17,7 +17,7 @@ import {
 
 import ActivityLoader from '../../components/loader/ActivityLoader';
 
-import {  getUserFollowerFollowing  } from '../../api/Users';
+import {getUserFollowerFollowing} from '../../api/Users';
 
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
@@ -41,14 +41,19 @@ export default function JoinedTeamsScreen({route}) {
 
   const getFollowingList = () => {
     setloading(true);
-      getUserFollowerFollowing(uid, role === 'user' ? 'players' : 'groups', 'following', authContext)
+    getUserFollowerFollowing(
+      uid,
+      role === 'user' ? 'players' : 'groups',
+      'following',
+      authContext,
+    )
       .then((res) => {
-        setloading(false)
+        setloading(false);
         setTeamList(res.payload);
       })
       .catch((error) => {
         console.log('error coming', error);
-        setloading(false)
+        setloading(false);
         Alert.alert(strings.alertmessagetitle, error.message);
       });
   };
@@ -58,7 +63,8 @@ export default function JoinedTeamsScreen({route}) {
       style={styles.listContainer}
       onPress={() => {
         console.log('Pressed Team..');
-      }}>
+      }}
+    >
       <View>
         <Image
           source={item?.thumbnail ? {uri: item?.thumbnail} : images.team_ph}

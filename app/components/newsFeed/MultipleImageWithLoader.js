@@ -1,30 +1,27 @@
 import React from 'react';
-import {
-  StyleSheet, View, Text, Image,
-} from 'react-native';
+import {StyleSheet, View, Text, Image} from 'react-native';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import colors from '../../Constants/Colors'
-import fonts from '../../Constants/Fonts'
+import colors from '../../Constants/Colors';
+import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 import TCZoomableImage from '../TCZoomableImage';
 
-function MultipleImageWithLoader({
-  data,
-}) {
-  const uploadImageURL = data && typeof data.thumbnail === 'string'
-  && (!data.thumbnail.split('http')[1] || !data.thumbnail.split('https')[1]) ? null : data.thumbnail;
+function MultipleImageWithLoader({data}) {
+  const uploadImageURL =
+    data &&
+    typeof data.thumbnail === 'string' &&
+    (!data.thumbnail.split('http')[1] || !data.thumbnail.split('https')[1])
+      ? null
+      : data.thumbnail;
 
   return (
-    <View style={ styles.uploadedImage }>
+    <View style={styles.uploadedImage}>
       <View style={styles.uploadedImage}>
-        <Image
-          style={ styles.imageStyle }
-          source={ images.imageLoadingGIF }
-        />
-        <Text style={ styles.loadingTextStyle }>Loading...</Text>
+        <Image style={styles.imageStyle} source={images.imageLoadingGIF} />
+        <Text style={styles.loadingTextStyle}>Loading...</Text>
       </View>
       {/* <Image
         style={ [styles.uploadedImage, { position: 'absolute' }] }
@@ -33,9 +30,9 @@ function MultipleImageWithLoader({
         } }
       /> */}
       <TCZoomableImage
-                      source={{ uri: uploadImageURL }}
-                      style={ [styles.uploadedImage, { position: 'absolute' }] }
-                  />
+        source={{uri: uploadImageURL}}
+        style={[styles.uploadedImage, {position: 'absolute'}]}
+      />
     </View>
   );
 }

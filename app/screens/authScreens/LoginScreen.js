@@ -355,7 +355,8 @@ export default function LoginScreen({navigation}) {
         />
         <TouchableOpacity
           onPress={() => hideShowPassword()}
-          style={{alignItems: 'center', justifyContent: 'center'}}>
+          style={{alignItems: 'center', justifyContent: 'center'}}
+        >
           {hidePassword ? (
             <Text style={styles.passwordEyes}>SHOW</Text>
           ) : (
@@ -388,7 +389,8 @@ export default function LoginScreen({navigation}) {
           onPress={onLogin}
         />
         <TouchableOpacity
-          onPress={() => navigation.navigate('ForgotPasswordScreen')}>
+          onPress={() => navigation.navigate('ForgotPasswordScreen')}
+        >
           <Text style={styles.forgotPasswordText}>
             {strings.forgotPassword}
           </Text>
@@ -406,7 +408,8 @@ export default function LoginScreen({navigation}) {
             // navigation.dispatch(StackActions.popToTop());
             navigation.pop();
             // navigation.dispatch(StackActions.replace('WelcomeScreen'));
-          }}>
+          }}
+        >
           <Image
             source={images.backArrow}
             style={{
@@ -424,7 +427,8 @@ export default function LoginScreen({navigation}) {
   return (
     <LinearGradient
       colors={[colors.themeColor1, colors.themeColor3]}
-      style={styles.mainContainer}>
+      style={styles.mainContainer}
+    >
       <ActivityLoader visible={loading} />
       <FastImage
         resizeMode={'stretch'}
@@ -444,7 +448,8 @@ export default function LoginScreen({navigation}) {
           <TouchableOpacity
             hitSlop={getHitSlop(15)}
             onPress={() => navigation.navigate('SignupScreen')}
-            style={styles.alreadyView}>
+            style={styles.alreadyView}
+          >
             <Text style={styles.alreadyMemberText}>
               {strings.notAMemberYetSignup}
               <Text> </Text>
@@ -452,7 +457,8 @@ export default function LoginScreen({navigation}) {
                 style={{
                   textDecorationLine: 'underline',
                   fontFamily: fonts.RBold,
-                }}>
+                }}
+              >
                 Sign Up
               </Text>
             </Text>

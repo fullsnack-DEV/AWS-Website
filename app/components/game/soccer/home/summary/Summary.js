@@ -92,17 +92,12 @@ const Summary = ({
   );
   const [starAttributesForReferee, setStarAttributesForReferee] = useState([]);
 
-  const [
-    sliderAttributesForScorekeeper,
-    setSliderAttributesForScorekeeper,
-  ] = useState([]);
-  const [
-    starAttributesForScorekeeper,
-    setStarAttributesForScorekeeper,
-  ] = useState([]);
+  const [sliderAttributesForScorekeeper, setSliderAttributesForScorekeeper] =
+    useState([]);
+  const [starAttributesForScorekeeper, setStarAttributesForScorekeeper] =
+    useState([]);
 
   useEffect(() => {
-
     if (isFocused && gameData) {
       leaveReviewButtonConfig();
 
@@ -997,7 +992,8 @@ const Summary = ({
       <View style={styles.headerButtonStyle}>
         <Text
           style={styles.cancelText}
-          onPress={() => recipientModalRef.current.close()}>
+          onPress={() => recipientModalRef.current.close()}
+        >
           Cancel
         </Text>
 
@@ -1006,7 +1002,8 @@ const Summary = ({
           style={styles.sendText}
           onPress={() => {
             console.log('OKOK');
-          }}>
+          }}
+        >
           Send
         </Text>
       </View>
@@ -1024,7 +1021,8 @@ const Summary = ({
           marginBottom: hp(1),
           backgroundColor: colors.whiteColor,
           padding: 10,
-        }}>
+        }}
+      >
         {renderScoreRecordingButton}
         {renderLeaveAReviewButton}
       </View>
@@ -1049,13 +1047,15 @@ const Summary = ({
           visible={isPopupVisible}
           onRequestClose={() => {
             // this.closeButtonFunction()
-          }}>
+          }}
+        >
           <View
             style={{
               // height: '50%',
               marginTop: 'auto',
               // backgroundColor: 'blue',
-            }}>
+            }}
+          >
             <View style={styles.bottomPopupContainer}>
               <View style={styles.titlePopup}>
                 <TouchableWithoutFeedback
@@ -1063,7 +1063,8 @@ const Summary = ({
                   onPress={() => {
                     setIsPopupVisible(false);
                     setSelectedTeamForReview();
-                  }}>
+                  }}
+                >
                   <Image
                     source={images.cancelImage}
                     style={styles.closeButton}
@@ -1109,7 +1110,8 @@ const Summary = ({
                         strings.chooseTeamFirst,
                       );
                     }
-                  }}>
+                  }}
+                >
                   Done
                 </Text>
               </View>
@@ -1122,18 +1124,21 @@ const Summary = ({
                     fontFamily: fonts.RRegular,
                     fontSize: 20,
                     color: colors.lightBlackColor,
-                  }}>
+                  }}
+                >
                   Choose a team to leave a review for.
                 </Text>
                 <View style={styles.entityView}>
                   <TouchableWithoutFeedback
                     onPress={() => {
                       setSelectedTeamForReview('home');
-                    }}>
+                    }}
+                  >
                     {selectedTeamForReview === 'home' ? (
                       <LinearGradient
                         colors={[colors.yellowColor, colors.themeColor]}
-                        style={styles.leftEntityView}>
+                        style={styles.leftEntityView}
+                      >
                         <Image
                           source={images.teamPlaceholder}
                           style={styles.teamProfileView}
@@ -1150,7 +1155,8 @@ const Summary = ({
                         />
                         <Text
                           style={styles.teamNameTextBlack}
-                          numberOfLines={2}>
+                          numberOfLines={2}
+                        >
                           {gameData?.home_team?.group_name}
                         </Text>
                       </View>
@@ -1161,11 +1167,13 @@ const Summary = ({
                   <TouchableWithoutFeedback
                     onPress={() => {
                       setSelectedTeamForReview('away');
-                    }}>
+                    }}
+                  >
                     {selectedTeamForReview === 'away' ? (
                       <LinearGradient
                         colors={[colors.yellowColor, colors.themeColor]}
-                        style={styles.rightEntityView}>
+                        style={styles.rightEntityView}
+                      >
                         <Image
                           source={images.teamPlaceholder}
                           style={styles.teamProfileView}
@@ -1182,7 +1190,8 @@ const Summary = ({
                         />
                         <Text
                           style={styles.teamNameTextBlack}
-                          numberOfLines={2}>
+                          numberOfLines={2}
+                        >
                           {gameData?.away_team?.group_name}
                         </Text>
                       </View>
@@ -1194,8 +1203,6 @@ const Summary = ({
           </View>
         </Modal>
       )}
-
-     
 
       <ActionSheet
         ref={reviewOpetions}

@@ -2,8 +2,8 @@
 /* eslint-disable brace-style */
 /* eslint-disable no-lonely-if */
 /* eslint-disable consistent-return */
-import React, { useContext } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import React, {useContext} from 'react';
+import {StyleSheet, View, Text} from 'react-native';
 import AuthContext from '../../auth/context';
 
 import colors from '../../Constants/Colors';
@@ -15,14 +15,17 @@ import RefereeReservationStatus from '../../Constants/RefereeReservationStatus';
 let entity = {};
 
 export default function RefereeReservationTitle({
- reservationObject, fontSize = 18, showDesc = true, containerStyle,
- }) {
+  reservationObject,
+  fontSize = 18,
+  showDesc = true,
+  containerStyle,
+}) {
   console.log('reservationObject OHHHH:=>', reservationObject);
 
   const entityList = [
-    { ...reservationObject?.game?.home_team },
-    { ...reservationObject?.game?.away_team },
-    { ...reservationObject?.referee },
+    {...reservationObject?.game?.home_team},
+    {...reservationObject?.game?.away_team},
+    {...reservationObject?.referee},
   ];
   console.log('entityList:=>', entityList);
 
@@ -31,7 +34,8 @@ export default function RefereeReservationTitle({
   console.log(entity);
 
   const getDayTimeDifferent = (sDate, eDate) => {
-    let delta = Math.abs(new Date(sDate).getTime() - new Date(eDate).getTime()) / 1000;
+    let delta =
+      Math.abs(new Date(sDate).getTime() - new Date(eDate).getTime()) / 1000;
 
     const days = Math.floor(delta / 86400);
     delta -= days * 86400;
@@ -119,11 +123,13 @@ export default function RefereeReservationTitle({
           if (reservationObject.requested_by === reservationObject.referee_id) {
             statusObject.title = 'You-declined';
             statusObject.color = colors.googleColor;
-            statusObject.desc = 'You declined  referee alter request sent by referee.';
+            statusObject.desc =
+              'You declined  referee alter request sent by referee.';
           } else {
             statusObject.title = 'Referee-declined';
             statusObject.color = colors.googleColor;
-            statusObject.desc = 'Referee declined  referee alter request sent by you.';
+            statusObject.desc =
+              'Referee declined  referee alter request sent by you.';
           }
         } else if (entity.uid === reservationObject.referee_id) {
           // For Referee
@@ -142,7 +148,9 @@ export default function RefereeReservationTitle({
           if (entity.uid === reservationObject.initiated_by) {
             if (reservationObject.version === 2) {
               // declined team B
-              if (reservationObject.requested_by === reservationObject.referee_id) {
+              if (
+                reservationObject.requested_by === reservationObject.referee_id
+              ) {
                 statusObject.title = 'You Declined';
                 statusObject.color = colors.googleColor;
                 statusObject.desc = `You declined  referee alter request sent by ${getReferee()}.`;
@@ -211,9 +219,9 @@ export default function RefereeReservationTitle({
         statusObject.desc = `You accepted a referee reservation from ${getTeamB()}, but the payment hasn't gone through yet.`;
       }
     } else if (
-      reservationObject.status === RefereeReservationStatus.accepted
-      || reservationObject.status === RefereeReservationStatus.restored
-      || reservationObject.status === RefereeReservationStatus.requestcancelled
+      reservationObject.status === RefereeReservationStatus.accepted ||
+      reservationObject.status === RefereeReservationStatus.restored ||
+      reservationObject.status === RefereeReservationStatus.requestcancelled
     ) {
       if (entity.uid === reservationObject.initiated_by) {
         if (reservationObject?.requested_by === reservationObject.referee_id) {
@@ -268,8 +276,7 @@ export default function RefereeReservationTitle({
             statusObject.color = colors.googleColor;
             statusObject.desc = `This referee reservation is cancelled by ${getTeamB()}.`;
           }
-        }
-         else {
+        } else {
           // For Referee
           if (reservationObject.done_by === reservationObject.referee_id) {
             statusObject.title = 'Cancelled';
@@ -317,8 +324,7 @@ export default function RefereeReservationTitle({
         statusObject.color = colors.darkThemeColor;
         statusObject.desc = 'Referee reservation withdrawn by Team B.';
       }
-    }
-    else if (
+    } else if (
       reservationObject.status === RefereeReservationStatus.changeRequest
     ) {
       if (reservationObject.automatic_request) {
@@ -336,7 +342,8 @@ export default function RefereeReservationTitle({
           if (reservationObject.requested_by === reservationObject.referee_id) {
             statusObject.title = 'Alteration-awaiting automatic';
             statusObject.color = colors.darkThemeColor;
-            statusObject.desc = 'An alteration request was sent to Team B because the game had been rescheduled.';
+            statusObject.desc =
+              'An alteration request was sent to Team B because the game had been rescheduled.';
           } else {
             statusObject.title = 'Alteration-pending automatic';
             statusObject.color = colors.darkThemeColor;
@@ -348,10 +355,21 @@ export default function RefereeReservationTitle({
           if (reservationObject.requested_by === reservationObject.referee_id) {
             statusObject.title = 'Alteration Pending';
             statusObject.color = colors.darkThemeColor;
-            statusObject.desc = <>You received a referee alteration request from {getReferee()}. Please, respond within {<Text style={styles.timeColor}>{getDayTimeDifferent(
-              reservationObject?.expiry_datetime * 1000,
-              new Date().getTime(),
-              )}</Text>}.</>;
+            statusObject.desc = (
+              <>
+                You received a referee alteration request from {getReferee()}.
+                Please, respond within{' '}
+                {
+                  <Text style={styles.timeColor}>
+                    {getDayTimeDifferent(
+                      reservationObject?.expiry_datetime * 1000,
+                      new Date().getTime(),
+                    )}
+                  </Text>
+                }
+                .
+              </>
+            );
           } else {
             statusObject.title = 'Alteration Awaiting';
             statusObject.color = colors.darkThemeColor;
@@ -365,16 +383,27 @@ export default function RefereeReservationTitle({
           } else {
             statusObject.title = 'Alteration Pending';
             statusObject.color = colors.darkThemeColor;
-            statusObject.desc = <>You received a referee alteration request from {getTeamB()}. Please, respond within {<Text style={styles.timeColor}>{getDayTimeDifferent(
-              reservationObject?.expiry_datetime * 1000,
-              new Date().getTime(),
-              )}</Text>}.</>;
+            statusObject.desc = (
+              <>
+                You received a referee alteration request from {getTeamB()}.
+                Please, respond within{' '}
+                {
+                  <Text style={styles.timeColor}>
+                    {getDayTimeDifferent(
+                      reservationObject?.expiry_datetime * 1000,
+                      new Date().getTime(),
+                    )}
+                  </Text>
+                }
+                .
+              </>
+            );
           }
         }
       }
     } else if (
-      reservationObject.status
-      === RefereeReservationStatus.pendingrequestpayment
+      reservationObject.status ===
+      RefereeReservationStatus.pendingrequestpayment
     ) {
       if (reservationObject?.referee?.user_id === entity.uid) {
         statusObject.title = 'Awaiting Payment';
@@ -393,7 +422,9 @@ export default function RefereeReservationTitle({
 
   const getTeamB = () => {
     const obj = entityList.filter(
-      (o) => o?.user_id === reservationObject?.initiated_by || o?.group_id === reservationObject?.initiated_by,
+      (o) =>
+        o?.user_id === reservationObject?.initiated_by ||
+        o?.group_id === reservationObject?.initiated_by,
     );
     console.log('obj obj::=>', obj);
 
@@ -405,7 +436,9 @@ export default function RefereeReservationTitle({
 
   const getTeamA = () => {
     const obj = entityList.filter(
-      (o) => o?.user_id === reservationObject?.approved_by || o?.group_id === reservationObject?.approved_by,
+      (o) =>
+        o?.user_id === reservationObject?.approved_by ||
+        o?.group_id === reservationObject?.approved_by,
     );
     if (obj[0]?.user_id) {
       return `${obj[0]?.full_name}`;
@@ -419,10 +452,10 @@ export default function RefereeReservationTitle({
     return `${obj[0]?.full_name}`;
   };
   return (
-    <View
-      style={containerStyle}>
+    <View style={containerStyle}>
       <Text
-        style={[styles.challengeTitle, { color: getTitle()?.color, fontSize }]}>
+        style={[styles.challengeTitle, {color: getTitle()?.color, fontSize}]}
+      >
         {getTitle()?.title}
       </Text>
 
@@ -441,7 +474,7 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     fontSize: 16,
   },
-  timeColor: { color: colors.themeColor },
+  timeColor: {color: colors.themeColor},
 });
 
 // export default memo(RefereeReservationTitle);

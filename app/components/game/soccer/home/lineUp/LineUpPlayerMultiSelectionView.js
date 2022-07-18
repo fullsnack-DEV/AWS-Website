@@ -1,67 +1,76 @@
-import React, {
-
-} from 'react';
-import {
-  Text,
-  View,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-} from 'react-native';
+import React from 'react';
+import {Text, View, StyleSheet, Image, TouchableOpacity} from 'react-native';
 
 import LinearGradient from 'react-native-linear-gradient';
-import images from '../../../../../Constants/ImagePath'
-import colors from '../../../../../Constants/Colors'
-import fonts from '../../../../../Constants/Fonts'
+import images from '../../../../../Constants/ImagePath';
+import colors from '../../../../../Constants/Colors';
+import fonts from '../../../../../Constants/Fonts';
 
 export default function LineUpPlayerMultiSelectionView({
-  userData, enable = false, onButtonPress,
+  userData,
+  enable = false,
+  onButtonPress,
 }) {
   return (
-    <TouchableOpacity disabled={enable} onPress={() => onButtonPress(userData.selected)}>
-      {userData.selected ? <LinearGradient
-    colors={[colors.greenGradientStart, colors.greenGradientEnd]}
-    style={styles.topViewContainer}
+    <TouchableOpacity
+      disabled={enable}
+      onPress={() => onButtonPress(userData.selected)}
     >
-        <View style={{ flexDirection: 'row' }}>
-          <View style={styles.profileView}>
-            <Image
+      {userData.selected ? (
+        <LinearGradient
+          colors={[colors.greenGradientStart, colors.greenGradientEnd]}
+          style={styles.topViewContainer}
+        >
+          <View style={{flexDirection: 'row'}}>
+            <View style={styles.profileView}>
+              <Image
                 source={
                   userData.profile.thumbnail
-                    ? { uri: userData.profile.thumbnail }
+                    ? {uri: userData.profile.thumbnail}
                     : images.profilePlaceHolder
                 }
                 style={styles.profileImage}
               />
+            </View>
+            <View style={styles.topTextContainer}>
+              <Text
+                style={styles.mediumNameTextWhite}
+                numberOfLines={1}
+              >{`${userData.profile.first_name} ${userData.profile.last_name}`}</Text>
+              <Text style={styles.locationTextWhite} numberOfLines={1}>{`${
+                userData.profile.jersey_number || ''
+              } ${userData.profile.positions || ''}`}</Text>
+            </View>
           </View>
-          <View style={styles.topTextContainer}>
-            <Text style={styles.mediumNameTextWhite} numberOfLines={1}>{`${userData.profile.first_name} ${userData.profile.last_name}`}</Text>
-            <Text style={styles.locationTextWhite} numberOfLines={1}>{`${userData.profile.jersey_number || ''} ${userData.profile.positions || ''}`}</Text>
-          </View>
-        </View>
-        <Image source={images.checkGreen} style={styles.checkGreenImage}/>
-      </LinearGradient> : <View style={styles.topViewContainer}>
-        <View style={{ flexDirection: 'row' }}>
-          <View style={styles.profileView}>
-            <Image
+          <Image source={images.checkGreen} style={styles.checkGreenImage} />
+        </LinearGradient>
+      ) : (
+        <View style={styles.topViewContainer}>
+          <View style={{flexDirection: 'row'}}>
+            <View style={styles.profileView}>
+              <Image
                 source={
                   userData.profile.thumbnail
-                    ? { uri: userData.profile.thumbnail }
+                    ? {uri: userData.profile.thumbnail}
                     : images.profilePlaceHolder
                 }
                 style={styles.profileImage}
               />
+            </View>
+            <View style={styles.topTextContainer}>
+              <Text
+                style={styles.mediumNameText}
+                numberOfLines={1}
+              >{`${userData.profile.first_name} ${userData.profile.last_name}`}</Text>
+              <Text style={styles.locationText} numberOfLines={1}>{`${
+                userData.profile.jersey_number || ''
+              } ${userData.profile.positions || ''}`}</Text>
+            </View>
           </View>
-          <View style={styles.topTextContainer}>
-            <Text style={styles.mediumNameText} numberOfLines={1}>{`${userData.profile.first_name} ${userData.profile.last_name}`}</Text>
-            <Text style={styles.locationText} numberOfLines={1}>{`${userData.profile.jersey_number || ''} ${userData.profile.positions || ''}`}</Text>
-          </View>
+          <Image source={images.whiteUncheck} style={styles.checkGreenImage} />
         </View>
-        <Image source={images.whiteUncheck} style={styles.checkGreenImage}/>
-      </View>}
-
+      )}
     </TouchableOpacity>
-
   );
 }
 const styles = StyleSheet.create({
@@ -77,7 +86,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: colors.offwhite,
     height: 60,
-    width: ('90%'),
+    width: '90%',
     alignSelf: 'center',
     justifyContent: 'space-between',
     paddingRight: 10,
@@ -87,7 +96,7 @@ const styles = StyleSheet.create({
 
     borderRadius: 10,
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.2,
     shadowRadius: 1,
     elevation: 3,
@@ -100,7 +109,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: {width: 0, height: 3},
     shadowOpacity: 0.5,
     shadowRadius: 4,
     elevation: 3,

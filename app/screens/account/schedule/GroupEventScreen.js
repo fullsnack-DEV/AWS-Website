@@ -144,9 +144,9 @@ export default function GroupEventScreen({navigation}) {
   const renderGroups = ({item, index}) => {
     return (
       <GroupEventItems
-        eventImageSource={item.entity_type === 'team'
-        ? images.teamPatch
-        : images.clubPatch}
+        eventImageSource={
+          item.entity_type === 'team' ? images.teamPatch : images.clubPatch
+        }
         eventText={item.group_name}
         groupImageSource={
           item.thumbnail
@@ -181,7 +181,8 @@ export default function GroupEventScreen({navigation}) {
               isSelected: !isAll,
             }));
             setGroupsList([...groups]);
-          }}>
+          }}
+        >
           <Image
             source={isAll ? images.orangeCheckBox : images.uncheckWhite}
             style={styles.imageStyle}

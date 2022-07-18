@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
@@ -12,8 +12,7 @@ export default function InvoiceRefundAmount({
   style,
 }) {
   return (
-    <View style={ style}>
-
+    <View style={style}>
       <View style={styles.containerView}>
         <Text style={styles.titleText}>{'Total Invoiced'}</Text>
         <Text
@@ -21,7 +20,9 @@ export default function InvoiceRefundAmount({
             fontSize: 16,
             fontFamily: fonts.RMedium,
             color: colors.lightBlackColor,
-          }}>{`$${totalAmount} ${currencyType}`}
+          }}
+        >
+          {`$${totalAmount} ${currencyType}`}
         </Text>
       </View>
 
@@ -32,7 +33,9 @@ export default function InvoiceRefundAmount({
             fontSize: 16,
             fontFamily: fonts.RMedium,
             color: colors.greenColorCard,
-          }}>{`$${notRefundedAmount} ${currencyType}`}
+          }}
+        >
+          {`$${notRefundedAmount} ${currencyType}`}
         </Text>
       </View>
 
@@ -43,7 +46,9 @@ export default function InvoiceRefundAmount({
             fontSize: 16,
             fontFamily: fonts.RMedium,
             color: colors.darkThemeColor,
-          }}>{`$${refundedAmount} ${currencyType}`}
+          }}
+        >
+          {`$${refundedAmount} ${currencyType}`}
         </Text>
       </View>
     </View>

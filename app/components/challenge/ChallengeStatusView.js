@@ -100,7 +100,8 @@ export default function ChallengeStatusView({
           {isOfferExpired() ? (
             <View>
               <Text
-                style={[styles.statusTitleText, {color: colors.googleColor}]}>
+                style={[styles.statusTitleText, {color: colors.googleColor}]}
+              >
                 {challengeObj?.challenger === challengeObj?.invited_by
                   ? 'RESERVATION REQUEST EXPIRED'
                   : 'INVITE TO CHALLENGE EXPIRED'}
@@ -134,7 +135,8 @@ export default function ChallengeStatusView({
           {isOfferExpired() ? (
             <View>
               <Text
-                style={[styles.statusTitleText, {color: colors.googleColor}]}>
+                style={[styles.statusTitleText, {color: colors.googleColor}]}
+              >
                 {challengeObj?.challenger === challengeObj?.invited_by
                   ? 'RESERVATION REQUEST EXPIRED'
                   : 'INVITE TO CHALLENGE EXPIRED'}
@@ -168,28 +170,28 @@ export default function ChallengeStatusView({
         (status === ReservationStatus.accepted ||
           status === ReservationStatus.restored ||
           status === ReservationStatus.requestcancelled) && (
-            <View>
-              <Text style={[styles.statusTitleText, {color: colors.greeColor}]}>
-                CONFIRMED
-              </Text>
-              <Text style={styles.statusDescription}>
-                {teamName} confirmed your match reservation request.
-              </Text>
-            </View>
+          <View>
+            <Text style={[styles.statusTitleText, {color: colors.greeColor}]}>
+              CONFIRMED
+            </Text>
+            <Text style={styles.statusDescription}>
+              {teamName} confirmed your match reservation request.
+            </Text>
+          </View>
         )}
       {!isSender &&
         (status === ReservationStatus.accepted ||
           status === ReservationStatus.restored ||
           status === ReservationStatus.requestcancelled) && (
-            <View>
-              <Text style={[styles.statusTitleText, {color: colors.greeColor}]}>
-                CONFIRMED
-              </Text>
-              <Text style={styles.statusDescription}>
-                {isTeamText()} has the confirmed match reservation request against{' '}
-                {teamName}.
-              </Text>
-            </View>
+          <View>
+            <Text style={[styles.statusTitleText, {color: colors.greeColor}]}>
+              CONFIRMED
+            </Text>
+            <Text style={styles.statusDescription}>
+              {isTeamText()} has the confirmed match reservation request against{' '}
+              {teamName}.
+            </Text>
+          </View>
         )}
 
       {isSender && status === ReservationStatus.declined && (
@@ -328,7 +330,8 @@ export default function ChallengeStatusView({
           {isOfferExpired() ? (
             <View>
               <Text
-                style={[styles.statusTitleText, {color: colors.googleColor}]}>
+                style={[styles.statusTitleText, {color: colors.googleColor}]}
+              >
                 ALTERATION REQUEST EXPIRED
               </Text>
               <Text style={styles.statusDescription}>
@@ -352,7 +355,8 @@ export default function ChallengeStatusView({
           {isOfferExpired() ? (
             <View>
               <Text
-                style={[styles.statusTitleText, {color: colors.googleColor}]}>
+                style={[styles.statusTitleText, {color: colors.googleColor}]}
+              >
                 ALTERATION REQUEST EXPIRED
               </Text>
               <Text style={styles.statusDescription}>

@@ -122,7 +122,8 @@ export default function TennisScoreView({scoreDataSource, marginTop = '10%'}) {
             <Text style={styles.scoreTitle}>{index + 1}</Text>
             <LinearGradient
               colors={[colors.yellowColor, colors.themeColor]}
-              style={styles.scoreView}>
+              style={styles.scoreView}
+            >
               <Text style={[styles.player1Score, {color: colors.whiteColor}]}>
                 {item?.s_id ? item?.home_team_win_count : '-'}
               </Text>
@@ -191,7 +192,8 @@ export default function TennisScoreView({scoreDataSource, marginTop = '10%'}) {
             (index === 2 && homeTeamGamePoint > awayTeamGamePoint)
               ? [styles.player1Score, {color: colors.themeColor}]
               : styles.player1Score
-          }>
+          }
+        >
           {(index === 0 && `${homeTeamMatchPoint}`) ||
             (index === 1 && getHomeGameScore()) ||
             (index === 2 && `${homeTeamGamePoint}`)}
@@ -225,7 +227,8 @@ export default function TennisScoreView({scoreDataSource, marginTop = '10%'}) {
             (index === 2 && homeTeamGamePoint < awayTeamGamePoint)
               ? [styles.player2Score, {color: colors.themeColor}]
               : styles.player2Score
-          }>
+          }
+        >
           {(index === 0 && `${awayTeamMatchPoint}`) ||
             (index === 1 && getAwayGameScore()) ||
             (index === 2 && `${awayTeamGamePoint}`)}

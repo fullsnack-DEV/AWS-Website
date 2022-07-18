@@ -108,14 +108,10 @@ const Summary = ({
     [],
   );
 
-  const [
-    sliderAttributesForScorekeeper,
-    setSliderAttributesForScorekeeper,
-  ] = useState([]);
-  const [
-    starAttributesForScorekeeper,
-    setStarAttributesForScorekeeper,
-  ] = useState([]);
+  const [sliderAttributesForScorekeeper, setSliderAttributesForScorekeeper] =
+    useState([]);
+  const [starAttributesForScorekeeper, setStarAttributesForScorekeeper] =
+    useState([]);
   const isFocused = useIsFocused();
 
   useEffect(() => {
@@ -841,7 +837,8 @@ const Summary = ({
               marginBottom: hp(1),
               backgroundColor: colors.whiteColor,
               marginLeft: 10,
-            }}>
+            }}
+          >
             {!checkReviewExpired(gameData?.actual_enddatetime) ? (
               <Text style={styles.reviewPeriod}>
                 The review period will be expired within
@@ -859,7 +856,8 @@ const Summary = ({
                 style={{
                   ...styles.reviewPeriod,
                   marginVertical: 10,
-                }}>
+                }}
+              >
                 The review period is{' '}
                 <Text style={{fontFamily: fonts.RBold}}>expired</Text>
               </Text>
@@ -891,7 +889,8 @@ const Summary = ({
             marginBottom: hp(1),
             backgroundColor: colors.whiteColor,
             padding: 10,
-          }}>
+          }}
+        >
           {renderRecordButton}
           {gameData?.sport_type === 'single'
             ? renderLeaveAReviewButton
@@ -914,7 +913,8 @@ const Summary = ({
       <View
         style={{
           backgroundColor: colors.whiteColor,
-        }}>
+        }}
+      >
         <Text style={[styles.title, {marginLeft: 15, marginBottom: 0}]}>
           Scores
         </Text>
@@ -1284,20 +1284,23 @@ const Summary = ({
           margin: 0,
           backgroundColor: colors.blackOpacityColor,
         }}
-        visible={isPopupVisible}>
+        visible={isPopupVisible}
+      >
         <View
           style={{
             // height: '50%',
             marginTop: 'auto',
             // backgroundColor: 'blue',
-          }}>
+          }}
+        >
           <View style={styles.bottomPopupContainer}>
             <View style={styles.titlePopup}>
               <TouchableWithoutFeedback
                 hitSlop={getHitSlop(15)}
                 onPress={() => {
                   setIsPopupVisible(false);
-                }}>
+                }}
+              >
                 <Image source={images.cancelImage} style={styles.closeButton} />
               </TouchableWithoutFeedback>
               <Text style={styles.startTime}>
@@ -1343,7 +1346,8 @@ const Summary = ({
                       strings.chooseTeamFirst,
                     );
                   }
-                }}>
+                }}
+              >
                 Done
               </Text>
             </View>
@@ -1356,18 +1360,21 @@ const Summary = ({
                   fontFamily: fonts.RRegular,
                   fontSize: 20,
                   color: colors.lightBlackColor,
-                }}>
+                }}
+              >
                 {gameData?.sport_type === 'single'
                   ? 'Choose a player to leave a review for.'
                   : 'Choose a team to leave a review for.'}
               </Text>
               <View style={styles.entityView}>
                 <TouchableWithoutFeedback
-                  onPress={() => setSelectedTeamForReview('home')}>
+                  onPress={() => setSelectedTeamForReview('home')}
+                >
                   {selectedTeamForReview === 'home' ? (
                     <LinearGradient
                       colors={[colors.yellowColor, colors.themeColor]}
-                      style={styles.leftEntityView}>
+                      style={styles.leftEntityView}
+                    >
                       <Image
                         source={
                           gameData?.home_team?.thumbnail
@@ -1405,11 +1412,13 @@ const Summary = ({
 
                 <Text style={styles.vs}>VS</Text>
                 <TouchableWithoutFeedback
-                  onPress={() => setSelectedTeamForReview('away')}>
+                  onPress={() => setSelectedTeamForReview('away')}
+                >
                   {selectedTeamForReview === 'away' ? (
                     <LinearGradient
                       colors={[colors.yellowColor, colors.themeColor]}
-                      style={styles.rightEntityView}>
+                      style={styles.rightEntityView}
+                    >
                       <Image
                         source={
                           gameData?.away_team?.thumbnail

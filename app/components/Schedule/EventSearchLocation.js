@@ -1,15 +1,8 @@
 import React from 'react';
-import {
-  StyleSheet,
-  Image,
-  Text,
-} from 'react-native';
+import {StyleSheet, Image, Text} from 'react-native';
 
-import {
-  widthPercentageToDP as wp,
-
-} from 'react-native-responsive-screen';
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
+import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
@@ -20,12 +13,14 @@ export default function EventSearchLocation({
   locationText,
 }) {
   return (
-    <TouchableWithoutFeedback style={[styles.sectionStyle, sectionStyle]} onPress={onLocationPress}>
-      <Image
-        source={images.searchLocation}
-        style={styles.searchImageStyle}
-      />
-      <Text style={ [styles.textInput, { color: colors.userPostTimeColor }] }>{locationText}</Text>
+    <TouchableWithoutFeedback
+      style={[styles.sectionStyle, sectionStyle]}
+      onPress={onLocationPress}
+    >
+      <Image source={images.searchLocation} style={styles.searchImageStyle} />
+      <Text style={[styles.textInput, {color: colors.userPostTimeColor}]}>
+        {locationText}
+      </Text>
     </TouchableWithoutFeedback>
   );
 }
@@ -38,7 +33,7 @@ const styles = StyleSheet.create({
     height: 45,
     width: wp('92%'),
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 0 },
+    shadowOffset: {width: 0, height: 0},
     shadowOpacity: 0.3,
     shadowRadius: 0.8,
     elevation: 2,

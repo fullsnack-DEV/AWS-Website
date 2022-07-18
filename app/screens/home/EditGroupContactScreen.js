@@ -1,25 +1,23 @@
-import React, { useState, useLayoutEffect, useContext } from 'react';
+import React, {useState, useLayoutEffect, useContext} from 'react';
 
-import {
-  View, Text, ScrollView, Alert, StyleSheet,
-} from 'react-native';
+import {View, Text, ScrollView, Alert, StyleSheet} from 'react-native';
 
 import Geocoder from 'react-native-geocoding';
-import MapView, { Marker } from 'react-native-maps';
+import MapView, {Marker} from 'react-native-maps';
 import TCTextField from '../../components/TCTextField';
 import TCLabel from '../../components/TCLabel';
 import TCPhoneNumber from '../../components/TCPhoneNumber';
-import { patchGroup } from '../../api/Groups';
+import {patchGroup} from '../../api/Groups';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import strings from '../../Constants/String';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import AuthContext from '../../auth/context';
-import { Google_API_Key } from '../../utils/constant';
+import {Google_API_Key} from '../../utils/constant';
 import * as Utility from '../../utils';
 import TCKeyboardView from '../../components/TCKeyboardView';
 
-export default function EditGroupContactScreen({ navigation, route }) {
+export default function EditGroupContactScreen({navigation, route}) {
   // For activity indicator
   const authContext = useContext(AuthContext);
   const [loading, setloading] = useState(false);
@@ -37,7 +35,8 @@ export default function EditGroupContactScreen({ navigation, route }) {
           }}
           onPress={() => {
             onSaveButtonClicked();
-          }}>
+          }}
+        >
           {strings.done}
         </Text>
       ),
@@ -46,19 +45,21 @@ export default function EditGroupContactScreen({ navigation, route }) {
 
   const onSaveButtonClicked = () => {
     setloading(true);
-    const groupProfile = { ...groupData };
-    patchGroup(groupData.group_id, groupProfile, authContext).then(async (response) => {
-      setloading(false);
-      const entity = authContext.entity
-      entity.obj = response.payload;
-      authContext.setEntity({ ...entity })
-      Utility.setStorage('authContextEntity', { ...entity })
-      navigation.goBack();
-    }).catch(() => {
-      setTimeout(() => {
-        Alert.alert(strings.alertmessagetitle, 'Something went wrong');
-      }, 0.1);
-    });
+    const groupProfile = {...groupData};
+    patchGroup(groupData.group_id, groupProfile, authContext)
+      .then(async (response) => {
+        setloading(false);
+        const entity = authContext.entity;
+        entity.obj = response.payload;
+        authContext.setEntity({...entity});
+        Utility.setStorage('authContextEntity', {...entity});
+        navigation.goBack();
+      })
+      .catch(() => {
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, 'Something went wrong');
+        }, 0.1);
+      });
   };
 
   const onHomeFieldExist = () => {
@@ -69,16 +70,16 @@ export default function EditGroupContactScreen({ navigation, route }) {
         const location = json.results[0].geometry.location;
         groupData.homefield_address_latitude = location.lat;
         groupData.homefield_address_longitude = location.lng;
-        setGroupData({ ...groupData })
+        setGroupData({...groupData});
       })
       .catch((error) => {
-        console.log(error)
+        console.log(error);
         delete groupData.homefield_address_latitude;
         delete groupData.homefield_address_longitude;
-        setGroupData({ ...groupData })
-      })
-      // .finally(() => setloading(false));
-  }
+        setGroupData({...groupData});
+      });
+    // .finally(() => setloading(false));
+  };
 
   const onOfficeFieldExist = () => {
     // setloading(true)
@@ -88,25 +89,28 @@ export default function EditGroupContactScreen({ navigation, route }) {
         const location = json.results[0].geometry.location;
         groupData.office_address_latitude = location.lat;
         groupData.office_address_longitude = location.lng;
-        setGroupData({ ...groupData })
+        setGroupData({...groupData});
       })
       .catch((error) => {
-        console.log(error)
+        console.log(error);
         delete groupData.office_address_latitude;
         delete groupData.office_address_longitude;
-        setGroupData({ ...groupData })
-      })
-      // .finally(() => setloading(false));
-  }
+        setGroupData({...groupData});
+      });
+    // .finally(() => setloading(false));
+  };
 
-  const coordinates = []
-  const markers = []
+  const coordinates = [];
+  const markers = [];
 
-  if (groupData.homefield_address_latitude && groupData.homefield_address_longitude) {
+  if (
+    groupData.homefield_address_latitude &&
+    groupData.homefield_address_longitude
+  ) {
     coordinates.push({
       latitude: Number(groupData.homefield_address_latitude),
       longitude: Number(groupData.homefield_address_longitude),
-    })
+    });
     markers.push({
       id: '1',
       latitude: groupData.homefield_address_latitude,
@@ -114,14 +118,14 @@ export default function EditGroupContactScreen({ navigation, route }) {
       name: strings.homeaddress,
       adddress: groupData.homefield_address,
       pinColor: 'red',
-    })
+    });
   }
 
   if (groupData.office_address_latitude && groupData.office_address_longitude) {
     coordinates.push({
       latitude: Number(groupData.office_address_latitude),
       longitude: Number(groupData.office_address_longitude),
-    })
+    });
     markers.push({
       id: '2',
       latitude: Number(groupData.office_address_latitude),
@@ -129,7 +133,7 @@ export default function EditGroupContactScreen({ navigation, route }) {
       name: strings.officeaddress,
       adddress: groupData.office_address,
       pinColor: 'green',
-    })
+    });
   }
 
   // const region = Utility.getRegionFromMarkers(coordinates)
@@ -139,18 +143,18 @@ export default function EditGroupContactScreen({ navigation, route }) {
       <ScrollView style={styles.mainContainer}>
         <ActivityLoader visible={loading} />
         <View>
-          <TCLabel title={strings.website} style={{ marginTop: 37 }} />
+          <TCLabel title={strings.website} style={{marginTop: 37}} />
           <TCTextField
             placeholder={strings.enterwebsite}
-            onChangeText={(text) => setGroupData({ ...groupData, webSite: text })}
+            onChangeText={(text) => setGroupData({...groupData, webSite: text})}
             value={groupData.webSite}
           />
         </View>
         <View>
-          <TCLabel title={strings.emailPlaceHolder} style={{ marginTop: 37 }} />
+          <TCLabel title={strings.emailPlaceHolder} style={{marginTop: 37}} />
           <TCTextField
             placeholder={strings.enterEmailPlaceholder}
-            onChangeText={(text) => setGroupData({ ...groupData, email: text })}
+            onChangeText={(text) => setGroupData({...groupData, email: text})}
             value={groupData.email}
           />
         </View>
@@ -163,53 +167,59 @@ export default function EditGroupContactScreen({ navigation, route }) {
             value={groupData.phone_country}
             numberValue={groupData.phone}
             onValueChange={(value) => {
-              setGroupData({ ...groupData, phone_country: value });
+              setGroupData({...groupData, phone_country: value});
             }}
             onChangeText={(text) => {
-              setGroupData({ ...groupData, phone: text });
+              setGroupData({...groupData, phone: text});
             }}
           />
         </View>
 
         <View>
           <TCLabel title={strings.office} />
-          <TCTextField placeholder={strings.officeaddress}
-            onChangeText={(text) => setGroupData({ ...groupData, office_address: text })}
+          <TCTextField
+            placeholder={strings.officeaddress}
+            onChangeText={(text) =>
+              setGroupData({...groupData, office_address: text})
+            }
             value={groupData.office_address}
             onBlur={onOfficeFieldExist}
-            />
+          />
         </View>
 
         <View>
           <TCLabel title={strings.homefield} />
-          <TCTextField placeholder={strings.homeaddress}
-            onChangeText={(text) => setGroupData({ ...groupData, homefield_address: text })}
+          <TCTextField
+            placeholder={strings.homeaddress}
+            onChangeText={(text) =>
+              setGroupData({...groupData, homefield_address: text})
+            }
             value={groupData.homefield_address}
             onBlur={onHomeFieldExist}
-            />
+          />
         </View>
 
-        {coordinates.length > 0 && <MapView
-          style={styles.mapViewStyle}>
-          {markers.map((marker) => (
-            <Marker
-              key={marker.id}
-              identifier={marker.id}
-              coordinate={{
-                latitude: marker.latitude,
-                longitude: marker.longitude,
-                latitudeDelta: 0.0922,
-                longitudeDelta: 0.0421,
-              }}
-              description={marker.adddress}
-              title={marker.name}
-              pinColor={marker.pinColor}
-            />
-          ))}
-        </MapView>
-        }
+        {coordinates.length > 0 && (
+          <MapView style={styles.mapViewStyle}>
+            {markers.map((marker) => (
+              <Marker
+                key={marker.id}
+                identifier={marker.id}
+                coordinate={{
+                  latitude: marker.latitude,
+                  longitude: marker.longitude,
+                  latitudeDelta: 0.0922,
+                  longitudeDelta: 0.0421,
+                }}
+                description={marker.adddress}
+                title={marker.name}
+                pinColor={marker.pinColor}
+              />
+            ))}
+          </MapView>
+        )}
 
-        <View style={{ height: 50 }} />
+        <View style={{height: 50}} />
       </ScrollView>
     </TCKeyboardView>
   );

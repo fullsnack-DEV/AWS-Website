@@ -1,8 +1,6 @@
 import React from 'react';
-import {
-  StyleSheet, View, Text,
-} from 'react-native';
-import { AirbnbRating } from 'react-native-ratings';
+import {StyleSheet, View, Text} from 'react-native';
+import {AirbnbRating} from 'react-native-ratings';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 

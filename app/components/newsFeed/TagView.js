@@ -1,24 +1,14 @@
 import React from 'react';
-import {
-  StyleSheet, View, Text, Image,
-} from 'react-native';
-import colors from '../../Constants/Colors'
-import fonts from '../../Constants/Fonts'
+import {StyleSheet, View, Text, Image} from 'react-native';
+import colors from '../../Constants/Colors';
+import fonts from '../../Constants/Fonts';
 
-const TagView = ({
-  source,
-  tagText,
-  tagTextStyle,
-}) => (
+const TagView = ({source, tagText, tagTextStyle}) => (
   <View style={styles.mainContainerStyle}>
-    <Image
-        source={source}
-        style={styles.imageStyle}
-        resizeMode={'contain'}
-      />
-    <Text style={{ ...styles.tagTextStyle, ...tagTextStyle }}>{tagText}</Text>
+    <Image source={source} style={styles.imageStyle} resizeMode={'contain'} />
+    <Text style={{...styles.tagTextStyle, ...tagTextStyle}}>{tagText}</Text>
   </View>
-  )
+);
 
 const styles = StyleSheet.create({
   mainContainerStyle: {

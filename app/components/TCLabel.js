@@ -1,11 +1,8 @@
 import React from 'react';
-import {
-  StyleSheet,
-  Text,
-} from 'react-native';
+import {StyleSheet, Text} from 'react-native';
 
-import colors from '../Constants/Colors'
-import fonts from '../Constants/Fonts'
+import colors from '../Constants/Colors';
+import fonts from '../Constants/Fonts';
 import strings from '../Constants/String';
 
 function TCLabel({
@@ -16,12 +13,10 @@ function TCLabel({
   ...otherProps
 }) {
   return (
-    <Text
-      style={ [styles.labelText, style] }
-      { ...otherProps }
-    >
-      { title }{required && <Text style={ styles.mendatory }> {strings.star} </Text>}
-      {isNew && <Text style={ styles.newText }> {strings.newText} </Text>}
+    <Text style={[styles.labelText, style]} {...otherProps}>
+      {title}
+      {required && <Text style={styles.mendatory}> {strings.star} </Text>}
+      {isNew && <Text style={styles.newText}> {strings.newText} </Text>}
     </Text>
   );
 }

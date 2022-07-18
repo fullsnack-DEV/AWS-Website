@@ -122,15 +122,15 @@ export default function SportAccountSettingScreen({navigation, route}) {
       style={styles.listContainer}
       onPress={() => {
         handleOpetions(item.key);
-      }}>
+      }}
+    >
       <View
         style={{
           flexDirection: 'row',
           opacity: isAccountDeactivated && index <= 3 ? 0.5 : 1,
         }}
-        pointerEvents={
-          isAccountDeactivated && index <= 3 ? pointEvent : 'auto'
-        }>
+        pointerEvents={isAccountDeactivated && index <= 3 ? pointEvent : 'auto'}
+      >
         <Text style={styles.listItems}>{item.key}</Text>
         {item.key === 'Currency' && authContext?.entity?.obj?.currency_type && (
           <Text style={styles.currencyTypeStyle}>
@@ -156,7 +156,8 @@ export default function SportAccountSettingScreen({navigation, route}) {
               color: colors.lightBlackColor,
               textAlign: 'center',
               fontFamily: fonts.RBold,
-            }}>
+            }}
+          >
             Settings{'\n'}
             <Text
               style={{
@@ -164,7 +165,8 @@ export default function SportAccountSettingScreen({navigation, route}) {
                 color: colors.lightBlackColor,
                 textAlign: 'center',
                 fontFamily: fonts.RRegular,
-              }}>
+              }}
+            >
               {getSportName(sport, authContext)}
             </Text>
           </Text>

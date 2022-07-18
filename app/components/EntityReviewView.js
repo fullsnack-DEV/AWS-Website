@@ -38,7 +38,7 @@ const EntityReviewView = ({
             height: 25,
             width: 75,
             borderWidth: 1,
-            borderColor:  isReviewed ? colors.whiteColor : colors.yellowColor,
+            borderColor: isReviewed ? colors.whiteColor : colors.yellowColor,
           }}
         />
       );
@@ -58,12 +58,11 @@ const EntityReviewView = ({
       </View>
       <View style={{flex: 0.6, paddingVertical: 10, justifyContent: 'center'}}>
         <Text style={{fontSize: 16, fontFamily: fonts.RMedium}}>{title}</Text>
-        {subTitle !== '' && <View style={{flexDirection: 'row'}}>
-          <Text
-            style={styles.subTitleText}>
-            {subTitle ?? ''}
-          </Text>
-        </View>}
+        {subTitle !== '' && (
+          <View style={{flexDirection: 'row'}}>
+            <Text style={styles.subTitleText}>{subTitle ?? ''}</Text>
+          </View>
+        )}
       </View>
       <View style={{flex: 0.25, alignItems: 'center'}}>
         <View>{renderButtons}</View>
@@ -84,6 +83,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: fonts.RRegular,
     color: colors.userPostTimeColor,
-  }
+  },
 });
 export default EntityReviewView;

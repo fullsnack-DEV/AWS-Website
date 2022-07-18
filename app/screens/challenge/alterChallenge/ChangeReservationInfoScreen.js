@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect, useContext } from 'react';
+import React, {useState, useLayoutEffect, useContext} from 'react';
 import {
   View,
   StyleSheet,
@@ -7,7 +7,7 @@ import {
   Alert,
   SafeAreaView,
 } from 'react-native';
-import { acceptDeclineChallenge } from '../../../api/Challenge';
+import {acceptDeclineChallenge} from '../../../api/Challenge';
 import AuthContext from '../../../auth/context';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import colors from '../../../Constants/Colors';
@@ -16,8 +16,8 @@ import TCGradientButton from '../../../components/TCGradientButton';
 import strings from '../../../Constants/String';
 
 let entity = {};
-export default function ChangeReservationInfoScreen({ navigation, route }) {
-  const { challengeObj, screen } = route.params ?? {};
+export default function ChangeReservationInfoScreen({navigation, route}) {
+  const {challengeObj, screen} = route.params ?? {};
   const [screenName] = useState(screen);
   const authContext = useContext(AuthContext);
   entity = authContext.entity;
@@ -26,15 +26,15 @@ export default function ChangeReservationInfoScreen({ navigation, route }) {
   useLayoutEffect(() => {
     navigation.setOptions({
       title:
-        (screenName && screenName === 'change' && 'Change Match Reservation')
-        || (screenName && screenName === 'cancel' && 'Cancel Match Reservation'),
+        (screenName && screenName === 'change' && 'Change Match Reservation') ||
+        (screenName && screenName === 'cancel' && 'Cancel Match Reservation'),
     });
   }, [navigation, screenName]);
 
   const getOpponentEntity = () => {
     if (
-      entity?.uid === challengeObj?.home_team?.user_id
-      || entity?.uid === challengeObj?.home_team?.group_id
+      entity?.uid === challengeObj?.home_team?.user_id ||
+      entity?.uid === challengeObj?.home_team?.group_id
     ) {
       return challengeObj?.away_team;
     }
@@ -162,7 +162,7 @@ export default function ChangeReservationInfoScreen({ navigation, route }) {
                     },
                   },
                 ],
-                { cancelable: false },
+                {cancelable: false},
               );
             }
           }}

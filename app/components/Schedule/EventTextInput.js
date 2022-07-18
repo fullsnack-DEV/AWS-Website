@@ -1,10 +1,6 @@
 import React from 'react';
-import {
-  StyleSheet, View, TextInput, Text, Platform,
-} from 'react-native';
-import {
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
+import {StyleSheet, View, TextInput, Text, Platform} from 'react-native';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
@@ -23,11 +19,13 @@ function EventTextInput({
 }) {
   return (
     <View style={[styles.containerStyle, containerStyle]}>
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        {displayFirstTitle && <Text style={styles.valueAfterTextStyle}>{valueFirstTitle}</Text>}
+      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        {displayFirstTitle && (
+          <Text style={styles.valueAfterTextStyle}>{valueFirstTitle}</Text>
+        )}
         <TextInput
           placeholder={placeholder}
-          style={{ ...styles.textInputStyle, flex: 1, ...textInputStyle }}
+          style={{...styles.textInputStyle, flex: 1, ...textInputStyle}}
           onChangeText={onChangeText}
           value={value}
           multiline={multiline}
@@ -35,15 +33,19 @@ function EventTextInput({
           keyboardType={keyboardType}
         />
       </View>
-      <View style={{
-        position: 'absolute',
-        right: 10,
-        height: '100%',
-        paddingHorizontal: 10,
-        justifyContent: 'center',
-        backgroundColor: colors.offwhite,
-      }}>
-        {displayLastTitle && <Text style={styles.valueAfterTextStyle}>{valueEndTitle}</Text>}
+      <View
+        style={{
+          position: 'absolute',
+          right: 10,
+          height: '100%',
+          paddingHorizontal: 10,
+          justifyContent: 'center',
+          backgroundColor: colors.offwhite,
+        }}
+      >
+        {displayLastTitle && (
+          <Text style={styles.valueAfterTextStyle}>{valueEndTitle}</Text>
+        )}
       </View>
     </View>
   );
@@ -61,7 +63,7 @@ const styles = StyleSheet.create({
     paddingRight: 30,
     paddingVertical: Platform.OS === 'ios' ? 10 : 0,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
     width: '92%',

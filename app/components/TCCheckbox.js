@@ -1,28 +1,22 @@
-import React, { useState } from 'react';
-import {
-  StyleSheet,
-
-  Image,
-  TouchableOpacity,
-
-} from 'react-native';
+import React, {useState} from 'react';
+import {StyleSheet, Image, TouchableOpacity} from 'react-native';
 
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
-import images from '../Constants/ImagePath'
+import images from '../Constants/ImagePath';
 
 function TCCheckbox() {
   const [checkbox, setCheckbox] = useState(false);
   return (
-    <TouchableOpacity onPress={ () => setCheckbox(checkbox) }>
+    <TouchableOpacity onPress={() => setCheckbox(checkbox)}>
       {checkbox === true && (
-        <Image source={ images.checkWhite } style={ styles.sportImg } />
+        <Image source={images.checkWhite} style={styles.sportImg} />
       )}
       {checkbox === false && (
-        <Image source={ images.uncheckWhite } style={ styles.sportImg } />
+        <Image source={images.uncheckWhite} style={styles.sportImg} />
       )}
     </TouchableOpacity>
   );
