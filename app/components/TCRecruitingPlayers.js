@@ -29,7 +29,6 @@ const TCRecruitingPlayers = ({data, entityType, selectedSport, onPress}) => {
           obj.sport_type === selectedSport.sport_type &&
           obj?.setting?.availibility === 'On',
       );
-      console.log('filterdData', filterdData);
       if (filterdData.length > 0) {
         sportText = `${getSportName(filterdData[0], authContext)}`;
         gameFee = filterdData?.[0]?.setting?.game_fee?.fee;
@@ -39,7 +38,6 @@ const TCRecruitingPlayers = ({data, entityType, selectedSport, onPress}) => {
       const filterdData = (data?.registered_sports || []).filter(
         (obj) => obj?.setting?.availibility === 'On',
       );
-      console.log('filterdData', filterdData);
 
       if (filterdData.length === 1) {
         sportText = getSportName(filterdData[0], authContext);
@@ -130,7 +128,6 @@ const styles = StyleSheet.create({
   teamTImage: {
     resizeMode: 'contain',
     marginLeft: 5,
-    // alignSelf: 'center',
     height: 15,
     width: 15,
   },
