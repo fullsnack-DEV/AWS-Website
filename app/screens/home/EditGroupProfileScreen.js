@@ -112,6 +112,8 @@ export default function EditGroupProfileScreen({navigation, route}) {
     backgroundImageChanged,
     currentImageSelection,
     groupProfile,
+    sportsName,
+    selectedSports,
   ]);
 
   useEffect(() => {
@@ -197,11 +199,19 @@ export default function EditGroupProfileScreen({navigation, route}) {
           getSportName(sportItem, authContext);
         return null;
       });
+      console.log('sportText111====>', sportText);
       setSportsName(sportText);
     } else {
       setSportsName(route?.params?.sportType);
     }
-  }, [authContext, route?.params?.sportType, selectedSports]);
+    if (authContext.entity.role === 'club') {
+      setGroupProfile((prevState) => ({
+        ...prevState,
+        sports: selectedSports,
+        sports_string: sportsName,
+      }));
+    }
+  }, [authContext, route?.params?.sportType, selectedSports, sportsName]);
   const toggleModal = () => {
     setVisibleSportsModal(!visibleSportsModal);
   };
@@ -395,11 +405,7 @@ export default function EditGroupProfileScreen({navigation, route}) {
     Keyboard.dismiss();
     if (checkValidation()) {
       setloading(true);
-      console.log('hhhh', sportsName);
-      setGroupProfile({
-        ...groupProfile,
-        sports_string: sportsName,
-      });
+
       const userProfile = {...groupProfile};
       if (profileImageChanged || backgroundImageChanged) {
         const imageArray = [];
@@ -909,7 +915,9 @@ export default function EditGroupProfileScreen({navigation, route}) {
                   const filterChecked = sportList.filter(
                     (obj) => obj.isChecked,
                   );
+                  console.log('Filter array', filterChecked);
                   setSelectedSports(filterChecked);
+
                   toggleModal();
                 }}
               >

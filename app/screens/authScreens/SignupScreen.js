@@ -124,7 +124,7 @@ export default function SignupScreen({navigation}) {
             style={{
               height: 20,
               width: 15,
-              marginLeft: 20,
+              marginLeft: wp('5.33%'),
               tintColor: colors.whiteColor,
             }}
           />
@@ -429,9 +429,11 @@ export default function SignupScreen({navigation}) {
           style={styles.background}
           source={images.loginBg}
         />
+
         <Text style={styles.checkEmailText}>{strings.signupwithemail}</Text>
+
         <TCKeyboardView>
-          <View style={{marginVertical: 30}}>
+          <View style={{marginVertical: hp('8.12%')}}>
             {/* <TouchableOpacity
               style={styles.profile}
               onPress={() => {
@@ -608,6 +610,7 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: colors.darkYellowColor,
     textDecorationLine: 'underline',
+    fontFamily: fonts.RLight,
   },
   passwordView: {
     backgroundColor: 'rgba(255,255,255,0.9)',
@@ -654,9 +657,9 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   nextButtonStyle: {
-    fontFamily: fonts.RBold,
+    fontFamily: fonts.RMedium,
     fontSize: 16,
-    marginRight: 15,
+    marginRight: wp('4%'),
     color: colors.whiteColor,
   },
   checkEmailText: {
@@ -664,7 +667,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
     fontSize: 25,
     marginLeft: wp('6.6%'),
-    marginTop: wp('24.6%'),
+    marginTop: hp('11.39%'),
     textAlign: 'left',
   },
 });

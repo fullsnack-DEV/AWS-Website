@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     flex: 1,
     color: colors.googleColor,
     fontFamily: fonts.RRegular,
-    fontSize: 17,
+    fontSize: 16,
     textAlign: 'center',
   },
 });

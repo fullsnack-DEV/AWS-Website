@@ -73,7 +73,11 @@ const AuthNavigator = () => (
       component={ChooseSportsScreen}
       options={{title: ''}}
     />
-    <Stack.Screen name="FollowTeams" component={FollowTeams} options={{}} />
+    <Stack.Screen
+      name="FollowTeams"
+      component={FollowTeams}
+      options={{title: ''}}
+    />
     <Stack.Screen name="HomeScreen" component={HomeScreen} options={{}} />
     <Stack.Screen
       name="EmailVerificationScreen"

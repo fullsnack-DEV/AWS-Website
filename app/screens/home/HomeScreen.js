@@ -1389,26 +1389,8 @@ const HomeScreen = ({navigation, route}) => {
     ],
   );
 
-  const onTeamPress = useCallback(
-    (groupObject) => {
-      navigation.push('HomeScreen', {
-        uid: groupObject?.group_id,
-        backButtonVisible: true,
-        role: groupObject?.entity_type,
-      });
-    },
-    [navigation],
-  );
-
   const onMemberPress = (memberObject) => {
     console.log('memberObject', memberObject);
-  };
-
-  const onGroupListPress = (groupList, entityType) => {
-    navigation.push('GroupListScreen', {
-      groups: groupList,
-      entity_type: entityType,
-    });
   };
 
   let language_string = '';
@@ -1784,6 +1766,7 @@ const HomeScreen = ({navigation, route}) => {
 
   const onConnectionButtonPress = useCallback(
     (tab) => {
+      console.log('Tab===>', tab);
       let entity_type = authContext?.entity?.role;
       let user_id = authContext?.entity?.uid;
       if (route?.params?.role) entity_type = route?.params?.role;
@@ -2328,8 +2311,8 @@ const HomeScreen = ({navigation, route}) => {
     navigation.navigate('EntityInfoScreen', {
       uid: route?.params?.uid || authContext.entity.uid,
       isAdmin: route?.params?.uid === authContext.entity.uid,
-      onGroupListPress,
-      onTeamPress,
+      // onGroupListPress,
+      // onTeamPress,
       refereesInModal,
       playInModel,
       onMemberPress,
@@ -3372,14 +3355,7 @@ const HomeScreen = ({navigation, route}) => {
               showsHorizontalScrollIndicator={false}
               data={
                 isTeamHome
-                  ? [
-                      'Info',
-                      'Scoreboard',
-                      'Schedule',
-                      'Gallery',
-                      'Review',
-                      'Stats',
-                    ]
+                  ? ['Info', 'Scoreboard', 'Gallery', 'Review', 'Stats']
                   : ['Info', 'Scoreboard', 'Schedule', 'Gallery']
               }
               horizontal

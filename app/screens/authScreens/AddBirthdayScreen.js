@@ -60,7 +60,7 @@ export default function AddBirthdayScreen({navigation, route}) {
             style={{
               height: 20,
               width: 15,
-              marginLeft: 20,
+              marginLeft: wp('5.33%'),
               tintColor: colors.whiteColor,
             }}
           />
@@ -118,12 +118,21 @@ export default function AddBirthdayScreen({navigation, route}) {
 
         <Text style={styles.checkEmailText}>{strings.addBirthdayText}</Text>
         <Text style={styles.resetText}>{strings.notDisplayText}</Text>
-
         <Tooltip
+          containerStyle={{
+            left: 25,
+          }}
           popover={
-            <Text style={{color: colors.themeColor, fontSize: 14}}>
-              {strings.birthdatText}
-            </Text>
+            <View style={{flex: 1, padding: 10}}>
+              <Text
+                style={{
+                  color: colors.themeColor,
+                  fontSize: 14,
+                  fontFamily: fonts.RRegular,
+                }}>
+                {strings.birthdatText}
+              </Text>
+            </View>
           }
           backgroundColor={colors.parrotColor}
           height={hp('40%')}
@@ -189,8 +198,8 @@ const styles = StyleSheet.create({
     color: colors.whiteColor,
     fontFamily: fonts.RBold,
     fontSize: 25,
-    marginLeft: 20,
-    marginTop: wp('25%'),
+    marginLeft: wp('6.6%'),
+    marginTop: hp('11.39%'),
     textAlign: 'left',
   },
   dateText: {
@@ -204,10 +213,10 @@ const styles = StyleSheet.create({
   },
   matchFeeTxt: {
     height: 40,
-    width: wp('90%'),
+    width: wp('81.3%'),
     alignSelf: 'center',
     justifyContent: 'center',
-    marginTop: 30,
+    marginTop: hp('9.23%'),
     fontSize: wp('3.8%'),
     color: 'black',
     backgroundColor: 'rgba(255,255,255,0.9)',
@@ -224,33 +233,34 @@ const styles = StyleSheet.create({
     color: colors.whiteColor,
     fontFamily: fonts.RMedium,
     fontSize: 16,
-    marginLeft: 20,
+    marginLeft: wp('6.6%'),
     marginRight: 20,
-    marginTop: 10,
+    marginTop: 5,
     textAlign: 'left',
   },
   whyAskingText: {
     color: colors.parrotColor,
-    fontFamily: fonts.RRegular,
+    fontFamily: fonts.RMedium,
     fontSize: 14,
-    marginLeft: 20,
+    marginLeft: wp('6.6%'),
     marginRight: 20,
-    marginTop: 10,
+    marginTop: hp('1.84%'),
+    // marginBottom: hp('9%'),
     textAlign: 'left',
   },
   birthDateChangeNote: {
     color: colors.parrotColor,
-    fontFamily: fonts.RRegular,
+    fontFamily: fonts.RMedium,
     fontSize: 14,
-    marginLeft: 35,
-    marginRight: 35,
+    marginRight: wp('9.33%'),
+    marginLeft: wp('9.33%'),
     textAlign: 'left',
   },
 
   nextButtonStyle: {
-    fontFamily: fonts.RBold,
+    fontFamily: fonts.RMedium,
     fontSize: 16,
-    marginRight: 15,
+    marginRight: wp('4%'),
     color: colors.whiteColor,
   },
 });

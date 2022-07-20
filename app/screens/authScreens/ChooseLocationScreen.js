@@ -84,7 +84,7 @@ export default function ChooseLocationScreen({navigation, route}) {
             style={{
               height: 20,
               width: 15,
-              marginLeft: 20,
+              marginLeft: wp('5.33%'),
               tintColor: colors.whiteColor,
             }}
           />
@@ -315,7 +315,7 @@ export default function ChooseLocationScreen({navigation, route}) {
         style={styles.background}
         source={images.loginBg}
       />
-      <Text style={styles.LocationText}>{strings.locationText}</Text>
+      <Text style={styles.LocationText}>{strings.signupLocationText}</Text>
       <Text style={styles.LocationDescription}>
         {strings.locationDescription}
       </Text>
@@ -338,7 +338,7 @@ export default function ChooseLocationScreen({navigation, route}) {
       </View>
       {noData && searchText?.length > 0 && (
         <Text style={styles.noDataText}>
-          Please, enter at least 3 characters to see addresses.
+          Please enter at least 3 characters to see cities.
         </Text>
       )}
       {noData && searchText?.length === 0 && nearByCity.length > 0 && (
@@ -393,20 +393,26 @@ export default function ChooseLocationScreen({navigation, route}) {
 
 const styles = StyleSheet.create({
   LocationText: {
+    // color: colors.whiteColor,
+    // fontFamily: fonts.RBold,
+    // fontSize: wp('6%'),
+    // marginTop: hp('12%'),
+    // paddingLeft: 30,
+    // textAlign: 'left',
     color: colors.whiteColor,
     fontFamily: fonts.RBold,
-    fontSize: wp('6%'),
-    marginTop: hp('12%'),
-    paddingLeft: 30,
+    fontSize: 25,
+    marginLeft: wp('6.6%'),
+    marginTop: hp('11.39%'),
     textAlign: 'left',
   },
   LocationDescription: {
     color: colors.whiteColor,
     fontFamily: fonts.RMedium,
-    fontSize: wp('4%'),
-    marginTop: hp('1%'),
-    paddingLeft: 30,
-    paddingRight: 30,
+    fontSize: 16,
+    marginLeft: wp('6.6%'),
+    marginRight: 20,
+    marginTop: 5,
     textAlign: 'left',
   },
   background: {
@@ -416,7 +422,7 @@ const styles = StyleSheet.create({
   },
   cityList: {
     color: colors.whiteColor,
-    fontSize: wp('4%'),
+    fontSize: 16,
     textAlign: 'left',
     fontFamily: fonts.RMedium,
 
@@ -427,7 +433,7 @@ const styles = StyleSheet.create({
   },
   curruentLocationText: {
     color: colors.whiteColor,
-    fontSize: wp('3%'),
+    fontSize: 12,
     textAlign: 'left',
     fontFamily: fonts.RRegular,
 
@@ -439,8 +445,9 @@ const styles = StyleSheet.create({
   },
   listItem: {
     flexDirection: 'row',
-    marginLeft: wp('10%'),
-    width: wp('80%'),
+    marginLeft: wp('8%'),
+    marginRight: wp('8%'),
+    width: wp('81.33%'),
   },
   mainContainer: {
     flex: 1,
@@ -472,7 +479,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     height: 40,
     justifyContent: 'center',
-    margin: wp('8%'),
+    // margin: wp('8%'),
     marginBottom: wp('1%'),
     paddingLeft: 17,
     paddingRight: 5,
@@ -481,6 +488,10 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.5,
     shadowRadius: 4,
+    marginTop: hp('3.07%'),
+    width: wp('86.67%'),
+    marginLeft: wp('6.6%'),
+    marginRight: wp('6.6%'),
   },
   textInput: {
     color: colors.darkYellowColor,

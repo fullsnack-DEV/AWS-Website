@@ -131,7 +131,7 @@ const strings = {
   clubTeamTitle2: 'Chelsea FC',
   clubTeamTitle3: 'FC Barcelona',
   leagueTeamTitle: 'UEFA Champions League',
-
+  signupLocationText: 'Choose your home city.',
   locationText: 'Choose your city.',
   locationDescription:
     'Home city is the city where you currently reside or you mostly play sports.',

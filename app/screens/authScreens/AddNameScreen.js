@@ -60,7 +60,7 @@ export default function SignupScreen({navigation, route}) {
             style={{
               height: 20,
               width: 15,
-              marginLeft: 20,
+              marginLeft: wp('5.33%'),
               tintColor: colors.whiteColor,
             }}
           />
@@ -335,7 +335,10 @@ export default function SignupScreen({navigation, route}) {
         <Text style={styles.checkEmailText}>{strings.addYourName}</Text>
 
         <TCKeyboardView>
-          <View style={{marginVertical: 20}}>
+          <View
+            style={{
+              marginTop: hp('7.51%'),
+            }}>
             <TouchableOpacity
               style={styles.profile}
               onPress={() => {
@@ -366,9 +369,9 @@ export default function SignupScreen({navigation, route}) {
                       : images.profilePlaceHolder
                   }
                   style={{
-                    width: 100,
-                    height: 100,
-                    borderRadius: 50,
+                    width: 60,
+                    height: 60,
+                    borderRadius: 30,
                     backgroundColor: '#FED378',
                   }}
                 />
@@ -383,9 +386,9 @@ export default function SignupScreen({navigation, route}) {
                           : images.profilePlaceHolder
                       }
                       style={{
-                        width: 100,
-                        height: 100,
-                        borderRadius: 50,
+                        width: 60,
+                        height: 60,
+                        borderRadius: 30,
                         backgroundColor: '#FED378',
                       }}
                     />
@@ -394,9 +397,9 @@ export default function SignupScreen({navigation, route}) {
                       resizeMode={'contain'}
                       source={images.profilePlaceHolder}
                       style={{
-                        width: 100,
-                        height: 100,
-                        borderRadius: 50,
+                        width: 60,
+                        height: 60,
+                        borderRadius: 30,
                         backgroundColor: '#FED378',
                       }}
                     />
@@ -462,11 +465,10 @@ const styles = StyleSheet.create({
   profile: {
     alignContent: 'center',
     alignSelf: 'center',
-    height: 100,
-    marginTop: 30,
-    marginBottom: 20,
-    width: 100,
-    borderRadius: 50,
+    height: 60,
+    marginBottom: hp('2.46%'),
+    width: 60,
+    borderRadius: 30,
 
     // borderWidth: 1,
     // borderColor: '#FED378',
@@ -476,7 +478,7 @@ const styles = StyleSheet.create({
     top: 30,
     marginVertical: 5,
     alignSelf: 'center',
-    width: wp('85%'),
+    width: wp('81.3%'),
     backgroundColor: 'rgba(255,255,255,0.9)',
     shadowColor: colors.googleColor,
     shadowOffset: {width: 0, height: 4},
@@ -486,8 +488,8 @@ const styles = StyleSheet.create({
   profileCameraButtonStyle: {
     height: 22,
     width: 22,
-    marginTop: -40,
-    marginLeft: 60,
+    marginTop: -41,
+    marginLeft: 40,
     alignSelf: 'center',
   },
   cameraIcon: {
@@ -495,17 +497,17 @@ const styles = StyleSheet.create({
     width: 22,
   },
   nextButtonStyle: {
-    fontFamily: fonts.RBold,
+    fontFamily: fonts.RMedium,
     fontSize: 16,
-    marginRight: 15,
+    marginRight: wp('4%'),
     color: colors.whiteColor,
   },
   checkEmailText: {
     color: colors.whiteColor,
     fontFamily: fonts.RBold,
     fontSize: 25,
-    marginLeft: 20,
-    marginTop: wp('25%'),
+    marginLeft: wp('6.6%'),
+    marginTop: hp('11.39%'),
     textAlign: 'left',
   },
 });

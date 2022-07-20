@@ -46,7 +46,7 @@ import {
   getTeamPendingRequest,
   groupUnpaused,
 } from '../../api/Groups';
-
+import {getGroupIndex} from '../../api/elasticSearch';
 import {getUnreadCount} from '../../api/Notificaitons';
 
 import * as Utility from '../../utils/index';
@@ -262,6 +262,15 @@ export default function AccountScreen({navigation}) {
   }, [authContext, isFocused]);
 
   // useEffect(() => {
+  //   if (
+  //     authContext.entity?.obj?.entity_type === 'team' &&
+  //     authContext.entity?.obj?.parent_groups?.length > 0
+  //   ) {
+  //     getJoinedClubListOfTeam(authContext.entity?.obj?.parent_groups);
+  //   }
+  // });
+
+  // useEffect(() => {
   //   if (route?.params?.createdSportName) {
   //     setIsSportCreateModalVisible(true);
   //   }
@@ -345,6 +354,7 @@ export default function AccountScreen({navigation}) {
   const getTeamsList = useCallback(
     async (currentEntity) => {
       console.log('team list api Called..');
+      console.log('currentEntity ==>', currentEntity);
       setloading(true);
       if (currentEntity.role === 'club') {
         console.log('team of club api Called..');
@@ -352,7 +362,7 @@ export default function AccountScreen({navigation}) {
         getTeamsOfClub(authContext.entity.uid, authContext)
           .then((response) => {
             setTeamList(response.payload);
-            console.log('team list api done Called..');
+            console.log('team list api done Called..', response.payload);
           })
           .catch((e) => {
             setloading(false);
@@ -399,24 +409,47 @@ export default function AccountScreen({navigation}) {
         // eslint-disable-next-line prefer-promise-reject-errors
         .catch(() => reject('error'));
     });
+  const getJoinedClubListOfTeam = useCallback((ids) => {
+    console.log('groupsIds==>', ids);
+    const body = {
+      query: {
+        terms: {
+          _id: ids,
+        },
+      },
+    };
+    console.log('query body ==>', JSON.stringify(body));
+    getGroupIndex(body).then((clubs) => {
+      console.log('Joined club list::=>', clubs);
+      setClubList(clubs);
+    });
+  }, []);
 
-  const getClubList = useCallback(async () => {
-    // setloading(true);
-    console.log('club list api Called..');
-
-    getJoinedGroups('club', authContext)
-      .then((response) => {
-        setClubList(response.payload);
-        console.log('club list api done Called..', response.payload);
-      })
-      .catch((e) => {
-        setloading(false);
-        console.log('4');
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
-  }, [authContext]);
+  const getClubList = useCallback(
+    async (entity) => {
+      console.log('club list api Called..');
+      if (entity.role === 'user') {
+        // called user club list
+        getJoinedGroups('club', authContext)
+          .then((response) => {
+            setClubList(response.payload);
+            console.log('club list api done Called..', response.payload);
+          })
+          .catch((e) => {
+            setloading(false);
+            console.log('4');
+            setTimeout(() => {
+              Alert.alert(strings.alertmessagetitle, e.message);
+            }, 10);
+          });
+      } else if (entity.role !== 'club') {
+        // fetch team club list from elastic search
+        const ids = entity?.obj?.parent_groups;
+        getJoinedClubListOfTeam(ids);
+      }
+    },
+    [authContext, getJoinedClubListOfTeam],
+  );
 
   const oncalcelTeamRequest = (type, requestID) => {
     setloading(true);

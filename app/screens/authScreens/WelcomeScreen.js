@@ -16,6 +16,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  SafeAreaView,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {
@@ -787,22 +788,32 @@ export default function WelcomeScreen({navigation}) {
             </Text>
           </TouchableOpacity>
         </View>
-        <Text style={styles.privacyText}>
-          By continuing or signing up you agree to our{'\n'}
-          <Text onPress={() => {}} style={{textDecorationLine: 'underline'}}>
-            Terms of Service.
-          </Text>{' '}
-          We will manage information about you{'\n'}
-          as described in our{' '}
-          <Text onPress={() => {}} style={{textDecorationLine: 'underline'}}>
-            Privacy Policy
-          </Text>{' '}
-          and{' '}
-          <Text onPress={() => {}} style={{textDecorationLine: 'underline'}}>
-            Cookie Policy
-          </Text>
-          .
-        </Text>
+        <SafeAreaView>
+          <View>
+            <Text style={styles.privacyText}>
+              By continuing or signing up you agree to our{'\n'}
+              <Text
+                onPress={() => {}}
+                style={{textDecorationLine: 'underline'}}>
+                Terms of Service.
+              </Text>{' '}
+              We will manage information about you{'\n'}
+              as described in our{' '}
+              <Text
+                onPress={() => {}}
+                style={{textDecorationLine: 'underline'}}>
+                Privacy Policy
+              </Text>{' '}
+              and{' '}
+              <Text
+                onPress={() => {}}
+                style={{textDecorationLine: 'underline'}}>
+                Cookie Policy
+              </Text>
+              .
+            </Text>
+          </View>
+        </SafeAreaView>
       </View>
     </LinearGradient>
   );
@@ -828,6 +839,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     fontSize: 16,
     textAlign: 'center',
+    marginTop: hp('2.46%'),
   },
   alreadyView: {
     marginVertical: 10,
@@ -851,18 +863,18 @@ const styles = StyleSheet.create({
     alignContent: 'center',
     height: hp(12),
     width: wp(22),
-    marginBottom: hp(4),
+    marginBottom: hp('2.46%'),
   },
   logoContainer: {
     alignItems: 'center',
     flexDirection: 'column',
-    marginTop: hp('15%'),
+    marginTop: hp('18.78%'),
   },
   logoTagLine: {
     color: colors.whiteColor,
     fontFamily: fonts.RMedium,
     fontSize: wp('4%'),
-    marginTop: hp('1%'),
+    marginTop: hp('0.61%'),
   },
   logoTitle: {
     color: colors.whiteColor,
@@ -889,7 +901,7 @@ const styles = StyleSheet.create({
     color: colors.themeColor,
     flex: 1,
     fontFamily: fonts.RRegular,
-    fontSize: 17,
+    fontSize: 16,
     textAlign: 'center',
   },
 });

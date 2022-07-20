@@ -1301,7 +1301,7 @@ const NewsFeedNavigator = () => (
       name="JoinedTeamsScreen"
       component={JoinedTeamsScreen}
       options={{
-        title: 'Teams',
+        title: 'Followings',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

@@ -88,7 +88,7 @@ export default function FollowTeams({route, navigation}) {
             style={{
               height: 20,
               width: 15,
-              marginLeft: 20,
+              marginLeft: wp('5.33%'),
               tintColor: colors.whiteColor,
             }}
           />
@@ -385,7 +385,7 @@ export default function FollowTeams({route, navigation}) {
       <SafeAreaView style={styles.container}>
         <Text style={styles.sportText}>{strings.followSportTeam}</Text>
         <FlatList
-          style={{padding: 27, bottom: 35}}
+          style={{marginTop: hp('3.69%'), paddingLeft: 28, paddingRight: 28}}
           data={teams}
           keyExtractor={(item, index) => index.toString()}
           renderItem={renderItem}
@@ -408,7 +408,7 @@ const styles = StyleSheet.create({
   cityText: {
     color: colors.whiteColor,
     fontFamily: fonts.RRegular,
-    fontSize: wp('3.5%'),
+    fontSize: 14,
     textAlign: 'left',
     textAlignVertical: 'center',
   },
@@ -425,8 +425,8 @@ const styles = StyleSheet.create({
   },
   followText: {
     color: colors.whiteColor,
-    fontFamily: fonts.RBlack,
-    fontSize: wp('3%'),
+    fontFamily: fonts.RBold,
+    fontSize: 12,
   },
   followingBtn: {
     alignItems: 'center',
@@ -440,8 +440,8 @@ const styles = StyleSheet.create({
   },
   followingText: {
     color: colors.themeColor,
-    fontFamily: fonts.RBlack,
-    fontSize: wp('3%'),
+    fontFamily: fonts.RBold,
+    fontSize: 12,
   },
   listItem: {
     flexDirection: 'row',
@@ -461,25 +461,32 @@ const styles = StyleSheet.create({
   },
 
   sportText: {
+    // color: colors.whiteColor,
+    // fontFamily: fonts.RBold,
+    // fontSize: wp('6%'),
+    // marginBottom: hp('4%'),
+    // marginTop: hp('12%'),
+    // paddingHorizontal: 30,
+    // textAlign: 'left',
+
     color: colors.whiteColor,
     fontFamily: fonts.RBold,
-    fontSize: wp('6%'),
-    marginBottom: hp('4%'),
-    marginTop: hp('12%'),
-    paddingHorizontal: 30,
+    fontSize: 25,
+    marginLeft: wp('6.6%'),
+    marginTop: hp('11.39%'),
     textAlign: 'left',
   },
   teamNameText: {
     color: colors.whiteColor,
-    fontFamily: fonts.RBlack,
-    fontSize: wp('4%'),
+    fontFamily: fonts.RBold,
+    fontSize: 16,
     textAlign: 'left',
     textAlignVertical: 'center',
   },
   nextButtonStyle: {
-    fontFamily: fonts.RBold,
+    fontFamily: fonts.RMedium,
     fontSize: 16,
-    marginRight: 15,
+    marginRight: wp('4%'),
     color: colors.whiteColor,
   },
   container: {
