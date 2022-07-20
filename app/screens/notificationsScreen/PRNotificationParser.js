@@ -137,8 +137,7 @@ const parseRefereeRequestNotification = async (data) => {
     notificationObject = JSON.parse(activity.object);
   }
 
-  const reservationObject = notificationObject.reservationObject;
-  console.log('reservationObject activity::=>', activity);
+  const reservationObject = notificationObject.reservation;
 
   if (reservationObject.referee_id === reservationObject.requested_by) {
     finalString.firstTitle = `${reservationObject.updated_by.first_name} ${reservationObject.updated_by.last_name}`;
@@ -217,7 +216,7 @@ const parseScorekeeperRequestNotification = async (data) => {
     notificationObject = JSON.parse(activity.object);
   }
 
-  const reservationObject = notificationObject.reservationObject;
+  const reservationObject = notificationObject.reservation;
 
   if (reservationObject.scorekeeper_id === reservationObject.requested_by) {
     finalString.firstTitle = `${reservationObject.updated_by.first_name} ${reservationObject.updated_by.last_name}`;
