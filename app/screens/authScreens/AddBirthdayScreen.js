@@ -30,10 +30,6 @@ import ActivityLoader from '../../components/loader/ActivityLoader';
 export default function AddBirthdayScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
 
-  console.log(
-    'auth birthday',
-    new Date(authContext?.entity?.obj?.birthday * 1000),
-  );
   const [dateValue, setDateValue] = useState(
     authContext?.entity?.obj?.birthday
       ? new Date(authContext?.entity?.obj?.birthday * 1000)
@@ -53,8 +49,7 @@ export default function AddBirthdayScreen({navigation, route}) {
         <TouchableOpacity
           onPress={() => {
             navigation.pop();
-          }}
-        >
+          }}>
           <Image
             source={images.backArrow}
             style={{
@@ -73,8 +68,7 @@ export default function AddBirthdayScreen({navigation, route}) {
           onPress={() => {
             const userParams = {birthday: new Date(dateValue).getTime() / 1000};
             navigateToGenderScreen(userParams);
-          }}
-        >
+          }}>
           Next
         </Text>
       ),
@@ -90,14 +84,10 @@ export default function AddBirthdayScreen({navigation, route}) {
     setMaxDateValue(maxdate);
   }, []);
   const navigateToGenderScreen = (userParams) => {
-    console.log('route?.params?.signupInfo', route?.params?.signupInfo);
-    console.log('userParams', userParams);
-
     const profileData = {
       ...route?.params?.signupInfo,
       birthday: userParams.birthday,
     };
-    console.log('Profile data gender ', profileData);
     navigation.navigate('ChooseGenderScreen', {
       signupInfo: {...profileData},
     });
@@ -106,8 +96,7 @@ export default function AddBirthdayScreen({navigation, route}) {
   return (
     <LinearGradient
       colors={[colors.themeColor1, colors.themeColor3]}
-      style={styles.mainContainer}
-    >
+      style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
       <View style={{flex: 1}}>
         <FastImage
@@ -138,8 +127,7 @@ export default function AddBirthdayScreen({navigation, route}) {
           height={hp('40%')}
           width={wp('75%')}
           overlayColor={'transparent'}
-          skipAndroidStatusBar={true}
-        >
+          skipAndroidStatusBar={true}>
           <Text style={styles.whyAskingText}>{strings.whyAskingText}</Text>
         </Tooltip>
 
@@ -168,8 +156,7 @@ export default function AddBirthdayScreen({navigation, route}) {
         <View
           style={{
             bottom: 16,
-          }}
-        >
+          }}>
           <Text style={styles.birthDateChangeNote}>
             {strings.birthDateChangeNote}
           </Text>

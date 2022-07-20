@@ -188,42 +188,24 @@ export default function WelcomeScreen({navigation}) {
           QB: {...res?.user, connected: true, token: res?.session?.token},
         };
 
-        console.log('QB qbEntity : ', qbEntity);
-
         QBconnectAndSubscribe(qbEntity);
         dummyAuthContext.entity = qbEntity;
         await wholeSignUpProcessComplete(response, dummyAuthContext);
       })
       .catch(async (error) => {
-        console.log('QB Login Error : ', error.message);
         qbEntity = {...qbEntity, QB: {connected: false}};
         dummyAuthContext.entity = qbEntity;
         await wholeSignUpProcessComplete(response, dummyAuthContext);
       });
   };
   const navigateToAddBirthdayScreen = async (userDetail, dummyAuth) => {
-    // const entity = {
-    //   auth: {user_id: user.uid},
-    //   uid: user.uid,
-    //   role: 'user',
-    // };
     setloading(false);
     const dummyAuthContext = {...dummyAuth};
     const authEntity = {...dummyAuthContext?.entity};
     const token = {...dummyAuthContext?.tokenData};
-    console.log('Token=====>', token);
-    console.log('authEntity=====>', authEntity);
-    console.log('userDetail=====>', userDetail);
 
     await authContext.setTokenData(token);
     await authContext.setEntity(authEntity);
-    // navigation.navigate('AddBirthdayScreen', {
-    //   signupInfo: {
-    //     first_name: userDetail?.first_name,
-    //     last_name: userDetail?.last_name,
-    //     email: userDetail?.email,
-    //   },
-    // });
 
     navigation.navigate('AddNameScreen', {
       signupInfo: {
@@ -242,9 +224,7 @@ export default function WelcomeScreen({navigation}) {
       last_name: userDetail?.last_name,
       email: userDetail?.email,
     };
-    console.log('Post userDetail:=>', userDetail);
 
-    console.log('Post Data:=>', data);
     createUser(data, dummyAuthContext)
       .then((createdUser) => {
         const authEntity = {...dummyAuthContext?.entity};
@@ -295,13 +275,10 @@ export default function WelcomeScreen({navigation}) {
     const dummyAuthContext = {...authContext};
     const socialSignInSignUpOnAuthChanged = auth().onAuthStateChanged(
       (user) => {
-        console.log('User :-', user);
-        console.log('User email:-', user.email);
         if (user) {
           user
             .getIdTokenResult()
             .then(async (idTokenResult) => {
-              console.log('User JWT: ', idTokenResult.token);
               const token = {
                 token: idTokenResult.token,
                 expirationTime: idTokenResult.expirationTime,
@@ -309,7 +286,6 @@ export default function WelcomeScreen({navigation}) {
               dummyAuthContext.tokenData = token;
               checkUserIsRegistratedOrNotWithTownscup(user?.email)
                 .then((userExist) => {
-                  console.log('User exist:=>', userExist);
                   const userConfig = {
                     method: 'get',
                     url: `${Config.BASE_URL}/users/${user?.uid}`,
@@ -328,15 +304,6 @@ export default function WelcomeScreen({navigation}) {
                           },
                         };
                         QBInitialLogin(dummyAuthContext, response?.payload);
-                        console.log('Already register user details', user);
-                        console.log(
-                          'Already register extraData details',
-                          extraData,
-                        );
-                        // setloading(false);
-                        // setTimeout(() => {
-                        //   Alert.alert(strings.alreadyRegisteredMessage);
-                        // }, 100);
                       })
                       .catch((error) => {
                         console.log('Login Error', error);
@@ -351,7 +318,6 @@ export default function WelcomeScreen({navigation}) {
                       uid: user.uid,
                       role: 'user',
                     };
-                    console.log('extraData:=>', extraData);
 
                     const flName = user?.displayName?.split(' ');
                     const userDetail = {...extraData};
@@ -378,8 +344,6 @@ export default function WelcomeScreen({navigation}) {
                       };
                       userDetail.uploadedProfilePic = uploadedProfilePic;
                     }
-                    console.log('Image==>', user.photoURL);
-                    console.log('Prepared userDetail:=>', userDetail);
 
                     // signUpToTownsCup(userDetail, dummyAuthContext);
                     navigateToAddBirthdayScreen(userDetail, dummyAuthContext);
@@ -410,28 +374,12 @@ export default function WelcomeScreen({navigation}) {
     provider,
     extraData = {},
   ) => {
-    console.log('social cred:=>', credential);
-
     auth()
       .signInWithCredential(credential)
       .then(async (authResult) => {
-        console.log('social authResult:=>', authResult);
-        console.log('social provider:=>', provider);
-
-        console.log('social extraData:=>', extraData);
-
         socialSignInSignUp(authResult, provider, extraData);
       })
       .catch(async (error) => {
-        // console.log('error lors de l\'authentification firebase : ', error);
-        //   console.log('codeError : ', error.code);
-        //  // error.email is undefined
-        //   console.log('emailError : ', error.email);
-        //   const codeError = error.code;
-        // if (codeError === 'auth/account-exists-with-different-credential') {
-        //   const providers = await auth().fetchSignInMethodsForEmail(error.email);
-        //  console.log('providersproviders',providers);
-        // }
         console.log('error.codeerror.code', error.code);
         setloading(false);
         let message = '';
@@ -497,7 +445,6 @@ export default function WelcomeScreen({navigation}) {
       } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
         Alert.alert('play services not available or outdated');
       } else {
-        console.log('Something went wrong:', error);
         Alert.alert('Something went wrong', error.toString());
       }
     }
@@ -510,7 +457,6 @@ export default function WelcomeScreen({navigation}) {
 
       await GoogleSignin.hasPlayServices();
       const {idToken} = await GoogleSignin.signIn();
-      console.log('idToken', idToken);
 
       const googleCredential = await auth.GoogleAuthProvider.credential(
         idToken,
@@ -528,7 +474,6 @@ export default function WelcomeScreen({navigation}) {
       } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
         Alert.alert('play services not available or outdated');
       } else {
-        console.log('Something went wrong:', error);
         Alert.alert('Something went wrong', error.toString());
       }
     }
@@ -562,8 +507,6 @@ export default function WelcomeScreen({navigation}) {
   }) => {
     checkUserIsRegistratedOrNotWithFirebase(email)
       .then(async (providerData) => {
-        console.log('provider::=>', provider);
-        console.log('providerData::=>', providerData);
         if (providerData?.length > 0 || !providerData) {
           successCallback();
         }
@@ -626,13 +569,10 @@ export default function WelcomeScreen({navigation}) {
 
   const handleAndroidAppleLogin = async () => {
     try {
-      console.log('1::=>:');
       setloading(true);
       if (!appleAuthAndroid?.isSupported) {
         alert('Apple Login not supported');
       } else {
-        console.log('2::=>:');
-
         const rawNonce = uuid();
         const state = uuid();
         appleAuthAndroid.configure({
@@ -643,10 +583,8 @@ export default function WelcomeScreen({navigation}) {
           nonce: rawNonce,
           state,
         });
-        console.log('3::=>:');
 
         const appleAuthRequestResponse = await appleAuthAndroid.signIn();
-        console.log('4::=>:');
         const {email} = await jwtDecode(appleAuthRequestResponse.id_token);
 
         console.log(appleAuthRequestResponse);
@@ -717,8 +655,7 @@ export default function WelcomeScreen({navigation}) {
   return (
     <LinearGradient
       colors={[colors.themeColor1, colors.themeColor3]}
-      style={styles.mainContainer}
-    >
+      style={styles.mainContainer}>
       <StatusBar backgroundColor="white" barStyle="dark-content" />
       <ActivityLoader visible={loading} />
       {renderBackgroundImages}
@@ -759,8 +696,7 @@ export default function WelcomeScreen({navigation}) {
 
           <TouchableOpacity
             style={styles.allButton}
-            onPress={() => navigation.navigate('SignupScreen')}
-          >
+            onPress={() => navigation.navigate('SignupScreen')}>
             <FastImage
               source={images.email}
               resizeMode={'contain'}
@@ -772,8 +708,7 @@ export default function WelcomeScreen({navigation}) {
           <TouchableOpacity
             hitSlop={getHitSlop(15)}
             onPress={() => navigation.navigate('LoginScreen')}
-            style={styles.alreadyView}
-          >
+            style={styles.alreadyView}>
             <Text style={styles.alreadyMemberText}>
               {strings.alreadyMember}
               <Text> </Text>
@@ -781,8 +716,7 @@ export default function WelcomeScreen({navigation}) {
                 style={{
                   textDecorationLine: 'underline',
                   fontFamily: fonts.RBold,
-                }}
-              >
+                }}>
                 Log In
               </Text>
             </Text>

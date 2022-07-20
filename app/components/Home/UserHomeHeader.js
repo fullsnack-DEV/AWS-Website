@@ -28,7 +28,6 @@ const UserHomeHeader = ({
   const actionSheet = useRef();
 
   const authContext = useContext(AuthContext);
-  console.log('Home currentUserData', currentUserData);
   const [entityData, setEntityData] = useState(null);
   useEffect(() => {
     if (currentUserData) {
@@ -49,7 +48,6 @@ const UserHomeHeader = ({
 
   // check member status
   let isMember = false;
-  console.log(isMember);
 
   if (loggedInEntity.role === 'club' && currentUserData.clubIds) {
     const result = currentUserData.clubIds.filter(

@@ -117,8 +117,7 @@ export default function SignupScreen({navigation}) {
         <TouchableOpacity
           onPress={() => {
             navigation.pop();
-          }}
-        >
+          }}>
           <Image
             source={images.backArrow}
             style={{
@@ -141,8 +140,7 @@ export default function SignupScreen({navigation}) {
                 authContext.showNetworkAlert();
               }
             }
-          }}
-        >
+          }}>
           {strings.signUp}
         </Text>
       ),
@@ -177,37 +175,6 @@ export default function SignupScreen({navigation}) {
         });
     });
 
-  /*
-  const signUpToTownsCup = async (uploadedProfilePic) => {
-    setloading(true);
-    const data = {
-      first_name: fName,
-      last_name: lName,
-      email,
-      thumbnail: uploadedProfilePic?.thumbnail ?? '',
-      full_image: uploadedProfilePic?.full_image ?? '',
-    };
-
-    createUser(data, dummyAuthContext)
-      .then((createdUser) => {
-        console.log('QB CreatedUser:', createdUser);
-        const authEntity = {...dummyAuthContext.entity};
-        authEntity.obj = createdUser?.payload;
-        authEntity.auth.user = createdUser?.payload;
-        authEntity.role = 'user';
-        setDummyAuthContext('entity', authEntity);
-        setDummyAuthContext('user', createdUser?.payload);
-        signUpWithQB(createdUser?.payload);
-      })
-      .catch((e) => {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
-  };
-  */
-
   const setDummyAuthContext = (key, value) => {
     dummyAuthContext[key] = value;
   };
@@ -216,8 +183,6 @@ export default function SignupScreen({navigation}) {
       user
         .getIdTokenResult()
         .then(async (idTokenResult) => {
-          console.log('idTokenResult', idTokenResult);
-
           const token = {
             token: idTokenResult.token,
             expirationTime: idTokenResult.expirationTime,
@@ -232,7 +197,6 @@ export default function SignupScreen({navigation}) {
             uid: user.uid,
             role: 'user',
           };
-          console.log('Signup token=========>', token);
           setDummyAuthContext('tokenData', token);
           await authContext.setTokenData(token);
           await authContext.setEntity(entity);
@@ -255,17 +219,14 @@ export default function SignupScreen({navigation}) {
               .then(async () => {
                 setDummyAuthContext('entity', entity);
                 navigateToEmailVarificationScreen();
-                console.log('1111');
               })
               .catch(async () => {
                 setDummyAuthContext('entity', entity);
-                console.log('2222');
                 // await signUpToTownsCup();
                 navigateToEmailVarificationScreen();
               });
           } else {
             setDummyAuthContext('entity', entity);
-            console.log('33333');
             // await signUpToTownsCup();
             navigateToEmailVarificationScreen();
           }
@@ -342,7 +303,6 @@ export default function SignupScreen({navigation}) {
   const signupUser = () => {
     setloading(true);
     checkUserIsRegistratedOrNotWithTownscup().then((userExist) => {
-      console.log('hhhhhhh', userExist);
       if (userExist) {
         setloading(false);
         setTimeout(() => {
@@ -385,44 +345,9 @@ export default function SignupScreen({navigation}) {
 
   return (
     <>
-      {/* <ActionSheet
-        ref={actionSheet}
-        // title={'News Feed Post'}
-        options={[strings.camera, strings.album, strings.cancelTitle]}
-        cancelButtonIndex={2}
-        onPress={(index) => {
-          if (index === 0) {
-            openCamera();
-          } else if (index === 1) {
-            openImagePicker();
-          }
-        }}
-      />
-      <ActionSheet
-        ref={actionSheetWithDelete}
-        // title={'News Feed Post'}
-        options={[
-          strings.camera,
-          strings.album,
-          strings.deleteTitle,
-          strings.cancelTitle,
-        ]}
-        cancelButtonIndex={3}
-        destructiveButtonIndex={2}
-        onPress={(index) => {
-          if (index === 0) {
-            openCamera();
-          } else if (index === 1) {
-            openImagePicker();
-          } else if (index === 2) {
-            deleteImage();
-          }
-        }}
-      /> */}
       <LinearGradient
         colors={[colors.themeColor1, colors.themeColor3]}
-        style={styles.mainContainer}
-      >
+        style={styles.mainContainer}>
         <ActivityLoader visible={loading} />
         <FastImage
           resizeMode={'stretch'}
@@ -434,36 +359,6 @@ export default function SignupScreen({navigation}) {
 
         <TCKeyboardView>
           <View style={{marginVertical: hp('8.12%')}}>
-            {/* <TouchableOpacity
-              style={styles.profile}
-              onPress={() => {
-                onProfileImageClicked();
-              }}>
-              <FastImage
-                source={
-                  profilePic?.path
-                    ? {uri: profilePic?.path}
-                    : images.profilePlaceHolder
-                }
-                style={{
-                  width: 100,
-                  height: 100,
-                  borderRadius: 50,
-                  backgroundColor: '#FED378',
-                }}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.profileCameraButtonStyle}
-              onPress={() => {
-                onProfileImageClicked();
-              }}>
-              <FastImage
-                source={images.certificateUpload}
-                style={styles.cameraIcon}
-              />
-            </TouchableOpacity> */}
-
             <TCTextField
               placeholderTextColor={colors.darkYellowColor}
               style={styles.textFieldStyle}
@@ -491,8 +386,7 @@ export default function SignupScreen({navigation}) {
                     justifyContent: 'center',
                     marginLeft: wp('5%'),
                     top: 10,
-                  }}
-                >
+                  }}>
                   {hidePassword ? (
                     <Text style={styles.passwordEyes}>SHOW</Text>
                   ) : (
@@ -519,8 +413,7 @@ export default function SignupScreen({navigation}) {
                   alignItems: 'center',
                   justifyContent: 'center',
                   marginLeft: wp('5%'),
-                }}
-              >
+                }}>
                 {hideConfirmPassword ? (
                   <Text style={styles.passwordEyes}>SHOW</Text>
                 ) : (
@@ -528,54 +421,14 @@ export default function SignupScreen({navigation}) {
                 )}
               </TouchableOpacity>
             </View>
-            {/* <TCButton
-              title={strings.signUpCapitalText}
-              extraStyle={{
-                marginTop: hp('2%'),
-              }}
-              onPress={() => {
-                if (validate()) {
-                  if (authContext.networkConnected) {
-                    signupUser();
-                  } else {
-                    authContext.showNetworkAlert();
-                  }
-                }
-              }}
-            /> */}
           </View>
-          {/* <TCTextField
-            placeholderTextColor={colors.darkYellowColor}
-            style={styles.textFieldStyle}
-            placeholder={strings.fnameText}
-            value={fName}
-            // onChangeText={(name) => {
-            //   if (Utility.validatedName(name)) {
-            //     setFName(name);
-            //   }
-            // }}
-            onChangeText={(text) => setFName(text)}
-          />
-          <TCTextField
-            placeholderTextColor={colors.darkYellowColor}
-            style={styles.textFieldStyle}
-            placeholder={strings.lnameText}
-            onChangeText={(text) => setLName(text)}
-            // onChangeText={(lastName) => {
-            //   if (Utility.validatedName(lastName) === true) {
-            //     setLName(lastName);
-            //   }
-            // }}
-            value={lName}
-          /> */}
         </TCKeyboardView>
         <SafeAreaView>
           <View style={{bottom: 16}}>
             <TouchableOpacity
               hitSlop={getHitSlop(15)}
               onPress={() => navigation.navigate('LoginScreen')}
-              style={styles.alreadyView}
-            >
+              style={styles.alreadyView}>
               <Text style={styles.alreadyMemberText}>
                 {strings.alreadyMember}
                 <Text> </Text>
@@ -583,8 +436,7 @@ export default function SignupScreen({navigation}) {
                   style={{
                     textDecorationLine: 'underline',
                     fontFamily: fonts.RBold,
-                  }}
-                >
+                  }}>
                   Log In
                 </Text>
               </Text>

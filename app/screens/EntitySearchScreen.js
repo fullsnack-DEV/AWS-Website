@@ -584,9 +584,6 @@ export default function EntitySearchScreen({navigation, route}) {
   }, [pageSize, teamsPageFrom, teams, teamFilters]);
 
   const getClubList = useCallback(() => {
-    // const clubsQuery = bodybuilder()
-    //   .query('match', 'entity_type', 'club')
-    //   .build();
     const clubsQuery = {
       size: pageSize,
       from: clubsPageFrom,

@@ -42,10 +42,7 @@ export default function SignupScreen({navigation, route}) {
   );
   const [profilePic, setProfilePic] = useState();
   const actionSheetWithDelete = useRef();
-  console.log(
-    'Route===>',
-    route?.params?.signupInfo?.uploadedProfilePic?.thumbnail,
-  );
+
   const actionSheet = useRef();
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -53,8 +50,7 @@ export default function SignupScreen({navigation, route}) {
         <TouchableOpacity
           onPress={() => {
             navigation.pop();
-          }}
-        >
+          }}>
           <Image
             source={images.backArrow}
             style={{
@@ -73,8 +69,7 @@ export default function SignupScreen({navigation, route}) {
             if (validate()) {
               uploadProfilePicAndGeneratePreSignedUrls();
             }
-          }}
-        >
+          }}>
           Next
         </Text>
       ),
@@ -92,69 +87,9 @@ export default function SignupScreen({navigation, route}) {
       };
       userData.uploadedProfilePic = uploadedProfilePic;
     }
-    console.log('profilePic==>', userData);
     navigateToAddBirthdayScreen(userData);
   };
-  /*
-  // For activity indigator
-  const uploadProfilePicAndGeneratePreSignedUrls = async () => {
-    console.log('0000000');
-    setLoading(true);
-    const tokenData = authContext?.tokenData;
-    const authToken = tokenData.token;
-    const userData = {};
-    const uploadImageConfig = {
-      method: 'get',
-      url: `${Config.BASE_URL}/pre-signed-url?count=2`,
-      headers: {Authorization: `Bearer ${authToken}`},
-    };
-    console.log('authToken', authToken);
-    console.log('uploadImageConfig', uploadImageConfig);
-    console.log('profilePic', profilePic);
 
-    if (profilePic) {
-      const apiResponse = await apiCall(uploadImageConfig);
-      const preSignedUrls = apiResponse?.payload?.preSignedUrls ?? [];
-      Promise.all([
-        uploadImageOnPreSignedUrls({
-          url: preSignedUrls?.[0],
-          uri: profilePic.path,
-          type: profilePic.path.split('.')[1] || 'jpeg',
-        }),
-        uploadImageOnPreSignedUrls({
-          url: preSignedUrls?.[1],
-          uri: profilePic?.path,
-          type: profilePic?.path.split('.')[1] || 'jpeg',
-        }),
-      ])
-        .then(async ([fullImage, thumbnail]) => {
-          setLoading(false);
-          const uploadedProfilePic = {full_image: fullImage, thumbnail};
-          userData.uploadedProfilePic = uploadedProfilePic;
-          navigateToAddBirthdayScreen(userData);
-          console.log('1111');
-        })
-        .catch(async () => {
-          setLoading(false);
-          console.log('2222');
-          // await signUpToTownsCup();
-          navigateToAddBirthdayScreen(userData);
-        });
-    } else if (providerPic) {
-      setLoading(false);
-      const uploadedProfilePic = {
-        full_image: providerPic,
-        thumbnail: providerPic,
-      };
-      userData.uploadedProfilePic = uploadedProfilePic;
-      navigateToAddBirthdayScreen(userData);
-    } else {
-      setLoading(false);
-      console.log('33333');
-      navigateToAddBirthdayScreen(userData);
-    }
-  };
-  */
   const navigateToAddBirthdayScreen = (userData) => {
     const profileData = {
       ...route?.params?.signupInfo,
@@ -162,15 +97,11 @@ export default function SignupScreen({navigation, route}) {
       first_name: fName,
       last_name: lName,
     };
-    console.log('Profile data ', profileData);
     navigation.navigate('AddBirthdayScreen', {
       signupInfo: {...profileData},
     });
   };
   const validate = () => {
-    console.log('fName', fName);
-    console.log('lName', lName);
-
     if (fName === '') {
       Alert.alert(strings.appName, 'First name cannot be blank');
       return false;
@@ -205,7 +136,6 @@ export default function SignupScreen({navigation, route}) {
       cropping: true,
       cropperCircleOverlay: cropCircle,
     }).then((pickImages) => {
-      console.log('pickImages', pickImages);
       setProviderPic('');
       setProfilePic(pickImages);
     });
@@ -275,8 +205,6 @@ export default function SignupScreen({navigation, route}) {
       });
   };
   const onProfileImageClicked = () => {
-    console.log('kkk', route?.params?.signupInfo);
-
     setTimeout(() => {
       if (profilePic) {
         actionSheetWithDelete.current.show();
@@ -324,8 +252,7 @@ export default function SignupScreen({navigation, route}) {
       />
       <LinearGradient
         colors={[colors.themeColor1, colors.themeColor3]}
-        style={styles.mainContainer}
-      >
+        style={styles.mainContainer}>
         <ActivityLoader visible={loading} />
         <FastImage
           resizeMode={'stretch'}
@@ -343,23 +270,7 @@ export default function SignupScreen({navigation, route}) {
               style={styles.profile}
               onPress={() => {
                 onProfileImageClicked();
-              }}
-            >
-              {/* <FastImage
-                resizeMode={'contain'}
-                source={
-                  profilePic?.path
-                    ? {uri: profilePic?.path}
-                    : images.profilePlaceHolder
-                }
-                style={{
-                  width: 100,
-                  height: 100,
-                  borderRadius: 50,
-                  backgroundColor: '#FED378',
-                }}
-              /> */}
-
+              }}>
               {profilePic ? (
                 <FastImage
                   resizeMode={'contain'}
@@ -411,8 +322,7 @@ export default function SignupScreen({navigation, route}) {
               style={styles.profileCameraButtonStyle}
               onPress={() => {
                 onProfileImageClicked();
-              }}
-            >
+              }}>
               <FastImage
                 source={images.certificateUpload}
                 style={styles.cameraIcon}
@@ -433,18 +343,6 @@ export default function SignupScreen({navigation, route}) {
             onChangeText={(text) => setLName(text)}
             value={lName}
           />
-
-          {/* <TCButton
-            title={strings.continueCapTitle}
-            extraStyle={{
-              marginTop: hp('2%'),
-            }}
-            onPress={() => {
-              if (validate()) {
-                navigation.navigate('AddBirthdayScreen');
-              }
-            }}
-          /> */}
         </TCKeyboardView>
       </LinearGradient>
     </>
