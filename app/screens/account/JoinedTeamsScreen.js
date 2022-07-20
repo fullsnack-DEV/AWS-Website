@@ -32,9 +32,6 @@ export default function JoinedTeamsScreen({route, navigation}) {
   const [uid] = useState(route?.params?.uid);
   const [role] = useState(route?.params?.role);
 
-  console.log('route?.params?.uid', route?.params?.uid);
-  console.log('route?.params?.role', route?.params?.role);
-
   useEffect(() => {
     getFollowingList();
   }, []);
@@ -52,18 +49,15 @@ export default function JoinedTeamsScreen({route, navigation}) {
         setTeamList(res.payload);
       })
       .catch((error) => {
-        console.log('error coming', error);
         setloading(false);
         Alert.alert(strings.alertmessagetitle, error.message);
       });
   };
   const renderTeamClubLeague = ({item}) => {
-    console.log('Items ===>', item);
     return (
       <TouchableOpacity
         style={styles.listContainer}
         onPress={() => {
-          console.log('Pressed Team..');
           navigation.push('HomeScreen', {
             uid: ['user', 'player']?.includes(item?.entity_type)
               ? item?.user_id

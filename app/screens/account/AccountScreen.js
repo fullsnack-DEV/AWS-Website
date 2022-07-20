@@ -74,7 +74,6 @@ export default function AccountScreen({navigation}) {
   const isFocused = useIsFocused();
 
   const authContext = useContext(AuthContext);
-  console.log('authContext?.sports', authContext);
   // const [isSportCreateModalVisible, setIsSportCreateModalVisible] = useState(
   //   false,
   // );
@@ -88,13 +87,10 @@ export default function AccountScreen({navigation}) {
   const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
   const [pointEvent, setPointEvent] = useState('auto');
   const [sportsSelection, setSportsSelection] = useState();
-  const [sports, setSports] = useState('');
+  const [setSports] = useState('');
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
 
   const [clickedUserType, setClickedUserType] = useState('user');
-
-  console.log(sports);
-  console.log('authSports::=>', authContext.sports);
 
   // for set/get teams
   const [teamList, setTeamList] = useState([]);
@@ -169,7 +165,6 @@ export default function AccountScreen({navigation}) {
     setIsAccountDeactivated(false);
     setPointEvent('auto');
     if (isFocused) {
-      console.log('its called....', authContext.entity.role);
       if (authContext?.entity?.obj?.is_pause === true) {
         setIsAccountDeactivated(true);
         setPointEvent('none');
@@ -192,30 +187,26 @@ export default function AccountScreen({navigation}) {
     () => (
       <View
         style={{opacity: isAccountDeactivated ? 0.5 : 1}}
-        pointerEvents={pointEvent}
-      >
+        pointerEvents={pointEvent}>
         <TouchableOpacity
           onPress={() => {
             navigation.navigate('NotificationsListScreen');
           }}
-          hitSlop={Utility.getHitSlop(15)}
-        >
+          hitSlop={Utility.getHitSlop(15)}>
           <ImageBackground
             source={
               notificationCounter > 0
                 ? images.notificationBell
                 : images.tab_notification
             }
-            style={styles.headerRightImg}
-          >
+            style={styles.headerRightImg}>
             {notificationCounter > 0 && (
               <View
                 style={
                   notificationCounter > 9
                     ? styles.eclipseBadge
                     : styles.roundBadge
-                }
-              >
+                }>
                 <Text style={styles.notificationCounterStyle}>
                   {notificationCounter > 9 ? '9+' : notificationCounter}
                 </Text>
@@ -231,7 +222,6 @@ export default function AccountScreen({navigation}) {
   const getData = () =>
     new Promise((resolve, reject) => {
       setloading(true);
-      console.log('get data Promise Called..');
       const entity = authContext.entity;
       const promises = [
         getNotificationUnreadCount(entity),
@@ -241,8 +231,6 @@ export default function AccountScreen({navigation}) {
       Promise.all(promises)
         .then(() => {
           resolve(true);
-
-          console.log('get data Promise resolved Called..');
         })
 
         // eslint-disable-next-line prefer-promise-reject-errors
@@ -278,7 +266,6 @@ export default function AccountScreen({navigation}) {
 
   const getParentClub = useCallback(
     async (item) => {
-      console.log('parent club  Called..');
       getGroupDetails(item.group_id, authContext)
         .then((response) => {
           if (!response?.payload?.club) {
@@ -286,11 +273,9 @@ export default function AccountScreen({navigation}) {
           } else {
             setParentGroup();
           }
-          console.log('parent club done Called..');
         })
         .catch((e) => {
           setloading(false);
-          console.log('6');
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
@@ -301,8 +286,6 @@ export default function AccountScreen({navigation}) {
 
   const getNotificationUnreadCount = useCallback(
     async (currentEntity) => {
-      console.log('unread api  Called..');
-
       getUnreadCount(authContext)
         .then((response) => {
           console.log('unread api  Called..', response.payload);
@@ -332,17 +315,8 @@ export default function AccountScreen({navigation}) {
             setGroupList([{...user}, ...updatedClub, ...teams]);
           }
           setloading(false);
-
-          // if (authContext?.entity?.QB) {
-          //   setloading(false);
-          // } else {
-          //   onSwitchProfile(authContext?.entity)
-          // }
-
-          console.log('unread api done Called..');
         })
         .catch((e) => {
-          console.log('catch -> Account Screen unread count api');
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
@@ -353,12 +327,8 @@ export default function AccountScreen({navigation}) {
 
   const getTeamsList = useCallback(
     async (currentEntity) => {
-      console.log('team list api Called..');
-      console.log('currentEntity ==>', currentEntity);
       setloading(true);
       if (currentEntity.role === 'club') {
-        console.log('team of club api Called..');
-
         getTeamsOfClub(authContext.entity.uid, authContext)
           .then((response) => {
             setTeamList(response.payload);
@@ -366,14 +336,12 @@ export default function AccountScreen({navigation}) {
           })
           .catch((e) => {
             setloading(false);
-            console.log('2');
+
             setTimeout(() => {
               Alert.alert(strings.alertmessagetitle, e.message);
             }, 10);
           });
       } else {
-        console.log('join group api Called..');
-
         getTeamData();
         // getJoinedGroups('team', authContext)
         //   .then((response) => {
@@ -394,7 +362,6 @@ export default function AccountScreen({navigation}) {
   const getTeamData = () =>
     new Promise((resolve, reject) => {
       setloading(true);
-      console.log('get data Promise Called..');
       const promises = [
         getJoinedGroups('team', authContext),
         getTeamPendingRequest(authContext),
@@ -410,7 +377,6 @@ export default function AccountScreen({navigation}) {
         .catch(() => reject('error'));
     });
   const getJoinedClubListOfTeam = useCallback((ids) => {
-    console.log('groupsIds==>', ids);
     const body = {
       query: {
         terms: {
@@ -427,7 +393,6 @@ export default function AccountScreen({navigation}) {
 
   const getClubList = useCallback(
     async (entity) => {
-      console.log('club list api Called..');
       if (entity.role === 'user') {
         // called user club list
         getJoinedGroups('club', authContext)
@@ -437,7 +402,6 @@ export default function AccountScreen({navigation}) {
           })
           .catch((e) => {
             setloading(false);
-            console.log('4');
             setTimeout(() => {
               Alert.alert(strings.alertmessagetitle, e.message);
             }, 10);
@@ -471,7 +435,6 @@ export default function AccountScreen({navigation}) {
       })
       .catch((e) => {
         setloading(false);
-        console.log('3');
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
@@ -481,7 +444,6 @@ export default function AccountScreen({navigation}) {
   const switchProfile = useCallback(
     async (item) => {
       setloading(true);
-      console.log('switch profile Called..');
 
       let currentEntity = authContext.entity;
       // delete currentEntity?.QB;
@@ -552,7 +514,6 @@ export default function AccountScreen({navigation}) {
   const switchQBAccount = useCallback(
     (accountData, entity) => {
       setloading(true);
-      console.log('switch QB Called..');
 
       let currentEntity = entity;
       const entityType = accountData?.entity_type;
@@ -587,7 +548,6 @@ export default function AccountScreen({navigation}) {
                     ...currentEntity,
                   });
                   setloading(false);
-                  console.log('switch QB done Called..');
                   if (qbRes?.error) console.log(strings.appName, qbRes?.error);
                 })
                 .catch(async () => {
@@ -614,18 +574,15 @@ export default function AccountScreen({navigation}) {
 
   const onSwitchProfile = useCallback(
     ({item}) => {
-      console.log('on switch profile  Called..');
       switchProfile(item)
         .then((currentEntity) => {
           scrollRef.current.scrollTo({x: 0, y: 0});
-          console.log('switch currentEntity', currentEntity);
           authContext.setEntity({...currentEntity});
           Utility.setStorage('authContextEntity', {...currentEntity});
           switchQBAccount(item, currentEntity);
         })
         .catch((e) => {
           setloading(false);
-          console.log('5');
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
@@ -678,8 +635,6 @@ export default function AccountScreen({navigation}) {
       if (entity.role === 'user') {
         navigation.navigate('UserSettingPrivacyScreen');
       } else {
-        console.log('clubs==>', club);
-        console.log('clubs list==>', clubList);
         navigation.navigate('GroupSettingPrivacyScreen', {
           groups: authContext?.entity?.role === 'team' ? clubList : teamList,
         });
@@ -698,7 +653,6 @@ export default function AccountScreen({navigation}) {
           Alert.alert('There is no registerd sports.');
         }
       } else {
-        console.log('entity?.obj?.sport1:=>', entity?.obj);
         navigation.navigate('ManageChallengeScreen', {
           groupObj: authContext.entity.obj,
           sportName: entity?.obj?.sport,
@@ -709,7 +663,6 @@ export default function AccountScreen({navigation}) {
       setClickedUserType('referee');
 
       const entity = authContext.entity;
-      console.log('entity?.objentity?.obj-->', entity?.obj, entity?.obj?.sport);
       if (entity.role === 'user') {
         if (entity?.obj?.referee_data?.length > 0) {
           setVisibleSportsModal(true);
@@ -792,20 +745,16 @@ export default function AccountScreen({navigation}) {
     [authContext.entity, navigation],
   );
 
-  console.log('authContext?.entity?.obj', authContext?.entity?.obj);
-
   const renderSportsList = useCallback(
     ({item}) => (
       <TouchableOpacity
         style={styles.listContainer}
         onPress={() => {
-          console.log('renderSportsList', item);
           navigation.navigate('SportAccountSettingScreen', {
             type: 'player',
             sport: item,
           });
-        }}
-      >
+        }}>
         <View style={styles.entityTextContainer}>
           <Image
             source={getSportIcon(item.sport)}
@@ -826,13 +775,11 @@ export default function AccountScreen({navigation}) {
       <TouchableOpacity
         style={styles.listContainer}
         onPress={() => {
-          console.log('renderRefereesList', item);
           navigation.navigate('SportAccountSettingScreen', {
             type: 'referee',
             sport: item,
           });
-        }}
-      >
+        }}>
         <View style={styles.entityTextContainer}>
           <Image
             source={getSportIcon(item.sport)}
@@ -853,13 +800,11 @@ export default function AccountScreen({navigation}) {
       <TouchableOpacity
         style={styles.listContainer}
         onPress={() => {
-          console.log('renderSportsList', item);
           navigation.navigate('SportAccountSettingScreen', {
             type: 'scorekeeper',
             sport: item,
           });
-        }}
-      >
+        }}>
         <View style={styles.entityTextContainer}>
           <Image
             source={getSportIcon(item.sport)}
@@ -883,8 +828,7 @@ export default function AccountScreen({navigation}) {
         style={styles.switchProfileListContainer}
         onPress={() => {
           onSwitchProfile({item});
-        }}
-      >
+        }}>
         <View>
           {item.entity_type === 'player' && (
             <View style={styles.placeholderView}>
@@ -975,14 +919,12 @@ export default function AccountScreen({navigation}) {
                         top: 10,
                       },
                     ]
-              }
-            >
+              }>
               <Text
                 style={{
                   ...styles.badgeCounter,
                   ...(item.unread > 9 ? {paddingHorizontal: 5} : {width: 15}),
-                }}
-              >
+                }}>
                 {item.unread > 9 ? `+${9}` : item.unread}
               </Text>
             </View>
@@ -1025,8 +967,7 @@ export default function AccountScreen({navigation}) {
                   item?.entity_type === 'player' ? 'user' : item?.entity_type,
               });
             }
-          }}
-        >
+          }}>
           <View style={styles.entityTextContainer}>
             <View style={styles.smallProfileContainer}>
               {item?.entity_type === 'team' && (
@@ -1057,8 +998,7 @@ export default function AccountScreen({navigation}) {
                   ? [styles.entityName, {width: wp('50%')}]
                   : styles.entityName
               }
-              numberOfLines={1}
-            >
+              numberOfLines={1}>
               {item?.group_name}
             </Text>
             <Text style={styles.teamSportView}>
@@ -1070,8 +1010,7 @@ export default function AccountScreen({navigation}) {
         </TouchableWithoutFeedback>
         {!item?.group_id && (
           <TouchableWithoutFeedback
-            onPress={() => oncalcelTeamRequest('cancel', item?.request_id)}
-          >
+            onPress={() => oncalcelTeamRequest('cancel', item?.request_id)}>
             <View style={styles.buttonView}>
               <Text style={styles.textStyle} numberOfLines={1}>
                 Cancel request
@@ -1089,15 +1028,13 @@ export default function AccountScreen({navigation}) {
       <TouchableWithoutFeedback
         style={styles.listContainer}
         onPress={() => {
-          console.log('Pressed Team..');
           navigation.navigate('HomeScreen', {
             uid: item.group_id,
             role: item.entity_type,
             backButtonVisible: true,
             menuBtnVisible: false,
           });
-        }}
-      >
+        }}>
         <View style={styles.entityTextContainer}>
           <View style={styles.smallProfileContainer}>
             <Image
@@ -1113,8 +1050,7 @@ export default function AccountScreen({navigation}) {
               item.entity_type === 'team'
                 ? styles.teamSportView
                 : styles.clubSportView
-            }
-          >
+            }>
             {' '}
             {item.sport}
           </Text>
@@ -1221,8 +1157,7 @@ export default function AccountScreen({navigation}) {
             style={styles.listContainer}
             onPress={() => {
               handleOptions(rowItem.opetions);
-            }}
-          >
+            }}>
             {rowItem.opetions === 'Add a sport' && (
               <Image source={images.addSport} style={styles.subMenuItem} />
             )}
@@ -1336,7 +1271,6 @@ export default function AccountScreen({navigation}) {
         setVisibleSportsModal(false);
         setSports(item?.sport);
         setTimeout(() => {
-          console.log('Sport name:=>', item?.sport, item?.sport_type);
           if (clickedUserType === 'user') {
             navigation.navigate('ManageChallengeScreen', {
               groupObj: authContext.entity.obj,
@@ -1355,16 +1289,14 @@ export default function AccountScreen({navigation}) {
             });
           }
         }, 300);
-      }}
-    >
+      }}>
       <View
         style={{
           padding: 20,
           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'space-between',
-        }}
-      >
+        }}>
         <Text style={styles.languageList}>
           {Utility.getSportName(item, authContext)}
         </Text>
@@ -1503,22 +1435,19 @@ export default function AccountScreen({navigation}) {
             flexDirection: 'row',
             justifyContent: 'space-between',
             alignItems: 'center',
-          }}
-        >
+          }}>
           {parentGroup ? (
             <View
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-              }}
-            >
+              }}>
               <Image source={images.clubLable} style={styles.clubLableView} />
               <View
                 style={{
                   flexDirection: 'row',
                   marginLeft: 10,
-                }}
-              >
+                }}>
                 <TCNavigationHeader
                   name={parentGroup?.group_name}
                   groupType={'club'}
@@ -1546,8 +1475,7 @@ export default function AccountScreen({navigation}) {
                   : images?.ImageBackground
               }
               style={styles.profileView}
-              blurRadius={10}
-            >
+              blurRadius={10}>
               <TouchableOpacity
                 onPress={() => {
                   navigation.navigate('HomeScreen', {
@@ -1561,8 +1489,7 @@ export default function AccountScreen({navigation}) {
                   flexDirection: 'row',
                   marginLeft: 25,
                   marginRight: 25,
-                }}
-              >
+                }}>
                 <View style={styles.profileImageContainer}>
                   <Image
                     source={
@@ -1577,15 +1504,13 @@ export default function AccountScreen({navigation}) {
                   style={{
                     marginLeft: 15,
                     width: Dimensions.get('window').width / 1.6,
-                  }}
-                >
+                  }}>
                   <View
                     style={{
                       flexDirection: 'row',
                       alignItems: 'center',
                       marginRight: 10,
-                    }}
-                  >
+                    }}>
                     <MarqueeText
                       style={
                         authContext?.entity?.obj?.background_thumbnail
@@ -1632,8 +1557,7 @@ export default function AccountScreen({navigation}) {
                               color: colors.lightBlackColor,
                             },
                           ]
-                    }
-                  >
+                    }>
                     {authContext?.entity?.obj?.city || ''},{' '}
                     {authContext?.entity?.obj?.state_abbr || ''}
                   </Text>
@@ -1652,8 +1576,7 @@ export default function AccountScreen({navigation}) {
                   : images.ImageBackground
               }
               style={styles.profileView}
-              blurRadius={10}
-            >
+              blurRadius={10}>
               <TouchableOpacity
                 onPress={() => {
                   navigation.navigate('HomeScreen', {
@@ -1668,8 +1591,7 @@ export default function AccountScreen({navigation}) {
                   marginLeft: 20,
                   marginRight: 20,
                   alignContent: 'center',
-                }}
-              >
+                }}>
                 <View style={styles.profileImageContainer}>
                   {authContext?.entity?.obj?.thumbnail ? (
                     <Image
@@ -1683,8 +1605,7 @@ export default function AccountScreen({navigation}) {
                         width: '100%',
                         alignItems: 'center',
                         justifyContent: 'center',
-                      }}
-                    >
+                      }}>
                       <Image
                         source={placeHolder}
                         style={{...styles.profileImg, resizeMode: 'contain'}}
@@ -1699,8 +1620,7 @@ export default function AccountScreen({navigation}) {
                           bottom: 0,
                           right: 0,
                           left: 0,
-                        }}
-                      >
+                        }}>
                         <Text
                           style={{
                             marginTop: -5,
@@ -1708,8 +1628,7 @@ export default function AccountScreen({navigation}) {
                             color: colors.whiteColor,
                             fontFamily: fonts.RBold,
                             fontSize: 16,
-                          }}
-                        >
+                          }}>
                           {authContext?.entity?.obj?.group_name[0]}
                         </Text>
                       </View>
@@ -1720,15 +1639,13 @@ export default function AccountScreen({navigation}) {
                   style={{
                     marginLeft: 15,
                     width: Dimensions.get('window').width / 1.6,
-                  }}
-                >
+                  }}>
                   <View
                     style={{
                       flexDirection: 'row',
                       alignItems: 'center',
                       marginRight: 10,
-                    }}
-                  >
+                    }}>
                     <MarqueeText
                       style={
                         authContext?.entity?.obj?.background_thumbnail
@@ -1743,8 +1660,7 @@ export default function AccountScreen({navigation}) {
                       }
                       duration={3000}
                       marqueeOnStart
-                      loop={true}
-                    >
+                      loop={true}>
                       {authContext?.entity?.obj?.group_name}
                     </MarqueeText>
 
@@ -1786,8 +1702,7 @@ export default function AccountScreen({navigation}) {
                               color: colors.lightBlackColor,
                             },
                           ]
-                    }
-                  >
+                    }>
                     {authContext?.entity?.obj?.city},{' '}
                     {authContext?.entity?.obj?.state_abbr}
                   </Text>
@@ -1817,22 +1732,19 @@ export default function AccountScreen({navigation}) {
                 style={{
                   opacity:
                     isAccountDeactivated && section !== 'Settings' ? 0.5 : 1,
-                }}
-              >
+                }}>
                 <TouchableWithoutFeedback
                   disabled={isAccountDeactivated && section !== 'Settings'}
                   style={styles.listContainer}
                   onPress={() => {
                     handleSections(section);
-                  }}
-                >
+                  }}>
                   <View
                     style={{
                       alignSelf: 'center',
                       alignItems: 'center',
                       justifyContent: 'center',
-                    }}
-                  >
+                    }}>
                     {section === 'Reservations' && (
                       <Image
                         source={images.accountMySchedule}
@@ -1960,8 +1872,7 @@ export default function AccountScreen({navigation}) {
           style={{flexDirection: 'row'}}
           onPress={() => {
             handleLogOut();
-          }}
-        >
+          }}>
           <Image source={images.logoutIcon} style={styles.switchAccountIcon} />
           <Text style={styles.switchAccount}>Log out</Text>
         </TouchableWithoutFeedback>
@@ -1977,8 +1888,7 @@ export default function AccountScreen({navigation}) {
           backdropTransitionOutTiming={800}
           style={{
             margin: 0,
-          }}
-        >
+          }}>
           <SafeAreaView
             style={{
               height: Dimensions.get('window').height / 1.7,
@@ -1994,16 +1904,14 @@ export default function AccountScreen({navigation}) {
               shadowOpacity: 0.5,
               shadowRadius: 5,
               elevation: 15,
-            }}
-          >
+            }}>
             <View
               style={{
                 flexDirection: 'row',
                 paddingHorizontal: 15,
                 justifyContent: 'center',
                 alignItems: 'center',
-              }}
-            >
+              }}>
               <Text
                 style={{
                   alignSelf: 'center',
@@ -2011,8 +1919,7 @@ export default function AccountScreen({navigation}) {
                   fontSize: 16,
                   fontFamily: fonts.RBold,
                   color: colors.lightBlackColor,
-                }}
-              >
+                }}>
                 {createEntity === 'club' ? 'Create Club' : 'Create Team'}
               </Text>
             </View>
@@ -2052,8 +1959,7 @@ export default function AccountScreen({navigation}) {
           backdropTransitionOutTiming={800}
           style={{
             margin: 0,
-          }}
-        >
+          }}>
           <View
             style={{
               width: '100%',
@@ -2069,21 +1975,18 @@ export default function AccountScreen({navigation}) {
               shadowOpacity: 0.5,
               shadowRadius: 5,
               elevation: 15,
-            }}
-          >
+            }}>
             <View
               style={{
                 flexDirection: 'row',
                 paddingHorizontal: 15,
                 justifyContent: 'space-between',
                 alignItems: 'center',
-              }}
-            >
+              }}>
               <TouchableOpacity
                 hitSlop={Utility.getHitSlop(15)}
                 style={styles.closeButton}
-                onPress={() => setVisibleSportsModal(false)}
-              >
+                onPress={() => setVisibleSportsModal(false)}>
                 <Image source={images.cancelImage} style={styles.closeButton} />
               </TouchableOpacity>
               <Text
@@ -2093,8 +1996,7 @@ export default function AccountScreen({navigation}) {
                   fontSize: 16,
                   fontFamily: fonts.RBold,
                   color: colors.lightBlackColor,
-                }}
-              >
+                }}>
                 Sports
               </Text>
 
@@ -2105,8 +2007,7 @@ export default function AccountScreen({navigation}) {
                   fontSize: 16,
                   fontFamily: fonts.RRegular,
                   color: colors.themeColor,
-                }}
-              ></Text>
+                }}></Text>
             </View>
             <View style={styles.separatorLine} />
             <FlatList
