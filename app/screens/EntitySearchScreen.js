@@ -35,14 +35,11 @@ import {func} from 'prop-types';
 import Geolocation from '@react-native-community/geolocation';
 import {ColorSpace} from 'react-native-reanimated';
 import AuthContext from '../auth/context';
-import {widthPercentageToDP} from '../utils';
-import TCSearchProfileView from '../components/TCSearchProfileView';
+import {widthPercentageToDP as wp} from '../utils';
 import TCScrollableProfileTabs from '../components/TCScrollableProfileTabs';
-import ScorekeeperInfoSection from '../components/Home/User/ScorekeeperInfoSection';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import {getGroupIndex, getUserIndex, getGameIndex} from '../api/elasticSearch';
-import TCProfileView from '../components/TCProfileView';
 import images from '../Constants/ImagePath';
 import strings from '../Constants/String';
 import * as Utility from '../utils';
@@ -1210,21 +1207,14 @@ export default function EntitySearchScreen({navigation, route}) {
     }
   };
   const onPressReset = () => {
+    setLocationFilterOpetion(0);
+    setLocation('world');
     switch (currentSubTab) {
-      case 'General':
-        setGeneralList({
-          location: 'world',
-          sport: 'All',
-        });
-        setSelectedSport('All');
-        setSelectedSportType('All');
-        setMinFee(0);
-        setMaxFee(0);
-        break;
       case 'Players':
-        setplayerList({
+        setPlayerFilter({
           location: 'world',
           sport: 'All',
+          sportType: 'All',
         });
         setSelectedSport('All');
         setSelectedSportType('All');
@@ -1232,7 +1222,7 @@ export default function EntitySearchScreen({navigation, route}) {
         setMaxFee(0);
         break;
       case 'Referees':
-        setReferees({
+        setrRefereeFilters({
           location: 'world',
           sport: 'All',
         });
@@ -1242,7 +1232,7 @@ export default function EntitySearchScreen({navigation, route}) {
         setMaxFee(0);
         break;
       case 'Scorekeepers':
-        setScorekeepers({
+        setScoreKeeperFilters({
           location: 'world',
           sport: 'All',
         });
@@ -1252,7 +1242,7 @@ export default function EntitySearchScreen({navigation, route}) {
         setMaxFee(0);
         break;
       case 'Teams':
-        setTeams({
+        setTeamFilters({
           location: 'world',
           sport: 'All',
         });
@@ -1263,7 +1253,7 @@ export default function EntitySearchScreen({navigation, route}) {
 
         break;
       case 'Clubs':
-        setClubs({
+        setClubFilters({
           location: 'world',
           sport: 'All',
         });
@@ -1273,7 +1263,7 @@ export default function EntitySearchScreen({navigation, route}) {
         setMaxFee(0);
         break;
       case 'Completed':
-        setCompletedGame({
+        setCompletedGameFilters({
           location: 'world',
           sport: 'All',
         });
@@ -1283,7 +1273,7 @@ export default function EntitySearchScreen({navigation, route}) {
         setMaxFee(0);
         break;
       case 'Upcoming':
-        setUpcomingGame({
+        setUpcomingGameFilters({
           location: 'world',
           sport: 'All',
         });
@@ -1760,6 +1750,17 @@ export default function EntitySearchScreen({navigation, route}) {
             (currentSubTab === 'Upcoming' &&
               Utility.getFiltersOpetions(upcomingGameFilters))
           }
+          filter={
+            (currentSubTab === 'General' && generalFilter) ||
+            (currentSubTab === 'Players' && playerFilter) ||
+            (currentSubTab === 'Referees' && refereeFilters) ||
+            (currentSubTab === 'Scorekeepers' && scoreKeeperFilters) ||
+            (currentSubTab === 'Teams' && teamFilters) ||
+            (currentSubTab === 'Clubs' && clubFilters) ||
+            (currentSubTab === 'Completed' && completedGameFilters) ||
+            (currentSubTab === 'Upcoming' && upcomingGameFilters)
+          }
+          authContext={authContext}
           onTagCancelPress={handleTagPress}
         />
       </View>
@@ -2267,7 +2268,7 @@ export default function EntitySearchScreen({navigation, route}) {
                 [
                   {
                     text: 'Cancel',
-                    onPress: () => console.log('Cancel Pressed'),
+                    onPress: () => {},
                     style: 'cancel',
                   },
                   {
@@ -2277,7 +2278,6 @@ export default function EntitySearchScreen({navigation, route}) {
                 ],
                 {cancelable: false},
               );
-              onPressReset();
             }}>
             <Text style={styles.resetTitle}>Reset</Text>
           </TouchableOpacity>
@@ -2439,7 +2439,7 @@ const styles = StyleSheet.create({
     height: 40,
     paddingLeft: 15,
     paddingRight: 15,
-    width: widthPercentageToDP('75%'),
+    width: wp('75%'),
     shadowColor: colors.googleColor,
     shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.2,
@@ -2453,7 +2453,7 @@ const styles = StyleSheet.create({
     height: 40,
     paddingLeft: 15,
     paddingRight: 15,
-    width: widthPercentageToDP('45%'),
+    width: wp('45%'),
     shadowColor: colors.googleColor,
     shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.2,
