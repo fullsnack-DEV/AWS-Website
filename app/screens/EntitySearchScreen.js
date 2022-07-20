@@ -167,7 +167,6 @@ export default function EntitySearchScreen({navigation, route}) {
   const [toDate, setToDate] = useState();
   const [sportsList] = useState(route?.params?.sportsList);
   const [sportsArray] = useState(route?.params?.sportsArray);
-  console.log('route?.params?.sportsList', route?.params?.sportsList);
 
   const [search, setSearch] = useState('');
   const searchBoxRef = useRef();
@@ -185,44 +184,30 @@ export default function EntitySearchScreen({navigation, route}) {
     }
   }, [route?.params?.locationText]);
   useEffect(() => {
-    console.log('call getPlayersList from useeffect ');
-
     getPlayersList();
-    // getRefereesList();
-    // getScoreKeepersList(filters);
-    // getTeamList(filters);
-    // getClubList(filters);
-    // getUpcomingGameList(filters);
-    // getCompletedGamesList(filters);
   }, [playerFilter]);
 
   useEffect(() => {
-    console.log('call getRefereesList from useEffect');
     getRefereesList();
   }, [refereeFilters]);
 
   useEffect(() => {
-    console.log('call scoreKeeperFilters from useEffect');
     getScoreKeepersList();
   }, [scoreKeeperFilters]);
 
   useEffect(() => {
-    console.log('call getTeamList from useEffect');
     getTeamList();
   }, [teamFilters]);
 
   useEffect(() => {
-    console.log('call getClubList from useEffect');
     getClubList();
   }, [clubFilters]);
 
   useEffect(() => {
-    console.log('call completed game from useEffect');
     getCompletedGamesList();
   }, [completedGameFilters]);
 
   useEffect(() => {
-    console.log('call upcomingGameFilters from useEffect');
     getUpcomingGameList();
   }, [upcomingGameFilters]);
 
@@ -240,12 +225,10 @@ export default function EntitySearchScreen({navigation, route}) {
       };
       list.push(dataSource);
     });
-    console.log('List --->', list);
     setSports(list);
   }, [sportsList]);
 
   const getPlayersList = useCallback(() => {
-    console.log('call getPlayersList');
     const playersQuery = {
       size: pageSize,
       from: pageFrom,
@@ -324,11 +307,9 @@ export default function EntitySearchScreen({navigation, route}) {
         },
       });
     }
-    console.log('playerQuery:=>', JSON.stringify(playersQuery));
     getUserIndex(playersQuery)
       .then((res) => {
         if (res.length > 0) {
-          console.log('Player response ', res);
           const fetchedData = [...playerList, ...res];
           setplayerList(fetchedData);
           setPageFrom(pageFrom + pageSize);
@@ -423,7 +404,6 @@ export default function EntitySearchScreen({navigation, route}) {
         },
       });
     }
-    console.log('Referee query:=>', JSON.stringify(refereeQuery));
     getUserIndex(refereeQuery)
       .then((res) => {
         if (res.length > 0) {
@@ -441,21 +421,6 @@ export default function EntitySearchScreen({navigation, route}) {
   }, [pageSize, refereesPageFrom, referees, refereeFilters]);
 
   const getScoreKeepersList = useCallback(() => {
-    console.log('Location -->', scoreKeeperFilters.location);
-    console.log('Location -->', scoreKeeperFilters.sport);
-
-    // Score keeper query
-    /*
-    const scoreKeeperQuery = {
-      size: pageSize,
-      from: scorekeeperPageFrom,
-      query: {
-        bool: {
-          must: [{term: {'scorekeeper_data.is_published': true}}],
-        },
-      },
-    };
-*/
     const scoreKeeperQuery = {
       size: pageSize,
       from: scorekeeperPageFrom,
@@ -517,7 +482,6 @@ export default function EntitySearchScreen({navigation, route}) {
         },
       });
     }
-    console.log('scoreKeeperQuery query ->', JSON.stringify(scoreKeeperQuery));
     getUserIndex(scoreKeeperQuery)
       .then((res) => {
         if (res.length > 0) {
@@ -535,7 +499,6 @@ export default function EntitySearchScreen({navigation, route}) {
   }, [pageSize, scorekeeperPageFrom, scorekeepers, scoreKeeperFilters]);
 
   const getTeamList = useCallback(() => {
-    console.log('Team search ==>', teamFilters.searchText);
     const teamsQuery = {
       size: pageSize,
       from: teamsPageFrom,
@@ -586,11 +549,9 @@ export default function EntitySearchScreen({navigation, route}) {
       });
     }
 
-    console.log('teams query ===>', JSON.stringify(teamsQuery));
     getGroupIndex(teamsQuery)
       .then((res) => {
         if (res.length > 0) {
-          console.log('teams response :=>', res);
           const fetchedData = [...teams, ...res];
           setTeams(fetchedData);
           setTeamsPageFrom(teamsPageFrom + pageSize);
@@ -605,9 +566,6 @@ export default function EntitySearchScreen({navigation, route}) {
   }, [pageSize, teamsPageFrom, teams, teamFilters]);
 
   const getClubList = useCallback(() => {
-    // const clubsQuery = bodybuilder()
-    //   .query('match', 'entity_type', 'club')
-    //   .build();
     const clubsQuery = {
       size: pageSize,
       from: clubsPageFrom,
@@ -657,12 +615,10 @@ export default function EntitySearchScreen({navigation, route}) {
         },
       });
     }
-    console.log('clubs query ===>', JSON.stringify(clubsQuery));
 
     getGroupIndex(clubsQuery)
       .then((res) => {
         if (res.length > 0) {
-          console.log('clubs response :=>', res);
           const fetchedData = [...clubs, ...res];
           setClubs(fetchedData);
           setClubsPageFrom(clubsPageFrom + pageSize);
@@ -718,7 +674,6 @@ export default function EntitySearchScreen({navigation, route}) {
       });
     }
     getGameIndex(completedGameQuery).then((games) => {
-      console.log('completed game response :=>', games);
       Utility.getGamesList(games).then((gamedata) => {
         if (games.length > 0) {
           const fetchedData = [...completedGame, ...gamedata];
@@ -767,11 +722,8 @@ export default function EntitySearchScreen({navigation, route}) {
         },
       });
     }
-    console.log('Upcoming game Query:=>', JSON.stringify(upcomingMatchQuery));
 
     getGameIndex(upcomingMatchQuery).then((games) => {
-      console.log('Upcoming game response :=>', games);
-
       Utility.getGamesList(games).then((gamedata) => {
         if (games.length > 0) {
           const fetchedData = [...upcomingGame, ...gamedata];
@@ -794,8 +746,7 @@ export default function EntitySearchScreen({navigation, route}) {
           fontFamily: fonts.RRegular,
           color: colors.grayColor,
           fontSize: 15,
-        }}
-      >
+        }}>
         No Records Found
       </Text>
     </View>
@@ -814,33 +765,6 @@ export default function EntitySearchScreen({navigation, route}) {
   };
 
   const handleTagPress = ({item}) => {
-    // const tempFilter = playerFilter;
-    // Object.keys(tempFilter).forEach((key) => {
-    //   if (key === Object.keys(item)[0]) {
-    //     if (Object.keys(item)[0] === 'sport') {
-    //       tempFilter.sport = 'All';
-    //       delete tempFilter.fee;
-    //       setSelectedSport('All');
-    //       setMinFee(0);
-    //       setMaxFee(0);
-    //     }
-    //     if (Object.keys(item)[0] === 'location') {
-    //       tempFilter.location = 'world';
-    //     }
-    //     if (Object.keys(item)[0] === 'fee') {
-    //       delete tempFilter.fee;
-    //     }
-    //   }
-    // });
-    // console.log('Temp filter', tempFilter);
-    // setPlayerFilter({...tempFilter});
-    // // applyFilter();
-    // setTimeout(() => {
-    //   setPageFrom(0);
-    //   setplayerList([]);
-    //   applyFilter(tempFilter);
-    // }, 10);
-
     switch (currentSubTab) {
       case 'General':
       case 'Players': {
@@ -1052,34 +976,21 @@ export default function EntitySearchScreen({navigation, route}) {
   const getLocation = () => {
     Geolocation.getCurrentPosition(
       (position) => {
-        console.log('Lat/long to position::=>', position);
         // const position = { coords: { latitude: 49.11637199697782, longitude: -122.7776695216056 } }
         getLocationNameWithLatLong(
           position.coords.latitude,
           position.coords.longitude,
           authContext,
         ).then((res) => {
-          console.log(
-            'Lat/long to address::=>',
-            res.results[0].address_components,
-          );
           let city;
           res.results[0].address_components.map((e) => {
             if (e.types.includes('administrative_area_level_2')) {
               city = e.short_name;
             }
           });
-          console.log(
-            'Location:=>',
-            city.charAt(0).toUpperCase() + city.slice(1),
-          );
+
           setLocation(city.charAt(0).toUpperCase() + city.slice(1));
-          // setFilters({
-          //   ...filters,
-          //   location: city.charAt(0).toUpperCase() + city.slice(1),
-          // });
         });
-        console.log(position.coords.latitude);
       },
       (error) => {
         // See error code charts below.
@@ -1119,7 +1030,6 @@ export default function EntitySearchScreen({navigation, route}) {
           }
         } else if (currentSubTab === 'Referees') {
           if (!stopFetchMore) {
-            console.log('called get referee');
             getRefereesList();
             stopFetchMore = true;
           }
@@ -1159,7 +1069,6 @@ export default function EntitySearchScreen({navigation, route}) {
       default:
         break;
     }
-    console.log('called on scroll end');
     setLoadMore(false);
   };
 
@@ -1177,8 +1086,6 @@ export default function EntitySearchScreen({navigation, route}) {
   };
   const searchFilterFunction = (text) => {
     setSearch(text);
-    console.log('search text value', text);
-    console.log('currentSubTab==>3333', currentSubTab);
 
     switch (currentSubTab) {
       case 'General':
@@ -1188,7 +1095,6 @@ export default function EntitySearchScreen({navigation, route}) {
           ...playerFilter,
           searchText: text,
         });
-        console.log('General filters ========>', playerFilter);
         break;
       case 'Players':
         setplayerList([]);
@@ -1197,10 +1103,8 @@ export default function EntitySearchScreen({navigation, route}) {
           ...playerFilter,
           searchText: text,
         });
-        console.log('players filters ========>', playerFilter);
         break;
       case 'Referees':
-        console.log('Referees filters ========>', refereeFilters);
         setReferees([]);
         setRefereesPageFrom(0);
         setrRefereeFilters({
@@ -1223,7 +1127,6 @@ export default function EntitySearchScreen({navigation, route}) {
           ...teamFilters,
           searchText: text,
         });
-        console.log('teamFilters', teamFilters);
 
         break;
       case 'Clubs':
@@ -1255,7 +1158,6 @@ export default function EntitySearchScreen({navigation, route}) {
     }
   };
   const onPressReset = () => {
-    console.log('dhdshjshs');
     switch (currentSubTab) {
       case 'General':
       case 'Players':
@@ -1330,7 +1232,6 @@ export default function EntitySearchScreen({navigation, route}) {
         setMaxFee(0);
         break;
       default:
-        console.log('ddddd');
         break;
     }
   };
@@ -1346,7 +1247,6 @@ export default function EntitySearchScreen({navigation, route}) {
   );
 
   const tabChangePress = useCallback((changeTab) => {
-    console.log('change tab value ', changeTab);
     searchFilterFunction('');
     searchBoxRef.current.clear();
     switch (changeTab.i) {
@@ -1379,15 +1279,13 @@ export default function EntitySearchScreen({navigation, route}) {
           borderBottomColor: colors.lightgrayColor,
           borderBottomWidth: 1,
           backgroundColor: '#FCFCFC',
-        }}
-      >
+        }}>
         {currentTab === 0 &&
           PEOPLE_SUB_TAB_ITEMS.map((item, index) => (
             <TouchableOpacity
               key={item}
               style={{padding: 10}}
-              onPress={() => onPressSubTabs(item, index)}
-            >
+              onPress={() => onPressSubTabs(item, index)}>
               {/* onPress={() => setCurrentSubTab(item)}> */}
               <Text
                 style={{
@@ -1397,8 +1295,7 @@ export default function EntitySearchScreen({navigation, route}) {
                       : colors.lightBlackColor,
                   fontFamily:
                     item === currentSubTab ? fonts.RBold : fonts.RRegular,
-                }}
-              >
+                }}>
                 {_.startCase(item)}
               </Text>
             </TouchableOpacity>
@@ -1408,8 +1305,7 @@ export default function EntitySearchScreen({navigation, route}) {
             <TouchableOpacity
               key={item}
               style={{padding: 10}}
-              onPress={() => setCurrentSubTab(item)}
-            >
+              onPress={() => setCurrentSubTab(item)}>
               <Text
                 style={{
                   color:
@@ -1418,8 +1314,7 @@ export default function EntitySearchScreen({navigation, route}) {
                       : colors.lightBlackColor,
                   fontFamily:
                     item === currentSubTab ? fonts.RBold : fonts.RRegular,
-                }}
-              >
+                }}>
                 {_.startCase(item)}
               </Text>
             </TouchableOpacity>
@@ -1429,8 +1324,7 @@ export default function EntitySearchScreen({navigation, route}) {
             <TouchableOpacity
               key={item}
               style={{padding: 10}}
-              onPress={() => setCurrentSubTab(item)}
-            >
+              onPress={() => setCurrentSubTab(item)}>
               <Text
                 style={{
                   color:
@@ -1439,8 +1333,7 @@ export default function EntitySearchScreen({navigation, route}) {
                       : colors.lightBlackColor,
                   fontFamily:
                     item === currentSubTab ? fonts.RBold : fonts.RRegular,
-                }}
-              >
+                }}>
                 {_.startCase(item)}
               </Text>
             </TouchableOpacity>
@@ -1450,8 +1343,7 @@ export default function EntitySearchScreen({navigation, route}) {
             <TouchableOpacity
               key={item}
               style={{padding: 10}}
-              onPress={() => setCurrentSubTab(item)}
-            >
+              onPress={() => setCurrentSubTab(item)}>
               <Text
                 style={{
                   color:
@@ -1460,8 +1352,7 @@ export default function EntitySearchScreen({navigation, route}) {
                       : colors.lightBlackColor,
                   fontFamily:
                     item === currentSubTab ? fonts.RBold : fonts.RRegular,
-                }}
-              >
+                }}>
                 {_.startCase(item)}
               </Text>
             </TouchableOpacity>
@@ -1488,7 +1379,6 @@ export default function EntitySearchScreen({navigation, route}) {
                     break;
                   }
                   case 'Referees': {
-                    console.log('LLLLLLLL', refereeFilters.location);
                     setLocation(refereeFilters.location);
                     setSelectedSport(refereeFilters.sport);
                     setLocationFilterOpetion(
@@ -1524,7 +1414,6 @@ export default function EntitySearchScreen({navigation, route}) {
                     break;
                   }
                   case 'Teams': {
-                    console.log('TTTTTTTTTTT', teamFilters);
                     setLocation(teamFilters.location);
                     setSelectedSport(teamFilters.sport);
                     setLocationFilterOpetion(
@@ -1540,8 +1429,6 @@ export default function EntitySearchScreen({navigation, route}) {
                     break;
                   }
                   case 'Clubs': {
-                    console.log('CCCCCCCC', clubFilters);
-
                     setLocation(clubFilters.location);
                     setSelectedSport(clubFilters.sport);
                     setLocationFilterOpetion(
@@ -1596,8 +1483,7 @@ export default function EntitySearchScreen({navigation, route}) {
 
                 setSettingPopup(true);
               }, 100);
-            }}
-          >
+            }}>
             <Image source={images.homeSetting} style={styles.settingImage} />
           </TouchableWithoutFeedback>
         )}
@@ -1639,7 +1525,6 @@ export default function EntitySearchScreen({navigation, route}) {
   );
 
   const renderUpcomingMatchItems = useCallback(({item}) => {
-    console.log('Upcoming Item 123:=>', item);
     return (
       <View style={{marginBottom: 15}}>
         <TCUpcomingMatchCard data={item} cardWidth={'92%'} />
@@ -1647,7 +1532,6 @@ export default function EntitySearchScreen({navigation, route}) {
     );
   }, []);
   const renderRecentMatchItems = useCallback(({item}) => {
-    console.log('Recent Item:=>', item);
     return (
       <View style={{marginBottom: 15}}>
         <TCRecentMatchCard data={item} cardWidth={'92%'} />
@@ -1833,8 +1717,6 @@ export default function EntitySearchScreen({navigation, route}) {
         onEndReachedThreshold={0.01}
         onScrollEndDrag={onScrollHandler}
         onScrollBeginDrag={() => {
-          console.log('called on scroll begin');
-
           stopFetchMore = false;
         }}
         ListEmptyComponent={listEmptyComponent}
@@ -1858,25 +1740,21 @@ export default function EntitySearchScreen({navigation, route}) {
         backdropTransitionOutTiming={800}
         style={{
           margin: 0,
-        }}
-      >
+        }}>
         <View
           style={[
             styles.bottomPopupContainer,
             {height: Dimensions.get('window').height - 100},
-          ]}
-        >
+          ]}>
           <KeyboardAvoidingView
             style={{flex: 1}}
             keyboardVerticalOffset={keyboardVerticalOffset}
-            behavior={Platform.OS === 'ios' ? 'padding' : null}
-          >
+            behavior={Platform.OS === 'ios' ? 'padding' : null}>
             <ScrollView style={{flex: 1}}>
               <View style={styles.viewsContainer}>
                 <Text
                   onPress={() => setSettingPopup(false)}
-                  style={styles.cancelText}
-                >
+                  style={styles.cancelText}>
                   Cancel
                 </Text>
                 <Text style={styles.locationText}>Filter</Text>
@@ -1954,7 +1832,6 @@ export default function EntitySearchScreen({navigation, route}) {
                             break;
                           }
                           case 'Teams': {
-                            console.log('teamFiltersteamFilters', teamFilters);
                             const tempFilter = {...teamFilters};
                             tempFilter.sport = selectedSport;
                             tempFilter.sportType = selectedSportType;
@@ -2027,10 +1904,8 @@ export default function EntitySearchScreen({navigation, route}) {
                             break;
                         }
                       }, 100);
-                      console.log('DONE::');
                     }
-                  }}
-                >
+                  }}>
                   {'Apply'}
                 </Text>
               </View>
@@ -2046,15 +1921,13 @@ export default function EntitySearchScreen({navigation, route}) {
                         flexDirection: 'row',
                         marginBottom: 10,
                         justifyContent: 'space-between',
-                      }}
-                    >
+                      }}>
                       <Text style={styles.filterTitle}>World</Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(0);
                           setLocation('world');
-                        }}
-                      >
+                        }}>
                         <Image
                           source={
                             locationFilterOpetion === 0
@@ -2070,8 +1943,7 @@ export default function EntitySearchScreen({navigation, route}) {
                         flexDirection: 'row',
                         marginBottom: 10,
                         justifyContent: 'space-between',
-                      }}
-                    >
+                      }}>
                       <Text style={styles.filterTitle}>Home City</Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
@@ -2082,8 +1954,7 @@ export default function EntitySearchScreen({navigation, route}) {
                               .toUpperCase() +
                               authContext?.entity?.obj?.city.slice(1),
                           );
-                        }}
-                      >
+                        }}>
                         <Image
                           source={
                             locationFilterOpetion === 1
@@ -2099,15 +1970,13 @@ export default function EntitySearchScreen({navigation, route}) {
                         flexDirection: 'row',
                         marginBottom: 10,
                         justifyContent: 'space-between',
-                      }}
-                    >
+                      }}>
                       <Text style={styles.filterTitle}>Current City</Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(2);
                           getLocation();
-                        }}
-                      >
+                        }}>
                         <Image
                           source={
                             locationFilterOpetion === 2
@@ -2126,14 +1995,12 @@ export default function EntitySearchScreen({navigation, route}) {
                         navigation.navigate('SearchCityScreen', {
                           comeFrom: 'EntitySearchScreen',
                         });
-                      }}
-                    >
+                      }}>
                       <View
                         style={{
                           flexDirection: 'row',
                           justifyContent: 'space-between',
-                        }}
-                      >
+                        }}>
                         <View style={styles.searchCityContainer}>
                           <Text style={styles.searchCityText}>
                             {route?.params?.locationText || 'Search City'}
@@ -2142,8 +2009,7 @@ export default function EntitySearchScreen({navigation, route}) {
                         <View
                           style={{
                             alignSelf: 'center',
-                          }}
-                        >
+                          }}>
                           <Image
                             source={
                               locationFilterOpetion === 3
@@ -2163,8 +2029,7 @@ export default function EntitySearchScreen({navigation, route}) {
                       flexDirection: 'column',
                       margin: 15,
                       justifyContent: 'space-between',
-                    }}
-                  >
+                    }}>
                     <View style={{}}>
                       <Text style={styles.filterTitle}>Sport</Text>
                     </View>
@@ -2173,7 +2038,6 @@ export default function EntitySearchScreen({navigation, route}) {
                         dataSource={sports}
                         placeholder={'Select Sport'}
                         onValueChange={(value) => {
-                          console.log('vaaaa', value);
                           setSelectedSport(value);
                           if (value === 'All') {
                             setMinFee(0);
@@ -2200,14 +2064,12 @@ export default function EntitySearchScreen({navigation, route}) {
                         onPress={() => {
                           setDatePickerFor('from');
                           setShow(!show);
-                        }}
-                      >
+                        }}>
                         <View
                           style={{
                             height: 35,
                             justifyContent: 'center',
-                          }}
-                        >
+                          }}>
                           <Text style={styles.fieldTitle} numberOfLines={1}>
                             From
                           </Text>
@@ -2228,14 +2090,12 @@ export default function EntitySearchScreen({navigation, route}) {
                         onPress={() => {
                           setDatePickerFor('to');
                           setShow(!show);
-                        }}
-                      >
+                        }}>
                         <View
                           style={{
                             height: 35,
                             justifyContent: 'center',
-                          }}
-                        >
+                          }}>
                           <Text style={styles.fieldTitle} numberOfLines={1}>
                             To
                           </Text>
@@ -2257,8 +2117,7 @@ export default function EntitySearchScreen({navigation, route}) {
                         color: colors.lightBlackColor,
                         textAlign: 'right',
                         marginTop: 10,
-                      }}
-                    >
+                      }}>
                       Time zone{' '}
                       <Text
                         style={{
@@ -2266,8 +2125,7 @@ export default function EntitySearchScreen({navigation, route}) {
                           fontFamily: fonts.RRegular,
                           color: colors.lightBlackColor,
                           textDecorationLine: 'underline',
-                        }}
-                      >
+                        }}>
                         Vancouver
                       </Text>
                     </Text>
@@ -2280,8 +2138,7 @@ export default function EntitySearchScreen({navigation, route}) {
                     flexDirection: 'column',
                     margin: 15,
                     justifyContent: 'space-between',
-                  }}
-                >
+                  }}>
                   <View style={{}}>
                     <Text style={styles.filterTitle}>Referee fee</Text>
                   </View>
@@ -2290,8 +2147,7 @@ export default function EntitySearchScreen({navigation, route}) {
                       style={{
                         flexDirection: 'row',
                         justifyContent: 'space-between',
-                      }}
-                    >
+                      }}>
                       <TextInput
                         onChangeText={(text) => setMinFee(text)}
                         value={minFee}

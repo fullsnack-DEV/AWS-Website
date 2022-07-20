@@ -70,7 +70,6 @@ export default function EmailVerificationScreen({navigation, route}) {
   const getRedirectionScreenName = useCallback(
     (townscupUser) =>
       new Promise((resolve, reject) => {
-        console.log('screen name object:=>', townscupUser);
         if (!townscupUser.birthday) resolve({screen: 'AddBirthdayScreen'});
         else if (!townscupUser.gender) resolve({screen: 'ChooseGenderScreen'});
         else if (!townscupUser.city) resolve({screen: 'ChooseLocationScreen'});
@@ -102,7 +101,6 @@ export default function EmailVerificationScreen({navigation, route}) {
       await setStorage('loggedInEntity', entity);
       await authContext.setEntity({...entity});
 
-      console.log('User Data:', userData);
       getRedirectionScreenName(userData)
         .then((responseScreen) => {
           setLoading(false);
@@ -116,13 +114,11 @@ export default function EmailVerificationScreen({navigation, route}) {
           await setStorage('loggedInEntity', {...entity});
           getAppSettingsWithoutAuth()
             .then(async (response) => {
-              console.log('Settings without auth:=>', response);
               await setStorage('appSetting', response.payload.app);
               await authContext.setEntity({...entity});
             })
             .catch((e) => {
               setTimeout(() => {
-                console.log('catch -> location screen setting api');
                 Alert.alert(strings.alertmessagetitle, e.message);
               }, 10);
             });
@@ -143,9 +139,6 @@ export default function EmailVerificationScreen({navigation, route}) {
       const response = {...townscupUser};
       let qbEntity = {...dummyAuthContext?.entity};
 
-      console.log('response : ', response);
-      console.log('qbEntity : ', qbEntity);
-
       QBlogin(qbEntity.uid, response)
         .then(async (res) => {
           qbEntity = {
@@ -157,7 +150,7 @@ export default function EmailVerificationScreen({navigation, route}) {
           loginFinalRedirection(firebaseUser, response);
         })
         .catch((error) => {
-          console.log('QB Login Error : ', error.message);
+          console.log('error', error);
           qbEntity = {...qbEntity, QB: {connected: false}};
           dummyAuthContext.entity = {...qbEntity};
           loginFinalRedirection(firebaseUser, response);
@@ -175,7 +168,6 @@ export default function EmailVerificationScreen({navigation, route}) {
             token: idTokenResult.token,
             expirationTime: idTokenResult.expirationTime,
           };
-          console.log('token:=>', token);
           dummyAuthContext.tokenData = token;
 
           setStorage('groupEventValue', true);
@@ -184,10 +176,8 @@ export default function EmailVerificationScreen({navigation, route}) {
             url: `${Config.BASE_URL}/users/${user?.uid}`,
             headers: {Authorization: `Bearer ${token?.token}`},
           };
-          console.log('Login Request:=>', userConfig);
           apiCall(userConfig)
             .then((response) => {
-              console.log('ressssss==>', response);
               if (response.status) {
                 dummyAuthContext.entity = {
                   uid: user.uid,
@@ -214,8 +204,8 @@ export default function EmailVerificationScreen({navigation, route}) {
               }
             })
             .catch((error) => {
+              console.log('error', error);
               setLoading(false);
-              console.log(error);
               navigation.navigate('AddNameScreen', {
                 signupInfo: {
                   ...route?.params?.signupInfo,
@@ -235,8 +225,6 @@ export default function EmailVerificationScreen({navigation, route}) {
   );
 
   const verifyUserEmail = () => {
-    console.log(route?.params?.signupInfo);
-    console.log(route?.params?.signupInfo?.password);
     setLoading(true);
     firebase
       .auth()
@@ -247,8 +235,6 @@ export default function EmailVerificationScreen({navigation, route}) {
       .then((res) => {
         setLoading(false);
         if (res.user.emailVerified) {
-          console.log('firebase user data', res);
-
           const loginOnAuthStateChanged = firebase
             .auth()
             .onAuthStateChanged(onAuthStateChanged);

@@ -42,7 +42,6 @@ export default function ChooseGenderScreen({navigation, route}) {
   const [enableNext, setEnableNext] = useState(false);
 
   const authContext = useContext(AuthContext);
-  console.log('authContextauthContext', authContext);
   const [selected, setSelected] = useState(
     authContext?.entity?.obj?.gender
       ? (authContext?.entity?.obj?.gender === 'male' && 0) ||
@@ -54,11 +53,9 @@ export default function ChooseGenderScreen({navigation, route}) {
   const navigateToChooseLocationScreen = useCallback(
     (genderParam) => {
       setLoading(false);
-      console.log('basicInfo=====>', route?.params?.signupInfo);
       const uniqueObjArray = [
         ...new Map(nearCity.map((item) => [item.description, item])).values(),
       ];
-      console.log('uniqueObjArray===>', uniqueObjArray);
       setTimeout(() => {
         navigation.navigate('ChooseLocationScreen', {
           signupInfo: {
@@ -75,7 +72,6 @@ export default function ChooseGenderScreen({navigation, route}) {
   );
   const fetchNearestCity = useCallback(
     (gender) => {
-      console.log('Latlong', latLong.coords);
       searchNearByCity(
         latLong.coords.latitude,
         latLong.coords.longitude,
@@ -85,7 +81,6 @@ export default function ChooseGenderScreen({navigation, route}) {
         .then((response) => {
           const places = []; // This Array WIll contain locations received from google
           const cities = [];
-          console.log('Places=====>', response.results);
           for (const googlePlace of response.results) {
             const place = {};
             const lat = googlePlace.geometry.location.lat;
@@ -99,11 +94,6 @@ export default function ChooseGenderScreen({navigation, route}) {
               coordinate.longitude,
               authContext,
             ).then((res) => {
-              console.log('res====>', res);
-              console.log(
-                'Lat/long to address::=>',
-                res.results[0].address_components,
-              );
               let stateAbbr, city, country;
               // eslint-disable-next-line array-callback-return
               res.results[0].address_components.map((e) => {
@@ -126,27 +116,13 @@ export default function ChooseGenderScreen({navigation, route}) {
             place.placeId = googlePlace.place_id;
             place.placeName = googlePlace.name;
             places.push(place);
-            console.log('places--->', places);
-
-            // const position = { coords: { latitude: 49.11637199697782, longitude: -122.7776695216056 } }
           }
           setNearCity(cities);
           setLoading(false);
 
-          console.log('nearCity--->', nearCity);
-          // navigation.navigate('ChooseLocationScreen', {
-          //   signupInfo: {
-          //     ...route?.params?.signupInfo,
-          //     gender,
-          //     location: currentLocation,
-          //     locationPosition: latLong,
-          //     nearCity,
-          //   },
-          // });
           navigateToChooseLocationScreen(gender);
         })
         .catch((e) => {
-          console.log('cathh ---error', e);
           navigateToChooseLocationScreen(gender);
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
@@ -157,7 +133,6 @@ export default function ChooseGenderScreen({navigation, route}) {
   );
 
   useLayoutEffect(() => {
-    console.log('000000', nearCity);
     navigation.setOptions({
       headerRight: () =>
         enableNext ? (
@@ -213,8 +188,7 @@ export default function ChooseGenderScreen({navigation, route}) {
                   console.log('error', error);
                   // …
                 });
-            }}
-          >
+            }}>
             Next
           </Text>
         ) : (
@@ -224,8 +198,7 @@ export default function ChooseGenderScreen({navigation, route}) {
         <TouchableOpacity
           onPress={() => {
             navigation.pop();
-          }}
-        >
+          }}>
           <Image
             source={images.backArrow}
             style={{
@@ -250,7 +223,6 @@ export default function ChooseGenderScreen({navigation, route}) {
     if (Platform.OS === 'android') {
       requestPermission();
     } else {
-      console.log('111');
       request(
         PERMISSIONS.IOS.LOCATION_ALWAYS,
         PERMISSIONS.IOS.LOCATION_WHEN_IN_USE,
@@ -291,19 +263,12 @@ export default function ChooseGenderScreen({navigation, route}) {
     Geolocation.requestAuthorization();
     Geolocation.getCurrentPosition(
       (position) => {
-        console.log('Lat/long to position::=>', position);
-        console.log('222');
-
         setlatLong(position);
         getLocationNameWithLatLong(
           position?.coords?.latitude,
           position?.coords?.longitude,
           authContext,
         ).then((res) => {
-          console.log(
-            'Lat/long to address::=>',
-            res.results[0].address_components,
-          );
           let stateAbbr, city, country;
           // eslint-disable-next-line array-callback-return
           res.results[0].address_components.map((e) => {
@@ -315,16 +280,13 @@ export default function ChooseGenderScreen({navigation, route}) {
               country = e.long_name;
             }
           });
-          console.log('333');
           setCurrentLocation({stateAbbr, city, country});
           setLoading(false);
           setEnableNext(true);
         });
-        console.log('444');
         setLoading(false);
       },
       (error) => {
-        console.log('555');
         setLoading(false);
         setEnableNext(true);
         // See error code charts below.
@@ -339,7 +301,6 @@ export default function ChooseGenderScreen({navigation, route}) {
       PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
     ])
       .then((result) => {
-        console.log('Data :::::', JSON.stringify(result));
         if (
           result['android.permission.ACCESS_COARSE_LOCATION'] &&
           result['android.permission.ACCESS_FINE_LOCATION'] === 'granted'
@@ -358,8 +319,7 @@ export default function ChooseGenderScreen({navigation, route}) {
         paddingHorizontal: 5,
         justifyContent: 'center',
         alignItems: 'center',
-      }}
-    >
+      }}>
       <TouchableOpacity
         style={{
           borderColor: colors.whiteColor,
@@ -370,8 +330,7 @@ export default function ChooseGenderScreen({navigation, route}) {
           alignItems: 'center',
           justifyContent: 'center',
         }}
-        onPress={onRadioPress}
-      >
+        onPress={onRadioPress}>
         {isSelected && (
           <View
             style={{
@@ -379,38 +338,16 @@ export default function ChooseGenderScreen({navigation, route}) {
               width: 13,
               borderRadius: 50,
               backgroundColor: colors.whiteColor,
-            }}
-          ></View>
+            }}></View>
         )}
       </TouchableOpacity>
     </View>
   );
-  /*
-  const updateProfile = async (params, callback) => {
-    setLoading(true);
-    updateUserProfile(params, authContext)
-      .then(async (userResoponse) => {
-        const userData = userResoponse?.payload;
-        const entity = {...authContext?.entity};
-        entity.auth.user = userData;
-        entity.obj = userData;
-        await Utility.setStorage('loggedInEntity', {...entity});
-        await Utility.setStorage('authContextEntity', {...entity});
-        await Utility.setStorage('authContextUser', {...userData});
-        await authContext.setUser({...userData});
-        await authContext.setEntity({...entity});
-        setLoading(false);
-        callback();
-      })
-      .catch(() => setLoading(false));
-  };
-*/
 
   return (
     <LinearGradient
       colors={[colors.themeColor1, colors.themeColor3]}
-      style={styles.mainContainer}
-    >
+      style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
       <View style={{flex: 1}}>
         <FastImage
@@ -441,8 +378,7 @@ export default function ChooseGenderScreen({navigation, route}) {
           height={hp('22%')}
           width={wp('75%')}
           overlayColor={'transparent'}
-          skipAndroidStatusBar={true}
-        >
+          skipAndroidStatusBar={true}>
           <Text style={styles.whyAskingText}>
             {strings.whyAskingGenderText}
           </Text>
@@ -476,18 +412,6 @@ export default function ChooseGenderScreen({navigation, route}) {
             <Text style={styles.radioText}>{strings.otherRadioText}</Text>
           </View>
         </View>
-
-        {/* <TCButton
-        title={strings.continueCapTitle}
-        onPress={async () => {
-          let gender = {};
-          if (selected === 0) gender = 'male';
-          else if (selected === 1) gender = 'female';
-          else if (selected === 2) gender = 'other';
-          navigateToChooseLocationScreen(gender);
-        }}
-        extraStyle={{bottom: hp('4%'), position: 'absolute'}}
-      /> */}
       </View>
       <SafeAreaView>
         <View
@@ -496,8 +420,7 @@ export default function ChooseGenderScreen({navigation, route}) {
             // justifyContent: 'flex-end',
             // marginBottom: 100,
             bottom: 16,
-          }}
-        >
+          }}>
           <Text style={styles.canNotChangeGender}>
             {strings.canNotChangeGender}
           </Text>
@@ -519,7 +442,6 @@ const styles = StyleSheet.create({
   },
   radioButtonView: {
     flexDirection: 'row',
-    // marginLeft: 20,
     marginRight: 15,
     marginTop: 20,
   },

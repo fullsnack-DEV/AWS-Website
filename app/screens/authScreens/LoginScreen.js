@@ -71,7 +71,6 @@ export default function LoginScreen({navigation}) {
   }, [email, password]);
 
   const validateEmail = (emailText) => {
-    console.log('email text', emailText);
     if (/^[\w-.+]+@([\w-]+\.)+[\w-]{2,4}$/.test(emailText)) {
       return true;
     }
@@ -81,7 +80,6 @@ export default function LoginScreen({navigation}) {
   const getRedirectionScreenName = useCallback(
     (townscupUser) =>
       new Promise((resolve, reject) => {
-        console.log('screen name object:=>', townscupUser);
         if (!townscupUser.birthday) resolve({screen: 'AddBirthdayScreen'});
         else if (!townscupUser.gender) resolve({screen: 'ChooseGenderScreen'});
         else if (!townscupUser.city) resolve({screen: 'ChooseLocationScreen'});
@@ -103,9 +101,6 @@ export default function LoginScreen({navigation}) {
     async (firebaseUser, townscupUser) => {
       const entity = {...dummyAuthContext.entity};
       const userData = {...townscupUser};
-
-      console.log('entity Data:', entity);
-      console.log('User Data/townscupUser:', townscupUser);
       entity.auth.user = {...userData};
       entity.obj = {...userData};
       await authContext.setTokenData(dummyAuthContext?.tokenData);
@@ -145,7 +140,6 @@ export default function LoginScreen({navigation}) {
               })
               .catch((e) => {
                 setTimeout(() => {
-                  console.log('catch -> location screen setting api');
                   Alert.alert(strings.alertmessagetitle, e.message);
                 }, 10);
               });
@@ -167,10 +161,6 @@ export default function LoginScreen({navigation}) {
     (firebaseUser, townscupUser) => {
       const response = {...townscupUser};
       let qbEntity = {...dummyAuthContext?.entity};
-
-      console.log('response : ', response);
-      console.log('qbEntity : ', qbEntity);
-
       QBlogin(qbEntity.uid, response)
         .then(async (res) => {
           qbEntity = {
@@ -199,7 +189,6 @@ export default function LoginScreen({navigation}) {
             token: idTokenResult.token,
             expirationTime: idTokenResult.expirationTime,
           };
-          console.log('token:=>', token);
           dummyAuthContext.tokenData = token;
           Utility.setStorage('eventColor', eventDefaultColorsData);
           Utility.setStorage('groupEventValue', true);
@@ -251,7 +240,6 @@ export default function LoginScreen({navigation}) {
     const token = {...dummyAuthContext?.tokenData};
     await authContext.setTokenData(token);
     await authContext.setEntity(entity);
-    console.log('Entity ===>', entity);
     user.sendEmailVerification();
     setloading(false);
     navigation.navigate('EmailVerificationScreen', {
@@ -280,7 +268,6 @@ export default function LoginScreen({navigation}) {
   };
   const login = useCallback(async () => {
     await Utility.clearStorage();
-    console.log('firebase:=>', firebase);
     firebase
       .auth()
       .signInWithEmailAndPassword(email, password)
@@ -355,8 +342,7 @@ export default function LoginScreen({navigation}) {
         />
         <TouchableOpacity
           onPress={() => hideShowPassword()}
-          style={{alignItems: 'center', justifyContent: 'center'}}
-        >
+          style={{alignItems: 'center', justifyContent: 'center'}}>
           {hidePassword ? (
             <Text style={styles.passwordEyes}>SHOW</Text>
           ) : (
@@ -370,7 +356,6 @@ export default function LoginScreen({navigation}) {
 
   const onLogin = useCallback(async () => {
     setloading(true);
-    console.log('Valide', validate());
     if (validate()) {
       if (authContext.networkConnected) {
         login();
@@ -389,8 +374,7 @@ export default function LoginScreen({navigation}) {
           onPress={onLogin}
         />
         <TouchableOpacity
-          onPress={() => navigation.navigate('ForgotPasswordScreen')}
-        >
+          onPress={() => navigation.navigate('ForgotPasswordScreen')}>
           <Text style={styles.forgotPasswordText}>
             {strings.forgotPassword}
           </Text>
@@ -408,8 +392,7 @@ export default function LoginScreen({navigation}) {
             // navigation.dispatch(StackActions.popToTop());
             navigation.pop();
             // navigation.dispatch(StackActions.replace('WelcomeScreen'));
-          }}
-        >
+          }}>
           <Image
             source={images.backArrow}
             style={{
@@ -427,8 +410,7 @@ export default function LoginScreen({navigation}) {
   return (
     <LinearGradient
       colors={[colors.themeColor1, colors.themeColor3]}
-      style={styles.mainContainer}
-    >
+      style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
       <FastImage
         resizeMode={'stretch'}
@@ -448,8 +430,7 @@ export default function LoginScreen({navigation}) {
           <TouchableOpacity
             hitSlop={getHitSlop(15)}
             onPress={() => navigation.navigate('SignupScreen')}
-            style={styles.alreadyView}
-          >
+            style={styles.alreadyView}>
             <Text style={styles.alreadyMemberText}>
               {strings.notAMemberYetSignup}
               <Text> </Text>
@@ -457,8 +438,7 @@ export default function LoginScreen({navigation}) {
                 style={{
                   textDecorationLine: 'underline',
                   fontFamily: fonts.RBold,
-                }}
-              >
+                }}>
                 Sign Up
               </Text>
             </Text>

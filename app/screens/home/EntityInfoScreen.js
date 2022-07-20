@@ -54,10 +54,6 @@ export default function EntityInfoScreen({navigation, route}) {
   useEffect(() => {
     const obj = [];
     if (route?.params?.selectedVenueObj) {
-      console.log(
-        'route?.params?.selectedVenueObj',
-        route?.params?.selectedVenueObj,
-      );
       obj.push(route?.params?.selectedVenueObj);
     } else {
       obj.push(currentUserData?.setting?.venue?.[0]);
