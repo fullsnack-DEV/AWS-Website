@@ -23,11 +23,11 @@ function TCTagsFilter({dataSource, onTagCancelPress, filter, authContext}) {
           Object.values(item)[0] !== 'world' &&
           Object.keys(item)[0] !== 'entityID' &&
           Object.keys(item)[0] !== 'searchText' &&
-          Object.keys(item)[0] !== 'sport_type' && (
+          Object.keys(item)[0] !== 'sport_type' &&
+          Object.keys(item)[0] !== 'locationType' && (
             <View
               style={styles.textContainer}
-              onPress={() => onTagCancelPress({item, index})}
-            >
+              onPress={() => onTagCancelPress({item, index})}>
               <Text style={styles.tagTitleText}>
                 {Object.keys(item)[0] === 'sport'
                   ? getSportName(filter, authContext)
@@ -36,8 +36,7 @@ function TCTagsFilter({dataSource, onTagCancelPress, filter, authContext}) {
               <Image source={images.tagDivider} style={styles.dividerImage} />
               <TouchableOpacity
                 style={styles.closeButton}
-                onPress={() => onTagCancelPress({item, index})}
-              >
+                onPress={() => onTagCancelPress({item, index})}>
                 <Image source={images.cancelImage} style={styles.closeButton} />
               </TouchableOpacity>
             </View>
