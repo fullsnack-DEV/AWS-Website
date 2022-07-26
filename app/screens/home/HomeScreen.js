@@ -616,8 +616,8 @@ const HomeScreen = ({navigation, route}) => {
           <TouchableOpacity
             style={{flexDirection: 'row', alignItems: 'center'}}
             disabled={!route?.params?.backButtonVisible}
-            onPress={() => navigation.goBack()}
-          >
+            hitSlop={Utility.getHitSlop(15)}
+            onPress={() => navigation.goBack()}>
             {route?.params?.backButtonVisible === true && (
               <Image
                 source={images.backArrow}
@@ -635,14 +635,12 @@ const HomeScreen = ({navigation, route}) => {
                 flexDirection: 'row',
                 justifyContent: 'flex-start',
                 alignItems: 'flex-start',
-              }}
-            >
+              }}>
               <MarqueeText
                 style={styles.userNavigationTextStyle}
                 duration={3000}
                 marqueeOnStart
-                loop={true}
-              >
+                loop={true}>
                 {currentUserData?.full_name || currentUserData?.group_name}
               </MarqueeText>
 
@@ -688,13 +686,12 @@ const HomeScreen = ({navigation, route}) => {
             {isAdmin && (isUserHome || isTeamHome) && (
               <View
                 style={{opacity: isAccountDeactivated ? 0.5 : 1}}
-                pointerEvents={pointEvent}
-              >
+                pointerEvents={pointEvent}>
                 <TouchableOpacity
+                  hitSlop={Utility.getHitSlop(15)}
                   onPress={() => {
                     manageChallengeActionSheet.current.show();
-                  }}
-                >
+                  }}>
                   <Image
                     source={images.threeDotIcon}
                     style={{
@@ -702,7 +699,7 @@ const HomeScreen = ({navigation, route}) => {
                       width: 15,
                       tintColor: colors.lightBlackColor,
                       resizeMode: 'contain',
-                      marginRight: 15,
+                      // marginRight: 15,
                     }}
                   />
                 </TouchableOpacity>
@@ -2366,8 +2363,7 @@ const HomeScreen = ({navigation, route}) => {
             flexDirection: 'row',
             justifyContent: 'space-around',
             alignItems: 'center',
-          }}
-        >
+          }}>
           <ScheduleTabView
             firstTabTitle={'Events'}
             secondTabTitle={'Calender'}
@@ -2434,16 +2430,14 @@ const HomeScreen = ({navigation, route}) => {
             style={{margin: 0, justifyContent: 'flex-end'}}
             hasBackdrop
             onBackdropPress={() => setIsRefereeModal(false)}
-            backdropOpacity={0}
-          >
+            backdropOpacity={0}>
             <SafeAreaView style={styles.modalMainViewStyle}>
               <Header
                 mainContainerStyle={styles.refereeHeaderMainStyle}
                 leftComponent={
                   <TouchableOpacity
                     hitSlop={Utility.getHitSlop(15)}
-                    onPress={() => setIsRefereeModal(false)}
-                  >
+                    onPress={() => setIsRefereeModal(false)}>
                     <Image
                       source={images.cancelImage}
                       style={[
@@ -2797,8 +2791,7 @@ const HomeScreen = ({navigation, route}) => {
           <FastImage
             source={{uri: bgImage}}
             resizeMode={'cover'}
-            style={styles.bgImageStyle}
-          >
+            style={styles.bgImageStyle}>
             {currentUserData.entity_type !== 'club' && !hideScore && (
               <ImageBackground
                 source={images.profileLevel}
@@ -2810,16 +2803,14 @@ const HomeScreen = ({navigation, route}) => {
                   alignItems: 'center',
                   justifyContent: 'center',
                   alignSelf: 'flex-start',
-                }}
-              >
+                }}>
                 <View
                   style={{
                     flexDirection: 'row',
                     alignItems: 'center',
                     justifyContent: 'center',
                     marginBottom: 8,
-                  }}
-                >
+                  }}>
                   <FastImage
                     source={images.tc_message_top_icon}
                     resizeMode={'contain'}
@@ -2831,8 +2822,7 @@ const HomeScreen = ({navigation, route}) => {
                         fontFamily: fonts.RBold,
                         fontSize: 16,
                         color: colors.lightBlackColor,
-                      }}
-                    >
+                      }}>
                       {currentUserData?.point ?? 0}
                     </Text>
                     <Text
@@ -2840,8 +2830,7 @@ const HomeScreen = ({navigation, route}) => {
                         fontFamily: fonts.RMedium,
                         fontSize: 10,
                         color: colors.lightBlackColor,
-                      }}
-                    >
+                      }}>
                       POINTS
                     </Text>
                   </View>
@@ -2865,16 +2854,14 @@ const HomeScreen = ({navigation, route}) => {
                 alignItems: 'center',
                 justifyContent: 'center',
                 alignSelf: 'flex-start',
-              }}
-            >
+              }}>
               <View
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
                   justifyContent: 'center',
                   marginBottom: 8,
-                }}
-              >
+                }}>
                 <FastImage
                   source={images.tc_message_top_icon}
                   resizeMode={'contain'}
@@ -2886,8 +2873,7 @@ const HomeScreen = ({navigation, route}) => {
                       fontFamily: fonts.RBold,
                       fontSize: 16,
                       color: colors.lightBlackColor,
-                    }}
-                  >
+                    }}>
                     {currentUserData?.point ?? 0}
                   </Text>
                   <Text
@@ -2895,8 +2881,7 @@ const HomeScreen = ({navigation, route}) => {
                       fontFamily: fonts.RMedium,
                       fontSize: 10,
                       color: colors.lightBlackColor,
-                    }}
-                  >
+                    }}>
                     POINTS
                   </Text>
                 </View>
@@ -3039,8 +3024,7 @@ const HomeScreen = ({navigation, route}) => {
           if (index === 5) {
             moveToStats();
           }
-        }}
-      >
+        }}>
         <View
           style={{
             marginTop: 2,
@@ -3056,16 +3040,14 @@ const HomeScreen = ({navigation, route}) => {
             shadowOpacity: 0.1,
             shadowRadius: 3,
             elevation: 3,
-          }}
-        >
+          }}>
           <Text
             style={{
               fontSize: 14,
               fontFamily: fonts.RMedium,
               color: colors.lightBlackColor,
               // backgroundColor: colors.redColor,
-            }}
-          >
+            }}>
             {item}
           </Text>
         </View>
@@ -3241,15 +3223,13 @@ const HomeScreen = ({navigation, route}) => {
                     {
                       justifyContent: 'center',
                     },
-                  ]}
-                >
+                  ]}>
                   <View
                     style={{
                       flexDirection: 'row',
                       alignItems: 'center',
                       justifyContent: 'center',
-                    }}
-                  >
+                    }}>
                     {(challengeButtonType() === 'both' ||
                       challengeButtonType() === 'challenge') && (
                       <Text style={styles.challengeButtonTitle}>
@@ -3285,8 +3265,7 @@ const HomeScreen = ({navigation, route}) => {
           marginTop: 0,
           marginBottom: 0,
           // backgroundColor: colors.redColor,
-        }}
-      >
+        }}>
         {challengeButton()}
         {isUserHome ? (
           <View style={{flex: 1}}>
@@ -3295,8 +3274,7 @@ const HomeScreen = ({navigation, route}) => {
                 fontSize: 20,
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
-              }}
-            >
+              }}>
               Timeline
             </Text>
             <View
@@ -3304,8 +3282,7 @@ const HomeScreen = ({navigation, route}) => {
                 flexDirection: 'row',
                 marginTop: 15,
                 marginBottom: 15,
-              }}
-            >
+              }}>
               <TCProfileButton
                 title={'Gallery'}
                 style={{marginRight: 15, alignItems: 'center'}}
@@ -3346,8 +3323,7 @@ const HomeScreen = ({navigation, route}) => {
                 color: colors.lightBlackColor,
                 // marginTop: 0,
                 marginLeft: 4,
-              }}
-            >
+              }}>
               Timeline
             </Text>
 
@@ -3684,16 +3660,14 @@ const HomeScreen = ({navigation, route}) => {
             });
           }
         }, 300);
-      }}
-    >
+      }}>
       <View
         style={{
           padding: 20,
           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'space-between',
-        }}
-      >
+        }}>
         <Text style={styles.languageList}>
           {Utility.getSportName(item, authContext)}
         </Text>
@@ -3720,8 +3694,7 @@ const HomeScreen = ({navigation, route}) => {
           fontSize: 16,
           color: colors.lightBlackColor,
           marginLeft: 15,
-        }}
-      >
+        }}>
         Choose a game that you want to referee.
       </Text>
     </View>
@@ -3736,8 +3709,7 @@ const HomeScreen = ({navigation, route}) => {
           fontSize: 16,
           color: colors.lightBlackColor,
           marginLeft: 15,
-        }}
-      >
+        }}>
         Choose a game that you want to scorekeeper.
       </Text>
     </View>
@@ -3973,8 +3945,7 @@ const HomeScreen = ({navigation, route}) => {
               setRefereesInModalVisible(false);
               setRefereeCurrentTab(0);
             }}
-            style={{padding: 10}}
-          >
+            style={{padding: 10}}>
             <Image
               source={images.cancelWhite}
               style={styles.cancelImageStyle}
@@ -4009,8 +3980,7 @@ const HomeScreen = ({navigation, route}) => {
               setScorekeeperInModalVisible(false);
               setScorekeeperCurrentTab(0);
             }}
-            style={{padding: 10}}
-          >
+            style={{padding: 10}}>
             <Image
               source={images.cancelWhite}
               style={styles.cancelImageStyle}
@@ -4210,8 +4180,7 @@ const HomeScreen = ({navigation, route}) => {
       )}
       <View
         style={{flex: 1, opacity: isAccountDeactivated ? 0.5 : 1}}
-        pointerEvents={pointEvent}
-      >
+        pointerEvents={pointEvent}>
         <ActionSheet
           ref={addRoleActionSheet}
           options={[
@@ -4461,8 +4430,7 @@ const HomeScreen = ({navigation, route}) => {
             }}
             hasBackdrop
             onBackdropPress={() => setRefereesInModalVisible(false)}
-            backdropOpacity={0}
-          >
+            backdropOpacity={0}>
             <View style={styles.modalContainerViewStyle}>
               <SafeAreaView style={{flex: 1}}>
                 {renderRefereeHeader}
@@ -4532,20 +4500,17 @@ const HomeScreen = ({navigation, route}) => {
                 }}
                 hasBackdrop
                 onBackdropPress={() => setRefereeInfoModalVisible(false)}
-                backdropOpacity={0}
-              >
+                backdropOpacity={0}>
                 <SafeAreaView
                   style={[
                     styles.modalContainerViewStyle,
                     {backgroundColor: colors.whiteColor},
-                  ]}
-                >
+                  ]}>
                   <Header
                     mainContainerStyle={styles.headerMainContainerStyle}
                     leftComponent={
                       <TouchableOpacity
-                        onPress={() => setReviewDetailModalVisible(false)}
-                      >
+                        onPress={() => setReviewDetailModalVisible(false)}>
                         <Image
                           source={images.backArrow}
                           style={styles.cancelImageStyle}
@@ -4565,8 +4530,7 @@ const HomeScreen = ({navigation, route}) => {
                     }
                     rightComponent={
                       <TouchableOpacity
-                        onPress={() => setReviewDetailModalVisible(false)}
-                      >
+                        onPress={() => setReviewDetailModalVisible(false)}>
                         <Image
                           source={images.cancelWhite}
                           style={styles.cancelImageStyle}
@@ -4625,26 +4589,22 @@ const HomeScreen = ({navigation, route}) => {
                 }}
                 hasBackdrop
                 onBackdropPress={() => setRefereeInfoModalVisible(false)}
-                backdropOpacity={0}
-              >
+                backdropOpacity={0}>
                 <SafeAreaView
                   style={[
                     styles.modalContainerViewStyle,
                     {backgroundColor: colors.whiteColor},
-                  ]}
-                >
+                  ]}>
                   <LinearGradient
                     colors={[colors.orangeColor, colors.yellowColor]}
                     end={{x: 0.0, y: 0.25}}
                     start={{x: 1, y: 0.5}}
-                    style={styles.gradiantHeaderViewStyle}
-                  ></LinearGradient>
+                    style={styles.gradiantHeaderViewStyle}></LinearGradient>
                   <Header
                     mainContainerStyle={styles.headerMainContainerStyle}
                     leftComponent={
                       <TouchableOpacity
-                        onPress={() => setRefereeInfoModalVisible(false)}
-                      >
+                        onPress={() => setRefereeInfoModalVisible(false)}>
                         <Image
                           source={images.backArrow}
                           style={styles.cancelImageStyle}
@@ -4664,8 +4624,7 @@ const HomeScreen = ({navigation, route}) => {
                     }
                     rightComponent={
                       <TouchableOpacity
-                        onPress={() => setRefereeInfoModalVisible(false)}
-                      >
+                        onPress={() => setRefereeInfoModalVisible(false)}>
                         <Image
                           source={images.cancelWhite}
                           style={styles.cancelImageStyle}
@@ -4734,27 +4693,23 @@ const HomeScreen = ({navigation, route}) => {
                 }}
                 hasBackdrop
                 onBackdropPress={() => setRefereeMatchModalVisible(false)}
-                backdropOpacity={0}
-              >
+                backdropOpacity={0}>
                 <SafeAreaView
                   style={[
                     styles.modalContainerViewStyle,
                     {backgroundColor: colors.whiteColor},
-                  ]}
-                >
+                  ]}>
                   <View>
                     <LinearGradient
                       colors={[colors.orangeColor, colors.yellowColor]}
                       end={{x: 0.0, y: 0.25}}
                       start={{x: 1, y: 0.5}}
-                      style={styles.gradiantHeaderViewStyle}
-                    ></LinearGradient>
+                      style={styles.gradiantHeaderViewStyle}></LinearGradient>
                     <Header
                       mainContainerStyle={styles.headerMainContainerStyle}
                       leftComponent={
                         <TouchableOpacity
-                          onPress={() => setRefereeMatchModalVisible(false)}
-                        >
+                          onPress={() => setRefereeMatchModalVisible(false)}>
                           <Image
                             source={images.backArrow}
                             style={styles.cancelImageStyle}
@@ -4776,8 +4731,7 @@ const HomeScreen = ({navigation, route}) => {
                       }
                       rightComponent={
                         <TouchableOpacity
-                          onPress={() => setRefereeMatchModalVisible(false)}
-                        >
+                          onPress={() => setRefereeMatchModalVisible(false)}>
                           <Image
                             source={images.cancelWhite}
                             style={styles.cancelImageStyle}
@@ -4832,27 +4786,23 @@ const HomeScreen = ({navigation, route}) => {
                 }}
                 hasBackdrop
                 onBackdropPress={() => setReviewsModalVisible(false)}
-                backdropOpacity={0}
-              >
+                backdropOpacity={0}>
                 <SafeAreaView
                   style={[
                     styles.modalContainerViewStyle,
                     {backgroundColor: colors.whiteColor},
-                  ]}
-                >
+                  ]}>
                   <View>
                     <LinearGradient
                       colors={[colors.orangeColor, colors.yellowColor]}
                       end={{x: 0.0, y: 0.25}}
                       start={{x: 1, y: 0.5}}
-                      style={styles.gradiantHeaderViewStyle}
-                    ></LinearGradient>
+                      style={styles.gradiantHeaderViewStyle}></LinearGradient>
                     <Header
                       mainContainerStyle={styles.headerMainContainerStyle}
                       leftComponent={
                         <TouchableOpacity
-                          onPress={() => setReviewsModalVisible(false)}
-                        >
+                          onPress={() => setReviewsModalVisible(false)}>
                           <Image
                             source={images.backArrow}
                             style={styles.cancelImageStyle}
@@ -4874,8 +4824,7 @@ const HomeScreen = ({navigation, route}) => {
                       }
                       rightComponent={
                         <TouchableOpacity
-                          onPress={() => setReviewsModalVisible(false)}
-                        >
+                          onPress={() => setReviewsModalVisible(false)}>
                           <Image
                             source={images.cancelWhite}
                             style={styles.cancelImageStyle}
@@ -4906,29 +4855,27 @@ const HomeScreen = ({navigation, route}) => {
                     }}
                     hasBackdrop
                     onBackdropPress={() => setReviewerDetailModalVisible(false)}
-                    backdropOpacity={0}
-                  >
+                    backdropOpacity={0}>
                     <SafeAreaView
                       style={[
                         styles.modalContainerViewStyle,
                         {backgroundColor: colors.whiteColor},
-                      ]}
-                    >
+                      ]}>
                       <View>
                         <LinearGradient
                           colors={[colors.orangeColor, colors.yellowColor]}
                           end={{x: 0.0, y: 0.25}}
                           start={{x: 1, y: 0.5}}
-                          style={styles.gradiantHeaderViewStyle}
-                        ></LinearGradient>
+                          style={
+                            styles.gradiantHeaderViewStyle
+                          }></LinearGradient>
                         <Header
                           mainContainerStyle={styles.headerMainContainerStyle}
                           leftComponent={
                             <TouchableOpacity
                               onPress={() =>
                                 setReviewerDetailModalVisible(false)
-                              }
-                            >
+                              }>
                               <Image
                                 source={images.backArrow}
                                 style={styles.cancelImageStyle}
@@ -4952,8 +4899,7 @@ const HomeScreen = ({navigation, route}) => {
                             <TouchableOpacity
                               onPress={() =>
                                 setReviewerDetailModalVisible(false)
-                              }
-                            >
+                              }>
                               <Image
                                 source={images.cancelWhite}
                                 style={styles.cancelImageStyle}
@@ -5005,8 +4951,7 @@ const HomeScreen = ({navigation, route}) => {
             }}
             hasBackdrop
             onBackdropPress={() => setScorekeeperInModalVisible(false)}
-            backdropOpacity={0}
-          >
+            backdropOpacity={0}>
             <View style={styles.modalContainerViewStyle}>
               {/* <Image style={[styles.background, { transform: [{ rotate: '180deg' }], borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }]} source={images.orangeLayer} /> */}
               <SafeAreaView style={{flex: 1}}>
@@ -5083,20 +5028,17 @@ const HomeScreen = ({navigation, route}) => {
                 }}
                 hasBackdrop
                 onBackdropPress={() => setRefereeInfoModalVisible(false)}
-                backdropOpacity={0}
-              >
+                backdropOpacity={0}>
                 <SafeAreaView
                   style={[
                     styles.modalContainerViewStyle,
                     {backgroundColor: colors.whiteColor},
-                  ]}
-                >
+                  ]}>
                   <Header
                     mainContainerStyle={styles.headerMainContainerStyle}
                     leftComponent={
                       <TouchableOpacity
-                        onPress={() => setReviewDetailModalVisible(false)}
-                      >
+                        onPress={() => setReviewDetailModalVisible(false)}>
                         <Image
                           source={images.backArrow}
                           style={styles.cancelImageStyle}
@@ -5116,8 +5058,7 @@ const HomeScreen = ({navigation, route}) => {
                     }
                     rightComponent={
                       <TouchableOpacity
-                        onPress={() => setReviewDetailModalVisible(false)}
-                      >
+                        onPress={() => setReviewDetailModalVisible(false)}>
                         <Image
                           source={images.cancelWhite}
                           style={styles.cancelImageStyle}
@@ -5176,26 +5117,22 @@ const HomeScreen = ({navigation, route}) => {
                 }}
                 hasBackdrop
                 onBackdropPress={() => setScorekeeperInfoModalVisible(false)}
-                backdropOpacity={0}
-              >
+                backdropOpacity={0}>
                 <SafeAreaView
                   style={[
                     styles.modalContainerViewStyle,
                     {backgroundColor: colors.whiteColor},
-                  ]}
-                >
+                  ]}>
                   <LinearGradient
                     colors={[colors.orangeColor, colors.yellowColor]}
                     end={{x: 0.0, y: 0.25}}
                     start={{x: 1, y: 0.5}}
-                    style={styles.gradiantHeaderViewStyle}
-                  ></LinearGradient>
+                    style={styles.gradiantHeaderViewStyle}></LinearGradient>
                   <Header
                     mainContainerStyle={styles.headerMainContainerStyle}
                     leftComponent={
                       <TouchableOpacity
-                        onPress={() => setScorekeeperInfoModalVisible(false)}
-                      >
+                        onPress={() => setScorekeeperInfoModalVisible(false)}>
                         <Image
                           source={images.backArrow}
                           style={styles.cancelImageStyle}
@@ -5215,8 +5152,7 @@ const HomeScreen = ({navigation, route}) => {
                     }
                     rightComponent={
                       <TouchableOpacity
-                        onPress={() => setScorekeeperInfoModalVisible(false)}
-                      >
+                        onPress={() => setScorekeeperInfoModalVisible(false)}>
                         <Image
                           source={images.cancelWhite}
                           style={styles.cancelImageStyle}
@@ -5284,27 +5220,25 @@ const HomeScreen = ({navigation, route}) => {
                 }}
                 hasBackdrop
                 onBackdropPress={() => setScorekeeperMatchModalVisible(false)}
-                backdropOpacity={0}
-              >
+                backdropOpacity={0}>
                 <SafeAreaView
                   style={[
                     styles.modalContainerViewStyle,
                     {backgroundColor: colors.whiteColor},
-                  ]}
-                >
+                  ]}>
                   <View>
                     <LinearGradient
                       colors={[colors.orangeColor, colors.yellowColor]}
                       end={{x: 0.0, y: 0.25}}
                       start={{x: 1, y: 0.5}}
-                      style={styles.gradiantHeaderViewStyle}
-                    ></LinearGradient>
+                      style={styles.gradiantHeaderViewStyle}></LinearGradient>
                     <Header
                       mainContainerStyle={styles.headerMainContainerStyle}
                       leftComponent={
                         <TouchableOpacity
-                          onPress={() => setScorekeeperMatchModalVisible(false)}
-                        >
+                          onPress={() =>
+                            setScorekeeperMatchModalVisible(false)
+                          }>
                           <Image
                             source={images.backArrow}
                             style={styles.cancelImageStyle}
@@ -5326,8 +5260,9 @@ const HomeScreen = ({navigation, route}) => {
                       }
                       rightComponent={
                         <TouchableOpacity
-                          onPress={() => setScorekeeperMatchModalVisible(false)}
-                        >
+                          onPress={() =>
+                            setScorekeeperMatchModalVisible(false)
+                          }>
                           <Image
                             source={images.cancelWhite}
                             style={styles.cancelImageStyle}
@@ -5382,27 +5317,23 @@ const HomeScreen = ({navigation, route}) => {
                 }}
                 hasBackdrop
                 onBackdropPress={() => setReviewsModalVisible(false)}
-                backdropOpacity={0}
-              >
+                backdropOpacity={0}>
                 <SafeAreaView
                   style={[
                     styles.modalContainerViewStyle,
                     {backgroundColor: colors.whiteColor},
-                  ]}
-                >
+                  ]}>
                   <View>
                     <LinearGradient
                       colors={[colors.orangeColor, colors.yellowColor]}
                       end={{x: 0.0, y: 0.25}}
                       start={{x: 1, y: 0.5}}
-                      style={styles.gradiantHeaderViewStyle}
-                    ></LinearGradient>
+                      style={styles.gradiantHeaderViewStyle}></LinearGradient>
                     <Header
                       mainContainerStyle={styles.headerMainContainerStyle}
                       leftComponent={
                         <TouchableOpacity
-                          onPress={() => setReviewsModalVisible(false)}
-                        >
+                          onPress={() => setReviewsModalVisible(false)}>
                           <Image
                             source={images.backArrow}
                             style={styles.cancelImageStyle}
@@ -5424,8 +5355,7 @@ const HomeScreen = ({navigation, route}) => {
                       }
                       rightComponent={
                         <TouchableOpacity
-                          onPress={() => setReviewsModalVisible(false)}
-                        >
+                          onPress={() => setReviewsModalVisible(false)}>
                           <Image
                             source={images.cancelWhite}
                             style={styles.cancelImageStyle}
@@ -5456,29 +5386,27 @@ const HomeScreen = ({navigation, route}) => {
                     }}
                     hasBackdrop
                     onBackdropPress={() => setReviewerDetailModalVisible(false)}
-                    backdropOpacity={0}
-                  >
+                    backdropOpacity={0}>
                     <SafeAreaView
                       style={[
                         styles.modalContainerViewStyle,
                         {backgroundColor: colors.whiteColor},
-                      ]}
-                    >
+                      ]}>
                       <View>
                         <LinearGradient
                           colors={[colors.orangeColor, colors.yellowColor]}
                           end={{x: 0.0, y: 0.25}}
                           start={{x: 1, y: 0.5}}
-                          style={styles.gradiantHeaderViewStyle}
-                        ></LinearGradient>
+                          style={
+                            styles.gradiantHeaderViewStyle
+                          }></LinearGradient>
                         <Header
                           mainContainerStyle={styles.headerMainContainerStyle}
                           leftComponent={
                             <TouchableOpacity
                               onPress={() =>
                                 setReviewerDetailModalVisible(false)
-                              }
-                            >
+                              }>
                               <Image
                                 source={images.backArrow}
                                 style={styles.cancelImageStyle}
@@ -5502,8 +5430,7 @@ const HomeScreen = ({navigation, route}) => {
                             <TouchableOpacity
                               onPress={() =>
                                 setReviewerDetailModalVisible(false)
-                              }
-                            >
+                              }>
                               <Image
                                 source={images.cancelWhite}
                                 style={styles.cancelImageStyle}
@@ -5554,8 +5481,7 @@ const HomeScreen = ({navigation, route}) => {
               backgroundColor: colors.blackOpacityColor,
               flex: 1,
             }}
-            ref={confirmationRef}
-          >
+            ref={confirmationRef}>
             <View style={styles.modalContainerViewStyle}>
               <Image style={styles.background} source={images.orangeLayer} />
               <Image
@@ -5564,8 +5490,7 @@ const HomeScreen = ({navigation, route}) => {
               />
               <TouchableOpacity
                 onPress={() => confirmationRef.current.close()}
-                style={{alignSelf: 'flex-end'}}
-              >
+                style={{alignSelf: 'flex-end'}}>
                 <Image
                   source={images.cancelWhite}
                   style={{
@@ -5584,8 +5509,7 @@ const HomeScreen = ({navigation, route}) => {
                   alignItems: 'center',
                   flex: 1,
                   justifyContent: 'center',
-                }}
-              >
+                }}>
                 <ImageBackground
                   source={
                     (route?.params?.entityObj?.thumbnail && {
@@ -5595,16 +5519,14 @@ const HomeScreen = ({navigation, route}) => {
                       ? images.clubPlaceholder
                       : images.teamGreenPH
                   }
-                  style={styles.groupsImg}
-                >
+                  style={styles.groupsImg}>
                   <Text
                     style={{
                       color: colors.whiteColor,
                       fontSize: 20,
                       fontFamily: fonts.RBlack,
                       marginBottom: 4,
-                    }}
-                  >{`${route?.params?.groupName
+                    }}>{`${route?.params?.groupName
                     ?.charAt(0)
                     ?.toUpperCase()}`}</Text>
                 </ImageBackground>
@@ -5612,8 +5534,7 @@ const HomeScreen = ({navigation, route}) => {
                   style={{
                     flexDirection: 'row',
                     alignItems: 'center',
-                  }}
-                >
+                  }}>
                   <Text style={[styles.foundText, {fontFamily: fonts.RBold}]}>
                     {`${route?.params?.groupName}`}
                   </Text>
@@ -5627,8 +5548,7 @@ const HomeScreen = ({navigation, route}) => {
                       marginLeft: 10,
                       justifyContent: 'center',
                       alignItems: 'center',
-                    }}
-                  >
+                    }}>
                     <Image
                       source={
                         route?.params?.role === 'team'
@@ -5667,8 +5587,7 @@ const HomeScreen = ({navigation, route}) => {
                       });
                     }
                   }
-                }}
-              >
+                }}>
                 <Text style={styles.goToProfileTitle}>
                   {route?.params?.role === 'club'
                     ? 'OK'
@@ -5749,8 +5668,7 @@ const HomeScreen = ({navigation, route}) => {
               setIsDoubleSportTeamCreatedVisible(false);
             }, 10);
           }}
-          backdropOpacity={0}
-        >
+          backdropOpacity={0}>
           <View style={styles.modalContainerViewStyle}>
             <Image style={styles.background} source={images.orangeLayer} />
             <Image style={styles.background} source={images.entityCreatedBG} />
@@ -5761,8 +5679,7 @@ const HomeScreen = ({navigation, route}) => {
                   setIsDoubleSportTeamCreatedVisible(false);
                 }, 10);
               }}
-              style={{alignSelf: 'flex-end'}}
-            >
+              style={{alignSelf: 'flex-end'}}>
               <Image
                 source={images.cancelWhite}
                 style={{
@@ -5781,14 +5698,12 @@ const HomeScreen = ({navigation, route}) => {
                 alignItems: 'center',
                 flex: 1,
                 justifyContent: 'center',
-              }}
-            >
+              }}>
               <Text
                 style={[
                   styles.doubleSportCreatedText,
                   {fontFamily: fonts.RRegular},
-                ]}
-              >
+                ]}>
                 {`You have completed all the process to create a team at your end. An invite will be sent to ${route?.params?.name}.`}
               </Text>
 
@@ -5813,8 +5728,7 @@ const HomeScreen = ({navigation, route}) => {
                 setTimeout(() => {
                   setIsDoubleSportTeamCreatedVisible(false);
                 }, 10);
-              }}
-            >
+              }}>
               <Text style={styles.goToProfileTitle}>OK</Text>
             </TouchableOpacity>
           </View>
@@ -5831,14 +5745,12 @@ const HomeScreen = ({navigation, route}) => {
             margin: 0,
             backgroundColor: colors.blackOpacityColor,
           }}
-          visible={challengePopup}
-        >
+          visible={challengePopup}>
           <View style={styles.bottomPopupContainer}>
             <View style={styles.viewsContainer}>
               <Text
                 onPress={() => setChallengePopup(false)}
-                style={styles.cancelText}
-              >
+                style={styles.cancelText}>
                 Cancel
               </Text>
               <Text style={styles.locationText}>Challenge</Text>
@@ -5930,19 +5842,16 @@ const HomeScreen = ({navigation, route}) => {
                 //     groupObj: currentUserData,
                 //   });
                 // }, 300);
-              }}
-            >
+              }}>
               {selectedChallengeOption === 0 ? (
                 <LinearGradient
                   colors={[colors.yellowColor, colors.orangeGradientColor]}
-                  style={styles.backgroundView}
-                >
+                  style={styles.backgroundView}>
                   <Text
                     style={[
                       styles.curruentLocationText,
                       {color: colors.whiteColor},
-                    ]}
-                  >
+                    ]}>
                     Continue to Challenge
                   </Text>
                 </LinearGradient>
@@ -6062,13 +5971,11 @@ const HomeScreen = ({navigation, route}) => {
                 } else {
                   Alert.alert('Your availability for challenge is off.');
                 }
-              }}
-            >
+              }}>
               {selectedChallengeOption === 1 ? (
                 <LinearGradient
                   colors={[colors.yellowColor, colors.orangeGradientColor]}
-                  style={styles.backgroundView}
-                >
+                  style={styles.backgroundView}>
                   <Text style={[styles.myCityText, {color: colors.whiteColor}]}>
                     Invite to Challenge
                   </Text>
@@ -6093,8 +6000,7 @@ const HomeScreen = ({navigation, route}) => {
           style={{
             margin: 0,
             backgroundColor: 'rgba(0,0,0,0.5)',
-          }}
-        >
+          }}>
           <View
             style={{
               width: '100%',
@@ -6110,21 +6016,18 @@ const HomeScreen = ({navigation, route}) => {
               shadowOpacity: 0.5,
               shadowRadius: 5,
               elevation: 15,
-            }}
-          >
+            }}>
             <View
               style={{
                 flexDirection: 'row',
                 paddingHorizontal: 15,
                 justifyContent: 'space-between',
                 alignItems: 'center',
-              }}
-            >
+              }}>
               <TouchableOpacity
                 hitSlop={Utility.getHitSlop(15)}
                 style={styles.closeButton}
-                onPress={() => setVisibleSportsModal(false)}
-              >
+                onPress={() => setVisibleSportsModal(false)}>
                 <Image source={images.cancelImage} style={styles.closeButton} />
               </TouchableOpacity>
               <Text
@@ -6134,8 +6037,7 @@ const HomeScreen = ({navigation, route}) => {
                   fontSize: 16,
                   fontFamily: fonts.RBold,
                   color: colors.lightBlackColor,
-                }}
-              >
+                }}>
                 Sports
               </Text>
 
@@ -6146,8 +6048,7 @@ const HomeScreen = ({navigation, route}) => {
                   fontSize: 16,
                   fontFamily: fonts.RRegular,
                   color: colors.themeColor,
-                }}
-              ></Text>
+                }}></Text>
             </View>
             <View style={styles.separatorLine} />
             <FlatList

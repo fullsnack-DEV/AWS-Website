@@ -18,6 +18,7 @@ import images from '../Constants/ImagePath';
 import TCBorderButton from './TCBorderButton';
 import strings from '../Constants/String';
 import {getGameHomeScreen} from '../utils/gameUtils';
+import {getHitSlop} from '../utils';
 
 // import TCBorderButton from '../../../components/TCBorderButton';
 
@@ -44,8 +45,7 @@ export default function ChallengeModalView({
         backgroundColor: 'rgba(0,0,0,0.5)',
         borderTopLeftRadius: 15,
         borderTopRightRadius: 15,
-      }}
-    >
+      }}>
       <View style={styles.mainContainer}>
         <Image style={styles.background} source={images.orangeLayer} />
         <Image style={styles.background} source={images.entityCreatedBG} />
@@ -161,10 +161,10 @@ export default function ChallengeModalView({
           <SafeAreaView>
             <TouchableOpacity
               style={styles.goToProfileButton}
+              hitSlop={getHitSlop(15)}
               onPress={() => {
                 navigation.popToTop();
-              }}
-            >
+              }}>
               <Text style={styles.goToProfileTitle}>OK</Text>
             </TouchableOpacity>
           </SafeAreaView>

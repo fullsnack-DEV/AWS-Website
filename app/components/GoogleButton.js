@@ -10,11 +10,15 @@ import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import images from '../Constants/ImagePath';
 import strings from '../Constants/String';
+import {getHitSlop} from '../utils';
 
 function GoogleButton({onPress}) {
   return (
     <SafeAreaView>
-      <TouchableOpacity style={styles.allButton} onPress={onPress}>
+      <TouchableOpacity
+        style={styles.allButton}
+        onPress={onPress}
+        hitSlop={getHitSlop(15)}>
         <Image source={images.signUpGoogle} style={styles.googleImg} />
         <Text style={styles.googleText}>{strings.googleText}</Text>
       </TouchableOpacity>

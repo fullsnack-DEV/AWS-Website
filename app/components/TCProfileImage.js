@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: colors.whiteColor,
     fontFamily: fonts.RBlack,
-    fontSize: 17,
+    fontSize: 12,
   },
   mainImageStyle: {
     position: 'absolute',
