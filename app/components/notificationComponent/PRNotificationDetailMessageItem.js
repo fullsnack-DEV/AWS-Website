@@ -5,7 +5,6 @@ import {
   Text,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  Dimensions,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import fonts from '../../Constants/Fonts';
@@ -49,8 +48,7 @@ function PRNotificationDetailMessageItem({
                   entityType: dataDictionary.entityType,
                   entityId: dataDictionary.entityId,
                 });
-              }}
-            >
+              }}>
               <TCProfileImage
                 entityType={dataDictionary.entityType}
                 source={{uri: dataDictionary.imgName}}
@@ -70,8 +68,7 @@ function PRNotificationDetailMessageItem({
                         entityType: dataDictionary.entityType,
                         entityId: dataDictionary.entityId,
                       });
-                    }}
-                  >
+                    }}>
                     <Text style={styles.boldTextStyle}>
                       {dataDictionary.preText
                         ? `${dataDictionary.firstTitle}`
@@ -123,7 +120,8 @@ function PRNotificationDetailMessageItem({
                     {strings.responsetimeexpired}
                   </Text>
                 )}
-                {!dataDictionary.isExpired &&
+                {!isTrash &&
+                  !dataDictionary.isExpired &&
                   !dataDictionary.isGameTimePassed &&
                   dataDictionary.expiryText && (
                     <Text style={styles.respnseTimeStyle}>
@@ -135,19 +133,24 @@ function PRNotificationDetailMessageItem({
                     </Text>
                   )}
               </View>
-              <View
-                style={
-                  disabled
-                    ? [styles.viewSecondStyle, {opacity: 0.5}]
-                    : styles.viewSecondStyle
-                }
-              >
+              <View style={styles.viewSecondStyle}>
                 <LinearGradient
-                  colors={[colors.themeColor1, colors.localHomeGradientEnd]}
-                  style={styles.detailBtnStyle}
-                >
-                  <TouchableOpacity onPress={onDetailPress} disabled={disabled}>
-                    <Text style={styles.detailBtnTextStyle}>
+                  colors={
+                    disabled
+                      ? [colors.grayBackgroundColor, colors.grayBackgroundColor]
+                      : [colors.themeColor1, colors.localHomeGradientEnd]
+                  }
+                  style={styles.detailBtnStyle}>
+                  <TouchableOpacity onPress={onDetailPress}>
+                    <Text
+                      style={[
+                        styles.detailBtnTextStyle,
+                        {
+                          color: disabled
+                            ? colors.userPostTimeColor
+                            : colors.whiteColor,
+                        },
+                      ]}>
                       {strings.respondWithinText}
                     </Text>
                   </TouchableOpacity>
@@ -167,7 +170,7 @@ const styles = StyleSheet.create({
   },
   textContentStyle: {
     flex: 1,
-    width: Dimensions.get('window').width,
+    // width: Dimensions.get('window').width,
     marginVertical: 15,
     marginRight: 15,
     flexDirection: 'row',
@@ -199,20 +202,17 @@ const styles = StyleSheet.create({
 
   viewSecondStyle: {
     flex: 0.3,
-    flexDirection: 'row',
+    alignItems: 'flex-end',
   },
   detailBtnStyle: {
-    flex: 1,
+    width: 75,
     height: 25,
-    borderWidth: 1,
-    borderColor: '#FF8A01',
     borderRadius: 5,
     justifyContent: 'center',
   },
   detailBtnTextStyle: {
     fontSize: 12,
     fontFamily: fonts.RBold,
-    color: colors.whiteColor,
     textAlign: 'center',
   },
   respnseTimeStyle: {

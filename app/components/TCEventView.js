@@ -41,6 +41,8 @@ export default function TCEventView({
     data?.game?.venue?.description ??
     '';
   const description = data?.descriptions ? data.descriptions : null;
+
+  console.log('dadadadad', data);
   const title = isGame ? getSportName(data.game, authContext) : data.title;
 
   let homeTeamName = '';
@@ -100,8 +102,7 @@ export default function TCEventView({
               ? [colors.yellowColor, colors.darkThemeColor]
               : [colors.greenGradientEnd, colors.greenGradientStart]
           }
-          style={styles.colorView}
-        >
+          style={styles.colorView}>
           {data?.allDay && data?.allDay === true ? (
             <Text style={styles.allTypeText}>{'All'}</Text>
           ) : (
@@ -125,15 +126,13 @@ export default function TCEventView({
                 styles.eventTitle,
                 {color: isGame ? colors.themeColor : colors.greenGradientStart},
               ]}
-              numberOfLines={1}
-            >
+              numberOfLines={1}>
               {title}
             </Text>
             {showDot && (
               <TouchableOpacity
                 onPress={onThreeDotPress}
-                hitSlop={getHitSlop(15)}
-              >
+                hitSlop={getHitSlop(15)}>
                 <Image source={images.vertical3Dot} style={styles.threedot} />
               </TouchableOpacity>
             )}
