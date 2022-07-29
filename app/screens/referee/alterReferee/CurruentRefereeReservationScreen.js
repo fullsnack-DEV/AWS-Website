@@ -244,8 +244,7 @@ export default function CurruentRefereeReservationScreen({navigation, route}) {
               flexDirection: 'row',
               justifyContent: 'space-between',
               margin: 15,
-            }}
-          >
+            }}>
             <View style={styles.challengerView}>
               <View style={styles.teamView}>
                 <Image source={images.reqIcon} style={styles.reqOutImage} />
@@ -303,8 +302,7 @@ export default function CurruentRefereeReservationScreen({navigation, route}) {
                     fontFamily: fonts.RMedium,
                     fontSize: 16,
                     color: colors.lightBlackColor,
-                  }}
-                >
+                  }}>
                   {`${bodyParams?.referee?.first_name} ${bodyParams?.referee?.last_name}`}
                 </Text>
               </View>
@@ -321,8 +319,7 @@ export default function CurruentRefereeReservationScreen({navigation, route}) {
                     style={[
                       styles.challengeMessage,
                       {color: colors.googleColor},
-                    ]}
-                  >
+                    ]}>
                     EXPIRED
                   </Text>
                 ) : (
@@ -330,8 +327,7 @@ export default function CurruentRefereeReservationScreen({navigation, route}) {
                     style={[
                       styles.challengeMessage,
                       {color: colors.requestSentColor},
-                    ]}
-                  >
+                    ]}>
                     SENT
                   </Text>
                 )}
@@ -362,8 +358,7 @@ export default function CurruentRefereeReservationScreen({navigation, route}) {
                     style={[
                       styles.challengeMessage,
                       {color: colors.googleColor},
-                    ]}
-                  >
+                    ]}>
                     EXPIRED
                   </Text>
                 ) : (
@@ -371,8 +366,7 @@ export default function CurruentRefereeReservationScreen({navigation, route}) {
                     style={[
                       styles.challengeMessage,
                       {color: colors.requestSentColor},
-                    ]}
-                  >
+                    ]}>
                     PENDING
                   </Text>
                 )}
@@ -445,8 +439,7 @@ export default function CurruentRefereeReservationScreen({navigation, route}) {
                   style={[
                     styles.challengeMessage,
                     {color: colors.requestConfirmColor},
-                  ]}
-                >
+                  ]}>
                   CONFIRMED
                 </Text>
                 <Text style={styles.challengeText}>
@@ -470,8 +463,7 @@ export default function CurruentRefereeReservationScreen({navigation, route}) {
                   style={[
                     styles.challengeMessage,
                     {color: colors.requestConfirmColor},
-                  ]}
-                >
+                  ]}>
                   CONFIRMED
                 </Text>
                 <Text style={styles.challengeText}>
@@ -488,8 +480,10 @@ export default function CurruentRefereeReservationScreen({navigation, route}) {
             bodyParams.status === RefereeReservationStatus.declined && (
               <View>
                 <Text
-                  style={[styles.challengeMessage, {color: colors.googleColor}]}
-                >
+                  style={[
+                    styles.challengeMessage,
+                    {color: colors.googleColor},
+                  ]}>
                   DECLINED
                 </Text>
                 <Text style={styles.challengeText}>
@@ -507,8 +501,10 @@ export default function CurruentRefereeReservationScreen({navigation, route}) {
             bodyParams.status === RefereeReservationStatus.declined && (
               <View>
                 <Text
-                  style={[styles.challengeMessage, {color: colors.googleColor}]}
-                >
+                  style={[
+                    styles.challengeMessage,
+                    {color: colors.googleColor},
+                  ]}>
                   DECLINED
                 </Text>
                 <Text style={styles.challengeText}>
@@ -529,8 +525,10 @@ export default function CurruentRefereeReservationScreen({navigation, route}) {
             bodyParams.status === RefereeReservationStatus.cancelled && (
               <View>
                 <Text
-                  style={[styles.challengeMessage, {color: colors.googleColor}]}
-                >
+                  style={[
+                    styles.challengeMessage,
+                    {color: colors.googleColor},
+                  ]}>
                   RESERVATION CANCELLED
                 </Text>
                 <Text style={styles.challengeText}>
@@ -548,8 +546,10 @@ export default function CurruentRefereeReservationScreen({navigation, route}) {
             bodyParams.status === RefereeReservationStatus.cancelled && (
               <View>
                 <Text
-                  style={[styles.challengeMessage, {color: colors.googleColor}]}
-                >
+                  style={[
+                    styles.challengeMessage,
+                    {color: colors.googleColor},
+                  ]}>
                   RESERVATION CANCELLED
                 </Text>
                 <Text style={styles.challengeText}>
@@ -722,15 +722,13 @@ export default function CurruentRefereeReservationScreen({navigation, route}) {
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-              }}
-            >
+              }}>
               <Text
                 style={{
                   fontFamily: fonts.RRegular,
                   fontSize: 16,
                   color: colors.lightBlackColor,
-                }}
-              >
+                }}>
                 {_.startCase(bodyParams?.chief_referee ? 'Chief' : 'Assistant')}{' '}
                 Referee
               </Text>

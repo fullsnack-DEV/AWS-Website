@@ -542,8 +542,7 @@ export default function ScorekeeperReservationScreen({navigation, route}) {
                 flexDirection: 'row',
                 justifyContent: 'space-between',
                 margin: 15,
-              }}
-            >
+              }}>
               <View style={styles.challengerView}>
                 <View style={styles.teamView}>
                   <Image source={images.reqIcon} style={styles.reqOutImage} />
@@ -602,8 +601,7 @@ export default function ScorekeeperReservationScreen({navigation, route}) {
                       fontSize: 16,
                       color: colors.lightBlackColor,
                       width: '80%',
-                    }}
-                  >
+                    }}>
                     {`${bodyParams?.scorekeeper?.first_name} ${bodyParams?.scorekeeper?.last_name}`}
                   </Text>
                 </View>

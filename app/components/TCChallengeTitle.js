@@ -30,8 +30,7 @@ function TCChallengeTitle({
               fontFamily: fonts.RRegular,
               fontSize: 14,
               color: colors.darkThemeColor,
-            }}
-          >
+            }}>
             {'  new'}
           </Text>
         )}
@@ -41,8 +40,7 @@ function TCChallengeTitle({
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'center',
-        }}
-      >
+        }}>
         <Text style={[styles.valueText, valueStyle]}>{value}</Text>
         <Text style={styles.staticValueText}>{staticValueText}</Text>
         {tooltipText !== '' && (
@@ -55,8 +53,7 @@ function TCChallengeTitle({
         {isEdit && (
           <Text
             style={{color: colors.themeColor, marginLeft: 10}}
-            onPress={onEditPress}
-          >
+            onPress={onEditPress}>
             Edit
           </Text>
         )}

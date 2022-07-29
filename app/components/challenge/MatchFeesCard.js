@@ -23,9 +23,11 @@ export default function MatchFeesCard({
         <View>
           <View style={styles.feesRow}>
             <Text style={styles.matchServiceFeeText}>
-              {(type === 'referee' && strings.refereeFeecardText) ||
-                (type === 'challenge' && strings.matchfee) ||
-                (type === 'scorekeeper' && strings.scorekeeperFee)}{' '}
+              {(type === 'referee' &&
+                strings.refereeFeecardText.toUpperCase()) ||
+                (type === 'challenge' && strings.matchfee.toUpperCase()) ||
+                (type === 'scorekeeper' &&
+                  strings.scorekeeperFee.toUpperCase())}{' '}
               {challengeObj.manual_fee === false && (
                 <Text style={styles.smallFeeText}>
                   {' '}
@@ -51,7 +53,9 @@ export default function MatchFeesCard({
             </Text>
           </View>
           <View style={styles.feesRow}>
-            <Text style={styles.matchServiceFeeText}>Service fee</Text>
+            <Text style={styles.matchServiceFeeText}>
+              {strings.servicefee.toUpperCase()}
+            </Text>
             <Text style={styles.matchServiceFeeText}>
               {senderOrReceiver === 'sender' ? '$' : '-$'}
               {senderOrReceiver === 'sender'
@@ -65,7 +69,7 @@ export default function MatchFeesCard({
           {senderOrReceiver === 'sender' && (
             <View style={styles.feesRow}>
               <Text style={styles.matchServiceFeeText}>
-                International card fee
+                {strings.internationalCardFee.toUpperCase()}
               </Text>
               <Text style={styles.matchServiceFeeText}>
                 {senderOrReceiver === 'sender' ? '$' : '-$'}
@@ -81,8 +85,8 @@ export default function MatchFeesCard({
           <View style={[styles.feesRow, {marginBottom: 5}]}>
             <Text style={styles.feeStructureText}>
               {senderOrReceiver === 'sender'
-                ? 'Total payment'
-                : 'Total earning'}
+                ? strings.totalamount.toUpperCase()
+                : strings.totalearning.toUpperCase()}
             </Text>
             <Text style={styles.feeStructureText}>
               $

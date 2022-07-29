@@ -50,8 +50,7 @@ function GameCard({
   return (
     <TouchableOpacity
       activeOpacity={0.7}
-      style={[styles.mainContainer, {width: wp(cardWidth)}]}
-    >
+      style={[styles.mainContainer, {width: wp(cardWidth)}]}>
       <View style={[styles.backgroundView, {width: wp(cardWidth)}]}>
         <LinearGradient
           colors={
@@ -63,8 +62,7 @@ function GameCard({
             data?.status === ReservationStatus.offered
               ? [styles.colorView, {opacity: 0.7}]
               : styles.colorView
-          }
-        >
+          }>
           <View style={styles.dateView}>
             <Text style={styles.dateMonthText}>
               {months[new Date(data?.start_datetime * 1000).getMonth()]}
@@ -81,8 +79,7 @@ function GameCard({
             </Text>
             <TouchableOpacity
               style={{marginRight: 7, marginBottom: 5}}
-              onPress={onPress}
-            >
+              onPress={onPress}>
               {/* eslint-disable-next-line no-nested-ternary */}
               {showSelectionCheckBox ? (
                 isSelected ? (

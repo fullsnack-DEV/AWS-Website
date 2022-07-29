@@ -221,7 +221,13 @@ const ScorekeeperBookingDateAndTime = ({navigation, route}) => {
         <ActivityLoader visible={loading} />
         {/* Name and country */}
         <View style={styles.contentContainer}>
-          <Title text={route?.params?.isHirer ? 'Hirer' : 'Scorekeeper'} />
+          <Title
+            text={
+              route?.params?.isHirer
+                ? strings.hirer.toUpperCase()
+                : strings.scorekeeper.toUpperCase()
+            }
+          />
           <View style={{marginVertical: 10}}>
             <View style={styles.topViewContainer}>
               <View style={styles.profileView}>
@@ -240,8 +246,9 @@ const ScorekeeperBookingDateAndTime = ({navigation, route}) => {
                 </Text>
                 <Text
                   style={styles.locationText}
-                  numberOfLines={1}
-                >{`${userData?.city}, ${userData?.country}`}</Text>
+                  numberOfLines={
+                    1
+                  }>{`${userData?.city}, ${userData?.country}`}</Text>
               </View>
             </View>
           </View>
@@ -271,10 +278,13 @@ const ScorekeeperBookingDateAndTime = ({navigation, route}) => {
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'space-between',
-            }}
-          >
+            }}>
             <Title
-              text={route?.params?.showMatches ? 'Choose a game' : 'Game'}
+              text={
+                route?.params?.showMatches
+                  ? strings.chooseagame.toUpperCase()
+                  : strings.match.toUpperCase()
+              }
               required={!!route?.params?.showMatches}
             />
             {route?.params?.showMatches && (
@@ -285,8 +295,7 @@ const ScorekeeperBookingDateAndTime = ({navigation, route}) => {
                     sport: sportName,
                     comeFrom: 'ScorekeeperBookingDateAndTime',
                   });
-                }}
-              >
+                }}>
                 <FastImage
                   source={images.arrowGT}
                   style={{width: 8, height: 12}}
@@ -296,22 +305,29 @@ const ScorekeeperBookingDateAndTime = ({navigation, route}) => {
           </TouchableOpacity>
 
           {gameData && (
-            <TCGameCard
-              data={gameData}
-              onPress={() => {
-                const routeName = getGameHomeScreen(gameData?.sport);
-                navigation.push(routeName, {gameId: gameData?.game_id});
-              }}
-            />
+            <View
+              style={{
+                top: 16,
+                marginBottom: 25,
+                marginRight: 15,
+              }}>
+              <TCGameCard
+                data={gameData}
+                onPress={() => {
+                  const routeName = getGameHomeScreen(gameData?.sport);
+                  navigation.push(routeName, {gameId: gameData?.game_id});
+                }}
+              />
+            </View>
           )}
         </View>
-
+        <Seperator />
         {/* Date & Time */}
         {gameData && (
           <View>
             <View style={styles.contentContainer}>
-              <Title text={'Date & Time'} />
-              <TCInfoField
+              <Title text={strings.dateAndTime.toUpperCase()} />
+              {/* <TCInfoField
                 title={'Date'}
                 value={
                   gameData?.start_datetime &&
@@ -338,26 +354,77 @@ const ScorekeeperBookingDateAndTime = ({navigation, route}) => {
                   fontFamily: fonts.RRegular,
                 }}
               />
-              <Seperator height={2} />
+              <Seperator height={2} /> */}
+              <View style={{marginTop: 20, marginLeft: 0, marginRight: 15}}>
+                <View style={styles.dateTimeValue}>
+                  <Text style={styles.dateTimeText}>
+                    {strings.start.toUpperCase()}
+                  </Text>
+                  <Text style={styles.dateTimeText}>
+                    {gameData?.start_datetime &&
+                      moment(gameData?.start_datetime * 1000).format(
+                        'MMM DD, YYYY\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0hh:mm a',
+                      )}
+                  </Text>
+                </View>
+                <View style={styles.dateTimeValue}>
+                  <Text style={styles.dateTimeText}>
+                    {strings.end.toUpperCase()}{' '}
+                  </Text>
+                  <Text style={styles.dateTimeText}>
+                    {gameData?.end_datetime &&
+                      moment(gameData?.end_datetime * 1000).format(
+                        'MMM DD, YYYY\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0hh:mm a',
+                      )}
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'flex-end',
+                  }}>
+                  <Text style={styles.timeZoneText}>
+                    Time zone{' '}
+                    <Text style={{fontFamily: fonts.RRegular}}>Vancouver</Text>
+                  </Text>
+                </View>
+              </View>
             </View>
-
+            <Seperator />
             {/* Venue */}
             <View style={styles.contentContainer}>
-              <Title text={'Venue'} />
+              <Title text={strings.venue.toUpperCase()} />
               <TCInfoField
-                title={'Venue'}
+                title={strings.venue.toUpperCase()}
                 value={gameData?.venue?.name}
+                marginTop={20}
+                marginLeft={0}
+                marginRight={0}
+                marginBottom={15}
                 titleStyle={{
                   alignSelf: 'flex-start',
                   fontFamily: fonts.RRegular,
                 }}
+                valueStyle={{
+                  flex: 0.72,
+                }}
               />
+              <Seperator height={1} />
               <TCInfoField
-                title={'Address'}
+                title={strings.address.toUpperCase()}
                 value={gameData?.venue?.address}
+                marginTop={0}
+                marginBottom={15}
+                marginLeft={0}
+                marginRight={0}
                 titleStyle={{
-                  alignSelf: 'flex-start',
                   fontFamily: fonts.RRegular,
+                  color: colors.lightBlackColor,
+                  fontSize: 16,
+                }}
+                valueStyle={{
+                  flex: 0.72,
+                  marginTop: 15,
                 }}
               />
               <EventMapView
@@ -371,23 +438,37 @@ const ScorekeeperBookingDateAndTime = ({navigation, route}) => {
                   latitude: gameData?.venue?.coordinate?.latitude ?? 0.0,
                   longitude: gameData?.venue?.coordinate?.longitude ?? 0.0,
                 }}
+                style={{marginBottom: 25}}
               />
             </View>
+            <Seperator />
           </View>
         )}
-        <TCChallengeTitle title={'Game Rules'} />
+        <TCChallengeTitle
+          title={strings.matchrules.toUpperCase()}
+          titleStyle={{
+            ...styles.titleText,
+            marginTop: 10,
+          }}
+        />
         <Text style={styles.rulesTitle}>General Rules</Text>
         <Text style={styles.rulesDetail}>{gameData?.general_rules}</Text>
         <View style={{marginBottom: 10}} />
         <Text style={styles.rulesTitle}>Special Rules</Text>
-        <Text style={[styles.rulesDetail, {marginBottom: 10}]}>
+        <Text style={[styles.rulesDetail, {marginBottom: 25}]}>
           {gameData?.special_rules}
         </Text>
         <Seperator />
 
         <View>
           <TCChallengeTitle
-            title={'Refund Policy'}
+            title={strings.refundpolicy.toUpperCase()}
+            titleStyle={{
+              ...styles.titleText,
+              marginTop: 10,
+              marginBottom: 10,
+            }}
+            valueStyle={{marginTop: 10, marginBottom: 10}}
             value={route?.params?.settingObj?.refund_policy}
             tooltipText={
               '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the match fee and service fee are not refunded.'
@@ -402,8 +483,18 @@ const ScorekeeperBookingDateAndTime = ({navigation, route}) => {
         {/* Payment */}
         {gameData && (
           <View style={styles.contentContainer}>
-            <Title text={route?.params?.isHirer ? 'Earning' : 'payment'} />
-            <View style={{marginTop: 10}}>
+            <Title
+              text={
+                route?.params?.isHirer
+                  ? strings.earning.toUpperCase()
+                  : strings.payment.toUpperCase()
+              }
+            />
+            <View
+              style={{
+                marginTop: 20,
+                marginBottom: 25,
+              }}>
               <MatchFeesCard
                 challengeObj={challengeObject}
                 senderOrReceiver={
@@ -414,13 +505,13 @@ const ScorekeeperBookingDateAndTime = ({navigation, route}) => {
             </View>
           </View>
         )}
-
+        <Seperator />
         {/* Payment Method */}
         {Number(challengeObject?.hourly_game_fee) > 0 &&
           !route?.params?.isHirer && (
             <View style={styles.contentContainer}>
-              <Title text={'Payment Method'} />
-              <View style={{marginTop: 10}}>
+              <Title text={strings.paymentMethod.toUpperCase()} />
+              <View style={{marginTop: 10, marginBottom: 15}}>
                 <TCTouchableLabel
                   title={
                     defaultCard &&
@@ -441,6 +532,10 @@ const ScorekeeperBookingDateAndTime = ({navigation, route}) => {
               </View>
             </View>
           )}
+        <Seperator />
+        <View style={styles.contentContainer}>
+          <Text style={styles.note}>{strings.refereebookingnote}</Text>
+        </View>
       </ScrollView>
       {/* Next Button */}
 
@@ -458,12 +553,13 @@ const ScorekeeperBookingDateAndTime = ({navigation, route}) => {
 
 const styles = StyleSheet.create({
   contentContainer: {
+    paddingTop: 25,
     padding: 15,
   },
   titleText: {
     color: colors.lightBlackColor,
-    fontSize: 20,
-    fontFamily: fonts.RRegular,
+    fontSize: 16,
+    fontFamily: fonts.RBold,
   },
 
   profileImage: {
@@ -476,6 +572,7 @@ const styles = StyleSheet.create({
   topViewContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: 10,
     // justifyContent: 'center',
   },
   profileView: {
@@ -492,7 +589,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   topTextContainer: {
-    marginLeft: 10,
+    marginLeft: 15,
     alignSelf: 'center',
   },
   nameText: {
@@ -519,6 +616,30 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     marginLeft: 15,
     marginRight: 15,
+  },
+  dateTimeValue: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginLeft: 0,
+    marginTop: 0,
+  },
+  dateTimeText: {
+    fontFamily: fonts.RRegular,
+    fontSize: 16,
+    color: colors.lightBlackColor,
+    marginBottom: 15,
+  },
+  timeZoneText: {
+    fontFamily: fonts.RLight,
+    fontSize: 14,
+    color: colors.lightBlackColor,
+    marginBottom: 25,
+  },
+  note: {
+    fontSize: 14,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
+    // margin: 15,
   },
 });
 

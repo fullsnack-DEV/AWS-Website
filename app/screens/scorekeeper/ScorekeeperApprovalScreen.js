@@ -173,8 +173,7 @@ export default function ScorekeeperApprovalScreen({navigation, route}) {
         }}
         onPress={() => {
           disApproveReservation(reservationObj.reservation_id);
-        }}
-      >
+        }}>
         {'DISAPPROVE'}
       </Text>
     </View>
@@ -192,8 +191,7 @@ export default function ScorekeeperApprovalScreen({navigation, route}) {
                 fontFamily: fonts.RRegular,
                 color: colors.lightBlackColor,
                 margin: 15,
-              }}
-            >
+              }}>
               {`${
                 getRequester(bodyParams).group_id
                   ? `${getRequester(bodyParams).group_name}`
@@ -208,8 +206,7 @@ export default function ScorekeeperApprovalScreen({navigation, route}) {
                 // flexDirection: 'row',
                 justifyContent: 'space-between',
                 margin: 15,
-              }}
-            >
+              }}>
               <View style={styles.challengerView}>
                 <View style={styles.teamView}>
                   <Image source={images.reqIcon} style={styles.reqOutImage} />
@@ -268,8 +265,7 @@ export default function ScorekeeperApprovalScreen({navigation, route}) {
                       fontSize: 16,
                       color: colors.lightBlackColor,
                       width: '80%',
-                    }}
-                  >
+                    }}>
                     {`${bodyParams?.scorekeeper?.first_name} ${bodyParams?.scorekeeper?.last_name}`}
                   </Text>
                 </View>
@@ -284,8 +280,7 @@ export default function ScorekeeperApprovalScreen({navigation, route}) {
                   fontFamily: fonts.RMedium,
                   fontSize: 16,
                   color: colors.greenColorCard,
-                }}
-              >
+                }}>
                 {'Approved'}
               </Text>
             )}
@@ -297,8 +292,7 @@ export default function ScorekeeperApprovalScreen({navigation, route}) {
                   fontFamily: fonts.RMedium,
                   fontSize: 16,
                   color: colors.lightBlackColor,
-                }}
-              >
+                }}>
                 {'Declined'}
               </Text>
             )}
@@ -310,8 +304,7 @@ export default function ScorekeeperApprovalScreen({navigation, route}) {
                   fontFamily: fonts.RMedium,
                   fontSize: 16,
                   color: colors.greenColorCard,
-                }}
-              >
+                }}>
                 {'Expired'}
               </Text>
             )}
@@ -324,23 +317,29 @@ export default function ScorekeeperApprovalScreen({navigation, route}) {
             {bodyParams && (
               <View>
                 <TCLabel
-                  title="Game"
-                  style={{marginLeft: 15, marginBottom: 15, marginTop: 15}}
+                  title={strings.match.toUpperCase()}
+                  style={{marginLeft: 15, marginBottom: 15, marginTop: 25}}
                 />
                 {bodyParams?.game && (
-                  <TCGameCard
-                    data={bodyParams?.game}
-                    onPress={() => {
-                      const routeName = getGameHomeScreen(
-                        bodyParams?.game?.sport,
-                      );
-                      navigation.push(routeName, {
-                        gameId: bodyParams?.game?.game_id,
-                      });
-                    }}
-                    cardWidth={'90%'}
-                  />
+                  <View
+                    style={{
+                      marginBottom: 10,
+                    }}>
+                    <TCGameCard
+                      data={bodyParams?.game}
+                      onPress={() => {
+                        const routeName = getGameHomeScreen(
+                          bodyParams?.game?.sport,
+                        );
+                        navigation.push(routeName, {
+                          gameId: bodyParams?.game?.game_id,
+                        });
+                      }}
+                      cardWidth={'92%'}
+                    />
+                  </View>
                 )}
+                <Seperator />
                 {/* Date & Time */}
                 {bodyParams?.game && (
                   <View>

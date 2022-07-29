@@ -169,8 +169,7 @@ export default function CurruentReservationScreen({route}) {
               flexDirection: 'row',
               justifyContent: 'space-between',
               margin: 15,
-            }}
-          >
+            }}>
             <View style={styles.challengerView}>
               <View style={styles.teamView}>
                 <Image source={images.requestOut} style={styles.reqOutImage} />
@@ -210,8 +209,7 @@ export default function CurruentReservationScreen({route}) {
                     fontFamily: fonts.RMedium,
                     fontSize: 16,
                     color: colors.lightBlackColor,
-                  }}
-                >
+                  }}>
                   {bodyParams.invited_by ===
                   (bodyParams.home_team.group_id ??
                     bodyParams.home_team.user_id)
