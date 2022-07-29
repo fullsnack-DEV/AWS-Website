@@ -73,6 +73,7 @@ const NotificationType = {
   deleted: 'deleted',
   accepted: 'accepted',
   declined: 'declined',
+  cancelled: 'cancelled',
 };
 
 export default NotificationType;
