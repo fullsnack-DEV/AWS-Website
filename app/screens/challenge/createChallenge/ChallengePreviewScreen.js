@@ -69,6 +69,7 @@ export default function ChallengePreviewScreen({navigation, route}) {
   const [loading, setloading] = useState(false);
   const [selectedTab, setSelectedTab] = useState(0);
   const [isMore, setIsMore] = useState(false);
+  const [isTrash] = useState(route?.params?.isTrash);
 
   entity = authContext.entity;
   const isFocused = useIsFocused();
@@ -534,27 +535,27 @@ export default function ChallengePreviewScreen({navigation, route}) {
             textStyle={{color: colors.userPostTimeColor}}
             title={strings.declineTitle}
             onPress={() => {
-              // navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-              //   status: 'accept',
-              //   teamObj: authContext.entity.obj,
-              // });
-              challengeOperation(
-                entity.uid,
-                challengeData?.challenge_id,
-                challengeData?.version,
-                'decline',
-              );
+              if (isTrash) {
+                Alert.alert('This follow request is no more valid.');
+              } else {
+                challengeOperation(
+                  entity.uid,
+                  challengeData?.challenge_id,
+                  challengeData?.version,
+                  'decline',
+                );
+              }
             }}
             style={{width: widthPercentageToDP('45%')}}
           />
           <TCSmallButton
             title={strings.acceptTitle}
             onPress={() => {
-              // navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-              //   status: 'accept',
-              //   teamObj: authContext.entity.obj,
-              // });
-              if (challengeData?.challenger === challengeData?.invited_by) {
+              if (isTrash) {
+                Alert.alert('This follow request is no more valid.');
+              } else if (
+                challengeData?.challenger === challengeData?.invited_by
+              ) {
                 challengeOperation(
                   entity.uid,
                   challengeData?.challenge_id,
@@ -706,44 +707,49 @@ export default function ChallengePreviewScreen({navigation, route}) {
               textStyle={{color: colors.userPostTimeColor}}
               title={strings.declineTitle}
               onPress={() => {
-                // navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-                //   status: 'accept',
-                //   teamObj: authContext.entity.obj,
-                // });
-                challengeOperation(
-                  entity.uid,
-                  challengeData?.challenge_id,
-                  challengeData?.version,
-                  'decline',
-                );
+                if (isTrash) {
+                  Alert.alert('This follow request is no more valid.');
+                } else {
+                  challengeOperation(
+                    entity.uid,
+                    challengeData?.challenge_id,
+                    challengeData?.version,
+                    'decline',
+                  );
+                }
               }}
               style={{width: widthPercentageToDP('45%')}}
             />
             <TCSmallButton
               title={strings.acceptTitle}
               onPress={() => {
-                let paymentObj = {};
+                if (isTrash) {
+                  Alert.alert('This follow request is no more valid.');
+                } else {
+                  let paymentObj = {};
 
-                paymentObj = {
-                  source: defaultCard?.id,
-                  payment_method_type: 'card',
-                  total_game_fee: challengeData?.total_game_fee,
-                  total_service_fee1: challengeData?.total_service_fee1,
-                  total_service_fee2: challengeData?.total_service_fee2,
-                  international_card_fee: challengeData?.international_card_fee,
-                  total_stripe_fee: challengeData?.total_stripe_fee,
-                  total_payout: challengeData?.total_payout,
-                  total_amount: challengeData?.total_amount,
-                };
+                  paymentObj = {
+                    source: defaultCard?.id,
+                    payment_method_type: 'card',
+                    total_game_fee: challengeData?.total_game_fee,
+                    total_service_fee1: challengeData?.total_service_fee1,
+                    total_service_fee2: challengeData?.total_service_fee2,
+                    international_card_fee:
+                      challengeData?.international_card_fee,
+                    total_stripe_fee: challengeData?.total_stripe_fee,
+                    total_payout: challengeData?.total_payout,
+                    total_amount: challengeData?.total_amount,
+                  };
 
-                console.log('paymentObj1:::', paymentObj);
-                alterChallengeOperation(
-                  entity.uid,
-                  challengeData?.challenge_id,
-                  challengeData?.version,
-                  'accept',
-                  paymentObj,
-                );
+                  console.log('paymentObj1:::', paymentObj);
+                  alterChallengeOperation(
+                    entity.uid,
+                    challengeData?.challenge_id,
+                    challengeData?.version,
+                    'accept',
+                    paymentObj,
+                  );
+                }
               }}
               style={{width: widthPercentageToDP('45%')}}
             />
@@ -936,8 +942,7 @@ export default function ChallengePreviewScreen({navigation, route}) {
                     ? 0
                     : 15,
               },
-            ]}
-          >
+            ]}>
             Request No.{`${challengeData?.challenge_id}`}
           </Text>
           <ChallengeStatusView
@@ -986,8 +991,7 @@ export default function ChallengePreviewScreen({navigation, route}) {
               flexDirection: 'row',
               justifyContent: 'space-between',
               margin: 15,
-            }}
-          >
+            }}>
             <View style={styles.challengerView}>
               <View style={styles.teamView}>
                 <Image source={images.reqIcon} style={styles.reqOutImage} />
@@ -1353,8 +1357,7 @@ export default function ChallengePreviewScreen({navigation, route}) {
           backgroundColor: 'rgba(0,0,0,0.5)',
           borderTopLeftRadius: 15,
           borderTopRightRadius: 15,
-        }}
-      >
+        }}>
         <View style={styles.mainContainer}>
           <Image style={styles.background} source={images.orangeLayer} />
           <Image style={styles.background} source={images.entityCreatedBG} />
@@ -1478,8 +1481,7 @@ export default function ChallengePreviewScreen({navigation, route}) {
                 style={styles.goToProfileButton}
                 onPress={() => {
                   navigation.popToTop();
-                }}
-              >
+                }}>
                 <Text style={styles.goToProfileTitle}>OK</Text>
               </TouchableOpacity>
             </SafeAreaView>
@@ -1558,8 +1560,7 @@ export default function ChallengePreviewScreen({navigation, route}) {
           backgroundColor: 'rgba(0,0,0,0.5)',
           borderTopLeftRadius: 15,
           borderTopRightRadius: 15,
-        }}
-      >
+        }}>
         <View style={styles.mainContainer}>
           <Image style={styles.background} source={images.orangeLayer} />
           <Image style={styles.background} source={images.entityCreatedBG} />
@@ -1596,8 +1597,7 @@ export default function ChallengePreviewScreen({navigation, route}) {
               onPress={() => {
                 setAlterModalVisible(false);
                 navigation.popToTop();
-              }}
-            >
+              }}>
               <Text style={styles.goToProfileTitle}>OK</Text>
             </TouchableOpacity>
           </SafeAreaView>

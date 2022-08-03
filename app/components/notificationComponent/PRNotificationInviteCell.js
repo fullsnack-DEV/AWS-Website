@@ -96,22 +96,42 @@ function PRNotificationInviteCell({
                     : styles.viewSecondStyle
                 }>
                 <TCGradientButton
-                  textStyle={styles.btnTextStyle}
+                  textStyle={[
+                    styles.btnTextStyle,
+                    {
+                      color: isTrash
+                        ? colors.userPostTimeColor
+                        : colors.whiteColor,
+                    },
+                  ]}
                   outerContainerStyle={styles.acceptBtnStyle}
                   style={styles.acceptButtonInnerStyle}
                   title={strings.accept}
+                  isTrash={isTrash}
                   disabled={disabled}
                   onPress={onAccept}
                 />
 
                 <TouchableOpacity
-                  style={styles.declineBtnStyle}
+                  style={[
+                    styles.declineBtnStyle,
+                    {
+                      backgroundColor: isTrash
+                        ? colors.grayBackgroundColor
+                        : colors.whiteColor,
+                    },
+                  ]}
                   onPress={onDecline}
-                  disabled={disabled}>
+                  // disabled={disabled}
+                >
                   <Text
                     style={[
                       styles.btnTextStyle,
-                      {color: colors.lightBlackColor},
+                      {
+                        color: isTrash
+                          ? colors.userPostTimeColor
+                          : colors.lightBlackColor,
+                      },
                     ]}>
                     {strings.decline}
                   </Text>
@@ -175,7 +195,7 @@ const styles = StyleSheet.create({
   btnTextStyle: {
     fontSize: 12,
     fontFamily: fonts.RBold,
-    color: colors.whiteColor,
+
     textAlign: 'center',
   },
 

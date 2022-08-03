@@ -18,15 +18,13 @@ const ScrollableTabs = ({currentTab = 0, tabs = [], onTabPress = () => {}}) => {
         borderBottomWidth: 3,
         borderColor:
           currentTab === index ? colors.themeColor : colors.grayBackgroundColor,
-      }}
-    >
+      }}>
       <Text
         style={{
           fontFamily: currentTab === index ? fonts.RBold : fonts.RRegular,
           color:
             currentTab === index ? colors.themeColor : colors.lightBlackColor,
-        }}
-      >
+        }}>
         {item}
       </Text>
     </TouchableOpacity>

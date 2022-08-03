@@ -23,22 +23,13 @@ export default function TCProfileImage({
   }
   return (
     <View style={[styles.imageContainerStyle, containerStyle]}>
-      <View
-        style={{
-          width: 40,
-          height: 40,
-          borderRadius: 20,
-          borderWidth: 1,
-          borderColor: colors.thinDividerColor,
-        }}
-      >
+      <View style={styles.containerImageStyle}>
         <Image style={styles.placeHolderImage} source={placeholder} />
       </View>
 
       {entityType !== 'user' && (
         <View
-          style={[styles.placeholderTextContainer, placeholderTextContainer]}
-        >
+          style={[styles.placeholderTextContainer, placeholderTextContainer]}>
           <Text style={[styles.placeholderText, placeholderText]}>
             {intialChar}
           </Text>
@@ -59,10 +50,13 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 80,
+    alignItems: 'center',
   },
   placeHolderImage: {
-    width: 40,
-    height: 40,
+    width: 36,
+    height: 36,
+    borderRadius: 72,
+    alignSelf: 'center',
     resizeMode: 'contain',
   },
   placeholderTextContainer: {
@@ -76,13 +70,23 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: colors.whiteColor,
     fontFamily: fonts.RBlack,
-    fontSize: 17,
+    fontSize: 12,
   },
   mainImageStyle: {
     position: 'absolute',
     width: 40,
     height: 40,
     borderRadius: 80,
-    alignSelf: 'center',
+  },
+  containerImageStyle: {
+    width: 40,
+    height: 40,
+    borderRadius: 80,
+    justifyContent: 'center',
+    backgroundColor: colors.whiteColor,
+    shadowColor: colors.googleColor,
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
   },
 });

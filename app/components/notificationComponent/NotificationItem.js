@@ -42,8 +42,7 @@ function NotificationItem({
                   entityType: dataDictionary.entityType,
                   entityId: dataDictionary.entityId,
                 });
-              }}
-            >
+              }}>
               <TCProfileImage
                 entityType={dataDictionary.entityType}
                 source={{uri: dataDictionary.imgName}}
@@ -61,8 +60,7 @@ function NotificationItem({
                       entityType: dataDictionary.entityType,
                       entityId: dataDictionary.entityId,
                     });
-                  }}
-                >
+                  }}>
                   <Text style={styles.boldTextStyle}>
                     {`${dataDictionary.firstTitle} `}
                   </Text>
@@ -75,11 +73,11 @@ function NotificationItem({
                         entityType: dataDictionary.entityType1,
                         entityId: dataDictionary.entityId1,
                       });
-                    }}
-                  >
+                    }}>
                     <Text
-                      style={styles.boldTextStyle}
-                    >{`${dataDictionary.secondTitle} `}</Text>
+                      style={
+                        styles.boldTextStyle
+                      }>{`${dataDictionary.secondTitle} `}</Text>
                   </TouchableWithoutFeedback>
                 )}
                 <Text>{`${dataDictionary.text} `}</Text>
