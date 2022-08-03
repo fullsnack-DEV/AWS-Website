@@ -27,12 +27,9 @@ function PRNotificationDetailMessageItem({
 }) {
   const authContext = useContext(AuthContext);
   const [dataDictionary, setDataDictionary] = useState();
-  console.log('Detail item cell');
 
   useEffect(() => {
     parseRequest(item, selectedEntity, authContext.entity).then((data) => {
-      console.log('Notification data11:', item);
-
       setDataDictionary(data);
     });
   }, []);
@@ -95,17 +92,35 @@ function PRNotificationDetailMessageItem({
 
                 {isTrash && entityType === 'user' && (
                   <Text style={styles.timeStyle}>
-                    {(NotificationType.deleted && 'Deleted') ||
-                      (NotificationType.accepted && 'Accepted') ||
-                      (NotificationType.declined && 'declined')}
+                    {(NotificationType.deleted ===
+                      item.activities[0].action_type &&
+                      'Deleted') ||
+                      (NotificationType.accepted ===
+                        item.activities[0].action_type &&
+                        'Accepted') ||
+                      (NotificationType.declined ===
+                        item.activities[0].action_type &&
+                        'Declined') ||
+                      (NotificationType.cancelled ===
+                        item.activities[0].action_type &&
+                        'Cancelled')}
                     <Text> {dataDictionary.notificationTime}</Text>
                   </Text>
                 )}
                 {isTrash && entityType === 'group' && (
                   <Text style={styles.timeStyle}>
-                    {(NotificationType.deleted && 'Deleted') ||
-                      (NotificationType.accepted && 'Accepted') ||
-                      (NotificationType.declined && 'Declined')}
+                    {(NotificationType.deleted ===
+                      item.activities[0].action_type &&
+                      'Deleted') ||
+                      (NotificationType.accepted ===
+                        item.activities[0].action_type &&
+                        'Accepted') ||
+                      (NotificationType.declined ===
+                        item.activities[0].action_type &&
+                        'Declined') ||
+                      (NotificationType.cancelled ===
+                        item.activities[0].action_type &&
+                        'Cancelled')}
                     <Text>
                       {' '}
                       by {item.activities[0].remove_by?.data?.full_name}{' '}
