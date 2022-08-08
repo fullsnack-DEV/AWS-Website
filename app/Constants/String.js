@@ -908,5 +908,14 @@ const strings = {
   refereebookingnote:
     'By selecting the button below, I agree to the Game Rules cancellation policy and refund policy. I also agree to pay the total amount shown above.',
   scorekeeper: 'Scorekeeper',
+
+  // Challenge screen
+  typeOfGame: 'Match Type',
+  matchFee: 'Match Fee',
+  homeAndAway: 'Home & Away',
+  gameDuration: 'Game Duration',
+  refundPolicy: 'Cancellation Policy',
+  matchDuration: 'Match Duration',
+  venueName: 'Venue name',
 };
 export default strings;

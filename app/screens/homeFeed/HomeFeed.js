@@ -333,7 +333,7 @@ const HomeFeed = ({
 
   const StickyHeaderComponent = useMemo(
     () => (
-      <View>
+      <View style={{}}>
         <WritePost
           navigation={navigation}
           postDataItem={currentUserData}

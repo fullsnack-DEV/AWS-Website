@@ -532,13 +532,24 @@ export default function RefereeReservationScreen({navigation, route}) {
             {/* <Text onPress={() => {
               navigation.navigate('RefereeApprovalScreen', { reservationObj: bodyParams })
             }}>On Press</Text> */}
-
+            <RefereeReservationTitle
+              reservationObject={bodyParams}
+              showDesc={true}
+              containerStyle={{
+                margin: 15,
+                marginBottom: 15,
+              }}
+              fontSize={18}
+              fontFamily={fonts.RBold}
+            />
+            <TCThinDivider />
             <View
               style={{
                 flex: 1,
                 flexDirection: 'row',
                 justifyContent: 'space-between',
                 margin: 15,
+                marginTop: 25,
               }}>
               <View style={styles.challengerView}>
                 <View style={styles.teamView}>
@@ -604,17 +615,6 @@ export default function RefereeReservationScreen({navigation, route}) {
                 </View>
               </View>
             </View>
-            <TCThinDivider />
-
-            <RefereeReservationTitle
-              reservationObject={bodyParams}
-              showDesc={true}
-              containerStyle={{
-                margin: 15,
-                marginBottom: 15,
-              }}
-              fontSize={16}
-            />
 
             {/* Status declined */}
             {/* {bodyParams?.approved_by === entity.uid && !bodyParams?.is_offer
@@ -702,39 +702,6 @@ export default function RefereeReservationScreen({navigation, route}) {
                 {/* Date & Time */}
                 {bodyParams?.game && (
                   <View>
-                    {/* <View style={styles.contentContainer}>
-                      <Title text={strings.dateAndTime.toUpperCase()} />
-                      <TCInfoField
-                        title={'Date'}
-                        value={
-                          bodyParams?.start_datetime &&
-                          moment(bodyParams?.start_datetime * 1000).format(
-                            'MMM DD, YYYY',
-                          )
-                        }
-                        titleStyle={{
-                          alignSelf: 'flex-start',
-                          fontFamily: fonts.RRegular,
-                        }}
-                      />
-                      <Seperator height={2} />
-                      <TCInfoField
-                        title={'Time'}
-                        value={
-                          bodyParams?.start_datetime && bodyParams?.end_datetime
-                            ? getDateDuration(
-                                bodyParams?.start_datetime,
-                                bodyParams?.end_datetime,
-                              )
-                            : ''
-                        }
-                        titleStyle={{
-                          alignSelf: 'flex-start',
-                          fontFamily: fonts.RRegular,
-                        }}
-                      />
-                      <Seperator height={2} />
-                    </View> */}
                     <View style={styles.contentContainer}>
                       <Title text={strings.dateAndTime.toUpperCase()} />
                       <View
@@ -920,6 +887,7 @@ export default function RefereeReservationScreen({navigation, route}) {
                   ? strings.payment.toUpperCase()
                   : strings.earning.toUpperCase()
               }
+              style={{marginTop: 25}}
             />
             <View
               style={{

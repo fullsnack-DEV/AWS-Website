@@ -200,7 +200,7 @@ export default function RefereeReservationTitle({
               statusObject.desc = `Referee declined referee request sent by ${getTeamB()}.`;
             }
           } else {
-            statusObject.title = 'You-declined';
+            statusObject.title = 'YOU -DECLINED';
             statusObject.color = colors.googleColor;
             statusObject.desc = `You declined referee request sent by ${getTeamB()}.`;
           }

@@ -343,53 +343,6 @@ export default function RefereeApprovalScreen({navigation, route}) {
                   )}
                 </View>
                 <TCThickDivider />
-
-                {/* Date & Time */}
-                {/* {bodyParams?.game && (
-                  <View>
-                    <View style={styles.contentContainer}>
-                      <Title text={'Date & Time'} />
-                      <TCInfoField
-                        marginLeft={0}
-                        marginTop={0}
-                        marginBottom={0}
-                        marginRight={0}
-                        backgroundColor={colors.redColor}
-                        title={'Date'}
-                        value={
-                          bodyParams?.start_datetime &&
-                          moment(bodyParams?.start_datetime * 1000).format(
-                            'MMM DD, YYYY',
-                          )
-                        }
-                        titleStyle={{
-                          alignSelf: 'flex-start',
-                          fontFamily: fonts.RRegular,
-                        }}
-                      />
-                      <TCInfoField
-                        title={'Time'}
-                        marginLeft={0}
-                        marginTop={15}
-                        marginBottom={15}
-                        marginRight={0}
-                        backgroundColor={colors.redColor}
-                        value={
-                          bodyParams?.start_datetime && bodyParams?.end_datetime
-                            ? getDateDuration(
-                                bodyParams?.start_datetime,
-                                bodyParams?.end_datetime,
-                              )
-                            : ''
-                        }
-                        titleStyle={{
-                          alignSelf: 'flex-start',
-                          fontFamily: fonts.RRegular,
-                        }}
-                        valueStyle={{textAlign: 'right'}}
-                      />
-                    </View>
-                    <TCThickDivider /> */}
                 {bodyParams?.game && (
                   <View>
                     <View style={styles.contentContainer}>

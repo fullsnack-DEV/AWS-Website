@@ -735,8 +735,7 @@ export default function AlterScorekeeperScreen({navigation, route}) {
             <TouchableOpacity onPress={() => console.log('OK')}>
               <LinearGradient
                 colors={[colors.yellowColor, colors.themeColor]}
-                style={styles.containerStyle}
-              >
+                style={styles.containerStyle}>
                 <Text style={styles.buttonText}>
                   Please edit the reservation details below before you send the
                   alteration request.
@@ -751,8 +750,7 @@ export default function AlterScorekeeperScreen({navigation, route}) {
               alignItems: 'flex-end',
               marginLeft: 15,
               marginRight: 15,
-            }}
-          >
+            }}>
             <ReservationNumber reservationNumber={bodyParams?.reservation_id} />
           </View>
 
@@ -762,8 +760,7 @@ export default function AlterScorekeeperScreen({navigation, route}) {
               flexDirection: 'row',
               justifyContent: 'space-between',
               margin: 15,
-            }}
-          >
+            }}>
             <View style={styles.challengerView}>
               <View style={styles.teamView}>
                 <Image source={images.reqIcon} style={styles.reqOutImage} />
@@ -822,8 +819,7 @@ export default function AlterScorekeeperScreen({navigation, route}) {
                     fontSize: 16,
                     color: colors.lightBlackColor,
                     width: '80%',
-                  }}
-                >
+                  }}>
                   {`${bodyParams?.scorekeeper?.first_name} ${bodyParams?.scorekeeper?.last_name}`}
                 </Text>
               </View>
@@ -884,8 +880,7 @@ export default function AlterScorekeeperScreen({navigation, route}) {
                     flexDirection: 'row',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                  }}
-                >
+                  }}>
                   <Title text={'Game'} />
 
                   {!isPendingRequestPayment && (
@@ -894,8 +889,7 @@ export default function AlterScorekeeperScreen({navigation, route}) {
                       hitSlop={getHitSlop(15)}
                       onPress={() =>
                         navigation.navigate('ScorekeeperSelectMatch')
-                      }
-                    >
+                      }>
                       <Image
                         source={images.editSection}
                         style={styles.editButton}
@@ -1030,8 +1024,7 @@ export default function AlterScorekeeperScreen({navigation, route}) {
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-              }}
-            >
+              }}>
               <TCLabel
                 title={
                   checkSenderForPayment(bodyParams) === 'sender'
@@ -1043,8 +1036,7 @@ export default function AlterScorekeeperScreen({navigation, route}) {
               <TouchableOpacity
                 onPress={() => {
                   navigation.navigate('ScorekeeperSelectMatch');
-                }}
-              ></TouchableOpacity>
+                }}></TouchableOpacity>
             </View>
             {!isPendingRequestPayment && (
               <TouchableOpacity
@@ -1055,8 +1047,7 @@ export default function AlterScorekeeperScreen({navigation, route}) {
                     editableAlter: true,
                     body: bodyParams,
                   })
-                }
-              >
+                }>
                 <Image source={images.editSection} style={styles.editButton} />
               </TouchableOpacity>
             )}

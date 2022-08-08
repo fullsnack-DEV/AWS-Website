@@ -318,14 +318,17 @@ const RefereeBookingDateAndTime = ({navigation, route}) => {
               alignItems: 'center',
               justifyContent: 'space-between',
             }}>
-            <Title
-              text={
-                route?.params?.showMatches
-                  ? strings.chooseagame.toUpperCase()
-                  : strings.match.toUpperCase()
-              }
-              required={!!route?.params?.showMatches}
-            />
+            <View style={{marginBottom: 15}}>
+              <Title
+                text={
+                  route?.params?.showMatches
+                    ? strings.chooseagame.toUpperCase()
+                    : strings.match.toUpperCase()
+                }
+                required={!!route?.params?.showMatches}
+              />
+            </View>
+
             {route?.params?.showMatches && (
               <View
                 onPress={() => {
@@ -346,9 +349,7 @@ const RefereeBookingDateAndTime = ({navigation, route}) => {
           {gameData && (
             <View
               style={{
-                top: 16,
-                marginBottom: 25,
-                marginRight: 15,
+                marginRight: 0,
               }}>
               <TCGameCard
                 data={gameData}
@@ -456,7 +457,7 @@ const RefereeBookingDateAndTime = ({navigation, route}) => {
                   latitude: gameData?.venue?.coordinate?.latitude ?? 0.0,
                   longitude: gameData?.venue?.coordinate?.longitude ?? 0.0,
                 }}
-                style={{marginBottom: 25}}
+                style={{marginBottom: 10}}
               />
             </View>
             <Seperator />
@@ -651,7 +652,6 @@ const RefereeBookingDateAndTime = ({navigation, route}) => {
 
 const styles = StyleSheet.create({
   contentContainer: {
-    // padding: 15,
     paddingTop: 25,
     padding: 15,
   },
@@ -732,7 +732,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RLight,
     fontSize: 14,
     color: colors.lightBlackColor,
-    marginBottom: 25,
+    marginBottom: 10,
   },
   note: {
     fontSize: 14,

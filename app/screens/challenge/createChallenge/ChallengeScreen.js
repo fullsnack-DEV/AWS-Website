@@ -108,7 +108,7 @@ export default function ChallengeScreen({navigation, route}) {
   const renderPeriod = ({item, index}) => (
     <>
       <TCChallengeTitle
-        containerStyle={{marginLeft: 25, marginTop: 5, marginBottom: 5}}
+        containerStyle={{marginLeft: 15, marginTop: 5, marginBottom: 5}}
         title={'Interval'}
         titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
         value={item.interval}
@@ -121,7 +121,7 @@ export default function ChallengeScreen({navigation, route}) {
         staticValueText={'min.'}
       />
       <TCChallengeTitle
-        containerStyle={{marginLeft: 25, marginTop: 5, marginBottom: 5}}
+        containerStyle={{marginLeft: 15, marginTop: 5, marginBottom: 5}}
         title={`${getNumberSuffix(index + 2)} Period`}
         titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
         value={item.period}
@@ -139,7 +139,7 @@ export default function ChallengeScreen({navigation, route}) {
   const renderOverTime = ({item, index}) => (
     <>
       <TCChallengeTitle
-        containerStyle={{marginLeft: 25, marginTop: 5, marginBottom: 5}}
+        containerStyle={{marginLeft: 15, marginTop: 5, marginBottom: 5}}
         title={'Interval'}
         titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
         value={item.interval}
@@ -152,7 +152,7 @@ export default function ChallengeScreen({navigation, route}) {
         staticValueText={'min.'}
       />
       <TCChallengeTitle
-        containerStyle={{marginLeft: 25, marginTop: 5, marginBottom: 5}}
+        containerStyle={{marginLeft: 15, marginTop: 5, marginBottom: 5}}
         title={`${getNumberSuffix(index + 1)} Over time`}
         titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
         value={item.overTime}
@@ -188,12 +188,11 @@ export default function ChallengeScreen({navigation, route}) {
       <TCFormProgress totalSteps={4} curruentStep={1} />
       <ActivityLoader visible={loading} />
       <View>
-        <View style={[styles.teamContainer, {marginTop: 15}]}>
+        <View style={[styles.teamContainer, {marginTop: 20}]}>
           <View
             style={{
               flexDirection: 'row',
-            }}
-          >
+            }}>
             <Image
               source={
                 sportType !== 'single'
@@ -211,40 +210,49 @@ export default function ChallengeScreen({navigation, route}) {
                 {groupObj?.full_name ?? groupObj?.group_name}
               </Text>
               <Text
-                style={styles.locationLable}
-              >{`${groupObj?.city}, ${groupObj?.state_abbr}`}</Text>
+                style={
+                  styles.locationLable
+                }>{`${groupObj?.city}, ${groupObj?.state_abbr}`}</Text>
               <Text style={styles.locationLable}>
                 TC Level 15 TC points 3,000
               </Text>
             </View>
           </View>
         </View>
+
         {!route?.params?.endTime && (
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('ChooseTimeSlotScreen', {
-                settingObject,
-                comeFrom: 'ChallengeScreen',
-              });
-            }}
-          >
-            <View style={[styles.borderButtonView, styles.shadowView]}>
-              <View />
-              <Text style={styles.detailButtonText}>CHECK AVAILIBILITY</Text>
-              <Image
-                source={images.arrowGraterthan}
-                style={styles.arrowImage}
-              />
-            </View>
-          </TouchableOpacity>
+          <View>
+            <TCThickDivider marginTop={25} />
+            <TCChallengeTitle
+              title={strings.dateAndTime.toUpperCase()}
+              titleStyle={{...styles.titleText, marginTop: 10}}
+            />
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('ChooseTimeSlotScreen', {
+                  settingObject,
+                  comeFrom: 'ChallengeScreen',
+                });
+              }}>
+              <View style={[styles.borderButtonView, styles.shadowView]}>
+                <View />
+                <Text style={styles.detailButtonText}>CHECK AVAILIBILITY</Text>
+                <Image
+                  source={images.arrowGraterthan}
+                  style={styles.arrowImage}
+                />
+              </View>
+            </TouchableOpacity>
+          </View>
         )}
 
-        <TCThickDivider marginTop={15} />
+        <TCThickDivider marginTop={25} />
 
         {route?.params?.endTime && (
           <View>
             <TCChallengeTitle
-              title={'Date & Time'}
+              title={strings.dateAndTime.toUpperCase()}
+              titleStyle={{...styles.titleText}}
               isEdit={!!route?.params?.endTime}
               onEditPress={() => {
                 navigation.navigate('ChooseTimeSlotScreen', {
@@ -252,22 +260,27 @@ export default function ChallengeScreen({navigation, route}) {
                   comeFrom: 'ChallengeScreen',
                 });
               }}
+              containerStyle={{marginTop: 25}}
             />
 
             <View>
               <View style={styles.dateTimeValue}>
-                <Text style={styles.dateTimeText}>Start </Text>
+                <Text style={styles.dateTimeText}>
+                  {strings.start.toUpperCase()}
+                </Text>
                 <Text style={styles.dateTimeText}>
                   {moment(route?.params?.startTime).format(
-                    'MMM DD, YYYY hh:mm a',
+                    'MMM DD, YYYY\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0hh:mm a',
                   )}
                 </Text>
               </View>
               <View style={styles.dateTimeValue}>
-                <Text style={styles.dateTimeText}>End </Text>
+                <Text style={styles.dateTimeText}>
+                  {strings.end.toUpperCase()}
+                </Text>
                 <Text style={styles.dateTimeText}>
                   {moment(route?.params?.endTime).format(
-                    'MMM DD, YYYY hh:mm a',
+                    'MMM DD, YYYY\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0hh:mm a',
                   )}
                 </Text>
               </View>
@@ -280,22 +293,25 @@ export default function ChallengeScreen({navigation, route}) {
               </View>
             </View>
 
-            <TCThickDivider marginTop={10} />
+            <TCThickDivider marginTop={0} />
           </View>
         )}
         <TCChallengeTitle
-          title={'Type of Game'}
+          title={strings.typeOfGame.toUpperCase()}
+          titleStyle={{...styles.titleText}}
           value={settingObject?.game_type}
           tooltipText={
             'The game result has an effect on TC points of the challengee and you.'
           }
           tooltipHeight={hp('6%')}
           tooltipWidth={wp('50%')}
+          containerStyle={{marginTop: 25, marginBottom: 25}}
         />
         <TCThickDivider />
 
         <TCChallengeTitle
-          title={'Match Fee'}
+          title={strings.matchFee.toUpperCase()}
+          titleStyle={{...styles.titleText}}
           value={settingObject?.game_fee?.fee}
           staticValueText={`${settingObject?.game_fee?.currency_type} /Game`}
           valueStyle={{
@@ -304,25 +320,32 @@ export default function ChallengeScreen({navigation, route}) {
             color: colors.greenColorCard,
             marginRight: 2,
           }}
+          containerStyle={{marginTop: 25, marginBottom: 25}}
         />
         <TCThickDivider />
 
         <TCChallengeTitle
-          title={'Refund Policy'}
+          title={strings.refundPolicy.toUpperCase()}
+          titleStyle={{...styles.titleText}}
           value={settingObject?.refund_policy}
           tooltipText={
             '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the match fee and service fee are not refunded.'
           }
           tooltipHeight={hp('18%')}
           tooltipWidth={wp('50%')}
+          containerStyle={{marginTop: 25, marginBottom: 25}}
         />
         <TCThickDivider />
       </View>
 
       <View>
-        <TCChallengeTitle title={'Home & Away'} />
+        <TCChallengeTitle
+          title={strings.homeAndAway.toUpperCase()}
+          titleStyle={{...styles.titleText}}
+          containerStyle={{marginTop: 25}}
+        />
         <View style={styles.teamContainer}>
-          <Text style={styles.homeLableStyle}>Home</Text>
+          <Text style={styles.homeLableStyle}>HOME</Text>
           <View style={styles.teamViewStyle}>
             <Image
               source={
@@ -358,7 +381,7 @@ export default function ChallengeScreen({navigation, route}) {
         </View>
 
         <View style={styles.teamContainer}>
-          <Text style={styles.homeLableStyle}>Away</Text>
+          <Text style={styles.homeLableStyle}>AWAY</Text>
           <View style={styles.teamViewStyle}>
             <Image
               source={
@@ -392,7 +415,7 @@ export default function ChallengeScreen({navigation, route}) {
             </View>
           </View>
         </View>
-        <TCThickDivider marginTop={20} />
+        <TCThickDivider marginTop={25} />
       </View>
       <View>
         {sportName.toLowerCase() === 'tennis' ? (
@@ -408,9 +431,13 @@ export default function ChallengeScreen({navigation, route}) {
           </View>
         ) : (
           <View>
-            <TCChallengeTitle title={'Game Duration'} />
             <TCChallengeTitle
-              containerStyle={{marginLeft: 25, marginTop: 15, marginBottom: 5}}
+              title={strings.matchDuration.toUpperCase()}
+              titleStyle={{...styles.titleText}}
+              containerStyle={{marginTop: 25}}
+            />
+            <TCChallengeTitle
+              containerStyle={{marginLeft: 15, marginTop: 15, marginBottom: 5}}
               title={'1st period'}
               titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
               value={settingObject?.game_duration?.first_period}
@@ -447,7 +474,8 @@ export default function ChallengeScreen({navigation, route}) {
 
         <View>
           <TCChallengeTitle
-            title={'Venue'}
+            title={strings.venue.toUpperCase()}
+            titleStyle={{...styles.titleText}}
             isEdit={!!venue && settingObject?.venue?.length > 1}
             onEditPress={() => {
               navigation.navigate('ChooseVenueScreen', {
@@ -459,7 +487,25 @@ export default function ChallengeScreen({navigation, route}) {
 
           {venue || settingObject?.venue?.length === 1 ? (
             <View style={styles.venueContainer}>
+              <Text
+                style={{
+                  fontFamily: fonts.RBold,
+                  fontSize: 14,
+                  color: colors.lightBlackColor,
+                  marginBottom: 5,
+                }}>
+                {strings.venueName}
+              </Text>
               <Text style={styles.venueTitle}>{venue?.name}</Text>
+              <Text
+                style={{
+                  fontFamily: fonts.RBold,
+                  fontSize: 14,
+                  color: colors.lightBlackColor,
+                  marginTop: 30,
+                }}>
+                {strings.address}
+              </Text>
               <Text style={styles.venueAddress}>{venue?.address}</Text>
 
               <EventMapView
@@ -475,8 +521,7 @@ export default function ChallengeScreen({navigation, route}) {
                   venues: settingObject?.venue || [],
                   comeFrom: 'ChallengeScreen',
                 });
-              }}
-            >
+              }}>
               <View style={[styles.borderButtonView, styles.shadowView]}>
                 <View />
                 <Text style={styles.detailButtonText}>CHOOSE A VENUE</Text>
@@ -488,16 +533,19 @@ export default function ChallengeScreen({navigation, route}) {
             </TouchableOpacity>
           )}
 
-          <TCThickDivider marginTop={10} />
+          <TCThickDivider marginTop={25} />
         </View>
 
-        <TCChallengeTitle title={'Game Rules'} />
+        <TCChallengeTitle
+          title={strings.matchrules.toUpperCase()}
+          titleStyle={{...styles.titleText, marginTop: 10}}
+        />
         <Text style={styles.rulesTitle}>General Rules</Text>
         <Text style={styles.rulesDetail}>{settingObject?.general_rules}</Text>
         <View style={{marginBottom: 10}} />
         <Text style={styles.rulesTitle}>Special Rules</Text>
         <Text style={styles.rulesDetail}>{settingObject?.special_rules}</Text>
-        <TCThickDivider marginTop={20} />
+        <TCThickDivider marginTop={25} />
 
         {/* <TCChallengeTitle
           title={'Referees'}
@@ -541,13 +589,18 @@ export default function ChallengeScreen({navigation, route}) {
 
         {!totalZero && (
           <View>
-            <TCLabel title={'Payment'} style={{marginBottom: 15}} />
+            <TCLabel
+              title={strings.payment.toUpperCase()}
+              style={{marginBottom: 15, marginTop: 25}}
+            />
+
             <GameFeeCard
               feeObject={feeObj}
               currency={settingObject?.game_fee?.currency_type}
               isChallenger={true}
             />
-            <TCThickDivider marginTop={20} />
+
+            <TCThickDivider marginTop={25} />
           </View>
         )}
       </View>
@@ -626,7 +679,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    marginLeft: 15,
+    marginLeft: 0,
     marginRight: 15,
   },
   homeLableStyle: {
@@ -678,7 +731,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.lightBlackColor,
     marginLeft: 15,
-    marginBottom: 5,
+    marginBottom: 15,
   },
   timeZoneText: {
     fontFamily: fonts.RLight,
@@ -710,7 +763,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 15,
+    marginTop: 7,
     paddingRight: 15,
     paddingLeft: 15,
   },
@@ -722,7 +775,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   normalTextStyle: {
-    marginLeft: 25,
+    marginLeft: 15,
     fontSize: 16,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
@@ -732,7 +785,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     margin: 25,
     marginBottom: 10,
-    marginLeft: 15,
+    marginLeft: 0,
     marginTop: 0,
   },
 
@@ -758,5 +811,10 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     marginLeft: 15,
     marginBottom: 5,
+  },
+  titleText: {
+    color: colors.lightBlackColor,
+    fontSize: 16,
+    fontFamily: fonts.RBold,
   },
 });
