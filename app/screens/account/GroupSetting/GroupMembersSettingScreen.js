@@ -28,9 +28,8 @@ export default function GroupMembersSettingScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const [hiringPlayersObject, setHiringPlayersObject] = useState();
 
-  const [userSetting] = useState([
+  const [userSetting, setUserSetting] = useState([
     {key: 'Recruiting Player', id: 1},
-    {key: 'Members Profile', id: 2},
   ]);
   console.log('Authcontext==>', authContext.entity.obj);
   useLayoutEffect(() => {
@@ -38,7 +37,14 @@ export default function GroupMembersSettingScreen({navigation, route}) {
       headerShown: false,
     });
   }, [navigation]);
-
+  useEffect(() => {
+    if (authContext.entity.role === 'club') {
+      setUserSetting([
+        {key: 'Recruiting Player', id: 1},
+        {key: 'Members Profile', id: 2},
+      ]);
+    }
+  }, [authContext.entity.role]);
   const handleOpetions = async (opetions) => {
     console.log('auth Enity', authContext.entity.obj);
     if (opetions === 'Recruiting Player') {
@@ -89,13 +95,11 @@ export default function GroupMembersSettingScreen({navigation, route}) {
       style={styles.listContainer}
       onPress={() => {
         handleOpetions(item.key);
-      }}
-    >
+      }}>
       <View
         style={{
           flexDirection: 'row',
-        }}
-      >
+        }}>
         <Text style={styles.listItems}>{item.key}</Text>
         {item.key === 'Recruiting Player' && (
           <Text style={styles.currencyTypeStyle}>
@@ -121,8 +125,7 @@ export default function GroupMembersSettingScreen({navigation, route}) {
               color: colors.lightBlackColor,
               textAlign: 'center',
               fontFamily: fonts.RBold,
-            }}
-          >
+            }}>
             Settings
           </Text>
         }
