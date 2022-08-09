@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   Alert,
   FlatList,
+  ScrollView,
 } from 'react-native';
 import moment from 'moment';
 
@@ -184,7 +185,7 @@ export default function ChallengeScreen({navigation, route}) {
   };
 
   return (
-    <TCKeyboardView>
+    <ScrollView testID="challenge-scroll">
       <TCFormProgress totalSteps={4} curruentStep={1} />
       <ActivityLoader visible={loading} />
       <View>
@@ -192,8 +193,7 @@ export default function ChallengeScreen({navigation, route}) {
           <View
             style={{
               flexDirection: 'row',
-            }}
-          >
+            }}>
             <Image
               source={
                 sportType !== 'single'
@@ -211,8 +211,9 @@ export default function ChallengeScreen({navigation, route}) {
                 {groupObj?.full_name ?? groupObj?.group_name}
               </Text>
               <Text
-                style={styles.locationLable}
-              >{`${groupObj?.city}, ${groupObj?.state_abbr}`}</Text>
+                style={
+                  styles.locationLable
+                }>{`${groupObj?.city}, ${groupObj?.state_abbr}`}</Text>
               <Text style={styles.locationLable}>
                 TC Level 15 TC points 3,000
               </Text>
@@ -226,8 +227,7 @@ export default function ChallengeScreen({navigation, route}) {
                 settingObject,
                 comeFrom: 'ChallengeScreen',
               });
-            }}
-          >
+            }}>
             <View style={[styles.borderButtonView, styles.shadowView]}>
               <View />
               <Text style={styles.detailButtonText}>CHECK AVAILIBILITY</Text>
@@ -475,8 +475,7 @@ export default function ChallengeScreen({navigation, route}) {
                   venues: settingObject?.venue || [],
                   comeFrom: 'ChallengeScreen',
                 });
-              }}
-            >
+              }}>
               <View style={[styles.borderButtonView, styles.shadowView]}>
                 <View />
                 <Text style={styles.detailButtonText}>CHOOSE A VENUE</Text>
@@ -617,7 +616,7 @@ export default function ChallengeScreen({navigation, route}) {
           marginTop: 15,
         }}
       />
-    </TCKeyboardView>
+    </ScrollView>
   );
 }
 

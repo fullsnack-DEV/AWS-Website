@@ -13,6 +13,7 @@ import {
   TouchableOpacity,
   SafeAreaView,
   Image,
+  ScrollView,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
@@ -28,7 +29,6 @@ import strings from '../../../Constants/String';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
 import TCGradientButton from '../../../components/TCGradientButton';
-import TCKeyboardView from '../../../components/TCKeyboardView';
 import TCThickDivider from '../../../components/TCThickDivider';
 import TCLabel from '../../../components/TCLabel';
 import TCThinDivider from '../../../components/TCThinDivider';
@@ -302,7 +302,7 @@ export default function ChallengePaymentScreen({route, navigation}) {
   };
 
   return (
-    <TCKeyboardView>
+    <ScrollView testID="challenge-payment-scroll">
       <ActivityLoader visible={loading} />
       <TCFormProgress totalSteps={4} curruentStep={4} />
 
@@ -328,8 +328,7 @@ export default function ChallengePaymentScreen({route, navigation}) {
           flexDirection: 'row',
           justifyContent: 'space-between',
           margin: 15,
-        }}
-      >
+        }}>
         <View style={styles.challengerView}>
           <View style={styles.teamView}>
             <Image source={images.reqIcon} style={styles.reqOutImage} />
@@ -600,8 +599,7 @@ export default function ChallengePaymentScreen({route, navigation}) {
           backgroundColor: 'rgba(0,0,0,0.5)',
           borderTopLeftRadius: 15,
           borderTopRightRadius: 15,
-        }}
-      >
+        }}>
         <View style={styles.mainContainer}>
           <Image style={styles.background} source={images.orangeLayer} />
           <Image style={styles.background} source={images.entityCreatedBG} />
@@ -628,14 +626,13 @@ export default function ChallengePaymentScreen({route, navigation}) {
               onPress={() => {
                 setModalVisible(false);
                 navigation.popToTop();
-              }}
-            >
+              }}>
               <Text style={styles.goToProfileTitle}>OK</Text>
             </TouchableOpacity>
           </SafeAreaView>
         </View>
       </Modal>
-    </TCKeyboardView>
+    </ScrollView>
   );
 }
 const styles = StyleSheet.create({

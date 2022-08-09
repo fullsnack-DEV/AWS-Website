@@ -1,10 +1,5 @@
-import React, {
-  useContext,
-  useLayoutEffect,
-  useState,
-  useEffect,
-  useCallback,
-} from 'react';
+/* eslint-disable consistent-return */
+import React, {useContext, useState, useEffect, useCallback} from 'react';
 import {
   StyleSheet,
   View,
@@ -14,34 +9,56 @@ import {
   TouchableWithoutFeedback,
   ScrollView,
   SafeAreaView,
-  TouchableOpacity,
 } from 'react-native';
+import {useIsFocused} from '@react-navigation/native';
 
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import AuthContext from '../../../auth/context';
 import images from '../../../Constants/ImagePath';
-import Header from '../../../components/Home/Header';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
+import strings from '../../../Constants/String';
 
 export default function GroupMembersSettingScreen({navigation, route}) {
+  const isFocused = useIsFocused();
+
   const authContext = useContext(AuthContext);
   const [hiringPlayersObject, setHiringPlayersObject] = useState();
+  const [whoCanJoinGroup, setWhoCanJoinGroup] = useState(
+    route?.params?.whoCanJoinGroup
+      ? route?.params?.whoCanJoinGroup
+      : authContext.entity?.obj?.who_can_join,
+  );
 
   const [userSetting] = useState([
-    {key: 'Recruiting Player', id: 1},
-    {key: 'Members Profile', id: 2},
+    {key: 'Who Can Join Team', id: 1},
+    {key: 'Who Can Invite Member', id: 2},
+    {key: 'Recruiting Player', id: 3},
+    {key: 'Members Profile', id: 4},
   ]);
-  console.log('Authcontext==>', authContext.entity.obj);
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerShown: false,
-    });
-  }, [navigation]);
+
+  useEffect(() => {
+    if (isFocused && route?.params?.whoCanJoinGroup) {
+      setWhoCanJoinGroup(route?.params?.whoCanJoinGroup);
+    }
+  }, [isFocused, route?.params?.whoCanJoinGroup]);
 
   const handleOpetions = async (opetions) => {
-    console.log('auth Enity', authContext.entity.obj);
-    if (opetions === 'Recruiting Player') {
+    if (opetions === 'Who Can Join Team') {
+      navigation.navigate('WhoCanJoinTeamScreen', {
+        whoCanJoinGroup,
+        comeFrom: 'GroupMembersSettingScreen',
+        sportName: authContext.entity?.obj?.sport,
+        sportType: authContext.entity?.obj?.sport_type,
+      });
+    } else if (opetions === 'Who Can Invite Member') {
+      navigation.navigate('WhoCanInviteMemberScreen', {
+        whoCanJoinGroup,
+        comeFrom: 'GroupMembersSettingScreen',
+        sportName: authContext.entity?.obj?.sport,
+        sportType: authContext.entity?.obj?.sport_type,
+      });
+    } else if (opetions === 'Recruiting Player') {
       navigation.navigate('RecruitingMemberScreen', {
         settingObj: hiringPlayersObject,
         comeFrom: 'GroupMembersSettingScreen',
@@ -62,6 +79,7 @@ export default function GroupMembersSettingScreen({navigation, route}) {
       setHiringPlayersObject(authContext?.entity?.obj);
     }
   }, [authContext]);
+
   useEffect(() => {
     if (route?.params?.entity?.obj) {
       setHiringPlayersObject(route?.params?.entity?.obj);
@@ -77,27 +95,41 @@ export default function GroupMembersSettingScreen({navigation, route}) {
   ]);
 
   const getSettingValue = (item) => {
+    console.log('item.key', whoCanJoinGroup);
     if (item === 'Recruiting Player') {
       if (hiringPlayersObject?.hiringPlayers) {
         return hiringPlayersObject?.hiringPlayers;
       }
+      return 'No';
     }
-    return 'No';
+    if (item === 'Who Can Join Team') {
+      if (whoCanJoinGroup) {
+        return (
+          (whoCanJoinGroup === 0 && strings.everyoneRadio) ||
+          (whoCanJoinGroup === 1 && 'Team Admin') ||
+          (whoCanJoinGroup === 2 && strings.inviteOnly)
+        );
+      }
+      return '';
+    }
   };
   const renderMenu = ({item}) => (
     <TouchableWithoutFeedback
       style={styles.listContainer}
       onPress={() => {
         handleOpetions(item.key);
-      }}
-    >
+      }}>
       <View
         style={{
           flexDirection: 'row',
-        }}
-      >
+        }}>
         <Text style={styles.listItems}>{item.key}</Text>
         {item.key === 'Recruiting Player' && (
+          <Text style={styles.currencyTypeStyle}>
+            {getSettingValue(item.key)}
+          </Text>
+        )}
+        {item.key === 'Who Can Join Team' && (
           <Text style={styles.currencyTypeStyle}>
             {getSettingValue(item.key)}
           </Text>
@@ -108,32 +140,6 @@ export default function GroupMembersSettingScreen({navigation, route}) {
   );
   return (
     <SafeAreaView style={{flex: 1}}>
-      <Header
-        leftComponent={
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Image source={images.backArrow} style={styles.backImageStyle} />
-          </TouchableOpacity>
-        }
-        centerComponent={
-          <Text
-            style={{
-              fontSize: 16,
-              color: colors.lightBlackColor,
-              textAlign: 'center',
-              fontFamily: fonts.RBold,
-            }}
-          >
-            Settings
-          </Text>
-        }
-      />
-      <View
-        style={{
-          width: '100%',
-          height: 0.5,
-          backgroundColor: colors.writePostSepratorColor,
-        }}
-      />
       <ScrollView style={styles.mainContainer}>
         <FlatList
           data={userSetting}
@@ -187,11 +193,5 @@ const styles = StyleSheet.create({
     backgroundColor: colors.lightgrayColor,
     height: 0.5,
     width: wp('90%'),
-  },
-  backImageStyle: {
-    height: 20,
-    width: 10,
-    tintColor: colors.lightBlackColor,
-    resizeMode: 'contain',
   },
 });

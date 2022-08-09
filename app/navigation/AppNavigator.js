@@ -280,6 +280,8 @@ const getTabBarVisibility = (route) => {
     routeName === 'SportAccountSettingScreen' ||
     routeName === 'GroupMembersSettingScreen' ||
     routeName === 'RecruitingMemberScreen' ||
+    routeName === 'WhoCanJoinTeamScreen' ||
+    routeName === 'WhoCanInviteMemberScreen' ||
     routeName === 'GroupsScreen' ||
     routeName === 'TrashScreen'
   ) {
@@ -389,8 +391,7 @@ const AppNavigator = ({navigation}) => {
             return (
               <LinearGradient
                 colors={[colors.yellowColor, colors.assistTextColor]}
-                style={styles.profileTabBorder}
-              >
+                style={styles.profileTabBorder}>
                 <View style={styles.profileImageCover}>
                   <Image
                     source={{uri: authContext?.entity?.obj?.thumbnail}}
@@ -405,8 +406,7 @@ const AppNavigator = ({navigation}) => {
               style={[
                 styles.profileTabBorder,
                 {backgroundColor: colors.whiteColor},
-              ]}
-            >
+              ]}>
               <Image
                 source={{uri: authContext?.entity?.obj?.thumbnail}}
                 style={[styles.profileTabImg, {height: 27, width: 27}]}
@@ -427,8 +427,7 @@ const AppNavigator = ({navigation}) => {
             return (
               <LinearGradient
                 colors={[colors.yellowColor, colors.assistTextColor]}
-                style={styles.profileTabBorder}
-              >
+                style={styles.profileTabBorder}>
                 <View style={styles.profileImageCover}>
                   <Image
                     source={{uri: authContext?.entity?.obj?.thumbnail}}
@@ -443,8 +442,7 @@ const AppNavigator = ({navigation}) => {
               style={[
                 styles.profileTabBorder,
                 {backgroundColor: colors.whiteColor},
-              ]}
-            >
+              ]}>
               <Image
                 source={{uri: authContext?.entity?.obj?.thumbnail}}
                 style={styles.profileTabImg}
@@ -470,8 +468,7 @@ const AppNavigator = ({navigation}) => {
             return (
               <LinearGradient
                 colors={[colors.yellowColor, colors.assistTextColor]}
-                style={styles.profileTabBorder}
-              >
+                style={styles.profileTabBorder}>
                 <View style={styles.profileImageCover}>
                   <Image
                     source={{uri: authContext?.entity?.obj?.thumbnail}}
@@ -486,8 +483,7 @@ const AppNavigator = ({navigation}) => {
               style={[
                 styles.profileTabBorder,
                 {backgroundColor: colors.whiteColor},
-              ]}
-            >
+              ]}>
               <Image
                 source={{uri: authContext?.entity?.obj?.thumbnail}}
                 style={styles.profileTabImg}
@@ -543,12 +539,12 @@ const AppNavigator = ({navigation}) => {
           // height: heightPercentageToDP(9),
           // marginTop: 7,
         },
-      }}
-    >
+      }}>
       <Tab.Screen
         name="Local Home"
         component={LocalHomeNavigator}
         options={({route}) => ({
+          tabBarTestID: 'localhome-tab',
           headerShown: false,
           // tabBarVisible: getTabBarVisibility(routes),
           tabBarStyle: {display: getTabBarVisibility(routes) ? 'flex' : 'none'},
@@ -567,6 +563,7 @@ const AppNavigator = ({navigation}) => {
         name="News Feed"
         component={NewsFeedNavigator}
         options={({route}) => ({
+          tabBarTestID: 'newsfeed-tab',
           headerShown: false,
           // tabBarVisible: getTabBarVisibility(route),
           tabBarStyle: {display: getTabBarVisibility(routes) ? 'flex' : 'none'},
@@ -586,6 +583,7 @@ const AppNavigator = ({navigation}) => {
         name="Schedule"
         component={ScheduleNavigator}
         options={({route}) => ({
+          tabBarTestID: 'schedule-tab',
           headerShown: false,
           // tabBarVisible: getTabBarVisibility(route),
           tabBarStyle: {display: getTabBarVisibility(routes) ? 'flex' : 'none'},
@@ -608,6 +606,7 @@ const AppNavigator = ({navigation}) => {
         name="Message"
         component={MessageNavigator}
         options={({route}) => ({
+          tabBarTestID: 'message-tab',
           headerShown: false,
           unmountOnBlur: true,
           ...(unreadCount > 0 && {
@@ -642,6 +641,7 @@ const AppNavigator = ({navigation}) => {
           tabBarStyle: {display: getTabBarVisibility(routes) ? 'flex' : 'none'},
           tabBarIcon: renderTabIcon,
           headerShown: false,
+          tabBarTestID: 'account-tab',
         })}
       />
     </Tab.Navigator>

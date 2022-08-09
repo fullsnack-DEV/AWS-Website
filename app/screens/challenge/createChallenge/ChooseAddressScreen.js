@@ -68,12 +68,13 @@ export default function ChooseAddressScreen({navigation, route}) {
           setCityData([...cityData]);
         }
         // getTeamsData(item)
-      }}
-    >
+      }}>
       <View
-        style={{flexDirection: 'row', justifyContent: 'center', marginTop: 25}}
-      >
-        <Text style={styles.cityList} numberOfLines={1}>
+        style={{flexDirection: 'row', justifyContent: 'center', marginTop: 25}}>
+        <Text
+          accessibilityLabel={`${index}`}
+          style={styles.cityList}
+          numberOfLines={1}>
           {cityData[index].description}
         </Text>
         <Image
@@ -90,6 +91,7 @@ export default function ChooseAddressScreen({navigation, route}) {
         <View style={styles.sectionStyle}>
           <Image source={images.searchLocation} style={styles.searchImg} />
           <TextInput
+            testID="location-input"
             autoCapitalize={'none'}
             autoCompleteType={'off'}
             textContentType={'none'}

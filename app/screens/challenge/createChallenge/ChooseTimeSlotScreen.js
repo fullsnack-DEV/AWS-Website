@@ -119,8 +119,7 @@ export default function ChooseTimeSlotScreen({navigation, route}) {
             } else {
               navigation.navigate(comeFrom, {startTime: from, endTime: to});
             }
-          }}
-        >
+          }}>
           Save
         </Text>
       ),
@@ -325,7 +324,7 @@ export default function ChooseTimeSlotScreen({navigation, route}) {
     // return freeslot
   };
 
-  const renderSlotsList = ({item}) => (
+  const renderSlotsList = ({item, index}) => (
     <TouchableOpacity
       onPress={() => {
         console.log('selected:=> ', item);
@@ -347,9 +346,9 @@ export default function ChooseTimeSlotScreen({navigation, route}) {
 
           setTo(dt.getTime());
         }
-      }}
-    >
+      }}>
       <ScheduleBlockedItems
+        accessibilityLabel={`${index}`}
         startDate={item.starttime}
         endDate={item.endtime}
         allDay={item.allDay}
@@ -437,6 +436,7 @@ export default function ChooseTimeSlotScreen({navigation, route}) {
           )}
         /> */}
           <FlatList
+            testID="time-slot-list"
             data={availableSlot}
             keyExtractor={(index) => index.toString()}
             renderItem={renderSlotsList}
@@ -458,14 +458,12 @@ export default function ChooseTimeSlotScreen({navigation, route}) {
                 } else {
                   Alert.alert('Please choose available time zone first.');
                 }
-              }}
-            >
+              }}>
               <View
                 style={{
                   height: 35,
                   justifyContent: 'center',
-                }}
-              >
+                }}>
                 <Text style={styles.fieldTitle} numberOfLines={1}>
                   From
                 </Text>
@@ -489,14 +487,12 @@ export default function ChooseTimeSlotScreen({navigation, route}) {
                 } else {
                   Alert.alert('Please choose available time zone first.');
                 }
-              }}
-            >
+              }}>
               <View
                 style={{
                   height: 35,
                   justifyContent: 'center',
-                }}
-              >
+                }}>
                 <Text style={styles.fieldTitle} numberOfLines={1}>
                   To
                 </Text>
@@ -515,15 +511,13 @@ export default function ChooseTimeSlotScreen({navigation, route}) {
               flexDirection: 'row',
               justifyContent: 'space-between',
               margin: 15,
-            }}
-          >
+            }}>
             <Text
               style={{
                 fontSize: 16,
                 fontFamily: fonts.RRegular,
                 color: colors.lightBlackColor,
-              }}
-            >
+              }}>
               Total Game Duration
             </Text>
             <Text
@@ -531,8 +525,7 @@ export default function ChooseTimeSlotScreen({navigation, route}) {
                 fontSize: 16,
                 fontFamily: fonts.RBold,
                 color: colors.themeColor,
-              }}
-            >{`${hours} Hours ${minutes} Minutes`}</Text>
+              }}>{`${hours} Hours ${minutes} Minutes`}</Text>
           </View>
           <DateTimePickerView
             title={'Choose a Time'}

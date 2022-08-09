@@ -1,0 +1,499 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Signup  Screen Test should match the snapshot- SignupScreen 1`] = `
+<BVLinearGradient
+  colors={
+    Array [
+      4294949633,
+      4294924288,
+    ]
+  }
+  endPoint={
+    Object {
+      "x": 0.5,
+      "y": 1,
+    }
+  }
+  locations={null}
+  startPoint={
+    Object {
+      "x": 0.5,
+      "y": 0,
+    }
+  }
+  style={
+    Object {
+      "flex": 1,
+      "paddingTop": 25,
+    }
+  }
+>
+  <View
+    style={
+      Array [
+        Object {
+          "overflow": "hidden",
+        },
+        Object {
+          "height": 1334,
+          "position": "absolute",
+          "width": 750,
+        },
+      ]
+    }
+  >
+    <FastImageView
+      resizeMode="stretch"
+      source={
+        Object {
+          "default": Object {
+            "Invoicing": [Circular],
+            "Members": [Circular],
+            "Payment_method": [Circular],
+            "Payout_method": [Circular],
+            "SettingPrivacy": [Circular],
+            "Transations": [Circular],
+            "accountMyClubs": [Circular],
+            "accountMyLeagues": [Circular],
+            "accountMyRefereeing": [Circular],
+            "accountMySchedule": [Circular],
+            "accountMyScoreKeeping": [Circular],
+            "accountMySports": [Circular],
+            "accountMyTeams": [Circular],
+            "accountPaymentPayout": [Circular],
+            "accountSettingPrivacy": [Circular],
+            "addEvent": [Circular],
+            "addMessageChat": [Circular],
+            "addRole": [Circular],
+            "addSport": [Circular],
+            "addSportList": [Circular],
+            "addStatus": [Circular],
+            "appleLogo": [Circular],
+            "archerySport": [Circular],
+            "arrowDown": [Circular],
+            "arrowGT": [Circular],
+            "arrowGraterthan": [Circular],
+            "assistBy": [Circular],
+            "assistReferee": [Circular],
+            "assistsImage": [Circular],
+            "assistsSelected": [Circular],
+            "availableChallenge": [Circular],
+            "backArrow": [Circular],
+            "backetballSport": [Circular],
+            "backgroudPlaceholder": [Circular],
+            "backgroundGrayPlceholder": [Circular],
+            "backgroundPlaceholder": [Circular],
+            "badmintonLoader": [Circular],
+            "bandySport": [Circular],
+            "baseballLoader": [Circular],
+            "baseballSport": [Circular],
+            "basketballLoader": [Circular],
+            "bgImage": [Circular],
+            "blankRatingStar": [Circular],
+            "blockedChallenge": [Circular],
+            "blueGradient": [Circular],
+            "blueRatingStar": [Circular],
+            "calNextArrow": [Circular],
+            "calPrevArrow": [Circular],
+            "cancelImage": [Circular],
+            "cancelWhite": [Circular],
+            "certiImagePick": [Circular],
+            "certificateUpload": [Circular],
+            "chain": [Circular],
+            "challengeSentPlane": [Circular],
+            "challengeeBadge": [Circular],
+            "challengeeCup": [Circular],
+            "challengerBadge": [Circular],
+            "challengerFlag": [Circular],
+            "challengerInvitePlane": [Circular],
+            "chat3Dot": [Circular],
+            "chatPlus": [Circular],
+            "chatSearch": [Circular],
+            "check": [Circular],
+            "checkEditor": [Circular],
+            "checkGreen": [Circular],
+            "checkGreenBG": [Circular],
+            "checkRoundOrange": [Circular],
+            "checkWhite": [Circular],
+            "checkWhiteLanguage": [Circular],
+            "choosePic": [Circular],
+            "closeSearch": [Circular],
+            "clubC": [Circular],
+            "clubCover": [Circular],
+            "clubLable": [Circular],
+            "clubPatch": [Circular],
+            "clubPlaceholder": [Circular],
+            "clubPlaceholderSmall": [Circular],
+            "clubSmallIcon": [Circular],
+            "clubSqure": [Circular],
+            "club_ph": [Circular],
+            "commentDeleteIcon": [Circular],
+            "commentImage": [Circular],
+            "commentReport": [Circular],
+            "commentReportIcon": [Circular],
+            "createClub": [Circular],
+            "createEventImage": [Circular],
+            "createLeague": [Circular],
+            "createTeam": [Circular],
+            "crossImage": [Circular],
+            "curruentTime": [Circular],
+            "declineChallenge": [Circular],
+            "deleteIcon": [Circular],
+            "deleteRecentGoal": [Circular],
+            "dotImage": [Circular],
+            "dottedLine": [Circular],
+            "doubleTeamCreated": [Circular],
+            "downArrow": [Circular],
+            "dropDownArrow": [Circular],
+            "dropDownArrow2": [Circular],
+            "dummyPhoto": [Circular],
+            "editButton": [Circular],
+            "editPencil": [Circular],
+            "editSection": [Circular],
+            "email": [Circular],
+            "emailSendIconBG": [Circular],
+            "emailSent1": [Circular],
+            "emailSent2": [Circular],
+            "emailSent3": [Circular],
+            "emailSent4": [Circular],
+            "emailSent5": [Circular],
+            "entityCreatedBG": [Circular],
+            "feedComment": [Circular],
+            "feedLike": [Circular],
+            "feedPlusIcon": [Circular],
+            "feedShare": [Circular],
+            "feedViewCommentButton": [Circular],
+            "feedViewLikeButton": [Circular],
+            "feedViewShareButton": [Circular],
+            "feedViewUnLike": [Circular],
+            "football2Loader": [Circular],
+            "footballLoader": [Circular],
+            "footballSport": [Circular],
+            "galleryVideoIcon": [Circular],
+            "gameDetail": [Circular],
+            "gameGoal": [Circular],
+            "gameIn": [Circular],
+            "gameOrangePlus": [Circular],
+            "gameOut": [Circular],
+            "gameOwnGoal": [Circular],
+            "gamePause": [Circular],
+            "gamePlus": [Circular],
+            "gameRC": [Circular],
+            "gameRecord": [Circular],
+            "gameSimple": [Circular],
+            "gameStart": [Circular],
+            "gameYC": [Circular],
+            "gamesImage": [Circular],
+            "gamesSelected": [Circular],
+            "goalsImage": [Circular],
+            "goalsSelected": [Circular],
+            "grayListIcon": [Circular],
+            "greenGradient": [Circular],
+            "greenQBGroup": [Circular],
+            "greenQBUser": [Circular],
+            "greenRatingStar": [Circular],
+            "groupIcon": [Circular],
+            "groupUsers": [Circular],
+            "hidePassword": [Circular],
+            "homeSetting": [Circular],
+            "home_gps": [Circular],
+            "home_search": [Circular],
+            "home_setting": [Circular],
+            "horizontal3Dot": [Circular],
+            "imageLoadingGIF": [Circular],
+            "imageUploadingGIF": [Circular],
+            "infoToolTipIcon": [Circular],
+            "landscapeBottomImage": [Circular],
+            "landscapeTopImage": [Circular],
+            "landscapeVideoImage": [Circular],
+            "leagueCover": [Circular],
+            "leagueDemo": [Circular],
+            "leagueL": [Circular],
+            "leaguePatch": [Circular],
+            "leaguePlaceholder": [Circular],
+            "leagueSmallIcon": [Circular],
+            "leave_chat_room": [Circular],
+            "likeImage": [Circular],
+            "likePlay": [Circular],
+            "linkCopied": [Circular],
+            "localHomeFilter": [Circular],
+            "localhomeOverlay": [Circular],
+            "lock": [Circular],
+            "loginBg": [Circular],
+            "logoutIcon": [Circular],
+            "manageChallengeIcon": [Circular],
+            "menu": [Circular],
+            "menuClose": [Circular],
+            "menuGray": [Circular],
+            "menuOrange": [Circular],
+            "messageCamera": [Circular],
+            "messageCheckboxBorder": [Circular],
+            "messageIcon": [Circular],
+            "messageSearchButton": [Circular],
+            "messageSearchButton2": [Circular],
+            "moveFlottyButton": [Circular],
+            "moveIcon": [Circular],
+            "multipleImagesIcon": [Circular],
+            "mute": [Circular],
+            "myClubs": [Circular],
+            "myLeagues": [Circular],
+            "myRefereeing": [Circular],
+            "mySchedule": [Circular],
+            "myScoreKeeping": [Circular],
+            "mySports": [Circular],
+            "myTeams": [Circular],
+            "navigationBack": [Circular],
+            "newFeed": [Circular],
+            "nextArrow": [Circular],
+            "noSpecicPlayer": [Circular],
+            "notificationBell": [Circular],
+            "orangeCheckBox": [Circular],
+            "orangeGradient": [Circular],
+            "orangeGradiet": [Circular],
+            "orangeLayer": [Circular],
+            "orangeListIcon": [Circular],
+            "orangeStar": [Circular],
+            "paymentPayout": [Circular],
+            "pickImage": [Circular],
+            "playerIcon": [Circular],
+            "playerSucessBG": [Circular],
+            "plus": [Circular],
+            "plusInvoice": [Circular],
+            "plus_round_orange": [Circular],
+            "popupUpArrow": [Circular],
+            "portraitVideoImage": [Circular],
+            "profileLevel": [Circular],
+            "profilePlaceHolder": [Circular],
+            "radioCheckGreenBG": [Circular],
+            "radioCheckYellow": [Circular],
+            "radioRoundOrange": [Circular],
+            "radioSelect": [Circular],
+            "radioSelectGreen": [Circular],
+            "radioSelectYellow": [Circular],
+            "radioUnSelectGreen": [Circular],
+            "radioUnselect": [Circular],
+            "recentMatch": [Circular],
+            "refIcon": [Circular],
+            "referePH": [Circular],
+            "refereeIcon": [Circular],
+            "refereeSucessBG": [Circular],
+            "refereesInImage": [Circular],
+            "registerReferee": [Circular],
+            "registerScorekeeper": [Circular],
+            "removeSportList": [Circular],
+            "reqIcon": [Circular],
+            "reqeIcon": [Circular],
+            "requestIn": [Circular],
+            "requestOut": [Circular],
+            "requestSentImage": [Circular],
+            "resetColor": [Circular],
+            "roundArrow": [Circular],
+            "savedIcon": [Circular],
+            "scheduleGray": [Circular],
+            "scheduleOrange": [Circular],
+            "scheduleThreeDot": [Circular],
+            "scorekeeperIcon": [Circular],
+            "scorekeeperPH": [Circular],
+            "searchLocation": [Circular],
+            "searchUser": [Circular],
+            "selectAddMessageButton": [Circular],
+            "selectMessageSearchButton": [Circular],
+            "sendButton": [Circular],
+            "settingInvoice": [Circular],
+            "settingSport": [Circular],
+            "shareImage": [Circular],
+            "shortCard": [Circular],
+            "shortComment": [Circular],
+            "shortDisLike": [Circular],
+            "shortLike": [Circular],
+            "shortShare": [Circular],
+            "showPassword": [Circular],
+            "signUpFb": [Circular],
+            "signUpGoogle": [Circular],
+            "smallRight": [Circular],
+            "soccerBackground": [Circular],
+            "soccerIcon": [Circular],
+            "soccerImage": [Circular],
+            "soccerLoader": [Circular],
+            "swapTeam": [Circular],
+            "switchAccount": [Circular],
+            "tabFeed": [Circular],
+            "tabSelectedFeed": [Circular],
+            "tab_account": [Circular],
+            "tab_account_group": [Circular],
+            "tab_account_group_selected": [Circular],
+            "tab_account_selected": [Circular],
+            "tab_home": [Circular],
+            "tab_home_selected": [Circular],
+            "tab_message": [Circular],
+            "tab_message_selected": [Circular],
+            "tab_notification": [Circular],
+            "tab_notification_selected": [Circular],
+            "tab_reservation": [Circular],
+            "tab_reservation_selected": [Circular],
+            "tagDivider": [Circular],
+            "tagGreenImage": [Circular],
+            "tagImage": [Circular],
+            "tc_message_top_icon": [Circular],
+            "teamCover": [Circular],
+            "teamGreenPH": [Circular],
+            "teamPH": [Circular],
+            "teamPatch": [Circular],
+            "teamPlaceholder": [Circular],
+            "teamPlaceholderSmall": [Circular],
+            "teamSmallIcon": [Circular],
+            "teamSqure": [Circular],
+            "teamT": [Circular],
+            "team_ph": [Circular],
+            "tennisAce": [Circular],
+            "tennisArrowLeft": [Circular],
+            "tennisArrowRight": [Circular],
+            "tennisBackground": [Circular],
+            "tennisFault": [Circular],
+            "tennisFootFault": [Circular],
+            "tennisGeneral": [Circular],
+            "tennisIcon": [Circular],
+            "tennisLet": [Circular],
+            "tennisScore": [Circular],
+            "tennisSingleHeaderIcon": [Circular],
+            "tennisUnForced": [Circular],
+            "tennisWinner": [Circular],
+            "themeGradientImage": [Circular],
+            "threeDotIcon": [Circular],
+            "thumbImage": [Circular],
+            "timeKnobGray": [Circular],
+            "timeKnobOrange": [Circular],
+            "townsCupIcon": [Circular],
+            "townsCupLogo": [Circular],
+            "unCheckWhiteBorder": [Circular],
+            "uncheckBox": [Circular],
+            "uncheckEditor": [Circular],
+            "uncheckWhite": [Circular],
+            "undoImage": [Circular],
+            "unlikeImage": [Circular],
+            "unmute": [Circular],
+            "upcomingMatch": [Circular],
+            "usaImage": [Circular],
+            "vertical3Dot": [Circular],
+            "videoFullScreen": [Circular],
+            "videoLoading": [Circular],
+            "videoMuteSound": [Circular],
+            "videoNormalScreen": [Circular],
+            "videoPauseButton": [Circular],
+            "videoPauseIcon": [Circular],
+            "videoPlayBtn": [Circular],
+            "videoPlayButton": [Circular],
+            "videoPlayIcon": [Circular],
+            "videoThumb": [Circular],
+            "videoUnMuteSound": [Circular],
+            "volleyballLoader": [Circular],
+            "warningIcon": [Circular],
+            "welcomeImage1": [Circular],
+            "welcomeImage2": [Circular],
+            "welcomeImage3": [Circular],
+            "welcomeImage4": [Circular],
+            "whiteTick": [Circular],
+            "whiteTrophySmall": [Circular],
+            "whiteUncheck": [Circular],
+            "yellowCardImage": [Circular],
+            "yellowCardSelected": [Circular],
+            "yellowCheckBox": [Circular],
+            "yellowDownArrow": [Circular],
+            "yellowQBGroup": [Circular],
+            "yellowQBUser": [Circular],
+            "yellowRatingStar": [Circular],
+            "youtubePlayButton": [Circular],
+          },
+        }
+      }
+      style={
+        Object {
+          "bottom": 0,
+          "left": 0,
+          "position": "absolute",
+          "right": 0,
+          "top": 0,
+        }
+      }
+    />
+  </View>
+  <Text
+    style={
+      Object {
+        "color": "#FFFFFF",
+        "fontFamily": "Roboto-Bold",
+        "fontSize": 25,
+        "marginLeft": 49.5,
+        "marginTop": 184.5,
+        "textAlign": "left",
+      }
+    }
+  >
+    Sign up with email
+  </Text>
+  <RCTSafeAreaView
+    emulateUnlessSupported={true}
+  >
+    <View
+      style={
+        Object {
+          "bottom": 16,
+        }
+      }
+    >
+      <View
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        hitSlop={
+          Object {
+            "bottom": 15,
+            "left": 15,
+            "right": 15,
+            "top": 15,
+          }
+        }
+        onClick={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          Object {
+            "alignSelf": "center",
+            "opacity": 1,
+          }
+        }
+      >
+        <Text
+          style={
+            Object {
+              "color": "#FFFFFF",
+              "fontFamily": "Roboto-Regular",
+              "fontSize": 16,
+              "textAlign": "center",
+            }
+          }
+        >
+          Already a member?
+          <Text>
+             
+          </Text>
+          <Text
+            style={
+              Object {
+                "fontFamily": "Roboto-Bold",
+                "textDecorationLine": "underline",
+              }
+            }
+          >
+            Log In
+          </Text>
+        </Text>
+      </View>
+    </View>
+  </RCTSafeAreaView>
+</BVLinearGradient>
+`;

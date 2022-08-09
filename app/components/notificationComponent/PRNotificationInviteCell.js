@@ -17,6 +17,7 @@ function PRNotificationInviteCell({
   disabled = false,
   isTrash = false,
   entityType = 'user',
+  accessibilityLabel,
 }) {
   const [dataDictionary, setDataDictionary] = useState();
 
@@ -96,14 +97,8 @@ function PRNotificationInviteCell({
                     : styles.viewSecondStyle
                 }>
                 <TCGradientButton
-                  textStyle={[
-                    styles.btnTextStyle,
-                    {
-                      color: isTrash
-                        ? colors.userPostTimeColor
-                        : colors.whiteColor,
-                    },
-                  ]}
+                  accessibilityLabel={`${accessibilityLabel}`}
+                  textStyle={styles.btnTextStyle}
                   outerContainerStyle={styles.acceptBtnStyle}
                   style={styles.acceptButtonInnerStyle}
                   title={strings.accept}
@@ -122,16 +117,11 @@ function PRNotificationInviteCell({
                     },
                   ]}
                   onPress={onDecline}
-                  // disabled={disabled}
-                >
+                  disabled={disabled}>
                   <Text
                     style={[
                       styles.btnTextStyle,
-                      {
-                        color: isTrash
-                          ? colors.userPostTimeColor
-                          : colors.lightBlackColor,
-                      },
+                      {color: colors.lightBlackColor},
                     ]}>
                     {strings.decline}
                   </Text>

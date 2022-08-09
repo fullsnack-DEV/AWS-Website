@@ -41,8 +41,7 @@ export default function GameRules({navigation, route}) {
           style={styles.saveButtonStyle}
           onPress={() => {
             onSavePressed();
-          }}
-        >
+          }}>
           Save
         </Text>
       ),
@@ -175,6 +174,7 @@ export default function GameRules({navigation, route}) {
       <Text style={styles.subTitleText}>{strings.gameRulesSubTitle1}</Text>
 
       <TextInput
+        testID="general-rules-input"
         style={styles.rulesText}
         onChangeText={(text) => setGeneralRules(text)}
         value={generalRules}
@@ -187,6 +187,7 @@ export default function GameRules({navigation, route}) {
       />
       <Text style={styles.subTitleText}>{strings.gameRulesSubTitle2}</Text>
       <TextInput
+        testID="special-rules-input"
         style={styles.rulesText}
         onChangeText={(text) => setSpecialRules(text)}
         value={specialRules}

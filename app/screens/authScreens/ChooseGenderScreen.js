@@ -42,6 +42,7 @@ export default function ChooseGenderScreen({navigation, route}) {
   const [enableNext, setEnableNext] = useState(false);
 
   const authContext = useContext(AuthContext);
+  console.log('authContextauthContext', authContext);
   const [selected, setSelected] = useState(
     authContext?.entity?.obj?.gender
       ? (authContext?.entity?.obj?.gender === 'male' && 0) ||
@@ -53,9 +54,11 @@ export default function ChooseGenderScreen({navigation, route}) {
   const navigateToChooseLocationScreen = useCallback(
     (genderParam) => {
       setLoading(false);
+      console.log('basicInfo=====>', route?.params?.signupInfo);
       const uniqueObjArray = [
         ...new Map(nearCity.map((item) => [item.description, item])).values(),
       ];
+      console.log('uniqueObjArray===>', uniqueObjArray);
       setTimeout(() => {
         navigation.navigate('ChooseLocationScreen', {
           signupInfo: {
@@ -72,6 +75,7 @@ export default function ChooseGenderScreen({navigation, route}) {
   );
   const fetchNearestCity = useCallback(
     (gender) => {
+      console.log('Latlong', latLong.coords);
       searchNearByCity(
         latLong.coords.latitude,
         latLong.coords.longitude,
@@ -81,6 +85,7 @@ export default function ChooseGenderScreen({navigation, route}) {
         .then((response) => {
           const places = []; // This Array WIll contain locations received from google
           const cities = [];
+          console.log('Places=====>', response.results);
           for (const googlePlace of response.results) {
             const place = {};
             const lat = googlePlace.geometry.location.lat;
@@ -94,6 +99,11 @@ export default function ChooseGenderScreen({navigation, route}) {
               coordinate.longitude,
               authContext,
             ).then((res) => {
+              console.log('res====>', res);
+              console.log(
+                'Lat/long to address::=>',
+                res.results[0].address_components,
+              );
               let stateAbbr, city, country;
               // eslint-disable-next-line array-callback-return
               res.results[0].address_components.map((e) => {
@@ -116,13 +126,27 @@ export default function ChooseGenderScreen({navigation, route}) {
             place.placeId = googlePlace.place_id;
             place.placeName = googlePlace.name;
             places.push(place);
+            console.log('places--->', places);
+
+            // const position = { coords: { latitude: 49.11637199697782, longitude: -122.7776695216056 } }
           }
           setNearCity(cities);
           setLoading(false);
 
+          console.log('nearCity--->', nearCity);
+          // navigation.navigate('ChooseLocationScreen', {
+          //   signupInfo: {
+          //     ...route?.params?.signupInfo,
+          //     gender,
+          //     location: currentLocation,
+          //     locationPosition: latLong,
+          //     nearCity,
+          //   },
+          // });
           navigateToChooseLocationScreen(gender);
         })
         .catch((e) => {
+          console.log('cathh ---error', e);
           navigateToChooseLocationScreen(gender);
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
@@ -133,10 +157,12 @@ export default function ChooseGenderScreen({navigation, route}) {
   );
 
   useLayoutEffect(() => {
+    console.log('000000', nearCity);
     navigation.setOptions({
       headerRight: () =>
         enableNext ? (
           <Text
+            testID={'next-signupGender-button'}
             style={styles.nextButtonStyle}
             onPress={async () => {
               let gender = {};
@@ -204,7 +230,7 @@ export default function ChooseGenderScreen({navigation, route}) {
             style={{
               height: 20,
               width: 15,
-              marginLeft: wp('5.33%'),
+              marginLeft: 20,
               tintColor: colors.whiteColor,
             }}
           />
@@ -223,6 +249,7 @@ export default function ChooseGenderScreen({navigation, route}) {
     if (Platform.OS === 'android') {
       requestPermission();
     } else {
+      console.log('111');
       request(
         PERMISSIONS.IOS.LOCATION_ALWAYS,
         PERMISSIONS.IOS.LOCATION_WHEN_IN_USE,
@@ -263,12 +290,19 @@ export default function ChooseGenderScreen({navigation, route}) {
     Geolocation.requestAuthorization();
     Geolocation.getCurrentPosition(
       (position) => {
+        console.log('Lat/long to position::=>', position);
+        console.log('222');
+
         setlatLong(position);
         getLocationNameWithLatLong(
           position?.coords?.latitude,
           position?.coords?.longitude,
           authContext,
         ).then((res) => {
+          console.log(
+            'Lat/long to address::=>',
+            res.results[0].address_components,
+          );
           let stateAbbr, city, country;
           // eslint-disable-next-line array-callback-return
           res.results[0].address_components.map((e) => {
@@ -280,13 +314,16 @@ export default function ChooseGenderScreen({navigation, route}) {
               country = e.long_name;
             }
           });
+          console.log('333');
           setCurrentLocation({stateAbbr, city, country});
           setLoading(false);
           setEnableNext(true);
         });
+        console.log('444');
         setLoading(false);
       },
       (error) => {
+        console.log('555');
         setLoading(false);
         setEnableNext(true);
         // See error code charts below.
@@ -301,6 +338,7 @@ export default function ChooseGenderScreen({navigation, route}) {
       PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
     ])
       .then((result) => {
+        console.log('Data :::::', JSON.stringify(result));
         if (
           result['android.permission.ACCESS_COARSE_LOCATION'] &&
           result['android.permission.ACCESS_FINE_LOCATION'] === 'granted'
@@ -343,6 +381,26 @@ export default function ChooseGenderScreen({navigation, route}) {
       </TouchableOpacity>
     </View>
   );
+  /*
+  const updateProfile = async (params, callback) => {
+    setLoading(true);
+    updateUserProfile(params, authContext)
+      .then(async (userResoponse) => {
+        const userData = userResoponse?.payload;
+        const entity = {...authContext?.entity};
+        entity.auth.user = userData;
+        entity.obj = userData;
+        await Utility.setStorage('loggedInEntity', {...entity});
+        await Utility.setStorage('authContextEntity', {...entity});
+        await Utility.setStorage('authContextUser', {...userData});
+        await authContext.setUser({...userData});
+        await authContext.setEntity({...entity});
+        setLoading(false);
+        callback();
+      })
+      .catch(() => setLoading(false));
+  };
+*/
 
   return (
     <LinearGradient
@@ -359,20 +417,10 @@ export default function ChooseGenderScreen({navigation, route}) {
         <Text style={styles.resetText}>{strings.notDisplayGenderText}</Text>
 
         <Tooltip
-          containerStyle={{
-            left: 25,
-          }}
           popover={
-            <View style={{flex: 1, padding: 10}}>
-              <Text
-                style={{
-                  color: colors.themeColor,
-                  fontSize: 14,
-                  fontFamily: fonts.RRegular,
-                }}>
-                {strings.genderText}
-              </Text>
-            </View>
+            <Text style={{color: colors.themeColor, fontSize: 14}}>
+              {strings.genderText}
+            </Text>
           }
           backgroundColor={colors.parrotColor}
           height={hp('22%')}
@@ -384,12 +432,7 @@ export default function ChooseGenderScreen({navigation, route}) {
           </Text>
         </Tooltip>
 
-        <View
-          style={{
-            marginTop: hp('6.77%'),
-            marginLeft: wp('9.3%'),
-            marginRight: wp('9.3%'),
-          }}>
+        <View style={{marginTop: 40, marginLeft: 20}}>
           <View style={styles.radioButtonView}>
             <RenderRadio
               isSelected={selected === 0}
@@ -412,6 +455,18 @@ export default function ChooseGenderScreen({navigation, route}) {
             <Text style={styles.radioText}>{strings.otherRadioText}</Text>
           </View>
         </View>
+
+        {/* <TCButton
+        title={strings.continueCapTitle}
+        onPress={async () => {
+          let gender = {};
+          if (selected === 0) gender = 'male';
+          else if (selected === 1) gender = 'female';
+          else if (selected === 2) gender = 'other';
+          navigateToChooseLocationScreen(gender);
+        }}
+        extraStyle={{bottom: hp('4%'), position: 'absolute'}}
+      /> */}
       </View>
       <SafeAreaView>
         <View
@@ -435,13 +490,21 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: wp('100%'),
   },
-
+  checkEmailText: {
+    color: colors.whiteColor,
+    fontFamily: fonts.RBold,
+    fontSize: 25,
+    marginLeft: 20,
+    marginTop: wp('25%'),
+    textAlign: 'left',
+  },
   mainContainer: {
     flex: 1,
     paddingTop: 25,
   },
   radioButtonView: {
     flexDirection: 'row',
+    marginLeft: 20,
     marginRight: 15,
     marginTop: 20,
   },
@@ -453,46 +516,36 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     marginRight: 15,
   },
-
   resetText: {
     color: colors.whiteColor,
     fontFamily: fonts.RMedium,
     fontSize: 16,
-    marginLeft: wp('6.6%'),
+    marginLeft: 20,
     marginRight: 20,
-    marginTop: 5,
+    marginTop: 10,
     textAlign: 'left',
   },
   whyAskingText: {
     color: colors.parrotColor,
-    fontFamily: fonts.RMedium,
+    fontFamily: fonts.RRegular,
     fontSize: 14,
-    marginLeft: wp('6.6%'),
+    marginLeft: 20,
     marginRight: 20,
-    marginTop: hp('1.84%'),
+    marginTop: 10,
     textAlign: 'left',
   },
-
   canNotChangeGender: {
     color: colors.parrotColor,
-    fontFamily: fonts.RMedium,
+    fontFamily: fonts.RRegular,
     fontSize: 14,
-    marginRight: wp('9.33%'),
-    marginLeft: wp('9.33%'),
+    marginLeft: 25,
+    marginRight: 25,
     textAlign: 'left',
   },
   nextButtonStyle: {
-    fontFamily: fonts.RMedium,
-    fontSize: 16,
-    marginRight: wp('4%'),
-    color: colors.whiteColor,
-  },
-  checkEmailText: {
-    color: colors.whiteColor,
     fontFamily: fonts.RBold,
-    fontSize: 25,
-    marginLeft: wp('6.6%'),
-    marginTop: hp('11.39%'),
-    textAlign: 'left',
+    fontSize: 16,
+    marginRight: 15,
+    color: colors.whiteColor,
   },
 });

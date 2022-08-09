@@ -800,8 +800,7 @@ export default function LocalHomeScreen({navigation, route}) {
                 sport_type: item.sport_type,
               });
             }
-          }}
-        >
+          }}>
           {/* {item.sport === 'All'
             ? 'All'
             : item.sport === 'more'
@@ -888,8 +887,7 @@ export default function LocalHomeScreen({navigation, route}) {
             marginBottom: 15,
             flex: 1,
             backgroundColor: colors.whiteColor,
-          }}
-        >
+          }}>
           <TCChallengerCard
             data={item}
             entityType={item.entity_type}
@@ -1130,8 +1128,7 @@ export default function LocalHomeScreen({navigation, route}) {
                 viewPosition: 0.8,
               });
             });
-          }}
-        >
+          }}>
           <View style={styles.sportsBackgroundView}>
             <View style={{flexDirection: 'row'}}>
               {/* <Image
@@ -1233,8 +1230,7 @@ export default function LocalHomeScreen({navigation, route}) {
       <ActivityLoader visible={loading} />
       <View
         pointerEvents={pointEvent}
-        style={{opacity: isAccountDeactivated ? 0.5 : 1}}
-      >
+        style={{opacity: isAccountDeactivated ? 0.5 : 1}}>
         <Header
           leftComponent={
             <View>
@@ -1252,8 +1248,7 @@ export default function LocalHomeScreen({navigation, route}) {
               onPress={() => {
                 setLocationPopup(true);
               }}
-              hitSlop={getHitSlop(15)}
-            >
+              hitSlop={getHitSlop(15)}>
               <Text style={styles.headerTitle}>
                 {location?.charAt?.(0)?.toUpperCase() + location?.slice(1)}
               </Text>
@@ -1267,8 +1262,7 @@ export default function LocalHomeScreen({navigation, route}) {
                   navigation.navigate('EntitySearchScreen', {
                     sportsList: customSports,
                   });
-                }}
-              >
+                }}>
                 <Image
                   source={images.home_search}
                   style={styles.townsCupIcon}
@@ -1280,7 +1274,7 @@ export default function LocalHomeScreen({navigation, route}) {
             </View>
           }
         />
-        <View style={styles.separateLine} />
+        <View style={styles.separateLine} testID="local-home-screen" />
         <View style={styles.sportsListView}>
           <FlatList
             ref={refContainer}
@@ -1329,8 +1323,7 @@ export default function LocalHomeScreen({navigation, route}) {
               setTimeout(() => {
                 setSettingPopup(true);
               }, 100);
-            }}
-          >
+            }}>
             more
           </Text>
         </View>
@@ -1383,8 +1376,7 @@ export default function LocalHomeScreen({navigation, route}) {
       ) : (
         <View
           pointerEvents={pointEvent}
-          style={{flex: 1, opacity: isAccountDeactivated ? 0.8 : 1}}
-        >
+          style={{flex: 1, opacity: isAccountDeactivated ? 0.8 : 1}}>
           <ScrollView>
             <View>
               <TCTitleWithArrow
@@ -1680,14 +1672,12 @@ export default function LocalHomeScreen({navigation, route}) {
         animationInTiming={300}
         animationOutTiming={800}
         backdropTransitionInTiming={300}
-        backdropTransitionOutTiming={800}
-      >
+        backdropTransitionOutTiming={800}>
         <View style={styles.bottomPopupContainer}>
           <View style={styles.viewsContainer}>
             <Text
               onPress={() => setLocationPopup(false)}
-              style={styles.cancelText}
-            >
+              style={styles.cancelText}>
               Cancel
             </Text>
             <Text style={styles.locationText}>Location</Text>
@@ -1705,19 +1695,16 @@ export default function LocalHomeScreen({navigation, route}) {
               setTimeout(() => {
                 setLocationPopup(false);
               }, 300);
-            }}
-          >
+            }}>
             {selectedLocationOption === 0 ? (
               <LinearGradient
                 colors={[colors.yellowColor, colors.orangeGradientColor]}
-                style={styles.backgroundView}
-              >
+                style={styles.backgroundView}>
                 <Text
                   style={[
                     styles.curruentLocationText,
                     {color: colors.whiteColor},
-                  ]}
-                >
+                  ]}>
                   Current city
                 </Text>
               </LinearGradient>
@@ -1749,13 +1736,11 @@ export default function LocalHomeScreen({navigation, route}) {
               setTimeout(() => {
                 setLocationPopup(false);
               }, 300);
-            }}
-          >
+            }}>
             {selectedLocationOption === 1 ? (
               <LinearGradient
                 colors={[colors.yellowColor, colors.orangeGradientColor]}
-                style={styles.backgroundView}
-              >
+                style={styles.backgroundView}>
                 <Text style={[styles.myCityText, {color: colors.whiteColor}]}>
                   Home city
                 </Text>
@@ -1779,13 +1764,11 @@ export default function LocalHomeScreen({navigation, route}) {
               setTimeout(() => {
                 setLocationPopup(false);
               }, 300);
-            }}
-          >
+            }}>
             {selectedLocationOption === 2 ? (
               <LinearGradient
                 colors={[colors.yellowColor, colors.orangeGradientColor]}
-                style={styles.backgroundView}
-              >
+                style={styles.backgroundView}>
                 <Text style={[styles.worldText, {color: colors.whiteColor}]}>
                   World
                 </Text>
@@ -1806,8 +1789,7 @@ export default function LocalHomeScreen({navigation, route}) {
               navigation.navigate('SearchCityScreen', {
                 comeFrom: 'LocalHomeScreen',
               });
-            }}
-          >
+            }}>
             <Text style={styles.searchText}>{strings.searchTitle}</Text>
           </TouchableOpacity>
         </View>
@@ -1821,22 +1803,19 @@ export default function LocalHomeScreen({navigation, route}) {
         backdropTransitionOutTiming={800}
         style={{
           margin: 0,
-        }}
-      >
+        }}>
         <View
           style={[
             styles.bottomPopupContainer,
             {height: Dimensions.get('window').height - 50},
-          ]}
-        >
+          ]}>
           <View style={styles.topHeaderContainer}>
             <TouchableOpacity
               hitSlop={getHitSlop(15)}
               style={styles.closeButton}
               onPress={() => {
                 setSettingPopup(false);
-              }}
-            >
+              }}>
               <Image source={images.crossImage} style={styles.closeButton} />
             </TouchableOpacity>
             <Text style={styles.moreText}>More</Text>
@@ -1863,8 +1842,7 @@ export default function LocalHomeScreen({navigation, route}) {
                     sports: [...sports],
                     pressBack: getBack,
                   });
-                }}
-              >
+                }}>
                 <Text style={styles.addSportsTitle}>Add or delete Sports</Text>
               </TouchableOpacity>
             )}

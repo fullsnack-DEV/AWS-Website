@@ -535,7 +535,7 @@ function PendingRequestScreen({navigation}) {
     }
   };
 
-  const notificationComponentType = (item) => {
+  const notificationComponentType = (item, index) => {
     console.log('VERB::=>', item);
     if (isInvite(item.activities[0].verb)) {
       if (
@@ -545,6 +545,7 @@ function PendingRequestScreen({navigation}) {
       ) {
         return (
           <PRNotificationTeamInvite
+            accessibilityLabel={index}
             item={item}
             selectedEntity={selectedEntity}
             // onAccept={() => onAccept(item.activities[0].id)}
@@ -559,6 +560,7 @@ function PendingRequestScreen({navigation}) {
       ) {
         return (
           <PRNotificationTeamInvite
+            accessibilityLabel={index}
             item={item}
             selectedEntity={selectedEntity}
             // onAccept={() => onAccept(item.activities[0].id)}
@@ -571,6 +573,7 @@ function PendingRequestScreen({navigation}) {
 
       return (
         <PRNotificationInviteCell
+          accessibilityLabel={index}
           item={item}
           selectedEntity={selectedEntity}
           onAccept={() => onAccept(item.activities[0].id)}
@@ -589,6 +592,7 @@ function PendingRequestScreen({navigation}) {
     ) {
       return (
         <PRNotificationDetailItem
+          accessibilityLabel={index}
           item={item}
           selectedEntity={selectedEntity}
           onDetailPress={() => onDetailPress(item)}
@@ -600,6 +604,7 @@ function PendingRequestScreen({navigation}) {
 
     return (
       <PRNotificationDetailMessageItem
+        accessibilityLabel={index}
         item={item}
         selectedEntity={selectedEntity}
         onDetailPress={() => onDetailPress(item)}
@@ -610,15 +615,14 @@ function PendingRequestScreen({navigation}) {
     );
   };
 
-  const renderPendingRequestComponent = ({item}) => {
+  const renderPendingRequestComponent = ({item, index}) => {
     console.log('ITEm:,', item);
     return (
       <AppleStyleSwipeableRow
         onPress={() => onDelete({item})}
         color={colors.darkThemeColor}
-        image={images.deleteIcon}
-      >
-        {notificationComponentType(item)}
+        image={images.deleteIcon}>
+        {notificationComponentType(item, index)}
       </AppleStyleSwipeableRow>
     );
   };

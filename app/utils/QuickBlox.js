@@ -83,7 +83,7 @@ export const getQBSetting = async () => {
 export const QB_MAX_ASSET_SIZE_UPLOAD = 104857600;
 
 export const QB_UNREAD_MESSAGE_COUNT_API = `${QUICKBLOX_BASE_URL}/chat/Message/unread.json?token=`;
-const MESSAGES_SORT = {
+const MESSAGES_SORT_TYPE = {
   ascending: false,
   field: QB.chat.MESSAGES_SORT.FIELD.DATE_SENT,
 };
@@ -375,7 +375,7 @@ export const QBgetMessages = (dialogId, skipCount = 0) => {
       const query = {
         dialogId,
         limit: MESSAGE_LIMIT,
-        sort: MESSAGES_SORT,
+        sort: MESSAGES_SORT_TYPE,
         skip: skipCount,
       };
       return QB.chat.getDialogMessages(query).then((response) => ({

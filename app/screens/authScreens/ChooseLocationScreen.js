@@ -70,6 +70,7 @@ export default function ChooseLocationScreen({navigation, route}) {
 
   const [loading, setLoading] = useState(false);
   const routes = useNavigationState((state) => state);
+  console.log('route?.signupInfo?', route?.params?.signupInfo);
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
@@ -82,7 +83,7 @@ export default function ChooseLocationScreen({navigation, route}) {
             style={{
               height: 20,
               width: 15,
-              marginLeft: wp('5.33%'),
+              marginLeft: 20,
               tintColor: colors.whiteColor,
             }}
           />
@@ -92,6 +93,9 @@ export default function ChooseLocationScreen({navigation, route}) {
   }, [navigation]);
 
   useEffect(() => {
+    console.log('searchText', searchText);
+
+    // getNearestCity();
     getLocationData(searchText);
   }, [searchText]);
 
@@ -99,6 +103,7 @@ export default function ChooseLocationScreen({navigation, route}) {
     if (Platform.OS === 'android') {
       requestPermission();
     } else {
+      console.log('111');
       getLocation();
     }
   }, []);
@@ -109,6 +114,7 @@ export default function ChooseLocationScreen({navigation, route}) {
       url: `http://getnearbycities.geobytes.com/GetNearbyCities?radius=${radious}&latitude=${lat}&longitude=${long}&limit=500`,
     })
       .then((response) => {
+        console.log('nearby city :=>', response.data);
         const cityList = response.data.map((obj) => {
           return {
             description: obj[1],
@@ -123,18 +129,23 @@ export default function ChooseLocationScreen({navigation, route}) {
       })
       .catch((e) => {
         setTimeout(() => {
+          console.log('catch -> location screen setting api');
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
   };
 
   useEffect(() => {
+    console.log('Settings useEffect clled:=>');
+
     getAppSettingsWithoutAuth()
       .then(async (response) => {
+        console.log('Settings:=>', response);
         await Utility.setStorage('appSetting', response.payload.app);
       })
       .catch((e) => {
         setTimeout(() => {
+          console.log('catch -> location screen setting api');
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
@@ -146,6 +157,7 @@ export default function ChooseLocationScreen({navigation, route}) {
       PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
     ])
       .then((result) => {
+        console.log('Data :::::', JSON.stringify(result));
         if (
           result['android.permission.ACCESS_COARSE_LOCATION'] &&
           result['android.permission.ACCESS_FINE_LOCATION'] === 'granted'
@@ -182,11 +194,14 @@ export default function ChooseLocationScreen({navigation, route}) {
               country = e.long_name;
             }
           });
-
+          console.log('333');
           setCurrentLocation({stateAbbr, city, country});
         });
+        console.log('444');
+        console.log(position.coords.latitude);
       },
       (error) => {
+        console.log('555');
         // See error code charts below.
         console.log(error.code, error.message);
       },
@@ -198,6 +213,7 @@ export default function ChooseLocationScreen({navigation, route}) {
     if (searchLocationText.length >= 3) {
       searchLocations(searchLocationText)
         .then((response) => {
+          console.log('Response ---8888', response);
           setNoData(false);
           setCityData(response.predictions);
         })
@@ -207,6 +223,8 @@ export default function ChooseLocationScreen({navigation, route}) {
           }, 10);
         });
     } else {
+      console.log('Response ---9999');
+
       setNoData(true);
       setCityData([]);
     }
@@ -214,17 +232,45 @@ export default function ChooseLocationScreen({navigation, route}) {
 
   const getTeamsDataByCurrentLocation = async () => {
     setLoading(true);
+    console.log('Curruent location data:=>', currentLocation);
     const userData = {
       city: currentLocation?.city,
       state_abbr: currentLocation?.stateAbbr,
       country: currentLocation?.country,
     };
-
+    // updateProfile(userData, () => {
+    //   navigation.navigate('ChooseSportsScreen', {
+    //     city: currentLocation?.city,
+    //     state: currentLocation?.stateAbbr,
+    //     country: currentLocation?.country,
+    //   });
+    // });
     navigateToChooseSportScreen(userData);
   };
-
+  /*
+  const updateProfile = async (params, callback) => {
+    setLoading(true);
+    updateUserProfile(params, authContext)
+      .then(async (userResoponse) => {
+        const userData = userResoponse?.payload;
+        const entity = {...authContext?.entity};
+        entity.auth.user = userData;
+        entity.obj = userData;
+        await Utility.setStorage('loggedInEntity', {...entity});
+        await Utility.setStorage('authContextEntity', {...entity});
+        await Utility.setStorage('authContextUser', {...userData});
+        await authContext.setUser({...userData});
+        await authContext.setEntity({...entity});
+        setLoading(false);
+        callback();
+      })
+      .catch(() => setLoading(false));
+  };
+*/
   const navigateToChooseSportScreen = (params) => {
     setLoading(false);
+    console.log('genderInfo', route?.params?.signupInfo);
+    console.log('location data', params);
 
     navigation.navigate('ChooseSportsScreen', {
       locationInfo: {
@@ -235,6 +281,7 @@ export default function ChooseLocationScreen({navigation, route}) {
   };
 
   const getTeamsData = async (item) => {
+    console.log('item location data:=>', item);
     setLoading(true);
     const userData = {
       city: item?.city ?? item?.terms?.[0]?.value,
@@ -265,7 +312,7 @@ export default function ChooseLocationScreen({navigation, route}) {
         style={styles.background}
         source={images.loginBg}
       />
-      <Text style={styles.LocationText}>{strings.signupLocationText}</Text>
+      <Text style={styles.LocationText}>{strings.locationText}</Text>
       <Text style={styles.LocationDescription}>
         {strings.locationDescription}
       </Text>
@@ -274,6 +321,7 @@ export default function ChooseLocationScreen({navigation, route}) {
         <Image source={images.searchLocation} style={styles.searchImg} />
         <TextInput
           // Indiër - For Test
+          testID="location-search-input"
           value={searchText}
           autoCorrect={false}
           spellCheck={false}
@@ -288,7 +336,7 @@ export default function ChooseLocationScreen({navigation, route}) {
       </View>
       {noData && searchText?.length > 0 && (
         <Text style={styles.noDataText}>
-          Please enter at least 3 characters to see cities.
+          Please, enter at least 3 characters to see addresses.
         </Text>
       )}
       {noData && searchText?.length === 0 && nearByCity.length > 0 && (
@@ -296,6 +344,7 @@ export default function ChooseLocationScreen({navigation, route}) {
           <FlatList
             data={nearByCity}
             renderItem={({item}) => {
+              console.log('Near city1111 ==>', nearByCity);
               return (
                 <TouchableWithoutFeedback
                   style={styles.listItem}
@@ -340,26 +389,20 @@ export default function ChooseLocationScreen({navigation, route}) {
 
 const styles = StyleSheet.create({
   LocationText: {
-    // color: colors.whiteColor,
-    // fontFamily: fonts.RBold,
-    // fontSize: wp('6%'),
-    // marginTop: hp('12%'),
-    // paddingLeft: 30,
-    // textAlign: 'left',
     color: colors.whiteColor,
     fontFamily: fonts.RBold,
-    fontSize: 25,
-    marginLeft: wp('6.6%'),
-    marginTop: hp('11.39%'),
+    fontSize: wp('6%'),
+    marginTop: hp('12%'),
+    paddingLeft: 30,
     textAlign: 'left',
   },
   LocationDescription: {
     color: colors.whiteColor,
     fontFamily: fonts.RMedium,
-    fontSize: 16,
-    marginLeft: wp('6.6%'),
-    marginRight: 20,
-    marginTop: 5,
+    fontSize: wp('4%'),
+    marginTop: hp('1%'),
+    paddingLeft: 30,
+    paddingRight: 30,
     textAlign: 'left',
   },
   background: {
@@ -369,7 +412,7 @@ const styles = StyleSheet.create({
   },
   cityList: {
     color: colors.whiteColor,
-    fontSize: 16,
+    fontSize: wp('4%'),
     textAlign: 'left',
     fontFamily: fonts.RMedium,
 
@@ -380,7 +423,7 @@ const styles = StyleSheet.create({
   },
   curruentLocationText: {
     color: colors.whiteColor,
-    fontSize: 12,
+    fontSize: wp('3%'),
     textAlign: 'left',
     fontFamily: fonts.RRegular,
 
@@ -392,9 +435,8 @@ const styles = StyleSheet.create({
   },
   listItem: {
     flexDirection: 'row',
-    marginLeft: wp('8%'),
-    marginRight: wp('8%'),
-    width: wp('81.33%'),
+    marginLeft: wp('10%'),
+    width: wp('80%'),
   },
   mainContainer: {
     flex: 1,
@@ -426,7 +468,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     height: 40,
     justifyContent: 'center',
-    // margin: wp('8%'),
+    margin: wp('8%'),
     marginBottom: wp('1%'),
     paddingLeft: 17,
     paddingRight: 5,
@@ -435,10 +477,6 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.5,
     shadowRadius: 4,
-    marginTop: hp('3.07%'),
-    width: wp('86.67%'),
-    marginLeft: wp('6.6%'),
-    marginRight: wp('6.6%'),
   },
   textInput: {
     color: colors.darkYellowColor,

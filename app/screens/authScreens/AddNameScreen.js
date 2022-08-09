@@ -42,7 +42,10 @@ export default function SignupScreen({navigation, route}) {
   );
   const [profilePic, setProfilePic] = useState();
   const actionSheetWithDelete = useRef();
-
+  console.log(
+    'Route===>',
+    route?.params?.signupInfo?.uploadedProfilePic?.thumbnail,
+  );
   const actionSheet = useRef();
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -56,7 +59,7 @@ export default function SignupScreen({navigation, route}) {
             style={{
               height: 20,
               width: 15,
-              marginLeft: wp('5.33%'),
+              marginLeft: 20,
               tintColor: colors.whiteColor,
             }}
           />
@@ -64,6 +67,7 @@ export default function SignupScreen({navigation, route}) {
       ),
       headerRight: () => (
         <Text
+          testID="next-signup-button"
           style={styles.nextButtonStyle}
           onPress={() => {
             if (validate()) {
@@ -87,9 +91,69 @@ export default function SignupScreen({navigation, route}) {
       };
       userData.uploadedProfilePic = uploadedProfilePic;
     }
+    console.log('profilePic==>', userData);
     navigateToAddBirthdayScreen(userData);
   };
+  /*
+  // For activity indigator
+  const uploadProfilePicAndGeneratePreSignedUrls = async () => {
+    console.log('0000000');
+    setLoading(true);
+    const tokenData = authContext?.tokenData;
+    const authToken = tokenData.token;
+    const userData = {};
+    const uploadImageConfig = {
+      method: 'get',
+      url: `${Config.BASE_URL}/pre-signed-url?count=2`,
+      headers: {Authorization: `Bearer ${authToken}`},
+    };
+    console.log('authToken', authToken);
+    console.log('uploadImageConfig', uploadImageConfig);
+    console.log('profilePic', profilePic);
 
+    if (profilePic) {
+      const apiResponse = await apiCall(uploadImageConfig);
+      const preSignedUrls = apiResponse?.payload?.preSignedUrls ?? [];
+      Promise.all([
+        uploadImageOnPreSignedUrls({
+          url: preSignedUrls?.[0],
+          uri: profilePic.path,
+          type: profilePic.path.split('.')[1] || 'jpeg',
+        }),
+        uploadImageOnPreSignedUrls({
+          url: preSignedUrls?.[1],
+          uri: profilePic?.path,
+          type: profilePic?.path.split('.')[1] || 'jpeg',
+        }),
+      ])
+        .then(async ([fullImage, thumbnail]) => {
+          setLoading(false);
+          const uploadedProfilePic = {full_image: fullImage, thumbnail};
+          userData.uploadedProfilePic = uploadedProfilePic;
+          navigateToAddBirthdayScreen(userData);
+          console.log('1111');
+        })
+        .catch(async () => {
+          setLoading(false);
+          console.log('2222');
+          // await signUpToTownsCup();
+          navigateToAddBirthdayScreen(userData);
+        });
+    } else if (providerPic) {
+      setLoading(false);
+      const uploadedProfilePic = {
+        full_image: providerPic,
+        thumbnail: providerPic,
+      };
+      userData.uploadedProfilePic = uploadedProfilePic;
+      navigateToAddBirthdayScreen(userData);
+    } else {
+      setLoading(false);
+      console.log('33333');
+      navigateToAddBirthdayScreen(userData);
+    }
+  };
+  */
   const navigateToAddBirthdayScreen = (userData) => {
     const profileData = {
       ...route?.params?.signupInfo,
@@ -97,11 +161,15 @@ export default function SignupScreen({navigation, route}) {
       first_name: fName,
       last_name: lName,
     };
+    console.log('Profile data ', profileData);
     navigation.navigate('AddBirthdayScreen', {
       signupInfo: {...profileData},
     });
   };
   const validate = () => {
+    console.log('fName', fName);
+    console.log('lName', lName);
+
     if (fName === '') {
       Alert.alert(strings.appName, 'First name cannot be blank');
       return false;
@@ -136,6 +204,7 @@ export default function SignupScreen({navigation, route}) {
       cropping: true,
       cropperCircleOverlay: cropCircle,
     }).then((pickImages) => {
+      console.log('pickImages', pickImages);
       setProviderPic('');
       setProfilePic(pickImages);
     });
@@ -205,6 +274,8 @@ export default function SignupScreen({navigation, route}) {
       });
   };
   const onProfileImageClicked = () => {
+    console.log('kkk', route?.params?.signupInfo);
+
     setTimeout(() => {
       if (profilePic) {
         actionSheetWithDelete.current.show();
@@ -262,15 +333,27 @@ export default function SignupScreen({navigation, route}) {
         <Text style={styles.checkEmailText}>{strings.addYourName}</Text>
 
         <TCKeyboardView>
-          <View
-            style={{
-              marginTop: hp('7.51%'),
-            }}>
+          <View style={{marginVertical: 20}}>
             <TouchableOpacity
               style={styles.profile}
               onPress={() => {
                 onProfileImageClicked();
               }}>
+              {/* <FastImage
+                resizeMode={'contain'}
+                source={
+                  profilePic?.path
+                    ? {uri: profilePic?.path}
+                    : images.profilePlaceHolder
+                }
+                style={{
+                  width: 100,
+                  height: 100,
+                  borderRadius: 50,
+                  backgroundColor: '#FED378',
+                }}
+              /> */}
+
               {profilePic ? (
                 <FastImage
                   resizeMode={'contain'}
@@ -280,9 +363,9 @@ export default function SignupScreen({navigation, route}) {
                       : images.profilePlaceHolder
                   }
                   style={{
-                    width: 60,
-                    height: 60,
-                    borderRadius: 30,
+                    width: 100,
+                    height: 100,
+                    borderRadius: 50,
                     backgroundColor: '#FED378',
                   }}
                 />
@@ -297,9 +380,9 @@ export default function SignupScreen({navigation, route}) {
                           : images.profilePlaceHolder
                       }
                       style={{
-                        width: 60,
-                        height: 60,
-                        borderRadius: 30,
+                        width: 100,
+                        height: 100,
+                        borderRadius: 50,
                         backgroundColor: '#FED378',
                       }}
                     />
@@ -308,9 +391,9 @@ export default function SignupScreen({navigation, route}) {
                       resizeMode={'contain'}
                       source={images.profilePlaceHolder}
                       style={{
-                        width: 60,
-                        height: 60,
-                        borderRadius: 30,
+                        width: 100,
+                        height: 100,
+                        borderRadius: 50,
                         backgroundColor: '#FED378',
                       }}
                     />
@@ -330,6 +413,7 @@ export default function SignupScreen({navigation, route}) {
             </TouchableOpacity>
           </View>
           <TCTextField
+            testID="fname-signup-input"
             placeholderTextColor={colors.darkYellowColor}
             style={styles.textFieldStyle}
             placeholder={strings.fnameText}
@@ -337,12 +421,25 @@ export default function SignupScreen({navigation, route}) {
             onChangeText={(text) => setFName(text)}
           />
           <TCTextField
+            testID="lname-signup-input"
             placeholderTextColor={colors.darkYellowColor}
             style={styles.textFieldStyle}
             placeholder={strings.lnameText}
             onChangeText={(text) => setLName(text)}
             value={lName}
           />
+
+          {/* <TCButton
+            title={strings.continueCapTitle}
+            extraStyle={{
+              marginTop: hp('2%'),
+            }}
+            onPress={() => {
+              if (validate()) {
+                navigation.navigate('AddBirthdayScreen');
+              }
+            }}
+          /> */}
         </TCKeyboardView>
       </LinearGradient>
     </>
@@ -363,10 +460,11 @@ const styles = StyleSheet.create({
   profile: {
     alignContent: 'center',
     alignSelf: 'center',
-    height: 60,
-    marginBottom: hp('2.46%'),
-    width: 60,
-    borderRadius: 30,
+    height: 100,
+    marginTop: 30,
+    marginBottom: 20,
+    width: 100,
+    borderRadius: 50,
 
     // borderWidth: 1,
     // borderColor: '#FED378',
@@ -376,7 +474,7 @@ const styles = StyleSheet.create({
     top: 30,
     marginVertical: 5,
     alignSelf: 'center',
-    width: wp('81.3%'),
+    width: wp('85%'),
     backgroundColor: 'rgba(255,255,255,0.9)',
     shadowColor: colors.googleColor,
     shadowOffset: {width: 0, height: 4},
@@ -386,8 +484,8 @@ const styles = StyleSheet.create({
   profileCameraButtonStyle: {
     height: 22,
     width: 22,
-    marginTop: -41,
-    marginLeft: 40,
+    marginTop: -40,
+    marginLeft: 60,
     alignSelf: 'center',
   },
   cameraIcon: {
@@ -395,17 +493,17 @@ const styles = StyleSheet.create({
     width: 22,
   },
   nextButtonStyle: {
-    fontFamily: fonts.RMedium,
+    fontFamily: fonts.RBold,
     fontSize: 16,
-    marginRight: wp('4%'),
+    marginRight: 15,
     color: colors.whiteColor,
   },
   checkEmailText: {
     color: colors.whiteColor,
     fontFamily: fonts.RBold,
     fontSize: 25,
-    marginLeft: wp('6.6%'),
-    marginTop: hp('11.39%'),
+    marginLeft: 20,
+    marginTop: wp('25%'),
     textAlign: 'left',
   },
 });

@@ -30,6 +30,10 @@ import ActivityLoader from '../../components/loader/ActivityLoader';
 export default function AddBirthdayScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
 
+  console.log(
+    'auth birthday',
+    new Date(authContext?.entity?.obj?.birthday * 1000),
+  );
   const [dateValue, setDateValue] = useState(
     authContext?.entity?.obj?.birthday
       ? new Date(authContext?.entity?.obj?.birthday * 1000)
@@ -55,7 +59,7 @@ export default function AddBirthdayScreen({navigation, route}) {
             style={{
               height: 20,
               width: 15,
-              marginLeft: wp('5.33%'),
+              marginLeft: 20,
               tintColor: colors.whiteColor,
             }}
           />
@@ -64,6 +68,7 @@ export default function AddBirthdayScreen({navigation, route}) {
 
       headerRight: () => (
         <Text
+          testID={'next-signupBirthday-button'}
           style={styles.nextButtonStyle}
           onPress={() => {
             const userParams = {birthday: new Date(dateValue).getTime() / 1000};
@@ -84,10 +89,14 @@ export default function AddBirthdayScreen({navigation, route}) {
     setMaxDateValue(maxdate);
   }, []);
   const navigateToGenderScreen = (userParams) => {
+    console.log('route?.params?.signupInfo', route?.params?.signupInfo);
+    console.log('userParams', userParams);
+
     const profileData = {
       ...route?.params?.signupInfo,
       birthday: userParams.birthday,
     };
+    console.log('Profile data gender ', profileData);
     navigation.navigate('ChooseGenderScreen', {
       signupInfo: {...profileData},
     });
@@ -107,21 +116,12 @@ export default function AddBirthdayScreen({navigation, route}) {
 
         <Text style={styles.checkEmailText}>{strings.addBirthdayText}</Text>
         <Text style={styles.resetText}>{strings.notDisplayText}</Text>
+
         <Tooltip
-          containerStyle={{
-            left: 25,
-          }}
           popover={
-            <View style={{flex: 1, padding: 10}}>
-              <Text
-                style={{
-                  color: colors.themeColor,
-                  fontSize: 14,
-                  fontFamily: fonts.RRegular,
-                }}>
-                {strings.birthdatText}
-              </Text>
-            </View>
+            <Text style={{color: colors.themeColor, fontSize: 14}}>
+              {strings.birthdatText}
+            </Text>
           }
           backgroundColor={colors.parrotColor}
           height={hp('40%')}
@@ -145,7 +145,7 @@ export default function AddBirthdayScreen({navigation, route}) {
             mode={'date'}
             maximumDate={minDateValue}
             minimumDate={maxDateValue}
-            testID={'startsDateDateTimePicker'}
+            testID={'birthday-signup-picker'}
             style={{marginTop: 15}}
             date={dateValue}
             onDateChange={onChange}
@@ -185,8 +185,8 @@ const styles = StyleSheet.create({
     color: colors.whiteColor,
     fontFamily: fonts.RBold,
     fontSize: 25,
-    marginLeft: wp('6.6%'),
-    marginTop: hp('11.39%'),
+    marginLeft: 20,
+    marginTop: wp('25%'),
     textAlign: 'left',
   },
   dateText: {
@@ -200,10 +200,10 @@ const styles = StyleSheet.create({
   },
   matchFeeTxt: {
     height: 40,
-    width: wp('81.3%'),
+    width: wp('90%'),
     alignSelf: 'center',
     justifyContent: 'center',
-    marginTop: hp('9.23%'),
+    marginTop: 30,
     fontSize: wp('3.8%'),
     color: 'black',
     backgroundColor: 'rgba(255,255,255,0.9)',
@@ -220,34 +220,33 @@ const styles = StyleSheet.create({
     color: colors.whiteColor,
     fontFamily: fonts.RMedium,
     fontSize: 16,
-    marginLeft: wp('6.6%'),
+    marginLeft: 20,
     marginRight: 20,
-    marginTop: 5,
+    marginTop: 10,
     textAlign: 'left',
   },
   whyAskingText: {
     color: colors.parrotColor,
-    fontFamily: fonts.RMedium,
+    fontFamily: fonts.RRegular,
     fontSize: 14,
-    marginLeft: wp('6.6%'),
+    marginLeft: 20,
     marginRight: 20,
-    marginTop: hp('1.84%'),
-    // marginBottom: hp('9%'),
+    marginTop: 10,
     textAlign: 'left',
   },
   birthDateChangeNote: {
     color: colors.parrotColor,
-    fontFamily: fonts.RMedium,
+    fontFamily: fonts.RRegular,
     fontSize: 14,
-    marginRight: wp('9.33%'),
-    marginLeft: wp('9.33%'),
+    marginLeft: 35,
+    marginRight: 35,
     textAlign: 'left',
   },
 
   nextButtonStyle: {
-    fontFamily: fonts.RMedium,
+    fontFamily: fonts.RBold,
     fontSize: 16,
-    marginRight: wp('4%'),
+    marginRight: 15,
     color: colors.whiteColor,
   },
 });
