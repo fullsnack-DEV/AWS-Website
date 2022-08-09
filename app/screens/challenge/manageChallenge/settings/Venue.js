@@ -52,7 +52,6 @@ export default function Venue({navigation, route}) {
   useEffect(() => {
     if (route?.params?.venueObj) {
       getLatLongData(route?.params?.venueObj?.description);
-
       console.log('Venue Object', route?.params?.venueObj);
     }
   }, [route?.params?.venueObj]);
@@ -71,8 +70,7 @@ export default function Venue({navigation, route}) {
             } else {
               onSavePressed();
             }
-          }}
-        >
+          }}>
           Save
         </Text>
       ),
@@ -105,8 +103,7 @@ export default function Venue({navigation, route}) {
             onPress={() => {
               venue.splice(index, 1);
               setVenue([...venue]);
-            }}
-          >
+            }}>
             Delete
           </Text>
         )}
@@ -114,6 +111,7 @@ export default function Venue({navigation, route}) {
 
       <View style={styles.viewContainer}>
         <TCTextInputClear
+          testID={'venue-name-input'}
           placeholder={strings.venueNamePlaceholder}
           onChangeText={(text) => {
             const ven = [...venue];
@@ -148,14 +146,14 @@ pointerEvents="none"
         /> */}
 
         <TouchableOpacity
+          testID="venue-button"
           style={styles.detailsSingleContainer}
           onPress={() => {
             setSelectedVenueIndex(index);
             navigation.navigate('ChooseAddressScreen', {
               comeFrom: 'Venue',
             });
-          }}
-        >
+          }}>
           <TextInput
             editable={false}
             pointerEvents="none"
@@ -166,6 +164,7 @@ pointerEvents="none"
         </TouchableOpacity>
 
         <TCTextInputClear
+          testID={'venue-detail-input'}
           placeholder={strings.venueDetailsPlaceholder}
           onChangeText={(text) => {
             const ven = [...venue];
@@ -375,28 +374,23 @@ pointerEvents="none"
   const getLatLongData = (addressDescription) => {
     getLatLong(addressDescription, authContext).then((response) => {
       console.log('Lat/Long response::=>', response);
-
       const ven = [...venue];
       let city, state, country;
       response.results[0].address_components.map((e) => {
         if (e?.types?.includes('country')) {
           country = e.long_name;
         }
-
         if (e?.types?.includes('administrative_area_level_1')) {
           state = e.long_name;
         }
-
         if (e?.types?.includes('administrative_area_level_2')) {
           city = e.long_name;
         }
       });
-
       ven[selectedVenueIndex].address = route?.params?.venueObj?.description;
       ven[selectedVenueIndex].city = city;
       ven[selectedVenueIndex].state = state;
       ven[selectedVenueIndex].country = country;
-
       ven[selectedVenueIndex].coordinate = {
         latitude: response.results[0].geometry.location.lat,
         longitude: response.results[0].geometry.location.lng,

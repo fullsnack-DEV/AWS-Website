@@ -254,6 +254,8 @@ import RecruitingMemberScreen from '../screens/account/GroupSetting/RecruitingMe
 import GroupsScreen from '../screens/account/GroupSetting/GroupsScreen';
 import PendingRequestScreen from '../screens/notificationsScreen/PendingRequestScreen';
 import TrashScreen from '../screens/notificationsScreen/TrashScreen';
+import WhoCanJoinTeamScreen from '../screens/account/GroupSetting/WhoCanJoinTeamScreen';
+import WhoCanInviteMemberScreen from '../screens/account/GroupSetting/WhoCanInviteMemberScreen';
 
 // Scorekeeper Review Screen
 
@@ -267,8 +269,7 @@ const AccountNavigator = () => (
       // headerTitle: true,
       gestureEnabled: false,
       headerBackTitleVisible: false,
-    }}
-  >
+    }}>
     <Stack.Screen
       name="AccountScreen"
       component={AccountScreen}
@@ -1269,7 +1270,7 @@ const AccountNavigator = () => (
       name="JoinedTeamsScreen"
       component={JoinedTeamsScreen}
       options={{
-        title: 'Followings',
+        title: 'Teams',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -3584,6 +3585,41 @@ const AccountNavigator = () => (
         },
       }}
     />
+    <Stack.Screen
+      name="WhoCanJoinTeamScreen"
+      component={WhoCanJoinTeamScreen}
+      options={{
+        title: 'Who Can Join Team',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="WhoCanInviteMemberScreen"
+      component={WhoCanInviteMemberScreen}
+      options={{
+        title: 'Who Can Invite Member',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+
     <Stack.Screen
       name="GroupsScreen"
       component={GroupsScreen}

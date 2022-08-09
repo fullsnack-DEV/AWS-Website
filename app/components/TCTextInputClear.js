@@ -16,11 +16,13 @@ const TCTextInputClear = ({
   placeholder,
   value,
   onPressClear,
+  testID,
 }) => (
   <>
     {multiline ? (
       <View style={styles.detailsContainer}>
         <TextInput
+          testID={testID}
           style={styles.detailsText}
           placeholder={placeholder}
           multiline={multiline}
@@ -49,6 +51,7 @@ const TCTextInputClear = ({
     ) : (
       <View style={styles.detailsSingleContainer}>
         <TextInput
+          testID={testID}
           style={styles.detailsSingleText}
           placeholder={placeholder}
           autoCorrect={false}

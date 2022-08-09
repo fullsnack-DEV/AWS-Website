@@ -18,7 +18,7 @@ import {
 } from 'react-native';
 import _ from 'lodash';
 import moment from 'moment';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,

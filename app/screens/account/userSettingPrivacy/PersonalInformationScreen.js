@@ -73,6 +73,8 @@ export default function PersonalInformationScreen({navigation, route}) {
   const [city, setCity] = useState(
     route?.params?.city ? route?.params?.city : authContext?.entity?.obj?.city,
   );
+  console.log('Current city1', route?.params?.city);
+  console.log('Current city2', authContext?.entity?.obj?.city);
   const [state, setState] = useState(
     route?.params?.state
       ? route?.params?.state
@@ -138,6 +140,7 @@ export default function PersonalInformationScreen({navigation, route}) {
   ]);
 
   useEffect(() => {
+    console.log('route?.params?.city', route?.params?.city);
     if (isFocused) {
       if (
         route?.params?.city &&
@@ -174,6 +177,7 @@ export default function PersonalInformationScreen({navigation, route}) {
     if (Platform.OS === 'android') {
       requestPermission();
     } else {
+      console.log('111');
       request(
         PERMISSIONS.IOS.LOCATION_ALWAYS,
         PERMISSIONS.IOS.LOCATION_WHEN_IN_USE,
@@ -212,6 +216,9 @@ export default function PersonalInformationScreen({navigation, route}) {
     Geolocation.requestAuthorization();
     Geolocation.getCurrentPosition(
       (position) => {
+        console.log('Lat/long to position::=>', position);
+        console.log('222');
+
         getLocationNameWithLatLong(
           position?.coords?.latitude,
           position?.coords?.longitude,
@@ -234,12 +241,15 @@ export default function PersonalInformationScreen({navigation, route}) {
               userData.country = e.long_name;
             }
           });
+          console.log('www', userData);
           setCurrentLocation(userData);
           setloading(false);
         });
+        console.log('444');
         setloading(false);
       },
       (error) => {
+        console.log('555');
         setloading(false);
         // See error code charts below.
         console.log(error.code, error.message);
@@ -266,10 +276,12 @@ export default function PersonalInformationScreen({navigation, route}) {
       });
   };
   const renderItem = ({item, index}) => {
+    console.log('Location item:=>', item);
     return (
       <TouchableWithoutFeedback
         style={styles.listItem}
-        onPress={() => getTeamsData(item)}>
+        onPress={() => getTeamsData(item)}
+      >
         <View>
           <Text style={styles.cityList}>{cityData[index].description}</Text>
           <TCThinDivider
@@ -292,6 +304,7 @@ export default function PersonalInformationScreen({navigation, route}) {
     setLocationPopup(false);
   };
   const getTeamsDataByCurrentLocation = async () => {
+    console.log('Curruent location data:=>', currentLocation);
     setCity(currentLocation.city);
     setState(currentLocation.state);
     setCountry(currentLocation.country);
@@ -300,6 +313,7 @@ export default function PersonalInformationScreen({navigation, route}) {
 
   // Form Validation
   const checkValidation = () => {
+    console.log('userInfo', userInfo);
     if (userInfo.email) {
       if (!Utility.validateEmail(userInfo.email)) {
         Alert.alert(strings.appName, 'Please enter valid email address.');
@@ -350,6 +364,8 @@ export default function PersonalInformationScreen({navigation, route}) {
   };
 
   const onSavePress = () => {
+    // console.log('checkValidation()', checkValidation());
+
     if (checkValidation()) {
       setloading(true);
       const bodyParams = {...userInfo};
@@ -361,8 +377,18 @@ export default function PersonalInformationScreen({navigation, route}) {
       bodyParams.state_abbr = state;
       bodyParams.country = country;
       bodyParams.street_address = streetAddress;
+      bodyParams.postal_code = postalCode;
 
       bodyParams.description = userInfo.description;
+      bodyParams.height = userInfo.height;
+      bodyParams.weight = userInfo.weight;
+
+      if (userInfo.language) {
+        bodyParams.language = userInfo.language;
+      }
+      if (phoneNumbers) {
+        bodyParams.phone_numbers = userInfo.phone_numbers;
+      }
 
       if (profileImageChanged) {
         const imageArray = [];
@@ -403,7 +429,7 @@ export default function PersonalInformationScreen({navigation, route}) {
 
   const updateUser = (params) => {
     setloading(true);
-    console.log('bodyPARAMS11:: ', params);
+    console.log('bodyPARAMS:: ', params);
     updateUserProfile(params, authContext)
       .then((response) => {
         const accountType = getQBAccountType(response?.payload?.entity_type);
@@ -416,6 +442,7 @@ export default function PersonalInformationScreen({navigation, route}) {
         )
           .then(() => {
             setloading(false);
+
             navigation.goBack();
           })
           .catch((error) => {
@@ -539,7 +566,8 @@ export default function PersonalInformationScreen({navigation, route}) {
               color: colors.lightBlackColor,
               textAlign: 'center',
               fontFamily: fonts.RBold,
-            }}>
+            }}
+          >
             {route?.params?.isEditProfile ? 'Edit Profile' : 'Profile'}
           </Text>
         }
@@ -550,7 +578,8 @@ export default function PersonalInformationScreen({navigation, route}) {
               // if (!editMode) changeEditMode();
               // else
               onSavePress();
-            }}>
+            }}
+          >
             Update
           </Text>
         }
@@ -578,7 +607,8 @@ export default function PersonalInformationScreen({navigation, route}) {
 
           <TouchableOpacity
             style={styles.profileCameraButtonStyle}
-            onPress={() => onProfileImageClicked()}>
+            onPress={() => onProfileImageClicked()}
+          >
             <Image
               style={styles.profileImageButtonStyle}
               source={images.certificateUpload}
@@ -626,7 +656,8 @@ export default function PersonalInformationScreen({navigation, route}) {
               //   comeFrom: 'PersonalInformationScreen',
               // });
               setLocationPopup(true);
-            }}>
+            }}
+          >
             <TextInput
               placeholder={strings.searchCityPlaceholder}
               style={{
@@ -844,19 +875,22 @@ export default function PersonalInformationScreen({navigation, route}) {
         backdropTransitionOutTiming={800}
         style={{
           margin: 0,
-        }}>
+        }}
+      >
         <View
           style={[
             styles.bottomPopupContainer,
             {height: Dimensions.get('window').height - 50},
-          ]}>
+          ]}
+        >
           <View style={styles.topHeaderContainer}>
             <TouchableOpacity
               hitSlop={getHitSlop(15)}
               style={styles.closeButton}
               onPress={() => {
                 setLocationPopup(false);
-              }}>
+              }}
+            >
               <Image source={images.crossImage} style={styles.closeButton} />
             </TouchableOpacity>
             <Text style={styles.moreText}>Home City</Text>
@@ -888,7 +922,8 @@ export default function PersonalInformationScreen({navigation, route}) {
             <View style={{flex: 1}}>
               <TouchableWithoutFeedback
                 style={styles.listItem}
-                onPress={() => getTeamsDataByCurrentLocation()}>
+                onPress={() => getTeamsDataByCurrentLocation()}
+              >
                 <View>
                   <Text style={[styles.cityList, {marginBottom: 3}]}>
                     {currentLocation?.city}, {currentLocation?.state},{' '}

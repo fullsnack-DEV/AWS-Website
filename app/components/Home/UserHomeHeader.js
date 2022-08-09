@@ -28,6 +28,7 @@ const UserHomeHeader = ({
   const actionSheet = useRef();
 
   const authContext = useContext(AuthContext);
+  console.log('Home currentUserData', currentUserData);
   const [entityData, setEntityData] = useState(null);
   useEffect(() => {
     if (currentUserData) {
@@ -48,6 +49,7 @@ const UserHomeHeader = ({
 
   // check member status
   let isMember = false;
+  console.log(isMember);
 
   if (loggedInEntity.role === 'club' && currentUserData.clubIds) {
     const result = currentUserData.clubIds.filter(
@@ -78,7 +80,8 @@ const UserHomeHeader = ({
                   flexDirection: 'row',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                }}>
+                }}
+              >
                 <View style={styles.profileImageContainer}>
                   <Image
                     style={styles.profileImageStyle}
@@ -174,9 +177,8 @@ const UserHomeHeader = ({
               </View>
 
               <Text
-                style={
-                  styles.cityTextStyle
-                }>{`${entityData?.city}, ${entityData?.country}`}</Text>
+                style={styles.cityTextStyle}
+              >{`${entityData?.city}, ${entityData?.country}`}</Text>
               {currentUserData.description?.length > 0 && (
                 <Text style={styles.sloganTextStyle}>
                   {currentUserData.description}
@@ -186,12 +188,12 @@ const UserHomeHeader = ({
 
             {(currentUserData.entity_type === 'user' ||
               currentUserData.entity_type === 'player') && (
-              // eslint-disable-next-line react/jsx-indent
               <View style={styles.statusViewStyle}>
                 {currentUserData.following_count !== undefined ? (
                   <TouchableOpacity
                     onPress={() => onConnectionButtonPress('following')}
-                    style={styles.statusInnerViewStyle}>
+                    style={styles.statusInnerViewStyle}
+                  >
                     <Text style={styles.followingLengthText}>
                       {entityData?.followingsCounter}
                     </Text>
@@ -202,7 +204,8 @@ const UserHomeHeader = ({
                 ) : (
                   <TouchableOpacity
                     onPress={() => onConnectionButtonPress('members')}
-                    style={styles.statusInnerViewStyle}>
+                    style={styles.statusInnerViewStyle}
+                  >
                     <Text style={styles.followingLengthText}>
                       {entityData?.memberCount}
                     </Text>
@@ -214,7 +217,8 @@ const UserHomeHeader = ({
                 <View style={styles.followingSepratorView} />
                 <TouchableOpacity
                   onPress={() => onConnectionButtonPress('followers')}
-                  style={styles.statusInnerViewStyle}>
+                  style={styles.statusInnerViewStyle}
+                >
                   <Text style={styles.followingLengthText}>
                     {entityData?.followersCounter}
                   </Text>
@@ -227,7 +231,8 @@ const UserHomeHeader = ({
                 {!isAdmin && (
                   <TouchableOpacity
                     onPress={() => onAction('message')}
-                    style={styles.statusInnerViewStyle}>
+                    style={styles.statusInnerViewStyle}
+                  >
                     <Image
                       style={styles.messageImage}
                       source={images.messageIcon}

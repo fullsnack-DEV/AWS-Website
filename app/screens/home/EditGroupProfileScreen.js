@@ -100,7 +100,8 @@ export default function EditGroupProfileScreen({navigation, route}) {
           }}
           onPress={() => {
             onSaveButtonClicked();
-          }}>
+          }}
+        >
           {strings.save}
         </Text>
       ),
@@ -111,8 +112,6 @@ export default function EditGroupProfileScreen({navigation, route}) {
     backgroundImageChanged,
     currentImageSelection,
     groupProfile,
-    sportsName,
-    selectedSports,
   ]);
 
   useEffect(() => {
@@ -152,6 +151,7 @@ export default function EditGroupProfileScreen({navigation, route}) {
     if (Platform.OS === 'android') {
       requestPermission();
     } else {
+      console.log('111');
       request(
         PERMISSIONS.IOS.LOCATION_ALWAYS,
         PERMISSIONS.IOS.LOCATION_WHEN_IN_USE,
@@ -188,6 +188,7 @@ export default function EditGroupProfileScreen({navigation, route}) {
 
   useEffect(() => {
     let sportText = '';
+    console.log('selectedSports:=>', selectedSports);
     if (selectedSports.length > 0) {
       selectedSports.map((sportItem, index) => {
         sportText =
@@ -200,14 +201,7 @@ export default function EditGroupProfileScreen({navigation, route}) {
     } else {
       setSportsName(route?.params?.sportType);
     }
-    if (authContext.entity.role === 'club') {
-      setGroupProfile((prevState) => ({
-        ...prevState,
-        sports: selectedSports,
-        sports_string: sportsName,
-      }));
-    }
-  }, [authContext, route?.params?.sportType, selectedSports, sportsName]);
+  }, [authContext, route?.params?.sportType, selectedSports]);
   const toggleModal = () => {
     setVisibleSportsModal(!visibleSportsModal);
   };
@@ -228,12 +222,16 @@ export default function EditGroupProfileScreen({navigation, route}) {
       obj.isChecked = false;
       arr.push(obj);
     }
+    console.log('Sport array:=>', arr);
     setSportList(arr);
   };
   const getCurrentLocation = async () => {
     Geolocation.requestAuthorization();
     Geolocation.getCurrentPosition(
       (position) => {
+        console.log('Lat/long to position::=>', position);
+        console.log('222');
+
         getLocationNameWithLatLong(
           position?.coords?.latitude,
           position?.coords?.longitude,
@@ -256,12 +254,15 @@ export default function EditGroupProfileScreen({navigation, route}) {
               userData.country = e.long_name;
             }
           });
+          console.log('www', userData);
           setCurrentLocation(userData);
           setloading(false);
         });
+        console.log('444');
         setloading(false);
       },
       (error) => {
+        console.log('555');
         setloading(false);
         // See error code charts below.
         console.log(error.code, error.message);
@@ -288,10 +289,12 @@ export default function EditGroupProfileScreen({navigation, route}) {
       });
   };
   const renderItem = ({item, index}) => {
+    console.log('Location item:=>', item);
     return (
       <TouchableWithoutFeedback
         style={styles.listItem}
-        onPress={() => getTeamsData(item)}>
+        onPress={() => getTeamsData(item)}
+      >
         <View>
           <Text style={styles.cityList}>{cityData[index].description}</Text>
           <TCThinDivider
@@ -311,14 +314,16 @@ export default function EditGroupProfileScreen({navigation, route}) {
       style={styles.listItem}
       onPress={() => {
         isIconCheckedOrNot({item, index});
-      }}>
+      }}
+    >
       <View
         style={{
           padding: 20,
           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'space-between',
-        }}>
+        }}
+      >
         <Text style={styles.sportList}>{getSportName(item, authContext)}</Text>
         <View style={styles.checkbox}>
           {sportList[index].isChecked ? (
@@ -348,6 +353,7 @@ export default function EditGroupProfileScreen({navigation, route}) {
     setLocationPopup(false);
   };
   const getTeamsDataByCurrentLocation = async () => {
+    console.log('Curruent location data:=>', currentLocation);
     setGroupProfile({
       ...groupProfile,
       location: currentLocation,
@@ -389,7 +395,11 @@ export default function EditGroupProfileScreen({navigation, route}) {
     Keyboard.dismiss();
     if (checkValidation()) {
       setloading(true);
-
+      console.log('hhhh', sportsName);
+      setGroupProfile({
+        ...groupProfile,
+        sports_string: sportsName,
+      });
       const userProfile = {...groupProfile};
       if (profileImageChanged || backgroundImageChanged) {
         const imageArray = [];
@@ -448,6 +458,7 @@ export default function EditGroupProfileScreen({navigation, route}) {
   };
 
   const callUpdateUserAPI = (userProfile, paramGroupID) => {
+    console.log('Update profile -->', userProfile);
     setloading(true);
     patchGroup(paramGroupID, userProfile, authContext)
       .then((response) => {
@@ -485,6 +496,10 @@ export default function EditGroupProfileScreen({navigation, route}) {
   };
 
   const onLocationClicked = async () => {
+    console.log('call on location');
+    // navigation.navigate('SearchLocationScreen', {
+    //   comeFrom: 'EditGroupProfileScreen',
+    // });
     setLocationPopup(true);
   };
 
@@ -703,14 +718,16 @@ export default function EditGroupProfileScreen({navigation, route}) {
               /> */}
               <TouchableOpacity
                 style={styles.languageView}
-                onPress={toggleModal}>
+                onPress={toggleModal}
+              >
                 <Text
                   style={
                     sportsName
                       ? styles.languageText
                       : styles.languagePlaceholderText
                   }
-                  numberOfLines={50}>
+                  numberOfLines={50}
+                >
                   {sportsName || 'Sports'}
                 </Text>
               </TouchableOpacity>
@@ -754,19 +771,22 @@ export default function EditGroupProfileScreen({navigation, route}) {
           backdropTransitionOutTiming={800}
           style={{
             margin: 0,
-          }}>
+          }}
+        >
           <View
             style={[
               styles.bottomPopupContainer,
               {height: Dimensions.get('window').height - 50},
-            ]}>
+            ]}
+          >
             <View style={styles.topHeaderContainer}>
               <TouchableOpacity
                 hitSlop={getHitSlop(15)}
                 style={styles.closeButton}
                 onPress={() => {
                   setLocationPopup(false);
-                }}>
+                }}
+              >
                 <Image source={images.crossImage} style={styles.closeButton} />
               </TouchableOpacity>
               <Text style={styles.moreText}>Home City</Text>
@@ -798,7 +818,8 @@ export default function EditGroupProfileScreen({navigation, route}) {
               <View style={{flex: 1}}>
                 <TouchableWithoutFeedback
                   style={styles.listItem}
-                  onPress={() => getTeamsDataByCurrentLocation()}>
+                  onPress={() => getTeamsDataByCurrentLocation()}
+                >
                   <View>
                     <Text style={[styles.cityList, {marginBottom: 3}]}>
                       {currentLocation?.city}, {currentLocation?.state},{' '}
@@ -835,7 +856,8 @@ export default function EditGroupProfileScreen({navigation, route}) {
           backdropTransitionOutTiming={800}
           style={{
             margin: 0,
-          }}>
+          }}
+        >
           <View
             style={{
               width: '100%',
@@ -851,18 +873,21 @@ export default function EditGroupProfileScreen({navigation, route}) {
               shadowOpacity: 0.5,
               shadowRadius: 5,
               elevation: 15,
-            }}>
+            }}
+          >
             <View
               style={{
                 flexDirection: 'row',
                 paddingHorizontal: 15,
                 justifyContent: 'space-between',
                 alignItems: 'center',
-              }}>
+              }}
+            >
               <TouchableOpacity
                 hitSlop={getHitSlop(15)}
                 style={{...styles.closeButton, left: 0}}
-                onPress={() => setVisibleSportsModal(false)}>
+                onPress={() => setVisibleSportsModal(false)}
+              >
                 <Image
                   source={images.crossImage}
                   style={{...styles.closeButton, left: 0}}
@@ -875,7 +900,8 @@ export default function EditGroupProfileScreen({navigation, route}) {
                   fontSize: 16,
                   fontFamily: fonts.RBold,
                   color: colors.lightBlackColor,
-                }}>
+                }}
+              >
                 Sports
               </Text>
               <TouchableOpacity
@@ -884,9 +910,9 @@ export default function EditGroupProfileScreen({navigation, route}) {
                     (obj) => obj.isChecked,
                   );
                   setSelectedSports(filterChecked);
-
                   toggleModal();
-                }}>
+                }}
+              >
                 <Text
                   style={{
                     alignSelf: 'center',
@@ -894,7 +920,8 @@ export default function EditGroupProfileScreen({navigation, route}) {
                     fontSize: 16,
                     fontFamily: fonts.RRegular,
                     color: colors.themeColor,
-                  }}>
+                  }}
+                >
                   Apply
                 </Text>
               </TouchableOpacity>

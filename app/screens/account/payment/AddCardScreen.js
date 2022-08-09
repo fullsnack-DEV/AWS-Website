@@ -70,8 +70,7 @@ export default function AddCardScreen({navigation}) {
             onPress={() => {
               setloading(true);
               createPaymentMethodByCard();
-            }}
-          >
+            }}>
             {strings.done}
           </Text>
         ) : (
@@ -81,8 +80,7 @@ export default function AddCardScreen({navigation}) {
               fontSize: 14,
               fontFamily: fonts.RRegular,
               color: colors.lightgrayColor,
-            }}
-          >
+            }}>
             {strings.done}
           </Text>
         ),
@@ -133,7 +131,7 @@ export default function AddCardScreen({navigation}) {
   };
 
   return (
-    <View>
+    <View accessibilityLabel="add-card-screen">
       <ActivityLoader visible={loading} />
       <CardField
         postalCodeEnabled={false}

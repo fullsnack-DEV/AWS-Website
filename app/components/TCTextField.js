@@ -5,6 +5,7 @@ import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 
 function TCTextField({
+  testID = '',
   placeholder,
   placeholderTextColor = colors.userPostTimeColor,
   secureText = false,
@@ -20,6 +21,7 @@ function TCTextField({
   return (
     <View style={[styles.textContainer, style, {height}]}>
       <TextInput
+        testID={testID}
         style={[styles.textInput, textStyle, {height}]}
         placeholder={placeholder}
         placeholderTextColor={placeholderTextColor}

@@ -1,3 +1,4 @@
+/* eslint-disable array-callback-return */
 /* eslint-disable no-nested-ternary */
 import React, {
   useEffect,
@@ -31,6 +32,7 @@ import NotificationType from '../../Constants/NotificationType';
 import {
   getUnreadCount,
   getNotificationsList,
+  getNotificationsNextList,
   acceptRequest,
   declineRequest,
   deleteNotification,
@@ -64,6 +66,7 @@ import PRNotificationDetailItem from '../../components/notificationComponent/PRN
 import RefereeReservationStatus from '../../Constants/RefereeReservationStatus';
 import ScorekeeperReservationStatus from '../../Constants/ScorekeeperReservationStatus';
 import {getEventById} from '../../api/Schedule';
+import TCInnerLoader from '../../components/TCInnerLoader';
 
 function NotificationsListScreen({navigation}) {
   const actionSheet = useRef();
@@ -82,7 +85,8 @@ function NotificationsListScreen({navigation}) {
 
   const [loading, setloading] = useState(false);
   const [firstTimeLoading, setFirstTimeLoading] = useState(true);
-
+  const [loadMore, setLoadMore] = useState(false);
+  const [IDLT, setIDLT] = useState();
   const onDetailPress = (item) => {
     console.log('Group ITEM ID:::::=>', item);
 
@@ -716,7 +720,6 @@ function NotificationsListScreen({navigation}) {
       )
         .then((obj) => {
           const reservationObj = obj.reservationObj || obj.reservationObj[0];
-
           console.log('reservationObj:1>=>', reservationObj);
 
           navigation.navigate(obj.screenName, {
@@ -965,6 +968,15 @@ function NotificationsListScreen({navigation}) {
       getNotificationsList(params, authContext)
         .then(async (response) => {
           const pendingReqNotification = response.payload.requests;
+
+          if (response.payload.notifications.length > 0) {
+            setIDLT(
+              response.payload.notifications[
+                response.payload.notifications.length - 1
+              ].id,
+            );
+          }
+
           const todayNotifications = response.payload.notifications.filter(
             (item) =>
               Moment(item.created_at).format('yyyy-MM-DD') ===
@@ -1035,6 +1047,95 @@ function NotificationsListScreen({navigation}) {
     setIsRulesModalVisible(false);
   };
 
+  const getNextNotificationData = () => {
+    const entity = authContext.entity.obj;
+    setSelectedEntity(entity);
+    const params = {
+      uid: entity.entity_type === 'player' ? entity.user_id : entity.group_id,
+    };
+    const id_lt = IDLT;
+    getNotificationsNextList(params, id_lt, authContext)
+      .then((response) => {
+        setloading(false);
+        setLoadMore(false);
+        setFirstTimeLoading(false);
+        const pendingReqNotification = response.payload.requests;
+        const todayNotifications = response.payload.notifications.filter(
+          (item) =>
+            Moment(item.created_at).format('yyyy-MM-DD') ===
+            Moment(currentDate).format('yyyy-MM-DD'),
+        );
+        const erlierNotifications = response.payload.notifications.filter(
+          (item) =>
+            Moment(item.created_at).format('yyyy-MM-DD') !==
+            Moment(currentDate).format('yyyy-MM-DD'),
+        );
+
+        console.log('mainNotificationList:=>', mainNotificationsList);
+        const array = [];
+
+        mainNotificationsList.map((obj, index) => {
+          if (obj.section === 'PENDING REQUESTS') {
+            array.push({
+              data: [
+                ...mainNotificationsList?.[index]?.data,
+                ...pendingReqNotification,
+              ],
+              section: strings.pendingrequests,
+              type: 'request',
+            });
+          } else if (obj.section === 'TODAY') {
+            array.push({
+              data: [
+                ...mainNotificationsList?.[index]?.data,
+                ...todayNotifications,
+              ],
+              section: strings.today,
+              type: 'notification',
+            });
+          } else {
+            array.push({
+              data: [
+                ...mainNotificationsList?.[index]?.data,
+                ...erlierNotifications,
+              ],
+              section: strings.earlier,
+              type: 'notification',
+            });
+          }
+        });
+
+        console.log('Array----->', array);
+        setMainNotificationsList([
+          ...array.filter((item) => item.data.length !== 0),
+        ]);
+      })
+      .catch((e) => {
+        Alert.alert(e.messages);
+      });
+  };
+
+  const onLoadMore = (e) => {
+    let paddingToBottom = 10;
+    paddingToBottom += e.nativeEvent.layoutMeasurement.height;
+    const currentOffset = e.nativeEvent.contentOffset.y;
+    const direction = currentOffset > 50 ? 'down' : 'up';
+    if (direction === 'up') {
+      if (
+        e.nativeEvent.contentOffset.y >=
+        e.nativeEvent.contentSize.height - paddingToBottom
+      ) {
+        if (!loadMore) {
+          console.log('next page');
+          setLoadMore(true);
+          setTimeout(() => {
+            getNextNotificationData();
+          }, 1000);
+        }
+      }
+    }
+  };
+
   return (
     <SafeAreaView style={{flex: 1}}>
       {firstTimeLoading && <NotificationListShimmer />}
@@ -1042,7 +1143,7 @@ function NotificationsListScreen({navigation}) {
       <ActivityLoader visible={loading} />
       {/* eslint-disable-next-line no-nested-ternary */}
 
-      {!firstTimeLoading && mainNotificationsList.length > 0 && (
+      {!firstTimeLoading && mainNotificationsList?.length > 0 && (
         <SectionList
           style={{flex: 1}}
           ItemSeparatorComponent={itemSeparator}
@@ -1071,10 +1172,14 @@ function NotificationsListScreen({navigation}) {
             </TouchableOpacity>
           )}
           renderSectionFooter={renderSectionFooter}
+          onScroll={onLoadMore}
         />
       )}
+      {loadMore && (
+        <TCInnerLoader allowMargin={false} size={60} visible={loadMore} />
+      )}
 
-      {!firstTimeLoading && mainNotificationsList.length <= 0 && (
+      {!firstTimeLoading && mainNotificationsList?.length <= 0 && (
         <View
           style={{
             flex: 1,

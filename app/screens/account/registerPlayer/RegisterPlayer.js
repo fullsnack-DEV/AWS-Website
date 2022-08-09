@@ -58,16 +58,14 @@ export default function RegisterPlayer({navigation}) {
         setTimeout(() => {
           setVisibleSportsModal(false);
         }, 300);
-      }}
-    >
+      }}>
       <View
         style={{
           padding: 20,
           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'space-between',
-        }}
-      >
+        }}>
         <Text style={styles.languageList}>
           {getSportName(item, authContext)}
         </Text>
@@ -113,14 +111,14 @@ export default function RegisterPlayer({navigation}) {
   return (
     <View style={{flex: 1}}>
       <TCFormProgress totalSteps={2} curruentStep={1} />
-
       <Text style={styles.LocationText}>{strings.sportsText}</Text>
-
-      <TouchableOpacity onPress={() => setVisibleSportsModal(true)}>
+      <TouchableOpacity
+        testID="choose-sport"
+        onPress={() => setVisibleSportsModal(true)}>
         <View style={styles.searchView}>
           <TextInput
             style={styles.searchTextField}
-            placeholder={strings.selectSportPlaceholder}
+            placeholder={strings.selectSportPlaceholderPlayer}
             value={getSportName(sportsSelection, authContext)}
             editable={false}
             pointerEvents="none"
@@ -138,8 +136,7 @@ export default function RegisterPlayer({navigation}) {
         backdropTransitionOutTiming={800}
         style={{
           margin: 0,
-        }}
-      >
+        }}>
         <View
           style={{
             width: '100%',
@@ -155,21 +152,18 @@ export default function RegisterPlayer({navigation}) {
             shadowOpacity: 0.5,
             shadowRadius: 5,
             elevation: 15,
-          }}
-        >
+          }}>
           <View
             style={{
               flexDirection: 'row',
               paddingHorizontal: 15,
               justifyContent: 'space-between',
               alignItems: 'center',
-            }}
-          >
+            }}>
             <TouchableOpacity
               hitSlop={getHitSlop(15)}
               style={styles.closeButton}
-              onPress={() => setVisibleSportsModal(false)}
-            >
+              onPress={() => setVisibleSportsModal(false)}>
               <Image source={images.cancelImage} style={styles.closeButton} />
             </TouchableOpacity>
             <Text
@@ -179,8 +173,7 @@ export default function RegisterPlayer({navigation}) {
                 fontSize: 16,
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
-              }}
-            >
+              }}>
               Sports
             </Text>
 
@@ -191,8 +184,7 @@ export default function RegisterPlayer({navigation}) {
                 fontSize: 16,
                 fontFamily: fonts.RRegular,
                 color: colors.themeColor,
-              }}
-            ></Text>
+              }}></Text>
           </View>
           <View style={styles.separatorLine} />
           <FlatList

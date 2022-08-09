@@ -13,6 +13,7 @@ function PRNotificationTeamInvite({
   onPress,
   onRespond,
   disabled = false,
+  accessibilityLabel,
 }) {
   const [dataDictionary, setDataDictionary] = useState();
 
@@ -51,9 +52,9 @@ function PRNotificationTeamInvite({
                   disabled
                     ? [styles.viewSecondStyle, {opacity: 0.5}]
                     : styles.viewSecondStyle
-                }
-              >
+                }>
                 <TCGradientButton
+                  accessibilityLabel={`${accessibilityLabel}`}
                   textStyle={styles.btnTextStyle}
                   style={styles.acceptButtonInnerStyle}
                   title={strings.respond}

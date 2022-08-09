@@ -6,6 +6,7 @@ import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 
 function TCPlayerView({onPress, showStar = false, data}) {
+  console.log('Player data:=>', data);
   return (
     <TouchableOpacity onPress={onPress}>
       <View style={styles.viewContainer}>
@@ -25,7 +26,7 @@ function TCPlayerView({onPress, showStar = false, data}) {
           </Text>
           <Text style={styles.locationText} numberOfLines={1}>
             {data?.city} ·{' '}
-            {data?.sports?.map((value) => value.sport_name).join(', ')}
+            {data?.sports.map((value) => value.sport_name).join(', ')}
           </Text>
         </View>
         {showStar && (
@@ -34,7 +35,8 @@ function TCPlayerView({onPress, showStar = false, data}) {
               flexDirection: 'row',
               alignItems: 'center',
               marginTop: 5,
-            }}>
+            }}
+          >
             <Image source={images.orangeStar} style={styles.starImage} />
             <Text style={styles.starPoints} numberOfLines={2}>
               5.0
@@ -62,6 +64,9 @@ const styles = StyleSheet.create({
   },
   viewContainer: {
     flexDirection: 'row',
+    // alignItems: 'center',
+    // backgroundColor: 'red',
+    // height: 125,
   },
   profileImage: {
     resizeMode: 'cover',

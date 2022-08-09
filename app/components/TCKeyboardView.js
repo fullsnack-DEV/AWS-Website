@@ -19,8 +19,7 @@ function TCKeyboardView({
     <TouchableWithoutFeedback
       style={styles.container}
       disabled
-      onPress={() => Keyboard.dismiss()}
-    >
+      onPress={() => Keyboard.dismiss()}>
       <KeyboardAwareScrollView
         ref={scrollReference}
         nestedScrollEnabled={true}
@@ -29,8 +28,7 @@ function TCKeyboardView({
         keyboardShouldPersistTaps="always"
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{flex: 1}}
-        extraScrollHeight={hp(5)}
-      >
+        extraScrollHeight={hp(5)}>
         <View style={{flex: 1}}>
           <ScrollView style={{flex: 1}} bounces={false}>
             {children}
