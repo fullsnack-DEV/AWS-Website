@@ -6,6 +6,7 @@ import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 
 export default function ScheduleBlockedItems({
+  accessibilityLabel,
   startDate,
   endDate,
   allDay = false,
@@ -32,12 +33,10 @@ export default function ScheduleBlockedItems({
             shadowOffset: {width: 0, height: 2},
             shadowOpacity: 0.5,
             shadowRadius: 2,
-          }}
-        >
+          }}>
           <Text
             style={[styles.fieldValue, {color: colors.whiteColor}]}
-            numberOfLines={3}
-          >
+            numberOfLines={3}>
             {allDay
               ? 'All day'
               : `${getTimeFormat(startDate)} - ${getTimeFormat(endDate)}`}
@@ -60,9 +59,11 @@ export default function ScheduleBlockedItems({
             shadowOpacity: 0.5,
             shadowRadius: 2,
             elevation: 1,
-          }}
-        >
-          <Text style={styles.fieldValue} numberOfLines={3}>
+          }}>
+          <Text
+            accessibilityLabel={accessibilityLabel}
+            style={styles.fieldValue}
+            numberOfLines={3}>
             {allDay
               ? 'All day'
               : `${getTimeFormat(startDate)} - ${getTimeFormat(endDate)}`}

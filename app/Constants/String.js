@@ -131,7 +131,7 @@ const strings = {
   clubTeamTitle2: 'Chelsea FC',
   clubTeamTitle3: 'FC Barcelona',
   leagueTeamTitle: 'UEFA Champions League',
-  signupLocationText: 'Choose your home city.',
+
   locationText: 'Choose your city.',
   locationDescription:
     'Home city is the city where you currently reside or you mostly play sports.',
@@ -165,6 +165,8 @@ const strings = {
 
   SportsTextFieldClubTitle:
     'Choose sports that members or teams in the club will play.',
+  selectSportPlaceholderPlayer: 'Which sport do you want to play?',
+
   selectSportPlaceholderReferee: 'Which sport do you want to referee?',
   selectSportPlaceholderScorekeeper: 'Which sport do you want to scorekeeping?',
 
@@ -379,6 +381,8 @@ const strings = {
   whoCanSeeClubFollowers: 'Who can see followers in club connections?',
   whoCanSeeTeamFollowers: 'Who can see followers in team connections?',
   everyoneRadio: 'Everyone',
+  personWhoRequest: 'A person whose request has been accepted by team admins',
+  inviteOnly: 'Invite only',
   followersRadio: 'Followers',
   clubMembersRadio: 'Club Members',
   adminsRadio: 'Only Club & Team Admins',
@@ -880,6 +884,7 @@ const strings = {
   postalCode: 'Postal Code',
   // Members
   isYourTeamRecruitingMember: 'Is your team recruiting a new member?',
+  whoCanJoinTeam: 'Who can join the team?',
   configureYourRefereeSetting:
     'You can’t send offer, please configure your referee setting first.',
   emailPasswordWrong: 'The email and password you entered dont match.',

@@ -14,6 +14,7 @@ import Modal from 'react-native-modal';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import images from '../Constants/ImagePath';
+import {getHitSlop} from '../utils';
 
 // import TCBorderButton from '../../../components/TCBorderButton';
 
@@ -35,8 +36,7 @@ export default function AlterChallengeModalView({
         backgroundColor: 'rgba(0,0,0,0.5)',
         borderTopLeftRadius: 15,
         borderTopRightRadius: 15,
-      }}
-    >
+      }}>
       <View style={styles.mainContainer}>
         <Image style={styles.background} source={images.orangeLayer} />
         <Image style={styles.background} source={images.entityCreatedBG} />
@@ -66,10 +66,10 @@ export default function AlterChallengeModalView({
         <SafeAreaView>
           <TouchableOpacity
             style={styles.goToProfileButton}
+            hitSlop={getHitSlop(15)}
             onPress={() => {
               navigation.popToTop();
-            }}
-          >
+            }}>
             <Text style={styles.goToProfileTitle}>OK</Text>
           </TouchableOpacity>
         </SafeAreaView>

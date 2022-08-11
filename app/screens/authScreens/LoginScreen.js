@@ -14,6 +14,9 @@ import {
   StyleSheet,
   Image,
   SafeAreaView,
+  TouchableWithoutFeedback,
+  ScrollView,
+  Keyboard,
 } from 'react-native';
 
 import {
@@ -25,6 +28,7 @@ import firebase from '@react-native-firebase/app';
 
 import Config from 'react-native-config';
 import LinearGradient from 'react-native-linear-gradient';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import AuthContext from '../../auth/context';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import images from '../../Constants/ImagePath';
@@ -38,11 +42,10 @@ import TCTextField from '../../components/TCTextField';
 import {QBconnectAndSubscribe, QBlogin} from '../../utils/QuickBlox';
 import {eventDefaultColorsData} from '../../Constants/LoaderImages';
 import apiCall from '../../utils/apiCall';
-import TCKeyboardView from '../../components/TCKeyboardView';
 import {getAppSettingsWithoutAuth} from '../../api/Users';
 import {getHitSlop} from '../../utils/index';
 
-export default function LoginScreen({navigation}) {
+const LoginScreen = ({navigation}) => {
   const [email, setEmail] = useState('makani20@gmail.com');
   const [password, setPassword] = useState('123456');
   const [hidePassword, setHidePassword] = useState(true);
@@ -71,6 +74,7 @@ export default function LoginScreen({navigation}) {
   }, [email, password]);
 
   const validateEmail = (emailText) => {
+    console.log('email text', emailText);
     if (/^[\w-.+]+@([\w-]+\.)+[\w-]{2,4}$/.test(emailText)) {
       return true;
     }
@@ -80,6 +84,7 @@ export default function LoginScreen({navigation}) {
   const getRedirectionScreenName = useCallback(
     (townscupUser) =>
       new Promise((resolve, reject) => {
+        console.log('screen name object:=>', townscupUser);
         if (!townscupUser.birthday) resolve({screen: 'AddBirthdayScreen'});
         else if (!townscupUser.gender) resolve({screen: 'ChooseGenderScreen'});
         else if (!townscupUser.city) resolve({screen: 'ChooseLocationScreen'});
@@ -101,6 +106,9 @@ export default function LoginScreen({navigation}) {
     async (firebaseUser, townscupUser) => {
       const entity = {...dummyAuthContext.entity};
       const userData = {...townscupUser};
+
+      console.log('entity Data:', entity);
+      console.log('User Data/townscupUser:', townscupUser);
       entity.auth.user = {...userData};
       entity.obj = {...userData};
       await authContext.setTokenData(dummyAuthContext?.tokenData);
@@ -140,6 +148,7 @@ export default function LoginScreen({navigation}) {
               })
               .catch((e) => {
                 setTimeout(() => {
+                  console.log('catch -> location screen setting api');
                   Alert.alert(strings.alertmessagetitle, e.message);
                 }, 10);
               });
@@ -161,6 +170,10 @@ export default function LoginScreen({navigation}) {
     (firebaseUser, townscupUser) => {
       const response = {...townscupUser};
       let qbEntity = {...dummyAuthContext?.entity};
+
+      console.log('response : ', response);
+      console.log('qbEntity : ', qbEntity);
+
       QBlogin(qbEntity.uid, response)
         .then(async (res) => {
           qbEntity = {
@@ -189,6 +202,7 @@ export default function LoginScreen({navigation}) {
             token: idTokenResult.token,
             expirationTime: idTokenResult.expirationTime,
           };
+          console.log('token:=>', token);
           dummyAuthContext.tokenData = token;
           Utility.setStorage('eventColor', eventDefaultColorsData);
           Utility.setStorage('groupEventValue', true);
@@ -240,6 +254,7 @@ export default function LoginScreen({navigation}) {
     const token = {...dummyAuthContext?.tokenData};
     await authContext.setTokenData(token);
     await authContext.setEntity(entity);
+    console.log('Entity ===>', entity);
     user.sendEmailVerification();
     setloading(false);
     navigation.navigate('EmailVerificationScreen', {
@@ -268,6 +283,7 @@ export default function LoginScreen({navigation}) {
   };
   const login = useCallback(async () => {
     await Utility.clearStorage();
+    console.log('firebase:=>', firebase);
     firebase
       .auth()
       .signInWithEmailAndPassword(email, password)
@@ -316,6 +332,7 @@ export default function LoginScreen({navigation}) {
   const renderEmailInput = useMemo(
     () => (
       <TCTextField
+        testID={'email-input'}
         style={styles.textFieldStyle}
         placeholder={strings.emailPlaceHolder}
         placeholderTextColor={colors.darkYellowColor}
@@ -332,6 +349,7 @@ export default function LoginScreen({navigation}) {
     () => (
       <View style={styles.passwordContainer}>
         <TextInput
+          testID={'password-input'}
           style={styles.passwordInput}
           placeholder={strings.passwordPlaceHolder}
           onChangeText={(text) => setPassword(text)}
@@ -356,6 +374,7 @@ export default function LoginScreen({navigation}) {
 
   const onLogin = useCallback(async () => {
     setloading(true);
+    console.log('Valide', validate());
     if (validate()) {
       if (authContext.networkConnected) {
         login();
@@ -369,6 +388,7 @@ export default function LoginScreen({navigation}) {
     () => (
       <View style={{marginTop: hp('4.31%')}}>
         <TCButton
+          testID={'login-button'}
           title={'LOG IN'}
           extraStyle={{marginTop: hp('0%')}}
           onPress={onLogin}
@@ -398,7 +418,7 @@ export default function LoginScreen({navigation}) {
             style={{
               height: 20,
               width: 15,
-              marginLeft: wp('5.33%'),
+              marginLeft: 15,
               tintColor: colors.whiteColor,
             }}
           />
@@ -417,14 +437,31 @@ export default function LoginScreen({navigation}) {
         style={styles.background}
         source={images.loginBg}
       />
-      <TCKeyboardView>
-        <Text style={styles.loginText}>{strings.loginText}</Text>
-        <View style={{marginTop: hp('3.69%')}}>
-          {renderEmailInput}
-          {renderPasswordInput}
-        </View>
-        {renderLoginAndForgotPasswordButtons}
-      </TCKeyboardView>
+      <TouchableWithoutFeedback
+        style={styles.container}
+        disabled
+        onPress={() => Keyboard.dismiss()}>
+        <KeyboardAwareScrollView
+          ref={React.createRef()}
+          nestedScrollEnabled={true}
+          bounces={false}
+          enableOnAndroid={false}
+          keyboardShouldPersistTaps="always"
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{flex: 1}}
+          extraScrollHeight={hp(5)}>
+          <View style={{flex: 1}}>
+            <ScrollView style={{flex: 1}} bounces={false}>
+              <Text style={styles.loginText}>{strings.loginText}</Text>
+              <View style={{marginTop: 30}}>
+                {renderEmailInput}
+                {renderPasswordInput}
+              </View>
+              {renderLoginAndForgotPasswordButtons}
+            </ScrollView>
+          </View>
+        </KeyboardAwareScrollView>
+      </TouchableWithoutFeedback>
       <SafeAreaView>
         <View style={{bottom: 16}}>
           <TouchableOpacity
@@ -447,7 +484,7 @@ export default function LoginScreen({navigation}) {
       </SafeAreaView>
     </LinearGradient>
   );
-}
+};
 
 const styles = StyleSheet.create({
   background: {
@@ -531,3 +568,5 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
 });
+
+export default LoginScreen;

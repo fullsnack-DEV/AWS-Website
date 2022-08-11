@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   Alert,
   FlatList,
+  ScrollView,
 } from 'react-native';
 import moment from 'moment';
 
@@ -184,7 +185,7 @@ export default function ChallengeScreen({navigation, route}) {
   };
 
   return (
-    <TCKeyboardView>
+    <ScrollView testID="challenge-scroll">
       <TCFormProgress totalSteps={4} curruentStep={1} />
       <ActivityLoader visible={loading} />
       <View>
@@ -670,7 +671,7 @@ export default function ChallengeScreen({navigation, route}) {
           marginTop: 15,
         }}
       />
-    </TCKeyboardView>
+    </ScrollView>
   );
 }
 

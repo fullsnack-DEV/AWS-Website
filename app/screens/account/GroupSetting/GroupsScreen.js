@@ -25,8 +25,8 @@ import TCThinDivider from '../../../components/TCThinDivider';
 export default function GroupsScreen({route, navigation}) {
   const [loading, setloading] = useState(false);
   const authContext = useContext(AuthContext);
-  const [groups, setGroups] = useState(route?.params?.groups);
-  const dummyAuthContext = {...authContext};
+  const [groups, setGroup] = useState(route?.params?.groups);
+  console.log('groups==>', route?.params?.groups);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -56,29 +56,21 @@ export default function GroupsScreen({route, navigation}) {
       ),
     });
   });
-  const setDummyAuthContext = (key, value) => {
-    dummyAuthContext[key] = value;
-  };
+
   const userLeaveGroup = (item, indexObj) => {
     setloading(true);
+    console.log('Item==>', item);
     const groupId = item.group_id;
+
     const params = {};
     leaveTeam(params, groupId, authContext)
-      .then(async () => {
+      .then(() => {
         console.log('user leave group');
-        setGroups((group) => group.filter((_, index) => index !== indexObj));
-        const entity = dummyAuthContext.entity;
-        if (entity.role === 'team') {
-          const parentGroups = entity?.obj?.parent_groups;
-          const filterParentGroups = parentGroups.filter(
-            (obj) => obj !== groupId,
-          );
-          entity.obj.parent_groups = filterParentGroups;
-          await setDummyAuthContext('entity', entity);
-        }
+        setGroup((group) => group.filter((_, index) => index !== indexObj));
         setloading(false);
       })
       .catch((error) => {
+        console.log('userLeaveGroup error with userID', error);
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message);

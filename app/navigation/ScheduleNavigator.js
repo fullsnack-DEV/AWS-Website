@@ -1003,7 +1003,7 @@ const ScheduleNavigator = () => (
       name="JoinedTeamsScreen"
       component={JoinedTeamsScreen}
       options={{
-        title: 'Followings',
+        title: 'Teams',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

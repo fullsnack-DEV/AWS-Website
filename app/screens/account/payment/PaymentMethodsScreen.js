@@ -58,8 +58,7 @@ export default function PaymentMethodsScreen({navigation, route}) {
             } else {
               Alert.alert(strings.selectAnyCard);
             }
-          }}
-        >
+          }}>
           Done
         </Text>
       ),
@@ -134,23 +133,20 @@ export default function PaymentMethodsScreen({navigation, route}) {
     );
   };
 
-  const renderCard = ({item}) => (
+  const renderCard = ({item, index}) => (
     <AppleStyleSwipeableRow
       onPress={() => onDeleteCard(item)}
       color={colors.redDelColor}
-      image={images.deleteIcon}
-    >
+      image={images.deleteIcon}>
       {selectedCard && selectedCard?.id === item.id ? (
         <LinearGradient
           colors={[colors.orangeEventColor, colors.assistTextColor]}
-          style={styles.paymentCardRow}
-        >
+          style={styles.paymentCardRow}>
           <TouchableOpacity
             style={{flexDirection: 'row'}}
             onPress={() => {
               setSelectedCard(item);
-            }}
-          >
+            }}>
             <View style={{flexDirection: 'column', width: '60%'}}>
               <View style={{flexDirection: 'row'}}>
                 <Text
@@ -158,8 +154,7 @@ export default function PaymentMethodsScreen({navigation, route}) {
                     fontFamily: fonts.RRegular,
                     fontSize: 16,
                     color: colors.whiteColor,
-                  }}
-                >
+                  }}>
                   {Utility.capitalize(item.card.brand)}
                 </Text>
                 <Text
@@ -168,8 +163,7 @@ export default function PaymentMethodsScreen({navigation, route}) {
                     fontFamily: fonts.RRegular,
                     fontSize: 16,
                     color: colors.whiteColor,
-                  }}
-                >
+                  }}>
                   {Utility.capitalize(item.card.brand)}
                 </Text>
                 <Text
@@ -177,8 +171,7 @@ export default function PaymentMethodsScreen({navigation, route}) {
                     fontFamily: fonts.RRegular,
                     fontSize: 16,
                     color: colors.whiteColor,
-                  }}
-                >
+                  }}>
                   {strings.endingin}
                 </Text>
                 <Text
@@ -186,8 +179,7 @@ export default function PaymentMethodsScreen({navigation, route}) {
                     fontFamily: fonts.RRegular,
                     fontSize: 16,
                     color: colors.whiteColor,
-                  }}
-                >
+                  }}>
                   {item.card.last4}
                 </Text>
               </View>
@@ -198,8 +190,7 @@ export default function PaymentMethodsScreen({navigation, route}) {
                     fontFamily: fonts.RRegular,
                     fontSize: 14,
                     marginTop: 5,
-                  }}
-                >
+                  }}>
                   Expires {item.card.exp_month} / {item.card.exp_year}
                 </Text>
               </View>
@@ -209,8 +200,7 @@ export default function PaymentMethodsScreen({navigation, route}) {
                 width: '40%',
                 flexDirection: 'row-reverse',
                 alignSelf: 'center',
-              }}
-            >
+              }}>
               <Image
                 source={images.whiteTick}
                 style={{height: 15, width: 15, resizeMode: 'contain'}}
@@ -224,16 +214,15 @@ export default function PaymentMethodsScreen({navigation, route}) {
             style={{}}
             onPress={() => {
               setSelectedCard(item);
-            }}
-          >
+            }}>
             <View style={{flexDirection: 'row'}}>
               <Text
+                accessibilityLabel={`${index}`}
                 style={{
                   fontFamily: fonts.RRegular,
                   fontSize: 16,
                   color: colors.lightBlackColor,
-                }}
-              >
+                }}>
                 {Utility.capitalize(item.card.brand)}
               </Text>
               <Text
@@ -242,8 +231,7 @@ export default function PaymentMethodsScreen({navigation, route}) {
                   fontFamily: fonts.RRegular,
                   fontSize: 16,
                   color: colors.lightBlackColor,
-                }}
-              >
+                }}>
                 {Utility.capitalize(item.card.brand)}
               </Text>
               <Text
@@ -251,8 +239,7 @@ export default function PaymentMethodsScreen({navigation, route}) {
                   fontFamily: fonts.RRegular,
                   fontSize: 16,
                   color: colors.lightBlackColor,
-                }}
-              >
+                }}>
                 {strings.endingin}
               </Text>
               <Text
@@ -260,8 +247,7 @@ export default function PaymentMethodsScreen({navigation, route}) {
                   fontFamily: fonts.RRegular,
                   fontSize: 16,
                   color: colors.lightBlackColor,
-                }}
-              >
+                }}>
                 {item.card.last4}
               </Text>
             </View>
@@ -272,8 +258,7 @@ export default function PaymentMethodsScreen({navigation, route}) {
                   fontFamily: fonts.RRegular,
                   fontSize: 14,
                   marginTop: 5,
-                }}
-              >
+                }}>
                 Expires {item.card.exp_month} / {item.card.exp_year}
               </Text>
             </View>
@@ -341,13 +326,13 @@ export default function PaymentMethodsScreen({navigation, route}) {
           color: colors.lightBlackColor,
           fontFamily: fonts.RRegular,
           fontSize: 20,
-        }}
-      >
+        }}>
         {strings.selectPaymentMethod}
       </Text>
       <TCInnerLoader visible={firstTimeLoad} size={50} />
       {!firstTimeLoad && (
         <FlatList
+          testID="payment-method-list"
           style={{marginTop: 15}}
           data={cards}
           renderItem={renderCard}

@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState, useCallback} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {Alert, SafeAreaView, ScrollView} from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
 
@@ -13,10 +13,12 @@ import ActivityLoader from '../../components/loader/ActivityLoader';
 // const entity = {};
 export default function EntityInfoScreen({navigation, route}) {
   const isFocused = useIsFocused();
+
   const [uid] = useState(route?.params?.uid);
   const [isAdmin] = useState(route?.params?.isAdmin);
-  // const [onGroupListPress] = useState(route?.params?.onGroupListPress);
-  // const [onTeamPress] = useState(route?.params?.onTeamPress);
+  const [onGroupListPress] = useState(route?.params?.onGroupListPress);
+  const [onTeamPress] = useState(route?.params?.onTeamPress);
+
   const authContext = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [currentUserData, setCurrentUserData] = useState();
@@ -54,37 +56,24 @@ export default function EntityInfoScreen({navigation, route}) {
   useEffect(() => {
     const obj = [];
     if (route?.params?.selectedVenueObj) {
+      console.log(
+        'route?.params?.selectedVenueObj',
+        route?.params?.selectedVenueObj,
+      );
       obj.push(route?.params?.selectedVenueObj);
     } else {
       obj.push(currentUserData?.setting?.venue?.[0]);
     }
     setSelectedVenue(obj);
   }, [currentUserData?.setting?.venue, route?.params?.selectedVenueObj]);
-
-  const onTeamPress = useCallback(
-    (groupObject) => {
-      navigation.push('HomeScreen', {
-        uid: groupObject?.group_id,
-        backButtonVisible: true,
-        role: groupObject?.entity_type,
-      });
-    },
-    [navigation],
-  );
-
-  const onGroupListPress = (groupList, entityType) => {
-    navigation.push('GroupListScreen', {
-      groups: groupList,
-      entity_type: entityType,
-    });
-  };
   return (
     <SafeAreaView style={{flex: 1}}>
       <ActivityLoader visible={loading} />
       <ScrollView
         style={{flex: 1}}
         bounces={false}
-        showsVerticalScrollIndicator={false}>
+        showsVerticalScrollIndicator={false}
+      >
         <GroupInfo
           navigation={navigation}
           groupDetails={currentUserData}

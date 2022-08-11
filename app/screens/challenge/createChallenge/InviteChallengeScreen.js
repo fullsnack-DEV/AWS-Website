@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Alert,
   FlatList,
+  ScrollView,
 } from 'react-native';
 import moment from 'moment';
 
@@ -25,7 +26,6 @@ import strings from '../../../Constants/String';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
 import TCGradientButton from '../../../components/TCGradientButton';
-import TCKeyboardView from '../../../components/TCKeyboardView';
 import TCThickDivider from '../../../components/TCThickDivider';
 import images from '../../../Constants/ImagePath';
 import TCLabel from '../../../components/TCLabel';
@@ -332,7 +332,7 @@ export default function InviteChallengeScreen({navigation, route}) {
   console.log('teams ===>', teams);
 
   return (
-    <TCKeyboardView>
+    <ScrollView testID="invite-challenge-scroll">
       <ActivityLoader visible={loading} />
       <TCFormProgress totalSteps={3} curruentStep={1} />
 
@@ -342,16 +342,14 @@ export default function InviteChallengeScreen({navigation, route}) {
             backgroundColor: colors.grayBackgroundColor,
             alignItems: 'center',
             justifyContent: 'center',
-          }}
-        >
+          }}>
           <Text
             style={{
               fontSize: 12,
               fontFamily: fonts.RRegular,
               color: colors.lightBlackColor,
               padding: 15,
-            }}
-          >
+            }}>
             {strings.inviteToChallengeText}
           </Text>
         </View>
@@ -371,8 +369,7 @@ export default function InviteChallengeScreen({navigation, route}) {
             flexDirection: 'row',
             justifyContent: 'space-between',
             margin: 15,
-          }}
-        >
+          }}>
           <View style={styles.challengerView}>
             <View style={styles.teamView}>
               <Image source={images.reqIcon} style={styles.reqOutImage} />
@@ -693,8 +690,7 @@ export default function InviteChallengeScreen({navigation, route}) {
                   settingObject,
                   comeFrom: 'InviteChallengeScreen',
                 });
-              }}
-            >
+              }}>
               <View style={[styles.borderButtonView, styles.shadowView]}>
                 <View />
                 <Text style={styles.detailButtonText}>
@@ -740,8 +736,7 @@ export default function InviteChallengeScreen({navigation, route}) {
                   venues: settingObject?.venue || [],
                   comeFrom: 'InviteChallengeScreen',
                 });
-              }}
-            >
+              }}>
               <View style={[styles.borderButtonView, styles.shadowView]}>
                 <View />
                 <Text style={styles.detailButtonText}>CHOOSE A VENUE</Text>
@@ -912,7 +907,7 @@ export default function InviteChallengeScreen({navigation, route}) {
           marginTop: 15,
         }}
       />
-    </TCKeyboardView>
+    </ScrollView>
   );
 }
 

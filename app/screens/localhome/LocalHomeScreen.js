@@ -1274,7 +1274,7 @@ export default function LocalHomeScreen({navigation, route}) {
             </View>
           }
         />
-        <View style={styles.separateLine} />
+        <View style={styles.separateLine} testID="local-home-screen" />
         <View style={styles.sportsListView}>
           <FlatList
             ref={refContainer}

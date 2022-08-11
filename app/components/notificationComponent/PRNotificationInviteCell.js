@@ -17,6 +17,7 @@ function PRNotificationInviteCell({
   disabled = false,
   isTrash = false,
   entityType = 'user',
+  accessibilityLabel,
 }) {
   const [dataDictionary, setDataDictionary] = useState();
 
@@ -52,17 +53,35 @@ function PRNotificationInviteCell({
                 </Text>
                 {isTrash && entityType === 'user' && (
                   <Text style={styles.timeStyle}>
-                    {(NotificationType.deleted && 'Deleted') ||
-                      (NotificationType.accepted && 'Accepted') ||
-                      (NotificationType.declined && 'declined')}
+                    {(NotificationType.deleted ===
+                      item.activities[0].action_type &&
+                      'Deleted') ||
+                      (NotificationType.accepted ===
+                        item.activities[0].action_type &&
+                        'Accepted') ||
+                      (NotificationType.declined ===
+                        item.activities[0].action_type &&
+                        'Declined') ||
+                      (NotificationType.cancelled ===
+                        item.activities[0].action_type &&
+                        'Cancelled')}
                     <Text> {dataDictionary.notificationTime}</Text>
                   </Text>
                 )}
                 {isTrash && entityType === 'group' && (
                   <Text style={styles.timeStyle}>
-                    {(NotificationType.deleted && 'Deleted') ||
-                      (NotificationType.accepted && 'Accepted') ||
-                      (NotificationType.declined && 'Declined')}
+                    {(NotificationType.deleted ===
+                      item.activities[0].action_type &&
+                      'Deleted') ||
+                      (NotificationType.accepted ===
+                        item.activities[0].action_type &&
+                        'Accepted') ||
+                      (NotificationType.declined ===
+                        item.activities[0].action_type &&
+                        'Declined') ||
+                      (NotificationType.cancelled ===
+                        item.activities[0].action_type &&
+                        'Cancelled')}
                     <Text>
                       {' '}
                       by {item.activities[0].remove_by?.data?.full_name}{' '}
@@ -76,28 +95,34 @@ function PRNotificationInviteCell({
                   disabled
                     ? [styles.viewSecondStyle, {opacity: 0.5}]
                     : styles.viewSecondStyle
-                }
-              >
+                }>
                 <TCGradientButton
+                  accessibilityLabel={`${accessibilityLabel}`}
                   textStyle={styles.btnTextStyle}
                   outerContainerStyle={styles.acceptBtnStyle}
                   style={styles.acceptButtonInnerStyle}
                   title={strings.accept}
+                  isTrash={isTrash}
                   disabled={disabled}
                   onPress={onAccept}
                 />
 
                 <TouchableOpacity
-                  style={styles.declineBtnStyle}
+                  style={[
+                    styles.declineBtnStyle,
+                    {
+                      backgroundColor: isTrash
+                        ? colors.grayBackgroundColor
+                        : colors.whiteColor,
+                    },
+                  ]}
                   onPress={onDecline}
-                  disabled={disabled}
-                >
+                  disabled={disabled}>
                   <Text
                     style={[
                       styles.btnTextStyle,
                       {color: colors.lightBlackColor},
-                    ]}
-                  >
+                    ]}>
                     {strings.decline}
                   </Text>
                 </TouchableOpacity>
@@ -160,7 +185,7 @@ const styles = StyleSheet.create({
   btnTextStyle: {
     fontSize: 12,
     fontFamily: fonts.RBold,
-    color: colors.whiteColor,
+
     textAlign: 'center',
   },
 

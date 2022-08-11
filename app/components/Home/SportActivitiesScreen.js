@@ -52,7 +52,9 @@ export default function SportActivitiesScreen({navigation}) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <TouchableOpacity onPress={() => actionSheet.current.show()}>
+        <TouchableOpacity
+          onPress={() => actionSheet.current.show()}
+          hitSlop={Utility.getHitSlop(15)}>
           <Image
             source={images.vertical3Dot}
             style={styles.navigationRightItem}
@@ -104,8 +106,7 @@ export default function SportActivitiesScreen({navigation}) {
               colors.blueGradiantStart,
             ])
           }
-          style={styles.backgroundView}
-        ></LinearGradient>
+          style={styles.backgroundView}></LinearGradient>
         <View style={styles.innerViewContainer}>
           <View style={styles.viewContainer}>
             <FastImage
@@ -136,8 +137,7 @@ export default function SportActivitiesScreen({navigation}) {
       <View style={styles.sportView}>
         <LinearGradient
           colors={[colors.darkThemeColor, colors.darkThemeColor]}
-          style={styles.backgroundView}
-        ></LinearGradient>
+          style={styles.backgroundView}></LinearGradient>
         <View style={styles.innerViewContainer}>
           <View style={styles.viewContainer}>
             <Image
@@ -168,8 +168,7 @@ export default function SportActivitiesScreen({navigation}) {
       <View style={styles.sportView}>
         <LinearGradient
           colors={[colors.blueGradiantEnd, colors.blueGradiantStart]}
-          style={styles.backgroundView}
-        ></LinearGradient>
+          style={styles.backgroundView}></LinearGradient>
         <View style={styles.innerViewContainer}>
           <View style={styles.viewContainer}>
             <Image

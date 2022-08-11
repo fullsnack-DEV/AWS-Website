@@ -17,6 +17,14 @@ export const getNotificationsList = (params, authContext) =>
     authContext,
   });
 
+export const getNotificationsNextList = (params, idLt, authContext) =>
+  makeAPIRequest({
+    method: 'get',
+    url: `${Config.BASE_URL}notifications?id_lt=${idLt}`,
+    params,
+    authContext,
+  });
+
 export const deleteNotification = (id, type, authContext) =>
   makeAPIRequest({
     method: 'delete',

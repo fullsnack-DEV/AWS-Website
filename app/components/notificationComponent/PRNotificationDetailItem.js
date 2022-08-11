@@ -20,6 +20,7 @@ function PRNotificationDetailItem({
   onDetailPress,
   onPressFirstEntity,
   disabled = false,
+  accessibilityLabel,
 }) {
   //   const authContext = useContext(AuthContext)
   const [dataDictionary, setDataDictionary] = useState();
@@ -41,8 +42,7 @@ function PRNotificationDetailItem({
                   entityType: dataDictionary.entityType,
                   entityId: dataDictionary.entityId,
                 });
-              }}
-            >
+              }}>
               <TCProfileImage
                 entityType={dataDictionary.entityType}
                 source={{uri: dataDictionary.imgName}}
@@ -61,8 +61,7 @@ function PRNotificationDetailItem({
                       entityType: dataDictionary.entityType,
                       entityId: dataDictionary.entityId,
                     });
-                  }}
-                >
+                  }}>
                   <Text style={styles.boldTextStyle}>
                     {dataDictionary.preText
                       ? `${dataDictionary.firstTitle}`
@@ -106,13 +105,12 @@ function PRNotificationDetailItem({
                   disabled
                     ? [styles.viewSecondStyle, {opacity: 0.5}]
                     : styles.viewSecondStyle
-                }
-              >
+                }>
                 <TouchableOpacity
+                  testID={`${accessibilityLabel}`}
                   style={styles.detailBtnStyle}
                   onPress={onDetailPress}
-                  disabled={disabled}
-                >
+                  disabled={disabled}>
                   <Text style={styles.detailBtnTextStyle}>
                     {strings.detailText}
                   </Text>

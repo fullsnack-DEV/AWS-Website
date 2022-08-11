@@ -18,7 +18,7 @@ import {
 } from 'react-native';
 import _ from 'lodash';
 import moment from 'moment';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
@@ -841,7 +841,17 @@ export const getNearDateTime = (date) => {
 };
 
 export const getSportName = (object, authContext) => {
-  if (object?.sport_type && object?.sport_type !== '') {
+  const tempObject = {
+    ...object,
+    sport_type:
+      object?.sport_type ??
+      object?.home_team?.sport_type ??
+      object?.away_team?.sport_type,
+    sport:
+      object?.sport ?? object?.home_team?.sport ?? object?.away_team?.sport,
+  };
+
+  if (tempObject?.sport_type && tempObject?.sport_type !== '') {
     let sportArr = [];
     authContext?.sports?.map((item) => {
       sportArr = [...sportArr, ...item.format];
@@ -849,15 +859,15 @@ export const getSportName = (object, authContext) => {
     });
     const filterFormat = sportArr?.filter(
       (item) =>
-        item?.sport_type === object?.sport_type &&
-        item?.sport === object?.sport,
+        item?.sport_type === tempObject?.sport_type &&
+        item?.sport === tempObject?.sport,
     )[0];
     return filterFormat?.sport_name?.toLowerCase() === 'Tennis'.toLowerCase()
       ? 'Tennis Singles'
       : filterFormat?.sport_name;
   }
   const filterFormat = authContext?.sports?.filter(
-    (obj) => obj?.sport === object?.sport,
+    (obj) => obj?.sport === tempObject?.sport,
   )[0];
 
   return filterFormat?.sport_name;

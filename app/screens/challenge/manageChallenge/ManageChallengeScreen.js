@@ -327,8 +327,7 @@ export default function ManageChallengeScreen({navigation, route}) {
       style={styles.listContainer}
       onPress={() => {
         handleOpetions(item.key);
-      }}
-    >
+      }}>
       <View style={{flexDirection: 'row'}}>
         <Text style={styles.listItems}>{item.key}</Text>
 
@@ -351,19 +350,17 @@ export default function ManageChallengeScreen({navigation, route}) {
 
   return (
     <>
-      <ScrollView style={styles.mainContainer}>
+      <ScrollView style={styles.mainContainer} testID="manage-challenge-screen">
         {/* <ActivityLoader visible={loading} /> */}
 
         <View
-          style={{padding: 15, backgroundColor: colors.grayBackgroundColor}}
-        >
+          style={{padding: 15, backgroundColor: colors.grayBackgroundColor}}>
           <Text
             style={{
               fontSize: 14,
               fontFamily: fonts.RRegular,
               color: colors.lightBlackColor,
-            }}
-          >
+            }}>
             {strings.challengeSettingTitle}
           </Text>
         </View>
@@ -380,16 +377,14 @@ export default function ManageChallengeScreen({navigation, route}) {
       {showBottomNotes && (
         <LinearGradient
           colors={[colors.yellowColor, colors.orangeGradientColor]}
-          style={styles.challengeNotesView}
-        >
+          style={styles.challengeNotesView}>
           <Text
             style={{
               color: colors.whiteColor,
               fontFamily: fonts.RBold,
               fontSize: 14,
               width: '88%',
-            }}
-          >
+            }}>
             {strings.challengeSettingNotes}
           </Text>
           <TouchableOpacity onPress={() => setShowBottomNotes(false)}>

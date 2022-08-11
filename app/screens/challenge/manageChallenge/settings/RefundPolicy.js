@@ -55,22 +55,22 @@ export default function RefundPolicy({navigation, route}) {
           style={styles.saveButtonStyle}
           onPress={() => {
             onSavePressed();
-          }}
-        >
+          }}>
           Save
         </Text>
       ),
     });
   }, [comeFrom, navigation, typeSelection.key]);
 
-  const renderPolicyTypes = ({item}) => (
+  const renderPolicyTypes = ({item, index}) => (
     <TouchableWithoutFeedback
       onPress={() => {
         setTypeSelection(item);
-      }}
-    >
+      }}>
       <View style={styles.radioItem}>
-        <Text style={styles.languageList}>{item.key}</Text>
+        <Text accessibilityLabel={`${index}`} style={styles.languageList}>
+          {item.key}
+        </Text>
         <View style={styles.checkbox}>
           {typeSelection?.key === item?.key ? (
             <Image
@@ -202,8 +202,7 @@ export default function RefundPolicy({navigation, route}) {
   return (
     <ScrollView
       style={styles.mainContainer}
-      showsVerticalScrollIndicator={false}
-    >
+      showsVerticalScrollIndicator={false}>
       <ActivityLoader visible={loading} />
 
       <TCLable title={strings.gameTyleTitle} required={false} />

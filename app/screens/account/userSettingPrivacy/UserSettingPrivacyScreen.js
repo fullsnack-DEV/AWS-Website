@@ -44,6 +44,7 @@ export default function UserSettingPrivacyScreen({navigation}) {
     setIsAccountDeactivated(false);
     setPointEvent('auto');
     if (isFocused) {
+      console.log('its called....', authContext.entity.role);
       if (authContext?.entity?.obj?.is_pause === true) {
         setIsAccountDeactivated(true);
         setPointEvent('none');
@@ -71,10 +72,11 @@ export default function UserSettingPrivacyScreen({navigation}) {
             {key: 'Profile', id: 2},
             {key: 'Basic Info', id: 3},
             {key: 'Sports Activities', id: 4},
-            {key: 'Currency', id: 5},
+            {key: 'Time Zone', id: 5},
+            {key: 'Currency', id: 6},
             // {key: 'Change Password', id: 7},
-            {key: 'Deactivate Account', id: 6},
-            {key: 'Terminate Account', id: 7},
+            {key: 'Deactivate Account', id: 7},
+            {key: 'Terminate Account', id: 8},
             // {key: 'Privacy Setting',id:3}
           ]);
         } else {
@@ -83,7 +85,8 @@ export default function UserSettingPrivacyScreen({navigation}) {
             {key: 'Profile', id: 2},
             {key: 'Basic Info', id: 3},
             {key: 'Sports Activities', id: 4},
-            {key: 'Currency', id: 5},
+            {key: 'Time Zone', id: 5},
+            {key: 'Currency', id: 6},
             // {key: 'Privacy Setting',id:3}
           ]);
         }
@@ -123,6 +126,7 @@ export default function UserSettingPrivacyScreen({navigation}) {
     } else if (opetions === 'Basic Info') {
       navigation.navigate('BasicInfoScreen');
     } else if (opetions === 'Sports Activities') {
+      console.log('click on sport setting');
       navigation.navigate('SportActivityScreen');
     }
     //  else if (opetions === 'Currency') {
@@ -142,15 +146,15 @@ export default function UserSettingPrivacyScreen({navigation}) {
       style={styles.listContainer}
       onPress={() => {
         handleOpetions(item.key);
-      }}>
+      }}
+    >
       <View
         style={{
           flexDirection: 'row',
           opacity: isAccountDeactivated && index <= 3 ? 0.5 : 1,
         }}
-        pointerEvents={
-          isAccountDeactivated && index <= 3 ? pointEvent : 'auto'
-        }>
+        pointerEvents={isAccountDeactivated && index <= 3 ? pointEvent : 'auto'}
+      >
         <Text style={styles.listItems}>{item.key}</Text>
         {item.key === 'Currency' && authContext?.entity?.obj?.currency_type && (
           <Text style={styles.currencyTypeStyle}>
@@ -176,7 +180,8 @@ export default function UserSettingPrivacyScreen({navigation}) {
               color: colors.lightBlackColor,
               textAlign: 'center',
               fontFamily: fonts.RBold,
-            }}>
+            }}
+          >
             Settings
           </Text>
         }

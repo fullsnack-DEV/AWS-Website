@@ -10,11 +10,15 @@ import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import images from '../Constants/ImagePath';
 import strings from '../Constants/String';
+import {getHitSlop} from '../utils';
 
 function FacebookButton({onPress}) {
   return (
     <SafeAreaView>
-      <TouchableOpacity style={styles.allButton} onPress={onPress}>
+      <TouchableOpacity
+        style={styles.allButton}
+        onPress={onPress}
+        hitSlop={getHitSlop(15)}>
         <Image source={images.signUpFb} style={styles.fbImg} />
         <Text style={styles.fbText}>{strings.fbText}</Text>
       </TouchableOpacity>
@@ -49,7 +53,7 @@ const styles = StyleSheet.create({
     flex: 1,
     color: colors.eventBlueColor,
     fontFamily: fonts.RRegular,
-    fontSize: 16,
+    fontSize: 17,
     textAlign: 'center',
   },
 });

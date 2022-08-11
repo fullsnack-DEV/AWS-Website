@@ -128,8 +128,7 @@ export default function TennisRecording({navigation, route}) {
       headerRight: () => (
         <TouchableWithoutFeedback
           onPress={() => headerActionSheet.current.show()}
-          hitSlop={getHitSlop(15)}
-        >
+          hitSlop={getHitSlop(15)}>
           <Image source={images.vertical3Dot} style={styles.headerRightImg} />
         </TouchableWithoutFeedback>
       ),
@@ -797,8 +796,7 @@ export default function TennisRecording({navigation, route}) {
                       {cancelable: false},
                     );
                   }
-                }}
-              >
+                }}>
                 <View>
                   <Text style={styles.centerSetText}>SET SCORES</Text>
                   <View style={styles.centerView}>
@@ -858,8 +856,7 @@ export default function TennisRecording({navigation, route}) {
             {showToast && (
               <LinearGradient
                 colors={[colors.yellowColor, colors.themeColor]}
-                style={styles.messageToast}
-              >
+                style={styles.messageToast}>
                 <View
                   style={{
                     flexDirection: 'row',
@@ -869,21 +866,18 @@ export default function TennisRecording({navigation, route}) {
                     justifyContent: 'center',
                     alignItems: 'center',
                     flex: 1,
-                  }}
-                >
+                  }}>
                   <View
                     style={{
                       flex: 1,
                       flexDirection: 'row',
                       alignItems: 'center',
                       width: '100%',
-                    }}
-                  >
+                    }}>
                     <View style={styles.gameRecordButton}>
                       <View
                         colors={colors.whiteColor}
-                        style={styles.gameRecordButton}
-                      ></View>
+                        style={styles.gameRecordButton}></View>
                     </View>
                     <Text numberOfLines={1} style={styles.messageText}>
                       {getMessageText()}
@@ -895,8 +889,7 @@ export default function TennisRecording({navigation, route}) {
                           route?.params?.gameDetail?.game_id,
                         );
                         getGameDetail(route?.params?.gameDetail?.game_id, true);
-                      }}
-                    >
+                      }}>
                       <Image
                         source={images.undoImage}
                         style={{
@@ -915,8 +908,7 @@ export default function TennisRecording({navigation, route}) {
                       //   selectedTeam,
                       //   gameObj.game_id,
                       // );
-                    }}
-                  >
+                    }}>
                     <Image
                       source={images.cancelImage}
                       style={{
@@ -946,8 +938,7 @@ export default function TennisRecording({navigation, route}) {
                 left: 0,
                 bottom: 0,
                 right: 0,
-              }}
-            >
+              }}>
               <View style={styles.view}>
                 <TennisScoreView scoreDataSource={gameObj} />
               </View>
@@ -960,8 +951,7 @@ export default function TennisRecording({navigation, route}) {
               onPress={() => {
                 console.log('Arrow Pressed.');
                 toggleView(() => setFooterUp(!footerUp), 200);
-              }}
-            >
+              }}>
               <View style={styles.bottomView}>
                 <View style={styles.timeView}>
                   <Text style={styles.timer}>{timelineTimer}</Text>
@@ -981,8 +971,7 @@ export default function TennisRecording({navigation, route}) {
                             setTimelineTimer('00 : 00 : 00');
                           }
                           setPickerShow(false);
-                        }}
-                      >
+                        }}>
                         <Image
                           source={images.curruentTime}
                           style={styles.curruentTimeImg}
@@ -994,8 +983,7 @@ export default function TennisRecording({navigation, route}) {
                     style={styles.startTime}
                     onPress={() => {
                       setPickerShow(!pickerShow);
-                    }}
-                  >
+                    }}>
                     {[GameStatus.accepted, GameStatus.reset].includes(
                       gameObj?.status,
                     )
@@ -1012,8 +1000,7 @@ export default function TennisRecording({navigation, route}) {
                     onPress={() => {
                       console.log('Arrow Pressed.');
                       toggleView(() => setFooterUp(!footerUp), 200);
-                    }}
-                  >
+                    }}>
                     <Image
                       source={images.dropDownArrow}
                       style={styles.downArrow}
@@ -1066,13 +1053,11 @@ export default function TennisRecording({navigation, route}) {
                             gameObj?.home_team?.user_id ??
                               gameObj?.home_team?.group_id,
                           );
-                        }}
-                      >
+                        }}>
                         {player1Selected ? (
                           <LinearGradient
                             colors={[colors.yellowColor, colors.themeColor]}
-                            style={styles.playerView}
-                          >
+                            style={styles.playerView}>
                             <Image
                               source={
                                 gameObj?.home_team?.thumbnail
@@ -1119,13 +1104,11 @@ export default function TennisRecording({navigation, route}) {
                             gameObj?.away_team?.user_id ??
                               gameObj?.away_team?.group_id,
                           );
-                        }}
-                      >
+                        }}>
                         {player2Selected ? (
                           <LinearGradient
                             colors={[colors.yellowColor, colors.themeColor]}
-                            style={styles.playerView}
-                          >
+                            style={styles.playerView}>
                             <Image
                               source={
                                 gameObj?.away_team?.thumbnail
@@ -1152,8 +1135,7 @@ export default function TennisRecording({navigation, route}) {
                             />
                             <Text
                               numberOfLines={2}
-                              style={styles.playerNameText}
-                            >
+                              style={styles.playerNameText}>
                               {gameObj?.away_team?.first_name
                                 ? `${gameObj?.away_team?.first_name} ${gameObj?.away_team?.last_name}`
                                 : `${gameObj?.away_team?.group_name}`}
@@ -1206,8 +1188,7 @@ export default function TennisRecording({navigation, route}) {
                               openToast();
                               addGameRecordDetail(gameObj.game_id, body);
                             }
-                          }}
-                        >
+                          }}>
                           <Image
                             source={images.gameOrangePlus}
                             style={{
@@ -1258,8 +1239,7 @@ export default function TennisRecording({navigation, route}) {
                                 {cancelable: false},
                               );
                             }
-                          }}
-                        >
+                          }}>
                           <Image
                             source={images.deleteRecentGoal}
                             style={{
@@ -1294,8 +1274,7 @@ export default function TennisRecording({navigation, route}) {
                     <ScrollView
                       horizontal={true}
                       style={{alignSelf: 'center'}}
-                      showsHorizontalScrollIndicator={false}
-                    >
+                      showsHorizontalScrollIndicator={false}>
                       <View style={styles.gameRecordButtonView}>
                         {(gameObj.status === GameStatus.accepted ||
                           gameObj.status === GameStatus.reset) && (

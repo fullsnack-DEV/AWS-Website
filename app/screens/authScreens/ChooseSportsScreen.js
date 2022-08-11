@@ -78,14 +78,13 @@ export default function ChooseSportsScreen({navigation, route}) {
         <TouchableOpacity
           onPress={() => {
             navigation.pop();
-          }}
-        >
+          }}>
           <Image
             source={images.backArrow}
             style={{
               height: 20,
               width: 15,
-              marginLeft: wp('5.33%'),
+              marginLeft: 20,
               tintColor: colors.whiteColor,
             }}
           />
@@ -93,6 +92,7 @@ export default function ChooseSportsScreen({navigation, route}) {
       ),
       headerRight: () => (
         <Text
+          testID="next-signupSport-button"
           style={styles.nextButtonStyle}
           onPress={() => {
             if (selected.length > 0) {
@@ -101,8 +101,7 @@ export default function ChooseSportsScreen({navigation, route}) {
               Alert.alert(strings.appName, 'Please choose at least one sport.');
               return false;
             }
-          }}
-        >
+          }}>
           {strings.next}
         </Text>
       ),
@@ -319,8 +318,7 @@ export default function ChooseSportsScreen({navigation, route}) {
         style={styles.listItem}
         onPress={() => {
           isIconCheckedOrNot({item, index});
-        }}
-      >
+        }}>
         <FastImage
           resizeMode={'contain'}
           source={{uri: `${image_base_url}${item.player_image}`}}
@@ -497,8 +495,7 @@ export default function ChooseSportsScreen({navigation, route}) {
   return (
     <LinearGradient
       colors={[colors.themeColor1, colors.themeColor3]}
-      style={styles.mainContainer}
-    >
+      style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
       <FastImage
         resizeMode={'stretch'}
@@ -511,7 +508,7 @@ export default function ChooseSportsScreen({navigation, route}) {
 
         <FlatList
           data={sports}
-          style={{marginTop: hp('3.69%')}}
+          style={{top: 0, marginBottom: 35}}
           keyExtractor={(item, index) => index.toString()}
           renderItem={renderItem}
         />
@@ -565,27 +562,29 @@ const styles = StyleSheet.create({
   },
   sportList: {
     color: colors.whiteColor,
-    fontSize: 16,
+    fontSize: wp('4%'),
     textAlign: 'left',
-    fontFamily: fonts.RMedium,
+    fontFamily: fonts.RRegular,
 
     // paddingLeft: wp('1%'),
-    width: wp('68%'),
+    width: wp('70%'),
     margin: wp('4%'),
     textAlignVertical: 'center',
   },
   sportText: {
     color: colors.whiteColor,
     fontFamily: fonts.RBold,
-    fontSize: 25,
-    marginLeft: wp('6.6%'),
-    marginTop: hp('11.39%'),
+    fontSize: wp('6%'),
+    marginBottom: hp('4%'),
+    marginTop: hp('12%'),
+    paddingLeft: 30,
     textAlign: 'left',
+    width: wp('70%'),
   },
   nextButtonStyle: {
-    fontFamily: fonts.RMedium,
+    fontFamily: fonts.RBold,
     fontSize: 16,
-    marginRight: wp('4%'),
+    marginRight: 15,
     color: colors.whiteColor,
   },
   container: {
