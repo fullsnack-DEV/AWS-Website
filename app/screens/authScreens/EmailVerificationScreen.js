@@ -58,7 +58,7 @@ export default function EmailVerificationScreen({navigation, route}) {
             style={{
               height: 20,
               width: 15,
-              marginLeft: wp('5.33%'),
+              marginLeft: 20,
               tintColor: colors.whiteColor,
             }}
           />
@@ -70,6 +70,7 @@ export default function EmailVerificationScreen({navigation, route}) {
   const getRedirectionScreenName = useCallback(
     (townscupUser) =>
       new Promise((resolve, reject) => {
+        console.log('screen name object:=>', townscupUser);
         if (!townscupUser.birthday) resolve({screen: 'AddBirthdayScreen'});
         else if (!townscupUser.gender) resolve({screen: 'ChooseGenderScreen'});
         else if (!townscupUser.city) resolve({screen: 'ChooseLocationScreen'});
@@ -101,6 +102,7 @@ export default function EmailVerificationScreen({navigation, route}) {
       await setStorage('loggedInEntity', entity);
       await authContext.setEntity({...entity});
 
+      console.log('User Data:', userData);
       getRedirectionScreenName(userData)
         .then((responseScreen) => {
           setLoading(false);
@@ -114,11 +116,13 @@ export default function EmailVerificationScreen({navigation, route}) {
           await setStorage('loggedInEntity', {...entity});
           getAppSettingsWithoutAuth()
             .then(async (response) => {
+              console.log('Settings without auth:=>', response);
               await setStorage('appSetting', response.payload.app);
               await authContext.setEntity({...entity});
             })
             .catch((e) => {
               setTimeout(() => {
+                console.log('catch -> location screen setting api');
                 Alert.alert(strings.alertmessagetitle, e.message);
               }, 10);
             });
@@ -139,6 +143,9 @@ export default function EmailVerificationScreen({navigation, route}) {
       const response = {...townscupUser};
       let qbEntity = {...dummyAuthContext?.entity};
 
+      console.log('response : ', response);
+      console.log('qbEntity : ', qbEntity);
+
       QBlogin(qbEntity.uid, response)
         .then(async (res) => {
           qbEntity = {
@@ -150,7 +157,7 @@ export default function EmailVerificationScreen({navigation, route}) {
           loginFinalRedirection(firebaseUser, response);
         })
         .catch((error) => {
-          console.log('error', error);
+          console.log('QB Login Error : ', error.message);
           qbEntity = {...qbEntity, QB: {connected: false}};
           dummyAuthContext.entity = {...qbEntity};
           loginFinalRedirection(firebaseUser, response);
@@ -168,6 +175,7 @@ export default function EmailVerificationScreen({navigation, route}) {
             token: idTokenResult.token,
             expirationTime: idTokenResult.expirationTime,
           };
+          console.log('token:=>', token);
           dummyAuthContext.tokenData = token;
 
           setStorage('groupEventValue', true);
@@ -176,8 +184,10 @@ export default function EmailVerificationScreen({navigation, route}) {
             url: `${Config.BASE_URL}/users/${user?.uid}`,
             headers: {Authorization: `Bearer ${token?.token}`},
           };
+          console.log('Login Request:=>', userConfig);
           apiCall(userConfig)
             .then((response) => {
+              console.log('ressssss==>', response);
               if (response.status) {
                 dummyAuthContext.entity = {
                   uid: user.uid,
@@ -204,8 +214,8 @@ export default function EmailVerificationScreen({navigation, route}) {
               }
             })
             .catch((error) => {
-              console.log('error', error);
               setLoading(false);
+              console.log(error);
               navigation.navigate('AddNameScreen', {
                 signupInfo: {
                   ...route?.params?.signupInfo,
@@ -225,6 +235,8 @@ export default function EmailVerificationScreen({navigation, route}) {
   );
 
   const verifyUserEmail = () => {
+    console.log(route?.params?.signupInfo);
+    console.log(route?.params?.signupInfo?.password);
     setLoading(true);
     firebase
       .auth()
@@ -235,6 +247,8 @@ export default function EmailVerificationScreen({navigation, route}) {
       .then((res) => {
         setLoading(false);
         if (res.user.emailVerified) {
+          console.log('firebase user data', res);
+
           const loginOnAuthStateChanged = firebase
             .auth()
             .onAuthStateChanged(onAuthStateChanged);
@@ -293,29 +307,17 @@ export default function EmailVerificationScreen({navigation, route}) {
         style={styles.background}
         source={images.loginBg}
       />
-      <View
-        style={{
-          marginTop: hp('11.39%'),
-          alignSelf: 'center',
-          width: '86.8%',
-          // backgroundColor: colors.redColor,
-        }}>
+      <View style={{marginTop: '30%', alignSelf: 'center', width: '80%'}}>
         <Text
           style={{
             fontSize: 25,
             fontFamily: fonts.RBold,
             color: colors.whiteColor,
-            marginBottom: 5,
+            marginBottom: 25,
           }}>
           Please verify your email.
         </Text>
-        <Text
-          style={{
-            fontSize: 16,
-            color: 'white',
-            fontFamily: fonts.RMedium,
-            marginVertical: 5,
-          }}>
+        <Text style={{fontSize: 16, color: 'white', fontFamily: fonts.RMedium}}>
           {getVerificationEmailText}
         </Text>
       </View>
@@ -324,25 +326,44 @@ export default function EmailVerificationScreen({navigation, route}) {
           height: 112,
           width: 180,
           alignSelf: 'center',
-          marginTop: hp('8.38%'),
-          marginBottom: hp('5.72%'),
+          marginVertical: 15,
         }}
         resizeMode={'contain'}
         source={images.emailSendIconBG}
       />
-      <TouchableOpacity onPress={verifyUserEmail}>
+
+      <TouchableOpacity
+        onPress={resend}
+        disabled={timer !== 0}
+        style={{alignItems: 'center'}}>
+        <Text
+          style={{
+            width: '85%',
+            textAlign: 'center',
+            color: colors.lightGreen,
+            textDecorationLine: 'underline',
+            fontSize: 13,
+            fontWeight: '700',
+          }}>
+          {timer !== 0
+            ? `YOU CAN SEND VERIFICATION EMAIL AGAIN AFTER ${timer} SECONDS.`
+            : 'SEND VERIFICATION EMAIL AGAIN'}
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity testID="verify-email-button" onPress={verifyUserEmail}>
         <View
           style={{
             borderRadius: 40,
             backgroundColor: 'white',
             borderWidth: 1,
             borderColor: 'orange',
-            width: '86.8%',
+            width: '80%',
             justifyContent: 'center',
             alignItems: 'center',
             alignSelf: 'center',
-            // marginTop: '5.72%',
-            height: 45,
+            marginTop: '10%',
+            height: 50,
           }}>
           <Text
             style={{
@@ -354,25 +375,6 @@ export default function EmailVerificationScreen({navigation, route}) {
             I’VE VERIFIED MY EMAIL ADDRESS
           </Text>
         </View>
-      </TouchableOpacity>
-      <TouchableOpacity
-        onPress={resend}
-        disabled={timer !== 0}
-        style={{alignItems: 'center'}}>
-        <Text
-          style={{
-            width: '86.6%',
-            textAlign: 'center',
-            color: colors.lightGreen,
-            textDecorationLine: 'underline',
-            fontSize: 14,
-            fontFamily: fonts.RBold,
-            marginTop: hp('2.46%'),
-          }}>
-          {timer !== 0
-            ? `YOU CAN SEND VERIFICATION EMAIL AGAIN AFTER ${timer} SECONDS.`
-            : 'SEND VERIFICATION EMAIL AGAIN'}
-        </Text>
       </TouchableOpacity>
     </LinearGradient>
   );

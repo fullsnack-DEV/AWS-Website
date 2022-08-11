@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
     flex: 1,
     color: colors.eventBlueColor,
     fontFamily: fonts.RRegular,
-    fontSize: 16,
+    fontSize: 17,
     textAlign: 'center',
   },
 });

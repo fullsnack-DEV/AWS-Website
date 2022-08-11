@@ -52,7 +52,7 @@ export default function ForgotPasswordScreen({navigation}) {
             style={{
               height: 20,
               width: 15,
-              marginLeft: wp('5.33%'),
+              marginLeft: 20,
               tintColor: colors.whiteColor,
             }}
           />
@@ -162,8 +162,8 @@ const styles = StyleSheet.create({
     color: colors.whiteColor,
     fontFamily: fonts.RBold,
     fontSize: 25,
-    marginLeft: wp('6.6%'),
-    marginTop: hp('11.39%'),
+    marginTop: hp('12%'),
+    paddingLeft: 25,
     textAlign: 'left',
   },
   mainContainer: {
@@ -194,9 +194,9 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
   nextButtonStyle: {
-    fontFamily: fonts.RMedium,
+    fontFamily: fonts.RBold,
     fontSize: 16,
-    marginRight: wp('4%'),
+    marginRight: 15,
     color: colors.whiteColor,
   },
 });

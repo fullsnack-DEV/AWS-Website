@@ -26,7 +26,7 @@ import Modal from 'react-native-modal';
 
 // import ActionSheet from 'react-native-actionsheet';
 // import { useIsDrawerOpen } from '@react-navigation/drawer';
-import MarqueeText from 'react-native-marquee';
+// import MarqueeText from 'react-native-marquee';
 
 import firebase from '@react-native-firebase/app';
 import ExpanableList from 'react-native-expandable-section-flatlist';
@@ -46,7 +46,7 @@ import {
   getTeamPendingRequest,
   groupUnpaused,
 } from '../../api/Groups';
-import {getGroupIndex} from '../../api/elasticSearch';
+
 import {getUnreadCount} from '../../api/Notificaitons';
 
 import * as Utility from '../../utils/index';
@@ -74,6 +74,7 @@ export default function AccountScreen({navigation}) {
   const isFocused = useIsFocused();
 
   const authContext = useContext(AuthContext);
+  console.log('authContext?.sports', authContext);
   // const [isSportCreateModalVisible, setIsSportCreateModalVisible] = useState(
   //   false,
   // );
@@ -87,10 +88,13 @@ export default function AccountScreen({navigation}) {
   const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
   const [pointEvent, setPointEvent] = useState('auto');
   const [sportsSelection, setSportsSelection] = useState();
-  const [setSports] = useState('');
+  const [sports, setSports] = useState('');
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
 
   const [clickedUserType, setClickedUserType] = useState('user');
+
+  console.log(sports);
+  console.log('authSports::=>', authContext.sports);
 
   // for set/get teams
   const [teamList, setTeamList] = useState([]);
@@ -165,6 +169,7 @@ export default function AccountScreen({navigation}) {
     setIsAccountDeactivated(false);
     setPointEvent('auto');
     if (isFocused) {
+      console.log('its called....', authContext.entity.role);
       if (authContext?.entity?.obj?.is_pause === true) {
         setIsAccountDeactivated(true);
         setPointEvent('none');
@@ -189,6 +194,7 @@ export default function AccountScreen({navigation}) {
         style={{opacity: isAccountDeactivated ? 0.5 : 1}}
         pointerEvents={pointEvent}>
         <TouchableOpacity
+          testID="notification-bell-button"
           onPress={() => {
             navigation.navigate('NotificationsListScreen');
           }}
@@ -222,6 +228,7 @@ export default function AccountScreen({navigation}) {
   const getData = () =>
     new Promise((resolve, reject) => {
       setloading(true);
+      console.log('get data Promise Called..');
       const entity = authContext.entity;
       const promises = [
         getNotificationUnreadCount(entity),
@@ -231,6 +238,8 @@ export default function AccountScreen({navigation}) {
       Promise.all(promises)
         .then(() => {
           resolve(true);
+
+          console.log('get data Promise resolved Called..');
         })
 
         // eslint-disable-next-line prefer-promise-reject-errors
@@ -250,15 +259,6 @@ export default function AccountScreen({navigation}) {
   }, [authContext, isFocused]);
 
   // useEffect(() => {
-  //   if (
-  //     authContext.entity?.obj?.entity_type === 'team' &&
-  //     authContext.entity?.obj?.parent_groups?.length > 0
-  //   ) {
-  //     getJoinedClubListOfTeam(authContext.entity?.obj?.parent_groups);
-  //   }
-  // });
-
-  // useEffect(() => {
   //   if (route?.params?.createdSportName) {
   //     setIsSportCreateModalVisible(true);
   //   }
@@ -266,6 +266,7 @@ export default function AccountScreen({navigation}) {
 
   const getParentClub = useCallback(
     async (item) => {
+      console.log('parent club  Called..');
       getGroupDetails(item.group_id, authContext)
         .then((response) => {
           if (!response?.payload?.club) {
@@ -273,9 +274,11 @@ export default function AccountScreen({navigation}) {
           } else {
             setParentGroup();
           }
+          console.log('parent club done Called..');
         })
         .catch((e) => {
           setloading(false);
+          console.log('6');
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
@@ -286,6 +289,8 @@ export default function AccountScreen({navigation}) {
 
   const getNotificationUnreadCount = useCallback(
     async (currentEntity) => {
+      console.log('unread api  Called..');
+
       getUnreadCount(authContext)
         .then((response) => {
           console.log('unread api  Called..', response.payload);
@@ -315,8 +320,17 @@ export default function AccountScreen({navigation}) {
             setGroupList([{...user}, ...updatedClub, ...teams]);
           }
           setloading(false);
+
+          // if (authContext?.entity?.QB) {
+          //   setloading(false);
+          // } else {
+          //   onSwitchProfile(authContext?.entity)
+          // }
+
+          console.log('unread api done Called..');
         })
         .catch((e) => {
+          console.log('catch -> Account Screen unread count api');
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
@@ -327,21 +341,26 @@ export default function AccountScreen({navigation}) {
 
   const getTeamsList = useCallback(
     async (currentEntity) => {
+      console.log('team list api Called..');
       setloading(true);
       if (currentEntity.role === 'club') {
+        console.log('team of club api Called..');
+
         getTeamsOfClub(authContext.entity.uid, authContext)
           .then((response) => {
             setTeamList(response.payload);
-            console.log('team list api done Called..', response.payload);
+            console.log('team list api done Called..');
           })
           .catch((e) => {
             setloading(false);
-
+            console.log('2');
             setTimeout(() => {
               Alert.alert(strings.alertmessagetitle, e.message);
             }, 10);
           });
       } else {
+        console.log('join group api Called..');
+
         getTeamData();
         // getJoinedGroups('team', authContext)
         //   .then((response) => {
@@ -362,6 +381,7 @@ export default function AccountScreen({navigation}) {
   const getTeamData = () =>
     new Promise((resolve, reject) => {
       setloading(true);
+      console.log('get data Promise Called..');
       const promises = [
         getJoinedGroups('team', authContext),
         getTeamPendingRequest(authContext),
@@ -376,44 +396,24 @@ export default function AccountScreen({navigation}) {
         // eslint-disable-next-line prefer-promise-reject-errors
         .catch(() => reject('error'));
     });
-  const getJoinedClubListOfTeam = useCallback((ids) => {
-    const body = {
-      query: {
-        terms: {
-          _id: ids,
-        },
-      },
-    };
-    console.log('query body ==>', JSON.stringify(body));
-    getGroupIndex(body).then((clubs) => {
-      console.log('Joined club list::=>', clubs);
-      setClubList(clubs);
-    });
-  }, []);
 
-  const getClubList = useCallback(
-    async (entity) => {
-      if (entity.role === 'user') {
-        // called user club list
-        getJoinedGroups('club', authContext)
-          .then((response) => {
-            setClubList(response.payload);
-            console.log('club list api done Called..', response.payload);
-          })
-          .catch((e) => {
-            setloading(false);
-            setTimeout(() => {
-              Alert.alert(strings.alertmessagetitle, e.message);
-            }, 10);
-          });
-      } else if (entity.role !== 'club') {
-        // fetch team club list from elastic search
-        const ids = entity?.obj?.parent_groups;
-        getJoinedClubListOfTeam(ids);
-      }
-    },
-    [authContext, getJoinedClubListOfTeam],
-  );
+  const getClubList = useCallback(async () => {
+    // setloading(true);
+    console.log('club list api Called..');
+
+    getJoinedGroups('club', authContext)
+      .then((response) => {
+        setClubList(response.payload);
+        console.log('club list api done Called..', response.payload);
+      })
+      .catch((e) => {
+        setloading(false);
+        console.log('4');
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  }, [authContext]);
 
   const oncalcelTeamRequest = (type, requestID) => {
     setloading(true);
@@ -435,6 +435,7 @@ export default function AccountScreen({navigation}) {
       })
       .catch((e) => {
         setloading(false);
+        console.log('3');
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
@@ -444,6 +445,7 @@ export default function AccountScreen({navigation}) {
   const switchProfile = useCallback(
     async (item) => {
       setloading(true);
+      console.log('switch profile Called..');
 
       let currentEntity = authContext.entity;
       // delete currentEntity?.QB;
@@ -514,6 +516,7 @@ export default function AccountScreen({navigation}) {
   const switchQBAccount = useCallback(
     (accountData, entity) => {
       setloading(true);
+      console.log('switch QB Called..');
 
       let currentEntity = entity;
       const entityType = accountData?.entity_type;
@@ -548,6 +551,7 @@ export default function AccountScreen({navigation}) {
                     ...currentEntity,
                   });
                   setloading(false);
+                  console.log('switch QB done Called..');
                   if (qbRes?.error) console.log(strings.appName, qbRes?.error);
                 })
                 .catch(async () => {
@@ -574,15 +578,18 @@ export default function AccountScreen({navigation}) {
 
   const onSwitchProfile = useCallback(
     ({item}) => {
+      console.log('on switch profile  Called..');
       switchProfile(item)
         .then((currentEntity) => {
           scrollRef.current.scrollTo({x: 0, y: 0});
+          console.log('switch currentEntity', currentEntity);
           authContext.setEntity({...currentEntity});
           Utility.setStorage('authContextEntity', {...currentEntity});
           switchQBAccount(item, currentEntity);
         })
         .catch((e) => {
           setloading(false);
+          console.log('5');
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
@@ -635,6 +642,8 @@ export default function AccountScreen({navigation}) {
       if (entity.role === 'user') {
         navigation.navigate('UserSettingPrivacyScreen');
       } else {
+        console.log('clubs==>', club);
+        console.log('clubs list==>', clubList);
         navigation.navigate('GroupSettingPrivacyScreen', {
           groups: authContext?.entity?.role === 'team' ? clubList : teamList,
         });
@@ -653,6 +662,7 @@ export default function AccountScreen({navigation}) {
           Alert.alert('There is no registerd sports.');
         }
       } else {
+        console.log('entity?.obj?.sport1:=>', entity?.obj);
         navigation.navigate('ManageChallengeScreen', {
           groupObj: authContext.entity.obj,
           sportName: entity?.obj?.sport,
@@ -663,6 +673,7 @@ export default function AccountScreen({navigation}) {
       setClickedUserType('referee');
 
       const entity = authContext.entity;
+      console.log('entity?.objentity?.obj-->', entity?.obj, entity?.obj?.sport);
       if (entity.role === 'user') {
         if (entity?.obj?.referee_data?.length > 0) {
           setVisibleSportsModal(true);
@@ -745,11 +756,14 @@ export default function AccountScreen({navigation}) {
     [authContext.entity, navigation],
   );
 
+  console.log('authContext?.entity?.obj', authContext?.entity?.obj);
+
   const renderSportsList = useCallback(
     ({item}) => (
       <TouchableOpacity
         style={styles.listContainer}
         onPress={() => {
+          console.log('renderSportsList', item);
           navigation.navigate('SportAccountSettingScreen', {
             type: 'player',
             sport: item,
@@ -775,6 +789,7 @@ export default function AccountScreen({navigation}) {
       <TouchableOpacity
         style={styles.listContainer}
         onPress={() => {
+          console.log('renderRefereesList', item);
           navigation.navigate('SportAccountSettingScreen', {
             type: 'referee',
             sport: item,
@@ -800,6 +815,7 @@ export default function AccountScreen({navigation}) {
       <TouchableOpacity
         style={styles.listContainer}
         onPress={() => {
+          console.log('renderSportsList', item);
           navigation.navigate('SportAccountSettingScreen', {
             type: 'scorekeeper',
             sport: item,
@@ -883,29 +899,29 @@ export default function AccountScreen({navigation}) {
             </View>
           )}
           {/*
-          {item.unread > 0 && (
-            <View
-              style={
-                item.thumbnail
-                  ? [styles.badgeView, { right: 10, top: 15 }]
-                  : [
-                      styles.badgeView,
-                      {
-                        right: 10,
-                        top: 10,
-
-                      },
-              ]
-              }>
-              <Text
-                style={{
-                  ...styles.badgeCounter,
-                  ...(item.unread > 9 ? { paddingHorizontal: 5 } : { width: 15 }),
-                }}>
-                {item.unread > 9 ? `+${9}` : item.unread}
-              </Text>
-            </View>
-          )} */}
+			{item.unread > 0 && (
+			  <View
+				style={
+				  item.thumbnail
+					? [styles.badgeView, { right: 10, top: 15 }]
+					: [
+						styles.badgeView,
+						{
+						  right: 10,
+						  top: 10,
+  
+						},
+				]
+				}>
+				<Text
+				  style={{
+					...styles.badgeCounter,
+					...(item.unread > 9 ? { paddingHorizontal: 5 } : { width: 15 }),
+				  }}>
+				  {item.unread > 9 ? `+${9}` : item.unread}
+				</Text>
+			  </View>
+			)} */}
 
           {item.unread > 0 && (
             <View
@@ -1028,6 +1044,7 @@ export default function AccountScreen({navigation}) {
       <TouchableWithoutFeedback
         style={styles.listContainer}
         onPress={() => {
+          console.log('Pressed Team..');
           navigation.navigate('HomeScreen', {
             uid: item.group_id,
             role: item.entity_type,
@@ -1271,6 +1288,7 @@ export default function AccountScreen({navigation}) {
         setVisibleSportsModal(false);
         setSports(item?.sport);
         setTimeout(() => {
+          console.log('Sport name:=>', item?.sport, item?.sport_type);
           if (clickedUserType === 'user') {
             navigation.navigate('ManageChallengeScreen', {
               groupObj: authContext.entity.obj,
@@ -1377,7 +1395,7 @@ export default function AccountScreen({navigation}) {
   };
 
   return (
-    <SafeAreaView style={styles.mainContainer}>
+    <SafeAreaView style={styles.mainContainer} testID="account-screen">
       <ActivityLoader visible={loading} />
 
       <Header
@@ -1429,7 +1447,10 @@ export default function AccountScreen({navigation}) {
           }}
         />
       )}
-      <ScrollView style={styles.mainContainer} ref={scrollRef}>
+      <ScrollView
+        style={styles.mainContainer}
+        ref={scrollRef}
+        testID="account-scroll">
         <View
           style={{
             flexDirection: 'row',
@@ -1459,12 +1480,12 @@ export default function AccountScreen({navigation}) {
             <View />
           )}
           {/* <View>
-            <TouchableOpacity onPress={() => {
-              // navigation.closeDrawer()
-            }} >
-              <Image source={images.menuClose} style={styles.closeMenu}/>
-            </TouchableOpacity>
-          </View> */}
+			  <TouchableOpacity onPress={() => {
+				// navigation.closeDrawer()
+			  }} >
+				<Image source={images.menuClose} style={styles.closeMenu}/>
+			  </TouchableOpacity>
+			</View> */}
         </View>
         {authContext.entity.role === 'user' && (
           <View style={styles.profileView}>
@@ -1477,6 +1498,7 @@ export default function AccountScreen({navigation}) {
               style={styles.profileView}
               blurRadius={10}>
               <TouchableOpacity
+                testID="move-to-user-home"
                 onPress={() => {
                   navigation.navigate('HomeScreen', {
                     uid: authContext.entity.uid,
@@ -1511,7 +1533,7 @@ export default function AccountScreen({navigation}) {
                       alignItems: 'center',
                       marginRight: 10,
                     }}>
-                    <MarqueeText
+                    {/* <MarqueeText
                       style={
                         authContext?.entity?.obj?.background_thumbnail
                           ? [styles.nameText, {alignSelf: 'flex-start'}]
@@ -1530,7 +1552,21 @@ export default function AccountScreen({navigation}) {
                       // marqueeResetDelay={1000}
                     >
                       {authContext?.entity?.obj?.full_name || ''}
-                    </MarqueeText>
+                    </MarqueeText> */}
+                    <Text
+                      style={
+                        authContext?.entity?.obj?.background_thumbnail
+                          ? [styles.nameText, {alignSelf: 'flex-start'}]
+                          : [
+                              styles.nameText,
+                              {
+                                alignSelf: 'flex-start',
+                                color: colors.lightBlackColor,
+                              },
+                            ]
+                      }>
+                      {authContext?.entity?.obj?.full_name || ''}
+                    </Text>
 
                     <Image
                       source={images.arrowGraterthan}
@@ -1646,7 +1682,7 @@ export default function AccountScreen({navigation}) {
                       alignItems: 'center',
                       marginRight: 10,
                     }}>
-                    <MarqueeText
+                    {/* <MarqueeText
                       style={
                         authContext?.entity?.obj?.background_thumbnail
                           ? [styles.nameText, {alignSelf: 'flex-start'}]
@@ -1662,7 +1698,22 @@ export default function AccountScreen({navigation}) {
                       marqueeOnStart
                       loop={true}>
                       {authContext?.entity?.obj?.group_name}
-                    </MarqueeText>
+                    </MarqueeText> */}
+                    <Text
+                      style={
+                        authContext?.entity?.obj?.background_thumbnail
+                          ? [styles.nameText, {alignSelf: 'flex-start'}]
+                          : [
+                              styles.nameText,
+                              {
+                                alignSelf: 'flex-start',
+                                color: colors.lightBlackColor,
+                              },
+                            ]
+                      }>
+                      {' '}
+                      {authContext?.entity?.obj?.group_name}
+                    </Text>
 
                     <Image
                       source={
@@ -1734,6 +1785,7 @@ export default function AccountScreen({navigation}) {
                     isAccountDeactivated && section !== 'Settings' ? 0.5 : 1,
                 }}>
                 <TouchableWithoutFeedback
+                  testID={`account-section${sectionID}`}
                   disabled={isAccountDeactivated && section !== 'Settings'}
                   style={styles.listContainer}
                   onPress={() => {
@@ -1821,7 +1873,9 @@ export default function AccountScreen({navigation}) {
                       />
                     )}
                   </View>
-                  <Text style={styles.listItems}>{section}</Text>
+                  <Text accessibilityLabel={section} style={styles.listItems}>
+                    {section}
+                  </Text>
                   {section !== 'Log out' && (
                     <>
                       {secData?.member ? (

@@ -268,21 +268,24 @@ const PlayInModule = ({
         playInObject?.sport !== 'soccer' && (
           <TouchableOpacity
             onPress={onChallengePress}
-            style={styles.challengeButtonContainer}
-          >
+            style={styles.challengeButtonContainer}>
             <LinearGradient
               colors={[colors.themeColor, '#FF3B00']}
-              style={styles.challengeLinearContainer}
-            >
+              style={styles.challengeLinearContainer}>
               <View
                 style={{
                   flexDirection: 'row',
                   justifyContent: 'center',
-                }}
-              >
+                }}>
                 {(challengeType === 'both' || challengeType === 'challenge') &&
                   (oppSetting?.game_fee?.fee ? (
-                    <Text style={styles.challengeButtonTitle}>
+                    <Text
+                      accessibilityLabel={
+                        challengeType === 'both'
+                          ? 'both-button'
+                          : 'challenge-button'
+                      }
+                      style={styles.challengeButtonTitle}>
                       {strings.challenge}
                       <Text>{` $${oppSetting?.game_fee?.fee} ${
                         currentUserData?.currency_type ??
@@ -290,12 +293,16 @@ const PlayInModule = ({
                       }${' / match'}`}</Text>
                     </Text>
                   ) : (
-                    <Text style={styles.challengeButtonTitle}>
+                    <Text
+                      accessibilityLabel="challenge-button"
+                      style={styles.challengeButtonTitle}>
                       {strings.challenge}
                     </Text>
                   ))}
                 {challengeType === 'invite' && (
-                  <Text style={styles.challengeButtonTitle}>
+                  <Text
+                    accessibilityLabel="invite-button"
+                    style={styles.challengeButtonTitle}>
                     {'Invite to challenge'}
                   </Text>
                 )}
@@ -451,8 +458,7 @@ const PlayInModule = ({
         }}
         hasBackdrop
         onBackdropPress={onClose}
-        backdropOpacity={0}
-      >
+        backdropOpacity={0}>
         <View style={styles.modalContainerViewStyle}>
           <SafeAreaView style={{flex: 1}}>
             {renderHeader}

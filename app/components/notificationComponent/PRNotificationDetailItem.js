@@ -20,6 +20,7 @@ function PRNotificationDetailItem({
   onDetailPress,
   onPressFirstEntity,
   disabled = false,
+  accessibilityLabel,
 }) {
   //   const authContext = useContext(AuthContext)
   const [dataDictionary, setDataDictionary] = useState();
@@ -106,6 +107,7 @@ function PRNotificationDetailItem({
                     : styles.viewSecondStyle
                 }>
                 <TouchableOpacity
+                  testID={`${accessibilityLabel}`}
                   style={styles.detailBtnStyle}
                   onPress={onDetailPress}
                   disabled={disabled}>

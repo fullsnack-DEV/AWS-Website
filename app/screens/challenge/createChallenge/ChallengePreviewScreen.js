@@ -13,6 +13,7 @@ import {
   SafeAreaView,
   Image,
   TouchableOpacity,
+  ScrollView,
 } from 'react-native';
 import moment from 'moment';
 
@@ -63,8 +64,6 @@ import TCGameDetailRules from '../../../components/TCGameDetailRules';
 
 let entity = {};
 export default function ChallengePreviewScreen({navigation, route}) {
-  console.log('route?.params?.challengeObj[0]', route?.params?.challengeObj[0]);
-  console.log('route?.params?.challengeObj', route?.params?.challengeObj);
   const authContext = useContext(AuthContext);
   const [loading, setloading] = useState(false);
   const [selectedTab, setSelectedTab] = useState(0);
@@ -159,12 +158,7 @@ export default function ChallengePreviewScreen({navigation, route}) {
       }
       getFeeDetail();
     }
-  }, [
-    challengeData?.source,
-    defaultCard,
-    isFocused,
-    route?.params?.paymentMethod,
-  ]);
+  }, [defaultCard, isFocused, route?.params?.paymentMethod]);
 
   useEffect(() => {
     console.log('challenge data11:=>', challengeData?.challengee);
@@ -191,7 +185,7 @@ export default function ChallengePreviewScreen({navigation, route}) {
   const getFeeDetail = () => {
     if (defaultCard) {
       const feeBody = {};
-      console.log('challengeObj check:=>', defaultCard);
+      console.log('challengeObj check:=>', challengeData);
       feeBody.challenge_id = challengeData?.challenge_id;
       feeBody.payment_method_type = 'card';
       feeBody.currency_type =
@@ -221,9 +215,9 @@ export default function ChallengePreviewScreen({navigation, route}) {
         })
         .catch((e) => {
           setloading(false);
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
+          //   setTimeout(() => {
+          //     Alert.alert(strings.alertmessagetitle, e.message);
+          //   }, 10);
         });
     }
   };
@@ -235,10 +229,10 @@ export default function ChallengePreviewScreen({navigation, route}) {
       challengeObj?.status === ReservationStatus.pendingpayment ||
       challengeObj?.status === ReservationStatus.pendingrequestpayment
     ) {
-      if (challengeObj?.invited_by === entity.uid) {
-        return 'receiver';
+      if (challengeObj?.requested_by === entity.uid) {
+        return 'sender';
       }
-      return 'sender';
+      return 'receiver';
     }
     if (
       challengeObj?.status === ReservationStatus.requestcancelled ||
@@ -914,7 +908,7 @@ export default function ChallengePreviewScreen({navigation, route}) {
   };
 
   return (
-    <TCKeyboardView>
+    <ScrollView testID="challenge-preview-scroll">
       <ActivityLoader visible={loading} />
 
       {(challengeData?.status === ReservationStatus.changeRequest ||
@@ -1603,7 +1597,7 @@ export default function ChallengePreviewScreen({navigation, route}) {
           </SafeAreaView>
         </View>
       </Modal>
-    </TCKeyboardView>
+    </ScrollView>
   );
 }
 const styles = StyleSheet.create({
