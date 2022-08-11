@@ -35,18 +35,33 @@ export default function GroupSettingPrivacyScreen({navigation, route}) {
   }, [navigation]);
 
   useEffect(() => {
-    setUserSetting([
-      {key: 'Profile', id: 1},
-      {key: 'Members', id: 2},
-      {key: authContext.entity.role === 'club' ? 'Teams' : 'Clubs', id: 3},
-      {key: 'Account', id: 4},
-      {key: 'Privacy', id: 5},
-      {
-        key: `Pause ${authContext.entity.role === 'club' ? 'Club' : 'Team'}`,
-        id: 6,
-      },
-      {key: 'Terminate Account', id: 7},
-    ]);
+    // As discussed with JG Remove club option in case of Team -#2351
+    if (authContext.entity.role === 'club') {
+      setUserSetting([
+        {key: 'Profile', id: 1},
+        {key: 'Members', id: 2},
+        {key: 'Teams', id: 3},
+        {key: 'Account', id: 4},
+        {key: 'Privacy', id: 5},
+        {
+          key: `Pause ${authContext.entity.role === 'club' ? 'Club' : 'Team'}`,
+          id: 6,
+        },
+        {key: 'Terminate Account', id: 7},
+      ]);
+    } else {
+      setUserSetting([
+        {key: 'Profile', id: 1},
+        {key: 'Members', id: 2},
+        {key: 'Account', id: 3},
+        {key: 'Privacy', id: 4},
+        {
+          key: `Pause ${authContext.entity.role === 'club' ? 'Club' : 'Team'}`,
+          id: 5,
+        },
+        {key: 'Terminate Account', id: 6},
+      ]);
+    }
   }, [authContext.entity.role]);
 
   const handleOpetions = async (opetions) => {
@@ -118,15 +133,15 @@ export default function GroupSettingPrivacyScreen({navigation, route}) {
       style={styles.listContainer}
       onPress={() => {
         handleOpetions(item.key);
-      }}
-    >
+      }}>
       <View
         style={{
           flexDirection: 'row',
           opacity: isAccountDeactivated && index <= 1 ? 0.5 : 1,
         }}
-        pointerEvents={isAccountDeactivated && index <= 1 ? pointEvent : 'auto'}
-      >
+        pointerEvents={
+          isAccountDeactivated && index <= 1 ? pointEvent : 'auto'
+        }>
         <Text style={styles.listItems}>{item.key}</Text>
         {item.key === 'Currency' && authContext?.entity?.obj?.currency_type && (
           <Text style={styles.currencyTypeStyle}>
@@ -152,8 +167,7 @@ export default function GroupSettingPrivacyScreen({navigation, route}) {
               color: colors.lightBlackColor,
               textAlign: 'center',
               fontFamily: fonts.RBold,
-            }}
-          >
+            }}>
             Settings
           </Text>
         }
