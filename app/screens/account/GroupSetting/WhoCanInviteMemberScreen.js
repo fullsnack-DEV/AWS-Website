@@ -71,6 +71,7 @@ export default function WhoCanInviteMemberScreen({navigation, route}) {
   }, [comeFrom, navigation, whoCanInvite]);
 
   const saveTeam = () => {
+
     const bodyParams = {};
 
     if (authContext.entity.role === 'team') {
@@ -89,6 +90,7 @@ export default function WhoCanInviteMemberScreen({navigation, route}) {
       }
     }
 
+
     setloading(true);
     patchGroup(authContext.entity.uid, bodyParams, authContext)
       .then(async (response) => {
@@ -101,6 +103,7 @@ export default function WhoCanInviteMemberScreen({navigation, route}) {
           await Utility.setStorage('authContextEntity', {...entity});
           navigation.navigate(comeFrom, {
             whoCanInviteGroup: response?.payload?.who_can_invite_member,
+
           });
         } else {
           Alert.alert(strings.appName, response.messages);
