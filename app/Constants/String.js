@@ -381,6 +381,8 @@ const strings = {
   whoCanSeeClubFollowers: 'Who can see followers in club connections?',
   whoCanSeeTeamFollowers: 'Who can see followers in team connections?',
   everyoneRadio: 'Everyone',
+  everyTeam: 'Every team',
+  acceptedByClub: 'A team whose request has been accepted by club',
   personWhoRequest: 'A person whose request has been accepted by team admins',
   inviteOnly: 'Invite only',
   followersRadio: 'Followers',
@@ -889,5 +891,10 @@ const strings = {
     'You can’t send offer, please configure your referee setting first.',
   emailPasswordWrong: 'The email and password you entered dont match.',
   passwordWrong: 'Your password is wrong.',
+
+  everyEvent: 'Every event',
+  eventCreatedByUser: 'Event created by personal user',
+  eventCreatedByGroup: 'Event create by group',
+  none: 'None',
 };
 export default strings;

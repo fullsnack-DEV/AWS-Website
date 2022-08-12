@@ -21,7 +21,7 @@ import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 import strings from '../../Constants/String';
 
-export default function GroupSettingPrivacyScreen({navigation, route}) {
+export default function GroupSettingPrivacyScreen({navigation}) {
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
 
@@ -35,33 +35,20 @@ export default function GroupSettingPrivacyScreen({navigation, route}) {
   }, [navigation]);
 
   useEffect(() => {
-    // As discussed with JG Remove club option in case of Team -#2351
-    if (authContext.entity.role === 'club') {
-      setUserSetting([
-        {key: 'Profile', id: 1},
-        {key: 'Members', id: 2},
-        {key: 'Teams', id: 3},
-        {key: 'Account', id: 4},
-        {key: 'Privacy', id: 5},
-        {
-          key: `Pause ${authContext.entity.role === 'club' ? 'Club' : 'Team'}`,
-          id: 6,
-        },
-        {key: 'Terminate Account', id: 7},
-      ]);
-    } else {
-      setUserSetting([
-        {key: 'Profile', id: 1},
-        {key: 'Members', id: 2},
-        {key: 'Account', id: 3},
-        {key: 'Privacy', id: 4},
-        {
-          key: `Pause ${authContext.entity.role === 'club' ? 'Club' : 'Team'}`,
-          id: 5,
-        },
-        {key: 'Terminate Account', id: 6},
-      ]);
-    }
+    setUserSetting([
+      {key: 'Profile', id: 1},
+      {key: 'Members', id: 2},
+      {key: authContext.entity.role === 'club' ? 'Team' : 'Club', id: 3},
+      {key: 'Event', id: 4},
+      {key: 'Account', id: 5},
+
+      {key: 'Privacy', id: 6},
+      {
+        key: `Pause ${authContext.entity.role === 'club' ? 'Club' : 'Team'}`,
+        id: 7,
+      },
+      {key: 'Terminate Account', id: 8},
+    ]);
   }, [authContext.entity.role]);
 
   const handleOpetions = async (opetions) => {
@@ -83,14 +70,12 @@ export default function GroupSettingPrivacyScreen({navigation, route}) {
       });
     } else if (opetions === 'Members') {
       navigation.navigate('GroupMembersSettingScreen');
-    } else if (opetions === 'Clubs') {
-      navigation.navigate('GroupsScreen', {
-        groups: route?.params?.groups,
-      });
-    } else if (opetions === 'Teams') {
-      navigation.navigate('GroupsScreen', {
-        groups: route?.params?.groups,
-      });
+    } else if (opetions === 'Club') {
+      navigation.navigate('ClubSettingPrivacyScreen');
+    } else if (opetions === 'Team') {
+      navigation.navigate('TeamSettingPrivacyScreen');
+    } else if (opetions === 'Event') {
+      navigation.navigate('EventSettingPrivacyScreen');
     } else if (opetions === 'Account') {
       Alert.alert('This is not decited yet');
     } else if (opetions === 'Privacy') {

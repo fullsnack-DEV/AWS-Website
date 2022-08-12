@@ -4,11 +4,11 @@
 import {expectToBeVisibleById} from '../../app/utils/testCaseHelper';
 
 const signUpInputData = {
-  email: 'makani20+11@gmail.com',
+  email: 'makani20+12@gmail.com',
   password: '123456',
   cpassword: '123456',
   fname: 'Kishan',
-  lname: 'Eleven',
+  lname: 'Twelve',
   birthday: '1991-01-01',
   location: 'Surat',
 };

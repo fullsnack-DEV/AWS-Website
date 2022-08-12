@@ -45,7 +45,7 @@ describe('TownsCup login flow', () => {
       await element(by.label('both-button')).tap();
       await element(by.text('Continue to Challenge')).tap();
       await element(by.text('CHECK AVAILIBILITY')).tap();
-      await element(by.text('10')).tap();
+      await element(by.text('12')).tap();
       await element(by.label('0')).tap();
       await element(by.text('Save')).tap();
       await element(by.id('challenge-scroll')).scroll(1000, 'down');

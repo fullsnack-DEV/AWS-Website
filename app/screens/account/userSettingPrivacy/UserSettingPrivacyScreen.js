@@ -72,11 +72,14 @@ export default function UserSettingPrivacyScreen({navigation}) {
             {key: 'Profile', id: 2},
             {key: 'Basic Info', id: 3},
             {key: 'Sports Activities', id: 4},
-            {key: 'Time Zone', id: 5},
-            {key: 'Currency', id: 6},
+            {key: 'Team', id: 5},
+            {key: 'Club', id: 6},
+            {key: 'Event', id: 7},
+            {key: 'Time Zone', id: 8},
+            {key: 'Currency', id: 9},
             // {key: 'Change Password', id: 7},
-            {key: 'Deactivate Account', id: 7},
-            {key: 'Terminate Account', id: 8},
+            {key: 'Deactivate Account', id: 10},
+            {key: 'Terminate Account', id: 11},
             // {key: 'Privacy Setting',id:3}
           ]);
         } else {
@@ -85,8 +88,11 @@ export default function UserSettingPrivacyScreen({navigation}) {
             {key: 'Profile', id: 2},
             {key: 'Basic Info', id: 3},
             {key: 'Sports Activities', id: 4},
-            {key: 'Time Zone', id: 5},
-            {key: 'Currency', id: 6},
+            {key: 'Team', id: 5},
+            {key: 'Club', id: 6},
+            {key: 'Event', id: 7},
+            {key: 'Time Zone', id: 8},
+            {key: 'Currency', id: 9},
             // {key: 'Privacy Setting',id:3}
           ]);
         }
@@ -138,6 +144,12 @@ export default function UserSettingPrivacyScreen({navigation}) {
       navigation.navigate('DeactivateAccountScreen');
     } else if (opetions === 'Terminate Account') {
       navigation.navigate('TerminateAccountScreen');
+    } else if (opetions === 'Team') {
+      navigation.navigate('GroupInviteSettingPrivacyScreen', {type: 'team'});
+    } else if (opetions === 'Club') {
+      navigation.navigate('GroupInviteSettingPrivacyScreen', {type: 'club'});
+    } else if (opetions === 'Event') {
+      navigation.navigate('UserEventSettingPrivacyScreen');
     }
   };
 
@@ -146,15 +158,15 @@ export default function UserSettingPrivacyScreen({navigation}) {
       style={styles.listContainer}
       onPress={() => {
         handleOpetions(item.key);
-      }}
-    >
+      }}>
       <View
         style={{
           flexDirection: 'row',
           opacity: isAccountDeactivated && index <= 3 ? 0.5 : 1,
         }}
-        pointerEvents={isAccountDeactivated && index <= 3 ? pointEvent : 'auto'}
-      >
+        pointerEvents={
+          isAccountDeactivated && index <= 3 ? pointEvent : 'auto'
+        }>
         <Text style={styles.listItems}>{item.key}</Text>
         {item.key === 'Currency' && authContext?.entity?.obj?.currency_type && (
           <Text style={styles.currencyTypeStyle}>
@@ -180,8 +192,7 @@ export default function UserSettingPrivacyScreen({navigation}) {
               color: colors.lightBlackColor,
               textAlign: 'center',
               fontFamily: fonts.RBold,
-            }}
-          >
+            }}>
             Settings
           </Text>
         }

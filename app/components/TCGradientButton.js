@@ -16,10 +16,12 @@ const TCGradientButton = ({
   outerContainerStyle,
   disabled = false,
   isDisabled = false,
+  accessibilityLabel,
   ...props
 }) => (
   <TouchableOpacity
-    // disabled={disabled || isDisabled}
+    testID={`${accessibilityLabel}`}
+    disabled={disabled || isDisabled}
     onPress={onPress}
     style={[styles.outerContainerStyle, outerContainerStyle, props]}>
     <LinearGradient

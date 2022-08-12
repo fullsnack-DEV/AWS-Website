@@ -22,47 +22,36 @@ import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
 import strings from '../../../Constants/String';
 
-
-export default function WhoCanJoinTeamScreen({navigation, route}) {
+export default function ClubInviteTeamScreen({navigation, route}) {
   const [comeFrom] = useState(route?.params?.comeFrom);
 
   const authContext = useContext(AuthContext);
 
   const [loading, setloading] = useState(false);
 
-  const whoCanJoinGroupOpetions = [
-    {key: strings.everyoneRadio, id: 1},
+  const clubInviteTeamOpetions = [
+    {key: strings.yes, id: 0},
     {
-      key: `A person whose request has been accepted by ${
-        authContext.entity.role === 'team' ? 'team admins' : 'club'
-      }`,
-      id: 2,
+      key: strings.no,
+      id: 1,
     },
-    {key: strings.inviteOnly, id: 3},
   ];
 
-  const [whoCanJoinTeam, setWhoCanJoinTeam] = useState(
-    (route?.params?.whoCanJoinGroup === 0 && {
-      key: strings.everyoneRadio,
+  const [clubInviteTeam, setClubInviteTeam] = useState(
+    (route?.params?.clubInviteTeam === 0 && {
+      key: strings.yes,
       id: 0,
     }) ||
-      (route?.params?.whoCanJoinGroup === 1 && {
-        key: whoCanJoinGroupOpetions[1].key,
-
+      (route?.params?.clubInviteTeam === 1 && {
+        key: strings.no,
         id: 1,
-      }) ||
-      (route?.params?.whoCanJoinGroup === 2 && {
-        key: strings.inviteOnly,
-        id: 2,
       }),
   );
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: () => (
-        <Text style={styles.headerTitle}>
-          Who Can Join {Utility.capitalize(authContext.entity.role)}
-        </Text>
+        <Text style={styles.headerTitle}>Can Club Invite Team</Text>
       ),
       headerRight: () => (
         <Text
@@ -74,21 +63,17 @@ export default function WhoCanJoinTeamScreen({navigation, route}) {
         </Text>
       ),
     });
-  }, [comeFrom, navigation, whoCanJoinTeam]);
+  }, [comeFrom, navigation, clubInviteTeam]);
 
   const saveTeam = () => {
     const bodyParams = {};
 
-    if (whoCanJoinTeam.key === whoCanJoinGroupOpetions[0].key) {
-      bodyParams.who_can_join_for_member = 0;
+    if (clubInviteTeam.key === clubInviteTeamOpetions[0].key) {
+      bodyParams.who_can_invite_for_club = 1;
     }
-    if (whoCanJoinTeam.key === whoCanJoinGroupOpetions[1].key) {
-      bodyParams.who_can_join_for_member = 1;
+    if (clubInviteTeam.key === clubInviteTeamOpetions[1].key) {
+      bodyParams.who_can_invite_for_club = 0;
     }
-    if (whoCanJoinTeam.key === whoCanJoinGroupOpetions[2].key) {
-      bodyParams.who_can_join_for_member = 2;
-    }
-
 
     setloading(true);
     patchGroup(authContext.entity.uid, bodyParams, authContext)
@@ -101,7 +86,7 @@ export default function WhoCanJoinTeamScreen({navigation, route}) {
 
           await Utility.setStorage('authContextEntity', {...entity});
           navigation.navigate(comeFrom, {
-            whoCanJoinGroup: response?.payload?.who_can_join_for_member,
+            clubInviteTeam: response?.payload?.who_can_invite_for_club,
           });
         } else {
           Alert.alert(strings.appName, response.messages);
@@ -126,15 +111,15 @@ export default function WhoCanJoinTeamScreen({navigation, route}) {
     }
   };
 
-  const renderWhocanJoinOption = ({item}) => (
+  const renderClubInviteTeam = ({item}) => (
     <TouchableWithoutFeedback
       onPress={() => {
-        setWhoCanJoinTeam(item);
+        setClubInviteTeam(item);
       }}>
       <View style={styles.radioItem}>
         <Text style={styles.languageList}>{item.key}</Text>
         <View style={styles.checkbox}>
-          {whoCanJoinTeam?.key === item?.key ? (
+          {clubInviteTeam?.key === item?.key ? (
             <Image
               source={images.radioCheckYellow}
               style={styles.checkboxImg}
@@ -152,15 +137,13 @@ export default function WhoCanJoinTeamScreen({navigation, route}) {
       style={styles.mainContainer}
       showsVerticalScrollIndicator={false}>
       <ActivityLoader visible={loading} />
-      <Text
-        style={
-          styles.opetionsTitle
-        }>{`Who can join the ${authContext.entity.role}?`}</Text>
+      <Text style={styles.opetionsTitle}>
+        {'Can a club invite your team to join the club?'}
+      </Text>
       <FlatList
-        // ItemSeparatorComponent={() => <TCThinDivider />}
-        data={whoCanJoinGroupOpetions}
+        data={clubInviteTeamOpetions}
         keyExtractor={(item, index) => index.toString()}
-        renderItem={renderWhocanJoinOption}
+        renderItem={renderClubInviteTeam}
       />
     </ScrollView>
   );

@@ -4,7 +4,7 @@
 const {loginFlow} = require('../../app/utils/testCaseHelper');
 
 const loginInputData = {
-  email: 'makani20+11@gmail.com',
+  email: 'makani20+12@gmail.com',
   password: '123456',
   sportName: 'Tennis Singles',
   language: ['English', 'Korean'],
