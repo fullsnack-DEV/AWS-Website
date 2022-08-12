@@ -211,7 +211,9 @@ const FeedsScreen = ({navigation}) => {
             style={styles.rightImageStyle}
           />
         </TouchableOpacity>
-        <TouchableOpacity onPress={onThreeDotPress}>
+        <TouchableOpacity
+          testID="search-entity-button"
+          onPress={onThreeDotPress}>
           <FastImage
             source={images.messageSearchButton2}
             resizeMode={'contain'}
@@ -546,8 +548,7 @@ const FeedsScreen = ({navigation}) => {
       <ActivityLoader visible={loading} />
       <View
         style={{opacity: isAccountDeactivated ? 0.5 : 1}}
-        pointerEvents={pointEvent}
-      >
+        pointerEvents={pointEvent}>
         {renderTopHeader}
       </View>
       {isAccountDeactivated && (
@@ -594,8 +595,7 @@ const FeedsScreen = ({navigation}) => {
       )}
       <View
         style={{flex: 1, opacity: isAccountDeactivated ? 0.5 : 1}}
-        pointerEvents={pointEvent}
-      >
+        pointerEvents={pointEvent}>
         {firstTimeLoading ? <NewsFeedShimmer /> : renderNewsFeedList}
         {renderImageProgress}
       </View>

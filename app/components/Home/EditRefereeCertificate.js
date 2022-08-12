@@ -107,8 +107,7 @@ const EditRefereeCertificate = ({
               certiUrl.splice(index, 1);
               setCertificatesData([...certiUrl]);
             }
-          }}
-        >
+          }}>
           <Text style={styles.delete}>{strings.deleteTitle}</Text>
         </TouchableOpacity>
         {!item?.url && (
@@ -148,8 +147,7 @@ const EditRefereeCertificate = ({
                   });
               });
             }}
-            style={styles.addCertificateButton}
-          >
+            style={styles.addCertificateButton}>
             <Text style={styles.addCertificateText}>
               {strings.addCertificateTitle}
             </Text>
@@ -161,8 +159,7 @@ const EditRefereeCertificate = ({
           style={{
             padding: 15,
             alignSelf: 'flex-start',
-          }}
-        >
+          }}>
           <View>
             <FastImage
               resizeMode={FastImage.resizeMode.cover}
@@ -187,8 +184,7 @@ const EditRefereeCertificate = ({
                   delete certi[index].url;
                   delete certi[index].thumbnail;
                   setCertificatesData([...certi]);
-                }}
-              >
+                }}>
                 <Image
                   source={images.menuClose}
                   style={{
@@ -212,8 +208,7 @@ const EditRefereeCertificate = ({
                   alignItems: 'center',
                   justifyContent: 'center',
                   flexDirection: 'row',
-                }}
-              >
+                }}>
                 <TCInnerLoader visible={index === imageUploadingLoader} />
                 <Text
                   style={{
@@ -221,8 +216,7 @@ const EditRefereeCertificate = ({
                     fontSize: 20,
                     color: colors.yellowColor,
                     marginLeft: 5,
-                  }}
-                >
+                  }}>
                   Uploading...
                 </Text>
               </View>
@@ -245,20 +239,17 @@ const EditRefereeCertificate = ({
         }}
         hasBackdrop
         onBackdropPress={onClose}
-        backdropOpacity={0}
-      >
+        backdropOpacity={0}>
         <SafeAreaView
           style={{
             ...styles.modalContainerViewStyle,
             backgroundColor: colors.whiteColor,
-          }}
-        >
+          }}>
           <LinearGradient
             colors={[colors.whiteColor, colors.whiteColor]}
             end={{x: 0.0, y: 0.25}}
             start={{x: 1, y: 0.5}}
-            style={styles.gradiantHeaderViewStyle}
-          ></LinearGradient>
+            style={styles.gradiantHeaderViewStyle}></LinearGradient>
           <Header
             mainContainerStyle={styles.headerMainContainerStyle}
             leftComponent={
@@ -298,15 +289,13 @@ const EditRefereeCertificate = ({
                     }
                     onSavePress(finalCerti);
                   }
-                }}
-              >
+                }}>
                 <Text
                   style={{
                     fontSize: 16,
                     fontFamily: fonts.RLight,
                     color: colors.lightBlackColor,
-                  }}
-                >
+                  }}>
                   {'Save'}
                 </Text>
               </TouchableOpacity>
@@ -320,8 +309,7 @@ const EditRefereeCertificate = ({
           <KeyboardAwareScrollView enableOnAndroid={false}>
             <EventItemRender
               title={strings.addCertiMainTitle}
-              headerTextStyle={{fontSize: 16}}
-            >
+              headerTextStyle={{fontSize: 16}}>
               <FlatList
                 scrollEnabled={true}
                 data={certificatesData}

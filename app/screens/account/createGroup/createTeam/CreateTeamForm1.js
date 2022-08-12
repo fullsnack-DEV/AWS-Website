@@ -105,16 +105,14 @@ export default function CreateTeamForm1({navigation, route}) {
               });
           }
         }, 300);
-      }}
-    >
+      }}>
       <View
         style={{
           padding: 20,
           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'space-between',
-        }}
-      >
+        }}>
         <Text style={styles.languageList}>
           {getSportName(item, authContext)}
         </Text>
@@ -268,15 +266,15 @@ export default function CreateTeamForm1({navigation, route}) {
       <TCFormProgress totalSteps={3} curruentStep={1} />
       <ScrollView
         style={styles.mainContainer}
-        showsVerticalScrollIndicator={false}
-      >
+        showsVerticalScrollIndicator={false}>
         <View>
           <TCLabel title={strings.SportsTextFieldTitle} required={false} />
           <TouchableOpacity onPress={() => setVisibleSportsModal(true)}>
             <View style={styles.searchView}>
               <TextInput
+                testID="choose-sport"
                 style={styles.searchTextField}
-                placeholder={strings.selectSportPlaceholder}
+                placeholder={strings.selectSportPlaceholderPlayer}
                 value={getSportName(sportsSelection, authContext)}
                 editable={false}
                 pointerEvents="none"
@@ -287,29 +285,28 @@ export default function CreateTeamForm1({navigation, route}) {
         <View style={styles.fieldView}>
           <TCLabel title={strings.teamNameTitle} required={false} />
           <TextInput
+            testID="team-name-input"
             placeholder={strings.teamNamePlaceholder}
             style={styles.matchFeeTxt}
             maxLength={20}
             onChangeText={(text) => setTeamName(text)}
-            value={teamName}
-          ></TextInput>
+            value={teamName}></TextInput>
         </View>
         <View style={styles.fieldView}>
           <TCLabel title={strings.locationTitle} required={false} />
           <TouchableOpacity
+            testID="choose-location-button"
             onPress={() =>
               navigation.navigate('SearchLocationScreen', {
                 comeFrom: 'CreateTeamForm1',
               })
-            }
-          >
+            }>
             <TextInput
               placeholder={strings.searchCityPlaceholder}
               style={[styles.matchFeeTxt, {marginBottom: 5}]}
               value={location}
               editable={false}
-              pointerEvents="none"
-            ></TextInput>
+              pointerEvents="none"></TextInput>
           </TouchableOpacity>
         </View>
         <View style={{flex: 1}} />
@@ -332,8 +329,7 @@ export default function CreateTeamForm1({navigation, route}) {
         backdropTransitionOutTiming={800}
         style={{
           margin: 0,
-        }}
-      >
+        }}>
         <View
           style={{
             width: '100%',
@@ -349,21 +345,18 @@ export default function CreateTeamForm1({navigation, route}) {
             shadowOpacity: 0.5,
             shadowRadius: 5,
             elevation: 15,
-          }}
-        >
+          }}>
           <View
             style={{
               flexDirection: 'row',
               paddingHorizontal: 15,
               justifyContent: 'space-between',
               alignItems: 'center',
-            }}
-          >
+            }}>
             <TouchableOpacity
               hitSlop={getHitSlop(15)}
               style={styles.closeButton}
-              onPress={() => setVisibleSportsModal(false)}
-            >
+              onPress={() => setVisibleSportsModal(false)}>
               <Image source={images.cancelImage} style={styles.closeButton} />
             </TouchableOpacity>
             <Text
@@ -373,8 +366,7 @@ export default function CreateTeamForm1({navigation, route}) {
                 fontSize: 16,
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
-              }}
-            >
+              }}>
               Sports
             </Text>
 
@@ -385,8 +377,7 @@ export default function CreateTeamForm1({navigation, route}) {
                 fontSize: 16,
                 fontFamily: fonts.RRegular,
                 color: colors.themeColor,
-              }}
-            ></Text>
+              }}></Text>
           </View>
           <View style={styles.separatorLine} />
           <FlatList

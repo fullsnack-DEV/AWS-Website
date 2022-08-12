@@ -1,10 +1,5 @@
-import React, {
-  useContext,
-  useLayoutEffect,
-  useState,
-  useEffect,
-  useCallback,
-} from 'react';
+/* eslint-disable consistent-return */
+import React, {useContext, useState, useEffect, useCallback} from 'react';
 import {
   StyleSheet,
   View,
@@ -14,34 +9,80 @@ import {
   TouchableWithoutFeedback,
   ScrollView,
   SafeAreaView,
-  TouchableOpacity,
 } from 'react-native';
+import {useIsFocused} from '@react-navigation/native';
 
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import AuthContext from '../../../auth/context';
 import images from '../../../Constants/ImagePath';
-import Header from '../../../components/Home/Header';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
+import strings from '../../../Constants/String';
 
 export default function GroupMembersSettingScreen({navigation, route}) {
+  const isFocused = useIsFocused();
+
   const authContext = useContext(AuthContext);
   const [hiringPlayersObject, setHiringPlayersObject] = useState();
+  const [whoCanJoinGroup, setWhoCanJoinGroup] = useState(
+    route?.params?.whoCanJoinGroup
+      ? route?.params?.whoCanJoinGroup
+      : authContext.entity?.obj?.who_can_join_for_member,
+  );
+  const [whoCanInviteGroup, setWhoCanInviteGroup] = useState(
+    route?.params?.whoCanInviteGroup
+      ? route?.params?.whoCanInviteGroup
+      : authContext.entity?.obj?.who_can_invite_member,
+  );
 
   const [userSetting] = useState([
-    {key: 'Recruiting Player', id: 1},
-    {key: 'Members Profile', id: 2},
+    {
+      key: `Who Can Join ${
+        authContext.entity.role === 'team' ? 'Team' : 'Club'
+      }`,
+      id: 1,
+    },
+    {key: 'Who Can Invite Member', id: 2},
+    {key: 'Recruiting Player', id: 3},
+    {key: 'Members Profile', id: 4},
   ]);
-  console.log('Authcontext==>', authContext.entity.obj);
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerShown: false,
-    });
-  }, [navigation]);
 
-  const handleOpetions = async (opetions) => {
-    console.log('auth Enity', authContext.entity.obj);
-    if (opetions === 'Recruiting Player') {
+  useEffect(() => {
+    if (isFocused) {
+      setWhoCanJoinGroup(
+        route?.params?.whoCanJoinGroup ??
+          authContext.entity?.obj?.who_can_join_for_member,
+      );
+
+      setWhoCanInviteGroup(
+        route?.params?.whoCanInviteGroup ??
+          authContext.entity?.obj?.who_can_invite_member,
+      );
+    }
+  }, [
+    authContext.entity?.obj?.who_can_invite_member,
+    authContext.entity?.obj?.who_can_join_for_member,
+    isFocused,
+    route?.params?.whoCanInviteGroup,
+    route?.params?.whoCanJoinGroup,
+  ]);
+
+  const handleOpetions = (opetions) => {
+    if (opetions === userSetting[0].key) {
+      navigation.navigate('WhoCanJoinTeamScreen', {
+        whoCanJoinGroup,
+        comeFrom: 'GroupMembersSettingScreen',
+        sportName: authContext.entity?.obj?.sport,
+        sportType: authContext.entity?.obj?.sport_type,
+      });
+    } else if (opetions === 'Who Can Invite Member') {
+      navigation.navigate('WhoCanInviteMemberScreen', {
+        whoCanInviteGroup,
+        comeFrom: 'GroupMembersSettingScreen',
+        sportName: authContext.entity?.obj?.sport,
+        sportType: authContext.entity?.obj?.sport_type,
+      });
+    } else if (opetions === 'Recruiting Player') {
       navigation.navigate('RecruitingMemberScreen', {
         settingObj: hiringPlayersObject,
         comeFrom: 'GroupMembersSettingScreen',
@@ -62,6 +103,7 @@ export default function GroupMembersSettingScreen({navigation, route}) {
       setHiringPlayersObject(authContext?.entity?.obj);
     }
   }, [authContext]);
+
   useEffect(() => {
     if (route?.params?.entity?.obj) {
       setHiringPlayersObject(route?.params?.entity?.obj);
@@ -76,28 +118,75 @@ export default function GroupMembersSettingScreen({navigation, route}) {
     route?.params?.entity?.obj,
   ]);
 
-  const getSettingValue = (item) => {
-    if (item === 'Recruiting Player') {
-      if (hiringPlayersObject?.hiringPlayers) {
-        return hiringPlayersObject?.hiringPlayers;
+  const getSettingValue = useCallback(
+    (item) => {
+      console.log('item.key', item);
+      if (item === 'Recruiting Player') {
+        if (hiringPlayersObject?.hiringPlayers) {
+          return hiringPlayersObject?.hiringPlayers;
+        }
+        return 'No';
       }
-    }
-    return 'No';
-  };
+      if (item === userSetting[0].key) {
+        if (whoCanJoinGroup === 0) {
+          return strings.everyoneRadio;
+        }
+        if (whoCanJoinGroup === 1) {
+          return `${
+            authContext.entity.role === 'team' ? 'Team Admin' : 'Club'
+          }`;
+        }
+        if (whoCanJoinGroup === 2) {
+          return strings.inviteOnly;
+        }
+      }
+      if (item === userSetting[1].key) {
+        console.log('whoCanInviteGroup === 0', whoCanInviteGroup === 0);
+
+        if (whoCanInviteGroup === 0) {
+          return `${
+            authContext.entity.role === 'team'
+              ? 'Team & members'
+              : 'Club & members'
+          }`;
+        }
+        if (whoCanInviteGroup === 1) {
+          return `${
+            authContext.entity.role === 'team' ? 'Team only' : 'Club only'
+          }`;
+        }
+      }
+    },
+    [
+      authContext.entity.role,
+      hiringPlayersObject?.hiringPlayers,
+      userSetting,
+      whoCanInviteGroup,
+      whoCanJoinGroup,
+    ],
+  );
   const renderMenu = ({item}) => (
     <TouchableWithoutFeedback
       style={styles.listContainer}
       onPress={() => {
         handleOpetions(item.key);
-      }}
-    >
+      }}>
       <View
         style={{
           flexDirection: 'row',
-        }}
-      >
+        }}>
         <Text style={styles.listItems}>{item.key}</Text>
         {item.key === 'Recruiting Player' && (
+          <Text style={styles.currencyTypeStyle}>
+            {getSettingValue(item.key)}
+          </Text>
+        )}
+        {item.key === userSetting[0].key && (
+          <Text style={styles.currencyTypeStyle}>
+            {getSettingValue(item.key)}
+          </Text>
+        )}
+        {item.key === userSetting[1].key && (
           <Text style={styles.currencyTypeStyle}>
             {getSettingValue(item.key)}
           </Text>
@@ -108,32 +197,6 @@ export default function GroupMembersSettingScreen({navigation, route}) {
   );
   return (
     <SafeAreaView style={{flex: 1}}>
-      <Header
-        leftComponent={
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Image source={images.backArrow} style={styles.backImageStyle} />
-          </TouchableOpacity>
-        }
-        centerComponent={
-          <Text
-            style={{
-              fontSize: 16,
-              color: colors.lightBlackColor,
-              textAlign: 'center',
-              fontFamily: fonts.RBold,
-            }}
-          >
-            Settings
-          </Text>
-        }
-      />
-      <View
-        style={{
-          width: '100%',
-          height: 0.5,
-          backgroundColor: colors.writePostSepratorColor,
-        }}
-      />
       <ScrollView style={styles.mainContainer}>
         <FlatList
           data={userSetting}
@@ -187,11 +250,5 @@ const styles = StyleSheet.create({
     backgroundColor: colors.lightgrayColor,
     height: 0.5,
     width: wp('90%'),
-  },
-  backImageStyle: {
-    height: 20,
-    width: 10,
-    tintColor: colors.lightBlackColor,
-    resizeMode: 'contain',
   },
 });

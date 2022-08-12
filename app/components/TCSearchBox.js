@@ -9,6 +9,7 @@ import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 
 export default function TCSearchBox({
+  testID,
   onChangeText,
   style,
   value,
@@ -21,6 +22,7 @@ export default function TCSearchBox({
     <View style={{...styles.sectionStyle, ...style}} {...props}>
       <Image source={images.searchLocation} style={styles.searchImg} />
       <TextInput
+        testID={testID}
         ref={textInputRef}
         editable={editable}
         autoCapitalize={'none'}

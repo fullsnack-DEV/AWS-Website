@@ -44,6 +44,7 @@ export default function UserSettingPrivacyScreen({navigation}) {
     setIsAccountDeactivated(false);
     setPointEvent('auto');
     if (isFocused) {
+      console.log('its called....', authContext.entity.role);
       if (authContext?.entity?.obj?.is_pause === true) {
         setIsAccountDeactivated(true);
         setPointEvent('none');
@@ -71,10 +72,14 @@ export default function UserSettingPrivacyScreen({navigation}) {
             {key: 'Profile', id: 2},
             {key: 'Basic Info', id: 3},
             {key: 'Sports Activities', id: 4},
-            {key: 'Currency', id: 5},
+            {key: 'Team', id: 5},
+            {key: 'Club', id: 6},
+            {key: 'Event', id: 7},
+            {key: 'Time Zone', id: 8},
+            {key: 'Currency', id: 9},
             // {key: 'Change Password', id: 7},
-            {key: 'Deactivate Account', id: 6},
-            {key: 'Terminate Account', id: 7},
+            {key: 'Deactivate Account', id: 10},
+            {key: 'Terminate Account', id: 11},
             // {key: 'Privacy Setting',id:3}
           ]);
         } else {
@@ -83,7 +88,11 @@ export default function UserSettingPrivacyScreen({navigation}) {
             {key: 'Profile', id: 2},
             {key: 'Basic Info', id: 3},
             {key: 'Sports Activities', id: 4},
-            {key: 'Currency', id: 5},
+            {key: 'Team', id: 5},
+            {key: 'Club', id: 6},
+            {key: 'Event', id: 7},
+            {key: 'Time Zone', id: 8},
+            {key: 'Currency', id: 9},
             // {key: 'Privacy Setting',id:3}
           ]);
         }
@@ -123,6 +132,7 @@ export default function UserSettingPrivacyScreen({navigation}) {
     } else if (opetions === 'Basic Info') {
       navigation.navigate('BasicInfoScreen');
     } else if (opetions === 'Sports Activities') {
+      console.log('click on sport setting');
       navigation.navigate('SportActivityScreen');
     }
     //  else if (opetions === 'Currency') {
@@ -134,6 +144,12 @@ export default function UserSettingPrivacyScreen({navigation}) {
       navigation.navigate('DeactivateAccountScreen');
     } else if (opetions === 'Terminate Account') {
       navigation.navigate('TerminateAccountScreen');
+    } else if (opetions === 'Team') {
+      navigation.navigate('GroupInviteSettingPrivacyScreen', {type: 'team'});
+    } else if (opetions === 'Club') {
+      navigation.navigate('GroupInviteSettingPrivacyScreen', {type: 'club'});
+    } else if (opetions === 'Event') {
+      navigation.navigate('UserEventSettingPrivacyScreen');
     }
   };
 

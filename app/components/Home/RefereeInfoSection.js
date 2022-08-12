@@ -321,20 +321,17 @@ function RefereeInfoSection({
             ? [colors.yellowColor, colors.orangeColor]
             : [colors.offwhite, colors.offwhite]
         }
-        style={[styles.listItems, {paddingHorizontal: 10, paddingVertical: 0}]}
-      >
+        style={[styles.listItems, {paddingHorizontal: 10, paddingVertical: 0}]}>
         <View
           style={{
             flexDirection: 'row',
-          }}
-        >
+          }}>
           <View style={styles.selectUnSelectViewStyle}>
             <Text
               style={{
                 ...styles.title,
                 color: isChecked ? colors.whiteColor : colors.lightBlackColor,
-              }}
-            >
+              }}>
               {item.title}
             </Text>
             {isChecked ? (
@@ -476,8 +473,7 @@ function RefereeInfoSection({
             actionSheet.current.show();
           }, 200);
         }}
-        containerStyle={{marginTop: 10, marginBottom: 12}}
-      >
+        containerStyle={{marginTop: 10, marginBottom: 12}}>
         <Text style={styles.bioTextStyle}>{bioText}</Text>
         <Text style={styles.signUpTimeStyle}>{strings.signedUpTime}</Text>
       </EditEventItem>
@@ -490,8 +486,7 @@ function RefereeInfoSection({
           setTimeout(() => {
             actionSheet.current.show();
           }, 200);
-        }}
-      >
+        }}>
         <BasicInfoItem title={strings.gender} value={data.gender ?? '-'} />
         <BasicInfoItem
           title={strings.yearOfBirth}
@@ -519,8 +514,7 @@ function RefereeInfoSection({
             actionSheet.current.show();
           }, 200);
           setSelectedCerti([]);
-        }}
-      >
+        }}>
         <FlatList
           data={certificatesData?.length > 0 ? certificatesData : []}
           bounces={false}
@@ -564,15 +558,13 @@ function RefereeInfoSection({
           alignItems: 'center',
           justifyContent: 'space-between',
           margin: 15,
-        }}
-      >
+        }}>
         <Text
           style={{
             fontFamily: fonts.RRegular,
             fontSize: 20,
             color: colors.lightBlackColor,
-          }}
-        >
+          }}>
           {strings.refereeFee}
         </Text>
 
@@ -582,8 +574,7 @@ function RefereeInfoSection({
 
             color: colors.blackColor,
             fontFamily: fonts.RBold,
-          }}
-        >
+          }}>
           {`$${
             refereeSetting?.game_fee?.fee
               ? refereeSetting?.game_fee?.fee
@@ -593,8 +584,7 @@ function RefereeInfoSection({
             style={{
               fontFamily: fonts.RRegular,
               color: colors.lightBlackColor,
-            }}
-          >
+            }}>
             CAD/hours
           </Text>
         </Text>
@@ -632,16 +622,14 @@ function RefereeInfoSection({
       <View
         style={{
           margin: 15,
-        }}
-      >
+        }}>
         <Text
           style={{
             fontFamily: fonts.RRegular,
             fontSize: 20,
             color: colors.lightBlackColor,
             marginBottom: 15,
-          }}
-        >
+          }}>
           {'Available Area'}
         </Text>
         {refereeSetting?.available_area ? (
@@ -665,8 +653,7 @@ function RefereeInfoSection({
                       fontFamily: fonts.RRegular,
                       color: colors.lightBlackColor,
                       marginLeft: 10,
-                    }}
-                  >
+                    }}>
                     {item?.address}
                   </Text>
                   <View
@@ -688,19 +675,16 @@ function RefereeInfoSection({
                   fontSize: 16,
                   fontFamily: fonts.RRegular,
                   color: colors.lightBlackColor,
-                }}
-              >
+                }}>
                 Within{' '}
                 <Text
-                  style={{color: colors.themeColor, fontFamily: fonts.RMedium}}
-                >
+                  style={{color: colors.themeColor, fontFamily: fonts.RMedium}}>
                   {refereeSetting?.available_area?.radious}{' '}
                   {refereeSetting?.available_area?.distance_type}
                 </Text>{' '}
                 of{' '}
                 <Text
-                  style={{color: colors.themeColor, fontFamily: fonts.RMedium}}
-                >
+                  style={{color: colors.themeColor, fontFamily: fonts.RMedium}}>
                   {refereeSetting?.available_area?.address}
                 </Text>
               </Text>
@@ -728,8 +712,7 @@ function RefereeInfoSection({
                 fontSize: 16,
                 fontFamily: fonts.RRegular,
                 color: colors.grayColor,
-              }}
-            >
+              }}>
               No Setting Configured Yet
             </Text>
           </View>
@@ -746,20 +729,17 @@ function RefereeInfoSection({
         }}
         hasBackdrop
         onBackdropPress={() => setPrivacyModal(false)}
-        backdropOpacity={0}
-      >
+        backdropOpacity={0}>
         <SafeAreaView
           style={[
             styles.modalContainerViewStyle,
             {backgroundColor: colors.whiteColor},
-          ]}
-        >
+          ]}>
           <LinearGradient
             colors={[colors.orangeColor, colors.yellowColor]}
             end={{x: 0.0, y: 0.25}}
             start={{x: 1, y: 0.5}}
-            style={styles.gradiantHeaderViewStyle}
-          ></LinearGradient>
+            style={styles.gradiantHeaderViewStyle}></LinearGradient>
           <Header
             mainContainerStyle={styles.headerMainContainerStyle}
             leftComponent={
@@ -788,8 +768,7 @@ function RefereeInfoSection({
                     fontSize: 16,
                     fontFamily: fonts.RLight,
                     color: colors.whiteColor,
-                  }}
-                >
+                  }}>
                   {'Save'}
                 </Text>
               </TouchableOpacity>
@@ -806,8 +785,7 @@ function RefereeInfoSection({
                 (editPressTitle === strings.refereeFeesTitle &&
                   strings.refereeFeePrivacyTitle)
               }
-              containerStyle={{marginTop: 10}}
-            >
+              containerStyle={{marginTop: 10}}>
               <FlatList
                 data={privacyData ?? []}
                 style={{marginTop: 10}}
@@ -838,15 +816,13 @@ function RefereeInfoSection({
           {editPressTitle === strings.basicinfotitle && (
             <KeyboardAwareScrollView
               enableOnAndroid={false}
-              showsVerticalScrollIndicator={false}
-            >
+              showsVerticalScrollIndicator={false}>
               <EventItemRender
                 title={
                   editPressTitle === strings.basicinfotitle &&
                   strings.basicInfoPrivacyTitle
                 }
-                containerStyle={{marginTop: 10}}
-              >
+                containerStyle={{marginTop: 10}}>
                 <FlatList
                   data={genderPrivacy ?? []}
                   bounces={false}
@@ -1001,8 +977,7 @@ function RefereeInfoSection({
           justifyContent: 'flex-end',
           backgroundColor: 'rgba(0,0,0,0)',
         }}
-        onBackdropPress={() => setEditModal(false)}
-      >
+        onBackdropPress={() => setEditModal(false)}>
         <TCKeyboardView>
           <View
             style={{
@@ -1010,14 +985,12 @@ function RefereeInfoSection({
               height: hp(100),
               top: hp(5),
               backgroundColor: colors.whiteColor,
-            }}
-          >
+            }}>
             <LinearGradient
               colors={[colors.whiteColor, colors.whiteColor]}
               end={{x: 0.0, y: 0.25}}
               start={{x: 1, y: 0.5}}
-              style={styles.gradiantHeaderViewStyle}
-            ></LinearGradient>
+              style={styles.gradiantHeaderViewStyle}></LinearGradient>
             <Header
               mainContainerStyle={styles.headerMainContainerStyle}
               leftComponent={
@@ -1051,15 +1024,13 @@ function RefereeInfoSection({
               }
               rightComponent={
                 <TouchableOpacity
-                  onPress={() => onTopEditSavePress(certificatesData)}
-                >
+                  onPress={() => onTopEditSavePress(certificatesData)}>
                   <Text
                     style={{
                       fontSize: 16,
                       fontFamily: fonts.RLight,
                       color: colors.lightBlackColor,
-                    }}
-                  >
+                    }}>
                     {'Save'}
                   </Text>
                 </TouchableOpacity>
@@ -1088,8 +1059,7 @@ function RefereeInfoSection({
                 <View>
                   <EventItemRender
                     title={strings.gender}
-                    containerStyle={{marginTop: 15}}
-                  >
+                    containerStyle={{marginTop: 15}}>
                     <View style={{marginTop: 8}}>
                       <TCPicker
                         dataSource={DataSource.Gender}
@@ -1103,8 +1073,7 @@ function RefereeInfoSection({
                   </EventItemRender>
                   <EventItemRender
                     title={strings.yearOfBirth}
-                    containerStyle={{marginTop: 15}}
-                  >
+                    containerStyle={{marginTop: 15}}>
                     <BirthSelectItem
                       title={
                         info?.birthdayText
@@ -1124,8 +1093,7 @@ function RefereeInfoSection({
                   </EventItemRender>
                   <EventItemRender
                     title={strings.language}
-                    containerStyle={{marginTop: 15}}
-                  >
+                    containerStyle={{marginTop: 15}}>
                     <BirthSelectItem
                       title={
                         selectedLanguage?.length > 0
@@ -1153,8 +1121,7 @@ function RefereeInfoSection({
                   />
                   <EventItemRender
                     title={strings.currrentCityTitle}
-                    containerStyle={{marginTop: 15}}
-                  >
+                    containerStyle={{marginTop: 15}}>
                     <BirthSelectItem
                       title={info.currentCity}
                       onItemPress={() => {
@@ -1169,8 +1136,7 @@ function RefereeInfoSection({
                 <KeyboardAwareScrollView enableOnAndroid={false}>
                   <EventItemRender
                     title={strings.addCertiMainTitle}
-                    headerTextStyle={{fontSize: 16}}
-                  >
+                    headerTextStyle={{fontSize: 16}}>
                     <FlatList
                       data={
                         certificatesData?.length
@@ -1224,8 +1190,7 @@ function RefereeInfoSection({
                                 marginTop: 15,
                                 flexDirection: 'row',
                                 justifyContent: 'space-between',
-                              }}
-                            >
+                              }}>
                               <Image
                                 source={{uri: item.thumbnail}}
                                 style={{
@@ -1244,8 +1209,7 @@ function RefereeInfoSection({
                                 }}
                                 onPress={() => {
                                   deleteItemById(index);
-                                }}
-                              >
+                                }}>
                                 Delete
                               </Text>
                             </View>
@@ -1460,8 +1424,7 @@ function RefereeInfoSection({
               backgroundColor: 'rgba(0,0,0,0)',
             }}
             hasBackdrop
-            onBackdropPress={() => setEditLanguageModal(false)}
-          >
+            onBackdropPress={() => setEditLanguageModal(false)}>
             <TCKeyboardView>
               <SafeAreaView
                 style={[
@@ -1471,20 +1434,17 @@ function RefereeInfoSection({
                     height: hp(100),
                     backgroundColor: colors.whiteColor,
                   },
-                ]}
-              >
+                ]}>
                 <LinearGradient
                   colors={[colors.orangeColor, colors.yellowColor]}
                   end={{x: 0.0, y: 0.25}}
                   start={{x: 1, y: 0.5}}
-                  style={styles.gradiantHeaderViewStyle}
-                ></LinearGradient>
+                  style={styles.gradiantHeaderViewStyle}></LinearGradient>
                 <Header
                   mainContainerStyle={styles.headerMainContainerStyle}
                   leftComponent={
                     <TouchableOpacity
-                      onPress={() => setEditLanguageModal(false)}
-                    >
+                      onPress={() => setEditLanguageModal(false)}>
                       <Image
                         source={images.backArrow}
                         style={styles.cancelImageStyle}
@@ -1508,15 +1468,13 @@ function RefereeInfoSection({
                     <TouchableOpacity
                       onPress={() => {
                         setEditLanguageModal(false);
-                      }}
-                    >
+                      }}>
                       <Text
                         style={{
                           fontSize: 16,
                           fontFamily: fonts.RLight,
                           color: colors.whiteColor,
-                        }}
-                      >
+                        }}>
                         {'Done'}
                       </Text>
                     </TouchableOpacity>
@@ -1547,8 +1505,7 @@ function RefereeInfoSection({
                           textAlign: 'center',
                           marginTop: hp(2),
                           color: colors.userPostTimeColor,
-                        }}
-                      >
+                        }}>
                         No Records Found
                       </Text>
                     }

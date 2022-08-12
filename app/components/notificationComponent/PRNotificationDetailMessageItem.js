@@ -24,6 +24,7 @@ function PRNotificationDetailMessageItem({
   disabled = false,
   isTrash = false,
   entityType = 'user',
+  accessibilityLabel,
 }) {
   const authContext = useContext(AuthContext);
   const [dataDictionary, setDataDictionary] = useState();
@@ -156,16 +157,19 @@ function PRNotificationDetailMessageItem({
                       : [colors.themeColor1, colors.localHomeGradientEnd]
                   }
                   style={styles.detailBtnStyle}>
-                  <TouchableOpacity onPress={onDetailPress}>
+                  <TouchableOpacity
+                    testID={`${accessibilityLabel}`}
+                    onPress={onDetailPress}
+                    disabled={disabled}>
                     <Text
-                      style={[
-                        styles.detailBtnTextStyle,
-                        {
-                          color: disabled
-                            ? colors.userPostTimeColor
-                            : colors.whiteColor,
-                        },
-                      ]}>
+                      style={
+                        isTrash
+                          ? [
+                              styles.detailBtnTextStyle,
+                              {color: colors.googleColor},
+                            ]
+                          : styles.detailBtnTextStyle
+                      }>
                       {strings.respondWithinText}
                     </Text>
                   </TouchableOpacity>
@@ -228,6 +232,7 @@ const styles = StyleSheet.create({
   detailBtnTextStyle: {
     fontSize: 12,
     fontFamily: fonts.RBold,
+    color: colors.whiteColor,
     textAlign: 'center',
   },
   respnseTimeStyle: {

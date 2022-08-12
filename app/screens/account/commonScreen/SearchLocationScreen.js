@@ -125,8 +125,7 @@ export default function SearchLocationScreen({navigation, route}) {
     return (
       <TouchableWithoutFeedback
         style={styles.listItem}
-        onPress={() => getTeamsData(item)}
-      >
+        onPress={() => getTeamsData(item)}>
         <Text style={styles.cityList}>{cityData[index].description}</Text>
         <Separator />
       </TouchableWithoutFeedback>
@@ -141,6 +140,7 @@ export default function SearchLocationScreen({navigation, route}) {
       <View style={styles.sectionStyle}>
         <Image source={images.searchLocation} style={styles.searchImg} />
         <TextInput
+          testID="choose-location-input"
           style={styles.textInput}
           placeholder={strings.locationPlaceholderText}
           clearButtonMode="always"

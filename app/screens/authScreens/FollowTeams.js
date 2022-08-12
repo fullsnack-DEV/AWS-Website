@@ -73,7 +73,10 @@ export default function FollowTeams({route, navigation}) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <Text style={styles.nextButtonStyle} onPress={signUpLastStep}>
+        <Text
+          testID="followteam-nav-button"
+          style={styles.nextButtonStyle}
+          onPress={signUpLastStep}>
           {strings.next}
         </Text>
       ),
@@ -87,7 +90,7 @@ export default function FollowTeams({route, navigation}) {
             style={{
               height: 20,
               width: 15,
-              marginLeft: wp('5.33%'),
+              marginLeft: 20,
               tintColor: colors.whiteColor,
             }}
           />
@@ -95,7 +98,51 @@ export default function FollowTeams({route, navigation}) {
       ),
     });
   });
+  /*
+  const isClubSport = ({sportName}) => {
+    const data = filterData.filter((obj) => obj.sport === sportName);
+    return data.length > 0;
+  };
 
+  useEffect(() => {
+    console.log('Team Data... :::', route.params.teamData);
+    let dataObj = [];
+    if (
+      route.params.sports[0] === 'Soccer' &&
+      route.params.sports.length === 1
+    ) {
+      dataObj = route.params.teamData.filter((item) => {
+        console.log('Sport string ==>', item.sports_string);
+        if (item.sport === 'soccer') {
+          return item;
+        }
+        return false;
+      });
+    } else if (
+      route.params.sports[0] === 'Tennis' &&
+      route.params.sports.length === 1
+    ) {
+      dataObj = route.params.teamData.filter((item) => {
+        if (item.sport === 'tennis') {
+          return item;
+        }
+        return false;
+      });
+    } else {
+      console.log('Both sport selected', route.params.teamData);
+      dataObj = route.params.teamData.filter((item) => {
+        if (item.sport === 'tennis' || item.sport === 'soccer') {
+          return item;
+        }
+        return false;
+      });
+    }
+
+    console.log('Sort dataObj-->', dataObj);
+    setFilterData([...dataObj]);
+    console.log('filter data-->', filterData);
+  }, []);
+  */
   useEffect(() => {
     const setFollowData = () => {
       const arr = [];
@@ -104,6 +151,7 @@ export default function FollowTeams({route, navigation}) {
 
         arr.push(tempData);
       }
+      console.log('teams', teams);
 
       setTeams(arr);
     };
@@ -111,6 +159,7 @@ export default function FollowTeams({route, navigation}) {
   }, []);
 
   const followUnfollowClicked = ({item, index}) => {
+    console.log('SELECTED:::', index);
     teams[index].follow = !item.follow;
     setTeams([...teams]);
     for (const temp of teams) {
@@ -123,6 +172,7 @@ export default function FollowTeams({route, navigation}) {
       }
     }
     setFollowed(followedTeam);
+    console.log('Followed Team:::', followedTeam);
   };
 
   const renderItem = ({item, index}) => (
@@ -190,6 +240,7 @@ export default function FollowTeams({route, navigation}) {
       url: `${Config.BASE_URL}/pre-signed-url?count=2`,
       headers: {Authorization: `Bearer ${authToken}`},
     };
+    console.log('Profile pic', signUpData?.profilePic);
 
     if (signUpData?.profilePic) {
       const apiResponse = await apiCall(uploadImageConfig);
@@ -223,6 +274,8 @@ export default function FollowTeams({route, navigation}) {
   };
   // Signup to Towncup
   const signUpToTownsCup = async (param) => {
+    console.log('Signup data ==>', signUpData);
+    console.log('param data ==>', param);
     setloading(true);
     const data = {
       first_name: signUpData.first_name,
@@ -236,6 +289,7 @@ export default function FollowTeams({route, navigation}) {
       sports: signUpData.sports,
     };
     if (signUpData?.profilePicData?.thumbnail) {
+      console.log('llllllll');
       data.thumbnail = signUpData.profilePicData?.thumbnail;
       data.full_image = signUpData.profilePicData?.full_image;
     } else if (param?.uploadedProfilePic) {
@@ -245,8 +299,10 @@ export default function FollowTeams({route, navigation}) {
     if (followed && followed.length > 0) {
       data.group_ids = followed;
     }
+    console.log('Data before cretae a user ===>', data);
     await createUser(data, authContext)
       .then((createdUser) => {
+        console.log('QB CreatedUser:', createdUser);
         const authEntity = {...dummyAuthContext.entity};
         authEntity.obj = createdUser?.payload;
         authEntity.auth.user = createdUser?.payload;
@@ -263,9 +319,13 @@ export default function FollowTeams({route, navigation}) {
       });
   };
   const signUpWithQB = async (response) => {
+    console.log('QB signUpWithQB : ', response);
+
     let qbEntity = {...dummyAuthContext.entity};
+    console.log('QB qbEntity : ', qbEntity);
 
     const setting = await Utility.getStorage('appSetting');
+    console.log('App QB Setting:=>', setting);
 
     authContext.setQBCredential(setting);
     QB.settings.enableAutoReconnect({enable: true});
@@ -280,7 +340,7 @@ export default function FollowTeams({route, navigation}) {
         await wholeSignUpProcessComplete(response);
       })
       .catch(async (error) => {
-        console.log('error', error);
+        console.log('QB Login Error : ', error.message);
         qbEntity = {...qbEntity, QB: {connected: false}};
         setDummyAuthContext('entity', qbEntity);
         QBcreateUser(qbEntity.uid, response, QB_ACCOUNT_TYPE.USER)
@@ -322,9 +382,11 @@ export default function FollowTeams({route, navigation}) {
         source={images.loginBg}
       />
       <SafeAreaView style={styles.container}>
-        <Text style={styles.sportText}>{strings.followSportTeam}</Text>
+        <Text testID="followteam-signup-text" style={styles.sportText}>
+          {strings.followSportTeam}
+        </Text>
         <FlatList
-          style={{marginTop: hp('3.69%'), paddingLeft: 28, paddingRight: 28}}
+          style={{padding: 27, bottom: 35}}
           data={teams}
           keyExtractor={(item, index) => index.toString()}
           renderItem={renderItem}
@@ -347,7 +409,7 @@ const styles = StyleSheet.create({
   cityText: {
     color: colors.whiteColor,
     fontFamily: fonts.RRegular,
-    fontSize: 14,
+    fontSize: wp('3.5%'),
     textAlign: 'left',
     textAlignVertical: 'center',
   },
@@ -364,8 +426,8 @@ const styles = StyleSheet.create({
   },
   followText: {
     color: colors.whiteColor,
-    fontFamily: fonts.RBold,
-    fontSize: 12,
+    fontFamily: fonts.RBlack,
+    fontSize: wp('3%'),
   },
   followingBtn: {
     alignItems: 'center',
@@ -379,8 +441,8 @@ const styles = StyleSheet.create({
   },
   followingText: {
     color: colors.themeColor,
-    fontFamily: fonts.RBold,
-    fontSize: 12,
+    fontFamily: fonts.RBlack,
+    fontSize: wp('3%'),
   },
   listItem: {
     flexDirection: 'row',
@@ -400,32 +462,25 @@ const styles = StyleSheet.create({
   },
 
   sportText: {
-    // color: colors.whiteColor,
-    // fontFamily: fonts.RBold,
-    // fontSize: wp('6%'),
-    // marginBottom: hp('4%'),
-    // marginTop: hp('12%'),
-    // paddingHorizontal: 30,
-    // textAlign: 'left',
-
     color: colors.whiteColor,
     fontFamily: fonts.RBold,
-    fontSize: 25,
-    marginLeft: wp('6.6%'),
-    marginTop: hp('11.39%'),
+    fontSize: wp('6%'),
+    marginBottom: hp('4%'),
+    marginTop: hp('12%'),
+    paddingHorizontal: 30,
     textAlign: 'left',
   },
   teamNameText: {
     color: colors.whiteColor,
-    fontFamily: fonts.RBold,
-    fontSize: 16,
+    fontFamily: fonts.RBlack,
+    fontSize: wp('4%'),
     textAlign: 'left',
     textAlignVertical: 'center',
   },
   nextButtonStyle: {
-    fontFamily: fonts.RMedium,
+    fontFamily: fonts.RBold,
     fontSize: 16,
-    marginRight: wp('4%'),
+    marginRight: 15,
     color: colors.whiteColor,
   },
   container: {

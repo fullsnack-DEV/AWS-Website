@@ -4,13 +4,17 @@ import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 
 function TCButton({
+  testID = '',
   title,
   onPress,
   extraStyle,
   textColor = {color: colors.darkYellowColor},
 }) {
   return (
-    <TouchableOpacity onPress={onPress} style={[styles.allButton, extraStyle]}>
+    <TouchableOpacity
+      testID={testID}
+      onPress={onPress}
+      style={[styles.allButton, extraStyle]}>
       <Text style={[styles.buttonText, textColor]}>{title}</Text>
     </TouchableOpacity>
   );

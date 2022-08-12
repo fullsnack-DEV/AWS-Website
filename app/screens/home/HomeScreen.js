@@ -18,7 +18,7 @@ import React, {
   useCallback,
 } from 'react';
 import FastImage from 'react-native-fast-image';
-import MarqueeText from 'react-native-marquee';
+// import MarqueeText from 'react-native-marquee';
 
 import {
   Image,
@@ -636,27 +636,16 @@ const HomeScreen = ({navigation, route}) => {
                 justifyContent: 'flex-start',
                 alignItems: 'flex-start',
               }}>
-              <MarqueeText
+              {/* <MarqueeText
                 style={styles.userNavigationTextStyle}
                 duration={3000}
                 marqueeOnStart
                 loop={true}>
                 {currentUserData?.full_name || currentUserData?.group_name}
-              </MarqueeText>
-
-              <Image
-                source={
-                  (currentUserData.entity_type === 'team' &&
-                    images.teamPatch) ||
-                  (currentUserData.entity_type === 'club' && images.clubPatch)
-                }
-                style={{
-                  height: 15,
-                  width: 15,
-                  resizeMode: 'cover',
-                  // backgroundColor: colors.yellowColor,
-                }}
-              />
+              </MarqueeText> */}
+              <Text numberOfLines={1} style={styles.userNavigationTextStyle}>
+                {currentUserData?.full_name || currentUserData?.group_name}
+              </Text>
             </View>
             {/* <MarqueeText
               style={styles.userNavigationTextStyle}
@@ -1386,8 +1375,26 @@ const HomeScreen = ({navigation, route}) => {
     ],
   );
 
+  const onTeamPress = useCallback(
+    (groupObject) => {
+      navigation.push('HomeScreen', {
+        uid: groupObject?.group_id,
+        backButtonVisible: true,
+        role: groupObject?.entity_type,
+      });
+    },
+    [navigation],
+  );
+
   const onMemberPress = (memberObject) => {
     console.log('memberObject', memberObject);
+  };
+
+  const onGroupListPress = (groupList, entityType) => {
+    navigation.push('GroupListScreen', {
+      groups: groupList,
+      entity_type: entityType,
+    });
   };
 
   let language_string = '';
@@ -1763,7 +1770,6 @@ const HomeScreen = ({navigation, route}) => {
 
   const onConnectionButtonPress = useCallback(
     (tab) => {
-      console.log('Tab===>', tab);
       let entity_type = authContext?.entity?.role;
       let user_id = authContext?.entity?.uid;
       if (route?.params?.role) entity_type = route?.params?.role;
@@ -2308,8 +2314,8 @@ const HomeScreen = ({navigation, route}) => {
     navigation.navigate('EntityInfoScreen', {
       uid: route?.params?.uid || authContext.entity.uid,
       isAdmin: route?.params?.uid === authContext.entity.uid,
-      // onGroupListPress,
-      // onTeamPress,
+      onGroupListPress,
+      onTeamPress,
       refereesInModal,
       playInModel,
       onMemberPress,
@@ -3331,7 +3337,14 @@ const HomeScreen = ({navigation, route}) => {
               showsHorizontalScrollIndicator={false}
               data={
                 isTeamHome
-                  ? ['Info', 'Scoreboard', 'Gallery', 'Review', 'Stats']
+                  ? [
+                      'Info',
+                      'Scoreboard',
+                      'Schedule',
+                      'Gallery',
+                      'Review',
+                      'Stats',
+                    ]
                   : ['Info', 'Scoreboard', 'Schedule', 'Gallery']
               }
               horizontal
@@ -6376,7 +6389,7 @@ const styles = StyleSheet.create({
     marginRight: 20,
   },
   userNavigationTextStyle: {
-    width: 200,
+    width: width - 100,
     fontSize: 22,
     fontFamily: fonts.RBold,
     textAlign: 'left',
