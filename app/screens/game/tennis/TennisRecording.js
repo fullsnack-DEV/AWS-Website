@@ -327,7 +327,7 @@ export default function TennisRecording({navigation, route}) {
           body = [
             {
               verb: lastVerb,
-              timestamp: lastTimeStamp,
+              timestamp: Number(lastTimeStamp),
               team_id: selectedTeam,
               doneBy: selectedTeam,
               serving_team_id: servingTeamID,
@@ -652,7 +652,7 @@ export default function TennisRecording({navigation, route}) {
       const body = [
         {
           verb: lastVerb,
-          timestamp: lastTimeStamp,
+          timestamp: Number(lastTimeStamp),
           team_id: actionByTeamID,
         },
       ];
@@ -1179,7 +1179,7 @@ export default function TennisRecording({navigation, route}) {
                               const body = [
                                 {
                                   verb: lastVerb,
-                                  timestamp: lastTimeStamp,
+                                  timestamp: Number(lastTimeStamp),
                                   team_id: selectedTeam,
                                   serving_team_id: servingTeamID,
                                 },
@@ -1315,7 +1315,7 @@ export default function TennisRecording({navigation, route}) {
                                   const body = [
                                     {
                                       verb: lastVerb,
-                                      timestamp: lastTimeStamp,
+                                      timestamp: Number(lastTimeStamp),
                                       team_id: actionByTeamID,
                                     },
                                   ];
@@ -1347,7 +1347,7 @@ export default function TennisRecording({navigation, route}) {
                               const body = [
                                 {
                                   verb: lastVerb,
-                                  timestamp: lastTimeStamp,
+                                  timestamp: Number(lastTimeStamp),
                                   team_id: actionByTeamID,
                                 },
                               ];
@@ -1374,7 +1374,7 @@ export default function TennisRecording({navigation, route}) {
                               const body = [
                                 {
                                   verb: lastVerb,
-                                  timestamp: lastTimeStamp,
+                                  timestamp: Number(lastTimeStamp),
                                   team_id: actionByTeamID,
                                 },
                               ];
@@ -1509,7 +1509,7 @@ export default function TennisRecording({navigation, route}) {
             const body = [
               {
                 verb: lastVerb,
-                timestamp: lastTimeStamp,
+                timestamp: Number(lastTimeStamp),
                 is_manual: true,
               },
             ];
@@ -1522,7 +1522,7 @@ export default function TennisRecording({navigation, route}) {
             const body = [
               {
                 verb: lastVerb,
-                timestamp: lastTimeStamp,
+                timestamp: Number(lastTimeStamp),
                 is_manual: true,
               },
             ];

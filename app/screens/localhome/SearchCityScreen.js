@@ -43,12 +43,11 @@ export default function SearchCityScreen({navigation, route}) {
     <TouchableOpacity
       style={styles.listItem}
       onPress={() => {
-        console.log('selected ITEM:=>', item);
+        console.log('selected ITEM2323:=>', route?.params?.comeFrom);
         navigation.navigate(route?.params?.comeFrom, {
           locationText: item?.structured_formatting?.main_text,
         });
-      }}
-    >
+      }}>
       <Text style={styles.cityList}>
         {item?.structured_formatting?.main_text}
       </Text>
@@ -61,8 +60,7 @@ export default function SearchCityScreen({navigation, route}) {
       style={[
         styles.bottomPopupContainer,
         {height: Dimensions.get('window').height - 60},
-      ]}
-    >
+      ]}>
       <TextInput
         style={styles.sectionStyle}
         placeholder={strings.searchTitle}
