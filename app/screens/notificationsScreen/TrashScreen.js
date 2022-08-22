@@ -10,12 +10,12 @@ import {
 
 import {useIsFocused} from '@react-navigation/native';
 import PRNotificationDetailMessageItem from '../../components/notificationComponent/PRNotificationDetailMessageItem';
-import NotificationItem from '../../components/notificationComponent/NotificationItem';
 import PRNotificationInviteCell from '../../components/notificationComponent/PRNotificationInviteCell';
 import NotificationType from '../../Constants/NotificationType';
 import {
   acceptRequest,
   declineRequest,
+  getRequestDetail,
   getTrash,
   getTrashNextList,
 } from '../../api/Notificaitons';
@@ -33,6 +33,9 @@ import {getScorekeeperReservationDetail} from '../scorekeeper/ScorekeeperUtility
 import RefereeReservationStatus from '../../Constants/RefereeReservationStatus';
 import {getRefereeReservationDetail} from '../referee/RefereeUtility';
 import {getChallengeDetail} from '../challenge/ChallengeUtility';
+import PRNotificationTeamInvite from '../../components/notificationComponent/PRNotificationTeamInvite';
+import PRNotificationDetailItem from '../../components/notificationComponent/PRNotificationDetailItem';
+import {getEventById} from '../../api/Schedule';
 
 function TrashScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
@@ -357,51 +360,195 @@ function TrashScreen({navigation, route}) {
       });
   };
 
-  const RenderSections = ({item}) => {
-    if (item.activities[0].is_request) {
-      return (
-        <View>
-          {isInvite(item.activities[0].verb) && (
-            <PRNotificationInviteCell
-              item={item}
-              isTrash={true}
-              entityType={
-                authContext.entity.role === 'user' ||
-                authContext.entity.role === 'player'
-                  ? 'user'
-                  : 'group'
-              } // user or group
-              disabled={true}
-              selectedEntity={selectedEntity}
-              onPressFirstEntity={openHomePage}
-              onAccept={() => onAccept(item.activities[0].id)}
-              onDecline={() => onDecline(item.activities[0].id)}
-            />
-          )}
+  const onRespond = (groupObj) => {
+    console.log('groupObj11:=>', groupObj);
 
-          {!isInvite(item.activities[0].verb) && (
-            <PRNotificationDetailMessageItem
-              item={item}
-              isTrash={true}
-              entityType={
-                authContext.entity.role === 'user' ||
-                authContext.entity.role === 'player'
-                  ? 'user'
-                  : 'group'
-              } // user or group
-              disabled={true}
-              onDetailPress={() => onDetailPress(item)}
-              selectedEntity={selectedEntity}
-              onPressFirstEntity={openHomePage}
-            />
-          )}
-        </View>
-      );
+    const groupId = JSON.parse(groupObj?.activities?.[0]?.object).groupData
+      ?.group_id;
+    console.log(
+      'groupObject:=>',
+      JSON.parse(groupObj?.activities?.[0]?.object),
+    );
+
+    if (
+      groupObj.activities[0].verb.includes(NotificationType.inviteToJoinClub)
+    ) {
+      navigation.navigate('RespondForInviteScreen', {groupObj});
     }
-    if (!item.activities[0].is_request) {
+    if (groupObj.activities[0].verb.includes(NotificationType.inviteToEvent)) {
+      setloading(true);
+      getEventById(
+        authContext.entity.role === 'user' ? 'users' : 'groups',
+        authContext.entity.uid || authContext.entity.auth.user_id,
+        JSON.parse(groupObj?.activities?.[0]?.object).eventId,
+        authContext,
+      )
+        .then((response) => {
+          setloading(false);
+          navigation.navigate('AcceptEventInviteScreen', {
+            data: response.payload,
+            requestID: groupObj?.activities?.[0].id,
+          });
+        })
+        .catch((e) => {
+          setloading(false);
+          console.log('Error :-', e);
+        });
+    } else if (
+      groupObj.activities[0].verb.includes(
+        NotificationType.sendBasicInfoToMember,
+      )
+    ) {
+      navigation.navigate('RequestBasicInfoScreen', {
+        groupID: groupId,
+        memberID: authContext.entity.uid,
+        requestID: groupObj.activities[0].id,
+      });
+    } else {
+      setloading(true);
+      getRequestDetail(groupId, authContext)
+        .then((response) => {
+          setloading(false);
+          console.log('details: =>', response.payload);
+        })
+        .catch((error) => {
+          setloading(false);
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, error.message);
+          }, 10);
+        });
+    }
+
+    // setGroupData(groupdata)
+    // setIsRulesModalVisible(true)
+  };
+
+  const onNotificationClick = (notificationItem) => {
+    console.log('Notification detail::=>', notificationItem);
+    console.log(notificationItem?.verb);
+    const verb = notificationItem?.verb?.split('_');
+    const postVerbTypes = [
+      NotificationType.clap,
+      NotificationType.tagged,
+      NotificationType.comment,
+    ];
+    const scorekeeperVerbTypes = [
+      NotificationType.scorekeeperReservationCancelled,
+      NotificationType.scorekeeperReservationAccepted,
+      NotificationType.scorekeeperReservationApproved,
+    ];
+    const refereeVerbTypes = [
+      NotificationType.refereeReservationCancelled,
+      NotificationType.refereeReservationAccepted,
+      NotificationType.refereeReservationApproved,
+    ];
+    const gameVerbTypes = [
+      NotificationType.gameAccepted,
+      NotificationType.gameCancelled,
+    ];
+
+    if (postVerbTypes.includes(verb?.[0])) {
+      navigation.navigate('SingleNotificationScreen', {notificationItem});
+    }
+    if (scorekeeperVerbTypes.includes(verb?.[0])) {
+      const a =
+        JSON.parse(notificationItem.activities[0].object)?.reservationObject
+          ?.reservation_id ||
+        JSON.parse(notificationItem.activities[0].object)?.reservation
+          ?.reservation_id;
+      setloading(true);
+      getScorekeeperReservationDetail(a, authContext.entity.uid, authContext)
+        .then((obj) => {
+          const reservationObj = obj.reservationObj || obj.reservationObj[0];
+          console.log('reservationObj:1>=>', reservationObj);
+
+          navigation.navigate(obj.screenName, {
+            reservationObj,
+          });
+
+          setloading(false);
+        })
+        .catch(() => setloading(false));
+    }
+    if (refereeVerbTypes.includes(verb?.[0])) {
+      const a =
+        JSON.parse(notificationItem.activities[0].object)?.reservationObject
+          ?.reservation_id ||
+        JSON.parse(notificationItem.activities[0].object)?.reservation
+          ?.reservation_id;
+      setloading(true);
+      getRefereeReservationDetail(a, authContext.entity.uid, authContext)
+        .then((obj) => {
+          const reservationObj = obj.reservationObj || obj.reservationObj[0];
+
+          console.log('reservationObj:1>=>', reservationObj);
+
+          navigation.navigate(obj.screenName, {
+            reservationObj,
+          });
+
+          setloading(false);
+        })
+        .catch(() => setloading(false));
+    }
+    if (gameVerbTypes.includes(verb?.[0])) {
+      const a = JSON.parse(notificationItem.activities[0].object)
+        ?.challengeObject?.challenge_id;
+      setloading(true);
+
+      getChallengeDetail(a, authContext)
+        .then((obj) => {
+          const challengeObj = obj.challengeObj || obj.challengeObj[0];
+
+          console.log('challengeObj:1>=>', challengeObj);
+
+          navigation.navigate(obj.screenName, {
+            challengeObj,
+          });
+
+          setloading(false);
+        })
+        .catch(() => setloading(false));
+    }
+  };
+
+  const notificationComponentType = ({item}) => {
+    console.log('VERB::=>', item);
+    if (isInvite(item.activities[0].verb)) {
+      if (
+        item.activities[0].verb.includes(NotificationType.inviteToDoubleTeam) ||
+        item.activities[0].verb.includes(NotificationType.inviteToEvent) ||
+        item.activities[0].verb.includes(NotificationType.inviteToJoinClub)
+      ) {
+        return (
+          <PRNotificationTeamInvite
+            item={item}
+            selectedEntity={selectedEntity}
+            // onAccept={() => onAccept(item.activities[0].id)}
+            onRespond={() => onRespond(item)} // JSON.parse(item.activities[0].object))
+            onPress={() => onNotificationClick(item)}
+            onPressFirstEntity={openHomePage}
+          />
+        );
+      }
+      if (
+        item.activities[0].verb.includes(NotificationType.sendBasicInfoToMember)
+      ) {
+        return (
+          <PRNotificationTeamInvite
+            item={item}
+            selectedEntity={selectedEntity}
+            onRespond={() => onRespond(item)} // JSON.parse(item.activities[0].object))
+            onPress={() => onNotificationClick(item)}
+            onPressFirstEntity={openHomePage}
+          />
+        );
+      }
+
       return (
-        <NotificationItem
-          data={item}
+        <PRNotificationInviteCell
+          onPress={() => onNotificationClick(item)}
+          item={item}
           isTrash={true}
           entityType={
             authContext.entity.role === 'user' ||
@@ -409,13 +556,49 @@ function TrashScreen({navigation, route}) {
               ? 'user'
               : 'group'
           } // user or group
+          disabled={true}
+          selectedEntity={selectedEntity}
           onPressFirstEntity={openHomePage}
-          onPressSecondEntity={openHomePage}
-          onPressCard={() => {}}
+          onAccept={() => onAccept(item.activities[0].id)}
+          onDecline={() => onDecline(item.activities[0].id)}
         />
       );
     }
-    return null;
+    if (
+      item.activities[0].verb.includes(
+        NotificationType.inviteToConnectMember,
+      ) ||
+      item.activities[0].verb.includes(NotificationType.refereeRequest) ||
+      item.activities[0].verb.includes(NotificationType.scorekeeperRequest)
+    ) {
+      return (
+        <PRNotificationDetailItem
+          item={item}
+          selectedEntity={selectedEntity}
+          onDetailPress={() => onDetailPress(item)}
+          onPress={() => onNotificationClick(item)}
+          onPressFirstEntity={openHomePage}
+        />
+      );
+    }
+
+    return (
+      <PRNotificationDetailMessageItem
+        onPress={() => onNotificationClick(item)}
+        item={item}
+        isTrash={true}
+        entityType={
+          authContext.entity.role === 'user' ||
+          authContext.entity.role === 'player'
+            ? 'user'
+            : 'group'
+        } // user or group
+        disabled={true}
+        onDetailPress={() => onDetailPress(item)}
+        selectedEntity={selectedEntity}
+        onPressFirstEntity={openHomePage}
+      />
+    );
   };
 
   useEffect(() => {
@@ -504,7 +687,7 @@ function TrashScreen({navigation, route}) {
           ItemSeparatorComponent={itemSeparator}
           data={notificationsList}
           keyExtractor={keyExtractor}
-          renderItem={RenderSections}
+          renderItem={notificationComponentType}
           onScroll={onLoadMore}
         />
       ) : (

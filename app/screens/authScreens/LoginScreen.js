@@ -74,7 +74,6 @@ const LoginScreen = ({navigation}) => {
   }, [email, password]);
 
   const validateEmail = (emailText) => {
-    console.log('email text', emailText);
     if (/^[\w-.+]+@([\w-]+\.)+[\w-]{2,4}$/.test(emailText)) {
       return true;
     }
@@ -107,7 +106,6 @@ const LoginScreen = ({navigation}) => {
       const entity = {...dummyAuthContext.entity};
       const userData = {...townscupUser};
 
-      console.log('entity Data:', entity);
       console.log('User Data/townscupUser:', townscupUser);
       entity.auth.user = {...userData};
       entity.obj = {...userData};

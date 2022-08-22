@@ -6,9 +6,6 @@ project(':react-native-config').projectDir = new File(rootProject.projectDir, '.
 include ':@react-native-community_blur'
 project(':@react-native-community_blur').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-community/blur/android')
 
-include ':@react-native-community_blur'
-project(':@react-native-community_blur').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-community/blur/android')
-
 include ':react-native-orientation'
 project(':react-native-orientation').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-orientation/android')
 
@@ -17,6 +14,9 @@ project(':react-native-text-gradient').projectDir = new File(rootProject.project
 
 include ':react-native-image-crop-picker'
 project(':react-native-image-crop-picker').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-image-crop-picker/android')
+
+include ':react-native-photo-view-ex'
+project(':react-native-photo-view-ex').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-photo-view-ex/android')
 
 include ':react-native-orientation', ':app'
 project(':react-native-orientation').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-orientation/android')
