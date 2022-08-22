@@ -74,6 +74,9 @@ const NotificationType = {
   accepted: 'accepted',
   declined: 'declined',
   cancelled: 'cancelled',
+
+  // join group new verbs
+  userRequestedJoingroup: 'userRequestedJoingroup',
 };
 
 export default NotificationType;

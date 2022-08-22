@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 import {View, StyleSheet, Image, Text} from 'react-native';
-import ImageSequence from 'react-native-image-sequence';
+import ImageSequence from 'react-native-image-sequence-2';
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
