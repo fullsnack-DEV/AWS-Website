@@ -6,7 +6,7 @@ import {
 } from 'react-native-responsive-screen';
 import LinearGradient from 'react-native-linear-gradient';
 import FastImage from 'react-native-fast-image';
-import ImageSequence from 'react-native-image-sequence';
+import ImageSequence from 'react-native-image-sequence-2';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
@@ -42,8 +42,7 @@ const ScorekeeperRequestSent = ({navigation, route}) => {
           position: 'absolute',
           alignItems: 'center',
           justifyContent: 'center',
-        }}
-      >
+        }}>
         {route?.params?.imageAnimation && (
           <ImageSequence
             images={imagesSet}
@@ -60,8 +59,7 @@ const ScorekeeperRequestSent = ({navigation, route}) => {
             fontSize: 20,
             marginTop: 10,
             textAlign: 'center',
-          }}
-        >
+          }}>
           {route?.params?.operationType}
         </Text>
       </LinearGradient>

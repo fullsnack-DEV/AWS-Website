@@ -381,6 +381,8 @@ const strings = {
   whoCanSeeClubFollowers: 'Who can see followers in club connections?',
   whoCanSeeTeamFollowers: 'Who can see followers in team connections?',
   everyoneRadio: 'Everyone',
+  everyTeam: 'Every team',
+  acceptedByClub: 'A team whose request has been accepted by club',
   personWhoRequest: 'A person whose request has been accepted by team admins',
   inviteOnly: 'Invite only',
   followersRadio: 'Followers',
@@ -922,5 +924,9 @@ const strings = {
   refundPolicy: 'Cancellation Policy',
   matchDuration: 'Match Duration',
   venueName: 'Venue name',
+  everyEvent: 'Every event',
+  eventCreatedByUser: 'Event created by personal user',
+  eventCreatedByGroup: 'Event create by group',
+  none: 'None',
 };
 export default strings;

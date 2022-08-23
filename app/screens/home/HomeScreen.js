@@ -18,7 +18,7 @@ import React, {
   useCallback,
 } from 'react';
 import FastImage from 'react-native-fast-image';
-import MarqueeText from 'react-native-marquee';
+// import MarqueeText from 'react-native-marquee';
 
 import {
   Image,
@@ -613,22 +613,23 @@ const HomeScreen = ({navigation, route}) => {
         showBackgroundColor={true}
         mainContainerStyle={{paddingBottom: 0}}
         leftComponent={
-          <TouchableOpacity
-            style={{flexDirection: 'row', alignItems: 'center'}}
-            disabled={!route?.params?.backButtonVisible}
-            hitSlop={Utility.getHitSlop(15)}
-            onPress={() => navigation.goBack()}>
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
             {route?.params?.backButtonVisible === true && (
-              <Image
-                source={images.backArrow}
-                style={{
-                  height: 20,
-                  width: 20,
-                  resizeMode: 'contain',
-                  tintColor: colors.lightBlackColor,
-                  marginRight: 15,
-                }}
-              />
+              <TouchableOpacity
+                onPress={() => navigation.goBack()}
+                hitSlop={Utility.getHitSlop(20)}
+                disabled={!route?.params?.backButtonVisible}>
+                <Image
+                  source={images.backArrow}
+                  style={{
+                    height: 20,
+                    width: 20,
+                    resizeMode: 'contain',
+                    tintColor: colors.lightBlackColor,
+                    marginRight: 15,
+                  }}
+                />
+              </TouchableOpacity>
             )}
             <View
               style={{
@@ -636,27 +637,16 @@ const HomeScreen = ({navigation, route}) => {
                 justifyContent: 'flex-start',
                 alignItems: 'flex-start',
               }}>
-              <MarqueeText
+              {/* <MarqueeText
                 style={styles.userNavigationTextStyle}
                 duration={3000}
                 marqueeOnStart
                 loop={true}>
                 {currentUserData?.full_name || currentUserData?.group_name}
-              </MarqueeText>
-
-              <Image
-                source={
-                  (currentUserData.entity_type === 'team' &&
-                    images.teamPatch) ||
-                  (currentUserData.entity_type === 'club' && images.clubPatch)
-                }
-                style={{
-                  height: 15,
-                  width: 15,
-                  resizeMode: 'cover',
-                  // backgroundColor: colors.yellowColor,
-                }}
-              />
+              </MarqueeText> */}
+              <Text numberOfLines={1} style={styles.userNavigationTextStyle}>
+                {currentUserData?.full_name || currentUserData?.group_name}
+              </Text>
             </View>
             {/* <MarqueeText
               style={styles.userNavigationTextStyle}
@@ -678,7 +668,7 @@ const HomeScreen = ({navigation, route}) => {
                 backgroundColor: colors.yellowColor,
               }}
             /> */}
-          </TouchableOpacity>
+          </View>
         }
         centerComponent={<View></View>}
         rightComponent={
@@ -688,7 +678,7 @@ const HomeScreen = ({navigation, route}) => {
                 style={{opacity: isAccountDeactivated ? 0.5 : 1}}
                 pointerEvents={pointEvent}>
                 <TouchableOpacity
-                  hitSlop={Utility.getHitSlop(15)}
+                  hitSlop={Utility.getHitSlop(25)}
                   onPress={() => {
                     manageChallengeActionSheet.current.show();
                   }}>
@@ -6399,7 +6389,7 @@ const styles = StyleSheet.create({
     marginRight: 20,
   },
   userNavigationTextStyle: {
-    width: 200,
+    width: width - 100,
     fontSize: 22,
     fontFamily: fonts.RBold,
     textAlign: 'left',

@@ -16,53 +16,44 @@ import AuthContext from '../../../auth/context';
 import images from '../../../Constants/ImagePath';
 import * as Utility from '../../../utils';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
-import {patchGroup} from '../../../api/Groups';
 
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
 import strings from '../../../Constants/String';
+import {patchPlayer} from '../../../api/Users';
 
-
-export default function WhoCanJoinTeamScreen({navigation, route}) {
+export default function GroupInviteYouScreen({navigation, route}) {
   const [comeFrom] = useState(route?.params?.comeFrom);
-
   const authContext = useContext(AuthContext);
-
   const [loading, setloading] = useState(false);
-
-  const whoCanJoinGroupOpetions = [
-    {key: strings.everyoneRadio, id: 1},
+  const groupInviteOpetions = [
     {
-      key: `A person whose request has been accepted by ${
-        authContext.entity.role === 'team' ? 'team admins' : 'club'
-      }`,
-      id: 2,
+      key: strings.yes,
+      id: 0,
     },
-    {key: strings.inviteOnly, id: 3},
+    {
+      key: strings.no,
+      id: 1,
+    },
   ];
 
-  const [whoCanJoinTeam, setWhoCanJoinTeam] = useState(
-    (route?.params?.whoCanJoinGroup === 0 && {
-      key: strings.everyoneRadio,
+  const [groupInviteYou, setGroupInviteYou] = useState(
+    (route?.params?.groupInviteYou === 0 && {
+      key: strings.yes,
       id: 0,
     }) ||
-      (route?.params?.whoCanJoinGroup === 1 && {
-        key: whoCanJoinGroupOpetions[1].key,
-
+      (route?.params?.groupInviteYou === 1 && {
+        key: strings.no,
         id: 1,
-      }) ||
-      (route?.params?.whoCanJoinGroup === 2 && {
-        key: strings.inviteOnly,
-        id: 2,
       }),
   );
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: () => (
-        <Text style={styles.headerTitle}>
-          Who Can Join {Utility.capitalize(authContext.entity.role)}
-        </Text>
+        <Text style={styles.headerTitle}>{`Can ${Utility.capitalize(
+          route?.params?.type,
+        )} Invite You`}</Text>
       ),
       headerRight: () => (
         <Text
@@ -74,34 +65,43 @@ export default function WhoCanJoinTeamScreen({navigation, route}) {
         </Text>
       ),
     });
-  }, [comeFrom, navigation, whoCanJoinTeam]);
+  }, [comeFrom, navigation, groupInviteYou]);
 
-  const saveTeam = () => {
+  const saveUser = () => {
     const bodyParams = {};
 
-    if (whoCanJoinTeam.key === whoCanJoinGroupOpetions[0].key) {
-      bodyParams.who_can_join_for_member = 0;
+    if (groupInviteYou.key === groupInviteOpetions[0].key) {
+      if (route?.params?.type === 'team') {
+        bodyParams.who_can_invite_for_team = 1;
+      } else {
+        bodyParams.who_can_invite_for_club = 1;
+      }
     }
-    if (whoCanJoinTeam.key === whoCanJoinGroupOpetions[1].key) {
-      bodyParams.who_can_join_for_member = 1;
+    if (groupInviteYou.key === groupInviteOpetions[1].key) {
+      if (route?.params?.type === 'team') {
+        bodyParams.who_can_invite_for_team = 0;
+      } else {
+        bodyParams.who_can_invite_for_club = 0;
+      }
     }
-    if (whoCanJoinTeam.key === whoCanJoinGroupOpetions[2].key) {
-      bodyParams.who_can_join_for_member = 2;
-    }
-
 
     setloading(true);
-    patchGroup(authContext.entity.uid, bodyParams, authContext)
+    patchPlayer(bodyParams, authContext)
       .then(async (response) => {
         if (response.status === true) {
           setloading(false);
           const entity = authContext.entity;
+          entity.auth.user = response.payload;
           entity.obj = response.payload;
           authContext.setEntity({...entity});
-
+          await Utility.setStorage('authContextUser', response.payload);
           await Utility.setStorage('authContextEntity', {...entity});
+
           navigation.navigate(comeFrom, {
-            whoCanJoinGroup: response?.payload?.who_can_join_for_member,
+            groupInviteYou:
+              route?.params?.type === 'team'
+                ? response?.payload?.who_can_invite_for_team
+                : response?.payload?.who_can_invite_for_club,
           });
         } else {
           Alert.alert(strings.appName, response.messages);
@@ -119,22 +119,22 @@ export default function WhoCanJoinTeamScreen({navigation, route}) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const onSavePressed = () => {
     if (
-      authContext.entity.role === 'team' ||
-      authContext.entity.role === 'club'
+      authContext.entity.role === 'user' ||
+      authContext.entity.role === 'player'
     ) {
-      saveTeam();
+      saveUser();
     }
   };
 
   const renderWhocanJoinOption = ({item}) => (
     <TouchableWithoutFeedback
       onPress={() => {
-        setWhoCanJoinTeam(item);
+        setGroupInviteYou(item);
       }}>
       <View style={styles.radioItem}>
         <Text style={styles.languageList}>{item.key}</Text>
         <View style={styles.checkbox}>
-          {whoCanJoinTeam?.key === item?.key ? (
+          {groupInviteYou?.key === item?.key ? (
             <Image
               source={images.radioCheckYellow}
               style={styles.checkboxImg}
@@ -155,10 +155,9 @@ export default function WhoCanJoinTeamScreen({navigation, route}) {
       <Text
         style={
           styles.opetionsTitle
-        }>{`Who can join the ${authContext.entity.role}?`}</Text>
+        }>{`Can a ${route?.params?.type} invite you to join the ${route?.params?.type}?`}</Text>
       <FlatList
-        // ItemSeparatorComponent={() => <TCThinDivider />}
-        data={whoCanJoinGroupOpetions}
+        data={groupInviteOpetions}
         keyExtractor={(item, index) => index.toString()}
         renderItem={renderWhocanJoinOption}
       />

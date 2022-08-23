@@ -21,7 +21,7 @@ import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 import strings from '../../Constants/String';
 
-export default function GroupSettingPrivacyScreen({navigation, route}) {
+export default function GroupSettingPrivacyScreen({navigation}) {
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
 
@@ -38,14 +38,16 @@ export default function GroupSettingPrivacyScreen({navigation, route}) {
     setUserSetting([
       {key: 'Profile', id: 1},
       {key: 'Members', id: 2},
-      {key: authContext.entity.role === 'club' ? 'Teams' : 'Clubs', id: 3},
-      {key: 'Account', id: 4},
-      {key: 'Privacy', id: 5},
+      {key: authContext.entity.role === 'club' ? 'Team' : 'Club', id: 3},
+      {key: 'Event', id: 4},
+      {key: 'Account', id: 5},
+
+      {key: 'Privacy', id: 6},
       {
         key: `Pause ${authContext.entity.role === 'club' ? 'Club' : 'Team'}`,
-        id: 6,
+        id: 7,
       },
-      {key: 'Terminate Account', id: 7},
+      {key: 'Terminate Account', id: 8},
     ]);
   }, [authContext.entity.role]);
 
@@ -68,14 +70,12 @@ export default function GroupSettingPrivacyScreen({navigation, route}) {
       });
     } else if (opetions === 'Members') {
       navigation.navigate('GroupMembersSettingScreen');
-    } else if (opetions === 'Clubs') {
-      navigation.navigate('GroupsScreen', {
-        groups: route?.params?.groups,
-      });
-    } else if (opetions === 'Teams') {
-      navigation.navigate('GroupsScreen', {
-        groups: route?.params?.groups,
-      });
+    } else if (opetions === 'Club') {
+      navigation.navigate('ClubSettingPrivacyScreen');
+    } else if (opetions === 'Team') {
+      navigation.navigate('TeamSettingPrivacyScreen');
+    } else if (opetions === 'Event') {
+      navigation.navigate('EventSettingPrivacyScreen');
     } else if (opetions === 'Account') {
       Alert.alert('This is not decited yet');
     } else if (opetions === 'Privacy') {
@@ -118,15 +118,15 @@ export default function GroupSettingPrivacyScreen({navigation, route}) {
       style={styles.listContainer}
       onPress={() => {
         handleOpetions(item.key);
-      }}
-    >
+      }}>
       <View
         style={{
           flexDirection: 'row',
           opacity: isAccountDeactivated && index <= 1 ? 0.5 : 1,
         }}
-        pointerEvents={isAccountDeactivated && index <= 1 ? pointEvent : 'auto'}
-      >
+        pointerEvents={
+          isAccountDeactivated && index <= 1 ? pointEvent : 'auto'
+        }>
         <Text style={styles.listItems}>{item.key}</Text>
         {item.key === 'Currency' && authContext?.entity?.obj?.currency_type && (
           <Text style={styles.currencyTypeStyle}>
@@ -152,8 +152,7 @@ export default function GroupSettingPrivacyScreen({navigation, route}) {
               color: colors.lightBlackColor,
               textAlign: 'center',
               fontFamily: fonts.RBold,
-            }}
-          >
+            }}>
             Settings
           </Text>
         }

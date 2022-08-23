@@ -256,6 +256,16 @@ import PendingRequestScreen from '../screens/notificationsScreen/PendingRequestS
 import TrashScreen from '../screens/notificationsScreen/TrashScreen';
 import WhoCanJoinTeamScreen from '../screens/account/GroupSetting/WhoCanJoinTeamScreen';
 import WhoCanInviteMemberScreen from '../screens/account/GroupSetting/WhoCanInviteMemberScreen';
+import TeamSettingPrivacyScreen from '../screens/account/GroupSetting/TeamSettingPrivacyScreen';
+import TeamJoinClubScreen from '../screens/account/GroupSetting/TeamJoinClubScreen';
+import ClubSettingPrivacyScreen from '../screens/account/GroupSetting/ClubSettingPrivacyScreen';
+import ClubInviteTeamScreen from '../screens/account/GroupSetting/ClubInviteTeamScreen';
+import EventSettingPrivacyScreen from '../screens/account/GroupSetting/EventSettingPrivacyScreen';
+import WhoCreateEventScreen from '../screens/account/GroupSetting/WhoCreateEventScreen';
+import GroupInviteYouScreen from '../screens/account/GroupSetting/GroupInviteYouScreen';
+import GroupInviteSettingPrivacyScreen from '../screens/account/GroupSetting/GroupInviteSettingPrivacyScreen';
+import UserEventSettingPrivacyScreen from '../screens/account/GroupSetting/UserEventSettingPrivacyScreen';
+import WhatEventInviteScreen from '../screens/account/GroupSetting/WhatEventInviteScreen';
 
 // Scorekeeper Review Screen
 
@@ -3590,6 +3600,185 @@ const AccountNavigator = () => (
       component={WhoCanJoinTeamScreen}
       options={{
         title: 'Who Can Join Team',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+
+    <Stack.Screen
+      name="GroupInviteYouScreen"
+      component={GroupInviteYouScreen}
+      options={{
+        title: 'Who Can Join Team',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+
+    <Stack.Screen
+      name="UserEventSettingPrivacyScreen"
+      component={UserEventSettingPrivacyScreen}
+      options={{
+        title: '',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+
+    <Stack.Screen
+      name="WhatEventInviteScreen"
+      component={WhatEventInviteScreen}
+      options={{
+        title: '',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+
+    <Stack.Screen
+      name="GroupInviteSettingPrivacyScreen"
+      component={GroupInviteSettingPrivacyScreen}
+      options={{
+        title: 'Who Can Join Team',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="EventSettingPrivacyScreen"
+      component={EventSettingPrivacyScreen}
+      options={{
+        title: 'Event',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+
+    <Stack.Screen
+      name="WhoCreateEventScreen"
+      component={WhoCreateEventScreen}
+      options={{
+        title: 'Who Can Create Event',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+
+    <Stack.Screen
+      name="ClubSettingPrivacyScreen"
+      component={ClubSettingPrivacyScreen}
+      options={{
+        title: 'Club',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+
+    <Stack.Screen
+      name="ClubInviteTeamScreen"
+      component={ClubInviteTeamScreen}
+      options={{
+        title: 'Can Club Invite Team',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+
+    <Stack.Screen
+      name="TeamJoinClubScreen"
+      component={TeamJoinClubScreen}
+      options={{
+        title: 'What Team Can Join Club',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+
+    <Stack.Screen
+      name="TeamSettingPrivacyScreen"
+      component={TeamSettingPrivacyScreen}
+      options={{
+        title: 'Team',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

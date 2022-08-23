@@ -22,47 +22,39 @@ import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
 import strings from '../../../Constants/String';
 
-
-export default function WhoCanJoinTeamScreen({navigation, route}) {
+export default function WhoCreateEventScreen({navigation, route}) {
   const [comeFrom] = useState(route?.params?.comeFrom);
 
   const authContext = useContext(AuthContext);
 
   const [loading, setloading] = useState(false);
 
-  const whoCanJoinGroupOpetions = [
-    {key: strings.everyoneRadio, id: 1},
+  const eventsSettingOpetions = [
     {
-      key: `A person whose request has been accepted by ${
-        authContext.entity.role === 'team' ? 'team admins' : 'club'
-      }`,
-      id: 2,
+      key: `${authContext.entity.role === 'team' ? 'Team' : 'Club'} & members`,
+      id: 0,
     },
-    {key: strings.inviteOnly, id: 3},
+    {
+      key: `${authContext.entity.role === 'team' ? 'Team' : 'Club'} only`,
+      id: 1,
+    },
   ];
 
-  const [whoCanJoinTeam, setWhoCanJoinTeam] = useState(
-    (route?.params?.whoCanJoinGroup === 0 && {
-      key: strings.everyoneRadio,
+  const [whoCreateEvent, setWhoCreateEvent] = useState(
+    (route?.params?.whoCreateEvent === 0 && {
+      key: eventsSettingOpetions[0].key,
       id: 0,
     }) ||
-      (route?.params?.whoCanJoinGroup === 1 && {
-        key: whoCanJoinGroupOpetions[1].key,
-
+      (route?.params?.whoCreateEvent === 1 && {
+        key: eventsSettingOpetions[1].key,
         id: 1,
-      }) ||
-      (route?.params?.whoCanJoinGroup === 2 && {
-        key: strings.inviteOnly,
-        id: 2,
       }),
   );
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: () => (
-        <Text style={styles.headerTitle}>
-          Who Can Join {Utility.capitalize(authContext.entity.role)}
-        </Text>
+        <Text style={styles.headerTitle}>Who Can Create Event</Text>
       ),
       headerRight: () => (
         <Text
@@ -74,21 +66,17 @@ export default function WhoCanJoinTeamScreen({navigation, route}) {
         </Text>
       ),
     });
-  }, [comeFrom, navigation, whoCanJoinTeam]);
+  }, [comeFrom, navigation, whoCreateEvent]);
 
   const saveTeam = () => {
     const bodyParams = {};
 
-    if (whoCanJoinTeam.key === whoCanJoinGroupOpetions[0].key) {
-      bodyParams.who_can_join_for_member = 0;
+    if (whoCreateEvent.key === eventsSettingOpetions[0].key) {
+      bodyParams.who_can_create_event = 0;
     }
-    if (whoCanJoinTeam.key === whoCanJoinGroupOpetions[1].key) {
-      bodyParams.who_can_join_for_member = 1;
+    if (whoCreateEvent.key === eventsSettingOpetions[1].key) {
+      bodyParams.who_can_create_event = 1;
     }
-    if (whoCanJoinTeam.key === whoCanJoinGroupOpetions[2].key) {
-      bodyParams.who_can_join_for_member = 2;
-    }
-
 
     setloading(true);
     patchGroup(authContext.entity.uid, bodyParams, authContext)
@@ -101,7 +89,7 @@ export default function WhoCanJoinTeamScreen({navigation, route}) {
 
           await Utility.setStorage('authContextEntity', {...entity});
           navigation.navigate(comeFrom, {
-            whoCanJoinGroup: response?.payload?.who_can_join_for_member,
+            whoCreateEvent: response?.payload?.who_can_create_event,
           });
         } else {
           Alert.alert(strings.appName, response.messages);
@@ -129,12 +117,12 @@ export default function WhoCanJoinTeamScreen({navigation, route}) {
   const renderWhocanJoinOption = ({item}) => (
     <TouchableWithoutFeedback
       onPress={() => {
-        setWhoCanJoinTeam(item);
+        setWhoCreateEvent(item);
       }}>
       <View style={styles.radioItem}>
         <Text style={styles.languageList}>{item.key}</Text>
         <View style={styles.checkbox}>
-          {whoCanJoinTeam?.key === item?.key ? (
+          {whoCreateEvent?.key === item?.key ? (
             <Image
               source={images.radioCheckYellow}
               style={styles.checkboxImg}
@@ -152,13 +140,11 @@ export default function WhoCanJoinTeamScreen({navigation, route}) {
       style={styles.mainContainer}
       showsVerticalScrollIndicator={false}>
       <ActivityLoader visible={loading} />
-      <Text
-        style={
-          styles.opetionsTitle
-        }>{`Who can join the ${authContext.entity.role}?`}</Text>
+      <Text style={styles.opetionsTitle}>{`Who can create your ${
+        authContext.entity.role === 'team' ? 'team' : 'club'
+      } event?`}</Text>
       <FlatList
-        // ItemSeparatorComponent={() => <TCThinDivider />}
-        data={whoCanJoinGroupOpetions}
+        data={eventsSettingOpetions}
         keyExtractor={(item, index) => index.toString()}
         renderItem={renderWhocanJoinOption}
       />

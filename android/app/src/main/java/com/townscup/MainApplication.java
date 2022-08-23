@@ -20,6 +20,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import com.facebook.react.bridge.JSIModulePackage; // <- add
 import com.swmansion.reanimated.ReanimatedJSIModulePackage; // <- add
+import io.amarcruz.photoview.PhotoViewPackage;
+
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -30,6 +32,8 @@ public class MainApplication extends Application implements ReactApplication {
           return BuildConfig.DEBUG;
         }
 
+		
+
         @Override
         protected List<ReactPackage> getPackages() {
           @SuppressWarnings("UnnecessaryLocalVariable")
@@ -37,7 +41,7 @@ public class MainApplication extends Application implements ReactApplication {
           // Packages that cannot be autolinked yet can be added manually here, for example:
           // packages.add(new MyReactNativePackage());
           //packages.add(new MapsPackage());
-          //packages.add(new ReactNativeConfigPackage());
+          packages.add(new PhotoViewPackage());
           return packages;
         }
 

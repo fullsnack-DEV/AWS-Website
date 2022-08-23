@@ -281,7 +281,17 @@ const getTabBarVisibility = (route) => {
     routeName === 'GroupMembersSettingScreen' ||
     routeName === 'RecruitingMemberScreen' ||
     routeName === 'WhoCanJoinTeamScreen' ||
+    routeName === 'ClubInviteTeamScreen' ||
+    routeName === 'GroupInviteSettingPrivacyScreen' ||
+    routeName === 'GroupInviteYouScreen' ||
+    routeName === 'EventSettingPrivacyScreen' ||
+    routeName === 'WhoCreateEventScreen' ||
+    routeName === 'ClubSettingPrivacyScreen' ||
+    routeName === 'TeamJoinClubScreen' ||
+    routeName === 'TeamSettingPrivacyScreen' ||
     routeName === 'WhoCanInviteMemberScreen' ||
+    routeName === 'WhatEventInviteScreen' ||
+    routeName === 'UserEventSettingPrivacyScreen' ||
     routeName === 'GroupsScreen' ||
     routeName === 'TrashScreen'
   ) {

@@ -149,20 +149,27 @@ function PRNotificationDetailMessageItem({
                     </Text>
                   )}
               </View>
-              <View
-                style={
-                  disabled
-                    ? [styles.viewSecondStyle, {opacity: 0.5}]
-                    : styles.viewSecondStyle
-                }>
+              <View style={styles.viewSecondStyle}>
                 <LinearGradient
-                  colors={[colors.themeColor1, colors.localHomeGradientEnd]}
+                  colors={
+                    disabled
+                      ? [colors.grayBackgroundColor, colors.grayBackgroundColor]
+                      : [colors.themeColor1, colors.localHomeGradientEnd]
+                  }
                   style={styles.detailBtnStyle}>
                   <TouchableOpacity
                     testID={`${accessibilityLabel}`}
                     onPress={onDetailPress}
                     disabled={disabled}>
-                    <Text style={styles.detailBtnTextStyle}>
+                    <Text
+                      style={
+                        isTrash
+                          ? [
+                              styles.detailBtnTextStyle,
+                              {color: colors.googleColor},
+                            ]
+                          : styles.detailBtnTextStyle
+                      }>
                       {strings.respondWithinText}
                     </Text>
                   </TouchableOpacity>
@@ -225,6 +232,7 @@ const styles = StyleSheet.create({
   detailBtnTextStyle: {
     fontSize: 12,
     fontFamily: fonts.RBold,
+    color: colors.whiteColor,
     textAlign: 'center',
   },
   respnseTimeStyle: {

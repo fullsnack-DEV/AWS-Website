@@ -38,19 +38,18 @@ export default function WhoCanInviteMemberScreen({navigation, route}) {
 
   const [loading, setloading] = useState(false);
 
-  console.log('route?.params?.whoCanJoinGroup', route?.params?.whoCanJoinGroup);
   const [whoCanInvite, setWhoCanInvite] = useState(
-    (route?.params?.whoCanJoinGroup === 0 && {
-      key: strings.everyoneRadio,
+    (route?.params?.whoCanInviteGroup === 0 && {
+      key: `${
+        authContext.entity.role === 'team' ? 'Team & members' : 'Club & members'
+      }`,
       id: 0,
     }) ||
-      (route?.params?.whoCanJoinGroup === 1 && {
-        key: strings.personWhoRequest,
+      (route?.params?.whoCanInviteGroup === 1 && {
+        key: `${
+          authContext.entity.role === 'team' ? 'Team Only' : 'Club only'
+        }`,
         id: 1,
-      }) ||
-      (route?.params?.whoCanJoinGroup === 2 && {
-        key: strings.inviteOnly,
-        id: 2,
       }),
   );
 
@@ -72,12 +71,26 @@ export default function WhoCanInviteMemberScreen({navigation, route}) {
   }, [comeFrom, navigation, whoCanInvite]);
 
   const saveTeam = () => {
-    const bodyParams = {
-      who_can_join:
-        (whoCanInvite.key === strings.everyoneRadio && 0) ||
-        (whoCanInvite.key === strings.personWhoRequest && 1) ||
-        (whoCanInvite.key === strings.inviteOnly && 2),
-    };
+
+    const bodyParams = {};
+
+    if (authContext.entity.role === 'team') {
+      if (whoCanInvite.key === whoCanInviteTeamOpetions[0].key) {
+        bodyParams.who_can_invite_member = 0;
+      }
+      if (whoCanInvite.key === whoCanInviteTeamOpetions[1].key) {
+        bodyParams.who_can_invite_member = 1;
+      }
+    } else {
+      if (whoCanInvite.key === whoCanInviteClubOpetions[0].key) {
+        bodyParams.who_can_invite_member = 0;
+      }
+      if (whoCanInvite.key === whoCanInviteClubOpetions[1].key) {
+        bodyParams.who_can_invite_member = 1;
+      }
+    }
+
+
     setloading(true);
     patchGroup(authContext.entity.uid, bodyParams, authContext)
       .then(async (response) => {
@@ -89,7 +102,8 @@ export default function WhoCanInviteMemberScreen({navigation, route}) {
 
           await Utility.setStorage('authContextEntity', {...entity});
           navigation.navigate(comeFrom, {
-            whoCanJoinGroup: response?.payload?.who_can_join,
+            whoCanInviteGroup: response?.payload?.who_can_invite_member,
+
           });
         } else {
           Alert.alert(strings.appName, response.messages);

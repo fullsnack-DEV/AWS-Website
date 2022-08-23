@@ -27,24 +27,48 @@ export default function GroupMembersSettingScreen({navigation, route}) {
   const [whoCanJoinGroup, setWhoCanJoinGroup] = useState(
     route?.params?.whoCanJoinGroup
       ? route?.params?.whoCanJoinGroup
-      : authContext.entity?.obj?.who_can_join,
+      : authContext.entity?.obj?.who_can_join_for_member,
+  );
+  const [whoCanInviteGroup, setWhoCanInviteGroup] = useState(
+    route?.params?.whoCanInviteGroup
+      ? route?.params?.whoCanInviteGroup
+      : authContext.entity?.obj?.who_can_invite_member,
   );
 
   const [userSetting] = useState([
-    {key: 'Who Can Join Team', id: 1},
+    {
+      key: `Who Can Join ${
+        authContext.entity.role === 'team' ? 'Team' : 'Club'
+      }`,
+      id: 1,
+    },
     {key: 'Who Can Invite Member', id: 2},
     {key: 'Recruiting Player', id: 3},
     {key: 'Members Profile', id: 4},
   ]);
 
   useEffect(() => {
-    if (isFocused && route?.params?.whoCanJoinGroup) {
-      setWhoCanJoinGroup(route?.params?.whoCanJoinGroup);
-    }
-  }, [isFocused, route?.params?.whoCanJoinGroup]);
+    if (isFocused) {
+      setWhoCanJoinGroup(
+        route?.params?.whoCanJoinGroup ??
+          authContext.entity?.obj?.who_can_join_for_member,
+      );
 
-  const handleOpetions = async (opetions) => {
-    if (opetions === 'Who Can Join Team') {
+      setWhoCanInviteGroup(
+        route?.params?.whoCanInviteGroup ??
+          authContext.entity?.obj?.who_can_invite_member,
+      );
+    }
+  }, [
+    authContext.entity?.obj?.who_can_invite_member,
+    authContext.entity?.obj?.who_can_join_for_member,
+    isFocused,
+    route?.params?.whoCanInviteGroup,
+    route?.params?.whoCanJoinGroup,
+  ]);
+
+  const handleOpetions = (opetions) => {
+    if (opetions === userSetting[0].key) {
       navigation.navigate('WhoCanJoinTeamScreen', {
         whoCanJoinGroup,
         comeFrom: 'GroupMembersSettingScreen',
@@ -53,7 +77,7 @@ export default function GroupMembersSettingScreen({navigation, route}) {
       });
     } else if (opetions === 'Who Can Invite Member') {
       navigation.navigate('WhoCanInviteMemberScreen', {
-        whoCanJoinGroup,
+        whoCanInviteGroup,
         comeFrom: 'GroupMembersSettingScreen',
         sportName: authContext.entity?.obj?.sport,
         sportType: authContext.entity?.obj?.sport_type,
@@ -94,25 +118,53 @@ export default function GroupMembersSettingScreen({navigation, route}) {
     route?.params?.entity?.obj,
   ]);
 
-  const getSettingValue = (item) => {
-    console.log('item.key', whoCanJoinGroup);
-    if (item === 'Recruiting Player') {
-      if (hiringPlayersObject?.hiringPlayers) {
-        return hiringPlayersObject?.hiringPlayers;
+  const getSettingValue = useCallback(
+    (item) => {
+      console.log('item.key', item);
+      if (item === 'Recruiting Player') {
+        if (hiringPlayersObject?.hiringPlayers) {
+          return hiringPlayersObject?.hiringPlayers;
+        }
+        return 'No';
       }
-      return 'No';
-    }
-    if (item === 'Who Can Join Team') {
-      if (whoCanJoinGroup) {
-        return (
-          (whoCanJoinGroup === 0 && strings.everyoneRadio) ||
-          (whoCanJoinGroup === 1 && 'Team Admin') ||
-          (whoCanJoinGroup === 2 && strings.inviteOnly)
-        );
+      if (item === userSetting[0].key) {
+        if (whoCanJoinGroup === 0) {
+          return strings.everyoneRadio;
+        }
+        if (whoCanJoinGroup === 1) {
+          return `${
+            authContext.entity.role === 'team' ? 'Team Admin' : 'Club'
+          }`;
+        }
+        if (whoCanJoinGroup === 2) {
+          return strings.inviteOnly;
+        }
       }
-      return '';
-    }
-  };
+      if (item === userSetting[1].key) {
+        console.log('whoCanInviteGroup === 0', whoCanInviteGroup === 0);
+
+        if (whoCanInviteGroup === 0) {
+          return `${
+            authContext.entity.role === 'team'
+              ? 'Team & members'
+              : 'Club & members'
+          }`;
+        }
+        if (whoCanInviteGroup === 1) {
+          return `${
+            authContext.entity.role === 'team' ? 'Team only' : 'Club only'
+          }`;
+        }
+      }
+    },
+    [
+      authContext.entity.role,
+      hiringPlayersObject?.hiringPlayers,
+      userSetting,
+      whoCanInviteGroup,
+      whoCanJoinGroup,
+    ],
+  );
   const renderMenu = ({item}) => (
     <TouchableWithoutFeedback
       style={styles.listContainer}
@@ -129,7 +181,12 @@ export default function GroupMembersSettingScreen({navigation, route}) {
             {getSettingValue(item.key)}
           </Text>
         )}
-        {item.key === 'Who Can Join Team' && (
+        {item.key === userSetting[0].key && (
+          <Text style={styles.currencyTypeStyle}>
+            {getSettingValue(item.key)}
+          </Text>
+        )}
+        {item.key === userSetting[1].key && (
           <Text style={styles.currencyTypeStyle}>
             {getSettingValue(item.key)}
           </Text>
