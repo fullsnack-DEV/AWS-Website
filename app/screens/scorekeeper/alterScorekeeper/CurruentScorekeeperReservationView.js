@@ -9,6 +9,8 @@ import _ from 'lodash';
 
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
+import strings from '../../../Constants/String';
+
 import AuthContext from '../../../auth/context';
 import TCKeyboardView from '../../../components/TCKeyboardView';
 import TCThickDivider from '../../../components/TCThickDivider';
@@ -247,8 +249,7 @@ export default function CurruentScorekeeperReservationView({
               flexDirection: 'row',
               justifyContent: 'space-between',
               margin: 15,
-            }}
-          >
+            }}>
             <View style={styles.challengerView}>
               <View style={styles.teamView}>
                 <Image source={images.reqIcon} style={styles.reqOutImage} />
@@ -307,8 +308,7 @@ export default function CurruentScorekeeperReservationView({
                     fontSize: 16,
                     color: colors.lightBlackColor,
                     width: '80%',
-                  }}
-                >
+                  }}>
                   {`${bodyParams?.scorekeeper?.first_name} ${bodyParams?.scorekeeper?.last_name}`}
                 </Text>
               </View>
@@ -326,25 +326,34 @@ export default function CurruentScorekeeperReservationView({
 
           {bodyParams && (
             <View>
-              <TCLabel title="Game" />
+              <TCLabel
+                title={strings.match.toUpperCase()}
+                style={{marginLeft: 15, marginBottom: 15, marginTop: 25}}
+              />
               {bodyParams?.game && (
-                <TCGameCard
-                  data={bodyParams?.game}
-                  onPress={() => {
-                    const routeName = getGameHomeScreen(
-                      bodyParams?.game?.sport,
-                    );
-                    navigation.push(routeName, {
-                      gameId: bodyParams?.game?.game_id,
-                    });
-                  }}
-                  cardWidth={'96%'}
-                />
+                <View
+                  style={{
+                    marginBottom: 10,
+                  }}>
+                  <TCGameCard
+                    data={bodyParams?.game}
+                    onPress={() => {
+                      const routeName = getGameHomeScreen(
+                        bodyParams?.game?.sport,
+                      );
+                      navigation.push(routeName, {
+                        gameId: bodyParams?.game?.game_id,
+                      });
+                    }}
+                    cardWidth={'92%'}
+                  />
+                </View>
               )}
+              <Seperator />
               {/* Date & Time */}
               {bodyParams?.game && (
                 <View>
-                  <View style={styles.contentContainer}>
+                  {/* <View style={styles.contentContainer}>
                     <Title text={'Date & Time'} />
                     <TCInfoField
                       title={'Date'}
@@ -376,25 +385,88 @@ export default function CurruentScorekeeperReservationView({
                       }}
                     />
                     <Seperator height={2} />
+                  </View> */}
+                  <View style={styles.contentContainer}>
+                    <Title text={strings.dateAndTime.toUpperCase()} />
+                    <View
+                      style={{
+                        marginTop: 20,
+                        marginLeft: 0,
+                        marginRight: 15,
+                      }}>
+                      <View style={styles.dateTimeValue}>
+                        <Text style={styles.dateTimeText}>
+                          {strings.start.toUpperCase()}{' '}
+                        </Text>
+                        <Text style={styles.dateTimeText}>
+                          {bodyParams?.start_datetime &&
+                            moment(bodyParams?.start_datetime * 1000).format(
+                              'MMM DD, YYYY\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0hh:mm a',
+                            )}
+                        </Text>
+                      </View>
+                      <View style={styles.dateTimeValue}>
+                        <Text style={styles.dateTimeText}>
+                          {strings.end.toUpperCase()}{' '}
+                        </Text>
+                        <Text style={styles.dateTimeText}>
+                          {bodyParams?.end_datetime &&
+                            moment(bodyParams?.end_datetime * 1000).format(
+                              'MMM DD, YYYY\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0hh:mm a',
+                            )}
+                        </Text>
+                      </View>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'flex-end',
+                        }}>
+                        {/* <Text style={styles.dateTimeText}> </Text> */}
+                        <Text style={styles.timeZoneText}>
+                          {strings.timezone}{' '}
+                          <Text style={{fontFamily: fonts.RRegular}}>
+                            Vancouver
+                          </Text>
+                        </Text>
+                      </View>
+                    </View>
                   </View>
+                  <Seperator />
 
                   {/* Venue */}
                   <View style={styles.contentContainer}>
-                    <Title text={'Venue'} />
+                    <Title text={strings.venue.toUpperCase()} />
                     <TCInfoField
-                      title={'Venue'}
+                      title={strings.venue.toUpperCase()}
                       value={bodyParams?.game?.venue?.name}
+                      marginTop={20}
+                      marginLeft={0}
+                      marginRight={0}
+                      marginBottom={15}
                       titleStyle={{
                         alignSelf: 'flex-start',
                         fontFamily: fonts.RRegular,
                       }}
+                      valueStyle={{
+                        flex: 0.72,
+                      }}
                     />
+                    <Seperator height={1} />
                     <TCInfoField
-                      title={'Address'}
+                      title={strings.address.toUpperCase()}
                       value={bodyParams?.game?.venue?.address}
+                      marginTop={0}
+                      marginBottom={15}
+                      marginLeft={0}
+                      marginRight={0}
                       titleStyle={{
-                        alignSelf: 'flex-start',
                         fontFamily: fonts.RRegular,
+                        color: colors.lightBlackColor,
+                        fontSize: 16,
+                      }}
+                      valueStyle={{
+                        flex: 0.72,
+                        marginTop: 15,
                       }}
                     />
                     <EventMapView
@@ -412,8 +484,10 @@ export default function CurruentScorekeeperReservationView({
                         latitudeDelta: 0.0922,
                         longitudeDelta: 0.0421,
                       }}
+                      style={{marginBottom: 10}}
                     />
                   </View>
+                  <Seperator />
                 </View>
               )}
             </View>
@@ -421,7 +495,13 @@ export default function CurruentScorekeeperReservationView({
 
           {bodyParams && (
             <View>
-              <TCChallengeTitle title={'Game Rules'} />
+              <TCChallengeTitle
+                title={strings.matchrules.toUpperCase()}
+                titleStyle={{
+                  ...styles.titleText,
+                  marginTop: 10,
+                }}
+              />
               <Text style={styles.rulesTitle}>General Rules</Text>
               <Text style={styles.rulesDetail}>
                 {bodyParams?.game?.general_rules}
@@ -438,23 +518,28 @@ export default function CurruentScorekeeperReservationView({
           <TCLabel
             title={
               checkSenderOrReceiver(bodyParams) === 'sender'
-                ? 'Payment'
-                : 'Earning'
+                ? strings.payment.toUpperCase()
+                : strings.earning.toUpperCase()
             }
           />
-
-          <MatchFeesCard
-            challengeObj={{
-              ...bodyParams,
-              start_datetime: bodyParams.start_datetime * 1000,
-              end_datetime: bodyParams.end_datetime * 1000,
-            }}
-            senderOrReceiver={
-              checkSenderOrReceiver(bodyParams) === 'sender'
-                ? 'sender'
-                : 'receiver'
-            }
-          />
+          <View
+            style={{
+              marginTop: 20,
+              marginBottom: 25,
+            }}>
+            <MatchFeesCard
+              challengeObj={{
+                ...bodyParams,
+                start_datetime: bodyParams.start_datetime * 1000,
+                end_datetime: bodyParams.end_datetime * 1000,
+              }}
+              senderOrReceiver={
+                checkSenderOrReceiver(bodyParams) === 'sender'
+                  ? 'sender'
+                  : 'receiver'
+              }
+            />
+          </View>
         </View>
       )}
     </TCKeyboardView>
@@ -501,11 +586,12 @@ const styles = StyleSheet.create({
 
   contentContainer: {
     padding: 15,
+    paddingTop: 25,
   },
   titleText: {
     color: colors.lightBlackColor,
-    fontSize: 20,
-    fontFamily: fonts.RRegular,
+    fontSize: 16,
+    fontFamily: fonts.RBold,
   },
 
   profileImage: {
@@ -541,5 +627,25 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     marginLeft: 15,
     marginRight: 15,
+  },
+  dateTimeValue: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+
+    marginLeft: 0,
+    marginTop: 0,
+  },
+  dateTimeText: {
+    fontFamily: fonts.RRegular,
+    fontSize: 16,
+    color: colors.lightBlackColor,
+    marginBottom: 15,
+  },
+  timeZoneText: {
+    fontFamily: fonts.RLight,
+    fontSize: 14,
+    color: colors.lightBlackColor,
+    marginBottom: 10,
+    backgroundColor: colors.redcolor,
   },
 });

@@ -8,6 +8,7 @@ import _ from 'lodash';
 
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
+import strings from '../../../Constants/String';
 import AuthContext from '../../../auth/context';
 import TCKeyboardView from '../../../components/TCKeyboardView';
 import TCThickDivider from '../../../components/TCThickDivider';
@@ -245,8 +246,7 @@ export default function CurruentRefereeReservationView({
               flexDirection: 'row',
               justifyContent: 'space-between',
               margin: 15,
-            }}
-          >
+            }}>
             <View style={styles.challengerView}>
               <View style={styles.teamView}>
                 <Image source={images.reqIcon} style={styles.reqOutImage} />
@@ -305,8 +305,7 @@ export default function CurruentRefereeReservationView({
                     fontSize: 16,
                     color: colors.lightBlackColor,
                     width: '80%',
-                  }}
-                >
+                  }}>
                   {`${bodyParams?.referee?.first_name} ${bodyParams?.referee?.last_name}`}
                 </Text>
               </View>
@@ -323,8 +322,7 @@ export default function CurruentRefereeReservationView({
                     style={[
                       styles.challengeMessage,
                       {color: colors.googleColor},
-                    ]}
-                  >
+                    ]}>
                     EXPIRED
                   </Text>
                 ) : (
@@ -332,8 +330,7 @@ export default function CurruentRefereeReservationView({
                     style={[
                       styles.challengeMessage,
                       {color: colors.requestSentColor},
-                    ]}
-                  >
+                    ]}>
                     SENT
                   </Text>
                 )}
@@ -364,8 +361,7 @@ export default function CurruentRefereeReservationView({
                     style={[
                       styles.challengeMessage,
                       {color: colors.googleColor},
-                    ]}
-                  >
+                    ]}>
                     EXPIRED
                   </Text>
                 ) : (
@@ -373,8 +369,7 @@ export default function CurruentRefereeReservationView({
                     style={[
                       styles.challengeMessage,
                       {color: colors.requestSentColor},
-                    ]}
-                  >
+                    ]}>
                     PENDING
                   </Text>
                 )}
@@ -447,8 +442,7 @@ export default function CurruentRefereeReservationView({
                   style={[
                     styles.challengeMessage,
                     {color: colors.requestConfirmColor},
-                  ]}
-                >
+                  ]}>
                   CONFIRMED
                 </Text>
                 <Text style={styles.challengeText}>
@@ -472,8 +466,7 @@ export default function CurruentRefereeReservationView({
                   style={[
                     styles.challengeMessage,
                     {color: colors.requestConfirmColor},
-                  ]}
-                >
+                  ]}>
                   CONFIRMED
                 </Text>
                 <Text style={styles.challengeText}>
@@ -490,8 +483,10 @@ export default function CurruentRefereeReservationView({
             bodyParams.status === RefereeReservationStatus.declined && (
               <View>
                 <Text
-                  style={[styles.challengeMessage, {color: colors.googleColor}]}
-                >
+                  style={[
+                    styles.challengeMessage,
+                    {color: colors.googleColor},
+                  ]}>
                   DECLINED
                 </Text>
                 <Text style={styles.challengeText}>
@@ -509,8 +504,10 @@ export default function CurruentRefereeReservationView({
             bodyParams.status === RefereeReservationStatus.declined && (
               <View>
                 <Text
-                  style={[styles.challengeMessage, {color: colors.googleColor}]}
-                >
+                  style={[
+                    styles.challengeMessage,
+                    {color: colors.googleColor},
+                  ]}>
                   DECLINED
                 </Text>
                 <Text style={styles.challengeText}>
@@ -531,8 +528,10 @@ export default function CurruentRefereeReservationView({
             bodyParams.status === RefereeReservationStatus.cancelled && (
               <View>
                 <Text
-                  style={[styles.challengeMessage, {color: colors.googleColor}]}
-                >
+                  style={[
+                    styles.challengeMessage,
+                    {color: colors.googleColor},
+                  ]}>
                   RESERVATION CANCELLED
                 </Text>
                 <Text style={styles.challengeText}>
@@ -550,8 +549,10 @@ export default function CurruentRefereeReservationView({
             bodyParams.status === RefereeReservationStatus.cancelled && (
               <View>
                 <Text
-                  style={[styles.challengeMessage, {color: colors.googleColor}]}
-                >
+                  style={[
+                    styles.challengeMessage,
+                    {color: colors.googleColor},
+                  ]}>
                   RESERVATION CANCELLED
                 </Text>
                 <Text style={styles.challengeText}>
@@ -569,8 +570,11 @@ export default function CurruentRefereeReservationView({
           <TCThickDivider marginTop={15} />
 
           {bodyParams && (
-            <View>
-              <TCLabel title="Game" />
+            <View style={{marginBottom: 10}}>
+              <TCLabel
+                title={strings.match.toUpperCase()}
+                style={{marginLeft: 15, marginBottom: 15, marginTop: 25}}
+              />
               {bodyParams?.game && (
                 <TCGameCard
                   data={bodyParams?.game}
@@ -582,63 +586,94 @@ export default function CurruentRefereeReservationView({
                       gameId: bodyParams?.game?.game_id,
                     });
                   }}
-                  cardWidth={'96%'}
+                  cardWidth={'92%'}
                 />
               )}
+              <TCThickDivider marginTop={10} />
               {/* Date & Time */}
               {bodyParams?.game && (
                 <View>
                   <View style={styles.contentContainer}>
-                    <Title text={'Date & Time'} />
-                    <TCInfoField
-                      title={'Date'}
-                      value={
-                        bodyParams?.start_datetime &&
-                        moment(bodyParams?.start_datetime * 1000).format(
-                          'MMM DD, YYYY',
-                        )
-                      }
-                      titleStyle={{
-                        alignSelf: 'flex-start',
-                        fontFamily: fonts.RRegular,
-                      }}
-                    />
-                    <Seperator height={2} />
-                    <TCInfoField
-                      title={'Time'}
-                      value={
-                        bodyParams?.start_datetime && bodyParams?.end_datetime
-                          ? getDateDuration(
-                              bodyParams?.start_datetime,
-                              bodyParams?.end_datetime,
-                            )
-                          : ''
-                      }
-                      titleStyle={{
-                        alignSelf: 'flex-start',
-                        fontFamily: fonts.RRegular,
-                      }}
-                    />
-                    <Seperator height={2} />
+                    <Title text={strings.dateAndTime.toUpperCase()} />
+                    <View
+                      style={{
+                        marginTop: 20,
+                        marginLeft: 0,
+                        marginRight: 15,
+                      }}>
+                      <View style={styles.dateTimeValue}>
+                        <Text style={styles.dateTimeText}>
+                          {strings.start.toUpperCase()}{' '}
+                        </Text>
+                        <Text style={styles.dateTimeText}>
+                          {bodyParams?.start_datetime &&
+                            moment(bodyParams?.start_datetime * 1000).format(
+                              'MMM DD, YYYY\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0hh:mm a',
+                            )}
+                        </Text>
+                      </View>
+                      <View style={styles.dateTimeValue}>
+                        <Text style={styles.dateTimeText}>
+                          {strings.end.toUpperCase()}{' '}
+                        </Text>
+                        <Text style={styles.dateTimeText}>
+                          {bodyParams?.end_datetime &&
+                            moment(bodyParams?.end_datetime * 1000).format(
+                              'MMM DD, YYYY\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0hh:mm a',
+                            )}
+                        </Text>
+                      </View>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'flex-end',
+                        }}>
+                        {/* <Text style={styles.dateTimeText}> </Text> */}
+                        <Text style={styles.timeZoneText}>
+                          {strings.timezone}{' '}
+                          <Text style={{fontFamily: fonts.RRegular}}>
+                            Vancouver
+                          </Text>
+                        </Text>
+                      </View>
+                    </View>
                   </View>
+                  <Seperator />
 
                   {/* Venue */}
                   <View style={styles.contentContainer}>
-                    <Title text={'Venue'} />
+                    <Title text={strings.venue.toUpperCase()} />
                     <TCInfoField
-                      title={'Venue'}
+                      title={strings.venue.toUpperCase()}
                       value={bodyParams?.game?.venue?.name}
+                      marginTop={20}
+                      marginLeft={0}
+                      marginRight={0}
+                      marginBottom={15}
                       titleStyle={{
                         alignSelf: 'flex-start',
                         fontFamily: fonts.RRegular,
                       }}
+                      valueStyle={{
+                        flex: 0.72,
+                      }}
                     />
+                    <Seperator height={1} />
                     <TCInfoField
-                      title={'Address'}
+                      title={strings.address.toUpperCase()}
                       value={bodyParams?.game?.venue?.address}
+                      marginTop={0}
+                      marginBottom={15}
+                      marginLeft={0}
+                      marginRight={0}
                       titleStyle={{
-                        alignSelf: 'flex-start',
                         fontFamily: fonts.RRegular,
+                        color: colors.lightBlackColor,
+                        fontSize: 16,
+                      }}
+                      valueStyle={{
+                        flex: 0.72,
+                        marginTop: 15,
                       }}
                     />
                     <EventMapView
@@ -656,8 +691,10 @@ export default function CurruentRefereeReservationView({
                         latitudeDelta: 0.0922,
                         longitudeDelta: 0.0421,
                       }}
+                      style={{marginBottom: 10}}
                     />
                   </View>
+                  <Seperator />
                 </View>
               )}
             </View>
@@ -665,38 +702,42 @@ export default function CurruentRefereeReservationView({
 
           {bodyParams && (
             <View>
-              <TCChallengeTitle title={'Game Rules'} />
+              <TCChallengeTitle
+                title={strings.matchrules.toUpperCase()}
+                titleStyle={{
+                  ...styles.titleText,
+                }}
+              />
               <Text style={styles.rulesTitle}>General Rules</Text>
               <Text style={styles.rulesDetail}>
                 {bodyParams?.game?.general_rules}
               </Text>
               <View style={{marginBottom: 10}} />
               <Text style={styles.rulesTitle}>Special Rules</Text>
-              <Text style={[styles.rulesDetail, {marginBottom: 10}]}>
+              <Text style={[styles.rulesDetail, {marginBottom: 0}]}>
                 {bodyParams?.game?.special_rules}
               </Text>
             </View>
           )}
-          <TCThickDivider marginTop={20} />
+          <TCThickDivider marginTop={25} />
 
           {/* Chief or assistant */}
           <View style={styles.contentContainer}>
-            <Title text={'Chief or assistant'} />
+            <Title text={strings.chieforassistant.toUpperCase()} />
             <View
               style={{
-                margin: 7,
+                marginTop: 15,
+                marginBottom: 10,
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-              }}
-            >
+              }}>
               <Text
                 style={{
                   fontFamily: fonts.RRegular,
                   fontSize: 16,
                   color: colors.lightBlackColor,
-                }}
-              >
+                }}>
                 {_.startCase(bodyParams?.chief_referee ? 'Chief' : 'Assistant')}{' '}
                 Referee
               </Text>
@@ -706,9 +747,13 @@ export default function CurruentRefereeReservationView({
           <TCLabel
             title={
               checkSenderOrReceiver(bodyParams) === 'sender'
-                ? 'Payment'
-                : 'Earning'
+                ? strings.payment.toUpperCase()
+                : strings.earning.toUpperCase()
             }
+            style={{
+              marginTop: 25,
+              marginBottom: 20,
+            }}
           />
 
           <MatchFeesCard
@@ -768,10 +813,10 @@ const styles = StyleSheet.create({
   },
   challengeMessage: {
     fontFamily: fonts.RBold,
-    fontSize: 18,
+    fontSize: 16,
     color: colors.themeColor,
     margin: 15,
-    marginBottom: 5,
+    marginBottom: 10,
   },
   challengeText: {
     fontFamily: fonts.RRegular,
@@ -779,7 +824,7 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     marginLeft: 15,
     marginRight: 15,
-    marginBottom: 15,
+    marginBottom: 10,
   },
   // challengeText: {
   //   fontFamily: fonts.RMedium,
@@ -805,11 +850,12 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     padding: 15,
+    paddingTop: 25,
   },
   titleText: {
     color: colors.lightBlackColor,
-    fontSize: 20,
-    fontFamily: fonts.RRegular,
+    fontSize: 16,
+    fontFamily: fonts.RBold,
   },
 
   profileImage: {
@@ -845,5 +891,24 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     marginLeft: 15,
     marginRight: 15,
+  },
+  dateTimeValue: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+
+    marginLeft: 0,
+    marginTop: 0,
+  },
+  dateTimeText: {
+    fontFamily: fonts.RRegular,
+    fontSize: 16,
+    color: colors.lightBlackColor,
+    marginBottom: 15,
+  },
+  timeZoneText: {
+    fontFamily: fonts.RLight,
+    fontSize: 14,
+    color: colors.lightBlackColor,
+    marginBottom: 10,
   },
 });

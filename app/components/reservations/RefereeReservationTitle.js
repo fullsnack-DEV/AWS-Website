@@ -107,7 +107,7 @@ export default function RefereeReservationTitle({
           // For team A
         } else {
           // For Referee
-          statusObject.title = 'Pending';
+          statusObject.title = 'PENDING';
           statusObject.color = colors.themeColor;
           statusObject.desc = `You received referee request sent by ${getTeamB()}.`;
         }
@@ -200,7 +200,7 @@ export default function RefereeReservationTitle({
               statusObject.desc = `Referee declined referee request sent by ${getTeamB()}.`;
             }
           } else {
-            statusObject.title = 'You-declined';
+            statusObject.title = 'YOU -DECLINED';
             statusObject.color = colors.googleColor;
             statusObject.desc = `You declined referee request sent by ${getTeamB()}.`;
           }
@@ -454,8 +454,7 @@ export default function RefereeReservationTitle({
   return (
     <View style={containerStyle}>
       <Text
-        style={[styles.challengeTitle, {color: getTitle()?.color, fontSize}]}
-      >
+        style={[styles.challengeTitle, {color: getTitle()?.color, fontSize}]}>
         {getTitle()?.title}
       </Text>
 
@@ -473,6 +472,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
     fontSize: 16,
+    marginTop: 10,
   },
   timeColor: {color: colors.themeColor},
 });

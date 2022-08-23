@@ -109,7 +109,7 @@ export default function ScorekeeperReservationTitle({
           // For team A
         } else {
           // For Scorekeeper
-          statusObject.title = 'Pending';
+          statusObject.title = 'PENDING';
           statusObject.color = colors.themeColor;
           statusObject.desc = `You received scorekeeper request sent by ${getTeamB()}.`;
         }
@@ -250,13 +250,13 @@ export default function ScorekeeperReservationTitle({
         ) {
           statusObject.title = reservationObject.automatic_request
             ? 'Confirmed - Rescheduled'
-            : 'Confirmed';
+            : 'CONFIRMED';
           statusObject.color = colors.requestConfirmColor;
           statusObject.desc = `You have a confirmed scorekeeper reservation sent by ${getScorekeeper()}.`;
         } else {
           statusObject.title = reservationObject.automatic_request
             ? 'Confirmed - Rescheduled'
-            : 'Confirmed';
+            : 'CONFIRMED';
           statusObject.color = colors.requestConfirmColor;
           statusObject.desc = `${getScorekeeper()} confirmed scorekeeper reservation sent by you.`;
         }
@@ -266,13 +266,13 @@ export default function ScorekeeperReservationTitle({
         ) {
           statusObject.title = reservationObject.automatic_request
             ? 'Confirmed - Rescheduled'
-            : 'Confirmed';
+            : 'CONFIRMED';
           statusObject.color = colors.requestConfirmColor;
           statusObject.desc = `${getTeamB()} confirmed scorekeeper reservation sent by you.`;
         } else {
           statusObject.title = reservationObject.automatic_request
             ? 'Confirmed - Rescheduled'
-            : 'Confirmed';
+            : 'CONFIRMED';
           statusObject.color = colors.requestConfirmColor;
           statusObject.desc = `You confirmed scorekeeper reservation sent by ${getTeamB()}.`;
         }
@@ -491,8 +491,7 @@ export default function ScorekeeperReservationTitle({
   return (
     <View style={containerStyle}>
       <Text
-        style={[styles.challengeTitle, {color: getTitle()?.color, fontSize}]}
-      >
+        style={[styles.challengeTitle, {color: getTitle()?.color, fontSize}]}>
         {getTitle()?.title}
       </Text>
 
@@ -510,6 +509,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
     fontSize: 16,
+    marginTop: 10,
   },
   timeColor: {color: colors.themeColor},
 });

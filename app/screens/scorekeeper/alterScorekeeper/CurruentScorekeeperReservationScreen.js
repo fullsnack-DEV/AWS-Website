@@ -246,8 +246,7 @@ export default function CurruentScorekeeperReservationScreen({
               flexDirection: 'row',
               justifyContent: 'space-between',
               margin: 15,
-            }}
-          >
+            }}>
             <View style={styles.challengerView}>
               <View style={styles.teamView}>
                 <Image source={images.requestOut} style={styles.reqOutImage} />
@@ -293,8 +292,7 @@ export default function CurruentScorekeeperReservationScreen({
                     fontFamily: fonts.RMedium,
                     fontSize: 16,
                     color: colors.lightBlackColor,
-                  }}
-                >
+                  }}>
                   {`${bodyParams?.scorekeeper?.first_name} ${bodyParams?.scorekeeper?.last_name}`}
                 </Text>
               </View>
@@ -311,8 +309,7 @@ export default function CurruentScorekeeperReservationScreen({
                     style={[
                       styles.challengeMessage,
                       {color: colors.googleColor},
-                    ]}
-                  >
+                    ]}>
                     EXPIRED
                   </Text>
                 ) : (
@@ -320,8 +317,7 @@ export default function CurruentScorekeeperReservationScreen({
                     style={[
                       styles.challengeMessage,
                       {color: colors.requestSentColor},
-                    ]}
-                  >
+                    ]}>
                     SENT
                   </Text>
                 )}
@@ -352,8 +348,7 @@ export default function CurruentScorekeeperReservationScreen({
                     style={[
                       styles.challengeMessage,
                       {color: colors.googleColor},
-                    ]}
-                  >
+                    ]}>
                     EXPIRED
                   </Text>
                 ) : (
@@ -361,8 +356,7 @@ export default function CurruentScorekeeperReservationScreen({
                     style={[
                       styles.challengeMessage,
                       {color: colors.requestSentColor},
-                    ]}
-                  >
+                    ]}>
                     PENDING
                   </Text>
                 )}
@@ -437,8 +431,7 @@ export default function CurruentScorekeeperReservationScreen({
                   style={[
                     styles.challengeMessage,
                     {color: colors.requestConfirmColor},
-                  ]}
-                >
+                  ]}>
                   CONFIRMED
                 </Text>
                 <Text style={styles.challengeText}>
@@ -462,8 +455,7 @@ export default function CurruentScorekeeperReservationScreen({
                   style={[
                     styles.challengeMessage,
                     {color: colors.requestConfirmColor},
-                  ]}
-                >
+                  ]}>
                   CONFIRMED
                 </Text>
                 <Text style={styles.challengeText}>
@@ -479,8 +471,10 @@ export default function CurruentScorekeeperReservationScreen({
             bodyParams.status === ScorekeeperReservationStatus.declined && (
               <View>
                 <Text
-                  style={[styles.challengeMessage, {color: colors.googleColor}]}
-                >
+                  style={[
+                    styles.challengeMessage,
+                    {color: colors.googleColor},
+                  ]}>
                   DECLINED
                 </Text>
                 <Text style={styles.challengeText}>
@@ -498,8 +492,10 @@ export default function CurruentScorekeeperReservationScreen({
             bodyParams.status === ScorekeeperReservationStatus.declined && (
               <View>
                 <Text
-                  style={[styles.challengeMessage, {color: colors.googleColor}]}
-                >
+                  style={[
+                    styles.challengeMessage,
+                    {color: colors.googleColor},
+                  ]}>
                   DECLINED
                 </Text>
                 <Text style={styles.challengeText}>
@@ -520,8 +516,10 @@ export default function CurruentScorekeeperReservationScreen({
             bodyParams.status === ScorekeeperReservationStatus.cancelled && (
               <View>
                 <Text
-                  style={[styles.challengeMessage, {color: colors.googleColor}]}
-                >
+                  style={[
+                    styles.challengeMessage,
+                    {color: colors.googleColor},
+                  ]}>
                   RESERVATION CANCELLED
                 </Text>
                 <Text style={styles.challengeText}>
@@ -539,8 +537,10 @@ export default function CurruentScorekeeperReservationScreen({
             bodyParams.status === ScorekeeperReservationStatus.cancelled && (
               <View>
                 <Text
-                  style={[styles.challengeMessage, {color: colors.googleColor}]}
-                >
+                  style={[
+                    styles.challengeMessage,
+                    {color: colors.googleColor},
+                  ]}>
                   RESERVATION CANCELLED
                 </Text>
                 <Text style={styles.challengeText}>

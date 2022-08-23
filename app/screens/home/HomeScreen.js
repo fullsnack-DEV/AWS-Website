@@ -311,7 +311,7 @@ const HomeScreen = ({navigation, route}) => {
   useEffect(() => {
     setTimeout(() => {
       SetHideScore(true);
-    }, 5000);
+    }, 100000);
   }, []);
 
   useEffect(() => {
@@ -3271,7 +3271,6 @@ const HomeScreen = ({navigation, route}) => {
           margin: 15,
           marginTop: 0,
           marginBottom: 0,
-          // backgroundColor: colors.redColor,
         }}>
         {challengeButton()}
         {isUserHome ? (
@@ -3288,7 +3287,7 @@ const HomeScreen = ({navigation, route}) => {
               style={{
                 flexDirection: 'row',
                 marginTop: 15,
-                marginBottom: 15,
+                marginBottom: 20,
               }}>
               <TCProfileButton
                 title={'Gallery'}

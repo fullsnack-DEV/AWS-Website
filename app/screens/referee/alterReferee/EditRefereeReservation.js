@@ -628,8 +628,7 @@ export default function EditRefereeReservation({navigation, route}) {
               flexDirection: 'row',
               justifyContent: 'space-between',
               margin: 15,
-            }}
-          >
+            }}>
             <View style={styles.challengerView}>
               <View style={styles.teamView}>
                 <Image source={images.reqIcon} style={styles.reqOutImage} />
@@ -687,8 +686,7 @@ export default function EditRefereeReservation({navigation, route}) {
                     fontFamily: fonts.RMedium,
                     fontSize: 16,
                     color: colors.lightBlackColor,
-                  }}
-                >
+                  }}>
                   {`${bodyParams?.referee?.first_name} ${bodyParams?.referee?.last_name}`}
                 </Text>
               </View>
@@ -703,9 +701,9 @@ export default function EditRefereeReservation({navigation, route}) {
 
               <View style={styles.editableView}>
                 <TCLabel
-                  title={'Game'}
+                  title={strings.match.toUpperCase()}
                   isNew={editMatch}
-                  style={{marginLeft: 0, marginTop: 0}}
+                  style={{marginLeft: 0, marginTop: 10}}
                 />
 
                 {/* {bodyParams?.referee?.user_id !== entity.uid && (
@@ -734,74 +732,109 @@ export default function EditRefereeReservation({navigation, route}) {
               </View>
 
               {bodyParams?.game && (
-                <TCGameCard
-                  data={bodyParams?.game}
-                  onPress={() => {
-                    const routeName = getGameHomeScreen(
-                      bodyParams?.game?.sport,
-                    );
-                    navigation.push(routeName, {
-                      gameId: bodyParams?.game?.game_id,
-                    });
-                  }}
-                  cardWidth={'90%'}
-                />
+                <View
+                  style={{
+                    marginBottom: 10,
+                  }}>
+                  <TCGameCard
+                    data={bodyParams?.game}
+                    onPress={() => {
+                      const routeName = getGameHomeScreen(
+                        bodyParams?.game?.sport,
+                      );
+                      navigation.push(routeName, {
+                        gameId: bodyParams?.game?.game_id,
+                      });
+                    }}
+                    cardWidth={'92%'}
+                  />
+                </View>
               )}
+              <Seperator />
               {/* Date & Time */}
               {bodyParams?.game && (
                 <View>
                   <View style={styles.contentContainer}>
-                    <Title text={'Date & Time'} />
-                    <TCInfoField
-                      title={'Date'}
-                      value={
-                        bodyParams?.timestamp &&
-                        moment(bodyParams?.game?.start_datetime * 1000).format(
-                          'MMM DD, YYYY',
-                        )
-                      }
-                      titleStyle={{
-                        alignSelf: 'flex-start',
-                        fontFamily: fonts.RRegular,
-                      }}
-                    />
-                    <Seperator height={2} />
-                    <TCInfoField
-                      title={'Time'}
-                      value={
-                        bodyParams?.game?.start_datetime &&
-                        bodyParams?.game?.end_datetime
-                          ? getDateDuration(
-                              bodyParams?.game?.start_datetime,
-                              bodyParams?.game?.end_datetime,
-                            )
-                          : ''
-                      }
-                      titleStyle={{
-                        alignSelf: 'flex-start',
-                        fontFamily: fonts.RRegular,
-                      }}
-                    />
-                    <Seperator height={2} />
+                    <Title text={strings.dateAndTime.toUpperCase()} />
+                    <View
+                      style={{
+                        marginTop: 20,
+                        marginLeft: 0,
+                        marginRight: 15,
+                      }}>
+                      <View style={styles.dateTimeValue}>
+                        <Text style={styles.dateTimeText}>
+                          {strings.start.toUpperCase()}{' '}
+                        </Text>
+                        <Text style={styles.dateTimeText}>
+                          {bodyParams?.start_datetime &&
+                            moment(bodyParams?.start_datetime * 1000).format(
+                              'MMM DD, YYYY\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0hh:mm a',
+                            )}
+                        </Text>
+                      </View>
+                      <View style={styles.dateTimeValue}>
+                        <Text style={styles.dateTimeText}>
+                          {strings.end.toUpperCase()}{' '}
+                        </Text>
+                        <Text style={styles.dateTimeText}>
+                          {bodyParams?.end_datetime &&
+                            moment(bodyParams?.end_datetime * 1000).format(
+                              'MMM DD, YYYY\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0hh:mm a',
+                            )}
+                        </Text>
+                      </View>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'flex-end',
+                        }}>
+                        {/* <Text style={styles.dateTimeText}> </Text> */}
+                        <Text style={styles.timeZoneText}>
+                          {strings.timezone}{' '}
+                          <Text style={{fontFamily: fonts.RRegular}}>
+                            Vancouver
+                          </Text>
+                        </Text>
+                      </View>
+                    </View>
                   </View>
+                  <Seperator />
 
                   {/* Venue */}
                   <View style={styles.contentContainer}>
-                    <Title text={'Venue'} />
+                    <Title text={strings.venue.toUpperCase()} />
                     <TCInfoField
-                      title={'Venue'}
+                      title={strings.venue.toUpperCase()}
                       value={bodyParams?.game?.venue?.name}
+                      marginTop={20}
+                      marginLeft={0}
+                      marginRight={0}
+                      marginBottom={15}
                       titleStyle={{
                         alignSelf: 'flex-start',
                         fontFamily: fonts.RRegular,
                       }}
+                      valueStyle={{
+                        flex: 0.72,
+                      }}
                     />
+                    <Seperator height={1} />
                     <TCInfoField
-                      title={'Address'}
+                      title={strings.address.toUpperCase()}
                       value={bodyParams?.game?.venue?.address}
+                      marginTop={0}
+                      marginBottom={15}
+                      marginLeft={0}
+                      marginRight={0}
                       titleStyle={{
-                        alignSelf: 'flex-start',
                         fontFamily: fonts.RRegular,
+                        color: colors.lightBlackColor,
+                        fontSize: 16,
+                      }}
+                      valueStyle={{
+                        flex: 0.72,
+                        marginTop: 15,
                       }}
                     />
                     <EventMapView
@@ -819,13 +852,18 @@ export default function EditRefereeReservation({navigation, route}) {
                         latitudeDelta: 0.0922,
                         longitudeDelta: 0.0421,
                       }}
+                      style={{marginBottom: 10}}
                     />
                   </View>
+                  <Seperator />
                 </View>
               )}
               <TCLabel
-                title={'Game Rules'}
-                style={{marginTop: 0, marginBottom: 10}}
+                title={strings.matchrules.toUpperCase()}
+                style={{
+                  ...styles.titleText,
+                  marginTop: 25,
+                }}
               />
               <Text style={styles.rulesTitle}>General Rules</Text>
               <Text style={styles.rulesDetail}>
@@ -853,29 +891,37 @@ export default function EditRefereeReservation({navigation, route}) {
 
           <View style={styles.editableView}>
             <TCLabel
-              title={'Chief or assistant'}
+              title={strings.chieforassistant.toUpperCase()}
               isNew={refereeUpdate}
-              style={{marginTop: 0, marginLeft: 0, padding: 0}}
+              style={{
+                marginTop: 10,
+                marginLeft: 0,
+                padding: 0,
+              }}
             />
           </View>
-          <View style={styles.contentContainer}>
+          <View
+            style={{
+              marginTop: 5,
+              marginBottom: 10,
+              marginLeft: 15,
+              marginRight: 15,
+            }}>
             {['chief', 'assistant'].map((item, index) => (
               <View
                 key={index}
                 style={{
-                  margin: 7,
+                  marginBottom: 15,
                   flexDirection: 'row',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                }}
-              >
+                }}>
                 <Text
                   style={{
                     fontFamily: fonts.RRegular,
                     fontSize: 16,
                     color: colors.lightBlackColor,
-                  }}
-                >
+                  }}>
                   {_.startCase(item)} Referee
                 </Text>
                 <TouchableOpacity
@@ -898,8 +944,7 @@ export default function EditRefereeReservation({navigation, route}) {
                       item !==
                         (oldVersion?.chief_referee ? 'chief' : 'assistant'),
                     );
-                  }}
-                >
+                  }}>
                   {item === chiefOrAssistant && (
                     <LinearGradient
                       colors={[colors.orangeColor, colors.yellowColor]}
@@ -909,8 +954,7 @@ export default function EditRefereeReservation({navigation, route}) {
                         height: 13,
                         width: 13,
                         borderRadius: 50,
-                      }}
-                    ></LinearGradient>
+                      }}></LinearGradient>
                   )}
                 </TouchableOpacity>
               </View>
@@ -920,7 +964,12 @@ export default function EditRefereeReservation({navigation, route}) {
           <TCThickDivider />
           <View>
             <TCChallengeTitle
-              title={'Refund Policy'}
+              title={strings.refundpolicy.toUpperCase()}
+              titleStyle={{
+                ...styles.titleText,
+                marginTop: 10,
+                marginBottom: 10,
+              }}
               value={bodyParams?.refund_policy}
               tooltipText={
                 '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the match fee and service fee are not refunded.'
@@ -935,11 +984,11 @@ export default function EditRefereeReservation({navigation, route}) {
             <TCLabel
               title={
                 checkSenderForPayment(bodyParams) === 'sender'
-                  ? 'Payment'
-                  : 'Earning'
+                  ? strings.payment.toUpperCase()
+                  : strings.earning.toUpperCase()
               }
               isNew={editPayment}
-              style={{marginTop: 0, marginLeft: 0}}
+              style={{marginTop: 10, marginLeft: 0}}
             />
 
             {(!isPendingRequestPayment ||
@@ -953,15 +1002,14 @@ export default function EditRefereeReservation({navigation, route}) {
                     editableAlter: true,
                     body: bodyParams,
                   });
-                }}
-              >
+                }}>
                 <Text
                   style={{
                     color: colors.themeColor,
                     fontFamily: fonts.RMedium,
                     fontSize: 16,
-                  }}
-                >
+                    marginTop: 10,
+                  }}>
                   Edit
                 </Text>
               </TouchableOpacity>
@@ -972,10 +1020,21 @@ export default function EditRefereeReservation({navigation, route}) {
             challengeObj={paymentCard}
             senderOrReceiver={checkSenderForPayment(bodyParams)}
           />
-
+          <TCThickDivider marginTop={25} />
           {checkSenderForPayment(bodyParams) === 'sender' &&
             paymentCard?.total_game_fee > 0 && (
-              <View style={{marginTop: 10}}>
+              <View
+                style={{
+                  marginTop: 25,
+                }}>
+                <View
+                  style={{
+                    marginLeft: 15,
+                    marginRight: 15,
+                    marginBottom: 10,
+                  }}>
+                  <Title text={strings.paymentMethod.toUpperCase()} />
+                </View>
                 <TCTouchableLabel
                   title={
                     defaultCard && defaultCard?.card?.brand
@@ -1280,12 +1339,12 @@ const styles = StyleSheet.create({
 
   contentContainer: {
     padding: 15,
-    paddingTop: 0,
+    paddingTop: 25,
   },
   titleText: {
     color: colors.lightBlackColor,
-    fontSize: 20,
-    fontFamily: fonts.RRegular,
+    fontSize: 16,
+    fontFamily: fonts.RBold,
   },
 
   profileImage: {
@@ -1322,5 +1381,24 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     marginLeft: 15,
     marginRight: 15,
+  },
+  dateTimeValue: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+
+    marginLeft: 0,
+    marginTop: 0,
+  },
+  dateTimeText: {
+    fontFamily: fonts.RRegular,
+    fontSize: 16,
+    color: colors.lightBlackColor,
+    marginBottom: 15,
+  },
+  timeZoneText: {
+    fontFamily: fonts.RLight,
+    fontSize: 14,
+    color: colors.lightBlackColor,
+    marginBottom: 10,
   },
 });

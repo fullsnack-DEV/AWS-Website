@@ -12,21 +12,20 @@ export default function GameFeeCard({feeObject, currency, isChallenger}) {
       <View style={styles.feeContainer}>
         <View>
           <Text style={[styles.normalTextStyle, {marginLeft: 0}]}>
-            Match Fee
+            MATCH FEE
           </Text>
         </View>
         <View>
           <Text
-            style={[styles.normalTextStyle, {marginLeft: 0}]}
-          >{`$${parseFloat(feeObject?.total_game_fee).toFixed(
-            2,
-          )} ${currency}`}</Text>
+            style={[styles.normalTextStyle, {marginLeft: 0}]}>{`$${parseFloat(
+            feeObject?.total_game_fee,
+          ).toFixed(2)} ${currency}`}</Text>
         </View>
       </View>
       <View style={styles.feeContainer}>
         <View>
           <Text style={[styles.normalTextStyle, {marginLeft: 0}]}>
-            Service Fee
+            SERVICE FEE
           </Text>
         </View>
         <View>
@@ -46,7 +45,7 @@ export default function GameFeeCard({feeObject, currency, isChallenger}) {
         <View style={styles.feeContainer}>
           <View>
             <Text style={[styles.normalTextStyle, {marginLeft: 0}]}>
-              International Card Fee
+              INTERNATIONAL CARD FEE
             </Text>
           </View>
           <View>
@@ -63,7 +62,7 @@ export default function GameFeeCard({feeObject, currency, isChallenger}) {
       <View style={styles.feeContainer}>
         <View>
           <Text style={[styles.normalTextStyle, {marginLeft: 0}]}>
-            Total payment
+            TOTAL PAYMENT
           </Text>
         </View>
         <View>
@@ -95,7 +94,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   mainContainer: {
-    marginLeft: 15,
+    marginLeft: 0,
     marginRight: 15,
     marginBottom: 5,
   },
