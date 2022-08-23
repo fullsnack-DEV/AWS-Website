@@ -43,6 +43,8 @@ import RegisterScorekeeper from '../screens/account/registerScorekeeper/Register
 import RegisterScorekeeperForm2 from '../screens/account/registerScorekeeper/RegisterScorekeeperForm2';
 import RegisterScorekeeperSuccess from '../screens/account/registerScorekeeper/RegisterScorekeeperSuccess';
 
+import SearchLocationScreen from '../screens/account/commonScreen/SearchLocationScreen';
+
 const Stack = createStackNavigator();
 
 const LocalHomeNavigator = () => (
@@ -55,8 +57,7 @@ const LocalHomeNavigator = () => (
       gestureEnabled: false,
       headerBackTitleVisible: false,
       // <Image source={images.backArrow} style={{height:12,width:12,resizeMode:'contain'}} />,
-    }}
-  >
+    }}>
     <Stack.Screen
       name="LocalHomeScreen"
       component={LocalHomeScreen}
@@ -654,15 +655,15 @@ const LocalHomeNavigator = () => (
       }}
     />
 
-    {/* <Stack.Screen
-        name="SearchLocationScreen"
-        component={ SearchLocationScreen }
-        options={ {
-          headerTransparent: true,
-          title: ' ',
-          headerTintColor: colors.whiteColor,
-        } }
-      /> */}
+    <Stack.Screen
+      name="SearchLocationScreen"
+      component={SearchLocationScreen}
+      options={{
+        headerTransparent: true,
+        title: ' ',
+        headerTintColor: colors.whiteColor,
+      }}
+    />
   </Stack.Navigator>
 );
 

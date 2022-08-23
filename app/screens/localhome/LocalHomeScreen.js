@@ -1501,10 +1501,6 @@ export default function LocalHomeScreen({navigation, route}) {
                     data={gameData}
                     cardWidth={'94%'}
                     placeholderText={'NO AVAILABLE TEAMS OR PLAYERS'}
-                    buttonTitle={'Create a team or register as a player >'}
-                    onPress={() => {
-                      actionSheet.current.show();
-                    }}
                   />
                 )}
               />
@@ -1534,10 +1530,6 @@ export default function LocalHomeScreen({navigation, route}) {
                   <TCEntityListPlaceholder
                     cardWidth={'94%'}
                     placeholderText={strings.refereesPlaceholderText}
-                    buttonText={'Register as Referee >'}
-                    onPress={() => {
-                      navigation.navigate('RegisterReferee');
-                    }}
                   />
                 )}
               />
@@ -1567,10 +1559,6 @@ export default function LocalHomeScreen({navigation, route}) {
                   <TCEntityListPlaceholder
                     cardWidth={'94%'}
                     placeholderText={strings.scorekeepersPlaceholderText}
-                    buttonText={'Register as Scorekeeper >'}
-                    onPress={() => {
-                      navigation.navigate('RegisterScorekeeper');
-                    }}
                   />
                 )}
               />
@@ -1607,10 +1595,6 @@ export default function LocalHomeScreen({navigation, route}) {
                     data={gameData}
                     cardWidth={'94%'}
                     placeholderText={strings.hiringPlayersPlaceholderText}
-                    buttonTitle={'Create your group >'}
-                    onPress={() => {
-                      actionSheetTeamClub.current.show();
-                    }}
                   />
                 )}
               />
@@ -1642,10 +1626,6 @@ export default function LocalHomeScreen({navigation, route}) {
                   <TCEntityListPlaceholder
                     cardWidth={'94%'}
                     placeholderText={strings.lookingTeamsPlaceholderText}
-                    buttonText={'Register as a player >'}
-                    onPress={() => {
-                      navigation.navigate('RegisterPlayer');
-                    }}
                   />
                 )}
               />
@@ -1859,7 +1839,25 @@ export default function LocalHomeScreen({navigation, route}) {
       <ActionSheet
         ref={actionSheetTeamClub}
         title={'Create a team or club or league'}
-        options={['Create Team', ' Create Club', 'Create League', 'Cancel']}
+        options={
+          (authContext.entity.role === 'team' && [
+            ' Create Club',
+            'Create League',
+            'Cancel',
+          ]) ||
+          (authContext.entity.role === 'club' && [
+            'Create Team',
+            'Create League',
+            'Cancel',
+          ]) ||
+          authContext.entity.role === 'user' ||
+          (authContext.entity.role === 'player' && [
+            'Create Team',
+            ' Create Club',
+            'Create League',
+            'Cancel',
+          ])
+        }
         cancelButtonIndex={3}
         onPress={onCreateGroupActionSheetItemPress}
       />

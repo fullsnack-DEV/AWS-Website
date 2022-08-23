@@ -22,8 +22,12 @@ public class MainActivity extends ReactActivity {
   }
   @Override
   protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(null);
-  }
+	if (savedInstanceState != null) {
+		savedInstanceState.remove("android:support:fragments");
+		savedInstanceState.remove("android:fragments");
+	}
+		   super.onCreate(savedInstanceState);
+}
 
   @Override
   protected String getMainComponentName() {
