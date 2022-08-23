@@ -32,18 +32,18 @@
 		2D02E4BF1E0B4AB3006451C7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		2DCD954D1E0B4F2C00145EB5 /* townscup_reactnativeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* townscup_reactnativeTests.m */; };
 		528491C42587B7BC0069B7ED /* TownsCup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528491C32587B7BC0069B7ED /* TownsCup.swift */; };
+		54A6AF28B5B3761ED7D65FC7 /* libPods-townscup_reactnative-townscup_reactnativeTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14F76719CFD8964154AFD68F /* libPods-townscup_reactnative-townscup_reactnativeTests.a */; };
 		68DA8E4E2787670B00A510E6 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 68DA8E4D2787670B00A510E6 /* GoogleService-Info.plist */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		884E78272535950600014A3D /* libRNGoogleSignin.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 884E78262535950600014A3D /* libRNGoogleSignin.a */; };
-		8AAF7880006219440C2BADA2 /* libPods-townscup_reactnative-townscup_reactnativeTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2EAC12A29CD5B9A40CB67E99 /* libPods-townscup_reactnative-townscup_reactnativeTests.a */; };
 		8D0AE550C857B0B283637E65 /* libPods-townscup_reactnative-tvOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 580AE42D1FD400616C2A8F5C /* libPods-townscup_reactnative-tvOSTests.a */; };
 		C9916F96BC5FAEB70B109A49 /* libPods-townscup_reactnative-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 12C0E4D0BEDB2D087F0B8B64 /* libPods-townscup_reactnative-tvOS.a */; };
 		DAC0E4382705DBB20006A40D /* GoogleService-Info-stage.plist in Resources */ = {isa = PBXBuildFile; fileRef = DAC0E4342705DBB20006A40D /* GoogleService-Info-stage.plist */; };
 		DAC0E43A2705DBB20006A40D /* GoogleService-Info-dev.plist in Resources */ = {isa = PBXBuildFile; fileRef = DAC0E4362705DBB20006A40D /* GoogleService-Info-dev.plist */; };
 		DAC0E43B2705DBB20006A40D /* GoogleService-Info-qa.plist in Resources */ = {isa = PBXBuildFile; fileRef = DAC0E4372705DBB20006A40D /* GoogleService-Info-qa.plist */; };
 		DAC0E4402705E6C90006A40D /* main.jsbundle in Resources */ = {isa = PBXBuildFile; fileRef = 008F07F21AC5B25A0029DE68 /* main.jsbundle */; };
+		DACB0C2F488193C13CD00F73 /* libPods-townscup_reactnative.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 08494F5E12E6203F4912E269 /* libPods-townscup_reactnative.a */; };
 		E34687092761BD65001E4A49 /* GoogleService-Info-prod.plist in Resources */ = {isa = PBXBuildFile; fileRef = E34687082761BD65001E4A49 /* GoogleService-Info-prod.plist */; };
-		F3B472B8B52588B9085F8F53 /* libPods-townscup_reactnative.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C542A4AB449CBFD49B44A978 /* libPods-townscup_reactnative.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -87,6 +87,7 @@
 		046ACE5F251CA906009CBADE /* Roboto-BlackItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-BlackItalic.ttf"; sourceTree = "<group>"; };
 		0658B917D1256C97BF3A99FF /* Pods-townscup_reactnative-tvOSTests.release_production.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOSTests.release_production.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOSTests/Pods-townscup_reactnative-tvOSTests.release_production.xcconfig"; sourceTree = "<group>"; };
 		07A472ED65881A7D066639F5 /* Pods-townscup_reactnative-townscup_reactnativeTests.debug_production.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-townscup_reactnativeTests.debug_production.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-townscup_reactnativeTests/Pods-townscup_reactnative-townscup_reactnativeTests.debug_production.xcconfig"; sourceTree = "<group>"; };
+		08494F5E12E6203F4912E269 /* libPods-townscup_reactnative.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-townscup_reactnative.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0E0E15B2C4DF6481C996D9F7 /* Pods-townscup_reactnative-townscup_reactnativeTests.debug_staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-townscup_reactnativeTests.debug_staging.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-townscup_reactnativeTests/Pods-townscup_reactnative-townscup_reactnativeTests.debug_staging.xcconfig"; sourceTree = "<group>"; };
 		0F3D5154EDE7429BBCF6A7F4 /* Feather.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Feather.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Feather.ttf"; sourceTree = "<group>"; };
 		12C0E4D0BEDB2D087F0B8B64 /* libPods-townscup_reactnative-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-townscup_reactnative-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -96,6 +97,7 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = townscup_reactnative/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = townscup_reactnative/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = townscup_reactnative/main.m; sourceTree = "<group>"; };
+		14F76719CFD8964154AFD68F /* libPods-townscup_reactnative-townscup_reactnativeTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-townscup_reactnative-townscup_reactnativeTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		15CA67CB260AD0E40064255D /* townscup_reactnative.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = townscup_reactnative.entitlements; path = townscup_reactnative/townscup_reactnative.entitlements; sourceTree = "<group>"; };
 		1885BE2CA4FA0B08529F172C /* Pods-townscup_reactnative.debug_production.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative.debug_production.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative/Pods-townscup_reactnative.debug_production.xcconfig"; sourceTree = "<group>"; };
 		1E0980AF85618AAE77D75455 /* Pods-townscup_reactnative-tvOSTests.debug_production.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOSTests.debug_production.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOSTests/Pods-townscup_reactnative-tvOSTests.debug_production.xcconfig"; sourceTree = "<group>"; };
@@ -107,7 +109,6 @@
 		2D02E47B1E0B4A5D006451C7 /* townscup_reactnative-tvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "townscup_reactnative-tvOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D02E4901E0B4A5D006451C7 /* townscup_reactnative-tvOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "townscup_reactnative-tvOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D12534D090B4900B24E641F /* FontAwesome5_Brands.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Brands.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Brands.ttf"; sourceTree = "<group>"; };
-		2EAC12A29CD5B9A40CB67E99 /* libPods-townscup_reactnative-townscup_reactnativeTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-townscup_reactnative-townscup_reactnativeTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		34B4B91DC347594121B2A5A3 /* Pods-townscup_reactnative-tvOS.distribution.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOS.distribution.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOS/Pods-townscup_reactnative-tvOS.distribution.xcconfig"; sourceTree = "<group>"; };
 		395044607D8B2035AAE1F881 /* Pods-townscup_reactnative-tvOSTests.distribution.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOSTests.distribution.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOSTests/Pods-townscup_reactnative-tvOSTests.distribution.xcconfig"; sourceTree = "<group>"; };
 		3BA4160D61B110F8CD115AEA /* Pods-townscup_reactnative-tvOSTests.debug_staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOSTests.debug_staging.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOSTests/Pods-townscup_reactnative-tvOSTests.debug_staging.xcconfig"; sourceTree = "<group>"; };
@@ -155,7 +156,6 @@
 		C15646BE66D2B43EEBB48A2F /* Pods-townscup_reactnative-townscup_reactnativeTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-townscup_reactnativeTests.release.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-townscup_reactnativeTests/Pods-townscup_reactnative-townscup_reactnativeTests.release.xcconfig"; sourceTree = "<group>"; };
 		C255B95CB1DA8E39BB7999F4 /* Pods-townscup_reactnative-townscup_reactnativeTests.release_development.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-townscup_reactnativeTests.release_development.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-townscup_reactnativeTests/Pods-townscup_reactnative-townscup_reactnativeTests.release_development.xcconfig"; sourceTree = "<group>"; };
 		C2B453C7559B2DBC5EEC1DEB /* Pods-townscup_reactnative-townscup_reactnativeTests.distribution.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-townscup_reactnativeTests.distribution.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-townscup_reactnativeTests/Pods-townscup_reactnative-townscup_reactnativeTests.distribution.xcconfig"; sourceTree = "<group>"; };
-		C542A4AB449CBFD49B44A978 /* libPods-townscup_reactnative.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-townscup_reactnative.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CC873254D4664C0DA0FCF368 /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = SimpleLineIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf"; sourceTree = "<group>"; };
 		D9155AC71DDBEB8F3C03A200 /* Pods-townscup_reactnative-tvOSTests.debug_development.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOSTests.debug_development.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOSTests/Pods-townscup_reactnative-tvOSTests.debug_development.xcconfig"; sourceTree = "<group>"; };
 		DAC0E4342705DBB20006A40D /* GoogleService-Info-stage.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info-stage.plist"; path = "townscup_reactnative/Firebase/GoogleService-Info-stage.plist"; sourceTree = "<group>"; };
@@ -179,7 +179,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8AAF7880006219440C2BADA2 /* libPods-townscup_reactnative-townscup_reactnativeTests.a in Frameworks */,
+				54A6AF28B5B3761ED7D65FC7 /* libPods-townscup_reactnative-townscup_reactnativeTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -188,7 +188,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				884E78272535950600014A3D /* libRNGoogleSignin.a in Frameworks */,
-				F3B472B8B52588B9085F8F53 /* libPods-townscup_reactnative.a in Frameworks */,
+				DACB0C2F488193C13CD00F73 /* libPods-townscup_reactnative.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -273,10 +273,10 @@
 				884E78262535950600014A3D /* libRNGoogleSignin.a */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				ED2971642150620600B7C4FE /* JavaScriptCore.framework */,
-				C542A4AB449CBFD49B44A978 /* libPods-townscup_reactnative.a */,
-				2EAC12A29CD5B9A40CB67E99 /* libPods-townscup_reactnative-townscup_reactnativeTests.a */,
 				12C0E4D0BEDB2D087F0B8B64 /* libPods-townscup_reactnative-tvOS.a */,
 				580AE42D1FD400616C2A8F5C /* libPods-townscup_reactnative-tvOSTests.a */,
+				08494F5E12E6203F4912E269 /* libPods-townscup_reactnative.a */,
+				14F76719CFD8964154AFD68F /* libPods-townscup_reactnative-townscup_reactnativeTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -446,6 +446,7 @@
 				AED5CADF16BADC261D27DBCA /* [CP-User] [RNFB] Core Configuration */,
 				E29A466AF6DE8D5D7003E2ED /* [CP] Embed Pods Frameworks */,
 				DA472A1B27058C2100E2D21B /* Run Script */,
+				47F6234EC4CD15ABBCDA101C /* [CP-User] [RNFB] Crashlytics Configuration */,
 			);
 			buildRules = (
 			);
@@ -511,7 +512,7 @@
 					13B07F861A680F5B00A75B9A = {
 						DevelopmentTeam = A734MJ7CPS;
 						LastSwiftMigration = 1220;
-						ProvisioningStyle = Automatic;
+						ProvisioningStyle = Manual;
 					};
 					2D02E47A1E0B4A5D006451C7 = {
 						CreatedOnToolsVersion = 8.2.1;
@@ -720,6 +721,20 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh\n";
+		};
+		47F6234EC4CD15ABBCDA101C /* [CP-User] [RNFB] Crashlytics Configuration */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}",
+				"$(SRCROOT)/$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
+			);
+			name = "[CP-User] [RNFB] Crashlytics Configuration";
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#!/usr/bin/env bash\n#\n# Copyright (c) 2016-present Invertase Limited & Contributors\n#\n# Licensed under the Apache License, Version 2.0 (the \"License\");\n# you may not use this library except in compliance with the License.\n# You may obtain a copy of the License at\n#\n#   http://www.apache.org/licenses/LICENSE-2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License for the specific language governing permissions and\n# limitations under the License.\n#\nset -e\n\nif [[ ${PODS_ROOT} ]]; then\n  echo \"info: Exec FirebaseCrashlytics Run from Pods\"\n  \"${PODS_ROOT}/FirebaseCrashlytics/run\"\nelse\n  echo \"info: Exec FirebaseCrashlytics Run from framework\"\n  \"${PROJECT_DIR}/FirebaseCrashlytics.framework/run\"\nfi\n";
 		};
 		5506A9FD47A89FF370A4F875 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1075,11 +1090,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = townscup_reactnative/townscup_reactnative.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "Apple Development: Junghyun Gu (L2QJ5W54YN)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development: Junghyun Gu (L2QJ5W54YN)";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1.0;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = A734MJ7CPS;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = townscup_reactnative/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
@@ -1091,7 +1106,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.towncup.app;
 				PRODUCT_NAME = townscup_reactnative;
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = "Development-Profile";
 				SWIFT_OBJC_BRIDGING_HEADER = "townscup_reactnative-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -1107,11 +1122,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = townscup_reactnative/townscup_reactnative.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "Apple Development: Junghyun Gu (L2QJ5W54YN)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution: Junghyun Gu (A734MJ7CPS)";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1.0;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = A734MJ7CPS;
 				INFOPLIST_FILE = townscup_reactnative/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1122,7 +1137,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.towncup.app;
 				PRODUCT_NAME = townscup_reactnative;
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = "Distribution-Profile";
 				SWIFT_OBJC_BRIDGING_HEADER = "townscup_reactnative-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1305,11 +1320,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = townscup_reactnative/townscup_reactnative.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "Apple Development: Junghyun Gu (L2QJ5W54YN)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution: Junghyun Gu (A734MJ7CPS)";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1.0;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = A734MJ7CPS;
 				INFOPLIST_FILE = townscup_reactnative/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1320,7 +1335,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.towncup.app;
 				PRODUCT_NAME = townscup_reactnative;
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = "Distribution-Profile";
 				SWIFT_OBJC_BRIDGING_HEADER = "townscup_reactnative-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1581,11 +1596,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = townscup_reactnative/townscup_reactnative.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "Apple Development: Junghyun Gu (L2QJ5W54YN)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development: Junghyun Gu (L2QJ5W54YN)";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1.0;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = A734MJ7CPS;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = townscup_reactnative/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
@@ -1597,7 +1612,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.towncup.app;
 				PRODUCT_NAME = townscup_reactnative;
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = "Development-Profile";
 				SWIFT_OBJC_BRIDGING_HEADER = "townscup_reactnative-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -1748,11 +1763,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = townscup_reactnative/townscup_reactnative.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "Apple Development: Junghyun Gu (L2QJ5W54YN)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution: Junghyun Gu (A734MJ7CPS)";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1.0;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = A734MJ7CPS;
 				INFOPLIST_FILE = townscup_reactnative/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1763,7 +1778,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.towncup.app;
 				PRODUCT_NAME = townscup_reactnative;
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = "Distribution-Profile";
 				SWIFT_OBJC_BRIDGING_HEADER = "townscup_reactnative-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1917,11 +1932,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = townscup_reactnative/townscup_reactnative.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "Apple Development: Junghyun Gu (L2QJ5W54YN)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development: Junghyun Gu (L2QJ5W54YN)";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1.0;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = A734MJ7CPS;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = townscup_reactnative/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
@@ -1933,7 +1948,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.towncup.app;
 				PRODUCT_NAME = townscup_reactnative;
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = "Development-Profile";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "townscup_reactnative-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -2085,11 +2100,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = townscup_reactnative/townscup_reactnative.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "Apple Development: Junghyun Gu (L2QJ5W54YN)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution: Junghyun Gu (A734MJ7CPS)";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1.0;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = A734MJ7CPS;
 				INFOPLIST_FILE = townscup_reactnative/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -2100,7 +2115,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.towncup.app;
 				PRODUCT_NAME = townscup_reactnative;
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = "Distribution-Profile";
 				SWIFT_OBJC_BRIDGING_HEADER = "townscup_reactnative-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -2254,11 +2269,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = townscup_reactnative/townscup_reactnative.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "Apple Development: Junghyun Gu (L2QJ5W54YN)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development: Junghyun Gu (L2QJ5W54YN)";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1.0;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = A734MJ7CPS;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = townscup_reactnative/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
@@ -2270,7 +2285,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.towncup.app;
 				PRODUCT_NAME = townscup_reactnative;
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = "Development-Profile";
 				SWIFT_OBJC_BRIDGING_HEADER = "townscup_reactnative-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -2428,11 +2443,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = townscup_reactnative/townscup_reactnative.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "Apple Development: Junghyun Gu (L2QJ5W54YN)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development: Junghyun Gu (L2QJ5W54YN)";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1.0;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = A734MJ7CPS;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = townscup_reactnative/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
@@ -2444,7 +2459,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.towncup.app;
 				PRODUCT_NAME = townscup_reactnative;
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = "Development-Profile";
 				SWIFT_OBJC_BRIDGING_HEADER = "townscup_reactnative-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -2595,11 +2610,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = townscup_reactnative/townscup_reactnative.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "Apple Development: Junghyun Gu (L2QJ5W54YN)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution: Junghyun Gu (A734MJ7CPS)";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1.0;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = A734MJ7CPS;
 				INFOPLIST_FILE = townscup_reactnative/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -2610,7 +2625,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.towncup.app;
 				PRODUCT_NAME = townscup_reactnative;
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = "Distribution-Profile";
 				SWIFT_OBJC_BRIDGING_HEADER = "townscup_reactnative-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -2757,11 +2772,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = townscup_reactnative/townscup_reactnative.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "Apple Development: Junghyun Gu (L2QJ5W54YN)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution: Junghyun Gu (A734MJ7CPS)";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1.0;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = A734MJ7CPS;
 				INFOPLIST_FILE = townscup_reactnative/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -2772,7 +2787,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.towncup.app;
 				PRODUCT_NAME = townscup_reactnative;
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = "Distribution-Profile";
 				SWIFT_OBJC_BRIDGING_HEADER = "townscup_reactnative-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

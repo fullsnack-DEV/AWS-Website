@@ -1,33 +1,41 @@
-# name: GitHub Android Build
-# on: push
-# env:
-#   ENV: 'qa'
-#   BASE_URL: 'https://xm1j1j8luh.execute-api.us-east-1.amazonaws.com/qa/'
-#   GAME_INDEX: 'gameindex-qa'
-#   USER_INDEX: 'userindex-qa'
-#   GROUP_INDEX: 'groupindex-qa'
-#   CALENDAR_INDEX: 'calendarindex-qa'
-# jobs:
-#   build-android:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - uses: actions/checkout@v2
-#       - name: Install npm dependencies
-#         run: |
-#           npm cache clear --force && npm install --legacy-peer-deps
-#       - name: Build Android QA Release
-#         run: |
-#           cd android && ./gradlew assembleRelease
-#       - name: Upload Artifact
-#         uses: actions/upload-artifact@v1
-#         with:
-#           name: app-QA-release.apk
-#           path: android/app/build/outputs/apk/Qa/release/
-#       - name: upload artefact to App Center
-#         uses: wzieba/AppCenter-Github-Action@v1
-#         with:
-#           appName: makani20/TownsCup-Android-dev
-#           token: 1f6f52337adfee3e501ec12f50dd902a1d3f7217
-#           group: TownCupTester
-#           file: android/app/build/outputs/apk/Qa/release/app-QA-release.apk
-#           notifyTesters: true
+name: GitHub Android Build
+on:
+  push:
+    branches:
+      - QA
+env:
+  ENV: 'qa'
+  BASE_URL: 'https://xm1j1j8luh.execute-api.us-east-1.amazonaws.com/qa/'
+  GAME_INDEX: 'gameindex-qa'
+  USER_INDEX: 'userindex-qa'
+  GROUP_INDEX: 'groupindex-qa'
+  CALENDAR_INDEX: 'calendarindex-qa'
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install npm dependencies
+        run: |
+          npm cache clear --force && npm install --legacy-peer-deps
+      - name: Build Android QA Release
+        run: |
+          cd android && ./gradlew assembleQaRelease
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: app-Qa-release.apk
+          path: android/app/build/outputs/apk/Qa/release/
+      - name: upload artefact to App Center
+        uses: wzieba/AppCenter-Github-Action@v1
+        with:
+          appName: makani20/TownsCup-Android-qa
+          token: 1ac906bbc52a02dc1dc59ef109a872acb947dd83
+          group: TownCupTester
+          file: android/app/build/outputs/apk/Qa/release/app-Qa-release.apk
+          notifyTesters: true
+      - name: Delete Artifact
+        uses: geekyeggo/delete-artifact@v1
+        with:
+          name: app-Qa-release.apk
+          path: android/app/build/outputs/apk/Qa/release/

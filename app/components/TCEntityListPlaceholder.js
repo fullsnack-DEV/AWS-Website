@@ -1,5 +1,5 @@
 import React, {memo} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import {View, Text, StyleSheet} from 'react-native';
 
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 
@@ -8,12 +8,7 @@ import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import TCEntityView from './TCEntityView';
 
-function TCEntityListPlaceholder({
-  cardWidth = '86%',
-  placeholderText = '',
-  buttonText = '',
-  onPress,
-}) {
+function TCEntityListPlaceholder({cardWidth = '86%', placeholderText = ''}) {
   return (
     <View style={[styles.backgroundView, {width: wp(cardWidth)}]}>
       <View
@@ -22,8 +17,7 @@ function TCEntityListPlaceholder({
           justifyContent: 'space-between',
           marginLeft: 15,
           marginRight: 15,
-        }}
-      >
+        }}>
         <View style={{marginBottom: 15}}>
           <TCEntityView showStar={true} placeholder={true} />
         </View>
@@ -39,13 +33,8 @@ function TCEntityListPlaceholder({
       </View>
       <LinearGradient
         colors={[colors.whiteColor, colors.whiteColor]}
-        style={styles.overlayStyle}
-      >
+        style={styles.overlayStyle}>
         <Text style={styles.placeholderTextStyle}>{placeholderText}</Text>
-
-        <TouchableOpacity onPress={onPress}>
-          <Text style={styles.startTitle}>{buttonText}</Text>
-        </TouchableOpacity>
       </LinearGradient>
     </View>
   );
@@ -78,13 +67,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RMedium,
     color: colors.googleColor,
     textAlign: 'center',
-  },
-
-  startTitle: {
-    fontSize: 20,
-    fontFamily: fonts.RMedium,
-    color: colors.themeColor,
-    alignSelf: 'center',
   },
 });
 

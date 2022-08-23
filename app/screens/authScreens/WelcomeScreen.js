@@ -18,6 +18,8 @@ import {
   View,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
+import crashlytics from '@react-native-firebase/crashlytics';
+
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
@@ -61,6 +63,7 @@ export default function WelcomeScreen({navigation}) {
   const [currentBackground, setCurrentBackground] = useState(1);
 
   useEffect(() => {
+    // crashlytics().crash();
     onLoad();
   }, [currentBackground]);
 
