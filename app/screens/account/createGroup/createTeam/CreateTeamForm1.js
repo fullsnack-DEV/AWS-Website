@@ -135,7 +135,7 @@ export default function CreateTeamForm1({navigation, route}) {
 
     authContext.sports.map((item) => {
       const filterFormat = item.format.filter(
-        (obj) => obj.entity_type === 'team',
+        (obj) => obj.entity_type === 'team' && obj.sport_type !== 'double',
       );
       sportArr = [...sportArr, ...filterFormat];
       return null;

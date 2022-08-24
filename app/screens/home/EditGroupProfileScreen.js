@@ -100,8 +100,7 @@ export default function EditGroupProfileScreen({navigation, route}) {
           }}
           onPress={() => {
             onSaveButtonClicked();
-          }}
-        >
+          }}>
           {strings.save}
         </Text>
       ),
@@ -293,10 +292,9 @@ export default function EditGroupProfileScreen({navigation, route}) {
     return (
       <TouchableWithoutFeedback
         style={styles.listItem}
-        onPress={() => getTeamsData(item)}
-      >
+        onPress={() => getTeamsData(item)}>
         <View>
-          <Text style={styles.cityList}>{cityData[index].description}</Text>
+          <Text style={styles.cityList}>{cityData[index].bio}</Text>
           <TCThinDivider
             width={'100%'}
             backgroundColor={colors.grayBackgroundColor}
@@ -314,16 +312,14 @@ export default function EditGroupProfileScreen({navigation, route}) {
       style={styles.listItem}
       onPress={() => {
         isIconCheckedOrNot({item, index});
-      }}
-    >
+      }}>
       <View
         style={{
           padding: 20,
           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'space-between',
-        }}
-      >
+        }}>
         <Text style={styles.sportList}>{getSportName(item, authContext)}</Text>
         <View style={styles.checkbox}>
           {sportList[index].isChecked ? (
@@ -718,16 +714,14 @@ export default function EditGroupProfileScreen({navigation, route}) {
               /> */}
               <TouchableOpacity
                 style={styles.languageView}
-                onPress={toggleModal}
-              >
+                onPress={toggleModal}>
                 <Text
                   style={
                     sportsName
                       ? styles.languageText
                       : styles.languagePlaceholderText
                   }
-                  numberOfLines={50}
-                >
+                  numberOfLines={50}>
                   {sportsName || 'Sports'}
                 </Text>
               </TouchableOpacity>
@@ -749,11 +743,11 @@ export default function EditGroupProfileScreen({navigation, route}) {
                   : 'Write your team slogan..'
               }
               onChangeText={(text) =>
-                setGroupProfile({...groupProfile, description: text})
+                setGroupProfile({...groupProfile, bio: text})
               }
               multiline
               maxLength={150}
-              value={groupProfile.description}
+              value={groupProfile.bio}
               height={120}
               style={{
                 marginTop: 5,
@@ -771,22 +765,19 @@ export default function EditGroupProfileScreen({navigation, route}) {
           backdropTransitionOutTiming={800}
           style={{
             margin: 0,
-          }}
-        >
+          }}>
           <View
             style={[
               styles.bottomPopupContainer,
               {height: Dimensions.get('window').height - 50},
-            ]}
-          >
+            ]}>
             <View style={styles.topHeaderContainer}>
               <TouchableOpacity
                 hitSlop={getHitSlop(15)}
                 style={styles.closeButton}
                 onPress={() => {
                   setLocationPopup(false);
-                }}
-              >
+                }}>
                 <Image source={images.crossImage} style={styles.closeButton} />
               </TouchableOpacity>
               <Text style={styles.moreText}>Home City</Text>
@@ -818,8 +809,7 @@ export default function EditGroupProfileScreen({navigation, route}) {
               <View style={{flex: 1}}>
                 <TouchableWithoutFeedback
                   style={styles.listItem}
-                  onPress={() => getTeamsDataByCurrentLocation()}
-                >
+                  onPress={() => getTeamsDataByCurrentLocation()}>
                   <View>
                     <Text style={[styles.cityList, {marginBottom: 3}]}>
                       {currentLocation?.city}, {currentLocation?.state},{' '}
@@ -856,8 +846,7 @@ export default function EditGroupProfileScreen({navigation, route}) {
           backdropTransitionOutTiming={800}
           style={{
             margin: 0,
-          }}
-        >
+          }}>
           <View
             style={{
               width: '100%',
@@ -873,21 +862,18 @@ export default function EditGroupProfileScreen({navigation, route}) {
               shadowOpacity: 0.5,
               shadowRadius: 5,
               elevation: 15,
-            }}
-          >
+            }}>
             <View
               style={{
                 flexDirection: 'row',
                 paddingHorizontal: 15,
                 justifyContent: 'space-between',
                 alignItems: 'center',
-              }}
-            >
+              }}>
               <TouchableOpacity
                 hitSlop={getHitSlop(15)}
                 style={{...styles.closeButton, left: 0}}
-                onPress={() => setVisibleSportsModal(false)}
-              >
+                onPress={() => setVisibleSportsModal(false)}>
                 <Image
                   source={images.crossImage}
                   style={{...styles.closeButton, left: 0}}
@@ -900,8 +886,7 @@ export default function EditGroupProfileScreen({navigation, route}) {
                   fontSize: 16,
                   fontFamily: fonts.RBold,
                   color: colors.lightBlackColor,
-                }}
-              >
+                }}>
                 Sports
               </Text>
               <TouchableOpacity
@@ -911,8 +896,7 @@ export default function EditGroupProfileScreen({navigation, route}) {
                   );
                   setSelectedSports(filterChecked);
                   toggleModal();
-                }}
-              >
+                }}>
                 <Text
                   style={{
                     alignSelf: 'center',
@@ -920,8 +904,7 @@ export default function EditGroupProfileScreen({navigation, route}) {
                     fontSize: 16,
                     fontFamily: fonts.RRegular,
                     color: colors.themeColor,
-                  }}
-                >
+                  }}>
                   Apply
                 </Text>
               </TouchableOpacity>

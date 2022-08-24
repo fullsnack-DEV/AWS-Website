@@ -42,12 +42,12 @@ export default function WhoCreateEventScreen({navigation, route}) {
 
   const [whoCreateEvent, setWhoCreateEvent] = useState(
     (route?.params?.whoCreateEvent === 0 && {
-      key: eventsSettingOpetions[0].key,
-      id: 0,
+      key: eventsSettingOpetions[1].key,
+      id: 1,
     }) ||
       (route?.params?.whoCreateEvent === 1 && {
-        key: eventsSettingOpetions[1].key,
-        id: 1,
+        key: eventsSettingOpetions[0].key,
+        id: 0,
       }),
   );
 
@@ -72,10 +72,10 @@ export default function WhoCreateEventScreen({navigation, route}) {
     const bodyParams = {};
 
     if (whoCreateEvent.key === eventsSettingOpetions[0].key) {
-      bodyParams.who_can_create_event = 0;
+      bodyParams.who_can_create_event = 1;
     }
     if (whoCreateEvent.key === eventsSettingOpetions[1].key) {
-      bodyParams.who_can_create_event = 1;
+      bodyParams.who_can_create_event = 0;
     }
 
     setloading(true);

@@ -31,20 +31,12 @@ export default function WhatEventInviteScreen({navigation, route}) {
 
   const eventsSettingOpetions = [
     {
-      key: strings.everyEvent,
+      key: strings.yes,
       id: 0,
     },
     {
-      key: strings.eventCreatedByUser,
+      key: strings.no,
       id: 1,
-    },
-    {
-      key: strings.eventCreatedByGroup,
-      id: 2,
-    },
-    {
-      key: strings.none,
-      id: 3,
     },
   ];
 
@@ -56,14 +48,6 @@ export default function WhatEventInviteScreen({navigation, route}) {
       (route?.params?.whoCreateEvent === 1 && {
         key: eventsSettingOpetions[1].key,
         id: 1,
-      }) ||
-      (route?.params?.whoCreateEvent === 2 && {
-        key: eventsSettingOpetions[2].key,
-        id: 2,
-      }) ||
-      (route?.params?.whoCreateEvent === 3 && {
-        key: eventsSettingOpetions[3].key,
-        id: 3,
       }),
   );
 
@@ -88,16 +72,10 @@ export default function WhatEventInviteScreen({navigation, route}) {
     const bodyParams = {};
 
     if (whoCreateEvent.key === eventsSettingOpetions[0].key) {
-      bodyParams.what_event_invite = 0;
+      bodyParams.invite_me_event = 1;
     }
     if (whoCreateEvent.key === eventsSettingOpetions[1].key) {
-      bodyParams.what_event_invite = 1;
-    }
-    if (whoCreateEvent.key === eventsSettingOpetions[2].key) {
-      bodyParams.what_event_invite = 2;
-    }
-    if (whoCreateEvent.key === eventsSettingOpetions[3].key) {
-      bodyParams.what_event_invite = 3;
+      bodyParams.invite_me_event = 0;
     }
 
     setloading(true);
@@ -111,7 +89,7 @@ export default function WhatEventInviteScreen({navigation, route}) {
 
           await Utility.setStorage('authContextEntity', {...entity});
           navigation.navigate(comeFrom, {
-            whoCreateEvent: response?.payload?.what_event_invite,
+            whoCreateEvent: response?.payload?.invite_me_event,
           });
         } else {
           Alert.alert(strings.appName, response.messages);
@@ -163,7 +141,7 @@ export default function WhatEventInviteScreen({navigation, route}) {
       showsVerticalScrollIndicator={false}>
       <ActivityLoader visible={loading} />
       <Text style={styles.opetionsTitle}>
-        {'To what event can people invite you?'}
+        {'Can people invite you to their events ?'}
       </Text>
       <FlatList
         data={eventsSettingOpetions}

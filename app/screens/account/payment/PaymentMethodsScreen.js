@@ -76,17 +76,13 @@ export default function PaymentMethodsScreen({navigation, route}) {
 
           setCards([...newCards]);
           // setloading(false)
-          if (response.payload.length === 0) {
-            openNewCardScreen();
-          }
+          //   if (response.payload.length === 0) {
+          //     openNewCardScreen();
+          //   }
           resolve(true);
         })
         .catch((e) => {
           reject(new Error(e.message));
-          // setloading(false)
-          // setTimeout(() => {
-          //   Alert.alert(strings.alertmessagetitle, e.message);
-          // }, 0.3)
         });
     });
 

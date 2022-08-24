@@ -1271,7 +1271,8 @@ export default function AccountScreen({navigation}) {
     if (createEntity === 'team') {
       if (entity.role === 'user') {
         navigation.navigate('CreateTeamForm1');
-      } else {
+      }
+      if (entity.role === 'club') {
         navigation.navigate('CreateTeamForm1', {clubObject: group});
       }
     }
@@ -1930,161 +1931,157 @@ export default function AccountScreen({navigation}) {
           <Image source={images.logoutIcon} style={styles.switchAccountIcon} />
           <Text style={styles.switchAccount}>Log out</Text>
         </TouchableWithoutFeedback>
-
-        {/* Rules notes modal */}
-        <Modal
-          isVisible={isRulesModalVisible}
-          onBackdropPress={() => setIsRulesModalVisible(false)}
-          onRequestClose={() => setIsRulesModalVisible(false)}
-          animationInTiming={300}
-          animationOutTiming={800}
-          backdropTransitionInTiming={300}
-          backdropTransitionOutTiming={800}
+      </ScrollView>
+      {/* Rules notes modal */}
+      <Modal
+        isVisible={isRulesModalVisible}
+        onBackdropPress={() => setIsRulesModalVisible(false)}
+        onRequestClose={() => setIsRulesModalVisible(false)}
+        animationInTiming={300}
+        animationOutTiming={800}
+        backdropTransitionInTiming={300}
+        backdropTransitionOutTiming={800}
+        style={{
+          margin: 0,
+        }}>
+        <SafeAreaView
           style={{
-            margin: 0,
-          }}>
-          <SafeAreaView
-            style={{
-              height: Dimensions.get('window').height / 1.7,
-              backgroundColor: 'white',
-              position: 'absolute',
-              bottom: 0,
-              left: 0,
-              right: 0,
-              borderTopLeftRadius: 30,
-              borderTopRightRadius: 30,
-              shadowColor: '#000',
-              shadowOffset: {width: 0, height: 1},
-              shadowOpacity: 0.5,
-              shadowRadius: 5,
-              elevation: 15,
-            }}>
-            <View
-              style={{
-                flexDirection: 'row',
-                paddingHorizontal: 15,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-              <Text
-                style={{
-                  alignSelf: 'center',
-                  marginVertical: 20,
-                  fontSize: 16,
-                  fontFamily: fonts.RBold,
-                  color: colors.lightBlackColor,
-                }}>
-                {createEntity === 'club' ? 'Create Club' : 'Create Team'}
-              </Text>
-            </View>
-            <View style={styles.separatorLine} />
-            <View style={{flex: 1}}>
-              <Text style={[styles.rulesText, {margin: 15}]}>
-                {'When your team creates a club:'}
-              </Text>
-              <Text style={[styles.rulesText, {marginLeft: 15}]}>
-                {'\n• your team will belong to the club initially.'}
-              </Text>
-              <Text style={[styles.rulesText, {marginLeft: 15}]}>
-                {'\n• your team can leave the club anytime later.'}
-              </Text>
-              <Text style={[styles.rulesText, {marginLeft: 15}]}>
-                {
-                  '\n• the admins of your team will be the admins of the club initially.'
-                }
-              </Text>
-            </View>
-            <TCGradientButton
-              title={strings.nextTitle}
-              onPress={onNextPressed}
-            />
-          </SafeAreaView>
-        </Modal>
-
-        {/* Rules notes modal */}
-
-        <Modal
-          isVisible={visibleSportsModal}
-          onBackdropPress={() => setVisibleSportsModal(false)}
-          onRequestClose={() => setVisibleSportsModal(false)}
-          animationInTiming={300}
-          animationOutTiming={800}
-          backdropTransitionInTiming={300}
-          backdropTransitionOutTiming={800}
-          style={{
-            margin: 0,
+            height: Dimensions.get('window').height / 1.7,
+            backgroundColor: 'white',
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            borderTopLeftRadius: 30,
+            borderTopRightRadius: 30,
+            shadowColor: '#000',
+            shadowOffset: {width: 0, height: 1},
+            shadowOpacity: 0.5,
+            shadowRadius: 5,
+            elevation: 15,
           }}>
           <View
             style={{
-              width: '100%',
-              height: Dimensions.get('window').height / 1.3,
-              backgroundColor: 'white',
-              position: 'absolute',
-              bottom: 0,
-              left: 0,
-              borderTopLeftRadius: 30,
-              borderTopRightRadius: 30,
-              shadowColor: '#000',
-              shadowOffset: {width: 0, height: 1},
-              shadowOpacity: 0.5,
-              shadowRadius: 5,
-              elevation: 15,
+              flexDirection: 'row',
+              paddingHorizontal: 15,
+              justifyContent: 'center',
+              alignItems: 'center',
             }}>
-            <View
+            <Text
               style={{
-                flexDirection: 'row',
-                paddingHorizontal: 15,
-                justifyContent: 'space-between',
-                alignItems: 'center',
+                alignSelf: 'center',
+                marginVertical: 20,
+                fontSize: 16,
+                fontFamily: fonts.RBold,
+                color: colors.lightBlackColor,
               }}>
-              <TouchableOpacity
-                hitSlop={Utility.getHitSlop(15)}
-                style={styles.closeButton}
-                onPress={() => setVisibleSportsModal(false)}>
-                <Image source={images.cancelImage} style={styles.closeButton} />
-              </TouchableOpacity>
-              <Text
-                style={{
-                  alignSelf: 'center',
-                  marginVertical: 20,
-                  fontSize: 16,
-                  fontFamily: fonts.RBold,
-                  color: colors.lightBlackColor,
-                }}>
-                Sports
-              </Text>
-
-              <Text
-                style={{
-                  alignSelf: 'center',
-                  marginVertical: 20,
-                  fontSize: 16,
-                  fontFamily: fonts.RRegular,
-                  color: colors.themeColor,
-                }}></Text>
-            </View>
-            <View style={styles.separatorLine} />
-            <FlatList
-              ItemSeparatorComponent={() => <TCThinDivider />}
-              data={
-                (clickedUserType === 'user' &&
-                  authContext?.entity?.obj?.registered_sports?.filter(
-                    (obj) =>
-                      obj?.sport &&
-                      obj?.sport_type &&
-                      obj.sport_type === 'single',
-                  )) ||
-                (clickedUserType === 'referee' &&
-                  authContext?.entity?.obj?.referee_data) ||
-                (clickedUserType === 'scorekeeper' &&
-                  authContext?.entity?.obj?.scorekeeper_data)
-              }
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={renderSports}
-            />
+              {createEntity === 'club' ? 'Create Club' : 'Create Team'}
+            </Text>
           </View>
-        </Modal>
-      </ScrollView>
+          <View style={styles.separatorLine} />
+          <View style={{flex: 1}}>
+            <Text style={[styles.rulesText, {margin: 15}]}>
+              {'When your team creates a club:'}
+            </Text>
+            <Text style={[styles.rulesText, {marginLeft: 15}]}>
+              {'\n• your team will belong to the club initially.'}
+            </Text>
+            <Text style={[styles.rulesText, {marginLeft: 15}]}>
+              {'\n• your team can leave the club anytime later.'}
+            </Text>
+            <Text style={[styles.rulesText, {marginLeft: 15}]}>
+              {
+                '\n• the admins of your team will be the admins of the club initially.'
+              }
+            </Text>
+          </View>
+          <TCGradientButton title={strings.nextTitle} onPress={onNextPressed} />
+        </SafeAreaView>
+      </Modal>
+
+      {/* Rules notes modal */}
+
+      <Modal
+        isVisible={visibleSportsModal}
+        onBackdropPress={() => setVisibleSportsModal(false)}
+        onRequestClose={() => setVisibleSportsModal(false)}
+        animationInTiming={300}
+        animationOutTiming={800}
+        backdropTransitionInTiming={300}
+        backdropTransitionOutTiming={800}
+        style={{
+          margin: 0,
+        }}>
+        <View
+          style={{
+            width: '100%',
+            height: Dimensions.get('window').height / 1.3,
+            backgroundColor: 'white',
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            borderTopLeftRadius: 30,
+            borderTopRightRadius: 30,
+            shadowColor: '#000',
+            shadowOffset: {width: 0, height: 1},
+            shadowOpacity: 0.5,
+            shadowRadius: 5,
+            elevation: 15,
+          }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              paddingHorizontal: 15,
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}>
+            <TouchableOpacity
+              hitSlop={Utility.getHitSlop(15)}
+              style={styles.closeButton}
+              onPress={() => setVisibleSportsModal(false)}>
+              <Image source={images.cancelImage} style={styles.closeButton} />
+            </TouchableOpacity>
+            <Text
+              style={{
+                alignSelf: 'center',
+                marginVertical: 20,
+                fontSize: 16,
+                fontFamily: fonts.RBold,
+                color: colors.lightBlackColor,
+              }}>
+              Sports
+            </Text>
+
+            <Text
+              style={{
+                alignSelf: 'center',
+                marginVertical: 20,
+                fontSize: 16,
+                fontFamily: fonts.RRegular,
+                color: colors.themeColor,
+              }}></Text>
+          </View>
+          <View style={styles.separatorLine} />
+          <FlatList
+            ItemSeparatorComponent={() => <TCThinDivider />}
+            data={
+              (clickedUserType === 'user' &&
+                authContext?.entity?.obj?.registered_sports?.filter(
+                  (obj) =>
+                    obj?.sport &&
+                    obj?.sport_type &&
+                    obj.sport_type === 'single',
+                )) ||
+              (clickedUserType === 'referee' &&
+                authContext?.entity?.obj?.referee_data) ||
+              (clickedUserType === 'scorekeeper' &&
+                authContext?.entity?.obj?.scorekeeper_data)
+            }
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={renderSports}
+          />
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }

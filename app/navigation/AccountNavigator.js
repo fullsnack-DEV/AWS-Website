@@ -266,6 +266,7 @@ import GroupInviteYouScreen from '../screens/account/GroupSetting/GroupInviteYou
 import GroupInviteSettingPrivacyScreen from '../screens/account/GroupSetting/GroupInviteSettingPrivacyScreen';
 import UserEventSettingPrivacyScreen from '../screens/account/GroupSetting/UserEventSettingPrivacyScreen';
 import WhatEventInviteScreen from '../screens/account/GroupSetting/WhatEventInviteScreen';
+import WhoCanInviteEventScreen from '../screens/account/GroupSetting/WhoCanInviteEventScreen';
 
 // Scorekeeper Review Screen
 
@@ -3720,6 +3721,23 @@ const AccountNavigator = () => (
       }}
     />
 
+    <Stack.Screen
+      name="WhoCanInviteEventScreen"
+      component={WhoCanInviteEventScreen}
+      options={{
+        title: 'Who Can Invite People',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
     <Stack.Screen
       name="ClubSettingPrivacyScreen"
       component={ClubSettingPrivacyScreen}

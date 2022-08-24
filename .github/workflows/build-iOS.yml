@@ -1,3 +1,24 @@
+name: GitHub iOS Build
+on:
+  push:
+    branches:
+      - QA
+env:
+  ENV: 'qa'
+  BASE_URL: 'https://xm1j1j8luh.execute-api.us-east-1.amazonaws.com/qa/'
+  GAME_INDEX: 'gameindex-qa'
+  USER_INDEX: 'userindex-qa'
+  GROUP_INDEX: 'groupindex-qa'
+  CALENDAR_INDEX: 'calendarindex-qa'
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install npm dependencies
+        run: |
+          npm cache clear --force
+
 # name: GitHub iOS Build
 # on: push
 # env:

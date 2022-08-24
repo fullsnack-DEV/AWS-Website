@@ -2315,11 +2315,11 @@ const HomeScreen = ({navigation, route}) => {
     navigation.navigate('EntityInfoScreen', {
       uid: route?.params?.uid || authContext.entity.uid,
       isAdmin: route?.params?.uid === authContext.entity.uid,
-      onGroupListPress,
-      onTeamPress,
-      refereesInModal,
-      playInModel,
-      onMemberPress,
+      onGroupListPress: () => onGroupListPress,
+      onTeamPress: () => onTeamPress,
+      refereesInModal: () => refereesInModal,
+      playInModel: () => playInModel,
+      onMemberPress: () => onMemberPress,
     });
   };
 
@@ -3019,16 +3019,16 @@ const HomeScreen = ({navigation, route}) => {
           if (index === 1) {
             moveToScoreboardTab();
           }
+          //   if (index === 2) {
+          //     moveToSchedule();
+          //   }
           if (index === 2) {
-            moveToSchedule();
-          }
-          if (index === 3) {
             moveToGallary();
           }
-          if (index === 4) {
+          if (index === 3) {
             moveToReview();
           }
-          if (index === 5) {
+          if (index === 4) {
             moveToStats();
           }
         }}>
@@ -3337,15 +3337,8 @@ const HomeScreen = ({navigation, route}) => {
               showsHorizontalScrollIndicator={false}
               data={
                 isTeamHome
-                  ? [
-                      'Info',
-                      'Scoreboard',
-                      'Schedule',
-                      'Gallery',
-                      'Review',
-                      'Stats',
-                    ]
-                  : ['Info', 'Scoreboard', 'Schedule', 'Gallery']
+                  ? ['Info', 'Scoreboard', 'Gallery', 'Review', 'Stats']
+                  : ['Info', 'Scoreboard', 'Gallery']
               }
               horizontal
               renderItem={renderHomeTabs}
