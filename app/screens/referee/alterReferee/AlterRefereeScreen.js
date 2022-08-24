@@ -47,10 +47,7 @@ import MatchFeesCard from '../../../components/challenge/MatchFeesCard';
 import ReservationNumber from '../../../components/reservations/ReservationNumber';
 import GameStatus from '../../../Constants/GameStatus';
 import TCGameCard from '../../../components/TCGameCard';
-import {
-  getGameFromToDateDiff,
-  getGameHomeScreen,
-} from '../../../utils/gameUtils';
+import {getGameHomeScreen} from '../../../utils/gameUtils';
 import RefereeReservationStatus from '../../../Constants/RefereeReservationStatus';
 import {
   getHitSlop,
@@ -626,12 +623,6 @@ export default function AlterRefereeScreen({navigation, route}) {
       }}
     />
   );
-  const getDateDuration = (fromData, toDate) => {
-    const startDate = moment(fromData * 1000).format('hh:mm a');
-    const endDate = moment(toDate * 1000).format('hh:mm a');
-    const duration = getGameFromToDateDiff(fromData, toDate);
-    return `${startDate} - ${endDate} (${duration})`;
-  };
 
   const getOpponentEntity = (reservationObject) => {
     if (reservationObject?.referee?.user_id === entity.uid) {
