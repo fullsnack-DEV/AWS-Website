@@ -20,10 +20,7 @@ import images from '../../../../Constants/ImagePath';
 import TCGradientButton from '../../../../components/TCGradientButton';
 import TCGameCard from '../../../../components/TCGameCard';
 import TCInfoField from '../../../../components/TCInfoField';
-import {
-  getGameFromToDateDiff,
-  getGameHomeScreen,
-} from '../../../../utils/gameUtils';
+import {getGameHomeScreen} from '../../../../utils/gameUtils';
 import {getScorekeeperGameFeeEstimation} from '../../../../api/Challenge';
 import {createUserReservation} from '../../../../api/Reservations';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
@@ -124,13 +121,6 @@ const ScorekeeperBookingDateAndTime = ({navigation, route}) => {
       }}
     />
   );
-
-  const getDateDuration = (fromData, toDate) => {
-    const startDate = moment(fromData * 1000).format('hh:mm a');
-    const endDate = moment(toDate * 1000).format('hh:mm a');
-    const duration = getGameFromToDateDiff(fromData, toDate);
-    return `${startDate} - ${endDate} (${duration})`;
-  };
 
   const handleOnNext = () => {
     if (!gameData?.game_id) {

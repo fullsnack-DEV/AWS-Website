@@ -15,6 +15,7 @@ import moment from 'moment';
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
 import _ from 'lodash';
+
 import AuthContext from '../../../../auth/context';
 import EventMapView from '../../../../components/Schedule/EventMapView';
 import colors from '../../../../Constants/Colors';
@@ -23,10 +24,7 @@ import images from '../../../../Constants/ImagePath';
 import TCGradientButton from '../../../../components/TCGradientButton';
 import TCGameCard from '../../../../components/TCGameCard';
 import TCInfoField from '../../../../components/TCInfoField';
-import {
-  getGameFromToDateDiff,
-  getGameHomeScreen,
-} from '../../../../utils/gameUtils';
+import {getGameHomeScreen} from '../../../../utils/gameUtils';
 
 import {getRefereeGameFeeEstimation} from '../../../../api/Challenge';
 import MatchFeesCard from '../../../../components/challenge/MatchFeesCard';
@@ -39,8 +37,6 @@ import TCChallengeTitle from '../../../../components/TCChallengeTitle';
 import TCThickDivider from '../../../../components/TCThickDivider';
 import {getGameRefereeReservation} from '../../../../api/Games';
 import TCFormProgress from '../../../../components/TCFormProgress';
-import {color} from 'react-native-reanimated';
-import {widthPercentageToDP} from 'react-native-responsive-screen';
 
 let body = {};
 const RefereeBookingDateAndTime = ({navigation, route}) => {
@@ -158,12 +154,6 @@ const RefereeBookingDateAndTime = ({navigation, route}) => {
   );
 
   console.log('gameData:=>', gameData);
-  const getDateDuration = (fromData, toDate) => {
-    const startDate = moment(fromData * 1000).format('hh:mm a');
-    const endDate = moment(toDate * 1000).format('hh:mm a');
-    const duration = getGameFromToDateDiff(fromData, toDate);
-    return `${startDate} - ${endDate} (${duration})`;
-  };
 
   const handleOnNext = () => {
     if (!gameData?.game_id) {
