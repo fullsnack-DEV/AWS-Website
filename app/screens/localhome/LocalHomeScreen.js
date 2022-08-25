@@ -34,7 +34,6 @@ import LinearGradient from 'react-native-linear-gradient';
 import Carousel from 'react-native-snap-carousel';
 import FastImage from 'react-native-fast-image';
 import {useIsFocused} from '@react-navigation/native';
-import ActionSheet from 'react-native-actionsheet';
 import {getLocationNameWithLatLong} from '../../api/External';
 import AuthContext from '../../auth/context';
 import images from '../../Constants/ImagePath';
@@ -79,8 +78,6 @@ import {getQBAccountType, QBupdateUser} from '../../utils/QuickBlox';
 const defaultPageSize = 5;
 export default function LocalHomeScreen({navigation, route}) {
   const refContainer = useRef();
-  const actionSheet = useRef();
-  const actionSheetTeamClub = useRef();
 
   const isFocused = useIsFocused();
 
@@ -1097,13 +1094,6 @@ export default function LocalHomeScreen({navigation, route}) {
     [authContext, createPostAfterUpload, imageUploadContext],
   );
 
-  const onCreateTeamActionSheetItemPress = (index) => {
-    if (index === 0) {
-      navigation.navigate('CreateTeamForm1');
-    } else if (index === 1) {
-      navigation.navigate('RegisterPlayer');
-    }
-  };
   const renderSportsView = useCallback(
     ({item}) =>
       item.sport !== 'All' && (
@@ -1153,15 +1143,6 @@ export default function LocalHomeScreen({navigation, route}) {
   const getBack = () => {
     console.log('called getback');
     setSettingPopup(true);
-  };
-  const onCreateGroupActionSheetItemPress = (index) => {
-    if (index === 0) {
-      navigation.navigate('CreateTeamForm1');
-    } else if (index === 1) {
-      navigation.navigate('CreateClubForm1');
-    } else if (index === 2) {
-      Alert.alert('This is under development');
-    }
   };
 
   const unPauseGroup = () => {
@@ -1829,38 +1810,7 @@ export default function LocalHomeScreen({navigation, route}) {
           />
         </View>
       </Modal>
-      <ActionSheet
-        ref={actionSheet}
-        title={'Create a team or register as a player'}
-        options={['Create Team', ' Register as Player', 'Cancel']}
-        cancelButtonIndex={2}
-        onPress={onCreateTeamActionSheetItemPress}
-      />
-      <ActionSheet
-        ref={actionSheetTeamClub}
-        title={'Create a team or club or league'}
-        options={
-          (authContext.entity.role === 'team' && [
-            ' Create Club',
-            'Create League',
-            'Cancel',
-          ]) ||
-          (authContext.entity.role === 'club' && [
-            'Create Team',
-            'Create League',
-            'Cancel',
-          ]) ||
-          authContext.entity.role === 'user' ||
-          (authContext.entity.role === 'player' && [
-            'Create Team',
-            ' Create Club',
-            'Create League',
-            'Cancel',
-          ])
-        }
-        cancelButtonIndex={3}
-        onPress={onCreateGroupActionSheetItemPress}
-      />
+
       {renderImageProgress}
     </View>
   );
