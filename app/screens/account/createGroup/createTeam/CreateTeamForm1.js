@@ -13,6 +13,7 @@ import {
   Text,
   Dimensions,
   SafeAreaView,
+  Keyboard,
 } from 'react-native';
 
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
@@ -32,7 +33,15 @@ import TCLabel from '../../../../components/TCLabel';
 import TCFormProgress from '../../../../components/TCFormProgress';
 
 import TCThinDivider from '../../../../components/TCThinDivider';
-import {getHitSlop, getSportName} from '../../../../utils';
+import {
+  getHitSlop,
+  getSportName,
+  heightPercentageToDP,
+} from '../../../../utils';
+import {
+  searchCityState,
+  searchLocationPlaceDetail,
+} from '../../../../api/External';
 
 export default function CreateTeamForm1({navigation, route}) {
   const isFocused = useIsFocused();
@@ -53,6 +62,10 @@ export default function CreateTeamForm1({navigation, route}) {
   const [state, setState] = useState('');
   const [country, setCountry] = useState('');
 
+  const [visibleLocationModal, setVisibleLocationModal] = useState(false);
+  const [cityData, setCityData] = useState([]);
+  const [searchText, setSearchText] = useState('');
+
   console.log(
     'route.params && route.params.clubObject',
     route.params && route.params.clubObject,
@@ -64,21 +77,16 @@ export default function CreateTeamForm1({navigation, route}) {
       if (route?.params?.clubObject) {
         setParentGroupID(route.params.clubObject.group_id);
       }
-      if (route?.params?.city) {
-        setCity(route?.params?.city);
-        setState(route?.params?.state);
-        setCountry(route?.params?.country);
-        setLocation(
-          `${route?.params?.city}, ${route?.params?.state}, ${route?.params?.country}`,
-        );
-      } else {
-        setCity('');
-        setState('');
-        setCountry('');
-        setLocation('');
-      }
     }
   }, [isFocused]);
+
+  useEffect(() => {
+    searchCityState(searchText).then((response) => {
+      console.log('rerererer', response);
+
+      setCityData(response.predictions);
+    });
+  }, [searchText]);
 
   const renderSports = ({item}) => (
     <TouchableWithoutFeedback
@@ -261,6 +269,37 @@ export default function CreateTeamForm1({navigation, route}) {
   //   });
   // };
 
+  const toggleLocationModal = () => {
+    setVisibleLocationModal(!visibleLocationModal);
+  };
+
+  const getTeamsData = async (item) => {
+    searchLocationPlaceDetail(item.place_id, authContext).then((response) => {
+      if (response) {
+        setCity(item?.terms?.[0]?.value ?? '');
+        setState(item?.terms?.[1]?.value ?? '');
+        setCountry(item?.terms?.[2]?.value ?? '');
+        setLocation(
+          `${item?.terms?.[0]?.value ?? ''}, ${
+            item?.terms?.[1]?.value ?? ''
+          }, ${item?.terms?.[2]?.value ?? ''}`,
+        );
+      }
+      setVisibleLocationModal(false);
+    });
+  };
+
+  const renderLocationItem = ({item, index}) => {
+    console.log('Location item:=>', item);
+    return (
+      <TouchableOpacity
+        style={styles.listItem}
+        onPress={() => getTeamsData(item)}>
+        <Text style={styles.cityList}>{cityData[index].description}</Text>
+      </TouchableOpacity>
+    );
+  };
+
   return (
     <>
       <TCFormProgress totalSteps={3} curruentStep={1} />
@@ -296,10 +335,11 @@ export default function CreateTeamForm1({navigation, route}) {
           <TCLabel title={strings.locationTitle} required={false} />
           <TouchableOpacity
             testID="choose-location-button"
-            onPress={() =>
-              navigation.navigate('SearchLocationScreen', {
-                comeFrom: 'CreateTeamForm1',
-              })
+            onPress={
+              //   navigation.navigate('SearchLocationScreen', {
+              //     comeFrom: 'CreateTeamForm1',
+              //   })
+              toggleLocationModal
             }>
             <TextInput
               placeholder={strings.searchCityPlaceholder}
@@ -386,6 +426,80 @@ export default function CreateTeamForm1({navigation, route}) {
             keyExtractor={(item, index) => index.toString()}
             renderItem={renderSports}
           />
+        </View>
+      </Modal>
+      <Modal
+        isVisible={visibleLocationModal}
+        onBackdropPress={() => setVisibleLocationModal(false)}
+        onRequestClose={() => setVisibleLocationModal(false)}
+        animationInTiming={300}
+        animationOutTiming={800}
+        backdropTransitionInTiming={300}
+        backdropTransitionOutTiming={800}
+        style={{
+          margin: 0,
+        }}>
+        <View
+          style={{
+            width: '100%',
+            height: Dimensions.get('window').height / 1.3,
+            backgroundColor: 'white',
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            borderTopLeftRadius: 30,
+            borderTopRightRadius: 30,
+            shadowColor: '#000',
+            shadowOffset: {width: 0, height: 1},
+            shadowOpacity: 0.5,
+            shadowRadius: 5,
+            elevation: 15,
+          }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              paddingHorizontal: 15,
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}>
+            <TouchableOpacity
+              hitSlop={getHitSlop(15)}
+              style={styles.closeButton}
+              onPress={() => setVisibleLocationModal(false)}>
+              <Image source={images.cancelImage} style={styles.closeButton} />
+            </TouchableOpacity>
+            <Text
+              style={{
+                alignSelf: 'center',
+                marginVertical: 20,
+                fontSize: 16,
+                fontFamily: fonts.RBold,
+                color: colors.lightBlackColor,
+              }}>
+              Location
+            </Text>
+            <TouchableOpacity onPress={() => {}}></TouchableOpacity>
+          </View>
+          <View style={styles.separatorLine} />
+          <View>
+            <View style={styles.sectionStyle}>
+              <Image source={images.searchLocation} style={styles.searchImg} />
+              <TextInput
+                testID="choose-location-input"
+                style={styles.textInput}
+                placeholder={strings.locationPlaceholderText}
+                clearButtonMode="always"
+                placeholderTextColor={colors.grayColor}
+                onChangeText={(text) => setSearchText(text)}
+              />
+            </View>
+            <FlatList
+              data={cityData}
+              renderItem={renderLocationItem}
+              keyExtractor={(item, index) => index.toString()}
+              onScroll={Keyboard.dismiss}
+            />
+          </View>
         </View>
       </Modal>
     </>
@@ -492,8 +606,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     backgroundColor: colors.grayColor,
     height: 0.5,
-    marginTop: 14,
-    width: wp('92%'),
+    width: wp('100%'),
   },
 
   languageList: {
@@ -507,5 +620,54 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     alignSelf: 'center',
   },
-  checkbox: {},
+
+  cityList: {
+    color: colors.lightBlackColor,
+    fontSize: wp('4%'),
+    textAlign: 'left',
+    fontFamily: fonts.RRegular,
+    // paddingLeft: wp('1%'),
+    width: wp('70%'),
+    margin: wp('4%'),
+    textAlignVertical: 'center',
+  },
+  listItem: {
+    flexDirection: 'row',
+    marginLeft: wp('10%'),
+    width: wp('80%'),
+  },
+
+  searchImg: {
+    alignSelf: 'center',
+    height: heightPercentageToDP('4%'),
+
+    resizeMode: 'contain',
+    width: wp('4%'),
+    tintColor: colors.lightBlackColor,
+  },
+  sectionStyle: {
+    alignItems: 'center',
+    backgroundColor: colors.whiteColor,
+    borderRadius: 25,
+
+    flexDirection: 'row',
+    height: 50,
+    justifyContent: 'center',
+    margin: wp('8%'),
+    paddingLeft: 17,
+    paddingRight: 5,
+
+    shadowColor: colors.googleColor,
+    shadowOffset: {width: 0, height: 4},
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  textInput: {
+    color: colors.blackColor,
+    flex: 1,
+    fontFamily: fonts.RRegular,
+    fontSize: wp('4.5%'),
+    paddingLeft: 10,
+  },
 });

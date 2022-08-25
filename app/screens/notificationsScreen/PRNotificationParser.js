@@ -607,7 +607,7 @@ const parseNormalNotification = async (data) => {
   if (activity.object) {
     notificationObject = JSON.parse(activity.object);
   }
-  console.log('Activity data:=>', activity);
+  console.log('Activity notificationObject:=>', activity.object);
   finalString.text = notificationObject.text;
   finalString.entityType =
     activity?.actor?.data?.entity_type === 'player'
@@ -645,6 +645,7 @@ const parseNormalNotification = async (data) => {
     );
   }
 
+  console.log('final string==>', finalString);
   return finalString;
 };
 

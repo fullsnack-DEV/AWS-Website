@@ -9,7 +9,6 @@ import {
 } from 'react-native';
 
 import {useIsFocused} from '@react-navigation/native';
-import PRNotificationDetailMessageItem from '../../components/notificationComponent/PRNotificationDetailMessageItem';
 import PRNotificationInviteCell from '../../components/notificationComponent/PRNotificationInviteCell';
 import NotificationType from '../../Constants/NotificationType';
 import {
@@ -36,6 +35,7 @@ import {getChallengeDetail} from '../challenge/ChallengeUtility';
 import PRNotificationTeamInvite from '../../components/notificationComponent/PRNotificationTeamInvite';
 import PRNotificationDetailItem from '../../components/notificationComponent/PRNotificationDetailItem';
 import {getEventById} from '../../api/Schedule';
+import NotificationItem from '../../components/notificationComponent/NotificationItem';
 
 function TrashScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
@@ -583,20 +583,33 @@ function TrashScreen({navigation, route}) {
     }
 
     return (
-      <PRNotificationDetailMessageItem
-        onPress={() => onNotificationClick(item)}
-        item={item}
+      //   <PRNotificationDetailMessageItem
+      //     onPress={() => onNotificationClick(item)}
+      //     item={item}
+      //     isTrash={true}
+      //     entityType={
+      //       authContext.entity.role === 'user' ||
+      //       authContext.entity.role === 'player'
+      //         ? 'user'
+      //         : 'group'
+      //     } // user or group
+      //     disabled={true}
+      //     onDetailPress={() => onDetailPress(item)}
+      //     selectedEntity={selectedEntity}
+      //     onPressFirstEntity={openHomePage}
+      //   />
+      <NotificationItem
         isTrash={true}
         entityType={
           authContext.entity.role === 'user' ||
           authContext.entity.role === 'player'
             ? 'user'
             : 'group'
-        } // user or group
-        disabled={true}
-        onDetailPress={() => onDetailPress(item)}
-        selectedEntity={selectedEntity}
+        }
+        data={item}
         onPressFirstEntity={openHomePage}
+        onPressSecondEntity={openHomePage}
+        onPressCard={() => onNotificationClick(item)}
       />
     );
   };
