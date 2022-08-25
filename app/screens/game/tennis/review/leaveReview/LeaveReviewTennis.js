@@ -137,8 +137,7 @@ const LeaveReviewTennis = ({navigation, route}) => {
         <TouchableOpacity
           onPress={() =>
             currentForm === 1 ? navigation.goBack() : setCurrentForm(1)
-          }
-        >
+          }>
           <Image
             source={images.backArrow}
             style={{
@@ -367,8 +366,7 @@ const LeaveReviewTennis = ({navigation, route}) => {
           <TouchableOpacity
             onPress={() =>
               currentForm === 1 ? navigation.goBack() : navigation.pop(1)
-            }
-          >
+            }>
             <Image source={images.backArrow} style={styles.backImageStyle} />
           </TouchableOpacity>
         }

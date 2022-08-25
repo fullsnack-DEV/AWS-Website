@@ -58,11 +58,9 @@ export default function ChangeSportsOrderScreen({navigation, route}) {
       ) || []),
     ];
 
-    const res = sportsList.map((obj) => {
-      return {
+    const res = sportsList.map((obj) => ({
         sport: obj.sport,
-      };
-    });
+      }));
     const data = Utility.uniqueArray(res, 'sport');
     console.log('resresres', data);
 
@@ -77,11 +75,9 @@ export default function ChangeSportsOrderScreen({navigation, route}) {
         ) {
           setAddedSport([...setting?.payload?.user?.schedule_sport_filter]);
           setRemovedSport(
-            data.filter((e) => {
-              return !setting?.payload?.user?.schedule_sport_filter?.some(
+            data.filter((e) => !setting?.payload?.user?.schedule_sport_filter?.some(
                 (item) => item.sport === e.sport,
-              );
-            }),
+              )),
           );
         } else {
           setAddedSport([]);
@@ -106,8 +102,7 @@ export default function ChangeSportsOrderScreen({navigation, route}) {
           onPress={() => {
             route?.params?.onBackClick(true);
             navigation.goBack();
-          }}
-        >
+          }}>
           <Image source={images.backArrow} style={styles.backImageStyle} />
         </TouchableOpacity>
       ),
@@ -119,8 +114,7 @@ export default function ChangeSportsOrderScreen({navigation, route}) {
             fontSize: 16,
             marginRight: 10,
             color: colors.lightBlackColor,
-          }}
-        >
+          }}>
           Save
         </Text>
       ),
@@ -169,8 +163,7 @@ export default function ChangeSportsOrderScreen({navigation, route}) {
               removedSport.push(item);
               setRemovedSport([...removedSport]);
             }}
-            style={{alignSelf: 'center'}}
-          >
+            style={{alignSelf: 'center'}}>
             <Image
               source={images.removeSportList}
               style={styles.addIconStyle}
@@ -220,8 +213,7 @@ export default function ChangeSportsOrderScreen({navigation, route}) {
                 Alert.alert('You can add up to 10 sports to the filter bar.');
               }
             }}
-            style={{alignSelf: 'center'}}
-          >
+            style={{alignSelf: 'center'}}>
             <Image source={images.addSportList} style={styles.addIconStyle} />
           </TouchableOpacity>
           <FastImage

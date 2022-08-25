@@ -22,7 +22,6 @@ import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
 import strings from '../../../Constants/String';
 
-
 export default function WhoCanJoinTeamScreen({navigation, route}) {
   const [comeFrom] = useState(route?.params?.comeFrom);
 
@@ -88,7 +87,6 @@ export default function WhoCanJoinTeamScreen({navigation, route}) {
     if (whoCanJoinTeam.key === whoCanJoinGroupOpetions[2].key) {
       bodyParams.who_can_join_for_member = 2;
     }
-
 
     setloading(true);
     patchGroup(authContext.entity.uid, bodyParams, authContext)

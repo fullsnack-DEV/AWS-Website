@@ -19,8 +19,7 @@ function SingleImageRender({data}) {
         onPress={() => {
           toggleModal();
         }}
-        style={styles.imagesViewStyle}
-      >
+        style={styles.imagesViewStyle}>
         <FastImage
           style={styles.imageStyle}
           source={{uri: data.attachments[0].thumbnail}}
@@ -38,8 +37,7 @@ function SingleImageRender({data}) {
           'landscape-left',
           'landscape-right',
         ]}
-        backdropOpacity={0}
-      >
+        backdropOpacity={0}>
         <SingleImageModal
           uploadImageURL={data.attachments[0].thumbnail}
           backBtnPress={() => setModalVisible(false)}

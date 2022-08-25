@@ -47,8 +47,7 @@ export default function TCSearchCityView({getCity}) {
         // navigation.navigate(route?.params?.comeFrom, { locationText: item?.structured_formatting?.main_text })
         getCity(item?.structured_formatting?.main_text);
         // setSelected(item?.structured_formatting?.main_text)
-      }}
-    >
+      }}>
       <Text style={styles.cityList}>
         {item?.structured_formatting?.main_text}
       </Text>

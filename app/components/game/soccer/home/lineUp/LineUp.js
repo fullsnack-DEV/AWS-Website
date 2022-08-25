@@ -246,7 +246,7 @@ export default function LineUp({navigation, gameData}) {
                 gameData.away_team.group_id === entity.uid &&
                 (gameData.status === GameStatus.accepted ||
                   gameData.status === GameStatus.reset))) && (
-              <TouchableOpacity
+                  <TouchableOpacity
                 style={styles.editTouchArea}
                 hitSlop={getHitSlop(15)}
                 onPress={() =>
@@ -254,10 +254,9 @@ export default function LineUp({navigation, gameData}) {
                     gameObj: gameData,
                     selectedTeam: selected === 1 ? 'home' : 'away',
                   })
-                }
-              >
-                <Image source={images.editSection} style={styles.editButton} />
-              </TouchableOpacity>
+                }>
+                    <Image source={images.editSection} style={styles.editButton} />
+                  </TouchableOpacity>
             )}
           </View>
           <Text
@@ -266,8 +265,7 @@ export default function LineUp({navigation, gameData}) {
               fontSize: 16,
               color: colors.lightBlackColor,
               marginLeft: 25,
-            }}
-          >
+            }}>
             Starting
           </Text>
 
@@ -279,8 +277,7 @@ export default function LineUp({navigation, gameData}) {
                 color: colors.grayColor,
                 marginLeft: 35,
                 marginTop: 10,
-              }}
-            >
+              }}>
               No Player
             </Text>
           ) : (
@@ -299,8 +296,7 @@ export default function LineUp({navigation, gameData}) {
               color: colors.lightBlackColor,
               marginLeft: 25,
               marginTop: 20,
-            }}
-          >
+            }}>
             Subs
           </Text>
 
@@ -312,8 +308,7 @@ export default function LineUp({navigation, gameData}) {
                 color: colors.grayColor,
                 marginLeft: 35,
                 marginTop: 10,
-              }}
-            >
+              }}>
               No Player
             </Text>
           ) : (
@@ -350,7 +345,7 @@ export default function LineUp({navigation, gameData}) {
                 gameData.away_team.group_id === entity.uid &&
                 (gameData.status === GameStatus.accepted ||
                   gameData.status === GameStatus.reset))) && (
-              <TouchableOpacity
+                  <TouchableOpacity
                 style={styles.editTouchArea}
                 hitSlop={getHitSlop(15)}
                 onPress={() =>
@@ -358,10 +353,9 @@ export default function LineUp({navigation, gameData}) {
                     gameObj: gameData,
                     selectedTeam: selected === 1 ? 'home' : 'away',
                   })
-                }
-              >
-                <Image source={images.editSection} style={styles.editButton} />
-              </TouchableOpacity>
+                }>
+                    <Image source={images.editSection} style={styles.editButton} />
+                  </TouchableOpacity>
             )}
           </View>
 
@@ -373,8 +367,7 @@ export default function LineUp({navigation, gameData}) {
                 color: colors.grayColor,
                 marginLeft: 35,
                 marginTop: 10,
-              }}
-            >
+              }}>
               No Coach
             </Text>
           ) : (

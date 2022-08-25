@@ -34,8 +34,7 @@ export default function ClubCreatedScreen({navigation, route}) {
               menuBtnVisible: false,
               sourceScreen: 'AccountScreen',
             });
-          }}
-        >
+          }}>
           <Text style={styles.goToProfileTitle}>{strings.goToClubText}</Text>
         </TouchableOpacity>
         {/* <TouchableOpacity style={ styles.inviteUserButton } onPress={() => {}}>

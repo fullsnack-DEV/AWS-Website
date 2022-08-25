@@ -6,8 +6,7 @@ function ImageButton({source, onImagePress, imageStyle, resizeMode, style}) {
   return (
     <TouchableOpacity
       onPress={onImagePress}
-      style={[styles.containerStyle, style]}
-    >
+      style={[styles.containerStyle, style]}>
       <Image
         source={source}
         style={[styles.imageStyle, imageStyle]}

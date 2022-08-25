@@ -116,8 +116,7 @@ const MessageNewGroupScreen = ({route, navigation}) => {
               </View>
               <TouchableOpacity
                 style={styles.selectedContactButtonView}
-                onPress={() => toggleSelection(true, item)}
-              >
+                onPress={() => toggleSelection(true, item)}>
                 <Image
                   source={images.cancelImage}
                   style={styles.deSelectedContactImage}
@@ -133,8 +132,7 @@ const MessageNewGroupScreen = ({route, navigation}) => {
                 fontFamily: fonts.RBold,
                 textAlign: 'center',
                 width: 50,
-              }}
-            >
+              }}>
               {fullName}
             </Text>
           </View>
@@ -311,8 +309,7 @@ const MessageNewGroupScreen = ({route, navigation}) => {
                 ...styles.eventTextStyle,
                 width: 100,
                 textAlign: 'right',
-              }}
-            >
+              }}>
               Create
             </Text>
           </TouchableOpacity>
@@ -391,8 +388,7 @@ const MessageNewGroupScreen = ({route, navigation}) => {
         <TouchableOpacity
           onPress={() => {
             onBGImageClicked();
-          }}
-        >
+          }}>
           <View
             style={{
               height: 80,
@@ -406,8 +402,7 @@ const MessageNewGroupScreen = ({route, navigation}) => {
               shadowOpacity: 0.16,
               shadowRadius: 3,
               elevation: 3,
-            }}
-          >
+            }}>
             <FastImage
               resizeMode={'contain'}
               source={

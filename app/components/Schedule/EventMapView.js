@@ -14,8 +14,7 @@ function EventMapView({region, coordinate, style}) {
       region={region}
       scrollEnabled={false}
       zoomEnabled={false}
-      style={[styles.mapViewStyle, style]}
-    >
+      style={[styles.mapViewStyle, style]}>
       <Marker coordinate={coordinate} />
     </MapView>
   );

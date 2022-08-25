@@ -70,8 +70,7 @@ export default function UserFoundScreen({navigation, route}) {
           <View
             style={{
               marginTop: 100,
-            }}
-          >
+            }}>
             <View style={styles.topContainer}>
               <Text style={styles.foundUserText}>
                 We found a user whose e-mail account is

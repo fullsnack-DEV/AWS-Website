@@ -78,8 +78,7 @@ export default function SearchModel({searchText, onItemPress}) {
               style={styles.userTextStyle}
               onPress={() => {
                 onItemPress(item.full_name);
-              }}
-            >
+              }}>
               {item.full_name}
             </Text>
           );

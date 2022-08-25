@@ -25,8 +25,7 @@ export default function TCInfoImageField({
             fontSize: 16,
             color,
           }}
-          numberOfLines={1}
-        >
+          numberOfLines={1}>
           {name}
         </Text>
       </View>

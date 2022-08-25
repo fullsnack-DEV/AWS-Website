@@ -31,8 +31,7 @@ export default function TCGameButton({
           )}
           {buttonTitle && (
             <Text
-              style={[styles.gameRecordButtonTitle, {color: buttonTextColor}]}
-            >
+              style={[styles.gameRecordButtonTitle, {color: buttonTextColor}]}>
               {buttonTitle}
             </Text>
           )}

@@ -80,8 +80,7 @@ export default function MembersProfileScreen({navigation, route}) {
         whoSeeID === entity.uid &&
         !loading && (
           <TouchableWithoutFeedback
-            onPress={() => actionSheet?.current?.show()}
-          >
+            onPress={() => actionSheet?.current?.show()}>
             <Image
               source={images.horizontal3Dot}
               style={styles.navigationRightItem}
@@ -194,25 +193,20 @@ export default function MembersProfileScreen({navigation, route}) {
     }
     return numbersString;
   };
-  const listEmptyView = () => {
-    return (
-      <View style={{margin: 15, marginLeft: 25}}>
-        <Text
+  const listEmptyView = () => (
+    <View style={{margin: 15, marginLeft: 25}}>
+      <Text
           style={{
             fontFamily: fonts.RMedium,
             fontSize: 18,
             color: colors.userPostTimeColor,
-          }}
-        >
-          No Joined Teams Available
-        </Text>
-      </View>
+          }}>
+        No Joined Teams Available
+      </Text>
+    </View>
     );
-  };
 
-  const renderSeparator = () => {
-    return <TCThinDivider marginTop={20} width={'100%'} />;
-  };
+  const renderSeparator = () => <TCThinDivider marginTop={20} width={'100%'} />;
 
   const getLocation = () => {
     let locationString = '';
@@ -247,8 +241,7 @@ export default function MembersProfileScreen({navigation, route}) {
                 flexDirection: 'row',
                 justifyContent: 'space-between',
                 marginBottom: 10,
-              }}
-            >
+              }}>
               <TCMemberProfile
                 image={
                   memberDetail?.thumbnail
@@ -266,8 +259,7 @@ export default function MembersProfileScreen({navigation, route}) {
                     navigation.navigate('EditMemberInfoScreen', {
                       memberInfo: memberDetail,
                     });
-                  }}
-                >
+                  }}>
                   <Image source={images.editSection} style={styles.editImage} />
                 </TouchableWithoutFeedback>
               )}
@@ -331,8 +323,7 @@ export default function MembersProfileScreen({navigation, route}) {
                       });
                     }
                   });
-                }}
-              >
+                }}>
                 <View style={styles.inviteButtonContainer}>
                   <Text style={styles.inviteTextStyle}>
                     Invite or Connect to an Account
@@ -351,8 +342,7 @@ export default function MembersProfileScreen({navigation, route}) {
                     navigation.navigate('EditMemberBasicInfoScreen', {
                       memberInfo: memberDetail,
                     })
-                  }
-                >
+                  }>
                   <Image source={images.editSection} style={styles.editImage} />
                 </TouchableWithoutFeedback>
               )}
@@ -521,8 +511,7 @@ export default function MembersProfileScreen({navigation, route}) {
                     navigation.navigate('EditClubNotesScreen', {
                       memberInfo: memberDetail,
                     })
-                  }
-                >
+                  }>
                   <Image source={images.editSection} style={styles.editImage} />
                 </TouchableWithoutFeedback>
               )}

@@ -34,8 +34,7 @@ export default function TCPlayerImageInfo({
               fontSize: 16,
               color,
             }}
-            numberOfLines={1}
-          >
+            numberOfLines={1}>
             {player1Name}
           </Text>
         </View>
@@ -53,8 +52,7 @@ export default function TCPlayerImageInfo({
               fontSize: 16,
               color,
             }}
-            numberOfLines={1}
-          >
+            numberOfLines={1}>
             {player2Name}
           </Text>
         </View>

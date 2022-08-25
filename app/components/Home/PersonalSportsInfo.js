@@ -158,8 +158,7 @@ const PersonalSportsInfo = ({
             actionSheet.current.show();
           }, 200);
         }}
-        containerStyle={{marginTop: 10}}
-      >
+        containerStyle={{marginTop: 10}}>
         <Text style={styles.bioTextStyle}>{bioText}</Text>
         <Text style={styles.signUpTimeStyle}>{strings.signedUpTime}</Text>
         <View style={styles.userCategoryView}>
@@ -181,8 +180,7 @@ const PersonalSportsInfo = ({
           setTimeout(() => {
             actionSheet.current.show();
           }, 200);
-        }}
-      >
+        }}>
         <BasicInfoItem title={strings.gender} value={info.genderText} />
         <BasicInfoItem
           title={strings.yearOfBirth}
@@ -215,11 +213,9 @@ const PersonalSportsInfo = ({
           setTimeout(() => {
             actionSheet.current.show();
           }, 200);
-        }}
-      >
+        }}>
         <Text
-          style={styles.ntrpValueStyle}
-        >{`$${gameFeeCount} CAD/match`}</Text>
+          style={styles.ntrpValueStyle}>{`$${gameFeeCount} CAD/match`}</Text>
       </EditEventItem>
       <View style={styles.dividerStyle} />
       <EditEventItem
@@ -231,8 +227,7 @@ const PersonalSportsInfo = ({
           setTimeout(() => {
             actionSheet.current.show();
           }, 200);
-        }}
-      >
+        }}>
         <Text style={styles.ntrpValueStyle}>{ntrpSelect}</Text>
       </EditEventItem>
       <View style={styles.dividerStyle} />
@@ -244,8 +239,7 @@ const PersonalSportsInfo = ({
           setTimeout(() => {
             actionSheet.current.show();
           }, 200);
-        }}
-      >
+        }}>
         <Text style={styles.bioTextStyle}>{info.homePlaceText}</Text>
         <EventMapView
           region={{
@@ -267,8 +261,7 @@ const PersonalSportsInfo = ({
         title={strings.teamstitle}
         onEditPress={() => {
           setPrivacyModal(true);
-        }}
-      >
+        }}>
         <FlatList
           data={teamsData}
           bounces={false}
@@ -304,8 +297,7 @@ const PersonalSportsInfo = ({
         title={strings.clubstitle}
         onEditPress={() => {
           setPrivacyModal(true);
-        }}
-      >
+        }}>
         <FlatList
           data={clubsData}
           bounces={false}
@@ -346,20 +338,17 @@ const PersonalSportsInfo = ({
         }}
         hasBackdrop
         onBackdropPress={() => setPrivacyModal(false)}
-        backdropOpacity={0}
-      >
+        backdropOpacity={0}>
         <SafeAreaView
           style={[
             styles.modalContainerViewStyle,
             {backgroundColor: colors.whiteColor},
-          ]}
-        >
+          ]}>
           <LinearGradient
             colors={[colors.orangeColor, colors.yellowColor]}
             end={{x: 0.0, y: 0.25}}
             start={{x: 1, y: 0.5}}
-            style={styles.gradiantHeaderViewStyle}
-          ></LinearGradient>
+            style={styles.gradiantHeaderViewStyle}></LinearGradient>
           <Header
             mainContainerStyle={styles.headerMainContainerStyle}
             leftComponent={
@@ -388,8 +377,7 @@ const PersonalSportsInfo = ({
                     fontSize: 16,
                     fontFamily: fonts.RLight,
                     color: colors.whiteColor,
-                  }}
-                >
+                  }}>
                   {'Save'}
                 </Text>
               </TouchableOpacity>
@@ -403,8 +391,7 @@ const PersonalSportsInfo = ({
               (editPressTitle === strings.homePlaceTitle &&
                 strings.homePlacePrivacyTitle)
             }
-            containerStyle={{marginTop: 10}}
-          >
+            containerStyle={{marginTop: 10}}>
             <FlatList
               data={privacyData}
               style={{marginTop: 10}}
@@ -443,15 +430,13 @@ const PersonalSportsInfo = ({
           backgroundColor: 'rgba(0,0,0,0)',
         }}
         hasBackdrop
-        onBackdropPress={() => setEditModal(false)}
-      >
+        onBackdropPress={() => setEditModal(false)}>
         <TCKeyboardView>
           <SafeAreaView
             style={[
               styles.modalContainerViewStyle,
               {height: hp(100), top: hp(5), backgroundColor: colors.whiteColor},
-            ]}
-          >
+            ]}>
             <ModalLocationSearch
               visible={searchLocationModal}
               onClose={() => setSearchLocationModal(false)}
@@ -464,8 +449,7 @@ const PersonalSportsInfo = ({
               colors={[colors.orangeColor, colors.yellowColor]}
               end={{x: 0.0, y: 0.25}}
               start={{x: 1, y: 0.5}}
-              style={styles.gradiantHeaderViewStyle}
-            ></LinearGradient>
+              style={styles.gradiantHeaderViewStyle}></LinearGradient>
             <Header
               mainContainerStyle={styles.headerMainContainerStyle}
               leftComponent={
@@ -528,15 +512,13 @@ const PersonalSportsInfo = ({
                     };
                     onSavePress(params);
                     // setEditModal(false)
-                  }}
-                >
+                  }}>
                   <Text
                     style={{
                       fontSize: 16,
                       fontFamily: fonts.RLight,
                       color: colors.whiteColor,
-                    }}
-                  >
+                    }}>
                     {'Save'}
                   </Text>
                 </TouchableOpacity>
@@ -556,8 +538,7 @@ const PersonalSportsInfo = ({
               <ScrollView>
                 <EventItemRender
                   title={strings.gender}
-                  containerStyle={{marginTop: 15}}
-                >
+                  containerStyle={{marginTop: 15}}>
                   <View style={{marginTop: 8}}>
                     <TCPicker
                       dataSource={DataSource.Gender}
@@ -571,8 +552,7 @@ const PersonalSportsInfo = ({
                 </EventItemRender>
                 <EventItemRender
                   title={strings.yearOfBirth}
-                  containerStyle={{marginTop: 15}}
-                >
+                  containerStyle={{marginTop: 15}}>
                   <BirthSelectItem
                     title={moment(info.birthdayText).format('YYYY')}
                     onItemPress={() => setDateModalVisible(!dateModalVisible)}
@@ -588,8 +568,7 @@ const PersonalSportsInfo = ({
                 </EventItemRender>
                 <EventItemRender
                   title={strings.height}
-                  containerStyle={{marginTop: 15}}
-                >
+                  containerStyle={{marginTop: 15}}>
                   <EventTextInput
                     value={info.heightText}
                     placeholder={'Enter Height'}
@@ -605,8 +584,7 @@ const PersonalSportsInfo = ({
                 </EventItemRender>
                 <EventItemRender
                   title={strings.weight}
-                  containerStyle={{marginTop: 15}}
-                >
+                  containerStyle={{marginTop: 15}}>
                   <EventTextInput
                     value={info.weightText}
                     placeholder={'Enter Weight'}
@@ -622,8 +600,7 @@ const PersonalSportsInfo = ({
                 </EventItemRender>
                 <EventItemRender
                   title={strings.mostUsedFoot}
-                  containerStyle={{marginTop: 15}}
-                >
+                  containerStyle={{marginTop: 15}}>
                   <View style={{marginTop: 8}}>
                     <TCPicker
                       dataSource={[
@@ -641,8 +618,7 @@ const PersonalSportsInfo = ({
                 </EventItemRender>
                 <EventItemRender
                   title={strings.currrentCityTitle}
-                  containerStyle={{marginTop: 15}}
-                >
+                  containerStyle={{marginTop: 15}}>
                   <BirthSelectItem
                     title={info.currentCity}
                     onItemPress={() => {

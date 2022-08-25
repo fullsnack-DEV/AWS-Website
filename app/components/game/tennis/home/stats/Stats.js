@@ -107,8 +107,7 @@ const Stats = ({gameData, getGameStatsData}) => {
         justifyContent: 'space-between',
         marginLeft: 15,
         marginRight: 15,
-      }}
-    >
+      }}>
       <Text style={styles.statsCounter}>
         {item.home_team === 0 ? '-' : Number(item.home_team).toFixed(2)}
       </Text>

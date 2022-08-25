@@ -1166,8 +1166,8 @@ export default function EditRefereeReservation({navigation, route}) {
           {(bodyParams.status === RefereeReservationStatus.changeRequest ||
             bodyParams.status ===
               RefereeReservationStatus.pendingrequestpayment) && (
-            <View>
-              <TCBorderButton
+              <View>
+                <TCBorderButton
                 title={strings.cancelreservation}
                 textColor={colors.whiteColor}
                 borderColor={colors.grayColor}
@@ -1200,7 +1200,7 @@ export default function EditRefereeReservation({navigation, route}) {
                   }
                 }}
               />
-            </View>
+              </View>
           )}
         </View>
       )}

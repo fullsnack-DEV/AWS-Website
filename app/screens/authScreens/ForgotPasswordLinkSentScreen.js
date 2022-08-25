@@ -18,8 +18,7 @@ export default function ForgotPasswordLinkSentScreen({navigation}) {
   return (
     <LinearGradient
       colors={[colors.themeColor1, colors.themeColor3]}
-      style={styles.mainContainer}
-    >
+      style={styles.mainContainer}>
       <FastImage
         resizeMode={'stretch'}
         style={styles.background}

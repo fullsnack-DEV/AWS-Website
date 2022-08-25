@@ -26,8 +26,7 @@ export default function LogDetailScreen({route}) {
             fontFamily: fonts.RRegular,
             fontSize: 16,
             color: colors.lightBlackColor,
-          }}
-        >
+          }}>
           Transaction no.: {data?.transaction_id}
         </Text>
       </View>
@@ -40,8 +39,7 @@ export default function LogDetailScreen({route}) {
               fontSize: 16,
               fontFamily: fonts.RMedium,
               color: colors.lightBlackColor,
-            }}
-          >
+            }}>
             {`$${data?.amount}`}
           </Text>
         </View>
@@ -53,8 +51,7 @@ export default function LogDetailScreen({route}) {
               fontSize: 16,
               fontFamily: fonts.RMedium,
               color: colors.lightBlackColor,
-            }}
-          >
+            }}>
             {data?.transaction_type.charAt(0).toUpperCase() +
               data?.transaction_type.slice(1)}
           </Text>
@@ -67,8 +64,7 @@ export default function LogDetailScreen({route}) {
               fontSize: 16,
               fontFamily: fonts.RMedium,
               color: colors.lightBlackColor,
-            }}
-          >
+            }}>
             {`By ${data?.payment_mode}`}
           </Text>
         </View>
@@ -82,8 +78,7 @@ export default function LogDetailScreen({route}) {
             fontFamily: fonts.RLight,
             fontSize: 16,
             color: colors.lightBlackColor,
-          }}
-        >
+          }}>
           {'Note'}
         </Text>
 
@@ -92,8 +87,7 @@ export default function LogDetailScreen({route}) {
             fontFamily: fonts.RRegular,
             fontSize: 16,
             color: colors.lightBlackColor,
-          }}
-        >
+          }}>
           {data?.notes}
         </Text>
       </View>
@@ -104,8 +98,7 @@ export default function LogDetailScreen({route}) {
           fontSize: 12,
           color: colors.userPostTimeColor,
           marginLeft: 15,
-        }}
-      >
+        }}>
         {`Logged by ${data?.done_by?.first_name} ${
           data?.done_by?.last_name
         } at ${moment(new Date(data?.transaction_date * 1000)).format(

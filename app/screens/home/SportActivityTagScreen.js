@@ -80,8 +80,7 @@ export default function SportActivityTagScreen({navigation}) {
             fontFamily: fonts.RLight,
             color: colors.lightBlackColor,
             marginRight: 15,
-          }}
-        >
+          }}>
           Save
         </Text>
       ),
@@ -206,8 +205,7 @@ export default function SportActivityTagScreen({navigation}) {
           style={styles.radioView}
           onPress={() => {
             setSelectedRadio(0);
-          }}
-        >
+          }}>
           <Text style={styles.radioTitle}>
             Display the later-done sports activity first
           </Text>
@@ -227,8 +225,7 @@ export default function SportActivityTagScreen({navigation}) {
               style={styles.checkView}
               onPress={() => {
                 setSelectedCheck(!selectedCheck);
-              }}
-            >
+              }}>
               <Image
                 source={
                   selectedCheck ? images.orangeCheckBox : images.uncheckBox
@@ -245,8 +242,7 @@ export default function SportActivityTagScreen({navigation}) {
               pointerEvents={selectedCheck ? 'auto' : 'none'}
               style={{
                 opacity: selectedCheck ? 1 : 0.4,
-              }}
-            >
+              }}>
               <FlatList
                 showsHorizontalScrollIndicator={false}
                 data={entitySource}
@@ -297,8 +293,7 @@ export default function SportActivityTagScreen({navigation}) {
           style={styles.radioView}
           onPress={() => {
             setSelectedRadio(1);
-          }}
-        >
+          }}>
           <Text style={styles.radioTitle}>Display in the fixed order</Text>
           <Image
             source={

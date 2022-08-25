@@ -20,8 +20,7 @@ function MultipleImageRender({data}) {
         onPress={() => {
           toggleModal();
         }}
-        style={styles.imagesViewStyle}
-      >
+        style={styles.imagesViewStyle}>
         <FastImage
           style={styles.imageStyle}
           source={{uri: data.attachments[0].thumbnail}}
@@ -43,8 +42,7 @@ function MultipleImageRender({data}) {
           'landscape-right',
         ]}
         style={{margin: 0}}
-        backdropOpacity={0}
-      >
+        backdropOpacity={0}>
         <MultipleImageModal
           attachedImages={data.attachments.length > 0 ? data.attachments : []}
           backBtnPress={() => setModalVisible(false)}

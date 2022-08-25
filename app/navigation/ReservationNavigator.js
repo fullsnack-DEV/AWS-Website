@@ -55,8 +55,7 @@ const ReservationNavigator = () => (
       // headerTransparent: true,
       // headerTitle: true,
       headerBackTitleVisible: false,
-    }}
-  >
+    }}>
     <Stack.Screen
       name="ReservationScreen"
       component={ReservationScreen}

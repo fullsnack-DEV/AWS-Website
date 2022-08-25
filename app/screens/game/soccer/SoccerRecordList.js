@@ -215,8 +215,7 @@ export default function SoccerRecordList({route}) {
               {key: 'delete', fillColor: '#E63E3F', image: images.deleteIcon},
               {key: 'edit', fillColor: '#4D4D4D', image: images.editButton},
             ]}
-            onPress={(key) => onSwipeRowItemPress(key, item)}
-          >
+            onPress={(key) => onSwipeRowItemPress(key, item)}>
             {!isGameState && isHomeTeam && (
               <TCGameScoreLeft
                 style={{opacity: item?.deleted ? 0.5 : 1}}
@@ -267,8 +266,7 @@ export default function SoccerRecordList({route}) {
             alignItems: 'center',
             flexDirection: 'row',
             flex: 1,
-          }}
-        >
+          }}>
           <Dash
             style={{
               width: 1,
@@ -285,8 +283,7 @@ export default function SoccerRecordList({route}) {
           <TouchableWithoutFeedback
             onPress={() => {
               setEditorChecked(!editorChecked);
-            }}
-          >
+            }}>
             {editorChecked === true ? (
               <Image source={images.checkEditor} style={styles.checkboxImg} />
             ) : (
@@ -317,8 +314,7 @@ export default function SoccerRecordList({route}) {
                 gameData?.home_team_goal > gameData?.away_team_goal
                   ? colors.themeColor
                   : colors?.lightBlackColor || colors.lightBlackColor,
-            }}
-          >
+            }}>
             {gameData?.home_team?.group_name ?? ''}
           </Text>
         </View>
@@ -346,8 +342,7 @@ export default function SoccerRecordList({route}) {
                   ? colors.themeColor
                   : colors?.lightBlackColor || colors.lightBlackColor,
             }}
-            numberOfLines={2}
-          >
+            numberOfLines={2}>
             {gameData?.away_team?.group_name ?? ''}
           </Text>
           <View style={styles.profileShadow}>
@@ -412,8 +407,7 @@ export default function SoccerRecordList({route}) {
               padding: 5,
               fontSize: 14,
               marginLeft: 10,
-            }}
-          >
+            }}>
             Last updated by{'\n'}(
             {getTeamName(
               matchRecords[matchRecords.length - 1]?.updated_by?.group_id,

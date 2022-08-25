@@ -32,8 +32,7 @@ export default function PlayInProfileViewSection({
           {isPatch && (
             <LinearGradient
               colors={[colors.themeColor, colors.darkThemeColor]}
-              style={styles.patchStyle}
-            >
+              style={styles.patchStyle}>
               <Text style={styles.patchText}>
                 {patchType === 'club'
                   ? 'Looking for club!'
@@ -54,14 +53,12 @@ export default function PlayInProfileViewSection({
           ) : (
             <TouchableOpacity
               style={styles.messageBtnStyle}
-              onPress={onMessageButtonPress}
-            >
+              onPress={onMessageButtonPress}>
               <Text
                 style={[
                   styles.detailBtnTextStyle,
                   {color: colors.lightBlackColor},
-                ]}
-              >
+                ]}>
                 {strings.message}
               </Text>
             </TouchableOpacity>

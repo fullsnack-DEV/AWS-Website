@@ -23,8 +23,7 @@ export default function TCDateTimePicker({
           marginBottom: 0,
           flexDirection: 'column-reverse',
           justifyContent: 'flex-start',
-        }}
-      >
+        }}>
         <View style={styles.modelHeaderContainer}>
           <DatePicker
             cancel={() => onCancel()}

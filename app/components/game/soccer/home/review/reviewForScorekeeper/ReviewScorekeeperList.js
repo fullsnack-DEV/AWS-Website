@@ -68,8 +68,7 @@ export default function ReviewRefereeList({navigation, route}) {
     <TouchableOpacity
       onPress={() => {
         console.log('row pressed');
-      }}
-    >
+      }}>
       <View style={styles.topViewContainer}>
         <View style={{flexDirection: 'row'}}>
           <View style={styles.profileView}>
@@ -85,8 +84,9 @@ export default function ReviewRefereeList({navigation, route}) {
           <View style={styles.topTextContainer}>
             <Text
               style={styles.mediumNameText}
-              numberOfLines={1}
-            >{`${userData.profile.first_name} ${userData.profile.last_name}`}</Text>
+              numberOfLines={
+                1
+              }>{`${userData.profile.first_name} ${userData.profile.last_name}`}</Text>
             <Text style={styles.locationText} numberOfLines={1}>
               {`${userData.profile.jersey_number || ''} ${
                 userData.profile.positions || ''
@@ -111,12 +111,10 @@ export default function ReviewRefereeList({navigation, route}) {
                       route?.params?.starAttributesForReferee,
                   });
                 }
-              }}
-            >
+              }}>
               <LinearGradient
                 colors={[colors.yellowColor, colors.themeColor]}
-                style={styles.buttonStyle}
-              >
+                style={styles.buttonStyle}>
                 <Text style={styles.buttonText}>
                   {userData?.review_id ? 'Edit Review' : 'Review'}
                 </Text>

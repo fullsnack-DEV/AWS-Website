@@ -41,8 +41,7 @@ function EventTextInput({
           paddingHorizontal: 10,
           justifyContent: 'center',
           backgroundColor: colors.offwhite,
-        }}
-      >
+        }}>
         {displayLastTitle && (
           <Text style={styles.valueAfterTextStyle}>{valueEndTitle}</Text>
         )}

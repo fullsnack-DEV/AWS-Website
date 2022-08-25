@@ -135,8 +135,7 @@ const ApproveDisapprove = ({
                   fontSize: 16,
                   fontFamily: fonts.RBold,
                   textAlign: 'center',
-                }}
-              >
+                }}>
                 {status}
               </Text>
             </View>
@@ -156,8 +155,7 @@ const ApproveDisapprove = ({
             Do you want to approve the winner and scores of this game?{' '}
             <TouchableOpacity
               onPress={() => setShowWarningPopup(!showWarningPopup)}
-              style={{alignItems: 'center', justifyContent: 'center'}}
-            >
+              style={{alignItems: 'center', justifyContent: 'center'}}>
               <TCInlineImage
                 resizeMode={'contain'}
                 source={images.warningIcon}

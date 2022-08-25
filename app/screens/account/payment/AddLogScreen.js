@@ -64,8 +64,7 @@ export default function AddLogScreen({navigation, route}) {
                   }, 10);
                 });
             }
-          }}
-        >
+          }}>
           <Text>Done</Text>
         </TouchableOpacity>
       ),
@@ -121,15 +120,13 @@ export default function AddLogScreen({navigation, route}) {
             flexDirection: 'row',
             justifyContent: 'space-between',
           }}
-          onPress={() => setPaymentType(0)}
-        >
+          onPress={() => setPaymentType(0)}>
           <Text
             style={{
               fontFamily: fonts.RRegular,
               fontSize: 16,
               color: colors.lightBlackColor,
-            }}
-          >
+            }}>
             In Cash
           </Text>
           <Image
@@ -146,15 +143,13 @@ export default function AddLogScreen({navigation, route}) {
             flexDirection: 'row',
             justifyContent: 'space-between',
           }}
-          onPress={() => setPaymentType(1)}
-        >
+          onPress={() => setPaymentType(1)}>
           <Text
             style={{
               fontFamily: fonts.RRegular,
               fontSize: 16,
               color: colors.lightBlackColor,
-            }}
-          >
+            }}>
             By check
           </Text>
           <Image
@@ -175,8 +170,7 @@ export default function AddLogScreen({navigation, route}) {
               color: colors.lightBlackColor,
               marginLeft: 15,
               marginTop: 15,
-            }}
-          >
+            }}>
             {strings.amountTitle}
           </Text>
           <TextInput
@@ -188,8 +182,7 @@ export default function AddLogScreen({navigation, route}) {
               }
             }}
             keyboardType="numeric"
-            value={amount}
-          ></TextInput>
+            value={amount}></TextInput>
         </View>
 
         <View>
@@ -200,8 +193,7 @@ export default function AddLogScreen({navigation, route}) {
               color: colors.lightBlackColor,
               marginLeft: 15,
               marginTop: 15,
-            }}
-          >
+            }}>
             {strings.noteTitle}
           </Text>
           <TextInput
@@ -209,8 +201,7 @@ export default function AddLogScreen({navigation, route}) {
             style={styles.noteTxt}
             multiline
             onChangeText={(text) => setNote(text)}
-            value={note}
-          ></TextInput>
+            value={note}></TextInput>
         </View>
       </View>
     </ScrollView>

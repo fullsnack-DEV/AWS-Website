@@ -132,14 +132,12 @@ export default function ReservationCard({
           style={[
             styles.timeLocationText,
             {marginRight: 5, marginLeft: 5, color: colors.lightgrayColor},
-          ]}
-        >
+          ]}>
           |
         </Text>
         <Text
           style={[styles.timeLocationText, {marginRight: 0, flex: 0.5}]}
-          numberOfLines={1}
-        >
+          numberOfLines={1}>
           {data?.game?.city ?? data?.city}
         </Text>
       </View>

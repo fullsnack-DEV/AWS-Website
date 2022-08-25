@@ -78,8 +78,7 @@ export default function SportHideUnhideScreen({navigation}) {
             fontFamily: fonts.RLight,
             color: colors.lightBlackColor,
             marginRight: 15,
-          }}
-        >
+          }}>
           Save
         </Text>
       ),

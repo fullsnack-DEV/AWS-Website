@@ -8,8 +8,7 @@ export default function LanguageViewInInfo({title, languageName}) {
     <View style={styles.containerStyle}>
       <Text style={styles.titleStyle}>{title}</Text>
       <Text
-        style={[styles.titleStyle, {fontFamily: fonts.RRegular, marginTop: 3}]}
-      >
+        style={[styles.titleStyle, {fontFamily: fonts.RRegular, marginTop: 3}]}>
         {languageName}
       </Text>
     </View>

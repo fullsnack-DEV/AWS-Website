@@ -17,8 +17,7 @@ const TCTeamVS = ({
     <View style={styles.leftTeamContainer}>
       <LinearGradient
         colors={[colors.themeColor, colors.yellowColor]}
-        style={{...styles.teamLogoContainer, marginRight: wp(2)}}
-      >
+        style={{...styles.teamLogoContainer, marginRight: wp(2)}}>
         <View style={styles.teamInnerLogoContainer}>
           <FastImage
             resizeMode={'cover'}
@@ -40,8 +39,7 @@ const TCTeamVS = ({
       </Text>
       <LinearGradient
         colors={[colors.blueGradiantStart, colors.blueGradiantEnd]}
-        style={{...styles.teamLogoContainer, marginLeft: wp(2)}}
-      >
+        style={{...styles.teamLogoContainer, marginLeft: wp(2)}}>
         <View style={{...styles.teamInnerLogoContainer}}>
           <FastImage
             resizeMode={'cover'}

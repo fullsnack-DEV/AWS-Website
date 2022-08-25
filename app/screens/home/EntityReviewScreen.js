@@ -61,27 +61,23 @@ export default function EntityReviewScreen({navigation, route}) {
           }}
           hasBackdrop
           onBackdropPress={() => setReviewerDetailModalVisible(false)}
-          backdropOpacity={0}
-        >
+          backdropOpacity={0}>
           <SafeAreaView
             style={[
               styles.modalContainerViewStyle,
               {backgroundColor: colors.whiteColor},
-            ]}
-          >
+            ]}>
             <View>
               <LinearGradient
                 colors={[colors.orangeColor, colors.yellowColor]}
                 end={{x: 0.0, y: 0.25}}
                 start={{x: 1, y: 0.5}}
-                style={styles.gradiantHeaderViewStyle}
-              ></LinearGradient>
+                style={styles.gradiantHeaderViewStyle}></LinearGradient>
               <Header
                 mainContainerStyle={styles.headerMainContainerStyle}
                 leftComponent={
                   <TouchableOpacity
-                    onPress={() => setReviewerDetailModalVisible(false)}
-                  >
+                    onPress={() => setReviewerDetailModalVisible(false)}>
                     <Image
                       source={images.backArrow}
                       style={styles.cancelImageStyle}
@@ -101,8 +97,7 @@ export default function EntityReviewScreen({navigation, route}) {
                 }
                 rightComponent={
                   <TouchableOpacity
-                    onPress={() => setReviewerDetailModalVisible(false)}
-                  >
+                    onPress={() => setReviewerDetailModalVisible(false)}>
                     <Image
                       source={images.cancelWhite}
                       style={styles.cancelImageStyle}

@@ -21,8 +21,7 @@ export default function ProfileCheckView({isChecked, onPress, playerDetail}) {
         <TouchableWithoutFeedback onPress={onPress}>
           <LinearGradient
             colors={[colors.whiteColor, colors.whiteColor]}
-            style={styles.topViewContainer}
-          >
+            style={styles.topViewContainer}>
             <View style={{flexDirection: 'row'}}>
               <View style={styles.profileView}>
                 <Image

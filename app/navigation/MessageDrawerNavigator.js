@@ -29,8 +29,7 @@ const MessageDrawerNavigator = () => (
       width: '70%',
       backgroundColor: colors.whiteColor,
       borderTopLeftRadius: 10,
-    }}
-  >
+    }}>
     <Drawer.Screen name="MessageChat" component={MessageNavigator} />
   </Drawer.Navigator>
 );

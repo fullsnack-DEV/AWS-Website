@@ -35,8 +35,7 @@ function TCPlayerView({onPress, showStar = false, data}) {
               flexDirection: 'row',
               alignItems: 'center',
               marginTop: 5,
-            }}
-          >
+            }}>
             <Image source={images.orangeStar} style={styles.starImage} />
             <Text style={styles.starPoints} numberOfLines={2}>
               5.0

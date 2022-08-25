@@ -89,8 +89,7 @@ export default function SearchPlayerScreen({navigation, route}) {
         <View
           style={{
             width: wp('72%'),
-          }}
-        >
+          }}>
           <Text style={styles.teamNameText}>
             {item.first_name} {item.last_name}
           </Text>
@@ -149,12 +148,10 @@ export default function SearchPlayerScreen({navigation, route}) {
               selectedPlayer: 2,
             });
           }
-        }}
-      >
+        }}>
         <LinearGradient
           colors={[colors.yellowColor, colors.themeColor]}
-          style={styles.nextButton}
-        >
+          style={styles.nextButton}>
           <Text style={styles.nextButtonText}>{strings.doneTitle}</Text>
         </LinearGradient>
       </TouchableOpacity>

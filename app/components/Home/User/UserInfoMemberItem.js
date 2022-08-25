@@ -10,8 +10,7 @@ export default function UserInfoMemberItem({title, imageData, onMemberPress}) {
   return (
     <TouchableOpacity
       onPress={onMemberPress}
-      style={{width: 55, height: 'auto', marginLeft: 26}}
-    >
+      style={{width: 55, height: 'auto', marginLeft: 26}}>
       <View style={styles.imageContainerStyle}>
         <TCImage
           containerStyle={styles.mainImageStyle}

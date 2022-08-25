@@ -27,8 +27,7 @@ function PostDescSection({
   return (
     <TouchableWithoutFeedback
       style={[styles.containerStyle, containerStyle]}
-      onPress={onReadMorePress}
-    >
+      onPress={onReadMorePress}>
       {descriptions.length > 0 && (
         <Text style={[styles.descText, descText]} onPress={onReadMorePress}>
           <ParsedText
@@ -41,8 +40,7 @@ function PostDescSection({
                 renderText,
               },
             ]}
-            childrenProps={{allowFontScaling: false}}
-          >
+            childrenProps={{allowFontScaling: false}}>
             {descriptions.substring(0, character)}
           </ParsedText>
           {descriptions.length > character ? '... ' : ' '}

@@ -51,8 +51,7 @@ export default function TCEventCard({
       <View style={styles.backgroundView} onPress={onPress}>
         <LinearGradient
           colors={[colors.greenGradientEnd, colors.greenGradientStart]}
-          style={styles.colorView}
-        >
+          style={styles.colorView}>
           {data?.allDay && data?.allDay === true ? (
             <Text style={styles.allTypeText}>{'All'}</Text>
           ) : (
@@ -77,8 +76,7 @@ export default function TCEventCard({
                   styles.eventTitle,
                   {color: colors.greenGradientStart, width: 200},
                 ]}
-                numberOfLines={1}
-              >
+                numberOfLines={1}>
                 {title}
               </Text>
               <View style={styles.bottomView}>
@@ -117,8 +115,7 @@ export default function TCEventCard({
             />
           </View>
           <View
-            style={{flexDirection: 'row', alignItems: 'center', marginTop: 10}}
-          >
+            style={{flexDirection: 'row', alignItems: 'center', marginTop: 10}}>
             <FastImage
               source={
                 data?.owner_obj?.thumbnail
@@ -135,8 +132,7 @@ export default function TCEventCard({
                 fontFamily: fonts.RBold,
                 flex: 1,
                 marginLeft: 5,
-              }}
-            >
+              }}>
               {data?.owner_obj?.group_name ?? data?.owner_obj?.full_name}
             </Text>
           </View>

@@ -291,11 +291,9 @@ export default function ScheduleScreen({navigation, route}) {
               ) || []),
             ];
 
-            const res = sportsList.map((obj) => {
-              return {
+            const res = sportsList.map((obj) => ({
                 sport: obj.sport,
-              };
-            });
+              }));
             const data = Utility.uniqueArray(res, 'sport');
 
             setSports([{sport: 'All'}, ...data, {sport: 'Others'}]);
@@ -611,9 +609,7 @@ export default function ScheduleScreen({navigation, route}) {
               }
             });
 
-            const pendingChallenge = listObj.filter((obj) => {
-              return obj !== undefined;
-            });
+            const pendingChallenge = listObj.filter((obj) => obj !== undefined);
             console.log('6666--');
 
             Utility.getGamesList([
@@ -727,9 +723,8 @@ export default function ScheduleScreen({navigation, route}) {
   );
 
   const opetionsListView = useCallback(
-    ({item, index}) => {
-      return (
-        <Text
+    ({item, index}) => (
+      <Text
           style={makeOpetionsSelected(item)}
           onPress={() => {
             refContainer.current.scrollToIndex({
@@ -742,16 +737,14 @@ export default function ScheduleScreen({navigation, route}) {
               opetion: sortFilterOpetion,
               title: item,
             });
-          }}
-        >
-          {item?.sport
+          }}>
+        {item?.sport
             ? item?.sport === 'All'
               ? 'All'
               : getSportName(item, authContext)
             : item}
-        </Text>
-      );
-    },
+      </Text>
+      ),
     [authContext, makeOpetionsSelected, sortFilterOpetion],
   );
 
@@ -773,8 +766,7 @@ export default function ScheduleScreen({navigation, route}) {
               opetion: sortFilterOpetion,
               title: item,
             });
-          }}
-        >
+          }}>
           {item.sport[0].toUpperCase() + item.sport.slice(1)}
         </Text>
       );
@@ -799,8 +791,7 @@ export default function ScheduleScreen({navigation, route}) {
               opetion: sortFilterOpetion,
               title: item,
             });
-          }}
-        >
+          }}>
           {item.group_name}
         </Text>
       );
@@ -808,20 +799,18 @@ export default function ScheduleScreen({navigation, route}) {
     [makeOpetionsSelected, selectedOpetions.title, sortFilterOpetion],
   );
 
-  const renderSortFilterOpetions = ({index, item}) => {
-    return (
-      <View
+  const renderSortFilterOpetions = ({index, item}) => (
+    <View
         style={{
           flexDirection: 'row',
           marginBottom: 15,
           justifyContent: 'space-between',
           marginLeft: 15,
           marginRight: 15,
-        }}
-      >
-        <View>
-          <Text style={styles.filterTitle}>{item}</Text>
-          {index === 1 &&
+        }}>
+      <View>
+        <Text style={styles.filterTitle}>{item}</Text>
+        {index === 1 &&
             sortFilterOpetion === index &&
             ['user', 'player'].includes(authContext.entity.role) && (
               <Text
@@ -831,12 +820,11 @@ export default function ScheduleScreen({navigation, route}) {
                   navigation.navigate('ChangeSportsOrderScreen', {
                     onBackClick: fromGoBack,
                   });
-                }}
-              >
+                }}>
                 Change order of sports
               </Text>
             )}
-          {index === 0 &&
+        {index === 0 &&
             sortFilterOpetion === index &&
             ['user', 'player'].includes(authContext.entity.role) && (
               <Text
@@ -846,22 +834,20 @@ export default function ScheduleScreen({navigation, route}) {
                   navigation.navigate('ChangeOtherListScreen', {
                     onBackClick: fromGoBack,
                   });
-                }}
-              >
+                }}>
                 Change list of Organizers
               </Text>
             )}
-        </View>
-        <TouchableOpacity
+      </View>
+      <TouchableOpacity
           onPress={() => {
             setSortFilterOpetion(index);
             setSelectedOpetions({
               opetion: 0,
               title: index === 1 ? {sport: 'All'} : 'All',
             });
-          }}
-        >
-          <Image
+          }}>
+        <Image
             source={
               sortFilterOpetion === index
                 ? images.radioRoundOrange
@@ -869,29 +855,25 @@ export default function ScheduleScreen({navigation, route}) {
             }
             style={styles.radioButtonStyle}
           />
-        </TouchableOpacity>
-      </View>
+      </TouchableOpacity>
+    </View>
     );
-  };
 
-  const renderTimeFilterOpetions = ({index, item}) => {
-    return (
-      <View
+  const renderTimeFilterOpetions = ({index, item}) => (
+    <View
         style={{
           flexDirection: 'row',
           marginBottom: 15,
           justifyContent: 'space-between',
           marginLeft: 15,
           marginRight: 15,
-        }}
-      >
-        <Text style={styles.filterTitle}>{item}</Text>
-        <TouchableOpacity
+        }}>
+      <Text style={styles.filterTitle}>{item}</Text>
+      <TouchableOpacity
           onPress={() => {
             setTimeFilterOpetion(index);
-          }}
-        >
-          <Image
+          }}>
+        <Image
             source={
               timeFilterOpetion === index
                 ? images.radioRoundOrange
@@ -899,10 +881,9 @@ export default function ScheduleScreen({navigation, route}) {
             }
             style={styles.radioButtonStyle}
           />
-        </TouchableOpacity>
-      </View>
+      </TouchableOpacity>
+    </View>
     );
-  };
 
   const datesBlacklistFunc = (startDate, endDate) => {
     const start = new Date(startDate);
@@ -944,8 +925,7 @@ export default function ScheduleScreen({navigation, route}) {
       <ActivityLoader visible={indigator} />
       <View
         style={{opacity: isAccountDeactivated ? 0.5 : 1}}
-        pointerEvents={pointEvent}
-      >
+        pointerEvents={pointEvent}>
         <Header
           leftComponent={
             <Text style={styles.eventTitleTextStyle}>Schedule</Text>
@@ -957,8 +937,7 @@ export default function ScheduleScreen({navigation, route}) {
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-              }}
-            >
+              }}>
               <TouchableOpacity onPress={onAddPlusPress}>
                 <Image source={images.addEvent} style={styles.headerRightImg} />
               </TouchableOpacity>
@@ -1021,8 +1000,7 @@ export default function ScheduleScreen({navigation, route}) {
           {opacity: isAccountDeactivated ? 0.5 : 1},
         ]}
         pointerEvents={pointEvent}
-        needsOffscreenAlphaCompositing
-      >
+        needsOffscreenAlphaCompositing>
         <View style={{flex: 1, backgroundColor: colors.offwhite}}>
           <View
             style={{
@@ -1033,8 +1011,7 @@ export default function ScheduleScreen({navigation, route}) {
               alignItems: 'center',
               marginRight: 15,
               marginLeft: 15,
-            }}
-          >
+            }}>
             <View style={{flexDirection: 'row'}}>
               <Text
                 style={
@@ -1044,8 +1021,7 @@ export default function ScheduleScreen({navigation, route}) {
                 }
                 onPress={() => {
                   setScheduleIndexCounter(0);
-                }}
-              >
+                }}>
                 Events
               </Text>
               <Text
@@ -1056,16 +1032,14 @@ export default function ScheduleScreen({navigation, route}) {
                 }
                 onPress={() => {
                   setScheduleIndexCounter(1);
-                }}
-              >
+                }}>
                 Availability
               </Text>
             </View>
             <TouchableOpacity
               onPress={() => {
                 setFilterPopup(true);
-              }}
-            >
+              }}>
               <FastImage
                 source={images.localHomeFilter}
                 style={{height: 25, width: 25}}
@@ -1153,8 +1127,7 @@ export default function ScheduleScreen({navigation, route}) {
                   shadowOpacity: 0.2,
                   shadowRadius: 3,
                   marginBottom: 10,
-                }}
-              >
+                }}>
                 <CalendarStrip
                   selectedDate={selectedDate}
                   scrollable={true}
@@ -1243,8 +1216,7 @@ export default function ScheduleScreen({navigation, route}) {
                     fontFamily: fonts.RRegular,
                     color: colors.lightBlackColor,
                     marginBottom: 10,
-                  }}
-                >
+                  }}>
                   Available time For challenge
                 </Text>
                 <FlatList
@@ -1317,8 +1289,7 @@ export default function ScheduleScreen({navigation, route}) {
           onBackdropPress={() => {
             setIsRefereeModal(false);
           }}
-          backdropOpacity={0}
-        >
+          backdropOpacity={0}>
           <SafeAreaView style={styles.modalMainViewStyle}>
             <Header
               mainContainerStyle={styles.headerMainContainerStyle}
@@ -1326,8 +1297,7 @@ export default function ScheduleScreen({navigation, route}) {
                 <TouchableOpacity
                   onPress={() => {
                     setIsRefereeModal(false);
-                  }}
-                >
+                  }}>
                   <Image
                     source={images.cancelImage}
                     style={styles.cancelImageStyle}
@@ -1372,8 +1342,7 @@ export default function ScheduleScreen({navigation, route}) {
           onBackdropPress={() => {
             setIsScorekeeperModal(false);
           }}
-          backdropOpacity={0}
-        >
+          backdropOpacity={0}>
           <SafeAreaView style={styles.modalMainViewStyle}>
             <Header
               mainContainerStyle={styles.headerMainContainerStyle}
@@ -1381,8 +1350,7 @@ export default function ScheduleScreen({navigation, route}) {
                 <TouchableOpacity
                   onPress={() => {
                     setIsScorekeeperModal(false);
-                  }}
-                >
+                  }}>
                   <Image
                     hitSlop={getHitSlop(15)}
                     source={images.cancelImage}
@@ -1428,22 +1396,19 @@ export default function ScheduleScreen({navigation, route}) {
           backdropTransitionOutTiming={800}
           style={{
             margin: 0,
-          }}
-        >
+          }}>
           <View
             style={[
               styles.bottomPopupContainer,
               {height: Dimensions.get('window').height - 50},
-            ]}
-          >
+            ]}>
             <View style={styles.topHeaderContainer}>
               <TouchableOpacity
                 hitSlop={getHitSlop(15)}
                 style={styles.closeButton}
                 onPress={() => {
                   setFilterPopup(false);
-                }}
-              >
+                }}>
                 <Image source={images.crossImage} style={styles.closeButton} />
               </TouchableOpacity>
               <Text style={styles.applyText}>Filter</Text>
@@ -1456,8 +1421,7 @@ export default function ScheduleScreen({navigation, route}) {
                     sort: sortFilterOpetion,
                     time: timeFilterOpetion,
                   });
-                }}
-              >
+                }}>
                 Apply
               </Text>
             </View>

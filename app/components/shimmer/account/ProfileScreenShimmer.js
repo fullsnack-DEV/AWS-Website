@@ -40,8 +40,7 @@ const ProfileScreenShimmer = () => (
           padding: 15,
           alignItems: 'center',
           justifyContent: 'center',
-        }}
-      >
+        }}>
         <ShimmerView style={{width: '70%'}} />
         <ShimmerView style={{width: '80%'}} height={10} />
         <ShimmerView style={{width: '50%'}} height={10} />
@@ -50,8 +49,7 @@ const ProfileScreenShimmer = () => (
             flexDirection: 'row',
             justifyContent: 'space-between',
             alignItems: 'center',
-          }}
-        >
+          }}>
           <ShimmerView style={{flex: 1, width: '100%'}} />
           <View style={{marginHorizontal: 10}} />
           <ShimmerView style={{flex: 1}} />
@@ -70,8 +68,7 @@ const ProfileScreenShimmer = () => (
             <ScrollView
               horizontal={true}
               showsHorizontalScrollIndicator={false}
-              showsVerticalScrollIndicator={false}
-            >
+              showsVerticalScrollIndicator={false}>
               {new Array(5).fill('').map((childItem, childIndex) => (
                 <View key={`child${childIndex}`}>
                   <ShimmerView

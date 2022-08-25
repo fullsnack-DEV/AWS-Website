@@ -143,13 +143,11 @@ const MessageInviteScreen = ({navigation}) => {
               ? [colors.greenGradientStart, colors.greenGradientEnd]
               : [colors.offwhite, colors.offwhite]
           }
-          style={[styles.listItems, {padding: 10}]}
-        >
+          style={[styles.listItems, {padding: 10}]}>
           <View
             style={{
               flexDirection: 'row',
-            }}
-          >
+            }}>
             <View style={styles.imageMainContainer}>
               <FastImage
                 resizeMode={'cover'}
@@ -162,23 +160,20 @@ const MessageInviteScreen = ({navigation}) => {
                 flexDirection: 'row',
                 justifyContent: 'space-between',
                 flex: 1,
-              }}
-            >
+              }}>
               <View
                 style={{
                   flex: 3,
                   justifyContent: 'center',
                   marginLeft: hp(1),
-                }}
-              >
+                }}>
                 <TCGroupNameBadge
                   textStyle={{...styles.title, color: colors.lightBlackColor}}
                   groupType={entityType}
                   name={fullName}
                 />
                 <Text
-                  style={{...styles.subTitle, color: colors.lightBlackColor}}
-                >
+                  style={{...styles.subTitle, color: colors.lightBlackColor}}>
                   {city}
                 </Text>
               </View>
@@ -242,8 +237,7 @@ const MessageInviteScreen = ({navigation}) => {
               </View>
               <TouchableOpacity
                 style={styles.selectedContactButtonView}
-                onPress={() => toggleSelection(true, item)}
-              >
+                onPress={() => toggleSelection(true, item)}>
                 <Image
                   source={images.cancelWhite}
                   style={styles.deSelectedContactImage}
@@ -259,8 +253,7 @@ const MessageInviteScreen = ({navigation}) => {
                 fontFamily: fonts.RBold,
                 textAlign: 'center',
                 width: 50,
-              }}
-            >
+              }}>
               {fullName}
             </Text>
           </View>
@@ -291,8 +284,7 @@ const MessageInviteScreen = ({navigation}) => {
           textAlign: 'center',
           marginTop: hp(2),
           color: colors.userPostTimeColor,
-        }}
-      >
+        }}>
         No Records Found
       </Text>
     ),
@@ -402,15 +394,13 @@ const MessageInviteScreen = ({navigation}) => {
         rightComponent={
           <TouchableOpacity
             onPress={handlePress}
-            disabled={selectedInvitees.length < 1}
-          >
+            disabled={selectedInvitees.length < 1}>
             <Text
               style={{
                 ...styles.eventTextStyle,
                 fontSize: 14,
                 opacity: selectedInvitees.length < 1 ? 0.5 : 1,
-              }}
-            >
+              }}>
               {selectedInvitees && selectedInvitees.length > 1
                 ? 'Next'
                 : 'Create'}
@@ -449,8 +439,7 @@ const MessageInviteScreen = ({navigation}) => {
             alignItems: 'center',
             flexDirection: 'row',
             height: 45,
-          }}
-        >
+          }}>
           {TAB_ITEMS.map((item, index) => (
             <TouchableOpacity
               activeOpacity={1}
@@ -464,16 +453,14 @@ const MessageInviteScreen = ({navigation}) => {
               onPress={() => {
                 setCurrentTab(index);
                 setSearchText('');
-              }}
-            >
+              }}>
               <View
                 style={{
                   width: '100%',
                   height: 43,
                   alignItems: 'center',
                   justifyContent: 'center',
-                }}
-              >
+                }}>
                 <Text
                   style={{
                     width: '100%',
@@ -486,8 +473,7 @@ const MessageInviteScreen = ({navigation}) => {
                       currentTab === index
                         ? colors.darkYellowColor
                         : colors.lightBlackColor,
-                  }}
-                >
+                  }}>
                   {item}
                 </Text>
               </View>
@@ -524,8 +510,7 @@ const MessageInviteScreen = ({navigation}) => {
           backgroundColor: colors.grayBackgroundColor,
           width: '100%',
           padding: 15,
-        }}
-      >
+        }}>
         <TextInput
           autoFocus={true}
           value={searchText}

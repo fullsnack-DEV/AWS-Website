@@ -30,8 +30,7 @@ export default function RecentMatchItems({
         <View style={styles.eventText}>
           <Text
             style={[styles.eventTitle, {color: eventColor}]}
-            numberOfLines={1}
-          >
+            numberOfLines={1}>
             {title}
           </Text>
           <View style={styles.bottomView}>
@@ -40,8 +39,7 @@ export default function RecentMatchItems({
             <View style={styles.timeCityDividerStyle} />
             <Text
               style={[styles.eventTime, {width: wp('42%')}]}
-              numberOfLines={1}
-            >
+              numberOfLines={1}>
               {location}
             </Text>
           </View>

@@ -14,8 +14,7 @@ export default function CalendarTimeTableView({
   return (
     <TouchableOpacity
       style={[styles.containerStyle, containerStyle]}
-      onPress={onPress}
-    >
+      onPress={onPress}>
       <View style={styles.eventViewStyle}>
         {type === 'game' && <Text style={styles.vsText}>VS</Text>}
         {type === 'game' && (

@@ -359,9 +359,7 @@ export const QBgetDialogByID = async (dialogID) => {
     };
     return QB.chat
       .getDialogs(getDialogsQuery)
-      .then((result) => {
-        return result;
-      })
+      .then((result) => result)
       .catch((e) => {
         // handle error
         console.log(e);
@@ -369,8 +367,7 @@ export const QBgetDialogByID = async (dialogID) => {
   }
   return 'error';
 };
-export const QBgetMessages = (dialogId, skipCount = 0) => {
-  return QBChatConnected().then((connected) => {
+export const QBgetMessages = (dialogId, skipCount = 0) => QBChatConnected().then((connected) => {
     if (connected) {
       const query = {
         dialogId,
@@ -384,7 +381,6 @@ export const QBgetMessages = (dialogId, skipCount = 0) => {
     }
     throw new Error('server-not-connected');
   });
-};
 export const QBsendMessage = (dialogId, body, file = null) =>
   QBChatConnected().then((connected) => {
     if (connected) {
@@ -455,16 +451,14 @@ export const QBupdateDialogNameAndPhoto = (
         qbToken: qbObj?.token,
         data: update,
       })
-        .then((res) => {
-          return {
+        .then((res) => ({
             dialogId: res?._id,
             name: res?.name,
             occupantsIds: res?.occupants_ids,
             dialogType: res?.type,
             photo: res?.photo,
             created_at: res?.created_at,
-          };
-        })
+          }))
         .catch((error) => ({status: 'error', error}));
     }
     throw new Error('server-not-connected');
@@ -485,10 +479,10 @@ export const QBupdateDialogInvitees = async (
 
       return QB.chat
         .updateDialog(update)
-        .then((updatedDialog) => {
+        .then((updatedDialog) => 
           // handle as necessarys
-          return updatedDialog;
-        })
+           updatedDialog
+        )
         .catch((e) => {
           // handle error
           console.log(e);

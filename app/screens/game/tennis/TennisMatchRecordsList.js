@@ -246,15 +246,16 @@ const TennisMatchRecordsList = (
     <Fragment>
       {renderAddSetButton()}
       <View
-        style={{...styles.setContainer, backgroundColor: 'rgba(255,138,1,0.1)'}}
-      >
+        style={{
+          ...styles.setContainer,
+          backgroundColor: 'rgba(255,138,1,0.1)',
+        }}>
         <RenderDash />
         {/* Down Arrow */}
         <TouchableOpacity
           style={styles.downArrowContainer}
           onPress={() => toggleMatchSets(index)}
-          hitSlop={getHitSlop(15)}
-        >
+          hitSlop={getHitSlop(15)}>
           <FastImage
             resizeMode={'contain'}
             source={images.yellowDownArrow}
@@ -272,8 +273,7 @@ const TennisMatchRecordsList = (
             flex: 0.3,
             alignItems: 'center',
             justifyContent: 'center',
-          }}
-        >
+          }}>
           <Text style={styles.setScoreText}>{home_team_score}</Text>
         </View>
 
@@ -283,8 +283,7 @@ const TennisMatchRecordsList = (
             flex: 0.5,
             alignItems: 'center',
             justifyContent: 'center',
-          }}
-        >
+          }}>
           <Text style={styles.setNumberText}>
             {getNumberSuffix(set_number)} set
           </Text>
@@ -297,8 +296,7 @@ const TennisMatchRecordsList = (
             flex: 0.3,
             alignItems: 'center',
             justifyContent: 'center',
-          }}
-        >
+          }}>
           <Text style={styles.setScoreText}>{away_team_score}</Text>
         </View>
       </View>
@@ -346,15 +344,13 @@ const TennisMatchRecordsList = (
             backgroundColor: colors.googleColor,
             alignItems: 'center',
             padding: 5,
-          }}
-        >
+          }}>
           <Text
             style={{
               fontFamily: fonts.RBold,
               fontSize: 12,
               color: colors.whiteColor,
-            }}
-          >
+            }}>
             + Add game
           </Text>
         </View>
@@ -370,15 +366,13 @@ const TennisMatchRecordsList = (
       <TouchableOpacity onPress={onAddSetPress}>
         <LinearGradient
           colors={[colors.themeColor, colors.yellowColor]}
-          style={{alignItems: 'center', padding: 5}}
-        >
+          style={{alignItems: 'center', padding: 5}}>
           <Text
             style={{
               fontFamily: fonts.RBold,
               fontSize: 12,
               color: colors.whiteColor,
-            }}
-          >
+            }}>
             + Add Set
           </Text>
         </LinearGradient>
@@ -396,12 +390,10 @@ const TennisMatchRecordsList = (
             ...(!visibleAddSetAndGameButton && {
               backgroundColor: colors.whiteColor,
             }),
-          }}
-        >
+          }}>
           <SwipeableRow
             enabled={getVisibleSwipableRowValue(item?.verb, item?.deleted)}
-            onPress={() => onSwipeRowItemPress(item?.verb, item?.record_id)}
-          >
+            onPress={() => onSwipeRowItemPress(item?.verb, item?.record_id)}>
             <TennisGameState recordData={item} />
           </SwipeableRow>
         </View>
@@ -455,12 +447,10 @@ const TennisMatchRecordsList = (
             ...(!visibleAddSetAndGameButton && {
               backgroundColor: colors.whiteColor,
             }),
-          }}
-        >
+          }}>
           <SwipeableRow
             enabled={getVisibleSwipableRowValue(item?.verb, item?.deleted)}
-            onPress={() => onSwipeRowItemPress(item?.verb, item?.record_id)}
-          >
+            onPress={() => onSwipeRowItemPress(item?.verb, item?.record_id)}>
             <TennisGameState recordData={item} titleColor={colors.themeColor} />
           </SwipeableRow>
         </View>
@@ -480,15 +470,13 @@ const TennisMatchRecordsList = (
             ...styles.setContainer,
             borderTopWidth: 0,
             marginBottom: 0,
-          }}
-        >
+          }}>
           <RenderDash />
           {/* Down Arrow */}
           <TouchableOpacity
             style={styles.downArrowContainer}
             onPress={() => toggleGameRecords(parentIndex, index)}
-            hitSlop={getHitSlop(15)}
-          >
+            hitSlop={getHitSlop(15)}>
             <FastImage
               resizeMode={'contain'}
               source={images.dropDownArrow}
@@ -506,22 +494,19 @@ const TennisMatchRecordsList = (
               flex: 0.3,
               alignItems: 'center',
               justifyContent: 'center',
-            }}
-          >
+            }}>
             {getGameScoreText(item?.home_team_point, item?.away_team_point, 1)}
           </View>
 
           {/* Set Number */}
           <View
-            style={{flex: 0.4, alignItems: 'center', justifyContent: 'center'}}
-          >
+            style={{flex: 0.4, alignItems: 'center', justifyContent: 'center'}}>
             <Text
               style={{
                 ...styles.setNumberText,
                 color: colors.googleColor,
                 fontSize: 17,
-              }}
-            >
+              }}>
               {getNumberSuffix(item?.number)} game
             </Text>
             <Text style={styles.setTimeDurationText}>{timeString}</Text>
@@ -533,8 +518,7 @@ const TennisMatchRecordsList = (
               flex: 0.3,
               alignItems: 'center',
               justifyContent: 'center',
-            }}
-          >
+            }}>
             {getGameScoreText(item?.home_team_point, item?.away_team_point, 2)}
           </View>
         </View>
@@ -629,12 +613,10 @@ const TennisMatchRecordsList = (
             ...(!visibleAddSetAndGameButton && {
               backgroundColor: colors.whiteColor,
             }),
-          }}
-        >
+          }}>
           <SwipeableRow
             enabled={getVisibleSwipableRowValue(item?.verb, item?.deleted)}
-            onPress={() => onSwipeRowItemPress(item?.verb, item?.record_id)}
-          >
+            onPress={() => onSwipeRowItemPress(item?.verb, item?.record_id)}>
             <TennisGameState recordData={item} />
           </SwipeableRow>
         </View>
@@ -646,8 +628,7 @@ const TennisMatchRecordsList = (
     return (
       <SwipeableRow
         enabled={getVisibleSwipableRowValue(item?.verb, item?.deleted)}
-        onPress={() => onSwipeRowItemPress(item?.verb, item?.record_id)}
-      >
+        onPress={() => onSwipeRowItemPress(item?.verb, item?.record_id)}>
         {/* <AppleStyleSwipeableRow
          onPress={() => onSwipeRowItemPress(item?.verb, item?.record_id)}
          color={colors.redDelColor}
@@ -660,8 +641,7 @@ const TennisMatchRecordsList = (
                 ...(!visibleAddSetAndGameButton && {
                   backgroundColor: colors.whiteColor,
                 }),
-              }}
-            >
+              }}>
               <RenderDash zIndex={1} />
               <TennisGameScoreLeft
                 gameData={gameData}
@@ -676,8 +656,7 @@ const TennisMatchRecordsList = (
                 ...(!visibleAddSetAndGameButton && {
                   backgroundColor: colors.whiteColor,
                 }),
-              }}
-            >
+              }}>
               <RenderDash zIndex={1} />
               <TennisGameScoreRight
                 gameData={gameData}
@@ -838,8 +817,7 @@ const TennisMatchRecordsList = (
             <TouchableWithoutFeedback
               onPress={() => {
                 setEditorChecked(!editorChecked);
-              }}
-            >
+              }}>
               {editorChecked === true ? (
                 <FastImage
                   resizeMode={'contain'}

@@ -30,8 +30,7 @@ export default function SearchView({
       {cancelViewShow && (
         <TouchableOpacity
           style={styles.cancelViewStyle}
-          onPress={onCancelPress}
-        >
+          onPress={onCancelPress}>
           <Image
             source={images.cancelImage}
             style={styles.cancelImageStyle}

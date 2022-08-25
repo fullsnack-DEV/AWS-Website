@@ -220,8 +220,7 @@ const HomeNavigator = () => (
       // headerTitle: true,
       gestureEnabled: false,
       headerBackTitleVisible: false,
-    }}
-  >
+    }}>
     <Stack.Screen
       name="AccountScreen"
       component={AccountScreen}

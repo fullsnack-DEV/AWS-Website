@@ -19,8 +19,7 @@ const TCGameDetailRules = ({
             margin: 15,
             marginTop: 0,
             justifyContent: 'space-between',
-          }}
-        >
+          }}>
           <Text style={styles.mainTitle}>SETS, GAMES & DURATION</Text>
         </View>
       )}
@@ -30,8 +29,7 @@ const TCGameDetailRules = ({
           flexDirection: 'row',
           margin: 15,
           justifyContent: 'space-between',
-        }}
-      >
+        }}>
         <Text style={styles.mainRulesTitle}>Number Of Sets to Win a Match</Text>
         <Text style={styles.subRulesTitle}>
           {gameRules?.total_sets} <Text style={styles.lightSubTitle}>Sets</Text>
@@ -43,8 +41,7 @@ const TCGameDetailRules = ({
           flexDirection: 'row',
           margin: 15,
           justifyContent: 'space-between',
-        }}
-      >
+        }}>
         <Text style={styles.mainRulesTitle}>Number Of Games to Win a Set</Text>
         <Text style={styles.subRulesTitle}>
           {gameRules?.total_available_games_in_set}{' '}
@@ -60,8 +57,7 @@ const TCGameDetailRules = ({
             fontSize: 16,
             fontFamily: fonts.RRegular,
             color: colors.lightBlackColor,
-          }}
-        >
+          }}>
           • A player must win a set by two games.
         </Text>
       )}
@@ -76,8 +72,7 @@ const TCGameDetailRules = ({
                   fontSize: 14,
                   fontFamily: fonts.RBold,
                   color: colors.lightBlackColor,
-                }}
-              >
+                }}>
                 Tie-breaker
               </Text>
 
@@ -87,8 +82,7 @@ const TCGameDetailRules = ({
                   margin: 15,
                   marginLeft: 45,
                   justifyContent: 'space-between',
-                }}
-              >
+                }}>
                 <Text style={styles.lightSubTitle}>
                   • Play tie-breaker after the game scores are{'\n'}
                   <Text style={styles.subRulesTitle}>
@@ -104,8 +98,7 @@ const TCGameDetailRules = ({
                   marginRight: 15,
                   marginLeft: 45,
                   justifyContent: 'space-between',
-                }}
-              >
+                }}>
                 <Text style={styles.lightSubTitle}>
                   • Winning points in tie-breaker are{' '}
                   <Text style={styles.subRulesTitle}>
@@ -120,8 +113,7 @@ const TCGameDetailRules = ({
                   marginRight: 15,
                   marginLeft: 45,
                   justifyContent: 'space-between',
-                }}
-              >
+                }}>
                 <Text style={styles.lightSubTitle}>
                   • A player must win the tie-breaker by two points
                 </Text>
@@ -135,8 +127,7 @@ const TCGameDetailRules = ({
               margin: 15,
               marginBottom: 5,
               justifyContent: 'space-between',
-            }}
-          >
+            }}>
             <Text style={styles.mainRulesTitle}>Maximum Match Duration</Text>
             <Text style={styles.subRulesTitle}>
               {gameRules?.match_duration}
@@ -147,8 +138,7 @@ const TCGameDetailRules = ({
             style={{
               margin: 15,
               marginBottom: 5,
-            }}
-          >
+            }}>
             <Text style={styles.mainRulesTitle}>Details</Text>
             <Text style={styles.lightSubTitle}>{gameRules?.details}</Text>
           </View>
@@ -156,8 +146,7 @@ const TCGameDetailRules = ({
       )}
       <Text
         style={[styles.lightSubTitle, {textAlign: 'right', marginRight: 15}]}
-        onPress={onPressMoreLess}
-      >
+        onPress={onPressMoreLess}>
         {isMore ? 'less' : 'more'}
       </Text>
     </View>

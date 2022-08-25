@@ -56,8 +56,7 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
       headerRight: () => (
         <Text
           style={styles.sendButtonStyle}
-          onPress={() => sendRequestForBasicInfo()}
-        >
+          onPress={() => sendRequestForBasicInfo()}>
           Send
         </Text>
       ),
@@ -101,8 +100,7 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
           fontFamily: fonts.RRegular,
           color: colors.grayColor,
           fontSize: 26,
-        }}
-      >
+        }}>
         No Players
       </Text>
     </View>

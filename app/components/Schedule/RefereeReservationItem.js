@@ -61,8 +61,7 @@ function RefereeReservationItem({data, onPressButton}) {
               {
                 color: statusColor,
               },
-            ]}
-          >
+            ]}>
             {status}
           </Text>
         </View>

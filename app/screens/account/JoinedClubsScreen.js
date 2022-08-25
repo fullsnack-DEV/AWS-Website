@@ -47,8 +47,7 @@ export default function JoinedClubsScreen() {
             style={styles.listContainer}
             onPress={() => {
               console.log('Pressed club..');
-            }}
-          >
+            }}>
             <View>
               {item.full_image ? (
                 <Image

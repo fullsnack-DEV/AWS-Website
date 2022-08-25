@@ -426,44 +426,44 @@ export default function CurruentScorekeeperReservationScreen({
               bodyParams.status === ScorekeeperReservationStatus.restored ||
               bodyParams.status ===
                 ScorekeeperReservationStatus.requestcancelled) && (
-              <View>
-                <Text
+                <View>
+                  <Text
                   style={[
                     styles.challengeMessage,
                     {color: colors.requestConfirmColor},
                   ]}>
-                  CONFIRMED
-                </Text>
-                <Text style={styles.challengeText}>
-                  {checkScorekeeperOrTeam(bodyParams) === 'scorekeeper'
+                    CONFIRMED
+                  </Text>
+                  <Text style={styles.challengeText}>
+                    {checkScorekeeperOrTeam(bodyParams) === 'scorekeeper'
                     ? `You have a confirmed scorekeeper reservation booked by ${getEntityName(
                         bodyParams,
                       )}.`
                     : `Your team has the confirmed scorekeeper reservation for ${getEntityName(
                         bodyParams,
                       )}.`}
-                </Text>
-              </View>
+                  </Text>
+                </View>
             )}
           {checkSenderOrReceiver(bodyParams) === 'receiver' &&
             (bodyParams.status === ScorekeeperReservationStatus.accepted ||
               bodyParams.status === ScorekeeperReservationStatus.restored ||
               bodyParams.status ===
                 ScorekeeperReservationStatus.requestcancelled) && (
-              <View>
-                <Text
+                <View>
+                  <Text
                   style={[
                     styles.challengeMessage,
                     {color: colors.requestConfirmColor},
                   ]}>
-                  CONFIRMED
-                </Text>
-                <Text style={styles.challengeText}>
-                  {`${getEntityName(
+                    CONFIRMED
+                  </Text>
+                  <Text style={styles.challengeText}>
+                    {`${getEntityName(
                     bodyParams,
                   )} has confirmed scorekeeper reservation request sent by you.`}
-                </Text>
-              </View>
+                  </Text>
+                </View>
             )}
           {/* Status accepted */}
           {/* Status declined */}

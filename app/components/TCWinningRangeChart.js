@@ -34,8 +34,7 @@ const TCWinningRangeChart = ({
             style={{
               ...styles.singleColumnContainer,
               width: `${(100 * teamOneCount) / totalCount}%`,
-            }}
-          >
+            }}>
             <GradiantContainer
               gradiantColor={[colors.themeColor, colors.yellowColor]}
               style={{
@@ -60,8 +59,7 @@ const TCWinningRangeChart = ({
             style={{
               ...styles.singleColumnContainer,
               width: `${(100 * drawCount) / totalCount}%`,
-            }}
-          >
+            }}>
             <GradiantContainer
               gradiantColor={[
                 colors.greenGradientEnd,
@@ -83,8 +81,7 @@ const TCWinningRangeChart = ({
             style={{
               ...styles.singleColumnContainer,
               width: `${(100 * teamTwoCount) / totalCount}%`,
-            }}
-          >
+            }}>
             <GradiantContainer
               gradiantColor={[colors.blueGradiantEnd, colors.blueGradiantStart]}
               style={{
@@ -109,8 +106,7 @@ const TCWinningRangeChart = ({
             ...styles.singleColumnContainer,
             width: '100%',
             marginTop: 30,
-          }}
-        >
+          }}>
           <GradiantContainer
             gradiantColor={[colors.veryLightGray, colors.veryLightGray]}
             style={{

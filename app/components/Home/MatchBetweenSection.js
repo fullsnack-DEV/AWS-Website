@@ -41,8 +41,7 @@ function MatchBetweenSection({
             fontSize: 16,
             fontFamily: fonts.RRegular,
             color: colors.googleColor,
-          }}
-        >
+          }}>
           {firstTeamPoint}
         </Text>
         <Text style={{marginHorizontal: 5}}>:</Text>
@@ -51,16 +50,14 @@ function MatchBetweenSection({
             fontSize: 16,
             fontFamily: fonts.RRegular,
             color: colors.googleColor,
-          }}
-        >
+          }}>
           {secondTeamPoint}
         </Text>
       </View>
       <View style={styles.firstUserViewStyle}>
         <Text
           style={[styles.textStyle, {textAlign: 'right', marginRight: 8}]}
-          numberOfLines={2}
-        >
+          numberOfLines={2}>
           {secondText}
         </Text>
         <View style={styles.eventImageViewStyle}>

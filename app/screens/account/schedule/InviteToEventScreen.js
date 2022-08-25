@@ -162,8 +162,7 @@ export default function InviteToEventScreen({navigation, route}) {
           fontFamily: fonts.RRegular,
           color: colors.grayColor,
           fontSize: 26,
-        }}
-      >
+        }}>
         No Players
       </Text>
     </View>

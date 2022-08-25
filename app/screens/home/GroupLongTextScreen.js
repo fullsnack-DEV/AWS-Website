@@ -33,8 +33,7 @@ export default function GroupLongTextScreen({navigation, route}) {
           }}
           onPress={() => {
             onSaveButtonClicked();
-          }}
-        >
+          }}>
           {strings.done}
         </Text>
       ),

@@ -161,8 +161,7 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
               //   navigation.navigate('CreateMemberProfileClubForm2', { form1: memberInfo })
               // }
             }
-          }}
-        >
+          }}>
           Done
         </Text>
       ),
@@ -314,8 +313,7 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
           marginLeft: 15,
           marginRight: 15,
           justifyContent: 'space-between',
-        }}
-      >
+        }}>
         <View style={{...styles.halfMatchFeeView, shadowStyle}}>
           <TextInput
             placeholder={'Height'}
@@ -395,8 +393,7 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
           marginLeft: 15,
           marginRight: 15,
           justifyContent: 'space-between',
-        }}
-      >
+        }}>
         <View style={{...styles.halfMatchFeeView, ...shadowStyle}}>
           <TextInput
             placeholder={'Weight'}
@@ -498,15 +495,12 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
               // navigation.navigate('RequestBasicInfoScreen', {memberInfo});
               sendRequestForBasicInfo();
             }}
-            style={styles.outerContainerStyle}
-          >
+            style={styles.outerContainerStyle}>
             <LinearGradient
               colors={[colors.whiteColor, colors.whiteColor]}
-              style={styles.containerStyle}
-            >
+              style={styles.containerStyle}>
               <Text
-                style={[styles.buttonText, {color: colors.lightBlackColor}]}
-              >
+                style={[styles.buttonText, {color: colors.lightBlackColor}]}>
                 {'Send request for basic info'}
               </Text>
             </LinearGradient>
@@ -597,16 +591,14 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
           navigation.navigate('SearchLocationScreen', {
             comeFrom: 'EditMemberBasicInfoScreen',
           })
-        }
-      >
+        }>
         <TextInput
           placeholder={strings.searchCityPlaceholder}
           placeholderTextColor={colors.userPostTimeColor}
           style={[styles.matchFeeTxt, {marginBottom: 5}]}
           value={location}
           editable={false}
-          pointerEvents="none"
-        ></TextInput>
+          pointerEvents="none"></TextInput>
       </TouchableOpacity>
 
       <View>

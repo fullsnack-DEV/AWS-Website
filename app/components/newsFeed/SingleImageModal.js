@@ -84,8 +84,7 @@ export default function SingleImageModal({backBtnPress, data}) {
             justifyContent: 'center',
             height: isLandScape ? wp(100) : hp(100),
             zIndex: 100,
-          }}
-        >
+          }}>
           <TCZoomableImage
             source={{uri: multiAttachItem.url}}
             style={[
@@ -107,8 +106,7 @@ export default function SingleImageModal({backBtnPress, data}) {
             alignItems: 'center',
             justifyContent: 'center',
             zIndex: 100,
-          }}
-        >
+          }}>
           <Image
             source={
               isLandScape
@@ -148,8 +146,7 @@ export default function SingleImageModal({backBtnPress, data}) {
   return (
     <KeyboardAvoidingView
       style={{flex: 1, backgroundColor: colors.blackColor}}
-      behavior={Platform.OS === 'ios' ? 'padding' : null}
-    >
+      behavior={Platform.OS === 'ios' ? 'padding' : null}>
       <View style={{flex: 1}}>
         {renderSingleImagePostView(data.attachments[0])}
       </View>

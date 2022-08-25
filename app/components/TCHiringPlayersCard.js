@@ -72,8 +72,7 @@ const TCHiringPlayerCard = ({
               justifyContent: 'space-between',
               marginRight: 10,
               marginLeft: 10,
-            }}
-          >
+            }}>
             <Image
               source={
                 data?.thumbnail

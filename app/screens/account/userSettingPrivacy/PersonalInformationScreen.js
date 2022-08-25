@@ -280,8 +280,7 @@ export default function PersonalInformationScreen({navigation, route}) {
     return (
       <TouchableWithoutFeedback
         style={styles.listItem}
-        onPress={() => getTeamsData(item)}
-      >
+        onPress={() => getTeamsData(item)}>
         <View>
           <Text style={styles.cityList}>{cityData[index].description}</Text>
           <TCThinDivider
@@ -566,8 +565,7 @@ export default function PersonalInformationScreen({navigation, route}) {
               color: colors.lightBlackColor,
               textAlign: 'center',
               fontFamily: fonts.RBold,
-            }}
-          >
+            }}>
             {route?.params?.isEditProfile ? 'Edit Profile' : 'Profile'}
           </Text>
         }
@@ -578,8 +576,7 @@ export default function PersonalInformationScreen({navigation, route}) {
               // if (!editMode) changeEditMode();
               // else
               onSavePress();
-            }}
-          >
+            }}>
             Update
           </Text>
         }
@@ -607,8 +604,7 @@ export default function PersonalInformationScreen({navigation, route}) {
 
           <TouchableOpacity
             style={styles.profileCameraButtonStyle}
-            onPress={() => onProfileImageClicked()}
-          >
+            onPress={() => onProfileImageClicked()}>
             <Image
               style={styles.profileImageButtonStyle}
               source={images.certificateUpload}
@@ -656,8 +652,7 @@ export default function PersonalInformationScreen({navigation, route}) {
               //   comeFrom: 'PersonalInformationScreen',
               // });
               setLocationPopup(true);
-            }}
-          >
+            }}>
             <TextInput
               placeholder={strings.searchCityPlaceholder}
               style={{
@@ -875,22 +870,19 @@ export default function PersonalInformationScreen({navigation, route}) {
         backdropTransitionOutTiming={800}
         style={{
           margin: 0,
-        }}
-      >
+        }}>
         <View
           style={[
             styles.bottomPopupContainer,
             {height: Dimensions.get('window').height - 50},
-          ]}
-        >
+          ]}>
           <View style={styles.topHeaderContainer}>
             <TouchableOpacity
               hitSlop={getHitSlop(15)}
               style={styles.closeButton}
               onPress={() => {
                 setLocationPopup(false);
-              }}
-            >
+              }}>
               <Image source={images.crossImage} style={styles.closeButton} />
             </TouchableOpacity>
             <Text style={styles.moreText}>Home City</Text>
@@ -922,8 +914,7 @@ export default function PersonalInformationScreen({navigation, route}) {
             <View style={{flex: 1}}>
               <TouchableWithoutFeedback
                 style={styles.listItem}
-                onPress={() => getTeamsDataByCurrentLocation()}
-              >
+                onPress={() => getTeamsDataByCurrentLocation()}>
                 <View>
                   <Text style={[styles.cityList, {marginBottom: 3}]}>
                     {currentLocation?.city}, {currentLocation?.state},{' '}

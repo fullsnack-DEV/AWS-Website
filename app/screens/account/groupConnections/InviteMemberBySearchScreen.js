@@ -155,8 +155,7 @@ export default function InviteMembersBySearchScreen({navigation}) {
           fontFamily: fonts.RRegular,
           color: colors.grayColor,
           fontSize: 26,
-        }}
-      >
+        }}>
         No Players
       </Text>
     </View>

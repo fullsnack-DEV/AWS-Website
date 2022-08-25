@@ -16,13 +16,11 @@ const UserInfoPlaysInItem = ({
 }) => (
   <TouchableOpacity onPress={onPlayInPress}>
     <View
-      style={[styles.containerStyle, {flex: 1, opacity: isOpacity ? 0.4 : 1}]}
-    >
+      style={[styles.containerStyle, {flex: 1, opacity: isOpacity ? 0.4 : 1}]}>
       <Image source={thumbURL} style={styles.imageStyle} />
       <View style={{marginLeft: 10, marginRight: 12}}>
         <Text
-          style={[styles.titleStyle, {fontSize: title.length > 12 ? 12 : 14}]}
-        >
+          style={[styles.titleStyle, {fontSize: title.length > 12 ? 12 : 14}]}>
           {title}
         </Text>
         {/* <Text style={styles.subTitleStyle}>
@@ -33,8 +31,7 @@ const UserInfoPlaysInItem = ({
         colors={[colors.yellowColor, colors.orangeGradientColor]}
         style={styles.overlayStyle}
         end={{x: 1, y: 1}}
-        start={{x: 1, y: 0}}
-      ></LinearGradient>
+        start={{x: 1, y: 0}}></LinearGradient>
     </View>
   </TouchableOpacity>
 );

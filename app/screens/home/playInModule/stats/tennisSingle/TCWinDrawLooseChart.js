@@ -33,8 +33,7 @@ const TCWinDrawLooseChart = ({
             style={{
               ...styles.singleColumnContainer,
               width: `${(100 * winCount) / totalCount}%`,
-            }}
-          >
+            }}>
             <GradiantContainer
               gradiantColor={[colors.blueGradiantEnd, colors.blueGradiantStart]}
               style={{
@@ -56,8 +55,7 @@ const TCWinDrawLooseChart = ({
             style={{
               ...styles.singleColumnContainer,
               width: `${(100 * drawCount) / totalCount}%`,
-            }}
-          >
+            }}>
             <GradiantContainer
               gradiantColor={[
                 colors.greenGradientEnd,
@@ -80,8 +78,7 @@ const TCWinDrawLooseChart = ({
             style={{
               ...styles.singleColumnContainer,
               width: `${(100 * lossCount) / totalCount}%`,
-            }}
-          >
+            }}>
             <GradiantContainer
               gradiantColor={[colors.themeColor, colors.themeColor2]}
               style={{
@@ -103,8 +100,7 @@ const TCWinDrawLooseChart = ({
             ...styles.singleColumnContainer,
             width: '100%',
             marginTop: 30,
-          }}
-        >
+          }}>
           <GradiantContainer
             gradiantColor={[colors.veryLightGray, colors.veryLightGray]}
             style={{

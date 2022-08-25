@@ -42,8 +42,8 @@ const RatePerformance = ({
         {/*    Rating Slider */}
         {reviewAttributes.length
           ? reviewAttributes.map((item, index) => (
-              <View key={index}>
-                <TCAttributeRatingWithSlider
+            <View key={index}>
+              <TCAttributeRatingWithSlider
                   selectedTrackColors={
                     teamNo === 0
                       ? [colors.yellowColor, colors.themeColor]
@@ -53,7 +53,7 @@ const RatePerformance = ({
                   title={item}
                   rating={reviewsData[item]}
                 />
-              </View>
+            </View>
             ))
           : null}
       </View>

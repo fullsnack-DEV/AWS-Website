@@ -183,8 +183,7 @@ export default function EditMemberTeamInfoScreen({navigation, route}) {
                 ...groupMemberDetail,
                 is_member: !groupMemberDetail.is_member,
               });
-            }}
-          >
+            }}>
             <Image
               source={
                 groupMemberDetail.is_member
@@ -204,8 +203,7 @@ export default function EditMemberTeamInfoScreen({navigation, route}) {
                 ...groupMemberDetail,
                 is_coach: !groupMemberDetail.is_coach,
               });
-            }}
-          >
+            }}>
             <Image
               source={
                 groupMemberDetail.is_coach
@@ -225,8 +223,7 @@ export default function EditMemberTeamInfoScreen({navigation, route}) {
                 ...groupMemberDetail,
                 is_admin: !groupMemberDetail.is_admin,
               });
-            }}
-          >
+            }}>
             <Image
               source={
                 groupMemberDetail.is_admin

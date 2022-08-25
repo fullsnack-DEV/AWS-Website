@@ -78,8 +78,7 @@ export default function MultipleImageModal({backBtnPress, attachedImages}) {
             justifyContent: 'center',
             height: isLandScape ? wp(100) : hp(100),
             zIndex: 100,
-          }}
-        >
+          }}>
           <TCZoomableImage
             source={{uri: multiAttachItem.url}}
             style={[
@@ -101,8 +100,7 @@ export default function MultipleImageModal({backBtnPress, attachedImages}) {
             alignItems: 'center',
             justifyContent: 'center',
             zIndex: 100,
-          }}
-        >
+          }}>
           <Image
             source={
               isLandScape
@@ -141,8 +139,7 @@ export default function MultipleImageModal({backBtnPress, attachedImages}) {
   return (
     <KeyboardAvoidingView
       style={{flex: 1, backgroundColor: colors.blackColor}}
-      behavior={Platform.OS === 'ios' ? 'padding' : null}
-    >
+      behavior={Platform.OS === 'ios' ? 'padding' : null}>
       <View style={{flex: 1}}>
         <Carousel
           ref={carouselRef}

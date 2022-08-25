@@ -105,8 +105,7 @@ class EventAgendaSection extends React.Component {
           {this.props.onKnobPress && (
             <TouchableWithoutFeedback
               hitSlop={Platform.OS === 'ios' ? getHitSlop(15) : getHitSlop(30)}
-              onPress={this.props.onKnobPress}
-            >
+              onPress={this.props.onKnobPress}>
               <View style={styles.knobContainer}>
                 <View style={styles.knobView}>
                   <Image

@@ -67,8 +67,7 @@ const ReportCommentModal = ({commentData, reportCommentModalRef}) => {
         modalStyle={{
           backgroundColor: 'transparent',
         }}
-        ref={reportCommentModalRef}
-      >
+        ref={reportCommentModalRef}>
         <View style={styles.mainContainer}>
           {/* Top Container */}
           <View style={styles.topContentContainer}>
@@ -80,8 +79,7 @@ const ReportCommentModal = ({commentData, reportCommentModalRef}) => {
                 width: '100%',
                 justifyContent: 'center',
                 alignItems: 'center',
-              }}
-            >
+              }}>
               <FastImage source={userProfile} style={styles.profileImage} />
               <Text style={styles.userName}>{userName}</Text>
             </View>
@@ -91,8 +89,7 @@ const ReportCommentModal = ({commentData, reportCommentModalRef}) => {
                 key={item?.key}
                 underlayColor={colors.underlayColor}
                 onPressOut={() => onOptionPress(item?.key)}
-                style={styles.optionContainer}
-              >
+                style={styles.optionContainer}>
                 <Text style={styles.textStyle}>{item.title}</Text>
               </TouchableHighlight>
             ))}
@@ -102,15 +99,13 @@ const ReportCommentModal = ({commentData, reportCommentModalRef}) => {
           <TouchableHighlight
             onPressOut={() => reportCommentModalRef?.current?.close()}
             underlayColor={colors.underlayColor}
-            style={styles.bottomContentContainer}
-          >
+            style={styles.bottomContentContainer}>
             <Text
               style={{
                 ...styles.textStyle,
                 fontFamily: fonts.RMedium,
                 color: colors.redColor,
-              }}
-            >
+              }}>
               Cancel
             </Text>
           </TouchableHighlight>

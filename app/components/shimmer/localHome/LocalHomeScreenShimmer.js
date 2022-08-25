@@ -13,8 +13,7 @@ const CommonheaderWithContent = () => (
       paddingVertical: 15,
       justifyContent: 'center',
       alignItems: 'center',
-    }}
-  >
+    }}>
     <ShimmerView width={150} height={25} style={{alignSelf: 'flex-start'}} />
     <View
       style={{
@@ -25,8 +24,7 @@ const CommonheaderWithContent = () => (
         borderRadius: 15,
         alignItems: 'center',
         justifyContent: 'center',
-      }}
-    >
+      }}>
       <ShimmerView width={150} height={15} />
       <ShimmerView width={250} height={15} />
       <ShimmerView width={100} height={15} />
@@ -37,20 +35,17 @@ const LocalHomeScreenShimmer = () => (
   <ScrollView
     style={{width: '100%'}}
     showsVerticalScrollIndicator={false}
-    showsHorizontalScrollIndicator={false}
-  >
+    showsHorizontalScrollIndicator={false}>
     <View>
       {/*  Sports List */}
       <ScrollView
         horizontal={true}
         showsHorizontalScrollIndicator={false}
-        showsVerticalScrollIndicator={false}
-      >
+        showsVerticalScrollIndicator={false}>
         {new Array(5).fill('').map((childItem, childIndex) => (
           <View
             key={`child${childIndex}`}
-            style={{paddingHorizontal: 15, marginVertical: 10}}
-          >
+            style={{paddingHorizontal: 15, marginVertical: 10}}>
             <ShimmerView
               width={100}
               height={15}
@@ -68,13 +63,11 @@ const LocalHomeScreenShimmer = () => (
       <ScrollView
         horizontal={true}
         showsHorizontalScrollIndicator={false}
-        showsVerticalScrollIndicator={false}
-      >
+        showsVerticalScrollIndicator={false}>
         {new Array(5).fill('').map((childItem, childIndex) => (
           <View
             key={`child${childIndex}`}
-            style={{paddingHorizontal: 10, marginVertical: 10}}
-          >
+            style={{paddingHorizontal: 10, marginVertical: 10}}>
             <View
               style={{
                 alignItems: 'center',
@@ -84,8 +77,7 @@ const LocalHomeScreenShimmer = () => (
                 borderRadius: 50,
                 borderWidth: 5,
                 borderColor: colors.lightgrayPlayInColor,
-              }}
-            >
+              }}>
               <ShimmerView width={50} height={50} style={{borderRadius: 50}} />
             </View>
           </View>
@@ -100,8 +92,7 @@ const LocalHomeScreenShimmer = () => (
           paddingVertical: 15,
           justifyContent: 'center',
           alignItems: 'center',
-        }}
-      >
+        }}>
         <ShimmerView
           width={150}
           height={25}
@@ -110,13 +101,11 @@ const LocalHomeScreenShimmer = () => (
         <ScrollView
           horizontal={true}
           showsHorizontalScrollIndicator={false}
-          showsVerticalScrollIndicator={false}
-        >
+          showsVerticalScrollIndicator={false}>
           {new Array(10).fill('').map((childItem, childIndex) => (
             <View
               key={`child${childIndex}`}
-              style={{paddingHorizontal: 7.5, marginVertical: 10}}
-            >
+              style={{paddingHorizontal: 7.5, marginVertical: 10}}>
               <ShimmerView
                 width={150}
                 height={250}

@@ -25,8 +25,7 @@ const TCScrollableTabs = ({
     tabBarInactiveTextColor={colors.lightBlackColor}
     tabBarUnderlineStyle={{backgroundColor: colors.themeColor}}
     initialPage={0 || initialPage}
-    renderTabBar={() => <ScrollableTabBar />}
-  >
+    renderTabBar={() => <ScrollableTabBar />}>
     {children}
   </ScrollableTabView>
 );

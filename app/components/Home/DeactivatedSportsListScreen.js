@@ -102,8 +102,7 @@ export default function DeactivatedSportsListScreen({navigation}) {
       <View style={styles.sportView}>
         <LinearGradient
           colors={[colors.yellowColor, colors.orangeGradientColor]}
-          style={styles.backgroundView}
-        ></LinearGradient>
+          style={styles.backgroundView}></LinearGradient>
         <View style={styles.innerViewContainer}>
           <View style={styles.viewContainer}>
             <FastImage
@@ -127,8 +126,7 @@ export default function DeactivatedSportsListScreen({navigation}) {
           <TouchableOpacity onPress={() => activateSport(item)}>
             <LinearGradient
               colors={[colors.yellowColor, colors.darkThemeColor]}
-              style={styles.activateView}
-            >
+              style={styles.activateView}>
               <Text style={styles.activateButtonText}>ACTIVATE</Text>
             </LinearGradient>
           </TouchableOpacity>
@@ -142,8 +140,7 @@ export default function DeactivatedSportsListScreen({navigation}) {
       <View style={styles.sportView}>
         <LinearGradient
           colors={[colors.darkThemeColor, colors.darkThemeColor]}
-          style={styles.backgroundView}
-        ></LinearGradient>
+          style={styles.backgroundView}></LinearGradient>
         <View style={styles.innerViewContainer}>
           <View style={styles.viewContainer}>
             <Image
@@ -166,8 +163,7 @@ export default function DeactivatedSportsListScreen({navigation}) {
           <TouchableOpacity onPress={() => activateSport(item)}>
             <LinearGradient
               colors={[colors.yellowColor, colors.darkThemeColor]}
-              style={styles.activateView}
-            >
+              style={styles.activateView}>
               <Text style={styles.activateButtonText}>ACTIVATE</Text>
             </LinearGradient>
           </TouchableOpacity>
@@ -182,8 +178,7 @@ export default function DeactivatedSportsListScreen({navigation}) {
       <View style={styles.sportView}>
         <LinearGradient
           colors={[colors.blueGradiantEnd, colors.blueGradiantStart]}
-          style={styles.backgroundView}
-        ></LinearGradient>
+          style={styles.backgroundView}></LinearGradient>
         <View style={styles.innerViewContainer}>
           <View style={styles.viewContainer}>
             <Image
@@ -206,8 +201,7 @@ export default function DeactivatedSportsListScreen({navigation}) {
           <TouchableOpacity onPress={() => activateSport(item)}>
             <LinearGradient
               colors={[colors.yellowColor, colors.darkThemeColor]}
-              style={styles.activateView}
-            >
+              style={styles.activateView}>
               <Text style={styles.activateButtonText}>ACTIVATE</Text>
             </LinearGradient>
           </TouchableOpacity>

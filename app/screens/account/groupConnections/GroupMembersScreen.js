@@ -322,8 +322,7 @@ export default function GroupMembersScreen({navigation, route}) {
           ...styles.nameText,
           color: colors.userPostTimeColor,
         }}
-        numberOfLines={1}
-      >
+        numberOfLines={1}>
         {item.first_name} {item.last_name}
       </Text>
     );
@@ -343,13 +342,11 @@ export default function GroupMembersScreen({navigation, route}) {
               width: 0,
               flexGrow: 1,
               flex: 1,
-            }}
-          >
+            }}>
             <View style={styles.topViewContainer}>
               <TouchableOpacity
                 onPress={() => onPressProfilePhotoAndTitle(data)}
-                style={styles.imageTouchStyle}
-              >
+                style={styles.imageTouchStyle}>
                 <View style={styles.profileView}>
                   <Image
                     source={
@@ -364,8 +361,7 @@ export default function GroupMembersScreen({navigation, route}) {
 
               <View style={styles.topTextContainer}>
                 <TouchableOpacity
-                  onPress={() => onPressProfilePhotoAndTitle(data)}
-                >
+                  onPress={() => onPressProfilePhotoAndTitle(data)}>
                   <Text style={styles.nameText} numberOfLines={1}>
                     {renderFirstNameAndLastName(data)}
                   </Text>
@@ -409,8 +405,7 @@ export default function GroupMembersScreen({navigation, route}) {
               <TouchableOpacity
                 style={styles.buttonContainer}
                 onPress={() => onPressProfile(data)}
-                hitSlop={getHitSlop(15)}
-              >
+                hitSlop={getHitSlop(15)}>
                 <Image
                   source={images.arrowGraterthan}
                   style={styles.arrowStyle}

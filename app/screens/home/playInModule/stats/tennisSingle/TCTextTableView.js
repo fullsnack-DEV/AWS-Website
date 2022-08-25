@@ -10,8 +10,7 @@ const TCTextTableView = ({leftTitle, leftSubTitle, rightTitle}) => (
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-      }}
-    >
+      }}>
       <Text style={styles.leftTitle}>{leftTitle}</Text>
       <Text style={styles.subTitle}>{leftSubTitle}</Text>
     </View>

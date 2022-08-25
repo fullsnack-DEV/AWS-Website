@@ -181,8 +181,7 @@ const CommentModal = ({
         scaleEnabled={false}
         showLabel={true}
         buttons={getButtons(data)}
-        onPress={(key) => onCommentOptionsPress(key, data)}
-      >
+        onPress={(key) => onCommentOptionsPress(key, data)}>
         <WriteCommentItems data={data} onProfilePress={onProfilePress} />
       </SwipeableRow>
     ),
@@ -251,8 +250,7 @@ const CommentModal = ({
   const FooterComponent = () => (
     <SafeAreaView
       pointerEvents={showBottomWriteCommentSection ? 'none' : 'auto'}
-      style={styles.bottomSafeAreaStyle}
-    >
+      style={styles.bottomSafeAreaStyle}>
       <View style={styles.bottomImgView}>
         <View style={styles.commentReportView}>
           <Image
@@ -325,8 +323,7 @@ const CommentModal = ({
         setTimeout(() => {
           writeCommentTextInputRef.current.focus(true);
         }, 1000);
-      }}
-    >
+      }}>
       {showBottomWriteCommentSection && <FooterComponent />}
     </TouchableOpacity>
   );

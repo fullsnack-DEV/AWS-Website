@@ -44,8 +44,7 @@ export default function InviteToChallengeSentScreen({navigation, route}) {
         style={styles.goToProfileButton}
         onPress={() => {
           navigation.popToTop();
-        }}
-      >
+        }}>
         <Text style={styles.goToProfileTitle}>OK</Text>
       </TouchableOpacity>
     </View>

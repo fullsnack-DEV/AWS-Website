@@ -24,8 +24,7 @@ export default function TennisGameScoreRight({
       <View style={{...styles.headerView}}>
         <View style={styles.leftBlankView}>
           <Text
-            style={{fontFamily: fonts.RBold, fontSize: 12, textAlign: 'right'}}
-          >
+            style={{fontFamily: fonts.RBold, fontSize: 12, textAlign: 'right'}}>
             {getGameConvertMinsToTime(recordData?.minutes ?? 0)}
           </Text>
           <Text
@@ -33,8 +32,7 @@ export default function TennisGameScoreRight({
               fontFamily: fonts.RLight,
               fontSize: 12,
               color: colors.darkGrayColor,
-            }}
-          >
+            }}>
             {getGameDateTimeInHMSformat(recordData?.timestamp)}
           </Text>
         </View>
@@ -44,8 +42,7 @@ export default function TennisGameScoreRight({
               width: '20%',
               alignItems: 'flex-start',
               left: 10,
-            }}
-          >
+            }}>
             <View style={styles.gameRecordButton}>
               <FastImage
                 source={tennisGamePlayStatsImage[recordData?.verb]}
@@ -79,8 +76,7 @@ export default function TennisGameScoreRight({
               width: '100%',
               justifyContent: 'space-around',
               alignItems: 'space-around',
-            }}
-          >
+            }}>
             <Text style={styles.recordedBy}>
               Recorded by{' '}
               {`${recordData?.recorded_by?.first_name} ${recordData?.recorded_by?.last_name}` ??

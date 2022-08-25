@@ -31,8 +31,7 @@ function NotificationProfileItem({data, indexNumber, selectedIndex}) {
         style={[
           styles.container,
           indexNumber === selectedIndex ? styles.containerActive : '',
-        ]}
-      >
+        ]}>
         <GroupIconImage
           entityName={entityName}
           entityImg={entityImage}
@@ -48,8 +47,7 @@ function NotificationProfileItem({data, indexNumber, selectedIndex}) {
                 ? styles.entityNameTextStyleActive
                 : '',
             ]}
-            numberOfLines={2}
-          >
+            numberOfLines={2}>
             {entityName}
           </Text>
         </View>

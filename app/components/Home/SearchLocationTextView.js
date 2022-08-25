@@ -9,8 +9,7 @@ function SearchLocationTextView({value, onItemPress}) {
   return (
     <TouchableWithoutFeedback
       style={styles.containerStyle}
-      onPress={onItemPress}
-    >
+      onPress={onItemPress}>
       <Text style={styles.textStyle}>{value}</Text>
     </TouchableWithoutFeedback>
   );

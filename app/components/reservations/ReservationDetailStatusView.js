@@ -18,8 +18,7 @@ export default function ReservationDetailStatusView({
       <TouchableOpacity>
         <LinearGradient
           colors={[colors.yellowColor, colors.themeColor]}
-          style={styles.borderView}
-        >
+          style={styles.borderView}>
           <View style={styles.dateView}>
             <Text style={styles.dateText}>Feb{'\n'}15</Text>
           </View>

@@ -21,8 +21,7 @@ const TCTeamsCardPlaceholder = ({
     <TCChallengerCard />
     <LinearGradient
       colors={[colors.whiteColor, colors.whiteColor]}
-      style={styles.overlayStyle}
-    >
+      style={styles.overlayStyle}>
       <Text style={styles.placeholderTextStyle}>{placeholderText}</Text>
       <TouchableOpacity onPress={onPress}>
         <Text style={styles.startTitle} numberOfLines={2}>

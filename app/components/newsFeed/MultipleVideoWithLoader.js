@@ -38,8 +38,7 @@ function MultipleVideoWithLoader({data}) {
             <TouchableOpacity
               onPress={() => {
                 setMute(!mute);
-              }}
-            >
+              }}>
               <FastImage
                 resizeMode={'contain'}
                 tintColor={'white'}
@@ -52,8 +51,7 @@ function MultipleVideoWithLoader({data}) {
             <TouchableOpacity
               onPress={() => {
                 setPlay(!play);
-              }}
-            >
+              }}>
               <FastImage
                 tintColor={'white'}
                 resizeMode={'contain'}

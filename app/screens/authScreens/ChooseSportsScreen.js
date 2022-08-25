@@ -312,22 +312,21 @@ export default function ChooseSportsScreen({navigation, route}) {
       });
   };
 
-  const renderItem = ({item, index}) => {
-    return (
-      <TouchableWithoutFeedback
+  const renderItem = ({item, index}) => (
+    <TouchableWithoutFeedback
         style={styles.listItem}
         onPress={() => {
           isIconCheckedOrNot({item, index});
         }}>
-        <FastImage
+      <FastImage
           resizeMode={'contain'}
           source={{uri: `${image_base_url}${item.player_image}`}}
           style={styles.sportImg}
         />
-        <Text style={styles.sportList}>{item.sport_name}</Text>
-        <View style={styles.checkbox}>
-          {sports?.[index]?.isChecked ? (
-            <FastImage
+      <Text style={styles.sportList}>{item.sport_name}</Text>
+      <View style={styles.checkbox}>
+        {sports?.[index]?.isChecked ? (
+          <FastImage
               source={images.checkWhite}
               resizeMode={'contain'}
               style={styles.checkboxImg}
@@ -339,11 +338,10 @@ export default function ChooseSportsScreen({navigation, route}) {
               style={styles.unCheckboxImg}
             />
           )}
-        </View>
-        <Separator />
-      </TouchableWithoutFeedback>
+      </View>
+      <Separator />
+    </TouchableWithoutFeedback>
     );
-  };
   const setDummyAuthContext = (key, value) => {
     dummyAuthContext[key] = value;
   };

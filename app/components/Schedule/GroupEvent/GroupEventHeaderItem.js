@@ -14,8 +14,7 @@ export default function GroupEventHeaderItem({
       <Text style={styles.titleTextStyle}>{title}</Text>
       <TouchableOpacity
         style={styles.touchCheckBoxStyle}
-        onPress={onHeaderItemPress}
-      >
+        onPress={onHeaderItemPress}>
         <Image
           source={source}
           style={styles.imageStyle}

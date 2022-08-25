@@ -77,8 +77,7 @@ function SingleImage({
               ? getImageDimention().height - 30
               : getImageDimention().height,
         },
-      ]}
-    >
+      ]}>
       <View
         style={[
           styles.uploadedImage,
@@ -90,8 +89,7 @@ function SingleImage({
                 ? getImageDimention().height - 30
                 : getImageDimention().height,
           },
-        ]}
-      >
+        ]}>
         <FastImage
           style={styles.imageStyle}
           source={images.imageLoadingGIF}
@@ -104,8 +102,7 @@ function SingleImage({
           if (uploadImageURL) {
             toggleModal();
           }
-        }}
-      >
+        }}>
         <FastImage
           style={{
             ...styles.uploadedImage,

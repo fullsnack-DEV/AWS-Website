@@ -244,16 +244,14 @@ export default function CreateEventScreen({navigation, route}) {
               ],
               {cancelable: false},
             );
-          }}
-        >
+          }}>
           <Image source={images.backArrow} style={styles.backImageStyle} />
         </TouchableOpacity>
       ),
       headerRight: () => (
         <TouchableOpacity
           style={{padding: 2, marginRight: 15}}
-          onPress={onDonePress}
-        >
+          onPress={onDonePress}>
           <Text>Done</Text>
         </TouchableOpacity>
       ),
@@ -378,8 +376,7 @@ export default function CreateEventScreen({navigation, route}) {
       style={styles.listItem}
       onPress={() => {
         setSelectedSport(item);
-      }}
-    >
+      }}>
       <View
         style={{
           padding: 20,
@@ -387,8 +384,7 @@ export default function CreateEventScreen({navigation, route}) {
           flexDirection: 'row',
           justifyContent: 'space-between',
           marginRight: 15,
-        }}
-      >
+        }}>
         <Text style={styles.languageList}>
           {getSportName(item, authContext)}
         </Text>
@@ -406,9 +402,8 @@ export default function CreateEventScreen({navigation, route}) {
     </TouchableOpacity>
   );
 
-  const renderWhoCan = ({item}) => {
-    return (
-      <TouchableOpacity
+  const renderWhoCan = ({item}) => (
+    <TouchableOpacity
         style={styles.listItem}
         onPress={() => {
           if (whoOpetion === 'see') {
@@ -420,51 +415,45 @@ export default function CreateEventScreen({navigation, route}) {
           setTimeout(() => {
             setVisibleWhoModal(false);
           }, 300);
-        }}
-      >
-        <View
+        }}>
+      <View
           style={{
             padding: 20,
             alignItems: 'center',
             flexDirection: 'row',
             justifyContent: 'space-between',
             marginRight: 15,
-          }}
-        >
-          <Text style={styles.languageList}>{item.text}</Text>
-          <View style={styles.checkbox}>
-            {(whoOpetion === 'see' && whoCanSeeOpetion.value === item?.value) ||
+          }}>
+        <Text style={styles.languageList}>{item.text}</Text>
+        <View style={styles.checkbox}>
+          {(whoOpetion === 'see' && whoCanSeeOpetion.value === item?.value) ||
             (whoOpetion === 'join' &&
               whoCanJoinOpetion.value === item?.value) ? (
-              <Image
+                <Image
                 source={images.radioCheckYellow}
                 style={styles.checkboxImg}
               />
             ) : (
               <Image source={images.radioUnselect} style={styles.checkboxImg} />
             )}
-          </View>
         </View>
-      </TouchableOpacity>
+      </View>
+    </TouchableOpacity>
     );
-  };
 
-  const renderEventPostedOpetions = ({item}) => {
-    return (
-      <View
+  const renderEventPostedOpetions = ({item}) => (
+    <View
         style={{
           flexDirection: 'row',
           marginBottom: 15,
 
           marginRight: 15,
-        }}
-      >
-        <TouchableOpacity
+        }}>
+      <TouchableOpacity
           onPress={() => {
             setEventPosted(item);
-          }}
-        >
-          <Image
+          }}>
+        <Image
             source={
               eventPosted.value === item.value
                 ? images.checkRoundOrange
@@ -472,15 +461,13 @@ export default function CreateEventScreen({navigation, route}) {
             }
             style={styles.radioButtonStyle}
           />
-        </TouchableOpacity>
-        <Text style={styles.eventPostedTitle}>{item.text}</Text>
-      </View>
+      </TouchableOpacity>
+      <Text style={styles.eventPostedTitle}>{item.text}</Text>
+    </View>
     );
-  };
 
-  const renderSeeGroups = ({item, index}) => {
-    return (
-      <GroupEventItems
+  const renderSeeGroups = ({item, index}) => (
+    <GroupEventItems
         eventImageSource={
           item.entity_type === 'team' ? images.teamPatch : images.clubPatch
         }
@@ -502,11 +489,9 @@ export default function CreateEventScreen({navigation, route}) {
         }}
       />
     );
-  };
 
-  const renderJoinGroups = ({item, index}) => {
-    return (
-      <GroupEventItems
+  const renderJoinGroups = ({item, index}) => (
+    <GroupEventItems
         eventImageSource={
           item.entity_type === 'team' ? images.teamPatch : images.clubPatch
         }
@@ -528,7 +513,6 @@ export default function CreateEventScreen({navigation, route}) {
         }}
       />
     );
-  };
 
   const onBGImageClicked = () => {
     setTimeout(() => {
@@ -885,8 +869,7 @@ export default function CreateEventScreen({navigation, route}) {
               <TouchableOpacity
                 onPress={() => {
                   setVisibleSportsModal(true);
-                }}
-              >
+                }}>
                 <TextInput
                   placeholder={strings.sportPlaceholder}
                   style={styles.textInputStyle}
@@ -912,8 +895,7 @@ export default function CreateEventScreen({navigation, route}) {
             <EventItemRender
               title={strings.timeTitle}
               isRequired={true}
-              headerTextStyle={{marginBottom: 15}}
-            >
+              headerTextStyle={{marginBottom: 15}}>
               <EventTimeSelectItem
                 title={strings.starts}
                 toggle={!toggle}
@@ -1085,8 +1067,7 @@ export default function CreateEventScreen({navigation, route}) {
                 onPress={() => {
                   setWhoOpetion('join');
                   setVisibleWhoModal(true);
-                }}
-              >
+                }}>
                 <View style={styles.dropContainer}>
                   <Text style={styles.textInputDropStyle}>
                     {whoCanJoinOpetion.text}
@@ -1111,8 +1092,7 @@ export default function CreateEventScreen({navigation, route}) {
                           isSelected: !isAll,
                         }));
                         setGroupsJoinList([...groups]);
-                      }}
-                    >
+                      }}>
                       <Image
                         source={
                           isAll ? images.orangeCheckBox : images.uncheckWhite
@@ -1174,8 +1154,7 @@ export default function CreateEventScreen({navigation, route}) {
                 {strings.refundPolicyTitle}
               </Text>
               <Text
-                style={{fontSize: 14, fontFamily: fonts.RBold, marginTop: 15}}
-              >
+                style={{fontSize: 14, fontFamily: fonts.RBold, marginTop: 15}}>
                 {'Primary Refund Policy'}
               </Text>
               <Text style={[styles.subTitleText, {marginTop: 10}]}>
@@ -1186,14 +1165,12 @@ export default function CreateEventScreen({navigation, route}) {
                     fontSize: 12,
                     fontFamily: fonts.RRegular,
                     textDecorationLine: 'underline',
-                  }}
-                >
+                  }}>
                   {'\n'}Read payment policy for more information.
                 </Text>
               </Text>
               <Text
-                style={{fontSize: 14, fontFamily: fonts.RBold, marginTop: 15}}
-              >
+                style={{fontSize: 14, fontFamily: fonts.RBold, marginTop: 15}}>
                 {'Additional Refund Policy'}
               </Text>
               <TextInput
@@ -1225,8 +1202,7 @@ export default function CreateEventScreen({navigation, route}) {
                 onPress={() => {
                   setWhoOpetion('see');
                   setVisibleWhoModal(true);
-                }}
-              >
+                }}>
                 <View style={styles.dropContainer}>
                   <Text style={styles.textInputDropStyle}>
                     {whoCanSeeOpetion.text}
@@ -1251,8 +1227,7 @@ export default function CreateEventScreen({navigation, route}) {
                           isSelected: !isAll,
                         }));
                         setGroupsSeeList([...groups]);
-                      }}
-                    >
+                      }}>
                       <Image
                         source={
                           isAll ? images.orangeCheckBox : images.uncheckWhite
@@ -1325,8 +1300,7 @@ export default function CreateEventScreen({navigation, route}) {
         backdropTransitionOutTiming={10}
         style={{
           margin: 0,
-        }}
-      >
+        }}>
         <View
           style={{
             width: '100%',
@@ -1342,21 +1316,18 @@ export default function CreateEventScreen({navigation, route}) {
             shadowOpacity: 0.5,
             shadowRadius: 5,
             elevation: 15,
-          }}
-        >
+          }}>
           <View
             style={{
               flexDirection: 'row',
               paddingHorizontal: 15,
               justifyContent: 'space-between',
               alignItems: 'center',
-            }}
-          >
+            }}>
             <TouchableOpacity
               hitSlop={getHitSlop(15)}
               style={styles.closeButton}
-              onPress={() => setVisibleSportsModal(false)}
-            >
+              onPress={() => setVisibleSportsModal(false)}>
               <Image source={images.cancelImage} style={styles.closeButton} />
             </TouchableOpacity>
             <Text
@@ -1366,8 +1337,7 @@ export default function CreateEventScreen({navigation, route}) {
                 fontSize: 16,
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
-              }}
-            >
+              }}>
               Sports
             </Text>
 
@@ -1384,8 +1354,7 @@ export default function CreateEventScreen({navigation, route}) {
                 setTimeout(() => {
                   setVisibleSportsModal(false);
                 }, 300);
-              }}
-            >
+              }}>
               Apply
             </Text>
           </View>
@@ -1411,8 +1380,7 @@ export default function CreateEventScreen({navigation, route}) {
         backdropTransitionOutTiming={10}
         style={{
           margin: 0,
-        }}
-      >
+        }}>
         <View
           style={{
             width: '100%',
@@ -1428,21 +1396,18 @@ export default function CreateEventScreen({navigation, route}) {
             shadowOpacity: 0.5,
             shadowRadius: 5,
             elevation: 15,
-          }}
-        >
+          }}>
           <View
             style={{
               flexDirection: 'row',
               paddingHorizontal: 15,
               justifyContent: 'space-between',
               alignItems: 'center',
-            }}
-          >
+            }}>
             <TouchableOpacity
               hitSlop={getHitSlop(15)}
               style={styles.closeButton}
-              onPress={() => setVisibleWhoModal(false)}
-            >
+              onPress={() => setVisibleWhoModal(false)}>
               <Image source={images.cancelImage} style={styles.closeButton} />
             </TouchableOpacity>
 
@@ -1453,8 +1418,7 @@ export default function CreateEventScreen({navigation, route}) {
                 fontSize: 16,
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
-              }}
-            >
+              }}>
               Privacy Setting
             </Text>
 
@@ -1465,8 +1429,7 @@ export default function CreateEventScreen({navigation, route}) {
                 fontSize: 16,
                 fontFamily: fonts.RRegular,
                 color: colors.themeColor,
-              }}
-            ></Text>
+              }}></Text>
           </View>
           <View style={styles.separatorLine} />
           <FlatList

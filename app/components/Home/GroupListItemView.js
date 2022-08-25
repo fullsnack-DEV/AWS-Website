@@ -16,8 +16,7 @@ export default function GroupListItemView({groupData, onPress}) {
       onPress={() => {
         onPress(groupData);
       }}
-      style={{marginTop: 15, marginHorizontal: 15, marginBottom: 3}}
-    >
+      style={{marginTop: 15, marginHorizontal: 15, marginBottom: 3}}>
       {groupData && (
         <View style={styles.topViewContainer}>
           <View style={{flexDirection: 'row'}}>
@@ -49,8 +48,7 @@ export default function GroupListItemView({groupData, onPress}) {
                   flexDirection: 'row',
                   justifyContent: 'flex-start',
                   alignItems: 'flex-start',
-                }}
-              >
+                }}>
                 <Text style={styles.nameText} numberOfLines={1}>
                   {groupData.group_name}
                 </Text>
@@ -68,12 +66,12 @@ export default function GroupListItemView({groupData, onPress}) {
                   flexDirection: 'row',
                   justifyContent: 'flex-start',
                   alignItems: 'flex-start',
-                }}
-              >
+                }}>
                 <Text
                   style={styles.locationText}
-                  numberOfLines={1}
-                >{`${groupData.city}, ${groupData.state_abbr}`}</Text>
+                  numberOfLines={
+                    1
+                  }>{`${groupData.city}, ${groupData.state_abbr}`}</Text>
                 <Text style={styles.sportText}>{groupData.sport}</Text>
               </View>
             </View>

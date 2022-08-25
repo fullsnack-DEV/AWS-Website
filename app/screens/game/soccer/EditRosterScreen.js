@@ -475,8 +475,7 @@ export default function EditRosterScreen({navigation, route}) {
                   setNonRoster([...nonRoster]);
                 }
               }}
-              disabled={enabledSection === 0}
-            >
+              disabled={enabledSection === 0}>
               <Image
                 source={images.moveFlottyButton}
                 style={{

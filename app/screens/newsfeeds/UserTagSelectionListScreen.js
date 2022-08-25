@@ -64,8 +64,7 @@ export default function UserTagSelectionListScreen({navigation, route}) {
                 selectedTagList: selectedUsers,
               });
             }
-          }}
-        >
+          }}>
           Done
         </Text>
       ),
@@ -332,8 +331,7 @@ export default function UserTagSelectionListScreen({navigation, route}) {
                     textAlign: 'center',
                     marginTop: hp(2),
                     color: colors.userPostTimeColor,
-                  }}
-                >
+                  }}>
                   No Records Found
                 </Text>
               )
@@ -364,8 +362,7 @@ export default function UserTagSelectionListScreen({navigation, route}) {
               flexDirection: 'row',
               borderBottomColor: colors.lightgrayColor,
               borderBottomWidth: 1,
-            }}
-          >
+            }}>
             {['team', 'club', 'league'].map((item) => (
               <TouchableOpacity
                 key={item}
@@ -375,8 +372,7 @@ export default function UserTagSelectionListScreen({navigation, route}) {
                   setPageFrom(0);
                   setGroupData([]);
                   getGroupsData('');
-                }}
-              >
+                }}>
                 <Text
                   style={{
                     color:
@@ -385,8 +381,7 @@ export default function UserTagSelectionListScreen({navigation, route}) {
                         : colors.lightBlackColor,
                     fontFamily:
                       item === currentGrpupTab ? fonts.RBold : fonts.RRegular,
-                  }}
-                >
+                  }}>
                   {_.startCase(item)}
                 </Text>
               </TouchableOpacity>
@@ -400,8 +395,7 @@ export default function UserTagSelectionListScreen({navigation, route}) {
                   textAlign: 'center',
                   marginTop: hp(2),
                   color: colors.userPostTimeColor,
-                }}
-              >
+                }}>
                 No Records Found
               </Text>
             }

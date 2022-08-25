@@ -157,8 +157,7 @@ const Review = ({navigation, gameData, isAdmin, getSoccerGameReview}) => {
             marginBottom: hp(1),
             backgroundColor: colors.whiteColor,
             marginLeft: 10,
-          }}
-        >
+          }}>
           {!checkReviewExpired(gameData?.actual_enddatetime) ? (
             <Text style={styles.reviewPeriod}>
               The review period will be expired within{' '}
@@ -176,8 +175,7 @@ const Review = ({navigation, gameData, isAdmin, getSoccerGameReview}) => {
               style={{
                 ...styles.reviewPeriod,
                 marginVertical: 10,
-              }}
-            >
+              }}>
               The review period is{' '}
               <Text style={{fontFamily: fonts.RBold}}>expired</Text>
             </Text>

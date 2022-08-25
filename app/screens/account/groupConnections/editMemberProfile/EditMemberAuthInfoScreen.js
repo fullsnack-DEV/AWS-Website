@@ -455,8 +455,7 @@ export default function EditMemberAuthInfoScreen({navigation, route}) {
             alignItems: 'center',
             marginRight: 15,
             marginBottom: 15,
-          }}
-        >
+          }}>
           <View style={styles.profileView}>
             <Image
               source={
@@ -476,8 +475,7 @@ export default function EditMemberAuthInfoScreen({navigation, route}) {
           style={[
             styles.checkBoxContainer,
             {opacity: groupMemberDetail?.teams ? 0.5 : 1},
-          ]}
-        >
+          ]}>
           <Text style={styles.checkBoxItemText}>Member</Text>
           <TouchableOpacity
             disabled={!!groupMemberDetail?.teams}
@@ -495,8 +493,7 @@ export default function EditMemberAuthInfoScreen({navigation, route}) {
                   is_admin: false,
                 });
               }
-            }}
-          >
+            }}>
             <Image
               source={
                 // item.join_membership_acceptedadmin === false
@@ -525,8 +522,7 @@ export default function EditMemberAuthInfoScreen({navigation, route}) {
                   is_admin: false,
                 });
               }
-            }}
-          >
+            }}>
             <Image
               source={
                 setting.is_admin ? images.orangeCheckBox : images.uncheckWhite

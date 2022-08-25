@@ -45,15 +45,13 @@ function Feed({data, navigation}) {
                 opacity: 0.5,
                 justifyContent: 'center',
                 alignItems: 'center',
-              }}
-            >
+              }}>
               <Text
                 style={{
                   color: colors.whiteColor,
                   // fontFamily: fonts.RRegular,
                   fontSize: wp('2.8%'),
-                }}
-              >
+                }}>
                 {index + 1}/{json.attachments.length}
               </Text>
             </View>
@@ -67,8 +65,7 @@ function Feed({data, navigation}) {
           style={styles.listItem}
           onPress={() =>
             console.log('Image pressed..', json.attachments[index].thumbnail)
-          }
-        >
+          }>
           <View>
             <Image
               source={{uri: json.attachments[index].thumbnail}}
@@ -86,15 +83,13 @@ function Feed({data, navigation}) {
                 opacity: 0.5,
                 justifyContent: 'center',
                 alignItems: 'center',
-              }}
-            >
+              }}>
               <Text
                 style={{
                   color: colors.whiteColor,
                   // fontFamily: fonts.RRegular,
                   fontSize: wp('2.8%'),
-                }}
-              >
+                }}>
                 {index + 1}/{json.attachments.length}
               </Text>
             </View>
@@ -114,8 +109,7 @@ function Feed({data, navigation}) {
               json.attachments[index].type,
               json.attachments[index].url,
             )
-          }
-        >
+          }>
           <Image
             source={{uri: json.attachments[index].thumbnail}}
             style={styles.singleMediaLandscap}
@@ -135,8 +129,7 @@ function Feed({data, navigation}) {
               json.attachments[index].type,
               json.attachments[index].url,
             )
-          }
-        >
+          }>
           <Image
             source={{uri: json.attachments[index].thumbnail}}
             style={styles.singleMediaPortrait}

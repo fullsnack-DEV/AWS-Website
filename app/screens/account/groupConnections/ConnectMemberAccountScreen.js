@@ -46,8 +46,7 @@ export default function ConnectMemberAccountScreen({navigation, route}) {
       headerRight: () => (
         <Text
           style={styles.nextButtonStyle}
-          onPress={() => connectMemberProfile()}
-        >
+          onPress={() => connectMemberProfile()}>
           Done
         </Text>
       ),
@@ -122,12 +121,10 @@ export default function ConnectMemberAccountScreen({navigation, route}) {
             }
           });
           setMembers([...members]);
-        }}
-      >
+        }}>
         <LinearGradient
           colors={[colors.greenGradientStart, colors.greenGradientEnd]}
-          style={styles.topViewContainer}
-        >
+          style={styles.topViewContainer}>
           <View style={{flexDirection: 'row'}}>
             <View style={styles.profileView}>
               <Image
@@ -167,8 +164,7 @@ export default function ConnectMemberAccountScreen({navigation, route}) {
           });
 
           setMembers([...members]);
-        }}
-      >
+        }}>
         <View style={styles.topViewContainer}>
           <View style={{flexDirection: 'row'}}>
             <View style={styles.profileView}>
@@ -212,27 +208,23 @@ export default function ConnectMemberAccountScreen({navigation, route}) {
           data={members}
           keyExtractor={(item, index) => index.toString()}
           renderItem={renderMembers}
-          ListEmptyComponent={() => {
-            return (
-              <View
+          ListEmptyComponent={() => (
+            <View
                 style={{
                   flex: 1,
                   alignItems: 'center',
                   justifyContent: 'center',
-                }}
-              >
-                <Text
+                }}>
+              <Text
                   style={{
                     fontFamily: fonts.RRegular,
                     color: colors.grayColor,
                     fontSize: 26,
-                  }}
-                >
-                  No members
-                </Text>
-              </View>
-            );
-          }}
+                  }}>
+                No members
+              </Text>
+            </View>
+            )}
         />
       </View>
     </View>

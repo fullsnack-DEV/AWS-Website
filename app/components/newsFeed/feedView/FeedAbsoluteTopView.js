@@ -114,12 +114,10 @@ const FeedAbsoluteTopView = memo(
               <ScrollView
                 indicatorStyle={'white'}
                 style={{zIndex: 10}}
-                showsVerticalScrollIndicator={true}
-              >
+                showsVerticalScrollIndicator={true}>
                 <ReactNativeTouchableOpacity
                   activeOpacity={1}
-                  onPress={() => setReadMore(!readMore)}
-                >
+                  onPress={() => setReadMore(!readMore)}>
                   <FeedDescriptionSection
                     readMore={readMore}
                     setReadMore={setReadMore}
@@ -153,15 +151,13 @@ const FeedAbsoluteTopView = memo(
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'flex-end',
-          }}
-        >
+          }}>
           {feedSubItem?.attachments?.[currentViewIndex]?.type === 'video' && (
             <Fragment>
               {/*  Mute Unmute Button */}
               <TouchableOpacity
                 hitSlop={getHitSlop(10)}
-                onPress={() => setIsMute((val) => !val)}
-              >
+                onPress={() => setIsMute((val) => !val)}>
                 <FastImage
                   source={
                     isMute ? images.videoMuteSound : images.videoUnMuteSound
@@ -179,8 +175,7 @@ const FeedAbsoluteTopView = memo(
               <TouchableOpacity
                 hitSlop={getHitSlop(10)}
                 onPress={onFullScreen}
-                style={{marginLeft: 20}}
-              >
+                style={{marginLeft: 20}}>
                 <FastImage
                   source={
                     isFullScreen
@@ -232,8 +227,7 @@ const FeedAbsoluteTopView = memo(
             onPress={() => {
               Orientation.lockToPortrait();
               navigation.goBack();
-            }}
-          >
+            }}>
             <FastImage
               tintColor={colors.whiteColor}
               source={images.backArrow}
@@ -263,8 +257,7 @@ const FeedAbsoluteTopView = memo(
                     portraitWidth: 35,
                   }),
                 }}
-                onPress={() => {}}
-              >
+                onPress={() => {}}>
                 {_.startCase(feedItem?.actor?.data?.full_name?.toLowerCase())}
               </Text>
               <Text style={styles.activeTimeAgoTxt}>
@@ -293,14 +286,12 @@ const FeedAbsoluteTopView = memo(
           opacity: showParent ? 1 : 0,
           ...(readMore && {bottom: 0}),
           backgroundColor: readMore ? 'rgba(0,0,0,0.7)' : 'transparent',
-        }}
-      >
+        }}>
         <View
           style={{
             ...styles.topSubContainer,
             width: getScreenWidth({isLandscape, screenInsets}),
-          }}
-        >
+          }}>
           {/* Render top profile image and name with back button */}
           {renderProfileDisplay}
 

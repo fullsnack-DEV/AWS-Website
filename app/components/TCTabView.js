@@ -29,23 +29,20 @@ export default function TCTabView({
           indexCounter === 0
             ? [styles.activeEventPricacy, {height: activeHeight}]
             : [styles.inactiveEventPricacy, {height: inactiveHeight}]
-        }
-      >
+        }>
         <TouchableOpacity
           onPress={onFirstTabPress}
           style={
             indexCounter === 0
               ? styles.activeEventPricacy
               : styles.inactiveEventPricacy
-          }
-        >
+          }>
           <Text
             style={
               indexCounter === 0
                 ? styles.activeEventPrivacyText
                 : styles.inactiveEventPrivacyText
-            }
-          >
+            }>
             {firstTabTitle}
           </Text>
         </TouchableOpacity>
@@ -69,23 +66,20 @@ export default function TCTabView({
           indexCounter === 1
             ? [styles.activeEventPricacy, {height: activeHeight}]
             : [styles.inactiveEventPricacy, {height: inactiveHeight}]
-        }
-      >
+        }>
         <TouchableOpacity
           onPress={onSecondTabPress}
           style={
             indexCounter === 1
               ? styles.activeEventPricacy
               : styles.inactiveEventPricacy
-          }
-        >
+          }>
           <Text
             style={
               indexCounter === 1
                 ? styles.activeEventPrivacyText
                 : styles.inactiveEventPrivacyText
-            }
-          >
+            }>
             {secondTabTitle}
           </Text>
         </TouchableOpacity>
@@ -110,23 +104,20 @@ export default function TCTabView({
             indexCounter === 2
               ? [styles.activeEventPricacy, {height: activeHeight}]
               : [styles.inactiveEventPricacy, {height: inactiveHeight}]
-          }
-        >
+          }>
           <TouchableOpacity
             onPress={onThirdTabPress}
             style={
               indexCounter === 2
                 ? styles.activeEventPricacy
                 : styles.inactiveEventPricacy
-            }
-          >
+            }>
             <Text
               style={
                 indexCounter === 2
                   ? styles.activeEventPrivacyText
                   : styles.inactiveEventPrivacyText
-              }
-            >
+              }>
               {thirdTabTitle}
             </Text>
           </TouchableOpacity>

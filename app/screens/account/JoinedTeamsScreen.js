@@ -63,8 +63,7 @@ export default function JoinedTeamsScreen({route}) {
       style={styles.listContainer}
       onPress={() => {
         console.log('Pressed Team..');
-      }}
-    >
+      }}>
       <View>
         <Image
           source={item?.thumbnail ? {uri: item?.thumbnail} : images.team_ph}

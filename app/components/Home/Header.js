@@ -32,8 +32,7 @@ function Header({
               ? colors.offwhite
               : 'transparent',
           },
-        ]}
-      >
+        ]}>
         <View style={[style.leftContainerStyle, leftContainerStyle]}>
           {leftComponent}
         </View>

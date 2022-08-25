@@ -7,8 +7,7 @@ const NotificationListTopHeaderShimmer = ({count = 10}) => (
     style={{marginVertical: 5}}
     horizontal={true}
     showsVerticalScrollIndicator={false}
-    showsHorizontalScrollIndicator={false}
-  >
+    showsHorizontalScrollIndicator={false}>
     {Array(count)
       .fill('')
       .map((item, index) => (

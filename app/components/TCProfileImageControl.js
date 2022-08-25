@@ -22,8 +22,7 @@ function TCProfileImageControl({
   return (
     <View style={{flex: 1}}>
       <View
-        style={{margin: 10, borderRadius: 10, overflow: 'hidden', height: 135}}
-      >
+        style={{margin: 10, borderRadius: 10, overflow: 'hidden', height: 135}}>
         <TCImage
           containerStyle={[styles.bgContainerStyle]}
           imageStyle={[styles.bgImageStyle, bgImageStyle]}
@@ -34,8 +33,7 @@ function TCProfileImageControl({
         {showEditButtons && (
           <TouchableOpacity
             style={styles.bgCameraButtonStyle}
-            onPress={onPressBGImage}
-          >
+            onPress={onPressBGImage}>
             <Image
               style={[styles.bgImageButtonStyle, bgImageButtonStyle]}
               source={buttonImage}
@@ -55,8 +53,7 @@ function TCProfileImageControl({
       {showEditButtons && (
         <TouchableOpacity
           style={styles.profileCameraButtonStyle}
-          onPress={onPressProfileImage}
-        >
+          onPress={onPressProfileImage}>
           <Image
             style={[styles.profileImageButtonStyle, profileImageButtonStyle]}
             source={buttonImage}

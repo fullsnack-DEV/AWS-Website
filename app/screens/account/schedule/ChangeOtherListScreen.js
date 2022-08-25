@@ -67,8 +67,7 @@ export default function ChangeOtherListScreen({navigation, route}) {
           onPress={() => {
             route?.params?.onBackClick(true);
             navigation.goBack();
-          }}
-        >
+          }}>
           <Image source={images.backArrow} style={styles.backImageStyle} />
         </TouchableOpacity>
       ),
@@ -94,11 +93,9 @@ export default function ChangeOtherListScreen({navigation, route}) {
           ) {
             setAddedGroups([...setting?.payload?.user?.schedule_group_filter]);
             setremovedGroups([
-              ...[...teams, ...clubs].filter((e) => {
-                return !setting?.payload?.user?.schedule_group_filter.some(
+              ...[...teams, ...clubs].filter((e) => !setting?.payload?.user?.schedule_group_filter.some(
                   (item) => item.group_id === e.group_id,
-                );
-              }),
+                )),
             ]);
           } else {
             const groups = [...teams, ...clubs].map((obj) => ({
@@ -136,8 +133,7 @@ export default function ChangeOtherListScreen({navigation, route}) {
                 removedGroups.push(temp);
                 setremovedGroups([...removedGroups]);
               }}
-              style={{alignSelf: 'center'}}
-            >
+              style={{alignSelf: 'center'}}>
               <Image
                 source={images.removeSportList}
                 style={styles.addIconStyle}
@@ -189,8 +185,7 @@ export default function ChangeOtherListScreen({navigation, route}) {
                   );
                 }
               }}
-              style={{alignSelf: 'center'}}
-            >
+              style={{alignSelf: 'center'}}>
               <Image source={images.addSportList} style={styles.addIconStyle} />
             </TouchableOpacity>
             {/* <FastImage

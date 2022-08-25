@@ -114,8 +114,7 @@ export default function EditChallengeAvailability({navigation}) {
   return (
     <KeyboardAvoidingView
       style={styles.mainContainerStyle}
-      behavior={Platform.OS === 'ios' ? 'padding' : null}
-    >
+      behavior={Platform.OS === 'ios' ? 'padding' : null}>
       <ActivityLoader visible={loading} />
 
       <Header
@@ -138,8 +137,7 @@ export default function EditChallengeAvailability({navigation}) {
                 ],
                 {cancelable: false},
               );
-            }}
-          >
+            }}>
             <Image source={images.backArrow} style={styles.backImageStyle} />
           </TouchableOpacity>
         }
@@ -225,8 +223,7 @@ export default function EditChallengeAvailability({navigation}) {
                   setLoading(false);
                   console.log('Error ::--', error);
                 });
-            }}
-          >
+            }}>
             <Text>Done</Text>
           </TouchableOpacity>
         }
@@ -247,8 +244,7 @@ export default function EditChallengeAvailability({navigation}) {
                         style={styles.deleteTextStyle}
                         onPress={() => {
                           deleteItemById(data.id);
-                        }}
-                      >
+                        }}>
                         Delete
                       </Text>
                       <View style={{flexDirection: 'row'}}>
@@ -260,8 +256,7 @@ export default function EditChallengeAvailability({navigation}) {
                             tempChallenge[index].allDay =
                               !tempChallenge[index].allDay;
                             setChallengeAvailable(tempChallenge);
-                          }}
-                        >
+                          }}>
                           <Image
                             source={
                               challengeAvailable[index].allDay

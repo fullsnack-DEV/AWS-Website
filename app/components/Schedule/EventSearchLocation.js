@@ -15,8 +15,7 @@ export default function EventSearchLocation({
   return (
     <TouchableWithoutFeedback
       style={[styles.sectionStyle, sectionStyle]}
-      onPress={onLocationPress}
-    >
+      onPress={onLocationPress}>
       <Image source={images.searchLocation} style={styles.searchImageStyle} />
       <Text style={[styles.textInput, {color: colors.userPostTimeColor}]}>
         {locationText}

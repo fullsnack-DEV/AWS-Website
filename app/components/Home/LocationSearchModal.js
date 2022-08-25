@@ -61,8 +61,7 @@ export default function LocationSearchModal({
             onSelect(data);
           })
           .catch(onClose);
-      }}
-    >
+      }}>
       <Text style={styles.cityList}>{cityData[index].description}</Text>
 
       <TCThinDivider />
@@ -79,8 +78,7 @@ export default function LocationSearchModal({
         margin: 0,
         backgroundColor: colors.whiteOpacityColor,
       }}
-      visible={visible}
-    >
+      visible={visible}>
       <View style={styles.bottomPopupContainer}>
         <View style={styles.viewsContainer}>
           <Text onPress={onClose} style={styles.cancelText}>

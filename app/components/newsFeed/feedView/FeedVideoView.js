@@ -75,8 +75,7 @@ const FeedVideoView = ({
           alignSelf: 'center',
           alignItems: 'center',
           justifyContent: 'center',
-        }}
-      >
+        }}>
         {!videoLoader && (
           <TouchableOpacity onPress={onPaused}>
             <FastImage
@@ -109,8 +108,7 @@ const FeedVideoView = ({
             alignSelf: 'center',
             alignItems: 'center',
             justifyContent: 'center',
-          }}
-        >
+          }}>
           {renderVideoLoader}
 
           <FastImage
@@ -142,8 +140,7 @@ const FeedVideoView = ({
           style={{
             height: getScreenHeight({isLandscape, screenInsets}),
             width: getScreenWidth({isLandscape, screenInsets}),
-          }}
-        >
+          }}>
           <Video
             disableFocus={true}
             ref={videoPlayerRef}
@@ -188,8 +185,7 @@ const FeedVideoView = ({
         justifyContent: 'center',
         width: getScreenWidth({isLandscape, screenInsets}),
         height: getScreenHeight({isLandscape, screenInsets}),
-      }}
-    >
+      }}>
       {renderVideoLoader}
       {renderPlayPauseButton}
       {renderVideo}

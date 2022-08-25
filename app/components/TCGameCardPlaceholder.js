@@ -52,8 +52,7 @@ function TCGameCardPlaceholder({
           data?.status === ReservationStatus.offered
             ? [styles.colorView, {opacity: 0.7}]
             : styles.colorView
-        }
-      >
+        }>
         <View style={styles.dateView}>
           <Text style={styles.dateMonthText}>
             {months[new Date(data.start_datetime * 1000).getMonth()]}
@@ -153,8 +152,7 @@ function TCGameCardPlaceholder({
       </View>
       <LinearGradient
         colors={[colors.whiteColor, colors.whiteColor]}
-        style={styles.overlayStyle}
-      >
+        style={styles.overlayStyle}>
         <Text style={styles.placeholderTextStyle}>{placeholderText}</Text>
       </LinearGradient>
     </View>

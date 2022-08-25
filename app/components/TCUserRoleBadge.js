@@ -13,8 +13,7 @@ export default function TCUserRoleBadge({
   return (
     <LinearGradient
       colors={[colors.whiteGradientColor, colors.blackGradientColor]}
-      style={styles.badgeView}
-    >
+      style={styles.badgeView}>
       <Text style={[styles.roleTitle, {color: titleColor}]}>{title}</Text>
     </LinearGradient>
   );

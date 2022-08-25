@@ -90,8 +90,7 @@ export default function RefereeAgreementView({
               onPress={() => {
                 radioOpetion(1);
               }}
-              style={styles.radio1Container}
-            >
+              style={styles.radio1Container}>
               <Image
                 source={
                   agreementOpetion === 1
@@ -112,8 +111,7 @@ export default function RefereeAgreementView({
               onPress={() => {
                 radioOpetion(2);
               }}
-              style={styles.radio2Container}
-            >
+              style={styles.radio2Container}>
               <Image
                 source={
                   agreementOpetion === 2
@@ -137,8 +135,7 @@ export default function RefereeAgreementView({
               }}
               onPress={() => {
                 morePressed(!isMore);
-              }}
-            >
+              }}>
               {isMore ? 'less' : 'more'}
             </Text>
           )}
@@ -165,8 +162,7 @@ export default function RefereeAgreementView({
                   onPress={() => {
                     radioOpetion(1);
                   }}
-                  style={styles.radio1Container}
-                >
+                  style={styles.radio1Container}>
                   <Image
                     source={
                       agreementOpetion === 1
@@ -187,8 +183,7 @@ export default function RefereeAgreementView({
                   onPress={() => {
                     radioOpetion(2);
                   }}
-                  style={styles.radio2Container}
-                >
+                  style={styles.radio2Container}>
                   <Image
                     source={
                       agreementOpetion === 2
@@ -212,8 +207,7 @@ export default function RefereeAgreementView({
                   }}
                   onPress={() => {
                     morePressed(!isMore);
-                  }}
-                >
+                  }}>
                   {isMore ? 'less' : 'more'}
                 </Text>
               )}
@@ -229,8 +223,7 @@ export default function RefereeAgreementView({
               }}
               onPress={() => {
                 showPressed(true);
-              }}
-            >
+              }}>
               {"WHAT HAPPENS IF YOUR TEAM DOESN'T\nSECURE REFEREES."}
             </Text>
           )}

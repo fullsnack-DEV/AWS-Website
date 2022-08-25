@@ -35,8 +35,7 @@ export default function GameFeeEditScreen({navigation, route}) {
           }}
           onPress={() => {
             onSaveButtonClicked();
-          }}
-        >
+          }}>
           {strings.done}
         </Text>
       ),
@@ -77,8 +76,7 @@ export default function GameFeeEditScreen({navigation, route}) {
               flexDirection: 'row',
               alignContent: 'flex-end',
               alignItems: 'flex-end',
-            }}
-          >
+            }}>
             <TCLabel title={strings.gamefeetitle} />
             <Text
               style={{
@@ -88,8 +86,7 @@ export default function GameFeeEditScreen({navigation, route}) {
                 fontSize: 16,
                 fontFamily: fonts.RRegular,
                 color: colors.userPostTimeColor,
-              }}
-            >
+              }}>
               {strings.perhoursinbracket}
             </Text>
           </View>

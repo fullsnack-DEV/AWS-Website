@@ -63,8 +63,7 @@ const RenderScorekeeper = ({
           paddingHorizontal: 5,
           justifyContent: 'center',
           alignItems: 'center',
-        }}
-      >
+        }}>
         <TouchableOpacity
           style={{
             borderColor: colors.magnifyIconColor,
@@ -75,8 +74,7 @@ const RenderScorekeeper = ({
             alignItems: 'center',
             justifyContent: 'center',
           }}
-          onPress={onRadioClick}
-        >
+          onPress={onRadioClick}>
           {isSelected && (
             <LinearGradient
               colors={[colors.orangeColor, colors.yellowColor]}
@@ -86,8 +84,7 @@ const RenderScorekeeper = ({
                 height: 13,
                 width: 13,
                 borderRadius: 50,
-              }}
-            ></LinearGradient>
+              }}></LinearGradient>
           )}
         </TouchableOpacity>
       </View>

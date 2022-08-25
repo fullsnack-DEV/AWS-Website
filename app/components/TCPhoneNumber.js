@@ -58,8 +58,7 @@ const TCPhoneNumber = ({
           onChangeText={onChangeText}
           maxLength={10}
           // editable={ editMode }
-          value={numberValue}
-        ></TextInput>
+          value={numberValue}></TextInput>
       </View>
     </View>
   );

@@ -12,16 +12,14 @@ const RowTitleWithTextInput = memo(({title, selectedText, onPress}) => (
       alignItems: 'center',
       paddingVertical: 10,
       paddingHorizontal: 15,
-    }}
-  >
+    }}>
     <Text
       style={{
         flex: 0.35,
         fontSize: 16,
         fontFamily: fonts.RRegular,
         color: colors.lightBlackColor,
-      }}
-    >
+      }}>
       {title}
     </Text>
     <View style={{flex: 1, paddingHorizontal: 5}}>
@@ -40,15 +38,13 @@ const RowTitleWithTextInput = memo(({title, selectedText, onPress}) => (
           height: 35,
           justifyContent: 'center',
           alignItems: 'center',
-        }}
-      >
+        }}>
         <Text
           style={{
             fontSize: 16,
             fontFamily: fonts.RRegular,
             color: selectedText ? colors.lightBlackColor : colors.grayColor,
-          }}
-        >
+          }}>
           {selectedText ?? `Select ${title}`}
         </Text>
       </TouchableOpacity>

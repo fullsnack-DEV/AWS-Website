@@ -47,8 +47,7 @@ export default function HomeAway({navigation, route}) {
           style={styles.saveButtonStyle}
           onPress={() => {
             onSavePressed();
-          }}
-        >
+          }}>
           Save
         </Text>
       ),
@@ -230,8 +229,7 @@ export default function HomeAway({navigation, route}) {
           </View>
           <TouchableOpacity
             style={styles.swapContainer}
-            onPress={() => swapTeam()}
-          >
+            onPress={() => swapTeam()}>
             <Image source={images.swapTeam} style={styles.swapImageStyle} />
           </TouchableOpacity>
           <View style={styles.teamContainer}>

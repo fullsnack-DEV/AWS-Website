@@ -135,8 +135,7 @@ export default function GameTennisDuration({navigation, route}) {
             } else {
               saveUser();
             }
-          }}
-        >
+          }}>
           Save
         </Text>
       ),
@@ -272,16 +271,14 @@ export default function GameTennisDuration({navigation, route}) {
           total_sets: item,
         });
         setVisibleWinMatchModal(false);
-      }}
-    >
+      }}>
       <View
         style={{
           padding: 20,
           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'space-between',
-        }}
-      >
+        }}>
         <Text style={styles.languageList}>
           Best of {item} {item === 1 ? 'set' : 'sets'}
         </Text>
@@ -309,16 +306,14 @@ export default function GameTennisDuration({navigation, route}) {
           game_count_to_win_set: (item + 1) / 2,
         });
         setVisibleWinSetModal(false);
-      }}
-    >
+      }}>
       <View
         style={{
           padding: 20,
           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'space-between',
-        }}
-      >
+        }}>
         <Text style={styles.languageList}>
           Best of {item} {item === 1 ? 'game' : 'games'}
         </Text>
@@ -345,16 +340,14 @@ export default function GameTennisDuration({navigation, route}) {
           tiebreaker_apply_at: item,
         });
         setVisiblePlayTieModal(false);
-      }}
-    >
+      }}>
       <View
         style={{
           padding: 20,
           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'space-between',
-        }}
-      >
+        }}>
         <Text style={styles.languageList}>
           {item} : {item}
         </Text>
@@ -381,16 +374,14 @@ export default function GameTennisDuration({navigation, route}) {
           winning_point_in_tiebreaker: item,
         });
         setVisibleWinPointModal(false);
-      }}
-    >
+      }}>
       <View
         style={{
           padding: 20,
           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'space-between',
-        }}
-      >
+        }}>
         <Text style={styles.languageList}>{item}</Text>
         <View>
           {matchSetting.winning_point_in_tiebreaker === item ? (
@@ -415,16 +406,14 @@ export default function GameTennisDuration({navigation, route}) {
           match_duration: item,
         });
         setVisibleMatchDurationModal(false);
-      }}
-    >
+      }}>
       <View
         style={{
           padding: 20,
           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'space-between',
-        }}
-      >
+        }}>
         <Text style={styles.languageList}>{item}</Text>
         <View>
           {matchSetting.match_duration === item ? (
@@ -455,15 +444,13 @@ export default function GameTennisDuration({navigation, route}) {
               fontSize: 16,
               textAlign: 'left',
               fontFamily: fonts.RBold,
-            }}
-          >
+            }}>
             {'NUMBER OF SETS'}
             <Text style={{color: colors.darkThemeColor}}> *</Text>
           </Text>
           <TouchableOpacity
             style={styles.setContainer}
-            onPress={() => setVisibleWinMatchModal(true)}
-          >
+            onPress={() => setVisibleWinMatchModal(true)}>
             <Text style={styles.itemView}>
               Best of {matchSetting?.total_sets}{' '}
               {matchSetting?.total_sets === 1 ? 'set' : 'sets'}
@@ -482,16 +469,14 @@ export default function GameTennisDuration({navigation, route}) {
               fontSize: 16,
               textAlign: 'left',
               fontFamily: fonts.RBold,
-            }}
-          >
+            }}>
             {'NUMBER OF GAMES IN A SET'}
             <Text style={{color: colors.darkThemeColor}}> *</Text>
           </Text>
 
           <TouchableOpacity
             style={styles.setContainer}
-            onPress={() => setVisibleWinSetModal(true)}
-          >
+            onPress={() => setVisibleWinSetModal(true)}>
             <Text style={styles.itemView}>
               Best of {matchSetting.total_available_games_in_set}{' '}
               {matchSetting.total_available_games_in_set === 1
@@ -508,8 +493,7 @@ export default function GameTennisDuration({navigation, route}) {
               justifyContent: 'center',
               marginBottom: 5,
               marginTop: 10,
-            }}
-          >
+            }}>
             <TouchableOpacity
               style={styles.checkBoxContainer}
               onPress={() => {
@@ -521,8 +505,7 @@ export default function GameTennisDuration({navigation, route}) {
                   win_two_points_in_tiebreaker:
                     !matchSetting.win_two_points_in_tiebreaker,
                 });
-              }}
-            >
+              }}>
               <Image
                 source={
                   matchSetting.win_set_by_two_games
@@ -548,8 +531,7 @@ export default function GameTennisDuration({navigation, route}) {
                 justifyContent: 'center',
                 marginBottom: 5,
                 marginTop: 10,
-              }}
-            >
+              }}>
               <TouchableOpacity
                 style={styles.checkBoxContainer}
                 onPress={() => {
@@ -558,8 +540,7 @@ export default function GameTennisDuration({navigation, route}) {
                     apply_tiebreaker_in_game:
                       !matchSetting.apply_tiebreaker_in_game,
                   });
-                }}
-              >
+                }}>
                 <Image
                   source={
                     matchSetting.apply_tiebreaker_in_game
@@ -582,8 +563,7 @@ export default function GameTennisDuration({navigation, route}) {
                 </Text>
                 <TouchableOpacity
                   style={[styles.setContainer, {flex: 0.5}]}
-                  onPress={() => setVisiblePlayTieModal(true)}
-                >
+                  onPress={() => setVisiblePlayTieModal(true)}>
                   <Text style={styles.itemView}>
                     {matchSetting.tiebreaker_apply_at} :{' '}
                     {matchSetting.tiebreaker_apply_at}
@@ -602,8 +582,7 @@ export default function GameTennisDuration({navigation, route}) {
                 </Text>
                 <TouchableOpacity
                   style={[styles.setContainer, {flex: 0.5}]}
-                  onPress={() => setVisibleWinPointModal(true)}
-                >
+                  onPress={() => setVisibleWinPointModal(true)}>
                   <Text style={styles.itemView}>
                     {matchSetting.winning_point_in_tiebreaker}
                   </Text>
@@ -623,8 +602,7 @@ export default function GameTennisDuration({navigation, route}) {
                     win_two_points_in_tiebreaker:
                       !matchSetting.win_two_points_in_tiebreaker,
                   });
-                }}
-              >
+                }}>
                 <Image
                   source={
                     matchSetting.win_two_points_in_tiebreaker
@@ -671,8 +649,7 @@ export default function GameTennisDuration({navigation, route}) {
               alignItems: 'center',
               marginTop: 20,
               marginBottom: 10,
-            }}
-          >
+            }}>
             <Text
               style={{
                 marginLeft: 15,
@@ -681,16 +658,14 @@ export default function GameTennisDuration({navigation, route}) {
                 fontSize: 16,
                 textAlign: 'left',
                 fontFamily: fonts.RBold,
-              }}
-            >
+              }}>
               {'MAXIMUM MATCH DURATION'}
               <Text style={{color: colors.darkThemeColor}}> *</Text>
             </Text>
             <TouchableOpacity
               onPress={() => {
                 setToolTipVisible(true);
-              }}
-            >
+              }}>
               <Image
                 source={images.infoToolTipIcon}
                 style={styles.toolTipStyle}
@@ -700,8 +675,7 @@ export default function GameTennisDuration({navigation, route}) {
 
           <TouchableOpacity
             style={styles.setContainer}
-            onPress={() => setVisibleMatchDurationModal(true)}
-          >
+            onPress={() => setVisibleMatchDurationModal(true)}>
             <Text style={styles.itemView}>{matchSetting.match_duration}</Text>
 
             <Image
@@ -718,8 +692,7 @@ export default function GameTennisDuration({navigation, route}) {
               fontSize: 16,
               textAlign: 'left',
               fontFamily: fonts.RBold,
-            }}
-          >
+            }}>
             {'DETAILS'}
           </Text>
           <TCTextInputClear
@@ -751,15 +724,13 @@ export default function GameTennisDuration({navigation, route}) {
           animationOutTiming={800}
           backdropTransitionInTiming={10}
           backdropTransitionOutTiming={10}
-          style={styles.modalStyle}
-        >
+          style={styles.modalStyle}>
           <View style={styles.modalViewContainer}>
             <View style={styles.modalHeaderContainer}>
               <TouchableOpacity
                 hitSlop={Utility.getHitSlop(15)}
                 style={styles.closeButton}
-                onPress={() => setVisibleWinMatchModal(false)}
-              >
+                onPress={() => setVisibleWinMatchModal(false)}>
                 <Image source={images.cancelImage} style={styles.closeButton} />
               </TouchableOpacity>
               <Text style={styles.itemText}>{strings.chooseSetting}</Text>
@@ -783,15 +754,13 @@ export default function GameTennisDuration({navigation, route}) {
           animationOutTiming={800}
           backdropTransitionInTiming={10}
           backdropTransitionOutTiming={10}
-          style={styles.modalStyle}
-        >
+          style={styles.modalStyle}>
           <View style={styles.modalViewContainer}>
             <View style={styles.modalHeaderContainer}>
               <TouchableOpacity
                 hitSlop={Utility.getHitSlop(15)}
                 style={styles.closeButton}
-                onPress={() => setVisibleWinSetModal(false)}
-              >
+                onPress={() => setVisibleWinSetModal(false)}>
                 <Image source={images.cancelImage} style={styles.closeButton} />
               </TouchableOpacity>
               <Text style={styles.itemText}>{strings.chooseSetting}</Text>
@@ -815,15 +784,13 @@ export default function GameTennisDuration({navigation, route}) {
           animationOutTiming={800}
           backdropTransitionInTiming={10}
           backdropTransitionOutTiming={10}
-          style={styles.modalStyle}
-        >
+          style={styles.modalStyle}>
           <View style={styles.modalViewContainer}>
             <View style={styles.modalHeaderContainer}>
               <TouchableOpacity
                 hitSlop={Utility.getHitSlop(15)}
                 style={styles.closeButton}
-                onPress={() => setVisiblePlayTieModal(false)}
-              >
+                onPress={() => setVisiblePlayTieModal(false)}>
                 <Image source={images.cancelImage} style={styles.closeButton} />
               </TouchableOpacity>
               <Text style={styles.itemText}>{strings.chooseSetting}</Text>
@@ -847,15 +814,13 @@ export default function GameTennisDuration({navigation, route}) {
           animationOutTiming={800}
           backdropTransitionInTiming={10}
           backdropTransitionOutTiming={10}
-          style={styles.modalStyle}
-        >
+          style={styles.modalStyle}>
           <View style={styles.modalViewContainer}>
             <View style={styles.modalHeaderContainer}>
               <TouchableOpacity
                 hitSlop={Utility.getHitSlop(15)}
                 style={styles.closeButton}
-                onPress={() => setVisibleWinPointModal(false)}
-              >
+                onPress={() => setVisibleWinPointModal(false)}>
                 <Image source={images.cancelImage} style={styles.closeButton} />
               </TouchableOpacity>
               <Text style={styles.itemText}>{strings.chooseSetting}</Text>
@@ -909,15 +874,13 @@ export default function GameTennisDuration({navigation, route}) {
           animationOutTiming={800}
           backdropTransitionInTiming={10}
           backdropTransitionOutTiming={10}
-          style={styles.modalStyle}
-        >
+          style={styles.modalStyle}>
           <View style={styles.modalViewContainer}>
             <View style={styles.modalHeaderContainer}>
               <TouchableOpacity
                 hitSlop={Utility.getHitSlop(15)}
                 style={styles.closeButton}
-                onPress={() => setVisibleMatchDurationModal(false)}
-              >
+                onPress={() => setVisibleMatchDurationModal(false)}>
                 <Image source={images.cancelImage} style={styles.closeButton} />
               </TouchableOpacity>
               <Text style={styles.itemText}>{strings.chooseSetting}</Text>
@@ -941,8 +904,7 @@ export default function GameTennisDuration({navigation, route}) {
           animationOutTiming={800}
           backdropTransitionInTiming={10}
           backdropTransitionOutTiming={10}
-          style={styles.modalStyle}
-        >
+          style={styles.modalStyle}>
           <View style={styles.modalViewContainer}>
             <View
               style={{
@@ -964,8 +926,7 @@ export default function GameTennisDuration({navigation, route}) {
                 fontSize: 16,
                 fontFamily: fonts.RMedium,
                 color: colors.lightBlackColor,
-              }}
-            >
+              }}>
               • The match can be played for up to The maximum duration.{'\n'}
               {'\n'}• The referee and scorekeeper fees for a match are
               calculated according to the maximum match duration and their

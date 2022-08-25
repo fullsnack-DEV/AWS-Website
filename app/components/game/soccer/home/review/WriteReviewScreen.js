@@ -289,8 +289,7 @@ export default function WriteReviewScreen({navigation, route}) {
         style={{
           ...styles.username,
           color: colors.greeColor,
-        }}
-      >{`${matchingString}`}</Text>
+        }}>{`${matchingString}`}</Text>
     ),
     [],
   );
@@ -299,8 +298,7 @@ export default function WriteReviewScreen({navigation, route}) {
     ({item}) => (
       <TouchableOpacity
         onPress={() => onTagPress(item)}
-        style={styles.userListStyle}
-      >
+        style={styles.userListStyle}>
         <Image
           source={
             item?.thumbnail ? {uri: item?.thumbnail} : images.profilePlaceHolder
@@ -313,8 +311,9 @@ export default function WriteReviewScreen({navigation, route}) {
             : `${item.first_name} ${item.last_name}`}
         </Text>
         <Text
-          style={styles.locationTextStyle}
-        >{`${item.city}, ${item.state_abbr}`}</Text>
+          style={
+            styles.locationTextStyle
+          }>{`${item.city}, ${item.state_abbr}`}</Text>
       </TouchableOpacity>
     ),
     [onTagPress],
@@ -345,12 +344,10 @@ export default function WriteReviewScreen({navigation, route}) {
               } else {
                 setloading(true);
                 let tagData = JSON.parse(JSON.stringify(tagsOfEntity));
-                tagData = tagData?.map((tag) => {
-                  return {
+                tagData = tagData?.map((tag) => ({
                     ...tag,
                     entity_type: 'publictimeline',
-                  };
-                });
+                  }));
                 const format_tagged_data = JSON.parse(
                   JSON.stringify(tagsOfEntity),
                 );
@@ -401,8 +398,7 @@ export default function WriteReviewScreen({navigation, route}) {
                   setloading(false);
                 }, uploadTimeout);
               }
-            }}
-          >
+            }}>
             <Text style={styles.doneTextStyle}>Done</Text>
           </TouchableOpacity>
         </View>
@@ -436,8 +432,7 @@ export default function WriteReviewScreen({navigation, route}) {
           style={[
             styles.userListContainer,
             {marginTop: searchFieldHeight + 20},
-          ]}
-        >
+          ]}>
           <FlatList
             showsVerticalScrollIndicator={false}
             data={[...users, ...groups]}
@@ -631,8 +626,7 @@ export default function WriteReviewScreen({navigation, route}) {
   return (
     <KeyboardAvoidingView
       style={{flex: 1}}
-      behavior={Platform.OS === 'ios' ? 'padding' : null}
-    >
+      behavior={Platform.OS === 'ios' ? 'padding' : null}>
       <ActivityLoader visible={loading} />
       {renderHeader}
       <View style={styles.sperateLine} />
@@ -656,12 +650,10 @@ export default function WriteReviewScreen({navigation, route}) {
           onChangeText={setSearchText}
           style={styles.textInputField}
           multiline={true}
-          textAlignVertical={'top'}
-        >
+          textAlignVertical={'top'}>
           <ParsedText
             parse={[{pattern: tagRegex, renderText: renderTagText}]}
-            childrenProps={{allowFontScaling: false}}
-          >
+            childrenProps={{allowFontScaling: false}}>
             {searchText}
           </ParsedText>
         </TextInput>

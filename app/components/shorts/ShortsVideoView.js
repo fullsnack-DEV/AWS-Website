@@ -279,8 +279,7 @@ function ShortsVideoView({
         <TouchableWithoutFeedback
           onPress={() => {
             onclosePress(!isClosed);
-          }}
-        >
+          }}>
           <TaggedEntityView
             onProfilePress={() => {
               navigation.push('HomeScreen', {
@@ -312,8 +311,7 @@ function ShortsVideoView({
       <TouchableWithoutFeedback
         onPress={() => {
           onclosePress(!isClosed);
-        }}
-      >
+        }}>
         <TCGameCard data={item?.entity_data} cardWidth={'92%'} />
       </TouchableWithoutFeedback>
     ),
@@ -383,8 +381,7 @@ function ShortsVideoView({
             top: 0,
             left: 0,
             right: 0,
-          }}
-        >
+          }}>
           <Image source={images.portraitVideoImage} resizeMode={'cover'} />
           <ShortsPlayer
             curruentIndex={index}
@@ -429,8 +426,7 @@ function ShortsVideoView({
           Dimensions.get('window').height - videoItem?.media_height
         }\nNotch Height: ${insets.top}`}</Text> */}
         <View
-          style={{...styles.commentShareLikeView, zIndex: !isClosed ? 1 : 0}}
-        >
+          style={{...styles.commentShareLikeView, zIndex: !isClosed ? 1 : 0}}>
           <View style={{}}>
             <TouchableOpacity
               onPress={() => {
@@ -442,8 +438,7 @@ function ShortsVideoView({
                 setLike(!like);
                 onLikePress(multiAttachItem);
               }}
-              style={styles.imageTouchStyle}
-            >
+              style={styles.imageTouchStyle}>
               <Image
                 style={styles.commentImage}
                 source={like ? images.shortLike : images.shortDisLike}
@@ -457,8 +452,7 @@ function ShortsVideoView({
                   {
                     color: like === true ? '#FF8A01' : colors.whiteColor,
                   },
-                ]}
-              >
+                ]}>
                 {likeCount}
               </Text>
             )}
@@ -466,8 +460,7 @@ function ShortsVideoView({
           <View>
             <TouchableOpacity
               onPress={() => setShowModelComment(true)}
-              style={styles.imageTouchStyle}
-            >
+              style={styles.imageTouchStyle}>
               <Image
                 style={[styles.commentImage, {top: 2}]}
                 source={images.shortComment}
@@ -485,8 +478,7 @@ function ShortsVideoView({
               onPress={() => {
                 shareActionSheet.current.show();
               }}
-              style={styles.imageTouchStyle}
-            >
+              style={styles.imageTouchStyle}>
               <Image
                 style={styles.commentImage}
                 source={images.shortShare}
@@ -500,8 +492,7 @@ function ShortsVideoView({
             style={styles.imageTouchStyle}
             onPress={() => {
               shareActionSheet.current.show();
-            }}
-          >
+            }}>
             <Image
               source={images.vertical3Dot}
               resizeMode={'contain'}
@@ -520,13 +511,11 @@ function ShortsVideoView({
             {
               height: isClosed ? componentHeight + 100 : componentHeight + 120,
             },
-          ]}
-        >
+          ]}>
           <View
             style={{
               flex: 1,
-            }}
-          >
+            }}>
             <ScrollView
               scrollEventThrottle={100}
               nestedScrollEnabled={true}
@@ -547,20 +536,17 @@ function ShortsVideoView({
                           : componentHeight,
                       bottom: 24,
                     }
-              }
-            >
+              }>
               {!isClosed && (
                 <View
                   onLayout={onLayout}
                   style={{
                     paddingBottom: 40,
                     width: '85%',
-                  }}
-                >
+                  }}>
                   <View style={styles.mainContainer}>
                     <TouchableWithoutFeedback
-                      onPress={() => onProfilePress(multiAttachItem)}
-                    >
+                      onPress={() => onProfilePress(multiAttachItem)}>
                       <View style={styles.backgroundProfileView}>
                         <Image
                           style={styles.background}
@@ -576,8 +562,7 @@ function ShortsVideoView({
                     <View style={styles.userNameView}>
                       <Text
                         style={styles.userNameTxt}
-                        onPress={() => onProfilePress(multiAttachItem)}
-                      >
+                        onPress={() => onProfilePress(multiAttachItem)}>
                         {profileItem?.full_name}
                       </Text>
                       <Text style={styles.activeTimeAgoTxt}>
@@ -616,8 +601,7 @@ function ShortsVideoView({
                       style={styles.mainContainerStyle}
                       onPress={() => {
                         setIsClosed(!isClosed);
-                      }}
-                    >
+                      }}>
                       <Image
                         source={images.tagGreenImage}
                         style={styles.imageStyle}
@@ -637,15 +621,13 @@ function ShortsVideoView({
             isVisible={isClosed}
             backdropColor="black"
             style={{margin: 0}}
-            backdropOpacity={0.5}
-          >
+            backdropOpacity={0.5}>
             <SafeAreaView style={{flex: 1, marginTop: hp(10)}}>
               <TouchableWithoutFeedback
                 style={styles.closeContainer}
                 onPress={() => {
                   setIsClosed(!isClosed);
-                }}
-              >
+                }}>
                 <Image
                   source={images.menuClose}
                   style={styles.closeImageStyle}
@@ -724,8 +706,7 @@ function ShortsVideoView({
                 style={[
                   styles.bottomSafeAreaStyle,
                   {bottom: keyboardOffset, position: 'absolute'},
-                ]}
-              >
+                ]}>
                 {/* <View style={styles.bottomSperateLine} /> */}
                 <View style={styles.bottomImgView}>
                   <View style={styles.commentReportView}>
@@ -780,8 +761,7 @@ function ShortsVideoView({
                             .catch((e) => {
                               console.log(e);
                             });
-                        }}
-                      >
+                        }}>
                         <Text style={styles.sendTextStyle}>SEND</Text>
                       </TouchableOpacity>
                     )}
@@ -798,8 +778,7 @@ function ShortsVideoView({
                 onPress={() => {
                   setShowModelComment(false);
                   setanimateModal(false);
-                }}
-              >
+                }}>
                 <Text>Comments</Text>
               </TouchableOpacity>
             </View>

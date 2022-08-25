@@ -29,8 +29,7 @@ export default function UserInfoGroupItem({
   return (
     <TouchableOpacity
       onPress={onGroupPress}
-      style={{width: 55, height: 'auto', marginLeft: 26}}
-    >
+      style={{width: 55, height: 'auto', marginLeft: 26}}>
       <View style={styles.imageContainerStyle}>
         <Image style={styles.placeHolderImage} source={placeholder}></Image>
         <View style={styles.placeholderTextContainer}>
@@ -51,8 +50,7 @@ export default function UserInfoGroupItem({
       <Text
         style={styles.titleStyle}
         ellipsizeMode={'middle'}
-        numberOfLines={2}
-      >
+        numberOfLines={2}>
         {title}
       </Text>
     </TouchableOpacity>

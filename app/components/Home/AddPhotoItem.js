@@ -12,12 +12,10 @@ function AddPhotoItem({onAddPhotoPress, disabled}) {
     <TouchableOpacity
       style={styles.headerImagePickerView}
       onPress={onAddPhotoPress}
-      disabled={disabled}
-    >
+      disabled={disabled}>
       <LinearGradient
         colors={[colors.yellowColor, colors.themeColor]}
-        style={styles.headerImagePickerView}
-      >
+        style={styles.headerImagePickerView}>
         <Image style={styles.plusImageStyle} source={images.plus} />
         <Text style={styles.addPhotoTextStyle}>Add Photo</Text>
       </LinearGradient>

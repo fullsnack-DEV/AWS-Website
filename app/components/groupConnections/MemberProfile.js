@@ -20,15 +20,13 @@ export default function MemberProfile({isChecked, onPress, playerDetail}) {
       {isChecked ? (
         <TouchableWithoutFeedback
           onPress={onPress}
-          disabled={!playerDetail.connected}
-        >
+          disabled={!playerDetail.connected}>
           <LinearGradient
             colors={[colors.whiteColor, colors.whiteColor]}
             style={[
               styles.topViewContainer,
               {opacity: playerDetail.connected ? 1 : 0.5},
-            ]}
-          >
+            ]}>
             <View style={{flexDirection: 'row'}}>
               <View style={styles.profileView}>
                 <Image
@@ -58,14 +56,12 @@ export default function MemberProfile({isChecked, onPress, playerDetail}) {
       ) : (
         <TouchableWithoutFeedback
           onPress={onPress}
-          disabled={!playerDetail.connected}
-        >
+          disabled={!playerDetail.connected}>
           <View
             style={[
               styles.topViewContainer,
               {opacity: playerDetail.connected ? 1 : 0.5},
-            ]}
-          >
+            ]}>
             <View style={{flexDirection: 'row'}}>
               <View style={styles.profileView}>
                 <Image

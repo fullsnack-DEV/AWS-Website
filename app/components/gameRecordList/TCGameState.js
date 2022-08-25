@@ -21,8 +21,7 @@ export default function TCGameState({recordData}) {
         alignItems: 'center',
         paddingVertical: 5,
         backgroundColor: colors.whiteColor,
-      }}
-    >
+      }}>
       <Dash
         style={{
           width: 1,
@@ -39,14 +38,12 @@ export default function TCGameState({recordData}) {
           color: colors.darkGrayColor,
           position: 'absolute',
           bottom: 0,
-        }}
-      >
+        }}>
         <Text
           style={{
             fontFamily: fonts.RBold,
             color: colors.blackColor,
-          }}
-        >
+          }}>
           {getGameConvertMinsToTime(recordData?.minutes) ?? 0}
         </Text>{' '}
         ({getGameDateTimeInHMSformat(recordData?.timestamp ?? new Date())}){' '}
@@ -55,8 +52,7 @@ export default function TCGameState({recordData}) {
             fontFamily: fonts.RMedium,
             fontSize: 16,
             color: colors.blackColor,
-          }}
-        >
+          }}>
           Match{' '}
           {recordData?.verb in soccerGameStats &&
             soccerGameStats[recordData?.verb]}

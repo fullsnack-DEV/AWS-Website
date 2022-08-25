@@ -79,8 +79,7 @@ function NotificationNavigator() {
       screenOptions={{
         gestureEnabled: false,
         headerBackTitleVisible: false,
-      }}
-    >
+      }}>
       <Stack.Screen
         name="NotificationsListScreen"
         component={NotificationsListScreen}

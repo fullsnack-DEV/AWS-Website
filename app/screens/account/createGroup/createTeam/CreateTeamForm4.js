@@ -173,8 +173,7 @@ export default function CreateTeamForm4({navigation, route}) {
               style={styles.feeText}
               keyboardType={'decimal-pad'}
               onChangeText={(text) => setMatchFee(text)}
-              value={matchFee}
-            ></TextInput>
+              value={matchFee}></TextInput>
             <Text style={styles.curruency}>
               {route?.params?.createTeamForm3?.currency_type}
             </Text>
@@ -298,8 +297,7 @@ export default function CreateTeamForm4({navigation, route}) {
           <TouchableOpacity onPress={() => creatTeamCall()}>
             <LinearGradient
               colors={[colors.yellowColor, colors.themeColor]}
-              style={styles.nextButton}
-            >
+              style={styles.nextButton}>
               <Text style={styles.nextButtonText}>{strings.nextTitle}</Text>
             </LinearGradient>
           </TouchableOpacity>

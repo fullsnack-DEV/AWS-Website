@@ -31,8 +31,9 @@ export default function LineUpPlayerView({
             <View style={styles.topTextContainer}>
               <Text
                 style={styles.mediumNameText}
-                numberOfLines={1}
-              >{`${userData.profile.first_name} ${userData.profile.last_name}`}</Text>
+                numberOfLines={
+                  1
+                }>{`${userData.profile.first_name} ${userData.profile.last_name}`}</Text>
               <Text style={styles.locationText} numberOfLines={1}>
                 {`${userData.profile.jersey_number || ''} ${
                   userData.profile.positions || ''
@@ -50,8 +51,7 @@ export default function LineUpPlayerView({
                       colors.greenGradientStart,
                       colors.greenGradientEnd,
                     ]}
-                    style={styles.buttonStyle}
-                  >
+                    style={styles.buttonStyle}>
                     <Text style={styles.buttonText}>{'MOVE'}</Text>
                   </LinearGradient>
                 </TouchableOpacity>
@@ -63,8 +63,7 @@ export default function LineUpPlayerView({
                       colors.greenGradientStart,
                       colors.greenGradientEnd,
                     ]}
-                    style={styles.buttonStyle}
-                  >
+                    style={styles.buttonStyle}>
                     <Text style={styles.buttonText}>{'Move up'}</Text>
                   </LinearGradient>
                 </TouchableOpacity>
@@ -97,8 +96,7 @@ export default function LineUpPlayerView({
                 <TouchableOpacity onPress={() => onButtonPress(buttonType)}>
                   <LinearGradient
                     colors={[colors.yellowColor, colors.themeColor]}
-                    style={styles.buttonStyle}
-                  >
+                    style={styles.buttonStyle}>
                     <Text style={styles.buttonText}>{'Review'}</Text>
                   </LinearGradient>
                 </TouchableOpacity>

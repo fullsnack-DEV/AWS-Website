@@ -289,8 +289,7 @@ function RefereeFeedPostItems({
             style={styles.dotImageTouchStyle}
             onPress={() => {
               actionSheet.current.show();
-            }}
-          >
+            }}>
             <Image
               style={styles.dotImageStyle}
               source={images.threeDotIcon}
@@ -346,21 +345,18 @@ function RefereeFeedPostItems({
             style={{
               flexDirection: 'row',
               width: wp('60%'),
-            }}
-          >
+            }}>
             <View
               style={{
                 flexDirection: 'row',
-              }}
-            >
+              }}>
               <TouchableOpacity
                 onPress={() => {
                   //  navigation.navigate('WriteCommentScreen', {
                   //    data: item,
                   //  });
                 }}
-                style={styles.imageTouchStyle}
-              >
+                style={styles.imageTouchStyle}>
                 <Image
                   style={styles.commentImage}
                   source={images.commentImage}
@@ -380,12 +376,10 @@ function RefereeFeedPostItems({
                 alignItems: 'center',
                 justifyContent: 'center',
                 marginLeft: 10,
-              }}
-            >
+              }}>
               <TouchableOpacity
                 onPress={() => shareActionSheet.current.show()}
-                style={styles.imageTouchStyle}
-              >
+                style={styles.imageTouchStyle}>
                 <Image
                   style={styles.commentImage}
                   source={images.shareImage}
@@ -402,8 +396,7 @@ function RefereeFeedPostItems({
               width: wp('32%'),
               justifyContent: 'flex-end',
               alignItems: 'center',
-            }}
-          >
+            }}>
             {item?.reaction_counts?.clap !== undefined && (
               <Text
                 style={[
@@ -412,15 +405,13 @@ function RefereeFeedPostItems({
                     color:
                       like === true ? '#FF8A01' : colors.reactionCountColor,
                   },
-                ]}
-              >
+                ]}>
                 {likeCount === 0 ? '' : likeCount}
               </Text>
             )}
             <TouchableOpacity
               onPress={onNewsFeedLikePress}
-              style={styles.imageTouchStyle}
-            >
+              style={styles.imageTouchStyle}>
               <Image
                 style={styles.commentImage}
                 source={like ? images.likeImage : images.unlikeImage}
@@ -459,8 +450,7 @@ function RefereeFeedPostItems({
           }}
           onPress={() => {
             setViewAllComment(!viewAllComment);
-          }}
-        >{`View ${commentData?.length - 2} more comments`}</Text>
+          }}>{`View ${commentData?.length - 2} more comments`}</Text>
       )}
       {commentData?.length > 2 && viewAllComment && (
         <Text
@@ -473,8 +463,7 @@ function RefereeFeedPostItems({
           }}
           onPress={() => {
             setViewAllComment(!viewAllComment);
-          }}
-        >
+          }}>
           {'Show only 2 comments'}
         </Text>
       )}

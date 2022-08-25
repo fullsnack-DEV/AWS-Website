@@ -172,8 +172,7 @@ const Stats = ({gameData, getGameStatsData, homeTeamName, awayTeamName}) => {
         backgroundColor: loading
           ? colors.whiteColor
           : colors.grayBackgroundColor,
-      }}
-    >
+      }}>
       {/*  Team Switcher */}
       <Fragment>
         <View
@@ -181,8 +180,7 @@ const Stats = ({gameData, getGameStatsData, homeTeamName, awayTeamName}) => {
             ...styles.subContainer,
             marginBottom: 0,
             paddingVertical: 0,
-          }}
-        >
+          }}>
           <TCSwitcher
             tabs={[homeTeamName, awayTeamName]}
             onTabPress={(tabIndex) => setSelectedTeamTab(tabIndex)}

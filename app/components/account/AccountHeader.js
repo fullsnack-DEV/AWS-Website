@@ -56,15 +56,13 @@ export default function AccountHeader({authEntity, entityRole}) {
               flexDirection: 'row',
               padding: 15,
               marginTop: Platform.OS === 'ios' ? 50 : 0,
-            }}
-          >
+            }}>
             <View
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
                 alignContent: 'center',
-              }}
-            >
+              }}>
               <Image source={images.clubLable} style={styles.clubLableView} />
 
               <Image
@@ -80,8 +78,7 @@ export default function AccountHeader({authEntity, entityRole}) {
                 style={{
                   flexDirection: 'row',
                   alignSelf: 'center',
-                }}
-              >
+                }}>
                 <Text style={styles.clubNameText}>
                   {parentGroup.group_name}
                 </Text>
@@ -130,8 +127,7 @@ export default function AccountHeader({authEntity, entityRole}) {
               flexDirection: 'row',
               alignSelf: 'center',
               paddingLeft: 30,
-            }}
-          >
+            }}>
             <Text style={styles.nameText}>{authEntity.group_name}</Text>
             <View style={styles.identityView}>
               <ImageBackground
@@ -162,8 +158,7 @@ export default function AccountHeader({authEntity, entityRole}) {
               flexDirection: 'row',
               alignSelf: 'center',
               paddingLeft: 30,
-            }}
-          >
+            }}>
             <Text style={styles.nameText}>{authEntity.group_name}</Text>
 
             <View style={styles.identityView}>

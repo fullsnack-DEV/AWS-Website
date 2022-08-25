@@ -33,8 +33,7 @@ export default function ClubHomeTopSection({
       style={{
         paddingTop: 20,
         paddingBottom: 25,
-      }}
-    >
+      }}>
       {isAdmin && (
         <TCProfileButton
           title={strings.editprofiletitle}

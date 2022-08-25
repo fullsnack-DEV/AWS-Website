@@ -38,8 +38,7 @@ function ScorekeeperEntityView({data}) {
           flexDirection: 'row',
           margin: 15,
           marginBottom: 5,
-        }}
-      >
+        }}>
         <Image source={images.reqIcon} style={styles.inOutImageView} />
         <View style={styles.entityView}>
           <View style={styles.imageShadowView}>
@@ -64,8 +63,7 @@ function ScorekeeperEntityView({data}) {
         style={{
           flexDirection: 'row',
           marginLeft: 15,
-        }}
-      >
+        }}>
         <Image source={images.refIcon} style={styles.inOutImageView} />
         <View style={styles.entityView}>
           <View style={styles.imageShadowView}>

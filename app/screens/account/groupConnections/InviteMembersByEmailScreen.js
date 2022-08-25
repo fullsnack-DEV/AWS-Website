@@ -108,8 +108,7 @@ export default function InviteMembersByEmailScreen({navigation}) {
         data={email}
         renderItem={renderItemEmail}
         keyExtractor={(item, index) => index.toString()}
-        style={styles.flateListStyle}
-      ></FlatList>
+        style={styles.flateListStyle}></FlatList>
 
       <TCMessageButton
         title={strings.addEmailText}

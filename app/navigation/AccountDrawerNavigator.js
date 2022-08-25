@@ -58,8 +58,7 @@ const AccountDrawerNavigator = () => (
       shadowOpacity: 0.5,
       shadowRadius: 6,
       elevation: 13,
-    }}
-  >
+    }}>
     <Drawer.Screen name="Home" component={HomeNavigator} />
   </Drawer.Navigator>
 );

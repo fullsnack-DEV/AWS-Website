@@ -89,8 +89,7 @@ export default function GameDetailRecord({navigation, route}) {
       headerRight: () => (
         <TouchableWithoutFeedback
           onPress={() => actionSheet.current.show()}
-          hitSlop={getHitSlop(15)}
-        >
+          hitSlop={getHitSlop(15)}>
           <Image source={images.vertical3Dot} style={styles.headerRightImg} />
         </TouchableWithoutFeedback>
       ),
@@ -919,14 +918,12 @@ export default function GameDetailRecord({navigation, route}) {
               setSelectedMemberID(item.member_id);
               setActionByTeamID(gameObj.home_team.group_id);
             }
-          }}
-        >
+          }}>
           {selectedMemberID === item.member_id ||
           selectedAssistMemberID === item.member_id ? (
             <LinearGradient
               colors={[colors.yellowColor, colors.themeColor]}
-              style={styles.orangeFieldView}
-            >
+              style={styles.orangeFieldView}>
               <Image
                 source={
                   item.profile.thumbnail
@@ -941,11 +938,9 @@ export default function GameDetailRecord({navigation, route}) {
                 style={[
                   styles.dividerView,
                   {backgroundColor: colors.whiteColor},
-                ]}
-              ></View>
+                ]}></View>
               <View
-                style={{flexDirection: 'row', justifyContent: 'space-between'}}
-              >
+                style={{flexDirection: 'row', justifyContent: 'space-between'}}>
                 <Text style={styles.whitePlayerName}>
                   {item.profile.first_name} {item.profile.last_name}
                 </Text>
@@ -970,12 +965,10 @@ export default function GameDetailRecord({navigation, route}) {
                 style={[
                   styles.dividerView,
                   {backgroundColor: colors.smallDividerColor},
-                ]}
-              ></View>
+                ]}></View>
 
               <View
-                style={{flexDirection: 'row', justifyContent: 'space-between'}}
-              >
+                style={{flexDirection: 'row', justifyContent: 'space-between'}}>
                 <Text style={styles.blackPlayerName}>
                   {item.profile.first_name} {item.profile.last_name}
                 </Text>
@@ -1009,14 +1002,12 @@ export default function GameDetailRecord({navigation, route}) {
               setSelectedMemberID(item.member_id);
               setActionByTeamID(gameObj.away_team.group_id);
             }
-          }}
-        >
+          }}>
           {selectedMemberID === item.member_id ||
           selectedAssistMemberID === item.member_id ? (
             <LinearGradient
               colors={[colors.yellowColor, colors.themeColor]}
-              style={styles.orangeFieldView}
-            >
+              style={styles.orangeFieldView}>
               <Image
                 source={
                   item.profile.thumbnail
@@ -1031,11 +1022,9 @@ export default function GameDetailRecord({navigation, route}) {
                 style={[
                   styles.dividerView,
                   {backgroundColor: colors.whiteColor},
-                ]}
-              ></View>
+                ]}></View>
               <View
-                style={{flexDirection: 'row', justifyContent: 'space-between'}}
-              >
+                style={{flexDirection: 'row', justifyContent: 'space-between'}}>
                 <Text style={styles.whitePlayerName}>
                   {item.profile.first_name} {item.profile.last_name}
                 </Text>
@@ -1060,11 +1049,9 @@ export default function GameDetailRecord({navigation, route}) {
                 style={[
                   styles.dividerView,
                   {backgroundColor: colors.smallDividerColor},
-                ]}
-              ></View>
+                ]}></View>
               <View
-                style={{flexDirection: 'row', justifyContent: 'space-between'}}
-              >
+                style={{flexDirection: 'row', justifyContent: 'space-between'}}>
                 <Text style={styles.blackPlayerName} numberOfLines={1}>
                   {item.profile.first_name} {item.profile.last_name}
                 </Text>
@@ -1109,8 +1096,7 @@ export default function GameDetailRecord({navigation, route}) {
                     ? styles.leftText
                     : [styles.leftText, {color: colors.themeColor}]
                 }
-                numberOfLines={2}
-              >
+                numberOfLines={2}>
                 {gameObj?.home_team?.group_name}
               </Text>
             </View>
@@ -1128,8 +1114,7 @@ export default function GameDetailRecord({navigation, route}) {
                           fontFamily: fonts.RBold,
                           color: colors.themeColor,
                         }
-                  }
-                >
+                  }>
                   {gameObj?.home_team_goal} :{' '}
                 </Text>
 
@@ -1144,8 +1129,7 @@ export default function GameDetailRecord({navigation, route}) {
                           fontFamily: fonts.RBold,
                           color: colors.themeColor,
                         }
-                  }
-                >
+                  }>
                   {gameObj.away_team_goal}
                 </Text>
               </Text>
@@ -1158,8 +1142,7 @@ export default function GameDetailRecord({navigation, route}) {
                     ? styles.rightText
                     : [styles.rightText, {color: colors.themeColor}]
                 }
-                numberOfLines={2}
-              >
+                numberOfLines={2}>
                 {gameObj?.away_team?.group_name}
               </Text>
 
@@ -1179,12 +1162,10 @@ export default function GameDetailRecord({navigation, route}) {
             <Animatable.View
               useNativeDriver={true}
               animation={'fadeInDown'}
-              easing="ease-in-out"
-            >
+              easing="ease-in-out">
               <LinearGradient
                 colors={[colors.yellowColor, colors.themeColor]}
-                style={styles.messageToast}
-              >
+                style={styles.messageToast}>
                 <View
                   style={{
                     flexDirection: 'row',
@@ -1194,21 +1175,18 @@ export default function GameDetailRecord({navigation, route}) {
                     justifyContent: 'center',
                     alignItems: 'center',
                     flex: 1,
-                  }}
-                >
+                  }}>
                   <View
                     style={{
                       flex: 1,
                       flexDirection: 'row',
                       alignItems: 'center',
                       width: '100%',
-                    }}
-                  >
+                    }}>
                     <View style={styles.gameRecordButton}>
                       <View
                         colors={colors.whiteColor}
-                        style={styles.gameRecordButton}
-                      >
+                        style={styles.gameRecordButton}>
                         <Image
                           source={
                             (lastVerb === GameVerb.Goal && images.gameGoal) ||
@@ -1231,8 +1209,7 @@ export default function GameDetailRecord({navigation, route}) {
                         <Text style={{color: colors.whiteColor}}>/ </Text>
                         <View
                           colors={colors.whiteColor}
-                          style={styles.gameRecordButton}
-                        >
+                          style={styles.gameRecordButton}>
                           <Image
                             source={images.assistsImage}
                             style={styles.gameRecordImg}
@@ -1240,8 +1217,7 @@ export default function GameDetailRecord({navigation, route}) {
                         </View>
                         <Text
                           numberOfLines={1}
-                          style={[styles.messageText, {width: 130}]}
-                        >
+                          style={[styles.messageText, {width: 130}]}>
                           {' '}
                           {messageText.split('/') && messageText.split('/')[1]}
                         </Text>
@@ -1251,8 +1227,7 @@ export default function GameDetailRecord({navigation, route}) {
                   <TouchableOpacity
                     onPress={() => {
                       setMessageToast(false);
-                    }}
-                  >
+                    }}>
                     <Image
                       source={images.cancelImage}
                       style={{
@@ -1373,8 +1348,7 @@ export default function GameDetailRecord({navigation, route}) {
                     onPress={() => {
                       // setDate();
                       date = null;
-                    }}
-                  >
+                    }}>
                     <Image
                       source={images.curruentTime}
                       style={styles.curruentTimeImg}
@@ -1386,8 +1360,7 @@ export default function GameDetailRecord({navigation, route}) {
                 style={styles.startTime}
                 onPress={() => {
                   setPickerShow(!pickerShow);
-                }}
-              >
+                }}>
                 {(gameObj &&
                   gameObj.status &&
                   gameObj.status === GameStatus.accepted) ||

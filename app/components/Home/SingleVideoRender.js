@@ -20,8 +20,7 @@ function SingleVideoRender({data}) {
         onPress={() => {
           toggleModal();
         }}
-        style={styles.imagesViewStyle}
-      >
+        style={styles.imagesViewStyle}>
         <Video
           source={{uri: data.attachments[0].url}}
           style={styles.videoStyle}
@@ -37,8 +36,7 @@ function SingleVideoRender({data}) {
         isVisible={isModalVisible}
         backdropColor="black"
         style={{margin: 0}}
-        backdropOpacity={0}
-      >
+        backdropOpacity={0}>
         <MultipleImageModal
           attachedImages={data.attachments.length > 0 ? data.attachments : []}
           backBtnPress={() => setModalVisible(false)}

@@ -141,9 +141,8 @@ export default function GroupEventScreen({navigation}) {
   //   };
   // }, []);
 
-  const renderGroups = ({item, index}) => {
-    return (
-      <GroupEventItems
+  const renderGroups = ({item, index}) => (
+    <GroupEventItems
         eventImageSource={
           item.entity_type === 'team' ? images.teamPatch : images.clubPatch
         }
@@ -165,7 +164,6 @@ export default function GroupEventScreen({navigation}) {
         }}
       />
     );
-  };
 
   return (
     <SafeAreaView style={{flex: 1}}>
@@ -181,8 +179,7 @@ export default function GroupEventScreen({navigation}) {
               isSelected: !isAll,
             }));
             setGroupsList([...groups]);
-          }}
-        >
+          }}>
           <Image
             source={isAll ? images.orangeCheckBox : images.uncheckWhite}
             style={styles.imageStyle}

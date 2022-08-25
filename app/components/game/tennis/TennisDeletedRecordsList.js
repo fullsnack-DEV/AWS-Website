@@ -130,14 +130,15 @@ export default function TennisDeletedRecordsList({matchData, isAdmin}) {
   }) => (
     <Fragment>
       <View
-        style={{...styles.setContainer, backgroundColor: 'rgba(255,138,1,0.1)'}}
-      >
+        style={{
+          ...styles.setContainer,
+          backgroundColor: 'rgba(255,138,1,0.1)',
+        }}>
         <RenderDash />
         {/* Down Arrow */}
         <TouchableOpacity
           style={styles.downArrowContainer}
-          onPress={() => toggleMatchSets(index)}
-        >
+          onPress={() => toggleMatchSets(index)}>
           <FastImage
             resizeMode={'contain'}
             source={images.yellowDownArrow}
@@ -155,8 +156,7 @@ export default function TennisDeletedRecordsList({matchData, isAdmin}) {
             flex: 0.3,
             alignItems: 'center',
             justifyContent: 'center',
-          }}
-        >
+          }}>
           <Text style={styles.setScoreText}>{home_team_score}</Text>
         </View>
 
@@ -166,8 +166,7 @@ export default function TennisDeletedRecordsList({matchData, isAdmin}) {
             flex: 0.5,
             alignItems: 'center',
             justifyContent: 'center',
-          }}
-        >
+          }}>
           <Text style={styles.setNumberText}>
             {getNumberSuffix(set_number)} set
           </Text>
@@ -179,8 +178,7 @@ export default function TennisDeletedRecordsList({matchData, isAdmin}) {
             flex: 0.3,
             alignItems: 'center',
             justifyContent: 'center',
-          }}
-        >
+          }}>
           <Text style={styles.setScoreText}>{away_team_score}</Text>
         </View>
       </View>
@@ -226,8 +224,7 @@ export default function TennisDeletedRecordsList({matchData, isAdmin}) {
           <SwipeableRow
             buttons={SwipeableRowButtons}
             enabled={getVisibleSwipableRowValue(item?.verb, item?.deleted)}
-            onPress={() => onSwipeRowItemPress(item?.verb, item?.record_id)}
-          >
+            onPress={() => onSwipeRowItemPress(item?.verb, item?.record_id)}>
             <TennisGameState recordData={item} />
           </SwipeableRow>
         </View>
@@ -293,8 +290,7 @@ export default function TennisDeletedRecordsList({matchData, isAdmin}) {
           <SwipeableRow
             buttons={SwipeableRowButtons}
             enabled={getVisibleSwipableRowValue(item?.verb, item?.deleted)}
-            onPress={() => onSwipeRowItemPress(item?.verb, item?.record_id)}
-          >
+            onPress={() => onSwipeRowItemPress(item?.verb, item?.record_id)}>
             <TennisGameState recordData={item} titleColor={colors.themeColor} />
           </SwipeableRow>
         </View>
@@ -308,14 +304,12 @@ export default function TennisDeletedRecordsList({matchData, isAdmin}) {
             ...styles.setContainer,
             borderTopWidth: 0,
             marginBottom: 0,
-          }}
-        >
+          }}>
           <RenderDash />
           {/* Down Arrow */}
           <TouchableOpacity
             style={styles.downArrowContainer}
-            onPress={() => toggleGameRecords(parentIndex, index)}
-          >
+            onPress={() => toggleGameRecords(parentIndex, index)}>
             <FastImage
               resizeMode={'contain'}
               source={images.dropDownArrow}
@@ -333,22 +327,19 @@ export default function TennisDeletedRecordsList({matchData, isAdmin}) {
               flex: 0.3,
               alignItems: 'center',
               justifyContent: 'center',
-            }}
-          >
+            }}>
             {getGameScoreText(item?.home_team_point, item?.away_team_point, 1)}
           </View>
 
           {/* Set Number */}
           <View
-            style={{flex: 0.4, alignItems: 'center', justifyContent: 'center'}}
-          >
+            style={{flex: 0.4, alignItems: 'center', justifyContent: 'center'}}>
             <Text
               style={{
                 ...styles.setNumberText,
                 color: colors.googleColor,
                 fontSize: 17,
-              }}
-            >
+              }}>
               {getNumberSuffix(item?.number)} game
             </Text>
           </View>
@@ -359,8 +350,7 @@ export default function TennisDeletedRecordsList({matchData, isAdmin}) {
               flex: 0.3,
               alignItems: 'center',
               justifyContent: 'center',
-            }}
-          >
+            }}>
             {getGameScoreText(item?.home_team_point, item?.away_team_point, 2)}
           </View>
         </View>
@@ -452,8 +442,7 @@ export default function TennisDeletedRecordsList({matchData, isAdmin}) {
         <SwipeableRow
           buttons={SwipeableRowButtons}
           enabled={getVisibleSwipableRowValue(item?.verb, item?.deleted)}
-          onPress={() => onSwipeRowItemPress(item?.verb, item?.record_id)}
-        >
+          onPress={() => onSwipeRowItemPress(item?.verb, item?.record_id)}>
           <View style={{backgroundColor: colors.whiteColor}}>
             <TennisGameState recordData={item} />
           </View>
@@ -467,8 +456,7 @@ export default function TennisDeletedRecordsList({matchData, isAdmin}) {
       <SwipeableRow
         buttons={SwipeableRowButtons}
         enabled={getVisibleSwipableRowValue(item?.verb, item?.deleted)}
-        onPress={() => onSwipeRowItemPress(item?.verb, item?.record_id)}
-      >
+        onPress={() => onSwipeRowItemPress(item?.verb, item?.record_id)}>
         <View>
           {!isGameState && isHomeTeam && (
             <View style={{backgroundColor: colors.whiteColor}}>
@@ -525,8 +513,7 @@ export default function TennisDeletedRecordsList({matchData, isAdmin}) {
             <TouchableWithoutFeedback
               onPress={() => {
                 setEditorChecked(!editorChecked);
-              }}
-            >
+              }}>
               {editorChecked === true ? (
                 <FastImage
                   resizeMode={'contain'}

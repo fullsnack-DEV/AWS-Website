@@ -29,8 +29,7 @@ export default function UserAboutScreen({navigation, route}) {
           }}
           onPress={() => {
             onSaveButtonClicked();
-          }}
-        >
+          }}>
           {strings.done}
         </Text>
       ),

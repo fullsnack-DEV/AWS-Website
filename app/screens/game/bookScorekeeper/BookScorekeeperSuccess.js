@@ -38,8 +38,7 @@ const BookScorekeeperSuccess = ({navigation, route}) => {
           position: 'absolute',
           alignItems: 'center',
           justifyContent: 'center',
-        }}
-      >
+        }}>
         <FastImage
           source={images.requestSentImage}
           style={{width: 150, height: 150}}
@@ -51,8 +50,7 @@ const BookScorekeeperSuccess = ({navigation, route}) => {
             fontSize: 20,
             marginTop: 10,
             textAlign: 'center',
-          }}
-        >
+          }}>
           Scorekeeper booking request{'\n'}sent.
         </Text>
       </LinearGradient>

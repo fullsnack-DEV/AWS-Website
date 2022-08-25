@@ -115,14 +115,12 @@ export default function ChooseLocationScreen({navigation, route}) {
     })
       .then((response) => {
         console.log('nearby city :=>', response.data);
-        const cityList = response.data.map((obj) => {
-          return {
+        const cityList = response.data.map((obj) => ({
             description: obj[1],
             city: obj[1],
             state_abbr: obj[2],
             country: obj[3],
-          };
-        });
+          }));
         setNearByCity(
           cityList.filter((obj) => obj?.city !== currentLocation?.city),
         );

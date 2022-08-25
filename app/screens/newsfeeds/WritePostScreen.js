@@ -132,12 +132,10 @@ export default function WritePostScreen({navigation, route}) {
             } else {
               // setloading(true);
               let tagData = JSON.parse(JSON.stringify(tagsOfEntity));
-              tagData = tagData?.map((tag) => {
-                return {
+              tagData = tagData?.map((tag) => ({
                   ...tag,
                   entity_type: 'publictimeline',
-                };
-              });
+                }));
               console.log('tagDatatagData', tagData);
 
               const format_tagged_data =
@@ -190,8 +188,7 @@ export default function WritePostScreen({navigation, route}) {
                 setloading(false);
               }, uploadTimeout);
             }
-          }}
-        >
+          }}>
           <Text style={styles.doneTextStyle}>Done</Text>
         </TouchableOpacity>
       ),
@@ -473,8 +470,7 @@ export default function WritePostScreen({navigation, route}) {
         style={{
           ...styles.username,
           color: colors.greeColor,
-        }}
-      >{`${matchingString}`}</Text>
+        }}>{`${matchingString}`}</Text>
     ),
     [],
   );
@@ -483,8 +479,7 @@ export default function WritePostScreen({navigation, route}) {
     ({item}) => (
       <TouchableOpacity
         onPress={() => onTagPress(item)}
-        style={styles.userListStyle}
-      >
+        style={styles.userListStyle}>
         <Image
           source={
             item?.thumbnail ? {uri: item?.thumbnail} : images.profilePlaceHolder
@@ -497,8 +492,9 @@ export default function WritePostScreen({navigation, route}) {
             : `${item.first_name} ${item.last_name}`}
         </Text>
         <Text
-          style={styles.locationTextStyle}
-        >{`${item.city}, ${item.state_abbr}`}</Text>
+          style={
+            styles.locationTextStyle
+          }>{`${item.city}, ${item.state_abbr}`}</Text>
       </TouchableOpacity>
     ),
     [onTagPress],
@@ -556,8 +552,7 @@ export default function WritePostScreen({navigation, route}) {
           style={[
             styles.userListContainer,
             {marginTop: searchFieldHeight + 20},
-          ]}
-        >
+          ]}>
           <FlatList
             showsVerticalScrollIndicator={false}
             data={arr}
@@ -763,8 +758,7 @@ export default function WritePostScreen({navigation, route}) {
     [renderSelectedGame, tagsOfEntity],
   );
 
-  const renderWhoCan = ({item}) => {
-    return (
+  const renderWhoCan = ({item}) => (
       <TouchableOpacity
         style={styles.listItem}
         onPress={() => {
@@ -773,8 +767,7 @@ export default function WritePostScreen({navigation, route}) {
           setTimeout(() => {
             setVisibleWhoModal(false);
           }, 300);
-        }}
-      >
+        }}>
         <View
           style={{
             padding: 20,
@@ -782,8 +775,7 @@ export default function WritePostScreen({navigation, route}) {
             flexDirection: 'row',
             justifyContent: 'space-between',
             marginRight: 15,
-          }}
-        >
+          }}>
           <Text style={styles.languageList}>{item.text}</Text>
           <View style={styles.checkbox}>
             {privacySetting.value === item?.value ? (
@@ -798,13 +790,11 @@ export default function WritePostScreen({navigation, route}) {
         </View>
       </TouchableOpacity>
     );
-  };
 
   return (
     <KeyboardAvoidingView
       style={{flex: 1}}
-      behavior={Platform.OS === 'ios' ? 'padding' : null}
-    >
+      behavior={Platform.OS === 'ios' ? 'padding' : null}>
       <ActivityLoader visible={loading} />
       {renderCurrentUseProfile}
 
@@ -826,12 +816,10 @@ export default function WritePostScreen({navigation, route}) {
           style={styles.textInputField}
           multiline={true}
           textAlignVertical={'top'}
-          maxLength={4000}
-        >
+          maxLength={4000}>
           <ParsedText
             parse={[{pattern: tagRegex, renderText: renderTagText}]}
-            childrenProps={{allowFontScaling: false}}
-          >
+            childrenProps={{allowFontScaling: false}}>
             {searchText}
           </ParsedText>
         </TextInput>
@@ -855,8 +843,7 @@ export default function WritePostScreen({navigation, route}) {
             style={[
               styles.onlyMeViewStyle,
               {flex: 1, justifyContent: 'flex-end'},
-            ]}
-          >
+            ]}>
             {selectImage?.length < MAX_UPLOAD_POST_ASSETS && (
               <ImageButton
                 source={images.pickImage}
@@ -886,8 +873,7 @@ export default function WritePostScreen({navigation, route}) {
         backdropTransitionOutTiming={50}
         style={{
           margin: 0,
-        }}
-      >
+        }}>
         <View
           style={{
             width: '100%',
@@ -903,21 +889,18 @@ export default function WritePostScreen({navigation, route}) {
             shadowOpacity: 0.5,
             shadowRadius: 5,
             elevation: 15,
-          }}
-        >
+          }}>
           <View
             style={{
               flexDirection: 'row',
               paddingHorizontal: 15,
               justifyContent: 'space-between',
               alignItems: 'center',
-            }}
-          >
+            }}>
             <TouchableOpacity
               hitSlop={getHitSlop(15)}
               style={styles.closeButton}
-              onPress={() => setVisibleWhoModal(false)}
-            >
+              onPress={() => setVisibleWhoModal(false)}>
               <Image source={images.cancelImage} style={styles.closeButton} />
             </TouchableOpacity>
             <Text
@@ -927,8 +910,7 @@ export default function WritePostScreen({navigation, route}) {
                 fontSize: 16,
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
-              }}
-            >
+              }}>
               Privacy Setting
             </Text>
 
@@ -939,8 +921,7 @@ export default function WritePostScreen({navigation, route}) {
                 fontSize: 16,
                 fontFamily: fonts.RRegular,
                 color: colors.themeColor,
-              }}
-            ></Text>
+              }}></Text>
           </View>
           <View style={styles.separatorLine} />
           <FlatList

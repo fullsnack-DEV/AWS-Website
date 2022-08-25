@@ -13,8 +13,7 @@ export default function ReservationPendingButton({onPressButon}) {
     <TouchableOpacity onPress={onPressButon}>
       <LinearGradient
         colors={[colors.yellowColor, colors.themeColor]}
-        style={styles.pendingButton}
-      >
+        style={styles.pendingButton}>
         <Text style={styles.pendingTimerText}>{strings.respondWithinText}</Text>
       </LinearGradient>
     </TouchableOpacity>

@@ -58,8 +58,7 @@ export default function SportActivityScreen({navigation}) {
         style={styles.listContainer}
         onPress={() => {
           navigation.navigate('ActivitySettingScreen', {sport: item});
-        }}
-      >
+        }}>
         <View style={{flexDirection: 'row'}}>
           <Text style={styles.listItems}>
             {Utility.getSportName(item, authContext)}
@@ -120,8 +119,7 @@ export default function SportActivityScreen({navigation}) {
         <TouchableWithoutFeedback
           onPress={() => {
             navigation.navigate('DeactivatedSportsListScreen');
-          }}
-        >
+          }}>
           <View style={{flexDirection: 'row'}}>
             <Text style={styles.listItemsTitle}>
               Deactivated Sports Acitivies

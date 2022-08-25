@@ -111,8 +111,7 @@ export default function EventInCalender({
               backgroundColor:
                 eventColor[0] !== '#' ? `#${eventColor}` : eventColor,
             },
-          ]}
-        >
+          ]}>
           <Text style={styles.hourTextStyle}>
             {moment(startDate).format('h')}
             <Text style={styles.minuteTextStyle}>
@@ -128,8 +127,7 @@ export default function EventInCalender({
                 styles.eventTitle,
                 {color: eventColor[0] !== '#' ? `#${eventColor}` : eventColor},
               ]}
-              numberOfLines={1}
-            >
+              numberOfLines={1}>
               {title}
             </Text>
             <TouchableOpacity onPress={onThreeDotPress}>

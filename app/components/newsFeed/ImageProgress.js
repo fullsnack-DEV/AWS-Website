@@ -52,8 +52,7 @@ const SingleImageProgressBar = memo(
                 alignItems: 'center',
                 justifyContent: 'center',
                 position: 'absolute',
-              }}
-            >
+              }}>
               <FastImage
                 source={images.videoPlayBtn}
                 tintColor={'white'}
@@ -103,8 +102,7 @@ const SingleImageProgressBar = memo(
               <TouchableOpacity
                 hitSlop={getHitSlop(15)}
                 style={styles.cancelTouchStyle}
-                onPress={onCancelPress}
-              >
+                onPress={onCancelPress}>
                 <Image
                   style={styles.cancelImagestyle}
                   source={images.cancelImage}
@@ -189,8 +187,7 @@ const ImageProgress = () => {
         height:
           heightOfProgressView *
           imageUploadContext?.state?.uploadingData?.length,
-      }}
-    >
+      }}>
       {/* Arrow
       {imageUploadContext?.state?.uploadingData?.length > 1 && (
         <TouchableOpacity

@@ -36,8 +36,7 @@ export default function StatsSelectionView({
               justifyContent: 'center',
               top: '40%',
               paddingRight: 5,
-            }}
-          >
+            }}>
             <Image source={images.dropDownArrow} style={styles.downArrow} />
           </View>
         )}

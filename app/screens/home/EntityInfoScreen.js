@@ -72,8 +72,7 @@ export default function EntityInfoScreen({navigation, route}) {
       <ScrollView
         style={{flex: 1}}
         bounces={false}
-        showsVerticalScrollIndicator={false}
-      >
+        showsVerticalScrollIndicator={false}>
         <GroupInfo
           navigation={navigation}
           groupDetails={currentUserData}

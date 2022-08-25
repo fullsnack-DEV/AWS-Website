@@ -68,8 +68,7 @@ const PlaysInLeagues = ({
       <EditEventItem
         editButtonVisible={isAdmin}
         title={strings.leaguesTitle}
-        onEditPress={() => actionSheet.current.show()}
-      >
+        onEditPress={() => actionSheet.current.show()}>
         <FlatList
           ItemSeparatorComponent={() => <TCThinDivider />}
           data={
@@ -121,8 +120,7 @@ const EditPlaysInModal = ({
       heading={`${
         editModalType !== strings.privacySettings ? 'Edit ' : ''
       }${editModalType}`}
-      onSavePress={onSavePress}
-    >
+      onSavePress={onSavePress}>
       <PlaysInEditPrivacySettings title={strings.leaguePrivacyTitle} />
     </PlayInEditModal>
   );

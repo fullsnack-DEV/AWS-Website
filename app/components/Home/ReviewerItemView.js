@@ -247,8 +247,7 @@ function ReviewerItemView({
                 flexDirection: 'row',
                 alignItems: 'center',
                 marginTop: 3,
-              }}
-            >
+              }}>
               <Text style={styles.activeTimeAgoTxt}>
                 {moment(new Date(reviewObj?.created_at * 1000)).format(
                   'MMM DD',
@@ -283,8 +282,7 @@ function ReviewerItemView({
                     style={[
                       styles.activeTimeAgoTxt,
                       {fontSize: 12, fontFamily: fonts.RMedium},
-                    ]}
-                  >
+                    ]}>
                     {getTeamData()?.name}
                   </Text>
                 </View>
@@ -320,8 +318,7 @@ function ReviewerItemView({
             style={styles.dotImageTouchStyle}
             onPress={() => {
               actionSheet.current.show();
-            }}
-          >
+            }}>
             <Image
               style={styles.dotImageStyle}
               source={images.dotImage}
@@ -359,8 +356,7 @@ function ReviewerItemView({
                         alignItems: 'center',
                         justifyContent: 'center',
                         position: 'absolute',
-                      }}
-                    >
+                      }}>
                       <FastImage
                         source={images.videoPlayBtn}
                         tintColor={'white'}
@@ -405,8 +401,7 @@ function ReviewerItemView({
                         alignItems: 'center',
                         justifyContent: 'center',
                         position: 'absolute',
-                      }}
-                    >
+                      }}>
                       <FastImage
                         source={images.videoPlayBtn}
                         tintColor={'white'}
@@ -461,8 +456,7 @@ function ReviewerItemView({
                           alignItems: 'center',
                           justifyContent: 'center',
                           position: 'absolute',
-                        }}
-                      >
+                        }}>
                         <FastImage
                           source={images.videoPlayBtn}
                           tintColor={'white'}
@@ -504,8 +498,7 @@ function ReviewerItemView({
               style={{
                 flexDirection: 'row',
                 width: wp('52%'),
-              }}
-            >
+              }}>
               <TouchableWithoutFeedback
                 style={{
                   flexDirection: 'row',
@@ -514,8 +507,7 @@ function ReviewerItemView({
                   if (isAdmin()) {
                     setShowModelComment(true);
                   }
-                }}
-              >
+                }}>
                 <Image
                   style={styles.commentImage}
                   source={images.commentImage}
@@ -533,8 +525,7 @@ function ReviewerItemView({
                   justifyContent: 'center',
                   marginLeft: 10,
                 }}
-                onPress={() => Alert.alert('Share')}
-              >
+                onPress={() => Alert.alert('Share')}>
                 <Image
                   style={styles.commentImage}
                   source={images.shareImage}
@@ -562,8 +553,7 @@ function ReviewerItemView({
                   setLike(!like);
                   onLikePress(item);
                 }
-              }}
-            >
+              }}>
               {likeCount > 0 && (
                 <Text
                   style={[
@@ -572,8 +562,7 @@ function ReviewerItemView({
                       color:
                         like === true ? colors.themeColor : colors.whiteColor,
                     },
-                  ]}
-                >
+                  ]}>
                   {likeCount}
                 </Text>
               )}
@@ -613,8 +602,7 @@ function ReviewerItemView({
           style={styles.maxReviewTouchStyle}
           onPress={() =>
             onFeedPress(item, feedIndex, gameData, indexNumber, true)
-          }
-        >
+          }>
           <Text style={styles.maxCountTextStyle}>
             {totalData?.length > 2 && indexNumber === 2
               ? `+${totalData?.length - 2} `
@@ -645,8 +633,7 @@ function ReviewerItemView({
               style={[
                 styles.bottomSafeAreaStyle,
                 {bottom: keyboardOffset, position: 'absolute'},
-              ]}
-            >
+              ]}>
               {/* <View style={styles.bottomSperateLine} /> */}
               <View style={styles.bottomImgView}>
                 <View style={styles.commentReportView}>
@@ -703,8 +690,7 @@ function ReviewerItemView({
                           .catch((e) => {
                             console.log(e);
                           });
-                      }}
-                    >
+                      }}>
                       <Text style={styles.sendTextStyle}>SEND</Text>
                     </TouchableOpacity>
                   )}
@@ -720,8 +706,7 @@ function ReviewerItemView({
             <TouchableOpacity
               onPress={() => {
                 setShowModelComment(false);
-              }}
-            >
+              }}>
               <Text>{`Reply from ${
                 authContext?.entity?.obj?.full_name ||
                 authContext?.entity?.obj?.group_name

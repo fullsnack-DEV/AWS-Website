@@ -323,8 +323,7 @@ const EditPostScreen = ({navigation, route}) => {
         style={{
           ...styles.username,
           color: colors.greeColor,
-        }}
-      >{`${matchingString}`}</Text>
+        }}>{`${matchingString}`}</Text>
     ),
     [],
   );
@@ -349,8 +348,7 @@ const EditPostScreen = ({navigation, route}) => {
     ({item}) => (
       <TouchableOpacity
         onPress={() => onTagPress(item)}
-        style={styles.userListStyle}
-      >
+        style={styles.userListStyle}>
         <Image
           source={
             item?.thumbnail ? {uri: item?.thumbnail} : images.profilePlaceHolder
@@ -363,8 +361,9 @@ const EditPostScreen = ({navigation, route}) => {
             : `${item.first_name} ${item.last_name}`}
         </Text>
         <Text
-          style={styles.locationTextStyle}
-        >{`${item.city}, ${item.state_abbr}`}</Text>
+          style={
+            styles.locationTextStyle
+          }>{`${item.city}, ${item.state_abbr}`}</Text>
       </TouchableOpacity>
     ),
     [onTagPress],
@@ -378,8 +377,7 @@ const EditPostScreen = ({navigation, route}) => {
           style={[
             styles.userListContainer,
             {marginTop: searchFieldHeight + 20},
-          ]}
-        >
+          ]}>
           <FlatList
             showsVerticalScrollIndicator={false}
             data={[...users, ...groups]}
@@ -549,8 +547,7 @@ const EditPostScreen = ({navigation, route}) => {
   return (
     <KeyboardAvoidingView
       style={{flex: 1}}
-      behavior={Platform.OS === 'ios' ? 'padding' : null}
-    >
+      behavior={Platform.OS === 'ios' ? 'padding' : null}>
       <ActivityLoader visible={loading} />
       <SafeAreaView>
         <View style={styles.containerStyle}>
@@ -604,8 +601,7 @@ const EditPostScreen = ({navigation, route}) => {
                   format_tagged_data,
                 );
               }
-            }}
-          >
+            }}>
             <Text style={styles.doneTextStyle}>Done</Text>
           </TouchableOpacity>
         </View>
@@ -639,12 +635,10 @@ const EditPostScreen = ({navigation, route}) => {
           style={styles.textInputField}
           multiline={true}
           autoCapitalize="none"
-          textAlignVertical={'top'}
-        >
+          textAlignVertical={'top'}>
           <ParsedText
             parse={[{pattern: tagRegex, renderText: renderTagText}]}
-            childrenProps={{allowFontScaling: false}}
-          >
+            childrenProps={{allowFontScaling: false}}>
             {searchText}
           </ParsedText>
         </TextInput>
@@ -668,8 +662,7 @@ const EditPostScreen = ({navigation, route}) => {
             style={[
               styles.onlyMeViewStyle,
               {flex: 1, justifyContent: 'flex-end'},
-            ]}
-          >
+            ]}>
             {selectImage?.length < MAX_UPLOAD_POST_ASSETS && (
               <ImageButton
                 source={images.pickImage}

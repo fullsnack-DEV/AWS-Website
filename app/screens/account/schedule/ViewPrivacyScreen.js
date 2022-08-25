@@ -44,8 +44,7 @@ export default function ViewPrivacyScreen({navigation}) {
   return (
     <KeyboardAvoidingView
       style={styles.mainContainerStyle}
-      behavior={Platform.OS === 'ios' ? 'padding' : null}
-    >
+      behavior={Platform.OS === 'ios' ? 'padding' : null}>
       <Header
         leftComponent={
           <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -58,8 +57,7 @@ export default function ViewPrivacyScreen({navigation}) {
         rightComponent={
           <TouchableOpacity
             style={{padding: 2}}
-            onPress={() => navigation.goBack()}
-          >
+            onPress={() => navigation.goBack()}>
             <Text style={{fontFamily: fonts.RMedium, fontSize: 16}}>Save</Text>
           </TouchableOpacity>
         }
@@ -68,8 +66,7 @@ export default function ViewPrivacyScreen({navigation}) {
       <SafeAreaView>
         <EventItemRender
           title={strings.whoCanSeeShcedule}
-          containerStyle={{marginTop: 10}}
-        >
+          containerStyle={{marginTop: 10}}>
           <FlatList
             data={scheduleData}
             style={{marginTop: 20}}

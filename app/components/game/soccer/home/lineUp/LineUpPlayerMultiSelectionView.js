@@ -14,13 +14,11 @@ export default function LineUpPlayerMultiSelectionView({
   return (
     <TouchableOpacity
       disabled={enable}
-      onPress={() => onButtonPress(userData.selected)}
-    >
+      onPress={() => onButtonPress(userData.selected)}>
       {userData.selected ? (
         <LinearGradient
           colors={[colors.greenGradientStart, colors.greenGradientEnd]}
-          style={styles.topViewContainer}
-        >
+          style={styles.topViewContainer}>
           <View style={{flexDirection: 'row'}}>
             <View style={styles.profileView}>
               <Image
@@ -35,8 +33,9 @@ export default function LineUpPlayerMultiSelectionView({
             <View style={styles.topTextContainer}>
               <Text
                 style={styles.mediumNameTextWhite}
-                numberOfLines={1}
-              >{`${userData.profile.first_name} ${userData.profile.last_name}`}</Text>
+                numberOfLines={
+                  1
+                }>{`${userData.profile.first_name} ${userData.profile.last_name}`}</Text>
               <Text style={styles.locationTextWhite} numberOfLines={1}>{`${
                 userData.profile.jersey_number || ''
               } ${userData.profile.positions || ''}`}</Text>
@@ -60,8 +59,9 @@ export default function LineUpPlayerMultiSelectionView({
             <View style={styles.topTextContainer}>
               <Text
                 style={styles.mediumNameText}
-                numberOfLines={1}
-              >{`${userData.profile.first_name} ${userData.profile.last_name}`}</Text>
+                numberOfLines={
+                  1
+                }>{`${userData.profile.first_name} ${userData.profile.last_name}`}</Text>
               <Text style={styles.locationText} numberOfLines={1}>{`${
                 userData.profile.jersey_number || ''
               } ${userData.profile.positions || ''}`}</Text>

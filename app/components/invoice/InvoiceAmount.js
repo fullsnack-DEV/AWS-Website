@@ -28,8 +28,7 @@ export default function InvoiceAmount({
                   : status === 'Cancelled'
                   ? colors.userPostTimeColor
                   : colors.darkThemeColor,
-            }}
-          >
+            }}>
             {status}
           </Text>
         </View>
@@ -43,8 +42,7 @@ export default function InvoiceAmount({
             fontSize: 16,
             fontFamily: fonts.RMedium,
             color: colors.lightBlackColor,
-          }}
-        >
+          }}>
           {`$${totalAmount} ${currencyType}`}
         </Text>
       </View>
@@ -56,8 +54,7 @@ export default function InvoiceAmount({
             fontSize: 16,
             fontFamily: fonts.RMedium,
             color: colors.greenColorCard,
-          }}
-        >
+          }}>
           {`$${paidAmount} ${currencyType}`}
         </Text>
       </View>
@@ -69,8 +66,7 @@ export default function InvoiceAmount({
             fontSize: 16,
             fontFamily: fonts.RMedium,
             color: colors.darkThemeColor,
-          }}
-        >
+          }}>
           {`$${openAmount} ${currencyType}`}
         </Text>
       </View>

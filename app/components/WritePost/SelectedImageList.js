@@ -40,8 +40,7 @@ function SelectedImageList({
               alignItems: 'center',
               justifyContent: 'center',
               position: 'absolute',
-            }}
-          >
+            }}>
             <FastImage
               source={images.videoPlayBtn}
               tintColor={'white'}

@@ -201,8 +201,7 @@ const ScheduleNavigator = () => (
       // headerTitle: true,
       gestureEnabled: false,
       headerBackTitleVisible: false,
-    }}
-  >
+    }}>
     {/* Accounts screens */}
 
     <Stack.Screen

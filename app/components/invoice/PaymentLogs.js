@@ -48,16 +48,14 @@ export default function PaymentLogs({data, onPressCard}) {
         shadowOpacity: 0.3,
         shadowRadius: 2,
         elevation: 5,
-      }}
-    >
+      }}>
       <View style={{marginLeft: 15}}>
         <Text
           style={{
             fontFamily: fonts.RMedium,
             fontSize: 16,
             color: colors.lightBlackColor,
-          }}
-        >
+          }}>
           {moment(new Date(data?.payment_date * 1000)).format('MMM DD, YYYY')}
         </Text>
 
@@ -66,8 +64,7 @@ export default function PaymentLogs({data, onPressCard}) {
             fontFamily: fonts.RLight,
             fontSize: 14,
             color: colors.lightBlackColor,
-          }}
-        >
+          }}>
           {getPaymentModeText()}
         </Text>
       </View>

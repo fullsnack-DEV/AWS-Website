@@ -9,8 +9,7 @@ function TCArrowView({title, onPress, containerStyle}) {
   return (
     <TouchableOpacity
       onPress={onPress}
-      style={[styles.viewContainer, containerStyle]}
-    >
+      style={[styles.viewContainer, containerStyle]}>
       <Text style={styles.titleStyle}>{title}</Text>
       <Image source={images.nextArrow} style={styles.infoImage} />
     </TouchableOpacity>

@@ -18,8 +18,7 @@ export const AuthProvider = ({children}) => {
         updateAuth,
         user,
         setUser,
-      }}
-    >
+      }}>
       {children}
     </AuthContext.Provider>
   );

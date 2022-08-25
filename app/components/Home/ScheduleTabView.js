@@ -24,23 +24,20 @@ export default function ScheduleTabView({
           indexCounter === 0
             ? styles.activeEventPricacy
             : styles.inactiveEventPricacy
-        }
-      >
+        }>
         <TouchableOpacity
           onPress={onFirstTabPress}
           style={
             indexCounter === 0
               ? styles.activeEventPricacy
               : styles.inactiveEventPricacy
-          }
-        >
+          }>
           <Text
             style={
               indexCounter === 0
                 ? styles.activeEventPrivacyText
                 : styles.inactiveEventPrivacyText
-            }
-          >
+            }>
             {firstTabTitle}
           </Text>
         </TouchableOpacity>
@@ -54,23 +51,20 @@ export default function ScheduleTabView({
           indexCounter === 1
             ? styles.activeEventPricacy
             : styles.inactiveEventPricacy
-        }
-      >
+        }>
         <TouchableOpacity
           onPress={onSecondTabPress}
           style={
             indexCounter === 1
               ? styles.activeEventPricacy
               : styles.inactiveEventPricacy
-          }
-        >
+          }>
           <Text
             style={
               indexCounter === 1
                 ? styles.activeEventPrivacyText
                 : styles.inactiveEventPrivacyText
-            }
-          >
+            }>
             {secondTabTitle}
           </Text>
         </TouchableOpacity>

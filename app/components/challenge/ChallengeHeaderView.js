@@ -12,8 +12,7 @@ export default function ChallengeHeaderView({challenger, challengee, role}) {
         flexDirection: 'row',
         justifyContent: 'space-between',
         padding: 15,
-      }}
-    >
+      }}>
       <View>
         {/* <LinearGradient
         colors={[colors.greenGradientEnd, colors.greenGradientStart]}
@@ -58,16 +57,14 @@ export default function ChallengeHeaderView({challenger, challengee, role}) {
       <View
         style={{
           height: 20,
-        }}
-      >
+        }}>
         <Text
           style={{
             fontSize: 16,
             fontFamily: fonts.RLight,
             color: colors.lightBlackColor,
             alignSelf: 'center',
-          }}
-        >
+          }}>
           VS
         </Text>
       </View>

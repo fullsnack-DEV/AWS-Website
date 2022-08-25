@@ -107,8 +107,7 @@ export default function EditLineUpCoachScreen({navigation, route}) {
               setLoading(false);
               Alert.alert('Please modify coaches first');
             }
-          }}
-        >
+          }}>
           Save
         </Text>
       ),

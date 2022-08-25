@@ -19,19 +19,16 @@ const TCSmallButton = ({
     {!isBorderButton ? (
       <LinearGradient
         colors={[endGradientColor, startGradientColor]}
-        style={[styles.containerStyle, {borderRadius: 20}, borderstyle, style]}
-      >
+        style={[styles.containerStyle, {borderRadius: 20}, borderstyle, style]}>
         <Text
-          style={[styles.buttonText, {color: colors.whiteColor}, textStyle]}
-        >
+          style={[styles.buttonText, {color: colors.whiteColor}, textStyle]}>
           {title}
         </Text>
       </LinearGradient>
     ) : (
       <View style={[styles.containerStyle, borderstyle, style]}>
         <Text
-          style={[styles.buttonText, {color: colors.whiteColor}, textStyle]}
-        >
+          style={[styles.buttonText, {color: colors.whiteColor}, textStyle]}>
           {title}
         </Text>
       </View>

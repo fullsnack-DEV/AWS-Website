@@ -251,8 +251,7 @@ export default function BasicInfoScreen({navigation, route}) {
     return (
       <TouchableWithoutFeedback
         style={styles.listItem}
-        onPress={() => getTeamsData(item)}
-      >
+        onPress={() => getTeamsData(item)}>
         <View>
           <Text style={styles.cityList}>{cityData[index].description}</Text>
           <TCThinDivider
@@ -433,14 +432,12 @@ export default function BasicInfoScreen({navigation, route}) {
           marginLeft: 15,
           marginRight: 15,
           justifyContent: 'space-between',
-        }}
-      >
+        }}>
         <View
           style={{
             ...styles.halfMatchFeeView,
             backgroundColor: colors.textFieldBackground,
-          }}
-        >
+          }}>
           <TextInput
             placeholder={'Height'}
             style={{...styles.halffeeText}}
@@ -517,14 +514,12 @@ export default function BasicInfoScreen({navigation, route}) {
           marginLeft: 15,
           marginRight: 15,
           justifyContent: 'space-between',
-        }}
-      >
+        }}>
         <View
           style={{
             ...styles.halfMatchFeeView,
             backgroundColor: colors.textFieldBackground,
-          }}
-        >
+          }}>
           <TextInput
             placeholder={'Weight'}
             style={{...styles.halffeeText}}
@@ -601,8 +596,7 @@ export default function BasicInfoScreen({navigation, route}) {
           marginLeft: 15,
           marginRight: 15,
           justifyContent: 'space-between',
-        }}
-      >
+        }}>
         <RNPickerSelect
           placeholder={{
             label: strings.selectCode,
@@ -665,8 +659,7 @@ export default function BasicInfoScreen({navigation, route}) {
           style={{
             ...styles.halfMatchFeeView,
             backgroundColor: colors.textFieldBackground,
-          }}
-        >
+          }}>
           <TextInput
             placeholder={'Phone number'}
             style={{
@@ -715,8 +708,7 @@ export default function BasicInfoScreen({navigation, route}) {
               color: colors.lightBlackColor,
               textAlign: 'center',
               fontFamily: fonts.RBold,
-            }}
-          >
+            }}>
             Basic info
           </Text>
         }
@@ -727,8 +719,7 @@ export default function BasicInfoScreen({navigation, route}) {
               // if (!editMode) changeEditMode();
               // else
               onSavePress();
-            }}
-          >
+            }}>
             Update
           </Text>
         }
@@ -793,8 +784,7 @@ export default function BasicInfoScreen({navigation, route}) {
             //   comeFrom: 'PersonalInformationScreen',
             // })
             setLocationPopup(true)
-          }
-        >
+          }>
           <TextInput
             placeholder={strings.searchCityPlaceholder}
             placeholderTextColor={colors.userPostTimeColor}
@@ -805,8 +795,7 @@ export default function BasicInfoScreen({navigation, route}) {
             ]}
             value={`${city}, ${state}, ${country}`}
             editable={false}
-            pointerEvents="none"
-          ></TextInput>
+            pointerEvents="none"></TextInput>
         </TouchableOpacity>
 
         <View>
@@ -827,22 +816,19 @@ export default function BasicInfoScreen({navigation, route}) {
           backdropTransitionOutTiming={800}
           style={{
             margin: 0,
-          }}
-        >
+          }}>
           <View
             style={[
               styles.bottomPopupContainer,
               {height: Dimensions.get('window').height - 50},
-            ]}
-          >
+            ]}>
             <View style={styles.topHeaderContainer}>
               <TouchableOpacity
                 hitSlop={getHitSlop(15)}
                 style={styles.closeButton}
                 onPress={() => {
                   setLocationPopup(false);
-                }}
-              >
+                }}>
                 <Image source={images.crossImage} style={styles.closeButton} />
               </TouchableOpacity>
               <Text style={styles.moreText}>Home City</Text>
@@ -874,8 +860,7 @@ export default function BasicInfoScreen({navigation, route}) {
               <View style={{flex: 1}}>
                 <TouchableWithoutFeedback
                   style={styles.listItem}
-                  onPress={() => getTeamsDataByCurrentLocation()}
-                >
+                  onPress={() => getTeamsDataByCurrentLocation()}>
                   <View>
                     <Text style={[styles.cityList, {marginBottom: 3}]}>
                       {currentLocation?.city}, {currentLocation?.state},{' '}

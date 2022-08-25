@@ -147,8 +147,7 @@ export default function CreateMemberProfileClubForm3({navigation, route}) {
             flexDirection: 'row',
             alignItems: 'center',
             margin: 15,
-          }}
-        >
+          }}>
           <View style={styles.profileView}>
             <Image
               source={images.clubPlaceholder}

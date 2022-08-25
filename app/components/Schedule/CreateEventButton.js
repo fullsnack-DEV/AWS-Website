@@ -15,12 +15,10 @@ function CreateEventButton({
   return (
     <TouchableOpacity
       onPress={onPress}
-      style={[styles.outerContainerStyle, outerContainerStyle]}
-    >
+      style={[styles.outerContainerStyle, outerContainerStyle]}>
       <LinearGradient
         colors={[startGradientColor, endGradientColor]}
-        style={[styles.containerStyle, style]}
-      >
+        style={[styles.containerStyle, style]}>
         <Image source={source} style={[styles.imageStyle, imageStyle]} />
       </LinearGradient>
     </TouchableOpacity>

@@ -92,8 +92,7 @@ export default function PayoutMethodList({navigation}) {
     <AppleStyleSwipeableRow
       onPress={() => onDeleteCard(item)}
       color={colors.redDelColor}
-      image={images.deleteIcon}
-    >
+      image={images.deleteIcon}>
       <View style={styles.paymentCardRow}>
         <View style={{flexDirection: 'row'}}>
           <Text
@@ -101,8 +100,7 @@ export default function PayoutMethodList({navigation}) {
               fontFamily: fonts.RRegular,
               fontSize: 16,
               color: colors.lightBlackColor,
-            }}
-          >
+            }}>
             {item.bank_name.toUpperCase()}
           </Text>
 
@@ -111,8 +109,7 @@ export default function PayoutMethodList({navigation}) {
               fontFamily: fonts.RRegular,
               fontSize: 16,
               color: colors.lightBlackColor,
-            }}
-          >
+            }}>
             {strings.endingin}
           </Text>
           <Text
@@ -120,8 +117,7 @@ export default function PayoutMethodList({navigation}) {
               fontFamily: fonts.RRegular,
               fontSize: 16,
               color: colors.lightBlackColor,
-            }}
-          >
+            }}>
             {item.last4}
           </Text>
         </View>
@@ -131,8 +127,7 @@ export default function PayoutMethodList({navigation}) {
               fontFamily: fonts.RRegular,
               fontSize: 16,
               color: colors.lightBlackColor,
-            }}
-          >
+            }}>
             {'Currency Type : '}
           </Text>
           <Text
@@ -141,8 +136,7 @@ export default function PayoutMethodList({navigation}) {
               fontFamily: fonts.RRegular,
               fontSize: 16,
               color: colors.themeColor,
-            }}
-          >
+            }}>
             {`${item.currency.toUpperCase()}`}
           </Text>
         </View>
@@ -186,8 +180,7 @@ export default function PayoutMethodList({navigation}) {
           color: colors.lightBlackColor,
           fontFamily: fonts.RRegular,
           fontSize: 20,
-        }}
-      >
+        }}>
         {strings.selectPayoutMethod}
       </Text>
       <TCInnerLoader visible={firstTimeLoad} size={50} />

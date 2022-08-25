@@ -49,8 +49,7 @@ export default function AddOrDeleteSport({navigation, route}) {
           onPress={() => {
             route.params.pressBack();
             onPressApply();
-          }}
-        >
+          }}>
           Save
         </Text>
       ),
@@ -59,8 +58,7 @@ export default function AddOrDeleteSport({navigation, route}) {
           onPress={() => {
             route.params.pressBack();
             navigation.popToTop();
-          }}
-        >
+          }}>
           <Image source={images.backArrow} style={styles.backStyle} />
         </TouchableOpacity>
       ),

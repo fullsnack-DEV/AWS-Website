@@ -17,8 +17,7 @@ const TCTextGradiant = ({
       colors={colors}
       start={start}
       end={end}
-      locations={[0, 1]}
-    >
+      locations={[0, 1]}>
       <Text>{gradientText}</Text>
     </LinearTextGradient>
   );

@@ -28,8 +28,7 @@ const TCUserRating = ({
         ...styles.singleSectionContainer,
         alignItems: 'flex-start',
         flex: 0.52,
-      }}
-    >
+      }}>
       <Text style={{...styles.nameText, textAlign: 'left'}}>{name}</Text>
     </View>
 

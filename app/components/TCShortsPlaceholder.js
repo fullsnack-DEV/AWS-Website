@@ -13,26 +13,23 @@ import fonts from '../Constants/Fonts';
 
 import images from '../Constants/ImagePath';
 
-const TCShortsPlaceholder = ({onPress}) => {
-  return (
-    <View style={styles.backgroundView}>
-      <FastImage source={images.shortCard} style={styles.shortView} />
-      <FastImage source={images.shortCard} style={styles.shortView} />
-      <FastImage source={images.shortCard} style={styles.shortView} />
-      <LinearGradient
+const TCShortsPlaceholder = ({onPress}) => (
+  <View style={styles.backgroundView}>
+    <FastImage source={images.shortCard} style={styles.shortView} />
+    <FastImage source={images.shortCard} style={styles.shortView} />
+    <FastImage source={images.shortCard} style={styles.shortView} />
+    <LinearGradient
         colors={[colors.whiteColor, colors.whiteColor]}
-        style={styles.overlayStyle}
-      >
-        <Text style={styles.placeholderTextStyle}>{'NO SHORTS'}</Text>
-        <TouchableOpacity onPress={onPress}>
-          <Text style={styles.startTitle} numberOfLines={2}>
-            {'Post your short >'}
-          </Text>
-        </TouchableOpacity>
-      </LinearGradient>
-    </View>
+        style={styles.overlayStyle}>
+      <Text style={styles.placeholderTextStyle}>{'NO SHORTS'}</Text>
+      <TouchableOpacity onPress={onPress}>
+        <Text style={styles.startTitle} numberOfLines={2}>
+          {'Post your short >'}
+        </Text>
+      </TouchableOpacity>
+    </LinearGradient>
+  </View>
   );
-};
 
 const styles = StyleSheet.create({
   shortView: {

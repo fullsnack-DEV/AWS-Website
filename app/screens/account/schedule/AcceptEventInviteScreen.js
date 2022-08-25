@@ -198,16 +198,14 @@ export default function AcceptEventInviteScreen({navigation, route}) {
             textAlign: 'center',
             marginLeft: 15,
             marginRight: 15,
-          }}
-        >
+          }}>
           {organizer?.full_name ?? organizer?.group_name}
           <Text
             style={{
               fontFamily: fonts.RMedium,
               fontSize: 20,
               color: colors.lightBlackColor,
-            }}
-          >
+            }}>
             {' '}
             invited you to join the event.
           </Text>
@@ -229,8 +227,9 @@ export default function AcceptEventInviteScreen({navigation, route}) {
             {organizer?.full_name ?? organizer?.group_name}
           </Text>
           <Text
-            style={styles.locationText}
-          >{`${organizer?.city}, ${organizer?.state_abbr}`}</Text>
+            style={
+              styles.locationText
+            }>{`${organizer?.city}, ${organizer?.state_abbr}`}</Text>
         </View>
 
         <Text style={[styles.textValueStyle, {margin: 15}]}>
@@ -264,8 +263,9 @@ export default function AcceptEventInviteScreen({navigation, route}) {
 
         <View style={styles.containerStyle}>
           <Text
-            style={styles.headerTextStyle}
-          >{`${strings.goingTitle} (${going?.length})`}</Text>
+            style={
+              styles.headerTextStyle
+            }>{`${strings.goingTitle} (${going?.length})`}</Text>
           <FlatList
             data={going}
             horizontal
@@ -371,8 +371,7 @@ export default function AcceptEventInviteScreen({navigation, route}) {
           style={{margin: 15}}
           onPress={() => {
             onDecline(requestID);
-          }}
-        >
+          }}>
           <Text
             style={{
               fontFamily: fonts.RBold,
@@ -380,8 +379,7 @@ export default function AcceptEventInviteScreen({navigation, route}) {
               color: colors.lightBlackColor,
               textAlign: 'center',
               textDecorationLine: 'underline',
-            }}
-          >
+            }}>
             DECLINE
           </Text>
         </TouchableOpacity>

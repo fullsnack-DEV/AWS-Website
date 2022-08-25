@@ -18,8 +18,7 @@ export default function TCModal({
       animationOutTiming={800}
       backdropTransitionInTiming={10}
       backdropTransitionOutTiming={10}
-      style={styles.modalStyle}
-    >
+      style={styles.modalStyle}>
       {child}
     </Modal>
   );

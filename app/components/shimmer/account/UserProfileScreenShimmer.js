@@ -15,8 +15,7 @@ const UserProfileScreenShimmer = () => (
           justifyContent: 'space-between',
           marginRight: 15,
           marginTop: 50,
-        }}
-      >
+        }}>
         <ShimmerView
           style={{
             marginLeft: 15,
@@ -39,8 +38,7 @@ const UserProfileScreenShimmer = () => (
         style={{
           marginTop: 0,
           padding: 15,
-        }}
-      >
+        }}>
         <ShimmerView style={{width: '70%'}} />
         <ShimmerView style={{width: '80%'}} height={10} />
 
@@ -50,8 +48,7 @@ const UserProfileScreenShimmer = () => (
             <ScrollView
               horizontal={true}
               showsHorizontalScrollIndicator={false}
-              showsVerticalScrollIndicator={false}
-            >
+              showsVerticalScrollIndicator={false}>
               {new Array(5).fill('').map((childItem, childIndex) => (
                 <View key={`child${childIndex}`}>
                   <ShimmerView

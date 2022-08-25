@@ -23,8 +23,7 @@ export default function TennisGameState({
         justifyContent: 'center',
         alignItems: 'center',
         paddingVertical: 5,
-      }}
-    >
+      }}>
       <Dash
         style={{
           width: 1,
@@ -41,14 +40,12 @@ export default function TennisGameState({
           color: colors.darkGrayColor,
           position: 'absolute',
           bottom: 0,
-        }}
-      >
+        }}>
         <Text
           style={{
             fontFamily: fonts.RBold,
             color: colors.blackColor,
-          }}
-        >
+          }}>
           {getGameConvertMinsToTime(recordData?.minutes) ?? 0}
         </Text>{' '}
         ({getGameDateTimeInHMSformat(recordData?.timestamp ?? new Date())}){' '}
@@ -57,8 +54,7 @@ export default function TennisGameState({
             fontFamily: fonts.RMedium,
             fontSize: 16,
             color: titleColor,
-          }}
-        >
+          }}>
           {recordData?.verb in tennisGameStats &&
             tennisGameStats?.[recordData?.verb]}
         </Text>

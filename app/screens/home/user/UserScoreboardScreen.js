@@ -115,8 +115,7 @@ export default function UserScoreboardScreen({route, navigation}) {
               ? styles.activeButton
               : styles.inActiveButton
           }
-          onPress={() => setScroboardTabNumber(0)}
-        >
+          onPress={() => setScroboardTabNumber(0)}>
           {`Completed (${recentMatchData?.length ?? 0})`}
         </Text>
         <Text
@@ -125,8 +124,7 @@ export default function UserScoreboardScreen({route, navigation}) {
               ? styles.activeButton
               : styles.inActiveButton
           }
-          onPress={() => setScroboardTabNumber(1)}
-        >
+          onPress={() => setScroboardTabNumber(1)}>
           {`Upcoming (${upcomingMatchData?.length ?? 0})`}
         </Text>
       </View>

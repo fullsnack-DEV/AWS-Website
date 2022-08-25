@@ -14,8 +14,7 @@ function NumberOfAttendees({onChangeMinText, onChangeMaxText, min, max}) {
         alignItems: 'center',
         justifyContent: 'center',
         flex: 1,
-      }}
-    >
+      }}>
       <View
         style={{
           height: 40,
@@ -25,8 +24,7 @@ function NumberOfAttendees({onChangeMinText, onChangeMaxText, min, max}) {
           flexDirection: 'row',
           alignItems: 'center',
           flex: 0.42,
-        }}
-      >
+        }}>
         <Text
           style={{
             fontFamily: fonts.RRegular,
@@ -34,8 +32,7 @@ function NumberOfAttendees({onChangeMinText, onChangeMaxText, min, max}) {
             color: colors.userPostTimeColor,
             marginLeft: 10,
             marginRight: 15,
-          }}
-        >
+          }}>
           Min
         </Text>
         <TextInput
@@ -60,8 +57,7 @@ function NumberOfAttendees({onChangeMinText, onChangeMaxText, min, max}) {
           flexDirection: 'row',
           alignItems: 'center',
           flex: 0.42,
-        }}
-      >
+        }}>
         <Text
           style={{
             fontFamily: fonts.RRegular,
@@ -69,8 +65,7 @@ function NumberOfAttendees({onChangeMinText, onChangeMaxText, min, max}) {
             color: colors.userPostTimeColor,
             marginLeft: 10,
             marginRight: 15,
-          }}
-        >
+          }}>
           Max
         </Text>
         <TextInput

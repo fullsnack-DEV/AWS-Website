@@ -35,8 +35,7 @@ export default function EditGroupContactScreen({navigation, route}) {
           }}
           onPress={() => {
             onSaveButtonClicked();
-          }}
-        >
+          }}>
           {strings.done}
         </Text>
       ),
