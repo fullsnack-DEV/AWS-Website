@@ -56,8 +56,7 @@ function ReviewSection({
         <EventItemRender
           title={`Rating for teams (${
             Object?.keys(reviewsFeed?.reviews?.results ?? {})?.length ?? 0
-          })`}
-        >
+          })`}>
           {reviewsData && (
             <FlatList
               data={reviewsData}
@@ -97,8 +96,7 @@ function ReviewSection({
             Object?.keys(reviewsFeed?.reviews?.results ?? {}).length || 0
           })`}
           containerStyle={{width: wp('100%'), padding: 0}}
-          headerTextStyle={{paddingLeft: 12}}
-        >
+          headerTextStyle={{paddingLeft: 12}}>
           {/* review_all_data */}
           {/* reviewsFeed?.reviews?.results || []  */}
           <FlatList

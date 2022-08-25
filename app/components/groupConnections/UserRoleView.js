@@ -19,8 +19,7 @@ export default function UserRoleView({data, onPressProfile, onPressMessage}) {
             width: 0,
             flexGrow: 1,
             flex: 1,
-          }}
-        >
+          }}>
           <View style={styles.topViewContainer}>
             <View style={styles.profileView}>
               <Image

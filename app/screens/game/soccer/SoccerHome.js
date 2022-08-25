@@ -569,8 +569,7 @@ const SoccerHome = ({navigation, route}) => {
           } else {
             resetGameDetail(soccerGameId);
           }
-        }}
-      >
+        }}>
         <TCScrollableProfileTabs
           tabItem={TAB_ITEMS}
           onChangeTab={(ChangeTab) => setCurrentTab(ChangeTab.i)}
@@ -1347,16 +1346,14 @@ const SoccerHome = ({navigation, route}) => {
           </View>
         }
         withHandle={false}
-        overlayStyle={{backgroundColor: 'rgba(0,0,0,0.5)'}}
-      >
+        overlayStyle={{backgroundColor: 'rgba(0,0,0,0.5)'}}>
         <Text
           style={{
             fontSize: 16,
             fontFamily: fonts.RBold,
             color: colors.lightBlackColor,
             textAlign: 'center',
-          }}
-        >
+          }}>
           Please leave a review.
         </Text>
         <Text
@@ -1366,8 +1363,7 @@ const SoccerHome = ({navigation, route}) => {
             color: colors.darkThemeColor,
             textAlign: 'center',
             marginTop: 15,
-          }}
-        >
+          }}>
           {`The review period will be expires within ${reviewExpiredDate(
             gameData?.review_expired_period,
           )}.`}
@@ -1380,8 +1376,7 @@ const SoccerHome = ({navigation, route}) => {
             textAlign: 'left',
             margin: 30,
             marginTop: 15,
-          }}
-        >
+          }}>
           Your reviews will be displayed after the review period expires or all
           teams, referees, scorekeepers complete their reviews.
         </Text>

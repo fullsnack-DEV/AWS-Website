@@ -87,8 +87,7 @@ const FeedAbsoluteBottomView = ({
           style={{
             ...styles.commentShareLikeView,
             width: getScreenWidth({isLandscape, screenInsets}),
-          }}
-        >
+          }}>
           {/* Comment And Share Button Button */}
           <View
             style={{
@@ -102,22 +101,19 @@ const FeedAbsoluteBottomView = ({
                 screenInsets,
                 portraitWidth: 70,
               }),
-            }}
-          >
+            }}>
             <View
               style={{
                 flexDirection: 'row',
                 marginRight: 20,
-              }}
-            >
+              }}>
               <TouchableOpacity
                 onPress={onCommentButtonPress}
                 style={{
                   ...styles.imageTouchStyle,
                   flexDirection: 'row',
                   alignItems: 'center',
-                }}
-              >
+                }}>
                 <Image
                   style={[styles.commentImage, {top: 2}]}
                   source={images.feedViewCommentButton}
@@ -135,14 +131,12 @@ const FeedAbsoluteBottomView = ({
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
-              }}
-            >
+              }}>
               <TouchableOpacity
                 onPress={() => {
                   shareActionSheetRef.current.show();
                 }}
-                style={styles.imageTouchStyle}
-              >
+                style={styles.imageTouchStyle}>
                 <Image
                   style={styles.commentImage}
                   source={images.feedViewShareButton}
@@ -165,13 +159,11 @@ const FeedAbsoluteBottomView = ({
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'flex-end',
-            }}
-          >
+            }}>
             <TouchableOpacity
               onPress={() => {
                 likersModalRef.current.open();
-              }}
-            >
+              }}>
               <Text
                 style={[
                   styles.commentlengthStyle,
@@ -179,8 +171,7 @@ const FeedAbsoluteBottomView = ({
                     marginRight: 5,
                     color: like === true ? '#FF8A01' : colors.whiteColor,
                   },
-                ]}
-              >
+                ]}>
                 {likeCount === 0 ? '' : likeCount}
               </Text>
             </TouchableOpacity>
@@ -191,8 +182,7 @@ const FeedAbsoluteBottomView = ({
                 else setLikeCount((val) => val + 1);
                 onLikePress();
               }}
-              style={styles.imageTouchStyle}
-            >
+              style={styles.imageTouchStyle}>
               {like === true ? (
                 <Image
                   style={styles.commentImage}
@@ -283,16 +273,14 @@ const FeedAbsoluteBottomView = ({
             alignItems: 'center',
             flexDirection: 'row',
             zIndex: 10,
-          }}
-        >
+          }}>
           <Text
             style={{
               textAlign: 'left',
               fontSize: 12,
               marginRight: 15,
               color: colors.whiteColor,
-            }}
-          >
+            }}>
             {currentTime > videoDuration
               ? secondsToHms(videoDuration?.toFixed(0))
               : secondsToHms(Math.ceil(currentTime?.toFixed(0)))}
@@ -332,8 +320,7 @@ const FeedAbsoluteBottomView = ({
               marginLeft: 15,
               color: colors.whiteColor,
               textAlign: 'right',
-            }}
-          >
+            }}>
             {videoDuration ? secondsToHms(videoDuration) : null}
           </Text>
         </View>
@@ -362,8 +349,7 @@ const FeedAbsoluteBottomView = ({
           bottom: 0,
           width: getScreenWidth({isLandscape, screenInsets}),
           opacity: showParent ? 1 : 0,
-        }}
-      >
+        }}>
         <View style={{justifyContent: 'flex-end'}}>
           {/* Render Description with read more functionality */}
           {!readMore && !isLandscape && (

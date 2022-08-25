@@ -33,8 +33,7 @@ const NotificationListShimmer = ({count = 15}) => (
                   flexDirection: 'row',
                   justifyContent: 'space-evenly',
                   marginTop: 15,
-                }}
-              >
+                }}>
                 <ShimmerView style={{width: '48%'}} height={30} />
                 <ShimmerView style={{width: '48%'}} height={30} />
               </View>

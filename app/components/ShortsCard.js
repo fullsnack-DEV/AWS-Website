@@ -35,8 +35,7 @@ function ShortsCard({onPress, cardItem}) {
         </View>
         <LinearGradient
           colors={['rgba(0,0,0,0.0)', 'rgba(0,0,0,0.3)']}
-          style={styles.overlayStyle}
-        >
+          style={styles.overlayStyle}>
           <Text style={styles.entityLable} numberOfLines={2}>
             {cardItem?.actor?.data?.entity_type === 'player'
               ? cardItem?.actor?.data?.full_name

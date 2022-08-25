@@ -65,8 +65,7 @@ export default function CreateMemberProfileClubForm2({navigation, route}) {
             flexDirection: 'row',
             alignItems: 'center',
             marginRight: 15,
-          }}
-        >
+          }}>
           <View style={styles.profileView}>
             <Image
               source={
@@ -93,8 +92,7 @@ export default function CreateMemberProfileClubForm2({navigation, route}) {
                   ...setting,
                   is_member: member_setting,
                 });
-              }}
-            >
+              }}>
               <Image
                 source={
                   // item.join_membership_acceptedadmin === false
@@ -117,8 +115,7 @@ export default function CreateMemberProfileClubForm2({navigation, route}) {
                   ...setting,
                   is_admin: admin_setting,
                 });
-              }}
-            >
+              }}>
               <Image
                 source={
                   setting.is_admin ? images.orangeCheckBox : images.uncheckWhite

@@ -21,15 +21,13 @@ export default function TabView({
           indexCounter === 0
             ? styles.activeEventPricacy
             : styles.inactiveEventPricacy
-        }
-      >
+        }>
         <Text
           style={
             indexCounter === 0
               ? styles.activeEventPrivacyText
               : styles.inactiveEventPrivacyText
-          }
-        >
+          }>
           {'All'}
         </Text>
       </TouchableOpacity>
@@ -39,15 +37,13 @@ export default function TabView({
           indexCounter === 1
             ? styles.activeEventPricacy
             : styles.inactiveEventPricacy
-        }
-      >
+        }>
         <Text
           style={
             indexCounter === 1
               ? styles.activeEventPrivacyText
               : styles.inactiveEventPrivacyText
-          }
-        >
+          }>
           {'From me'}
         </Text>
       </TouchableOpacity>
@@ -57,15 +53,13 @@ export default function TabView({
           indexCounter === 2
             ? styles.activeEventPricacy
             : styles.inactiveEventPricacy
-        }
-      >
+        }>
         <Text
           style={
             indexCounter === 2
               ? styles.activeEventPrivacyText
               : styles.inactiveEventPrivacyText
-          }
-        >
+          }>
           {'Tagged'}
         </Text>
       </TouchableOpacity>

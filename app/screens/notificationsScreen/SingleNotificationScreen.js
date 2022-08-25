@@ -172,8 +172,7 @@ function SingleNotificationScreen({route, navigation}) {
                         .catch((e) => {
                           console.log(e);
                         });
-                    }}
-                  >
+                    }}>
                     <Text style={styles.sendTextStyle}>SEND</Text>
                   </TouchableOpacity>
                 )}

@@ -3,9 +3,7 @@ import React from 'react';
 import {render} from '@testing-library/react-native';
 import SignupScreen from '../../app/screens/authScreens/SignupScreen';
 
-jest.mock('react-native-fs', () => {
-  return {};
-});
+jest.mock('react-native-fs', () => ({}));
 
 describe('Signup  Screen Test', () => {
   const navigate = jest.fn();

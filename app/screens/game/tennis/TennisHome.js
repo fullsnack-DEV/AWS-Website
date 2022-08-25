@@ -540,8 +540,7 @@ const TennisHome = ({navigation, route}) => {
         isAdmin={isAdmin}
         resetGameDetail={resetGameDetail}
         navigation={navigation}
-        gameData={gameData}
-      >
+        gameData={gameData}>
         <TCScrollableProfileTabs
           tabItem={TAB_ITEMS}
           onChangeTab={(ChangeTab) => {
@@ -1431,16 +1430,14 @@ const TennisHome = ({navigation, route}) => {
           </View>
         }
         withHandle={false}
-        overlayStyle={{backgroundColor: 'rgba(0,0,0,0.5)'}}
-      >
+        overlayStyle={{backgroundColor: 'rgba(0,0,0,0.5)'}}>
         <Text
           style={{
             fontSize: 16,
             fontFamily: fonts.RBold,
             color: colors.lightBlackColor,
             textAlign: 'center',
-          }}
-        >
+          }}>
           Please leave a review.
         </Text>
         <Text
@@ -1450,8 +1447,7 @@ const TennisHome = ({navigation, route}) => {
             color: colors.darkThemeColor,
             textAlign: 'center',
             marginTop: 15,
-          }}
-        >
+          }}>
           {'The review period will be expires within '}
           <Text
             style={{
@@ -1460,8 +1456,7 @@ const TennisHome = ({navigation, route}) => {
               color: colors.darkThemeColor,
               textAlign: 'center',
               marginTop: 15,
-            }}
-          >
+            }}>
             {reviewExpiredDate(gameData?.review_expired_period)}.
           </Text>
         </Text>
@@ -1473,8 +1468,7 @@ const TennisHome = ({navigation, route}) => {
             textAlign: 'left',
             margin: 30,
             marginTop: 15,
-          }}
-        >
+          }}>
           {`Your reviews will be displayed after the review period expires or all ${
             gameData?.sport_type === 'single' ? 'players' : 'teams'
           }, referees, scorekeepers complete their reviews.`}

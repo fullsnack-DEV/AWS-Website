@@ -14,8 +14,7 @@ export default function MemberInvoiceView({data, onPressCard}) {
           width: '20%',
           alignItems: 'center',
           justifyContent: 'center',
-        }}
-      >
+        }}>
         <View style={styles.profileContainer}>
           <Image
             source={
@@ -31,15 +30,13 @@ export default function MemberInvoiceView({data, onPressCard}) {
         style={{
           width: '80%',
           justifyContent: 'center',
-        }}
-      >
+        }}>
         <Text
           style={{
             fontFamily: fonts.RMedium,
             fontSize: 16,
             color: colors.lightBlackColor,
-          }}
-        >
+          }}>
           {`${data?.first_name} ${data?.last_name}`}
         </Text>
         <Text
@@ -47,16 +44,14 @@ export default function MemberInvoiceView({data, onPressCard}) {
             fontFamily: fonts.RMedium,
             fontSize: 14,
             color: colors.lightBlackColor,
-          }}
-        >
+          }}>
           ${data?.invoice_paid_total}
           <Text
             style={{
               fontFamily: fonts.RLight,
               fontSize: 14,
               color: colors.lightBlackColor,
-            }}
-          >
+            }}>
             {` of $${data?.invoice_total}`}
           </Text>
         </Text>
@@ -65,8 +60,7 @@ export default function MemberInvoiceView({data, onPressCard}) {
             fontFamily: fonts.RLight,
             fontSize: 14,
             color: colors.lightBlackColor,
-          }}
-        >
+          }}>
           {`${data?.invoices?.length} invoices`}
         </Text>
         <View style={styles.percentageView}>

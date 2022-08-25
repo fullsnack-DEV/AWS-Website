@@ -41,8 +41,7 @@ function UserReviewSection({
   return (
     <ScrollView>
       <EventItemRender
-        title={`Ratings (${reviewsFeed?.reviews?.results?.length || 0})`}
-      >
+        title={`Ratings (${reviewsFeed?.reviews?.results?.length || 0})`}>
         {reviewsData && (
           <View>
             <FlatList
@@ -95,8 +94,7 @@ function UserReviewSection({
       <EventItemRender
         title={`Reviews (${reviewsFeed?.reviews?.results?.length || 0})`}
         containerStyle={{width: wp('100%'), padding: 0}}
-        headerTextStyle={{paddingLeft: 12}}
-      >
+        headerTextStyle={{paddingLeft: 12}}>
         {/* review_all_data */}
         {/* reviewsFeed?.reviews?.results || []  */}
         <FlatList

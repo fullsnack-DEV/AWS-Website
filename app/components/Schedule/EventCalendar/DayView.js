@@ -89,8 +89,7 @@ export default class DayView extends React.PureComponent {
       return [
         <Text
           key={`timeLabel${i}`}
-          style={[styles.timeLabel, {top: offset * i - 6}]}
-        >
+          style={[styles.timeLabel, {top: offset * i - 6}]}>
           {timeText}
         </Text>,
         i === 0 ? null : (
@@ -137,16 +136,16 @@ export default class DayView extends React.PureComponent {
           ) : (
             <TouchableOpacity
               activeOpacity={0.5}
-              onPress={() => this.onEventTapped(this.props.events[event.index])}
-            >
+              onPress={() =>
+                this.onEventTapped(this.props.events[event.index])
+              }>
               <Text numberOfLines={1} style={styles.eventTitle}>
                 {'AAA ' || 'Event'}
               </Text>
               {numberOfLines > 1 ? (
                 <Text
                   numberOfLines={numberOfLines - 1}
-                  style={styles.eventSummary}
-                >
+                  style={styles.eventSummary}>
                   {event.summary || ' '}
                 </Text>
               ) : null}
@@ -176,8 +175,10 @@ export default class DayView extends React.PureComponent {
         ref={(ref) => {
           this.scrollView = ref;
         }}
-        contentContainerStyle={[styles.contentStyle, {width: this.props.width}]}
-      >
+        contentContainerStyle={[
+          styles.contentStyle,
+          {width: this.props.width},
+        ]}>
         {this.renderLines()}
         {this.renderEvents()}
         {this.renderRedLine()}

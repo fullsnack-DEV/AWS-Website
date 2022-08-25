@@ -95,8 +95,7 @@ const TopBackgroundHeader = ({
   const renderForeground = () => (
     <LinearGradient
       colors={['transparent', 'rgba(0,0,0,0.4)']}
-      style={styles.topImageInnerContainer}
-    >
+      style={styles.topImageInnerContainer}>
       {renderTopHeader}
       <Text style={styles.vsTextStyle}>VS</Text>
       <View style={styles.topHeaderAbsoluteContainer}>
@@ -150,8 +149,7 @@ const TopBackgroundHeader = ({
               marginHorizontal: 5,
               paddingRight: 5,
               borderLeftWidth: 1,
-            }}
-          >
+            }}>
             <Text style={styles.bottomInfoText}>
               {moment(new Date(gameData?.start_datetime * 1000 ?? '')).format(
                 'MMM DD , hh:mm a',
@@ -177,8 +175,7 @@ const TopBackgroundHeader = ({
             ...styles.topCloseHeaderText,
             fontFamily: fonts.RMedium,
             color,
-          }}
-        >
+          }}>
           {teamNumber === 1 ? firstTeamScore : secondTeamScore ?? 0}
         </Text>
       );
@@ -378,8 +375,7 @@ const TopBackgroundHeader = ({
                   ...styles.teamLogoContainer,
                   height: 25,
                   width: 25,
-                }}
-              >
+                }}>
                 <FastImage
                   source={
                     gameData?.home_team?.thumbnail
@@ -394,8 +390,7 @@ const TopBackgroundHeader = ({
                   flexDirection: 'row',
                   justifyContent: 'center',
                   alignItems: 'center',
-                }}
-              >
+                }}>
                 {getScoreText(homeTeamMatchPoint, awayTeamMatchPoint, 1)}
                 <Text style={styles.topCloseHeaderText}>:</Text>
                 {getScoreText(homeTeamMatchPoint, awayTeamMatchPoint, 2)}
@@ -406,8 +401,7 @@ const TopBackgroundHeader = ({
                   height: 25,
                   width: 25,
                   marginRight: wp(2),
-                }}
-              >
+                }}>
                 <FastImage
                   source={
                     gameData?.away_team?.thumbnail
@@ -461,8 +455,7 @@ const TopBackgroundHeader = ({
         renderFixedHeader={renderFixedHeader}
         renderStickyHeader={renderStickyHeader}
         renderForeground={renderForeground}
-        renderBackground={renderBackground}
-      >
+        renderBackground={renderBackground}>
         {useMemo(() => {
           let destructiveButtonIndex = null;
           const options = [];

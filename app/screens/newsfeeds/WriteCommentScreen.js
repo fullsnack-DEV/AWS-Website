@@ -66,8 +66,7 @@ export default function WriteCommentScreen({
   return (
     <KeyboardAvoidingView
       style={{flex: 1}}
-      behavior={Platform.OS === 'ios' ? 'padding' : null}
-    >
+      behavior={Platform.OS === 'ios' ? 'padding' : null}>
       <ActivityLoader visible={loading} />
       <SafeAreaView>
         <View style={styles.containerStyle}>
@@ -77,8 +76,7 @@ export default function WriteCommentScreen({
               navigation.goBack();
               if (onDonePress)
                 onDonePress({count: commentData?.length ?? 0, id: data?.id});
-            }}
-          >
+            }}>
             <Image style={styles.backButtonImage} source={images.backArrow} />
           </TouchableOpacity>
           <View style={styles.writePostViewStyle}>
@@ -97,8 +95,7 @@ export default function WriteCommentScreen({
                 navigation.goBack();
                 if (onDonePress)
                   onDonePress({count: commentData?.length ?? 0, id: data?.id});
-              }}
-            >
+              }}>
               Done
             </Text>
           </View>
@@ -173,8 +170,7 @@ export default function WriteCommentScreen({
                     .catch((e) => {
                       console.log(e);
                     });
-                }}
-              >
+                }}>
                 <Text style={styles.sendTextStyle}>SEND</Text>
               </TouchableOpacity>
             )}

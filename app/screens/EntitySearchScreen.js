@@ -1623,13 +1623,12 @@ export default function EntitySearchScreen({navigation, route}) {
   }, []);
 
   const renderItem = useCallback(
-    ({item}) => {
-      return (
-        <View>
-          {currentTab === 0 && (
-            <View style={styles.topViewContainer}>
-              <View style={[styles.separator, {flex: 1}]}>
-                <TCPlayerView
+    ({item}) => (
+      <View>
+        {currentTab === 0 && (
+        <View style={styles.topViewContainer}>
+          <View style={[styles.separator, {flex: 1}]}>
+            <TCPlayerView
                   data={item}
                   showStar={false}
                   onPress={() => {
@@ -1645,13 +1644,13 @@ export default function EntitySearchScreen({navigation, route}) {
                     });
                   }}
                 />
-              </View>
-            </View>
+          </View>
+        </View>
           )}
-          {currentTab === 1 && (
-            <View style={styles.topViewContainer}>
-              <View style={[styles.separator, {flex: 1}]}>
-                <TCTeamSearchView
+        {currentTab === 1 && (
+        <View style={styles.topViewContainer}>
+          <View style={[styles.separator, {flex: 1}]}>
+            <TCTeamSearchView
                   data={item}
                   showStar={true}
                   onPress={() => {
@@ -1667,48 +1666,47 @@ export default function EntitySearchScreen({navigation, route}) {
                     });
                   }}
                 />
-              </View>
-            </View>
-          )}
-          {currentTab === 2 && currentSubTab === 'Upcoming' && (
-            <View style={{marginBottom: 15}}>
-              <TCUpcomingMatchCard
-                data={item}
-                cardWidth={'92%'}
-                onPress={() => {
-                  const gameHome = getGameHomeScreen(item?.sport);
-                  if (item?.game_id) {
-                    navigation.navigate(gameHome, {
-                      gameId: item?.game_id,
-                    });
-                  } else {
-                    Alert.alert('Game ID does not exist.');
-                  }
-                }}
-              />
-            </View>
-          )}
-          {currentTab === 2 && currentSubTab === 'Completed' && (
-            <View style={{marginBottom: 15}}>
-              <TCRecentMatchCard
-                data={item}
-                cardWidth={'92%'}
-                onPress={() => {
-                  const gameHome = getGameHomeScreen(item?.sport);
-                  if (item?.game_id) {
-                    navigation.navigate(gameHome, {
-                      gameId: item?.game_id,
-                    });
-                  } else {
-                    Alert.alert('Game ID does not exist.');
-                  }
-                }}
-              />
-            </View>
-          )}
+          </View>
         </View>
-      );
-    },
+          )}
+        {currentTab === 2 && currentSubTab === 'Upcoming' && (
+        <View style={{marginBottom: 15}}>
+          <TCUpcomingMatchCard
+                data={item}
+                cardWidth={'92%'}
+                onPress={() => {
+                  const gameHome = getGameHomeScreen(item?.sport);
+                  if (item?.game_id) {
+                    navigation.navigate(gameHome, {
+                      gameId: item?.game_id,
+                    });
+                  } else {
+                    Alert.alert('Game ID does not exist.');
+                  }
+                }}
+              />
+        </View>
+          )}
+        {currentTab === 2 && currentSubTab === 'Completed' && (
+        <View style={{marginBottom: 15}}>
+          <TCRecentMatchCard
+                data={item}
+                cardWidth={'92%'}
+                onPress={() => {
+                  const gameHome = getGameHomeScreen(item?.sport);
+                  if (item?.game_id) {
+                    navigation.navigate(gameHome, {
+                      gameId: item?.game_id,
+                    });
+                  } else {
+                    Alert.alert('Game ID does not exist.');
+                  }
+                }}
+              />
+        </View>
+          )}
+      </View>
+      ),
     [currentSubTab, currentTab, navigation],
   );
   const renderEntityListView = useCallback(

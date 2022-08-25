@@ -44,8 +44,7 @@ export default function RefereesProfileSection({
             <TouchableOpacity
               onPress={() => {
                 actionSheetSettingRef.current.show();
-              }}
-            >
+              }}>
               <FastImage
                 resizeMode={'contain'}
                 source={images.SettingPrivacy}
@@ -68,15 +67,13 @@ export default function RefereesProfileSection({
               {
                 justifyContent: 'center',
               },
-            ]}
-          >
+            ]}>
             <View
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
-              }}
-            >
+              }}>
               <Text style={styles.challengeButtonTitle}>
                 {isReferee ? 'Book Referee' : 'Book Scorekeeper'}
                 <Text>{` $${feesCount} CAD / hour`}</Text>

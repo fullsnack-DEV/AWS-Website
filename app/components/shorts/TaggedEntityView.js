@@ -16,8 +16,7 @@ export default function TaggedEntityView({
     <TouchableOpacity
       style={styles.topViewContainer}
       onPress={onProfilePress}
-      activeOpacity={0.8}
-    >
+      activeOpacity={0.8}>
       <View style={styles.profileView}>
         <Image source={teamImage} style={styles.profileImage} />
       </View>

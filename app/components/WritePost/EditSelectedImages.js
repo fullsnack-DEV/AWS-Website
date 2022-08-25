@@ -31,8 +31,7 @@ function EditSelectedImages({data, onItemPress, itemNumber, totalItemNumber}) {
               alignItems: 'center',
               justifyContent: 'center',
               position: 'absolute',
-            }}
-          >
+            }}>
             <FastImage
               source={images.videoPlayBtn}
               tintColor={'white'}

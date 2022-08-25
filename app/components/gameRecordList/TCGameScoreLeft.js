@@ -39,8 +39,7 @@ export default function TCGameScoreLeft({
           alignSelf: 'center',
           position: 'absolute',
           bottom: 0,
-        }}
-      >
+        }}>
         <Text
           style={[
             styles.scoreText,
@@ -50,8 +49,7 @@ export default function TCGameScoreLeft({
                   ? colors.themeColor
                   : colors.lightBlackColor,
             },
-          ]}
-        >
+          ]}>
           {recordData?.scoreboard?.home_team ?? 0}
         </Text>
         {' : '}
@@ -64,8 +62,7 @@ export default function TCGameScoreLeft({
                   ? colors.themeColor
                   : colors.lightBlackColor,
             },
-          ]}
-        >
+          ]}>
           {recordData?.scoreboard?.away_team ?? 0}
         </Text>
       </Text>
@@ -76,8 +73,7 @@ export default function TCGameScoreLeft({
       <View
         style={{
           backgroundColor,
-        }}
-      >
+        }}>
         <View style={styles.headerView}>
           <View style={styles.leftView}>
             <View style={{width: '22%'}}>
@@ -127,8 +123,7 @@ export default function TCGameScoreLeft({
                 fontFamily: fonts.RLight,
                 fontSize: 12,
                 color: colors.darkGrayColor,
-              }}
-            >
+              }}>
               {getGameDateTimeInHMSformat(recordData?.timestamp)}
             </Text>
           </View>
@@ -161,8 +156,7 @@ export default function TCGameScoreLeft({
               justifyContent: 'space-around',
               alignItems: 'space-around',
               position: 'absolute',
-            }}
-          >
+            }}>
             <Text style={styles.recordedBy}>
               Recorded by{' '}
               {`${recordData?.recorded_by?.first_name} ${recordData?.recorded_by?.last_name}` ??

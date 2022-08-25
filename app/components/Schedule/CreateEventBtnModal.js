@@ -31,8 +31,7 @@ function CreateEventBtnModal({
             <Text style={styles.textStyle}>Set challenge availability</Text>
             <TouchableOpacity
               style={styles.createEventBtnStyle}
-              onPress={onChallengePress}
-            >
+              onPress={onChallengePress}>
               <Image
                 source={images.createEventImage}
                 style={styles.imageStyle}
@@ -44,8 +43,7 @@ function CreateEventBtnModal({
             <Text style={styles.textStyle}>Create an event</Text>
             <TouchableOpacity
               style={styles.createEventBtnStyle}
-              onPress={onCreateEventPress}
-            >
+              onPress={onCreateEventPress}>
               <Image
                 source={images.createEventImage}
                 style={styles.imageStyle}
@@ -56,8 +54,7 @@ function CreateEventBtnModal({
           <TouchableOpacity
             hitSlop={getHitSlop(15)}
             style={styles.cancelBtnStyle}
-            onPress={onCancelPress}
-          >
+            onPress={onCancelPress}>
             <Image
               source={images.cancelImage}
               style={styles.cancelImageStyle}

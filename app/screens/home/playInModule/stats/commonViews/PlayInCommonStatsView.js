@@ -145,8 +145,7 @@ const PlayInCommonStatsView = ({playInObject, currentUserData, sportName}) => {
             zIndex: 1,
             borderTopLeftRadius: 12,
             borderTopRightRadius: 12,
-          }}
-        >
+          }}>
           <TCInnerLoader loaderStyle={{top: '10%'}} visible={true} size={50} />
         </View>
       )}

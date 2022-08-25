@@ -17,14 +17,12 @@ const TCFollowUnfollowButton = ({
   <TouchableOpacity onPress={onPress} style={styles.outerContainerStyle}>
     <LinearGradient
       colors={[endGradientColor, startGradientColor]}
-      style={styles.containerStyle}
-    >
+      style={styles.containerStyle}>
       <Text
         style={[
           styles.buttonText,
           {color: isFollowing ? colors.lightBlackColor : colors.themeColor},
-        ]}
-      >
+        ]}>
         {title}
       </Text>
       {rightIcon && (

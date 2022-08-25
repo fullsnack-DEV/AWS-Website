@@ -69,8 +69,7 @@ const TCRoundChart = ({
             spacing={0}
             radius={35}
             outerRadius={35}
-            innerRadius={30}
-          >
+            innerRadius={30}>
             <GradientView keyName={'looser'} />
             <GradientView keyName={'draw'} />
             <GradientView keyName={'winner'} />
@@ -84,8 +83,7 @@ const TCRoundChart = ({
                 shadowOpacity: 0.2,
                 shadowRadius: 5,
                 elevation: 5,
-              }}
-            >
+              }}>
               <Image
                 source={images.soccerBackground}
                 style={{

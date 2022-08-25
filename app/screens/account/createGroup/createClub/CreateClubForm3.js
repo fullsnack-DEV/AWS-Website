@@ -661,8 +661,7 @@ export default function CreateClubForm3({navigation, route}) {
       <TCFormProgress totalSteps={3} curruentStep={3} />
       <ScrollView
         style={styles.mainContainer}
-        showsVerticalScrollIndicator={false}
-      >
+        showsVerticalScrollIndicator={false}>
         <ActivityLoader visible={loading} />
 
         <TCLabel

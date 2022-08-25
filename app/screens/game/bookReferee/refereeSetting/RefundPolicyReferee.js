@@ -52,8 +52,7 @@ export default function RefundPolicyReferee({navigation, route}) {
           style={styles.saveButtonStyle}
           onPress={() => {
             onSavePressed();
-          }}
-        >
+          }}>
           Save
         </Text>
       ),
@@ -64,8 +63,7 @@ export default function RefundPolicyReferee({navigation, route}) {
     <TouchableWithoutFeedback
       onPress={() => {
         setTypeSelection(item);
-      }}
-    >
+      }}>
       <View style={styles.radioItem}>
         <Text style={styles.languageList}>{item.key}</Text>
         <View style={styles.checkbox}>
@@ -156,8 +154,7 @@ export default function RefundPolicyReferee({navigation, route}) {
   return (
     <ScrollView
       style={styles.mainContainer}
-      showsVerticalScrollIndicator={false}
-    >
+      showsVerticalScrollIndicator={false}>
       <ActivityLoader visible={loading} />
 
       <TCLable title={strings.gameTyleTitle} required={false} />

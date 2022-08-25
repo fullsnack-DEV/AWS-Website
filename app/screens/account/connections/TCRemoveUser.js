@@ -15,47 +15,42 @@ const TCRemoveUser = ({
   onRemovePress,
   entityType,
   onProfilePress = () => {},
-}) => {
-  return (
-    <View>
-      <View
+}) => (
+  <View>
+    <View
         style={{
           alignItems: 'center',
           flexDirection: 'row',
           marginVertical: 5,
           marginHorizontal: 15,
-        }}
-      >
-        <TouchableOpacity
+        }}>
+      <TouchableOpacity
           onPress={onProfilePress}
-          style={{flex: 0.18, alignItems: 'flex-start'}}
-        >
-          <FastImage
+          style={{flex: 0.18, alignItems: 'flex-start'}}>
+        <FastImage
             resizeMode={'cover'}
             source={
               profileImage ? {uri: profileImage} : images.profilePlaceHolder
             }
             style={{width: 45, height: 45, borderRadius: 25}}
           />
-        </TouchableOpacity>
-        <TouchableOpacity
+      </TouchableOpacity>
+      <TouchableOpacity
           onPress={onProfilePress}
-          style={{flex: 0.65, paddingVertical: 10, justifyContent: 'center'}}
-        >
-          <TCGroupNameBadge name={title} groupType={entityType} />
-          <Text
+          style={{flex: 0.65, paddingVertical: 10, justifyContent: 'center'}}>
+        <TCGroupNameBadge name={title} groupType={entityType} />
+        <Text
             style={{
               fontSize: 14,
               fontFamily: fonts.RRegular,
               color: colors.userPostTimeColor,
-            }}
-          >
-            {subTitle}
-          </Text>
-        </TouchableOpacity>
-        <View style={{flex: 0.25, alignItems: 'center'}}>
-          <View>
-            <TCGradientButton
+            }}>
+          {subTitle}
+        </Text>
+      </TouchableOpacity>
+      <View style={{flex: 0.25, alignItems: 'center'}}>
+        <View>
+          <TCGradientButton
               rightIconStyle={{
                 height: 6,
                 width: 10,
@@ -83,13 +78,12 @@ const TCRemoveUser = ({
                 width: '100%',
               }}
             />
-          </View>
         </View>
       </View>
-      <View style={styles.seperateContainer} />
     </View>
+    <View style={styles.seperateContainer} />
+  </View>
   );
-};
 
 const styles = StyleSheet.create({
   seperateContainer: {

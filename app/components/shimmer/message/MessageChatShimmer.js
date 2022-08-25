@@ -16,8 +16,7 @@ const MessageChatShimmer = ({count = 5}) => (
               marginBottom: 10,
               justifyContent: 'flex-start',
               width: '100%',
-            }}
-          >
+            }}>
             <ShimmerView
               style={{marginRight: 15, borderRadius: 50}}
               width={30}
@@ -36,8 +35,7 @@ const MessageChatShimmer = ({count = 5}) => (
               marginBottom: 10,
               justifyContent: 'flex-end',
               width: '100%',
-            }}
-          >
+            }}>
             <View>
               <ShimmerView
                 style={{width: wp(30), alignSelf: 'flex-end'}}

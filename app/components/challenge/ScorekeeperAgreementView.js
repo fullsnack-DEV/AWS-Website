@@ -90,8 +90,7 @@ export default function ScorekeeperAgreementView({
               onPress={() => {
                 radioOpetion(1);
               }}
-              style={styles.radio1Container}
-            >
+              style={styles.radio1Container}>
               <Image
                 source={
                   agreementOpetion === 1
@@ -112,8 +111,7 @@ export default function ScorekeeperAgreementView({
               onPress={() => {
                 radioOpetion(2);
               }}
-              style={styles.radio2Container}
-            >
+              style={styles.radio2Container}>
               <Image
                 source={
                   agreementOpetion === 2
@@ -137,8 +135,7 @@ export default function ScorekeeperAgreementView({
               }}
               onPress={() => {
                 morePressed(!isMore);
-              }}
-            >
+              }}>
               {isMore ? 'less' : 'more'}
             </Text>
           )}
@@ -162,8 +159,7 @@ export default function ScorekeeperAgreementView({
                   onPress={() => {
                     radioOpetion(1);
                   }}
-                  style={styles.radio1Container}
-                >
+                  style={styles.radio1Container}>
                   <Image
                     source={
                       agreementOpetion === 1
@@ -184,8 +180,7 @@ export default function ScorekeeperAgreementView({
                   onPress={() => {
                     radioOpetion(2);
                   }}
-                  style={styles.radio2Container}
-                >
+                  style={styles.radio2Container}>
                   <Image
                     source={
                       agreementOpetion === 2
@@ -209,8 +204,7 @@ export default function ScorekeeperAgreementView({
                   }}
                   onPress={() => {
                     morePressed(!isMore);
-                  }}
-                >
+                  }}>
                   {isMore ? 'less' : 'more'}
                 </Text>
               )}
@@ -226,8 +220,7 @@ export default function ScorekeeperAgreementView({
               }}
               onPress={() => {
                 showPressed(true);
-              }}
-            >
+              }}>
               {"WHAT HAPPENS IF YOUR TEAM DOESN'T\nSECURE SCOREKEEPER."}
             </Text>
           )}

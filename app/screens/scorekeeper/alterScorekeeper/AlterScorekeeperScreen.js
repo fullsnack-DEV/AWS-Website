@@ -1062,10 +1062,10 @@ export default function AlterScorekeeperScreen({navigation, route}) {
             bodyParams?.total_game_fee > 0) ||
             (bodyParams?.total_game_fee > 0 &&
               checkSenderForPayment(bodyParams) === 'sender')) && (
-            <View style={styles.contentContainer}>
-              <Title text={'Payment Method'} />
-              <View style={{marginTop: 10}}>
-                <TCTouchableLabel
+              <View style={styles.contentContainer}>
+                <Title text={'Payment Method'} />
+                <View style={{marginTop: 10}}>
+                  <TCTouchableLabel
                   title={
                     defaultCard
                       ? Utility.capitalize(defaultCard.card.brand)
@@ -1079,8 +1079,8 @@ export default function AlterScorekeeperScreen({navigation, route}) {
                     });
                   }}
                 />
+                </View>
               </View>
-            </View>
           )}
 
           {editPayment && (

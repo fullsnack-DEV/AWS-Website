@@ -30,8 +30,7 @@ function MatchBetweenRecentView({
             fontSize: 20,
             fontFamily: fonts.RBold,
             color: colors.themeColor,
-          }}
-        >
+          }}>
           {firstTeamPoint}
         </Text>
         <Text style={{marginHorizontal: 5}}>:</Text>
@@ -40,8 +39,7 @@ function MatchBetweenRecentView({
             fontSize: 20,
             fontFamily: fonts.RRegular,
             color: colors.googleColor,
-          }}
-        >
+          }}>
           {secondTeamPoint}
         </Text>
       </View>

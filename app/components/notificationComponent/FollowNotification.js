@@ -35,16 +35,14 @@ function FollowNotification(data) {
         <View style={styles.viewFirstStyle}>
           <Image
             source={actorImage ? {uri: actorImage} : placeHolder}
-            style={styles.imageContainer}
-          ></Image>
+            style={styles.imageContainer}></Image>
           <Text style={styles.textContainerStyle}>
             <Text
               style={{
                 fontFamily: fonts.RBold,
                 fontSize: 16,
                 color: Colors.lightBlackColor,
-              }}
-            >
+              }}>
               {' '}
               {actorName}{' '}
             </Text>
@@ -53,8 +51,7 @@ function FollowNotification(data) {
                 fontFamily: fonts.RLight,
                 fontSize: 16,
                 color: Colors.lightBlackColor,
-              }}
-            >
+              }}>
               {notificationText}{' '}
               {commentPostTimeCalculate(notificationCreatedAt)}
             </Text>

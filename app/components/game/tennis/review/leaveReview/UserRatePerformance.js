@@ -36,9 +36,9 @@ const UserRatePerformance = ({
 
       {isRefereeAvailable
         ? reviewAttributes.map((item, index) => (
-            <View style={{marginVertical: 5}} key={index}>
-              <Text style={styles.questionText}>{item.description}</Text>
-              <TCRatingStarSlider
+          <View style={{marginVertical: 5}} key={index}>
+            <Text style={styles.questionText}>{item.description}</Text>
+            <TCRatingStarSlider
                 currentRating={reviewsData[item.name]}
                 onPress={(star) => {
                   setTeamReview(item.name, star);
@@ -46,7 +46,7 @@ const UserRatePerformance = ({
                 style={{alignSelf: 'flex-end'}}
                 starColor={starColor}
               />
-            </View>
+          </View>
           ))
         : reviewAttributes
             .filter((e) => e.name !== 'respectforreferre')

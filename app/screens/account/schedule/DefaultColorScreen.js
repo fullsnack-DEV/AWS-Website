@@ -131,12 +131,10 @@ export default function DefaultColorScreen({navigation}) {
     return null;
   };
 
-  const renderCreatedEventsColorItem = ({item}) => {
-    return (
-      <View
-        style={{marginRight: Dimensions.get('window').width > 360 ? -1 : 5}}
-      >
-        <EventColorItem
+  const renderCreatedEventsColorItem = ({item}) => (
+    <View
+        style={{marginRight: Dimensions.get('window').width > 360 ? -1 : 5}}>
+      <EventColorItem
           item={item}
           isNew={!!item?.isNew}
           onChangeColorPressed={() => onChangeColorPressed('Created Events')}
@@ -175,16 +173,13 @@ export default function DefaultColorScreen({navigation}) {
             marginRight: wp(3),
           }}
         />
-      </View>
+    </View>
     );
-  };
 
-  const renderImportedEventsColorItem = ({item}) => {
-    return (
-      <View
-        style={{marginRight: Dimensions.get('window').width > 360 ? -1 : 5}}
-      >
-        <EventColorItem
+  const renderImportedEventsColorItem = ({item}) => (
+    <View
+        style={{marginRight: Dimensions.get('window').width > 360 ? -1 : 5}}>
+      <EventColorItem
           item={item}
           isNew={!!item?.isNew}
           onChangeColorPressed={() => onChangeColorPressed('Imported Events')}
@@ -222,16 +217,13 @@ export default function DefaultColorScreen({navigation}) {
             marginRight: wp(3),
           }}
         />
-      </View>
+    </View>
     );
-  };
 
-  const renderGamesEventsColorItem = ({item}) => {
-    return (
-      <View
-        style={{marginRight: Dimensions.get('window').width > 360 ? -1 : 5}}
-      >
-        <EventColorItem
+  const renderGamesEventsColorItem = ({item}) => (
+    <View
+        style={{marginRight: Dimensions.get('window').width > 360 ? -1 : 5}}>
+      <EventColorItem
           item={item}
           isNew={!!item?.isNew}
           onChangeColorPressed={() => onChangeColorPressed('Game Events')}
@@ -270,9 +262,8 @@ export default function DefaultColorScreen({navigation}) {
             marginRight: wp(3),
           }}
         />
-      </View>
+    </View>
     );
-  };
 
   const onDonePress = () => {
     Utility.setStorage('eventColors', createdEventColors);
@@ -283,8 +274,7 @@ export default function DefaultColorScreen({navigation}) {
   return (
     <KeyboardAvoidingView
       style={styles.mainContainerStyle}
-      behavior={Platform.OS === 'ios' ? 'padding' : null}
-    >
+      behavior={Platform.OS === 'ios' ? 'padding' : null}>
       <Header
         leftComponent={
           <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -297,8 +287,7 @@ export default function DefaultColorScreen({navigation}) {
         rightComponent={
           <TouchableOpacity
             style={{padding: 2, fontFamily: fonts.RMedium, fontSize: 10}}
-            onPress={onDonePress}
-          >
+            onPress={onDonePress}>
             <Text>Save</Text>
           </TouchableOpacity>
         }

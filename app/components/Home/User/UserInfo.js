@@ -149,8 +149,7 @@ export default function UserInfo({
               fontSize: 16,
               fontFamily: fonts.RLight,
               color: colors.lightBlackColor,
-            }}
-          >
+            }}>
             {userDetails.about}
           </Text>
         </View>
@@ -160,8 +159,7 @@ export default function UserInfo({
               fontSize: 12,
               fontFamily: fonts.RLight,
               color: colors.userPostTimeColor,
-            }}
-          >
+            }}>
             {strings.signedupin}
             {userDetails.sign_in}
           </Text>
@@ -169,8 +167,7 @@ export default function UserInfo({
       </View>
       {/* Gray divider */}
       <View
-        style={{height: 7, backgroundColor: colors.grayBackgroundColor}}
-      ></View>
+        style={{height: 7, backgroundColor: colors.grayBackgroundColor}}></View>
       {/* Basic section */}
       <View style={styles.sectionStyle}>
         <TCEditHeader
@@ -201,8 +198,7 @@ export default function UserInfo({
       </View>
       {/* Gray divider */}
       <View
-        style={{height: 7, backgroundColor: colors.grayBackgroundColor}}
-      ></View>
+        style={{height: 7, backgroundColor: colors.grayBackgroundColor}}></View>
       {/* Play in section */}
       {playin && (
         <View>
@@ -223,8 +219,10 @@ export default function UserInfo({
           </View>
           {/* Gray divider */}
           <View
-            style={{height: 7, backgroundColor: colors.grayBackgroundColor}}
-          ></View>
+            style={{
+              height: 7,
+              backgroundColor: colors.grayBackgroundColor,
+            }}></View>
         </View>
       )}
       {refereesIn && (
@@ -246,8 +244,10 @@ export default function UserInfo({
           </View>
           {/* Gray divider */}
           <View
-            style={{height: 7, backgroundColor: colors.grayBackgroundColor}}
-          ></View>
+            style={{
+              height: 7,
+              backgroundColor: colors.grayBackgroundColor,
+            }}></View>
         </View>
       )}
 
@@ -270,8 +270,7 @@ export default function UserInfo({
       </View>
       {/* Gray divider */}
       <View
-        style={{height: 7, backgroundColor: colors.grayBackgroundColor}}
-      ></View>
+        style={{height: 7, backgroundColor: colors.grayBackgroundColor}}></View>
       {/* Club section */}
       <View style={[styles.sectionStyle, {marginHorizontal: 0}]}>
         <TCEditHeader
@@ -291,8 +290,7 @@ export default function UserInfo({
       </View>
       {/* Gray divider */}
       <View
-        style={{height: 7, backgroundColor: colors.grayBackgroundColor}}
-      ></View>
+        style={{height: 7, backgroundColor: colors.grayBackgroundColor}}></View>
     </View>
   );
 }

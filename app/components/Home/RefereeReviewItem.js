@@ -99,14 +99,12 @@ function RefereeReviewItem({
               style={[
                 styles.userNameTxt,
                 {fontFamily: fonts.RRegular, marginLeft: 5},
-              ]}
-            >
+              ]}>
               {'left a review'}
             </Text>
           </View>
           <View
-            style={{flexDirection: 'row', alignItems: 'center', marginTop: 3}}
-          >
+            style={{flexDirection: 'row', alignItems: 'center', marginTop: 3}}>
             <Text style={styles.activeTimeAgoTxt}>
               {commentPostTimeCalculate(item.time)}
             </Text>
@@ -121,8 +119,7 @@ function RefereeReviewItem({
               style={[
                 styles.activeTimeAgoTxt,
                 {fontSize: 12, fontFamily: fonts.RMedium},
-              ]}
-            >
+              ]}>
               {'Newyork City FC'}
             </Text>
           </View>
@@ -131,8 +128,7 @@ function RefereeReviewItem({
           style={styles.dotImageTouchStyle}
           onPress={() => {
             actionSheet.current.show();
-          }}
-        >
+          }}>
           <Image
             style={styles.dotImageStyle}
             source={images.dotImage}
@@ -208,21 +204,18 @@ function RefereeReviewItem({
             style={{
               flexDirection: 'row',
               width: wp('60%'),
-            }}
-          >
+            }}>
             <View
               style={{
                 flexDirection: 'row',
-              }}
-            >
+              }}>
               <TouchableOpacity
                 onPress={() => {
                   navigation.navigate('WriteCommentScreen', {
                     data: item,
                   });
                 }}
-                style={styles.imageTouchStyle}
-              >
+                style={styles.imageTouchStyle}>
                 <Image
                   style={styles.commentImage}
                   source={images.commentImage}
@@ -245,12 +238,10 @@ function RefereeReviewItem({
                 alignItems: 'center',
                 justifyContent: 'center',
                 marginLeft: 10,
-              }}
-            >
+              }}>
               <TouchableOpacity
                 onPress={() => {}}
-                style={styles.imageTouchStyle}
-              >
+                style={styles.imageTouchStyle}>
                 <Image
                   style={styles.commentImage}
                   source={images.shareImage}
@@ -267,8 +258,7 @@ function RefereeReviewItem({
               width: wp('32%'),
               justifyContent: 'flex-end',
               alignItems: 'center',
-            }}
-          >
+            }}>
             {item.reaction_counts && item.reaction_counts.clap !== undefined && (
               <Text
                 style={[
@@ -277,8 +267,7 @@ function RefereeReviewItem({
                     color:
                       like === true ? '#FF8A01' : colors.reactionCountColor,
                   },
-                ]}
-              >
+                ]}>
                 {likeCount === 0 ? '' : likeCount}
               </Text>
             )}
@@ -292,8 +281,7 @@ function RefereeReviewItem({
                 }
                 onLikePress();
               }}
-              style={styles.imageTouchStyle}
-            >
+              style={styles.imageTouchStyle}>
               {like === true ? (
                 <Image
                   style={styles.commentImage}

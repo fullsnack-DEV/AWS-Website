@@ -386,8 +386,7 @@ const Scorekeepers = ({
           fontSize: 16,
           color: colors.lightBlackColor,
           marginLeft: 15,
-        }}
-      >
+        }}>
         Which team do you want to send a scorekeeper offer to?
       </Text>
     </View>
@@ -411,12 +410,10 @@ const Scorekeepers = ({
                 sportName: gameData?.sport,
               });
             }, 500);
-          }}
-        >
+          }}>
           <LinearGradient
             colors={[colors.yellowColor, colors.orangeColor]}
-            style={styles.teamContainer}
-          >
+            style={styles.teamContainer}>
             <View style={styles.profileView}>
               <Image
                 source={
@@ -430,14 +427,12 @@ const Scorekeepers = ({
             <View style={styles.topTextContainer}>
               <Text
                 style={[styles.nameText, {color: colors.whiteColor}]}
-                numberOfLines={1}
-              >
+                numberOfLines={1}>
                 {item?.group_name}
               </Text>
               <Text
                 style={[styles.locationText, {color: colors.whiteColor}]}
-                numberOfLines={1}
-              >
+                numberOfLines={1}>
                 {item?.city}
               </Text>
             </View>
@@ -459,12 +454,10 @@ const Scorekeepers = ({
                 sportName: gameData?.sport,
               });
             }, 500);
-          }}
-        >
+          }}>
           <View
             colors={[colors.whiteColor, colors.whiteColor]}
-            style={styles.teamContainer}
-          >
+            style={styles.teamContainer}>
             <View style={styles.profileView}>
               <Image
                 source={

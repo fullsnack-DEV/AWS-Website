@@ -117,8 +117,7 @@ export default function NewsFeedVideoPlayer({navigation, route}) {
         isLoading={isLoading}
         onFullScreen={onFullScreen}
         progress={currentTime}
-        playerState={playerState}
-      >
+        playerState={playerState}>
         <MediaControls.Toolbar>
           <View style={styles.toolbar}>
             <Text style={{color: colors.red}}>Im a custom toolbar </Text>

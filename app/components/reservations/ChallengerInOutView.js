@@ -447,8 +447,7 @@ function ChallengerInOutView({data}) {
         flex: 1,
         flexDirection: 'row',
         margin: 15,
-      }}
-    >
+      }}>
       <Image
         source={
           getChallengerOrChallengee() === strings.challenger ||
@@ -481,8 +480,7 @@ function ChallengerInOutView({data}) {
                     ? colors.themeColor
                     : colors.greeColor,
               },
-            ]}
-          >
+            ]}>
             {getChallengerOrChallengee()}
           </Text>
         </View>

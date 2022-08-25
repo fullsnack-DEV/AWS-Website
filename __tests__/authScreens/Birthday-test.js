@@ -3,9 +3,7 @@ import React from 'react';
 import {render} from '@testing-library/react-native';
 import AddBirthdayScreen from '../../app/screens/authScreens/AddBirthdayScreen';
 
-jest.mock('react-native-fs', () => {
-  return {};
-});
+jest.mock('react-native-fs', () => ({}));
 
 describe('Birthday Screen Test', () => {
   const navigate = jest.fn();

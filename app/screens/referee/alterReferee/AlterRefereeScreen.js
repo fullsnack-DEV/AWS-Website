@@ -1185,15 +1185,15 @@ export default function AlterRefereeScreen({navigation, route}) {
             bodyParams?.total_game_fee > 0) ||
             (bodyParams?.total_game_fee > 0 &&
               checkSenderForPayment(bodyParams) === 'sender')) && (
-            <View style={styles.contentContainer}>
-              <View>
-                <Title text={strings.paymentMethod.toUpperCase()} />
-                <View
+              <View style={styles.contentContainer}>
+                <View>
+                  <Title text={strings.paymentMethod.toUpperCase()} />
+                  <View
                   style={{
                     marginTop: 10,
                     marginBottom: 15,
                   }}>
-                  <TCTouchableLabel
+                    <TCTouchableLabel
                     title={
                       defaultCard
                         ? Utility.capitalize(defaultCard.card.brand)
@@ -1208,9 +1208,9 @@ export default function AlterRefereeScreen({navigation, route}) {
                     }}
                     style={{marginHorizontal: 0}}
                   />
+                  </View>
                 </View>
               </View>
-            </View>
           )}
 
           {editPayment && (

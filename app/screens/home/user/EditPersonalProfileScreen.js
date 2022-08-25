@@ -64,8 +64,7 @@ export default function EditPersonalProfileScreen({navigation, route}) {
           }}
           onPress={() => {
             onSaveButtonClicked();
-          }}
-        >
+          }}>
           {strings.save}
         </Text>
       ),
@@ -455,8 +454,7 @@ export default function EditPersonalProfileScreen({navigation, route}) {
 
             <TouchableOpacity
               style={styles.profileCameraButtonStyle}
-              onPress={() => onProfileImageClicked()}
-            >
+              onPress={() => onProfileImageClicked()}>
               <Image
                 style={styles.profileImageButtonStyle}
                 source={images.certificateUpload}

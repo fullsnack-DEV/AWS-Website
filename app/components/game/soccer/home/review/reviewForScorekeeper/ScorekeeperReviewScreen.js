@@ -357,8 +357,7 @@ export default function ScorekeeperReviewScreen({navigation, route}) {
                         marginVertical: 10,
                         flexDirection: 'row',
                       }}
-                      key={index}
-                    >
+                      key={index}>
                       <Text style={styles.starText}>
                         {item.charAt(0).toUpperCase() + item.slice(1)}
                       </Text>
@@ -423,8 +422,7 @@ export default function ScorekeeperReviewScreen({navigation, route}) {
                         reviewsData?.format_tagged_data ||
                         [],
                     });
-                  }}
-                >
+                  }}>
                   <View>
                     {reviewsData?.comment?.length > 0 ? (
                       <NewsFeedDescription
@@ -447,8 +445,7 @@ export default function ScorekeeperReviewScreen({navigation, route}) {
                           fontFamily: fonts.RRegular,
                           fontSize: 16,
                           color: colors.grayColor,
-                        }}
-                      >
+                        }}>
                         {`Describe what you thought and felt about ${userData?.first_name} ${userData?.last_name} while watching or playing the game.`}
                       </Text>
                     )}

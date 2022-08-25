@@ -43,8 +43,7 @@ export default function TeamCreatedScreen({navigation, route}) {
               menuBtnVisible: false,
               sourceScreen: 'AccountScreen',
             });
-          }}
-        >
+          }}>
           <Text style={styles.goToProfileTitle}>Go to team home</Text>
         </TouchableOpacity>
       </View>

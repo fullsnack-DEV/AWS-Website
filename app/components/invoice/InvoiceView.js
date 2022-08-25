@@ -14,8 +14,7 @@ export default function InvoiceView({data, onPressCard}) {
           width: '20%',
           alignItems: 'center',
           justifyContent: 'center',
-        }}
-      >
+        }}>
         <View style={styles.profileContainer}>
           <Image
             source={
@@ -31,15 +30,13 @@ export default function InvoiceView({data, onPressCard}) {
         style={{
           width: '80%',
           justifyContent: 'center',
-        }}
-      >
+        }}>
         <Text
           style={{
             fontFamily: fonts.RMedium,
             fontSize: 16,
             color: colors.lightBlackColor,
-          }}
-        >
+          }}>
           {`${data?.member?.first_name} ${data?.member?.last_name}`}
         </Text>
         <Text
@@ -47,16 +44,14 @@ export default function InvoiceView({data, onPressCard}) {
             fontFamily: fonts.RMedium,
             fontSize: 14,
             color: colors.lightBlackColor,
-          }}
-        >
+          }}>
           {data?.amount_paid}
           <Text
             style={{
               fontFamily: fonts.RLight,
               fontSize: 14,
               color: colors.lightBlackColor,
-            }}
-          >
+            }}>
             {` of $${data?.amount_due}`}
           </Text>
         </Text>

@@ -73,8 +73,7 @@ export default function ClubSettingScreen({navigation}) {
         <View style={styles.radioMainView}>
           <TouchableOpacity
             style={styles.radioButtonView}
-            onPress={() => setSelected(0)}
-          >
+            onPress={() => setSelected(0)}>
             <Image
               source={
                 selected === 0 ? images.radioSelect : images.radioUnselect
@@ -93,8 +92,7 @@ export default function ClubSettingScreen({navigation}) {
         <View style={styles.radioMainView}>
           <TouchableOpacity
             style={styles.radioButtonView}
-            onPress={() => setSelected(1)}
-          >
+            onPress={() => setSelected(1)}>
             <Image
               source={
                 selected === 1 ? images.radioSelect : images.radioUnselect

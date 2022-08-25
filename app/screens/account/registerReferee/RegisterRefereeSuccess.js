@@ -34,8 +34,7 @@ const RegisterRefereeSuccess = ({navigation}) => {
           position: 'absolute',
           alignItems: 'center',
           justifyContent: 'center',
-        }}
-      >
+        }}>
         <FastImage
           source={images.profilePlaceHolder}
           style={{width: 60, height: 60}}
@@ -46,8 +45,7 @@ const RegisterRefereeSuccess = ({navigation}) => {
             fontFamily: fonts.RBold,
             fontSize: 20,
             marginTop: 10,
-          }}
-        >
+          }}>
           Registered{'\n'}as a referee
         </Text>
       </LinearGradient>

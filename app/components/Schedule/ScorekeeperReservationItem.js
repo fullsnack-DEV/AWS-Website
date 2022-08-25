@@ -64,8 +64,7 @@ function ScorekeeperReservationItem({data, onPressButton}) {
               {
                 color: statusColor,
               },
-            ]}
-          >
+            ]}>
             {status}
           </Text>
         </View>

@@ -295,13 +295,11 @@ export default function EditLineUpScreen({navigation, route}) {
       }
       onPress={() => {
         setSelectedPosition(index + 1);
-      }}
-    >
+      }}>
       {selectedPosition === index + 1 ? (
         <LinearGradient
           colors={[colors.greenGradientStart, colors.greenGradientEnd]}
-          style={styles.topViewContainer}
-        >
+          style={styles.topViewContainer}>
           <Text style={styles.radioText} numberOfLines={1}>
             {item}
           </Text>
@@ -317,12 +315,10 @@ export default function EditLineUpScreen({navigation, route}) {
             (selected === 2 && enabledSection === index + 1)
               ? styles.topViewOpacityContainer
               : styles.topViewContainer
-          }
-        >
+          }>
           <Text
             style={[styles.radioText, {color: colors.lightBlackColor}]}
-            numberOfLines={1}
-          >
+            numberOfLines={1}>
             {item}
           </Text>
           <Image
@@ -448,8 +444,7 @@ export default function EditLineUpScreen({navigation, route}) {
                   fontSize: 16,
                   color: colors.lightBlackColor,
                   marginLeft: 25,
-                }}
-              >
+                }}>
                 Starting
               </Text>
               {starting.length === 0 ? (
@@ -469,8 +464,7 @@ export default function EditLineUpScreen({navigation, route}) {
                   color: colors.lightBlackColor,
                   marginLeft: 25,
                   marginTop: 20,
-                }}
-              >
+                }}>
                 Subs
               </Text>
               {subs.length === 0 ? (
@@ -490,8 +484,7 @@ export default function EditLineUpScreen({navigation, route}) {
                   justifyContent: 'space-between',
 
                   alignItems: 'center',
-                }}
-              >
+                }}>
                 <TCLabel title={'Non-Roster'} style={{height: 50}} />
 
                 {search ? (
@@ -525,8 +518,7 @@ export default function EditLineUpScreen({navigation, route}) {
                   <TouchableOpacity
                     onPress={() => {
                       setSearch(true);
-                    }}
-                  >
+                    }}>
                     <Image
                       source={images.searchLocation}
                       style={styles.searchImg}
@@ -562,8 +554,7 @@ export default function EditLineUpScreen({navigation, route}) {
                   fontSize: 16,
                   color: colors.lightBlackColor,
                   marginLeft: 25,
-                }}
-              >
+                }}>
                 Starting
               </Text>
 
@@ -585,8 +576,7 @@ export default function EditLineUpScreen({navigation, route}) {
                   color: colors.lightBlackColor,
                   marginLeft: 25,
                   marginTop: 20,
-                }}
-              >
+                }}>
                 Subs
               </Text>
               {subs.length === 0 ? (
@@ -606,8 +596,7 @@ export default function EditLineUpScreen({navigation, route}) {
                   justifyContent: 'space-between',
 
                   alignItems: 'center',
-                }}
-              >
+                }}>
                 <TCLabel title={'Non-Roster'} style={{height: 50}} />
 
                 {search ? (
@@ -641,8 +630,7 @@ export default function EditLineUpScreen({navigation, route}) {
                   <TouchableOpacity
                     onPress={() => {
                       setSearch(true);
-                    }}
-                  >
+                    }}>
                     <Image
                       source={images.searchLocation}
                       style={styles.searchImg}
@@ -664,8 +652,7 @@ export default function EditLineUpScreen({navigation, route}) {
             </ScrollView>
             <TouchableWithoutFeedback
               onPress={toggleModal}
-              disabled={enabledSection === 0}
-            >
+              disabled={enabledSection === 0}>
               <Image
                 source={images.moveFlottyButton}
                 style={{
@@ -691,8 +678,7 @@ export default function EditLineUpScreen({navigation, route}) {
         isVisible={isModalVisible}
         backdropColor="black"
         backdropOpacity={0}
-        style={{marginLeft: 0, marginRight: 0, marginBottom: 0}}
-      >
+        style={{marginLeft: 0, marginRight: 0, marginBottom: 0}}>
         <View style={styles.modelViewContainer}>
           <View
             style={{
@@ -700,8 +686,7 @@ export default function EditLineUpScreen({navigation, route}) {
               justifyContent: 'space-between',
               marginLeft: 10,
               marginRight: 10,
-            }}
-          >
+            }}>
             <Text onPress={toggleModal} style={styles.cancelTitle}>
               Cancel
             </Text>
@@ -850,8 +835,7 @@ export default function EditLineUpScreen({navigation, route}) {
                   console.log('NON', nonRoster);
                   console.log('ROS', roster);
                 }
-              }}
-            >
+              }}>
               <Text style={styles.doneTitle}>Done</Text>
             </TouchableOpacity>
           </View>

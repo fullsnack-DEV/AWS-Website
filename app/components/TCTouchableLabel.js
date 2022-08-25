@@ -45,8 +45,7 @@ function TCTouchableLabel({
                   elevation: 3,
                 },
               ]
-        }
-      >
+        }>
         {!subTitle && (
           <TextInput
             placeholder={placeholder}
@@ -65,8 +64,7 @@ function TCTouchableLabel({
               marginHorizontal: 15,
               justifyContent: 'space-between',
               alignItems: 'center',
-            }}
-          >
+            }}>
             <Text style={styles.text}>{title}</Text>
             <Text style={styles.text}>{subTitle}</Text>
           </View>

@@ -22,8 +22,7 @@ export default function TCBorderButton({
           shadow
             ? [styles.borderButtonView, {borderColor}, styles.shadowView, Props]
             : [styles.borderButtonView, {borderColor}, Props]
-        }
-      >
+        }>
         <Text style={[styles.detailButtonText, {color: textColor, fontSize}]}>
           {title}
         </Text>

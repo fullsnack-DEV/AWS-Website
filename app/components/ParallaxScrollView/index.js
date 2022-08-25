@@ -133,8 +133,7 @@ class ParallaxScrollView extends Component {
     return (
       <View
         style={[style, styles.container]}
-        onLayout={(e) => this.maybeUpdateViewDimensions(e)}
-      >
+        onLayout={(e) => this.maybeUpdateViewDimensions(e)}>
         {background}
         {React.cloneElement(
           scrollElement,
@@ -284,8 +283,7 @@ class ParallaxScrollView extends Component {
               },
             ],
           },
-        ]}
-      >
+        ]}>
         <View>{renderBackground()}</View>
       </Animated.View>
     );
@@ -319,8 +317,7 @@ class ParallaxScrollView extends Component {
                   })
                 : 1,
             },
-          ]}
-        >
+          ]}>
           <View style={{height: parallaxHeaderHeight}}>
             {renderForeground()}
           </View>
@@ -371,8 +368,7 @@ class ParallaxScrollView extends Component {
             });
             this.footerHeight = footerHeight;
           }
-        }}
-      >
+        }}>
         {renderContentBackground()}
         {children}
       </View>
@@ -414,8 +410,7 @@ class ParallaxScrollView extends Component {
               width: viewWidth,
               ...(stickyHeaderHeight ? {height: stickyHeaderHeight} : null),
             },
-          ]}
-        >
+          ]}>
           {renderStickyHeader ? (
             <Animated.View
               style={{
@@ -427,8 +422,7 @@ class ParallaxScrollView extends Component {
                 // extrapolate: 'clamp'
                 // })
                 opacity: this.props.isActionButtonVisible ? 0 : 1,
-              }}
-            >
+              }}>
               <Animated.View
                 style={{
                   transform: [
@@ -440,8 +434,7 @@ class ParallaxScrollView extends Component {
                       }),
                     },
                   ],
-                }}
-              >
+                }}>
                 {renderStickyHeader()}
               </Animated.View>
             </Animated.View>

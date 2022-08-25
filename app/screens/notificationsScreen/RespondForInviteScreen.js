@@ -138,8 +138,7 @@ export default function RespondForInviteScreen({navigation, route}) {
           <FastImage
             source={{uri: groupObject?.background_thumbnail}}
             resizeMode={'cover'}
-            style={styles.bgImageStyle}
-          >
+            style={styles.bgImageStyle}>
             {!hideScore && (
               <ImageBackground
                 source={images.profileLevel}
@@ -149,16 +148,14 @@ export default function RespondForInviteScreen({navigation, route}) {
                   resizeMode: 'contain',
                   alignItems: 'center',
                   justifyContent: 'center',
-                }}
-              >
+                }}>
                 <View
                   style={{
                     flexDirection: 'row',
                     alignItems: 'center',
                     justifyContent: 'center',
                     marginBottom: 8,
-                  }}
-                >
+                  }}>
                   <FastImage
                     source={images.tc_message_top_icon}
                     resizeMode={'contain'}
@@ -170,8 +167,7 @@ export default function RespondForInviteScreen({navigation, route}) {
                         fontFamily: fonts.RBold,
                         fontSize: 16,
                         color: colors.lightBlackColor,
-                      }}
-                    >
+                      }}>
                       {0}
                     </Text>
                     <Text
@@ -179,8 +175,7 @@ export default function RespondForInviteScreen({navigation, route}) {
                         fontFamily: fonts.RMedium,
                         fontSize: 10,
                         color: colors.lightBlackColor,
-                      }}
-                    >
+                      }}>
                       POINTS
                     </Text>
                   </View>
@@ -203,16 +198,14 @@ export default function RespondForInviteScreen({navigation, route}) {
                 resizeMode: 'contain',
                 alignItems: 'center',
                 justifyContent: 'center',
-              }}
-            >
+              }}>
               <View
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
                   justifyContent: 'center',
                   marginBottom: 8,
-                }}
-              >
+                }}>
                 <FastImage
                   source={images.tc_message_top_icon}
                   resizeMode={'contain'}
@@ -224,8 +217,7 @@ export default function RespondForInviteScreen({navigation, route}) {
                       fontFamily: fonts.RBold,
                       fontSize: 16,
                       color: colors.lightBlackColor,
-                    }}
-                  >
+                    }}>
                     {0}
                   </Text>
                   <Text
@@ -233,8 +225,7 @@ export default function RespondForInviteScreen({navigation, route}) {
                       fontFamily: fonts.RMedium,
                       fontSize: 10,
                       color: colors.lightBlackColor,
-                    }}
-                  >
+                    }}>
                     POINTS
                   </Text>
                 </View>
@@ -266,8 +257,7 @@ export default function RespondForInviteScreen({navigation, route}) {
           />
 
           <View
-            style={{flexDirection: 'row', alignSelf: 'center', marginTop: 5}}
-          >
+            style={{flexDirection: 'row', alignSelf: 'center', marginTop: 5}}>
             <Text style={styles.nameText} numberOfLines={5}>
               {groupObject?.group_name}
             </Text>
@@ -302,15 +292,13 @@ export default function RespondForInviteScreen({navigation, route}) {
               margin: 30,
               marginTop: 0,
               marginBottom: 15,
-            }}
-          >
+            }}>
             <Text
               style={{
                 fontSize: 20,
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
-              }}
-            >
+              }}>
               {groupObject?.group_name}
             </Text>{' '}
             invited you to join the team.
@@ -324,8 +312,7 @@ export default function RespondForInviteScreen({navigation, route}) {
                 margin: 15,
                 marginTop: 0,
                 marginBottom: 0,
-              }}
-            >
+              }}>
               {groupObject?.bio}
             </Text>
             <Text
@@ -335,8 +322,7 @@ export default function RespondForInviteScreen({navigation, route}) {
                 color: colors.lightBlackColor,
                 marginLeft: 15,
                 marginRight: 15,
-              }}
-            >
+              }}>
               Signed up in{' '}
               {new Date(groupObject?.createdAt * 1000).getFullYear()}
             </Text>
@@ -347,8 +333,7 @@ export default function RespondForInviteScreen({navigation, route}) {
               flexDirection: 'row',
               margin: 15,
               justifyContent: 'space-between',
-            }}
-          >
+            }}>
             <Text style={styles.lightTextStyle}>Sports</Text>
             <Text style={styles.regularTextStyle}>{groupObject?.sport}</Text>
           </View>
@@ -359,8 +344,7 @@ export default function RespondForInviteScreen({navigation, route}) {
               margin: 15,
               marginTop: 0,
               justifyContent: 'space-between',
-            }}
-          >
+            }}>
             <Text style={styles.lightTextStyle}>Member’s age</Text>
             <Text style={styles.regularTextStyle}>
               Min {groupObject?.min_age} Max {groupObject?.max_age}
@@ -373,8 +357,7 @@ export default function RespondForInviteScreen({navigation, route}) {
               margin: 15,
               marginTop: 0,
               justifyContent: 'space-between',
-            }}
-          >
+            }}>
             <Text style={styles.lightTextStyle}>Language</Text>
             <Text style={styles.regularTextStyle}>
               {groupObject?.languages?.toString()}
@@ -387,8 +370,7 @@ export default function RespondForInviteScreen({navigation, route}) {
               margin: 15,
               marginTop: 0,
               justifyContent: 'space-between',
-            }}
-          >
+            }}>
             <Text style={styles.lightTextStyle}>Office</Text>
             <Text style={styles.regularTextStyle} numberOfLines={3}>
               {groupObject?.office_address}
@@ -403,8 +385,7 @@ export default function RespondForInviteScreen({navigation, route}) {
               margin: 15,
               marginTop: 0,
               justifyContent: 'space-between',
-            }}
-          >
+            }}>
             <Text style={styles.lightTextStyle}>
               Membership registration fee
             </Text>
@@ -419,8 +400,7 @@ export default function RespondForInviteScreen({navigation, route}) {
               margin: 15,
               marginTop: 0,
               justifyContent: 'space-between',
-            }}
-          >
+            }}>
             <Text style={styles.lightTextStyle}>Membership fee</Text>
             <Text style={styles.regularTextStyle} numberOfLines={3}>
               ${groupObject?.membership_fee} CAD /{' '}

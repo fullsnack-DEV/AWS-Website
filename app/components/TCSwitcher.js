@@ -25,13 +25,11 @@ const TCSwitcher = ({
         activeOpacity={0.8}
         key={index}
         onPress={() => onTabPress(index)}
-        style={{flex: 1, ...style}}
-      >
+        style={{flex: 1, ...style}}>
         <LinearGradient
           key={index?.toString()}
           colors={selectedTab === index ? focusedTabColors : unFocusedTabColors}
-          style={styles.gradiantContainer}
-        >
+          style={styles.gradiantContainer}>
           <Text
             style={{
               ...styles.tabText,
@@ -39,8 +37,7 @@ const TCSwitcher = ({
                 selectedTab === index
                   ? focusedTabTextColor
                   : unFocusedTabTextColor,
-            }}
-          >
+            }}>
             {item}
           </Text>
         </LinearGradient>

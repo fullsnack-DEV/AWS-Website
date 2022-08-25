@@ -15,8 +15,7 @@ export default function BatchFeeView({data, onPressCard}) {
           width: '20%',
           alignItems: 'center',
           justifyContent: 'center',
-        }}
-      >
+        }}>
         <Text style={styles.dateView}>
           {`${moment(new Date(data.due_date * 1000)).format('MMM')}\n${moment(
             new Date(data.due_date * 1000),
@@ -27,15 +26,13 @@ export default function BatchFeeView({data, onPressCard}) {
         style={{
           width: '80%',
           justifyContent: 'center',
-        }}
-      >
+        }}>
         <Text
           style={{
             fontFamily: fonts.RMedium,
             fontSize: 16,
             color: colors.lightBlackColor,
-          }}
-        >
+          }}>
           {data?.invoice_title}
         </Text>
         <Text
@@ -43,16 +40,14 @@ export default function BatchFeeView({data, onPressCard}) {
             fontFamily: fonts.RMedium,
             fontSize: 14,
             color: colors.lightBlackColor,
-          }}
-        >
+          }}>
           ${data?.invoice_paid_total}
           <Text
             style={{
               fontFamily: fonts.RLight,
               fontSize: 14,
               color: colors.lightBlackColor,
-            }}
-          >
+            }}>
             {` of $${data?.invoice_total}`}
           </Text>
         </Text>
@@ -63,8 +58,7 @@ export default function BatchFeeView({data, onPressCard}) {
             fontSize: 14,
             color: colors.lightBlackColor,
             marginTop: 2,
-          }}
-        >
+          }}>
           {`${data?.invoices?.length} Recepients`}
         </Text>
         <View style={styles.percentageView}>

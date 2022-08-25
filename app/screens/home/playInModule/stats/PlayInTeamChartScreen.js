@@ -69,8 +69,7 @@ export default function PlayInTeamChartScreen({
           flexDirection: 'row',
           paddingVertical: 5,
           paddingHorizontal: 15,
-        }}
-      >
+        }}>
         <View style={styles.totalGameViewStyle}>
           <Text style={styles.totalGameTextStyle}>{'Total Matches'}</Text>
           <Text style={styles.totalGameCounterText}>
@@ -100,8 +99,7 @@ export default function PlayInTeamChartScreen({
             spacing={0}
             radius={60}
             outerRadius={60}
-            innerRadius={52}
-          >
+            innerRadius={52}>
             <GradientView keyName={'looser'} />
             <GradientView keyName={'draw'} />
             <GradientView keyName={'winner'} />

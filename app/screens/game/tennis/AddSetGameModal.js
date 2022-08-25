@@ -73,14 +73,12 @@ const AddSetGameModal = ({
         backgroundColor: 'rgba(0,0,0,0)',
       }}
       hasBackdrop
-      onBackdropPress={onClose}
-    >
+      onBackdropPress={onClose}>
       <SafeAreaView
         style={[
           styles.modalContainerViewStyle,
           {top: hp(25), height: hp(100), backgroundColor: colors.whiteColor},
-        ]}
-      >
+        ]}>
         <View style={styles.gradiantHeaderViewStyle} />
         <Header
           mainContainerStyle={styles.headerMainContainerStyle}
@@ -91,8 +89,7 @@ const AddSetGameModal = ({
                   fontSize: 16,
                   fontFamily: fonts.RLight,
                   color: colors.blocklightgraycolor,
-                }}
-              >
+                }}>
                 {'Cancel'}
               </Text>
             </TouchableOpacity>
@@ -109,8 +106,7 @@ const AddSetGameModal = ({
                   fontSize: 16,
                   fontFamily: fonts.RLight,
                   color: colors.themeColor,
-                }}
-              >
+                }}>
                 {'Done'}
               </Text>
             </TouchableOpacity>
@@ -128,8 +124,7 @@ const AddSetGameModal = ({
                 justifyContent: 'center',
                 backgroundColor: 'rgba(255,255,255,0.8)',
                 zIndex: 1,
-              }}
-            >
+              }}>
               <TCInnerLoader visible={true} size={50} />
             </View>
           )}
@@ -139,8 +134,7 @@ const AddSetGameModal = ({
                 fontSize: 16,
                 fontFamily: fonts.RMedium,
                 color: colors.lightBlackColor,
-              }}
-            >
+              }}>
               {title}
             </Text>
             <Text
@@ -149,8 +143,7 @@ const AddSetGameModal = ({
                 fontFamily: fonts.RRegular,
                 color: colors.redDelColor,
                 marginTop: 10,
-              }}
-            >
+              }}>
               {subTitle}
             </Text>
 
@@ -202,15 +195,13 @@ const StartsEndComponent = ({title, date, onPress}) => (
   <TouchableOpacity
     onPress={onPress}
     activeOpacity={0.7}
-    style={styles.startsEndContainer}
-  >
+    style={styles.startsEndContainer}>
     <Text
       style={{
         fontSize: 16,
         fontFamily: fonts.RMedium,
         color: colors.lightBlackColor,
-      }}
-    >
+      }}>
       {title}
     </Text>
     <View
@@ -218,16 +209,14 @@ const StartsEndComponent = ({title, date, onPress}) => (
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-      }}
-    >
+      }}>
       <Text
         style={{
           fontSize: 14,
           fontFamily: fonts.RMedium,
           textDecorationLine: 'underline',
           color: colors.lightBlackColor,
-        }}
-      >
+        }}>
         {date ? moment(date).format('hh:mm a') : '00:00'}
       </Text>
       <Text
@@ -236,8 +225,7 @@ const StartsEndComponent = ({title, date, onPress}) => (
           textDecorationLine: 'none',
           fontFamily: fonts.RMedium,
           color: colors.themeColor,
-        }}
-      >
+        }}>
         {'  '}
         {date && '(3h 55m)'}
       </Text>

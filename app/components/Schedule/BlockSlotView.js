@@ -36,12 +36,10 @@ export default function BlockSlotView({
             shadowOffset: {width: 0, height: 2},
             shadowOpacity: 0.5,
             shadowRadius: 2,
-          }}
-        >
+          }}>
           <Text
             style={[styles.fieldValue, {color: colors.whiteColor}]}
-            numberOfLines={3}
-          >
+            numberOfLines={3}>
             {allDay
               ? 'All day'
               : `${getTimeFormat(startDate)} - ${getTimeFormat(endDate)}`}
@@ -57,8 +55,7 @@ export default function BlockSlotView({
             alignSelf: 'center',
             alignItems: 'center',
             justifyContent: 'center',
-          }}
-        >
+          }}>
           <Text style={styles.blockFieldValue} numberOfLines={3}>
             {allDay
               ? 'All day'
@@ -82,8 +79,7 @@ export default function BlockSlotView({
             shadowOpacity: 0.5,
             shadowRadius: 2,
             elevation: 1,
-          }}
-        >
+          }}>
           <Text style={styles.fieldValue} numberOfLines={3}>
             {allDay
               ? 'All day'

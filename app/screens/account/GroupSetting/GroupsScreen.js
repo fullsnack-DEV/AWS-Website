@@ -40,8 +40,7 @@ export default function GroupsScreen({route, navigation}) {
         <TouchableOpacity
           onPress={() => {
             navigation.pop();
-          }}
-        >
+          }}>
           <Image
             source={images.backArrow}
             style={{
@@ -100,8 +99,7 @@ export default function GroupsScreen({route, navigation}) {
           flexDirection: 'row',
           // backgroundColor: colors.blueColor,
           justifyContent: 'space-between',
-        }}
-      >
+        }}>
         <TeamClubLeagueView
           onProfilePress={() => {}}
           teamImage={item?.full_image ? {uri: item?.full_image} : teamImagePH}
@@ -113,8 +111,7 @@ export default function GroupsScreen({route, navigation}) {
           style={{
             // backgroundColor: colors.yellowColor,
             justifyContent: 'center',
-          }}
-        >
+          }}>
           <TouchableWithoutFeedback
             onPress={() => {
               Alert.alert(
@@ -137,8 +134,7 @@ leave  ${item.group_name}?`,
                 {cancelable: false},
               );
               // }
-            }}
-          >
+            }}>
             <View style={styles.followingBtn}>
               <Text style={styles.followingText}>Leave</Text>
             </View>
@@ -151,8 +147,7 @@ leave  ${item.group_name}?`,
   return (
     <LinearGradient
       colors={[colors.whiteColor, colors.whiteColor]}
-      style={styles.mainContainer}
-    >
+      style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
       <SafeAreaView style={styles.container}>
         <FlatList

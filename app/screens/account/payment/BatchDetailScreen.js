@@ -85,8 +85,7 @@ export default function BatchDetailScreen({navigation, route}) {
           <TouchableOpacity
             onPress={() => {
               batchActionsheet.current.show();
-            }}
-          >
+            }}>
             <Image
               source={images.threeDotIcon}
               style={styles.townsCupthreeDotIcon}
@@ -213,8 +212,7 @@ export default function BatchDetailScreen({navigation, route}) {
       <View style={styles.headerButtonStyle}>
         <Text
           style={styles.cancelText}
-          onPress={() => resendModalRef.current.close()}
-        >
+          onPress={() => resendModalRef.current.close()}>
           Cancel
         </Text>
 
@@ -280,8 +278,7 @@ export default function BatchDetailScreen({navigation, route}) {
                 }
               }
             }
-          }}
-        >
+          }}>
           Send
         </Text>
       </View>
@@ -298,8 +295,7 @@ export default function BatchDetailScreen({navigation, route}) {
           onPress={() => {
             setSelectedRecipient([]);
             recipientModalRef.current.close();
-          }}
-        >
+          }}>
           Cancel
         </Text>
 
@@ -354,8 +350,7 @@ export default function BatchDetailScreen({navigation, route}) {
                 {cancelable: false},
               );
             }
-          }}
-        >
+          }}>
           Done
         </Text>
       </View>
@@ -396,8 +391,7 @@ export default function BatchDetailScreen({navigation, route}) {
               newRecipientData[index] = tempObj;
               setNewRecipientData([...newRecipientData]);
             }
-          }}
-        >
+          }}>
           <Image
             source={
               item?.selected ? images.orangeCheckBox : images.uncheckEditor
@@ -442,8 +436,7 @@ export default function BatchDetailScreen({navigation, route}) {
         <View
           style={{
             margin: 15,
-          }}
-        >
+          }}>
           <Text style={styles.dateView}>
             {`Due : ${moment(batchData?.due_date * 1000).format(
               'ddd, MMM DD, YYYY',
@@ -528,8 +521,7 @@ export default function BatchDetailScreen({navigation, route}) {
             elevation: 10,
           }}
           HeaderComponent={ModalHeader}
-          ref={resendModalRef}
-        >
+          ref={resendModalRef}>
           <View>
             {selectedActionSheetOpetion === 0 && (
               <View>
@@ -541,8 +533,7 @@ export default function BatchDetailScreen({navigation, route}) {
                     marginLeft: 15,
                     marginRight: 15,
                     flexDirection: 'row',
-                  }}
-                >
+                  }}>
                   <Text>Send to</Text>
                   <InvoiceTypeSelection
                     dataSource={[
@@ -570,15 +561,13 @@ export default function BatchDetailScreen({navigation, route}) {
                     marginLeft: 15,
                     marginRight: 15,
                     flexDirection: 'row',
-                  }}
-                >
+                  }}>
                   <Text
                     style={
                       selectedRecipient.length > 0
                         ? styles.totalRecipient
                         : styles.recipientText
-                    }
-                  >
+                    }>
                     {selectedRecipient.length > 0
                       ? `${selectedRecipient.length} Recipients`
                       : 'Add Recipients'}
@@ -595,16 +584,14 @@ export default function BatchDetailScreen({navigation, route}) {
               style={{
                 margin: 15,
                 backgroundColor: colors.lightGrayBackground,
-              }}
-            >
+              }}>
               <View style={{margin: 15}}>
                 <Text
                   style={{
                     fontFamily: fonts.RLight,
                     fontSize: 16,
                     color: colors.lightBlackColor,
-                  }}
-                >
+                  }}>
                   Invoice Title
                 </Text>
                 <Text
@@ -612,8 +599,7 @@ export default function BatchDetailScreen({navigation, route}) {
                     fontFamily: fonts.RMedium,
                     fontSize: 16,
                     color: colors.lightBlackColor,
-                  }}
-                >
+                  }}>
                   {batchData?.invoice_title}
                 </Text>
               </View>
@@ -623,8 +609,7 @@ export default function BatchDetailScreen({navigation, route}) {
                     fontFamily: fonts.RLight,
                     fontSize: 16,
                     color: colors.lightBlackColor,
-                  }}
-                >
+                  }}>
                   Invoice Description
                 </Text>
                 <Text
@@ -632,8 +617,7 @@ export default function BatchDetailScreen({navigation, route}) {
                     fontFamily: fonts.RRegular,
                     fontSize: 16,
                     color: colors.lightBlackColor,
-                  }}
-                >
+                  }}>
                   {batchData?.invoice_description}
                 </Text>
               </View>
@@ -643,8 +627,7 @@ export default function BatchDetailScreen({navigation, route}) {
                     fontFamily: fonts.RLight,
                     fontSize: 16,
                     color: colors.lightBlackColor,
-                  }}
-                >
+                  }}>
                   Invoice Amount
                 </Text>
                 <Text
@@ -652,8 +635,7 @@ export default function BatchDetailScreen({navigation, route}) {
                     fontFamily: fonts.RMedium,
                     fontSize: 20,
                     color: colors.lightBlackColor,
-                  }}
-                >
+                  }}>
                   ${batchData?.invoice_total}
                 </Text>
               </View>
@@ -663,8 +645,7 @@ export default function BatchDetailScreen({navigation, route}) {
                     fontFamily: fonts.RLight,
                     fontSize: 16,
                     color: colors.lightBlackColor,
-                  }}
-                >
+                  }}>
                   Due at
                 </Text>
                 <Text
@@ -672,8 +653,7 @@ export default function BatchDetailScreen({navigation, route}) {
                     fontFamily: fonts.RMedium,
                     fontSize: 16,
                     color: colors.lightBlackColor,
-                  }}
-                >
+                  }}>
                   {moment(batchData?.due_date * 1000).format(
                     'ddd, MMM DD, YYYY',
                   )}
@@ -702,8 +682,7 @@ export default function BatchDetailScreen({navigation, route}) {
             elevation: 10,
           }}
           HeaderComponent={RecipientsModalHeader}
-          ref={recipientModalRef}
-        >
+          ref={recipientModalRef}>
           <View>
             <View>
               {selectedActionSheetOpetion === 2 && (
@@ -714,8 +693,7 @@ export default function BatchDetailScreen({navigation, route}) {
                     color: colors.lightBlackColor,
                     margin: 15,
                     marginTop: 0,
-                  }}
-                >
+                  }}>
                   Choose recipients of the invoices that you want to cancel.
                 </Text>
               )}
@@ -728,15 +706,13 @@ export default function BatchDetailScreen({navigation, route}) {
                   marginLeft: 15,
                   marginRight: 15,
                   flexDirection: 'row',
-                }}
-              >
+                }}>
                 <Text
                   style={{
                     fontFamily: fonts.RRegular,
                     fontSize: 16,
                     color: colors.lightBlackColor,
-                  }}
-                >
+                  }}>
                   All
                 </Text>
                 {/* <Image source={images.orangeCheckBox} style={styles.checkButton} /> */}
@@ -759,8 +735,7 @@ export default function BatchDetailScreen({navigation, route}) {
                       });
                       setNewRecipientData([...result]);
                     }
-                  }}
-                >
+                  }}>
                   <Image
                     source={
                       recipientAllData
@@ -780,8 +755,7 @@ export default function BatchDetailScreen({navigation, route}) {
                   fontFamily: fonts.RRegular,
                   fontSize: 16,
                   color: colors.lightBlackColor,
-                }}
-              >
+                }}>
                 Members
               </Text>
               <FlatList

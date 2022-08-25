@@ -94,8 +94,7 @@ function ChooseVenueScreen({navigation, route}) {
             } else {
               Alert.alert('Please choose any one venue.');
             }
-          }}
-        >
+          }}>
           Save
         </Text>
       ),
@@ -115,8 +114,7 @@ function ChooseVenueScreen({navigation, route}) {
             alignItems: 'center',
             marginLeft: 15,
             marginRight: 15,
-          }}
-        >
+          }}>
           <View style={{flex: 0.9}}>
             <Text style={styles.venueTitle}>{item.name}</Text>
             <Text style={styles.venueAddress} numberOfLines={1}>
@@ -127,8 +125,7 @@ function ChooseVenueScreen({navigation, route}) {
             style={{flex: 0.1}}
             onPress={() => {
               setSelectedVenue(item);
-            }}
-          >
+            }}>
             {selectedVenue === item ? (
               <Image
                 source={images.radioCheckYellow}
@@ -155,8 +152,7 @@ function ChooseVenueScreen({navigation, route}) {
               textAlign: 'right',
               marginRight: 15,
               marginTop: 10,
-            }}
-          >
+            }}>
             Change
           </Text>
         )}
@@ -213,8 +209,7 @@ function ChooseVenueScreen({navigation, route}) {
           onPress={() => {
             console.log('Custom venue item:=>', item);
             setSelectedVenue(item);
-          }}
-        >
+          }}>
           {selectedVenue === item ? (
             <Image
               source={images.radioCheckYellow}
@@ -249,8 +244,7 @@ function ChooseVenueScreen({navigation, route}) {
             navigation.navigate('ChooseAddressScreen', {
               comeFrom: 'ChooseVenueScreen',
             });
-          }}
-        >
+          }}>
           <TextInput
             editable={false}
             pointerEvents="none"

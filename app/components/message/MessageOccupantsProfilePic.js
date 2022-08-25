@@ -113,15 +113,13 @@ const ProfilePreview = ({data, isSingle = false}) => {
         ...styles.profilePreViewContainer,
         height: outerCircleSize,
         width: outerCircleSize,
-      }}
-    >
+      }}>
       <View
         style={{
           ...styles.imageContainer,
           height: innerCircleSize,
           width: innerCircleSize,
-        }}
-      >
+        }}>
         <FastImage
           resizeMode={'contain'}
           source={data?.full_image ? {uri: data?.full_image} : defaultImage}

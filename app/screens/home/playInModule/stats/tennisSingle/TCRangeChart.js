@@ -28,8 +28,7 @@ const TCRangeChart = ({
             style={{
               ...styles.singleColumnContainer,
               width: `${(100 * progressCount) / totalCount}%`,
-            }}
-          >
+            }}>
             <GradiantContainer
               gradiantColor={[colors.userPostTimeColor, colors.lightBlackColor]}
               style={{
@@ -49,8 +48,7 @@ const TCRangeChart = ({
               zIndex: -1,
               ...styles.singleColumnContainer,
               width: `${100 - (100 * progressCount) / totalCount}%`,
-            }}
-          >
+            }}>
             <GradiantContainer
               gradiantColor={[colors.veryLightGray, colors.veryLightGray]}
               style={{
@@ -68,8 +66,7 @@ const TCRangeChart = ({
             ...styles.singleColumnContainer,
             width: '100%',
             marginTop: 30,
-          }}
-        >
+          }}>
           <GradiantContainer
             gradiantColor={[colors.veryLightGray, colors.veryLightGray]}
             style={{

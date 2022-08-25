@@ -19,8 +19,7 @@ const TCActionButton = ({
   <TouchableOpacity
     disabled={disabled || isDisabled}
     onPress={onPress}
-    style={[styles.outerContainerStyle, outerContainerStyle, props]}
-  >
+    style={[styles.outerContainerStyle, outerContainerStyle, props]}>
     <View style={[styles.containerStyle, style]}>
       <Text style={[styles.buttonText, {color: colors.themeColor}, textStyle]}>
         {title}

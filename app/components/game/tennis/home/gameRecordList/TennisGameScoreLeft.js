@@ -61,8 +61,7 @@ export default function TennisGameScoreLeft({
                 fontFamily: fonts.RLight,
                 fontSize: 12,
                 color: colors.darkGrayColor,
-              }}
-            >
+              }}>
               {getGameDateTimeInHMSformat(recordData?.timestamp)}
             </Text>
           </View>
@@ -75,8 +74,7 @@ export default function TennisGameScoreLeft({
               width: '100%',
               justifyContent: 'space-around',
               alignItems: 'space-around',
-            }}
-          >
+            }}>
             <Text style={styles.recordedBy}>
               Recorded by{' '}
               {`${recordData?.recorded_by?.first_name} ${recordData?.recorded_by?.last_name}` ??

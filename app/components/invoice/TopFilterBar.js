@@ -28,8 +28,7 @@ export default function TopFilterBar({
         alignItems: 'center',
         justifyContent: 'center',
         flexDirection: 'row',
-      }}
-    >
+      }}>
       <TextInput
         style={styles.searchTxt}
         returnKeyType="search"
@@ -47,8 +46,7 @@ export default function TopFilterBar({
           marginTop: 8,
           position: 'absolute',
           right: 0,
-        }}
-      >
+        }}>
         <Image source={images.settingInvoice} style={styles.settingIcon} />
       </TouchableOpacity>
     </View>

@@ -53,8 +53,7 @@ export default function RefereeFee({navigation, route}) {
           style={styles.saveButtonStyle}
           onPress={() => {
             onSavePressed();
-          }}
-        >
+          }}>
           Save
         </Text>
       ),
@@ -162,8 +161,7 @@ export default function RefereeFee({navigation, route}) {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-      }}
-    >
+      }}>
       <Text style={{marginTop: 15, marginBottom: 15}}>{item.label}</Text>
       <Image
         source={
@@ -190,16 +188,14 @@ export default function RefereeFee({navigation, route}) {
             }
           }}
           value={basicFee.toString()}
-          keyboardType={'decimal-pad'}
-        ></TextInput>
+          keyboardType={'decimal-pad'}></TextInput>
         <Text style={styles.curruency}>{currencyType}</Text>
       </View>
       <Text
         style={[styles.changeCurruency, {textDecorationLine: 'underline'}]}
         onPress={() => {
           setVisibleCurrencyModal(true);
-        }}
-      >
+        }}>
         {'Change currency'}
       </Text>
       <Modal
@@ -213,8 +209,7 @@ export default function RefereeFee({navigation, route}) {
         backdropTransitionOutTiming={10}
         style={{
           margin: 0,
-        }}
-      >
+        }}>
         <View
           style={{
             width: '100%',
@@ -230,21 +225,18 @@ export default function RefereeFee({navigation, route}) {
             shadowOpacity: 0.5,
             shadowRadius: 5,
             elevation: 15,
-          }}
-        >
+          }}>
           <View
             style={{
               flexDirection: 'row',
               paddingHorizontal: 15,
               justifyContent: 'space-between',
               alignItems: 'center',
-            }}
-          >
+            }}>
             <TouchableOpacity
               hitSlop={Utility.getHitSlop(15)}
               style={styles.closeButton}
-              onPress={() => setVisibleCurrencyModal(false)}
-            >
+              onPress={() => setVisibleCurrencyModal(false)}>
               <Image source={images.cancelImage} style={styles.closeButton} />
             </TouchableOpacity>
             <Text
@@ -254,8 +246,7 @@ export default function RefereeFee({navigation, route}) {
                 fontSize: 16,
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
-              }}
-            >
+              }}>
               Currency Setting
             </Text>
 
@@ -266,8 +257,7 @@ export default function RefereeFee({navigation, route}) {
                 fontSize: 16,
                 fontFamily: fonts.RRegular,
                 color: colors.themeColor,
-              }}
-            ></Text>
+              }}></Text>
           </View>
           <View style={styles.separatorLine} />
           <FlatList

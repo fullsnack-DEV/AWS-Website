@@ -61,8 +61,7 @@ function WriteCommentItems({data, onProfilePress}) {
                 ...styles.activeTimeAgoTxt,
                 marginLeft: 10,
                 fontFamily: fonts.RBold,
-              }}
-            >
+              }}>
               99 Likes
             </Text>
           </TouchableOpacity>
@@ -72,8 +71,7 @@ function WriteCommentItems({data, onProfilePress}) {
                 ...styles.activeTimeAgoTxt,
                 marginLeft: 10,
                 fontFamily: fonts.RBold,
-              }}
-            >
+              }}>
               Reply
             </Text>
           </TouchableOpacity>

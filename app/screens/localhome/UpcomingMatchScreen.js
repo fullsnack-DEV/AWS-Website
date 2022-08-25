@@ -406,8 +406,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
           fontFamily: fonts.RRegular,
           color: colors.grayColor,
           fontSize: 26,
-        }}
-      >
+        }}>
         No Games
       </Text>
     </View>
@@ -434,8 +433,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
           setIsSelected(true);
           setSelectedEntity(item);
         }}
-        style={{flexDirection: 'row', alignItems: 'center', margin: 5}}
-      >
+        style={{flexDirection: 'row', alignItems: 'center', margin: 5}}>
         <Image
           source={
             item?.thumbnail ? {uri: item?.thumbnail} : images.profilePlaceHolder
@@ -554,25 +552,21 @@ export default function UpcomingMatchScreen({navigation, route}) {
         backdropTransitionOutTiming={800}
         style={{
           margin: 0,
-        }}
-      >
+        }}>
         <View
           style={[
             styles.bottomPopupContainer,
             {height: Dimensions.get('window').height - 100},
-          ]}
-        >
+          ]}>
           <KeyboardAvoidingView
             style={{flex: 1}}
             keyboardVerticalOffset={keyboardVerticalOffset}
-            behavior={Platform.OS === 'ios' ? 'padding' : null}
-          >
+            behavior={Platform.OS === 'ios' ? 'padding' : null}>
             <ScrollView style={{flex: 1}}>
               <View style={styles.viewsContainer}>
                 <Text
                   onPress={() => setSettingPopup(false)}
-                  style={styles.cancelText}
-                >
+                  style={styles.cancelText}>
                   Cancel
                 </Text>
                 <Text style={styles.locationText}>Filter</Text>
@@ -618,8 +612,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
                       applyFilter(tempFilter);
                     }, 100);
                     console.log('DONE::');
-                  }}
-                >
+                  }}>
                   {'Apply'}
                 </Text>
               </View>
@@ -635,8 +628,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
                         flexDirection: 'row',
                         marginBottom: 10,
                         justifyContent: 'space-between',
-                      }}
-                    >
+                      }}>
                       <Text style={styles.filterTitle}>World</Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
@@ -645,8 +637,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
                           //   ...filters,
                           //   location: 'world',
                           // });
-                        }}
-                      >
+                        }}>
                         <Image
                           source={
                             locationFilterOpetion === 0
@@ -662,8 +653,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
                         flexDirection: 'row',
                         marginBottom: 10,
                         justifyContent: 'space-between',
-                      }}
-                    >
+                      }}>
                       <Text style={styles.filterTitle}>Home City</Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
@@ -682,8 +672,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
                           //       .toUpperCase()
                           //     + authContext?.entity?.obj?.city.slice(1),
                           // });
-                        }}
-                      >
+                        }}>
                         <Image
                           source={
                             locationFilterOpetion === 1
@@ -699,15 +688,13 @@ export default function UpcomingMatchScreen({navigation, route}) {
                         flexDirection: 'row',
                         marginBottom: 10,
                         justifyContent: 'space-between',
-                      }}
-                    >
+                      }}>
                       <Text style={styles.filterTitle}>Current City</Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(2);
                           getLocation();
-                        }}
-                      >
+                        }}>
                         <Image
                           source={
                             locationFilterOpetion === 2
@@ -726,14 +713,12 @@ export default function UpcomingMatchScreen({navigation, route}) {
                         navigation.navigate('SearchCityScreen', {
                           comeFrom: 'UpcomingMatchScreen',
                         });
-                      }}
-                    >
+                      }}>
                       <View
                         style={{
                           flexDirection: 'row',
                           justifyContent: 'space-between',
-                        }}
-                      >
+                        }}>
                         {/* <TCSearchCityView
                       getCity={(value) => {
                         console.log('Value:=>', value);
@@ -750,8 +735,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
                         <View
                           style={{
                             alignSelf: 'center',
-                          }}
-                        >
+                          }}>
                           <Image
                             source={
                               locationFilterOpetion === 3
@@ -771,8 +755,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
                       flexDirection: 'column',
                       margin: 15,
                       justifyContent: 'space-between',
-                    }}
-                  >
+                    }}>
                     <View style={{}}>
                       <Text style={styles.filterTitle}>Sport</Text>
                     </View>
@@ -812,8 +795,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
                           style={{
                             height: 35,
                             justifyContent: 'center',
-                          }}
-                        >
+                          }}>
                           <Text style={styles.fieldTitle} numberOfLines={1}>
                             From
                           </Text>
@@ -823,8 +805,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
                             setDatePickerFor('from');
                             setShowFrom(!showFrom);
                           }}
-                          style={{marginRight: 15, flexDirection: 'row'}}
-                        >
+                          style={{marginRight: 15, flexDirection: 'row'}}>
                           <Text style={styles.fieldValue} numberOfLines={1}>
                             {fromDate
                               ? `${moment(fromDate).format(
@@ -837,8 +818,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
                           <TouchableOpacity
                             onPress={() => {
                               setFromDate();
-                            }}
-                          >
+                            }}>
                             <Image
                               source={images.menuClose}
                               style={{height: 10, width: 10, marginRight: 15}}
@@ -853,8 +833,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
                           style={{
                             height: 35,
                             justifyContent: 'center',
-                          }}
-                        >
+                          }}>
                           <Text style={styles.fieldTitle} numberOfLines={1}>
                             To
                           </Text>
@@ -864,8 +843,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
                             setDatePickerFor('to');
                             setShowTo(!showTo);
                           }}
-                          style={{marginRight: 15, flexDirection: 'row'}}
-                        >
+                          style={{marginRight: 15, flexDirection: 'row'}}>
                           <Text style={styles.fieldValue} numberOfLines={1}>
                             {toDate
                               ? `${moment(toDate).format(
@@ -878,8 +856,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
                           <TouchableOpacity
                             onPress={() => {
                               setToDate();
-                            }}
-                          >
+                            }}>
                             <Image
                               source={images.menuClose}
                               style={{height: 10, width: 10, marginRight: 15}}
@@ -895,8 +872,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
                         color: colors.lightBlackColor,
                         textAlign: 'right',
                         marginTop: 10,
-                      }}
-                    >
+                      }}>
                       Time zone{' '}
                       <Text
                         style={{
@@ -904,8 +880,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
                           fontFamily: fonts.RRegular,
                           color: colors.lightBlackColor,
                           textDecorationLine: 'underline',
-                        }}
-                      >
+                        }}>
                         Vancouver
                       </Text>
                     </Text>
@@ -979,8 +954,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
                     flexDirection: 'column',
                     margin: 15,
                     justifyContent: 'space-between',
-                  }}
-                >
+                  }}>
                   <View style={{}}>
                     <Text style={styles.filterTitle}>Team Or Player</Text>
                   </View>
@@ -989,8 +963,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
                       style={{
                         flexDirection: 'column',
                         // justifyContent: 'space-between',
-                      }}
-                    >
+                      }}>
                       <TextInput
                         onChangeText={(text) => {
                           setIsSelected(false);
@@ -1021,8 +994,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
                             shadowOpacity: 0.3,
                             shadowRadius: 5,
                             elevation: 3,
-                          }}
-                        >
+                          }}>
                           <FlatList
                             data={entityData}
                             renderItem={renderEntity}
@@ -1059,8 +1031,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
                 ],
                 {cancelable: false},
               );
-            }}
-          >
+            }}>
             <Text style={styles.resetTitle}>Reset</Text>
           </TouchableOpacity>
         </View>

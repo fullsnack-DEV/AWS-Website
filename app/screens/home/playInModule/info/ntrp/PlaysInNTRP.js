@@ -35,8 +35,7 @@ const PlaysInNTRP = ({
         editButtonVisible={isAdmin}
         title={strings.ntrpTitle}
         onEditPress={() => actionSheet.current.show()}
-        containerStyle={{marginVertical: 10}}
-      >
+        containerStyle={{marginVertical: 10}}>
         <Text style={styles.bioTextStyle}>{registerSport?.ntrp ?? '-'}</Text>
       </EditEventItem>
       <ActionSheet
@@ -101,8 +100,7 @@ const EditPlaysInModal = ({
       heading={`${
         editModalType !== strings.privacySettings ? 'Edit ' : ''
       }${editModalType}`}
-      onSavePress={onSavePress}
-    >
+      onSavePress={onSavePress}>
       {editModalType === strings.ntrpTitle ? (
         <View style={{marginTop: 20}}>
           <TCPicker

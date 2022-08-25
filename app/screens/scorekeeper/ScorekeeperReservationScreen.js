@@ -413,8 +413,8 @@ export default function ScorekeeperReservationScreen({navigation, route}) {
         bodyParams.status === ScorekeeperReservationStatus.requestcancelled ||
         (bodyParams.status === ScorekeeperReservationStatus.declined &&
           bodyParams.version > 3)) && (
-        <View>
-          <TCBorderButton
+          <View>
+            <TCBorderButton
             title={strings.alterReservation}
             textColor={colors.grayColor}
             borderColor={colors.grayColor}
@@ -441,7 +441,7 @@ export default function ScorekeeperReservationScreen({navigation, route}) {
               }
             }}
           />
-          <TCBorderButton
+            <TCBorderButton
             title={strings.cancelreservation}
             textColor={colors.whiteColor}
             borderColor={colors.grayColor}
@@ -479,7 +479,7 @@ export default function ScorekeeperReservationScreen({navigation, route}) {
               }
             }}
           />
-        </View>
+          </View>
       )}
       {(bodyParams.status === ScorekeeperReservationStatus.pendingpayment ||
         bodyParams.status === ScorekeeperReservationStatus.approved) && (

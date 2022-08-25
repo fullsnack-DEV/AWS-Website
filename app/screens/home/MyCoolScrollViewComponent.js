@@ -16,8 +16,7 @@ const MyCoolScrollViewComponent = () => (
         //    On End Reached API Call
       }
     }}
-    scrollEventThrottle={400}
-  >
+    scrollEventThrottle={400}>
     <FlatList data={['']} renderItem={() => {}} scrollEnable={false} />
   </ScrollView>
 );

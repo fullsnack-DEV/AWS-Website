@@ -194,8 +194,7 @@ function ReservationStatusView({data, onClick}) {
             fontSize: 12,
             color: colors.lightBlackColor,
             textAlign: 'center',
-          }}
-        >
+          }}>
           {moment(getDate()).format('MMM')}
         </Text>
         <Text
@@ -204,8 +203,7 @@ function ReservationStatusView({data, onClick}) {
             fontSize: 25,
             color: colors.lightBlackColor,
             textAlign: 'center',
-          }}
-        >
+          }}>
           {moment(getDate()).format('DD')}
         </Text>
       </View>

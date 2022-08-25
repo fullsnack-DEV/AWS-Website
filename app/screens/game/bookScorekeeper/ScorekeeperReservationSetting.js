@@ -134,8 +134,7 @@ export default function ScorekeeperReservationSetting({navigation, route}) {
       style={styles.listContainer}
       onPress={() => {
         handleOpetions(item.key);
-      }}
-    >
+      }}>
       <View style={{flexDirection: 'row'}}>
         <Text style={styles.listItems}>{item.key}</Text>
 
@@ -160,15 +159,13 @@ export default function ScorekeeperReservationSetting({navigation, route}) {
     <>
       <ScrollView style={styles.mainContainer}>
         <View
-          style={{padding: 15, backgroundColor: colors.grayBackgroundColor}}
-        >
+          style={{padding: 15, backgroundColor: colors.grayBackgroundColor}}>
           <Text
             style={{
               fontSize: 14,
               fontFamily: fonts.RRegular,
               color: colors.lightBlackColor,
-            }}
-          >
+            }}>
             {strings.scorekeeperSettingHeading}
           </Text>
         </View>
@@ -185,16 +182,14 @@ export default function ScorekeeperReservationSetting({navigation, route}) {
       {showBottomNotes && (
         <LinearGradient
           colors={[colors.yellowColor, colors.orangeGradientColor]}
-          style={styles.challengeNotesView}
-        >
+          style={styles.challengeNotesView}>
           <Text
             style={{
               color: colors.whiteColor,
               fontFamily: fonts.RBold,
               fontSize: 14,
               width: '88%',
-            }}
-          >
+            }}>
             {strings.scorekeeperSettingNotes}
           </Text>
           <TouchableOpacity onPress={() => setShowBottomNotes(false)}>

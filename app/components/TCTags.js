@@ -18,14 +18,12 @@ export default function TCTags({dataSource, titleKey, onTagCancelPress}) {
       {item.isChecked && (
         <View
           style={styles.textContainer}
-          onPress={() => onTagCancelPress({item, index})}
-        >
+          onPress={() => onTagCancelPress({item, index})}>
           <Text style={styles.tagTitleText}>{item[titleKey]}</Text>
           <Image source={images.tagDivider} style={styles.dividerImage} />
           <TouchableOpacity
             style={styles.closeButton}
-            onPress={() => onTagCancelPress({item, index})}
-          >
+            onPress={() => onTagCancelPress({item, index})}>
             <Image source={images.cancelImage} style={styles.closeButton} />
           </TouchableOpacity>
         </View>

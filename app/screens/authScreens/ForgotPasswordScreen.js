@@ -36,8 +36,7 @@ export default function ForgotPasswordScreen({navigation}) {
             if (checkValidation()) {
               forgotPassword(email);
             }
-          }}
-        >
+          }}>
           Next
         </Text>
       ),
@@ -45,8 +44,7 @@ export default function ForgotPasswordScreen({navigation}) {
         <TouchableOpacity
           onPress={() => {
             navigation.pop();
-          }}
-        >
+          }}>
           <Image
             source={images.backArrow}
             style={{
@@ -113,8 +111,7 @@ export default function ForgotPasswordScreen({navigation}) {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <LinearGradient
         colors={[colors.themeColor1, colors.themeColor3]}
-        style={styles.mainContainer}
-      >
+        style={styles.mainContainer}>
         <ActivityLoader visible={loading} />
         <FastImage
           resizeMode={'stretch'}

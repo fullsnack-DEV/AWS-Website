@@ -36,8 +36,7 @@ const PlayInEditModal = ({
     hasBackdrop
     onRequestClose={onClose}
     onBackdropPress={onClose}
-    backdropOpacity={0}
-  >
+    backdropOpacity={0}>
     <TCKeyboardView>
       <View style={styles.modalContainerViewStyle}>
         <Header
@@ -70,8 +69,7 @@ const PlayInEditModal = ({
                   fontSize: 16,
                   fontFamily: fonts.RLight,
                   color: colors.lightBlackColor,
-                }}
-              >
+                }}>
                 {'Save'}
               </Text>
             </TouchableOpacity>
@@ -91,8 +89,7 @@ const PlayInEditModal = ({
               zIndex: 1,
               borderTopLeftRadius: 12,
               borderTopRightRadius: 12,
-            }}
-          >
+            }}>
             <TCInnerLoader visible={true} size={50} />
           </View>
         )}

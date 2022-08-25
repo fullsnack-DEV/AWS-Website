@@ -121,8 +121,7 @@ function ChallengeAvailabilityItem({
               obj.allDay = !toggle;
               changeAvailablilityItem(obj);
               setToggle(!toggle);
-            }}
-          >
+            }}>
             <Image
               source={toggle ? images.checkWhiteLanguage : images.uncheckWhite}
               style={styles.checkboxImg}

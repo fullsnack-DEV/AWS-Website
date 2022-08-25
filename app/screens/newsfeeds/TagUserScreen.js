@@ -70,8 +70,7 @@ export default function TagUserScreen({backBtnPress, onItemPress}) {
   return (
     <KeyboardAvoidingView
       style={{flex: 1, backgroundColor: 'white'}}
-      behavior={Platform.OS === 'ios' ? 'padding' : null}
-    >
+      behavior={Platform.OS === 'ios' ? 'padding' : null}>
       <SafeAreaView>
         <View style={styles.containerStyle}>
           <View style={styles.backIconViewStyle}>
@@ -128,8 +127,7 @@ export default function TagUserScreen({backBtnPress, onItemPress}) {
                 style={styles.userTextStyle}
                 onPress={() => {
                   onItemPress(item);
-                }}
-              >
+                }}>
                 {item.full_name}
               </Text>
             );

@@ -393,8 +393,7 @@ export default function CreateTeamForm3({navigation, route}) {
       <TCFormProgress totalSteps={3} curruentStep={3} />
       <ScrollView
         style={styles.mainContainer}
-        showsVerticalScrollIndicator={false}
-      >
+        showsVerticalScrollIndicator={false}>
         <ActivityLoader visible={loading} />
 
         <TCLabel title={strings.photoUploadTitle} />

@@ -122,15 +122,13 @@ export default function RegisterPlayerForm2({navigation, route}) {
       )
     ) {
       registerdPlayerData = authContext?.entity?.obj?.registered_sports.map(
-        (item) => {
-          return item.sport === bodyParams.sport &&
+        (item) => item.sport === bodyParams.sport &&
             item.sport_type === bodyParams.sport_type
             ? {
                 ...item,
                 is_published: true,
               }
-            : item;
-        },
+            : item,
       );
     } else {
       registerdPlayerData.push(bodyParams);

@@ -31,8 +31,7 @@ export default function GroupEventItems({
       </View>
       <TouchableOpacity
         style={styles.touchCheckBoxStyle}
-        onPress={onCheckBoxPress}
-      >
+        onPress={onCheckBoxPress}>
         <Image
           source={checkBoxImage}
           style={styles.checkBoxImageStyle}

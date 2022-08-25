@@ -55,8 +55,7 @@ const Scores = ({gameId, getTennisGameData}) => {
       </Text>
       {!isImageContainer ? (
         <View
-          style={{...styles.innerColumnContainer, ...rowTextContainerStyle}}
-        >
+          style={{...styles.innerColumnContainer, ...rowTextContainerStyle}}>
           <Text style={{...styles.contentText, ...firstRowTextStyle}}>
             {firstRowText}
           </Text>
@@ -71,8 +70,7 @@ const Scores = ({gameId, getTennisGameData}) => {
             flex: 1,
             justifyContent: 'space-evenly',
             alignItems: 'center',
-          }}
-        >
+          }}>
           <FastImage
             source={
               firstRowImage ? {uri: firstRowImage} : images.profilePlaceHolder
@@ -116,8 +114,7 @@ const Scores = ({gameId, getTennisGameData}) => {
             style={{maxWidth: '45%', flexWrap: 'wrap'}}
             bounces={false}
             bouncesZoom={false}
-            horizontal={true}
-          >
+            horizontal={true}>
             {Array(
               gameData?.scoreboard?.sets?.length < 4
                 ? 4
@@ -153,8 +150,7 @@ const Scores = ({gameId, getTennisGameData}) => {
             style={{maxWidth: '40%', flexWrap: 'wrap'}}
             bounces={false}
             bouncesZoom={false}
-            horizontal={true}
-          >
+            horizontal={true}>
             {/* Sets */}
             <SingleColumn
               headerTextStyle={{

@@ -83,8 +83,7 @@ function MultiPostVideo({
         style={[
           styles.singleImageDisplayStyle,
           {borderWidth: 1, borderColor: colors.lightgrayColor},
-        ]}
-      >
+        ]}>
         <FastImage
           style={styles.loadimageStyle}
           source={images.imageLoadingGIF}
@@ -95,8 +94,7 @@ function MultiPostVideo({
       <TouchableWithoutFeedback
         onPress={() => {
           toggleModal();
-        }}
-      >
+        }}>
         <Video
           repeat={true}
           ref={videoPlayerRef}
@@ -133,8 +131,7 @@ function MultiPostVideo({
             style={styles.pauseMuteStyle}
             onPress={() => {
               setMute(!mute);
-            }}
-          >
+            }}>
             <FastImage
               resizeMode={'contain'}
               tintColor={'white'}

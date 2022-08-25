@@ -37,8 +37,7 @@ export default function TCGameScoreRight({
           backgroundColor: 'transparent',
           alignSelf: 'center',
           bottom: 0,
-        }}
-      >
+        }}>
         <Text
           style={[
             styles.scoreText,
@@ -48,8 +47,7 @@ export default function TCGameScoreRight({
                   ? colors.themeColor
                   : colors.lightBlackColor,
             },
-          ]}
-        >
+          ]}>
           {recordData?.scoreboard?.home_team ?? 0}
         </Text>
         {' : '}
@@ -62,8 +60,7 @@ export default function TCGameScoreRight({
                   ? colors.themeColor
                   : colors.lightBlackColor,
             },
-          ]}
-        >
+          ]}>
           {recordData?.scoreboard?.away_team ?? 0}
         </Text>
       </Text>
@@ -74,8 +71,7 @@ export default function TCGameScoreRight({
       <View style={{...styles.headerView, backgroundColor}}>
         <View style={styles.leftBlankView}>
           <Text
-            style={{fontFamily: fonts.RBold, fontSize: 12, textAlign: 'right'}}
-          >
+            style={{fontFamily: fonts.RBold, fontSize: 12, textAlign: 'right'}}>
             {getGameConvertMinsToTime(recordData?.minutes ?? 0)}
           </Text>
           <Text
@@ -83,8 +79,7 @@ export default function TCGameScoreRight({
               fontFamily: fonts.RLight,
               fontSize: 12,
               color: colors.darkGrayColor,
-            }}
-          >
+            }}>
             {getGameDateTimeInHMSformat(recordData?.timestamp)}
           </Text>
         </View>
@@ -104,8 +99,7 @@ export default function TCGameScoreRight({
               width: '20%',
               alignItems: 'flex-start',
               left: 10,
-            }}
-          >
+            }}>
             <View style={styles.gameRecordButton}>
               <FastImage
                 source={soccerGamePlayStatsImage[recordData?.verb]}
@@ -150,8 +144,7 @@ export default function TCGameScoreRight({
               justifyContent: 'space-around',
               alignItems: 'space-around',
               position: 'absolute',
-            }}
-          >
+            }}>
             <Text style={styles.recordedBy}>
               Recorded by{' '}
               {`${recordData?.recorded_by?.first_name} ${recordData?.recorded_by?.last_name}` ??

@@ -136,8 +136,7 @@ const AllInOneGallery = ({
           borderBottomColor: colors.lightgrayColor,
           borderBottomWidth: 1,
           marginBottom: 15,
-        }}
-      >
+        }}>
         {showSubTabs &&
           [GALLERY_TYPE.FROMME, GALLERY_TYPE.TAGGED].map((item) => (
             <TouchableOpacity
@@ -146,8 +145,7 @@ const AllInOneGallery = ({
               onPress={() => {
                 setGalleryData([]);
                 setGalleryType(item);
-              }}
-            >
+              }}>
               <Text
                 style={{
                   color:
@@ -156,8 +154,7 @@ const AllInOneGallery = ({
                       : colors.lightBlackColor,
                   fontFamily:
                     item === galleryType ? fonts.RBold : fonts.RRegular,
-                }}
-              >
+                }}>
                 {_.startCase(item)}
               </Text>
             </TouchableOpacity>
@@ -170,8 +167,7 @@ const AllInOneGallery = ({
               textAlign: 'center',
               fontFamily: fonts.RLight,
               fontSize: 16,
-            }}
-          >
+            }}>
             No Gallery Found
           </Text>
         }

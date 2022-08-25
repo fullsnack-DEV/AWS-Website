@@ -39,8 +39,7 @@ export default function Availibility({navigation, route}) {
           style={styles.saveButtonStyle}
           onPress={() => {
             onSavePressed();
-          }}
-        >
+          }}>
           Save
         </Text>
       ),
@@ -193,15 +192,13 @@ export default function Availibility({navigation, route}) {
             justifyContent: 'space-between',
             margin: 15,
             marginTop: 35,
-          }}
-        >
+          }}>
           <Text
             style={{
               fontSize: 16,
               fontFamily: fonts.RRegular,
               color: colors.lightBlackColor,
-            }}
-          >
+            }}>
             {strings.AvailibilitySubTitle}
           </Text>
           <ToggleView

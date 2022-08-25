@@ -229,9 +229,7 @@ export const convertFirstCharacterAllWordsToUppercase = (stringToConvert) => {
     stringObj = stringToConvert;
   }
   const wordsArray = stringObj.split(' ');
-  const convertedWordsArray = wordsArray.map((word) => {
-    return convertFirstCharacterToUppercase(word);
-  });
+  const convertedWordsArray = wordsArray.map((word) => convertFirstCharacterToUppercase(word));
 
   return convertedWordsArray.join(' ');
 };
@@ -827,11 +825,9 @@ export const getCalendar = async (
   }
 };
 
-export const uniqueArray = (array, propertyName) => {
-  return array.filter(
+export const uniqueArray = (array, propertyName) => array.filter(
     (e, i) => array.findIndex((a) => a[propertyName] === e[propertyName]) === i,
   );
-};
 
 export const getNearDateTime = (date) => {
   const start = moment(date);

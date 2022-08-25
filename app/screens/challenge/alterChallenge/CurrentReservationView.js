@@ -155,8 +155,7 @@ export default function CurruentReservationView({reservationObj}) {
             {
               marginTop: 0,
             },
-          ]}
-        >
+          ]}>
           Request No.{`${challengeObj?.challenge_id}`}
         </Text>
         <View
@@ -165,8 +164,7 @@ export default function CurruentReservationView({reservationObj}) {
             flexDirection: 'row',
             justifyContent: 'space-between',
             margin: 15,
-          }}
-        >
+          }}>
           <View style={styles.challengerView}>
             <View style={styles.teamView}>
               <Image source={images.reqIcon} style={styles.reqOutImage} />

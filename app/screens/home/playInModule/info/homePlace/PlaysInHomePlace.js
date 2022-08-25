@@ -35,8 +35,7 @@ const PlaysInHomePlace = ({
       <EditEventItem
         editButtonVisible={isAdmin}
         title={strings.homePlaceTitle}
-        onEditPress={() => actionSheet.current.show()}
-      >
+        onEditPress={() => actionSheet.current.show()}>
         <Text style={styles.bioTextStyle}>
           {registerSport?.homePlace ?? '-'}
         </Text>
@@ -137,8 +136,7 @@ const EditPlaysInModal = ({
       heading={`${
         editModalType !== strings.privacySettings ? 'Edit ' : ''
       }${editModalType}`}
-      onSavePress={onSavePress}
-    >
+      onSavePress={onSavePress}>
       <ModalLocationSearch
         visible={searchLocationModal}
         onClose={() => setSearchLocationModal(false)}
@@ -154,8 +152,7 @@ const EditPlaysInModal = ({
       {editModalType === strings.homePlaceTitle ? (
         <TouchableOpacity
           onPress={() => setSearchLocationModal(true)}
-          style={styles.containerStyle}
-        >
+          style={styles.containerStyle}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <Text style={{...styles.textInputStyle}}>{homePlace}</Text>
           </View>

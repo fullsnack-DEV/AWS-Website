@@ -24,8 +24,7 @@ const MatchRecords = ({
         style={{flexDirection: 'row', padding: 10}}
         onPress={() => {
           navigation.navigate('SoccerRecordList', {gameId, gameData, isAdmin});
-        }}
-      >
+        }}>
         <Text style={styles.title}>Match records</Text>
         <FastImage
           resizeMode={'contain'}

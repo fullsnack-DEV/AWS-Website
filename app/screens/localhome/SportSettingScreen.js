@@ -101,8 +101,7 @@ export default function SportSettingScreen({navigation, route}) {
             navigation.navigate('AddOrDeleteSport', {
               sports: sportsSource,
             });
-          }}
-        >
+          }}>
           <Text style={styles.addSportsTitle}>Add or delete Sports</Text>
         </TouchableOpacity>
       </SafeAreaView>

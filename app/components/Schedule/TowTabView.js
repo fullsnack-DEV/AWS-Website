@@ -15,30 +15,26 @@ export default function TwoTabView({
     <View style={styles.eventPrivacyContianer}>
       <TouchableOpacity
         onPress={onFirstTabPress}
-        style={styles.activeEventPricacy}
-      >
+        style={styles.activeEventPricacy}>
         <Text
           style={
             indexCounter === 0
               ? styles.activeEventPrivacyText
               : styles.inactiveEventPrivacyText
-          }
-        >
+          }>
           {firstTabTitle}
         </Text>
       </TouchableOpacity>
       <View style={styles.itemSepratorView} />
       <TouchableOpacity
         onPress={onSecondTabPress}
-        style={styles.activeEventPricacy}
-      >
+        style={styles.activeEventPricacy}>
         <Text
           style={
             indexCounter === 1
               ? styles.activeEventPrivacyText
               : styles.inactiveEventPrivacyText
-          }
-        >
+          }>
           {secondTabTitle}
         </Text>
       </TouchableOpacity>

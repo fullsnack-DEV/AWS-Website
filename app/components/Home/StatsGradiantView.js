@@ -22,8 +22,7 @@ export default function StatsGradiantView({
     <TouchableOpacity style={styles.containerStyle} onPress={onItemPress}>
       <LinearGradient
         colors={[topGradiantColor1, bottomGradiantColor1]}
-        style={styles.topLinearViewStyle}
-      >
+        style={styles.topLinearViewStyle}>
         <Image
           source={sourceImage}
           style={[styles.imageViewStyle, imageViewStyle]}
@@ -33,8 +32,7 @@ export default function StatsGradiantView({
       </LinearGradient>
       <LinearGradient
         colors={[topGradiantColor2, bottomGradiantColor2]}
-        style={styles.bottomLinearViewStyle}
-      >
+        style={styles.bottomLinearViewStyle}>
         <Text style={[styles.counterTextStyle, counterTextStyle]}>
           {counterNumber}
         </Text>

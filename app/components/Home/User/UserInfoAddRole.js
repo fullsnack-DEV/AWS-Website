@@ -10,8 +10,7 @@ const UserInfoAddRole = ({title, onPress, thumbURL, isOpacity = false}) => (
       <Image source={thumbURL} style={styles.imageStyle} />
       <View style={{marginLeft: 10, marginRight: 12}}>
         <Text
-          style={[styles.titleStyle, {fontSize: title.length > 9 ? 12 : 14}]}
-        >
+          style={[styles.titleStyle, {fontSize: title.length > 9 ? 12 : 14}]}>
           {title}
         </Text>
       </View>

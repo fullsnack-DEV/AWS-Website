@@ -24,8 +24,7 @@ const SportsListView = ({sports, onSelect, defaultSport}) => {
           !!defaultSport?.filter((obj) => obj.sport === item.sport).length > 0
         }
         style={styles.listItem}
-        onPress={() => onSelect({item, index})}
-      >
+        onPress={() => onSelect({item, index})}>
         <View
           style={{
             flexDirection: 'row',
@@ -35,8 +34,7 @@ const SportsListView = ({sports, onSelect, defaultSport}) => {
               defaultSport?.filter((obj) => obj.sport === item.sport).length > 0
                 ? 0.5
                 : 1,
-          }}
-        >
+          }}>
           <Text style={styles.sportList}>
             {getSportName(item, authContext)}
           </Text>

@@ -19,12 +19,10 @@ export default class AppleStyleSwipeableRow extends Component {
     });
     return (
       <Animated.View
-        style={{flex: 1, transform: [{translateX: trans}], ...style}}
-      >
+        style={{flex: 1, transform: [{translateX: trans}], ...style}}>
         <RectButton
           style={[styles.rightAction, {backgroundColor: color}]}
-          onPress={this.onPress}
-        >
+          onPress={this.onPress}>
           {/* <Text style={styles.actionText}>{text}</Text> */}
           <Image source={this.props.image} style={styles.deleteImgContainer} />
         </RectButton>
@@ -37,8 +35,7 @@ export default class AppleStyleSwipeableRow extends Component {
       style={{
         width: 70,
         flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
-      }}
-    >
+      }}>
       {this.renderRightAction('', this.props.color, 0, progress)}
     </View>
   );
@@ -58,8 +55,7 @@ export default class AppleStyleSwipeableRow extends Component {
         ref={this.updateRef}
         friction={2}
         rightThreshold={40}
-        renderRightActions={this.renderRightActions}
-      >
+        renderRightActions={this.renderRightActions}>
         {children}
       </Swipeable>
     );

@@ -12,8 +12,7 @@ export default function TCNavigationHeader({name, groupType, image}) {
         alignItems: 'center',
         marginLeft: 15,
         marginRight: 15,
-      }}
-    >
+      }}>
       <View style={styles.profileView}>
         <Image
           source={image ? {uri: image} : images.teamPlaceholder}

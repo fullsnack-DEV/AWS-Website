@@ -200,8 +200,7 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
         style={[
           styles.checkBoxTitle,
           {marginTop: 15, marginBottom: 0, marginLeft: 15},
-        ]}
-      >
+        ]}>
         Membership {'&'} Admin Authority
       </Text>
       <View style={styles.mainCheckBoxContainer}>
@@ -211,8 +210,7 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
             alignItems: 'center',
 
             marginRight: 15,
-          }}
-        >
+          }}>
           <View style={styles.profileView}>
             <Image
               source={
@@ -242,8 +240,7 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
                   ...setting,
                   is_member: member_setting,
                 });
-              }}
-            >
+              }}>
               <Image
                 source={
                   // item.join_membership_acceptedadmin === false
@@ -266,8 +263,7 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
                   ...setting,
                   is_admin: admin_setting,
                 });
-              }}
-            >
+              }}>
               <Image
                 source={
                   setting.is_admin ? images.orangeCheckBox : images.uncheckWhite
@@ -289,8 +285,7 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
                 ...groupMemberDetail,
                 is_player: !groupMemberDetail.is_player,
               });
-            }}
-          >
+            }}>
             <Image
               source={
                 groupMemberDetail.is_player
@@ -309,8 +304,7 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
                 ...groupMemberDetail,
                 is_coach: !groupMemberDetail.is_coach,
               });
-            }}
-          >
+            }}>
             <Image
               source={
                 groupMemberDetail.is_coach
@@ -329,8 +323,7 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
                 ...groupMemberDetail,
                 is_others: !groupMemberDetail.is_others,
               });
-            }}
-          >
+            }}>
             <Image
               source={
                 groupMemberDetail.is_others
@@ -397,8 +390,7 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
                 ...groupMemberDetail,
                 status: playerStatus,
               });
-            }}
-          >
+            }}>
             <Image
               source={
                 playerStatus.indexOf('Injured') !== -1
@@ -424,8 +416,7 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
                 ...groupMemberDetail,
                 status: playerStatus,
               });
-            }}
-          >
+            }}>
             <Image
               source={
                 playerStatus.some((el) => el === 'Long-term Away')
@@ -451,8 +442,7 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
                 ...groupMemberDetail,
                 status: playerStatus,
               });
-            }}
-          >
+            }}>
             <Image
               source={
                 playerStatus.some((el) => el === 'Suspended')

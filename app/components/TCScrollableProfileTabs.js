@@ -29,8 +29,7 @@ const TCScrollableProfileTabs = ({
       tabBarInactiveTextColor={colors.lightBlackColor}
       tabBarUnderlineStyle={{backgroundColor: colors.themeColor}}
       initialPage={0}
-      renderTabBar={() => <ScrollableTabBar />}
-    >
+      renderTabBar={() => <ScrollableTabBar />}>
       {tabItem.map((item, key) => (
         <View key={key} tabLabel={item} />
       ))}

@@ -38,8 +38,7 @@ function TeamEntityView({data}) {
           flexDirection: 'row',
           margin: 15,
           marginBottom: 5,
-        }}
-      >
+        }}>
         <Image source={images.reqIcon} style={styles.inOutImageView} />
         <View style={styles.entityView}>
           <View style={styles.imageShadowView}>
@@ -68,8 +67,7 @@ function TeamEntityView({data}) {
         style={{
           flexDirection: 'row',
           marginLeft: 15,
-        }}
-      >
+        }}>
         <Image source={images.reqeIcon} style={styles.inOutImageView} />
         <View style={styles.entityView}>
           <View style={styles.imageShadowView}>

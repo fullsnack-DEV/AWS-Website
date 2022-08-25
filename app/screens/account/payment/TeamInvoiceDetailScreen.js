@@ -78,8 +78,7 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
               } else {
                 actionSheet.current.show();
               }
-            }}
-          >
+            }}>
             <Image
               source={images.threeDotIcon}
               style={styles.townsCupSettingIcon}
@@ -155,18 +154,17 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
       logsList?.length - 1 === index &&
       authContext?.entity?.role === 'team' &&
       item?.payment_mode !== 'card' ? (
-      <AppleStyleSwipeableRow
+        <AppleStyleSwipeableRow
         onPress={() => onDeleteLog(item)}
         color={colors.redDelColor}
-        image={images.deleteIcon}
-      >
-        <PaymentLogs
+        image={images.deleteIcon}>
+          <PaymentLogs
           data={item}
           onPressCard={() => {
             navigation.navigate('LogDetailScreen', {data: item});
           }}
         />
-      </AppleStyleSwipeableRow>
+        </AppleStyleSwipeableRow>
     ) : (
       <PaymentLogs
         data={item}
@@ -181,8 +179,7 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
       <View style={styles.headerButtonStyle}>
         <Text
           style={styles.cancelText}
-          onPress={() => resendModalRef.current.close()}
-        >
+          onPress={() => resendModalRef.current.close()}>
           Cancel
         </Text>
 
@@ -191,8 +188,7 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
           style={styles.sendText}
           onPress={() => {
             resendInvoiceByID();
-          }}
-        >
+          }}>
           Send
         </Text>
       </View>
@@ -257,8 +253,7 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
           marginTop: 15,
           fontSize: 16,
           color: colors.lightBlackColor,
-        }}
-      >
+        }}>
         No Logs Found
       </Text>
     ),
@@ -325,8 +320,7 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
                 flexDirection: 'row',
                 alignItems: 'center',
                 borderRadius: 34,
-              }}
-            >
+              }}>
               <Image
                 source={
                   from === 'user'
@@ -346,8 +340,7 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
                   fontFamily: fonts.RBold,
                   fontSize: 16,
                   color: colors.lightBlackColor,
-                }}
-              >
+                }}>
                 {from === 'user'
                   ? `${invoiceDetail?.group?.group_name}`
                   : `${invoiceDetail?.user?.first_name} ${invoiceDetail?.user?.last_name}`}
@@ -358,8 +351,7 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
                 fontFamily: fonts.RRegular,
                 fontSize: 16,
                 color: colors.lightBlackColor,
-              }}
-            >
+              }}>
               {`Invoice no.: ${invoiceDetail?.invoice_id}`}
             </Text>
             <Text
@@ -367,8 +359,7 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
                 fontFamily: fonts.RRegular,
                 fontSize: 16,
                 color: colors.lightBlackColor,
-              }}
-            >
+              }}>
               {`Due at: ${moment(
                 new Date(invoiceDetail?.due_date * 1000),
               ).format('MMM DD, YYYY')}`}
@@ -377,8 +368,7 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
 
           <LinearGradient
             colors={[colors.grayBackgroundColor, colors.grayBackgroundColor]}
-            style={styles.paymentProgressView}
-          >
+            style={styles.paymentProgressView}>
             <LinearGradient
               colors={[colors.greenGradientEnd, colors.greenGradientStart]}
               style={{
@@ -389,16 +379,14 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
                 }%`,
                 // alignItems: 'center',
                 justifyContent: 'center',
-              }}
-            >
+              }}>
               <Text
                 style={{
                   color: 'white',
                   fontFamily: fonts.RBold,
                   fontSize: 12,
                   marginLeft: 15,
-                }}
-              >
+                }}>
                 {`$${invoiceDetail?.amount_paid} `}
                 {strings.defaultCurrency}
               </Text>
@@ -421,8 +409,7 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
                 fontFamily: fonts.RLight,
                 fontSize: 16,
                 color: colors.lightBlackColor,
-              }}
-            >
+              }}>
               {'Description '}
             </Text>
             <Text
@@ -430,8 +417,7 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
                 fontFamily: fonts.RRegular,
                 fontSize: 16,
                 color: colors.lightBlackColor,
-              }}
-            >
+              }}>
               {invoiceDetail?.invoice_description}
             </Text>
           </View>
@@ -441,8 +427,7 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
               fontSize: 12,
               color: colors.userPostTimeColor,
               marginLeft: 15,
-            }}
-          >
+            }}>
             {`Logged by ${invoiceDetail?.created_by?.first_name} ${
               invoiceDetail?.created_by?.last_name
             } at ${moment(new Date(invoiceDetail?.created_date * 1000)).format(
@@ -462,8 +447,7 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
               style={styles.paymentContainer}
               onPress={() => {
                 navigation.navigate('AddLogScreen', {invoiceDetail});
-              }}
-            >
+              }}>
               <Text style={styles.cardDetailText}>Log Manually</Text>
             </TouchableOpacity>
           )}
@@ -475,8 +459,7 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
                 navigation.navigate('PaymentMethodsScreen', {
                   comeFrom: 'TeamInvoiceDetailScreen',
                 });
-              }}
-            >
+              }}>
               <Text style={styles.cardDetailViewText}>
                 {route?.params?.paymentMethod?.card?.brand
                   ? Utility.capitalize(
@@ -502,8 +485,7 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
                     fontSize: 20,
                     color: colors.lightBlackColor,
                     margin: 15,
-                  }}
-                >
+                  }}>
                   Log
                 </Text>
                 <FlatList
@@ -523,12 +505,10 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
                 <TouchableOpacity
                   onPress={() => {
                     payNowClicked();
-                  }}
-                >
+                  }}>
                   <LinearGradient
                     colors={[colors.yellowColor, colors.darkThemeColor]}
-                    style={styles.activeEventPricacy}
-                  >
+                    style={styles.activeEventPricacy}>
                     <Text style={styles.activeEventPrivacyText}>
                       {'PAY NOW'}
                     </Text>
@@ -665,23 +645,20 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
                 elevation: 10,
               }}
               HeaderComponent={ModalHeader}
-              ref={resendModalRef}
-            >
+              ref={resendModalRef}>
               <View>
                 <View
                   style={{
                     margin: 15,
                     backgroundColor: colors.lightGrayBackground,
-                  }}
-                >
+                  }}>
                   <View style={{margin: 15}}>
                     <Text
                       style={{
                         fontFamily: fonts.RLight,
                         fontSize: 16,
                         color: colors.lightBlackColor,
-                      }}
-                    >
+                      }}>
                       Invoice Title
                     </Text>
                     <Text
@@ -689,8 +666,7 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
                         fontFamily: fonts.RMedium,
                         fontSize: 16,
                         color: colors.lightBlackColor,
-                      }}
-                    >
+                      }}>
                       {invoiceDetail?.invoice_title}
                     </Text>
                   </View>
@@ -700,8 +676,7 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
                         fontFamily: fonts.RLight,
                         fontSize: 16,
                         color: colors.lightBlackColor,
-                      }}
-                    >
+                      }}>
                       Invoice Description
                     </Text>
                     <Text
@@ -709,8 +684,7 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
                         fontFamily: fonts.RRegular,
                         fontSize: 16,
                         color: colors.lightBlackColor,
-                      }}
-                    >
+                      }}>
                       {invoiceDetail?.invoice_description}
                     </Text>
                   </View>
@@ -720,8 +694,7 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
                         fontFamily: fonts.RLight,
                         fontSize: 16,
                         color: colors.lightBlackColor,
-                      }}
-                    >
+                      }}>
                       Invoice Amount
                     </Text>
                     <Text
@@ -729,8 +702,7 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
                         fontFamily: fonts.RMedium,
                         fontSize: 20,
                         color: colors.lightBlackColor,
-                      }}
-                    >
+                      }}>
                       ${invoiceDetail?.amount_due}
                     </Text>
                   </View>
@@ -740,8 +712,7 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
                         fontFamily: fonts.RLight,
                         fontSize: 16,
                         color: colors.lightBlackColor,
-                      }}
-                    >
+                      }}>
                       Due at
                     </Text>
                     <Text
@@ -749,8 +720,7 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
                         fontFamily: fonts.RMedium,
                         fontSize: 16,
                         color: colors.lightBlackColor,
-                      }}
-                    >
+                      }}>
                       {moment(invoiceDetail?.due_date * 1000).format(
                         'ddd, MMM DD, YYYY',
                       )}

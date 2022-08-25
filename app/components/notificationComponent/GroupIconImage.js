@@ -19,8 +19,7 @@ function GroupIconImage({
             currentState === 'Active'
               ? styles.placeholderViewActive
               : styles.placeholderViewInActive
-          }
-        >
+          }>
           <Image source={{uri: entityImg}} style={styles.entityImg} />
         </View>
       ) : (
@@ -29,8 +28,7 @@ function GroupIconImage({
             currentState === 'Active'
               ? styles.placeholderViewActive
               : styles.placeholderViewInActive
-          }
-        >
+          }>
           <Image source={placeholderImage} style={styles.entityImg} />
           <Text style={styles.oneCharacterText}>
             {entityName.charAt(0).toUpperCase()}
@@ -42,8 +40,7 @@ function GroupIconImage({
           <Text
             style={
               unreadCount > 99 ? styles.ovalBadgeView : styles.badgeCounter
-            }
-          >
+            }>
             {unreadCount > 99 ? '99+' : unreadCount}
           </Text>
         </View>

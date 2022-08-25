@@ -156,8 +156,7 @@ const MessageEditInviteeScreen = ({navigation, route}) => {
         <TouchableOpacity
           onPress={onPress}
           style={[styles.listItems, style]}
-          disabled={isDisabled}
-        >
+          disabled={isDisabled}>
           <View
             colors={
               isChecked
@@ -167,13 +166,11 @@ const MessageEditInviteeScreen = ({navigation, route}) => {
             style={[
               styles.listItems,
               {padding: 10, opacity: isDisabled ? 0.5 : 1},
-            ]}
-          >
+            ]}>
             <View
               style={{
                 flexDirection: 'row',
-              }}
-            >
+              }}>
               <View style={styles.imageMainContainer}>
                 <FastImage
                   resizeMode={'cover'}
@@ -186,23 +183,20 @@ const MessageEditInviteeScreen = ({navigation, route}) => {
                   flexDirection: 'row',
                   justifyContent: 'space-between',
                   flex: 1,
-                }}
-              >
+                }}>
                 <View
                   style={{
                     flex: 3,
                     justifyContent: 'center',
                     marginLeft: hp(1),
-                  }}
-                >
+                  }}>
                   <TCGroupNameBadge
                     textStyle={{...styles.title, color: colors.lightBlackColor}}
                     groupType={entityType}
                     name={fullName}
                   />
                   <Text
-                    style={{...styles.subTitle, color: colors.lightBlackColor}}
-                  >
+                    style={{...styles.subTitle, color: colors.lightBlackColor}}>
                     {city}
                   </Text>
                 </View>
@@ -282,8 +276,7 @@ const MessageEditInviteeScreen = ({navigation, route}) => {
               {!isExistingUser && (
                 <TouchableOpacity
                   style={styles.selectedContactButtonView}
-                  onPress={() => toggleSelection(true, item)}
-                >
+                  onPress={() => toggleSelection(true, item)}>
                   <Image
                     source={images.cancelWhite}
                     style={styles.deSelectedContactImage}
@@ -300,8 +293,7 @@ const MessageEditInviteeScreen = ({navigation, route}) => {
                 fontFamily: fonts.RBold,
                 textAlign: 'center',
                 width: 50,
-              }}
-            >
+              }}>
               {fullName}
             </Text>
           </View>
@@ -335,8 +327,7 @@ const MessageEditInviteeScreen = ({navigation, route}) => {
           textAlign: 'center',
           marginTop: hp(2),
           color: colors.userPostTimeColor,
-        }}
-      >
+        }}>
         No Records Found
       </Text>
     ),
@@ -490,8 +481,7 @@ const MessageEditInviteeScreen = ({navigation, route}) => {
             alignItems: 'center',
             flexDirection: 'row',
             height: 45,
-          }}
-        >
+          }}>
           {TAB_ITEMS.map((item, index) => (
             <TouchableOpacity
               activeOpacity={1}
@@ -505,16 +495,14 @@ const MessageEditInviteeScreen = ({navigation, route}) => {
               onPress={() => {
                 setCurrentTab(index);
                 setSearchText('');
-              }}
-            >
+              }}>
               <View
                 style={{
                   width: '100%',
                   height: 43,
                   alignItems: 'center',
                   justifyContent: 'center',
-                }}
-              >
+                }}>
                 <Text
                   style={{
                     width: '100%',
@@ -527,8 +515,7 @@ const MessageEditInviteeScreen = ({navigation, route}) => {
                       currentTab === index
                         ? colors.darkYellowColor
                         : colors.lightBlackColor,
-                  }}
-                >
+                  }}>
                   {item}
                 </Text>
               </View>
@@ -565,8 +552,7 @@ const MessageEditInviteeScreen = ({navigation, route}) => {
           backgroundColor: colors.grayBackgroundColor,
           width: '100%',
           padding: 15,
-        }}
-      >
+        }}>
         <TextInput
           autoFocus={true}
           value={searchText}

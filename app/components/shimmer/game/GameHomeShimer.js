@@ -42,14 +42,12 @@ const GameHomeShimer = ({navigation}) => (
           paddingHorizontal: 15,
           alignItems: 'center',
           justifyContent: 'center',
-        }}
-      >
+        }}>
         <View style={{marginTop: 15, width: '100%'}}>
           <ScrollView
             horizontal={true}
             showsHorizontalScrollIndicator={false}
-            showsVerticalScrollIndicator={false}
-          >
+            showsVerticalScrollIndicator={false}>
             {new Array(5).fill('').map((childItem, childIndex) => (
               <View key={`child${childIndex}`}>
                 <ShimmerView

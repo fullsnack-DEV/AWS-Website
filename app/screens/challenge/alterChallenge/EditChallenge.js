@@ -491,8 +491,7 @@ export default function EditChallenge({navigation, route}) {
                 flexDirection: 'row',
                 justifyContent: 'space-between',
                 margin: 15,
-              }}
-            >
+              }}>
               <View style={styles.challengerView}>
                 <View style={styles.teamView}>
                   <Image source={images.reqIcon} style={styles.reqOutImage} />
@@ -1130,8 +1129,7 @@ export default function EditChallenge({navigation, route}) {
           backgroundColor: 'rgba(0,0,0,0.5)',
           borderTopLeftRadius: 15,
           borderTopRightRadius: 15,
-        }}
-      >
+        }}>
         <View style={styles.mainContainer}>
           <Image style={styles.background} source={images.orangeLayer} />
           <Image style={styles.background} source={images.entityCreatedBG} />
@@ -1154,8 +1152,7 @@ export default function EditChallenge({navigation, route}) {
               onPress={() => {
                 setAlterModalVisible(false);
                 navigation.popToTop();
-              }}
-            >
+              }}>
               <Text style={styles.goToProfileTitle}>OK</Text>
             </TouchableOpacity>
           </SafeAreaView>

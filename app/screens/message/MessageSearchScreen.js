@@ -148,8 +148,7 @@ const MessageSearchScreen = ({navigation}) => {
         fontFamily: fonts.RLight,
         fontSize: 16,
         marginTop: 15,
-      }}
-    >
+      }}>
       No Data Found
     </Text>
   );
@@ -205,8 +204,7 @@ const MessageSearchScreen = ({navigation}) => {
           backgroundColor: colors.grayBackgroundColor,
           width: '100%',
           padding: 15,
-        }}
-      >
+        }}>
         <TextInput
           autoFocus={true}
           value={searchText}

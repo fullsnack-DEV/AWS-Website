@@ -141,8 +141,7 @@ export default function ChangePasswordScreen({navigation}) {
               color: colors.lightBlackColor,
               textAlign: 'center',
               fontFamily: fonts.RBold,
-            }}
-          >
+            }}>
             Change Password
           </Text>
         }
@@ -153,8 +152,7 @@ export default function ChangePasswordScreen({navigation}) {
                 fontSize: 16,
                 fontFamily: fonts.RMedium,
                 color: colors.lightBlackColor,
-              }}
-            >
+              }}>
               Save
             </Text>
           </TouchableOpacity>
@@ -199,16 +197,14 @@ export default function ChangePasswordScreen({navigation}) {
                 right: 15,
                 alignItems: 'center',
                 justifyContent: 'center',
-              }}
-            >
+              }}>
               <Text
                 style={{
                   textDecorationLine: 'underline',
                   color: colors.userPostTimeColor,
                   fontSize: 10,
                   fontFamily: fonts.RLight,
-                }}
-              >
+                }}>
                 {hideNewPassword ? 'SHOW' : 'HIDE'}
               </Text>
             </TouchableOpacity>
@@ -232,15 +228,13 @@ export default function ChangePasswordScreen({navigation}) {
                 right: 15,
                 alignItems: 'center',
                 justifyContent: 'center',
-              }}
-            >
+              }}>
               <Text
                 style={{
                   color: colors.userPostTimeColor,
                   fontSize: 10,
                   fontFamily: fonts.RLight,
-                }}
-              >
+                }}>
                 {hideConfirmPassword ? 'SHOW' : 'HIDE'}
               </Text>
             </TouchableOpacity>

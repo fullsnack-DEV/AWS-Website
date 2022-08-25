@@ -23,12 +23,12 @@ const TCGreenSwitcher = ({
         selectedTab === 1
           ? styles.activeEventPricacy
           : styles.inactiveEventPricacy
-      }
-    >
+      }>
       <Text
         onPress={onFirstTabPress}
-        style={selectedTab === 1 ? styles.whiteTextColor : styles.grayTextColor}
-      >
+        style={
+          selectedTab === 1 ? styles.whiteTextColor : styles.grayTextColor
+        }>
         {firstTabText}
       </Text>
     </LinearGradient>
@@ -42,12 +42,12 @@ const TCGreenSwitcher = ({
         selectedTab === 2
           ? styles.activeEventPricacy
           : styles.inactiveEventPricacy
-      }
-    >
+      }>
       <Text
         onPress={onSecondTabPress}
-        style={selectedTab === 2 ? styles.whiteTextColor : styles.grayTextColor}
-      >
+        style={
+          selectedTab === 2 ? styles.whiteTextColor : styles.grayTextColor
+        }>
         {secondTabText}
       </Text>
     </LinearGradient>

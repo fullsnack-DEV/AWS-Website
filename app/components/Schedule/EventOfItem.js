@@ -13,8 +13,7 @@ function EventOfItem({eventOfText, refereeList}) {
           backgroundColor: colors.whiteColor,
           flexDirection: 'row',
           alignItems: 'center',
-        }}
-      >
+        }}>
         <Text style={styles.eventOfTextStyle}>{eventOfText}</Text>
         <FlatList
           data={refereeList}

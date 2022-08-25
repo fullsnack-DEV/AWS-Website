@@ -97,8 +97,7 @@ export default function RespondToInviteScreen({navigation, route}) {
       <TCFormProgress totalSteps={3} curruentStep={3} />
       <ScrollView
         style={styles.mainContainer}
-        showsVerticalScrollIndicator={false}
-      >
+        showsVerticalScrollIndicator={false}>
         <ActivityLoader visible={loading} />
 
         <TCLabel title={strings.invitetocreateteam} />
@@ -188,8 +187,7 @@ export default function RespondToInviteScreen({navigation, route}) {
             fontSize: 20,
             fontFamily: fonts.RRegular,
             color: colors.lightBlackColor,
-          }}
-        >
+          }}>
           {getStatusMessage()}
         </Text>
       ) : (

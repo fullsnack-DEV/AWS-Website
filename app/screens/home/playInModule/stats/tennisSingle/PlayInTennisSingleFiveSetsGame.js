@@ -12,8 +12,7 @@ const TopHeader = ({title}) => (
       flexDirection: 'row',
       paddingVertical: 5,
       paddingHorizontal: 15,
-    }}
-  >
+    }}>
     <View style={styles.totalGameViewStyle}>
       <Text style={styles.totalGameTextStyle}>{title}</Text>
     </View>

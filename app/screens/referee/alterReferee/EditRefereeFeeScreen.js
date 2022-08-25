@@ -44,8 +44,7 @@ export default function EditRefereeFeeScreen({navigation, route}) {
             setBasicFee(text);
           }}
           value={basicFee}
-          keyboardType={'decimal-pad'}
-        ></TextInput>
+          keyboardType={'decimal-pad'}></TextInput>
         <Text style={styles.curruency}>CAD</Text>
       </View>
       <TCGradientButton

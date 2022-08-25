@@ -60,8 +60,7 @@ export default function ModalLocationSearch({visible, onSelect, onClose}) {
             onSelect(data);
           })
           .catch(onClose);
-      }}
-    >
+      }}>
       <Text style={styles.cityList}>{cityData[index].description}</Text>
 
       <Separator />
@@ -84,8 +83,7 @@ export default function ModalLocationSearch({visible, onSelect, onClose}) {
       }}
       hasBackdrop
       onBackdropPress={onClose}
-      backdropOpacity={0}
-    >
+      backdropOpacity={0}>
       <FastImage
         style={styles.background}
         resizeMode={'stretch'}
@@ -103,8 +101,7 @@ export default function ModalLocationSearch({visible, onSelect, onClose}) {
           position: 'absolute',
           right: wp(5),
           top: hp(8),
-        }}
-      >
+        }}>
         <FastImage
           source={images.cancelImage}
           resizeMode={'contain'}

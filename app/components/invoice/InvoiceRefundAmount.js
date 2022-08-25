@@ -20,8 +20,7 @@ export default function InvoiceRefundAmount({
             fontSize: 16,
             fontFamily: fonts.RMedium,
             color: colors.lightBlackColor,
-          }}
-        >
+          }}>
           {`$${totalAmount} ${currencyType}`}
         </Text>
       </View>
@@ -33,8 +32,7 @@ export default function InvoiceRefundAmount({
             fontSize: 16,
             fontFamily: fonts.RMedium,
             color: colors.greenColorCard,
-          }}
-        >
+          }}>
           {`$${notRefundedAmount} ${currencyType}`}
         </Text>
       </View>
@@ -46,8 +44,7 @@ export default function InvoiceRefundAmount({
             fontSize: 16,
             fontFamily: fonts.RMedium,
             color: colors.darkThemeColor,
-          }}
-        >
+          }}>
           {`$${refundedAmount} ${currencyType}`}
         </Text>
       </View>

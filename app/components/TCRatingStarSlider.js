@@ -31,8 +31,7 @@ const TCRatingStarSlider = ({
             onPress={() => {
               onPress(index + 1);
               setRating(index + 1);
-            }}
-          >
+            }}>
             <TCStar
               color={index + 1 <= rating ? starColor : STAR_COLOR.WHITE}
               size={starSize}

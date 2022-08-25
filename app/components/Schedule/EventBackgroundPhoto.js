@@ -21,8 +21,7 @@ function EventBackgroundPhoto({
   return (
     <ImageBackground
       source={imageURL}
-      style={[styles.bgStyle, {height: isImage ? 200 : 150}]}
-    >
+      style={[styles.bgStyle, {height: isImage ? 200 : 150}]}>
       {!isPreview && (
         <View>
           {!isEdit && (

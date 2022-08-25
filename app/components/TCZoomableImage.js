@@ -30,8 +30,7 @@ const TCZoomableImage = ({
             alignItems: 'center',
             // height: getScreenHeight({ isLandscape, screenInsets }),
             // width: getScreenWidth({ isLandscape, screenInsets }),
-          }}
-        >
+          }}>
           <FastImage
             style={style}
             source={thumbnailSource}

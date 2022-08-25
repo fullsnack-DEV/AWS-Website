@@ -77,8 +77,7 @@ export default function RecentMatchItems({
   return (
     <TouchableWithoutFeedback
       style={styles.backgroundView}
-      onPress={onItemPress}
-    >
+      onPress={onItemPress}>
       <View style={styles.backgroundView}>
         <View
           style={[
@@ -87,8 +86,7 @@ export default function RecentMatchItems({
               backgroundColor:
                 eventColor[0] !== '#' ? `#${eventColor}` : eventColor,
             },
-          ]}
-        >
+          ]}>
           <Text style={styles.dateMonthText}>
             {moment(startDate).format('MMM')}
           </Text>
@@ -105,8 +103,7 @@ export default function RecentMatchItems({
                       eventColor[0] !== '#' ? `#${eventColor}` : eventColor,
                   },
                 ]}
-                numberOfLines={1}
-              >
+                numberOfLines={1}>
                 {title}
               </Text>
               {showEventNumbers && (
@@ -125,8 +122,7 @@ export default function RecentMatchItems({
             <View style={styles.timeCityDividerStyle} />
             <Text
               numberOfLines={1}
-              style={[styles.eventTime, {width: wp('42%')}]}
-            >
+              style={[styles.eventTime, {width: wp('42%')}]}>
               {location}
             </Text>
           </View>

@@ -28,8 +28,7 @@ function DefaultColorModal({
       style={{margin: 0, justifyContent: 'flex-end'}}
       hasBackdrop
       onBackdropPress={onBackdropPress}
-      backdropOpacity={0}
-    >
+      backdropOpacity={0}>
       <View style={[styles.containerStyle, containerStyle]}>
         <Header
           mainContainerStyle={styles.headerMainContainerStyle}
@@ -53,8 +52,7 @@ function DefaultColorModal({
                     fontSize: 14,
                     fontFamily: fonts.RRegular,
                     color: colors.lightBlackColor,
-                  }}
-                >
+                  }}>
                   Done
                 </Text>
               </TouchableOpacity>

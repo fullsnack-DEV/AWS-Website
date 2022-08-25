@@ -195,8 +195,7 @@ const MessageEditGroupScreen = ({route, navigation}) => {
                 ...styles.eventTextStyle,
                 width: 100,
                 textAlign: 'right',
-              }}
-            >
+              }}>
               Done
             </Text>
           </TouchableOpacity>
@@ -215,8 +214,7 @@ const MessageEditGroupScreen = ({route, navigation}) => {
         <TouchableOpacity
           onPress={() => {
             onBGImageClicked();
-          }}
-        >
+          }}>
           <FastImage
             resizeMode={'cover'}
             source={

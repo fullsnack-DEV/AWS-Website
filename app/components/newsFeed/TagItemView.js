@@ -14,8 +14,7 @@ function TagItemView({
   return (
     <TouchableWithoutFeedback
       style={styles.mainContainerStyle}
-      onPress={onItemPress}
-    >
+      onPress={onItemPress}>
       <View style={{flexDirection: 'row', alignItems: 'center'}}>
         <Image source={source} style={styles.imageStyle} resizeMode={'cover'} />
         <View style={styles.textViewStyle}>

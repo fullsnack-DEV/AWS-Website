@@ -70,8 +70,7 @@ export default function RefereesSetting({navigation, route}) {
           style={styles.saveButtonStyle}
           onPress={() => {
             onSavePressed();
-          }}
-        >
+          }}>
           Save
         </Text>
       ),
@@ -115,16 +114,14 @@ export default function RefereesSetting({navigation, route}) {
             setVisibleModal(false);
           }, 300);
         }
-      }}
-    >
+      }}>
       <View
         style={{
           padding: 20,
           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'space-between',
-        }}
-      >
+        }}>
         <Text style={styles.languageList}>{item}</Text>
         <View>
           {selection === item ? (
@@ -334,8 +331,7 @@ export default function RefereesSetting({navigation, route}) {
             marginLeft: 15,
             marginRight: 15,
             marginTop: 15,
-          }}
-        >
+          }}>
           {strings.refereeRules1}
         </Text>
         <Text
@@ -344,14 +340,12 @@ export default function RefereesSetting({navigation, route}) {
             fontSize: 16,
             color: colors.lightBlackColor,
             margin: 15,
-          }}
-        >
+          }}>
           {strings.refereeRules2}
         </Text>
         <TouchableOpacity
           style={styles.viewContainer}
-          onPress={() => setVisibleModal(true)}
-        >
+          onPress={() => setVisibleModal(true)}>
           <Text style={styles.itemView}> {selection || '-'}</Text>
           <View style={{flexDirection: 'row'}}>
             <Text style={styles.itemView}>{'Referee(s)'}</Text>
@@ -386,8 +380,7 @@ export default function RefereesSetting({navigation, route}) {
             fontSize: 16,
             color: colors.darkThemeColor,
             margin: 15,
-          }}
-        >
+          }}>
           {
             'In order to complete this part, please click the Save button on the right top after choosing your preference.'
           }
@@ -401,15 +394,13 @@ export default function RefereesSetting({navigation, route}) {
           animationOutTiming={800}
           backdropTransitionInTiming={300}
           backdropTransitionOutTiming={800}
-          style={styles.modalStyle}
-        >
+          style={styles.modalStyle}>
           <View style={styles.modalViewContainer}>
             <View style={styles.modalHeaderContainer}>
               <TouchableOpacity
                 hitSlop={Utility.getHitSlop(15)}
                 style={styles.closeButton}
-                onPress={() => setVisibleModal(false)}
-              >
+                onPress={() => setVisibleModal(false)}>
                 <Image source={images.cancelImage} style={styles.closeButton} />
               </TouchableOpacity>
               <Text style={styles.itemText}>{strings.refereesTitle}</Text>

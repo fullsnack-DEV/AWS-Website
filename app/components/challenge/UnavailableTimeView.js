@@ -22,8 +22,7 @@ export default function UnavailableTimeView({
             justifyContent: 'center',
             alignItems: 'center',
             borderRadius: 5,
-          }}
-        >
+          }}>
           <Text style={styles.fieldTitle} numberOfLines={1}>
             Blocked zone
           </Text>

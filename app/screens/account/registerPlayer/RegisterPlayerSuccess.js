@@ -32,8 +32,7 @@ const RegisterPlayerSuccess = ({navigation}) => {
           position: 'absolute',
           alignItems: 'center',
           justifyContent: 'center',
-        }}
-      >
+        }}>
         <FastImage
           source={images.profilePlaceHolder}
           style={{width: 60, height: 60}}
@@ -45,8 +44,7 @@ const RegisterPlayerSuccess = ({navigation}) => {
             fontSize: 20,
             marginTop: 10,
             textAlign: 'center',
-          }}
-        >
+          }}>
           Registered as {'\n'}a player
         </Text>
       </LinearGradient>

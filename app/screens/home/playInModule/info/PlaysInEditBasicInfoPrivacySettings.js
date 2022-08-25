@@ -60,8 +60,7 @@ const PlaysInEditBasicInfoPrivacySettings = () => {
   return (
     <EventItemRender
       title={'Who can see each category in Basic Info?'}
-      containerStyle={{marginTop: 10}}
-    >
+      containerStyle={{marginTop: 10}}>
       {/*  Gender */}
       <RenderPrivacySettingSection
         title={'Gender'}

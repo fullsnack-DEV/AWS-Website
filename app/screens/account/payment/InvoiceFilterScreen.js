@@ -117,8 +117,7 @@ export default function InvoiceFilterScreen({navigation}) {
       headerRight: () => (
         <View style={styles.rightHeaderView}>
           <TouchableOpacity
-            onPress={() => createInvoiceModalRef.current.open()}
-          >
+            onPress={() => createInvoiceModalRef.current.open()}>
             <Image
               source={images.plusInvoice}
               style={styles.townsCupPlusIcon}
@@ -199,8 +198,7 @@ export default function InvoiceFilterScreen({navigation}) {
       <View style={styles.headerButtonStyle}>
         <Text
           style={styles.cancelText}
-          onPress={() => createInvoiceModalRef.current.close()}
-        >
+          onPress={() => createInvoiceModalRef.current.close()}>
           Cancel
         </Text>
 
@@ -234,8 +232,7 @@ export default function InvoiceFilterScreen({navigation}) {
                   }, 10);
                 });
             }
-          }}
-        >
+          }}>
           Send
         </Text>
       </View>
@@ -249,8 +246,7 @@ export default function InvoiceFilterScreen({navigation}) {
       <View style={styles.headerButtonStyle}>
         <Text
           style={styles.cancelText}
-          onPress={() => recipientModalRef.current.close()}
-        >
+          onPress={() => recipientModalRef.current.close()}>
           Cancel
         </Text>
 
@@ -267,8 +263,7 @@ export default function InvoiceFilterScreen({navigation}) {
             console.log(result);
             setSelectedRecipient(result);
             recipientModalRef.current.close();
-          }}
-        >
+          }}>
           Done
         </Text>
       </View>
@@ -282,8 +277,7 @@ export default function InvoiceFilterScreen({navigation}) {
       <View style={styles.headerButtonStyle}>
         <Text
           style={styles.cancelText}
-          onPress={() => filterModalRef.current.close()}
-        >
+          onPress={() => filterModalRef.current.close()}>
           Cancel
         </Text>
 
@@ -292,8 +286,7 @@ export default function InvoiceFilterScreen({navigation}) {
           style={styles.sendText}
           onPress={() => {
             filterModalRef.current.close();
-          }}
-        >
+          }}>
           Apply
         </Text>
       </View>
@@ -328,8 +321,7 @@ export default function InvoiceFilterScreen({navigation}) {
             tempObj.selected = !tempObj?.selected;
             recipientData[index] = tempObj;
             setRecipientData([...recipientData]);
-          }}
-        >
+          }}>
           <Image
             source={
               item?.selected ? images.orangeCheckBox : images.uncheckEditor
@@ -358,8 +350,7 @@ export default function InvoiceFilterScreen({navigation}) {
         onPress={() => {
           // onTagCancelPress({ item, index })
           alert('cancel');
-        }}
-      >
+        }}>
         <Image source={images.cancelImage} style={styles.closeButton} />
       </TouchableOpacity>
     </View>
@@ -509,8 +500,7 @@ export default function InvoiceFilterScreen({navigation}) {
             elevation: 10,
           }}
           HeaderComponent={createInvoiceModalHeader}
-          ref={createInvoiceModalRef}
-        >
+          ref={createInvoiceModalRef}>
           <View>
             <View>
               <TouchableOpacity
@@ -522,15 +512,13 @@ export default function InvoiceFilterScreen({navigation}) {
                   marginLeft: 15,
                   marginRight: 15,
                   flexDirection: 'row',
-                }}
-              >
+                }}>
                 <Text
                   style={
                     selectedRecipient.length > 0
                       ? styles.totalRecipient
                       : styles.recipientText
-                  }
-                >
+                  }>
                   {selectedRecipient.length > 0
                     ? `${selectedRecipient.length} Recipients`
                     : 'Recipients'}
@@ -551,15 +539,13 @@ export default function InvoiceFilterScreen({navigation}) {
                   marginLeft: 15,
                   marginRight: 15,
                   flexDirection: 'row',
-                }}
-              >
+                }}>
                 <Text
                   style={{
                     fontFamily: fonts.RRegular,
                     fontSize: 16,
                     color: colors.lightBlackColor,
-                  }}
-                >
+                  }}>
                   Due Date
                 </Text>
                 <Text
@@ -567,8 +553,7 @@ export default function InvoiceFilterScreen({navigation}) {
                     selectedDueDate
                       ? styles.dueDateSelectedText
                       : styles.dueDateText
-                  }
-                >
+                  }>
                   {selectedDueDate
                     ? moment(selectedDueDate).format('MMM DD, YYYY')
                     : 'Please select'}
@@ -602,15 +587,13 @@ export default function InvoiceFilterScreen({navigation}) {
                   color: colors.lightBlackColor,
                   marginLeft: 15,
                   marginTop: 15,
-                }}
-              >
+                }}>
                 {strings.invoiceTitle}
               </Text>
               <TextInput
                 style={styles.amountTxt}
                 onChangeText={(text) => setInvoiceTitle(text)}
-                value={invoiceTitle}
-              ></TextInput>
+                value={invoiceTitle}></TextInput>
             </View>
 
             <View>
@@ -621,16 +604,14 @@ export default function InvoiceFilterScreen({navigation}) {
                   color: colors.lightBlackColor,
                   marginLeft: 15,
                   marginTop: 15,
-                }}
-              >
+                }}>
                 {strings.amountDueTitle}
               </Text>
               <TextInput
                 style={styles.amountTxt}
                 onChangeText={(text) => setAmount(text)}
                 keyboardType="numeric"
-                value={amount}
-              ></TextInput>
+                value={amount}></TextInput>
             </View>
 
             <View style={{marginBottom: 10}}>
@@ -641,16 +622,14 @@ export default function InvoiceFilterScreen({navigation}) {
                   color: colors.lightBlackColor,
                   marginLeft: 15,
                   marginTop: 15,
-                }}
-              >
+                }}>
                 {strings.invoiceDescTitle}
               </Text>
               <TextInput
                 style={styles.noteTxt}
                 multiline
                 onChangeText={(text) => setNote(text)}
-                value={note}
-              ></TextInput>
+                value={note}></TextInput>
             </View>
           </View>
         </Modalize>
@@ -674,8 +653,7 @@ export default function InvoiceFilterScreen({navigation}) {
             elevation: 10,
           }}
           HeaderComponent={RecipientsModalHeader}
-          ref={recipientModalRef}
-        >
+          ref={recipientModalRef}>
           <View>
             <View>
               <View>
@@ -687,15 +665,13 @@ export default function InvoiceFilterScreen({navigation}) {
                     marginLeft: 15,
                     marginRight: 15,
                     flexDirection: 'row',
-                  }}
-                >
+                  }}>
                   <Text
                     style={{
                       fontFamily: fonts.RRegular,
                       fontSize: 16,
                       color: colors.lightBlackColor,
-                    }}
-                  >
+                    }}>
                     All
                   </Text>
                   {/* <Image source={images.orangeCheckBox} style={styles.checkButton} /> */}
@@ -710,8 +686,7 @@ export default function InvoiceFilterScreen({navigation}) {
                       });
 
                       setRecipientData([...result]);
-                    }}
-                  >
+                    }}>
                     <Image
                       source={
                         recipientAllData
@@ -731,8 +706,7 @@ export default function InvoiceFilterScreen({navigation}) {
                     fontFamily: fonts.RRegular,
                     fontSize: 16,
                     color: colors.lightBlackColor,
-                  }}
-                >
+                  }}>
                   Members
                 </Text>
                 <FlatList
@@ -764,8 +738,7 @@ export default function InvoiceFilterScreen({navigation}) {
             elevation: 10,
           }}
           HeaderComponent={filterModalHeader}
-          ref={filterModalRef}
-        >
+          ref={filterModalRef}>
           <View>
             <View>
               <Text style={styles.radioHeader}>Filter by payment</Text>
@@ -774,8 +747,7 @@ export default function InvoiceFilterScreen({navigation}) {
                   style={styles.radioItem}
                   onPress={() =>
                     setFilterPayment(DataSource.filterByPayment[0])
-                  }
-                >
+                  }>
                   <Text style={styles.radioTitle}>
                     {DataSource.filterByPayment[0]}
                   </Text>
@@ -792,8 +764,7 @@ export default function InvoiceFilterScreen({navigation}) {
                   style={styles.radioItem}
                   onPress={() =>
                     setFilterPayment(DataSource.filterByPayment[1])
-                  }
-                >
+                  }>
                   <Text style={styles.radioTitle}>
                     {DataSource.filterByPayment[1]}
                   </Text>
@@ -810,8 +781,7 @@ export default function InvoiceFilterScreen({navigation}) {
                   style={styles.radioItem}
                   onPress={() =>
                     setFilterPayment(DataSource.filterByPayment[2])
-                  }
-                >
+                  }>
                   <Text style={styles.radioTitle}>
                     {DataSource.filterByPayment[2]}
                   </Text>
@@ -833,8 +803,7 @@ export default function InvoiceFilterScreen({navigation}) {
               <View>
                 <TouchableOpacity
                   style={styles.radioItem}
-                  onPress={() => setFilterBatch(DataSource.filterByBatch[0])}
-                >
+                  onPress={() => setFilterBatch(DataSource.filterByBatch[0])}>
                   <Text style={styles.radioTitle}>
                     {DataSource.filterByBatch[0]}
                   </Text>
@@ -849,8 +818,7 @@ export default function InvoiceFilterScreen({navigation}) {
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.radioItem}
-                  onPress={() => setFilterBatch(DataSource.filterByBatch[1])}
-                >
+                  onPress={() => setFilterBatch(DataSource.filterByBatch[1])}>
                   <Text style={styles.radioTitle}>
                     {DataSource.filterByBatch[1]}
                   </Text>
@@ -865,8 +833,7 @@ export default function InvoiceFilterScreen({navigation}) {
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.radioItem}
-                  onPress={() => setFilterBatch(DataSource.filterByBatch[2])}
-                >
+                  onPress={() => setFilterBatch(DataSource.filterByBatch[2])}>
                   <Text style={styles.radioTitle}>
                     {DataSource.filterByBatch[2]}
                   </Text>
@@ -889,8 +856,7 @@ export default function InvoiceFilterScreen({navigation}) {
               <View>
                 <TouchableOpacity
                   style={styles.radioItem}
-                  onPress={() => setFilterDate(filterByDate[0])}
-                >
+                  onPress={() => setFilterDate(filterByDate[0])}>
                   <Text style={styles.radioTitle}>{filterByDate[0]}</Text>
                   <Image
                     source={
@@ -903,8 +869,7 @@ export default function InvoiceFilterScreen({navigation}) {
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.radioItem}
-                  onPress={() => setFilterDate(filterByDate[1])}
-                >
+                  onPress={() => setFilterDate(filterByDate[1])}>
                   <Text style={styles.radioTitle}>{filterByDate[1]}</Text>
                   <Image
                     source={
@@ -917,8 +882,7 @@ export default function InvoiceFilterScreen({navigation}) {
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.radioItem}
-                  onPress={() => setFilterDate(filterByDate[2])}
-                >
+                  onPress={() => setFilterDate(filterByDate[2])}>
                   <Text style={styles.radioTitle}>{filterByDate[2]}</Text>
                   <Image
                     source={
@@ -931,8 +895,7 @@ export default function InvoiceFilterScreen({navigation}) {
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.radioItem}
-                  onPress={() => setFilterDate(filterByDate[3])}
-                >
+                  onPress={() => setFilterDate(filterByDate[3])}>
                   <Text style={styles.radioTitle}>{filterByDate[3]}</Text>
                   <Image
                     source={
@@ -945,8 +908,7 @@ export default function InvoiceFilterScreen({navigation}) {
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.radioItem}
-                  onPress={() => setFilterDate(filterByDate[4])}
-                >
+                  onPress={() => setFilterDate(filterByDate[4])}>
                   <Text style={styles.radioTitle}>{filterByDate[4]}</Text>
                   <Image
                     source={
@@ -959,8 +921,7 @@ export default function InvoiceFilterScreen({navigation}) {
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.radioItem}
-                  onPress={() => setFilterDate(filterByDate[5])}
-                >
+                  onPress={() => setFilterDate(filterByDate[5])}>
                   <Text style={styles.radioTitle}>{filterByDate[5]}</Text>
                   <Image
                     source={
@@ -979,26 +940,22 @@ export default function InvoiceFilterScreen({navigation}) {
                     margin: 15,
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                  }}
-                >
+                  }}>
                   <View
                     style={{
                       flexDirection: 'row',
                       flex: 0.5,
                       alignItems: 'center',
-                    }}
-                  >
+                    }}>
                     <Text style={styles.fromToTitle}>From</Text>
                     <TouchableOpacity
                       style={styles.dateView}
-                      onPress={() => setFromdateVisisble(!fromdateVisisble)}
-                    >
+                      onPress={() => setFromdateVisisble(!fromdateVisisble)}>
                       <Text
                         style={[
                           styles.radioTitle,
                           {paddingLeft: 15, paddingRight: 15},
-                        ]}
-                      >
+                        ]}>
                         {moment(filterFromDate).format('MMM DD, YYYY')}
                       </Text>
                     </TouchableOpacity>
@@ -1008,19 +965,16 @@ export default function InvoiceFilterScreen({navigation}) {
                       flexDirection: 'row',
                       flex: 0.5,
                       alignItems: 'center',
-                    }}
-                  >
+                    }}>
                     <Text style={styles.fromToTitle}>To</Text>
                     <TouchableOpacity
                       style={styles.dateView}
-                      onPress={() => setTodateVisisble(!todateVisisble)}
-                    >
+                      onPress={() => setTodateVisisble(!todateVisisble)}>
                       <Text
                         style={[
                           styles.radioTitle,
                           {paddingLeft: 15, paddingRight: 15},
-                        ]}
-                      >
+                        ]}>
                         {moment(filterToDate).format('MMM DD, YYYY')}
                       </Text>
                     </TouchableOpacity>

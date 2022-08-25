@@ -99,8 +99,7 @@ const UserReview = ({
               selectedImageList: reviewsData?.attachments || [],
               taggedData: tags || [],
             });
-          }}
-        >
+          }}>
           <View>
             {reviewsData?.comment !== '' ? (
               <NewsFeedDescription
@@ -116,8 +115,7 @@ const UserReview = ({
                   fontFamily: fonts.RRegular,
                   fontSize: 16,
                   color: colors.grayColor,
-                }}
-              >
+                }}>
                 {`Describe what you thought and felt about ${
                   teamData?.full_name ?? teamData?.group_name
                 } while watching or playing the game.`}

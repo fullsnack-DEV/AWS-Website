@@ -30,8 +30,7 @@ function TCEditHeader({
           flexDirection: 'row',
           justifyContent: 'center',
           alignItems: 'center',
-        }}
-      >
+        }}>
         <Text style={[styles.textStyle, textStyle]}>{title}</Text>
         {/* <TCPopupMessage
               visible={true}

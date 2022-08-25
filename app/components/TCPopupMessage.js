@@ -11,8 +11,7 @@ const TCPopupMessage = ({top = 13, message, style}) => (
       ...styles.mainContainer,
       top,
       ...style,
-    }}
-  >
+    }}>
     <Text style={styles.message}>{message}</Text>
   </LinearGradient>
 );

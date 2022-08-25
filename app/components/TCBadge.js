@@ -11,8 +11,7 @@ const TCBadge = ({value = '', align = 'center', style = {}}) => (
         fontFamily: fonts.LRegular,
         fontSize: 12,
         color: colors.whiteColor,
-      }}
-    >
+      }}>
       @<Text style={styles.valueText}>{value}</Text>
     </Text>
   </View>

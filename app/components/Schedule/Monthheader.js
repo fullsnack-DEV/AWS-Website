@@ -14,8 +14,7 @@ export default function MonthHeader({monthYear = new Date()}) {
           hitSlop={getHitSlop(15)}
           onPress={() => {
             console.log('prev press');
-          }}
-        >
+          }}>
           <Image
             style={[styles.icon, styles.leftIcon]}
             source={images.calNextArrow}
@@ -28,8 +27,7 @@ export default function MonthHeader({monthYear = new Date()}) {
           hitSlop={getHitSlop(15)}
           onPress={() => {
             console.log('next press');
-          }}
-        >
+          }}>
           <Image
             style={[styles.icon, styles.leftIcon]}
             source={images.calPrevArrow}

@@ -28,12 +28,10 @@ const TCUserList = ({
           flexDirection: 'row',
           marginVertical: 5,
           marginHorizontal: 15,
-        }}
-      >
+        }}>
         <TouchableOpacity
           onPress={onProfilePress}
-          style={{flex: 0.18, alignItems: 'flex-start'}}
-        >
+          style={{flex: 0.18, alignItems: 'flex-start'}}>
           <FastImage
             resizeMode={'cover'}
             source={
@@ -44,16 +42,14 @@ const TCUserList = ({
         </TouchableOpacity>
         <TouchableOpacity
           onPress={onProfilePress}
-          style={{flex: 0.65, paddingVertical: 10, justifyContent: 'center'}}
-        >
+          style={{flex: 0.65, paddingVertical: 10, justifyContent: 'center'}}>
           <TCGroupNameBadge name={title} groupType={entityType} />
           <Text
             style={{
               fontSize: 14,
               fontFamily: fonts.RRegular,
               color: colors.userPostTimeColor,
-            }}
-          >
+            }}>
             {subTitle}
           </Text>
         </TouchableOpacity>

@@ -88,8 +88,7 @@ export default function ChallengeStatusTitle({
           {isOfferExpired() ? (
             <View>
               <Text
-                style={[styles.statusTitleText, {color: colors.googleColor}]}
-              >
+                style={[styles.statusTitleText, {color: colors.googleColor}]}>
                 {challengeObj?.challenger === challengeObj?.invited_by
                   ? 'EXPIRED'
                   : 'INVITE TO CHALLENGE EXPIRED'}
@@ -111,8 +110,7 @@ export default function ChallengeStatusTitle({
           {isOfferExpired() ? (
             <View>
               <Text
-                style={[styles.statusTitleText, {color: colors.googleColor}]}
-              >
+                style={[styles.statusTitleText, {color: colors.googleColor}]}>
                 {challengeObj?.challenger === challengeObj?.invited_by
                   ? 'EXPIRED'
                   : 'INVITE TO CHALLENGE EXPIRED'}
@@ -236,8 +234,7 @@ export default function ChallengeStatusTitle({
           {isOfferExpired() ? (
             <View>
               <Text
-                style={[styles.statusTitleText, {color: colors.googleColor}]}
-              >
+                style={[styles.statusTitleText, {color: colors.googleColor}]}>
                 ALTERATION REQUEST EXPIRED
               </Text>
             </View>
@@ -253,8 +250,7 @@ export default function ChallengeStatusTitle({
           {isOfferExpired() ? (
             <View>
               <Text
-                style={[styles.statusTitleText, {color: colors.googleColor}]}
-              >
+                style={[styles.statusTitleText, {color: colors.googleColor}]}>
                 ALTERATION REQUEST EXPIRED
               </Text>
             </View>

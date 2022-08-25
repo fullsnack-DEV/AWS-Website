@@ -15,12 +15,12 @@ export default function RadioBtnItem({
       <Text style={styles.titleTextStyle}>{titleName}</Text>
       <TouchableOpacity
         style={[styles.touchRadioBtnStyle, touchRadioBtnStyle]}
-        onPress={onRadioBtnPress}
-      >
+        onPress={onRadioBtnPress}>
         <LinearGradient
           colors={[colors.yellowColor, colors.orangeGradientColor]}
-          style={selected ? styles.viewFirstStyle : styles.viewSecondStyle}
-        ></LinearGradient>
+          style={
+            selected ? styles.viewFirstStyle : styles.viewSecondStyle
+          }></LinearGradient>
       </TouchableOpacity>
     </View>
   );

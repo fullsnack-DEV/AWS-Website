@@ -55,8 +55,7 @@ export default function EditMemberInfoScreen({navigation, route}) {
               //   navigation.navigate('CreateMemberProfileClubForm2', { form1: memberInfo })
               // }
             }
-          }}
-        >
+          }}>
           Done
         </Text>
       ),
@@ -202,16 +201,16 @@ export default function EditMemberInfoScreen({navigation, route}) {
         />
         <TouchableOpacity
           style={styles.choosePhoto}
-          onPress={() => onProfileImageClicked()}
-        >
+          onPress={() => onProfileImageClicked()}>
           <Image source={images.certificateUpload} style={styles.choosePhoto} />
         </TouchableOpacity>
       </View>
 
       {memberInfo?.connected ? (
         <Text
-          style={styles.fixedNameText}
-        >{`${memberInfo.first_name} ${memberInfo.last_name}`}</Text>
+          style={
+            styles.fixedNameText
+          }>{`${memberInfo.first_name} ${memberInfo.last_name}`}</Text>
       ) : (
         <View>
           <TCLable title={'Name'} required={true} />

@@ -17,16 +17,14 @@ function TCToolTip({tooltipText = '', tooltipHeight = 40, tooltipWidth = 40}) {
 
             fontSize: 11,
             fontFamily: fonts.RRegular,
-          }}
-        >
+          }}>
           {tooltipText}
         </Text>
       }
       height={tooltipHeight}
       width={tooltipWidth}
       backgroundColor={colors.themeColor}
-      overlayColor={'transparent'}
-    >
+      overlayColor={'transparent'}>
       <Image source={images.infoToolTipIcon} style={styles.infoImage} />
       {/* <Text style={ styles.whyAskingText } >Info</Text> */}
     </Tooltip>

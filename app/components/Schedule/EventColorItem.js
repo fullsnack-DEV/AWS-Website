@@ -16,8 +16,7 @@ function EventColorItem({
   return (
     <TouchableOpacity
       onPress={onItemPress}
-      style={[styles.eventColorViewStyle, eventColorViewStyle]}
-    >
+      style={[styles.eventColorViewStyle, eventColorViewStyle]}>
       {(item?.isSelected || item?.isNew) && (
         <Image
           source={source}
@@ -32,8 +31,7 @@ function EventColorItem({
             position: 'absolute',
             right: -8,
             top: -8,
-          }}
-        >
+          }}>
           <Image
             source={images.resetColor}
             style={{

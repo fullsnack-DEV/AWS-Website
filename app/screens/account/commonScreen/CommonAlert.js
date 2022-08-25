@@ -18,8 +18,7 @@ const CommonAlert = ({alertData}) => (
     isVisible={alertData?.visible}
     backdropColor="black"
     style={{margin: 0}}
-    backdropOpacity={0}
-  >
+    backdropOpacity={0}>
     <View
       style={{
         justifyContent: 'center',
@@ -27,8 +26,7 @@ const CommonAlert = ({alertData}) => (
         backgroundColor: 'rgba(0,0,0,0.4)',
         width: wp(100),
         height: hp(100),
-      }}
-    >
+      }}>
       <View
         style={{
           width: 145,
@@ -37,8 +35,7 @@ const CommonAlert = ({alertData}) => (
           alignItems: 'center',
           height: 90,
           backgroundColor: colors.lightWhite,
-        }}
-      >
+        }}>
         <FastImage
           style={{height: 25, width: 25}}
           source={alertData?.iconImage ?? images.linkCopied}
@@ -49,8 +46,7 @@ const CommonAlert = ({alertData}) => (
             fontFamily: fonts.RMedium,
             color: colors.darkYellowColor,
             marginTop: 5,
-          }}
-        >
+          }}>
           {alertData?.message ?? 'Link Copied!'}
         </Text>
       </View>

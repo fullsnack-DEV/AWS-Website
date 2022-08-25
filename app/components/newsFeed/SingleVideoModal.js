@@ -21,8 +21,7 @@ export default function SingleVideoModal({backBtnPress, data}) {
   return (
     <KeyboardAvoidingView
       style={{flex: 1, backgroundColor: colors.blackColor}}
-      behavior={Platform.OS === 'ios' ? 'padding' : null}
-    >
+      behavior={Platform.OS === 'ios' ? 'padding' : null}>
       <SafeAreaView style={{flex: 1}}>
         <View style={styles.searchViewStyle}>
           <MultipleVideoWithLoader data={data} />

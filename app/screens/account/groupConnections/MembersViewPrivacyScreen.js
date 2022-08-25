@@ -97,13 +97,13 @@ export default function MembersViewPrivacyScreen({navigation}) {
         <Text style={styles.titleStyle}>Connections</Text>
         <View style={styles.privacyCell}>
           <Text
-            style={styles.privacyNameStyle}
-          >{`Who can see members in ${switchUser.role} connections?`}</Text>
+            style={
+              styles.privacyNameStyle
+            }>{`Who can see members in ${switchUser.role} connections?`}</Text>
           <View style={styles.radioMainView}>
             <TouchableOpacity
               style={styles.radioButtonView}
-              onPress={() => setMember(0)}
-            >
+              onPress={() => setMember(0)}>
               <Image
                 source={
                   member === 0 ? images.radioSelect : images.radioUnselect
@@ -114,8 +114,7 @@ export default function MembersViewPrivacyScreen({navigation}) {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.radioButtonView}
-              onPress={() => setMember(1)}
-            >
+              onPress={() => setMember(1)}>
               <Image
                 source={
                   member === 1 ? images.radioSelect : images.radioUnselect
@@ -126,8 +125,7 @@ export default function MembersViewPrivacyScreen({navigation}) {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.radioButtonView}
-              onPress={() => setMember(2)}
-            >
+              onPress={() => setMember(2)}>
               <Image
                 source={
                   member === 2 ? images.radioSelect : images.radioUnselect
@@ -138,8 +136,7 @@ export default function MembersViewPrivacyScreen({navigation}) {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.radioButtonView}
-              onPress={() => setMember(3)}
-            >
+              onPress={() => setMember(3)}>
               <Image
                 source={
                   member === 3 ? images.radioSelect : images.radioUnselect
@@ -153,13 +150,13 @@ export default function MembersViewPrivacyScreen({navigation}) {
 
         <View style={styles.privacyCell}>
           <Text
-            style={styles.privacyNameStyle}
-          >{`Who can see followers in ${switchUser.role} connections?`}</Text>
+            style={
+              styles.privacyNameStyle
+            }>{`Who can see followers in ${switchUser.role} connections?`}</Text>
           <View style={styles.radioMainView}>
             <TouchableOpacity
               style={styles.radioButtonView}
-              onPress={() => setFollower(0)}
-            >
+              onPress={() => setFollower(0)}>
               <Image
                 source={
                   follower === 0 ? images.radioSelect : images.radioUnselect
@@ -170,8 +167,7 @@ export default function MembersViewPrivacyScreen({navigation}) {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.radioButtonView}
-              onPress={() => setFollower(1)}
-            >
+              onPress={() => setFollower(1)}>
               <Image
                 source={
                   follower === 1 ? images.radioSelect : images.radioUnselect
@@ -182,8 +178,7 @@ export default function MembersViewPrivacyScreen({navigation}) {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.radioButtonView}
-              onPress={() => setFollower(2)}
-            >
+              onPress={() => setFollower(2)}>
               <Image
                 source={
                   follower === 2 ? images.radioSelect : images.radioUnselect
@@ -194,8 +189,7 @@ export default function MembersViewPrivacyScreen({navigation}) {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.radioButtonView}
-              onPress={() => setFollower(3)}
-            >
+              onPress={() => setFollower(3)}>
               <Image
                 source={
                   follower === 3 ? images.radioSelect : images.radioUnselect
@@ -214,8 +208,7 @@ export default function MembersViewPrivacyScreen({navigation}) {
           <View style={styles.radioMainView}>
             <TouchableOpacity
               style={styles.radioButtonView}
-              onPress={() => setProfile(0)}
-            >
+              onPress={() => setProfile(0)}>
               <Image
                 source={
                   profile === 0 ? images.radioSelect : images.radioUnselect
@@ -226,8 +219,7 @@ export default function MembersViewPrivacyScreen({navigation}) {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.radioButtonView}
-              onPress={() => setProfile(1)}
-            >
+              onPress={() => setProfile(1)}>
               <Image
                 source={
                   profile === 1 ? images.radioSelect : images.radioUnselect

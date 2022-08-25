@@ -38,8 +38,7 @@ function PostImageSet({
         style={[
           styles.uploadedImage,
           {borderWidth: 1, borderColor: colors.lightgrayColor},
-        ]}
-      >
+        ]}>
         <FastImage
           style={styles.imageStyle}
           source={images.imageLoadingGIF}

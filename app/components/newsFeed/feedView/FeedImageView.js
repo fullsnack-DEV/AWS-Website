@@ -15,8 +15,7 @@ const FeedImageView = ({
     style={{
       alignItems: 'center',
       justifyContent: 'center',
-    }}
-  >
+    }}>
     <TCZoomableImage
       screenInsets={screenInsets}
       onClick={setShowParent}
