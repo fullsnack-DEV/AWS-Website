@@ -28,10 +28,9 @@ import TCLabel from '../../components/TCLabel';
 import TCInfoField from '../../components/TCInfoField';
 import EventMapView from '../../components/Schedule/EventMapView';
 import TCGameCard from '../../components/TCGameCard';
-import {getGameFromToDateDiff, getGameHomeScreen} from '../../utils/gameUtils';
+import {getGameHomeScreen} from '../../utils/gameUtils';
 import TCChallengeTitle from '../../components/TCChallengeTitle';
 import RefereeReservationStatus from '../../Constants/RefereeReservationStatus';
-import {color} from 'react-native-reanimated';
 
 let entity = {};
 
@@ -118,13 +117,6 @@ export default function RefereeApprovalScreen({navigation, route}) {
       {required && <Text style={{color: colors.redDelColor}}> * </Text>}
     </Text>
   );
-
-  const getDateDuration = (fromData, toDate) => {
-    const startDate = moment(fromData * 1000).format('hh:mm a');
-    const endDate = moment(toDate * 1000).format('hh:mm a');
-    const duration = getGameFromToDateDiff(fromData, toDate);
-    return `${startDate} - ${endDate} (${duration})`;
-  };
 
   const Seperator = ({height = 7}) => (
     <View

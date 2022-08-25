@@ -46,16 +46,12 @@ import MatchFeesCard from '../../../components/challenge/MatchFeesCard';
 import GameStatus from '../../../Constants/GameStatus';
 import TCTouchableLabel from '../../../components/TCTouchableLabel';
 import TCGameCard from '../../../components/TCGameCard';
-import {
-  getGameFromToDateDiff,
-  getGameHomeScreen,
-} from '../../../utils/gameUtils';
+import {getGameHomeScreen} from '../../../utils/gameUtils';
 import ScorekeeperReservationStatus from '../../../Constants/ScorekeeperReservationStatus';
 import TCTabView from '../../../components/TCTabView';
 import TCThinDivider from '../../../components/TCThinDivider';
 import CurruentScorekeeperReservationView from './CurruentScorekeeperReservationView';
 import TCChallengeTitle from '../../../components/TCChallengeTitle';
-import {color} from 'react-native-reanimated';
 
 let entity = {};
 const scroll = React.createRef();
@@ -572,12 +568,6 @@ export default function EditScorekeeperReservation({navigation, route}) {
       }}
     />
   );
-  const getDateDuration = (fromData, toDate) => {
-    const startDate = moment(fromData * 1000).format('hh:mm a');
-    const endDate = moment(toDate * 1000).format('hh:mm a');
-    const duration = getGameFromToDateDiff(fromData, toDate);
-    return `${startDate} - ${endDate} (${duration})`;
-  };
 
   const acceptDeclineScorekeeperReservation = (
     reservationID,

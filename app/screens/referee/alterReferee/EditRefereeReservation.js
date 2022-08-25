@@ -41,10 +41,7 @@ import MatchFeesCard from '../../../components/challenge/MatchFeesCard';
 import GameStatus from '../../../Constants/GameStatus';
 import TCTouchableLabel from '../../../components/TCTouchableLabel';
 import TCGameCard from '../../../components/TCGameCard';
-import {
-  getGameFromToDateDiff,
-  getGameHomeScreen,
-} from '../../../utils/gameUtils';
+import {getGameHomeScreen} from '../../../utils/gameUtils';
 import RefereeReservationStatus from '../../../Constants/RefereeReservationStatus';
 import TCTabView from '../../../components/TCTabView';
 import TCThinDivider from '../../../components/TCThinDivider';
@@ -578,12 +575,6 @@ export default function EditRefereeReservation({navigation, route}) {
       }}
     />
   );
-  const getDateDuration = (fromData, toDate) => {
-    const startDate = moment(fromData * 1000).format('hh:mm a');
-    const endDate = moment(toDate * 1000).format('hh:mm a');
-    const duration = getGameFromToDateDiff(fromData, toDate);
-    return `${startDate} - ${endDate} (${duration})`;
-  };
 
   console.log('Default card:', defaultCard);
 

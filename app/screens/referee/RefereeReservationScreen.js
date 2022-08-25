@@ -40,14 +40,13 @@ import TCBorderButton from '../../components/TCBorderButton';
 import MatchFeesCard from '../../components/challenge/MatchFeesCard';
 import ReservationNumber from '../../components/reservations/ReservationNumber';
 import TCGameCard from '../../components/TCGameCard';
-import {getGameFromToDateDiff, getGameHomeScreen} from '../../utils/gameUtils';
+import {getGameHomeScreen} from '../../utils/gameUtils';
 import RefereeReservationStatus from '../../Constants/RefereeReservationStatus';
 import TCChallengeTitle from '../../components/TCChallengeTitle';
 import {heightPercentageToDP, widthPercentageToDP} from '../../utils';
 import TCTouchableLabel from '../../components/TCTouchableLabel';
 import RefereeReservationTitle from '../../components/reservations/RefereeReservationTitle';
 import {paymentMethods} from '../../api/Users';
-import {string} from 'prop-types';
 
 let entity = {};
 
@@ -261,13 +260,6 @@ export default function RefereeReservationScreen({navigation, route}) {
       {required && <Text style={{color: colors.redDelColor}}> * </Text>}
     </Text>
   );
-
-  const getDateDuration = (fromData, toDate) => {
-    const startDate = moment(fromData * 1000).format('hh:mm a');
-    const endDate = moment(toDate * 1000).format('hh:mm a');
-    const duration = getGameFromToDateDiff(fromData, toDate);
-    return `${startDate} - ${endDate} (${duration})`;
-  };
 
   const Seperator = ({height = 7}) => (
     <View
