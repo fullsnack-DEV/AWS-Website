@@ -109,16 +109,14 @@ export default function CreateClubForm1({navigation, route}) {
       style={styles.listItem}
       onPress={() => {
         isIconCheckedOrNot({item, index});
-      }}
-    >
+      }}>
       <View
         style={{
           padding: 20,
           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'space-between',
-        }}
-      >
+        }}>
         <Text style={styles.languageList}>
           {getSportName(item, authContext)}
         </Text>
@@ -173,8 +171,7 @@ export default function CreateClubForm1({navigation, route}) {
               style={styles.matchFeeTxt}
               maxLength={20}
               onChangeText={(text) => setClubName(text)}
-              value={clubName}
-            ></TextInput>
+              value={clubName}></TextInput>
           </View>
 
           <View style={styles.fieldView}>
@@ -184,15 +181,13 @@ export default function CreateClubForm1({navigation, route}) {
                 navigation.navigate('SearchLocationScreen', {
                   comeFrom: 'CreateClubForm1',
                 })
-              }
-            >
+              }>
               <TextInput
                 placeholder={strings.searchCityPlaceholder}
                 style={styles.matchFeeTxt}
                 value={location}
                 editable={false}
-                pointerEvents="none"
-              ></TextInput>
+                pointerEvents="none"></TextInput>
             </TouchableOpacity>
           </View>
           <Text style={styles.fieldTitle}>
@@ -205,8 +200,7 @@ export default function CreateClubForm1({navigation, route}) {
                   ? styles.languageText
                   : styles.languagePlaceholderText
               }
-              numberOfLines={50}
-            >
+              numberOfLines={50}>
               {sportsName || 'Sports'}
             </Text>
           </TouchableOpacity>
@@ -235,8 +229,7 @@ export default function CreateClubForm1({navigation, route}) {
         backdropTransitionOutTiming={800}
         style={{
           margin: 0,
-        }}
-      >
+        }}>
         <View
           style={{
             width: '100%',
@@ -252,21 +245,18 @@ export default function CreateClubForm1({navigation, route}) {
             shadowOpacity: 0.5,
             shadowRadius: 5,
             elevation: 15,
-          }}
-        >
+          }}>
           <View
             style={{
               flexDirection: 'row',
               paddingHorizontal: 15,
               justifyContent: 'space-between',
               alignItems: 'center',
-            }}
-          >
+            }}>
             <TouchableOpacity
               hitSlop={getHitSlop(15)}
               style={styles.closeButton}
-              onPress={() => setVisibleSportsModal(false)}
-            >
+              onPress={() => setVisibleSportsModal(false)}>
               <Image source={images.cancelImage} style={styles.closeButton} />
             </TouchableOpacity>
             <Text
@@ -276,8 +266,7 @@ export default function CreateClubForm1({navigation, route}) {
                 fontSize: 16,
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
-              }}
-            >
+              }}>
               Sports
             </Text>
             <TouchableOpacity
@@ -285,8 +274,7 @@ export default function CreateClubForm1({navigation, route}) {
                 const filterChecked = sportList.filter((obj) => obj.isChecked);
                 setSelectedSports(filterChecked);
                 toggleModal();
-              }}
-            >
+              }}>
               <Text
                 style={{
                   alignSelf: 'center',
@@ -294,8 +282,7 @@ export default function CreateClubForm1({navigation, route}) {
                   fontSize: 16,
                   fontFamily: fonts.RRegular,
                   color: colors.themeColor,
-                }}
-              >
+                }}>
                 Apply
               </Text>
             </TouchableOpacity>

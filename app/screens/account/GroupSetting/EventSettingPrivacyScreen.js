@@ -1,11 +1,5 @@
 /* eslint-disable consistent-return */
-import React, {
-  useContext,
-  useLayoutEffect,
-  useState,
-  useEffect,
-  useCallback,
-} from 'react';
+import React, {useContext, useLayoutEffect, useState, useEffect} from 'react';
 import {
   StyleSheet,
   View,
@@ -30,11 +24,19 @@ export default function EventSettingPrivacyScreen({navigation, route}) {
 
   const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
   const [pointEvent, setPointEvent] = useState('auto');
-  const [teamSetting] = useState([{key: 'Who Can Create Event', id: 0}]);
+  const [teamSetting] = useState([
+    {key: 'Who Can Create Event', id: 0},
+    {key: 'Who Can Invite People', id: 1},
+  ]);
   const [whoCreateEvent, setWhoCreateEvent] = useState(
     route?.params?.whoCreateEvent
       ? route?.params?.whoCreateEvent
       : authContext.entity?.obj?.who_can_create_event,
+  );
+  const [whoInviteEvent, setWhoInviteEvent] = useState(
+    route?.params?.whoInviteEvent
+      ? route?.params?.whoInviteEvent
+      : authContext.entity?.obj?.who_can_invite_event,
   );
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -48,17 +50,29 @@ export default function EventSettingPrivacyScreen({navigation, route}) {
         route?.params?.whoCreateEvent ??
           authContext.entity?.obj?.who_can_create_event,
       );
+      setWhoInviteEvent(
+        route?.params?.whoInviteEvent ??
+          authContext.entity?.obj?.who_can_invite_event,
+      );
     }
   }, [
     authContext.entity?.obj?.who_can_create_event,
+    authContext.entity?.obj?.who_can_invite_event,
     isFocused,
     route?.params?.whoCreateEvent,
+    route?.params?.whoInviteEvent,
   ]);
 
-  const handleOpetions = async (opetions) => {
+  const handleOpetions = (opetions) => {
     if (opetions === teamSetting[0].key) {
       navigation.navigate('WhoCreateEventScreen', {
         whoCreateEvent,
+        comeFrom: 'EventSettingPrivacyScreen',
+      });
+    }
+    if (opetions === teamSetting[1].key) {
+      navigation.navigate('WhoCanInviteEventScreen', {
+        whoInviteEvent,
         comeFrom: 'EventSettingPrivacyScreen',
       });
     }
@@ -87,23 +101,30 @@ export default function EventSettingPrivacyScreen({navigation, route}) {
     pointEvent,
   ]);
 
-  const getSettingValue = useCallback(
-    (item) => {
-      console.log('item.key', item);
+  const getSettingValue = (item) => {
+    console.log('item.key', item);
 
-      if (item === teamSetting[0].key) {
-        if (whoCreateEvent === 0) {
-          return `${
-            authContext.entity.role === 'team' ? 'Team' : 'Club'
-          } & members`;
-        }
-        if (whoCreateEvent === 1) {
-          return `${authContext.entity.role === 'team' ? 'Team' : 'Club'} only`;
-        }
+    if (item === teamSetting[0].key) {
+      if (whoCreateEvent === 1) {
+        return `${
+          authContext.entity.role === 'team' ? 'Team' : 'Club'
+        } & members`;
       }
-    },
-    [teamSetting, whoCreateEvent, authContext.entity.role],
-  );
+      if (whoCreateEvent === 0) {
+        return `${authContext.entity.role === 'team' ? 'Team' : 'Club'} only`;
+      }
+    }
+    if (item === teamSetting[1].key) {
+      if (whoInviteEvent === 1) {
+        return `${
+          authContext.entity.role === 'team' ? 'Team' : 'Club'
+        } & members`;
+      }
+      if (whoInviteEvent === 0) {
+        return `${authContext.entity.role === 'team' ? 'Team' : 'Club'} only`;
+      }
+    }
+  };
 
   const renderMenu = ({item, index}) => (
     <TouchableWithoutFeedback
@@ -121,6 +142,11 @@ export default function EventSettingPrivacyScreen({navigation, route}) {
         }>
         <Text style={styles.listItems}>{item.key}</Text>
         {item.key === teamSetting[0].key && (
+          <Text style={styles.currencyTypeStyle}>
+            {getSettingValue(item.key)}
+          </Text>
+        )}
+        {item.key === teamSetting[1].key && (
           <Text style={styles.currencyTypeStyle}>
             {getSettingValue(item.key)}
           </Text>

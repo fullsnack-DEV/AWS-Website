@@ -1,3 +1,4 @@
+/* eslint-disable no-bitwise */
 import React, {useState, useLayoutEffect, useContext} from 'react';
 import {
   StyleSheet,
@@ -19,26 +20,42 @@ import {patchGroup} from '../../../api/Groups';
 
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
-import TCLable from '../../../components/TCLabel';
 import strings from '../../../Constants/String';
 
-const hiringPlayersOptions = [
-  {key: strings.yes, id: 0},
-  {key: strings.no, id: 1},
-];
-export default function RecruitingMemberScreen({navigation, route}) {
+export default function WhoCanInviteEventScreen({navigation, route}) {
   const [comeFrom] = useState(route?.params?.comeFrom);
 
   const authContext = useContext(AuthContext);
 
   const [loading, setloading] = useState(false);
-  const [hiringPlayersSelection, setHiringPlayersSelection] = useState(
-    (route?.params?.settingObj?.hiringPlayers === 'Yes' && 1) ||
-      (route?.params?.settingObj?.hiringPlayers === 'No' && 0),
+
+  const eventsSettingOpetions = [
+    {
+      key: `${authContext.entity.role === 'team' ? 'Team' : 'Club'} & members`,
+      id: 0,
+    },
+    {
+      key: `${authContext.entity.role === 'team' ? 'Team' : 'Club'} only`,
+      id: 1,
+    },
+  ];
+
+  const [whoInviteEvent, setWhoInviteEvent] = useState(
+    (route?.params?.whoInviteEvent === 0 && {
+      key: eventsSettingOpetions[1].key,
+      id: 1,
+    }) ||
+      (route?.params?.whoInviteEvent === 1 && {
+        key: eventsSettingOpetions[0].key,
+        id: 0,
+      }),
   );
 
   useLayoutEffect(() => {
     navigation.setOptions({
+      headerTitle: () => (
+        <Text style={styles.headerTitle}>To What Event Can People Invite</Text>
+      ),
       headerRight: () => (
         <Text
           style={styles.saveButtonStyle}
@@ -49,21 +66,22 @@ export default function RecruitingMemberScreen({navigation, route}) {
         </Text>
       ),
     });
-  }, [comeFrom, navigation, hiringPlayersSelection.key]);
+  }, [comeFrom, navigation, whoInviteEvent]);
 
   const saveTeam = () => {
-    const bodyParams = {
-      hiringPlayers:
-        (hiringPlayersSelection.key === strings.yes && 1) ||
-        (hiringPlayersSelection.key === strings.no && 0),
-    };
-    setloading(true);
+    const bodyParams = {};
 
+    if (whoInviteEvent.key === eventsSettingOpetions[0].key) {
+      bodyParams.who_can_invite_event = 1;
+    }
+    if (whoInviteEvent.key === eventsSettingOpetions[1].key) {
+      bodyParams.who_can_invite_event = 0;
+    }
+
+    setloading(true);
     patchGroup(authContext.entity.uid, bodyParams, authContext)
       .then(async (response) => {
         if (response.status === true) {
-          console.log('Team patch::::--->', response.payload);
-
           setloading(false);
           const entity = authContext.entity;
           entity.obj = response.payload;
@@ -71,7 +89,7 @@ export default function RecruitingMemberScreen({navigation, route}) {
 
           await Utility.setStorage('authContextEntity', {...entity});
           navigation.navigate(comeFrom, {
-            hiringPlayersObject: response.payload.setting,
+            whoInviteEvent: response?.payload?.who_can_invite_event,
           });
         } else {
           Alert.alert(strings.appName, response.messages);
@@ -96,15 +114,15 @@ export default function RecruitingMemberScreen({navigation, route}) {
     }
   };
 
-  const renderHiringPlayersOption = ({item}) => (
+  const renderWhocanJoinOption = ({item}) => (
     <TouchableWithoutFeedback
       onPress={() => {
-        setHiringPlayersSelection(item);
+        setWhoInviteEvent(item);
       }}>
       <View style={styles.radioItem}>
         <Text style={styles.languageList}>{item.key}</Text>
         <View style={styles.checkbox}>
-          {hiringPlayersSelection?.key === item?.key ? (
+          {whoInviteEvent?.key === item?.key ? (
             <Image
               source={images.radioCheckYellow}
               style={styles.checkboxImg}
@@ -122,12 +140,13 @@ export default function RecruitingMemberScreen({navigation, route}) {
       style={styles.mainContainer}
       showsVerticalScrollIndicator={false}>
       <ActivityLoader visible={loading} />
-      <TCLable title={strings.isYourTeamRecruitingMember} required={false} />
+      <Text style={styles.opetionsTitle}>{`Who can invite people to your ${
+        authContext.entity.role === 'team' ? 'team' : 'club'
+      } event?`}</Text>
       <FlatList
-        // ItemSeparatorComponent={() => <TCThinDivider />}
-        data={hiringPlayersOptions}
+        data={eventsSettingOpetions}
         keyExtractor={(item, index) => index.toString()}
-        renderItem={renderHiringPlayersOption}
+        renderItem={renderWhocanJoinOption}
       />
     </ScrollView>
   );
@@ -175,11 +194,17 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
   },
-
-  languageList: {
+  opetionsTitle: {
     color: colors.lightBlackColor,
     fontFamily: fonts.RRegular,
-    fontSize: wp('4%'),
+    fontSize: 16,
+    margin: 15,
+  },
+  languageList: {
+    width: '90%',
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RRegular,
+    fontSize: 16,
   },
   checkboxImg: {
     width: 22,
@@ -200,5 +225,10 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RMedium,
     fontSize: 16,
     marginRight: 10,
+  },
+  headerTitle: {
+    fontFamily: fonts.RBold,
+    fontSize: 16,
+    color: colors.lightBlackColor,
   },
 });

@@ -71,25 +71,23 @@ export default function WhoCanInviteMemberScreen({navigation, route}) {
   }, [comeFrom, navigation, whoCanInvite]);
 
   const saveTeam = () => {
-
     const bodyParams = {};
 
     if (authContext.entity.role === 'team') {
       if (whoCanInvite.key === whoCanInviteTeamOpetions[0].key) {
-        bodyParams.who_can_invite_member = 0;
+        bodyParams.who_can_invite_member = 1;
       }
       if (whoCanInvite.key === whoCanInviteTeamOpetions[1].key) {
-        bodyParams.who_can_invite_member = 1;
+        bodyParams.who_can_invite_member = 0;
       }
     } else {
       if (whoCanInvite.key === whoCanInviteClubOpetions[0].key) {
-        bodyParams.who_can_invite_member = 0;
-      }
-      if (whoCanInvite.key === whoCanInviteClubOpetions[1].key) {
         bodyParams.who_can_invite_member = 1;
       }
+      if (whoCanInvite.key === whoCanInviteClubOpetions[1].key) {
+        bodyParams.who_can_invite_member = 0;
+      }
     }
-
 
     setloading(true);
     patchGroup(authContext.entity.uid, bodyParams, authContext)
@@ -103,7 +101,6 @@ export default function WhoCanInviteMemberScreen({navigation, route}) {
           await Utility.setStorage('authContextEntity', {...entity});
           navigation.navigate(comeFrom, {
             whoCanInviteGroup: response?.payload?.who_can_invite_member,
-
           });
         } else {
           Alert.alert(strings.appName, response.messages);

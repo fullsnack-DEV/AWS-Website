@@ -60,8 +60,7 @@ export default function GroupInfo({
         justifyContent: 'center',
         backgroundColor: colors.whiteColor,
         margin: 5,
-      }}
-    >
+      }}>
       <Image
         source={
           item?.thumbnail ? {uri: item?.thumbnail} : images.profilePlaceHolder
@@ -203,8 +202,7 @@ export default function GroupInfo({
               fontFamily: fonts.RLight,
               color: colors.userPostTimeColor,
               marginLeft: 10,
-            }}
-          >
+            }}>
             {strings.signedupin}
             {signUpString(groupDetails?.createdAt)}
           </Text>
@@ -218,8 +216,7 @@ export default function GroupInfo({
               height: 30,
               marginTop: 10,
               maxWidth: '80%',
-            }}
-          >
+            }}>
             <TCClubClipView
               name={groupDetails?.club.group_name}
               image={groupDetails?.club.thumbnail}
@@ -229,8 +226,7 @@ export default function GroupInfo({
       </View>
       {/* Gray divider */}
       <View
-        style={{height: 7, backgroundColor: colors.grayBackgroundColor}}
-      ></View>
+        style={{height: 7, backgroundColor: colors.grayBackgroundColor}}></View>
 
       {/* Basic Info section */}
       <View style={styles.sectionStyle}>
@@ -281,8 +277,7 @@ export default function GroupInfo({
       </View>
       {/* Gray divider */}
       <View
-        style={{height: 7, backgroundColor: colors.grayBackgroundColor}}
-      ></View>
+        style={{height: 7, backgroundColor: colors.grayBackgroundColor}}></View>
 
       {/* Members list section */}
       {groupDetails?.entity_type === 'team' && (
@@ -319,8 +314,7 @@ export default function GroupInfo({
             style={{
               height: 7,
               backgroundColor: colors.grayBackgroundColor,
-            }}
-          ></View>
+            }}></View>
         </View>
       )}
 
@@ -356,8 +350,7 @@ export default function GroupInfo({
             style={{
               height: 7,
               backgroundColor: colors.grayBackgroundColor,
-            }}
-          ></View>
+            }}></View>
         </View>
       )}
 
@@ -416,8 +409,7 @@ export default function GroupInfo({
             style={{
               height: 7,
               backgroundColor: colors.grayBackgroundColor,
-            }}
-          ></View>
+            }}></View>
         </View>
       )}
 
@@ -508,8 +500,7 @@ export default function GroupInfo({
             style={{
               height: 7,
               backgroundColor: colors.grayBackgroundColor,
-            }}
-          ></View>
+            }}></View>
         </View>
       )}
 
@@ -534,8 +525,7 @@ export default function GroupInfo({
           style={{
             height: 7,
             backgroundColor: colors.grayBackgroundColor,
-          }}
-        ></View>
+          }}></View>
       </View>
 
       {/* Team section */}
@@ -562,8 +552,7 @@ export default function GroupInfo({
             style={{
               height: 7,
               backgroundColor: colors.grayBackgroundColor,
-            }}
-          ></View>
+            }}></View>
         </View>
       )}
 
@@ -591,8 +580,7 @@ export default function GroupInfo({
       </View>
       {/* Gray divider */}
       <View
-        style={{height: 7, backgroundColor: colors.grayBackgroundColor}}
-      ></View>
+        style={{height: 7, backgroundColor: colors.grayBackgroundColor}}></View>
 
       {/* ByLaw section */}
       <View style={styles.sectionStyle}>
@@ -620,8 +608,7 @@ export default function GroupInfo({
       </View>
       {/* Gray divider */}
       <View
-        style={{height: 7, backgroundColor: colors.grayBackgroundColor}}
-      ></View>
+        style={{height: 7, backgroundColor: colors.grayBackgroundColor}}></View>
     </View>
   );
 }

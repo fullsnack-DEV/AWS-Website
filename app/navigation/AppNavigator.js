@@ -286,6 +286,7 @@ const getTabBarVisibility = (route) => {
     routeName === 'GroupInviteYouScreen' ||
     routeName === 'EventSettingPrivacyScreen' ||
     routeName === 'WhoCreateEventScreen' ||
+	routeName === 'WhoCanInviteEventScreen' ||
     routeName === 'ClubSettingPrivacyScreen' ||
     routeName === 'TeamJoinClubScreen' ||
     routeName === 'TeamSettingPrivacyScreen' ||

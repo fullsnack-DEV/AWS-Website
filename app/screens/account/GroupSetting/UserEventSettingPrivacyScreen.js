@@ -32,12 +32,12 @@ export default function UserEventSettingPrivacyScreen({navigation, route}) {
   const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
   const [pointEvent, setPointEvent] = useState('auto');
   const [userEventSetting] = useState([
-    {key: 'To What Event Can People Invite', id: 0},
+    {key: 'Can People Invite You Their Events', id: 0},
   ]);
   const [whoCreateEvent, setWhoCreateEvent] = useState(
     route?.params?.whoCreateEvent
       ? route?.params?.whoCreateEvent
-      : authContext.entity?.obj?.what_event_invite,
+      : authContext.entity?.obj?.invite_me_event,
   );
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -49,11 +49,11 @@ export default function UserEventSettingPrivacyScreen({navigation, route}) {
     if (isFocused) {
       setWhoCreateEvent(
         route?.params?.whoCreateEvent ??
-          authContext.entity?.obj?.what_event_invite,
+          authContext.entity?.obj?.invite_me_event,
       );
     }
   }, [
-    authContext.entity?.obj?.what_event_invite,
+    authContext.entity?.obj?.invite_me_event,
     isFocused,
     route?.params?.whoCreateEvent,
   ]);
