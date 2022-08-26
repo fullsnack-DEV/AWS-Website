@@ -35,9 +35,8 @@ import {
   searchCityState,
   searchLocationPlaceDetail,
 } from '../../../../api/External';
-import Separator from '../../../../components/Separator';
 
-export default function CreateClubForm1({navigation, route}) {
+export default function CreateClubForm1({navigation}) {
   const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
 
