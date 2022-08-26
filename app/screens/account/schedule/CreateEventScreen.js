@@ -129,25 +129,46 @@ export default function CreateEventScreen({navigation, route}) {
   const [backgroundThumbnail, setBackgroundThumbnail] = useState();
   const [backgroundImageChanged, setBackgroundImageChanged] = useState(false);
 
-  const whoCanDataSourceUser = [
+  const whoCanJoinUser = [
     {text: 'Everyone', value: 0},
     {
       text: 'Followers',
-      value: 3,
+      value: 1,
     },
-    {text: 'Invited only', value: 1},
+    {text: 'Invited only', value: 2},
   ];
-  const whoCanDataSourceGroup = [
+  const whoCanSeeUser = [
     {text: 'Everyone', value: 0},
-    {text: 'Only me', value: 1},
     {
-      text: 'Members in my groups',
+      text: 'Followers',
+      value: 1,
+    },
+    {text: 'Only me', value: 2},
+  ];
+  const whoCanJoinGroup = [
+    {text: 'Everyone', value: 0},
+    {
+      text: 'Follower',
+      value: 1,
+    },
+    {
+      text: 'Member',
       value: 2,
     },
+    {text: 'Invite only', value: 3},
+  ];
+  const whoCanSeeGroup = [
+    {text: 'Everyone', value: 0},
     {
-      text: 'Followers',
-      value: 3,
+      text: 'Follower',
+      value: 1,
     },
+
+    {
+      text: 'Member',
+      value: 2,
+    },
+    {text: 'Team only', value: 3},
   ];
   const countNumberOfWeekFromDay = () => {
     const date = new Date();
@@ -1436,8 +1457,12 @@ export default function CreateEventScreen({navigation, route}) {
             showsVerticalScrollIndicator={false}
             data={
               ['user', 'player'].includes(authContext.entity.role)
-                ? whoCanDataSourceUser
-                : whoCanDataSourceGroup
+                ? whoOpetion === 'join'
+                  ? whoCanJoinUser
+                  : whoCanSeeUser
+                : whoOpetion === 'join'
+                ? whoCanJoinGroup
+                : whoCanSeeGroup
             }
             keyExtractor={(item, index) => index.toString()}
             renderItem={renderWhoCan}
