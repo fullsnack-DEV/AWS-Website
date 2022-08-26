@@ -24,18 +24,21 @@ import AuthContext from '../../../auth/context';
 import images from '../../../Constants/ImagePath';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
-import {capitalize} from '../../../utils';
 import strings from '../../../Constants/String';
 
 export default function GroupInviteSettingPrivacyScreen({navigation, route}) {
-  const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
+
+  const authContext = useContext(AuthContext);
 
   const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
   const [pointEvent, setPointEvent] = useState('auto');
   const [groupInviteYouSetting] = useState([
     {
-      key: `Can ${capitalize(route?.params?.type)} Invite You`,
+      key: `Can ${
+        route?.params?.type.charAt(0).toUpperCase() +
+        route?.params?.type.slice(1)
+      } Invite You`,
       id: 0,
     },
   ]);
@@ -50,7 +53,8 @@ export default function GroupInviteSettingPrivacyScreen({navigation, route}) {
     navigation.setOptions({
       headerTitle: () => (
         <Text style={styles.headerTitle}>
-          {capitalize(route?.params?.type)}
+          {route?.params?.type.charAt(0).toUpperCase() +
+            route?.params?.type.slice(1)}
         </Text>
       ),
     });
@@ -59,7 +63,9 @@ export default function GroupInviteSettingPrivacyScreen({navigation, route}) {
   useEffect(() => {
     if (isFocused) {
       setGroupInviteYou(
-        route?.params?.groupInviteYou ?? route?.params?.type === 'team'
+        route?.params?.groupInviteYou
+          ? route?.params?.groupInviteYou
+          : route?.params?.type === 'team'
           ? authContext.entity?.obj?.who_can_invite_for_team
           : authContext.entity?.obj?.who_can_invite_for_club,
       );
@@ -110,10 +116,10 @@ export default function GroupInviteSettingPrivacyScreen({navigation, route}) {
       console.log('item.key', item);
 
       if (item === groupInviteYouSetting[0].key) {
-        if (groupInviteYou === 0) {
+        if (groupInviteYou === 1) {
           return strings.yes;
         }
-        if (groupInviteYou === 1) {
+        if (groupInviteYou === 0) {
           return strings.no;
         }
       }

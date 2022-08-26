@@ -16,11 +16,11 @@ import AuthContext from '../../../auth/context';
 import images from '../../../Constants/ImagePath';
 import * as Utility from '../../../utils';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
-import {patchGroup} from '../../../api/Groups';
 
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
 import strings from '../../../Constants/String';
+import {patchPlayer} from '../../../api/Users';
 
 export default function WhatEventInviteScreen({navigation, route}) {
   const [comeFrom] = useState(route?.params?.comeFrom);
@@ -41,11 +41,11 @@ export default function WhatEventInviteScreen({navigation, route}) {
   ];
 
   const [whoCreateEvent, setWhoCreateEvent] = useState(
-    (route?.params?.whoCreateEvent === 0 && {
+    (route?.params?.whoCreateEvent === 1 && {
       key: eventsSettingOpetions[0].key,
       id: 0,
     }) ||
-      (route?.params?.whoCreateEvent === 1 && {
+      (route?.params?.whoCreateEvent === 0 && {
         key: eventsSettingOpetions[1].key,
         id: 1,
       }),
@@ -69,6 +69,8 @@ export default function WhatEventInviteScreen({navigation, route}) {
   }, [comeFrom, navigation, whoCreateEvent]);
 
   const saveTeam = () => {
+    console.log('sadsadasdasdasd');
+
     const bodyParams = {};
 
     if (whoCreateEvent.key === eventsSettingOpetions[0].key) {
@@ -79,7 +81,7 @@ export default function WhatEventInviteScreen({navigation, route}) {
     }
 
     setloading(true);
-    patchGroup(authContext.entity.uid, bodyParams, authContext)
+    patchPlayer(bodyParams, authContext)
       .then(async (response) => {
         if (response.status === true) {
           setloading(false);
@@ -107,8 +109,8 @@ export default function WhatEventInviteScreen({navigation, route}) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const onSavePressed = () => {
     if (
-      authContext.entity.role === 'team' ||
-      authContext.entity.role === 'club'
+      authContext.entity.role === 'user' ||
+      authContext.entity.role === 'player'
     ) {
       saveTeam();
     }

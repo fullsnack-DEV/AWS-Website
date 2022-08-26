@@ -38,11 +38,11 @@ export default function GroupInviteYouScreen({navigation, route}) {
   ];
 
   const [groupInviteYou, setGroupInviteYou] = useState(
-    (route?.params?.groupInviteYou === 0 && {
+    (route?.params?.groupInviteYou === 1 && {
       key: strings.yes,
       id: 0,
     }) ||
-      (route?.params?.groupInviteYou === 1 && {
+      (route?.params?.groupInviteYou === 0 && {
         key: strings.no,
         id: 1,
       }),
@@ -59,13 +59,24 @@ export default function GroupInviteYouScreen({navigation, route}) {
         <Text
           style={styles.saveButtonStyle}
           onPress={() => {
-            onSavePressed();
+            if (
+              authContext.entity.role === 'user' ||
+              authContext.entity.role === 'player'
+            ) {
+              saveUser();
+            }
           }}>
           Save
         </Text>
       ),
     });
-  }, [comeFrom, navigation, groupInviteYou]);
+  }, [
+    comeFrom,
+    navigation,
+    groupInviteYou,
+    route?.params?.type,
+    authContext.entity.role,
+  ]);
 
   const saveUser = () => {
     const bodyParams = {};
@@ -91,13 +102,16 @@ export default function GroupInviteYouScreen({navigation, route}) {
         if (response.status === true) {
           setloading(false);
           const entity = authContext.entity;
+          console.log('Register player response IS:: ', response.payload);
           entity.auth.user = response.payload;
           entity.obj = response.payload;
           authContext.setEntity({...entity});
+          authContext.setUser(response.payload);
           await Utility.setStorage('authContextUser', response.payload);
           await Utility.setStorage('authContextEntity', {...entity});
 
           navigation.navigate(comeFrom, {
+            type: route?.params?.type,
             groupInviteYou:
               route?.params?.type === 'team'
                 ? response?.payload?.who_can_invite_for_team
@@ -114,16 +128,6 @@ export default function GroupInviteYouScreen({navigation, route}) {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
-  };
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const onSavePressed = () => {
-    if (
-      authContext.entity.role === 'user' ||
-      authContext.entity.role === 'player'
-    ) {
-      saveUser();
-    }
   };
 
   const renderWhocanJoinOption = ({item}) => (

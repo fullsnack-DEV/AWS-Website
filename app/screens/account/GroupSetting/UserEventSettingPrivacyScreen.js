@@ -94,16 +94,10 @@ export default function UserEventSettingPrivacyScreen({navigation, route}) {
     (item) => {
       if (item === userEventSetting[0].key) {
         if (whoCreateEvent === 0) {
-          return strings.everyEvent;
+          return strings.no;
         }
         if (whoCreateEvent === 1) {
-          return 'User';
-        }
-        if (whoCreateEvent === 2) {
-          return 'Group';
-        }
-        if (whoCreateEvent === 3) {
-          return strings.none;
+          return strings.yes;
         }
       }
     },

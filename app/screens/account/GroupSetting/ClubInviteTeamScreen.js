@@ -38,11 +38,11 @@ export default function ClubInviteTeamScreen({navigation, route}) {
   ];
 
   const [clubInviteTeam, setClubInviteTeam] = useState(
-    (route?.params?.clubInviteTeam === 0 && {
+    (route?.params?.clubInviteTeam === 1 && {
       key: strings.yes,
       id: 0,
     }) ||
-      (route?.params?.clubInviteTeam === 1 && {
+      (route?.params?.clubInviteTeam === 0 && {
         key: strings.no,
         id: 1,
       }),

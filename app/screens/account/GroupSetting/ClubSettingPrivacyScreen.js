@@ -23,6 +23,7 @@ import AuthContext from '../../../auth/context';
 import images from '../../../Constants/ImagePath';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
+import strings from '../../../Constants/String';
 
 export default function ClubSettingPrivacyScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
@@ -92,11 +93,11 @@ export default function ClubSettingPrivacyScreen({navigation, route}) {
       console.log('item.key', item);
 
       if (item === clubSetting[0].key) {
-        if (clubInviteTeam === 0) {
-          return 'Yes';
-        }
         if (clubInviteTeam === 1) {
-          return 'No';
+          return strings.yes;
+        }
+        if (clubInviteTeam === 0) {
+          return strings.no;
         }
       }
     },
