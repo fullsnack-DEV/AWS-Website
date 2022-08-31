@@ -11,7 +11,7 @@ import FastImage from 'react-native-fast-image';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import TCButton from '../../components/TCButton';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 import images from '../../Constants/ImagePath';
 
 export default function ForgotPasswordLinkSentScreen({navigation}) {

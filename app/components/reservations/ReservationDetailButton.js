@@ -3,7 +3,7 @@ import {StyleSheet, View} from 'react-native';
 
 import TCMessageButton from '../TCMessageButton';
 
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 import colors from '../../Constants/Colors';
 
 export default function ReservationDetailButton({onPressButon}) {

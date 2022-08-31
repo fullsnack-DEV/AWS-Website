@@ -1,5 +1,4 @@
 /* eslint-disable no-confusing-arrow */
-/* eslint-disable no-unused-vars */
 /* eslint-disable array-callback-return */
 import React, {
   useState,
@@ -28,29 +27,21 @@ import {
 import Modal from 'react-native-modal';
 import moment from 'moment';
 
-import _, {set} from 'lodash';
-import bodybuilder from 'bodybuilder';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {func} from 'prop-types';
 import Geolocation from '@react-native-community/geolocation';
-import {ColorSpace} from 'react-native-reanimated';
+import _ from 'lodash';
 import AuthContext from '../auth/context';
 // import UserListShimmer from '../components/shimmer/commonComponents/UserListShimmer';
 import {widthPercentageToDP} from '../utils';
-import TCSearchProfileView from '../components/TCSearchProfileView';
 import TCScrollableProfileTabs from '../components/TCScrollableProfileTabs';
-import ScorekeeperInfoSection from '../components/Home/User/ScorekeeperInfoSection';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import {getGroupIndex, getUserIndex, getGameIndex} from '../api/elasticSearch';
-import TCProfileView from '../components/TCProfileView';
 import images from '../Constants/ImagePath';
-import strings from '../Constants/String';
+import {strings} from '../../Localization/translation';
 import * as Utility from '../utils';
 import TCUpcomingMatchCard from '../components/TCUpcomingMatchCard';
 import TCPlayerView from '../components/TCPlayerView';
 import TCThinDivider from '../components/TCThinDivider';
-import TCRefereeView from '../components/TCRefereeView';
 import TCTeamSearchView from '../components/TCTeamSearchView';
 import TCRecentMatchCard from '../components/TCRecentMatchCard';
 import TCTagsFilter from '../components/TCTagsFilter';
@@ -65,6 +56,33 @@ import TCPicker from '../components/TCPicker';
 
 let stopFetchMore = true;
 
+const TAB_ITEMS = [
+  strings.peopleTitleText,
+  strings.groupsTitleText,
+  strings.gamesTitleText,
+  strings.postsTitleText,
+];
+const PEOPLE_SUB_TAB_ITEMS = [
+  strings.generalText,
+  strings.playerTitle,
+  strings.refereesTitle,
+  strings.scorekeeperTitle,
+];
+const GROUP_SUB_TAB_ITEMS = [
+  strings.teamsTitleText,
+  strings.clubsTitleText,
+  strings.leaguesTitleText,
+];
+const GAMES_SUB_TAB_ITEMS = [
+  strings.completedTitleText,
+  strings.upcomingTitleText,
+];
+const POST_SUB_TAB_ITEMS = [
+  strings.all,
+  strings.videosTitleText,
+  strings.photosTitleText,
+];
+
 export default function EntitySearchScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const GAME_HOME = {
@@ -76,34 +94,23 @@ export default function EntitySearchScreen({navigation, route}) {
     GAME_HOME[sportName?.split(' ').join('_').toLowerCase()];
 
   // For activity indigator
-  const [loading, setloading] = useState(true);
-  const [searchMember, setSearchMember] = useState();
-  const [groups, setGroups] = useState();
+
   const [currentTab, setCurrentTab] = useState(0);
-  const [currentSubTab, setCurrentSubTab] = useState('General');
+  const [currentSubTab, setCurrentSubTab] = useState(strings.generalText);
 
   const [playerList, setplayerList] = useState([]);
-  const [groupData, setGroupData] = useState([]);
   const [referees, setReferees] = useState([]);
   const [scorekeepers, setScorekeepers] = useState([]);
   const [teams, setTeams] = useState([]);
   const [clubs, setClubs] = useState([]);
   const [completedGame, setCompletedGame] = useState([]);
   const [upcomingGame, setUpcomingGame] = useState([]);
-  const [filterData, setFilterData] = useState([]);
   const [settingPopup, setSettingPopup] = useState(false);
-  const [data, setData] = useState({
-    peopleMainData: [],
-    peopleFilterData: [],
-  });
 
   // Pagination
 
-  const [loadMore, setLoadMore] = useState(false);
-
   const [pageSize] = useState(10);
   const [pageFrom, setPageFrom] = useState(0);
-  const [from, setFrom] = useState(0);
 
   const [refereesPageFrom, setRefereesPageFrom] = useState(0);
   const [scorekeeperPageFrom, setScorekeeperPageFrom] = useState(0);
@@ -111,54 +118,42 @@ export default function EntitySearchScreen({navigation, route}) {
   const [clubsPageFrom, setClubsPageFrom] = useState(0);
   const [completedGamePageFrom, setCompletedGamePageFrom] = useState(0);
   const [upcomingGamePageFrom, setUpcomingGamePageFrom] = useState(0);
-  const [location, setLocation] = useState('world');
-  const [selectedSport, setSelectedSport] = useState('All');
-  const [selectedSportType, setSelectedSportType] = useState('All');
+  const [location, setLocation] = useState(strings.worldTitleText);
+  const [selectedSport, setSelectedSport] = useState(strings.all);
+  const [selectedSportType, setSelectedSportType] = useState(strings.all);
 
   const [minFee, setMinFee] = useState(0);
   const [maxFee, setMaxFee] = useState(0);
   const [playerFilter, setPlayerFilter] = useState({
-    location: 'world',
-    sport: 'All',
-    sportType: 'All',
+    location: strings.worldTitleText,
+    sport: strings.all,
+    sportType: strings.all,
   });
   const [refereeFilters, setrRefereeFilters] = useState({
-    location: 'world',
-    sport: 'All',
+    location: strings.worldTitleText,
+    sport: strings.all,
   });
   const [scoreKeeperFilters, setScoreKeeperFilters] = useState({
-    location: 'world',
-    sport: 'All',
+    location: strings.worldTitleText,
+    sport: strings.all,
   });
   const [teamFilters, setTeamFilters] = useState({
-    location: 'world',
-    sport: 'All',
+    location: strings.worldTitleText,
+    sport: strings.all,
   });
   const [clubFilters, setClubFilters] = useState({
-    location: 'world',
-    sport: 'All',
+    location: strings.worldTitleText,
+    sport: strings.all,
   });
   const [completedGameFilters, setCompletedGameFilters] = useState({
-    location: 'world',
-    sport: 'All',
+    location: strings.worldTitleText,
+    sport: strings.all,
   });
   const [upcomingGameFilters, setUpcomingGameFilters] = useState({
-    location: 'world',
-    sport: 'All',
+    location: strings.worldTitleText,
+    sport: strings.all,
   });
 
-  const TAB_ITEMS = ['People', 'Groups', 'Games', 'Posts'];
-  const PEOPLE_SUB_TAB_ITEMS = [
-    'General',
-    'Players',
-    'Referees',
-    'Scorekeepers',
-  ];
-  const GROUP_SUB_TAB_ITEMS = ['Teams', 'Clubs', 'Leagues'];
-  const GAMES_SUB_TAB_ITEMS = ['Completed', 'Upcoming'];
-  const POST_SUB_TAB_ITEMS = ['ALL', 'Videos', 'Photos'];
-  const body = bodybuilder().query('match', 'entity_type', 'player').build();
-  const defaultPageSize = 0;
   const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
   const [locationFilterOpetion, setLocationFilterOpetion] = useState(0);
   const [sports, setSports] = useState([]);
@@ -167,10 +162,7 @@ export default function EntitySearchScreen({navigation, route}) {
   const [fromDate, setFromDate] = useState();
   const [toDate, setToDate] = useState();
   const [sportsList] = useState(route?.params?.sportsList);
-  const [sportsArray] = useState(route?.params?.sportsArray);
-  console.log('route?.params?.sportsList', route?.params?.sportsList);
 
-  const [search, setSearch] = useState('');
   const searchBoxRef = useRef();
   useEffect(() => {
     if (route?.params?.locationText) {
@@ -186,8 +178,6 @@ export default function EntitySearchScreen({navigation, route}) {
     }
   }, [route?.params?.locationText]);
   useEffect(() => {
-    console.log('call getPlayersList from useeffect ');
-
     getPlayersList();
     // getRefereesList();
     // getScoreKeepersList(filters);
@@ -198,40 +188,34 @@ export default function EntitySearchScreen({navigation, route}) {
   }, [playerFilter]);
 
   useEffect(() => {
-    console.log('call getRefereesList from useEffect');
     getRefereesList();
   }, [refereeFilters]);
 
   useEffect(() => {
-    console.log('call scoreKeeperFilters from useEffect');
     getScoreKeepersList();
   }, [scoreKeeperFilters]);
 
   useEffect(() => {
-    console.log('call getTeamList from useEffect');
     getTeamList();
   }, [teamFilters]);
 
   useEffect(() => {
-    console.log('call getClubList from useEffect');
     getClubList();
   }, [clubFilters]);
 
   useEffect(() => {
-    console.log('call completed game from useEffect');
     getCompletedGamesList();
   }, [completedGameFilters]);
 
   useEffect(() => {
-    console.log('call upcomingGameFilters from useEffect');
     getUpcomingGameList();
   }, [upcomingGameFilters]);
 
   useEffect(() => {
     const list = [
       {
-        label: 'All',
-        value: 'All',
+        label: strings.all,
+        value: strings.all,
       },
     ];
     sportsList.map((obj) => {
@@ -241,12 +225,10 @@ export default function EntitySearchScreen({navigation, route}) {
       };
       list.push(dataSource);
     });
-    console.log('List --->', list);
     setSports(list);
   }, [sportsList]);
 
   const getPlayersList = useCallback(() => {
-    console.log('call getPlayersList');
     const playersQuery = {
       size: pageSize,
       from: pageFrom,
@@ -270,7 +252,7 @@ export default function EntitySearchScreen({navigation, route}) {
     };
 
     // Sport filter
-    if (playerFilter.sport !== 'All') {
+    if (playerFilter.sport !== strings.all) {
       playersQuery.query.bool.must[0].nested.query.bool.must.push(
         {term: {'registered_sports.is_active': true}},
         {
@@ -282,7 +264,7 @@ export default function EntitySearchScreen({navigation, route}) {
     }
 
     // World filter
-    if (playerFilter.location !== 'world') {
+    if (playerFilter.location !== strings.worldTitleText) {
       playersQuery.query.bool.must.push({
         multi_match: {
           query: `${playerFilter.location.toLowerCase()}`,
@@ -342,7 +324,7 @@ export default function EntitySearchScreen({navigation, route}) {
           //   setFilterData(fetchedData);
           //   setPageFrom(pageFrom + pageSize);
           //   stopFetchMore = true;
-          //   if (currentSubTab === 'Players' || currentSubTab === 'General') {
+          //   if (currentSubTab === strings.playerTitle || currentSubTab === strings.generalText) {
           //     setFilterData(fetchedData);
           //   }
           // } else if (isFiltering) {
@@ -351,7 +333,7 @@ export default function EntitySearchScreen({navigation, route}) {
           //   setFilterData(fetchedFilterData);
           //   setPageFrom(pageFrom + pageSize);
           //   stopFetchMore = true;
-          //   if (currentSubTab === 'Players' || currentSubTab === 'General') {
+          //   if (currentSubTab === strings.playerTitle || currentSubTab === strings.generalText) {
           //     setFilterData(fetchedFilterData);
           //   }
           // }
@@ -385,7 +367,7 @@ export default function EntitySearchScreen({navigation, route}) {
     };
 
     // Location filter
-    if (refereeFilters.location !== 'world') {
+    if (refereeFilters.location !== strings.worldTitleText) {
       refereeQuery.query.bool.must.push({
         multi_match: {
           query: `${refereeFilters.location}`,
@@ -394,7 +376,7 @@ export default function EntitySearchScreen({navigation, route}) {
       });
     }
     // Sport Filter
-    if (refereeFilters.sport !== 'All') {
+    if (refereeFilters.sport !== strings.all) {
       refereeQuery.query.bool.must[0].nested.query.bool.must.push({
         term: {
           'referee_data.sport_name.keyword': {
@@ -456,7 +438,7 @@ export default function EntitySearchScreen({navigation, route}) {
       },
     };
     // Location filter
-    if (scoreKeeperFilters.location !== 'world') {
+    if (scoreKeeperFilters.location !== strings.worldTitleText) {
       scoreKeeperQuery.query.bool.must.push({
         multi_match: {
           query: `${scoreKeeperFilters.location.toLowerCase()}`,
@@ -465,7 +447,7 @@ export default function EntitySearchScreen({navigation, route}) {
       });
     }
 
-    if (scoreKeeperFilters.sport !== 'All') {
+    if (scoreKeeperFilters.sport !== strings.all) {
       scoreKeeperQuery.query.bool.must.push({
         term: {
           'scorekeeper_data.sport_name.keyword': {
@@ -524,7 +506,7 @@ export default function EntitySearchScreen({navigation, route}) {
       },
     };
 
-    if (teamFilters.location !== 'world') {
+    if (teamFilters.location !== strings.worldTitleText) {
       teamsQuery.query.bool.must.push({
         multi_match: {
           query: `${teamFilters.location.toLowerCase()}`,
@@ -533,7 +515,7 @@ export default function EntitySearchScreen({navigation, route}) {
       });
     }
 
-    if (teamFilters.sport !== 'All') {
+    if (teamFilters.sport !== strings.all) {
       teamsQuery.query.bool.must.push({
         term: {
           'registered_sports.sport_name.keyword': {
@@ -596,7 +578,7 @@ export default function EntitySearchScreen({navigation, route}) {
       },
     };
 
-    if (clubFilters.location !== 'world') {
+    if (clubFilters.location !== strings.worldTitleText) {
       clubsQuery.query.bool.must.push({
         multi_match: {
           query: `${clubFilters.location.toLowerCase()}`,
@@ -605,7 +587,7 @@ export default function EntitySearchScreen({navigation, route}) {
       });
     }
 
-    if (clubFilters.sport !== 'All') {
+    if (clubFilters.sport !== strings.all) {
       clubsQuery.query.bool.must.push({
         term: {
           'registered_sports.sport_name.keyword': {
@@ -676,7 +658,7 @@ export default function EntitySearchScreen({navigation, route}) {
       sort: [{actual_enddatetime: 'desc'}],
     };
     // Location filter
-    if (completedGameFilters.location !== 'world') {
+    if (completedGameFilters.location !== strings.worldTitleText) {
       completedGameQuery.query.bool.must.push({
         multi_match: {
           query: completedGameFilters.location,
@@ -685,7 +667,7 @@ export default function EntitySearchScreen({navigation, route}) {
       });
     }
     // Sport filter
-    if (completedGameFilters.sport !== 'All') {
+    if (completedGameFilters.sport !== strings.all) {
       completedGameQuery.query.bool.must.push({
         term: {
           'sport.keyword': {
@@ -727,7 +709,7 @@ export default function EntitySearchScreen({navigation, route}) {
       },
       sort: [{actual_enddatetime: 'desc'}],
     };
-    if (upcomingGameFilters.location !== 'world') {
+    if (upcomingGameFilters.location !== strings.worldTitleText) {
       upcomingMatchQuery.query.bool.must.push({
         multi_match: {
           query: upcomingGameFilters.location,
@@ -735,7 +717,7 @@ export default function EntitySearchScreen({navigation, route}) {
         },
       });
     }
-    if (upcomingGameFilters.sport !== 'All') {
+    if (upcomingGameFilters.sport !== strings.all) {
       upcomingMatchQuery.query.bool.must.push({
         term: {
           'sport.keyword': {
@@ -795,14 +777,14 @@ export default function EntitySearchScreen({navigation, route}) {
     // Object.keys(tempFilter).forEach((key) => {
     //   if (key === Object.keys(item)[0]) {
     //     if (Object.keys(item)[0] === 'sport') {
-    //       tempFilter.sport = 'All';
+    //       tempFilter.sport = strings.all;
     //       delete tempFilter.fee;
-    //       setSelectedSport('All');
+    //       setSelectedSport(strings.all);
     //       setMinFee(0);
     //       setMaxFee(0);
     //     }
     //     if (Object.keys(item)[0] === 'location') {
-    //       tempFilter.location = 'world';
+    //       tempFilter.location = strings.worldTitleText;
     //     }
     //     if (Object.keys(item)[0] === 'fee') {
     //       delete tempFilter.fee;
@@ -819,21 +801,21 @@ export default function EntitySearchScreen({navigation, route}) {
     // }, 10);
 
     switch (currentSubTab) {
-      case 'General':
-      case 'Players': {
+      case strings.generalText:
+      case strings.playerTitle: {
         const tempFilter = playerFilter;
         Object.keys(tempFilter).forEach((key) => {
           if (key === Object.keys(item)[0]) {
             if (Object.keys(item)[0] === 'sport') {
-              tempFilter.sport = 'All';
+              tempFilter.sport = strings.all;
               delete tempFilter.fee;
-              setSelectedSport('All');
-              setSelectedSportType('All');
+              setSelectedSport(strings.all);
+              setSelectedSportType(strings.all);
               setMinFee(0);
               setMaxFee(0);
             }
             if (Object.keys(item)[0] === 'location') {
-              tempFilter.location = 'world';
+              tempFilter.location = strings.worldTitleText;
             }
             if (Object.keys(item)[0] === 'fee') {
               delete tempFilter.fee;
@@ -850,20 +832,20 @@ export default function EntitySearchScreen({navigation, route}) {
 
         break;
       }
-      case 'Referees': {
+      case strings.refereesTitle: {
         const tempFilter = refereeFilters;
         Object.keys(tempFilter).forEach((key) => {
           if (key === Object.keys(item)[0]) {
             if (Object.keys(item)[0] === 'sport') {
-              tempFilter.sport = 'All';
+              tempFilter.sport = strings.all;
               delete tempFilter.fee;
-              setSelectedSport('All');
-              setSelectedSportType('All');
+              setSelectedSport(strings.all);
+              setSelectedSportType(strings.all);
               setMinFee(0);
               setMaxFee(0);
             }
             if (Object.keys(item)[0] === 'location') {
-              tempFilter.location = 'world';
+              tempFilter.location = strings.worldTitleText;
             }
             if (Object.keys(item)[0] === 'fee') {
               delete tempFilter.fee;
@@ -878,20 +860,20 @@ export default function EntitySearchScreen({navigation, route}) {
         }, 10);
         break;
       }
-      case 'Scorekeepers': {
+      case strings.scorekeeperTitle: {
         const tempFilter = scoreKeeperFilters;
         Object.keys(tempFilter).forEach((key) => {
           if (key === Object.keys(item)[0]) {
             if (Object.keys(item)[0] === 'sport') {
-              tempFilter.sport = 'All';
+              tempFilter.sport = strings.all;
               delete tempFilter.fee;
-              setSelectedSport('All');
-              setSelectedSportType('All');
+              setSelectedSport(strings.all);
+              setSelectedSportType(strings.all);
               setMinFee(0);
               setMaxFee(0);
             }
             if (Object.keys(item)[0] === 'location') {
-              tempFilter.location = 'world';
+              tempFilter.location = strings.worldTitleText;
             }
             if (Object.keys(item)[0] === 'fee') {
               delete tempFilter.fee;
@@ -907,20 +889,20 @@ export default function EntitySearchScreen({navigation, route}) {
 
         break;
       }
-      case 'Teams': {
+      case strings.teamsTitleText: {
         const tempFilter = teamFilters;
         Object.keys(tempFilter).forEach((key) => {
           if (key === Object.keys(item)[0]) {
             if (Object.keys(item)[0] === 'sport') {
-              tempFilter.sport = 'All';
+              tempFilter.sport = strings.all;
               delete tempFilter.fee;
-              setSelectedSport('All');
-              setSelectedSportType('All');
+              setSelectedSport(strings.all);
+              setSelectedSportType(strings.all);
               setMinFee(0);
               setMaxFee(0);
             }
             if (Object.keys(item)[0] === 'location') {
-              tempFilter.location = 'world';
+              tempFilter.location = strings.worldTitleText;
             }
             if (Object.keys(item)[0] === 'fee') {
               delete tempFilter.fee;
@@ -937,20 +919,20 @@ export default function EntitySearchScreen({navigation, route}) {
 
         break;
       }
-      case 'Clubs': {
+      case strings.clubsTitleText: {
         const tempFilter = clubFilters;
         Object.keys(tempFilter).forEach((key) => {
           if (key === Object.keys(item)[0]) {
             if (Object.keys(item)[0] === 'sport') {
-              tempFilter.sport = 'All';
+              tempFilter.sport = strings.all;
               delete tempFilter.fee;
-              setSelectedSport('All');
-              setSelectedSportType('All');
+              setSelectedSport(strings.all);
+              setSelectedSportType(strings.all);
               setMinFee(0);
               setMaxFee(0);
             }
             if (Object.keys(item)[0] === 'location') {
-              tempFilter.location = 'world';
+              tempFilter.location = strings.worldTitleText;
             }
             if (Object.keys(item)[0] === 'fee') {
               delete tempFilter.fee;
@@ -967,20 +949,20 @@ export default function EntitySearchScreen({navigation, route}) {
 
         break;
       }
-      case 'Completed': {
+      case strings.completedTitleText: {
         const tempFilter = completedGameFilters;
         Object.keys(tempFilter).forEach((key) => {
           if (key === Object.keys(item)[0]) {
             if (Object.keys(item)[0] === 'sport') {
-              tempFilter.sport = 'All';
+              tempFilter.sport = strings.all;
               delete tempFilter.fee;
-              setSelectedSport('All');
-              setSelectedSportType('All');
+              setSelectedSport(strings.all);
+              setSelectedSportType(strings.all);
               setMinFee(0);
               setMaxFee(0);
             }
             if (Object.keys(item)[0] === 'location') {
-              tempFilter.location = 'world';
+              tempFilter.location = strings.worldTitleText;
             }
             if (Object.keys(item)[0] === 'fee') {
               delete tempFilter.fee;
@@ -995,20 +977,20 @@ export default function EntitySearchScreen({navigation, route}) {
         }, 10);
         break;
       }
-      case 'Upcoming': {
+      case strings.upcomingTitleText: {
         const tempFilter = upcomingGameFilters;
         Object.keys(tempFilter).forEach((key) => {
           if (key === Object.keys(item)[0]) {
             if (Object.keys(item)[0] === 'sport') {
-              tempFilter.sport = 'All';
+              tempFilter.sport = strings.all;
               delete tempFilter.fee;
-              setSelectedSport('All');
-              setSelectedSportType('All');
+              setSelectedSport(strings.all);
+              setSelectedSportType(strings.all);
               setMinFee(0);
               setMaxFee(0);
             }
             if (Object.keys(item)[0] === 'location') {
-              tempFilter.location = 'world';
+              tempFilter.location = strings.worldTitleText;
             }
             if (Object.keys(item)[0] === 'fee') {
               delete tempFilter.fee;
@@ -1065,9 +1047,6 @@ export default function EntitySearchScreen({navigation, route}) {
       {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
     );
   };
-  const applyFilter = useCallback((fil) => {
-    // getPlayersList(fil);
-  }, []);
 
   const applyValidation = useCallback(() => {
     if (Number(minFee) > 0 && Number(maxFee) <= 0) {
@@ -1086,21 +1065,23 @@ export default function EntitySearchScreen({navigation, route}) {
   }, [maxFee, minFee]);
 
   const onScrollHandler = () => {
-    setLoadMore(true);
     switch (currentTab) {
       case 0:
-        if (currentSubTab === 'General' || currentSubTab === 'Players') {
+        if (
+          currentSubTab === strings.generalText ||
+          currentSubTab === strings.playerTitle
+        ) {
           if (!stopFetchMore) {
             getPlayersList();
             stopFetchMore = true;
           }
-        } else if (currentSubTab === 'Referees') {
+        } else if (currentSubTab === strings.refereesTitle) {
           if (!stopFetchMore) {
             console.log('called get referee');
             getRefereesList();
             stopFetchMore = true;
           }
-        } else if (currentSubTab === 'Scorekeepers') {
+        } else if (currentSubTab === strings.scorekeeperTitle) {
           if (!stopFetchMore) {
             getScoreKeepersList();
             stopFetchMore = true;
@@ -1108,12 +1089,12 @@ export default function EntitySearchScreen({navigation, route}) {
         }
         break;
       case 1:
-        if (currentSubTab === 'Teams') {
+        if (currentSubTab === strings.teamsTitleText) {
           if (!stopFetchMore) {
             getTeamList();
             stopFetchMore = true;
           }
-        } else if (currentSubTab === 'Clubs') {
+        } else if (currentSubTab === strings.clubsTitleText) {
           if (!stopFetchMore) {
             getClubList();
             stopFetchMore = true;
@@ -1121,12 +1102,12 @@ export default function EntitySearchScreen({navigation, route}) {
         }
         break;
       case 2:
-        if (currentSubTab === 'Completed') {
+        if (currentSubTab === strings.completedTitleText) {
           if (!stopFetchMore) {
             getCompletedGamesList();
             stopFetchMore = true;
           }
-        } else if (currentSubTab === 'Upcoming') {
+        } else if (currentSubTab === strings.upcomingTitleText) {
           if (!stopFetchMore) {
             getUpcomingGameList();
             stopFetchMore = true;
@@ -1137,28 +1118,14 @@ export default function EntitySearchScreen({navigation, route}) {
         break;
     }
     console.log('called on scroll end');
-    setLoadMore(false);
   };
 
-  const onProfilePress = (item) => {
-    navigation.navigate('HomeScreen', {
-      uid: ['user', 'player']?.includes(item?.entity_type)
-        ? item?.user_id
-        : item?.group_id,
-      role: ['user', 'player']?.includes(item?.entity_type)
-        ? 'user'
-        : item.entity_type,
-      backButtonVisible: true,
-      menuBtnVisible: false,
-    });
-  };
   const searchFilterFunction = (text) => {
-    setSearch(text);
     console.log('search text value', text);
     console.log('currentSubTab==>3333', currentSubTab);
 
     switch (currentSubTab) {
-      case 'General':
+      case strings.generalText:
         setplayerList([]);
         setPageFrom(0);
         setPlayerFilter({
@@ -1167,7 +1134,7 @@ export default function EntitySearchScreen({navigation, route}) {
         });
         console.log('General filters ========>', playerFilter);
         break;
-      case 'Players':
+      case strings.playerTitle:
         setplayerList([]);
         setPageFrom(0);
         setPlayerFilter({
@@ -1176,7 +1143,7 @@ export default function EntitySearchScreen({navigation, route}) {
         });
         console.log('players filters ========>', playerFilter);
         break;
-      case 'Referees':
+      case strings.refereesTitle:
         console.log('Referees filters ========>', refereeFilters);
         setReferees([]);
         setRefereesPageFrom(0);
@@ -1185,7 +1152,7 @@ export default function EntitySearchScreen({navigation, route}) {
           searchText: text,
         });
         break;
-      case 'Scorekeepers':
+      case strings.scorekeeperTitle:
         setScorekeepers([]);
         setScorekeeperPageFrom(0);
         setScoreKeeperFilters({
@@ -1193,7 +1160,7 @@ export default function EntitySearchScreen({navigation, route}) {
           searchText: text,
         });
         break;
-      case 'Teams':
+      case strings.teamsTitleText:
         setTeams([]);
         setTeamsPageFrom(0);
         setTeamFilters({
@@ -1203,7 +1170,7 @@ export default function EntitySearchScreen({navigation, route}) {
         console.log('teamFilters', teamFilters);
 
         break;
-      case 'Clubs':
+      case strings.clubsTitleText:
         setClubs([]);
         setClubsPageFrom(0);
         setClubFilters({
@@ -1211,7 +1178,7 @@ export default function EntitySearchScreen({navigation, route}) {
           searchText: text,
         });
         break;
-      case 'Completed':
+      case strings.completedTitleText:
         setCompletedGame([]);
         setCompletedGamePageFrom(0);
         setCompletedGameFilters({
@@ -1219,7 +1186,7 @@ export default function EntitySearchScreen({navigation, route}) {
           searchText: text,
         });
         break;
-      case 'Upcoming':
+      case strings.upcomingTitleText:
         setUpcomingGame([]);
         setUpcomingGamePageFrom(0);
         setUpcomingGameFilters({
@@ -1234,75 +1201,75 @@ export default function EntitySearchScreen({navigation, route}) {
   const onPressReset = () => {
     console.log('dhdshjshs');
     switch (currentSubTab) {
-      case 'General':
-      case 'Players':
+      case strings.generalText:
+      case strings.playerTitle:
         setplayerList({
-          location: 'world',
-          sport: 'All',
+          location: strings.worldTitleText,
+          sport: strings.all,
         });
-        setSelectedSport('All');
-        setSelectedSportType('All');
+        setSelectedSport(strings.all);
+        setSelectedSportType(strings.all);
         setMinFee(0);
         setMaxFee(0);
         break;
-      case 'Referees':
+      case strings.refereesTitle:
         setReferees({
-          location: 'world',
-          sport: 'All',
+          location: strings.worldTitleText,
+          sport: strings.all,
         });
-        setSelectedSport('All');
-        setSelectedSportType('All');
+        setSelectedSport(strings.all);
+        setSelectedSportType(strings.all);
         setMinFee(0);
         setMaxFee(0);
         break;
-      case 'Scorekeepers':
+      case strings.scorekeeperTitle:
         setScorekeepers({
-          location: 'world',
-          sport: 'All',
+          location: strings.worldTitleText,
+          sport: strings.all,
         });
-        setSelectedSport('All');
-        setSelectedSportType('All');
+        setSelectedSport(strings.all);
+        setSelectedSportType(strings.all);
         setMinFee(0);
         setMaxFee(0);
         break;
-      case 'Teams':
+      case strings.teamsTitleText:
         setTeams({
-          location: 'world',
-          sport: 'All',
+          location: strings.worldTitleText,
+          sport: strings.all,
         });
-        setSelectedSport('All');
-        setSelectedSportType('All');
+        setSelectedSport(strings.all);
+        setSelectedSportType(strings.all);
         setMinFee(0);
         setMaxFee(0);
 
         break;
-      case 'Clubs':
+      case strings.clubsTitleText:
         setClubs({
-          location: 'world',
-          sport: 'All',
+          location: strings.worldTitleText,
+          sport: strings.all,
         });
-        setSelectedSport('All');
-        setSelectedSportType('All');
+        setSelectedSport(strings.all);
+        setSelectedSportType(strings.all);
         setMinFee(0);
         setMaxFee(0);
         break;
-      case 'Completed':
+      case strings.completedTitleText:
         setCompletedGame({
-          location: 'world',
-          sport: 'All',
+          location: strings.worldTitleText,
+          sport: strings.all,
         });
-        setSelectedSport('All');
-        setSelectedSportType('All');
+        setSelectedSport(strings.all);
+        setSelectedSportType(strings.all);
         setMinFee(0);
         setMaxFee(0);
         break;
-      case 'Upcoming':
+      case strings.upcomingTitleText:
         setUpcomingGame({
-          location: 'world',
-          sport: 'All',
+          location: strings.worldTitleText,
+          sport: strings.all,
         });
-        setSelectedSport('All');
-        setSelectedSportType('All');
+        setSelectedSport(strings.all);
+        setSelectedSportType(strings.all);
         setMinFee(0);
         setMaxFee(0);
         break;
@@ -1311,16 +1278,6 @@ export default function EntitySearchScreen({navigation, route}) {
         break;
     }
   };
-  const renderSearchBox = () => (
-    <View style={styles.searchBarView}>
-      <TCSearchBox
-        editable={true}
-        onChangeText={(text) => {
-          searchFilterFunction(text);
-        }}
-      />
-    </View>
-  );
 
   const tabChangePress = useCallback((changeTab) => {
     console.log('change tab value ', changeTab);
@@ -1328,24 +1285,23 @@ export default function EntitySearchScreen({navigation, route}) {
     searchBoxRef.current.clear();
     switch (changeTab.i) {
       case 0:
-        setCurrentSubTab('General');
+        setCurrentSubTab(strings.generalText);
         break;
       case 1:
-        setCurrentSubTab('Teams');
+        setCurrentSubTab(strings.teamsTitleText);
         break;
       case 2:
-        setCurrentSubTab('Completed');
+        setCurrentSubTab(strings.completedTitleText);
         break;
       case 3:
-        setCurrentSubTab('All');
+        setCurrentSubTab(strings.all);
         break;
       default:
         break;
     }
     setCurrentTab(changeTab.i);
   }, []);
-  const onPressSubTabs = useCallback((item, index) => {
-    setSearch('');
+  const onPressSubTabs = useCallback((item) => {
     setCurrentSubTab(item);
   }, []);
   const renderTabContain = useMemo(
@@ -1378,7 +1334,7 @@ export default function EntitySearchScreen({navigation, route}) {
             </TouchableOpacity>
           ))}
         {currentTab === 1 &&
-          GROUP_SUB_TAB_ITEMS.map((item, index) => (
+          GROUP_SUB_TAB_ITEMS.map((item) => (
             <TouchableOpacity
               key={item}
               style={{padding: 10}}
@@ -1397,7 +1353,7 @@ export default function EntitySearchScreen({navigation, route}) {
             </TouchableOpacity>
           ))}
         {currentTab === 2 &&
-          GAMES_SUB_TAB_ITEMS.map((item, index) => (
+          GAMES_SUB_TAB_ITEMS.map((item) => (
             <TouchableOpacity
               key={item}
               style={{padding: 10}}
@@ -1416,7 +1372,7 @@ export default function EntitySearchScreen({navigation, route}) {
             </TouchableOpacity>
           ))}
         {currentTab === 3 &&
-          POST_SUB_TAB_ITEMS.map((item, index) => (
+          POST_SUB_TAB_ITEMS.map((item) => (
             <TouchableOpacity
               key={item}
               style={{padding: 10}}
@@ -1434,13 +1390,13 @@ export default function EntitySearchScreen({navigation, route}) {
               </Text>
             </TouchableOpacity>
           ))}
-        {currentSubTab !== 'General' && (
+        {currentSubTab !== strings.generalText && (
           <TouchableWithoutFeedback
             onPress={() => {
               setTimeout(() => {
                 switch (currentSubTab) {
-                  case 'General':
-                  case 'Players': {
+                  case strings.generalText:
+                  case strings.playerTitle: {
                     setLocation(playerFilter.location);
                     setSelectedSport(playerFilter.sport);
                     setLocationFilterOpetion(
@@ -1455,8 +1411,7 @@ export default function EntitySearchScreen({navigation, route}) {
                     }
                     break;
                   }
-                  case 'Referees': {
-                    console.log('LLLLLLLL', refereeFilters.location);
+                  case strings.refereesTitle: {
                     setLocation(refereeFilters.location);
                     setSelectedSport(refereeFilters.sport);
                     setLocationFilterOpetion(
@@ -1473,7 +1428,7 @@ export default function EntitySearchScreen({navigation, route}) {
                     }
                     break;
                   }
-                  case 'Scorekeepers': {
+                  case strings.scorekeeperTitle: {
                     setLocation(scoreKeeperFilters.location);
                     setSelectedSport(scoreKeeperFilters.sport);
                     setLocationFilterOpetion(
@@ -1491,8 +1446,7 @@ export default function EntitySearchScreen({navigation, route}) {
                     }
                     break;
                   }
-                  case 'Teams': {
-                    console.log('TTTTTTTTTTT', teamFilters);
+                  case strings.teamsTitleText: {
                     setLocation(teamFilters.location);
                     setSelectedSport(teamFilters.sport);
                     setLocationFilterOpetion(
@@ -1507,9 +1461,7 @@ export default function EntitySearchScreen({navigation, route}) {
                     }
                     break;
                   }
-                  case 'Clubs': {
-                    console.log('CCCCCCCC', clubFilters);
-
+                  case strings.clubsTitleText: {
                     setLocation(clubFilters.location);
                     setSelectedSport(clubFilters.sport);
                     setLocationFilterOpetion(
@@ -1524,7 +1476,7 @@ export default function EntitySearchScreen({navigation, route}) {
                     }
                     break;
                   }
-                  case 'Completed': {
+                  case strings.completedTitleText: {
                     setLocation(completedGameFilters.location);
                     setSelectedSport(completedGameFilters.sport);
                     setLocationFilterOpetion(
@@ -1541,7 +1493,7 @@ export default function EntitySearchScreen({navigation, route}) {
                     }
                     break;
                   }
-                  case 'Upcoming': {
+                  case strings.upcomingTitleText: {
                     setLocation(upcomingGameFilters.location);
                     setSelectedSport(upcomingGameFilters.sport);
                     setLocationFilterOpetion(
@@ -1605,118 +1557,94 @@ export default function EntitySearchScreen({navigation, route}) {
     ],
   );
 
-  const renderUpcomingMatchItems = useCallback(({item}) => {
-    console.log('Upcoming Item 123:=>', item);
-    return (
-      <View style={{marginBottom: 15}}>
-        <TCUpcomingMatchCard data={item} cardWidth={'92%'} />
-      </View>
-    );
-  }, []);
-  const renderRecentMatchItems = useCallback(({item}) => {
-    console.log('Recent Item:=>', item);
-    return (
-      <View style={{marginBottom: 15}}>
-        <TCRecentMatchCard data={item} cardWidth={'92%'} />
-      </View>
-    );
-  }, []);
-
   const renderItem = useCallback(
     ({item}) => (
       <View>
         {currentTab === 0 && (
-        <View style={styles.topViewContainer}>
-          <View style={[styles.separator, {flex: 1}]}>
-            <TCPlayerView
-                  data={item}
-                  showStar={false}
-                  onPress={() => {
-                    navigation.navigate('HomeScreen', {
-                      uid: ['user', 'player']?.includes(item?.entity_type)
-                        ? item?.user_id
-                        : item?.group_id,
-                      role: ['user', 'player']?.includes(item?.entity_type)
-                        ? 'user'
-                        : item.entity_type,
-                      backButtonVisible: true,
-                      menuBtnVisible: false,
-                    });
-                  }}
-                />
+          <View style={styles.topViewContainer}>
+            <View style={[styles.separator, {flex: 1}]}>
+              <TCPlayerView
+                data={item}
+                showStar={false}
+                onPress={() => {
+                  navigation.navigate('HomeScreen', {
+                    uid: ['user', 'player']?.includes(item?.entity_type)
+                      ? item?.user_id
+                      : item?.group_id,
+                    role: ['user', 'player']?.includes(item?.entity_type)
+                      ? 'user'
+                      : item.entity_type,
+                    backButtonVisible: true,
+                    menuBtnVisible: false,
+                  });
+                }}
+              />
+            </View>
           </View>
-        </View>
-          )}
+        )}
         {currentTab === 1 && (
-        <View style={styles.topViewContainer}>
-          <View style={[styles.separator, {flex: 1}]}>
-            <TCTeamSearchView
-                  data={item}
-                  showStar={true}
-                  onPress={() => {
-                    navigation.navigate('HomeScreen', {
-                      uid: ['user', 'player']?.includes(item?.entity_type)
-                        ? item?.user_id
-                        : item?.group_id,
-                      role: ['user', 'player']?.includes(item?.entity_type)
-                        ? 'user'
-                        : item.entity_type,
-                      backButtonVisible: true,
-                      menuBtnVisible: false,
-                    });
-                  }}
-                />
+          <View style={styles.topViewContainer}>
+            <View style={[styles.separator, {flex: 1}]}>
+              <TCTeamSearchView
+                data={item}
+                showStar={true}
+                onPress={() => {
+                  navigation.navigate('HomeScreen', {
+                    uid: ['user', 'player']?.includes(item?.entity_type)
+                      ? item?.user_id
+                      : item?.group_id,
+                    role: ['user', 'player']?.includes(item?.entity_type)
+                      ? 'user'
+                      : item.entity_type,
+                    backButtonVisible: true,
+                    menuBtnVisible: false,
+                  });
+                }}
+              />
+            </View>
           </View>
-        </View>
-          )}
-        {currentTab === 2 && currentSubTab === 'Upcoming' && (
-        <View style={{marginBottom: 15}}>
-          <TCUpcomingMatchCard
-                data={item}
-                cardWidth={'92%'}
-                onPress={() => {
-                  const gameHome = getGameHomeScreen(item?.sport);
-                  if (item?.game_id) {
-                    navigation.navigate(gameHome, {
-                      gameId: item?.game_id,
-                    });
-                  } else {
-                    Alert.alert('Game ID does not exist.');
-                  }
-                }}
-              />
-        </View>
-          )}
-        {currentTab === 2 && currentSubTab === 'Completed' && (
-        <View style={{marginBottom: 15}}>
-          <TCRecentMatchCard
-                data={item}
-                cardWidth={'92%'}
-                onPress={() => {
-                  const gameHome = getGameHomeScreen(item?.sport);
-                  if (item?.game_id) {
-                    navigation.navigate(gameHome, {
-                      gameId: item?.game_id,
-                    });
-                  } else {
-                    Alert.alert('Game ID does not exist.');
-                  }
-                }}
-              />
-        </View>
-          )}
-      </View>
-      ),
-    [currentSubTab, currentTab, navigation],
-  );
-  const renderEntityListView = useCallback(
-    ({item}) => (
-      <View style={[styles.separator, {flex: 1}]}>
-        <TCPlayerView data={item} showStar={false} />
+        )}
+        {currentTab === 2 && currentSubTab === strings.upcomingTitleText && (
+          <View style={{marginBottom: 15}}>
+            <TCUpcomingMatchCard
+              data={item}
+              cardWidth={'92%'}
+              onPress={() => {
+                const gameHome = getGameHomeScreen(item?.sport);
+                if (item?.game_id) {
+                  navigation.navigate(gameHome, {
+                    gameId: item?.game_id,
+                  });
+                } else {
+                  Alert.alert(strings.gameIDNotExitsTitle);
+                }
+              }}
+            />
+          </View>
+        )}
+        {currentTab === 2 && currentSubTab === strings.completedTitleText && (
+          <View style={{marginBottom: 15}}>
+            <TCRecentMatchCard
+              data={item}
+              cardWidth={'92%'}
+              onPress={() => {
+                const gameHome = getGameHomeScreen(item?.sport);
+                if (item?.game_id) {
+                  navigation.navigate(gameHome, {
+                    gameId: item?.game_id,
+                  });
+                } else {
+                  Alert.alert(strings.gameIDNotExitsTitle);
+                }
+              }}
+            />
+          </View>
+        )}
       </View>
     ),
-    [],
+    [currentSubTab, currentTab, navigation],
   );
+
   const keyExtractor = useCallback((item, index) => index.toString(), []);
 
   return (
@@ -1744,21 +1672,21 @@ export default function EntitySearchScreen({navigation, route}) {
         <TCTagsFilter
           // dataSource={Utility.getFiltersOpetions(playerFilter)}
           dataSource={
-            (currentSubTab === 'General' &&
+            (currentSubTab === strings.generalText &&
               Utility.getFiltersOpetions(playerFilter)) ||
-            (currentSubTab === 'Players' &&
+            (currentSubTab === strings.playerTitle &&
               Utility.getFiltersOpetions(playerFilter)) ||
-            (currentSubTab === 'Referees' &&
+            (currentSubTab === strings.refereesTitle &&
               Utility.getFiltersOpetions(refereeFilters)) ||
-            (currentSubTab === 'Scorekeepers' &&
+            (currentSubTab === strings.scorekeeperTitle &&
               Utility.getFiltersOpetions(scoreKeeperFilters)) ||
-            (currentSubTab === 'Teams' &&
+            (currentSubTab === strings.teamsTitleText &&
               Utility.getFiltersOpetions(teamFilters)) ||
-            (currentSubTab === 'Clubs' &&
+            (currentSubTab === strings.clubsTitleText &&
               Utility.getFiltersOpetions(clubFilters)) ||
-            (currentSubTab === 'Completed' &&
+            (currentSubTab === strings.completedTitleText &&
               Utility.getFiltersOpetions(completedGameFilters)) ||
-            (currentSubTab === 'Upcoming' &&
+            (currentSubTab === strings.upcomingTitleText &&
               Utility.getFiltersOpetions(upcomingGameFilters))
           }
           onTagCancelPress={handleTagPress}
@@ -1766,25 +1694,25 @@ export default function EntitySearchScreen({navigation, route}) {
       </View>
       <FlatList
         extraData={
-          (currentSubTab === 'General' && playerList) ||
-          (currentSubTab === 'Players' && playerList) ||
-          (currentSubTab === 'Referees' && referees) ||
-          (currentSubTab === 'Scorekeepers' && scorekeepers) ||
-          (currentSubTab === 'Teams' && teams) ||
-          (currentSubTab === 'Clubs' && clubs) ||
-          (currentSubTab === 'Completed' && completedGame) ||
-          (currentSubTab === 'Upcoming' && upcomingGame)
+          (currentSubTab === strings.generalText && playerList) ||
+          (currentSubTab === strings.playerTitle && playerList) ||
+          (currentSubTab === strings.refereesTitle && referees) ||
+          (currentSubTab === strings.scorekeeperTitle && scorekeepers) ||
+          (currentSubTab === strings.teamsTitleText && teams) ||
+          (currentSubTab === strings.clubsTitleText && clubs) ||
+          (currentSubTab === strings.completedTitleText && completedGame) ||
+          (currentSubTab === strings.upcomingTitleText && upcomingGame)
         }
         showsHorizontalScrollIndicator={false}
         data={
-          (currentSubTab === 'General' && playerList) ||
-          (currentSubTab === 'Players' && playerList) ||
-          (currentSubTab === 'Referees' && referees) ||
-          (currentSubTab === 'Scorekeepers' && scorekeepers) ||
-          (currentSubTab === 'Teams' && teams) ||
-          (currentSubTab === 'Clubs' && clubs) ||
-          (currentSubTab === 'Completed' && completedGame) ||
-          (currentSubTab === 'Upcoming' && upcomingGame)
+          (currentSubTab === strings.generalText && playerList) ||
+          (currentSubTab === strings.playerTitle && playerList) ||
+          (currentSubTab === strings.refereesTitle && referees) ||
+          (currentSubTab === strings.scorekeeperTitle && scorekeepers) ||
+          (currentSubTab === strings.teamsTitleText && teams) ||
+          (currentSubTab === strings.clubsTitleText && clubs) ||
+          (currentSubTab === strings.completedTitleText && completedGame) ||
+          (currentSubTab === strings.upcomingTitleText && upcomingGame)
         }
         ItemSeparatorComponent={renderSeparator}
         keyExtractor={keyExtractor}
@@ -1799,8 +1727,6 @@ export default function EntitySearchScreen({navigation, route}) {
         onEndReachedThreshold={0.01}
         onScrollEndDrag={onScrollHandler}
         onScrollBeginDrag={() => {
-          console.log('called on scroll begin');
-
           stopFetchMore = false;
         }}
         ListEmptyComponent={listEmptyComponent}
@@ -1864,8 +1790,8 @@ export default function EntitySearchScreen({navigation, route}) {
                         // Referee case
 
                         switch (currentSubTab) {
-                          case 'General':
-                          case 'Players': {
+                          case strings.generalText:
+                          case strings.playerTitle: {
                             const tempFilter = {...playerFilter};
                             tempFilter.sport = selectedSport;
                             tempFilter.sportType = selectedSportType;
@@ -1882,7 +1808,7 @@ export default function EntitySearchScreen({navigation, route}) {
 
                             break;
                           }
-                          case 'Referees': {
+                          case strings.refereesTitle: {
                             const tempFilter = {...refereeFilters};
                             tempFilter.sport = selectedSport;
                             tempFilter.sportType = selectedSportType;
@@ -1899,7 +1825,7 @@ export default function EntitySearchScreen({navigation, route}) {
                             });
                             break;
                           }
-                          case 'Scorekeepers': {
+                          case strings.scorekeeperTitle: {
                             const tempFilter = {...scoreKeeperFilters};
                             tempFilter.sport = selectedSport;
                             tempFilter.sportType = selectedSportType;
@@ -1915,8 +1841,7 @@ export default function EntitySearchScreen({navigation, route}) {
                             });
                             break;
                           }
-                          case 'Teams': {
-                            console.log('teamFiltersteamFilters', teamFilters);
+                          case strings.teamsTitleText: {
                             const tempFilter = {...teamFilters};
                             tempFilter.sport = selectedSport;
                             tempFilter.sportType = selectedSportType;
@@ -1934,7 +1859,7 @@ export default function EntitySearchScreen({navigation, route}) {
 
                             break;
                           }
-                          case 'Clubs': {
+                          case strings.clubsTitleText: {
                             const tempFilter = {...clubFilters};
                             tempFilter.sport = selectedSport;
                             tempFilter.sportType = selectedSportType;
@@ -1951,7 +1876,7 @@ export default function EntitySearchScreen({navigation, route}) {
                             });
                             break;
                           }
-                          case 'Completed': {
+                          case strings.completedTitleText: {
                             const tempFilter = {...completedGameFilters};
                             tempFilter.sport = selectedSport;
                             tempFilter.sportType = selectedSportType;
@@ -1968,7 +1893,7 @@ export default function EntitySearchScreen({navigation, route}) {
                             });
                             break;
                           }
-                          case 'Upcoming': {
+                          case strings.upcomingTitleText: {
                             const tempFilter = {...upcomingGameFilters};
                             tempFilter.sport = selectedSport;
                             tempFilter.sportType = selectedSportType;
@@ -1989,10 +1914,9 @@ export default function EntitySearchScreen({navigation, route}) {
                             break;
                         }
                       }, 100);
-                      console.log('DONE::');
                     }
                   }}>
-                  {'Apply'}
+                  {strings.apply}
                 </Text>
               </View>
               <TCThinDivider width={'100%'} marginBottom={15} />
@@ -2008,11 +1932,13 @@ export default function EntitySearchScreen({navigation, route}) {
                         marginBottom: 10,
                         justifyContent: 'space-between',
                       }}>
-                      <Text style={styles.filterTitle}>World</Text>
+                      <Text style={styles.filterTitle}>
+                        {Utility.capitalize(strings.worldTitleText)}
+                      </Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(0);
-                          setLocation('world');
+                          setLocation(strings.worldTitleText);
                         }}>
                         <Image
                           source={
@@ -2030,7 +1956,9 @@ export default function EntitySearchScreen({navigation, route}) {
                         marginBottom: 10,
                         justifyContent: 'space-between',
                       }}>
-                      <Text style={styles.filterTitle}>Home City</Text>
+                      <Text style={styles.filterTitle}>
+                        {strings.homeCityTitleText}
+                      </Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(1);
@@ -2057,7 +1985,9 @@ export default function EntitySearchScreen({navigation, route}) {
                         marginBottom: 10,
                         justifyContent: 'space-between',
                       }}>
-                      <Text style={styles.filterTitle}>Current City</Text>
+                      <Text style={styles.filterTitle}>
+                        {strings.currrentCityTitle}
+                      </Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(2);
@@ -2122,11 +2052,10 @@ export default function EntitySearchScreen({navigation, route}) {
                     <View style={{marginTop: 10}}>
                       <TCPicker
                         dataSource={sports}
-                        placeholder={'Select Sport'}
+                        placeholder={strings.selectSportTitleText}
                         onValueChange={(value) => {
-                          console.log('vaaaa', value);
                           setSelectedSport(value);
-                          if (value === 'All') {
+                          if (value === strings.all) {
                             setMinFee(0);
                             setMaxFee(0);
                           }
@@ -2158,7 +2087,7 @@ export default function EntitySearchScreen({navigation, route}) {
                             justifyContent: 'center',
                           }}>
                           <Text style={styles.fieldTitle} numberOfLines={1}>
-                            From
+                            {strings.fromText}
                           </Text>
                         </View>
                         <View style={{marginRight: 15, flexDirection: 'row'}}>
@@ -2184,7 +2113,7 @@ export default function EntitySearchScreen({navigation, route}) {
                             justifyContent: 'center',
                           }}>
                           <Text style={styles.fieldTitle} numberOfLines={1}>
-                            To
+                            {strings.toText}
                           </Text>
                         </View>
                         <View style={{marginRight: 15, flexDirection: 'row'}}>
@@ -2205,7 +2134,7 @@ export default function EntitySearchScreen({navigation, route}) {
                         textAlign: 'right',
                         marginTop: 10,
                       }}>
-                      Time zone{' '}
+                      {strings.timezoneTitleText}
                       <Text
                         style={{
                           fontSize: 12,
@@ -2213,13 +2142,13 @@ export default function EntitySearchScreen({navigation, route}) {
                           color: colors.lightBlackColor,
                           textDecorationLine: 'underline',
                         }}>
-                        Vancouver
+                        {'Vancouver'}
                       </Text>
                     </Text>
                   </View>
                 </View>
               </View>
-              {selectedSport !== 'All' && (
+              {selectedSport !== strings.all && (
                 <View
                   style={{
                     flexDirection: 'column',
@@ -2227,7 +2156,7 @@ export default function EntitySearchScreen({navigation, route}) {
                     justifyContent: 'space-between',
                   }}>
                   <View style={{}}>
-                    <Text style={styles.filterTitle}>Referee fee</Text>
+                    <Text style={styles.filterTitle}>{strings.refereeFee}</Text>
                   </View>
                   <View style={{marginTop: 10}}>
                     <View
@@ -2239,7 +2168,7 @@ export default function EntitySearchScreen({navigation, route}) {
                         onChangeText={(text) => setMinFee(text)}
                         value={minFee}
                         style={styles.minFee}
-                        placeholder={'Min'}
+                        placeholder={strings.minPlaceholder}
                         autoCorrect={false}
                         // clearButtonMode={'always'}
                         keyboardType={'numeric'}
@@ -2249,7 +2178,7 @@ export default function EntitySearchScreen({navigation, route}) {
                         onChangeText={(text) => setMaxFee(text)}
                         value={maxFee}
                         style={styles.minFee}
-                        placeholder={'Max'}
+                        placeholder={strings.maxPlaceholder}
                         autoCorrect={false}
                         // clearButtonMode={'always'}
                         keyboardType={'numeric'}
@@ -2267,23 +2196,23 @@ export default function EntitySearchScreen({navigation, route}) {
             style={styles.resetButton}
             onPress={() => {
               Alert.alert(
-                'Are you sure want to reset filters?',
+                strings.areYouSureRemoveFilterText,
                 '',
                 [
                   {
-                    text: 'Cancel',
+                    text: strings.cancel,
                     onPress: () => console.log('Cancel Pressed'),
                     style: 'cancel',
                   },
                   {
-                    text: 'OK',
+                    text: strings.okTitleText,
                     onPress: () => onPressReset(),
                   },
                 ],
                 {cancelable: false},
               );
             }}>
-            <Text style={styles.resetTitle}>Reset</Text>
+            <Text style={styles.resetTitle}>{strings.resetTitleText}</Text>
           </TouchableOpacity>
         </View>
         <DateTimePickerView

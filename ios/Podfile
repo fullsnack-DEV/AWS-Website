@@ -24,7 +24,7 @@ target 'townscup_reactnative' do
   pod 'react-native-orientation', :path => '../node_modules/react-native-orientation'
   pod 'react-native-blur', :path => '../node_modules/@react-native-community/blur'
 
-  
+  pod 'RNLocalize', :path => '../node_modules/react-native-localize'
   pod 'Permission-Camera', :path => "#{permissions_path}/Camera"
   pod 'Permission-PhotoLibrary', :path => "#{permissions_path}/PhotoLibrary"
 

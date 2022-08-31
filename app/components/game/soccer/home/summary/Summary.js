@@ -42,7 +42,7 @@ import colors from '../../../../../Constants/Colors';
 import ApproveDisapprove from './approveDisapprove/ApproveDisapprove';
 import {checkReviewExpired} from '../../../../../utils/gameUtils';
 import fonts from '../../../../../Constants/Fonts';
-import strings from '../../../../../Constants/String';
+import {strings} from '../../../../../../Localization/translation';
 import GameFeed from '../../../common/summary/GameFeed';
 
 import images from '../../../../../Constants/ImagePath';

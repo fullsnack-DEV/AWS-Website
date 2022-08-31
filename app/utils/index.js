@@ -23,7 +23,7 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import strings from '../Constants/String';
+import {strings} from '../../Localization/translation';
 import images from '../Constants/ImagePath';
 import colors from '../Constants/Colors';
 // eslint-disable-next-line import/no-cycle
@@ -229,7 +229,9 @@ export const convertFirstCharacterAllWordsToUppercase = (stringToConvert) => {
     stringObj = stringToConvert;
   }
   const wordsArray = stringObj.split(' ');
-  const convertedWordsArray = wordsArray.map((word) => convertFirstCharacterToUppercase(word));
+  const convertedWordsArray = wordsArray.map((word) =>
+    convertFirstCharacterToUppercase(word),
+  );
 
   return convertedWordsArray.join(' ');
 };
@@ -825,7 +827,8 @@ export const getCalendar = async (
   }
 };
 
-export const uniqueArray = (array, propertyName) => array.filter(
+export const uniqueArray = (array, propertyName) =>
+  array.filter(
     (e, i) => array.findIndex((a) => a[propertyName] === e[propertyName]) === i,
   );
 

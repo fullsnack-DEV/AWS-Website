@@ -12,7 +12,7 @@ import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import MatchBetweenRecentView from './MatchBetweenRecentView';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 
 export default function RecentMatchItems({
   data,

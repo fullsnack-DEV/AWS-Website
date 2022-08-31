@@ -9,7 +9,7 @@ import {
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import images from '../Constants/ImagePath';
-import strings from '../Constants/String';
+import {strings} from '../../Localization/translation';
 import {getHitSlop} from '../utils';
 
 function FacebookButton({onPress}) {

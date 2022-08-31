@@ -34,7 +34,7 @@ import {ImageUploadContext} from '../../context/GetContexts';
 import Header from '../../components/Home/Header';
 import fonts from '../../Constants/Fonts';
 import {setStorage, widthPercentageToDP as wp} from '../../utils';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 import {getShortsList, getSportsList} from '../../api/Games'; // getRecentGameDetails
 import TCAccountDeactivate from '../../components/TCAccountDeactivate';
 import {userActivate} from '../../api/Users';
@@ -472,7 +472,9 @@ const FeedsScreen = ({navigation}) => {
             //     style={styles.backImageStyle}
             //   />
             // </View>
-            <Text style={styles.eventTitleTextStyle}>Feed</Text>
+            <Text style={styles.eventTitleTextStyle}>
+              {strings.feedTitleText}
+            </Text>
           }
           // centerComponent={<Text style={styles.eventTitleTextStyle}>Feed</Text>}
           rightComponent={topRightButton}

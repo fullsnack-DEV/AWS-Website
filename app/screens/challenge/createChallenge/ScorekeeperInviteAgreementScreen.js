@@ -3,7 +3,7 @@ import {StyleSheet, View, SafeAreaView, Alert} from 'react-native';
 import AuthContext from '../../../auth/context';
 
 import colors from '../../../Constants/Colors';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import TCGradientButton from '../../../components/TCGradientButton';
 import TCFormProgress from '../../../components/TCFormProgress';
 import ScorekeeperAgreementView from '../../../components/challenge/ScorekeeperAgreementView';

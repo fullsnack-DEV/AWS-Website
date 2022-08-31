@@ -21,7 +21,7 @@ import TCThinDivider from '../../../components/TCThinDivider';
 import InvoiceAmount from '../../../components/invoice/InvoiceAmount';
 import images from '../../../Constants/ImagePath';
 import PaymentLogs from '../../../components/invoice/PaymentLogs';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 
 export default function InvoiceDetailScreen({navigation}) {
   // const [loading, setloading] = useState(false);

@@ -24,7 +24,7 @@ import EventItemRender from '../../../components/Schedule/EventItemRender';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import DefaultColorModal from '../../../components/Schedule/DefaultColor/DefaultColorModal';
 
 export default function DefaultColorScreen({navigation}) {
@@ -132,138 +132,132 @@ export default function DefaultColorScreen({navigation}) {
   };
 
   const renderCreatedEventsColorItem = ({item}) => (
-    <View
-        style={{marginRight: Dimensions.get('window').width > 360 ? -1 : 5}}>
+    <View style={{marginRight: Dimensions.get('window').width > 360 ? -1 : 5}}>
       <EventColorItem
-          item={item}
-          isNew={!!item?.isNew}
-          onChangeColorPressed={() => onChangeColorPressed('Created Events')}
-          imageStyle={{
-            tintColor:
-              item.color !== '0' ? colors.whiteColor : colors.lightBlackColor,
-          }}
-          onItemPress={() => {
-            setPressAddEventColor('Created Events');
-            if (item.color === '0') {
-              setAddColorDoneButton(false);
-              toggleModal();
-              setSelectedEventColors();
-            } else {
-              createdEventColors.map((createEventItem) => {
-                const createEventData = createEventItem;
-                if (createEventData.id === item.id) {
-                  createEventData.isSelected = true;
+        item={item}
+        isNew={!!item?.isNew}
+        onChangeColorPressed={() => onChangeColorPressed('Created Events')}
+        imageStyle={{
+          tintColor:
+            item.color !== '0' ? colors.whiteColor : colors.lightBlackColor,
+        }}
+        onItemPress={() => {
+          setPressAddEventColor('Created Events');
+          if (item.color === '0') {
+            setAddColorDoneButton(false);
+            toggleModal();
+            setSelectedEventColors();
+          } else {
+            createdEventColors.map((createEventItem) => {
+              const createEventData = createEventItem;
+              if (createEventData.id === item.id) {
+                createEventData.isSelected = true;
 
-                  setSelectedEventColors(createEventData.color);
-                } else {
-                  createEventData.isSelected = false;
-                }
-                return null;
-              });
+                setSelectedEventColors(createEventData.color);
+              } else {
+                createEventData.isSelected = false;
+              }
+              return null;
+            });
 
-              setCreatedEventColors([...createdEventColors]);
-            }
-          }}
-          source={getImageOfColor(item)}
-          eventColorViewStyle={{
-            backgroundColor:
-              item.color === '0' ? colors.whiteColor : item.color,
-            borderWidth: item.isSelected ? 2 : 0,
-            borderColor: colors.whiteColor,
-            marginRight: wp(3),
-          }}
-        />
+            setCreatedEventColors([...createdEventColors]);
+          }
+        }}
+        source={getImageOfColor(item)}
+        eventColorViewStyle={{
+          backgroundColor: item.color === '0' ? colors.whiteColor : item.color,
+          borderWidth: item.isSelected ? 2 : 0,
+          borderColor: colors.whiteColor,
+          marginRight: wp(3),
+        }}
+      />
     </View>
-    );
+  );
 
   const renderImportedEventsColorItem = ({item}) => (
-    <View
-        style={{marginRight: Dimensions.get('window').width > 360 ? -1 : 5}}>
+    <View style={{marginRight: Dimensions.get('window').width > 360 ? -1 : 5}}>
       <EventColorItem
-          item={item}
-          isNew={!!item?.isNew}
-          onChangeColorPressed={() => onChangeColorPressed('Imported Events')}
-          imageStyle={{
-            tintColor:
-              item.color !== '0' ? colors.whiteColor : colors.lightBlackColor,
-          }}
-          onItemPress={() => {
-            setPressAddEventColor('Imported Events');
-            if (item.color === '0') {
-              setAddColorDoneButton(false);
-              toggleModal();
-              setSelectedImportedColors();
-            } else {
-              importedEventColors.map(async (importedEventItem) => {
-                const importedEventData = importedEventItem;
-                if (importedEventData.id === item.id) {
-                  importedEventData.isSelected = true;
-                  setSelectedImportedColors(importedEventData.color);
-                } else {
-                  importedEventData.isSelected = false;
-                }
-                return null;
-              });
+        item={item}
+        isNew={!!item?.isNew}
+        onChangeColorPressed={() => onChangeColorPressed('Imported Events')}
+        imageStyle={{
+          tintColor:
+            item.color !== '0' ? colors.whiteColor : colors.lightBlackColor,
+        }}
+        onItemPress={() => {
+          setPressAddEventColor('Imported Events');
+          if (item.color === '0') {
+            setAddColorDoneButton(false);
+            toggleModal();
+            setSelectedImportedColors();
+          } else {
+            importedEventColors.map(async (importedEventItem) => {
+              const importedEventData = importedEventItem;
+              if (importedEventData.id === item.id) {
+                importedEventData.isSelected = true;
+                setSelectedImportedColors(importedEventData.color);
+              } else {
+                importedEventData.isSelected = false;
+              }
+              return null;
+            });
 
-              setImportedEventColors([...importedEventColors]);
-            }
-          }}
-          source={getImageOfColor(item)}
-          eventColorViewStyle={{
-            backgroundColor:
-              item.color === '0' ? colors.whiteColor : item.color,
-            borderWidth: item.isSelected ? 2 : 0,
-            borderColor: colors.whiteColor,
-            marginRight: wp(3),
-          }}
-        />
+            setImportedEventColors([...importedEventColors]);
+          }
+        }}
+        source={getImageOfColor(item)}
+        eventColorViewStyle={{
+          backgroundColor: item.color === '0' ? colors.whiteColor : item.color,
+          borderWidth: item.isSelected ? 2 : 0,
+          borderColor: colors.whiteColor,
+          marginRight: wp(3),
+        }}
+      />
     </View>
-    );
+  );
 
   const renderGamesEventsColorItem = ({item}) => (
-    <View
-        style={{marginRight: Dimensions.get('window').width > 360 ? -1 : 5}}>
+    <View style={{marginRight: Dimensions.get('window').width > 360 ? -1 : 5}}>
       <EventColorItem
-          item={item}
-          isNew={!!item?.isNew}
-          onChangeColorPressed={() => onChangeColorPressed('Game Events')}
-          imageStyle={{
-            tintColor:
-              item.color !== '0' ? colors.whiteColor : colors.lightBlackColor,
-          }}
-          onItemPress={() => {
-            setPressAddEventColor('Game Events');
-            if (item.color === '0') {
-              setAddColorDoneButton(false);
-              toggleModal();
-              setSelectedMatchColors();
-            } else {
-              gamesEventColors.map(async (gamesEventItem) => {
-                const gamesEventData = gamesEventItem;
-                if (gamesEventData.id === item.id) {
-                  gamesEventData.isSelected = true;
+        item={item}
+        isNew={!!item?.isNew}
+        onChangeColorPressed={() => onChangeColorPressed('Game Events')}
+        imageStyle={{
+          tintColor:
+            item.color !== '0' ? colors.whiteColor : colors.lightBlackColor,
+        }}
+        onItemPress={() => {
+          setPressAddEventColor('Game Events');
+          if (item.color === '0') {
+            setAddColorDoneButton(false);
+            toggleModal();
+            setSelectedMatchColors();
+          } else {
+            gamesEventColors.map(async (gamesEventItem) => {
+              const gamesEventData = gamesEventItem;
+              if (gamesEventData.id === item.id) {
+                gamesEventData.isSelected = true;
 
-                  setSelectedMatchColors(gamesEventData.color);
-                } else {
-                  gamesEventData.isSelected = false;
-                }
-                return null;
-              });
+                setSelectedMatchColors(gamesEventData.color);
+              } else {
+                gamesEventData.isSelected = false;
+              }
+              return null;
+            });
 
-              setGamesEventColor([...gamesEventColors]);
-            }
-          }}
-          source={getImageOfColor(item)}
-          eventColorViewStyle={{
-            backgroundColor:
-              item.color === '0' ? colors.whiteColor : item.color,
-            borderWidth: item.isSelected ? 2 : 0,
-            borderColor: colors.whiteColor,
-            marginRight: wp(3),
-          }}
-        />
+            setGamesEventColor([...gamesEventColors]);
+          }
+        }}
+        source={getImageOfColor(item)}
+        eventColorViewStyle={{
+          backgroundColor: item.color === '0' ? colors.whiteColor : item.color,
+          borderWidth: item.isSelected ? 2 : 0,
+          borderColor: colors.whiteColor,
+          marginRight: wp(3),
+        }}
+      />
     </View>
-    );
+  );
 
   const onDonePress = () => {
     Utility.setStorage('eventColors', createdEventColors);

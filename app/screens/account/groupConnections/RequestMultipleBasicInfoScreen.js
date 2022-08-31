@@ -8,7 +8,7 @@ import React, {
 import {Text, View, StyleSheet, FlatList, Alert} from 'react-native';
 
 import ActivityLoader from '../../../components/loader/ActivityLoader';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import TCSearchBox from '../../../components/TCSearchBox';

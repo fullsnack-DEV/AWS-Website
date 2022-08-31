@@ -56,16 +56,16 @@ const style = StyleSheet.create({
     height: 45,
   },
   leftContainerStyle: {
-    width: wp('15%'),
+    width: wp('25%'),
     paddingLeft: 15,
   },
   rightContainerStyle: {
-    width: wp('15%'),
+    width: wp('25%'),
     paddingRight: 15,
     alignItems: 'flex-end',
   },
   centerContainerStyle: {
-    width: wp('70%'),
+    width: wp('50%'),
   },
 });
 

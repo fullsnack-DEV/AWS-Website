@@ -8,7 +8,6 @@
 // import colors from '../../Constants/Colors';
 // import fonts from '../../Constants/Fonts';
 // import AuthContext from '../../auth/context';
-// import strings from '../../Constants/String';
 
 // let entity = {};
 // function ChallengerInOutView({ data }) {
@@ -253,7 +252,7 @@ import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import AuthContext from '../../auth/context';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 
 let entity = {};
 function ChallengerInOutView({data}) {

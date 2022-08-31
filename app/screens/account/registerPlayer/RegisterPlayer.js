@@ -21,7 +21,7 @@ import {
 import Modal from 'react-native-modal';
 
 import images from '../../../Constants/ImagePath';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import AuthContext from '../../../auth/context';
@@ -42,11 +42,7 @@ export default function RegisterPlayer({navigation}) {
 
     console.log('authContext.sports', authContext.sports);
     authContext.sports.map((item) => {
-      const sportData = item.format.map((obj) => ({
-        ...obj,
-        player_image: item.player_image,
-      }));
-      sportArr = [...sportArr, ...sportData];
+      sportArr = [...sportArr, ...item.format];
       console.log('sportArrsportArr', sportArr);
       return null;
     });
@@ -105,9 +101,7 @@ export default function RegisterPlayer({navigation}) {
         bodyParams.sport_type = sportsSelection.sport_type;
         bodyParams.sport = sportsSelection.sport;
         bodyParams.sport_name = sportsSelection.sport_name;
-        bodyParams.player_image = sportsSelection.player_image;
         bodyParams.is_active = true;
-        console.log('body params for register player', bodyParams);
         navigation.navigate('RegisterPlayerForm2', {
           bodyParams,
         });

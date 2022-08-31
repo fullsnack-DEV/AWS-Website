@@ -7,11 +7,10 @@ import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import TCBorderButton from '../../components/TCBorderButton';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 import AuthContext from '../../auth/context';
 
 // import TCBorderButton from '../../components/TCBorderButton';
-// import strings from '../../Constants/String';
 import {getGameHomeScreen} from '../../utils/gameUtils';
 
 export default function ChallengeAcceptedDeclinedScreen({navigation, route}) {

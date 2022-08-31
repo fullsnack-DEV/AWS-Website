@@ -24,7 +24,7 @@ import FastImage from 'react-native-fast-image';
 import Config from 'react-native-config';
 import AuthContext from '../../auth/context';
 import images from '../../Constants/ImagePath';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';

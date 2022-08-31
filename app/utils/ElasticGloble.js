@@ -2,7 +2,7 @@
 import axios from 'axios';
 import NetInfo from '@react-native-community/netinfo';
 
-import strings from '../Constants/String';
+import {strings} from '../../Localization/translation';
 // eslint-disable-next-line import/no-cycle
 import * as Utility from './index';
 

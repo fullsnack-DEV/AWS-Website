@@ -3,15 +3,18 @@ import {View, StyleSheet, FlatList} from 'react-native';
 
 import {useIsFocused} from '@react-navigation/native';
 import _ from 'lodash';
+import {format} from 'react-string-format';
 import TCNoDataView from '../../../components/TCNoDataView';
 import AuthContext from '../../../auth/context';
 import TCUserList from './TCUserList';
+
 import {
   followUser,
   getUserFollowerFollowing,
   unfollowUser,
 } from '../../../api/Users';
 import UserListShimmer from '../../../components/shimmer/commonComponents/UserListShimmer';
+import {strings} from '../../../../Localization/translation';
 
 export default function UserConnections({navigation, route}) {
   const isFocused = useIsFocused();
@@ -34,7 +37,9 @@ export default function UserConnections({navigation, route}) {
 
       getUserFollowerFollowing(
         user_id,
-        eType === 'user' ? 'players' : 'groups',
+        eType === strings.entityTypeUser
+          ? strings.entityTypePlayers
+          : strings.entityTypeGroups,
         tab,
         authContext,
       )
@@ -54,7 +59,9 @@ export default function UserConnections({navigation, route}) {
               <UserListShimmer />
             ) : (
               <View style={{flex: 1}}>
-                <TCNoDataView title={`No ${_.startCase(tab)} Found`} />
+                <TCNoDataView
+                  title={format(strings.noTabsFoundText_dy, _.startCase(tab))}
+                />
               </View>
             )}
           </View>
@@ -63,15 +70,22 @@ export default function UserConnections({navigation, route}) {
             data={data}
             keyExtractor={(item, index) => index.toString()}
             renderItem={({item}) => {
-              const showFollowUnfollowButton = userRole === 'user';
+              const showFollowUnfollowButton =
+                userRole === strings.entityTypeUser;
               return (
                 <TCUserList
                   onProfilePress={() => {
                     navigation.push('HomeScreen', {
-                      role: ['player', 'user']?.includes(item?.entity_type)
-                        ? 'user'
+                      role: [
+                        strings.entityTypePlayer,
+                        strings.entityTypeUser,
+                      ]?.includes(item?.entity_type)
+                        ? strings.entityTypeUser
                         : item?.entity_type,
-                      uid: ['player', 'user']?.includes(item?.entity_type)
+                      uid: [
+                        strings.entityTypePlayer,
+                        strings.entityTypeUser,
+                      ]?.includes(item?.entity_type)
                         ? item?.user_id
                         : item?.group_id,
                       backButtonVisible: true,
@@ -82,7 +96,7 @@ export default function UserConnections({navigation, route}) {
                   profileImage={item?.full_image}
                   entityType={item?.entity_type}
                   title={
-                    item?.entity_type === 'player'
+                    item?.entity_type === strings.entityTypePlayer
                       ? item?.full_name
                       : item?.group_name
                   }
@@ -91,7 +105,7 @@ export default function UserConnections({navigation, route}) {
                   followUnfollowPress={(wantToFollow) => {
                     const entity_type = item?.entity_type;
                     const uid =
-                      item?.entity_type === 'player'
+                      item?.entity_type === strings.entityTypePlayer
                         ? item?.user_id
                         : item?.group_id;
                     if (wantToFollow) {

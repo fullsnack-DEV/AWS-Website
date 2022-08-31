@@ -22,7 +22,7 @@ import {
   approveBasicInfoRequest,
   getGroupMembersInfo,
 } from '../../../api/Groups';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import images from '../../../Constants/ImagePath';
 
 import fonts from '../../../Constants/Fonts';

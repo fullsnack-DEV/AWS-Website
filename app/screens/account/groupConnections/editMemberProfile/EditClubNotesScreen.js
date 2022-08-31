@@ -3,7 +3,7 @@ import {StyleSheet, View, Text, ScrollView, Alert} from 'react-native';
 
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import {patchMember} from '../../../../api/Groups';
-import strings from '../../../../Constants/String';
+import {strings} from '../../../../../Localization/translation';
 import fonts from '../../../../Constants/Fonts';
 import TCTextField from '../../../../components/TCTextField';
 import TCNavigationHeader from '../../../../components/TCNavigationHeader';
@@ -76,7 +76,7 @@ export default function EditClubNotesScreen({navigation, route}) {
       <ActivityLoader visible={loading} />
 
       <View>
-        <TCLabel title={'Note'} />
+        <TCLabel title={strings.writeNotesPlaceholder} />
         <TCTextField
           value={memberInfo.note}
           height={100}

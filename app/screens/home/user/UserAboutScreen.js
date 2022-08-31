@@ -6,7 +6,7 @@ import TCTextField from '../../../components/TCTextField';
 import TCLabel from '../../../components/TCLabel';
 import {updateUserProfile} from '../../../api/Users';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import AuthContext from '../../../auth/context';

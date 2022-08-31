@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
+import {strings} from '../../Localization/translation';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 
@@ -19,17 +20,17 @@ const TCShortsPlaceholder = ({onPress}) => (
     <FastImage source={images.shortCard} style={styles.shortView} />
     <FastImage source={images.shortCard} style={styles.shortView} />
     <LinearGradient
-        colors={[colors.whiteColor, colors.whiteColor]}
-        style={styles.overlayStyle}>
-      <Text style={styles.placeholderTextStyle}>{'NO SHORTS'}</Text>
+      colors={[colors.whiteColor, colors.whiteColor]}
+      style={styles.overlayStyle}>
+      <Text style={styles.placeholderTextStyle}>{strings.noShortsText}</Text>
       <TouchableOpacity onPress={onPress}>
         <Text style={styles.startTitle} numberOfLines={2}>
-          {'Post your short >'}
+          {strings.postShortsText}
         </Text>
       </TouchableOpacity>
     </LinearGradient>
   </View>
-  );
+);
 
 const styles = StyleSheet.create({
   shortView: {

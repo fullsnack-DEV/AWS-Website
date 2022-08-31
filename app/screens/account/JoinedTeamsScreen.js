@@ -23,7 +23,7 @@ import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 import AuthContext from '../../auth/context';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 
 export default function JoinedTeamsScreen({route}) {
   const [teamList, setTeamList] = useState([]);

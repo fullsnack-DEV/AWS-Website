@@ -18,8 +18,9 @@ import {
 
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
+import {format} from 'react-string-format';
 import images from '../../../../Constants/ImagePath';
-import strings from '../../../../Constants/String';
+import {strings} from '../../../../../Localization/translation';
 import colors from '../../../../Constants/Colors';
 import fonts from '../../../../Constants/Fonts';
 import {getUserList} from '../../../../api/elasticSearch';
@@ -34,7 +35,7 @@ export default function SearchPlayerScreen({navigation, route}) {
   }, []);
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: `Player ${route.params.player}`,
+      title: format(strings.playerTitleText_dy, route.params.player),
     });
   }, [navigation]);
   const getPlayerList = async () => {

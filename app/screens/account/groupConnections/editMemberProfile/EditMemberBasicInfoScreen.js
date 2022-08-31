@@ -20,7 +20,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import {useIsFocused} from '@react-navigation/native';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import {patchMember, sendBasicInfoRequest} from '../../../../api/Groups';
-import strings from '../../../../Constants/String';
+import {strings} from '../../../../../Localization/translation';
 import images from '../../../../Constants/ImagePath';
 import * as Utility from '../../../../utils/index';
 
@@ -38,24 +38,11 @@ import DataSource from '../../../../Constants/DataSource';
 import colors from '../../../../Constants/Colors';
 import TCKeyboardView from '../../../../components/TCKeyboardView';
 import DateTimePickerView from '../../../../components/Schedule/DateTimePickerModal';
+import {monthNames} from '../../../../utils/constant';
 
 let entity = {};
 
 export default function EditMemberBasicInfoScreen({navigation, route}) {
-  const monthNames = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-  ];
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
 
@@ -88,9 +75,6 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
     // setDateValue(mindate);
     setMinDateValue(mindate);
     setMaxDateValue(maxdate);
-
-    console.log('Min date', mindate);
-    console.log('Max date', maxdate);
   }, []);
 
   useEffect(() => {
@@ -152,7 +136,6 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
         <Text
           style={styles.nextButtonStyle}
           onPress={() => {
-            console.log('memberInfomemberInfo', memberInfo);
             if (checkValidation()) {
               editMemberBasicInfo();
               // if (entity.role === 'team') {
@@ -172,39 +155,39 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
   const checkValidation = () => {
     if (memberInfo.email) {
       if (!Utility.validateEmail(memberInfo.email)) {
-        Alert.alert(strings.appName, 'Please enter valid email address.');
+        Alert.alert(strings.appName, strings.validEmailValidation);
         return false;
       }
     }
     if (memberInfo.first_name === '') {
-      Alert.alert(strings.appName, 'First name cannot be blank');
+      Alert.alert(strings.appName, strings.firstnamevalidation);
       return false;
     }
     if (memberInfo.last_name === '') {
-      Alert.alert(strings.appName, 'Last name cannot be blank');
+      Alert.alert(strings.appName, strings.lastnamevalidation);
       return false;
     }
     if (memberInfo.city && memberInfo.state_abbr && memberInfo.country === '') {
-      Alert.alert(strings.appName, 'Location cannot be blank');
+      Alert.alert(strings.appName, strings.locationvalidation);
       return false;
     }
     if (memberInfo.height) {
       if (!memberInfo.height.height_type) {
-        Alert.alert(strings.appName, 'Please select height measurement');
+        Alert.alert(strings.appName, strings.heightValidation);
         return false;
       }
       if (memberInfo.height.height <= 0 || memberInfo.height.height >= 1000) {
-        Alert.alert(strings.appName, 'Please enter valid height.');
+        Alert.alert(strings.appName, strings.validHeightValidation);
         return false;
       }
     }
     if (memberInfo.weight) {
       if (!memberInfo.weight.weight_type) {
-        Alert.alert(strings.appName, 'Please select weight measurement');
+        Alert.alert(strings.appName, strings.weightValidation);
         return false;
       }
       if (memberInfo.weight.weight <= 0 || memberInfo.weight.weight >= 1000) {
-        Alert.alert(strings.appName, 'Please enter valid weight.');
+        Alert.alert(strings.appName, strings.validWeightValidation);
         return false;
       }
     }
@@ -217,15 +200,6 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
 
     const bodyParams = {...memberInfo};
     delete bodyParams.group;
-    // bodyParams.email = memberInfo?.email;
-    // bodyParams.phone_numbers = memberInfo?.phone_numbers;
-    // bodyParams.street_address = memberInfo?.street_address;
-    // bodyParams.city = memberInfo?.city;
-    // bodyParams.state_abbr = memberInfo?.state_abbr;
-    // bodyParams.country = memberInfo?.country;
-    // bodyParams.postal_code = memberInfo?.postal_code;
-    // bodyParams.birthday = memberInfo?.birthday;
-    // bodyParams.gender = memberInfo?.gender;
 
     console.log('BODY PARAMS::', bodyParams);
     patchMember(entity?.uid, memberInfo?.user_id, bodyParams, authContext)
@@ -316,7 +290,7 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
         }}>
         <View style={{...styles.halfMatchFeeView, shadowStyle}}>
           <TextInput
-            placeholder={'Height'}
+            placeholder={strings.height}
             style={{...styles.halffeeText, ...shadowStyle}}
             keyboardType={'number-pad'}
             onChangeText={(text) => {
@@ -333,12 +307,12 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
         </View>
         <RNPickerSelect
           placeholder={{
-            label: 'Height type',
+            label: strings.heightTypeText,
             value: null,
           }}
           items={[
-            {label: 'cm', value: 'cm'},
-            {label: 'ft', value: 'ft'},
+            {label: strings.cm, value: strings.cm},
+            {label: strings.ft, value: strings.ft},
           ]}
           onValueChange={(value) => {
             setMemberInfo({
@@ -396,7 +370,7 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
         }}>
         <View style={{...styles.halfMatchFeeView, ...shadowStyle}}>
           <TextInput
-            placeholder={'Weight'}
+            placeholder={strings.weight}
             style={{...styles.halffeeText, ...shadowStyle}}
             keyboardType={'number-pad'}
             onChangeText={(text) => {
@@ -413,12 +387,12 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
         </View>
         <RNPickerSelect
           placeholder={{
-            label: 'Weight type',
+            label: strings.weightTypeText,
             value: null,
           }}
           items={[
-            {label: 'kg', value: 'kg'},
-            {label: 'pound', value: 'pound'},
+            {label: strings.kg, value: strings.kg},
+            {label: strings.pound, value: strings.pound},
           ]}
           onValueChange={(value) => {
             setMemberInfo({
@@ -471,7 +445,7 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
       .then((response) => {
         setloading(false);
         setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, 'Request sent successfully.');
+          Alert.alert(strings.alertmessagetitle, strings.requestSentText);
         }, 10);
         console.log('sendBasicInfoRequest', response);
       })
@@ -501,21 +475,19 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
               style={styles.containerStyle}>
               <Text
                 style={[styles.buttonText, {color: colors.lightBlackColor}]}>
-                {'Send request for basic info'}
+                {strings.sendRequestText}
               </Text>
             </LinearGradient>
           </TouchableOpacity>
           <Text style={styles.basicInfoText}>
-            You can send a request to collect a member’s basic info. When it is
-            accepted, this basic info will be updated with the information
-            provided by the member.
+            {strings.collectMemberInfoText}
           </Text>
           <TCThickDivider />
         </View>
       )}
 
       <View>
-        <TCLabel title={'Gender'} />
+        <TCLabel title={strings.gender} />
         <TCPicker
           // disabled={!!memberInfo.gender}
           dataSource={DataSource.Gender}
@@ -527,7 +499,7 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
         />
       </View>
       <View>
-        <TCLabel title={'Birthday'} />
+        <TCLabel title={strings.birthDatePlaceholder} />
         <TCTouchableLabel
           title={
             memberInfo.birthday &&
@@ -542,14 +514,14 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
         />
       </View>
 
-      <TCLabel title={'Height'} />
+      <TCLabel title={strings.height} />
       {heightView()}
 
-      <TCLabel title={'Weight'} />
+      <TCLabel title={strings.weight} />
       {weightView()}
 
       <View>
-        <TCLabel title={'E-Mail'} required={true} />
+        <TCLabel title={strings.emailPlaceHolder} required={true} />
         <TCTextField
           editable={false}
           value={memberInfo.email}
@@ -559,7 +531,7 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
         />
       </View>
       <View>
-        <TCLabel title={'Phone'} />
+        <TCLabel title={strings.phone} />
         <FlatList
           data={phoneNumber}
           renderItem={renderPhoneNumber}
@@ -575,7 +547,7 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
         onPress={() => addPhoneNumber()}
       />
       <View>
-        <TCLabel title={'Address'} />
+        <TCLabel title={strings.address} />
         <TCTextField
           value={memberInfo.street_address}
           onChangeText={(text) =>

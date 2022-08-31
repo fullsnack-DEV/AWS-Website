@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {View, StyleSheet, Text, TouchableOpacity} from 'react-native';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 import TCProfileImage from '../TCProfileImage';
 import TCGradientButton from '../TCGradientButton';
 import {parseInviteRequest} from '../../screens/notificationsScreen/PRNotificationParser';

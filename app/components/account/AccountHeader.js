@@ -21,7 +21,7 @@ import AuthContext from '../../auth/context';
 import {getGroupDetails} from '../../api/Groups';
 
 import images from '../../Constants/ImagePath';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 
 export default function AccountHeader({authEntity, entityRole}) {
   const [parentGroup, setParentGroup] = useState(null);

@@ -27,7 +27,7 @@ import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import TCTouchableLabel from '../../../../components/TCTouchableLabel';
 import * as Utility from '../../../../utils';
 import MatchFeesCard from '../../../../components/challenge/MatchFeesCard';
-import strings from '../../../../Constants/String';
+import {strings} from '../../../../../Localization/translation';
 import TCFormProgress from '../../../../components/TCFormProgress';
 import TCChallengeTitle from '../../../../components/TCChallengeTitle';
 import TCThickDivider from '../../../../components/TCThickDivider';

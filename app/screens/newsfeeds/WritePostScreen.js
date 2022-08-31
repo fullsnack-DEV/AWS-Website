@@ -48,6 +48,7 @@ import TCGameCard from '../../components/TCGameCard';
 import {getGroupIndex, getUserIndex} from '../../api/elasticSearch';
 import TCThinDivider from '../../components/TCThinDivider';
 import AuthContext from '../../auth/context';
+import {strings} from '../../../Localization/translation';
 
 const urlRegex =
   /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gim;
@@ -77,7 +78,7 @@ export default function WritePostScreen({navigation, route}) {
   const [groups, setGroups] = useState([]);
 
   const [privacySetting, setPrivacySetting] = useState({
-    text: 'Everyone',
+    text: strings.everyoneTitleText,
     value: 0,
   });
 
@@ -100,22 +101,22 @@ export default function WritePostScreen({navigation, route}) {
   }
 
   const whoCanDataSourceUser = [
-    {text: 'Everyone', value: 0},
-    {text: 'Only me', value: 1},
+    {text: strings.everyoneTitleText, value: 0},
+    {text: strings.onlymeTitleText, value: 1},
     {
-      text: 'Followers',
+      text: strings.followerTitleText,
       value: 3,
     },
   ];
   const whoCanDataSourceGroup = [
-    {text: 'Everyone', value: 0},
-    {text: 'Only me', value: 1},
+    {text: strings.everyoneTitleText, value: 0},
+    {text: strings.onlymeTitleText, value: 1},
     {
-      text: 'Members in my groups',
+      text: strings.memberInGroupText,
       value: 2,
     },
     {
-      text: 'Followers',
+      text: strings.followerTitleText,
       value: 3,
     },
   ];
@@ -128,15 +129,14 @@ export default function WritePostScreen({navigation, route}) {
           onPress={async () => {
             const uploadTimeout = selectImage?.length * 300;
             if (searchText.trim()?.length === 0 && selectImage?.length === 0) {
-              Alert.alert('Please write some text or select any image.');
+              Alert.alert(strings.writeTextOrImage);
             } else {
               // setloading(true);
               let tagData = JSON.parse(JSON.stringify(tagsOfEntity));
               tagData = tagData?.map((tag) => ({
-                  ...tag,
-                  entity_type: 'publictimeline',
-                }));
-              console.log('tagDatatagData', tagData);
+                ...tag,
+                entity_type: 'publictimeline',
+              }));
 
               const format_tagged_data =
                 JSON.parse(JSON.stringify(tagsOfEntity)) ?? [];
@@ -153,14 +153,9 @@ export default function WritePostScreen({navigation, route}) {
                 if (!isThere) format_tagged_data.splice(index, 1);
                 return null;
               });
-              console.log('format_tagged_data', format_tagged_data);
 
               // eslint-disable-next-line no-param-reassign
               tagData.forEach((tData) => delete tData.entity_data);
-              console.log('tagData', tagData);
-              console.log('route::route', route?.params);
-
-              console.log('onPressDoneButton', onPressDoneButton);
 
               const who_can_see = {...privacySetting};
               if (privacySetting.value === 2) {
@@ -269,10 +264,7 @@ export default function WritePostScreen({navigation, route}) {
         });
         setLetModalVisible(false);
         setTagsOfEntity([...tagsOfEntity, ...tagsArray]);
-        console.log('[...tagsOfEntity, ...tagsArray]', [
-          ...tagsOfEntity,
-          ...tagsArray,
-        ]);
+
         const modifiedSearch = searchText;
         const output = [
           modifiedSearch.slice(0, currentTextInputIndex - 1),
@@ -759,37 +751,37 @@ export default function WritePostScreen({navigation, route}) {
   );
 
   const renderWhoCan = ({item}) => (
-      <TouchableOpacity
-        style={styles.listItem}
-        onPress={() => {
-          setPrivacySetting(item);
+    <TouchableOpacity
+      style={styles.listItem}
+      onPress={() => {
+        setPrivacySetting(item);
 
-          setTimeout(() => {
-            setVisibleWhoModal(false);
-          }, 300);
+        setTimeout(() => {
+          setVisibleWhoModal(false);
+        }, 300);
+      }}>
+      <View
+        style={{
+          padding: 20,
+          alignItems: 'center',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          marginRight: 15,
         }}>
-        <View
-          style={{
-            padding: 20,
-            alignItems: 'center',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            marginRight: 15,
-          }}>
-          <Text style={styles.languageList}>{item.text}</Text>
-          <View style={styles.checkbox}>
-            {privacySetting.value === item?.value ? (
-              <Image
-                source={images.radioCheckYellow}
-                style={styles.checkboxImg}
-              />
-            ) : (
-              <Image source={images.radioUnselect} style={styles.checkboxImg} />
-            )}
-          </View>
+        <Text style={styles.languageList}>{item.text}</Text>
+        <View style={styles.checkbox}>
+          {privacySetting.value === item?.value ? (
+            <Image
+              source={images.radioCheckYellow}
+              style={styles.checkboxImg}
+            />
+          ) : (
+            <Image source={images.radioUnselect} style={styles.checkboxImg} />
+          )}
         </View>
-      </TouchableOpacity>
-    );
+      </View>
+    </TouchableOpacity>
+  );
 
   return (
     <KeyboardAvoidingView
@@ -808,7 +800,7 @@ export default function WritePostScreen({navigation, route}) {
           onLayout={(event) =>
             setSearchFieldHeight(event?.nativeEvent?.layout?.height)
           }
-          placeholder="What's going on?"
+          placeholder={strings.whatsGoingText}
           placeholderTextColor={colors.userPostTimeColor}
           onSelectionChange={onSelectionChange}
           onKeyPress={onKeyPress}
@@ -911,7 +903,7 @@ export default function WritePostScreen({navigation, route}) {
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
               }}>
-              Privacy Setting
+              {strings.privacySettingText}
             </Text>
 
             <Text

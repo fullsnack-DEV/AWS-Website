@@ -40,7 +40,7 @@ import DateTimePickerView from '../../../../components/Schedule/DateTimePickerMo
 import fonts from '../../../../Constants/Fonts';
 import TCThinDivider from '../../../../components/TCThinDivider';
 
-import strings from '../../../../Constants/String';
+import {strings} from '../../../../../Localization/translation';
 import {getUserIndex} from '../../../../api/elasticSearch';
 import RenderScorekeeper from './RenderScorekeeper';
 import TCTagsFilter from '../../../../components/TCTagsFilter';

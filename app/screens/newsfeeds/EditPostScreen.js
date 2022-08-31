@@ -35,6 +35,7 @@ import {getTaggedEntityData} from '../../utils';
 import {getPickedData, MAX_UPLOAD_POST_ASSETS} from '../../utils/imageAction';
 import TCGameCard from '../../components/TCGameCard';
 import {getGroupIndex, getUserIndex} from '../../api/elasticSearch';
+import {strings} from '../../../Localization/translation';
 
 const urlRegex =
   /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gim;
@@ -627,7 +628,7 @@ const EditPostScreen = ({navigation, route}) => {
           onLayout={(event) =>
             setSearchFieldHeight(event?.nativeEvent?.layout?.height)
           }
-          placeholder="What's going on?"
+          placeholder={strings.whatsGoingText}
           placeholderTextColor={colors.userPostTimeColor}
           onSelectionChange={onSelectionChange}
           onKeyPress={onKeyPress}

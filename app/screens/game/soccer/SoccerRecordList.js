@@ -42,7 +42,7 @@ import {
 import {soccerGameStats} from '../../../utils/gameUtils';
 import SwipeableRow from '../../../components/gameRecordList/SwipeableRow';
 import GameStatus from '../../../Constants/GameStatus';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import DateTimePickerView from '../../../components/Schedule/DateTimePickerModal';
 

@@ -5,7 +5,7 @@ import {TouchableOpacity, StyleSheet, View, Text, Image} from 'react-native';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 
 function ScorekeeperReservationItem({data, onPressButton}) {
   console.log('Scorekeeper Data:::=>?', data);

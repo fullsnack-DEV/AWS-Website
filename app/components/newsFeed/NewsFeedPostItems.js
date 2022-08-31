@@ -32,7 +32,7 @@ import CustomURLPreview from '../account/CustomURLPreview';
 import {getHitSlop} from '../../utils';
 import {createRePost} from '../../api/NewsFeeds';
 import AuthContext from '../../auth/context';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 
 const NewsFeedPostItems = memo(
   ({

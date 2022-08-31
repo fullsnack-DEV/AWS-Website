@@ -18,7 +18,7 @@ import firebase from '@react-native-firebase/app';
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
 import TCTextField from '../../components/TCTextField';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';

@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
 import ActionSheet from 'react-native-actionsheet';
 import _ from 'lodash';
-import strings from '../../../../../Constants/String';
+import {strings} from '../../../../../../Localization/translation';
 import EditEventItem from '../../../../../components/Schedule/EditEventItem';
 import fonts from '../../../../../Constants/Fonts';
 import colors from '../../../../../Constants/Colors';
@@ -65,7 +65,7 @@ const PlaysInHomePlace = ({
       </EditEventItem>
       <ActionSheet
         ref={actionSheet}
-        options={['Edit Home Place', 'Privacy Setting', 'Cancel']}
+        options={['Edit Home Place', strings.privacySettingText, 'Cancel']}
         cancelButtonIndex={2}
         onPress={(index) => {
           if (index === 0) setEditModalType(strings.homePlaceTitle);

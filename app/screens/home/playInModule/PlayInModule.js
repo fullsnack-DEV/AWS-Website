@@ -32,7 +32,7 @@ import PlayInInfoView from './info/PlayInInfoView';
 import PlayInScoreboardView from './scoreboard/PlayInScoreboardView';
 import PlayInStatsView from './stats/PlayInStatsView';
 import {patchPlayer} from '../../../api/Users';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import AuthContext from '../../../auth/context';
 
 import * as Utility from '../../../utils';

@@ -5,7 +5,7 @@ import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 import TCThinDivider from '../TCThinDivider';
 import {getShortTimeDifForReservation} from '../../utils/Time';
 

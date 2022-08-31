@@ -6,7 +6,7 @@ import {WebView} from 'react-native-webview';
 import AuthContext from '../../../auth/context';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import {merchantAuthDetail, addMerchantAccount} from '../../../api/Users';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import * as Utility from '../../../utils';
 // import TCInnerLoader from '../../../components/TCInnerLoader';
 

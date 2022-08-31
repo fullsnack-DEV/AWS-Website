@@ -8,7 +8,7 @@ import React, {
 import {Text, View, StyleSheet, FlatList, Alert} from 'react-native';
 
 import ActivityLoader from '../../../components/loader/ActivityLoader';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import TCSearchBox from '../../../components/TCSearchBox';
@@ -156,7 +156,7 @@ export default function InviteMembersBySearchScreen({navigation}) {
           color: colors.grayColor,
           fontSize: 26,
         }}>
-        No Players
+        {strings.noPlayer}
       </Text>
     </View>
   );
@@ -192,16 +192,6 @@ export default function InviteMembersBySearchScreen({navigation}) {
         titleKey={'full_name'}
         onTagCancelPress={handleTagPress}
       />
-      {/* <FlatList
-        data={players}
-        renderItem={renderPlayer}
-        keyExtractor={(item, index) => index.toString()}
-        onScroll={onScrollHandler}
-        onEndReachedThreshold={0.01}
-        onScrollBeginDrag={() => {
-          stopFetchMore = false;
-        }}
-      /> */}
 
       <FlatList
         extraData={players}

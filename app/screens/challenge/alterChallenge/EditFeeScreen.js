@@ -4,7 +4,7 @@ import {StyleSheet, View, Text, TextInput, Alert} from 'react-native';
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import {useIsFocused} from '@react-navigation/native';
 import colors from '../../../Constants/Colors';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import TCGradientButton from '../../../components/TCGradientButton';
 import TCLabel from '../../../components/TCLabel';
 

@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import {StyleSheet, View, Text} from 'react-native';
 import ActionSheet from 'react-native-actionsheet';
 import _ from 'lodash';
-import strings from '../../../../../Constants/String';
+import {strings} from '../../../../../../Localization/translation';
 import EditEventItem from '../../../../../components/Schedule/EditEventItem';
 import fonts from '../../../../../Constants/Fonts';
 import colors from '../../../../../Constants/Colors';
@@ -38,7 +38,7 @@ const PlaysInBio = ({isAdmin, currentUserData, sportName, onSave}) => {
       </EditEventItem>
       <ActionSheet
         ref={actionSheet}
-        options={['Edit Bio', 'Privacy Setting', 'Cancel']}
+        options={['Edit Bio', strings.privacySettingText, 'Cancel']}
         cancelButtonIndex={2}
         onPress={(index) => {
           if (index === 0) setEditModalType(strings.bio);

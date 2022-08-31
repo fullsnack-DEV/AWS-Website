@@ -31,7 +31,7 @@ import fonts from '../../../Constants/Fonts';
 import TCProfileView from '../../../components/TCProfileView';
 import TCThickDivider from '../../../components/TCThickDivider';
 import TCInfoField from '../../../components/TCInfoField';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import TCMessageButton from '../../../components/TCMessageButton';
 import TCThinDivider from '../../../components/TCThinDivider';
 import GroupMembership from '../../../components/groupConnections/GroupMembership';
@@ -196,15 +196,15 @@ export default function MembersProfileScreen({navigation, route}) {
   const listEmptyView = () => (
     <View style={{margin: 15, marginLeft: 25}}>
       <Text
-          style={{
-            fontFamily: fonts.RMedium,
-            fontSize: 18,
-            color: colors.userPostTimeColor,
-          }}>
+        style={{
+          fontFamily: fonts.RMedium,
+          fontSize: 18,
+          color: colors.userPostTimeColor,
+        }}>
         No Joined Teams Available
       </Text>
     </View>
-    );
+  );
 
   const renderSeparator = () => <TCThinDivider marginTop={20} width={'100%'} />;
 
@@ -385,7 +385,7 @@ export default function MembersProfileScreen({navigation, route}) {
               }
             />
             <TCInfoField
-              title={'Gender'}
+              title={strings.gender}
               value={memberDetail?.gender ? memberDetail?.gender : 'N/A'}
             />
           </View>

@@ -22,7 +22,7 @@ import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import {patchMember} from '../../../../api/Groups';
 import uploadImages from '../../../../utils/imageAction';
 import images from '../../../../Constants/ImagePath';
-import strings from '../../../../Constants/String';
+import {strings} from '../../../../../Localization/translation';
 import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
 import TCLable from '../../../../components/TCLabel';
@@ -37,7 +37,6 @@ export default function EditMemberInfoScreen({navigation, route}) {
   const [memberInfo, setMemberInfo] = useState({});
 
   useEffect(() => {
-    console.log('MEMBER INFO ::', route.params.memberInfo);
     setMemberInfo(route.params.memberInfo);
   }, []);
 
@@ -134,11 +133,11 @@ export default function EditMemberInfoScreen({navigation, route}) {
   };
   const checkValidation = () => {
     if (memberInfo.first_name === '') {
-      Alert.alert(strings.appName, 'First name cannot be blank');
+      Alert.alert(strings.appName, strings.firstnamevalidation);
       return false;
     }
     if (memberInfo.last_name === '') {
-      Alert.alert(strings.appName, 'Last name cannot be blank');
+      Alert.alert(strings.appName, strings.lastnamevalidation);
       return false;
     }
     return true;
@@ -213,7 +212,7 @@ export default function EditMemberInfoScreen({navigation, route}) {
           }>{`${memberInfo.first_name} ${memberInfo.last_name}`}</Text>
       ) : (
         <View>
-          <TCLable title={'Name'} required={true} />
+          <TCLable title={strings.nameText} required={true} />
           <TCTextField
             value={memberInfo.first_name}
             onChangeText={(text) =>

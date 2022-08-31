@@ -12,7 +12,7 @@ import AuthContext from './app/auth/context';
 import NavigationMainContainer from './NavigationMainContainer';
 // import { firebaseConfig } from './app/utils/constant';
 import * as Utility from './app/utils';
-import strings from './app/Constants/String';
+import {strings} from './Localization/translation';
 import {ImageUploadProvider} from './app/context/GetContexts';
 import CommonAlert from './app/screens/account/commonScreen/CommonAlert';
 

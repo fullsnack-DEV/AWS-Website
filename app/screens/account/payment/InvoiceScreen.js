@@ -44,7 +44,7 @@ import images from '../../../Constants/ImagePath';
 import MemberInvoiceView from '../../../components/invoice/MemberInvoiceView';
 import TopFilterBar from '../../../components/invoice/TopFilterBar';
 import BatchFeeView from '../../../components/invoice/BatchFeeView';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import TCThinDivider from '../../../components/TCThinDivider';
 import {heightPercentageToDP as hp} from '../../../utils';
 import DataSource from '../../../Constants/DataSource';

@@ -20,7 +20,7 @@ import {getJoinedGroups} from '../../api/Groups';
 import images from '../../Constants/ImagePath';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 
 export default function JoinedClubsScreen() {
   const authContext = useContext(AuthContext);

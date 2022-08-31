@@ -6,7 +6,6 @@ import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 // import TCBorderButton from '../../components/TCBorderButton';
-// import strings from '../../Constants/String';
 // import { getGameHomeScreen } from '../../utils/gameUtils';
 
 export default function ScorekeeperAcceptDeclineScreen({navigation, route}) {

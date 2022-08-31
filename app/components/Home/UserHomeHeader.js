@@ -12,7 +12,7 @@ import ActionSheet from 'react-native-actionsheet';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 import TCGradientButton from '../TCGradientButton';
 import TCProfileButton from '../TCProfileButton';
 import TCThinDivider from '../TCThinDivider';

@@ -3,9 +3,11 @@ import {StyleSheet, View, Text, Image, TouchableOpacity} from 'react-native';
 
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 
+import {format} from 'react-string-format';
 import images from '../../../../Constants/ImagePath';
 import colors from '../../../../Constants/Colors';
 import fonts from '../../../../Constants/Fonts';
+import {strings} from '../../../../../Localization/translation';
 
 export default function TeamCreatedScreen({navigation, route}) {
   return (
@@ -30,7 +32,7 @@ export default function TeamCreatedScreen({navigation, route}) {
 
         <Text style={styles.LocationText}>
           <Text style={styles.foundText}>
-            {`${route.params.groupName}\nhas been created.`}
+            {format(strings.entityCreatedText_dy, route.params.groupName)}
           </Text>
         </Text>
         <TouchableOpacity
@@ -44,7 +46,9 @@ export default function TeamCreatedScreen({navigation, route}) {
               sourceScreen: 'AccountScreen',
             });
           }}>
-          <Text style={styles.goToProfileTitle}>Go to team home</Text>
+          <Text style={styles.goToProfileTitle}>
+            {strings.goToTeamHomeText}
+          </Text>
         </TouchableOpacity>
       </View>
     </View>

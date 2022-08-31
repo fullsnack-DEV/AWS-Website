@@ -13,7 +13,7 @@ import useRenderCount from '../../hooks/useRenderCount';
 import AuthContext from '../../auth/context';
 
 import {reportActivity} from '../../api/NewsFeeds';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 
 const optionSelectionColor = colors.optionSelectionColor;
 const ReportCommentModal = ({commentData, reportCommentModalRef}) => {

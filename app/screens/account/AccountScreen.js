@@ -61,20 +61,20 @@ import {
   getQBAccountType,
   QBupdateUser,
 } from '../../utils/QuickBlox';
-import strings from '../../Constants/String';
+
 import Header from '../../components/Home/Header';
 import TCGradientButton from '../../components/TCGradientButton';
 import TCThinDivider from '../../components/TCThinDivider';
 import {getSportIcon} from '../../utils/index';
 import TCAccountDeactivate from '../../components/TCAccountDeactivate';
 import {userActivate} from '../../api/Users';
+import {strings} from '../../../Localization/translation';
 
 export default function AccountScreen({navigation}) {
   const scrollRef = useRef();
   const isFocused = useIsFocused();
 
   const authContext = useContext(AuthContext);
-  console.log('authContext?.sports', authContext);
   // const [isSportCreateModalVisible, setIsSportCreateModalVisible] = useState(
   //   false,
   // );
@@ -88,13 +88,11 @@ export default function AccountScreen({navigation}) {
   const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
   const [pointEvent, setPointEvent] = useState('auto');
   const [sportsSelection, setSportsSelection] = useState();
-  const [sports, setSports] = useState('');
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
 
-  const [clickedUserType, setClickedUserType] = useState('user');
-
-  console.log(sports);
-  console.log('authSports::=>', authContext.sports);
+  const [clickedUserType, setClickedUserType] = useState(
+    strings.entityTypeUser,
+  );
 
   // for set/get teams
   const [teamList, setTeamList] = useState([]);
@@ -108,61 +106,70 @@ export default function AccountScreen({navigation}) {
 
   // Account menu
   const userMenu = [
-    {key: 'Reservations'},
-    {key: 'Playing', member: [{opetions: 'Add a sport'}]},
-    {key: 'Refereeing', member: [{opetions: 'Register as Referee'}]},
-    {key: 'Scorekeeping', member: [{opetions: 'Register as Scorekeeper'}]},
-    {key: 'Teams', member: [{opetions: 'Create Team'}]},
-    {key: 'Clubs', member: [{opetions: 'Create Club'}]},
+    {key: strings.reservationsTitleText},
+    {
+      key: strings.playingTitleText,
+      member: [{opetions: strings.addSportsTitle}],
+    },
+    {
+      key: strings.refereeingTitleText,
+      member: [{opetions: strings.registerRefereeTitle}],
+    },
+    {
+      key: strings.scorekeepingTitleText,
+      member: [{opetions: strings.registerScorekeeperTitle}],
+    },
+    {key: strings.teamstitle, member: [{opetions: strings.createTeamText}]},
+    {key: strings.clubstitle, member: [{opetions: strings.createClubText}]},
     // {key: 'My Leagues', member:[{opetions: 'Create a League'}]},
-    // {key: 'Register as Referee'},
+    // {key: strings.registerRefereeTitle},
     // {key: 'Register as a personal player'},
     // {key: 'Create Group'},
-    // {key: 'Reservations'},
+    // {key: strings.reservationsTitleText},
     {
-      key: 'Payment & Payout',
+      key: strings.paymentPayoutText,
       member: [
-        {opetions: 'Payment Method'},
-        {opetions: 'Payout Method'},
-        {opetions: 'Invoices'},
-        {opetions: 'Transactions'},
+        {opetions: strings.paymentMethodTitle},
+        {opetions: strings.payoutMethodTitle},
+        {opetions: strings.invoicesTitle},
+        {opetions: strings.transactionsTitles},
       ],
     },
     // { key: 'Currency' },
-    {key: 'Settings'},
+    {key: strings.settingsTitleText},
   ];
   const teamMenu = [
-    {key: 'Reservations'},
+    {key: strings.reservationsTitleText},
     {key: 'Challenge Settings'},
     {key: 'Members'},
 
-    {key: 'Clubs', member: [{opetions: 'Create Club'}]},
+    {key: strings.clubstitle, member: [{opetions: strings.createClubText}]},
     // {key: 'Leagues',member: [{ opetions: 'Create League' }]},
     {
-      key: 'Payment & Payout',
+      key: strings.paymentPayoutText,
       member: [
-        {opetions: 'Payment Method'},
-        {opetions: 'Payout Method'},
-        {opetions: 'Invoicing'},
-        {opetions: 'Transactions'},
+        {opetions: strings.paymentMethodTitle},
+        {opetions: strings.payoutMethodTitle},
+        {opetions: strings.invoicingTitleText},
+        {opetions: strings.transactionsTitles},
       ],
     },
-    {key: 'Settings'},
+    {key: strings.settingsTitleText},
   ];
   const clubMenu = [
     {key: 'Members'},
-    {key: 'Teams', member: [{opetions: 'Create Team'}]},
+    {key: strings.teamstitle, member: [{opetions: strings.createTeamText}]},
     // {key: 'My Leagues'},
     // {key: 'Invite Teams'},
     {
-      key: 'Payment & Payout',
+      key: strings.paymentPayoutText,
       member: [
-        {opetions: 'Payment Method'},
-        {opetions: 'Payout Method'},
-        {opetions: 'Transactions'},
+        {opetions: strings.paymentMethodTitle},
+        {opetions: strings.payoutMethodTitle},
+        {opetions: strings.transactionsTitles},
       ],
     },
-    {key: 'Settings'},
+    {key: strings.settingsTitleText},
   ];
 
   useEffect(() => {
@@ -234,7 +241,8 @@ export default function AccountScreen({navigation}) {
         getNotificationUnreadCount(entity),
         getTeamsList(entity),
       ];
-      if (entity.role !== 'club') promises.push(getClubList(entity));
+      if (entity.role !== strings.entityTypeClub)
+        promises.push(getClubList(entity));
       Promise.all(promises)
         .then(() => {
           resolve(true);
@@ -306,14 +314,14 @@ export default function AccountScreen({navigation}) {
           setTeam(teams);
           setClub(clubs);
           setNotificationCounter(switchEntityObject?.[0]?.unread);
-          if (currentEntity.role === 'user') {
+          if (currentEntity.role === strings.entityTypeUser) {
             setGroupList([...clubs, ...teams]);
-          } else if (currentEntity.role === 'team') {
+          } else if (currentEntity.role === strings.entityTypeTeam) {
             const updatedTeam = teams.filter(
               (item) => item.group_id !== authContext.entity.uid,
             );
             setGroupList([{...user}, ...clubs, ...updatedTeam]);
-          } else if (authContext.entity.role === 'club') {
+          } else if (authContext.entity.role === strings.entityTypeClub) {
             const updatedClub = clubs.filter(
               (item) => item.group_id !== authContext.entity.uid,
             );
@@ -343,7 +351,7 @@ export default function AccountScreen({navigation}) {
     async (currentEntity) => {
       console.log('team list api Called..');
       setloading(true);
-      if (currentEntity.role === 'club') {
+      if (currentEntity.role === strings.entityTypeClub) {
         console.log('team of club api Called..');
 
         getTeamsOfClub(authContext.entity.uid, authContext)
@@ -362,7 +370,7 @@ export default function AccountScreen({navigation}) {
         console.log('join group api Called..');
 
         getTeamData();
-        // getJoinedGroups('team', authContext)
+        // getJoinedGroups(strings.entityTypeTeam, authContext)
         //   .then((response) => {
         //     console.log('join group api done Called..');
         //   })
@@ -383,7 +391,7 @@ export default function AccountScreen({navigation}) {
       setloading(true);
       console.log('get data Promise Called..');
       const promises = [
-        getJoinedGroups('team', authContext),
+        getJoinedGroups(strings.entityTypeTeam, authContext),
         getTeamPendingRequest(authContext),
       ];
       Promise.all(promises)
@@ -401,7 +409,7 @@ export default function AccountScreen({navigation}) {
     // setloading(true);
     console.log('club list api Called..');
 
-    getJoinedGroups('club', authContext)
+    getJoinedGroups(strings.entityTypeClub, authContext)
       .then((response) => {
         setClubList(response.payload);
         console.log('club list api done Called..', response.payload);
@@ -449,56 +457,59 @@ export default function AccountScreen({navigation}) {
 
       let currentEntity = authContext.entity;
       // delete currentEntity?.QB;
-      if (item?.entity_type === 'player' || item?.entity_type === 'user') {
-        if (currentEntity.obj.entity_type === 'team') {
+      if (
+        item?.entity_type === 'player' ||
+        item?.entity_type === strings.entityTypeUser
+      ) {
+        if (currentEntity.obj.entity_type === strings.entityTypeTeam) {
           team.push(currentEntity.obj);
-        } else if (currentEntity.obj.entity_type === 'club') {
+        } else if (currentEntity.obj.entity_type === strings.entityTypeClub) {
           club.push(currentEntity.obj);
         }
         // setGroupList([...club, ...team]);
         currentEntity = {
           ...currentEntity,
           uid: item?.user_id,
-          role: 'user',
+          role: strings.entityTypeUser,
           obj: item,
         };
         setParentGroup();
-      } else if (item?.entity_type === 'team') {
+      } else if (item?.entity_type === strings.entityTypeTeam) {
         const i = team.indexOf(item);
         if (
           currentEntity.obj.entity_type === 'player' ||
-          currentEntity.obj.entity_type === 'user'
+          currentEntity.obj.entity_type === strings.entityTypeUser
         ) {
           team.splice(i, 1);
-        } else if (currentEntity.obj.entity_type === 'team') {
+        } else if (currentEntity.obj.entity_type === strings.entityTypeTeam) {
           team.splice(i, 1, currentEntity.obj);
-        } else if (currentEntity.obj.entity_type === 'club') {
+        } else if (currentEntity.obj.entity_type === strings.entityTypeClub) {
           club.push(currentEntity.obj);
         }
         currentEntity = {
           ...currentEntity,
           uid: item?.group_id,
-          role: 'team',
+          role: strings.entityTypeTeam,
           obj: item,
         };
         getParentClub(item);
-      } else if (item?.entity_type === 'club') {
+      } else if (item?.entity_type === strings.entityTypeClub) {
         const i = club.indexOf(item);
         if (
           currentEntity.obj.entity_type === 'player' ||
-          currentEntity.obj.entity_type === 'user'
+          currentEntity.obj.entity_type === strings.entityTypeUser
         ) {
           club.splice(i, 1);
-        } else if (currentEntity.obj.entity_type === 'team') {
+        } else if (currentEntity.obj.entity_type === strings.entityTypeTeam) {
           club.splice(i, 1);
           team.push(currentEntity.obj);
-        } else if (currentEntity.obj.entity_type === 'club') {
+        } else if (currentEntity.obj.entity_type === strings.entityTypeClub) {
           club.splice(i, 1, currentEntity.obj);
         }
         currentEntity = {
           ...currentEntity,
           uid: item?.group_id,
-          role: 'club',
+          role: strings.entityTypeClub,
           obj: item,
         };
         setParentGroup();
@@ -521,15 +532,15 @@ export default function AccountScreen({navigation}) {
       let currentEntity = entity;
       const entityType = accountData?.entity_type;
       const uid =
-        entityType === 'player' || entityType === 'user'
+        entityType === 'player' || entityType === strings.entityTypeUser
           ? 'user_id'
           : 'group_id';
       QBLogout()
         .then(() => {
           const {USER, CLUB, LEAGUE, TEAM} = QB_ACCOUNT_TYPE;
           let accountType = USER;
-          if (entityType === 'club') accountType = CLUB;
-          else if (entityType === 'team') accountType = TEAM;
+          if (entityType === strings.entityTypeClub) accountType = CLUB;
+          else if (entityType === strings.entityTypeTeam) accountType = TEAM;
           else if (entityType === 'league') accountType = LEAGUE;
           QBlogin(
             accountData[uid],
@@ -625,37 +636,40 @@ export default function AccountScreen({navigation}) {
   }, [onLogout]);
 
   const handleSections = async (section) => {
-    if (section === 'Reservations') {
+    if (section === strings.reservationsTitleText) {
       navigation.navigate('ReservationNavigator', {
         screen: 'ReservationScreen',
       });
-    } else if (section === 'Register as Referee') {
+    } else if (section === strings.registerRefereeTitle) {
       navigation.navigate('RegisterReferee');
     } else if (section === 'Register as a personal player') {
       navigation.navigate('RegisterPlayer');
-    } else if (section === 'Register as Scorekeeper') {
+    } else if (section === strings.registerScorekeeperTitle) {
       navigation.navigate('RegisterScorekeeper');
-    } else if (section === 'Create Club') {
+    } else if (section === strings.createClubText) {
       navigation.navigate('CreateClubForm1');
-    } else if (section === 'Settings') {
+    } else if (section === strings.settingsTitleText) {
       const entity = authContext.entity;
-      if (entity.role === 'user') {
+      if (entity.role === strings.entityTypeUser) {
         navigation.navigate('UserSettingPrivacyScreen');
       } else {
         console.log('clubs==>', club);
         console.log('clubs list==>', clubList);
         navigation.navigate('GroupSettingPrivacyScreen', {
-          groups: authContext?.entity?.role === 'team' ? clubList : teamList,
+          groups:
+            authContext?.entity?.role === strings.entityTypeTeam
+              ? clubList
+              : teamList,
         });
       }
     } else if (section === 'Members') {
       const entity = authContext.entity;
       navigation.navigate('GroupMembersScreen', {groupID: entity.uid});
     } else if (section === 'Challenge Settings') {
-      setClickedUserType('user');
+      setClickedUserType(strings.entityTypeUser);
       const entity = authContext.entity;
 
-      if (entity.role === 'user') {
+      if (entity.role === strings.entityTypeUser) {
         if (entity?.obj?.registered_sports?.length > 0) {
           setVisibleSportsModal(true);
         } else {
@@ -674,7 +688,7 @@ export default function AccountScreen({navigation}) {
 
       const entity = authContext.entity;
       console.log('entity?.objentity?.obj-->', entity?.obj, entity?.obj?.sport);
-      if (entity.role === 'user') {
+      if (entity.role === strings.entityTypeUser) {
         if (entity?.obj?.referee_data?.length > 0) {
           setVisibleSportsModal(true);
         } else {
@@ -690,7 +704,7 @@ export default function AccountScreen({navigation}) {
 
       const entity = authContext.entity;
 
-      if (entity.role === 'user') {
+      if (entity.role === strings.entityTypeUser) {
         if (entity?.obj?.scorekeeper_data?.length > 0) {
           setVisibleSportsModal(true);
         } else {
@@ -709,46 +723,46 @@ export default function AccountScreen({navigation}) {
   const handleOptions = useCallback(
     (options) => {
       // navigation.closeDrawer();
-      if (options === 'Register as Referee') {
+      if (options === strings.registerRefereeTitle) {
         navigation.navigate('RegisterReferee');
-      } else if (options === 'Register as Scorekeeper') {
+      } else if (options === strings.registerScorekeeperTitle) {
         navigation.navigate('RegisterScorekeeper');
-      } else if (options === 'Add a sport') {
+      } else if (options === strings.addSportsTitle) {
         navigation.navigate('RegisterPlayer');
-      } else if (options === 'Create Team') {
-        setCreateEntity('team');
+      } else if (options === strings.createTeamText) {
+        setCreateEntity(strings.entityTypeTeam);
 
         const entity = authContext.entity;
-        if (entity.role === 'user') {
+        if (entity.role === strings.entityTypeUser) {
           setIsRulesModalVisible(false);
           navigation.navigate('CreateTeamForm1');
         } else {
           setIsRulesModalVisible(true);
         }
-      } else if (options === 'Create Club') {
+      } else if (options === strings.createClubText) {
         const entity = authContext.entity;
-        setCreateEntity('club');
-        if (entity.role === 'user') {
+        setCreateEntity(strings.entityTypeClub);
+        if (entity.role === strings.entityTypeUser) {
           navigation.navigate('CreateClubForm1');
         } else {
           setIsRulesModalVisible(true);
         }
-      } else if (options === 'Payment Method') {
+      } else if (options === strings.paymentMethodTitle) {
         navigation.navigate('Account', {
           screen: 'PaymentMethodsScreen',
           params: {
             comeFrom: 'AccountScreen',
           },
         });
-      } else if (options === 'Payout Method') {
+      } else if (options === strings.payoutMethodTitle) {
         // navigation.navigate('PayoutMethodScreen');
         navigation.navigate('PayoutMethodList', {comeFrom: 'AccountScreen'});
-      } else if (options === 'Invoicing') {
+      } else if (options === strings.invoicingTitleText) {
         navigation.navigate('InvoiceScreen');
         // navigation.navigate('MembersDetailScreen');
-      } else if (options === 'Invoices') {
+      } else if (options === strings.invoicesTitle) {
         navigation.navigate('UserInvoiceScreen');
-      } else if (options === 'Transactions') {
+      } else if (options === strings.transactionsTitles) {
         // navigation.navigate('InvoiceScreen');
         Alert.alert('Transaction section');
       }
@@ -860,7 +874,7 @@ export default function AccountScreen({navigation}) {
               />
             </View>
           )}
-          {item.entity_type === 'club' && (
+          {item.entity_type === strings.entityTypeClub && (
             <View style={styles.placeholderView}>
               <Image
                 source={
@@ -879,7 +893,7 @@ export default function AccountScreen({navigation}) {
               )}
             </View>
           )}
-          {item.entity_type === 'team' && (
+          {item.entity_type === strings.entityTypeTeam && (
             <View style={styles.placeholderView}>
               <Image
                 source={
@@ -951,10 +965,10 @@ export default function AccountScreen({navigation}) {
           {item.entity_type === 'player' && (
             <Text style={styles.entityNameText}>{item.full_name}</Text>
           )}
-          {item.entity_type === 'team' && (
+          {item.entity_type === strings.entityTypeTeam && (
             <Text style={styles.entityNameText}>{item.group_name}</Text>
           )}
-          {item.entity_type === 'club' && (
+          {item.entity_type === strings.entityTypeClub && (
             <Text style={styles.entityNameText}>{item.group_name}</Text>
           )}
           <Text style={styles.entityLocationText}>
@@ -980,13 +994,15 @@ export default function AccountScreen({navigation}) {
                 uid,
                 backButtonVisible: true,
                 role:
-                  item?.entity_type === 'player' ? 'user' : item?.entity_type,
+                  item?.entity_type === 'player'
+                    ? strings.entityTypeUser
+                    : item?.entity_type,
               });
             }
           }}>
           <View style={styles.entityTextContainer}>
             <View style={styles.smallProfileContainer}>
-              {item?.entity_type === 'team' && (
+              {item?.entity_type === strings.entityTypeTeam && (
                 <Image
                   source={
                     item?.thumbnail
@@ -996,7 +1012,7 @@ export default function AccountScreen({navigation}) {
                   style={styles.smallProfileImg}
                 />
               )}
-              {item?.entity_type === 'club' && (
+              {item?.entity_type === strings.entityTypeClub && (
                 <Image
                   source={
                     item.thumbnail
@@ -1064,7 +1080,7 @@ export default function AccountScreen({navigation}) {
           <Text style={styles.entityName}>{item?.group_name}</Text>
           <Text
             style={
-              item.entity_type === 'team'
+              item.entity_type === strings.entityTypeTeam
                 ? styles.teamSportView
                 : styles.clubSportView
             }>
@@ -1081,7 +1097,7 @@ export default function AccountScreen({navigation}) {
   const renderMenuItems = useCallback(
     (rowItem, rowId, sectionId) => (
       <View>
-        {authContext.entity.role === 'user' &&
+        {authContext.entity.role === strings.entityTypeUser &&
           sectionId === 1 &&
           !isAccountDeactivated && (
             <FlatList
@@ -1097,7 +1113,7 @@ export default function AccountScreen({navigation}) {
               scrollEnabled={false}
             />
           )}
-        {authContext.entity.role === 'user' &&
+        {authContext.entity.role === strings.entityTypeUser &&
           sectionId === 2 &&
           !isAccountDeactivated && (
             <FlatList
@@ -1111,7 +1127,7 @@ export default function AccountScreen({navigation}) {
               scrollEnabled={false}
             />
           )}
-        {authContext.entity.role === 'user' &&
+        {authContext.entity.role === strings.entityTypeUser &&
           sectionId === 3 &&
           !isAccountDeactivated && (
             <FlatList
@@ -1125,7 +1141,7 @@ export default function AccountScreen({navigation}) {
               scrollEnabled={false}
             />
           )}
-        {authContext.entity.role === 'user' &&
+        {authContext.entity.role === strings.entityTypeUser &&
           !isAccountDeactivated &&
           (sectionId === 4 || sectionId === 5) && (
             <FlatList
@@ -1139,7 +1155,7 @@ export default function AccountScreen({navigation}) {
               scrollEnabled={false}
             />
           )}
-        {authContext.entity.role === 'team' &&
+        {authContext.entity.role === strings.entityTypeTeam &&
           !isAccountDeactivated &&
           sectionId === 3 && (
             <FlatList
@@ -1154,7 +1170,7 @@ export default function AccountScreen({navigation}) {
             />
           )}
 
-        {authContext.entity.role === 'club' &&
+        {authContext.entity.role === strings.entityTypeClub &&
           sectionId === 1 &&
           !isAccountDeactivated && (
             <FlatList
@@ -1175,57 +1191,57 @@ export default function AccountScreen({navigation}) {
             onPress={() => {
               handleOptions(rowItem.opetions);
             }}>
-            {rowItem.opetions === 'Add a sport' && (
+            {rowItem.opetions === strings.addSportsTitle && (
               <Image source={images.addSport} style={styles.subMenuItem} />
             )}
-            {rowItem.opetions === 'Register as Referee' && (
+            {rowItem.opetions === strings.registerRefereeTitle && (
               <Image
                 source={images.registerReferee}
                 style={styles.subMenuItem}
               />
             )}
-            {rowItem.opetions === 'Register as Scorekeeper' && (
+            {rowItem.opetions === strings.registerScorekeeperTitle && (
               <Image
                 source={images.registerScorekeeper}
                 style={styles.subMenuItem}
               />
             )}
-            {rowItem.opetions === 'Create Team' && (
+            {rowItem.opetions === strings.createTeamText && (
               <Image source={images.createTeam} style={styles.subMenuItem} />
             )}
-            {rowItem.opetions === 'Create Club' && (
+            {rowItem.opetions === strings.createClubText && (
               <Image source={images.createClub} style={styles.subMenuItem} />
             )}
             {rowItem.opetions === 'Create a League' && (
               <Image source={images.createLeague} style={styles.subMenuItem} />
             )}
             <View style={{marginVertical: 5}}>
-              {rowItem.opetions === 'Payment Method' && (
+              {rowItem.opetions === strings.paymentMethodTitle && (
                 <Image
                   source={images.Payment_method}
                   style={{...styles.subMenuItem}}
                 />
               )}
 
-              {rowItem.opetions === 'Payout Method' && (
+              {rowItem.opetions === strings.payoutMethodTitle && (
                 <Image
                   source={images.Payout_method}
                   style={{...styles.subMenuItem}}
                 />
               )}
-              {rowItem.opetions === 'Invoicing' && (
+              {rowItem.opetions === strings.invoicingTitleText && (
                 <Image
                   source={images.Invoicing}
                   style={{...styles.subMenuItem}}
                 />
               )}
-              {rowItem.opetions === 'Invoices' && (
+              {rowItem.opetions === strings.invoicesTitle && (
                 <Image
                   source={images.Invoicing}
                   style={{...styles.subMenuItem}}
                 />
               )}
-              {rowItem.opetions === 'Transactions' && (
+              {rowItem.opetions === strings.transactionsTitles && (
                 <Image
                   source={images.Transations}
                   style={{...styles.subMenuItem}}
@@ -1257,9 +1273,9 @@ export default function AccountScreen({navigation}) {
   );
 
   let placeHolder = images.teamSqure;
-  if (authContext.entity.role === 'club') {
+  if (authContext.entity.role === strings.entityTypeClub) {
     placeHolder = images.clubPlaceholderSmall;
-  } else if (authContext.entity.role === 'team') {
+  } else if (authContext.entity.role === strings.entityTypeTeam) {
     placeHolder = images.teamPlaceholderSmall;
   } else {
     placeHolder = images.profilePlaceHolder;
@@ -1268,15 +1284,15 @@ export default function AccountScreen({navigation}) {
   const onNextPressed = () => {
     setIsRulesModalVisible(false);
     const entity = authContext.entity;
-    if (createEntity === 'team') {
-      if (entity.role === 'user') {
+    if (createEntity === strings.entityTypeTeam) {
+      if (entity.role === strings.entityTypeUser) {
         navigation.navigate('CreateTeamForm1');
       }
-      if (entity.role === 'club') {
+      if (entity.role === strings.entityTypeClub) {
         navigation.navigate('CreateTeamForm1', {clubObject: group});
       }
     }
-    if (createEntity === 'club') {
+    if (createEntity === strings.entityTypeClub) {
       navigation.navigate('CreateClubForm1');
     }
   };
@@ -1287,10 +1303,9 @@ export default function AccountScreen({navigation}) {
       onPress={() => {
         setSportsSelection(item);
         setVisibleSportsModal(false);
-        setSports(item?.sport);
         setTimeout(() => {
           console.log('Sport name:=>', item?.sport, item?.sport_type);
-          if (clickedUserType === 'user') {
+          if (clickedUserType === strings.entityTypeUser) {
             navigation.navigate('ManageChallengeScreen', {
               groupObj: authContext.entity.obj,
               sportName: item.sport,
@@ -1472,7 +1487,7 @@ export default function AccountScreen({navigation}) {
                 }}>
                 <TCNavigationHeader
                   name={parentGroup?.group_name}
-                  groupType={'club'}
+                  groupType={strings.entityTypeClub}
                   image={parentGroup?.thumbnail}
                 />
               </View>
@@ -1488,7 +1503,7 @@ export default function AccountScreen({navigation}) {
 			  </TouchableOpacity>
 			</View> */}
         </View>
-        {authContext.entity.role === 'user' && (
+        {authContext.entity.role === strings.entityTypeUser && (
           <View style={styles.profileView}>
             <ImageBackground
               source={
@@ -1503,7 +1518,7 @@ export default function AccountScreen({navigation}) {
                 onPress={() => {
                   navigation.navigate('HomeScreen', {
                     uid: authContext.entity.uid,
-                    role: 'user',
+                    role: strings.entityTypeUser,
                     backButtonVisible: true,
                     menuBtnVisible: false,
                   });
@@ -1603,8 +1618,8 @@ export default function AccountScreen({navigation}) {
             </ImageBackground>
           </View>
         )}
-        {(authContext.entity.role === 'team' ||
-          authContext.entity.role === 'club') && (
+        {(authContext.entity.role === strings.entityTypeTeam ||
+          authContext.entity.role === strings.entityTypeClub) && (
           <View style={styles.profileView}>
             <ImageBackground
               source={
@@ -1718,7 +1733,7 @@ export default function AccountScreen({navigation}) {
 
                     <Image
                       source={
-                        authContext.entity.role === 'team'
+                        authContext.entity.role === strings.entityTypeTeam
                           ? images.teamPatch
                           : images.clubPatch
                       }
@@ -1766,9 +1781,9 @@ export default function AccountScreen({navigation}) {
 
         <ExpanableList
           dataSource={
-            (authContext.entity.role === 'team' && teamMenu) ||
-            (authContext.entity.role === 'club' && clubMenu) ||
-            (authContext.entity.role === 'user' && userMenu)
+            (authContext.entity.role === strings.entityTypeTeam && teamMenu) ||
+            (authContext.entity.role === strings.entityTypeClub && clubMenu) ||
+            (authContext.entity.role === strings.entityTypeUser && userMenu)
           }
           style={{marginTop: 15}}
           headerKey={'key'}
@@ -1783,11 +1798,17 @@ export default function AccountScreen({navigation}) {
               <View
                 style={{
                   opacity:
-                    isAccountDeactivated && section !== 'Settings' ? 0.5 : 1,
+                    isAccountDeactivated &&
+                    section !== strings.settingsTitleText
+                      ? 0.5
+                      : 1,
                 }}>
                 <TouchableWithoutFeedback
                   testID={`account-section${sectionID}`}
-                  disabled={isAccountDeactivated && section !== 'Settings'}
+                  disabled={
+                    isAccountDeactivated &&
+                    section !== strings.settingsTitleText
+                  }
                   style={styles.listContainer}
                   onPress={() => {
                     handleSections(section);
@@ -1798,37 +1819,37 @@ export default function AccountScreen({navigation}) {
                       alignItems: 'center',
                       justifyContent: 'center',
                     }}>
-                    {section === 'Reservations' && (
+                    {section === strings.reservationsTitleText && (
                       <Image
                         source={images.accountMySchedule}
                         style={{...styles.menuItem}}
                       />
                     )}
-                    {section === 'Playing' && (
+                    {section === strings.playingTitleText && (
                       <Image
                         source={images.accountMySports}
                         style={{...styles.menuItem}}
                       />
                     )}
-                    {section === 'Refereeing' && (
+                    {section === strings.refereeingTitleText && (
                       <Image
                         source={images.accountMyRefereeing}
                         style={{...styles.menuItem}}
                       />
                     )}
-                    {section === 'Scorekeeping' && (
+                    {section === strings.scorekeepingTitleText && (
                       <Image
                         source={images.accountMyScoreKeeping}
                         style={{...styles.menuItem}}
                       />
                     )}
-                    {section === 'Teams' && (
+                    {section === strings.teamstitle && (
                       <Image
                         source={images.accountMyTeams}
                         style={{...styles.menuItem}}
                       />
                     )}
-                    {section === 'Clubs' && (
+                    {section === strings.clubstitle && (
                       <Image
                         source={images.accountMyClubs}
                         style={{...styles.menuItem}}
@@ -1847,14 +1868,14 @@ export default function AccountScreen({navigation}) {
                       />
                     )}
 
-                    {section === 'Payment & Payout' && (
+                    {section === strings.paymentPayoutText && (
                       <Image
                         source={images.accountPaymentPayout}
                         style={{...styles.menuItem}}
                       />
                     )}
 
-                    {section === 'Settings' && (
+                    {section === strings.settingsTitleText && (
                       <Image
                         source={images.accountSettingPrivacy}
                         style={{...styles.menuItem}}
@@ -1911,7 +1932,7 @@ export default function AccountScreen({navigation}) {
                 source={images.switchAccount}
                 style={styles.switchAccountIcon}
               />
-              <Text style={styles.switchAccount}>Switch Account</Text>
+              <Text style={styles.switchAccount}>{strings.switchAccount}</Text>
             </View>
           </>
         )}
@@ -1975,7 +1996,9 @@ export default function AccountScreen({navigation}) {
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
               }}>
-              {createEntity === 'club' ? 'Create Club' : 'Create Team'}
+              {createEntity === strings.entityTypeClub
+                ? strings.createClubText
+                : strings.createTeamText}
             </Text>
           </View>
           <View style={styles.separatorLine} />
@@ -2065,7 +2088,7 @@ export default function AccountScreen({navigation}) {
           <FlatList
             ItemSeparatorComponent={() => <TCThinDivider />}
             data={
-              (clickedUserType === 'user' &&
+              (clickedUserType === strings.entityTypeUser &&
                 authContext?.entity?.obj?.registered_sports?.filter(
                   (obj) =>
                     obj?.sport &&

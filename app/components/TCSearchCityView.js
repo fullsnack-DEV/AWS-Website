@@ -13,7 +13,7 @@ import {searchCityState} from '../api/External';
 import AuthContext from '../auth/context';
 import {widthPercentageToDP} from '../utils';
 import colors from '../Constants/Colors';
-import strings from '../Constants/String';
+import {strings} from '../../Localization/translation';
 import fonts from '../Constants/Fonts';
 import TCThinDivider from './TCThinDivider';
 

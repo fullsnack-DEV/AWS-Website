@@ -45,7 +45,7 @@ import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import AppleStyleSwipeableRow from '../../components/notificationComponent/AppleStyleSwipeableRow';
 import ActivityLoader from '../../components/loader/ActivityLoader';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 import * as RefereeUtils from '../referee/RefereeUtility';
 import * as ScorekeeperUtils from '../scorekeeper/ScorekeeperUtility';
 import * as challengeUtility from '../challenge/ChallengeUtility';
@@ -1129,11 +1129,7 @@ function NotificationsListScreen({navigation}) {
           console.log('next page');
           setLoadMore(true);
           setTimeout(() => {
-            if (IDLT) {
-              getNextNotificationData();
-            } else {
-              setLoadMore(false);
-            }
+            getNextNotificationData();
           }, 1000);
         }
       }

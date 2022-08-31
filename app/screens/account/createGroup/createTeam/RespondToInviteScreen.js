@@ -8,12 +8,13 @@ import {
   SafeAreaView,
 } from 'react-native';
 
+import {format} from 'react-string-format';
 import TCInfoField from '../../../../components/TCInfoField';
 import {getGroupRequest} from '../../../../api/Groups';
 
 import AuthContext from '../../../../auth/context';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
-import strings from '../../../../Constants/String';
+import {strings} from '../../../../../Localization/translation';
 import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
 import TCLabel from '../../../../components/TCLabel';
@@ -36,20 +37,6 @@ export default function RespondToInviteScreen({navigation, route}) {
     getGroupRequest(type, groupId, authContext)
       .then((response) => {
         setloading(false);
-
-        // if (
-        //   entity.role === ('user' || 'player')
-        //   && teamObject?.sport?.toLowerCase() === 'Tennis Double'.toLowerCase()
-        // ) {
-        //   navigation.push('HomeScreen', {
-        //     uid: response.payload.group_id,
-        //     role: response.payload.entity_type,
-        //     backButtonVisible: false,
-        //     menuBtnVisible: false,
-        //     isDoubleSportTeamCreated: true,
-        //     name: teamObject?.player2?.full_name,
-        //   });
-        // } else {
 
         console.log('Team created res:=>', response.payload);
         if (type === 'accept') {
@@ -78,18 +65,18 @@ export default function RespondToInviteScreen({navigation, route}) {
 
   const getStatusMessage = () => {
     if (teamObject?.status === TeamStatus.declined) {
-      return 'This request is already declined.';
+      return strings.requestDeclinedText;
     }
     if (teamObject?.status === TeamStatus.cancelled) {
-      return 'This request is already deleted.';
+      return strings.requestDeletedText;
     }
     if (teamObject?.status === TeamStatus.accepted) {
-      return 'This request is already accepted.';
+      return strings.requestAcceptedText;
     }
     if (teamObject?.status === TeamStatus.invalid) {
-      return 'This request is not valid now.';
+      return strings.requestNotValidText;
     }
-    return 'status not defined';
+    return strings.requestStatusNotText;
   };
 
   return (
@@ -103,7 +90,7 @@ export default function RespondToInviteScreen({navigation, route}) {
         <TCLabel title={strings.invitetocreateteam} />
 
         <TCInfoField
-          title={'Sport'}
+          title={strings.sportsEventsTitle}
           value={getSportName(teamObject, authContext)}
           marginLeft={25}
           marginTop={30}
@@ -113,7 +100,7 @@ export default function RespondToInviteScreen({navigation, route}) {
         {teamObject?.sport?.toLowerCase() === 'Tennis Double'.toLowerCase() && (
           <View>
             <TCPlayerImageInfo
-              title={'Players'}
+              title={strings.playerTitle}
               player1Image={teamObject?.player1?.thumbnail}
               player2Image={teamObject?.player2?.thumbnail}
               player1Name={teamObject?.player1?.full_name}
@@ -127,14 +114,14 @@ export default function RespondToInviteScreen({navigation, route}) {
         )}
 
         <TCInfoField
-          title={'Team name'}
+          title={strings.teamName}
           value={teamObject?.group_name}
           marginLeft={25}
         />
         <TCThinDivider marginTop={5} marginBottom={3} />
 
         <TCInfoField
-          title={'Home city'}
+          title={strings.homeCityTitleText}
           value={teamObject?.city}
           marginLeft={25}
         />
@@ -143,7 +130,7 @@ export default function RespondToInviteScreen({navigation, route}) {
         {teamObject?.sport?.toLowerCase() !== 'Tennis Double'.toLowerCase() && (
           <View>
             <TCInfoField
-              title={'Members’ gender'}
+              title={strings.membersgender}
               value={
                 teamObject?.gender?.charAt(0)?.toUpperCase() +
                 teamObject?.gender?.slice(1)
@@ -153,10 +140,12 @@ export default function RespondToInviteScreen({navigation, route}) {
             <TCThinDivider marginTop={5} marginBottom={3} />
 
             <TCInfoField
-              title={'Members’ ages'}
-              value={`Min ${teamObject?.min_age ?? 'N/A'} Max ${
-                teamObject?.max_age ?? 'N/A'
-              }`}
+              title={strings.membersage}
+              value={format(
+                strings.minMaxText_dy,
+                teamObject?.min_age ?? '-',
+                teamObject?.max_age ?? '-',
+              )}
               marginLeft={25}
             />
             <TCThinDivider marginTop={5} marginBottom={3} />
@@ -164,14 +153,14 @@ export default function RespondToInviteScreen({navigation, route}) {
         )}
 
         <TCInfoField
-          title={'Language'}
+          title={strings.language}
           value={teamObject?.language.join(', ')}
           marginLeft={25}
         />
         <TCThinDivider marginTop={5} marginBottom={3} />
 
         <Text style={styles.describeTitle} numberOfLines={2}>
-          Describe
+          {strings.describeText}
         </Text>
         <Text style={styles.describeText} numberOfLines={50}>
           {teamObject?.descriptions}

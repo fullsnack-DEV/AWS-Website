@@ -56,7 +56,7 @@ import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import TCThinDivider from '../../../components/TCThinDivider';
 import TennisScoreView from '../../../components/game/tennis/TennisScoreView';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 
 import TennisMatchRecordsList from './TennisMatchRecordsList';
 

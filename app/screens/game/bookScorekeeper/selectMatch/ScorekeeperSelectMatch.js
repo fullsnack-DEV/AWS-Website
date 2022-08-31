@@ -10,7 +10,7 @@ import {getSearchData} from '../../../../utils';
 import GameCard from '../../../../components/TCGameCard';
 import * as Utility from '../../../../utils';
 import {getCalendarIndex, getGameIndex} from '../../../../api/elasticSearch';
-import strings from '../../../../Constants/String';
+import {strings} from '../../../../../Localization/translation';
 
 const TYPING_SPEED = 200;
 let bodyParams = {};

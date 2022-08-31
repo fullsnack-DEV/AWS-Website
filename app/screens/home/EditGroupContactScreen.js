@@ -9,7 +9,7 @@ import TCLabel from '../../components/TCLabel';
 import TCPhoneNumber from '../../components/TCPhoneNumber';
 import {patchGroup} from '../../api/Groups';
 import ActivityLoader from '../../components/loader/ActivityLoader';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import AuthContext from '../../auth/context';

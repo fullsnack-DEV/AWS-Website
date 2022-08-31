@@ -17,7 +17,7 @@ import ActivityLoader from '../../../components/loader/ActivityLoader';
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import AuthContext from '../../../auth/context';
 import TCGradientButton from '../../../components/TCGradientButton';
 import * as Utility from '../../../utils';

@@ -43,7 +43,7 @@ import BatchDetailView from '../../../components/invoice/BatchDetailView';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import TCThinDivider from '../../../components/TCThinDivider';
 import {heightPercentageToDP} from '../../../utils';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import InvoiceTypeSelection from '../../../components/invoice/InvoiceTypeSelection';
 
 let entity = {};

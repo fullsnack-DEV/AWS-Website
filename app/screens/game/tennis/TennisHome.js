@@ -47,7 +47,7 @@ import {
 import {followUser, unfollowUser} from '../../../api/Users';
 import ImageProgress from '../../../components/newsFeed/ImageProgress';
 import AuthContext from '../../../auth/context';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import GameHomeShimer from '../../../components/shimmer/game/GameHomeShimer';
 import TCBorderButton from '../../../components/TCBorderButton';
 import fonts from '../../../Constants/Fonts';

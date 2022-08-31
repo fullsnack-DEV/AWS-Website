@@ -47,7 +47,7 @@ import SwipeableRow from '../../../components/gameRecordList/SwipeableRow';
 import GameStatus from '../../../Constants/GameStatus';
 import GameVerb from '../../../Constants/GameVerb';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import * as Utils from '../../challenge/ChallengeUtility';
 import AddSetGameModal from './AddSetGameModal';
 import {getHitSlop} from '../../../utils';

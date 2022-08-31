@@ -21,7 +21,7 @@ import images from '../../../../../Constants/ImagePath';
 import colors from '../../../../../Constants/Colors';
 import Header from '../../../../../components/Home/Header';
 import AuthContext from '../../../../../auth/context';
-import strings from '../../../../../Constants/String';
+import {strings} from '../../../../../../Localization/translation';
 import uploadImages from '../../../../../utils/imageAction';
 import ActivityLoader from '../../../../../components/loader/ActivityLoader';
 

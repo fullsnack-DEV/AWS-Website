@@ -46,7 +46,7 @@ import DateTimePickerView from '../../../components/Schedule/DateTimePickerModal
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import {createEvent} from '../../../api/Schedule';
 import TCProfileView from '../../../components/TCProfileView';
 
@@ -1439,7 +1439,7 @@ export default function CreateEventScreen({navigation, route}) {
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
               }}>
-              Privacy Setting
+              strings.privacySettingText
             </Text>
 
             <Text

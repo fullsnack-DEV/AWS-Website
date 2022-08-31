@@ -9,6 +9,7 @@ import {
 import colors from '../../../Constants/Colors';
 import images from '../../../Constants/ImagePath';
 import fonts from '../../../Constants/Fonts';
+import {strings} from '../../../../Localization/translation';
 
 const CommonAlert = ({alertData}) => (
   <Modal
@@ -47,7 +48,7 @@ const CommonAlert = ({alertData}) => (
             color: colors.darkYellowColor,
             marginTop: 5,
           }}>
-          {alertData?.message ?? 'Link Copied!'}
+          {alertData?.message ?? strings.linkedCopied}
         </Text>
       </View>
     </View>

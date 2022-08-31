@@ -2,7 +2,7 @@ import {Text, View, StyleSheet} from 'react-native';
 import React, {useState} from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import StatsSelectionView from '../../../../../components/Home/StatsSelectionView';
-import strings from '../../../../../Constants/String';
+import {strings} from '../../../../../../Localization/translation';
 import fonts from '../../../../../Constants/Fonts';
 import colors from '../../../../../Constants/Colors';
 import {heightPercentageToDP as hp} from '../../../../../utils';

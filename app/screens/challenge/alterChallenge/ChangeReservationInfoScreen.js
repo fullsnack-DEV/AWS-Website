@@ -13,7 +13,7 @@ import ActivityLoader from '../../../components/loader/ActivityLoader';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import TCGradientButton from '../../../components/TCGradientButton';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 
 let entity = {};
 export default function ChangeReservationInfoScreen({navigation, route}) {

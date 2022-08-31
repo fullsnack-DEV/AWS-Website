@@ -14,7 +14,7 @@ import colors from '../Constants/Colors';
 import TCGradientButton from './TCGradientButton';
 import {getHitSlop} from '../utils';
 import TCInnerLoader from './TCInnerLoader';
-import strings from '../Constants/String';
+import {strings} from '../../Localization/translation';
 
 const TCUserFollowUnfollowList = ({
   followUser,

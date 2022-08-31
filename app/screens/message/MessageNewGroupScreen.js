@@ -44,7 +44,7 @@ import {
 import TCInputBox from '../../components/TCInputBox';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import * as Utility from '../../utils/index';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 import uploadImages from '../../utils/imageAction';
 
 const MessageNewGroupScreen = ({route, navigation}) => {

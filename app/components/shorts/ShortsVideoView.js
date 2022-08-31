@@ -60,7 +60,7 @@ import TeamClubLeagueView from '../Home/TeamClubLeagueView';
 
 import ActivityLoader from '../loader/ActivityLoader';
 import TaggedEntityView from './TaggedEntityView';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 
 // let bottomViewHeight = 0
 const windowHeight = Dimensions.get('window').height;

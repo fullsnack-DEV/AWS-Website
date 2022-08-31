@@ -22,7 +22,7 @@ import fonts from '../../Constants/Fonts';
 import TCThickDivider from '../../components/TCThickDivider';
 import TCGradientButton from '../../components/TCGradientButton';
 import {getGroupDetails, getGroupMembers} from '../../api/Groups';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 import {acceptRequest, declineRequest} from '../../api/Notificaitons';
 // import { useIsFocused } from '@react-navigation/native';
 

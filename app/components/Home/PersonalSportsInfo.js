@@ -17,7 +17,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 import EditEventItem from '../Schedule/EditEventItem';
 import EventMapView from '../Schedule/EventMapView';
 import BasicInfoItem from './BasicInfoItem';
@@ -367,7 +367,9 @@ const PersonalSportsInfo = ({
                   style={styles.soccerImageStyle}
                   resizeMode={'contain'}
                 />
-                <Text style={styles.playInTextStyle}>{'Privacy Setting'}</Text>
+                <Text style={styles.playInTextStyle}>
+                  {strings.privacySettingText}
+                </Text>
               </View>
             }
             rightComponent={
@@ -378,7 +380,7 @@ const PersonalSportsInfo = ({
                     fontFamily: fonts.RLight,
                     color: colors.whiteColor,
                   }}>
-                  {'Save'}
+                  {strings.save}
                 </Text>
               </TouchableOpacity>
             }
@@ -473,7 +475,8 @@ const PersonalSportsInfo = ({
                     {(editPressTitle === strings.bio && strings.bio) ||
                       (editPressTitle === strings.basicinfotitle &&
                         strings.basicinfotitle) ||
-                      (editPressTitle === strings.gameFee && 'Fee') ||
+                      (editPressTitle === strings.gameFee &&
+                        strings.feeTitleText) ||
                       (editPressTitle === strings.ntrpTitle &&
                         strings.ntrpTitle) ||
                       (editPressTitle === strings.homePlaceTitle &&
@@ -519,7 +522,7 @@ const PersonalSportsInfo = ({
                       fontFamily: fonts.RLight,
                       color: colors.whiteColor,
                     }}>
-                    {'Save'}
+                    {strings.save}
                   </Text>
                 </TouchableOpacity>
               }
@@ -542,7 +545,7 @@ const PersonalSportsInfo = ({
                   <View style={{marginTop: 8}}>
                     <TCPicker
                       dataSource={DataSource.Gender}
-                      placeholder={'Select Gender'}
+                      placeholder={strings.selectGenderPlaceholder}
                       value={info.genderText}
                       onValueChange={(value) => {
                         setInfo({...info, genderText: value});
@@ -571,7 +574,7 @@ const PersonalSportsInfo = ({
                   containerStyle={{marginTop: 15}}>
                   <EventTextInput
                     value={info.heightText}
-                    placeholder={'Enter Height'}
+                    placeholder={strings.enterHeightText}
                     onChangeText={(text) => {
                       setInfo({...info, heightText: text});
                     }}
@@ -587,7 +590,7 @@ const PersonalSportsInfo = ({
                   containerStyle={{marginTop: 15}}>
                   <EventTextInput
                     value={info.weightText}
-                    placeholder={'Enter Weight'}
+                    placeholder={strings.enterWeightText}
                     onChangeText={(text) => {
                       setInfo({...info, weightText: text});
                     }}
@@ -604,11 +607,11 @@ const PersonalSportsInfo = ({
                   <View style={{marginTop: 8}}>
                     <TCPicker
                       dataSource={[
-                        {label: 'Right', value: 'Right'},
-                        {label: 'Left', value: 'Left'},
-                        {label: 'Pose', value: 'Pose'},
+                        {label: strings.rightWord, value: strings.rightWord},
+                        {label: strings.leftWord, value: strings.leftWord},
+                        {label: strings.poseWord, value: strings.poseWord},
                       ]}
-                      placeholder={'Select Most Used Foot'}
+                      placeholder={strings.selectMostUsedFootText}
                       value={mostusetFootSelect}
                       onValueChange={(value) => {
                         setMostUsedFootSelect(value);
@@ -638,8 +641,8 @@ const PersonalSportsInfo = ({
                 keyboardType={'numeric'}
                 displayLastTitle={true}
                 displayFirstTitle={true}
-                valueFirstTitle={'$'}
-                valueEndTitle={' CAD/match'}
+                valueFirstTitle={strings.dollerSign}
+                valueEndTitle={strings.CADpermatch}
                 containerStyle={{justifyContent: 'space-between'}}
               />
             )}
@@ -687,13 +690,15 @@ const PersonalSportsInfo = ({
       <ActionSheet
         ref={actionSheet}
         options={[
-          (editPressTitle === strings.bio && 'Edit Bio') ||
-            (editPressTitle === strings.basicinfotitle && 'Edit Basic Info') ||
-            (editPressTitle === strings.gameFee && 'Edit Fee') ||
-            (editPressTitle === strings.ntrpTitle && 'Edit NTRP') ||
-            (editPressTitle === strings.homePlaceTitle && 'Edit Home Place'),
-          'Privacy Setting',
-          'Cancel',
+          (editPressTitle === strings.bio && strings.editBioText) ||
+            (editPressTitle === strings.basicinfotitle &&
+              strings.editBasicInfoText) ||
+            (editPressTitle === strings.gameFee && strings.editFeeText) ||
+            (editPressTitle === strings.ntrpTitle && strings.editNTRPText) ||
+            (editPressTitle === strings.homePlaceTitle &&
+              strings.editHomePlaceText),
+          strings.privacySettingText,
+          strings.cancel,
         ]}
         cancelButtonIndex={2}
         onPress={(index) => {

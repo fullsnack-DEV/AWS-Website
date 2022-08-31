@@ -23,7 +23,7 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import AuthContext from '../../../../auth/context';
 
 import images from '../../../../Constants/ImagePath';
-import strings from '../../../../Constants/String';
+import {strings} from '../../../../../Localization/translation';
 import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
 import TCLabel from '../../../../components/TCLabel';
@@ -235,9 +235,10 @@ export default function CreateTeamForm2({navigation, route}) {
 
   const nextOnPress = () => {
     if (
-      createTeamForm1.sport === 'tennis' &&
-      createTeamForm1.sport_type === 'double' &&
-      authContext?.entity?.role === ('user' || 'player')
+      createTeamForm1.sport === strings.tennisSport &&
+      createTeamForm1.sport_type === strings.doubleSport &&
+      authContext?.entity?.role ===
+        (strings.entityTypeUser || strings.entityTypePlayer)
     ) {
       const obj = {
         player1: authContext?.entity?.obj,
@@ -487,7 +488,7 @@ export default function CreateTeamForm2({navigation, route}) {
                   : styles.languagePlaceholderText
               }
               numberOfLines={50}>
-              {languagesName || 'Add language'}
+              {languagesName || strings.addLanguageText}
             </Text>
           </TouchableOpacity>
 
@@ -573,7 +574,7 @@ export default function CreateTeamForm2({navigation, route}) {
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
               }}>
-              Languages
+              {strings.languages}
             </Text>
             <TouchableOpacity
               onPress={() => {
@@ -593,7 +594,7 @@ export default function CreateTeamForm2({navigation, route}) {
                   fontFamily: fonts.RRegular,
                   color: colors.themeColor,
                 }}>
-                Apply
+                {strings.apply}
               </Text>
             </TouchableOpacity>
           </View>
@@ -724,7 +725,7 @@ export default function CreateTeamForm2({navigation, route}) {
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
               }}>
-              Player
+              {strings.player}
             </Text>
 
             <Text

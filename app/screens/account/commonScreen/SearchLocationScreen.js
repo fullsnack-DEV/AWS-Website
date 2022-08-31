@@ -16,7 +16,7 @@ import {
 
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import images from '../../../Constants/ImagePath';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import Separator from '../../../components/Separator';
 import AuthContext from '../../../auth/context';
 import colors from '../../../Constants/Colors';
@@ -120,17 +120,14 @@ export default function SearchLocationScreen({navigation, route}) {
     });
   };
 
-  const renderItem = ({item, index}) => {
-    console.log('Location item:=>', item);
-    return (
-      <TouchableWithoutFeedback
-        style={styles.listItem}
-        onPress={() => getTeamsData(item)}>
-        <Text style={styles.cityList}>{cityData[index].description}</Text>
-        <Separator />
-      </TouchableWithoutFeedback>
-    );
-  };
+  const renderItem = ({item, index}) => (
+    <TouchableWithoutFeedback
+      style={styles.listItem}
+      onPress={() => getTeamsData(item)}>
+      <Text style={styles.cityList}>{cityData[index].description}</Text>
+      <Separator />
+    </TouchableWithoutFeedback>
+  );
 
   return (
     <View style={styles.mainContainer}>
@@ -149,9 +146,7 @@ export default function SearchLocationScreen({navigation, route}) {
         />
       </View>
       {noData && (
-        <Text style={styles.noDataText}>
-          Please enter atleast 3 characters to see city
-        </Text>
+        <Text style={styles.noDataText}>{strings.enterThreeCharText}</Text>
       )}
       <FlatList
         data={cityData}

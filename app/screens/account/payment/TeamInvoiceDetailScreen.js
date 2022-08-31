@@ -50,7 +50,7 @@ import {
   addLog,
   deleteInvoiceLog,
 } from '../../../api/Invoice';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 
 export default function TeamInvoiceDetailScreen({navigation, route}) {
@@ -154,17 +154,17 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
       logsList?.length - 1 === index &&
       authContext?.entity?.role === 'team' &&
       item?.payment_mode !== 'card' ? (
-        <AppleStyleSwipeableRow
+      <AppleStyleSwipeableRow
         onPress={() => onDeleteLog(item)}
         color={colors.redDelColor}
         image={images.deleteIcon}>
-          <PaymentLogs
+        <PaymentLogs
           data={item}
           onPressCard={() => {
             navigation.navigate('LogDetailScreen', {data: item});
           }}
         />
-        </AppleStyleSwipeableRow>
+      </AppleStyleSwipeableRow>
     ) : (
       <PaymentLogs
         data={item}

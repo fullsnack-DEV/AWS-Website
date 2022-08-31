@@ -25,7 +25,7 @@ import EventItemRender from '../../../components/Schedule/EventItemRender';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import AddTimeItem from '../../../components/Schedule/AddTimeItem';
 import {editSlots} from '../../../api/Schedule';
 import ActivityLoader from '../../../components/loader/ActivityLoader';

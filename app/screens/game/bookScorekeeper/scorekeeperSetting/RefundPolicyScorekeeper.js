@@ -20,7 +20,7 @@ import {patchPlayer} from '../../../../api/Users';
 import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
 import TCLable from '../../../../components/TCLabel';
-import strings from '../../../../Constants/String';
+import {strings} from '../../../../../Localization/translation';
 
 export default function RefundPolicyScorekeeper({navigation, route}) {
   const policiesTypeList = [

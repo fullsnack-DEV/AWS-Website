@@ -34,7 +34,7 @@ import SwipeableRow from '../../gameRecordList/SwipeableRow';
 import GameStatus from '../../../Constants/GameStatus';
 import GameVerb from '../../../Constants/GameVerb';
 import ActivityLoader from '../../loader/ActivityLoader';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 
 const SwipeableRowButtons = [
   {key: 'revert', fillColor: colors.themeColor, image: images.deleteIcon},

@@ -25,7 +25,7 @@ import TCGradientButton from '../../../../components/TCGradientButton';
 import {getUserDoubleTeamFollower} from '../../../../api/Users';
 import AuthContext from '../../../../auth/context';
 import images from '../../../../Constants/ImagePath';
-import strings from '../../../../Constants/String';
+import {strings} from '../../../../../Localization/translation';
 import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
 import TCLabel from '../../../../components/TCLabel';
@@ -66,10 +66,6 @@ export default function CreateTeamForm1({navigation, route}) {
   const [cityData, setCityData] = useState([]);
   const [searchText, setSearchText] = useState('');
 
-  console.log(
-    'route.params && route.params.clubObject',
-    route.params && route.params.clubObject,
-  );
   useEffect(() => {
     if (isFocused) {
       getSports();
@@ -82,8 +78,6 @@ export default function CreateTeamForm1({navigation, route}) {
 
   useEffect(() => {
     searchCityState(searchText).then((response) => {
-      console.log('rerererer', response);
-
       setCityData(response.predictions);
     });
   }, [searchText]);
@@ -96,9 +90,10 @@ export default function CreateTeamForm1({navigation, route}) {
         setTimeout(() => {
           setVisibleSportsModal(false);
           if (
-            item?.sport === 'tennis' &&
-            item?.sport_type === 'double' &&
-            authContext?.entity?.role === ('user' || 'player')
+            item?.sport === strings.tennisSport &&
+            item?.sport_type === strings.doubleSports &&
+            authContext?.entity?.role ===
+              (strings.entityTypeUser || strings.entityTypePlayer)
           ) {
             getUserDoubleTeamFollower(
               item?.sport,
@@ -143,7 +138,9 @@ export default function CreateTeamForm1({navigation, route}) {
 
     authContext.sports.map((item) => {
       const filterFormat = item.format.filter(
-        (obj) => obj.entity_type === 'team' && obj.sport_type !== 'double',
+        (obj) =>
+          obj.entity_type === strings.entityTypeTeam &&
+          obj.sport_type !== strings.doubleSport,
       );
       sportArr = [...sportArr, ...filterFormat];
       return null;
@@ -166,12 +163,12 @@ export default function CreateTeamForm1({navigation, route}) {
       tempIds.push(parentGroupID);
       obj.parent_groups = tempIds;
     }
-    console.log('Form1 Object:=>', obj);
 
     if (
-      sportsSelection.sport === 'tennis' &&
-      sportsSelection.sport_type === 'double' &&
-      authContext?.entity?.role === ('user' || 'player')
+      sportsSelection.sport === strings.tennisSport &&
+      sportsSelection.sport_type === strings.doubleSport &&
+      authContext?.entity?.role ===
+        (strings.entityTypeUser || strings.entityTypePlayer)
     ) {
       if (followersData?.length > 0) {
         navigation.navigate('CreateTeamForm2', {
@@ -191,83 +188,6 @@ export default function CreateTeamForm1({navigation, route}) {
       });
     }
   };
-
-  // we can't add duplicate team name in same city with same sport
-
-  // const nextOnPress = () => {
-  //   const query = {
-  //     _source: ['group_id'],
-  //     query: {
-  //       bool: {
-  //         must: [
-  //           {
-  //             term: {
-  //               'group_name.keyword': {
-  //                 value: teamName,
-  //                 case_insensitive: true,
-  //               },
-  //             },
-  //           },
-  //           {term: {entity_type: 'team'}},
-  //           {
-  //             term: {
-  //               'city.keyword': {
-  //                 value: city,
-  //                 case_insensitive: true,
-  //               },
-  //             },
-  //           },
-  //         ],
-  //       },
-  //     },
-  //   };
-
-  //   getGroupIndex(query).then((teams) => {
-
-  //     if (teams.length === 0) {
-  //       const obj = {
-  //         sport: sportsSelection.sport,
-  //         sport_type: sportsSelection.sport_type,
-  //         group_name: teamName,
-  //         city,
-  //         state_abbr: state,
-  //         country,
-  //         currency_type: authContext?.entity?.obj?.currency_type,
-  //       };
-  //       if (parentGroupID) {
-  //         const tempIds = [];
-  //         tempIds.push(parentGroupID);
-  //         obj.parent_groups = tempIds;
-  //       }
-  //       console.log('Form1 Object:=>', obj);
-
-  //       if (
-  //         sportsSelection.sport === 'tennis' &&
-  //         sportsSelection.sport_type === 'double' &&
-  //         authContext?.entity?.role === ('user' || 'player')
-  //       ) {
-  //         if (followersData?.length > 0) {
-  //           navigation.navigate('CreateTeamForm2', {
-  //             followersList: followersData,
-  //             createTeamForm1: {
-  //               ...obj,
-  //             },
-  //           });
-  //         } else {
-  //           Alert.alert(strings.noFollowersTocreateTeam);
-  //         }
-  //       } else {
-  //         navigation.navigate('CreateTeamForm2', {
-  //           createTeamForm1: {
-  //             ...obj,
-  //           },
-  //         });
-  //       }
-  //     } else {
-  //       Alert.alert(strings.teamExist);
-  //     }
-  //   });
-  // };
 
   const toggleLocationModal = () => {
     setVisibleLocationModal(!visibleLocationModal);
@@ -407,7 +327,7 @@ export default function CreateTeamForm1({navigation, route}) {
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
               }}>
-              Sports
+              {strings.sportsTitleText}
             </Text>
 
             <Text
@@ -476,7 +396,7 @@ export default function CreateTeamForm1({navigation, route}) {
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
               }}>
-              Location
+              {strings.locationTitleText}
             </Text>
             <TouchableOpacity onPress={() => {}}></TouchableOpacity>
           </View>

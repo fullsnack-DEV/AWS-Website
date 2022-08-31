@@ -9,7 +9,7 @@ import {
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import AuthContext from '../../../auth/context';
 import images from '../../../Constants/ImagePath';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import {searchVenue} from '../../../api/External';
 
 import colors from '../../../Constants/Colors';

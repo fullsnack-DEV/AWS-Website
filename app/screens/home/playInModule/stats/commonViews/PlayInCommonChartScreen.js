@@ -13,7 +13,7 @@ import WinProgressView from '../../../../../components/Home/WinProgressView';
 import colors from '../../../../../Constants/Colors';
 import fonts from '../../../../../Constants/Fonts';
 import StatsSelectionView from '../../../../../components/Home/StatsSelectionView';
-import strings from '../../../../../Constants/String';
+import {strings} from '../../../../../../Localization/translation';
 import {monthsSelectionData} from '../../../../../utils/constant';
 
 const Gradient = () => (

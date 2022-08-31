@@ -19,7 +19,7 @@ import TCThinDivider from '../../../components/TCThinDivider';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import {addLog} from '../../../api/Invoice';
 import AuthContext from '../../../auth/context';
 

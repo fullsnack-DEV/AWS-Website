@@ -8,7 +8,7 @@ import AuthContext from '../../../../auth/context';
 import TCInnerLoader from '../../../../components/TCInnerLoader';
 import {getSearchData} from '../../../../utils';
 import TCGameCard from '../../../../components/TCGameCard';
-import strings from '../../../../Constants/String';
+import {strings} from '../../../../../Localization/translation';
 import * as Utility from '../../../../utils';
 import {getCalendarIndex, getGameIndex} from '../../../../api/elasticSearch';
 

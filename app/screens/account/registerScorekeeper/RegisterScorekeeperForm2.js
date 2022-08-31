@@ -20,7 +20,7 @@ import * as Utility from '../../../utils';
 import AuthContext from '../../../auth/context';
 import images from '../../../Constants/ImagePath';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import uploadImages from '../../../utils/imageAction';
 
 import {
@@ -107,13 +107,15 @@ export default function RegisterScorekeeperForm2({navigation, route}) {
           )
         ) {
           registerdScorekeeperData =
-            authContext?.entity?.obj?.scorekeeper_data.map((item) => item.sport === bodyParams.sport &&
-                item.sport_type === bodyParams.sport_type
+            authContext?.entity?.obj?.scorekeeper_data.map((item) =>
+              item.sport === bodyParams.sport &&
+              item.sport_type === bodyParams.sport_type
                 ? {
                     ...item,
                     is_published: true,
                   }
-                : item);
+                : item,
+            );
         } else {
           registerdScorekeeperData.push(bodyParams);
         }

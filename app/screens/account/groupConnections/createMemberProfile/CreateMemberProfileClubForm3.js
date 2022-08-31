@@ -5,7 +5,7 @@ import {createMemberProfile} from '../../../../api/Groups';
 import uploadImages from '../../../../utils/imageAction';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import images from '../../../../Constants/ImagePath';
-import strings from '../../../../Constants/String';
+import {strings} from '../../../../../Localization/translation';
 import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
 import TCTextField from '../../../../components/TCTextField';
@@ -156,7 +156,7 @@ export default function CreateMemberProfileClubForm3({navigation, route}) {
           </View>
           <TCGroupNameBadge
             name={((auth || {}).obj || {}).group_name || ''}
-            groupType={'club'}
+            groupType={strings.entityTypeClub}
           />
         </View>
         <TCTextField

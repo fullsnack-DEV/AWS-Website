@@ -3,7 +3,7 @@ import {View, StyleSheet, Image, Text} from 'react-native';
 
 import ImageSequence from 'react-native-image-sequence-2';
 import images from '../../../Constants/ImagePath';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 

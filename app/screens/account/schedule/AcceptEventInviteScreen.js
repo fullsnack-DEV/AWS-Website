@@ -22,7 +22,7 @@ import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 import EventTimeItem from '../../../components/Schedule/EventTimeItem';
 import EventMapView from '../../../components/Schedule/EventMapView';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import EventBackgroundPhoto from '../../../components/Schedule/EventBackgroundPhoto';
 import AuthContext from '../../../auth/context';
 import TCThinDivider from '../../../components/TCThinDivider';

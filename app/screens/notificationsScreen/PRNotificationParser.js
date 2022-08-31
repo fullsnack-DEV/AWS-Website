@@ -1,5 +1,5 @@
 import moment from 'moment';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 import {toShortTimeFromString} from '../../utils/Time';
 import NotificationType from '../../Constants/NotificationType';
 

@@ -20,7 +20,7 @@ import AuthContext from '../../../auth/context';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 
 export default function RefereeReservationSetting({navigation, route}) {
   const isFocused = useIsFocused();

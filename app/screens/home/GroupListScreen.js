@@ -2,7 +2,7 @@ import React, {useLayoutEffect, useState} from 'react';
 
 import {View, FlatList, StyleSheet, Text} from 'react-native';
 
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 import GroupListItemView from '../../components/Home/GroupListItemView';
 
 export default function GroupListScreen({navigation, route}) {

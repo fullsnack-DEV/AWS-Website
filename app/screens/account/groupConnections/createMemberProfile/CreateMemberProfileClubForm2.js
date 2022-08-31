@@ -7,6 +7,7 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
+import {format} from 'react-string-format';
 import images from '../../../../Constants/ImagePath';
 import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
@@ -14,6 +15,7 @@ import AuthContext from '../../../../auth/context';
 import TCGroupNameBadge from '../../../../components/TCGroupNameBadge';
 import TCThinDivider from '../../../../components/TCThinDivider';
 import TCFormProgress from '../../../../components/TCFormProgress';
+import {strings} from '../../../../../Localization/translation';
 
 let entity = {};
 export default function CreateMemberProfileClubForm2({navigation, route}) {
@@ -33,7 +35,7 @@ export default function CreateMemberProfileClubForm2({navigation, route}) {
     navigation.setOptions({
       headerRight: () => (
         <Text style={styles.nextButtonStyle} onPress={() => pressedNext()}>
-          Next
+          {strings.next}
         </Text>
       ),
     });
@@ -46,7 +48,6 @@ export default function CreateMemberProfileClubForm2({navigation, route}) {
       is_admin: setting.is_admin,
       is_member: setting.is_member,
     };
-    console.log('membersAuthority', membersAuthority);
     navigation.navigate('CreateMemberProfileClubForm3', {
       form2: membersAuthority,
     });
@@ -56,9 +57,7 @@ export default function CreateMemberProfileClubForm2({navigation, route}) {
     <ScrollView style={styles.mainContainer}>
       <TCFormProgress totalSteps={3} curruentStep={2} />
 
-      <Text style={styles.checkBoxTitle}>
-        Team Membership {'&'} Admin Authority
-      </Text>
+      <Text style={styles.checkBoxTitle}>{strings.teamMemberShipText}</Text>
       <View style={styles.mainCheckBoxContainer}>
         <View
           style={{
@@ -78,12 +77,12 @@ export default function CreateMemberProfileClubForm2({navigation, route}) {
           </View>
           <TCGroupNameBadge
             name={((entity || {}).obj || {}).group_name || ''}
-            groupType={'club'}
+            groupType={strings.entityTypeClub}
           />
         </View>
         <View style={styles.mainCheckBoxContainer}>
           <View style={[styles.checkBoxContainer, {opacity: 0.5}]}>
-            <Text style={styles.checkBoxItemText}>Member</Text>
+            <Text style={styles.checkBoxItemText}>{strings.member}</Text>
             <TouchableOpacity
               disabled={true}
               onPress={() => {
@@ -105,9 +104,12 @@ export default function CreateMemberProfileClubForm2({navigation, route}) {
             </TouchableOpacity>
           </View>
           <View style={styles.checkBoxContainer}>
-            <Text style={[styles.checkBoxItemText, {marginLeft: 0}]}>{`${
-              entity.role.charAt(0).toUpperCase() + entity.role.slice(1)
-            } Admin`}</Text>
+            <Text style={[styles.checkBoxItemText, {marginLeft: 0}]}>
+              {format(
+                strings.adminText_dy,
+                entity.role.charAt(0).toUpperCase() + entity.role.slice(1),
+              )}
+            </Text>
             <TouchableOpacity
               onPress={() => {
                 const admin_setting = !setting.is_admin;

@@ -14,7 +14,7 @@ import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import Modal from 'react-native-modal';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import colors from '../../../../Constants/Colors';
-import strings from '../../../../Constants/String';
+import {strings} from '../../../../../Localization/translation';
 import TCLabel from '../../../../components/TCLabel';
 import fonts from '../../../../Constants/Fonts';
 import AuthContext from '../../../../auth/context';

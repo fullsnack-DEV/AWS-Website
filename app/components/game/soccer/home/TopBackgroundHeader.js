@@ -24,7 +24,7 @@ import {getChallengeDetail} from '../../../../screens/challenge/ChallengeUtility
 import AuthContext from '../../../../auth/context';
 import ActivityLoader from '../../../loader/ActivityLoader';
 
-import strings from '../../../../Constants/String';
+import {strings} from '../../../../../Localization/translation';
 
 const bgImage = images.soccerBackground;
 

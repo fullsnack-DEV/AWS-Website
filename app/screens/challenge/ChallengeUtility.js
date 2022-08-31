@@ -3,7 +3,7 @@
 import {Alert} from 'react-native';
 import {getChallenge} from '../../api/Challenge';
 import ReservationStatus from '../../Constants/ReservationStatus';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 
 // eslint-disable-next-line import/prefer-default-export
 export const getChallengeDetail = (challengeID, authContext) => {

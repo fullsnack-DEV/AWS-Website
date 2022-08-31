@@ -20,7 +20,7 @@ import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 import AuthContext from '../../../auth/context';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 
 let entity = {};
 export default function ConnectMemberAccountScreen({navigation, route}) {
@@ -47,7 +47,7 @@ export default function ConnectMemberAccountScreen({navigation, route}) {
         <Text
           style={styles.nextButtonStyle}
           onPress={() => connectMemberProfile()}>
-          Done
+          {strings.done}
         </Text>
       ),
     });
@@ -61,12 +61,10 @@ export default function ConnectMemberAccountScreen({navigation, route}) {
         response.payload.map((e) => {
           e.isSelect = false;
         });
-        console.log('getGroupMembers', response.payload);
         const data = response.payload.filter(
           (obj) => obj.connected === false && obj.canConnect === true,
         );
 
-        console.log('getGroupMembers', data);
         setMembers(data);
         setSearchMember(data);
         setloading(false);
@@ -95,10 +93,7 @@ export default function ConnectMemberAccountScreen({navigation, route}) {
           }, 10);
         });
     } else {
-      Alert.alert(
-        strings.appName,
-        'Please select one member for connect with profile.',
-      );
+      Alert.alert(strings.appName, strings.selectOneMemberText);
     }
   };
   const searchFilterFunction = (text) => {
@@ -193,16 +188,10 @@ export default function ConnectMemberAccountScreen({navigation, route}) {
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-      <View tabLabel="Members" style={{flex: 1}}>
+      <View tabLabel={strings.membersTitle} style={{flex: 1}}>
         <View style={styles.searchBarView}>
           <TCSearchBox onChangeText={(text) => searchFilterFunction(text)} />
         </View>
-
-        {/* {members.length > 0 && <FlatList
-        data={members}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => <TCProfileView type={'medium'} name={item.first_name + ' ' + item.last_name}/>
-        /> */}
 
         <FlatList
           data={members}
@@ -210,21 +199,21 @@ export default function ConnectMemberAccountScreen({navigation, route}) {
           renderItem={renderMembers}
           ListEmptyComponent={() => (
             <View
-                style={{
-                  flex: 1,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}>
+              style={{
+                flex: 1,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
               <Text
-                  style={{
-                    fontFamily: fonts.RRegular,
-                    color: colors.grayColor,
-                    fontSize: 26,
-                  }}>
-                No members
+                style={{
+                  fontFamily: fonts.RRegular,
+                  color: colors.grayColor,
+                  fontSize: 26,
+                }}>
+                {strings.noMembersText}
               </Text>
             </View>
-            )}
+          )}
         />
       </View>
     </View>

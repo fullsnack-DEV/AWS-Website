@@ -2,7 +2,7 @@
 import {Alert} from 'react-native';
 import {getReservation} from '../../api/Challenge';
 import RefereeReservationStatus from '../../Constants/RefereeReservationStatus';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 
 // eslint-disable-next-line import/prefer-default-export
 export const getRefereeReservationDetail = (
