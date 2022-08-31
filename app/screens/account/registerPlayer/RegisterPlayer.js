@@ -42,7 +42,11 @@ export default function RegisterPlayer({navigation}) {
 
     console.log('authContext.sports', authContext.sports);
     authContext.sports.map((item) => {
-      sportArr = [...sportArr, ...item.format];
+      const sportData = item.format.map((obj) => ({
+        ...obj,
+        player_image: item.player_image,
+      }));
+      sportArr = [...sportArr, ...sportData];
       console.log('sportArrsportArr', sportArr);
       return null;
     });
@@ -101,7 +105,9 @@ export default function RegisterPlayer({navigation}) {
         bodyParams.sport_type = sportsSelection.sport_type;
         bodyParams.sport = sportsSelection.sport;
         bodyParams.sport_name = sportsSelection.sport_name;
+        bodyParams.player_image = sportsSelection.player_image;
         bodyParams.is_active = true;
+        console.log('body params for register player', bodyParams);
         navigation.navigate('RegisterPlayerForm2', {
           bodyParams,
         });

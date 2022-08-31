@@ -1129,7 +1129,11 @@ function NotificationsListScreen({navigation}) {
           console.log('next page');
           setLoadMore(true);
           setTimeout(() => {
-            getNextNotificationData();
+            if (IDLT) {
+              getNextNotificationData();
+            } else {
+              setLoadMore(false);
+            }
           }, 1000);
         }
       }
