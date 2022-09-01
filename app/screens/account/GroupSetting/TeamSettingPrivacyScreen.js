@@ -23,7 +23,7 @@ import AuthContext from '../../../auth/context';
 import images from '../../../Constants/ImagePath';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 
 export default function TeamSettingPrivacyScreen({navigation, route}) {
   const authContext = useContext(AuthContext);

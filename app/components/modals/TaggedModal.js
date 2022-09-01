@@ -5,7 +5,7 @@ import {Modalize} from 'react-native-modalize';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
 import fonts from '../../Constants/Fonts';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 import TCGameCard from '../TCGameCard';
 import TaggedEntityView from '../shorts/TaggedEntityView';
 import {getGameHomeScreen} from '../../utils/gameUtils';

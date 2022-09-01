@@ -28,7 +28,7 @@ import FastImage from 'react-native-fast-image';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 import EditEventItem from '../Schedule/EditEventItem';
 import BasicInfoItem from './BasicInfoItem';
 import Header from './Header';
@@ -56,22 +56,22 @@ import {getSportName} from '../../utils';
 const privacy_Data = [
   {
     id: 0,
-    title: 'Everyone',
+    title: strings.everyoneTitleText,
     isSelected: true,
   },
   {
     id: 1,
-    title: 'Followers',
+    title: strings.followerTitleText,
     isSelected: false,
   },
   {
     id: 2,
-    title: 'Members in groups',
+    title: strings.memberInGroupText,
     isSelected: false,
   },
   {
     id: 3,
-    title: 'Only me',
+    title: strings.onlymeTitleText,
     isSelected: false,
   },
 ];
@@ -79,22 +79,22 @@ const privacy_Data = [
 const gender_privacy = [
   {
     id: 0,
-    title: 'Everyone',
+    title: strings.everyoneTitleText,
     isSelected: true,
   },
   {
     id: 1,
-    title: 'Followers',
+    title: strings.followerTitleText,
     isSelected: false,
   },
   {
     id: 2,
-    title: 'Members in groups',
+    title: strings.memberInGroupText,
     isSelected: false,
   },
   {
     id: 3,
-    title: 'Only me',
+    title: strings.onlymeTitleText,
     isSelected: false,
   },
 ];
@@ -102,22 +102,22 @@ const gender_privacy = [
 const yearOfBirth_privacy = [
   {
     id: 0,
-    title: 'Everyone',
+    title: strings.everyoneTitleText,
     isSelected: true,
   },
   {
     id: 1,
-    title: 'Followers',
+    title: strings.followerTitleText,
     isSelected: false,
   },
   {
     id: 2,
-    title: 'Members in groups',
+    title: strings.memberInGroupText,
     isSelected: false,
   },
   {
     id: 3,
-    title: 'Only me',
+    title: strings.onlymeTitleText,
     isSelected: false,
   },
 ];
@@ -125,22 +125,22 @@ const yearOfBirth_privacy = [
 const language_privacy = [
   {
     id: 0,
-    title: 'Everyone',
+    title: strings.everyoneTitleText,
     isSelected: true,
   },
   {
     id: 1,
-    title: 'Followers',
+    title: strings.followerTitleText,
     isSelected: false,
   },
   {
     id: 2,
-    title: 'Members in groups',
+    title: strings.memberInGroupText,
     isSelected: false,
   },
   {
     id: 3,
-    title: 'Only me',
+    title: strings.onlymeTitleText,
     isSelected: false,
   },
 ];
@@ -148,22 +148,22 @@ const language_privacy = [
 const currentCity_privacy = [
   {
     id: 0,
-    title: 'Everyone',
+    title: strings.everyoneTitleText,
     isSelected: true,
   },
   {
     id: 1,
-    title: 'Followers',
+    title: strings.followerTitleText,
     isSelected: false,
   },
   {
     id: 2,
-    title: 'Members in groups',
+    title: strings.memberInGroupText,
     isSelected: false,
   },
   {
     id: 3,
-    title: 'Only me',
+    title: strings.onlymeTitleText,
     isSelected: false,
   },
 ];
@@ -171,42 +171,42 @@ const currentCity_privacy = [
 const language_list = [
   {
     id: 0,
-    title: 'English',
+    title: strings.englishLangText,
     isChecked: false,
   },
   {
     id: 1,
-    title: 'English(Canada)',
+    title: strings.englishCanadaLangText,
     isChecked: false,
   },
   {
     id: 2,
-    title: 'English(Singapore)',
+    title: strings.englishSingaporeLangText,
     isChecked: false,
   },
   {
     id: 3,
-    title: 'English(UK)',
+    title: strings.englishUKLangText,
     isChecked: false,
   },
   {
     id: 4,
-    title: 'English(US)',
+    title: strings.englishUSLangText,
     isChecked: false,
   },
   {
     id: 5,
-    title: 'Deutsch',
+    title: strings.deutschLangText,
     isChecked: false,
   },
   {
     id: 6,
-    title: 'Italiano',
+    title: strings.italianoLangText,
     isChecked: false,
   },
   {
     id: 7,
-    title: 'Korean',
+    title: strings.koreanLangText,
     isChecked: false,
   },
 ];
@@ -585,7 +585,7 @@ function RefereeInfoSection({
               fontFamily: fonts.RRegular,
               color: colors.lightBlackColor,
             }}>
-            CAD/hours
+            {strings.cadPerHourText}
           </Text>
         </Text>
       </View>
@@ -630,7 +630,7 @@ function RefereeInfoSection({
             color: colors.lightBlackColor,
             marginBottom: 15,
           }}>
-          {'Available Area'}
+          {strings.availableAreaText}
         </Text>
         {refereeSetting?.available_area ? (
           refereeSetting?.available_area?.is_specific_address ? (
@@ -642,7 +642,9 @@ function RefereeInfoSection({
               }
               bounces={false}
               ListEmptyComponent={
-                <Text style={styles.notAvailableTextStyle}>No Area found</Text>
+                <Text style={styles.notAvailableTextStyle}>
+                  {strings.noAreaFoundText}
+                </Text>
               }
               style={{marginTop: 5, marginBottom: 15}}
               renderItem={({item}) => (
@@ -713,7 +715,7 @@ function RefereeInfoSection({
                 fontFamily: fonts.RRegular,
                 color: colors.grayColor,
               }}>
-              No Setting Configured Yet
+              {strings.noSettingConfigureText}
             </Text>
           </View>
         )}
@@ -758,7 +760,9 @@ function RefereeInfoSection({
                   style={styles.soccerImageStyle}
                   resizeMode={'contain'}
                 />
-                <Text style={styles.playInTextStyle}>{'Privacy Setting'}</Text>
+                <Text style={styles.playInTextStyle}>
+                  {strings.privacySettingText}
+                </Text>
               </View>
             }
             rightComponent={
@@ -769,7 +773,7 @@ function RefereeInfoSection({
                     fontFamily: fonts.RLight,
                     color: colors.whiteColor,
                   }}>
-                  {'Save'}
+                  {strings.save}
                 </Text>
               </TouchableOpacity>
             }
@@ -1010,15 +1014,16 @@ function RefereeInfoSection({
                     resizeMode={'contain'}
                   />
                   <Text style={styles.playInTextStyle}>
-                    {'Edit'}{' '}
+                    {strings.editTitleText}{' '}
                     {(editPressTitle === strings.bio && strings.bio) ||
                       (editPressTitle === strings.basicinfotitle &&
                         strings.basicinfotitle) ||
                       (editPressTitle === strings.certificateTitle &&
                         strings.certificateTitle) ||
-                      (editPressTitle === strings.refereeFeesTitle && 'Fee') ||
+                      (editPressTitle === strings.refereeFeesTitle &&
+                        strings.feeTitleText) ||
                       (editPressTitle === strings.cancellationPolicy &&
-                        'Policy')}
+                        strings.policyTitleText)}
                   </Text>
                 </View>
               }
@@ -1031,7 +1036,7 @@ function RefereeInfoSection({
                       fontFamily: fonts.RLight,
                       color: colors.lightBlackColor,
                     }}>
-                    {'Save'}
+                    {strings.save}
                   </Text>
                 </TouchableOpacity>
               }
@@ -1063,7 +1068,7 @@ function RefereeInfoSection({
                     <View style={{marginTop: 8}}>
                       <TCPicker
                         dataSource={DataSource.Gender}
-                        placeholder={'Select Gender'}
+                        placeholder={strings.selectGenderPlaceholder}
                         value={info?.genderText ?? '-'}
                         onValueChange={(value) => {
                           setInfo({...info, genderText: value});
@@ -1149,7 +1154,7 @@ function RefereeInfoSection({
                         if (index === certificatesData.length) {
                           return (
                             <AddCertiPhotoTitleView
-                              placeholder={'Title and photos'}
+                              placeholder={strings.titleAndPhotosText}
                               value={addCertiTitle}
                               onChangeText={(text) => {
                                 setAddCertiTitle(text);
@@ -1210,7 +1215,7 @@ function RefereeInfoSection({
                                 onPress={() => {
                                   deleteItemById(index);
                                 }}>
-                                Delete
+                                {strings.deleteTitle}
                               </Text>
                             </View>
                           </View>
@@ -1230,9 +1235,9 @@ function RefereeInfoSection({
                             source={images.plus}
                             onAddTimePress={() => {
                               if (addCertiTitle === '') {
-                                Alert.alert('Please Enter Certificate Name!');
+                                Alert.alert(strings.certificateNameText);
                               } else if (selectedCerti.length === 0) {
-                                Alert.alert('Please Select Certificate Image!');
+                                Alert.alert(strings.selectCertificateImageText);
                               } else {
                                 const imageArray = selectedCerti.map(
                                   (dataItem) => dataItem,
@@ -1281,7 +1286,7 @@ function RefereeInfoSection({
                   valueFirstTitle={
                     refereeFeeCount.toString().length > 0 ? '$' : ''
                   }
-                  valueEndTitle={' CAD/match'}
+                  valueEndTitle={strings.CADpermatch}
                   containerStyle={{justifyContent: 'space-between'}}
                 />
               )}
@@ -1460,7 +1465,7 @@ function RefereeInfoSection({
                         resizeMode={'contain'}
                       />
                       <Text style={styles.playInTextStyle}>
-                        {'Edit Languages'}
+                        {strings.editlanguagesText}
                       </Text>
                     </View>
                   }
@@ -1475,7 +1480,7 @@ function RefereeInfoSection({
                           fontFamily: fonts.RLight,
                           color: colors.whiteColor,
                         }}>
-                        {'Done'}
+                        {strings.done}
                       </Text>
                     </TouchableOpacity>
                   }
@@ -1506,7 +1511,7 @@ function RefereeInfoSection({
                           marginTop: hp(2),
                           color: colors.userPostTimeColor,
                         }}>
-                        No Records Found
+                        {strings.noRecordFoundText}
                       </Text>
                     }
                     data={languageList ?? []}
@@ -1523,14 +1528,16 @@ function RefereeInfoSection({
       <ActionSheet
         ref={actionSheet}
         options={[
-          (editPressTitle === strings.bio && 'Edit Bio') ||
-            (editPressTitle === strings.basicinfotitle && 'Edit Basic Info') ||
+          (editPressTitle === strings.bio && strings.editBioText) ||
+            (editPressTitle === strings.basicinfotitle &&
+              strings.editBasicInfoText) ||
             (editPressTitle === strings.certificateTitle &&
-              'Edit Certificates') ||
-            (editPressTitle === strings.refereeFee && 'Edit Fee') ||
-            (editPressTitle === strings.cancellationPolicy && 'Edit Policy'),
-          'Privacy Setting',
-          'Cancel',
+              strings.editCertificateText) ||
+            (editPressTitle === strings.refereeFee && strings.editFeeText) ||
+            (editPressTitle === strings.cancellationPolicy &&
+              strings.editPolicyText),
+          strings.privacySettingText,
+          strings.cancel,
         ]}
         cancelButtonIndex={2}
         onPress={(index) => {

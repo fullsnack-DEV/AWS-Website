@@ -9,7 +9,7 @@ import StatsSelectionView from '../../../../../components/Home/StatsSelectionVie
 
 import colors from '../../../../../Constants/Colors';
 import fonts from '../../../../../Constants/Fonts';
-import strings from '../../../../../Constants/String';
+import {strings} from '../../../../../../Localization/translation';
 import {getMaxFromRange} from '../../../../../utils';
 import {monthsSelectionData} from '../../../../../utils/constant';
 

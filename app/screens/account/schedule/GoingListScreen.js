@@ -5,7 +5,7 @@ import AuthContext from '../../../auth/context';
 import {followUser, unfollowUser} from '../../../api/Users';
 import TCUserList from '../connections/TCUserList';
 import {getUserIndex} from '../../../api/elasticSearch';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import TCRemoveUser from '../connections/TCRemoveUser';
 import {removeAttendeeFromEvent} from '../../../api/Schedule';
 import ActivityLoader from '../../../components/loader/ActivityLoader';

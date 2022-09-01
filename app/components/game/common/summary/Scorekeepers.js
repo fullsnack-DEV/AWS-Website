@@ -43,7 +43,7 @@ import {
 } from '../../../../utils/gameUtils';
 
 import ScorekeeperReservationStatus from '../../../../Constants/ScorekeeperReservationStatus';
-import strings from '../../../../Constants/String';
+import {strings} from '../../../../../Localization/translation';
 import images from '../../../../Constants/ImagePath';
 
 let selectedScorekeeperData;

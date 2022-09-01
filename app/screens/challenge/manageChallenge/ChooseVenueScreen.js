@@ -20,7 +20,7 @@ import AuthContext from '../../../auth/context';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 
 function ChooseVenueScreen({navigation, route}) {
   const [venues] = useState(route?.params?.venues);

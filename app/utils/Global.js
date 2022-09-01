@@ -6,7 +6,7 @@ import firebase from '@react-native-firebase/app';
 import jwtDecode from 'jwt-decode';
 import * as Utility from '.';
 import {QBLogout} from './QuickBlox';
-import strings from '../Constants/String';
+import {strings} from '../../Localization/translation';
 
 const prepareHeader = (headers, authToken, caller_id, caller) => {
   let apiHeaders = {

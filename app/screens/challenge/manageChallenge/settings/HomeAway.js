@@ -17,7 +17,7 @@ import * as Utility from '../../../../utils';
 
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 
-import strings from '../../../../Constants/String';
+import {strings} from '../../../../../Localization/translation';
 import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
 import TCLabel from '../../../../components/TCLabel';

@@ -40,7 +40,7 @@ import AuthContext from '../../auth/context';
 import UserListShimmer from '../../components/shimmer/commonComponents/UserListShimmer';
 import TCAccountDeactivate from '../../components/TCAccountDeactivate';
 import {groupUnpaused} from '../../api/Groups';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 import {userActivate} from '../../api/Users';
 
 const QbMessageEmitter = new NativeEventEmitter(QB);

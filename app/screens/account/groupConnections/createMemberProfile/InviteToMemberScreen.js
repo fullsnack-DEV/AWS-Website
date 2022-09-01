@@ -15,7 +15,7 @@ import TCSmallButton from '../../../../components/TCSmallButton';
 import colors from '../../../../Constants/Colors';
 import fonts from '../../../../Constants/Fonts';
 import images from '../../../../Constants/ImagePath';
-import strings from '../../../../Constants/String';
+import {strings} from '../../../../../Localization/translation';
 import {widthPercentageToDP} from '../../../../utils';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 
@@ -77,9 +77,7 @@ export default function InviteToMemberScreen({navigation, route}) {
             <Text style={{fontFamily: fonts.RBlack}}>
               {data?.activities?.[0]?.actor?.data?.full_name}
             </Text>
-            {
-              ' sent you a request to connect your account  to one of their exsiting member profiles. When you accept it, you will be a member in the team and the profile will be connected to your account.'
-            }
+            {strings.connectAccountRequestText}
           </Text>
         </View>
 
@@ -110,11 +108,7 @@ export default function InviteToMemberScreen({navigation, route}) {
         </View>
 
         <View>
-          <Text style={styles.infoText}>
-            {
-              'If the name on the profile is different from the name on your account, it will be replaced with the name on your account.'
-            }
-          </Text>
+          <Text style={styles.infoText}>{strings.nameDifferentText}</Text>
           <View style={styles.bottomButtonContainer}>
             <TCSmallButton
               isBorderButton={true}

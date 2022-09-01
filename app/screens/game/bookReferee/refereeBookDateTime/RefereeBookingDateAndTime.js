@@ -31,7 +31,7 @@ import MatchFeesCard from '../../../../components/challenge/MatchFeesCard';
 import {createUserReservation} from '../../../../api/Reservations';
 import TCTouchableLabel from '../../../../components/TCTouchableLabel';
 import * as Utility from '../../../../utils';
-import strings from '../../../../Constants/String';
+import {strings} from '../../../../../Localization/translation';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import TCChallengeTitle from '../../../../components/TCChallengeTitle';
 import TCThickDivider from '../../../../components/TCThickDivider';

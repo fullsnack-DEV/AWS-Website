@@ -23,7 +23,7 @@ import Config from 'react-native-config';
 import {createUser} from '../../api/Users';
 import {getSportsList} from '../../api/Games';
 import images from '../../Constants/ImagePath';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 import Separator from '../../components/Separator';
 import AuthContext from '../../auth/context';
 import ActivityLoader from '../../components/loader/ActivityLoader';
@@ -314,34 +314,34 @@ export default function ChooseSportsScreen({navigation, route}) {
 
   const renderItem = ({item, index}) => (
     <TouchableWithoutFeedback
-        style={styles.listItem}
-        onPress={() => {
-          isIconCheckedOrNot({item, index});
-        }}>
+      style={styles.listItem}
+      onPress={() => {
+        isIconCheckedOrNot({item, index});
+      }}>
       <FastImage
-          resizeMode={'contain'}
-          source={{uri: `${image_base_url}${item.player_image}`}}
-          style={styles.sportImg}
-        />
+        resizeMode={'contain'}
+        source={{uri: `${image_base_url}${item.player_image}`}}
+        style={styles.sportImg}
+      />
       <Text style={styles.sportList}>{item.sport_name}</Text>
       <View style={styles.checkbox}>
         {sports?.[index]?.isChecked ? (
           <FastImage
-              source={images.checkWhite}
-              resizeMode={'contain'}
-              style={styles.checkboxImg}
-            />
-          ) : (
-            <FastImage
-              resizeMode={'contain'}
-              source={images.unCheckWhiteBorder}
-              style={styles.unCheckboxImg}
-            />
-          )}
+            source={images.checkWhite}
+            resizeMode={'contain'}
+            style={styles.checkboxImg}
+          />
+        ) : (
+          <FastImage
+            resizeMode={'contain'}
+            source={images.unCheckWhiteBorder}
+            style={styles.unCheckboxImg}
+          />
+        )}
       </View>
       <Separator />
     </TouchableWithoutFeedback>
-    );
+  );
   const setDummyAuthContext = (key, value) => {
     dummyAuthContext[key] = value;
   };

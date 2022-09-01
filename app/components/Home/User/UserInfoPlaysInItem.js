@@ -5,8 +5,6 @@ import LinearGradient from 'react-native-linear-gradient';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
 
-// import strings from '../../../Constants/String'
-
 const UserInfoPlaysInItem = ({
   title,
   // totalGames,

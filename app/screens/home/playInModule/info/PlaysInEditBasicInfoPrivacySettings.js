@@ -3,6 +3,7 @@ import React, {useState} from 'react';
 import EventItemRender from '../../../../components/Schedule/EventItemRender';
 import RadioBtnItem from '../../../../components/Schedule/RadioBtnItem';
 import TCThinDivider from '../../../../components/TCThinDivider';
+import {strings} from '../../../../../Localization/translation';
 
 const privacy_Data = [
   {
@@ -63,7 +64,7 @@ const PlaysInEditBasicInfoPrivacySettings = () => {
       containerStyle={{marginTop: 10}}>
       {/*  Gender */}
       <RenderPrivacySettingSection
-        title={'Gender'}
+        title={strings.gender}
         privacyData={privacyData}
         setPrivacyData={setPrivacyData}
       />

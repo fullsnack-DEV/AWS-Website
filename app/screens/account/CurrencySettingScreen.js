@@ -17,7 +17,7 @@ import AuthContext from '../../auth/context';
 import DataSource from '../../Constants/DataSource';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import images from '../../Constants/ImagePath';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 import TCLabel from '../../components/TCLabel';

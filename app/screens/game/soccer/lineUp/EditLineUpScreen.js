@@ -39,7 +39,7 @@ import TCLabel from '../../../../components/TCLabel';
 import TCGradientButton from '../../../../components/TCGradientButton';
 import LineUpPlayerView from '../../../../components/game/soccer/home/lineUp/LineUpPlayerView';
 import images from '../../../../Constants/ImagePath';
-import strings from '../../../../Constants/String';
+import {strings} from '../../../../../Localization/translation';
 import LineUpPlayerMultiSelectionView from '../../../../components/game/soccer/home/lineUp/LineUpPlayerMultiSelectionView';
 
 const moveToData = ['Starting', 'Subs', 'Non-roster'];

@@ -9,6 +9,7 @@ import {StyleSheet, View, Text, ScrollView, Alert} from 'react-native';
 import ActionSheet from 'react-native-actionsheet';
 import ImagePicker from 'react-native-image-crop-picker';
 import {check, PERMISSIONS, RESULTS, request} from 'react-native-permissions';
+import {format} from 'react-string-format';
 import TCInfoField from '../../../../components/TCInfoField';
 import {createGroup, createGroupRequest} from '../../../../api/Groups';
 import uploadImages from '../../../../utils/imageAction';
@@ -16,7 +17,7 @@ import uploadImages from '../../../../utils/imageAction';
 import AuthContext from '../../../../auth/context';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import images from '../../../../Constants/ImagePath';
-import strings from '../../../../Constants/String';
+import {strings} from '../../../../../Localization/translation';
 import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
 import TCLabel from '../../../../components/TCLabel';
@@ -30,7 +31,6 @@ import {getSportName} from '../../../../utils';
 export default function CreateTeamForm3({navigation, route}) {
   const [createTeamForm2] = useState(route?.params?.createTeamForm2);
 
-  console.log('createTeamForm2:=>', createTeamForm2);
   const actionSheet = useRef();
   const actionSheetWithDelete = useRef();
   const authContext = useContext(AuthContext);
@@ -102,9 +102,7 @@ export default function CreateTeamForm3({navigation, route}) {
       .then((result) => {
         switch (result) {
           case RESULTS.UNAVAILABLE:
-            Alert.alert(
-              'This feature is not available (on this device / in this context)',
-            );
+            Alert.alert(strings.thisFeaturesNotAvailableText);
             break;
           case RESULTS.DENIED:
             request(PERMISSIONS.IOS.CAMERA).then(() => {
@@ -167,7 +165,7 @@ export default function CreateTeamForm3({navigation, route}) {
     setloading(true);
     const bodyParams = {
       ...createTeamForm2,
-      entity_type: 'team',
+      entity_type: strings.entityTypeTeam,
     };
 
     if (bodyParams?.player1) {
@@ -220,7 +218,9 @@ export default function CreateTeamForm3({navigation, route}) {
           createGroupRequest(
             bodyParams,
             entity.uid,
-            entity.role === 'club' ? 'club' : 'user',
+            entity.role === strings.entityTypeClub
+              ? strings.entityTypeClub
+              : strings.entityTypeUser,
             authContext,
           )
             .then(() => {
@@ -257,7 +257,9 @@ export default function CreateTeamForm3({navigation, route}) {
       createGroupRequest(
         bodyParams,
         entity.uid,
-        entity.role === 'club' ? 'club' : 'user',
+        entity.role === strings.entityTypeClub
+          ? strings.entityTypeClub
+          : strings.entityTypeUser,
         authContext,
       )
         .then(() => {
@@ -285,7 +287,7 @@ export default function CreateTeamForm3({navigation, route}) {
     setloading(true);
     const bodyParams = {
       ...createTeamForm2,
-      entity_type: 'team',
+      entity_type: strings.entityTypeTeam,
     };
 
     if (thumbnail) {
@@ -410,7 +412,7 @@ export default function CreateTeamForm3({navigation, route}) {
           showEditButtons
         />
         <TCInfoField
-          title={'Sport'}
+          title={strings.sportsTitleText}
           value={getSportName(createTeamForm2, authContext)}
           marginLeft={25}
           marginTop={30}
@@ -418,10 +420,10 @@ export default function CreateTeamForm3({navigation, route}) {
         <TCThinDivider marginTop={5} marginBottom={3} />
 
         {createTeamForm2?.sport?.toLowerCase() ===
-          'Tennis Double'.toLowerCase() && (
+          strings.tennisDoubleSport.toLowerCase() && (
           <View>
             <TCPlayerImageInfo
-              title={'Players'}
+              title={strings.playerTitle}
               player1Image={createTeamForm2?.player1?.thumbnail}
               player2Image={createTeamForm2?.player2?.thumbnail}
               player1Name={createTeamForm2?.player1?.full_name}
@@ -435,24 +437,24 @@ export default function CreateTeamForm3({navigation, route}) {
         )}
 
         <TCInfoField
-          title={'Team name'}
+          title={strings.teamName}
           value={createTeamForm2?.group_name}
           marginLeft={25}
         />
         <TCThinDivider marginTop={5} marginBottom={3} />
 
         <TCInfoField
-          title={'Home city'}
+          title={strings.homeCityText}
           value={createTeamForm2?.city}
           marginLeft={25}
         />
         <TCThinDivider marginTop={5} marginBottom={3} />
 
         {createTeamForm2?.sport?.toLowerCase() !==
-          'Tennis Double'.toLowerCase() && (
+          strings.tennisDoubleSport.toLowerCase() && (
           <View>
             <TCInfoField
-              title={'Members’ gender'}
+              title={strings.membersgender}
               value={
                 createTeamForm2?.gender?.charAt(0)?.toUpperCase() +
                 createTeamForm2?.gender?.slice(1)
@@ -462,10 +464,12 @@ export default function CreateTeamForm3({navigation, route}) {
             <TCThinDivider marginTop={5} marginBottom={3} />
 
             <TCInfoField
-              title={'Members’ ages'}
-              value={`Min ${createTeamForm2?.min_age ?? 'N/A'} Max ${
-                createTeamForm2?.max_age ?? 'N/A'
-              }`}
+              title={strings.membersage}
+              value={format(
+                strings.minMaxText_dy,
+                createTeamForm2?.min_age ?? '-',
+                createTeamForm2?.max_age ?? '-',
+              )}
               marginLeft={25}
             />
             <TCThinDivider marginTop={5} marginBottom={3} />
@@ -473,7 +477,7 @@ export default function CreateTeamForm3({navigation, route}) {
         )}
 
         <TCInfoField
-          title={'Language'}
+          title={strings.language}
           value={createTeamForm2?.language.join(', ')}
           marginLeft={25}
         />
@@ -492,8 +496,8 @@ export default function CreateTeamForm3({navigation, route}) {
         title={strings.doneTitle}
         style={{marginBottom: 30, marginTop: 20}}
         onPress={
-          createTeamForm2?.sport === 'tennis' &&
-          createTeamForm2?.sport_type === 'double'
+          createTeamForm2?.sport === strings.tennisSport &&
+          createTeamForm2?.sport_type === strings.doubleSport
             ? doubleNextPressed
             : singleNextPressed
           // entity.role === 'club' ? clubNextPressed : userNextPressed

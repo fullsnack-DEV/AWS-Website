@@ -30,7 +30,7 @@ import {QBupdateDialogNameAndPhoto} from '../../utils/QuickBlox';
 import TCInputBox from '../../components/TCInputBox';
 import AuthContext from '../../auth/context';
 import uploadImages from '../../utils/imageAction';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 
 const MessageEditGroupScreen = ({route, navigation}) => {

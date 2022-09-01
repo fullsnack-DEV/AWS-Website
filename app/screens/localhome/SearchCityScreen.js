@@ -15,7 +15,7 @@ import AuthContext from '../../auth/context';
 import {widthPercentageToDP} from '../../utils';
 import colors from '../../Constants/Colors';
 import TCThinDivider from '../../components/TCThinDivider';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 import fonts from '../../Constants/Fonts';
 
 export default function SearchCityScreen({navigation, route}) {

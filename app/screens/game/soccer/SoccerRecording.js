@@ -39,7 +39,7 @@ import {
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import {getHitSlop} from '../../../utils';
 
 let entity = {};

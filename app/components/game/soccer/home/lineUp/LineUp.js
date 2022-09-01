@@ -22,7 +22,7 @@ import TCSwitcher from '../../../../TCSwitcher';
 import TCThickDivider from '../../../../TCThickDivider';
 import LineUpPlayerView from './LineUpPlayerView';
 import AuthContext from '../../../../../auth/context';
-import strings from '../../../../../Constants/String';
+import {strings} from '../../../../../../Localization/translation';
 import {getHitSlop} from '../../../../../utils';
 
 let entity = {};
@@ -246,7 +246,7 @@ export default function LineUp({navigation, gameData}) {
                 gameData.away_team.group_id === entity.uid &&
                 (gameData.status === GameStatus.accepted ||
                   gameData.status === GameStatus.reset))) && (
-                  <TouchableOpacity
+              <TouchableOpacity
                 style={styles.editTouchArea}
                 hitSlop={getHitSlop(15)}
                 onPress={() =>
@@ -255,8 +255,8 @@ export default function LineUp({navigation, gameData}) {
                     selectedTeam: selected === 1 ? 'home' : 'away',
                   })
                 }>
-                    <Image source={images.editSection} style={styles.editButton} />
-                  </TouchableOpacity>
+                <Image source={images.editSection} style={styles.editButton} />
+              </TouchableOpacity>
             )}
           </View>
           <Text
@@ -345,7 +345,7 @@ export default function LineUp({navigation, gameData}) {
                 gameData.away_team.group_id === entity.uid &&
                 (gameData.status === GameStatus.accepted ||
                   gameData.status === GameStatus.reset))) && (
-                  <TouchableOpacity
+              <TouchableOpacity
                 style={styles.editTouchArea}
                 hitSlop={getHitSlop(15)}
                 onPress={() =>
@@ -354,8 +354,8 @@ export default function LineUp({navigation, gameData}) {
                     selectedTeam: selected === 1 ? 'home' : 'away',
                   })
                 }>
-                    <Image source={images.editSection} style={styles.editButton} />
-                  </TouchableOpacity>
+                <Image source={images.editSection} style={styles.editButton} />
+              </TouchableOpacity>
             )}
           </View>
 

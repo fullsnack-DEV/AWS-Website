@@ -4,7 +4,7 @@ import {StyleSheet, Text, TouchableOpacity} from 'react-native';
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import LinearGradient from 'react-native-linear-gradient';
 
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 

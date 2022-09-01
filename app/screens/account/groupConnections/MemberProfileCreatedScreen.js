@@ -9,12 +9,14 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
+import {format} from 'react-string-format';
+
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import {connectProfile} from '../../../api/Groups';
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import TCBorderButton from '../../../components/TCBorderButton';
 import AuthContext from '../../../auth/context';
 
@@ -76,8 +78,11 @@ export default function MemberProfileCreatedScreen({navigation, route}) {
       {route.params.memberObj && (
         <View style={styles.topContainer}>
           <Text style={styles.notFoundUserText}>
-            {route.params.memberObj.first_name}’s profile has been created in
-            your {switchUser.role}.
+            {format(
+              strings.profileHasBeenCreatedText,
+              route.params.memberObj.first_name,
+              switchUser.role,
+            )}
           </Text>
           <Image
             style={styles.userImage}
@@ -103,7 +108,7 @@ export default function MemberProfileCreatedScreen({navigation, route}) {
                       // Linking.openURL(`mailto:${data.email}`)
                       Alert.alert(
                         strings.appName,
-                        'Please configure email in your device',
+                        strings.configureEmailAccounttext,
                       );
                     } else {
                       return Linking.openURL(

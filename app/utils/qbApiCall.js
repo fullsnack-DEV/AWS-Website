@@ -1,7 +1,7 @@
 import axios from 'axios';
 import NetInfo from '@react-native-community/netinfo';
 import {Alert} from 'react-native';
-import strings from '../Constants/String';
+import {strings} from '../../Localization/translation';
 
 const qbApiCall = async ({method, url, data, qbToken, params, responseType}) =>
   NetInfo.fetch().then(async (netStat) => {

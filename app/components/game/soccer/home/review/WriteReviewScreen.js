@@ -35,6 +35,7 @@ import {
 } from '../../../../../utils/imageAction';
 import TCGameCard from '../../../../TCGameCard';
 import {getGroupList, getUserList} from '../../../../../api/elasticSearch';
+import {strings} from '../../../../../../Localization/translation';
 
 const urlRegex =
   /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gim;
@@ -345,9 +346,9 @@ export default function WriteReviewScreen({navigation, route}) {
                 setloading(true);
                 let tagData = JSON.parse(JSON.stringify(tagsOfEntity));
                 tagData = tagData?.map((tag) => ({
-                    ...tag,
-                    entity_type: 'publictimeline',
-                  }));
+                  ...tag,
+                  entity_type: 'publictimeline',
+                }));
                 const format_tagged_data = JSON.parse(
                   JSON.stringify(tagsOfEntity),
                 );
@@ -643,7 +644,7 @@ export default function WriteReviewScreen({navigation, route}) {
           onLayout={(event) =>
             setSearchFieldHeight(event?.nativeEvent?.layout?.height)
           }
-          placeholder="What's going on?"
+          placeholder={strings.whatsGoingText}
           placeholderTextColor={colors.userPostTimeColor}
           onSelectionChange={onSelectionChange}
           onKeyPress={onKeyPress}

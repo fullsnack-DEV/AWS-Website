@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import fonts from '../../Constants/Fonts';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 import TCProfileImage from '../TCProfileImage';
 import colors from '../../Constants/Colors';
 import AuthContext from '../../auth/context';

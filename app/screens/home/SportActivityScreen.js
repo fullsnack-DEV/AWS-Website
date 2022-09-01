@@ -22,7 +22,7 @@ import images from '../../Constants/ImagePath';
 import TCThinDivider from '../../components/TCThinDivider';
 import {getUserDetails} from '../../api/Users';
 import ActivityLoader from '../../components/loader/ActivityLoader';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 
 export default function SportActivityScreen({navigation}) {
   const isFocused = useIsFocused();

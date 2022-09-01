@@ -32,7 +32,7 @@ import TCKeyboardView from '../../../../../TCKeyboardView';
 import TCRatingStarSlider from '../../../../../TCRatingStarSlider';
 import Header from '../../../../../Home/Header';
 import SelectedImageList from '../../../../../WritePost/SelectedImageList';
-import strings from '../../../../../../Constants/String';
+import {strings} from '../../../../../../../Localization/translation';
 import ActivityLoader from '../../../../../loader/ActivityLoader';
 import NewsFeedDescription from '../../../../../newsFeed/NewsFeedDescription';
 

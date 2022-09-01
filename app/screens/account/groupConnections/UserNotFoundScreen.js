@@ -5,7 +5,7 @@ import {} from 'react-native-gesture-handler';
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import TCBorderButton from '../../../components/TCBorderButton';
 
 export default function UserNotFoundScreen({route}) {

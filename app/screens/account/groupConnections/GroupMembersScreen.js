@@ -34,7 +34,7 @@ import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors';
 // import fonts from '../../../Constants/Fonts'
 // import TCThinDivider from '../../../components/TCThinDivider';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import {
   QB_DIALOG_TYPE,
   QBcreateDialog,
@@ -443,7 +443,7 @@ export default function GroupMembersScreen({navigation, route}) {
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-      <View tabLabel="Members" style={{flex: 1}}>
+      <View tabLabel={strings.membersTitle} style={{flex: 1}}>
         <View style={styles.searchBarView}>
           <TCSearchBox
             editable={members?.length > 0}
@@ -460,7 +460,7 @@ export default function GroupMembersScreen({navigation, route}) {
             keyExtractor={(item, index) => index.toString()}
           />
         ) : (
-          <TCNoDataView title={'No Members Found'} />
+          <TCNoDataView title={strings.noMebersFoundText} />
         )}
       </View>
 
@@ -468,29 +468,28 @@ export default function GroupMembersScreen({navigation, route}) {
         ref={actionSheet}
         // title={'News Feed Post'}
         options={
-          switchUser.role === 'club'
+          switchUser.role === strings.entityTypeClub
             ? [
-                'Group Message',
-                'Invite Member',
-                'Create Member Profile',
-                'Connect Member Account',
-                'Send Request For Basic Info',
-                'Privacy Setting',
-                'Setting',
-                'Cancel',
+                strings.groupMessageText,
+                strings.inviteMemberText,
+                strings.createMemberProfileText,
+                strings.connectMemberAccountText,
+                strings.sendrequestForBaicInfoText,
+                strings.privacySettingText,
+                strings.setting,
+                strings.cancel,
               ]
             : [
-                'Group Message',
-                'Invite Member',
-                'Create Member Profile',
-                'Connect Member Account',
-                'Send Request For Basic Info',
-                'Privacy Setting',
-                'Cancel',
-                // eslint-disable-next-line react/jsx-indent
+                strings.groupMessageText,
+                strings.inviteMemberText,
+                strings.createMemberProfileText,
+                strings.connectMemberAccountText,
+                strings.sendrequestForBaicInfoText,
+                strings.privacySettingText,
+                strings.cancel,
               ]
         }
-        cancelButtonIndex={switchUser.role === 'club' ? 5 : 6}
+        cancelButtonIndex={switchUser.role === strings.entityTypeClub ? 5 : 6}
         // destructiveButtonIndex={1}
         onPress={(index) => {
           if (index === 0) {
@@ -508,7 +507,7 @@ export default function GroupMembersScreen({navigation, route}) {
           } else if (index === 5) {
             navigation.navigate('MembersViewPrivacyScreen');
           } else if (index === 6) {
-            if (switchUser.role === 'club') {
+            if (switchUser.role === strings.entityTypeClub) {
               navigation.navigate('ClubSettingScreen');
             }
           }
@@ -517,7 +516,11 @@ export default function GroupMembersScreen({navigation, route}) {
       <ActionSheet
         ref={actionSheetInvite}
         // title={'News Feed Post'}
-        options={['Invite by Search', 'Invite by E-mail', 'Cancel']}
+        options={[
+          strings.inviteBySearchText,
+          strings.inviteEmailtext,
+          strings.cancel,
+        ]}
         cancelButtonIndex={2}
         // destructiveButtonIndex={1}
         onPress={(index) => {
@@ -528,40 +531,6 @@ export default function GroupMembersScreen({navigation, route}) {
           }
         }}
       />
-      {/* {isModalVisible && <Modal
-        isVisible={isModalVisible}
-        backdropColor="black"
-        backdropOpacity={0}
-        style={{ marginLeft: 0, marginRight: 0, marginBottom: 0 }}>
-        <View style={styles.modelHeaderContainer}>
-          <View style={styles.headerView}>
-            <TouchableWithoutFeedback style={styles.closeButtonView} onPress={() => toggleModal()}>
-              <Image source={images.cancelImage} style={styles.closeButton}/>
-            </TouchableWithoutFeedback>
-            <Text
-              style={styles.headerTitle}>
-              Filters
-            </Text>
-            <Text style={styles.doneButton} onPress={() => toggleModal()}>
-              Done
-            </Text>
-          </View>
-          <TCThinDivider width={'100%'}/>
-          <TouchableWithoutFeedback onPress={() => makAllSelected()}>
-            <View style={styles.allButtonContainer}><Text style={styles.allTextButton}>All</Text>
-              {allSelected ? <Image source={images.checkWhiteLanguage} style={styles.checkImage}></Image>
-                : <Image source={images.uncheckWhite} style={styles.checkImage}></Image>}</View>
-          </TouchableWithoutFeedback>
-          <SectionList
-                  sections={filterArray}
-                  renderItem={renderFilterItem}
-                  renderSectionHeader={({ section }) => <Text style={styles.SectionHeaderStyle}>{section.optionName}</Text>}
-                  keyExtractor={(item, index) => index}
-                  style={styles.sectionListStyle}
-                  showsVerticalScrollIndicator={false}
-                />
-        </View>
-      </Modal>} */}
     </View>
   );
 }

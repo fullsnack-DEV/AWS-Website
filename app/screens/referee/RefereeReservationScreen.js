@@ -23,7 +23,7 @@ import _ from 'lodash';
 import * as Utility from '../../utils';
 import {acceptDeclineReservation, getReservation} from '../../api/Challenge';
 import ActivityLoader from '../../components/loader/ActivityLoader';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 import AuthContext from '../../auth/context';
@@ -402,8 +402,8 @@ export default function RefereeReservationScreen({navigation, route}) {
         bodyParams.status === RefereeReservationStatus.requestcancelled ||
         (bodyParams.status === RefereeReservationStatus.declined &&
           bodyParams.version > 3)) && (
-          <View>
-            <TCBorderButton
+        <View>
+          <TCBorderButton
             title={strings.alterReservation}
             textColor={colors.grayColor}
             borderColor={colors.grayColor}
@@ -430,7 +430,7 @@ export default function RefereeReservationScreen({navigation, route}) {
               }
             }}
           />
-            <TCBorderButton
+          <TCBorderButton
             title={strings.cancelreservation}
             textColor={colors.whiteColor}
             borderColor={colors.grayColor}
@@ -468,7 +468,7 @@ export default function RefereeReservationScreen({navigation, route}) {
               }
             }}
           />
-          </View>
+        </View>
       )}
       {(bodyParams.status === RefereeReservationStatus.pendingpayment ||
         bodyParams.status === RefereeReservationStatus.approved) && (

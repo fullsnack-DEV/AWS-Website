@@ -25,7 +25,7 @@ import {check, PERMISSIONS, RESULTS, request} from 'react-native-permissions';
 import {useIsFocused} from '@react-navigation/native';
 
 import images from '../../../../Constants/ImagePath';
-import strings from '../../../../Constants/String';
+import {strings} from '../../../../../Localization/translation';
 import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
 import TCPicker from '../../../../components/TCPicker';
@@ -74,8 +74,6 @@ export default function CreateMemberProfileForm1({navigation, route}) {
   const [postalCode, setPostalCode] = useState();
   const [birthday, setBirthday] = useState();
 
-  console.log('this value form1');
-
   useEffect(() => {
     const mindate = new Date();
     const maxdate = new Date();
@@ -84,9 +82,6 @@ export default function CreateMemberProfileForm1({navigation, route}) {
     // setDateValue(mindate);
     setMinDateValue(mindate);
     setMaxDateValue(maxdate);
-
-    console.log('Min date', mindate);
-    console.log('Max date', maxdate);
   }, []);
 
   useEffect(() => {
@@ -126,15 +121,15 @@ export default function CreateMemberProfileForm1({navigation, route}) {
 
   const checkValidation = useCallback(() => {
     if (firstName === '') {
-      Alert.alert(strings.appName, 'First name cannot be blank');
+      Alert.alert(strings.appName, strings.nameCanNotBlankText);
       return false;
     }
     if (lastName === '') {
-      Alert.alert(strings.appName, 'Last name cannot be blank');
+      Alert.alert(strings.appName, strings.lastNameCanNotBlankText);
       return false;
     }
     if (email === '') {
-      Alert.alert(strings.appName, 'Email cannot be blank');
+      Alert.alert(strings.appName, strings.emailNotBlankText);
       return false;
     }
     if (ValidateEmail(email) === false) {
@@ -152,7 +147,7 @@ export default function CreateMemberProfileForm1({navigation, route}) {
           style={styles.nextButtonStyle}
           onPress={() => {
             if (checkValidation()) {
-              if (entity.role === 'team') {
+              if (entity.role === strings.entityTypeTeam) {
                 navigation.navigate('CreateMemberProfileTeamForm2', {
                   form1: {
                     ...memberInfo,
@@ -169,7 +164,7 @@ export default function CreateMemberProfileForm1({navigation, route}) {
                     gender,
                   },
                 });
-              } else if (entity.role === 'club') {
+              } else if (entity.role === strings.entityTypeClub) {
                 navigation.navigate('CreateMemberProfileClubForm2', {
                   form1: {
                     ...memberInfo,
@@ -242,9 +237,7 @@ export default function CreateMemberProfileForm1({navigation, route}) {
       .then((result) => {
         switch (result) {
           case RESULTS.UNAVAILABLE:
-            Alert.alert(
-              'This feature is not available (on this device / in this context)',
-            );
+            Alert.alert(strings.thisFeaturesNotAvailableText);
             break;
           case RESULTS.DENIED:
             request(PERMISSIONS.IOS.CAMERA).then(() => {
@@ -297,7 +290,6 @@ export default function CreateMemberProfileForm1({navigation, route}) {
     });
   };
   const handleDonePress = (date) => {
-    console.log('seleccccc', date);
     setBirthday(new Date(date).getTime());
     setShowDate(!showDate);
   };
@@ -351,7 +343,10 @@ export default function CreateMemberProfileForm1({navigation, route}) {
 
   return (
     <TCKeyboardView>
-      <TCFormProgress totalSteps={role === 'club' ? 3 : 2} curruentStep={1} />
+      <TCFormProgress
+        totalSteps={role === strings.entityTypeClub ? 3 : 2}
+        curruentStep={1}
+      />
 
       <View style={styles.profileView}>
         <Image
@@ -370,7 +365,7 @@ export default function CreateMemberProfileForm1({navigation, route}) {
       </View>
 
       <View>
-        <TCLable title={'Name'} required={true} />
+        <TCLable title={strings.nameText} required={true} />
         <TCTextField
           value={firstName}
           autoCapitalize="none"
@@ -400,7 +395,7 @@ export default function CreateMemberProfileForm1({navigation, route}) {
         />
       </View>
       <View>
-        <TCLable title={'Phone'} />
+        <TCLable title={strings.phone} />
         <FlatList
           data={phoneNumber}
           renderItem={renderPhoneNumber}
@@ -417,7 +412,7 @@ export default function CreateMemberProfileForm1({navigation, route}) {
       )}
 
       <View>
-        <TCLable title={'Address'} />
+        <TCLable title={strings.venueAddressPlaceholder} />
         <TCTextField
           value={streetAddress}
           onChangeText={(text) => setStreetAddress(text)}
@@ -458,8 +453,7 @@ export default function CreateMemberProfileForm1({navigation, route}) {
       </View>
 
       <View>
-        <TCLable title={'Birthday'} />
-        {/* <TCTextField value={teamName} onChangeText={(text) => setTeamName(text)} placeholder={strings.addressPlaceholder} keyboardType={'default'}/> */}
+        <TCLable title={strings.birthDatePlaceholder} />
 
         <TCTouchableLabel
           title={
@@ -473,7 +467,7 @@ export default function CreateMemberProfileForm1({navigation, route}) {
         />
       </View>
       <View>
-        <TCLable title={'Gender'} />
+        <TCLable title={strings.gender} />
         <TCPicker
           dataSource={DataSource.Gender}
           placeholder={strings.selectGenderPlaceholder}

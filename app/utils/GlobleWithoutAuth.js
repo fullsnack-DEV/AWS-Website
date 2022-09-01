@@ -3,7 +3,7 @@ import axios from 'axios';
 import NetInfo from '@react-native-community/netinfo';
 import firebase from '@react-native-firebase/app';
 
-import strings from '../Constants/String';
+import {strings} from '../../Localization/translation';
 
 const prepareHeader = (headers) => {
   let apiHeaders = {

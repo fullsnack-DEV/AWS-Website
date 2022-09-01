@@ -16,7 +16,7 @@ import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import images from '../Constants/ImagePath';
 import TCBorderButton from './TCBorderButton';
-import strings from '../Constants/String';
+import {strings} from '../../Localization/translation';
 import {getGameHomeScreen} from '../utils/gameUtils';
 import {getHitSlop} from '../utils';
 

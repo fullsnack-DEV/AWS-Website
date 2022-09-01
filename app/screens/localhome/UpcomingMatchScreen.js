@@ -33,7 +33,7 @@ import DateTimePickerView from '../../components/Schedule/DateTimePickerModal';
 import fonts from '../../Constants/Fonts';
 import TCThinDivider from '../../components/TCThinDivider';
 
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 import {
   getGameIndex,
   getGroupIndex,

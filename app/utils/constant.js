@@ -19,6 +19,28 @@ export const invoiceMonthsSelectionData = [
   {label: 'For past 12 Months', value: 'For past 12 Months'},
 ];
 
+export const localize_language = [
+  {name: 'English', code: 'en'},
+  {name: 'Korean', code: 'ko'},
+  {name: 'Thai', code: 'th'},
+  {name: 'French', code: 'fr'},
+];
+
+export const monthNames = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+];
+
 export const groupsType = [{type: 'Teams'}, {type: 'Clubs'}, {type: 'Leagues'}];
 export const gameData = {
   challenge_referee: [

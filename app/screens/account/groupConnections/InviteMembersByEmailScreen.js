@@ -3,7 +3,7 @@ import {Text, View, StyleSheet, FlatList, Alert} from 'react-native';
 import {sendInvitationInGroup} from '../../../api/Users';
 import TCTextField from '../../../components/TCTextField';
 import TCMessageButton from '../../../components/TCMessageButton';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import AuthContext from '../../../auth/context';
@@ -25,10 +25,7 @@ export default function InviteMembersByEmailScreen({navigation}) {
       };
       setEmail([...email, obj]);
     } else {
-      Alert.alert(
-        strings.alertmessagetitle,
-        'You can not add more than 10 email id.',
-      );
+      Alert.alert(strings.alertmessagetitle, strings.youCanNotAddMoreEmailText);
     }
   };
 
@@ -36,7 +33,7 @@ export default function InviteMembersByEmailScreen({navigation}) {
     navigation.setOptions({
       headerRight: () => (
         <Text style={styles.sendButtonStyle} onPress={() => sendInvitation()}>
-          Send
+          {strings.send}
         </Text>
       ),
     });
@@ -57,7 +54,7 @@ export default function InviteMembersByEmailScreen({navigation}) {
     );
 
     if (resultEmails.length > 0) {
-      Alert.alert('Please fill all email fields.');
+      Alert.alert(strings.fillAllEmailText);
     } else if (invalidEmails.length > 0) {
       Alert.alert('', strings.validEmailMessage);
     } else {
@@ -67,7 +64,6 @@ export default function InviteMembersByEmailScreen({navigation}) {
         emailIds: emails,
         uid: entity.uid,
       };
-      console.log('body params:', obj);
       sendInvitationInGroup(obj, authContext)
         .then(() => {
           setEmail([
@@ -88,14 +84,13 @@ export default function InviteMembersByEmailScreen({navigation}) {
 
   const renderItemEmail = ({item, index}) => (
     <TCTextField
-      placeholder="E-mail Address"
+      placeholder={strings.emailPlaceHolder}
       keyboardType="email-address"
       value={item.email}
       onChangeText={(value) => {
         const tempEmail = [...email];
         tempEmail[index].email = value;
         setEmail(tempEmail);
-        console.log('Emails :', email);
       }}
       style={{alignSelf: 'center', width: '85%', marginBottom: 10}}
     />

@@ -23,7 +23,7 @@ import AuthContext from '../../auth/context';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import {getGallery} from '../../api/Users';
 import WritePost from '../../components/newsFeed/WritePost';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 import colors from '../../Constants/Colors';
 import {ImageUploadContext} from '../../context/ImageUploadContext';
 

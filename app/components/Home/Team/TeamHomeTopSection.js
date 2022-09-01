@@ -1,6 +1,6 @@
 import React from 'react';
 import {View, StyleSheet, Alert} from 'react-native';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 
 import colors from '../../../Constants/Colors';
 import images from '../../../Constants/ImagePath';

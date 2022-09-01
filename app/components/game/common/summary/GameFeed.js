@@ -13,7 +13,7 @@ import WritePost from '../../../newsFeed/WritePost';
 import colors from '../../../../Constants/Colors';
 import NewsFeedList from '../../../../screens/newsfeeds/NewsFeedList';
 import AuthContext from '../../../../auth/context';
-import strings from '../../../../Constants/String';
+import {strings} from '../../../../../Localization/translation';
 import {
   createReaction,
   deletePost,

@@ -23,7 +23,7 @@ import {
 import {useIsFocused} from '@react-navigation/native';
 import AuthContext from '../../../../auth/context';
 import images from '../../../../Constants/ImagePath';
-import strings from '../../../../Constants/String';
+import {strings} from '../../../../../Localization/translation';
 import colors from '../../../../Constants/Colors';
 import fonts from '../../../../Constants/Fonts';
 import TCFormProgress from '../../../../components/TCFormProgress';
@@ -61,8 +61,6 @@ export default function CreateClubForm1({navigation}) {
 
   useEffect(() => {
     searchCityState(searchText).then((response) => {
-      console.log('rerererer', response);
-
       setCityData(response.predictions);
     });
   }, [searchText]);
@@ -84,13 +82,11 @@ export default function CreateClubForm1({navigation}) {
       obj.isChecked = false;
       arr.push(obj);
     }
-    console.log('Sport array:=>', arr);
     setSportList(arr);
   };
 
   useEffect(() => {
     let sportText = '';
-    console.log('selectedSports:=>', selectedSports);
     if (selectedSports.length > 0) {
       selectedSports.map((sportItem, index) => {
         sportText =
@@ -144,13 +140,11 @@ export default function CreateClubForm1({navigation}) {
   };
 
   const onNextPressed = () => {
-    console.log('selectedSports', selectedSports);
     const newArray = selectedSports.map((obj) => {
       delete obj.isChecked;
       delete obj.entity_type;
       return obj;
     });
-    console.log('new sports:=>', newArray);
     const obj = {
       sports: newArray, // Object of sport
       sports_string: sportsName,
@@ -237,7 +231,7 @@ export default function CreateClubForm1({navigation}) {
                   : styles.languagePlaceholderText
               }
               numberOfLines={50}>
-              {sportsName || 'Sports'}
+              {sportsName || strings.sportsTitleText}
             </Text>
           </TouchableOpacity>
         </View>
@@ -319,7 +313,7 @@ export default function CreateClubForm1({navigation}) {
                   fontFamily: fonts.RRegular,
                   color: colors.themeColor,
                 }}>
-                Apply
+                {strings.apply}
               </Text>
             </TouchableOpacity>
           </View>
@@ -380,7 +374,7 @@ export default function CreateClubForm1({navigation}) {
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
               }}>
-              Location
+              {strings.locationTitleText}
             </Text>
             <TouchableOpacity
               onPress={() => {

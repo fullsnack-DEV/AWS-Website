@@ -4,7 +4,7 @@ import {View, StyleSheet} from 'react-native';
 import colors from '../../../Constants/Colors';
 import images from '../../../Constants/ImagePath';
 import fonts from '../../../Constants/Fonts';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import TCProfileButton from '../../TCProfileButton';
 import TCActionButton from '../../TCActionButton';
 

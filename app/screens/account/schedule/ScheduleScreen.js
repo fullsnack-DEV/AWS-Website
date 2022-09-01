@@ -46,7 +46,7 @@ import * as RefereeUtils from '../../referee/RefereeUtility';
 import * as ScorekeeperUtils from '../../scorekeeper/ScorekeeperUtility';
 import * as Utils from '../../challenge/ChallengeUtility';
 import {getEventById} from '../../../api/Schedule';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import {
   getRefereeReservationDetails,
   getScorekeeperReservationDetails,
@@ -292,8 +292,8 @@ export default function ScheduleScreen({navigation, route}) {
             ];
 
             const res = sportsList.map((obj) => ({
-                sport: obj.sport,
-              }));
+              sport: obj.sport,
+            }));
             const data = Utility.uniqueArray(res, 'sport');
 
             setSports([{sport: 'All'}, ...data, {sport: 'Others'}]);
@@ -725,26 +725,26 @@ export default function ScheduleScreen({navigation, route}) {
   const opetionsListView = useCallback(
     ({item, index}) => (
       <Text
-          style={makeOpetionsSelected(item)}
-          onPress={() => {
-            refContainer.current.scrollToIndex({
-              animated: true,
-              index,
-              viewPosition: 0.8,
-            });
-            console.log('selected sport::=>', item);
-            setSelectedOpetions({
-              opetion: sortFilterOpetion,
-              title: item,
-            });
-          }}>
+        style={makeOpetionsSelected(item)}
+        onPress={() => {
+          refContainer.current.scrollToIndex({
+            animated: true,
+            index,
+            viewPosition: 0.8,
+          });
+          console.log('selected sport::=>', item);
+          setSelectedOpetions({
+            opetion: sortFilterOpetion,
+            title: item,
+          });
+        }}>
         {item?.sport
-            ? item?.sport === 'All'
-              ? 'All'
-              : getSportName(item, authContext)
-            : item}
+          ? item?.sport === 'All'
+            ? 'All'
+            : getSportName(item, authContext)
+          : item}
       </Text>
-      ),
+    ),
     [authContext, makeOpetionsSelected, sortFilterOpetion],
   );
 
@@ -801,89 +801,89 @@ export default function ScheduleScreen({navigation, route}) {
 
   const renderSortFilterOpetions = ({index, item}) => (
     <View
-        style={{
-          flexDirection: 'row',
-          marginBottom: 15,
-          justifyContent: 'space-between',
-          marginLeft: 15,
-          marginRight: 15,
-        }}>
+      style={{
+        flexDirection: 'row',
+        marginBottom: 15,
+        justifyContent: 'space-between',
+        marginLeft: 15,
+        marginRight: 15,
+      }}>
       <View>
         <Text style={styles.filterTitle}>{item}</Text>
         {index === 1 &&
-            sortFilterOpetion === index &&
-            ['user', 'player'].includes(authContext.entity.role) && (
-              <Text
-                style={styles.changeOrderStyle}
-                onPress={() => {
-                  setFilterPopup(false);
-                  navigation.navigate('ChangeSportsOrderScreen', {
-                    onBackClick: fromGoBack,
-                  });
-                }}>
-                Change order of sports
-              </Text>
-            )}
+          sortFilterOpetion === index &&
+          ['user', 'player'].includes(authContext.entity.role) && (
+            <Text
+              style={styles.changeOrderStyle}
+              onPress={() => {
+                setFilterPopup(false);
+                navigation.navigate('ChangeSportsOrderScreen', {
+                  onBackClick: fromGoBack,
+                });
+              }}>
+              Change order of sports
+            </Text>
+          )}
         {index === 0 &&
-            sortFilterOpetion === index &&
-            ['user', 'player'].includes(authContext.entity.role) && (
-              <Text
-                style={styles.changeOrderStyle}
-                onPress={() => {
-                  setFilterPopup(false);
-                  navigation.navigate('ChangeOtherListScreen', {
-                    onBackClick: fromGoBack,
-                  });
-                }}>
-                Change list of Organizers
-              </Text>
-            )}
+          sortFilterOpetion === index &&
+          ['user', 'player'].includes(authContext.entity.role) && (
+            <Text
+              style={styles.changeOrderStyle}
+              onPress={() => {
+                setFilterPopup(false);
+                navigation.navigate('ChangeOtherListScreen', {
+                  onBackClick: fromGoBack,
+                });
+              }}>
+              Change list of Organizers
+            </Text>
+          )}
       </View>
       <TouchableOpacity
-          onPress={() => {
-            setSortFilterOpetion(index);
-            setSelectedOpetions({
-              opetion: 0,
-              title: index === 1 ? {sport: 'All'} : 'All',
-            });
-          }}>
+        onPress={() => {
+          setSortFilterOpetion(index);
+          setSelectedOpetions({
+            opetion: 0,
+            title: index === 1 ? {sport: 'All'} : 'All',
+          });
+        }}>
         <Image
-            source={
-              sortFilterOpetion === index
-                ? images.radioRoundOrange
-                : images.radioUnselect
-            }
-            style={styles.radioButtonStyle}
-          />
+          source={
+            sortFilterOpetion === index
+              ? images.radioRoundOrange
+              : images.radioUnselect
+          }
+          style={styles.radioButtonStyle}
+        />
       </TouchableOpacity>
     </View>
-    );
+  );
 
   const renderTimeFilterOpetions = ({index, item}) => (
     <View
-        style={{
-          flexDirection: 'row',
-          marginBottom: 15,
-          justifyContent: 'space-between',
-          marginLeft: 15,
-          marginRight: 15,
-        }}>
+      style={{
+        flexDirection: 'row',
+        marginBottom: 15,
+        justifyContent: 'space-between',
+        marginLeft: 15,
+        marginRight: 15,
+      }}>
       <Text style={styles.filterTitle}>{item}</Text>
       <TouchableOpacity
-          onPress={() => {
-            setTimeFilterOpetion(index);
-          }}>
+        onPress={() => {
+          setTimeFilterOpetion(index);
+        }}>
         <Image
-            source={
-              timeFilterOpetion === index
-                ? images.radioRoundOrange
-                : images.radioUnselect
-            }
-            style={styles.radioButtonStyle}
-          />
+          source={
+            timeFilterOpetion === index
+              ? images.radioRoundOrange
+              : images.radioUnselect
+          }
+          style={styles.radioButtonStyle}
+        />
       </TouchableOpacity>
     </View>
-    );
+  );
 
   const datesBlacklistFunc = (startDate, endDate) => {
     const start = new Date(startDate);

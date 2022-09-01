@@ -43,7 +43,7 @@ import {
   searchNearByCity,
 } from '../../api/External'; // getLatLongFromPlaceID
 import images from '../../Constants/ImagePath';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 import Separator from '../../components/Separator';
 import AuthContext from '../../auth/context';
 import colors from '../../Constants/Colors';
@@ -116,11 +116,11 @@ export default function ChooseLocationScreen({navigation, route}) {
       .then((response) => {
         console.log('nearby city :=>', response.data);
         const cityList = response.data.map((obj) => ({
-            description: obj[1],
-            city: obj[1],
-            state_abbr: obj[2],
-            country: obj[3],
-          }));
+          description: obj[1],
+          city: obj[1],
+          state_abbr: obj[2],
+          country: obj[3],
+        }));
         setNearByCity(
           cityList.filter((obj) => obj?.city !== currentLocation?.city),
         );

@@ -8,7 +8,7 @@ import _ from 'lodash';
 
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import AuthContext from '../../../auth/context';
 import TCKeyboardView from '../../../components/TCKeyboardView';
 import TCThickDivider from '../../../components/TCThickDivider';
@@ -427,45 +427,45 @@ export default function CurruentRefereeReservationView({
               bodyParams.status === RefereeReservationStatus.restored ||
               bodyParams.status ===
                 RefereeReservationStatus.requestcancelled) && (
-                <View>
-                  <Text
+              <View>
+                <Text
                   style={[
                     styles.challengeMessage,
                     {color: colors.requestConfirmColor},
                   ]}>
-                    CONFIRMED
-                  </Text>
-                  <Text style={styles.challengeText}>
-                    {checkRefereeOrTeam(bodyParams) === 'referee'
+                  CONFIRMED
+                </Text>
+                <Text style={styles.challengeText}>
+                  {checkRefereeOrTeam(bodyParams) === 'referee'
                     ? `You have a confirmed referee reservation booked by ${getEntityName(
                         bodyParams,
                       )}.`
                     : `Your team has the confirmed referee reservation for ${getEntityName(
                         bodyParams,
                       )}.`}
-                  </Text>
-                </View>
+                </Text>
+              </View>
             )}
           {checkSenderOrReceiver(bodyParams) === 'receiver' &&
             (bodyParams.status === RefereeReservationStatus.accepted ||
               bodyParams.status === RefereeReservationStatus.restored ||
               bodyParams.status ===
                 RefereeReservationStatus.requestcancelled) && (
-                <View>
-                  <Text
+              <View>
+                <Text
                   style={[
                     styles.challengeMessage,
                     {color: colors.requestConfirmColor},
                   ]}>
-                    CONFIRMED
-                  </Text>
-                  <Text style={styles.challengeText}>
-                    {/* {checkRefereeOrTeam(bodyParams) === 'referee' ? `${getEntityName(bodyParams)} has confirmed referee reservation request sent by you.` : `${getEntityName(bodyParams)} has confirmed referee reservation request sent to you.` } */}
-                    {`${getEntityName(
+                  CONFIRMED
+                </Text>
+                <Text style={styles.challengeText}>
+                  {/* {checkRefereeOrTeam(bodyParams) === 'referee' ? `${getEntityName(bodyParams)} has confirmed referee reservation request sent by you.` : `${getEntityName(bodyParams)} has confirmed referee reservation request sent to you.` } */}
+                  {`${getEntityName(
                     bodyParams,
                   )} has confirmed referee reservation request sent by you.`}
-                  </Text>
-                </View>
+                </Text>
+              </View>
             )}
           {/* Status accepted */}
           {/* Status declined */}

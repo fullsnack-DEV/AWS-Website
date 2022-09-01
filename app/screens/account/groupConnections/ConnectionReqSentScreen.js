@@ -1,9 +1,11 @@
 import React, {useLayoutEffect} from 'react';
 import {View, StyleSheet, Image, Text, TouchableOpacity} from 'react-native';
 
+import {format} from 'react-string-format';
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
+import {strings} from '../../../../Localization/translation';
 
 export default function ConnectionReqSentScreen({navigation, route}) {
   useLayoutEffect(() => {
@@ -23,13 +25,16 @@ export default function ConnectionReqSentScreen({navigation, route}) {
       <View style={styles.imageContainer}></View>
       <View style={styles.mailContainer}>
         <Image source={images.challengeSentPlane} style={styles.rotateImage} />
-        <Text style={styles.invitationText}>Connection request sent</Text>
+        <Text style={styles.invitationText}>
+          {strings.connectionRequestSentText}
+        </Text>
 
         <Text style={styles.infoText}>
-          When {route.params.memberObj.first_name}{' '}
-          {route.params.memberObj.last_name} accepts the request, the user’s
-          account will be connected to the member’s profile created in your
-          group.
+          {format(
+            strings.accountConnectText,
+            route.params.memberObj.first_name,
+            route.params.memberObj.last_name,
+          )}
         </Text>
       </View>
     </View>

@@ -7,6 +7,7 @@ import colors from '../../../Constants/Colors';
 import TCGradientButton from '../../../components/TCGradientButton';
 import {heightPercentageToDP as hp} from '../../../utils';
 import TCGroupNameBadge from '../../../components/TCGroupNameBadge';
+import {strings} from '../../../../Localization/translation';
 
 const TCUserList = ({
   title,
@@ -74,7 +75,7 @@ const TCUserList = ({
                   height: 25,
                   width: 75,
                 }}
-                title={follow ? 'Following' : 'Follow'}
+                title={follow ? strings.following : strings.follow}
                 startGradientColor={
                   !follow ? colors.yellowColor : colors.whiteColor
                 }

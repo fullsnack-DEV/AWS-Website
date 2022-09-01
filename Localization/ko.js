@@ -1,5 +1,4 @@
-/* eslint-disable quotes */
-const strings = {
+export default {
   townsCupTitle: 'TownsCup',
   alertmessagetitle: 'TownsCup',
   defaultError: 'Something went wrong',
@@ -697,10 +696,10 @@ const strings = {
   cannotCancelReservationAfterGameStartText:
     'Reservation cannot be cancel after game game has beed started.',
   cannotChooseDatetime: 'This datetime is overlapping with blocked datetime.',
-  recentMatchesTitle: 'Recent Matches',
+  recentMatchesTitle: '최근 경기',
   upcomingMatchesTitle: 'Upcoming Matches',
   lookingForTitle: 'Available for Challenge',
-  shortsTitle: 'Shorts',
+  shortsTitle: '반바지',
   hiringPlayerTitle: 'Recruiting Members',
   lookingForTeamTitle: 'Looking For Team/Club',
   refereesTitle: 'Referees',
@@ -928,5 +927,5 @@ const strings = {
   eventCreatedByUser: 'Event created by personal user',
   eventCreatedByGroup: 'Event create by group',
   none: 'None',
+  switchAccount: 'Switch Account',
 };
-export default strings;

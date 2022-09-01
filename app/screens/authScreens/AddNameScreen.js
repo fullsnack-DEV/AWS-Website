@@ -22,7 +22,7 @@ import TCKeyboardView from '../../components/TCKeyboardView';
 
 import * as Utility from '../../utils/index';
 import images from '../../Constants/ImagePath';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import TCTextField from '../../components/TCTextField';

@@ -1,7 +1,7 @@
 import React, {useRef, useState} from 'react';
 import {View, FlatList} from 'react-native';
 import ActionSheet from 'react-native-actionsheet';
-import strings from '../../../../../Constants/String';
+import {strings} from '../../../../../../Localization/translation';
 import EditEventItem from '../../../../../components/Schedule/EditEventItem';
 import PlayInEditModal from '../PlayInEditModal';
 import PlaysInEditPrivacySettings from '../PlaysInEditPrivacySettings';
@@ -81,7 +81,7 @@ const PlaysInLeagues = ({
       </EditEventItem>
       <ActionSheet
         ref={actionSheet}
-        options={['Privacy Setting', 'Cancel']}
+        options={[strings.privacySettingText, 'Cancel']}
         cancelButtonIndex={1}
         onPress={(index) => {
           if (index === 0) {

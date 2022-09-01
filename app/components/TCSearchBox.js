@@ -4,7 +4,7 @@ import {StyleSheet, View, Image, TextInput} from 'react-native';
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 
 import images from '../Constants/ImagePath';
-import strings from '../Constants/String';
+import {strings} from '../../Localization/translation';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 

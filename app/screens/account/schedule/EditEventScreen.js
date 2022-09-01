@@ -46,7 +46,7 @@ import DateTimePickerView from '../../../components/Schedule/DateTimePickerModal
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import TCProfileView from '../../../components/TCProfileView';
 
 import ActivityLoader from '../../../components/loader/ActivityLoader';
@@ -390,115 +390,114 @@ export default function EditEventScreen({navigation, route}) {
 
   const renderWhoCan = ({item}) => (
     <TouchableOpacity
-        style={styles.listItem}
-        onPress={() => {
-          if (whoOpetion === 'see') {
-            setWhoCanSeeOpetion(item);
-          } else {
-            setWhoCanJoinOpetion(item);
-          }
+      style={styles.listItem}
+      onPress={() => {
+        if (whoOpetion === 'see') {
+          setWhoCanSeeOpetion(item);
+        } else {
+          setWhoCanJoinOpetion(item);
+        }
 
-          setTimeout(() => {
-            setVisibleWhoModal(false);
-          }, 300);
-        }}>
+        setTimeout(() => {
+          setVisibleWhoModal(false);
+        }, 300);
+      }}>
       <View
-          style={{
-            padding: 20,
-            alignItems: 'center',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            marginRight: 15,
-          }}>
+        style={{
+          padding: 20,
+          alignItems: 'center',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          marginRight: 15,
+        }}>
         <Text style={styles.languageList}>{item.text}</Text>
         <View style={styles.checkbox}>
           {(whoOpetion === 'see' && whoCanSeeOpetion.value === item?.value) ||
-            (whoOpetion === 'join' &&
-              whoCanJoinOpetion.value === item?.value) ? (
-                <Image
-                source={images.radioCheckYellow}
-                style={styles.checkboxImg}
-              />
-            ) : (
-              <Image source={images.radioUnselect} style={styles.checkboxImg} />
-            )}
+          (whoOpetion === 'join' && whoCanJoinOpetion.value === item?.value) ? (
+            <Image
+              source={images.radioCheckYellow}
+              style={styles.checkboxImg}
+            />
+          ) : (
+            <Image source={images.radioUnselect} style={styles.checkboxImg} />
+          )}
         </View>
       </View>
     </TouchableOpacity>
-    );
+  );
 
   const renderEventPostedOpetions = ({item}) => (
     <View
-        style={{
-          flexDirection: 'row',
-          marginBottom: 15,
+      style={{
+        flexDirection: 'row',
+        marginBottom: 15,
 
-          marginRight: 15,
-        }}>
+        marginRight: 15,
+      }}>
       <TouchableOpacity
-          onPress={() => {
-            setEventPosted(item);
-          }}>
+        onPress={() => {
+          setEventPosted(item);
+        }}>
         <Image
-            source={
-              eventPosted.value === item.value
-                ? images.checkRoundOrange
-                : images.radioUnselect
-            }
-            style={styles.radioButtonStyle}
-          />
+          source={
+            eventPosted.value === item.value
+              ? images.checkRoundOrange
+              : images.radioUnselect
+          }
+          style={styles.radioButtonStyle}
+        />
       </TouchableOpacity>
       <Text style={styles.eventPostedTitle}>{item.text}</Text>
     </View>
-    );
+  );
 
   const renderSeeGroups = ({item, index}) => (
     <GroupEventItems
-        eventImageSource={
-          item.entity_type === 'team' ? images.teamPatch : images.clubPatch
-        }
-        eventText={item.group_name}
-        groupImageSource={
-          item.thumbnail
-            ? {uri: item.thumbnail}
-            : item.entity_type === 'team'
-            ? images.teamPlaceholder
-            : images.clubPlaceholder
-        }
-        checkBoxImage={
-          item.isSelected ? images.orangeCheckBox : images.uncheckWhite
-        }
-        onCheckBoxPress={() => {
-          groupsSeeList[index].isSelected = !groupsSeeList[index].isSelected;
-          setGroupsSeeList([...groupsSeeList]);
-          setIsAll(false);
-        }}
-      />
-    );
+      eventImageSource={
+        item.entity_type === 'team' ? images.teamPatch : images.clubPatch
+      }
+      eventText={item.group_name}
+      groupImageSource={
+        item.thumbnail
+          ? {uri: item.thumbnail}
+          : item.entity_type === 'team'
+          ? images.teamPlaceholder
+          : images.clubPlaceholder
+      }
+      checkBoxImage={
+        item.isSelected ? images.orangeCheckBox : images.uncheckWhite
+      }
+      onCheckBoxPress={() => {
+        groupsSeeList[index].isSelected = !groupsSeeList[index].isSelected;
+        setGroupsSeeList([...groupsSeeList]);
+        setIsAll(false);
+      }}
+    />
+  );
 
   const renderJoinGroups = ({item, index}) => (
     <GroupEventItems
-        eventImageSource={
-          item.entity_type === 'team' ? images.teamPatch : images.clubPatch
-        }
-        eventText={item.group_name}
-        groupImageSource={
-          item.thumbnail
-            ? {uri: item.thumbnail}
-            : item.entity_type === 'team'
-            ? images.teamPlaceholder
-            : images.clubPlaceholder
-        }
-        checkBoxImage={
-          item.isSelected ? images.orangeCheckBox : images.uncheckWhite
-        }
-        onCheckBoxPress={() => {
-          groupsJoinList[index].isSelected = !groupsJoinList[index].isSelected;
-          setGroupsJoinList([...groupsJoinList]);
-          setIsAll(false);
-        }}
-      />
-    );
+      eventImageSource={
+        item.entity_type === 'team' ? images.teamPatch : images.clubPatch
+      }
+      eventText={item.group_name}
+      groupImageSource={
+        item.thumbnail
+          ? {uri: item.thumbnail}
+          : item.entity_type === 'team'
+          ? images.teamPlaceholder
+          : images.clubPlaceholder
+      }
+      checkBoxImage={
+        item.isSelected ? images.orangeCheckBox : images.uncheckWhite
+      }
+      onCheckBoxPress={() => {
+        groupsJoinList[index].isSelected = !groupsJoinList[index].isSelected;
+        setGroupsJoinList([...groupsJoinList]);
+        setIsAll(false);
+      }}
+    />
+  );
 
   const onBGImageClicked = () => {
     setTimeout(() => {
@@ -1379,7 +1378,7 @@ export default function EditEventScreen({navigation, route}) {
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
               }}>
-              Privacy Setting
+              strings.privacySettingText
             </Text>
 
             <Text

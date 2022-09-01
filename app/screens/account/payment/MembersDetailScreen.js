@@ -37,7 +37,7 @@ import MembershipFeeView from '../../../components/invoice/MembershipFeeView';
 import TopFilterBar from '../../../components/invoice/TopFilterBar';
 import images from '../../../Constants/ImagePath';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import TCThinDivider from '../../../components/TCThinDivider';
 import EventAgendaSection from '../../../components/Schedule/EventAgendaSection';
 import {heightPercentageToDP} from '../../../utils';

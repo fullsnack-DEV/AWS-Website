@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 import TCProfileImage from '../TCProfileImage';
 import {parseNotification} from '../../screens/notificationsScreen/PRNotificationParser';
 import NotificationType from '../../Constants/NotificationType';

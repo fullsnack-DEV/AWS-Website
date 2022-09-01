@@ -15,6 +15,7 @@ import NewsFeedPostItems from '../../components/newsFeed/NewsFeedPostItems';
 import colors from '../../Constants/Colors';
 import AuthContext from '../../auth/context';
 import fonts from '../../Constants/Fonts';
+import {strings} from '../../../Localization/translation';
 
 const viewabilityConfig = {itemVisiblePercentThreshold: 50};
 const NewsFeedList = ({
@@ -34,7 +35,7 @@ const NewsFeedList = ({
   onLikePress = () => {},
   onStartShouldSetResponderCapture = () => {},
   updateCommentCount,
-  noDataFoundText = 'No Post Found',
+  noDataFoundText = strings.noPostFoundText,
   feedAPI,
   isNewsFeedScreen = false,
   openProfilId,

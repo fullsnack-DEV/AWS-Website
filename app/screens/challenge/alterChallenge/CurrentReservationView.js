@@ -17,7 +17,7 @@ import {
 
 import GameFeeCard from '../../../components/challenge/GameFeeCard';
 
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
 import TCThickDivider from '../../../components/TCThickDivider';

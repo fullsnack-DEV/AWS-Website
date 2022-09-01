@@ -26,6 +26,7 @@ import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 import Header from '../../../components/Home/Header';
+import {strings} from '../../../../Localization/translation';
 
 export default function UserSettingPrivacyScreen({navigation}) {
   const authContext = useContext(AuthContext);
@@ -76,11 +77,12 @@ export default function UserSettingPrivacyScreen({navigation}) {
             {key: 'Club', id: 6},
             {key: 'Event', id: 7},
             {key: 'Time Zone', id: 8},
+            {key: strings.appLanguage, id: 12},
             {key: 'Currency', id: 9},
             // {key: 'Change Password', id: 7},
             {key: 'Deactivate Account', id: 10},
             {key: 'Terminate Account', id: 11},
-            // {key: 'Privacy Setting',id:3}
+            // {key: strings.privacySettingText,id:3}
           ]);
         } else {
           setUserSetting([
@@ -92,8 +94,10 @@ export default function UserSettingPrivacyScreen({navigation}) {
             {key: 'Club', id: 6},
             {key: 'Event', id: 7},
             {key: 'Time Zone', id: 8},
+            {key: strings.appLanguage, id: 10},
             {key: 'Currency', id: 9},
-            // {key: 'Privacy Setting',id:3}
+
+            // {key: strings.privacySettingText,id:3}
           ]);
         }
       })
@@ -138,7 +142,9 @@ export default function UserSettingPrivacyScreen({navigation}) {
     //  else if (opetions === 'Currency') {
     //   navigation.navigate('CurrencySettingScreen');
     // }
-    else if (opetions === 'Privacy Setting') {
+    else if (opetions === strings.appLanguage) {
+      navigation.navigate('LanguageSettingScreen');
+    } else if (opetions === strings.privacySettingText) {
       // groupOpetionActionSheet.show();
     } else if (opetions === 'Deactivate Account') {
       navigation.navigate('DeactivateAccountScreen');

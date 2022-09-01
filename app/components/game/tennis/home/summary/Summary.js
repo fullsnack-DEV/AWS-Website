@@ -53,7 +53,7 @@ import {
   getGameMemberDetails,
 } from '../../../../../api/Games';
 import images from '../../../../../Constants/ImagePath';
-import strings from '../../../../../Constants/String';
+import {strings} from '../../../../../../Localization/translation';
 import {ImageUploadContext} from '../../../../../context/ImageUploadContext';
 import ApproveDisapprove from '../../../soccer/home/summary/approveDisapprove/ApproveDisapprove';
 import ActivityLoader from '../../../../loader/ActivityLoader';

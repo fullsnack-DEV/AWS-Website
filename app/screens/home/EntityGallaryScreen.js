@@ -6,7 +6,7 @@ import ActivityLoader from '../../components/loader/ActivityLoader';
 
 import AllInOneGallery from './AllInOneGallery';
 import {createPost} from '../../api/NewsFeeds';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 import {ImageUploadContext} from '../../context/ImageUploadContext';
 // import { useIsFocused } from '@react-navigation/native';
 

@@ -3,7 +3,7 @@ import {StyleSheet, Text} from 'react-native';
 
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
-import strings from '../Constants/String';
+import {strings} from '../../Localization/translation';
 
 function TCLabel({
   isNew = false,

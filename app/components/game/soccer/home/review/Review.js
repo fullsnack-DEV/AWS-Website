@@ -21,7 +21,7 @@ import {
   REVIEW_EXPIRY_DAYS,
 } from '../../../../../utils/gameUtils';
 
-import strings from '../../../../../Constants/String';
+import {strings} from '../../../../../../Localization/translation';
 
 const Review = ({navigation, gameData, isAdmin, getSoccerGameReview}) => {
   const isFocused = useIsFocused();

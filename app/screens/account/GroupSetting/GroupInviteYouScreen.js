@@ -19,7 +19,7 @@ import ActivityLoader from '../../../components/loader/ActivityLoader';
 
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import {patchPlayer} from '../../../api/Users';
 
 export default function GroupInviteYouScreen({navigation, route}) {

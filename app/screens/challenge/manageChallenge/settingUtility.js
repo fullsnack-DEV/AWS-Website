@@ -2,7 +2,6 @@
 /* eslint-disable import/prefer-default-export */
 /* eslint-disable consistent-return */
 import {Alert} from 'react-native';
-import strings from '../../../Constants/String';
 import {getUserDetails} from '../../../api/Users';
 import {getGroupDetails} from '../../../api/Groups';
 

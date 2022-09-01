@@ -20,7 +20,7 @@ import {patchGroup} from '../../../api/Groups';
 
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 
 export default function WhoCanInviteEventScreen({navigation, route}) {
   const [comeFrom] = useState(route?.params?.comeFrom);

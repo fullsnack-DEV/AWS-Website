@@ -7,7 +7,7 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native';
 import fonts from '../../Constants/Fonts';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 import TCProfileImage from '../TCProfileImage';
 import colors from '../../Constants/Colors';
 // import AuthContext from '../../auth/context'

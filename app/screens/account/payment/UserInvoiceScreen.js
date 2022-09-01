@@ -14,7 +14,7 @@ import InvoiceAmount from '../../../components/invoice/InvoiceAmount';
 import TCTabView from '../../../components/TCTabView';
 import TopFilterBar from '../../../components/invoice/TopFilterBar';
 import UserInvoiceView from '../../../components/invoice/UserInvoiceView';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 
 export default function UserInvoiceScreen({navigation}) {
   const [loading, setloading] = useState(false);

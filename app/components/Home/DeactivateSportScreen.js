@@ -14,7 +14,7 @@ import AuthContext from '../../auth/context';
 import ActivityLoader from '../loader/ActivityLoader';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 import TCGradientButton from '../TCGradientButton';
 import * as Utility from '../../utils';
 import {sportDeactivate} from '../../api/Users';

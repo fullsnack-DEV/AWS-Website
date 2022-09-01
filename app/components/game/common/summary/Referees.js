@@ -40,7 +40,7 @@ import {
   checkReviewExpired,
   getGameHomeScreen,
 } from '../../../../utils/gameUtils';
-import strings from '../../../../Constants/String';
+import {strings} from '../../../../../Localization/translation';
 import images from '../../../../Constants/ImagePath';
 import {getSetting} from '../../../../screens/challenge/manageChallenge/settingUtility';
 import TCThinDivider from '../../../TCThinDivider';

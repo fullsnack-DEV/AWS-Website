@@ -19,7 +19,7 @@ import images from '../../Constants/ImagePath';
 import Header from '../../components/Home/Header';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 
 export default function GroupSettingPrivacyScreen({navigation}) {
   const authContext = useContext(AuthContext);

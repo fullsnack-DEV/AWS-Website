@@ -9,11 +9,12 @@ import {
   FlatList,
 } from 'react-native';
 
+import {format} from 'react-string-format';
 import {createMemberProfile} from '../../../../api/Groups';
 import uploadImages from '../../../../utils/imageAction';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import images from '../../../../Constants/ImagePath';
-import strings from '../../../../Constants/String';
+import {strings} from '../../../../../Localization/translation';
 import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
 
@@ -253,9 +254,12 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
             </TouchableOpacity>
           </View>
           <View style={styles.checkBoxContainer}>
-            <Text style={[styles.checkBoxItemText, {marginLeft: 0}]}>{`${
-              entity.role.charAt(0).toUpperCase() + entity.role.slice(1)
-            } Admin`}</Text>
+            <Text style={[styles.checkBoxItemText, {marginLeft: 0}]}>
+              {format(
+                strings.adminText_dy,
+                entity.role.charAt(0).toUpperCase() + entity.role.slice(1),
+              )}
+            </Text>
             <TouchableOpacity
               onPress={() => {
                 const admin_setting = !setting.is_admin;
@@ -278,7 +282,7 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
       <View style={styles.mainCheckBoxContainer}>
         <Text style={styles.checkBoxTitle}>Roles</Text>
         <View style={styles.checkBoxContainer}>
-          <Text style={styles.checkBoxItemText}>Player</Text>
+          <Text style={styles.checkBoxItemText}>{strings.player}</Text>
           <TouchableOpacity
             onPress={() => {
               setGroupMemberDetail({
@@ -297,7 +301,7 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
           </TouchableOpacity>
         </View>
         <View style={styles.checkBoxContainer}>
-          <Text style={styles.checkBoxItemText}>Coach</Text>
+          <Text style={styles.checkBoxItemText}>{strings.coach}</Text>
           <TouchableOpacity
             onPress={() => {
               setGroupMemberDetail({
@@ -316,7 +320,7 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
           </TouchableOpacity>
         </View>
         <View style={styles.checkBoxContainer}>
-          <Text style={styles.checkBoxItemText}>Others</Text>
+          <Text style={styles.checkBoxItemText}>{strings.othersText}</Text>
           <TouchableOpacity
             onPress={() => {
               setGroupMemberDetail({
@@ -336,7 +340,7 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
         </View>
       </View>
       <View>
-        <TCLable title={'Position'} />
+        <TCLable title={strings.positionPlaceholder} />
         <FlatList
           data={positions}
           renderItem={renderPosition}
@@ -352,7 +356,7 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
         onPress={() => addPosition()}
       />
       <View>
-        <TCLable title={'Jersey Number'} />
+        <TCLable title={strings.jerseyNumberPlaceholder} />
         <TCTextField
           value={groupMemberDetail.jersey_number}
           onChangeText={(text) =>
@@ -363,7 +367,7 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
         />
       </View>
       <View>
-        <TCLable title={'Appearance'} />
+        <TCLable title={strings.AppearancePlaceholder} />
         <TCTextField
           value={groupMemberDetail.appearance}
           onChangeText={(text) =>
@@ -376,14 +380,16 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
       <View style={styles.mainCheckBoxContainer}>
         <Text style={styles.checkBoxTitle}>Status</Text>
         <View style={styles.checkBoxContainer}>
-          <Text style={styles.checkBoxItemText}>Injured</Text>
+          <Text style={styles.checkBoxItemText}>
+            {strings.injuredPlaceholder}
+          </Text>
           <TouchableOpacity
             onPress={() => {
-              if (playerStatus.indexOf('Injured') !== -1) {
-                const i = playerStatus.indexOf('Injured');
+              if (playerStatus.indexOf(strings.injuredPlaceholder) !== -1) {
+                const i = playerStatus.indexOf(strings.injuredPlaceholder);
                 playerStatus.splice(i, 1);
               } else {
-                playerStatus.push('Injured');
+                playerStatus.push(strings.injuredPlaceholder);
               }
               setPlayerStatus(playerStatus);
               setGroupMemberDetail({
@@ -393,7 +399,7 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
             }}>
             <Image
               source={
-                playerStatus.indexOf('Injured') !== -1
+                playerStatus.indexOf(strings.injuredPlaceholder) !== -1
                   ? images.orangeCheckBox
                   : images.uncheckWhite
               }
@@ -402,14 +408,18 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
           </TouchableOpacity>
         </View>
         <View style={styles.checkBoxContainer}>
-          <Text style={styles.checkBoxItemText}>Long-term Away</Text>
+          <Text style={styles.checkBoxItemText}>
+            {strings.longTermAwayPlaceholder}
+          </Text>
           <TouchableOpacity
             onPress={() => {
-              if (playerStatus.indexOf('Long-term Away') !== -1) {
-                const i = playerStatus.indexOf('Long-term Away');
+              if (
+                playerStatus.indexOf(strings.longTermAwayPlaceholder) !== -1
+              ) {
+                const i = playerStatus.indexOf(strings.longTermAwayPlaceholder);
                 playerStatus.splice(i, 1);
               } else {
-                playerStatus.push('Long-term Away');
+                playerStatus.push(strings.longTermAwayPlaceholder);
               }
               setPlayerStatus(playerStatus);
               setGroupMemberDetail({
@@ -419,7 +429,9 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
             }}>
             <Image
               source={
-                playerStatus.some((el) => el === 'Long-term Away')
+                playerStatus.some(
+                  (el) => el === strings.longTermAwayPlaceholder,
+                )
                   ? images.orangeCheckBox
                   : images.uncheckWhite
               }
@@ -428,14 +440,16 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
           </TouchableOpacity>
         </View>
         <View style={styles.checkBoxContainer}>
-          <Text style={styles.checkBoxItemText}>Suspended</Text>
+          <Text style={styles.checkBoxItemText}>
+            {strings.suspendedPlaceholder}
+          </Text>
           <TouchableOpacity
             onPress={() => {
-              if (playerStatus.indexOf('Suspended') !== -1) {
-                const i = playerStatus.indexOf('Suspended');
+              if (playerStatus.indexOf(strings.suspendedPlaceholder) !== -1) {
+                const i = playerStatus.indexOf(strings.suspendedPlaceholder);
                 playerStatus.splice(i, 1);
               } else {
-                playerStatus.push('Suspended');
+                playerStatus.push(strings.suspendedPlaceholder);
               }
               setPlayerStatus(playerStatus);
               setGroupMemberDetail({
@@ -445,7 +459,7 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
             }}>
             <Image
               source={
-                playerStatus.some((el) => el === 'Suspended')
+                playerStatus.some((el) => el === strings.suspendedPlaceholder)
                   ? images.orangeCheckBox
                   : images.uncheckWhite
               }
@@ -455,7 +469,7 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
         </View>
       </View>
       <View>
-        <TCLable title={'Note'} />
+        <TCLable title={strings.writeNotesPlaceholder} />
         <TCTextField
           value={groupMemberDetail.note}
           height={100}

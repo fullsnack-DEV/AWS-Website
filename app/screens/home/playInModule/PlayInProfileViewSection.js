@@ -6,7 +6,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 
 export default function PlayInProfileViewSection({
   isPatch = false,

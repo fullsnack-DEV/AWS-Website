@@ -25,7 +25,7 @@ import {QBLogout} from '../../../utils/QuickBlox';
 import AuthContext from '../../../auth/context';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import images from '../../../Constants/ImagePath';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import TCLabel from '../../../components/TCLabel';

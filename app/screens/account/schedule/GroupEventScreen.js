@@ -25,7 +25,7 @@ import GroupEventItems from '../../../components/Schedule/GroupEvent/GroupEventI
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import {getGroups} from '../../../api/Groups';
 
 export default function GroupEventScreen({navigation}) {
@@ -143,27 +143,27 @@ export default function GroupEventScreen({navigation}) {
 
   const renderGroups = ({item, index}) => (
     <GroupEventItems
-        eventImageSource={
-          item.entity_type === 'team' ? images.teamPatch : images.clubPatch
-        }
-        eventText={item.group_name}
-        groupImageSource={
-          item.thumbnail
-            ? {uri: item.thumbnail}
-            : item.entity_type === 'team'
-            ? images.teamPlaceholder
-            : images.clubPlaceholder
-        }
-        checkBoxImage={
-          item.isSelected ? images.orangeCheckBox : images.uncheckWhite
-        }
-        onCheckBoxPress={() => {
-          groupsList[index].isSelected = !groupsList[index].isSelected;
-          setGroupsList([...groupsList]);
-          setIsAll(false);
-        }}
-      />
-    );
+      eventImageSource={
+        item.entity_type === 'team' ? images.teamPatch : images.clubPatch
+      }
+      eventText={item.group_name}
+      groupImageSource={
+        item.thumbnail
+          ? {uri: item.thumbnail}
+          : item.entity_type === 'team'
+          ? images.teamPlaceholder
+          : images.clubPlaceholder
+      }
+      checkBoxImage={
+        item.isSelected ? images.orangeCheckBox : images.uncheckWhite
+      }
+      onCheckBoxPress={() => {
+        groupsList[index].isSelected = !groupsList[index].isSelected;
+        setGroupsList([...groupsList]);
+        setIsAll(false);
+      }}
+    />
+  );
 
   return (
     <SafeAreaView style={{flex: 1}}>

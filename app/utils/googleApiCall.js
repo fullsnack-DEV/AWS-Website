@@ -5,7 +5,7 @@ import NetInfo from '@react-native-community/netinfo';
 
 import * as Utility from '.';
 
-import strings from '../Constants/String';
+import {strings} from '../../Localization/translation';
 
 const prepareHeader = (headers) => {
   let apiHeaders = {

@@ -36,7 +36,7 @@ import AuthContext from '../auth/context';
 import {getUnreadCount} from '../api/Notificaitons';
 import AccountNavigator from './AccountNavigator';
 import LocalHomeNavigator from './LocalHomeNavigator';
-import strings from '../Constants/String';
+import {strings} from '../../Localization/translation';
 import ScheduleNavigator from './ScheduleNavigator';
 
 // import HomeNavigator from './HomeNavigator';
@@ -294,7 +294,8 @@ const getTabBarVisibility = (route) => {
     routeName === 'WhatEventInviteScreen' ||
     routeName === 'UserEventSettingPrivacyScreen' ||
     routeName === 'GroupsScreen' ||
-    routeName === 'TrashScreen'
+    routeName === 'TrashScreen' ||
+    routeName === 'LanguageSettingScreen'
   ) {
     return false;
   }

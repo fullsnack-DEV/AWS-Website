@@ -23,7 +23,7 @@ import Modal from 'react-native-modal';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 import images from '../../../Constants/ImagePath';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import AuthContext from '../../../auth/context';
@@ -122,8 +122,9 @@ export default function RegisterPlayerForm2({navigation, route}) {
       )
     ) {
       registerdPlayerData = authContext?.entity?.obj?.registered_sports.map(
-        (item) => item.sport === bodyParams.sport &&
-            item.sport_type === bodyParams.sport_type
+        (item) =>
+          item.sport === bodyParams.sport &&
+          item.sport_type === bodyParams.sport_type
             ? {
                 ...item,
                 is_published: true,

@@ -34,7 +34,7 @@ import {widthPercentageToDP} from '../../utils';
 import fonts from '../../Constants/Fonts';
 import TCThinDivider from '../../components/TCThinDivider';
 
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 import {getEntityIndex} from '../../api/elasticSearch';
 import TCTagsFilter from '../../components/TCTagsFilter';
 import TCPicker from '../../components/TCPicker';

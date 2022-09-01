@@ -20,7 +20,7 @@ import * as Utility from '../../../utils';
 import AuthContext from '../../../auth/context';
 import images from '../../../Constants/ImagePath';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import uploadImages from '../../../utils/imageAction';
 
 import {getUserDetails, patchRegisterRefereeDetails} from '../../../api/Users';
@@ -103,8 +103,9 @@ export default function RegisterRefereeForm2({navigation, route}) {
           )
         ) {
           registerdRefereeData = authContext?.entity?.obj?.referee_data.map(
-            (item) => item.sport === bodyParams.sport &&
-                item.sport_type === bodyParams.sport_type
+            (item) =>
+              item.sport === bodyParams.sport &&
+              item.sport_type === bodyParams.sport_type
                 ? {
                     ...item,
                     is_published: true,

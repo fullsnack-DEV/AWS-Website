@@ -23,7 +23,7 @@ import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import TCNoDataView from '../../components/TCNoDataView';
 import ActivityLoader from '../../components/loader/ActivityLoader';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 
 import NotificationListShimmer from '../../components/shimmer/account/NotificationListShimmer';
 import TCInnerLoader from '../../components/TCInnerLoader';

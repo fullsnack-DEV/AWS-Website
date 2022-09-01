@@ -15,7 +15,7 @@ import {
 
 import FastImage from 'react-native-fast-image';
 import images from '../../Constants/ImagePath';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 import Separator from '../Separator';
 import AuthContext from '../../auth/context';
 import colors from '../../Constants/Colors';

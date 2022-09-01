@@ -14,7 +14,7 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 import AuthContext from '../../auth/context';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';

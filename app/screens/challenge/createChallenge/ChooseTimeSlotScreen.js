@@ -28,7 +28,7 @@ import EventAgendaSection from '../../../components/Schedule/EventAgendaSection'
 import AuthContext from '../../../auth/context';
 import * as Utility from '../../../utils/index';
 
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 
 import DateTimePickerView from '../../../components/Schedule/DateTimePickerModal';
 import ScheduleBlockedItems from '../../../components/Schedule/ScheduleBlockedItems';

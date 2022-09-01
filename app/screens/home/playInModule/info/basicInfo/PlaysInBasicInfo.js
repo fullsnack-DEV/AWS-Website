@@ -3,7 +3,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import {View} from 'react-native';
 import ActionSheet from 'react-native-actionsheet';
 import moment from 'moment';
-import strings from '../../../../../Constants/String';
+import {strings} from '../../../../../../Localization/translation';
 import EditEventItem from '../../../../../components/Schedule/EditEventItem';
 import PlayInEditModal from '../PlayInEditModal';
 import EventTextInput from '../../../../../components/Schedule/EventTextInput';
@@ -71,7 +71,7 @@ const PlaysInBasicInfo = ({isAdmin, currentUserData, onSave}) => {
       </EditEventItem>
       <ActionSheet
         ref={actionSheet}
-        options={['Edit Basic Info', 'Privacy Setting', 'Cancel']}
+        options={['Edit Basic Info', strings.privacySettingText, 'Cancel']}
         cancelButtonIndex={2}
         onPress={(index) => {
           if (index === 0) setEditModalType(strings.basicinfotitle);
@@ -170,7 +170,7 @@ const EditPlaysInModal = ({
             <View style={{marginTop: 8}}>
               <TCPicker
                 dataSource={DataSource.Gender}
-                placeholder={'Select Gender'}
+                placeholder={strings.selectGenderPlaceholder}
                 value={userData?.gender}
                 onValueChange={(value) => {
                   setUserData({...userData, gender: value});

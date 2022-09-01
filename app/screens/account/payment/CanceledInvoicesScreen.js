@@ -10,7 +10,7 @@ import ActivityLoader from '../../../components/loader/ActivityLoader';
 
 import TCTabView from '../../../components/TCTabView';
 import {getCancelledInvoice} from '../../../api/Invoice';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import InvoiceView from '../../../components/invoice/InvoiceView';
 import InvoiceRefundAmount from '../../../components/invoice/InvoiceRefundAmount';
 

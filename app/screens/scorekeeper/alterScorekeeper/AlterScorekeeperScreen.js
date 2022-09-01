@@ -32,7 +32,7 @@ import * as Utility from '../../../utils';
 
 import {paymentMethods} from '../../../api/Users';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
 import AuthContext from '../../../auth/context';
@@ -1062,10 +1062,10 @@ export default function AlterScorekeeperScreen({navigation, route}) {
             bodyParams?.total_game_fee > 0) ||
             (bodyParams?.total_game_fee > 0 &&
               checkSenderForPayment(bodyParams) === 'sender')) && (
-              <View style={styles.contentContainer}>
-                <Title text={'Payment Method'} />
-                <View style={{marginTop: 10}}>
-                  <TCTouchableLabel
+            <View style={styles.contentContainer}>
+              <Title text={'Payment Method'} />
+              <View style={{marginTop: 10}}>
+                <TCTouchableLabel
                   title={
                     defaultCard
                       ? Utility.capitalize(defaultCard.card.brand)
@@ -1079,8 +1079,8 @@ export default function AlterScorekeeperScreen({navigation, route}) {
                     });
                   }}
                 />
-                </View>
               </View>
+            </View>
           )}
 
           {editPayment && (

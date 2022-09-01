@@ -19,7 +19,7 @@ import moment from 'moment';
 
 import Modal from 'react-native-modal';
 import {useIsFocused} from '@react-navigation/native';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
 import ActivityLoader from '../../../components/loader/ActivityLoader';

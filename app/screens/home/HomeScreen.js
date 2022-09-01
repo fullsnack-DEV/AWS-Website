@@ -98,7 +98,7 @@ import EventScheduleScreen from '../account/schedule/EventScheduleScreen';
 import UserHomeTopSection from '../../components/Home/User/UserHomeTopSection';
 import ClubHomeTopSection from '../../components/Home/Club/ClubHomeTopSection';
 import TeamHomeTopSection from '../../components/Home/Team/TeamHomeTopSection';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 import ScoreboardSportsScreen from './ScoreboardSportsScreen';
 import UpcomingMatchScreen from './UpcomingMatchScreen';
 import {deleteEvent, getEventById} from '../../api/Schedule';

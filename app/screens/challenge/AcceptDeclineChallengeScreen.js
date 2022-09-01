@@ -5,7 +5,7 @@ import moment from 'moment';
 import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 import {acceptDeclineChallenge} from '../../api/Challenge';
 import ActivityLoader from '../../components/loader/ActivityLoader';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 import AuthContext from '../../auth/context';

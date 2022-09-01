@@ -17,7 +17,7 @@ import ActivityLoader from '../../../components/loader/ActivityLoader';
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import TCGradientButton from '../../../components/TCGradientButton';
 
 export default function ClubSettingScreen({navigation}) {
@@ -64,12 +64,9 @@ export default function ClubSettingScreen({navigation}) {
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-      <Text style={styles.titleStyle}>Sync Info</Text>
+      <Text style={styles.titleStyle}>{strings.syncInfoText}</Text>
       <View style={styles.privacyCell}>
-        <Text style={styles.privacyNameStyle}>
-          How do you like to update a member’s profile by Importing member’s
-          account info?
-        </Text>
+        <Text style={styles.privacyNameStyle}>{strings.importMembersText}</Text>
         <View style={styles.radioMainView}>
           <TouchableOpacity
             style={styles.radioButtonView}
@@ -81,11 +78,8 @@ export default function ClubSettingScreen({navigation}) {
               style={styles.radioImage}
             />
             <Text style={styles.radioText}>
-              Mannually {'\n'}
-              <Text style={styles.noteText}>
-                A member’s profile is updated when you click the “sync Info”
-                button in each member’s profile.
-              </Text>
+              {strings.manually} {'\n'}
+              <Text style={styles.noteText}>{strings.clickSyncButtonText}</Text>
             </Text>
           </TouchableOpacity>
         </View>
@@ -100,18 +94,14 @@ export default function ClubSettingScreen({navigation}) {
               style={styles.radioImage}
             />
             <Text style={styles.radioText}>
-              Automatically{'\n'}
-              <Text style={styles.noteText}>
-                A member’s profile is updated every time a member changes his or
-                her account info.
-              </Text>
+              {strings.automatically}
+              {'\n'}
+              <Text style={styles.noteText}>{strings.autoSyncInfoText}</Text>
             </Text>
           </TouchableOpacity>
         </View>
       </View>
-      <Text style={styles.warning}>
-        * Each team settings prevails over the club settings.
-      </Text>
+      <Text style={styles.warning}>{strings.eachteamSettingNote}</Text>
 
       <View style={{flex: 1}} />
       <SafeAreaView>

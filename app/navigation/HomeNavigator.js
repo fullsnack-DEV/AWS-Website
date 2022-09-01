@@ -12,7 +12,7 @@ import NotificationsListScreen from '../screens/notificationsScreen/Notification
 import colors from '../Constants/Colors';
 import WritePostScreen from '../screens/newsfeeds/WritePostScreen';
 import WriteCommentScreen from '../screens/newsfeeds/WriteCommentScreen';
-import strings from '../Constants/String';
+import {strings} from '../../Localization/translation';
 import UserAboutScreen from '../screens/home/user/UserAboutScreen';
 import UserBasicInfoScreen from '../screens/home/user/UserBasicInfoScreen';
 import GroupLongTextScreen from '../screens/home/GroupLongTextScreen';
@@ -208,6 +208,7 @@ import AccountInfoScreen from '../screens/account/userSettingPrivacy/AccountInfo
 import BasicInfoScreen from '../screens/account/userSettingPrivacy/BasicInfoScreen';
 import PendingRequestScreen from '../screens/notificationsScreen/PendingRequestScreen';
 import TrashScreen from '../screens/notificationsScreen/TrashScreen';
+import LanguageSettingScreen from '../screens/account/userSettingPrivacy/LanguageSettingScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -2219,6 +2220,23 @@ const HomeNavigator = () => (
         headerTitleStyle: {
           fontWeight: '500',
         },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="LanguageSettingScreen"
+      component={LanguageSettingScreen}
+      options={{
+        title: strings.appLanguage,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerShown: true,
         headerStyle: {
           backgroundColor: colors.whiteColor,
           borderBottomColor: colors.grayColor,

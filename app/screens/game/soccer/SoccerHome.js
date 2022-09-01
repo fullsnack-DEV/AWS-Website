@@ -52,7 +52,7 @@ import {followUser, unfollowUser} from '../../../api/Users';
 import LineUp from '../../../components/game/soccer/home/lineUp/LineUp';
 import ImageProgress from '../../../components/newsFeed/ImageProgress';
 import GameHomeShimer from '../../../components/shimmer/game/GameHomeShimer';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import GameStatus from '../../../Constants/GameStatus';
 import fonts from '../../../Constants/Fonts';
 import {checkReviewExpired, reviewExpiredDate} from '../../../utils/gameUtils';

@@ -1,6 +1,6 @@
 import React, {useContext} from 'react';
 import {View, Text, StyleSheet, FlatList, Image} from 'react-native';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 import TCEditHeader from '../TCEditHeader';
 
 import fonts from '../../Constants/Fonts';

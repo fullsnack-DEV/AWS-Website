@@ -6,7 +6,7 @@ import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 import BlockAvailableTabView from './BlockAvailableTabView';
 import DateTimePickerView from './DateTimePickerModal';
 import EventTimeSelectItem from './EventTimeSelectItem';

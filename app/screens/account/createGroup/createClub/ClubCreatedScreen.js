@@ -3,10 +3,11 @@ import {StyleSheet, View, Text, Image, TouchableOpacity} from 'react-native';
 
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 
+import {format} from 'react-string-format';
 import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
 import images from '../../../../Constants/ImagePath';
-import strings from '../../../../Constants/String';
+import {strings} from '../../../../../Localization/translation';
 
 export default function ClubCreatedScreen({navigation, route}) {
   return (
@@ -21,7 +22,7 @@ export default function ClubCreatedScreen({navigation, route}) {
 
         <Text style={styles.LocationText}>
           <Text style={styles.foundText}>
-            {`${route.params.groupName}\nhas been created.`}
+            {format(strings.entityCreatedText_dy, route.params.groupName)}
           </Text>
         </Text>
         <TouchableOpacity

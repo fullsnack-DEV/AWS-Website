@@ -19,7 +19,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import FastImage from 'react-native-fast-image';
 import Modal from 'react-native-modal';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 import uploadImages from '../../utils/imageAction';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';

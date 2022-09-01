@@ -2,7 +2,7 @@ import {View, Alert} from 'react-native';
 import React, {useEffect, useContext, useState} from 'react';
 import AuthContext from '../../../../auth/context';
 
-import strings from '../../../../Constants/String';
+import {strings} from '../../../../../Localization/translation';
 
 import {getUserReviews} from '../../../../api/Games';
 import UserReviewSection from '../../../../components/Home/UserReviewSection';

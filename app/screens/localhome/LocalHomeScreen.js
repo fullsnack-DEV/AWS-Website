@@ -34,13 +34,14 @@ import LinearGradient from 'react-native-linear-gradient';
 import Carousel from 'react-native-snap-carousel';
 import FastImage from 'react-native-fast-image';
 import {useIsFocused} from '@react-navigation/native';
+
 import {getLocationNameWithLatLong} from '../../api/External';
 import AuthContext from '../../auth/context';
 import images from '../../Constants/ImagePath';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 import TCTitleWithArrow from '../../components/TCTitleWithArrow';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 import {getShortsList, getSportsList} from '../../api/Games'; // getRecentGameDetails
 import * as Utility from '../../utils';
 
@@ -86,8 +87,6 @@ export default function LocalHomeScreen({navigation, route}) {
 
   const [loading, setloading] = useState(false);
   const [sports, setSports] = useState([]);
-  const [sportsMinus, setSportsMinus] = useState([]);
-  const [sportsPlus, setSportsPlus] = useState([]);
 
   const [customSports, setCustomSports] = useState([]);
   // eslint-disable-next-line no-unused-vars
@@ -99,8 +98,8 @@ export default function LocalHomeScreen({navigation, route}) {
     authContext?.entity?.obj?.city?.charAt(0).toUpperCase() +
       authContext?.entity?.obj?.city.slice(1),
   );
-  const [selectedSport, setSelectedSport] = useState('All');
-  const [sportType, setSportType] = useState('All');
+  const [selectedSport, setSelectedSport] = useState(strings.allType);
+  const [sportType, setSportType] = useState(strings.allType);
   const [settingPopup, setSettingPopup] = useState(false);
   const [shortsList, setShortsList] = useState([]);
   const [recentMatch, setRecentMatch] = useState([]);
@@ -212,7 +211,7 @@ export default function LocalHomeScreen({navigation, route}) {
           if (setting === null) {
             const playerSport =
               authContext?.entity?.auth?.user?.registered_sports || [];
-            const followedSport = authContext?.entity?.auth?.user?.sports;
+            const followedSport = authContext?.entity?.obj?.sports;
             const res = ([...playerSport, ...followedSport] || []).map(
               (obj) => ({
                 sport: obj.sport,
@@ -221,7 +220,6 @@ export default function LocalHomeScreen({navigation, route}) {
                 player_image: obj.player_image,
               }),
             );
-            console.log('rerererererere', res);
             const result = res.reduce((unique, o) => {
               if (
                 !unique.some(
@@ -240,7 +238,6 @@ export default function LocalHomeScreen({navigation, route}) {
               return unique;
             }, []);
             setSports(result);
-            setSportsMinus(result);
           } else {
             const arr = [];
             for (const sport of sports) {
@@ -263,7 +260,6 @@ export default function LocalHomeScreen({navigation, route}) {
             );
             console.log('unique ==>', uniqueSports);
             setSports([...uniqueSports]);
-            setSportsMinus([...uniqueSports]);
           }
         })
         // eslint-disable-next-line no-unused-vars
@@ -296,7 +292,6 @@ export default function LocalHomeScreen({navigation, route}) {
           }, []);
 
           setSports(result);
-          setSportsMinus(result);
         });
     }
   }, [authContext, isFocused]);
@@ -352,7 +347,7 @@ export default function LocalHomeScreen({navigation, route}) {
           },
         });
       }
-      if (selectedSport !== 'All') {
+      if (selectedSport !== strings.allType) {
         recentMatchQuery.query.bool.must.push({
           term: {
             'sport.keyword': {
@@ -398,7 +393,7 @@ export default function LocalHomeScreen({navigation, route}) {
           },
         });
       }
-      if (selectedSport !== 'All') {
+      if (selectedSport !== strings.allType) {
         upcomingMatchQuery.query.bool.must.push({
           term: {
             'sport.keyword': {
@@ -489,7 +484,7 @@ export default function LocalHomeScreen({navigation, route}) {
         });
       }
 
-      if (selectedSport !== 'All') {
+      if (selectedSport !== strings.allType) {
         availableForchallengeQuery.query.bool.should[0].bool.must.push({
           term: {
             'sport.keyword': {
@@ -545,7 +540,7 @@ export default function LocalHomeScreen({navigation, route}) {
           },
         });
       }
-      if (selectedSport !== 'All') {
+      if (selectedSport !== strings.allType) {
         recruitingPlayersQuery.query.bool.must.push({
           term: {
             'sport.keyword': {
@@ -604,7 +599,7 @@ export default function LocalHomeScreen({navigation, route}) {
           },
         });
       }
-      if (selectedSport !== 'All') {
+      if (selectedSport !== strings.allType) {
         lookingQuery.query.bool.must[0].nested.query.bool.must.push({
           term: {
             'registered_sports.sport.keyword': {
@@ -658,7 +653,7 @@ export default function LocalHomeScreen({navigation, route}) {
           },
         });
       }
-      if (selectedSport !== 'All') {
+      if (selectedSport !== strings.allType) {
         refereeQuery.query.bool.must[0].nested.query.bool.must.push({
           term: {
             'referee_data.sport.keyword': {
@@ -697,7 +692,7 @@ export default function LocalHomeScreen({navigation, route}) {
           },
         });
       }
-      if (selectedSport !== 'All') {
+      if (selectedSport !== strings.allType) {
         scorekeeperQuery.query.bool.must[0].nested.query.bool.must.push({
           term: {
             'scorekeeper_data.sport.keyword': {
@@ -787,7 +782,7 @@ export default function LocalHomeScreen({navigation, route}) {
               viewPosition: 0.8,
             });
             console.log('selected sport::=>', item);
-            if (item.sport === 'more') {
+            if (item.sport === strings.moreText) {
               setTimeout(() => {
                 setSettingPopup(true);
               }, 100);
@@ -804,21 +799,21 @@ export default function LocalHomeScreen({navigation, route}) {
               });
             }
           }}>
-          {/* {item.sport === 'All'
-            ? 'All'
-            : item.sport === 'more'
-            ? 'more'
+          {/* {item.sport === strings.allType
+            ? strings.allType
+            : item.sport === strings.moreText
+            ? strings.moreText
             : Utility.getSportName(item, authContext)} */}
 
-          {item.sport === 'All'
-            ? 'All'
-            : item.sport === 'more'
-            ? 'more'
-            : Utility.getSportName(item, authContext)}
+          {item.sport === strings.allType
+            ? strings.allType
+            : item.sport === strings.moreText
+            ? strings.moreText
+            : Utility.convertFirstCharacterAllWordsToUppercase(item.sport)}
         </Text>
       );
     },
-    [authContext, filters, selectedSport, sportType],
+    [filters, selectedSport, sportType],
   );
 
   const onShortPress = useCallback(
@@ -1100,75 +1095,51 @@ export default function LocalHomeScreen({navigation, route}) {
     [authContext, createPostAfterUpload, imageUploadContext],
   );
 
-  const renderSportsMinusView = useCallback(
-    ({item, index}) => (
-      <View style={styles.sportsBackgroundView}>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <TouchableOpacity
-            style={{
-              marginLeft: 10,
-            }}
-            onPress={() => {
-              const tempMinus = sportsMinus;
-              const tempPlus = sportsPlus;
-              tempMinus.splice(index, 1);
-              tempPlus.push(item);
-              setSportsMinus([...tempMinus]);
-              setSportsPlus([...tempPlus]);
-            }}>
-            <FastImage
-              resizeMode={'contain'}
-              source={images.removeSportList}
-              style={styles.plusIcon}
-            />
-          </TouchableOpacity>
-          <FastImage
-            resizeMode={'contain'}
-            source={{uri: `${image_base_url}${item.player_image}`}}
-            style={styles.sportsIcon}
-          />
-          <Text style={styles.sportNameTitle}>
-            {Utility.getSportName(item, authContext)}
-          </Text>
-        </View>
-      </View>
-    ),
-    [authContext, image_base_url, sportsMinus, sportsPlus],
-  );
-  const renderSportsPlusView = useCallback(
-    ({item, index}) => (
-      <View style={styles.sportsBackgroundView}>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <TouchableOpacity
-            style={{
-              marginLeft: 10,
-            }}
-            onPress={() => {
-              const tempMinus = sportsMinus;
-              const tempPlus = sportsPlus;
-              tempPlus.splice(index, 1);
-              tempMinus.push(item);
-              setSportsMinus([...tempMinus]);
-              setSportsPlus([...tempPlus]);
-            }}>
-            <FastImage
-              resizeMode={'contain'}
-              source={images.addSportList}
-              style={styles.plusIcon}
-            />
-          </TouchableOpacity>
-          <FastImage
-            resizeMode={'contain'}
-            source={{uri: `${image_base_url}${item.player_image}`}}
-            style={styles.sportsIcon}
-          />
-          <Text style={styles.sportNameTitle}>
-            {Utility.getSportName(item, authContext)}
-          </Text>
-        </View>
-      </View>
-    ),
-    [authContext, image_base_url, sportsMinus, sportsPlus],
+  const renderSportsView = useCallback(
+    ({item}) =>
+      item.sport !== strings.allType && (
+        <TouchableOpacity
+          onPress={() => {
+            const array = sports.filter((obj) => {
+              if (obj.sport === item.sport) {
+                return false;
+              }
+              return true;
+            });
+            const newArray = [item, ...array];
+            setSports([...newArray]);
+            Utility.setStorage('sportSetting', sports).then(() => {
+              console.log('data save');
+              setSettingPopup(false);
+              setSelectedSport(item.sport);
+              setSportType(item.sport_type);
+              refContainer.current.scrollToIndex({
+                animated: true,
+                index: 1,
+                viewPosition: 0.8,
+              });
+            });
+          }}>
+          <View style={styles.sportsBackgroundView}>
+            <View style={{flexDirection: 'row'}}>
+              {/* <Image
+              source={{uri: `${image_base_url}${item.player_image}`}}
+              style={styles.sportsIcon}
+            /> */}
+              <FastImage
+                resizeMode={'contain'}
+                source={{uri: `${image_base_url}${item.player_image}`}}
+                style={styles.sportsIcon}
+              />
+              <Text style={styles.sportNameTitle}>
+                {/* {Utility.getSportName(item, authContext)} */}
+                {Utility.convertFirstCharacterAllWordsToUppercase(item.sport)}
+              </Text>
+            </View>
+          </View>
+        </TouchableOpacity>
+      ),
+    [authContext, image_base_url, sports],
   );
   const getBack = () => {
     console.log('called getback');
@@ -1294,8 +1265,8 @@ export default function LocalHomeScreen({navigation, route}) {
             data={[
               ...[
                 {
-                  sport: 'All',
-                  sport_type: 'All',
+                  sport: strings.allType,
+                  sport_type: strings.allType,
                 },
               ],
               ...sports.slice(0, 12),
@@ -1319,7 +1290,7 @@ export default function LocalHomeScreen({navigation, route}) {
           />
           <Text
             style={
-              selectedSport === 'more'
+              selectedSport === strings.moreText
                 ? [
                     styles.sportName,
                     {
@@ -1335,7 +1306,7 @@ export default function LocalHomeScreen({navigation, route}) {
                 setSettingPopup(true);
               }, 100);
             }}>
-            more
+            {strings.moreText}
           </Text>
         </View>
       </View>
@@ -1511,7 +1482,7 @@ export default function LocalHomeScreen({navigation, route}) {
                   <TCTeamsCardPlaceholder
                     data={gameData}
                     cardWidth={'94%'}
-                    placeholderText={'NO AVAILABLE TEAMS OR PLAYERS'}
+                    placeholderText={strings.noPlayerTeamText}
                   />
                 )}
               />
@@ -1645,6 +1616,16 @@ export default function LocalHomeScreen({navigation, route}) {
         </View>
       )}
       <Modal
+        // onBackdropPress={() => setLocationPopup(false)}
+        // backdropOpacity={1}
+        // animationType="slide"
+        // hasBackdrop
+        // style={{
+        //   margin: 0,
+        //   backgroundColor: colors.blackOpacityColor,
+        // }}
+        // visible={locationPopup}
+
         onBackdropPress={() => setLocationPopup(false)}
         style={{
           margin: 0,
@@ -1784,96 +1765,50 @@ export default function LocalHomeScreen({navigation, route}) {
         backdropTransitionOutTiming={800}
         style={{
           margin: 0,
-          position: 'absolute',
-          bottom: 0,
-          right: 0,
-          left: 0,
         }}>
         <View
           style={[
             styles.bottomPopupContainer,
             {height: Dimensions.get('window').height - 50},
           ]}>
-          <View
-            style={{
-              flexDirection: 'row',
-              paddingHorizontal: 15,
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}>
+          <View style={styles.topHeaderContainer}>
             <TouchableOpacity
               hitSlop={getHitSlop(15)}
               style={styles.closeButton}
-              onPress={() => setSettingPopup(false)}>
-              <Image source={images.cancelImage} style={styles.closeButton} />
-            </TouchableOpacity>
-            <Text
-              style={{
-                alignSelf: 'center',
-                marginVertical: 20,
-                fontSize: 16,
-                fontFamily: fonts.RBold,
-                color: colors.lightBlackColor,
+              onPress={() => {
+                setSettingPopup(false);
               }}>
-              More
-            </Text>
-            <TouchableOpacity onPress={() => {}}>
-              <Text
-                style={{
-                  alignSelf: 'center',
-                  marginVertical: 20,
-                  fontSize: 16,
-                  fontFamily: fonts.RRegular,
-                  color: colors.themeColor,
-                }}>
-                Apply
-              </Text>
+              <Image source={images.crossImage} style={styles.closeButton} />
             </TouchableOpacity>
+            <Text style={styles.moreText}>More</Text>
           </View>
           <TCThinDivider width={'100%'} marginBottom={15} />
-          {sportsMinus.length > 0 && (
-            <View style={{flex: 0.5}}>
-              <Text style={styles.listTitle}>
-                Sports Displayed In Filter Bar
-              </Text>
-              <Text style={styles.listSubTitle}>
-                Upto 12 sports will be displayed in filter bar
-              </Text>
-              <FlatList
-                showsHorizontalScrollIndicator={false}
-                data={sportsMinus}
-                keyExtractor={keyExtractor}
-                renderItem={renderSportsMinusView}
-              />
-            </View>
-          )}
-          <View style={{flex: 0.5}}>
-            {sportsPlus.length > 0 && (
-              <View>
-                <Text style={[styles.listTitle, {marginBottom: 10}]}>
-                  Other Sports
-                </Text>
-                <FlatList
-                  showsHorizontalScrollIndicator={false}
-                  data={sportsPlus}
-                  keyExtractor={keyExtractor}
-                  renderItem={renderSportsPlusView}
-                />
-              </View>
+          <FlatList
+            showsHorizontalScrollIndicator={false}
+            data={sports}
+            keyExtractor={keyExtractor}
+            renderItem={renderSportsView}
+            style={{
+              width: '100%',
+              alignContent: 'center',
+              marginBottom: 0,
+              paddingVertical: 0,
+            }}
+            ListFooterComponent={() => (
+              <TouchableOpacity
+                style={styles.addSportsView}
+                onPress={() => {
+                  // setSportsListPopup(true);
+                  setSettingPopup(false);
+                  navigation.navigate('AddOrDeleteSport', {
+                    sports: [...sports],
+                    pressBack: getBack,
+                  });
+                }}>
+                <Text style={styles.addSportsTitle}>Add or delete Sports</Text>
+              </TouchableOpacity>
             )}
-          </View>
-          <TouchableOpacity
-            style={styles.addSportsView}
-            onPress={() => {
-              // setSportsListPopup(true);
-              setSettingPopup(false);
-              navigation.navigate('AddOrDeleteSport', {
-                sports: [...sports],
-                pressBack: getBack,
-              });
-            }}>
-            <Text style={styles.addSportsTitle}>Add or delete Sports</Text>
-          </TouchableOpacity>
+          />
         </View>
       </Modal>
 
@@ -1927,7 +1862,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.whiteColor,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-
+    position: 'absolute',
+    bottom: 0,
     width: '100%',
 
     ...Platform.select({
@@ -1982,20 +1918,21 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
   },
 
-  listTitle: {
+  moreText: {
     fontSize: 16,
     fontFamily: fonts.RBold,
     color: colors.lightBlackColor,
-    marginLeft: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: widthPercentageToDP('40%'),
   },
-  listSubTitle: {
-    fontSize: 14,
-    fontFamily: fonts.RRegular,
-    color: colors.lightBlackColor,
-    marginLeft: 20,
-    marginBottom: 10,
+  closeButton: {
+    alignSelf: 'center',
+    width: 25,
+    height: 25,
+    resizeMode: 'contain',
+    left: 5,
   },
-
   viewsContainer: {
     height: 60,
     justifyContent: 'space-between',
@@ -2044,11 +1981,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginLeft: 5,
     marginRight: 15,
-  },
-  plusIcon: {
-    resizeMode: 'cover',
-    height: 25,
-    width: 25,
   },
 
   sportNameTitle: {
@@ -2107,12 +2039,9 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     color: colors.veryLightGray,
   },
-
-  closeButton: {
-    alignSelf: 'center',
-    width: 13,
-    height: 13,
-    marginLeft: 5,
-    resizeMode: 'contain',
+  topHeaderContainer: {
+    height: 50,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });

@@ -21,7 +21,7 @@ import {patchGroup} from '../../../../api/Groups';
 import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
 import TCLable from '../../../../components/TCLabel';
-import strings from '../../../../Constants/String';
+import {strings} from '../../../../../Localization/translation';
 
 const gameTypeList = [
   {key: strings.officialOnly, id: 1},

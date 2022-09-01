@@ -28,7 +28,7 @@ import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 import {getUserDetails} from '../../api/Users';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 import ActivityLoader from '../loader/ActivityLoader';
 
 let image_url = '';

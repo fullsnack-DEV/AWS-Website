@@ -16,7 +16,7 @@ import ActivityLoader from '../../../components/loader/ActivityLoader';
 import * as Utility from '../../../utils';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
-import strings from '../../../Constants/String';
+import {strings} from '../../../../Localization/translation';
 import images from '../../../Constants/ImagePath';
 
 export default function LookingForSettingScreen({navigation, route}) {

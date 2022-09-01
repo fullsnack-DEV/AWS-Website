@@ -3,7 +3,7 @@ import {Alert, SafeAreaView, ScrollView} from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
 
 import GroupInfo from '../../components/Home/GroupInfo';
-import strings from '../../Constants/String';
+import {strings} from '../../../Localization/translation';
 import AuthContext from '../../auth/context';
 import {getGroupDetails, getGroupMembers} from '../../api/Groups';
 import ActivityLoader from '../../components/loader/ActivityLoader';
