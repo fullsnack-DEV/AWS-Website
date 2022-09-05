@@ -42,7 +42,6 @@ public class MainApplication extends Application implements ReactApplication {
           // packages.add(new MyReactNativePackage());
           //packages.add(new MapsPackage());
           packages.add(new PhotoViewPackage());
-		  packages.add(new RNLocalizePackage());
 
           return packages;
         }

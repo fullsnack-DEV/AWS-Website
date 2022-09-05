@@ -4,7 +4,6 @@ import {
   Text,
   Image,
   FlatList,
-  TouchableWithoutFeedback,
   StyleSheet,
   TouchableOpacity,
   Alert,
@@ -208,8 +207,8 @@ export default function FollowTeams({route, navigation}) {
               {teams[index].country}
             </Text>
           </View>
-          <View style={{flex: 0.3}}>
-            <TouchableWithoutFeedback
+          <View style={{flex: 0.4}}>
+            <TouchableOpacity
               onPress={() => {
                 followUnfollowClicked({item, index});
               }}>
@@ -222,7 +221,7 @@ export default function FollowTeams({route, navigation}) {
                   <Text style={styles.followingText}>Follow</Text>
                 </View>
               )}
-            </TouchableWithoutFeedback>
+            </TouchableOpacity>
           </View>
         </View>
       </View>

@@ -159,67 +159,64 @@ export default function ChooseGenderScreen({navigation, route}) {
   useLayoutEffect(() => {
     console.log('000000', nearCity);
     navigation.setOptions({
-      headerRight: () =>
-        enableNext ? (
-          <Text
-            testID={'next-signupGender-button'}
-            style={styles.nextButtonStyle}
-            onPress={async () => {
-              let gender = {};
-              if (selected === 0) gender = 'male';
-              else if (selected === 1) gender = 'female';
-              else if (selected === 2) gender = 'other';
+      headerRight: () => (
+        <Text
+          testID={'next-signupGender-button'}
+          style={styles.nextButtonStyle}
+          onPress={async () => {
+            let gender = {};
+            if (selected === 0) gender = 'male';
+            else if (selected === 1) gender = 'female';
+            else if (selected === 2) gender = 'other';
 
-              check(
-                PERMISSIONS.IOS.LOCATION_ALWAYS,
-                PERMISSIONS.IOS.LOCATION_WHEN_IN_USE,
-              )
-                .then((result) => {
-                  switch (result) {
-                    case RESULTS.UNAVAILABLE:
-                      console.log(
-                        'This feature is not available (on this device / in this context)',
-                      );
-                      navigateToChooseLocationScreen(gender);
-                      break;
-                    case RESULTS.DENIED:
-                      console.log(
-                        'The permission has not been requested / is denied but requestable',
-                      );
-                      navigateToChooseLocationScreen(gender);
-                      break;
-                    case RESULTS.LIMITED:
-                      console.log(
-                        'The permission is limited: some actions are possible',
-                      );
-                      navigateToChooseLocationScreen(gender);
-                      break;
-                    case RESULTS.GRANTED:
-                      console.log('The permission is granted');
-                      setLoading(true);
-                      fetchNearestCity(gender);
+            check(
+              PERMISSIONS.IOS.LOCATION_ALWAYS,
+              PERMISSIONS.IOS.LOCATION_WHEN_IN_USE,
+            )
+              .then((result) => {
+                switch (result) {
+                  case RESULTS.UNAVAILABLE:
+                    console.log(
+                      'This feature is not available (on this device / in this context)',
+                    );
+                    navigateToChooseLocationScreen(gender);
+                    break;
+                  case RESULTS.DENIED:
+                    console.log(
+                      'The permission has not been requested / is denied but requestable',
+                    );
+                    navigateToChooseLocationScreen(gender);
+                    break;
+                  case RESULTS.LIMITED:
+                    console.log(
+                      'The permission is limited: some actions are possible',
+                    );
+                    navigateToChooseLocationScreen(gender);
+                    break;
+                  case RESULTS.GRANTED:
+                    console.log('The permission is granted');
+                    setLoading(true);
+                    fetchNearestCity(gender);
 
-                      break;
-                    case RESULTS.BLOCKED:
-                      console.log(
-                        'The permission is denied and not requestable anymore',
-                      );
-                      navigateToChooseLocationScreen(gender);
-                      break;
-                    default:
-                      navigateToChooseLocationScreen(gender);
-                  }
-                })
-                .catch((error) => {
-                  console.log('error', error);
-                  // …
-                });
-            }}>
-            Next
-          </Text>
-        ) : (
-          <View></View>
-        ),
+                    break;
+                  case RESULTS.BLOCKED:
+                    console.log(
+                      'The permission is denied and not requestable anymore',
+                    );
+                    navigateToChooseLocationScreen(gender);
+                    break;
+                  default:
+                    navigateToChooseLocationScreen(gender);
+                }
+              })
+              .catch((error) => {
+                console.log('error', error);
+                // …
+              });
+          }}>
+          Next
+        </Text>
+      ),
       headerLeft: () => (
         <TouchableOpacity
           onPress={() => {
