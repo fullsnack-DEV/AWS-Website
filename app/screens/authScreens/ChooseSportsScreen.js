@@ -17,7 +17,6 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import QB from 'quickblox-react-native-sdk';
-import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import Config from 'react-native-config';
 import {createUser} from '../../api/Users';
@@ -313,7 +312,7 @@ export default function ChooseSportsScreen({navigation, route}) {
   };
 
   const renderItem = ({item, index}) => (
-    <TouchableWithoutFeedback
+    <TouchableOpacity
       style={styles.listItem}
       onPress={() => {
         isIconCheckedOrNot({item, index});
@@ -340,7 +339,7 @@ export default function ChooseSportsScreen({navigation, route}) {
         )}
       </View>
       <Separator />
-    </TouchableWithoutFeedback>
+    </TouchableOpacity>
   );
   const setDummyAuthContext = (key, value) => {
     dummyAuthContext[key] = value;

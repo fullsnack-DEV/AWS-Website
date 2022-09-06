@@ -286,41 +286,7 @@ export default function SignupScreen({navigation, route}) {
   };
 
   return (
-    <>
-      <ActionSheet
-        ref={actionSheet}
-        // title={'News Feed Post'}
-        options={[strings.camera, strings.album, strings.cancelTitle]}
-        cancelButtonIndex={2}
-        onPress={(index) => {
-          if (index === 0) {
-            openCamera();
-          } else if (index === 1) {
-            openImagePicker();
-          }
-        }}
-      />
-      <ActionSheet
-        ref={actionSheetWithDelete}
-        // title={'News Feed Post'}
-        options={[
-          strings.camera,
-          strings.album,
-          strings.deleteTitle,
-          strings.cancelTitle,
-        ]}
-        cancelButtonIndex={3}
-        destructiveButtonIndex={2}
-        onPress={(index) => {
-          if (index === 0) {
-            openCamera();
-          } else if (index === 1) {
-            openImagePicker();
-          } else if (index === 2) {
-            deleteImage();
-          }
-        }}
-      />
+    <View style={{flex: 1}}>
       <LinearGradient
         colors={[colors.themeColor1, colors.themeColor3]}
         style={styles.mainContainer}>
@@ -333,27 +299,12 @@ export default function SignupScreen({navigation, route}) {
         <Text style={styles.checkEmailText}>{strings.addYourName}</Text>
 
         <TCKeyboardView>
-          <View style={{marginVertical: 20}}>
+          <View>
             <TouchableOpacity
               style={styles.profile}
               onPress={() => {
                 onProfileImageClicked();
               }}>
-              {/* <FastImage
-                resizeMode={'contain'}
-                source={
-                  profilePic?.path
-                    ? {uri: profilePic?.path}
-                    : images.profilePlaceHolder
-                }
-                style={{
-                  width: 100,
-                  height: 100,
-                  borderRadius: 50,
-                  backgroundColor: '#FED378',
-                }}
-              /> */}
-
               {profilePic ? (
                 <FastImage
                   resizeMode={'contain'}
@@ -442,7 +393,41 @@ export default function SignupScreen({navigation, route}) {
           /> */}
         </TCKeyboardView>
       </LinearGradient>
-    </>
+      <ActionSheet
+        ref={actionSheet}
+        // title={'News Feed Post'}
+        options={[strings.camera, strings.album, strings.cancelTitle]}
+        cancelButtonIndex={2}
+        onPress={(index) => {
+          if (index === 0) {
+            openCamera();
+          } else if (index === 1) {
+            openImagePicker();
+          }
+        }}
+      />
+      <ActionSheet
+        ref={actionSheetWithDelete}
+        // title={'News Feed Post'}
+        options={[
+          strings.camera,
+          strings.album,
+          strings.deleteTitle,
+          strings.cancelTitle,
+        ]}
+        cancelButtonIndex={3}
+        destructiveButtonIndex={2}
+        onPress={(index) => {
+          if (index === 0) {
+            openCamera();
+          } else if (index === 1) {
+            openImagePicker();
+          } else if (index === 2) {
+            deleteImage();
+          }
+        }}
+      />
+    </View>
   );
 }
 
