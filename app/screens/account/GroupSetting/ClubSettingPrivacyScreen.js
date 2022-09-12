@@ -31,7 +31,7 @@ export default function ClubSettingPrivacyScreen({navigation, route}) {
 
   const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
   const [pointEvent, setPointEvent] = useState('auto');
-  const [clubSetting] = useState([{key: 'Can Club invite Team', id: 0}]);
+  const [clubSetting] = useState([{key: strings.canClubInviteTeamText, id: 0}]);
   const [clubInviteTeam, setClubInviteTeam] = useState(
     route?.params?.clubInviteTeam
       ? route?.params?.clubInviteTeam
@@ -39,7 +39,9 @@ export default function ClubSettingPrivacyScreen({navigation, route}) {
   );
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: () => <Text style={styles.headerTitle}>Club</Text>,
+      headerTitle: () => (
+        <Text style={styles.headerTitle}>{strings.clubText}</Text>
+      ),
     });
   }, [navigation]);
 
@@ -69,7 +71,6 @@ export default function ClubSettingPrivacyScreen({navigation, route}) {
     setIsAccountDeactivated(false);
     setPointEvent('auto');
     if (isFocused) {
-      console.log('its called....', authContext.entity.role);
       if (authContext?.entity?.obj?.is_pause === true) {
         setIsAccountDeactivated(true);
         setPointEvent('none');
@@ -90,8 +91,6 @@ export default function ClubSettingPrivacyScreen({navigation, route}) {
 
   const getSettingValue = useCallback(
     (item) => {
-      console.log('item.key', item);
-
       if (item === clubSetting[0].key) {
         if (clubInviteTeam === 1) {
           return strings.yes;

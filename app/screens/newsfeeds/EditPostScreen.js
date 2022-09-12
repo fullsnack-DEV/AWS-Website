@@ -289,7 +289,6 @@ const EditPostScreen = ({navigation, route}) => {
 
   const searchFilterFunction = useCallback(
     (text) => {
-      console.log('search text', text);
       if (text?.length > 0) {
         let userData = searchUsers.filter(
           (a) => !tagsOfEntity.some((b) => a.user_id === b.entity_id),
@@ -558,13 +557,13 @@ const EditPostScreen = ({navigation, route}) => {
             </TouchableOpacity>
           </View>
           <View style={styles.writePostViewStyle}>
-            <Text style={styles.writePostTextStyle}>Edit Post</Text>
+            <Text style={styles.writePostTextStyle}>{strings.editPost}</Text>
           </View>
           <TouchableOpacity
             style={styles.doneViewStyle}
             onPress={() => {
               if (searchText.trim().length === 0 && selectImage.length === 0) {
-                Alert.alert('Please write some text or select any image.');
+                Alert.alert(strings.writeText);
               } else {
                 setloading(false);
 
@@ -588,11 +587,6 @@ const EditPostScreen = ({navigation, route}) => {
                 // eslint-disable-next-line no-param-reassign
                 tagData.forEach((tData) => delete tData.entity_data);
                 navigation.goBack();
-                console.log('select image', selectImage);
-                console.log('searchText', searchText);
-                console.log('data', data);
-                console.log('tagData', tagData);
-                console.log('format_tagged_data', format_tagged_data);
 
                 onPressDone(
                   selectImage,
@@ -603,7 +597,7 @@ const EditPostScreen = ({navigation, route}) => {
                 );
               }
             }}>
-            <Text style={styles.doneTextStyle}>Done</Text>
+            <Text style={styles.doneTextStyle}>{strings.done}</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -657,7 +651,7 @@ const EditPostScreen = ({navigation, route}) => {
               imageStyle={{width: 30, height: 30}}
               onImagePress={() => {}}
             />
-            <Text style={styles.onlyMeTextStyle}>Only me</Text>
+            <Text style={styles.onlyMeTextStyle}>{strings.onlymeTitleText}</Text>
           </View>
           <View
             style={[

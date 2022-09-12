@@ -19,6 +19,7 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import Modal from 'react-native-modal';
+import {format} from 'react-string-format';
 import * as Utility from '../../../utils';
 import GameFeeCard from '../../../components/challenge/GameFeeCard';
 import {
@@ -61,8 +62,6 @@ export default function AlterChallengeScreen({navigation, route}) {
   const [groupObj] = useState(route?.params?.groupObj);
   const [sportName] = useState(route?.params?.sportName);
 
-  console.log('settingObjsettingObj:=>', route?.params?.settingObj);
-
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
   const [loading, setloading] = useState(false);
@@ -96,7 +95,6 @@ export default function AlterChallengeScreen({navigation, route}) {
 
   useEffect(() => {
     setloading(true);
-    console.log('challenge data11:=>', bodyParams?.challengee);
     getSetting(
       bodyParams?.challengee,
       authContext.entity.role === 'user' ? 'player' : 'team',
@@ -105,7 +103,6 @@ export default function AlterChallengeScreen({navigation, route}) {
       bodyParams?.sport_type,
     ).then((response) => {
       setloading(false);
-      console.log('manage challenge response:=>', response);
       setSettingObject(response);
     });
   }, [authContext, bodyParams?.challengee, bodyParams?.sport]);
@@ -113,7 +110,6 @@ export default function AlterChallengeScreen({navigation, route}) {
   useEffect(() => {
     entity = authContext.entity;
     const {challengeObj} = route.params ?? {};
-    console.log('challengeObj1:=> ', challengeObj);
     if (challengeObj.length > 0) {
       for (let i = 0; i < challengeObj.length; i++) {
         if (challengeObj[i].status === ReservationStatus.accepted) {
@@ -155,8 +151,6 @@ export default function AlterChallengeScreen({navigation, route}) {
       if (!defaultCard && challengeObj[0].source) {
         getPaymentMethods(challengeObj[0].source);
       }
-
-      console.log('challenge Object::', challengeObj[0]);
     } else {
       if (isOld === false) {
         setbodyParams(challengeObj);
@@ -195,8 +189,6 @@ export default function AlterChallengeScreen({navigation, route}) {
       if (!defaultCard && challengeObj.source) {
         getPaymentMethods(challengeObj.source);
       }
-      console.log('challenge Object::', challengeObj);
-      console.log('Payment Object::', paymentCard);
     }
     if (route?.params?.paymentMethod) {
       setDefaultCard(route?.params?.paymentMethod);
@@ -207,8 +199,6 @@ export default function AlterChallengeScreen({navigation, route}) {
     setloading(true);
     paymentMethods(authContext)
       .then((response) => {
-        console.log('source ID:', bodyParams?.source);
-        console.log('payment method', response.payload);
         for (const tempCard of response?.payload) {
           if (tempCard?.id === bodyParams?.source) {
             setDefaultCard(tempCard);
@@ -223,7 +213,6 @@ export default function AlterChallengeScreen({navigation, route}) {
         // }
       })
       .catch((e) => {
-        console.log('error in payment method', e);
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
@@ -262,14 +251,11 @@ export default function AlterChallengeScreen({navigation, route}) {
       }
     }
     if (bodyParams?.game_fee?.fee || bodyParams?.game_fee?.fee === 0) {
-      console.log('bodyParams check 1:=>', bodyParams);
-
       getFeeDetail();
     }
   }, [authContext.entity, bodyParams, groupObj]);
 
   useEffect(() => {
-    console.log('authContext.entitity', authContext.entity);
     setloading(true);
     getSetting(
       bodyParams?.challengee,
@@ -279,7 +265,6 @@ export default function AlterChallengeScreen({navigation, route}) {
     )
       .then((response) => {
         setloading(false);
-        console.log('manage challenge response:=>', response);
         if (bodyParams?.venue?.isCustom) {
           response.venue.push(bodyParams?.venue);
           setVenueList(response.venue);
@@ -296,19 +281,15 @@ export default function AlterChallengeScreen({navigation, route}) {
   }, [authContext, bodyParams?.challengee, bodyParams?.venue, sportName]);
 
   useEffect(() => {
-    console.log('useEffect Called');
     if (isFocused) {
       const settings = {...bodyParams};
       if (route?.params?.gameType) {
-        console.log('route?.params?.gameType', route?.params?.gameType);
         settings.game_type = route?.params?.gameType;
       }
       if (route?.params?.gameFee) {
-        console.log('route?.params?.gameFee', route?.params?.gameFee);
         settings.game_fee = route?.params?.gameFee;
       }
       if (route?.params?.refundPolicy) {
-        console.log('route?.params?.refundPolicy', route?.params?.refundPolicy);
         settings.refund_policy = route?.params?.refundPolicy;
       }
       if (route?.params?.homeAway) {
@@ -324,17 +305,11 @@ export default function AlterChallengeScreen({navigation, route}) {
 
         //  settings.home_team = route?.params?.home_team;
         //  settings.away_team = route?.params?.away_team;
-
-        console.log('setting:=> ', settings);
       }
       if (route?.params?.gameDuration) {
         settings.game_duration = route?.params?.gameDuration;
       }
       if (route?.params?.gameGeneralRules) {
-        console.log(
-          'route?.params?.gameGeneralRules',
-          route?.params?.gameGeneralRules,
-        );
         settings.general_rules = route?.params?.gameGeneralRules;
         settings.special_rules = route?.params?.gameSpecialRules;
       }
@@ -387,7 +362,7 @@ export default function AlterChallengeScreen({navigation, route}) {
     <>
       <TCChallengeTitle
         containerStyle={{marginLeft: 25, marginTop: 5, marginBottom: 5}}
-        title={'Interval'}
+        title={strings.intervalText}
         titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
         value={item.interval}
         valueStyle={{
@@ -396,11 +371,11 @@ export default function AlterChallengeScreen({navigation, route}) {
           color: colors.greenColorCard,
           marginRight: 2,
         }}
-        staticValueText={'min.'}
+        staticValueText={strings.minuteText}
       />
       <TCChallengeTitle
         containerStyle={{marginLeft: 25, marginTop: 5, marginBottom: 5}}
-        title={`${getNumberSuffix(index + 2)} Period`}
+        title={format(strings.nPeriod, getNumberSuffix(index + 2))}
         titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
         value={item.period}
         valueStyle={{
@@ -409,7 +384,7 @@ export default function AlterChallengeScreen({navigation, route}) {
           color: colors.greenColorCard,
           marginRight: 2,
         }}
-        staticValueText={'min.'}
+        staticValueText={strings.minuteText}
       />
     </>
   );
@@ -418,7 +393,7 @@ export default function AlterChallengeScreen({navigation, route}) {
     <>
       <TCChallengeTitle
         containerStyle={{marginLeft: 25, marginTop: 5, marginBottom: 5}}
-        title={'Interval'}
+        title={strings.intervalText}
         titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
         value={item.interval}
         valueStyle={{
@@ -427,7 +402,7 @@ export default function AlterChallengeScreen({navigation, route}) {
           color: colors.greenColorCard,
           marginRight: 2,
         }}
-        staticValueText={'min.'}
+        staticValueText={strings.minuteText}
       />
       <TCChallengeTitle
         containerStyle={{marginLeft: 25, marginTop: 5, marginBottom: 5}}
@@ -440,7 +415,7 @@ export default function AlterChallengeScreen({navigation, route}) {
           color: colors.greenColorCard,
           marginRight: 2,
         }}
-        staticValueText={'min.'}
+        staticValueText={strings.minuteText}
       />
     </>
   );
@@ -803,7 +778,6 @@ export default function AlterChallengeScreen({navigation, route}) {
         </View>
       );
     }
-    console.log('Challenge Object:=>', bodyParams);
     if (
       (checkSenderOrReceiver(bodyParams) === 'sender' ||
         checkSenderOrReceiver(bodyParams) === 'receiver') &&
@@ -1037,8 +1011,8 @@ export default function AlterChallengeScreen({navigation, route}) {
 
       <TCTabView
         totalTabs={2}
-        firstTabTitle={'ALTERATION REQUEST'}
-        secondTabTitle={'CURRENT RESERVATION'}
+        firstTabTitle={strings.alterRequest}
+        secondTabTitle={strings.currentReservation}
         indexCounter={maintabNumber}
         eventPrivacyContianer={{width: 100}}
         onFirstTabPress={() => setMaintabNumber(0)}
@@ -1050,7 +1024,7 @@ export default function AlterChallengeScreen({navigation, route}) {
         <View style={{marginBottom: 15}}>
           <View>
             <Text style={styles.challengeNumberStyle}>
-              Request No.{`${bodyParams?.challenge_id}`}
+              {format(strings.requestNumber, bodyParams?.challenge_id)}
             </Text>
 
             <ChallengeStatusView
@@ -1072,11 +1046,9 @@ export default function AlterChallengeScreen({navigation, route}) {
 
             {bodyParams?.game_id && (
               <TCArrowView
-                title={'Game Home '}
+                title={`${strings.gameHome} `}
                 onPress={() => {
-                  console.log('teamObject?.sport', bodyParams);
                   const gameHome = getGameHomeScreen(bodyParams?.sport);
-                  console.log('gameHome', gameHome);
 
                   navigation.navigate(gameHome, {
                     gameId: bodyParams?.game_id,
@@ -1102,7 +1074,9 @@ export default function AlterChallengeScreen({navigation, route}) {
               <View style={styles.challengerView}>
                 <View style={styles.teamView}>
                   <Image source={images.reqIcon} style={styles.reqOutImage} />
-                  <Text style={styles.challengerText}>Challenger</Text>
+                  <Text style={styles.challengerText}>
+                    {strings.challenger}
+                  </Text>
                 </View>
 
                 <View style={styles.teamView}>
@@ -1128,7 +1102,9 @@ export default function AlterChallengeScreen({navigation, route}) {
               <View style={styles.challengeeView}>
                 <View style={styles.teamView}>
                   <Image source={images.reqeIcon} style={styles.reqOutImage} />
-                  <Text style={styles.challengeeText}>Challengee</Text>
+                  <Text style={styles.challengeeText}>
+                    {strings.challengee}
+                  </Text>
                 </View>
 
                 <View style={styles.teamView}>
@@ -1156,7 +1132,7 @@ export default function AlterChallengeScreen({navigation, route}) {
             <TCThickDivider marginTop={15} />
             <View>
               <TCChallengeTitle
-                title={'Home & Away'}
+                title={strings.homeAndAway}
                 isEdit={true}
                 onEditPress={() => {
                   navigation.navigate('HomeAway', {
@@ -1167,7 +1143,7 @@ export default function AlterChallengeScreen({navigation, route}) {
                 }}
               />
               <View style={styles.teamContainer}>
-                <Text style={styles.homeLableStyle}>Home</Text>
+                <Text style={styles.homeLableStyle}>{strings.home}</Text>
                 <View style={styles.teamViewStyle}>
                   <Image
                     source={
@@ -1193,7 +1169,7 @@ export default function AlterChallengeScreen({navigation, route}) {
               </View>
 
               <View style={styles.teamContainer}>
-                <Text style={styles.homeLableStyle}>Away</Text>
+                <Text style={styles.homeLableStyle}>{strings.away}</Text>
                 <View style={styles.teamViewStyle}>
                   <Image
                     source={
@@ -1221,7 +1197,7 @@ export default function AlterChallengeScreen({navigation, route}) {
             </View>
 
             <TCChallengeTitle
-              title={'Game Duration'}
+              title={strings.gameDuration}
               isEdit={true}
               onEditPress={() => {
                 navigation.navigate('GameDuration', {
@@ -1233,7 +1209,7 @@ export default function AlterChallengeScreen({navigation, route}) {
             />
             <TCChallengeTitle
               containerStyle={{marginLeft: 25, marginTop: 15, marginBottom: 5}}
-              title={'1st period'}
+              title={strings.firstPeriodText}
               titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
               value={bodyParams?.game_duration?.first_period}
               valueStyle={{
@@ -1242,7 +1218,7 @@ export default function AlterChallengeScreen({navigation, route}) {
                 color: colors.greenColorCard,
                 marginRight: 2,
               }}
-              staticValueText={'min.'}
+              staticValueText={strings.minuteText}
             />
 
             <FlatList
@@ -1267,7 +1243,7 @@ export default function AlterChallengeScreen({navigation, route}) {
 
             <View>
               <TCChallengeTitle
-                title={'Date & Time'}
+                title={strings.dateAndTimeCam}
                 isEdit={true}
                 onEditPress={() => {
                   navigation.navigate('ChooseTimeSlotScreen', {
@@ -1279,7 +1255,7 @@ export default function AlterChallengeScreen({navigation, route}) {
 
               <View>
                 <View style={styles.dateTimeValue}>
-                  <Text style={styles.dateTimeText}>Start </Text>
+                  <Text style={styles.dateTimeText}>{strings.starts} </Text>
                   <Text style={styles.dateTimeText}>
                     {moment(
                       new Date(
@@ -1290,7 +1266,7 @@ export default function AlterChallengeScreen({navigation, route}) {
                   </Text>
                 </View>
                 <View style={styles.dateTimeValue}>
-                  <Text style={styles.dateTimeText}>End </Text>
+                  <Text style={styles.dateTimeText}>{strings.ends} </Text>
                   <Text style={styles.dateTimeText}>
                     {moment(
                       new Date(
@@ -1303,8 +1279,10 @@ export default function AlterChallengeScreen({navigation, route}) {
                 <View style={styles.dateTimeValue}>
                   <Text style={styles.dateTimeText}> </Text>
                   <Text style={styles.timeZoneText}>
-                    Time zone{' '}
-                    <Text style={{fontFamily: fonts.RRegular}}>Vancouver</Text>
+                    {strings.timezone}{' '}
+                    <Text style={{fontFamily: fonts.RRegular}}>
+                      {strings.vancouver}
+                    </Text>
                   </Text>
                 </View>
               </View>
@@ -1327,7 +1305,7 @@ export default function AlterChallengeScreen({navigation, route}) {
 
             <View>
               <TCChallengeTitle
-                title={'Venue'}
+                title={strings.venue}
                 isEdit={true}
                 onEditPress={() => {
                   navigation.navigate('ChooseVenueScreen', {
@@ -1354,11 +1332,9 @@ export default function AlterChallengeScreen({navigation, route}) {
             </View>
 
             <TCChallengeTitle
-              title={'Type of Game'}
+              title={strings.typeOfGameText}
               value={bodyParams?.game_type}
-              tooltipText={
-                'The game result has an effect on TC points of the challengee and you.'
-              }
+              tooltipText={strings.gameResuleAffect}
               tooltipHeight={hp('6%')}
               tooltipWidth={wp('50%')}
               isEdit={true}
@@ -1373,9 +1349,12 @@ export default function AlterChallengeScreen({navigation, route}) {
             <TCThickDivider />
 
             <TCChallengeTitle
-              title={'Match Fee'}
+              title={strings.gameFee}
               value={bodyParams?.game_fee?.fee}
-              staticValueText={`${bodyParams?.game_fee?.currency_type} /Game`}
+              staticValueText={format(
+                strings.perGame,
+                bodyParams?.game_fee?.currency_type,
+              )}
               valueStyle={{
                 fontFamily: fonts.RBold,
                 fontSize: 16,
@@ -1398,7 +1377,7 @@ export default function AlterChallengeScreen({navigation, route}) {
                 <View>
                   <View>
                     <TCLabel
-                      title={'Payment Method'}
+                      title={strings.paymentMethod}
                       style={{marginBottom: 10}}
                     />
                     <View style={styles.viewMarginStyle}>
@@ -1426,7 +1405,7 @@ export default function AlterChallengeScreen({navigation, route}) {
               )}
 
             <TCChallengeTitle
-              title={'Game Rules'}
+              title={strings.gameRules}
               isEdit={true}
               onEditPress={() => {
                 navigation.navigate('GameRules', {
@@ -1436,10 +1415,10 @@ export default function AlterChallengeScreen({navigation, route}) {
                 });
               }}
             />
-            <Text style={styles.rulesTitle}>General Rules</Text>
+            <Text style={styles.rulesTitle}>{strings.gameRulesSubTitle1}</Text>
             <Text style={styles.rulesDetail}>{bodyParams?.general_rules}</Text>
             <View style={{marginBottom: 10}} />
-            <Text style={styles.rulesTitle}>Special Rules</Text>
+            <Text style={styles.rulesTitle}>{strings.gameRulesSubTitle2}</Text>
             <Text style={styles.rulesDetail}>{bodyParams?.special_rules}</Text>
             <TCThickDivider marginTop={20} />
           </View>
@@ -1550,7 +1529,9 @@ export default function AlterChallengeScreen({navigation, route}) {
 
             <TCChallengeTitle
               title={
-                bodyParams?.challenger === entity.uid ? 'Payment' : 'Earning'
+                bodyParams?.challenger === entity.uid
+                  ? strings.payment
+                  : strings.earning
               }
               isEdit={false}
               onEditPress={() => {
@@ -1593,11 +1574,9 @@ export default function AlterChallengeScreen({navigation, route}) {
          }}
        /> */}
           <TCChallengeTitle
-            title={'Refund Policy'}
+            title={strings.refundpolicy}
             value={bodyParams?.refund_policy}
-            tooltipText={
-              '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the match fee and service fee are not refunded.'
-            }
+            tooltipText={strings.cancellationPolicyDesc}
             tooltipHeight={hp('18%')}
             tooltipWidth={wp('50%')}
             isEdit={false}
@@ -1640,7 +1619,7 @@ export default function AlterChallengeScreen({navigation, route}) {
 
           <View style={styles.mailContainer}>
             <Text style={styles.invitationText}>
-              {'Alteration request\nsent'}
+              {strings.alterRequestSend}
             </Text>
             <View style={styles.imageContainer}>
               <Image
@@ -1657,7 +1636,7 @@ export default function AlterChallengeScreen({navigation, route}) {
                 setAlterModalVisible(false);
                 navigation.popToTop();
               }}>
-              <Text style={styles.goToProfileTitle}>OK</Text>
+              <Text style={styles.goToProfileTitle}>{strings.okTitleText}</Text>
             </TouchableOpacity>
           </SafeAreaView>
         </View>

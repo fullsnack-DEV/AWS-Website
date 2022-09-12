@@ -83,7 +83,6 @@ export default function SoccerRecording({navigation, route}) {
     getGameRoster(gameId, authContext)
       .then((res2) => {
         setloading(false);
-        console.log('ROSTER RESPONSE::', res2.payload);
 
         const homeField = res2.payload.home_team.roster.filter(
           (obj) => obj.field_status === 'onField' && obj.role === 'player',
@@ -101,9 +100,9 @@ export default function SoccerRecording({navigation, route}) {
         // )
 
         if (homeField.length <= 0) {
-          setIsLineUpSet('Your team does not configure lineup yet.');
+          setIsLineUpSet(strings.yourTeamDontLineup);
         } else if (awayField.length <= 0) {
-          setIsLineUpSet('Away team does not configure lineup yet.');
+          setIsLineUpSet(strings.awayTeamDoesNotHaveLineup);
         }
       })
       .catch((e) => {
@@ -164,25 +163,24 @@ export default function SoccerRecording({navigation, route}) {
     }
   };
 
-  console.log('TIMER :=> ', timelineTimer);
   const validate = () => {
     if (
       gameObj.status === GameStatus.accepted ||
       gameObj.status === GameStatus.reset
     ) {
-      Alert.alert('Please, start the game first.');
+      Alert.alert(strings.startGameFirstValidation);
       return false;
     }
     if (gameObj.status === GameStatus.paused) {
-      Alert.alert('Game is paused.');
+      Alert.alert(strings.gamePaused);
       return false;
     }
     if (gameObj.status === GameStatus.ended) {
-      Alert.alert('Game is ended.');
+      Alert.alert(strings.gameEnded);
       return false;
     }
     if (!selectedTeam) {
-      Alert.alert('Please, select a team first');
+      Alert.alert(strings.selectTeamFirst);
       return false;
     }
     return true;
@@ -258,7 +256,6 @@ export default function SoccerRecording({navigation, route}) {
       if (![GameStatus.accepted, GameStatus.reset].includes(gameObj?.status)) {
         startStopTimerTimeline(gameObj);
       }
-      console.log('route?.params?.gameDetail', route?.params?.gameDetail);
     }
 
     // timerForTimeline = setInterval(() => {
@@ -358,8 +355,6 @@ export default function SoccerRecording({navigation, route}) {
           setActionByTeamID(gameObj?.away_team?.group_id);
         }
         setloading(false);
-
-        console.log('GAME RESPONSE::', response.payload);
       })
       .catch((e) => {
         setloading(false);
@@ -371,14 +366,12 @@ export default function SoccerRecording({navigation, route}) {
   const resetGameDetail = (gameId) => {
     setloading(true);
     resetGame(gameId, authContext)
-      .then((response) => {
+      .then(() => {
         date = null;
-        console.log('RESET GAME OBJECT::', gameObj);
         getGameDetail(gameId, true);
         setloading(false);
         setTimelineTimer('00 : 00 : 00');
         startStopTimerTimeline(gameObj);
-        console.log('RESET GAME RESPONSE::', response);
       })
       .catch((e) => {
         setloading(false);
@@ -390,7 +383,7 @@ export default function SoccerRecording({navigation, route}) {
   const decreaseGameScoreRecord = (teamId, gameId) => {
     setloading(true);
     decreaseGameScore(teamId, gameId, authContext)
-      .then((response) => {
+      .then(() => {
         if (selectedTeam === gameObj?.home_team?.group_id) {
           setGameObj({
             ...gameObj,
@@ -403,7 +396,6 @@ export default function SoccerRecording({navigation, route}) {
           });
         }
         setloading(false);
-        console.log('DECREASE GAME RESPONSE::', response.payload);
       })
       .catch((e) => {
         setloading(false);
@@ -416,7 +408,7 @@ export default function SoccerRecording({navigation, route}) {
     setloading(true);
 
     addGameRecord(gameId, params, authContext)
-      .then((response) => {
+      .then(() => {
         setloading(false);
         // setDate();
         date = null;
@@ -458,7 +450,6 @@ export default function SoccerRecording({navigation, route}) {
           startStopTimerTimeline(gameObj);
         }
         getGameDetail(gameId, true);
-        console.log('GAME RESPONSE::', response.payload);
       })
       .catch((e) => {
         setloading(false);
@@ -469,14 +460,10 @@ export default function SoccerRecording({navigation, route}) {
   };
 
   const onChange = (selectedDate) => {
-    console.log('selected Date::', selectedDate);
     date = selectedDate;
     startStopTimerTimeline(gameObj);
     setPickerShow(Platform.OS === 'ios' || Platform.OS === 'android');
   };
-
-  console.log('gameObj?.home_team_goal', gameObj?.home_team_goal);
-  console.log('gameObj?.away_team_goal', gameObj?.away_team_goal);
 
   const getOpetions = () => {
     if (
@@ -485,9 +472,13 @@ export default function SoccerRecording({navigation, route}) {
       gameObj?.away_team?.group_id === authContext.entity.uid ||
       gameObj?.away_team?.user_id === authContext.entity.uid
     ) {
-      return ['Edit Roster and Non-roster', 'Reset Match Records', 'Cancel'];
+      return [
+        strings.editRosterNonRoster,
+        strings.resetMatchRecords,
+        strings.cancel,
+      ];
     }
-    return ['Reset Match Records', 'Cancel'];
+    return [strings.resetMatchRecords, strings.cancel];
   };
 
   return (
@@ -499,7 +490,6 @@ export default function SoccerRecording({navigation, route}) {
             <TouchableOpacity
               style={styles.headerView}
               onPress={() => {
-                console.log('Clicked..');
                 setPickerShow(false);
               }}>
               <View style={styles.leftView}>
@@ -610,7 +600,7 @@ export default function SoccerRecording({navigation, route}) {
                 (gameObj &&
                   gameObj.status &&
                   gameObj.status === GameStatus.reset)
-                  ? 'Game start at now'
+                  ? strings.gameStartAtNow
                   : getDateFormat(date ? new Date(date.getTime()) : new Date())}
               </Text>
               <Image source={images.dropDownArrow} style={styles.downArrow} />
@@ -648,7 +638,6 @@ export default function SoccerRecording({navigation, route}) {
           </View>
           <TouchableOpacity
             onPress={() => {
-              console.log('OKOKOKO');
               setPickerShow(false);
             }}
             style={{
@@ -705,7 +694,7 @@ export default function SoccerRecording({navigation, route}) {
                   )}
                 </TouchableOpacity>
 
-                <Text style={styles.vs}>VS</Text>
+                <Text style={styles.vs}>{strings.VS}</Text>
 
                 <TouchableOpacity
                   onPress={() => setSelectedTeam(gameObj?.away_team?.group_id)}>
@@ -759,11 +748,11 @@ export default function SoccerRecording({navigation, route}) {
                           gameObj.status === GameStatus.accepted ||
                           gameObj.status === GameStatus.reset
                         ) {
-                          Alert.alert('Game not started yet.');
+                          Alert.alert(strings.gameNotStarted);
                         } else if (gameObj.status === GameStatus.ended) {
-                          Alert.alert('Game is ended.');
+                          Alert.alert(strings.gameEnded);
                         } else if (!selectedTeam) {
-                          Alert.alert('Select Team');
+                          Alert.alert(strings.selectTeam);
                         } else {
                           console.log(
                             `${parseFloat(new Date().getTime() / 1000).toFixed(
@@ -802,23 +791,23 @@ export default function SoccerRecording({navigation, route}) {
                           selectedTeam === gameObj?.home_team?.group_id &&
                           gameObj.home_team_goal <= 0
                         ) {
-                          Alert.alert('Goal not added yet.');
+                          Alert.alert(strings.goalNotAddedYet);
                         } else if (
                           selectedTeam === gameObj?.away_team?.group_id &&
                           gameObj?.away_team_goal <= 0
                         ) {
-                          Alert.alert('Goal not added yet.');
+                          Alert.alert(strings.goalNotAddedYet);
                         } else {
                           Alert.alert(
-                            'The recent goal will be cancelled.',
+                            strings.goalWillBeCancelled,
                             '',
                             [
                               {
-                                text: 'Cancel',
+                                text: strings.cancel,
                                 style: 'cancel',
                               },
                               {
-                                text: 'Ok',
+                                text: strings.OkText,
                                 style: 'default',
                                 onPress: () => {
                                   decreaseGameScoreRecord(
@@ -848,7 +837,7 @@ export default function SoccerRecording({navigation, route}) {
             <View style={styles.gameRecordButtonView}>
               {gameObj.status === GameStatus.accepted && (
                 <TCGameButton
-                  title="Start"
+                  title={strings.starts}
                   onPress={() => {
                     if (
                       gameObj.start_datetime >
@@ -861,9 +850,7 @@ export default function SoccerRecording({navigation, route}) {
                         (ReservationStatus.pendingrequestpayment ||
                           ReservationStatus.pendingpayment)
                       ) {
-                        Alert.alert(
-                          'Game cannot be start unless the payment goes through',
-                        );
+                        Alert.alert(strings.gameNotStartWithoutPayment);
                       } else {
                         lastTimeStamp = date
                           ? parseFloat(
@@ -881,7 +868,7 @@ export default function SoccerRecording({navigation, route}) {
                         addGameRecordDetail(gameObj.game_id, body);
                       }
                     } else {
-                      Alert.alert('Game cannot be start because its expired.');
+                      Alert.alert(strings.gameNotStartExpired);
                     }
                   }}
                   gradientColor={[colors.yellowColor, colors.themeColor]}
@@ -892,7 +879,7 @@ export default function SoccerRecording({navigation, route}) {
               )}
               {gameObj.status === GameStatus.paused && (
                 <TCGameButton
-                  title="Resume"
+                  title={strings.resume}
                   onPress={() => {
                     lastTimeStamp = parseFloat(
                       new Date().getTime() / 1000,
@@ -916,7 +903,7 @@ export default function SoccerRecording({navigation, route}) {
               {(gameObj.status === GameStatus.playing ||
                 gameObj.status === GameStatus.resume) && (
                 <TCGameButton
-                  title="Pause"
+                  title={strings.pause}
                   onPress={() => {
                     lastTimeStamp = parseFloat(
                       new Date().getTime() / 1000,
@@ -941,18 +928,18 @@ export default function SoccerRecording({navigation, route}) {
                 gameObj.status === GameStatus.paused ||
                 gameObj.status === GameStatus.resume) && (
                 <TCGameButton
-                  title="Match End"
+                  title={strings.matchEnd}
                   onPress={() => {
                     Alert.alert(
-                      'Do you want to end match?',
+                      strings.doYouWantEndMatch,
                       '',
                       [
                         {
-                          text: 'Cancel',
+                          text: strings.cancel,
                           // style: 'cancel',
                         },
                         {
-                          text: 'Ok',
+                          text: strings.OkText,
 
                           // style: 'destructive',
                           onPress: () => {
@@ -975,7 +962,7 @@ export default function SoccerRecording({navigation, route}) {
                     );
                   }}
                   gradientColor={[colors.yellowColor, colors.themeColor]}
-                  buttonTitle={'END'}
+                  buttonTitle={strings.END}
                   buttonTextColor={colors.whiteColor}
                   textColor={colors.themeColor}
                   imageSize={15}
@@ -987,7 +974,7 @@ export default function SoccerRecording({navigation, route}) {
                 gameObj.status === GameStatus.ended ||
                 gameObj.status === GameStatus.resume) && (
                 <TCGameButton
-                  title="Records"
+                  title={strings.records}
                   onPress={() => {
                     navigation.navigate('SoccerRecordList', {
                       gameId: gameObj.game_id,
@@ -1006,7 +993,7 @@ export default function SoccerRecording({navigation, route}) {
                 gameObj.status === GameStatus.ended ||
                 gameObj.status === GameStatus.resume) && (
                 <TCGameButton
-                  title="Details"
+                  title={strings.venueDetailsPlaceholder}
                   onPress={() => {
                     navigation.navigate('GameDetailRecord', {
                       gameObject: gameObj,
@@ -1032,7 +1019,7 @@ export default function SoccerRecording({navigation, route}) {
             destructiveButtonIndex={1}
             onPress={(index) => {
               const opetions = getOpetions();
-              if (opetions[index] === 'Edit Roster and Non-roster') {
+              if (opetions[index] === strings.editRosterNonRoster) {
                 navigation.navigate('EditRosterScreen', {
                   gameObj,
                   selectedTeam:
@@ -1041,17 +1028,17 @@ export default function SoccerRecording({navigation, route}) {
                       ? 'home'
                       : 'away',
                 });
-              } else if (opetions[index] === 'Reset Match Records') {
+              } else if (opetions[index] === strings.resetMatchRecords) {
                 Alert.alert(
                   strings.resetMatchRecord,
                   '',
                   [
                     {
-                      text: 'Cancel',
+                      text: strings.cancel,
                       style: 'cancel',
                     },
                     {
-                      text: 'Reset',
+                      text: strings.resetTitleText,
                       style: 'destructive',
                       onPress: () => {
                         if (

@@ -5,6 +5,7 @@ import {View, StyleSheet, Image, Text} from 'react-native';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
+import {strings} from '../../../Localization/translation';
 // import TCBorderButton from '../../components/TCBorderButton';
 // import { getGameHomeScreen } from '../../utils/gameUtils';
 
@@ -32,75 +33,32 @@ export default function ScorekeeperAcceptDeclineScreen({navigation, route}) {
             />
           </View>
           <Text style={styles.invitationText}>
-            {(route.params.status === 'accept' && 'Reservation accepted') ||
-              (route.params.status === 'decline' && 'Reservation declined') ||
-              (route.params.status === 'cancel' && 'Reservation cancelled') ||
-              (route.params.status === 'restored' && 'Reservation Restored')}
+            {(route.params.status === 'accept' && strings.reservationAccepted) ||
+              (route.params.status === 'decline' && strings.reservationDeclined2) ||
+              (route.params.status === 'cancel' && strings.reservationCancelled3) ||
+              (route.params.status === 'restored' && strings.reservationRestored2)}
           </Text>
           <Text style={styles.infoText}>
             {(route.params.status === 'accept' &&
-              `A reservation between ${
+              `${strings.aReservationBetween} ${
                 route.params.teamObj.group_name ||
                 `${route.params.teamObj.first_name} ${route.params.teamObj.last_name}`
-              } and you has been scheduled.`) ||
+              } ${strings.andYouScheduled}`) ||
               (route.params.status === 'decline' &&
-                `The reservation reservation request from ${
+                `${strings.reservationRequest} ${
                   route.params.teamObj.group_name ||
                   `${route.params.teamObj.first_name} ${route.params.teamObj.last_name}`
-                } has been declined.`) ||
+                } ${strings.matchDeclined}`) ||
               (route.params.status === 'cancel' &&
-                `The reservation from ${
+                `${strings.reservationFrom} ${
                   route.params.teamObj.group_name ||
                   `${route.params.teamObj.first_name} ${route.params.teamObj.last_name}`
-                } has been cancelled.`) ||
+                } ${strings.matchCancelled}`) ||
               (route.params.status === 'restored' &&
-                'Reservation alteration request restored.')}
+                strings.requestRestored)}
           </Text>
         </View>
       )}
-
-      {/* {route && route.params && route.params.teamObj && (
-        <TCBorderButton
-          title={`GO TO ${(route.params.teamObj.group_name)?.toUpperCase() || `${route.params?.teamObj?.first_name?.toUpperCase()} ${route?.params?.teamObj?.last_name?.toUpperCase()}`}`}
-          textColor={colors.whiteColor}
-          borderColor={colors.whiteColor}
-          backgroundColor={'transparent'}
-          height={40}
-          shadow={true}
-          marginBottom={route?.params?.status === 'accept' ? 34 : 55}
-          onPress={() => {
-            navigation.navigate('HomeScreen', {
-              uid: route.params.teamObj ? route.params.teamObj.group_id : route.params.teamObj.user_id,
-              backButtonVisible: true,
-              role: route.params.teamObj.entity_type === 'player' ? 'user' : route.params.teamObj.entity_type,
-              menuBtnVisible: false,
-            })
-          }}
-        />
-
-      )}
-      {route?.params?.status === 'accept' && route?.params?.teamObj?.game_id && (
-        <TCBorderButton
-          title={strings.goToGameHome}
-          textColor={colors.themeColor}
-          borderColor={'transparent'}
-          height={40}
-          shadow={true}
-          marginBottom={55}
-          onPress={() => {
-            if (route?.params?.teamObj) {
-              const gameHome = getGameHomeScreen(route?.params?.teamObj?.sport);
-              if (route?.params?.teamObj?.game_id) {
-                navigation.navigate(gameHome, {
-                  gameId: route?.params?.teamObj?.game_id,
-                })
-              } else {
-                Alert.alert('Game ID not exist');
-              }
-            }
-          }}
-        />
-      )} */}
     </View>
   );
 }

@@ -20,7 +20,6 @@ export const getScorekeeperReservationDetail = (
     authContext,
   )
     .then((response) => {
-      console.log('Response of Scorekeeper reservation details::=>', response);
       if (
         ScorekeeperReservationStatus.changeRequest ===
           response.payload[0].status ||
@@ -49,7 +48,6 @@ export const getScorekeeperReservationDetail = (
           response.payload[0].status
       ) {
         let tempObj;
-        console.log('request cancelled true');
         for (let i = 0; i < response.payload.length; i++) {
           if (
             response.payload[i].status === ScorekeeperReservationStatus.accepted

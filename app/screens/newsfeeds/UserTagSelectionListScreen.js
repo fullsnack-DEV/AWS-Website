@@ -30,6 +30,7 @@ import ScrollableTabs from '../../components/ScrollableTabs';
 import TagMatches from './TagMatches';
 import {getAllGames} from '../../api/NewsFeeds';
 import {getGroupIndex, getUserIndex} from '../../api/elasticSearch';
+import { strings } from '../../../Localization/translation';
 
 let stopFetchMore = true;
 
@@ -65,7 +66,7 @@ export default function UserTagSelectionListScreen({navigation, route}) {
               });
             }
           }}>
-          Done
+          {strings.done}
         </Text>
       ),
     });
@@ -84,8 +85,6 @@ export default function UserTagSelectionListScreen({navigation, route}) {
 
   const getUsersData = useCallback(
     (text = '') => {
-      console.log('get referee called');
-
       const userQuery = {
         size: pageSize,
         from: pageFrom,
@@ -332,7 +331,7 @@ export default function UserTagSelectionListScreen({navigation, route}) {
                     marginTop: hp(2),
                     color: colors.userPostTimeColor,
                   }}>
-                  No Records Found
+                  {strings.noRecordFoundText}
                 </Text>
               )
             }
@@ -396,7 +395,7 @@ export default function UserTagSelectionListScreen({navigation, route}) {
                   marginTop: hp(2),
                   color: colors.userPostTimeColor,
                 }}>
-                No Records Found
+                {strings.noRecordFoundText}
               </Text>
             }
             data={groupData}
@@ -478,7 +477,7 @@ export default function UserTagSelectionListScreen({navigation, route}) {
       selectedUsers.length > 0 && (
         <SelectedTagList
           dataSource={selectedUsers}
-          titleKey={'title'}
+          titleKey={strings.titlesmall}
           onTagCancelPress={({item}) => {
             toggleSelection(true, item);
           }}
@@ -497,7 +496,7 @@ export default function UserTagSelectionListScreen({navigation, route}) {
       {renderSearchBox}
       {renderSelectedEntity}
       <ScrollableTabs
-        tabs={['People', 'Groups', 'Matches']}
+        tabs={[strings.peopleTitleText, strings.groupsTitleText, strings.matchesTitleText]}
         onTabPress={onTabPress}
         currentTab={currentTab}
       />

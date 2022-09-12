@@ -19,6 +19,7 @@ import firebase from '@react-native-firebase/app';
 import FastImage from 'react-native-fast-image';
 import Config from 'react-native-config';
 import LinearGradient from 'react-native-linear-gradient';
+import {format} from 'react-string-format';
 import {uploadImageOnPreSignedUrls} from '../../utils/imageAction';
 import TCKeyboardView from '../../components/TCKeyboardView';
 import ActivityLoader from '../../components/loader/ActivityLoader';
@@ -51,29 +52,23 @@ export default function SignupScreen({navigation}) {
 
   const validate = () => {
     if (fName === '') {
-      Alert.alert(strings.appName, 'First name cannot be blank');
+      Alert.alert(strings.appName, strings.firstnamevalidation);
       return false;
     }
     if (Utility.validatedName(fName) === false) {
-      Alert.alert(
-        strings.appName,
-        'The first name cannot contain numbers or special characters.',
-      );
+      Alert.alert(strings.appName, strings.fNameCanNotBlank);
       return false;
     }
     if (lName === '') {
-      Alert.alert(strings.appName, 'Last name cannot be blank');
+      Alert.alert(strings.appName, strings.lastnamevalidation);
       return false;
     }
     if (Utility.validatedName(lName) === false) {
-      Alert.alert(
-        strings.appName,
-        'The last name cannot contain numbers or special characters.',
-      );
+      Alert.alert(strings.appName, strings.lNameCanNotBlank);
       return false;
     }
     if (email === '') {
-      Alert.alert(strings.appName, 'Email cannot be blank');
+      Alert.alert(strings.appName, strings.emailNotBlankText);
       return false;
     }
     if (validateEmail(email) === false) {
@@ -176,37 +171,6 @@ export default function SignupScreen({navigation}) {
         });
     });
 
-  /*
-  const signUpToTownsCup = async (uploadedProfilePic) => {
-    setloading(true);
-    const data = {
-      first_name: fName,
-      last_name: lName,
-      email,
-      thumbnail: uploadedProfilePic?.thumbnail ?? '',
-      full_image: uploadedProfilePic?.full_image ?? '',
-    };
-
-    createUser(data, dummyAuthContext)
-      .then((createdUser) => {
-        console.log('QB CreatedUser:', createdUser);
-        const authEntity = {...dummyAuthContext.entity};
-        authEntity.obj = createdUser?.payload;
-        authEntity.auth.user = createdUser?.payload;
-        authEntity.role = 'user';
-        setDummyAuthContext('entity', authEntity);
-        setDummyAuthContext('user', createdUser?.payload);
-        signUpWithQB(createdUser?.payload);
-      })
-      .catch((e) => {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
-  };
-  */
-
   const setDummyAuthContext = (key, value) => {
     dummyAuthContext[key] = value;
   };
@@ -231,7 +195,6 @@ export default function SignupScreen({navigation}) {
             uid: user.uid,
             role: 'user',
           };
-          console.log('Signup token=========>', token);
           setDummyAuthContext('tokenData', token);
           await authContext.setTokenData(token);
           await authContext.setEntity(entity);
@@ -254,17 +217,14 @@ export default function SignupScreen({navigation}) {
               .then(async () => {
                 setDummyAuthContext('entity', entity);
                 navigateToEmailVarificationScreen();
-                console.log('1111');
               })
               .catch(async () => {
                 setDummyAuthContext('entity', entity);
-                console.log('2222');
                 // await signUpToTownsCup();
                 navigateToEmailVarificationScreen();
               });
           } else {
             setDummyAuthContext('entity', entity);
-            console.log('33333');
             // await signUpToTownsCup();
             navigateToEmailVarificationScreen();
           }
@@ -303,16 +263,16 @@ export default function SignupScreen({navigation}) {
         setloading(false);
         let message = '';
         if (e.code === 'auth/user-not-found') {
-          message = 'This email address is not registerd';
+          message = strings.emailNotRegisterdValidation;
         }
         if (e.code === 'auth/email-already-in-use') {
-          message = 'That email address is already registrated! please login';
+          message = strings.emailAlreadyRegisteredValidation;
         }
         if (e.code === 'auth/invalid-email') {
           message = strings.validEmailMessage;
         }
         if (e.code === 'auth/too-many-requests') {
-          message = 'Too many request for signup ,try after sometime';
+          message = strings.manyRequestForSignUpValidation;
         }
         if (e.code === 'auth/network-request-failed') {
           message = strings.networkConnectivityErrorMessage;
@@ -341,7 +301,6 @@ export default function SignupScreen({navigation}) {
   const signupUser = () => {
     setloading(true);
     checkUserIsRegistratedOrNotWithTownscup().then((userExist) => {
-      console.log('hhhhhhh', userExist);
       if (userExist) {
         setloading(false);
         setTimeout(() => {
@@ -360,8 +319,11 @@ export default function SignupScreen({navigation}) {
                   setloading(false);
                   setTimeout(() => {
                     Alert.alert(
-                      'Townscup',
-                      `This email is already registrated with ${error?.provider}`,
+                      strings.appName,
+                      format(
+                        strings.emailAlreadyRegisteredWith,
+                        error?.provider,
+                      ),
                     );
                   }, 100);
                 });
@@ -519,9 +481,9 @@ export default function SignupScreen({navigation}) {
                   marginLeft: wp('5%'),
                 }}>
                 {hideConfirmPassword ? (
-                  <Text style={styles.passwordEyes}>SHOW</Text>
+                  <Text style={styles.passwordEyes}>strings.SHOW</Text>
                 ) : (
-                  <Text style={styles.passwordEyes}>HIDE</Text>
+                  <Text style={styles.passwordEyes}>strings.HIDE</Text>
                 )}
               </TouchableOpacity>
             </View>
@@ -580,7 +542,7 @@ export default function SignupScreen({navigation}) {
                     textDecorationLine: 'underline',
                     fontFamily: fonts.RBold,
                   }}>
-                  Log In
+                  {strings.loginText}
                 </Text>
               </Text>
             </TouchableOpacity>

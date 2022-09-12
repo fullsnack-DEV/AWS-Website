@@ -56,7 +56,7 @@ export default function EditGroupContactScreen({navigation, route}) {
       })
       .catch(() => {
         setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, 'Something went wrong');
+          Alert.alert(strings.alertmessagetitle, strings.defaultError);
         }, 0.1);
       });
   };

@@ -174,7 +174,7 @@ export default function DeactivateAccountScreen({navigation, route}) {
               '',
               [
                 {
-                  text: 'Cancel',
+                  text: strings.cancel,
                   style: 'cancel',
                 },
                 {

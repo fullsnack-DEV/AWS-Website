@@ -82,10 +82,6 @@ const LeaveReviewTennis = ({navigation, route}) => {
   );
 
   useEffect(() => {
-    console.log(
-      'route?.params?.gameReviewData?.results[0]?.object',
-      route?.params?.gameReviewData,
-    );
     if (route?.params?.gameReviewData) {
       const reviewObj =
         route?.params?.gameReviewData ??
@@ -151,7 +147,7 @@ const LeaveReviewTennis = ({navigation, route}) => {
       ),
       headerRight: () => (
         <Text onPress={createReview} style={styles.nextButtonStyle}>
-          Done
+          {strings.done}
         </Text>
       ),
     });
@@ -200,11 +196,10 @@ const LeaveReviewTennis = ({navigation, route}) => {
     return isValid;
   };
   const createReview = () => {
-    console.log('Review Data::=>', JSON.stringify(reviewsData));
     if (isValidReview()) {
       uploadMediaForTeam();
     } else {
-      Alert.alert('Please, complete all ratings before moving to the next.');
+      Alert.alert(strings.completeReviewFirst);
     }
   };
 
@@ -230,8 +225,6 @@ const LeaveReviewTennis = ({navigation, route}) => {
       const reviewObj = {
         ...teamReview,
       };
-
-      console.log('Edited Review Object::=>', reviewObj);
 
       patchPlayerReview(
         currentForm === 1
@@ -302,7 +295,6 @@ const LeaveReviewTennis = ({navigation, route}) => {
         ...teamReview,
       };
 
-      console.log('Edited Review Object::=>', reviewObj);
       patchGameReview(gameData?.game_id, reviewID, reviewObj, authContext)
         .then(() => {
           setLoading(false);
@@ -310,11 +302,7 @@ const LeaveReviewTennis = ({navigation, route}) => {
         })
         .catch((error) => {
           setLoading(false);
-          console.log(
-            'strings.alertmessagetitle, error?.message',
-            strings.alertmessagetitle,
-            error?.message,
-          );
+
           setTimeout(
             () => Alert.alert(strings.alertmessagetitle, error?.message),
             100,
@@ -322,7 +310,6 @@ const LeaveReviewTennis = ({navigation, route}) => {
           navigation.goBack();
         });
     } else {
-      console.log('New Review Object::=>', reviewsData);
       setLoading(true);
       addGameReview(gameData?.game_id, reviewsData, authContext)
         .then(() => {
@@ -352,7 +339,6 @@ const LeaveReviewTennis = ({navigation, route}) => {
   };
 
   const setTeamReview = (teamNo = 0, key = '', value = '') => {
-    console.log(`key::${key}value::${value}`);
     if (reviewsData[key] !== value) {
       const reviews = _.cloneDeep(reviewsData);
       reviews[key] = value;
@@ -375,7 +361,7 @@ const LeaveReviewTennis = ({navigation, route}) => {
         }
         rightComponent={
           <Text onPress={createReview} style={styles.nextButtonStyle}>
-            Done
+            {strings.done}
           </Text>
         }
       />

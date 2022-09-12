@@ -2,6 +2,7 @@
 /* eslint-disable no-undef */
 
 const {loginFlow} = require('../../app/utils/testCaseHelper');
+const {strings} = require('../../Localization/translation');
 
 const loginInputData = {
   email: 'makani20+12@gmail.com',
@@ -39,6 +40,6 @@ describe('TownsCup register sport flow', () => {
       loginInputData.description,
     );
     await element(by.text('DONE')).tap();
-    await element(by.text('OK')).tap();
+    await element(by.text(strings.okTitleText)).tap();
   });
 });

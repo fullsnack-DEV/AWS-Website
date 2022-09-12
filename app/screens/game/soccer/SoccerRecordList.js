@@ -144,24 +144,24 @@ export default function SoccerRecordList({route}) {
     } else if (key === 'delete') {
       if (item?.verb === 'start') {
         Alert.alert(
-          'Do you want to reset all the match records?',
+          strings.resetMatchRecord,
           '',
           [
             {
-              text: 'Cancel',
+              text: strings.cancel,
               style: 'cancel',
             },
             {
-              text: 'Reset',
+              text: strings.resetTitleText,
               style: 'destructive',
               onPress: () => {
                 if (
                   gameData.status === GameStatus.accepted ||
                   gameData.status === GameStatus.reset
                 ) {
-                  Alert.alert('Game not started yet.');
+                  Alert.alert(strings.gameNotStarted);
                 } else if (gameData.status === GameStatus.ended) {
-                  Alert.alert('Game is ended.');
+                  Alert.alert(strings.gameEnded);
                 } else {
                   resetGameDetail(gameData.game_id);
                 }
@@ -196,7 +196,7 @@ export default function SoccerRecordList({route}) {
         })
         .catch((error) => {
           setFullScreenLoading(false);
-          setTimeout(() => Alert.alert('TownsCup', error?.message), 100);
+          setTimeout(() => Alert.alert(strings.appName, error?.message), 100);
         })
         .finally(() => setSelectedRecord(null));
     }, 500);
@@ -278,7 +278,7 @@ export default function SoccerRecordList({route}) {
         </View>
         <View style={styles.editorView}>
           <Text style={{fontSize: 12, fontFamily: fonts.RRegular}}>
-            Show editors
+            {strings.showEditors}
           </Text>
           <TouchableWithoutFeedback
             onPress={() => {
@@ -373,31 +373,12 @@ export default function SoccerRecordList({route}) {
             <View>
               {!loading && (
                 <Text style={styles.notAvailableTextStyle}>
-                  Not available yet
+                  {strings.notAvailableYet}
                 </Text>
               )}
             </View>
           )}
         />
-        {/* <View style={ styles.updatedByView }>
-          {matchRecords.length > 0 && <Text
-                      style={ {
-                        color: colors.grayColor,
-                        // fontFamily: fonts.RLight,
-                        fontSize: 14,
-                        marginLeft: 10,
-                      } }>
-            Last updated by{'\n'}({getTeamName(matchRecords[matchRecords.length - 1]?.updated_by?.group_id)})
-          </Text>}
-          <Text
-                      style={ {
-                        color: colors.themeColor,
-                        fontSize: 14,
-                        marginLeft: 10,
-                      } }>
-
-          </Text>
-        </View> */}
 
         {matchRecords.length > 0 && (
           <Text

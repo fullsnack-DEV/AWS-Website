@@ -247,7 +247,7 @@ const UserHomeHeader = ({
       <TCThinDivider width={'100%'} />
       <ActionSheet
         ref={actionSheet}
-        options={['Unfollow', 'Cancel']}
+        options={['Unfollow', strings.cancel]}
         cancelButtonIndex={1}
         onPress={(index) => {
           if (index === 0) {

@@ -62,8 +62,6 @@ export default function RefereeReservationScreen({navigation, route}) {
   useEffect(() => {
     entity = authContext.entity;
     const {reservationObj} = route.params ?? {};
-    console.log('ALTER REFEREE RESERVATION OBJECT:', reservationObj);
-    console.log('ALTER REFEREE RESERVATION Home team OBJECT:', awayTeam);
     if (route?.params?.isRefresh) {
       getReservationDetails(reservationObj?.reservation_id);
     }
@@ -89,16 +87,13 @@ export default function RefereeReservationScreen({navigation, route}) {
     setloading(true);
     paymentMethods(authContext)
       .then((response) => {
-        console.log('Payment api called', response.payload);
         const matchCard = response.payload.find((card) => card.id === source);
         if (matchCard) {
-          console.log('default payment method', matchCard);
           setDefaultCard(matchCard);
         }
         setloading(false);
       })
       .catch((e) => {
-        console.log('error in payment method', e);
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
@@ -137,10 +132,8 @@ export default function RefereeReservationScreen({navigation, route}) {
       {source: defaultCard?.id},
       authContext,
     )
-      .then((response) => {
+      .then(() => {
         setloading(false);
-        console.log('ACCEPT RESPONSE::', JSON.stringify(response.payload));
-
         if (status === 'accept') {
           navigation.navigate('RefereeRequestSent', {
             operationType: strings.reservationRequestAccepted,
@@ -196,7 +189,6 @@ export default function RefereeReservationScreen({navigation, route}) {
   };
 
   const checkSenderForPayment = useCallback((reservationObj) => {
-    console.log('reservationObj::=>', reservationObj);
     if (reservationObj?.referee?.user_id === entity.uid) {
       return 'receiver';
     }
@@ -205,48 +197,6 @@ export default function RefereeReservationScreen({navigation, route}) {
   }, []);
   const checkSenderOrReceiver = (reservationObj) => {
     const teampObj = {...reservationObj};
-    // if (
-    //   teampObj?.status === RefereeReservationStatus.pendingpayment
-    //   || teampObj?.status === RefereeReservationStatus.pendingrequestpayment
-    // ) {
-    //   if (teampObj?.updated_by) {
-    //     if (teampObj?.updated_by?.group_id) {
-    //       teampObj.requested_by = teampObj.updated_by.group_id;
-    //     } else {
-    //       teampObj.requested_by = teampObj.updated_by.uid;
-    //     }
-    //   } else if (teampObj?.created_by?.group_id) {
-    //     teampObj.requested_by = teampObj.created_by.group_id;
-    //   } else {
-    //     teampObj.requested_by = teampObj.created_by.uid;
-    //   }
-    // } else if (teampObj?.updated_by) {
-    //   if (teampObj?.updated_by?.group_id) {
-    //     if (
-    //       teampObj?.automatic_request
-    //       && teampObj?.status === RefereeReservationStatus.changeRequest
-    //       && entity.obj.entity_type === 'team'
-    //     ) {
-    //       teampObj.requested_by = teampObj.initiated_by;
-    //     } else {
-    //       teampObj.requested_by = teampObj.updated_by.group_id;
-    //     }
-    //   } else if (
-    //     teampObj?.automatic_request
-    //     && teampObj?.status === RefereeReservationStatus.changeRequest
-    //     && teampObj?.referee?.user_id !== entity.uid
-    //   ) {
-    //     teampObj.requested_by = teampObj.initiated_by;
-    //   } else {
-    //     teampObj.requested_by = teampObj.updated_by.uid;
-    //   }
-    // } else if (teampObj?.created_by?.group_id) {
-    //   teampObj.requested_by = teampObj.created_by.group_id;
-    // } else {
-    //   teampObj.requested_by = teampObj.created_by.uid;
-    // }
-
-    console.log('Temp Object::', teampObj);
     console.log(`${teampObj?.requested_by}:::${entity.uid}`);
     if (teampObj?.requested_by === entity.uid) {
       return 'sender';
@@ -335,8 +285,6 @@ export default function RefereeReservationScreen({navigation, route}) {
               title={strings.accept}
               marginBottom={15}
               onPress={() => {
-                // navigation.navigate('AlterRefereeScreen', { reservationObj: allReservationData })
-
                 if (
                   !(
                     bodyParams?.game?.status === GameStatus.accepted ||
@@ -356,7 +304,7 @@ export default function RefereeReservationScreen({navigation, route}) {
                   bodyParams.total_game_fee > 0 &&
                   !defaultCard
                 ) {
-                  Alert.alert('Please choose payment method first.');
+                  Alert.alert(strings.paymentMethodFirst);
                 } else {
                   let callerId = '';
                   if (bodyParams?.referee?.user_id !== entity.uid) {
@@ -422,10 +370,10 @@ export default function RefereeReservationScreen({navigation, route}) {
                   lastConfirmVersion: bodyParams,
                 });
               } else if (bodyParams?.game?.status === GameStatus.ended) {
-                Alert.alert('Game is ended so you can not change reservation.');
+                Alert.alert(strings.gameEndedNotChangeReservation);
               } else {
                 Alert.alert(
-                  'Reservation cannot be change after game time passed or offer expired.',
+                  strings.reservationCannotChange,
                 );
               }
             }}
@@ -459,11 +407,11 @@ export default function RefereeReservationScreen({navigation, route}) {
                 new Date().getTime()
               ) {
                 Alert.alert(
-                  'Reservation cannot be cancel after game time passed or offer expired.',
+                  strings.cannotCancelReservationText,
                 );
               } else {
                 Alert.alert(
-                  'Reservation can not be cancel after game has been started.',
+                  strings.reservationNotCancelAfterGame,
                 );
               }
             }}
@@ -511,8 +459,6 @@ export default function RefereeReservationScreen({navigation, route}) {
       )}
     </SafeAreaView>
   );
-
-  console.log('Referee bodyparams:', bodyParams);
   return (
     <TCKeyboardView>
       <ScrollView style={{flex: 1}}>
@@ -520,10 +466,6 @@ export default function RefereeReservationScreen({navigation, route}) {
         {bodyParams && (
           <View>
             <ReservationNumber reservationNumber={bodyParams.reservation_id} />
-
-            {/* <Text onPress={() => {
-              navigation.navigate('RefereeApprovalScreen', { reservationObj: bodyParams })
-            }}>On Press</Text> */}
             <RefereeReservationTitle
               reservationObject={bodyParams}
               showDesc={true}
@@ -546,7 +488,7 @@ export default function RefereeReservationScreen({navigation, route}) {
               <View style={styles.challengerView}>
                 <View style={styles.teamView}>
                   <Image source={images.reqIcon} style={styles.reqOutImage} />
-                  <Text style={styles.challengerText}>Requester</Text>
+                  <Text style={styles.challengerText}>{strings.requester}</Text>
                 </View>
 
                 <View style={styles.teamView}>
@@ -572,18 +514,10 @@ export default function RefereeReservationScreen({navigation, route}) {
               <View style={styles.challengeeView}>
                 <View style={styles.teamView}>
                   <Image source={images.refIcon} style={styles.reqOutImage} />
-                  <Text style={styles.challengeeText}>Referee</Text>
+                  <Text style={styles.challengeeText}>{strings.Referee}</Text>
                 </View>
 
                 <View style={styles.teamView}>
-                  {/* <Image
-                    source={
-                      bodyParams?.referee?.thumbnail
-                        ? { uri: bodyParams?.referee?.thumbnail }
-                        : images.teamPlaceholder
-                    }
-                    style={styles.teamImage}
-                  /> */}
                   <View style={styles.profileView}>
                     <Image
                       source={
@@ -607,55 +541,10 @@ export default function RefereeReservationScreen({navigation, route}) {
                 </View>
               </View>
             </View>
-
-            {/* Status declined */}
-            {/* {bodyParams?.approved_by === entity.uid && !bodyParams?.is_offer
-              && bodyParams.status === RefereeReservationStatus.declined && (
-                <View>
-                  <Text
-                    style={[
-                      styles.challengeMessage,
-                      { color: colors.googleColor },
-                    ]}>
-                    DECLINED
-                  </Text>
-                  <Text style={styles.challengeText}>
-                    {checkRefereeOrTeam(bodyParams) === 'referee'
-                      ? `You have declined a referee request from ${getEntityName(
-                          bodyParams,
-                        )}.`
-                      : `Your team have declined referee reservation request from ${getEntityName(
-                          bodyParams,
-                        )}.`}
-                  </Text>
-                </View>
-              )}
-            {bodyParams?.initiated_by === entity.uid && !bodyParams?.is_offer
-              && bodyParams.status === RefereeReservationStatus.declined && (
-                <View>
-                  <Text
-                    style={[
-                      styles.challengeMessage,
-                      { color: colors.googleColor },
-                    ]}>
-                    DECLINED
-                  </Text>
-                  <Text style={styles.challengeText}>
-                    {checkRefereeOrTeam(bodyParams) === 'referee'
-                      ? `${getEntityName(
-                        bodyParams,
-                      )} has declined a referee request sent by you.`
-                      : `${getEntityName(
-                        bodyParams,
-                      )} has declined referee reservation request sent by your team.`}
-                  </Text>
-                </View>
-              )} */}
-
             {bodyParams?.referee?.user_id !== entity.uid &&
               bodyParams.status === RefereeReservationStatus.pendingpayment && (
                 <TCGradientButton
-                  title={'TRY TO PAY AGAIN'}
+                  title={strings.tryToPayText}
                   onPress={() => {
                     navigation.navigate('PayAgainRefereeScreen', {
                       body: bodyParams,
@@ -729,19 +618,16 @@ export default function RefereeReservationScreen({navigation, route}) {
                             flexDirection: 'row',
                             justifyContent: 'flex-end',
                           }}>
-                          {/* <Text style={styles.dateTimeText}> </Text> */}
                           <Text style={styles.timeZoneText}>
                             {strings.timezone}{' '}
                             <Text style={{fontFamily: fonts.RRegular}}>
-                              Vancouver
+                              {strings.vancouver}
                             </Text>
                           </Text>
                         </View>
                       </View>
                     </View>
                     <Seperator />
-
-                    {/* Venue */}
                     <View style={styles.contentContainer}>
                       <Title text={strings.venue.toUpperCase()} />
                       <TCInfoField
@@ -811,27 +697,16 @@ export default function RefereeReservationScreen({navigation, route}) {
                 marginTop: 10,
               }}
             />
-            <Text style={styles.rulesTitle}>General Rules</Text>
+            <Text style={styles.rulesTitle}>{strings.gameRulesSubTitle1}</Text>
             <Text style={styles.rulesDetail}>
               {bodyParams?.game?.general_rules}
             </Text>
             <View style={{marginBottom: 10}} />
-            <Text style={styles.rulesTitle}>Special Rules</Text>
+            <Text style={styles.rulesTitle}>{strings.gameRulesSubTitle2}</Text>
             <Text style={[styles.rulesDetail, {marginBottom: 25}]}>
               {bodyParams?.game?.special_rules}
             </Text>
             <TCThickDivider />
-            {/* {bodyParams && (
-            <View>
-              <TCLabel title={'Rules of the match'} />
-              <Text style={styles.rulesText}>
-                {bodyParams?.game?.special_rule}
-              </Text>
-            </View>
-          )}
-          <TCThickDivider marginTop={20} /> */}
-
-            {/* Chief or assistant */}
             <View style={styles.contentContainer}>
               <Title text={strings.chieforassistant.toUpperCase()} />
               <View
@@ -848,9 +723,9 @@ export default function RefereeReservationScreen({navigation, route}) {
                     color: colors.lightBlackColor,
                   }}>
                   {_.startCase(
-                    bodyParams?.chief_referee ? 'Chief' : 'Assistant',
+                    bodyParams?.chief_referee ? strings.chief : strings.assistant,
                   )}{' '}
-                  Referee
+                  {strings.Referee}
                 </Text>
               </View>
             </View>
@@ -860,7 +735,7 @@ export default function RefereeReservationScreen({navigation, route}) {
                 title={strings.refundpolicy.toUpperCase()}
                 value={bodyParams?.refund_policy}
                 tooltipText={
-                  '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the match fee and service fee are not refunded.'
+                  strings.cancellationPolicyDesc
                 }
                 tooltipHeight={heightPercentageToDP('18%')}
                 tooltipWidth={widthPercentageToDP('50%')}

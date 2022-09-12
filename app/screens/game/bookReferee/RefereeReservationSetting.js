@@ -56,13 +56,13 @@ export default function RefereeReservationSetting({navigation, route}) {
   ]);
 
   const challengeSettingMenu = [
-    {key: 'Availability', id: 1},
-    {key: 'Referee Fee', id: 2},
-    {key: 'Refund Policy', id: 3},
-    {key: 'Available Area', id: 4},
+    {key: strings.availability, id: 1},
+    {key: strings.refereeFee, id: 2},
+    {key: strings.refundpolicy, id: 3},
+    {key: strings.availableAreaText, id: 4},
   ];
   const handleOpetions = async (opetions) => {
-    if (opetions === 'Availability') {
+    if (opetions === strings.availability) {
       if (settingObject) {
         navigation.navigate('AvailibilityReferee', {
           settingObj: settingObject,
@@ -75,7 +75,7 @@ export default function RefereeReservationSetting({navigation, route}) {
           sportName,
         });
       }
-    } else if (opetions === 'Referee Fee') {
+    } else if (opetions === strings.refereeFee) {
       if (settingObject) {
         navigation.navigate('RefereeFee', {
           settingObj: settingObject,
@@ -88,7 +88,7 @@ export default function RefereeReservationSetting({navigation, route}) {
           sportName,
         });
       }
-    } else if (opetions === 'Refund Policy') {
+    } else if (opetions === strings.refundpolicy) {
       if (settingObject) {
         navigation.navigate('RefundPolicyReferee', {
           settingObj: settingObject,
@@ -101,7 +101,7 @@ export default function RefereeReservationSetting({navigation, route}) {
           sportName,
         });
       }
-    } else if (opetions === 'Available Area') {
+    } else if (opetions === strings.availableAreaText) {
       console.log(settingObject);
       if (settingObject) {
         navigation.navigate('AvailableAreaReferee', {
@@ -118,30 +118,30 @@ export default function RefereeReservationSetting({navigation, route}) {
     }
   };
   const getSettingValue = (item) => {
-    if (item.key === 'Availability') {
+    if (item.key === strings.availability) {
       if (settingObject?.referee_availibility) {
         return settingObject?.referee_availibility;
       }
     }
 
-    if (item.key === 'Referee Fee') {
+    if (item.key === strings.refereeFee) {
       if (settingObject?.game_fee) {
         return `${settingObject?.game_fee?.fee} ${settingObject?.game_fee?.currency_type}`;
       }
     }
-    if (item.key === 'Refund Policy') {
+    if (item.key === strings.refundpolicy) {
       if (settingObject?.refund_policy) {
         return settingObject?.refund_policy;
       }
     }
 
-    if (item.key === 'Available Area') {
+    if (item.key === strings.availableAreaText) {
       if (settingObject?.available_area) {
-        return 'Complated';
+        return strings.completedTitleText;
       }
     }
 
-    return 'incomplete';
+    return strings.incomplete;
   };
   const renderMenu = ({item}) => (
     <TouchableWithoutFeedback
@@ -152,7 +152,7 @@ export default function RefereeReservationSetting({navigation, route}) {
       <View style={{flexDirection: 'row'}}>
         <Text style={styles.listItems}>{item.key}</Text>
 
-        {getSettingValue(item) === 'incomplete' ? (
+        {getSettingValue(item) === strings.incomplete ? (
           <Text style={styles.incompleteStyle}>
             {/* {getSettingValue(item)} */}
             incomplete

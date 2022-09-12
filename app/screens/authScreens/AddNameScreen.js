@@ -42,10 +42,7 @@ export default function SignupScreen({navigation, route}) {
   );
   const [profilePic, setProfilePic] = useState();
   const actionSheetWithDelete = useRef();
-  console.log(
-    'Route===>',
-    route?.params?.signupInfo?.uploadedProfilePic?.thumbnail,
-  );
+
   const actionSheet = useRef();
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -74,7 +71,7 @@ export default function SignupScreen({navigation, route}) {
               uploadProfilePicAndGeneratePreSignedUrls();
             }
           }}>
-          Next
+          {strings.next}
         </Text>
       ),
     });
@@ -91,69 +88,9 @@ export default function SignupScreen({navigation, route}) {
       };
       userData.uploadedProfilePic = uploadedProfilePic;
     }
-    console.log('profilePic==>', userData);
     navigateToAddBirthdayScreen(userData);
   };
-  /*
-  // For activity indigator
-  const uploadProfilePicAndGeneratePreSignedUrls = async () => {
-    console.log('0000000');
-    setLoading(true);
-    const tokenData = authContext?.tokenData;
-    const authToken = tokenData.token;
-    const userData = {};
-    const uploadImageConfig = {
-      method: 'get',
-      url: `${Config.BASE_URL}/pre-signed-url?count=2`,
-      headers: {Authorization: `Bearer ${authToken}`},
-    };
-    console.log('authToken', authToken);
-    console.log('uploadImageConfig', uploadImageConfig);
-    console.log('profilePic', profilePic);
 
-    if (profilePic) {
-      const apiResponse = await apiCall(uploadImageConfig);
-      const preSignedUrls = apiResponse?.payload?.preSignedUrls ?? [];
-      Promise.all([
-        uploadImageOnPreSignedUrls({
-          url: preSignedUrls?.[0],
-          uri: profilePic.path,
-          type: profilePic.path.split('.')[1] || 'jpeg',
-        }),
-        uploadImageOnPreSignedUrls({
-          url: preSignedUrls?.[1],
-          uri: profilePic?.path,
-          type: profilePic?.path.split('.')[1] || 'jpeg',
-        }),
-      ])
-        .then(async ([fullImage, thumbnail]) => {
-          setLoading(false);
-          const uploadedProfilePic = {full_image: fullImage, thumbnail};
-          userData.uploadedProfilePic = uploadedProfilePic;
-          navigateToAddBirthdayScreen(userData);
-          console.log('1111');
-        })
-        .catch(async () => {
-          setLoading(false);
-          console.log('2222');
-          // await signUpToTownsCup();
-          navigateToAddBirthdayScreen(userData);
-        });
-    } else if (providerPic) {
-      setLoading(false);
-      const uploadedProfilePic = {
-        full_image: providerPic,
-        thumbnail: providerPic,
-      };
-      userData.uploadedProfilePic = uploadedProfilePic;
-      navigateToAddBirthdayScreen(userData);
-    } else {
-      setLoading(false);
-      console.log('33333');
-      navigateToAddBirthdayScreen(userData);
-    }
-  };
-  */
   const navigateToAddBirthdayScreen = (userData) => {
     const profileData = {
       ...route?.params?.signupInfo,
@@ -161,35 +98,25 @@ export default function SignupScreen({navigation, route}) {
       first_name: fName,
       last_name: lName,
     };
-    console.log('Profile data ', profileData);
     navigation.navigate('AddBirthdayScreen', {
       signupInfo: {...profileData},
     });
   };
   const validate = () => {
-    console.log('fName', fName);
-    console.log('lName', lName);
-
     if (fName === '') {
-      Alert.alert(strings.appName, 'First name cannot be blank');
+      Alert.alert(strings.appName, strings.firstnamevalidation);
       return false;
     }
     if (Utility.validatedName(fName) === false) {
-      Alert.alert(
-        strings.appName,
-        'The first name cannot contain numbers or special characters.',
-      );
+      Alert.alert(strings.appName, strings.fNameCanNotBlank);
       return false;
     }
     if (lName === '') {
-      Alert.alert(strings.appName, 'Last name cannot be blank');
+      Alert.alert(strings.appName, strings.lastnamevalidation);
       return false;
     }
     if (Utility.validatedName(lName) === false) {
-      Alert.alert(
-        strings.appName,
-        'The last name cannot contain numbers or special characters.',
-      );
+      Alert.alert(strings.appName, strings.lNameCanNotBlank);
       return false;
     }
 
@@ -204,7 +131,6 @@ export default function SignupScreen({navigation, route}) {
       cropping: true,
       cropperCircleOverlay: cropCircle,
     }).then((pickImages) => {
-      console.log('pickImages', pickImages);
       setProviderPic('');
       setProfilePic(pickImages);
     });
@@ -220,9 +146,7 @@ export default function SignupScreen({navigation, route}) {
       .then((result) => {
         switch (result) {
           case RESULTS.UNAVAILABLE:
-            Alert.alert(
-              'This feature is not available (on this device / in this context)',
-            );
+            Alert.alert(strings.thisFeaturesNotAvailableText);
             break;
           case RESULTS.DENIED:
             request(PERMISSIONS.IOS.CAMERA).then(() => {
@@ -243,7 +167,7 @@ export default function SignupScreen({navigation, route}) {
             });
             break;
           case RESULTS.LIMITED:
-            console.log('The permission is limited: some actions are possible');
+            console.log(strings.permissionLimitedText);
             break;
           case RESULTS.GRANTED:
             {
@@ -264,7 +188,7 @@ export default function SignupScreen({navigation, route}) {
             }
             break;
           case RESULTS.BLOCKED:
-            console.log('The permission is denied and not requestable anymore');
+            console.log(strings.permissionDenitedText);
             break;
           default:
         }
@@ -274,8 +198,6 @@ export default function SignupScreen({navigation, route}) {
       });
   };
   const onProfileImageClicked = () => {
-    console.log('kkk', route?.params?.signupInfo);
-
     setTimeout(() => {
       if (profilePic) {
         actionSheetWithDelete.current.show();
@@ -286,7 +208,41 @@ export default function SignupScreen({navigation, route}) {
   };
 
   return (
-    <View style={{flex: 1}}>
+    <>
+      <ActionSheet
+        ref={actionSheet}
+        // title={'News Feed Post'}
+        options={[strings.camera, strings.album, strings.cancelTitle]}
+        cancelButtonIndex={2}
+        onPress={(index) => {
+          if (index === 0) {
+            openCamera();
+          } else if (index === 1) {
+            openImagePicker();
+          }
+        }}
+      />
+      <ActionSheet
+        ref={actionSheetWithDelete}
+        // title={'News Feed Post'}
+        options={[
+          strings.camera,
+          strings.album,
+          strings.deleteTitle,
+          strings.cancelTitle,
+        ]}
+        cancelButtonIndex={3}
+        destructiveButtonIndex={2}
+        onPress={(index) => {
+          if (index === 0) {
+            openCamera();
+          } else if (index === 1) {
+            openImagePicker();
+          } else if (index === 2) {
+            deleteImage();
+          }
+        }}
+      />
       <LinearGradient
         colors={[colors.themeColor1, colors.themeColor3]}
         style={styles.mainContainer}>
@@ -299,7 +255,7 @@ export default function SignupScreen({navigation, route}) {
         <Text style={styles.checkEmailText}>{strings.addYourName}</Text>
 
         <TCKeyboardView>
-          <View>
+          <View style={{marginVertical: 20}}>
             <TouchableOpacity
               style={styles.profile}
               onPress={() => {
@@ -393,41 +349,7 @@ export default function SignupScreen({navigation, route}) {
           /> */}
         </TCKeyboardView>
       </LinearGradient>
-      <ActionSheet
-        ref={actionSheet}
-        // title={'News Feed Post'}
-        options={[strings.camera, strings.album, strings.cancelTitle]}
-        cancelButtonIndex={2}
-        onPress={(index) => {
-          if (index === 0) {
-            openCamera();
-          } else if (index === 1) {
-            openImagePicker();
-          }
-        }}
-      />
-      <ActionSheet
-        ref={actionSheetWithDelete}
-        // title={'News Feed Post'}
-        options={[
-          strings.camera,
-          strings.album,
-          strings.deleteTitle,
-          strings.cancelTitle,
-        ]}
-        cancelButtonIndex={3}
-        destructiveButtonIndex={2}
-        onPress={(index) => {
-          if (index === 0) {
-            openCamera();
-          } else if (index === 1) {
-            openImagePicker();
-          } else if (index === 2) {
-            deleteImage();
-          }
-        }}
-      />
-    </View>
+    </>
   );
 }
 

@@ -1,9 +1,11 @@
 import React from 'react';
 import {View, StyleSheet, Image, Text, TouchableOpacity} from 'react-native';
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
+import {format} from 'react-string-format';
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
+import {strings} from '../../../../Localization/translation';
 // import TCBorderButton from '../../../components/TCBorderButton';
 
 export default function InviteToChallengeSentScreen({navigation, route}) {
@@ -22,15 +24,18 @@ export default function InviteToChallengeSentScreen({navigation, route}) {
         <Image style={styles.backButtonImage} source={images.backArrow} />
       </TouchableOpacity> */}
       <View style={styles.mailContainer}>
-        <Text style={styles.invitationText}>Invite to Challenge sent</Text>
+        <Text style={styles.invitationText}>
+          {strings.inviteToChallengeSent}
+        </Text>
         <Text style={styles.infoText}>
-          When{' '}
-          {route &&
-            route.params &&
-            route.params.groupObj &&
-            (route.params.groupObj.group_name ||
-              `${route.params.groupObj.first_name} ${route.params.groupObj.last_name}`)}{' '}
-          accepts your Invite To Challenge, you will be notified.
+          {format(
+            strings.inviteChallengeNotifiedDesc,
+            route &&
+              route.params &&
+              route.params.groupObj &&
+              (route.params.groupObj.group_name ||
+                `${route.params.groupObj.first_name} ${route.params.groupObj.last_name}`),
+          )}
         </Text>
         <View style={styles.imageContainer}>
           <Image
@@ -45,7 +50,7 @@ export default function InviteToChallengeSentScreen({navigation, route}) {
         onPress={() => {
           navigation.popToTop();
         }}>
-        <Text style={styles.goToProfileTitle}>OK</Text>
+        <Text style={styles.goToProfileTitle}>{strings.okTitleText}</Text>
       </TouchableOpacity>
     </View>
   );

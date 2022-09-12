@@ -27,7 +27,6 @@ export default function AddLogScreen({navigation, route}) {
   const [loading, setloading] = useState(false);
   const authContext = useContext(AuthContext);
   const [invoiceDetail] = useState(route?.params?.invoiceDetail);
-  console.log('IDetail:=>', invoiceDetail);
   // const isFocused = useIsFocused();
   const [paymentSwitchSelection, setPaymentSwitchSelection] = useState(0);
   const [paymentType, setPaymentType] = useState(0);
@@ -65,7 +64,7 @@ export default function AddLogScreen({navigation, route}) {
                 });
             }
           }}>
-          <Text>Done</Text>
+          <Text>{strings.done}</Text>
         </TouchableOpacity>
       ),
     });
@@ -75,23 +74,23 @@ export default function AddLogScreen({navigation, route}) {
 
   const addLogValidation = () => {
     if (!amount) {
-      Alert.alert('Please select due amount.');
+      Alert.alert(strings.dueAmountValidation);
       return false;
     }
     if (amount < 1 && amount >= 0) {
-      Alert.alert('User should not allow less than $1 amount.');
+      Alert.alert(strings.lessThan1AmountValidation);
       return false;
     }
     if (amount > invoiceDetail?.amount_due) {
-      Alert.alert('User should not allow more than invoice amount.');
+      Alert.alert(strings.moreThanInvoiceAmountValidation);
       return false;
     }
     if (paymentSwitchSelection === 1 && amount > invoiceDetail?.amount_paid) {
-      Alert.alert('User should not refund more than invoice paid amount.');
+      Alert.alert(strings.notRefundMorethanInvoiceValication);
       return false;
     }
     if (!note) {
-      Alert.alert('Please select invoice note.');
+      Alert.alert(strings.invoiceNoteValidation);
       return false;
     }
     return true;
@@ -104,8 +103,8 @@ export default function AddLogScreen({navigation, route}) {
 
         <TCTabView
           totalTabs={2}
-          firstTabTitle={'PAYMENT'}
-          secondTabTitle={'REFUND'}
+          firstTabTitle={strings.paymentCam}
+          secondTabTitle={strings.refundCam}
           indexCounter={paymentSwitchSelection}
           eventPrivacyContianer={{width: 100}}
           onFirstTabPress={() => setPaymentSwitchSelection(0)}
@@ -127,7 +126,7 @@ export default function AddLogScreen({navigation, route}) {
               fontSize: 16,
               color: colors.lightBlackColor,
             }}>
-            In Cash
+            {strings.inCashtext}
           </Text>
           <Image
             source={
@@ -150,7 +149,7 @@ export default function AddLogScreen({navigation, route}) {
               fontSize: 16,
               color: colors.lightBlackColor,
             }}>
-            By check
+            {strings.byChequeText}
           </Text>
           <Image
             source={

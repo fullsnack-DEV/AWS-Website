@@ -22,7 +22,6 @@ const RenderReferee = ({
   } else {
     sportObj = data?.referee_data;
   }
-  console.log('referee sport data:=>', sportObj);
   return (
     <View style={styles.refereeContainer}>
       <View style={styles.viewContainer}>

@@ -9,6 +9,7 @@ import React, {
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import FastImage from 'react-native-fast-image';
 import {TouchableOpacity} from 'react-native-gesture-handler';
+import {format} from 'react-string-format';
 import ScoreboardSportsScreen from '../ScoreboardSportsScreen';
 import UpcomingMatchScreen from '../UpcomingMatchScreen';
 import {getGameScoreboardEvents} from '../../../api/Games';
@@ -19,6 +20,7 @@ import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 import Header from '../../../components/Home/Header';
+import {strings} from '../../../../Localization/translation';
 
 export default function UserScoreboardScreen({route, navigation}) {
   const {uid} = route?.params ?? '';
@@ -103,7 +105,7 @@ export default function UserScoreboardScreen({route, navigation}) {
           </TouchableOpacity>
         }
         centerComponent={
-          <Text style={styles.eventTitleTextStyle}>Scoreboard</Text>
+          <Text style={styles.eventTitleTextStyle}>{strings.scoreboard}</Text>
         }
         rightComponent={topRightButton}
       />
@@ -116,7 +118,7 @@ export default function UserScoreboardScreen({route, navigation}) {
               : styles.inActiveButton
           }
           onPress={() => setScroboardTabNumber(0)}>
-          {`Completed (${recentMatchData?.length ?? 0})`}
+          {format(strings.completedNGame, recentMatchData?.length ?? 0)}
         </Text>
         <Text
           style={
@@ -125,7 +127,7 @@ export default function UserScoreboardScreen({route, navigation}) {
               : styles.inActiveButton
           }
           onPress={() => setScroboardTabNumber(1)}>
-          {`Upcoming (${upcomingMatchData?.length ?? 0})`}
+          {format(strings.upcomingNGame, upcomingMatchData?.length ?? 0)}
         </Text>
       </View>
       <View style={styles.separateLine} />

@@ -66,7 +66,7 @@ export default function ScorekeepersSetting({navigation, route}) {
           onPress={() => {
             onSavePressed();
           }}>
-          Save
+          {strings.save}
         </Text>
       ),
     });
@@ -342,7 +342,7 @@ export default function ScorekeepersSetting({navigation, route}) {
           onPress={() => setVisibleModal(true)}>
           <Text style={styles.itemView}> {selection || '-'}</Text>
           <View style={{flexDirection: 'row'}}>
-            <Text style={styles.itemView}>{'Scorekeeper(s)'}</Text>
+            <Text style={styles.itemView}>{strings.scorekeepers}</Text>
             <Image
               source={images.dropDownArrow}
               style={styles.downArrowImage}
@@ -372,9 +372,7 @@ export default function ScorekeepersSetting({navigation, route}) {
             color: colors.darkThemeColor,
             margin: 15,
           }}>
-          {
-            'In order to complete this part, please click the Save button on the right top after choosing your preference.'
-          }
+          {strings.saveForComplete}
         </Text>
         <Modal
           isVisible={visibleModal}

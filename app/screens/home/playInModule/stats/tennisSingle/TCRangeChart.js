@@ -1,11 +1,12 @@
 import React from 'react';
 import {Text, StyleSheet, View} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import {strings} from '../../../../../../Localization/translation';
 import colors from '../../../../../Constants/Colors';
 import fonts from '../../../../../Constants/Fonts';
 
 const TCRangeChart = ({
-  heading = 'Total',
+  heading = strings.totalText,
   totalCount = 0,
   progressCount = 0,
 }) => {

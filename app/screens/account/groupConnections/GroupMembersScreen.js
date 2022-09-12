@@ -47,6 +47,7 @@ import TCThinDivider from '../../../components/TCThinDivider';
 import {getHitSlop} from '../../../utils';
 import {followUser, unfollowUser} from '../../../api/Users';
 import TCFollowUnfollwButton from '../../../components/TCFollowUnfollwButton';
+import Verbs from '../../../Constants/Verbs';
 
 let entity = {};
 export default function GroupMembersScreen({navigation, route}) {
@@ -413,16 +414,20 @@ export default function GroupMembersScreen({navigation, route}) {
               </TouchableOpacity>
             )
           ) : data.is_following ? (
-            <TCFollowUnfollwButton
-              outerContainerStyle={styles.firstButtonOuterStyle}
-              style={styles.firstButtonStyle}
-              title={strings.following}
-              isFollowing={data.is_following}
-              onPress={() => {
-                onUserAction('following', data, index);
-              }}
-            />
-          ) : (
+            authContext.entity.uid !== data?.user_id ? (
+              <TCFollowUnfollwButton
+                outerContainerStyle={styles.firstButtonOuterStyle}
+                style={styles.firstButtonStyle}
+                title={strings.following}
+                isFollowing={data.is_following}
+                onPress={() => {
+                  onUserAction('following', data, index);
+                }}
+              />
+            ) : (
+              <View />
+            )
+          ) : authContext.entity.uid !== data?.user_id ? (
             <TCFollowUnfollwButton
               outerContainerStyle={styles.firstButtonOuterStyle}
               style={styles.firstButtonStyle}
@@ -432,6 +437,8 @@ export default function GroupMembersScreen({navigation, route}) {
                 onUserAction('follow', data, index);
               }}
             />
+          ) : (
+            <View />
           )}
         </View>
         <TCThinDivider marginTop={20} />
@@ -468,7 +475,7 @@ export default function GroupMembersScreen({navigation, route}) {
         ref={actionSheet}
         // title={'News Feed Post'}
         options={
-          switchUser.role === strings.entityTypeClub
+          switchUser.role === Verbs.entityTypeClub
             ? [
                 strings.groupMessageText,
                 strings.inviteMemberText,
@@ -489,7 +496,7 @@ export default function GroupMembersScreen({navigation, route}) {
                 strings.cancel,
               ]
         }
-        cancelButtonIndex={switchUser.role === strings.entityTypeClub ? 5 : 6}
+        cancelButtonIndex={switchUser.role === Verbs.entityTypeClub ? 5 : 6}
         // destructiveButtonIndex={1}
         onPress={(index) => {
           if (index === 0) {
@@ -507,7 +514,7 @@ export default function GroupMembersScreen({navigation, route}) {
           } else if (index === 5) {
             navigation.navigate('MembersViewPrivacyScreen');
           } else if (index === 6) {
-            if (switchUser.role === strings.entityTypeClub) {
+            if (switchUser.role === Verbs.entityTypeClub) {
               navigation.navigate('ClubSettingScreen');
             }
           }

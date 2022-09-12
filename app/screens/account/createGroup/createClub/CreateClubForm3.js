@@ -20,6 +20,7 @@ import TCProfileImageControl from '../../../../components/TCProfileImageControl'
 import TCFormProgress from '../../../../components/TCFormProgress';
 import TCGradientButton from '../../../../components/TCGradientButton';
 import TCThinDivider from '../../../../components/TCThinDivider';
+import Verbs from '../../../../Constants/Verbs';
 
 export default function CreateClubForm3({navigation, route}) {
   const [createClubForm2] = useState(route?.params?.createClubForm2);
@@ -152,7 +153,7 @@ export default function CreateClubForm3({navigation, route}) {
     setloading(true);
     const bodyParams = {
       ...createClubForm2,
-      entity_type: strings.entityTypeClub,
+      entity_type: Verbs.entityTypeClub,
       // privacy_profile: 'members',
       // allclubmemberautomatically_sync: false,
       // homefield_address_longitude: 0.0,
@@ -206,8 +207,8 @@ export default function CreateClubForm3({navigation, route}) {
 
           createGroup(
             bodyParams,
-            entity.role === strings.entityTypeTeam && entity.uid,
-            entity.role === strings.entityTypeTeam && strings.entityTypeTeam,
+            entity.role === Verbs.entityTypeTeam && entity.uid,
+            entity.role === Verbs.entityTypeTeam && Verbs.entityTypeTeam,
             authContext,
           )
             .then((response) => {
@@ -240,8 +241,8 @@ export default function CreateClubForm3({navigation, route}) {
         bodyParams,
         // entity.uid,
         // entity.role === 'team' ? 'team' : 'user',
-        entity.role === strings.entityTypeTeam && entity.uid,
-        entity.role === strings.entityTypeTeam && strings.entityTypeTeam,
+        entity.role === Verbs.entityTypeTeam && entity.uid,
+        entity.role === Verbs.entityTypeTeam && Verbs.entityTypeTeam,
         authContext,
       )
         .then((response) => {

@@ -135,7 +135,7 @@ export default function ReservationScreen({navigation}) {
       <ActivityLoader visible={loading} />
 
       <TCScrollableTabs>
-        <View tabLabel="Upcoming" style={{flex: 1}}>
+        <View tabLabel={strings.upcomingTitleText} style={{flex: 1}}>
           {/* eslint-disable-next-line no-nested-ternary */}
           {firstTimeLoading ? (
             <ReservationMainScreenShimmer />
@@ -153,7 +153,7 @@ export default function ReservationScreen({navigation}) {
             />
           )}
         </View>
-        <View tabLabel="Past" style={{flex: 1}}>
+        <View tabLabel={strings.past} style={{flex: 1}}>
           {/* eslint-disable-next-line no-nested-ternary */}
           {firstTimeLoading ? (
             <ReservationMainScreenShimmer />

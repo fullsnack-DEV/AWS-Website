@@ -19,6 +19,7 @@ import {
 import moment from 'moment';
 import {ScrollView} from 'react-native-gesture-handler';
 import {useIsFocused} from '@react-navigation/native';
+import {format} from 'react-string-format';
 
 import {
   widthPercentageToDP as wp,
@@ -42,6 +43,7 @@ import {attendEvent, deleteEvent, getEventById} from '../../../api/Schedule';
 import TCProfileButton from '../../../components/TCProfileButton';
 import {getGroupIndex, getUserIndex} from '../../../api/elasticSearch';
 import TCProfileView from '../../../components/TCProfileView';
+import Verbs from '../../../Constants/Verbs';
 
 export default function EventScreen({navigation, route}) {
   const actionSheet = useRef();
@@ -281,7 +283,9 @@ export default function EventScreen({navigation, route}) {
               source={images.blockedChallenge}
               style={styles.availableImageStyle}
             />
-            <Text style={styles.blockTextStyle}>{strings.blocked}</Text>
+            <Text style={styles.blockTextStyle}>
+              {strings.blockedForChallenge}
+            </Text>
           </View>
         )}
 
@@ -369,7 +373,11 @@ export default function EventScreen({navigation, route}) {
         <View style={styles.sepratorViewStyle} />
         <EventItemRender title={strings.numberOfAttend}>
           <Text style={styles.textValueStyle}>
-            {`MIN ${eventData?.min_attendees}   MAX ${eventData?.max_attendees}`}
+            {format(
+              strings.minMaxText_dy,
+              eventData?.min_attendees,
+              eventData?.max_attendees,
+            )}
           </Text>
         </EventItemRender>
 
@@ -399,7 +407,7 @@ export default function EventScreen({navigation, route}) {
             </Text>
           </Text>
           <Text style={{fontSize: 14, fontFamily: fonts.RBold, marginTop: 15}}>
-            {'Additional Refund Policy'}
+            {strings.additionalRefundPolicy}
           </Text>
           <Text style={styles.textValueStyle}>{eventData?.refund_policy}</Text>
         </EventItemRender>
@@ -491,7 +499,7 @@ export default function EventScreen({navigation, route}) {
 
       <ActionSheet
         ref={actionSheet}
-        options={['Edit', 'Delete', 'Cancel']}
+        options={['Edit', 'Delete', strings.cancel]}
         cancelButtonIndex={2}
         destructiveButtonIndex={1}
         onPress={(index) => {
@@ -505,18 +513,18 @@ export default function EventScreen({navigation, route}) {
             }
           } else if (index === 1) {
             Alert.alert(
-              'Do you want to delete this event ?',
+              strings.deleteThisEventText,
               '',
               [
                 {
-                  text: 'Delete',
+                  text: strings.delete,
                   style: 'destructive',
                   onPress: async () => {
                     setloading(true);
                     const entity = authContext.entity;
                     const uid = entity.uid || entity.auth.user_id;
                     const entityRole =
-                      entity.role === 'user' ? 'users' : 'groups';
+                      entity.role === Verbs.entityTypeUser ? 'users' : 'groups';
                     deleteEvent(entityRole, uid, eventData.cal_id, authContext)
                       .then(() => navigation.goBack())
                       .catch((e) => {
@@ -526,7 +534,7 @@ export default function EventScreen({navigation, route}) {
                   },
                 },
                 {
-                  text: 'Cancel',
+                  text: strings.cancel,
                   style: 'cancel',
                 },
               ],
@@ -537,7 +545,7 @@ export default function EventScreen({navigation, route}) {
       />
       <ActionSheet
         ref={editactionsheet}
-        options={['Change Event Color', 'Hide', 'Cancel']}
+        options={[strings.changeEventColor, strings.hide, strings.cancel]}
         cancelButtonIndex={2}
         // destructiveButtonIndex={1}
         onPress={() => {}}

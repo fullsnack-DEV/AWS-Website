@@ -28,6 +28,7 @@ import {
 import Modal from 'react-native-modal';
 import moment from 'moment';
 import Geolocation from '@react-native-community/geolocation';
+import {format} from 'react-string-format';
 import * as Utils from '../../../challenge/manageChallenge/settingUtility';
 import AuthContext from '../../../../auth/context';
 
@@ -45,6 +46,7 @@ import {getUserIndex} from '../../../../api/elasticSearch';
 import RenderScorekeeper from './RenderScorekeeper';
 import TCTagsFilter from '../../../../components/TCTagsFilter';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
+import Verbs from '../../../../Constants/Verbs';
 
 let stopFetchMore = true;
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
@@ -75,13 +77,11 @@ export default function BookScorekeeper({navigation, route}) {
   const [location, setLocation] = useState(route?.params?.filters.location);
   const [selectedScorekeeper, setSelectedScorekeeper] = useState(null);
 
-  console.log('Scorekeeper Filter:=>', filters);
-
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
         <Text style={styles.nextButtonStyle} onPress={() => onPressNext()}>
-          {selectedScorekeeper !== null ? 'Next' : ''}
+          {selectedScorekeeper !== null ? strings.next : ''}
         </Text>
       ),
     });
@@ -125,7 +125,7 @@ export default function BookScorekeeper({navigation, route}) {
                           term: {
                             'scorekeeper_data.setting.scorekeeper_availibility.keyword':
                               {
-                                value: 'On',
+                                value: Verbs.on,
                               },
                           },
                         },
@@ -166,8 +166,6 @@ export default function BookScorekeeper({navigation, route}) {
         });
       }
 
-      console.log('ScorekeeperQuery:=>', JSON.stringify(scorekeeperQuery));
-
       // Scorekeeper query
 
       getUserIndex(scorekeeperQuery)
@@ -194,8 +192,6 @@ export default function BookScorekeeper({navigation, route}) {
   }, []);
 
   const onPressNext = () => {
-    console.log('gameData111:=>', gameData);
-
     setLoading(true);
     Utils.getSetting(
       authContext?.entity?.uid,
@@ -206,7 +202,6 @@ export default function BookScorekeeper({navigation, route}) {
     )
       .then((response) => {
         setLoading(false);
-        console.log('setting of group or player:::=>', response);
         if (
           response?.responsible_for_scorekeeper?.who_secure?.length >
           (gameData?.scorekeepers?.length ?? 0)
@@ -220,7 +215,6 @@ export default function BookScorekeeper({navigation, route}) {
           )
             .then((res) => {
               setLoading(false);
-              console.log('res3:::=>', res);
               if (
                 res?.scorekeeper_availibility &&
                 res?.game_fee &&
@@ -249,7 +243,10 @@ export default function BookScorekeeper({navigation, route}) {
         } else {
           Alert.alert(
             strings.appName,
-            `You can't book more than ${response?.responsible_for_scorekeeper?.who_secure?.length} scorekeeper for this match. You can change the number of scorekeepers in the reservation details.`,
+            format(
+              strings.youCanNotBookMoreScorekeeperValidation,
+              response?.responsible_for_scorekeeper?.who_secure?.length,
+            ),
           );
         }
       })
@@ -318,7 +315,6 @@ export default function BookScorekeeper({navigation, route}) {
         // delete tempFilter[key];
       }
     });
-    console.log('Temp filter', tempFilter);
     setFilters({...tempFilter});
     // applyFilter();
     setTimeout(() => {
@@ -331,27 +327,19 @@ export default function BookScorekeeper({navigation, route}) {
   const getLocation = () => {
     Geolocation.getCurrentPosition(
       (position) => {
-        console.log('Lat/long to position::=>', position);
         // const position = { coords: { latitude: 49.11637199697782, longitude: -122.7776695216056 } }
         getLocationNameWithLatLong(
           position.coords.latitude,
           position.coords.longitude,
           authContext,
         ).then((res) => {
-          console.log(
-            'Lat/long to address::=>',
-            res.results[0].address_components,
-          );
           let city;
           res.results[0].address_components.map((e) => {
             if (e.types.includes('administrative_area_level_2')) {
               city = e.short_name;
             }
           });
-          console.log(
-            'Location:=>',
-            city.charAt(0).toUpperCase() + city.slice(1),
-          );
+
           setLocation(city.charAt(0).toUpperCase() + city.slice(1));
           // setFilters({
           //   ...filters,
@@ -374,15 +362,15 @@ export default function BookScorekeeper({navigation, route}) {
 
   const applyValidation = useCallback(() => {
     if (Number(minFee) > 0 && Number(maxFee) <= 0) {
-      Alert.alert('Please enter correct scorekeeper max fee.');
+      Alert.alert(strings.scorekeeperMaxFeeValidation);
       return false;
     }
     if (Number(minFee) <= 0 && Number(maxFee) > 0) {
-      Alert.alert('Please enter correct scorekeeper min fee.');
+      Alert.alert(strings.scorekeeperMinFeeValidation);
       return false;
     }
     if (Number(minFee) > Number(maxFee)) {
-      Alert.alert('Please enter correct scorekeeper fee.');
+      Alert.alert(strings.correctScorekeeperFeeValidation);
       return false;
     }
     return true;
@@ -395,7 +383,7 @@ export default function BookScorekeeper({navigation, route}) {
           color: colors.grayColor,
           fontSize: 26,
         }}>
-        No Scorekeepers
+        {strings.noScorekeeper}
       </Text>
     </View>
   );
@@ -486,9 +474,9 @@ export default function BookScorekeeper({navigation, route}) {
                 <Text
                   onPress={() => setSettingPopup(false)}
                   style={styles.cancelText}>
-                  Cancel
+                  {strings.cancel}
                 </Text>
-                <Text style={styles.locationText}>Filter</Text>
+                <Text style={styles.locationText}>{strings.filter}</Text>
                 <Text
                   style={styles.doneText}
                   onPress={() => {
@@ -512,7 +500,7 @@ export default function BookScorekeeper({navigation, route}) {
                       console.log('DONE::');
                     }
                   }}>
-                  {'Apply'}
+                  {strings.apply}
                 </Text>
               </View>
               <TCThinDivider width={'100%'} marginBottom={15} />
@@ -528,7 +516,7 @@ export default function BookScorekeeper({navigation, route}) {
                         marginBottom: 10,
                         justifyContent: 'space-between',
                       }}>
-                      <Text style={styles.filterTitle}>World</Text>
+                      <Text style={styles.filterTitle}>{strings.world}</Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(0);
@@ -554,7 +542,9 @@ export default function BookScorekeeper({navigation, route}) {
                         marginBottom: 10,
                         justifyContent: 'space-between',
                       }}>
-                      <Text style={styles.filterTitle}>Home City</Text>
+                      <Text style={styles.filterTitle}>
+                        {strings.homeCityTitleText}
+                      </Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(1);
@@ -589,7 +579,9 @@ export default function BookScorekeeper({navigation, route}) {
                         marginBottom: 10,
                         justifyContent: 'space-between',
                       }}>
-                      <Text style={styles.filterTitle}>Current City</Text>
+                      <Text style={styles.filterTitle}>
+                        {strings.locationTitle}
+                      </Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(2);
@@ -631,7 +623,7 @@ export default function BookScorekeeper({navigation, route}) {
                           <Text style={styles.searchCityText}>
                             {route?.params?.locationText ||
                               (location !== 'world' && location) ||
-                              'Search City'}
+                              strings.searchCityText}
                           </Text>
                         </View>
                         <View
@@ -654,7 +646,9 @@ export default function BookScorekeeper({navigation, route}) {
 
                 <View style={{flexDirection: 'column', margin: 15}}>
                   <View>
-                    <Text style={styles.filterTitle}>Available Time</Text>
+                    <Text style={styles.filterTitle}>
+                      {strings.availableTime}
+                    </Text>
                   </View>
                   <View style={{marginTop: 10}}>
                     <View style={{flexDirection: 'row', marginBottom: 10}}>
@@ -670,7 +664,7 @@ export default function BookScorekeeper({navigation, route}) {
                             justifyContent: 'center',
                           }}>
                           <Text style={styles.fieldTitle} numberOfLines={1}>
-                            From
+                            {strings.from}
                           </Text>
                         </View>
                         <View style={{marginRight: 15, flexDirection: 'row'}}>
@@ -696,7 +690,7 @@ export default function BookScorekeeper({navigation, route}) {
                             justifyContent: 'center',
                           }}>
                           <Text style={styles.fieldTitle} numberOfLines={1}>
-                            To
+                            {strings.to}
                           </Text>
                         </View>
                         <View style={{marginRight: 15, flexDirection: 'row'}}>
@@ -717,7 +711,7 @@ export default function BookScorekeeper({navigation, route}) {
                         textAlign: 'right',
                         marginTop: 10,
                       }}>
-                      Time zone{' '}
+                      {strings.timezone}{' '}
                       <Text
                         style={{
                           fontSize: 12,
@@ -725,72 +719,12 @@ export default function BookScorekeeper({navigation, route}) {
                           color: colors.lightBlackColor,
                           textDecorationLine: 'underline',
                         }}>
-                        Vancouver
+                        {strings.vancouver}
                       </Text>
                     </Text>
                   </View>
                 </View>
               </View>
-              {/* Rate View */}
-              {/* <View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  margin: 15,
-                  marginTop: 0,
-                  justifyContent: 'space-between',
-                }}>
-                <View style={{ flex: 0.2 }}>
-                  <Text style={styles.filterTitle}>Rating</Text>
-                </View>
-                <View
-                  style={{
-                    marginLeft: 15,
-                    flex: 0.6,
-                    alignSelf: 'flex-end',
-                  }}>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      marginBottom: 10,
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                    }}>
-                    <Text style={styles.minMaxTitle}>Min</Text>
-                    <AirbnbRating
-                      count={5}
-                      fractions={1}
-                      showRating={false}
-                      defaultRating={0}
-                      size={20}
-                      isDisabled={false}
-                      selectedColor={'#f49c20'}
-                    />
-                    <Text style={styles.starCount}>2.0</Text>
-                  </View>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                    }}>
-                    <Text style={styles.minMaxTitle}>Max</Text>
-                    <AirbnbRating
-                      count={5}
-                      fractions={1}
-                      showRating={false}
-                      defaultRating={0}
-                      size={20}
-                      isDisabled={false}
-                      selectedColor={'#f49c20'}
-                    />
-                    <Text style={styles.starCount}>2.0</Text>
-                  </View>
-                </View>
-              </View>
-
-            </View> */}
-              {/* Rate View */}
 
               <View
                 style={{
@@ -799,7 +733,9 @@ export default function BookScorekeeper({navigation, route}) {
                   justifyContent: 'space-between',
                 }}>
                 <View style={{}}>
-                  <Text style={styles.filterTitle}>Scorekeeper fee</Text>
+                  <Text style={styles.filterTitle}>
+                    {strings.scorekeeperFee}
+                  </Text>
                 </View>
                 <View style={{marginTop: 10}}>
                   <View
@@ -811,7 +747,7 @@ export default function BookScorekeeper({navigation, route}) {
                       onChangeText={(text) => setMinFee(text)}
                       value={minFee}
                       style={styles.minFee}
-                      placeholder={'Min'}
+                      placeholder={strings.minPlaceholder}
                       autoCorrect={false}
                       // clearButtonMode={'always'}
                       keyboardType={'numeric'}
@@ -821,7 +757,7 @@ export default function BookScorekeeper({navigation, route}) {
                       onChangeText={(text) => setMaxFee(text)}
                       value={maxFee}
                       style={styles.minFee}
-                      placeholder={'Max'}
+                      placeholder={strings.maxPlaceholder}
                       autoCorrect={false}
                       // clearButtonMode={'always'}
                       keyboardType={'numeric'}
@@ -839,23 +775,23 @@ export default function BookScorekeeper({navigation, route}) {
             style={styles.resetButton}
             onPress={() => {
               Alert.alert(
-                'Are you sure want to reset filters?',
+                strings.areYouSureRemoveFilterText,
                 '',
                 [
                   {
-                    text: 'Cancel',
+                    text: strings.cancel,
                     onPress: () => console.log('Cancel Pressed'),
                     style: 'cancel',
                   },
                   {
-                    text: 'OK',
+                    text: strings.okTitleText,
                     onPress: () => onPressReset(),
                   },
                 ],
                 {cancelable: false},
               );
             }}>
-            <Text style={styles.resetTitle}>Reset</Text>
+            <Text style={styles.resetTitle}>{strings.resetTitleText}</Text>
           </TouchableOpacity>
         </View>
         <DateTimePickerView

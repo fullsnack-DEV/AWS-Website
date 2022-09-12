@@ -42,6 +42,7 @@ import {
   searchCityState,
   searchLocationPlaceDetail,
 } from '../../../../api/External';
+import Verbs from '../../../../Constants/Verbs';
 
 export default function CreateTeamForm1({navigation, route}) {
   const isFocused = useIsFocused();
@@ -90,10 +91,10 @@ export default function CreateTeamForm1({navigation, route}) {
         setTimeout(() => {
           setVisibleSportsModal(false);
           if (
-            item?.sport === strings.tennisSport &&
-            item?.sport_type === strings.doubleSports &&
+            item?.sport === Verbs.tennisSport &&
+            item?.sport_type === Verbs.doubleSports &&
             authContext?.entity?.role ===
-              (strings.entityTypeUser || strings.entityTypePlayer)
+              (Verbs.entityTypeUser || Verbs.entityTypePlayer)
           ) {
             getUserDoubleTeamFollower(
               item?.sport,
@@ -139,8 +140,8 @@ export default function CreateTeamForm1({navigation, route}) {
     authContext.sports.map((item) => {
       const filterFormat = item.format.filter(
         (obj) =>
-          obj.entity_type === strings.entityTypeTeam &&
-          obj.sport_type !== strings.doubleSport,
+          obj.entity_type === Verbs.entityTypeTeam &&
+          obj.sport_type !== Verbs.doubleSport,
       );
       sportArr = [...sportArr, ...filterFormat];
       return null;
@@ -165,10 +166,10 @@ export default function CreateTeamForm1({navigation, route}) {
     }
 
     if (
-      sportsSelection.sport === strings.tennisSport &&
-      sportsSelection.sport_type === strings.doubleSport &&
+      sportsSelection.sport === Verbs.tennisSport &&
+      sportsSelection.sport_type === Verbs.doubleSport &&
       authContext?.entity?.role ===
-        (strings.entityTypeUser || strings.entityTypePlayer)
+        (Verbs.entityTypeUser || Verbs.entityTypePlayer)
     ) {
       if (followersData?.length > 0) {
         navigation.navigate('CreateTeamForm2', {

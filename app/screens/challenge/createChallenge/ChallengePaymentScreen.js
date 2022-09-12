@@ -22,6 +22,7 @@ import {
 import moment from 'moment';
 import {useIsFocused} from '@react-navigation/native';
 import Modal from 'react-native-modal';
+import {format} from 'react-string-format';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 
 import AuthContext from '../../../auth/context';
@@ -60,7 +61,6 @@ export default function ChallengePaymentScreen({route, navigation}) {
   const [challengeData, setChallengeData] = useState(
     route?.params?.challengeObj,
   );
-  console.log(' route?.params?.challengeObj,', route?.params?.challengeObj);
   const [groupObj] = useState(route?.params?.groupObj);
   const [defaultCard, setDefaultCard] = useState();
 
@@ -94,7 +94,6 @@ export default function ChallengePaymentScreen({route, navigation}) {
         (obj) => obj.policy_type === challengeData?.refund_policy,
       )[0];
       const value = refund.values.filter((obj_1) => obj_1.after === 1)[0];
-      console.log('refund obj', value.refund);
       setRefundValue(value.refund);
     });
   }, [challengeData?.refund_policy]);
@@ -108,10 +107,6 @@ export default function ChallengePaymentScreen({route, navigation}) {
   useEffect(() => {
     if (isFocused) {
       if (route?.params?.paymentMethod) {
-        console.log(
-          'route?.params?.paymentMethod',
-          route?.params?.paymentMethod,
-        );
         getFeeDetail();
         setDefaultCard(route?.params?.paymentMethod);
       }
@@ -136,7 +131,6 @@ export default function ChallengePaymentScreen({route, navigation}) {
 
   const getFeeDetail = () => {
     const feeBody = {};
-    console.log('challengeData check:=>', challengeData);
 
     feeBody.source = route?.params?.paymentMethod?.id;
     feeBody.challenge_id = challengeData?.challenge_id;
@@ -163,7 +157,6 @@ export default function ChallengePaymentScreen({route, navigation}) {
         // if (response.payload.total_game_fee === 0) {
         //   setTotalZero(true);
         // }
-        console.log('Body estimate fee:=>', response.payload);
 
         setloading(false);
       })
@@ -177,7 +170,6 @@ export default function ChallengePaymentScreen({route, navigation}) {
 
   const sendChallenge = () => {
     entity = authContext.entity;
-    console.log('Entity:=>', entity);
     const res_secure_referee =
       challengeData?.responsible_for_referee?.who_secure?.map((obj) => ({
         ...obj,
@@ -204,14 +196,12 @@ export default function ChallengePaymentScreen({route, navigation}) {
       ),
       end_datetime: Number(parseFloat(challengeData?.end_datetime).toFixed(0)),
     };
-    console.log('res_secure_referee?.length', res_secure_referee?.length);
     if (res_secure_referee?.length > 0) {
       body.responsible_for_referee.who_secure = res_secure_referee;
     }
     if (res_secure_scorekeeper?.length > 0) {
       body.responsible_for_scorekeeper.who_secure = res_secure_scorekeeper;
     }
-    console.log('body:=>', body);
     const homeID =
       challengeData?.sport_type === 'single'
         ? body.home_team.user_id
@@ -228,7 +218,6 @@ export default function ChallengePaymentScreen({route, navigation}) {
     if (defaultCard) {
       body.source = defaultCard.id;
     }
-    console.log('Challenge Object111:=>', body);
 
     setloading(true);
     createChallenge(body, authContext)
@@ -332,7 +321,7 @@ export default function ChallengePaymentScreen({route, navigation}) {
         <View style={styles.challengerView}>
           <View style={styles.teamView}>
             <Image source={images.reqIcon} style={styles.reqOutImage} />
-            <Text style={styles.challengerText}>Challenger</Text>
+            <Text style={styles.challengerText}>{strings.challenger}</Text>
           </View>
 
           <View style={styles.teamView}>
@@ -356,7 +345,7 @@ export default function ChallengePaymentScreen({route, navigation}) {
         <View style={styles.challengeeView}>
           <View style={styles.teamView}>
             <Image source={images.reqeIcon} style={styles.reqOutImage} />
-            <Text style={styles.challengeeText}>Challengee</Text>
+            <Text style={styles.challengeeText}>{strings.challengee}</Text>
           </View>
 
           <View style={styles.teamView}>
@@ -382,9 +371,9 @@ export default function ChallengePaymentScreen({route, navigation}) {
 
       {type === 'challenge' && (
         <View>
-          <TCLabel title={`Game · ${challengeData?.sport}`} />
+          <TCLabel title={format(strings.matchSport, challengeData?.sport)} />
           <TCInfoImageField
-            title={'Home'}
+            title={strings.home}
             image={
               challengeData?.home_team?.thumbnail
                 ? {uri: challengeData?.home_team?.thumbnail}
@@ -400,7 +389,7 @@ export default function ChallengePaymentScreen({route, navigation}) {
           />
           <TCThinDivider />
           <TCInfoImageField
-            title={'Away'}
+            title={strings.away}
             image={
               challengeData?.away_team?.thumbnail
                 ? {uri: challengeData?.away_team?.thumbnail}
@@ -417,7 +406,7 @@ export default function ChallengePaymentScreen({route, navigation}) {
           <TCThinDivider />
 
           <TCInfoField
-            title={'Time'}
+            title={strings.timeText}
             value={`${moment(
               new Date(challengeData?.start_datetime * 1000),
             ).format('MMM DD, YYYY  hh:mm a')} -\n${moment(
@@ -432,14 +421,14 @@ export default function ChallengePaymentScreen({route, navigation}) {
           <TCThinDivider />
 
           <TCInfoField
-            title={'Venue'}
+            title={strings.venue}
             value={challengeData?.venue?.name}
             marginLeft={30}
             titleStyle={{fontSize: 16}}
           />
           <TCThinDivider />
           <TCInfoField
-            title={'Address'}
+            title={strings.address}
             value={challengeData?.venue?.address}
             marginLeft={30}
             titleStyle={{fontSize: 16}}
@@ -453,7 +442,7 @@ export default function ChallengePaymentScreen({route, navigation}) {
         </View>
       )}
 
-      <TCLabel title={'Payment details'} style={{marginBottom: 15}} />
+      <TCLabel title={strings.paymentDetailsText} style={{marginBottom: 15}} />
       <GameFeeCard
         feeObject={{
           total_game_fee: challengeData?.total_game_fee,
@@ -472,7 +461,7 @@ export default function ChallengePaymentScreen({route, navigation}) {
       {challengeData?.total_game_fee !== 0 && (
         <View>
           <View>
-            <TCLabel title={'Payment Method'} />
+            <TCLabel title={strings.paymentMethod} />
             <View style={styles.viewMarginStyle}>
               <TCTouchableLabel
                 title={
@@ -498,47 +487,50 @@ export default function ChallengePaymentScreen({route, navigation}) {
       )}
 
       <TCChallengeTitle
-        title={'Refund Policy'}
+        title={strings.refundpolicy}
         value={challengeData?.refund_policy}
-        tooltipText={
-          '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the match fee and service fee are not refunded.'
-        }
+        tooltipText={strings.cancellationPolicyDesc}
         tooltipHeight={hp('18%')}
         tooltipWidth={wp('50%')}
       />
       <Text style={styles.normalTextStyle}>
         {challengeData?.refund_policy === 'Strict' &&
-          `When you cancel this game reservation before ${moment(
-            new Date(challengeData?.start_datetime * 1000),
-          ).format('hh:mm a')} on ${moment(
-            new Date(challengeData?.start_datetime * 1000),
-          ).format(
-            'MMMM DD',
-          )}, you will get a ${refundValue}% refund, minus the service fee.`}
+          format(
+            strings.cancelGameReservationBefore,
+            moment(new Date(challengeData?.start_datetime * 1000)).format(
+              'hh:mm a',
+            ),
+            moment(new Date(challengeData?.start_datetime * 1000)).format(
+              'MMMM DD',
+            ),
+            refundValue,
+          )}
         {challengeData?.refund_policy === 'Flexible' &&
-          `When you cancel this game reservation before ${moment(
-            new Date(challengeData?.start_datetime * 1000),
-          ).format('hh:mm a')} on ${moment(
-            new Date(challengeData?.start_datetime * 1000),
-          ).format(
-            'MMMM DD',
-          )}, you will get a ${refundValue}% refund, minus the service fee.`}
+          format(
+            strings.cancelGameReservationMinusFee,
+            moment(new Date(challengeData?.start_datetime * 1000)).format(
+              'hh:mm a',
+            ),
+            moment(new Date(challengeData?.start_datetime * 1000)).format(
+              'MMMM DD',
+            ),
+            refundValue,
+          )}
         {challengeData?.refund_policy === 'Moderate' &&
-          `When you cancel this game reservation before ${moment(
-            new Date(challengeData?.start_datetime * 1000),
-          ).format('hh:mm a')} on ${moment(
-            new Date(challengeData?.start_datetime * 1000),
-          ).format(
-            'MMMM DD',
-          )}, you will get a ${refundValue}% refund, minus the service fee.`}
+          format(
+            strings.cancelGameReservationMinusFee,
+            moment(new Date(challengeData?.start_datetime * 1000)).format(
+              'hh:mm a',
+            ),
+            moment(new Date(challengeData?.start_datetime * 1000)).format(
+              'MMMM DD',
+            ),
+            refundValue,
+          )}
       </Text>
       <TCThickDivider />
 
-      <Text style={styles.termsTextStyle}>
-        By selecting the button below, I agree to the Game Rules cancellation
-        policy and refund policy. I also agree to pay the total amount shown
-        above.
-      </Text>
+      <Text style={styles.termsTextStyle}>{strings.refereebookingnote}</Text>
 
       <TCGradientButton
         isDisabled={challengeData?.total_game_fee !== 0 ? !defaultCard : false}
@@ -605,12 +597,15 @@ export default function ChallengePaymentScreen({route, navigation}) {
           <Image style={styles.background} source={images.entityCreatedBG} />
 
           <View style={styles.mailContainer}>
-            <Text style={styles.invitationText}>Challenge sent</Text>
+            <Text style={styles.invitationText}>
+              {strings.challengeSentText}
+            </Text>
             <Text style={styles.infoText}>
-              When{' '}
-              {groupObj?.group_name ??
-                `${groupObj?.first_name} ${groupObj?.last_name}`}{' '}
-              accepts your match reservation request, you will be notified.
+              {format(
+                strings.whenGroupNotifyText,
+                groupObj?.group_name ??
+                  `${groupObj?.first_name} ${groupObj?.last_name}`,
+              )}
             </Text>
             <View style={styles.imageContainer}>
               <Image
@@ -627,7 +622,7 @@ export default function ChallengePaymentScreen({route, navigation}) {
                 setModalVisible(false);
                 navigation.popToTop();
               }}>
-              <Text style={styles.goToProfileTitle}>OK</Text>
+              <Text style={styles.goToProfileTitle}>{strings.okTitleText}</Text>
             </TouchableOpacity>
           </SafeAreaView>
         </View>

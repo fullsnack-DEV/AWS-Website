@@ -184,7 +184,7 @@ export default function WritePostScreen({navigation, route}) {
               }, uploadTimeout);
             }
           }}>
-          <Text style={styles.doneTextStyle}>Done</Text>
+          <Text style={styles.doneTextStyle}>{strings.done}</Text>
         </TouchableOpacity>
       ),
     });
@@ -310,7 +310,7 @@ export default function WritePostScreen({navigation, route}) {
   useEffect(() => {
     if (route?.params?.comeFrom === 'LocalHomeScreen') {
       Alert.alert(
-        'A vertical video that is 30 seconds long or less may be shown in Shorts.',
+        strings.verticalVideo,
       );
     }
   }, [route?.params?.comeFrom]);

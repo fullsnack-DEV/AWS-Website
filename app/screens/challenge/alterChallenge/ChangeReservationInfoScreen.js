@@ -26,8 +26,12 @@ export default function ChangeReservationInfoScreen({navigation, route}) {
   useLayoutEffect(() => {
     navigation.setOptions({
       title:
-        (screenName && screenName === 'change' && 'Change Match Reservation') ||
-        (screenName && screenName === 'cancel' && 'Cancel Match Reservation'),
+        (screenName &&
+          screenName === 'change' &&
+          strings.changeMatchReservation) ||
+        (screenName &&
+          screenName === 'cancel' &&
+          strings.cancelMatchReservation),
     });
   }, [navigation, screenName]);
 
@@ -78,46 +82,19 @@ export default function ChangeReservationInfoScreen({navigation, route}) {
         <View style={styles.mailContainer}>
           {screenName === 'change' ? (
             <Text style={styles.titleText}>
-              What happens when you change The match reservation?
+              {strings.whatHappensChangeReservation}
             </Text>
           ) : (
-            <Text style={styles.titleText}>
-              Please note the following instructions before you cancel the Game
-              reservation.
-            </Text>
+            <Text style={styles.titleText}>{strings.noteForCancelGame}</Text>
           )}
 
           {screenName === 'change' ? (
             <Text style={styles.descText}>
-              • When the opponent team accepts your match reservation alteration
-              request and, as a result, the time or venue of the match listed in
-              the reservation is changed, a referee reservation alteration
-              request will be automatically sent to each referee booked for the
-              match.{'\n'}
-              {'\n'}• When a referee doesn’t accept the alteration request above
-              after the match reservation has been changed, the referee
-              reservation will be canceled. The referee fee will be refunded
-              according to the cancellation policy.{'\n'}
-              {'\n'}• Other users may be able to see who has canceled the
-              reservations and how many days prior to the match starting time
-              they have been canceled in your scoreboard or schedule.
-              Furthermore, your stats may shows the number or percentage of the
-              cancellation that you have made.{'\n'}
-              {'\n'}
+              {strings.changeGameReservationDesc}
             </Text>
           ) : (
             <Text style={styles.descText}>
-              • When the game reservation is canceled, all the referees of the
-              game will still remain as booked referees of the game and the team
-              which has booked a referee still has to pay the referee fee to the
-              referee.{'\n'}
-              {'\n'}• You can cancel the referee reservation. The referee fee
-              will be refunded according to the cancellation policy.{'\n'}
-              {'\n'}• The match fee will be refunded according to the
-              cancellation policy.{'\n'}
-              {'\n'}• The cancellation stats will be displayed on your home or
-              stats, which shows the number or percentage of the cancellation
-              that your team have made.
+              {strings.cancelGameReservationDesc}
             </Text>
           )}
         </View>
@@ -128,7 +105,6 @@ export default function ChangeReservationInfoScreen({navigation, route}) {
             screenName === 'change' ? strings.nextTitle : strings.cancelMatch
           }
           onPress={() => {
-            console.log('route?.params?.settingObj', route?.params?.settingObj);
             if (screenName === 'change') {
               navigation.navigate('EditChallenge', {
                 groupObj: getOpponentEntity(),
@@ -140,11 +116,11 @@ export default function ChangeReservationInfoScreen({navigation, route}) {
               });
             } else {
               Alert.alert(
-                'Are you sure that you want to cancel the match reservation?',
+                strings.areYouSureCancelReservation,
                 '',
                 [
                   {
-                    text: 'Yes',
+                    text: strings.yes,
                     onPress: () => {
                       acceptDeclineChallengeOperation(
                         entity.uid,
@@ -155,7 +131,7 @@ export default function ChangeReservationInfoScreen({navigation, route}) {
                     },
                   },
                   {
-                    text: 'No',
+                    text: strings.no,
                     style: 'cancel',
                     onPress: () => {
                       navigation.goBack();

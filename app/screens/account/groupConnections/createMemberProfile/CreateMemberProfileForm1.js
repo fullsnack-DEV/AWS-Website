@@ -40,6 +40,7 @@ import {monthNames, widthPercentageToDP} from '../../../../utils';
 import TCFormProgress from '../../../../components/TCFormProgress';
 import TCKeyboardView from '../../../../components/TCKeyboardView';
 import DateTimePickerView from '../../../../components/Schedule/DateTimePickerModal';
+import Verbs from '../../../../Constants/Verbs';
 
 let entity = {};
 
@@ -147,7 +148,7 @@ export default function CreateMemberProfileForm1({navigation, route}) {
           style={styles.nextButtonStyle}
           onPress={() => {
             if (checkValidation()) {
-              if (entity.role === strings.entityTypeTeam) {
+              if (entity.role === Verbs.entityTypeTeam) {
                 navigation.navigate('CreateMemberProfileTeamForm2', {
                   form1: {
                     ...memberInfo,
@@ -164,7 +165,7 @@ export default function CreateMemberProfileForm1({navigation, route}) {
                     gender,
                   },
                 });
-              } else if (entity.role === strings.entityTypeClub) {
+              } else if (entity.role === Verbs.entityTypeClub) {
                 navigation.navigate('CreateMemberProfileClubForm2', {
                   form1: {
                     ...memberInfo,
@@ -344,7 +345,7 @@ export default function CreateMemberProfileForm1({navigation, route}) {
   return (
     <TCKeyboardView>
       <TCFormProgress
-        totalSteps={role === strings.entityTypeClub ? 3 : 2}
+        totalSteps={role === Verbs.entityTypeClub ? 3 : 2}
         curruentStep={1}
       />
 

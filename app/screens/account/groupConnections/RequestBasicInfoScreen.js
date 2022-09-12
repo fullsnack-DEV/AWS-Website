@@ -271,7 +271,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
   };
 
   const editMemberBasicInfo = () => {
-    // setloading(true);
+    setloading(true);
     const bodyParams = {};
     console.log('SETTING PARAMS::', setting);
     bodyParams.gender = memberInfo?.gender;
@@ -315,7 +315,8 @@ export default function RequestBasicInfoScreen({navigation, route}) {
         }, 10);
       });
   };
-  const handleDonePress = ({date}) => {
+  const handleDonePress = (date) => {
+    console.log('dadadad', date);
     setShow(!show);
     if (date !== '') {
       setMemberInfo({...memberInfo, birthday: new Date(date).getTime()});
@@ -624,7 +625,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
             style={{height: 22, width: 22, resizeMode: 'contain'}}
           />
         </TouchableOpacity>
-        <Text style={styles.checkBoxText}>Height</Text>
+        <Text style={styles.checkBoxText}>{strings.height}</Text>
       </View>
       {heightView()}
 
@@ -643,7 +644,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
             style={{height: 22, width: 22, resizeMode: 'contain'}}
           />
         </TouchableOpacity>
-        <Text style={styles.checkBoxText}>Weight</Text>
+        <Text style={styles.checkBoxText}>{strings.weight}</Text>
       </View>
       {weightView()}
 
@@ -688,7 +689,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
               style={{height: 22, width: 22, resizeMode: 'contain'}}
             />
           </TouchableOpacity>
-          <Text style={styles.checkBoxText}>Phone</Text>
+          <Text style={styles.checkBoxText}>{strings.Phone}</Text>
         </View>
         <FlatList
           data={phoneNumber}
@@ -719,7 +720,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
             style={{height: 22, width: 22, resizeMode: 'contain'}}
           />
         </TouchableOpacity>
-        <Text style={styles.checkBoxText}>Address</Text>
+        <Text style={styles.checkBoxText}>{strings.address}</Text>
       </View>
       <View>
         <TCTextField
@@ -764,7 +765,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
         <View>
           <DateTimePickerView
             visible={show}
-            date={memberInfo?.birthday}
+            // date={new Date(memberInfo?.birthday)}
             onDone={handleDonePress}
             onCancel={handleCancelPress}
             onHide={handleCancelPress}

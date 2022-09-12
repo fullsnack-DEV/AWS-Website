@@ -31,8 +31,6 @@ export default function SportActivityScreen({navigation}) {
   const [loading, setloading] = useState(false);
   const [userObject, setUserObject] = useState();
 
-  console.log('authContext', authContext.entity.obj);
-
   useEffect(() => {
     if (isFocused) {
       setloading(true);
@@ -122,7 +120,7 @@ export default function SportActivityScreen({navigation}) {
           }}>
           <View style={{flexDirection: 'row'}}>
             <Text style={styles.listItemsTitle}>
-              Deactivated Sports Acitivies
+              {strings.deactivatedSportsActivities}
             </Text>
             <Image source={images.nextArrow} style={styles.nextArrow} />
           </View>

@@ -89,7 +89,7 @@ export default function RefereesListScreen({navigation, route}) {
   useEffect(() => {
     const list = [
       {
-        label: 'All',
+        label: strings.all,
         value: 'All',
       },
     ];
@@ -107,8 +107,6 @@ export default function RefereesListScreen({navigation, route}) {
 
   const getReferees = useCallback(
     (filerReferee) => {
-      console.log('get referee called');
-
       const refereeQuery = {
         size: pageSize,
         from: pageFrom,
@@ -328,15 +326,15 @@ export default function RefereesListScreen({navigation, route}) {
 
   const applyValidation = useCallback(() => {
     if (Number(minFee) > 0 && Number(maxFee) <= 0) {
-      Alert.alert('Please enter correct referee max fee.');
+      Alert.alert(strings.refereeFeeMax);
       return false;
     }
     if (Number(minFee) <= 0 && Number(maxFee) > 0) {
-      Alert.alert('Please enter correct referee min fee.');
+      Alert.alert(strings.refereeFeeMin);
       return false;
     }
     if (Number(minFee) > Number(maxFee)) {
-      Alert.alert('Please enter correct referee fee.');
+      Alert.alert(strings.refereeFeeCorrect);
       return false;
     }
     return true;
@@ -349,7 +347,7 @@ export default function RefereesListScreen({navigation, route}) {
           color: colors.grayColor,
           fontSize: 26,
         }}>
-        No Referees
+        {strings.noReferees}
       </Text>
     </View>
   );
@@ -455,9 +453,9 @@ export default function RefereesListScreen({navigation, route}) {
                 <Text
                   onPress={() => setSettingPopup(false)}
                   style={styles.cancelText}>
-                  Cancel
+                  {strings.cancel}
                 </Text>
-                <Text style={styles.locationText}>Filter</Text>
+                <Text style={styles.locationText}>{strings.filter}</Text>
                 <Text
                   style={styles.doneText}
                   onPress={() => {
@@ -481,14 +479,14 @@ export default function RefereesListScreen({navigation, route}) {
                       }, 100);
                     }
                   }}>
-                  {'Apply'}
+                  {strings.apply}
                 </Text>
               </View>
               <TCThinDivider width={'100%'} marginBottom={15} />
               <View>
                 <View style={{flexDirection: 'column', margin: 15}}>
                   <View>
-                    <Text style={styles.filterTitle}>Location</Text>
+                    <Text style={styles.filterTitle}>{strings.locationTitleText}</Text>
                   </View>
                   <View style={{marginTop: 10, marginLeft: 10}}>
                     <View
@@ -497,7 +495,7 @@ export default function RefereesListScreen({navigation, route}) {
                         marginBottom: 10,
                         justifyContent: 'space-between',
                       }}>
-                      <Text style={styles.filterTitle}>World</Text>
+                      <Text style={styles.filterTitle}>{strings.world}</Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(0);
@@ -523,7 +521,7 @@ export default function RefereesListScreen({navigation, route}) {
                         marginBottom: 10,
                         justifyContent: 'space-between',
                       }}>
-                      <Text style={styles.filterTitle}>Home City</Text>
+                      <Text style={styles.filterTitle}>{strings.currentCity}</Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(1);
@@ -558,7 +556,7 @@ export default function RefereesListScreen({navigation, route}) {
                         marginBottom: 10,
                         justifyContent: 'space-between',
                       }}>
-                      <Text style={styles.filterTitle}>Current City</Text>
+                      <Text style={styles.filterTitle}>{strings.currrentCityTitle}</Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(2);
@@ -598,7 +596,7 @@ export default function RefereesListScreen({navigation, route}) {
 
                         <View style={styles.searchCityContainer}>
                           <Text style={styles.searchCityText}>
-                            {route?.params?.locationText || 'Search City'}
+                            {route?.params?.locationText || strings.searchCityText}
                           </Text>
                         </View>
                         <View
@@ -626,12 +624,12 @@ export default function RefereesListScreen({navigation, route}) {
                       justifyContent: 'space-between',
                     }}>
                     <View style={{}}>
-                      <Text style={styles.filterTitle}>Sport</Text>
+                      <Text style={styles.filterTitle}>{strings.sport}</Text>
                     </View>
                     <View style={{marginTop: 10}}>
                       <TCPicker
                         dataSource={sports}
-                        placeholder={'Select Sport'}
+                        placeholder={strings.selectSportTitleText}
                         onValueChange={(value) => {
                           console.log('Sport value:=>', value);
                           if (value === 'All') {
@@ -650,7 +648,7 @@ export default function RefereesListScreen({navigation, route}) {
                         value={
                           selectedSport.sport !== 'All'
                             ? Utility.getSportName(selectedSport, authContext)
-                            : 'All'
+                            : strings.all
                         }
                       />
                     </View>
@@ -804,7 +802,7 @@ export default function RefereesListScreen({navigation, route}) {
                     justifyContent: 'space-between',
                   }}>
                   <View style={{}}>
-                    <Text style={styles.filterTitle}>Referee fee</Text>
+                    <Text style={styles.filterTitle}>{strings.refereeFee}</Text>
                   </View>
                   <View style={{marginTop: 10}}>
                     <View
@@ -816,7 +814,7 @@ export default function RefereesListScreen({navigation, route}) {
                         onChangeText={(text) => setMinFee(text)}
                         value={minFee}
                         style={styles.minFee}
-                        placeholder={'Min'}
+                        placeholder={strings.minPlaceholder}
                         autoCorrect={false}
                         // clearButtonMode={'always'}
                         keyboardType={'numeric'}
@@ -826,7 +824,7 @@ export default function RefereesListScreen({navigation, route}) {
                         onChangeText={(text) => setMaxFee(text)}
                         value={maxFee}
                         style={styles.minFee}
-                        placeholder={'Max'}
+                        placeholder={strings.maxPlaceholder}
                         autoCorrect={false}
                         // clearButtonMode={'always'}
                         keyboardType={'numeric'}
@@ -844,23 +842,23 @@ export default function RefereesListScreen({navigation, route}) {
             style={styles.resetButton}
             onPress={() => {
               Alert.alert(
-                'Are you sure want to reset filters?',
+                strings.areYouSureRemoveFilterText,
                 '',
                 [
                   {
-                    text: 'Cancel',
+                    text: strings.cancel,
                     onPress: () => console.log('Cancel Pressed'),
                     style: 'cancel',
                   },
                   {
-                    text: 'OK',
+                    text: strings.okTitleText,
                     onPress: () => onPressReset(),
                   },
                 ],
                 {cancelable: false},
               );
             }}>
-            <Text style={styles.resetTitle}>Reset</Text>
+            <Text style={styles.resetTitle}>{strings.resetTitleText}</Text>
           </TouchableOpacity>
         </View>
         {/* <DateTimePickerView

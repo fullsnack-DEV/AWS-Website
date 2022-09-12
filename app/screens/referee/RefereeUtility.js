@@ -11,7 +11,6 @@ export const getRefereeReservationDetail = (
   authContext,
 ) => {
   const Obj = {};
-  console.log('data of referee reservation details::=>', reservationID);
   // eslint-disable-next-line consistent-return
   return getReservation(
     'referees',
@@ -20,7 +19,6 @@ export const getRefereeReservationDetail = (
     authContext,
   )
     .then((response) => {
-      console.log('Response of referee reservation details::=>', response);
       if (
         RefereeReservationStatus.changeRequest === response.payload[0].status ||
         RefereeReservationStatus.pendingrequestpayment ===
@@ -47,7 +45,6 @@ export const getRefereeReservationDetail = (
         RefereeReservationStatus.requestcancelled === response.payload[0].status
       ) {
         let tempObj;
-        console.log('request cancelled true');
         for (let i = 0; i < response.payload.length; i++) {
           if (
             response.payload[i].status === RefereeReservationStatus.accepted

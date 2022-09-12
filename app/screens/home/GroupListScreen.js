@@ -4,6 +4,7 @@ import {View, FlatList, StyleSheet, Text} from 'react-native';
 
 import {strings} from '../../../Localization/translation';
 import GroupListItemView from '../../components/Home/GroupListItemView';
+import Verbs from '../../Constants/Verbs';
 
 export default function GroupListScreen({navigation, route}) {
   const [groups] = useState(route.params.groups);
@@ -11,7 +12,7 @@ export default function GroupListScreen({navigation, route}) {
   useLayoutEffect(() => {
     navigation.setOptions({
       title:
-        route.params.entity_type === 'club'
+        route.params.entity_type === Verbs.entityTypeClub
           ? strings.clubstitle
           : strings.teamstitle,
     });
@@ -40,7 +41,7 @@ export default function GroupListScreen({navigation, route}) {
           renderItem={renderItems}
           ListEmptyComponent={() => (
             <View>
-              <Text>No Groups Found</Text>
+              <Text>{strings.noGroupFond}</Text>
             </View>
           )}
         />

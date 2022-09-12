@@ -12,6 +12,7 @@ import {
   CardFieldInput,
   useStripe,
 } from '@stripe/stripe-react-native';
+import {format} from 'react-string-format';
 import * as Utility from '../../../utils';
 import AuthContext from '../../../auth/context';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
@@ -35,8 +36,7 @@ export default function AddCardScreen({navigation}) {
     });
 
     if (error) {
-      Alert.alert(`Error code: ${error.code}`, error.message);
-      console.log(`Error1: ${JSON.stringify(error)}`);
+      Alert.alert(format(strings.errorCodeText, error.message));
       setloading(false);
     } else if (paymentMethod) {
       console.log('createPaymentMethod ', paymentMethod);

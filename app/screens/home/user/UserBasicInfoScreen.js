@@ -57,8 +57,6 @@ export default function UserBasicInfoScreen({navigation, route}) {
     userProfile.birthday = userData.birthday;
     userProfile.address = userData.address;
 
-    console.log('user profile object', userProfile);
-
     updateUserProfile(userProfile, authContext).then(async (response) => {
       setloading(false);
       if (response && response.status === true) {
@@ -72,14 +70,13 @@ export default function UserBasicInfoScreen({navigation, route}) {
         navigation.goBack();
       } else {
         setTimeout(() => {
-          Alert.alert(strings.appName, 'Something went wrong');
+          Alert.alert(strings.appName, strings.defaultError);
         }, 0.1);
       }
     });
   };
 
   const onBirthDayClicked = async () => {
-    console.log('On BirthDay Clicked');
     setShow(!show);
   };
 
@@ -175,7 +172,7 @@ export default function UserBasicInfoScreen({navigation, route}) {
 
       <View style={{height: 50}} />
       <TCDateTimePicker
-        title={'Choose Birthday'}
+        title={strings.chooseBirthday}
         visible={show}
         onDone={handleDonePress}
         onCancel={handleCancelPress}

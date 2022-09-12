@@ -22,7 +22,6 @@ const RenderScorekeeper = ({
   } else {
     sportObj = data?.scorekeeper_data;
   }
-  console.log('Scorekeeper sport data:=>', sportObj);
   return (
     <View style={styles.scorekeeperContainer}>
       <View style={styles.viewContainer}>

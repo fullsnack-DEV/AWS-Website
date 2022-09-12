@@ -52,7 +52,7 @@ export default function RefundPolicyScorekeeper({navigation, route}) {
           onPress={() => {
             onSavePressed();
           }}>
-          Save
+          {strings.save}
         </Text>
       ),
     });
@@ -116,17 +116,13 @@ export default function RefundPolicyScorekeeper({navigation, route}) {
         ...authContext?.entity?.obj,
         scorekeeper_data: registerdScorekeeperData,
       };
-      console.log('Body::::--->', body);
 
       patchPlayer(body, authContext)
         .then(async (response) => {
           if (response.status === true) {
             setloading(false);
             const entity = authContext.entity;
-            console.log(
-              'Register scorekeeper response IS:: ',
-              response.payload,
-            );
+
             entity.auth.user = response.payload;
             entity.obj = response.payload;
             authContext.setEntity({...entity});
@@ -141,7 +137,6 @@ export default function RefundPolicyScorekeeper({navigation, route}) {
           } else {
             Alert.alert(strings.appName, response.messages);
           }
-          console.log('RESPONSE IS:: ', response);
           setloading(false);
         })
         .catch((e) => {

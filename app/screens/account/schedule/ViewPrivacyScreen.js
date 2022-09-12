@@ -23,17 +23,17 @@ import {strings} from '../../../../Localization/translation';
 const schedule_Data = [
   {
     id: 0,
-    title: 'Everyone',
+    title: strings.everyoneTitleText,
     isSelected: true,
   },
   {
     id: 1,
-    title: 'Followers',
+    title: strings.followerTitleText,
     isSelected: false,
   },
   {
     id: 2,
-    title: 'Only me',
+    title: strings.onlymeTitleText,
     isSelected: false,
   },
 ];
@@ -52,13 +52,15 @@ export default function ViewPrivacyScreen({navigation}) {
           </TouchableOpacity>
         }
         centerComponent={
-          <Text style={styles.eventTextStyle}>View Privacy</Text>
+          <Text style={styles.eventTextStyle}>{strings.viewPrivacy}</Text>
         }
         rightComponent={
           <TouchableOpacity
             style={{padding: 2}}
             onPress={() => navigation.goBack()}>
-            <Text style={{fontFamily: fonts.RMedium, fontSize: 16}}>Save</Text>
+            <Text style={{fontFamily: fonts.RMedium, fontSize: 16}}>
+              {strings.save}
+            </Text>
           </TouchableOpacity>
         }
       />

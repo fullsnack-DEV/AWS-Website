@@ -37,8 +37,6 @@ const EntityStatScreen = ({route}) => {
   const [homeAway, setHomeAway] = useState();
   const [loading, setloading] = useState(false);
 
-  console.log('currentUserData:', route?.params?.entityData);
-
   useEffect(() => {
     loadStatsData(monthsSelectionData[3]?.value);
     loadChartData(monthsSelectionData[3]?.value);
@@ -156,7 +154,6 @@ const EntityStatScreen = ({route}) => {
       .then((barChartData) => {
         //  Bar Chart
         if (barChartData) {
-          console.log('barChartData', barChartData);
           if (barChartData.payload && barChartData.payload.length > 0) {
             // barChartData.payload[0].data.map((gameChartItem) => {
             //   gameChart.push(gameChartItem.value);
@@ -182,7 +179,6 @@ const EntityStatScreen = ({route}) => {
         <PlayInTeamChartScreen
           selectWeekMonth={selectWeekMonth}
           setSelectWeekMonth={(val) => {
-            console.log('stats month selection value', val);
             setSelectWeekMonth(val);
             loadStatsData(val);
           }}
@@ -193,7 +189,6 @@ const EntityStatScreen = ({route}) => {
           gameChartData={gamesChartData}
           selectMonth={selectMonth}
           setSelectMonth={(val) => {
-            console.log('chart month selection value', val);
             setSelectMonth(val);
             loadChartData(val);
           }}

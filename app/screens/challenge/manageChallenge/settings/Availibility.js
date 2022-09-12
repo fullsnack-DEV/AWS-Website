@@ -12,6 +12,7 @@ import * as Utility from '../../../../utils';
 
 import {patchPlayer} from '../../../../api/Users';
 import {patchGroup} from '../../../../api/Groups';
+import Verbs from '../../../../Constants/Verbs';
 
 export default function Availibility({navigation, route}) {
   const [comeFrom] = useState(route?.params?.comeFrom);
@@ -25,12 +26,9 @@ export default function Availibility({navigation, route}) {
   const [loading, setloading] = useState(false);
   const [acceptChallenge, setAcceptChallenge] = useState(
     route?.params?.settingObj?.availibility
-      ? route?.params?.settingObj?.availibility === 'On'
+      ? route?.params?.settingObj?.availibility === Verbs.on
       : true,
   );
-
-  console.log('comeFrom ', comeFrom);
-  console.log('sportName ', sportName);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -40,7 +38,7 @@ export default function Availibility({navigation, route}) {
           onPress={() => {
             onSavePressed();
           }}>
-          Save
+          {strings.save}
         </Text>
       ),
     });
@@ -65,8 +63,8 @@ export default function Availibility({navigation, route}) {
     const bodyParams = {
       sport: sportName,
       sport_type: sportType,
-      entity_type: 'player',
-      availibility: acceptChallenge ? 'On' : 'Off',
+      entity_type: Verbs.entityTypePlayer,
+      availibility: acceptChallenge ? Verbs.on : Verbs.off,
     };
     setloading(true);
 
@@ -92,17 +90,12 @@ export default function Availibility({navigation, route}) {
       ...authContext?.entity?.obj,
       registered_sports: registerdPlayerData,
     };
-    console.log('Body::::--->', body);
-
-    console.log('registerdPlayerData::::--->', registerdPlayerData);
-    console.log('selectedSport::::--->', selectedSport);
 
     patchPlayer(body, authContext)
       .then(async (response) => {
         if (response.status === true) {
           setloading(false);
           const entity = authContext.entity;
-          console.log('Register player response IS:: ', response.payload);
           entity.auth.user = response.payload;
           entity.obj = response.payload;
           authContext.setEntity({...entity});
@@ -117,7 +110,6 @@ export default function Availibility({navigation, route}) {
         } else {
           Alert.alert(strings.appName, response.messages);
         }
-        console.log('RESPONSE IS:: ', response);
         setloading(false);
       })
       .catch((e) => {
@@ -132,8 +124,8 @@ export default function Availibility({navigation, route}) {
     const bodyParams = {
       sport: sportName,
       sport_type: sportType,
-      entity_type: 'team',
-      availibility: acceptChallenge ? 'On' : 'Off',
+      entity_type: Verbs.entityTypeTeam,
+      availibility: acceptChallenge ? Verbs.on : Verbs.off,
     };
     setloading(true);
     let selectedTeam = {...authContext?.entity?.obj};
@@ -142,13 +134,10 @@ export default function Availibility({navigation, route}) {
       setting: {...selectedTeam?.setting, ...bodyParams},
     };
     const body = {...selectedTeam};
-    console.log('Body Team::::--->', body);
 
     patchGroup(authContext.entity.uid, body, authContext)
       .then(async (response) => {
         if (response.status === true) {
-          console.log('Team patch::::--->', response.payload);
-
           setloading(false);
           const entity = authContext.entity;
           entity.obj = response.payload;
@@ -172,8 +161,7 @@ export default function Availibility({navigation, route}) {
   };
 
   const onSavePressed = () => {
-    console.log('Save press');
-    if (authContext.entity.role === 'team') {
+    if (authContext.entity.role === Verbs.entityTypeTeam) {
       saveTeam();
     } else {
       saveUser();
@@ -209,7 +197,7 @@ export default function Availibility({navigation, route}) {
                 (groupObj?.player_deactivated &&
                   groupObj?.player_deactivated === true)
               ) {
-                Alert.alert('You can not change availibility setting.');
+                Alert.alert(strings.canNotCgangesetting);
               } else {
                 setAcceptChallenge(!acceptChallenge);
               }

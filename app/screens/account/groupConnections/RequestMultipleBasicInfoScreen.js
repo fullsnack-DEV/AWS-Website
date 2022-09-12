@@ -6,6 +6,7 @@ import React, {
   useCallback,
 } from 'react';
 import {Text, View, StyleSheet, FlatList, Alert} from 'react-native';
+import {format} from 'react-string-format';
 
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import {strings} from '../../../../Localization/translation';
@@ -57,7 +58,7 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
         <Text
           style={styles.sendButtonStyle}
           onPress={() => sendRequestForBasicInfo()}>
-          Send
+          {strings.send}
         </Text>
       ),
     });
@@ -72,7 +73,6 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
       return obj;
     });
     setSelectedList(selectedPlayers);
-    console.log('Selected Item:', selectedPlayers);
   };
 
   const renderPlayer = ({item, index}) => (
@@ -101,7 +101,7 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
           color: colors.grayColor,
           fontSize: 26,
         }}>
-        No Players
+        {strings.noPlayer}
       </Text>
     </View>
   );
@@ -130,7 +130,12 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
           setTimeout(() => {
             Alert.alert(
               strings.alertmessagetitle,
-              `Requests for basic info were sent to ${selectedList?.length} members.`,
+              format(
+                strings.requestForBasicInfoWereSentText,
+                selectedList?.length,
+              ),
+              [{text: 'OK', onPress: () => navigation.goBack()}],
+              {cancelable: false},
             );
           }, 10);
           console.log('sendBasicInfoRequest', response);
@@ -142,18 +147,14 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
           }, 10);
         });
     } else {
-      Alert.alert(strings.alertmessagetitle, 'Please select members first.');
+      Alert.alert(strings.alertmessagetitle, strings.selectmemberValidation);
     }
   };
 
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-      <Text style={styles.infoTextStyle}>
-        You can send a request to collect a member’s basic info. When it is
-        accepted, this basic info will be updated with the information provided
-        by the member.
-      </Text>
+      <Text style={styles.infoTextStyle}>{strings.collectMemberInfoText}</Text>
 
       <TCThickDivider marginBottom={15} />
       <TCSearchBox
@@ -168,16 +169,6 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
         titleKey={'first_name'}
         onTagCancelPress={handleTagPress}
       />
-      {/* <FlatList
-        data={players}
-        renderItem={renderPlayer}
-        keyExtractor={(item, index) => index.toString()}
-        onScroll={onScrollHandler}
-        onEndReachedThreshold={0.01}
-        onScrollBeginDrag={() => {
-          stopFetchMore = false;
-        }}
-      /> */}
 
       <FlatList
         extraData={players}

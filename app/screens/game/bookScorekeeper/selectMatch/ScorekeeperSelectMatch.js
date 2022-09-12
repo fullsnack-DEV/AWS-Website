@@ -1,6 +1,7 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {Alert, FlatList, StyleSheet, Text, View} from 'react-native';
 
+import {format} from 'react-string-format';
 import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
 import TCSearchBox from '../../../../components/TCSearchBox';
@@ -31,7 +32,6 @@ const ScorekeeperSelectMatch = ({navigation, route}) => {
       route.params.editableAlter &&
       route.params.body
     ) {
-      console.log('EDIT Games::', route.params.body);
       bodyParams = {
         ...route.params.body,
       };
@@ -39,7 +39,6 @@ const ScorekeeperSelectMatch = ({navigation, route}) => {
   }, [route]);
 
   useEffect(() => {
-    console.log('userData:::::=>', userData);
     setLoading(true);
     const headers = {};
     headers.caller_id = authContext?.entity?.uid;
@@ -49,16 +48,6 @@ const ScorekeeperSelectMatch = ({navigation, route}) => {
         setMatchData([...res]);
       },
     );
-    // getGameSlots(
-    //   'scorekeepers',
-    //   userData?.user_id,
-    //   `status=accepted&sport=${sport}&scorekeeperDetail=true`,
-    //   headers,
-    //   authContext,
-    // )
-    //   .then((res) => {
-    //     setMatchData([...res?.payload]);
-    //   }).finally(() => setLoading(false))
   }, [authContext?.entity?.uid, userData]);
 
   const getGamesForScorekeeper = async (scorekeeperId, teamId) => {
@@ -94,7 +83,6 @@ const ScorekeeperSelectMatch = ({navigation, route}) => {
       sort: [{start_datetime: 'asc'}],
     };
 
-    console.log('Json string:=>', JSON.stringify(gameListWithFilter));
     const scorekeeperList = {
       query: {
         bool: {
@@ -122,8 +110,6 @@ const ScorekeeperSelectMatch = ({navigation, route}) => {
     return Promise.all(promiseArr)
       .then(([gameList, eventList]) => {
         setLoading(false);
-        console.log('gameList', gameList);
-        console.log('scorekeeperList', eventList);
 
         for (const game of gameList) {
           game.isAvailable = true;
@@ -215,14 +201,9 @@ const ScorekeeperSelectMatch = ({navigation, route}) => {
 
                     let message = '';
                     if (isSameScorekeeper) {
-                      message =
-                        'This scorekeeper is already booked for this game.';
+                      message = strings.scorekeeperAlreadyBookForGame;
                     }
                     if (message === '') {
-                      // navigation.navigate(route?.params?.comeFrom, {
-                      //   comeFrom: 'ScorekeeperSelectMatch',
-                      //   gameData: item,
-                      // });
                       navigation.navigate(route?.params?.comeFrom, {
                         reservationObj: {
                           ...bodyParams,
@@ -237,8 +218,8 @@ const ScorekeeperSelectMatch = ({navigation, route}) => {
             ListEmptyComponent={
               <Text style={styles.emptySectionListItem}>
                 {searchText === ''
-                  ? 'No match found'
-                  : `No match found for '${searchText}'`}
+                  ? strings.noGameFound
+                  : format(strings.noGameFoundFor, searchText)}
               </Text>
             }
           />

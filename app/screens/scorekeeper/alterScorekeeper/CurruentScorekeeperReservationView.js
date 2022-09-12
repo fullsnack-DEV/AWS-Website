@@ -253,7 +253,7 @@ export default function CurruentScorekeeperReservationView({
             <View style={styles.challengerView}>
               <View style={styles.teamView}>
                 <Image source={images.reqIcon} style={styles.reqOutImage} />
-                <Text style={styles.challengerText}>Requester</Text>
+                <Text style={styles.challengerText}>{strings.requester}</Text>
               </View>
 
               <View style={styles.teamView}>
@@ -279,7 +279,7 @@ export default function CurruentScorekeeperReservationView({
             <View style={styles.challengeeView}>
               <View style={styles.teamView}>
                 <Image source={images.refIcon} style={styles.reqOutImage} />
-                <Text style={styles.challengeeText}>Scorekeeper</Text>
+                <Text style={styles.challengeeText}>{strings.scorekeeper}</Text>
               </View>
 
               <View style={styles.teamView}>
@@ -425,7 +425,7 @@ export default function CurruentScorekeeperReservationView({
                         <Text style={styles.timeZoneText}>
                           {strings.timezone}{' '}
                           <Text style={{fontFamily: fonts.RRegular}}>
-                            Vancouver
+                            {strings.vancouver}
                           </Text>
                         </Text>
                       </View>
@@ -502,12 +502,12 @@ export default function CurruentScorekeeperReservationView({
                   marginTop: 10,
                 }}
               />
-              <Text style={styles.rulesTitle}>General Rules</Text>
+              <Text style={styles.rulesTitle}>{strings.gameRulesSubTitle1}</Text>
               <Text style={styles.rulesDetail}>
                 {bodyParams?.game?.general_rules}
               </Text>
               <View style={{marginBottom: 10}} />
-              <Text style={styles.rulesTitle}>Special Rules</Text>
+              <Text style={styles.rulesTitle}>{strings.gameRulesSubTitle2}</Text>
               <Text style={[styles.rulesDetail, {marginBottom: 10}]}>
                 {bodyParams?.game?.special_rules}
               </Text>

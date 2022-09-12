@@ -13,11 +13,13 @@ import {
 
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import LinearGradient from 'react-native-linear-gradient';
+import {format} from 'react-string-format';
 import AuthContext from '../../../auth/context';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 import {strings} from '../../../../Localization/translation';
+import Verbs from '../../../Constants/Verbs';
 
 export default function ManageChallengeScreen({navigation, route}) {
   const [settingObject, setSettingObject] = useState();
@@ -29,25 +31,14 @@ export default function ManageChallengeScreen({navigation, route}) {
   const [sportType] = useState(route?.params?.sportType);
   const [groupObj] = useState(route?.params?.groupObj);
 
-  console.log('sportName:::=>', sportName);
-  console.log('sportType:::=>', sportType);
-
   const getSettings = useCallback(() => {
     if (authContext.entity.role === 'team') {
-      console.log('Au:::=>', authContext);
       setSettingObject(authContext?.entity?.obj?.setting);
     }
     if (
-      authContext.entity.role === 'player' ||
-      authContext.entity.role === 'user'
+      authContext.entity.role === Verbs.entityTypePlayer ||
+      authContext.entity.role === Verbs.entityTypeUser
     ) {
-      console.log(
-        'Au1212121212:::=>',
-        (authContext?.entity?.obj?.registered_sports ?? []).filter(
-          (obj) => obj.sport === sportName && obj.sport_type === sportType,
-        )?.[0]?.setting,
-      );
-
       setSettingObject(
         (authContext?.entity?.obj?.registered_sports ?? []).filter(
           (obj) => obj.sport === sportName && obj.sport_type === sportType,
@@ -65,22 +56,25 @@ export default function ManageChallengeScreen({navigation, route}) {
   }, [authContext, getSettings, route?.params?.settingObj, sportName]);
 
   const challengeSettingMenu = [
-    {key: 'Availability', id: 1},
-    {key: 'Game Type', id: 2},
-    {key: 'Match Fee', id: 3},
-    {key: 'Refund Policy', id: 4},
-    {key: 'Home & Away', id: 5},
+    {key: strings.availability, id: 1},
+    {key: strings.gameType, id: 2},
+    {key: strings.gameFee, id: 3},
+    {key: strings.refundPolicy, id: 4},
+    {key: strings.homeAndAway, id: 5},
     {
-      key: sportName === 'tennis' ? 'Sets, Points & Duration' : 'Game Duration',
+      key:
+        sportName === Verbs.tennisSport
+          ? strings.setsPointsDuration
+          : strings.gameDuration,
       id: 6,
     },
-    {key: 'Venue', id: 7},
-    {key: 'Game Rules', id: 8},
-    {key: 'Referees', id: 9},
-    {key: 'Scorekeepers', id: 10},
+    {key: strings.venue, id: 7},
+    {key: strings.gameRules, id: 8},
+    {key: strings.refereesTitle, id: 9},
+    {key: strings.scorekeeperTitle, id: 10},
   ];
   const handleOpetions = async (opetions) => {
-    if (opetions === 'Availability') {
+    if (opetions === strings.availability) {
       if (settingObject) {
         navigation.navigate('Availibility', {
           settingObj: settingObject,
@@ -96,7 +90,7 @@ export default function ManageChallengeScreen({navigation, route}) {
           sportType,
         });
       }
-    } else if (opetions === 'Game Type') {
+    } else if (opetions === strings.gameType) {
       if (settingObject) {
         navigation.navigate('GameType', {
           settingObj: settingObject,
@@ -111,7 +105,7 @@ export default function ManageChallengeScreen({navigation, route}) {
           sportType,
         });
       }
-    } else if (opetions === 'Match Fee') {
+    } else if (opetions === strings.gameFee) {
       if (settingObject) {
         navigation.navigate('GameFee', {
           settingObj: settingObject,
@@ -126,7 +120,7 @@ export default function ManageChallengeScreen({navigation, route}) {
           sportType,
         });
       }
-    } else if (opetions === 'Refund Policy') {
+    } else if (opetions === strings.refundPolicy) {
       if (settingObject) {
         navigation.navigate('RefundPolicy', {
           settingObj: settingObject,
@@ -141,7 +135,7 @@ export default function ManageChallengeScreen({navigation, route}) {
           sportType,
         });
       }
-    } else if (opetions === 'Home & Away') {
+    } else if (opetions === strings.homeAndAway) {
       if (settingObject) {
         navigation.navigate('HomeAway', {
           settingObj: settingObject,
@@ -156,7 +150,7 @@ export default function ManageChallengeScreen({navigation, route}) {
           sportType,
         });
       }
-    } else if (opetions === 'Game Duration') {
+    } else if (opetions === strings.gameDuration) {
       console.log(settingObject);
       if (settingObject) {
         navigation.navigate('GameDuration', {
@@ -172,7 +166,7 @@ export default function ManageChallengeScreen({navigation, route}) {
           sportType,
         });
       }
-    } else if (opetions === 'Sets, Points & Duration') {
+    } else if (opetions === strings.setsPointsDuration) {
       if (settingObject) {
         navigation.navigate('GameTennisDuration', {
           settingObj: settingObject,
@@ -187,7 +181,7 @@ export default function ManageChallengeScreen({navigation, route}) {
           sportType,
         });
       }
-    } else if (opetions === 'Venue') {
+    } else if (opetions === strings.venue) {
       if (settingObject) {
         navigation.navigate('Venue', {
           settingObj: settingObject,
@@ -202,7 +196,7 @@ export default function ManageChallengeScreen({navigation, route}) {
           sportType,
         });
       }
-    } else if (opetions === 'Game Rules') {
+    } else if (opetions === strings.gameRules) {
       if (settingObject) {
         navigation.navigate('GameRules', {
           settingObj: settingObject,
@@ -217,7 +211,7 @@ export default function ManageChallengeScreen({navigation, route}) {
           sportType,
         });
       }
-    } else if (opetions === 'Referees') {
+    } else if (opetions === strings.refereesTitle) {
       if (settingObject) {
         navigation.navigate('RefereesSetting', {
           settingObj: settingObject,
@@ -232,7 +226,7 @@ export default function ManageChallengeScreen({navigation, route}) {
           sportType,
         });
       }
-    } else if (opetions === 'Scorekeepers') {
+    } else if (opetions === strings.scorekeeperTitle) {
       if (settingObject) {
         navigation.navigate('ScorekeepersSetting', {
           settingObj: settingObject,
@@ -250,77 +244,78 @@ export default function ManageChallengeScreen({navigation, route}) {
     }
   };
   const getSettingValue = (item) => {
-    if (item.key === 'Availability') {
+    if (item.key === strings.availability) {
       if (settingObject?.availibility) {
         return settingObject?.availibility;
       }
     }
 
-    if (item.key === 'Game Type') {
+    if (item.key === strings.gameType) {
       if (settingObject?.game_type) {
         return settingObject?.game_type;
       }
     }
-    if (item.key === 'Match Fee') {
+    if (item.key === strings.gameFee) {
       if (settingObject?.game_fee) {
         return `${settingObject?.game_fee?.fee} ${settingObject?.game_fee?.currency_type}`;
       }
     }
-    if (item.key === 'Refund Policy') {
+    if (item.key === strings.refundPolicy) {
       if (settingObject?.refund_policy) {
         return settingObject?.refund_policy;
       }
     }
-    if (item.key === 'Home & Away') {
+    if (item.key === strings.homeAndAway) {
       if (settingObject?.home_away) {
-        return `You: ${settingObject?.home_away}`;
+        return format(strings.youSetting, settingObject?.home_away);
       }
     }
-    if (item.key === 'Game Duration') {
+    if (item.key === strings.gameDuration) {
       if (settingObject?.game_duration) {
         return `${settingObject?.game_duration?.totalHours}h ${settingObject?.game_duration?.totalMinutes}m`;
       }
     }
-    if (item.key === 'Sets, Points & Duration') {
+    if (item.key === strings.setsPointsDuration) {
       if (settingObject?.score_rules) {
         return `${settingObject?.score_rules?.match_duration}`;
       }
     }
 
-    if (item.key === 'Venue') {
+    if (item.key === strings.venue) {
       if (settingObject?.venue) {
-        return `${settingObject?.venue?.length} Venues`;
+        return format(strings.nVenues, settingObject?.venue?.length);
       }
     }
 
-    if (item.key === 'Game Rules') {
-      console.log('settingObject?.general_rules', settingObject?.general_rules);
+    if (item.key === strings.gameRules) {
       if (settingObject?.general_rules || settingObject?.general_rules === '') {
-        return 'Completed';
+        return strings.completedTitleText;
       }
     }
 
-    if (item.key === 'Referees') {
+    if (item.key === strings.refereesTitle) {
       if (settingObject?.responsible_for_referee) {
-        return `${
+        return format(
+          strings.nReferees,
           settingObject?.responsible_for_referee?.who_secure
             ? settingObject?.responsible_for_referee?.who_secure?.length
-            : 'No'
-        } Referees`;
+            : strings.no,
+        );
       }
     }
 
-    if (item.key === 'Scorekeepers') {
+    if (item.key === strings.scorekeeperTitle) {
       if (settingObject?.responsible_for_scorekeeper) {
-        return `${
+        return format(
+          strings.nScorekeeper,
           settingObject?.responsible_for_scorekeeper?.who_secure
             ? settingObject?.responsible_for_scorekeeper?.who_secure?.length
-            : 'No'
-        } Scorekeepers`;
+            : strings.no,
+        );
       }
     }
 
-    return 'incomplete';
+    return strings.incomplete;
   };
   const renderMenu = ({item}) => (
     <TouchableWithoutFeedback
@@ -331,10 +326,10 @@ export default function ManageChallengeScreen({navigation, route}) {
       <View style={{flexDirection: 'row'}}>
         <Text style={styles.listItems}>{item.key}</Text>
 
-        {getSettingValue(item) === 'incomplete' ? (
+        {getSettingValue(item) === strings.incomplete ? (
           <Text style={styles.incompleteStyle}>
             {/* {getSettingValue(item)} */}
-            incomplete
+            {strings.incomplete}
           </Text>
         ) : (
           <Text style={styles.completeStyle}>

@@ -26,10 +26,10 @@ import {widthPercentageToDP as wp} from '../../utils';
 import NewsFeedPostItems from '../../components/newsFeed/NewsFeedPostItems';
 import AuthContext from '../../auth/context';
 import {createReaction} from '../../api/NewsFeeds';
+import { strings } from '../../../Localization/translation';
 
 function SingleNotificationScreen({route, navigation}) {
   const postItem = route.params?.notificationItem?.activities?.[0];
-  console.log('Post Item:=>', postItem);
   const [commentTxt, setCommentTxt] = useState('');
   const keyboardDidShowListener = useRef();
   const keyboardDidHideListener = useRef();
@@ -40,7 +40,7 @@ function SingleNotificationScreen({route, navigation}) {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: `${postItem?.actor?.data?.full_name}'s Post`,
+      title: `${postItem?.actor?.data?.full_name}${strings.sPost}`,
     });
   }, [navigation, postItem?.actor?.data?.full_name]);
   useEffect(() => {
@@ -60,7 +60,6 @@ function SingleNotificationScreen({route, navigation}) {
 
   const authContext = useContext(AuthContext);
   const onLikePress = (item) => {
-    console.log('ITEM 123:=>', item);
     const bodyParams = {
       reaction_type: 'clap',
       activity_id: item.id,
@@ -96,7 +95,6 @@ function SingleNotificationScreen({route, navigation}) {
           pData[pIndex].reaction_counts.clap =
             pData?.[pIndex]?.reaction_counts?.clap - 1 ?? 0;
         }
-        console.log('pData[pIndex]', pData[pIndex]);
       })
       .catch((e) => {
         console.log(e.message);
@@ -135,7 +133,7 @@ function SingleNotificationScreen({route, navigation}) {
               </View>
               <View style={styles.onlyMeViewStyle}>
                 <TextInput
-                  placeholder={'Write a comment'}
+                  placeholder={strings.writeComment}
                   placeholderTextColor={colors.userPostTimeColor}
                   multiline={true}
                   textAlignVertical={'top'}
@@ -173,7 +171,7 @@ function SingleNotificationScreen({route, navigation}) {
                           console.log(e);
                         });
                     }}>
-                    <Text style={styles.sendTextStyle}>SEND</Text>
+                    <Text style={styles.sendTextStyle}>{strings.SEND}</Text>
                   </TouchableOpacity>
                 )}
               </View>

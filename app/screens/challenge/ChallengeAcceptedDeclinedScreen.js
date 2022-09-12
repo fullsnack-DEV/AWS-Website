@@ -3,6 +3,7 @@
 import React, {useContext} from 'react';
 import {View, StyleSheet, Image, Text, Alert, SafeAreaView} from 'react-native';
 
+import {format} from 'react-string-format';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
@@ -12,6 +13,7 @@ import AuthContext from '../../auth/context';
 
 // import TCBorderButton from '../../components/TCBorderButton';
 import {getGameHomeScreen} from '../../utils/gameUtils';
+import Verbs from '../../Constants/Verbs';
 
 export default function ChallengeAcceptedDeclinedScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
@@ -30,34 +32,17 @@ export default function ChallengeAcceptedDeclinedScreen({navigation, route}) {
       {route && route.params && route.params.status && route.params.teamObj && (
         <View style={styles.mailContainer}>
           <Text style={styles.invitationText}>
-            {(route.params.status === 'accept' && 'Challenge accepted') ||
-              (route.params.status === 'decline' && 'Challenge declined') ||
-              (route.params.status === 'cancel' && 'Challenge cancelled') ||
-              (route.params.status === 'restored' && 'Challenge Restored')}
+            {(route.params.status === Verbs.acceptVerb &&
+              strings.challengeAccepted) ||
+              (route.params.status === Verbs.declineVerb &&
+                strings.challengeDeclined) ||
+              (route.params.status === Verbs.cancelVerb &&
+                strings.challengeCancelled) ||
+              (route.params.status === Verbs.restoredVerb &&
+                strings.challengeRestored)}
           </Text>
-          {/* <Text style={styles.infoText}>
-            {(route.params.status === 'accept'
-              && `A match between ${
-                route.params.teamObj.group_name
-                || `${route.params.teamObj.first_name} ${route.params.teamObj.last_name}`
-              } and ${
-                route?.params?.teamObj?.group_name ? 'your team' : 'you'
-              } has been scheduled.`)
-              || (route.params.status === 'decline'
-                && `The match reservation request from ${
-                  route.params.teamObj.group_name
-                  || `${route.params.teamObj.first_name} ${route.params.teamObj.last_name}`
-                } has been declined.`)
-              || (route.params.status === 'cancel'
-                && `The match reservation from ${
-                  route.params.teamObj.group_name
-                  || `${route.params.teamObj.first_name} ${route.params.teamObj.last_name}`
-                } has been cancelled.`)
-              || (route.params.status === 'restored'
-                && 'Reservation alteration request restored.')}
-          </Text> */}
 
-          {route.params.status === 'accept' && (
+          {route.params.status === Verbs.acceptVerb && (
             <Text style={styles.infoText}>
               A match between{' '}
               <Text style={styles.entityNameBoldText}>
@@ -66,40 +51,43 @@ export default function ChallengeAcceptedDeclinedScreen({navigation, route}) {
                   : route.params.teamObj.first_name +
                     route.params.teamObj.last_name}
               </Text>{' '}
-              and {route?.params?.teamObj?.group_name ? 'your team' : 'you'} has
-              been scheduled.
+              and{' '}
+              {route?.params?.teamObj?.group_name
+                ? strings.yourTeamText
+                : strings.you}{' '}
+              has been scheduled.
             </Text>
           )}
 
-          {route.params.status === 'decline' && (
+          {route.params.status === Verbs.declineVerb && (
             <Text style={styles.infoText}>
-              A match reservation request from{' '}
+              {strings.reservationRequestFrom}{' '}
               <Text style={styles.entityNameBoldText}>
                 {route.params.teamObj.group_name
                   ? route.params.teamObj.group_name
                   : route.params.teamObj.first_name +
                     route.params.teamObj.last_name}
               </Text>{' '}
-              has been declined.
+              {strings.hasBeenDeclined}
             </Text>
           )}
 
-          {route.params.status === 'cancel' && (
+          {route.params.status === Verbs.cancelVerb && (
             <Text style={styles.infoText}>
-              A match reservation from{' '}
+              {strings.reservationRequestFrom}{' '}
               <Text style={styles.entityNameBoldText}>
                 {route.params.teamObj.group_name
                   ? route.params.teamObj.group_name
                   : route.params.teamObj.first_name +
                     route.params.teamObj.last_name}
               </Text>{' '}
-              has been cancelled.
+              {strings.hasBeenCancelled}
             </Text>
           )}
 
-          {route.params.status === 'restored' && (
+          {route.params.status === Verbs.restoredVerb && (
             <Text style={styles.infoText}>
-              Reservation alteration request restored.
+              {strings.reservationRestoredText}
             </Text>
           )}
 
@@ -114,7 +102,7 @@ export default function ChallengeAcceptedDeclinedScreen({navigation, route}) {
               }
               style={styles.rotateImage}
             />
-            <Text style={styles.vsText}>VS</Text>
+            <Text style={styles.vsText}>{strings.VS}</Text>
             <Image
               source={
                 route.params.teamObj.thumbnail
@@ -130,10 +118,11 @@ export default function ChallengeAcceptedDeclinedScreen({navigation, route}) {
       <SafeAreaView>
         <View style={{height: 95, justifyContent: 'space-between'}}>
           <TCBorderButton
-            title={`GO TO ${
+            title={format(
+              strings.GOTOButtonTitle,
               route.params.teamObj.group_name?.toUpperCase() ||
-              `${route.params.teamObj.first_name?.toUpperCase()} ${route.params.teamObj.last_name?.toUpperCase()}`
-            }`}
+                `${route.params.teamObj.first_name?.toUpperCase()} ${route.params.teamObj.last_name?.toUpperCase()}`,
+            )}
             textColor={colors.whiteColor}
             borderColor={colors.whiteColor}
             backgroundColor={'transparent'}
@@ -149,8 +138,8 @@ export default function ChallengeAcceptedDeclinedScreen({navigation, route}) {
                 backButtonVisible: true,
                 menuBtnVisible: false,
                 role:
-                  route.params.teamObj.entity_type === 'player'
-                    ? 'user'
+                  route.params.teamObj.entity_type === Verbs.entityTypePlayer
+                    ? Verbs.entityTypeUser
                     : route.params.teamObj.entity_type,
               });
             }}
@@ -166,22 +155,16 @@ export default function ChallengeAcceptedDeclinedScreen({navigation, route}) {
               // marginBottom={55}
               onPress={() => {
                 if (route?.params?.teamObj) {
-                  console.log(
-                    'route?.params?.teamObj?.sport',
-                    route?.params?.teamObj,
-                  );
-
                   const gameHome = getGameHomeScreen(
                     route?.params?.teamObj?.sport,
                   );
-                  console.log('gameHome', gameHome);
 
                   if (route?.params?.teamObj?.game_id) {
                     navigation.push(gameHome, {
                       gameId: route?.params?.teamObj?.game_id,
                     });
                   } else {
-                    Alert.alert('Game ID does not exist.');
+                    Alert.alert(strings.gameIDNotExitsTitle);
                   }
                 }
               }}

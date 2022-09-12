@@ -686,7 +686,7 @@ const ScheduleNavigator = () => (
       name="UserConnections"
       component={UserConnections}
       options={{
-        title: 'Connections',
+        title: strings.connections,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

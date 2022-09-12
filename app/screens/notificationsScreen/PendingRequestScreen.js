@@ -63,7 +63,6 @@ function PendingRequestScreen({navigation}) {
   };
 
   const onDetailPress = (item) => {
-    console.log('Group ITEM ID:::::=>', item);
     const verb = item.activities[0].verb;
     if (
       verb.includes(NotificationType.initialChallengePaymentFail) ||
@@ -84,7 +83,6 @@ function PendingRequestScreen({navigation}) {
       setloading(true);
       getChallengeDetail(a, authContext)
         .then((obj) => {
-          console.log('challenge utils res:=>', obj);
           navigation.navigate(obj.screenName, {
             challengeObj: obj.challengeObj,
           });
@@ -118,8 +116,6 @@ function PendingRequestScreen({navigation}) {
       getRefereeReservationDetail(a, authContext.entity.uid, authContext)
         .then((obj) => {
           const reservationObj = obj.reservationObj || obj.reservationObj[0];
-
-          console.log('reservationObj:1>=>', reservationObj);
           if (reservationObj?.referee?.user_id === authContext.entity.uid) {
             navigation.navigate(obj.screenName, {
               reservationObj,
@@ -226,7 +222,6 @@ function PendingRequestScreen({navigation}) {
       getScorekeeperReservationDetail(a, authContext.entity.uid, authContext)
         .then((obj) => {
           const reservationObj = obj.reservationObj || obj.reservationObj[0];
-          console.log('reservationObj:1>=>', reservationObj);
           if (reservationObj?.scorekeeper?.user_id === authContext.entity.uid) {
             navigation.navigate(obj.screenName, {
               reservationObj,
@@ -386,20 +381,13 @@ function PendingRequestScreen({navigation}) {
       })
       .catch(() => {
         setloading(false);
-        Alert.alert('Failed to move to trash. Try again later');
+        Alert.alert(strings.failedToMove);
       });
   };
 
   const onRespond = (groupObj) => {
-    console.log('groupObj11:=>', groupObj);
-
     const groupId = JSON.parse(groupObj?.activities?.[0]?.object).groupData
       ?.group_id;
-    console.log(
-      'groupObject:=>',
-      JSON.parse(groupObj?.activities?.[0]?.object),
-    );
-
     if (
       groupObj.activities[0].verb.includes(NotificationType.inviteToJoinClub)
     ) {
@@ -420,9 +408,8 @@ function PendingRequestScreen({navigation}) {
             requestID: groupObj?.activities?.[0].id,
           });
         })
-        .catch((e) => {
+        .catch(() => {
           setloading(false);
-          console.log('Error :-', e);
         });
     } else if (
       groupObj.activities[0].verb.includes(
@@ -437,9 +424,8 @@ function PendingRequestScreen({navigation}) {
     } else {
       setloading(true);
       getRequestDetail(groupId, authContext)
-        .then((response) => {
+        .then(() => {
           setloading(false);
-          console.log('details: =>', response.payload);
         })
         .catch((error) => {
           setloading(false);
@@ -451,7 +437,6 @@ function PendingRequestScreen({navigation}) {
   };
 
   const onNotificationClick = (notificationItem) => {
-    console.log('Notification detail::=>', notificationItem);
     console.log(notificationItem?.verb);
     const verb = notificationItem?.verb?.split('_');
     const postVerbTypes = [
@@ -487,7 +472,6 @@ function PendingRequestScreen({navigation}) {
       getScorekeeperReservationDetail(a, authContext.entity.uid, authContext)
         .then((obj) => {
           const reservationObj = obj.reservationObj || obj.reservationObj[0];
-          console.log('reservationObj:1>=>', reservationObj);
           navigation.navigate(obj.screenName, {
             reservationObj,
           });
@@ -522,9 +506,6 @@ function PendingRequestScreen({navigation}) {
       getChallengeDetail(a, authContext)
         .then((obj) => {
           const challengeObj = obj.challengeObj || obj.challengeObj[0];
-
-          console.log('challengeObj:1>=>', challengeObj);
-
           navigation.navigate(obj.screenName, {
             challengeObj,
           });
@@ -536,7 +517,6 @@ function PendingRequestScreen({navigation}) {
   };
 
   const notificationComponentType = (item, index) => {
-    console.log('VERB::=>', item);
     if (isInvite(item.activities[0].verb)) {
       if (
         item.activities[0].verb.includes(NotificationType.inviteToDoubleTeam) ||
@@ -692,7 +672,6 @@ function PendingRequestScreen({navigation}) {
         e.nativeEvent.contentSize.height - paddingToBottom
       ) {
         if (!loadMore) {
-          console.log('next page');
           setLoadMore(true);
           setTimeout(() => {
             getNextPendingRequestData();
@@ -717,7 +696,7 @@ function PendingRequestScreen({navigation}) {
           onScroll={onLoadMore}
         />
       ) : (
-        <TCNoDataView title={'No records found'} />
+        <TCNoDataView title={strings.noRecordFoundText} />
       )}
       {loadMore && (
         <TCInnerLoader allowMargin={false} size={60} visible={loadMore} />

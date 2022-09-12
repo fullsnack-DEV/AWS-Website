@@ -167,11 +167,10 @@ export default function ScorekeeperApprovalScreen({navigation, route}) {
         onPress={() => {
           disApproveReservation(reservationObj.reservation_id);
         }}>
-        {'DISAPPROVE'}
+        {strings.disapprove}
       </Text>
     </View>
   );
-  console.log('Scorekeeper bodyparams:', bodyParams);
   return (
     <TCKeyboardView>
       <ActivityLoader visible={loading} />
@@ -191,7 +190,7 @@ export default function ScorekeeperApprovalScreen({navigation, route}) {
                   : `${getRequester(bodyParams).first_name} ${
                       getRequester(bodyParams).last_name
                     }`
-              } wants to hire a scorekeeper for a game between you and them at their own cost. Would you like to approve this scorekeeper for the game?`}
+              } ${strings.wantToHire}`}
             </Text>
             <View
               style={{
@@ -203,7 +202,7 @@ export default function ScorekeeperApprovalScreen({navigation, route}) {
               <View style={styles.challengerView}>
                 <View style={styles.teamView}>
                   <Image source={images.reqIcon} style={styles.reqOutImage} />
-                  <Text style={styles.challengerText}>Hiring Team</Text>
+                  <Text style={styles.challengerText}>{strings.hiringTeam}</Text>
                 </View>
 
                 <View style={styles.teamView}>
@@ -229,7 +228,7 @@ export default function ScorekeeperApprovalScreen({navigation, route}) {
               <View style={[styles.challengeeView, {marginTop: 10}]}>
                 <View style={styles.teamView}>
                   <Image source={images.refIcon} style={styles.reqOutImage} />
-                  <Text style={styles.challengeeText}>Scorekeeper</Text>
+                  <Text style={styles.challengeeText}>{strings.scorekeeper}</Text>
                 </View>
 
                 <View style={styles.teamView}>
@@ -274,7 +273,7 @@ export default function ScorekeeperApprovalScreen({navigation, route}) {
                   fontSize: 16,
                   color: colors.greenColorCard,
                 }}>
-                {'Approved'}
+                {strings.approved}
               </Text>
             )}
             {type === ScorekeeperReservationStatus.declined && (
@@ -286,7 +285,7 @@ export default function ScorekeeperApprovalScreen({navigation, route}) {
                   fontSize: 16,
                   color: colors.lightBlackColor,
                 }}>
-                {'Declined'}
+                {strings.Decline}
               </Text>
             )}
             {type === 'expired' && (
@@ -298,7 +297,7 @@ export default function ScorekeeperApprovalScreen({navigation, route}) {
                   fontSize: 16,
                   color: colors.greenColorCard,
                 }}>
-                {'Expired'}
+                {strings.expired2}
               </Text>
             )}
 
@@ -375,7 +374,7 @@ export default function ScorekeeperApprovalScreen({navigation, route}) {
                           <Text style={styles.timeZoneText}>
                             {strings.timezone}{' '}
                             <Text style={{fontFamily: fonts.RRegular}}>
-                              Vancouver
+                              {strings.vancouver}
                             </Text>
                           </Text>
                         </View>
@@ -452,12 +451,12 @@ export default function ScorekeeperApprovalScreen({navigation, route}) {
                 marginTop: 10,
               }}
             />
-            <Text style={styles.rulesTitle}>General Rules</Text>
+            <Text style={styles.rulesTitle}>{strings.gameRulesSubTitle1}</Text>
             <Text style={styles.rulesDetail}>
               {bodyParams?.game?.general_rules}
             </Text>
             <View style={{marginBottom: 10}} />
-            <Text style={styles.rulesTitle}>Special Rules</Text>
+            <Text style={styles.rulesTitle}>{strings.gameRulesSubTitle2}</Text>
             <Text style={[styles.rulesDetail, {marginBottom: 25}]}>
               {bodyParams?.game?.special_rules}
             </Text>

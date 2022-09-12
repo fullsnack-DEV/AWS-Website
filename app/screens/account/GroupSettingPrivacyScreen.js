@@ -14,12 +14,14 @@ import {
 
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import {useIsFocused} from '@react-navigation/native';
+import {format} from 'react-string-format';
 import AuthContext from '../../auth/context';
 import images from '../../Constants/ImagePath';
 import Header from '../../components/Home/Header';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 import {strings} from '../../../Localization/translation';
+import Verbs from '../../Constants/Verbs';
 
 export default function GroupSettingPrivacyScreen({navigation}) {
   const authContext = useContext(AuthContext);
@@ -36,56 +38,70 @@ export default function GroupSettingPrivacyScreen({navigation}) {
 
   useEffect(() => {
     setUserSetting([
-      {key: 'Profile', id: 1},
-      {key: 'Members', id: 2},
-      {key: authContext.entity.role === 'club' ? 'Team' : 'Club', id: 3},
-      {key: 'Event', id: 4},
-      {key: 'Account', id: 5},
-
-      {key: 'Privacy', id: 6},
+      {key: strings.profileText, id: 1},
+      {key: strings.membersTitle, id: 2},
       {
-        key: `Pause ${authContext.entity.role === 'club' ? 'Club' : 'Team'}`,
+        key:
+          authContext.entity.role === Verbs.entityTypeClub
+            ? strings.team
+            : strings.club,
+        id: 3,
+      },
+      {key: strings.event, id: 4},
+      {key: strings.account, id: 5},
+
+      {key: strings.privacyText, id: 6},
+      {
+        key: format(
+          strings.pauseGroup,
+          authContext.entity.role === Verbs.entityTypeClub
+            ? strings.club
+            : strings.team,
+        ),
         id: 7,
       },
-      {key: 'Terminate Account', id: 8},
+      {key: strings.terminateAccountText, id: 8},
     ]);
   }, [authContext.entity.role]);
 
   const handleOpetions = async (opetions) => {
-    console.log('auth Enity', authContext.entity.obj);
     if (opetions === 'Profile') {
       navigation.navigate('EditGroupProfileScreen', {
         placeholder:
-          authContext.entity.role === 'team'
+          authContext.entity.role === Verbs.entityTypeTeam
             ? strings.teamNamePlaceholder
             : strings.clubNameplaceholder,
         nameTitle:
-          authContext.entity.role === 'team'
+          authContext.entity.role === Verbs.entityTypeTeam
             ? strings.teamName
             : strings.clubName,
         sportType:
-          authContext.entity.role === 'team'
+          authContext.entity.role === Verbs.entityTypeTeam
             ? authContext.entity.obj.sport_type
             : authContext.entity.obj.sports_string,
       });
-    } else if (opetions === 'Members') {
+    } else if (opetions === strings.membersTitle) {
       navigation.navigate('GroupMembersSettingScreen');
-    } else if (opetions === 'Club') {
+    } else if (opetions === strings.club) {
       navigation.navigate('ClubSettingPrivacyScreen');
-    } else if (opetions === 'Team') {
+    } else if (opetions === strings.team) {
       navigation.navigate('TeamSettingPrivacyScreen');
-    } else if (opetions === 'Event') {
+    } else if (opetions === strings.event) {
       navigation.navigate('EventSettingPrivacyScreen');
-    } else if (opetions === 'Account') {
-      Alert.alert('This is not decited yet');
-    } else if (opetions === 'Privacy') {
-      Alert.alert('This is not decited yet');
+    } else if (opetions === strings.account) {
+      Alert.alert(strings.thisFeatureisUnderDevelopment);
+    } else if (opetions === strings.privacyText) {
+      Alert.alert(strings.thisFeatureisUnderDevelopment);
     } else if (
       opetions ===
-      `Pause ${authContext.entity.role === 'club' ? 'Club' : 'Team'}`
+      `Pause ${
+        authContext.entity.role === Verbs.entityTypeClub
+          ? strings.club
+          : strings.team
+      }`
     ) {
       navigation.navigate('PauseGroupScreen');
-    } else if (opetions === 'Terminate Account') {
+    } else if (opetions === strings.terminateAccountText) {
       navigation.navigate('TerminateAccountScreen');
     }
   };
@@ -94,7 +110,6 @@ export default function GroupSettingPrivacyScreen({navigation}) {
     setIsAccountDeactivated(false);
     setPointEvent('auto');
     if (isFocused) {
-      console.log('its called....', authContext.entity.role);
       if (authContext?.entity?.obj?.is_pause === true) {
         setIsAccountDeactivated(true);
         setPointEvent('none');
@@ -153,7 +168,7 @@ export default function GroupSettingPrivacyScreen({navigation}) {
               textAlign: 'center',
               fontFamily: fonts.RBold,
             }}>
-            Settings
+            {strings.settingsTitleText}
           </Text>
         }
       />

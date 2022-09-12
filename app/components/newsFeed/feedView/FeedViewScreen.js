@@ -19,6 +19,7 @@ import FeedAbsoluteTopView from './FeedAbsoluteTopView';
 import FeedAbsoluteBottomView from './FeedAbsoluteBottomView';
 import AuthContext from '../../../auth/context';
 import FeedPostView from './FeedPostView';
+import {strings} from '../../../../Localization/translation';
 
 const FeedViewScreen = ({navigation, route}) => {
   const screenInsets = useSafeAreaInsets();
@@ -323,7 +324,7 @@ const FeedViewScreen = ({navigation, route}) => {
         <ActionSheet
           ref={shareActionSheetRef}
           title={'News Feed Post'}
-          options={['Repost', 'Copy Link', 'More', 'Cancel']}
+          options={['Repost', 'Copy Link', 'More', strings.cancel]}
           cancelButtonIndex={3}
           onPress={onShareActionSheetItemPress}
         />
@@ -340,8 +341,8 @@ const FeedViewScreen = ({navigation, route}) => {
           ref={threeDotRef}
           options={
             isPostOwner
-              ? ['Edit Privacy', 'Report', 'Cancel']
-              : ['Report', 'Cancel']
+              ? ['Edit Privacy', 'Report', strings.cancel]
+              : ['Report', strings.cancel]
           }
           cancelButtonIndex={isPostOwner ? 2 : 1}
           onPress={(index) => {

@@ -516,7 +516,7 @@ const Scorekeepers = ({
         {renderBookScorekeepersButton}
         <ActionSheet
           ref={actionSheet}
-          options={['Scorekeeper Reservation Details', 'Cancel']}
+          options={['Scorekeeper Reservation Details', strings.cancel]}
           cancelButtonIndex={1}
           onPress={(index) => {
             if (index === 0) {

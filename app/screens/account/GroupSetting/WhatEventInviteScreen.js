@@ -21,6 +21,7 @@ import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
 import {strings} from '../../../../Localization/translation';
 import {patchPlayer} from '../../../api/Users';
+import Verbs from '../../../Constants/Verbs';
 
 export default function WhatEventInviteScreen({navigation, route}) {
   const [comeFrom] = useState(route?.params?.comeFrom);
@@ -54,7 +55,9 @@ export default function WhatEventInviteScreen({navigation, route}) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: () => (
-        <Text style={styles.headerTitle}>To What Event Can People Invite</Text>
+        <Text style={styles.headerTitle}>
+          {strings.toWhatEventPeopleInviteText}
+        </Text>
       ),
       headerRight: () => (
         <Text
@@ -62,15 +65,13 @@ export default function WhatEventInviteScreen({navigation, route}) {
           onPress={() => {
             onSavePressed();
           }}>
-          Save
+          {strings.save}
         </Text>
       ),
     });
   }, [comeFrom, navigation, whoCreateEvent]);
 
   const saveTeam = () => {
-    console.log('sadsadasdasdasd');
-
     const bodyParams = {};
 
     if (whoCreateEvent.key === eventsSettingOpetions[0].key) {
@@ -109,8 +110,8 @@ export default function WhatEventInviteScreen({navigation, route}) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const onSavePressed = () => {
     if (
-      authContext.entity.role === 'user' ||
-      authContext.entity.role === 'player'
+      authContext.entity.role === Verbs.entityTypeUser ||
+      authContext.entity.role === Verbs.entityTypePlayer
     ) {
       saveTeam();
     }
@@ -143,7 +144,7 @@ export default function WhatEventInviteScreen({navigation, route}) {
       showsVerticalScrollIndicator={false}>
       <ActivityLoader visible={loading} />
       <Text style={styles.opetionsTitle}>
-        {'Can people invite you to their events ?'}
+        {strings.canPeopleInviteTheirEventText}
       </Text>
       <FlatList
         data={eventsSettingOpetions}

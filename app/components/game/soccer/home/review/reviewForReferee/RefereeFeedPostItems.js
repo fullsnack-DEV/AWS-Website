@@ -43,6 +43,7 @@ import PostImageSet from '../../../../../newsFeed/PostImageSet';
 import MultiPostVideo from '../../../../../newsFeed/MultiPostVideo';
 import NewsFeedDescription from '../../../../../newsFeed/NewsFeedDescription';
 import WriteReviewComment from '../../../../../newsFeed/WriteReviewComment';
+import {strings} from '../../../../../../../Localization/translation';
 
 function RefereeFeedPostItems({
   navigation,
@@ -424,7 +425,7 @@ function RefereeFeedPostItems({
         <ActionSheet
           ref={actionSheet}
           title={'News Feed Post'}
-          options={['Edit Post', 'Delete Post', 'Cancel']}
+          options={['Edit Post', 'Delete Post', strings.cancel]}
           cancelButtonIndex={2}
           destructiveButtonIndex={1}
           onPress={onActionSheetItemPress}
@@ -433,7 +434,7 @@ function RefereeFeedPostItems({
         <ActionSheet
           ref={shareActionSheet}
           title={'Reviews Feed Post'}
-          options={['Share', 'Copy Link', 'More Options', 'Cancel']}
+          options={['Share', 'Copy Link', 'More Options', strings.cancel]}
           cancelButtonIndex={3}
           // destructiveButtonIndex={1}
           onPress={onShareActionSheetItemPress}

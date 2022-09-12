@@ -5,6 +5,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   ScrollView,
+  SafeAreaView,
 } from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {heightPercentageToDP as hp} from '../utils';
@@ -31,7 +32,7 @@ function TCKeyboardView({
         extraScrollHeight={hp(5)}>
         <View style={{flex: 1}}>
           <ScrollView style={{flex: 1}} bounces={false}>
-            {children}
+            <SafeAreaView>{children}</SafeAreaView>
           </ScrollView>
         </View>
       </KeyboardAwareScrollView>

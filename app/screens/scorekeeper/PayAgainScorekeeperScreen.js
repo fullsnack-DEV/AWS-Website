@@ -33,11 +33,6 @@ export default function PayAgainScorekeeperScreen({navigation, route}) {
       const {body, comeFrom} = route.params ?? {};
       setSourceScreen(comeFrom);
       setReservationObj(body);
-      console.log(
-        'Body Object of pay again scorekeeper screen: ',
-        JSON.stringify(body),
-      );
-      // getFeeDetail();
       if (route?.params?.paymentMethod) {
         setDefaultCard(route?.params?.paymentMethod);
       } else {
@@ -49,16 +44,13 @@ export default function PayAgainScorekeeperScreen({navigation, route}) {
     setloading(true);
     paymentMethods(authContext)
       .then((response) => {
-        console.log('Payment api called', response.payload);
         const matchCard = response.payload.find((card) => card.id === source);
         if (matchCard) {
-          console.log('default payment method', matchCard);
           setDefaultCard(matchCard);
         }
         setloading(false);
       })
       .catch((e) => {
-        console.log('error in payment method', e);
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
@@ -71,7 +63,6 @@ export default function PayAgainScorekeeperScreen({navigation, route}) {
     if (defaultCard) {
       bodyParams.source = defaultCard.id;
       bodyParams.payment_method_type = 'card';
-      console.log('body params::', bodyParams);
       if (sorceScreen === ReservationStatus.pendingrequestpayment) {
         payAgainAlterScorekeeper(
           reservationObj.reservation_id,
@@ -161,8 +152,7 @@ export default function PayAgainScorekeeperScreen({navigation, route}) {
       <ActivityLoader visible={loading} />
 
       <View style={styles.viewMarginStyle}>
-        <TCLabel title={'Payment'} />
-        {/* paymentData={paymentInfo} homeTeam={homeTeam && homeTeam} awayTeam={awayTeam && awayTeam} */}
+        <TCLabel title={strings.payment} />
         <MatchFeesCard
           challengeObj={reservationObj}
           senderOrReceiver={'sender'}
@@ -170,7 +160,7 @@ export default function PayAgainScorekeeperScreen({navigation, route}) {
       </View>
 
       <View style={styles.viewMarginStyle}>
-        <TCLabel title={'Payment Method'} />
+        <TCLabel title={strings.paymentMethodTitle} />
         <View>
           <TCTouchableLabel
             title={
@@ -193,14 +183,12 @@ export default function PayAgainScorekeeperScreen({navigation, route}) {
       </View>
 
       <View style={styles.viewMarginStyle}>
-        <TCLabel title={'Cancellation Policy'} />
+        <TCLabel title={strings.refundPolicy} />
         <Text style={styles.responsibilityText}>
-          When you cancel this game reservation before 3:55pm on August 11, you
-          will get a 50% refund, minus the service fee.{' '}
+          {`${strings.cancellationPolicyText} `}
         </Text>
         <Text style={styles.responsibilityNote}>
-          By selecting the button below, I agree to the cancellation policy, and
-          also agree to pay the total amount shown above.
+          {strings.agreeCancellationPolicy}
         </Text>
       </View>
       <View style={{flex: 1}} />

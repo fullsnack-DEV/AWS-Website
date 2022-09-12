@@ -21,6 +21,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import moment from 'moment';
+import {format} from 'react-string-format';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
@@ -32,6 +33,7 @@ import {strings} from '../../../../Localization/translation';
 
 import DateTimePickerView from '../../../components/Schedule/DateTimePickerModal';
 import ScheduleBlockedItems from '../../../components/Schedule/ScheduleBlockedItems';
+import Verbs from '../../../Constants/Verbs';
 
 let selectedDayMarking = {};
 export default function ChooseTimeSlotScreen({navigation, route}) {
@@ -65,8 +67,7 @@ export default function ChooseTimeSlotScreen({navigation, route}) {
     // console.log('temp mark:', selectedDayMarking);
     // setMarkingDays(selectedDayMarking);
 
-    if (settingObject?.sport?.toLowerCase() === 'tennis') {
-      console.log('dsfsdfsadfasdf', settingObject);
+    if (settingObject?.sport?.toLowerCase() === Verbs.tennisSport) {
       setHours(
         Utility.getHoursMinutesFromString(
           settingObject?.score_rules?.match_duration,
@@ -184,7 +185,6 @@ export default function ChooseTimeSlotScreen({navigation, route}) {
           };
         }
         setMarkingDays({...markedDates, ...selectedDayMarking});
-        console.log('BLOCKED::', markedDates);
       });
 
       console.log('Marked dates::', JSON.stringify(markedDates));
@@ -327,7 +327,6 @@ export default function ChooseTimeSlotScreen({navigation, route}) {
   const renderSlotsList = ({item, index}) => (
     <TouchableOpacity
       onPress={() => {
-        console.log('selected:=> ', item);
         setselectedSlot(item);
         const date = new Date();
 
@@ -418,23 +417,8 @@ export default function ChooseTimeSlotScreen({navigation, route}) {
           calendarMarkedDates={markingDays}
         />
         <ScrollView style={{flex: 1}}>
-          <Text style={styles.slotHeader}>Available Time Zone</Text>
-          {/* <SectionList
-          sections={blockedGroups}
-          renderItem={({ item }) => (
-            <ScheduleBlockedItems
-              startDate={item.start_datetime}
-              endDate={item.end_datetime}
-              allDay={item.allDay}
-            />
-          )}
-          keyExtractor={(item, index) => index.toString()}
-          renderSectionHeader={({ section: { title } }) => (
-            <Text style={styles.sectionHeader}>
-              {moment(new Date(title)).format('dddd, MMM DD, YYYY')}
-            </Text>
-          )}
-        /> */}
+          <Text style={styles.slotHeader}>{strings.availableTimeZone}</Text>
+
           <FlatList
             testID="time-slot-list"
             data={availableSlot}
@@ -456,7 +440,7 @@ export default function ChooseTimeSlotScreen({navigation, route}) {
                 if (from) {
                   setFromPickerVisible(!fromPickerVisible);
                 } else {
-                  Alert.alert('Please choose available time zone first.');
+                  Alert.alert(strings.chooseTimeZone);
                 }
               }}>
               <View
@@ -485,7 +469,7 @@ export default function ChooseTimeSlotScreen({navigation, route}) {
                 if (to) {
                   setToPickerVisible(!toPickerVisible);
                 } else {
-                  Alert.alert('Please choose available time zone first.');
+                  Alert.alert(strings.chooseTimeZone);
                 }
               }}>
               <View
@@ -494,7 +478,7 @@ export default function ChooseTimeSlotScreen({navigation, route}) {
                   justifyContent: 'center',
                 }}>
                 <Text style={styles.fieldTitle} numberOfLines={1}>
-                  To
+                  {strings.to}
                 </Text>
               </View>
               <View style={{marginRight: 15, flexDirection: 'row'}}>
@@ -518,17 +502,19 @@ export default function ChooseTimeSlotScreen({navigation, route}) {
                 fontFamily: fonts.RRegular,
                 color: colors.lightBlackColor,
               }}>
-              Total Game Duration
+              {strings.totalGameDuration}
             </Text>
             <Text
               style={{
                 fontSize: 16,
                 fontFamily: fonts.RBold,
                 color: colors.themeColor,
-              }}>{`${hours} Hours ${minutes} Minutes`}</Text>
+              }}>
+              {format(strings.hoursMinutesText, hours, minutes)}
+            </Text>
           </View>
           <DateTimePickerView
-            title={'Choose a Time'}
+            title={strings.chooseTimeText}
             date={new Date(from)}
             visible={fromPickerVisible}
             onDone={onFromDone}
@@ -540,7 +526,7 @@ export default function ChooseTimeSlotScreen({navigation, route}) {
             mode={'time'}
           />
           <DateTimePickerView
-            title={'Choose a Time'}
+            title={strings.chooseTimeText}
             date={new Date(to)}
             visible={toPickerVisible}
             onDone={onToDone}

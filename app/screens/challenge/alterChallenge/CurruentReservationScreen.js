@@ -3,6 +3,7 @@ import {StyleSheet, View, Text, Image, FlatList} from 'react-native';
 import moment from 'moment';
 import {useIsFocused} from '@react-navigation/native';
 
+import {format} from 'react-string-format';
 import {strings} from '../../../../Localization/translation';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
@@ -70,7 +71,9 @@ export default function CurruentReservationScreen({route}) {
   const renderSecureReferee = ({item, index}) => (
     <TCInfoImageField
       title={
-        index === 0 ? `Referee ${index + 1} (Chief)` : `Referee ${index + 1}`
+        index === 0
+          ? format(strings.refereeChiefN, index + 1)
+          : format(strings.refereeN, index + 1)
       }
       name={
         homeTeam &&
@@ -88,7 +91,7 @@ export default function CurruentReservationScreen({route}) {
 
   const renderSecureScorekeeper = ({item, index}) => (
     <TCInfoImageField
-      title={`Scorekeeper ${index + 1}`}
+      title={format(strings.scorekeeperN, index + 1)}
       name={
         homeTeam &&
         awayTeam &&
@@ -131,7 +134,6 @@ export default function CurruentReservationScreen({route}) {
       // }
       // return 'receiver';
     }
-    console.log('challenge for user to user');
     if (
       challengeObj.status === ReservationStatus.pendingpayment ||
       challengeObj.status === ReservationStatus.pendingrequestpayment
@@ -173,7 +175,7 @@ export default function CurruentReservationScreen({route}) {
             <View style={styles.challengerView}>
               <View style={styles.teamView}>
                 <Image source={images.requestOut} style={styles.reqOutImage} />
-                <Text style={styles.challengerText}>Challenger</Text>
+                <Text style={styles.challengerText}>{strings.challenger}</Text>
               </View>
 
               <View style={styles.teamView}>
@@ -195,7 +197,7 @@ export default function CurruentReservationScreen({route}) {
             <View style={styles.challengeeView}>
               <View style={styles.teamView}>
                 <Image source={images.requestIn} style={styles.reqOutImage} />
-                <Text style={styles.challengeeText}>Challengee</Text>
+                <Text style={styles.challengeeText}>{strings.challengee}</Text>
               </View>
 
               <View style={styles.teamView}>
@@ -226,10 +228,10 @@ export default function CurruentReservationScreen({route}) {
           {bodyParams && (
             <View>
               <View style={styles.editableView}>
-                <TCLabel title={`Match · ${bodyParams.sport}`} />
+                <TCLabel title={format(strings.matchSport, bodyParams.sport)} />
               </View>
               <TCInfoImageField
-                title={'Home'}
+                title={strings.home}
                 name={
                   bodyParams.home_team.group_name ||
                   `${bodyParams.home_team.first_name} ${bodyParams.home_team.last_name}`
@@ -238,7 +240,7 @@ export default function CurruentReservationScreen({route}) {
               />
               <TCThinDivider />
               <TCInfoImageField
-                title={'Away'}
+                title={strings.away}
                 name={
                   bodyParams.away_team.group_name ||
                   `${bodyParams.away_team.first_name} ${bodyParams.away_team.last_name}`
@@ -247,7 +249,7 @@ export default function CurruentReservationScreen({route}) {
               />
               <TCThinDivider />
               <TCInfoField
-                title={'Time'}
+                title={strings.timeText}
                 value={`${getDateFormat(
                   bodyParams.start_datetime * 1000,
                 )} -\n${getDateFormat(
@@ -261,14 +263,14 @@ export default function CurruentReservationScreen({route}) {
               />
               <TCThinDivider />
               <TCInfoField
-                title={'Venue'}
+                title={strings.venue}
                 value={bodyParams.venue.title}
                 marginLeft={30}
                 titleStyle={{fontSize: 16}}
               />
               <TCThinDivider />
               <TCInfoField
-                title={'Address'}
+                title={strings.address}
                 value={bodyParams.venue.address}
                 marginLeft={30}
                 titleStyle={{fontSize: 16}}
@@ -293,7 +295,7 @@ export default function CurruentReservationScreen({route}) {
           {bodyParams && (
             <View>
               <View style={styles.editableView}>
-                <TCLabel title={'Responsibility  to Secure Venue'} />
+                <TCLabel title={strings.responsibilityToSecureVenue} />
               </View>
 
               <View style={styles.viewContainer}>
@@ -324,7 +326,7 @@ export default function CurruentReservationScreen({route}) {
           {bodyParams && (
             <View>
               <View style={styles.editableView}>
-                <TCLabel title={'Rules'} />
+                <TCLabel title={strings.rules} />
               </View>
               <Text style={styles.rulesText}>{bodyParams.special_rule}</Text>
             </View>
@@ -332,7 +334,7 @@ export default function CurruentReservationScreen({route}) {
           <TCThickDivider marginTop={20} />
           <View>
             <View style={styles.editableView}>
-              <TCLabel title={'Responsibility to Secure Referees'} />
+              <TCLabel title={strings.secureRefereesText} />
             </View>
             {bodyParams && (
               <FlatList
@@ -346,7 +348,7 @@ export default function CurruentReservationScreen({route}) {
           <TCThickDivider marginTop={10} />
           <View>
             <View style={styles.editableView}>
-              <TCLabel title={'Responsibility to Secure ScoreKeeper'} />
+              <TCLabel title={strings.secureScorekeeperText} />
             </View>
             {bodyParams && (
               <FlatList
@@ -362,8 +364,8 @@ export default function CurruentReservationScreen({route}) {
             <TCLabel
               title={
                 checkSenderOrReceiver(bodyParams) === 'sender'
-                  ? 'Payment'
-                  : 'Earning'
+                  ? strings.payment
+                  : strings.earning
               }
             />
           </View>
@@ -379,14 +381,13 @@ export default function CurruentReservationScreen({route}) {
           <Text style={styles.responsibilityNote}>
             These match fee doesn’t include the{' '}
             <Text style={styles.responsibilityNoteMedium}>
-              Match Place Fee, Referee Fee
+              {strings.matchPlaceFee}
             </Text>{' '}
-            and{' '}
+            {strings.and}{' '}
             <Text style={styles.responsibilityNoteMedium}>
-              Scorekeeper Fee.
+              {strings.scorekeeperFeeText}
             </Text>{' '}
-            The match place, referees and scorekeepers should be secured by the
-            team who has charge of them at its own expense.
+            {strings.matchPlaceFeeDesc}
           </Text>
           {checkSenderOrReceiver(bodyParams) === 'sender' &&
             bodyParams.status === ReservationStatus.offered &&

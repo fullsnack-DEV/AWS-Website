@@ -42,7 +42,7 @@ export default function EditFeeScreen({navigation, route}) {
           }}
           value={basicFee}
           keyboardType={'decimal-pad'}></TextInput>
-        <Text style={styles.curruency}>CAD</Text>
+        <Text style={styles.curruency}>{strings.CAD}</Text>
       </View>
       <TCGradientButton
         title={strings.doneTitle}
@@ -53,7 +53,6 @@ export default function EditFeeScreen({navigation, route}) {
         shadow={true}
         marginTop={15}
         onPress={() => {
-          console.log('BASIC FEE::', basicFee);
           if (basicFee <= 0.0 || basicFee >= 1.0) {
             navigation.navigate('EditChallenge', {
               challengeObj: {
@@ -64,7 +63,7 @@ export default function EditFeeScreen({navigation, route}) {
               updatedFee: true,
             });
           } else {
-            Alert.alert('Please enter valid match fee.');
+            Alert.alert(strings.enterValidGameFee);
           }
         }}
       />

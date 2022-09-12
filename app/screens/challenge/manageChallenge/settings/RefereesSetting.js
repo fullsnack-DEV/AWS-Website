@@ -71,7 +71,7 @@ export default function RefereesSetting({navigation, route}) {
           onPress={() => {
             onSavePressed();
           }}>
-          Save
+          {strings.save}
         </Text>
       ),
     });
@@ -348,7 +348,7 @@ export default function RefereesSetting({navigation, route}) {
           onPress={() => setVisibleModal(true)}>
           <Text style={styles.itemView}> {selection || '-'}</Text>
           <View style={{flexDirection: 'row'}}>
-            <Text style={styles.itemView}>{'Referee(s)'}</Text>
+            <Text style={styles.itemView}>{strings.referees}</Text>
             <Image
               source={images.dropDownArrow}
               style={styles.downArrowImage}
@@ -381,9 +381,7 @@ export default function RefereesSetting({navigation, route}) {
             color: colors.darkThemeColor,
             margin: 15,
           }}>
-          {
-            'In order to complete this part, please click the Save button on the right top after choosing your preference.'
-          }
+          {strings.saveForComplete}
         </Text>
 
         <Modal

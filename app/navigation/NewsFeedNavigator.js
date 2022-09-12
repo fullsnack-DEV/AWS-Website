@@ -88,6 +88,7 @@ import JoinedTeamsScreen from '../screens/account/JoinedTeamsScreen';
 import EntityStatScreen from '../screens/home/EntityStatScreen';
 import MessageChat from '../components/message/MessageChat';
 import GameTennisDuration from '../screens/challenge/manageChallenge/settings/GameTennisDuration';
+import {strings} from '../../Localization/translation';
 
 const Stack = createStackNavigator();
 
@@ -361,7 +362,7 @@ const NewsFeedNavigator = () => (
       name="UserConnections"
       component={UserConnections}
       options={{
-        title: 'Connections',
+        title: strings.connections,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

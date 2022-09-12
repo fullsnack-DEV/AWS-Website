@@ -132,7 +132,7 @@ export default function PauseGroupScreen({navigation, route}) {
               '',
               [
                 {
-                  text: 'Cancel',
+                  text: strings.cancel,
                   style: 'cancel',
                 },
                 {

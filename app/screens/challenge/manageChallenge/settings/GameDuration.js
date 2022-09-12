@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 
 // import { useIsFocused } from '@react-navigation/native';
+import {format} from 'react-string-format';
 import AuthContext from '../../../../auth/context';
 
 import {patchPlayer} from '../../../../api/Users';
@@ -90,14 +91,14 @@ export default function GameDuration({navigation, route}) {
               (obj) => obj.interval === 0 || obj.overTime === 0,
             );
             if (resultPeriod.length > 0 || firstPeriod === 0) {
-              Alert.alert('Please fill all fields.');
+              Alert.alert(strings.fillAllFields);
             } else if (withOverTime && resultOvertime.length > 0) {
-              Alert.alert('Please fill all fields.');
+              Alert.alert(strings.fillAllFields);
             } else {
               onSavePressed();
             }
           }}>
-          Save
+          {strings.save}
         </Text>
       ),
     });
@@ -201,7 +202,7 @@ export default function GameDuration({navigation, route}) {
                 overTime.splice(index, 1);
                 setOverTime([...overTime]);
               }}>
-              Delete
+              {strings.delete}
             </Text>
           )}
         </View>
@@ -229,7 +230,7 @@ export default function GameDuration({navigation, route}) {
           <View style={styles.textTitle}>
             <Text style={[styles.minText, {marginLeft: 10, flex: 0.4}]}>
               {/* {strings.firstOverTimeText} */}
-              {`${getNumberSuffix(index + 1)} Overtime`}
+              {format(strings.nOverTime, getNumberSuffix(index + 1))}
             </Text>
             <View style={styles.textInputContainer}>
               <TextInput
@@ -493,7 +494,7 @@ export default function GameDuration({navigation, route}) {
             style={{marginBottom: 15}}
           />
           <TCMessageButton
-            title={'+ Add Interval & Period'}
+            title={strings.addIntervalPeriod}
             width={150}
             alignSelf={'center'}
             marginTop={15}
@@ -571,7 +572,7 @@ export default function GameDuration({navigation, route}) {
                 style={{marginBottom: 15}}
               />
               <TCMessageButton
-                title={'+ Add Interval & Overtime'}
+                title={strings.addIntervalPeriod}
                 width={160}
                 alignSelf={'center'}
                 marginTop={15}
@@ -587,12 +588,14 @@ export default function GameDuration({navigation, route}) {
               {strings.totalTimeTitle}
             </Text>
 
-            <Text style={styles.totalTimeText}>{`${
-              calculateDuration().hours !== null && calculateDuration().hours
-            }h ${
-              calculateDuration().minutes !== null &&
-              calculateDuration().minutes
-            }m`}</Text>
+            <Text style={styles.totalTimeText}>
+              {format(
+                strings.hmTime,
+                calculateDuration().hours !== null && calculateDuration().hours,
+                calculateDuration().minutes !== null &&
+                  calculateDuration().minutes,
+              )}
+            </Text>
           </View>
           <TCLabel title={strings.detailsTitleText} style={{marginRight: 15}} />
           <TCTextInputClear

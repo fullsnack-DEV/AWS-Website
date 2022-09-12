@@ -90,7 +90,7 @@ const MessageEditGroupScreen = ({route, navigation}) => {
 
   const checkValidation = () => {
     if (groupName === '') {
-      Alert.alert('Enter Chatroom Name');
+      Alert.alert(strings.enterChatroomName);
       return false;
     }
     return true;
@@ -186,7 +186,7 @@ const MessageEditGroupScreen = ({route, navigation}) => {
           </TouchableOpacity>
         }
         centerComponent={
-          <Text style={styles.eventTitleTextStyle}>Message</Text>
+          <Text style={styles.eventTitleTextStyle}>{strings.message}</Text>
         }
         rightComponent={
           <TouchableOpacity style={{padding: 2}} onPress={onSaveButtonClicked}>
@@ -196,7 +196,7 @@ const MessageEditGroupScreen = ({route, navigation}) => {
                 width: 100,
                 textAlign: 'right',
               }}>
-              Done
+              {strings.done}
             </Text>
           </TouchableOpacity>
         }
@@ -232,9 +232,9 @@ const MessageEditGroupScreen = ({route, navigation}) => {
           />
         </TouchableOpacity>
         <View style={styles.inputBoxContainer}>
-          <Text style={styles.chatRoomName}>Chatroom Name</Text>
+          <Text style={styles.chatRoomName}>{strings.chatroomName}</Text>
           <TCInputBox
-            placeHolderText={'New Group'}
+            placeHolderText={strings.newGroup}
             value={groupName}
             onChangeText={setGroupName}
           />

@@ -12,6 +12,7 @@ import TCTextField from '../../../../components/TCTextField';
 import AuthContext from '../../../../auth/context';
 import TCGroupNameBadge from '../../../../components/TCGroupNameBadge';
 import TCFormProgress from '../../../../components/TCFormProgress';
+import Verbs from '../../../../Constants/Verbs';
 
 let entity = {};
 export default function CreateMemberProfileClubForm3({navigation, route}) {
@@ -156,7 +157,7 @@ export default function CreateMemberProfileClubForm3({navigation, route}) {
           </View>
           <TCGroupNameBadge
             name={((auth || {}).obj || {}).group_name || ''}
-            groupType={strings.entityTypeClub}
+            groupType={Verbs.entityTypeClub}
           />
         </View>
         <TCTextField

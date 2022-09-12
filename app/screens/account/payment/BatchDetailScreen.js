@@ -19,6 +19,7 @@ import {
 } from 'react-native';
 
 // import { useIsFocused } from '@react-navigation/native';
+import {format} from 'react-string-format';
 
 import moment from 'moment';
 import ActionSheet from 'react-native-actionsheet';
@@ -45,6 +46,7 @@ import TCThinDivider from '../../../components/TCThinDivider';
 import {heightPercentageToDP} from '../../../utils';
 import {strings} from '../../../../Localization/translation';
 import InvoiceTypeSelection from '../../../components/invoice/InvoiceTypeSelection';
+import Verbs from '../../../Constants/Verbs';
 
 let entity = {};
 export default function BatchDetailScreen({navigation, route}) {
@@ -78,7 +80,7 @@ export default function BatchDetailScreen({navigation, route}) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: () => (
-        <Text style={styles.navTitle}>{'Membership Fee'}</Text>
+        <Text style={styles.navTitle}>{strings.membershipFeeTitle}</Text>
       ),
       headerRight: () => (
         <View style={styles.rightHeaderView}>
@@ -116,7 +118,6 @@ export default function BatchDetailScreen({navigation, route}) {
     addRecipientList(batchData?.invoice_group, authContext)
       .then((response) => {
         setloading(false);
-        console.log('setNewRecipientData res', response);
         setNewRecipientData(response.payload);
 
         const result = [];
@@ -180,9 +181,8 @@ export default function BatchDetailScreen({navigation, route}) {
   );
 
   const sendInvoiceValidation = () => {
-    console.log('selectedRecipient.length', selectedRecipient.length);
     if (selectedRecipient.length <= 0) {
-      Alert.alert('Please select recipients.');
+      Alert.alert(strings.selectRecipientValidation);
       return false;
     }
 
@@ -191,7 +191,7 @@ export default function BatchDetailScreen({navigation, route}) {
 
   const cancelInvoiceValidation = () => {
     if (newRecipientData.filter((e) => e.selected).length <= 0) {
-      Alert.alert('Please select recipients.');
+      Alert.alert(strings.selectRecipientValidation);
       return false;
     }
 
@@ -200,7 +200,7 @@ export default function BatchDetailScreen({navigation, route}) {
 
   const reSendInvoiceValidation = () => {
     if (!selectInvoiceType) {
-      Alert.alert('Please select invoice type.');
+      Alert.alert(strings.selectInvoiceTypeValidation);
       return false;
     }
 
@@ -213,13 +213,13 @@ export default function BatchDetailScreen({navigation, route}) {
         <Text
           style={styles.cancelText}
           onPress={() => resendModalRef.current.close()}>
-          Cancel
+          {strings.cancel}
         </Text>
 
         <Text style={styles.titleText}>
           {selectedActionSheetOpetion === 1
-            ? 'Add Recipients'
-            : 'Resend Invoice'}
+            ? strings.addRecipientText
+            : strings.resendInvoiceText}
         </Text>
         <Text
           style={styles.sendText}
@@ -232,9 +232,12 @@ export default function BatchDetailScreen({navigation, route}) {
 
                   const body = {};
                   body.type =
-                    (selectInvoiceType === 'Open Invoices' && 'open') ||
-                    (selectInvoiceType === 'Paid Invoices' && 'paid') ||
-                    (selectInvoiceType === 'All Invoices' && 'All');
+                    (selectInvoiceType === strings.openInvoiceText &&
+                      Verbs.open) ||
+                    (selectInvoiceType === strings.paidInvoiceText &&
+                      Verbs.paid) ||
+                    (selectInvoiceType === strings.allInvoiceText &&
+                      strings.allType);
                   body.email_sent = false;
 
                   resendBatchInvoice(batchData.invoice_group, body, authContext)
@@ -296,7 +299,7 @@ export default function BatchDetailScreen({navigation, route}) {
             setSelectedRecipient([]);
             recipientModalRef.current.close();
           }}>
-          Cancel
+          {strings.cancel}
         </Text>
 
         <Text style={styles.titleText}>Recipients</Text>
@@ -326,13 +329,14 @@ export default function BatchDetailScreen({navigation, route}) {
               setSelectedRecipient(result);
 
               Alert.alert(
-                `Are you sure that you want to cancel ${
-                  newRecipientData.filter((e) => e.selected).length
-                } invoice?`,
+                format(
+                  strings.cancelInvoiceAlertText,
+                  newRecipientData.filter((e) => e.selected).length,
+                ),
                 '',
                 [
                   {
-                    text: 'Back',
+                    text: strings.back,
                     style: 'cancel',
                   },
                   {
@@ -438,12 +442,13 @@ export default function BatchDetailScreen({navigation, route}) {
             margin: 15,
           }}>
           <Text style={styles.dateView}>
-            {`Due : ${moment(batchData?.due_date * 1000).format(
-              'ddd, MMM DD, YYYY',
-            )}`}
+            {format(
+              strings.dueDateInvoice,
+              moment(batchData?.due_date * 1000).format('ddd, MMM DD, YYYY'),
+            )}
           </Text>
           <Text style={styles.dateView}>
-            {`${batchData?.invoices?.length} Recepients`}
+            {format(strings.NreciepientText, batchData?.invoices?.length)}
           </Text>
         </View>
 
@@ -456,9 +461,18 @@ export default function BatchDetailScreen({navigation, route}) {
 
         <TCTabView
           totalTabs={3}
-          firstTabTitle={`Open (${batchListByFilter('Open').length})`}
-          secondTabTitle={`Paid (${batchListByFilter('Paid').length})`}
-          thirdTabTitle={`All (${batchListByFilter('All').length})`}
+          firstTabTitle={format(
+            strings.openNInvoice,
+            batchListByFilter('Open').length,
+          )}
+          secondTabTitle={format(
+            strings.paidNInvoice,
+            batchListByFilter('Paid').length,
+          )}
+          thirdTabTitle={format(
+            strings.allNInvoice,
+            batchListByFilter('All').length,
+          )}
           indexCounter={tabNumber}
           eventPrivacyContianer={{width: 100}}
           onFirstTabPress={() => setTabNumber(0)}
@@ -468,9 +482,9 @@ export default function BatchDetailScreen({navigation, route}) {
 
         <FlatList
           data={
-            (tabNumber === 0 && batchListByFilter('Open')) ||
-            (tabNumber === 1 && batchListByFilter('Paid')) ||
-            (tabNumber === 2 && batchListByFilter('All'))
+            (tabNumber === 0 && batchListByFilter(Verbs.open)) ||
+            (tabNumber === 1 && batchListByFilter(Verbs.paid)) ||
+            (tabNumber === 2 && batchListByFilter(strings.allType))
           }
           renderItem={renderBatchDetailView}
           keyExtractor={(item, index) => index.toString()}
@@ -480,10 +494,10 @@ export default function BatchDetailScreen({navigation, route}) {
       <ActionSheet
         ref={batchActionsheet}
         options={[
-          'Resend Invoice',
-          'Add recipients',
-          'Cancel Invoices',
-          'Cancel',
+          strings.resendInvoiceText,
+          strings.addRecipientText,
+          strings.cancelInvoiceText,
+          strings.cancel,
         ]}
         cancelButtonIndex={3}
         destructiveButtonIndex={2}
@@ -534,12 +548,21 @@ export default function BatchDetailScreen({navigation, route}) {
                     marginRight: 15,
                     flexDirection: 'row',
                   }}>
-                  <Text>Send to</Text>
+                  <Text>{strings.sendTo}</Text>
                   <InvoiceTypeSelection
                     dataSource={[
-                      {label: 'Open Invoices', value: 'Open Invoices'},
-                      {label: 'Paid Invoices', value: 'Paid Invoices'},
-                      {label: 'All Invoices', value: 'All Invoices'},
+                      {
+                        label: strings.openInvoiceText,
+                        value: strings.openInvoiceText,
+                      },
+                      {
+                        label: strings.paidInvoiceText,
+                        value: strings.paidInvoiceText,
+                      },
+                      {
+                        label: strings.allInvoiceText,
+                        value: strings.allInvoiceText,
+                      },
                     ]}
                     value={selectInvoiceType}
                     onValueChange={(value) => {
@@ -569,8 +592,11 @@ export default function BatchDetailScreen({navigation, route}) {
                         : styles.recipientText
                     }>
                     {selectedRecipient.length > 0
-                      ? `${selectedRecipient.length} Recipients`
-                      : 'Add Recipients'}
+                      ? format(
+                          strings.NreciepientText,
+                          selectedRecipient.length,
+                        )
+                      : strings.addRecipientText}
                   </Text>
                   <Image
                     style={styles.nextIconStyle}
@@ -592,7 +618,7 @@ export default function BatchDetailScreen({navigation, route}) {
                     fontSize: 16,
                     color: colors.lightBlackColor,
                   }}>
-                  Invoice Title
+                  {strings.invoiceTitle}
                 </Text>
                 <Text
                   style={{
@@ -610,7 +636,7 @@ export default function BatchDetailScreen({navigation, route}) {
                     fontSize: 16,
                     color: colors.lightBlackColor,
                   }}>
-                  Invoice Description
+                  {strings.invoiceDescriptionText}
                 </Text>
                 <Text
                   style={{
@@ -628,7 +654,7 @@ export default function BatchDetailScreen({navigation, route}) {
                     fontSize: 16,
                     color: colors.lightBlackColor,
                   }}>
-                  Invoice Amount
+                  {strings.invoiceAmountText}
                 </Text>
                 <Text
                   style={{
@@ -646,7 +672,7 @@ export default function BatchDetailScreen({navigation, route}) {
                     fontSize: 16,
                     color: colors.lightBlackColor,
                   }}>
-                  Due at
+                  {strings.dueAt}
                 </Text>
                 <Text
                   style={{
@@ -694,7 +720,7 @@ export default function BatchDetailScreen({navigation, route}) {
                     margin: 15,
                     marginTop: 0,
                   }}>
-                  Choose recipients of the invoices that you want to cancel.
+                  {strings.chooseReciepientText}
                 </Text>
               )}
 
@@ -713,7 +739,7 @@ export default function BatchDetailScreen({navigation, route}) {
                     fontSize: 16,
                     color: colors.lightBlackColor,
                   }}>
-                  All
+                  {strings.allType}
                 </Text>
                 {/* <Image source={images.orangeCheckBox} style={styles.checkButton} /> */}
                 <TouchableOpacity
@@ -756,7 +782,7 @@ export default function BatchDetailScreen({navigation, route}) {
                   fontSize: 16,
                   color: colors.lightBlackColor,
                 }}>
-                Members
+                {strings.membersTitle}
               </Text>
               <FlatList
                 data={

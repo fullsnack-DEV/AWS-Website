@@ -38,6 +38,7 @@ import TCThinDivider from '../../../../components/TCThinDivider';
 import TCGradientButton from '../../../../components/TCGradientButton';
 import TCSearchBox from '../../../../components/TCSearchBox';
 import TCFollowerList from '../../../../components/TCFollowerList';
+import Verbs from '../../../../Constants/Verbs';
 
 export default function CreateTeamForm2({navigation, route}) {
   const [createTeamForm1] = useState(route?.params?.createTeamForm1);
@@ -235,10 +236,10 @@ export default function CreateTeamForm2({navigation, route}) {
 
   const nextOnPress = () => {
     if (
-      createTeamForm1.sport === strings.tennisSport &&
-      createTeamForm1.sport_type === strings.doubleSport &&
+      createTeamForm1.sport === Verbs.tennisSport &&
+      createTeamForm1.sport_type === Verbs.doubleSport &&
       authContext?.entity?.role ===
-        (strings.entityTypeUser || strings.entityTypePlayer)
+        (Verbs.entityTypeUser || Verbs.entityTypePlayer)
     ) {
       const obj = {
         player1: authContext?.entity?.obj,

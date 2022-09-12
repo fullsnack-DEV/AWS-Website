@@ -174,7 +174,7 @@ export default function RegisterPlayer({navigation}) {
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
               }}>
-              Sports
+              {strings.sportsTitleText}
             </Text>
 
             <Text

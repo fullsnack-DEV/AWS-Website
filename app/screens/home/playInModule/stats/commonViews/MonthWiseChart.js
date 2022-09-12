@@ -18,14 +18,11 @@ export default function MonthWiseChart({
   selectMonth,
   setSelectMonth,
 }) {
-  console.log('gameChartData', gameChartData);
   const [maxValue, setMaxValue] = useState();
   useEffect(() => {
     const maxArray = gameChartData?.map((o) => o.value);
     const max_of_array = Math.max.apply(Math, maxArray);
     setMaxValue(getMaxFromRange(max_of_array));
-
-    console.log('maxmax', max_of_array);
   }, [gameChartData]);
 
   const renderMonths = ({item}) => {
@@ -84,7 +81,9 @@ export default function MonthWiseChart({
           paddingHorizontal: 15,
         }}>
         <View style={styles.totalGameViewStyle}>
-          <Text style={styles.totalGameTextStyle}>{'Monthly Matches'}</Text>
+          <Text style={styles.totalGameTextStyle}>
+            {strings.monthlyMatches}
+          </Text>
         </View>
         <StatsSelectionView
           dataSource={monthsSelectionData}

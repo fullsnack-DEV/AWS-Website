@@ -63,7 +63,6 @@ const TennisMatchRecordsList = (
   },
   matchRef,
 ) => {
-  console.log('Match data:=>', matchData);
   const authContext = useContext(AuthContext);
   const [visibleAddSetAndGameButton, setVisibleAddSetAndGameButton] =
     useState(false);
@@ -134,7 +133,6 @@ const TennisMatchRecordsList = (
         }
         getGameMatchRecords(gameId, authContext, 'grouped=true').then(
           (matchRes) => {
-            console.log('matchRes:=>', matchRes);
             setMatchRecords([...matchRes.payload]);
             setLoading(false);
           },
@@ -168,12 +166,10 @@ const TennisMatchRecordsList = (
     setAwayMatchPoint(0);
     let homePoint = 0;
     let awayPoint = 0;
-    console.log('SETS::->', gameData?.scoreboard?.sets);
     (gameData?.scoreboard?.sets || []).map((e) => {
       if (e?.winner) {
         if (e.winner === gameData?.home_team?.user_id) {
           homePoint += 1;
-          console.log('SETS NO::->', homePoint);
         } else {
           awayPoint += 1;
         }
@@ -285,7 +281,7 @@ const TennisMatchRecordsList = (
             justifyContent: 'center',
           }}>
           <Text style={styles.setNumberText}>
-            {getNumberSuffix(set_number)} set
+            {getNumberSuffix(set_number)} {strings.set}
           </Text>
           <Text style={styles.setTimeDurationText}>{timeString}</Text>
         </View>
@@ -351,7 +347,7 @@ const TennisMatchRecordsList = (
               fontSize: 12,
               color: colors.whiteColor,
             }}>
-            + Add game
+            {strings.addGame}
           </Text>
         </View>
       </TouchableOpacity>
@@ -373,7 +369,7 @@ const TennisMatchRecordsList = (
               fontSize: 12,
               color: colors.whiteColor,
             }}>
-            + Add Set
+            {strings.addSet}
           </Text>
         </LinearGradient>
       </TouchableOpacity>
@@ -402,7 +398,7 @@ const TennisMatchRecordsList = (
     let timeString = '';
     if (item?.start_datetime) timeString += getDMYHM(item?.start_datetime);
     if (item?.end_datetime) timeString += ` - ${getDMYHM(item?.end_datetime)}`;
-    else timeString += ' - Not Ended';
+    else timeString += ` - ${strings.notEnded}`;
 
     return (
       <View>
@@ -460,7 +456,7 @@ const TennisMatchRecordsList = (
     let timeString = '';
     if (item?.start_datetime) timeString += getDMYHM(item?.start_datetime);
     if (item?.end_datetime) timeString += ` - ${getDMYHM(item?.end_datetime)}`;
-    else timeString += ' - Not Ended';
+    else timeString += ` - ${strings.notEnded}`;
 
     return (
       <View>
@@ -507,7 +503,7 @@ const TennisMatchRecordsList = (
                 color: colors.googleColor,
                 fontSize: 17,
               }}>
-              {getNumberSuffix(item?.number)} game
+              {getNumberSuffix(item?.number)} {strings.totalGames}
             </Text>
             <Text style={styles.setTimeDurationText}>{timeString}</Text>
           </View>
@@ -562,24 +558,24 @@ const TennisMatchRecordsList = (
   const onSwipeRowItemPress = (verb, record_id) => {
     if (verb === GameVerb.Start) {
       Alert.alert(
-        'Do you want to reset all the match records?',
+        strings.resetMatchRecord,
         '',
         [
           {
-            text: 'Cancel',
+            text: strings.cancel,
             style: 'cancel',
           },
           {
-            text: 'Reset',
+            text: strings.resetTitleText,
             style: 'destructive',
             onPress: () => {
               if (
                 gameData.status === GameStatus.accepted ||
                 gameData.status === GameStatus.reset
               ) {
-                Alert.alert('Game not started yet.');
+                Alert.alert(strings.gameNotStarted);
               } else if (gameData.status === GameStatus.ended) {
-                Alert.alert('Game is ended.');
+                Alert.alert(strings.gameEnded);
               } else {
                 resetGameDetail(gameData.game_id);
               }
@@ -624,7 +620,6 @@ const TennisMatchRecordsList = (
     }
     const isHomeTeam = teamIds?.home_team?.group_id === item.team_id;
     const isGameState = item.verb in tennisGameStats;
-    console.log('re-render swipe');
     return (
       <SwipeableRow
         enabled={getVisibleSwipableRowValue(item?.verb, item?.deleted)}
@@ -692,7 +687,7 @@ const TennisMatchRecordsList = (
     console.log(startDateTime);
     console.log(endDateTime);
     if (startDateTime.getTime() > endDateTime.getTime()) {
-      Alert.alert('Start time should be greter than end time');
+      Alert.alert(strings.starttimeGreterEndTime);
     } else {
       setFullScreenLoading(true);
       const obj = [
@@ -708,7 +703,7 @@ const TennisMatchRecordsList = (
         })
         .catch((error) => {
           setFullScreenLoading(false);
-          setTimeout(() => Alert.alert('TownsCup', error.message), 100);
+          setTimeout(() => Alert.alert(strings.appName, error.message), 100);
         });
     }
   };
@@ -726,17 +721,17 @@ const TennisMatchRecordsList = (
           gameData?.status === GameStatus.paused ||
           gameData?.status === GameStatus.resume
             ? [
-                'Game Reservation Detail',
-                'Add Set or Game',
-                'Deleted Records',
-                'Reset Match',
-                'Cancel',
+                strings.gameReservationDetail,
+                strings.addSetOrGame,
+                strings.deletedRecords,
+                strings.resetMatch,
+                strings.cancel,
               ]
             : [
-                'Game Reservation Detail',
-                'Add Set or Game',
-                'Deleted Records',
-                'Cancel',
+                strings.gameReservationDetail,
+                strings.addSetOrGame,
+                strings.deletedRecords,
+                strings.cancel,
               ]
         }
         cancelButtonIndex={
@@ -777,24 +772,24 @@ const TennisMatchRecordsList = (
               gameData?.status === GameStatus.resume
             ) {
               Alert.alert(
-                'Do you want to reset all the match records?',
+                strings.resetMatchRecord,
                 '',
                 [
                   {
-                    text: 'Cancel',
+                    text: strings.cancel,
                     style: 'cancel',
                   },
                   {
-                    text: 'Reset',
+                    text: strings.resetTitleText,
                     style: 'destructive',
                     onPress: () => {
                       if (
                         gameData.status === GameStatus.accepted ||
                         gameData.status === GameStatus.reset
                       ) {
-                        Alert.alert('Game not started yet.');
+                        Alert.alert(strings.gameNotStarted);
                       } else if (gameData.status === GameStatus.ended) {
-                        Alert.alert('Game is ended.');
+                        Alert.alert(strings.gameEnded);
                       } else {
                         resetGameDetail();
                       }
@@ -812,7 +807,7 @@ const TennisMatchRecordsList = (
           <RenderDash />
           <View style={{...styles.editorView}}>
             <Text style={{fontSize: 12, fontFamily: fonts.RRegular}}>
-              Show editors
+              {strings.showEditors}
             </Text>
             <TouchableWithoutFeedback
               onPress={() => {
@@ -861,7 +856,7 @@ const TennisMatchRecordsList = (
 
             <TouchableWithoutFeedback>
               <View>
-                <Text style={styles.centerSetText}>SET SCORES</Text>
+                <Text style={styles.centerSetText}>{strings.setScore}</Text>
                 <View style={styles.centerView}>
                   <Text style={styles.centerText}>
                     {getScoreText(homeTeamMatchPoint, awayTeamMatchPoint, 1)}
@@ -902,11 +897,9 @@ const TennisMatchRecordsList = (
       {/* Add Set Modal */}
       <AddSetGameModal
         loading={fullScreenLoading}
-        headingTitle={'Add a set'}
-        title={'Choose the starting and ending time of the new set.'}
-        subTitle={
-          'When adding a new set causes an excess set, the set and its records will be invalid.'
-        }
+        headingTitle={strings.addASet}
+        title={strings.chooseStartEndTime}
+        subTitle={strings.whenAddingNewSet}
         visible={visibleAddSetModal}
         onDatePickerClose={() => {
           setVisibleAddSetModal(false);
@@ -919,11 +912,9 @@ const TennisMatchRecordsList = (
       {/* Add Game Modal */}
       <AddSetGameModal
         loading={fullScreenLoading}
-        headingTitle={'Add a game'}
-        title={'Choose the starting and ending time of the new Game.'}
-        subTitle={
-          'When adding a new game causes an excess game or set, the game or set and their records will be invalid.'
-        }
+        headingTitle={strings.addAGame}
+        title={strings.chooseStartEndTimeGame}
+        subTitle={strings.addNewGameOrSet}
         visible={visibleAddGameModal}
         onDatePickerClose={() => {
           setVisibleAddGameModal(false);
@@ -950,7 +941,7 @@ const TennisMatchRecordsList = (
             <View>
               {!loading && (
                 <Text style={styles.notAvailableTextStyle}>
-                  Not available yet
+                  {strings.notAvailableYet}
                 </Text>
               )}
             </View>

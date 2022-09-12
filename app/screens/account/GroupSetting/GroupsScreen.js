@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import LinearGradient from 'react-native-linear-gradient';
+import {format} from 'react-string-format';
 import {leaveTeam} from '../../../api/Groups';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import images from '../../../Constants/ImagePath';
@@ -21,16 +22,19 @@ import fonts from '../../../Constants/Fonts';
 import {strings} from '../../../../Localization/translation';
 import TeamClubLeagueView from '../../../components/Home/TeamClubLeagueView';
 import TCThinDivider from '../../../components/TCThinDivider';
+import Verbs from '../../../Constants/Verbs';
 
 export default function GroupsScreen({route, navigation}) {
   const [loading, setloading] = useState(false);
   const authContext = useContext(AuthContext);
   const [groups, setGroup] = useState(route?.params?.groups);
-  console.log('groups==>', route?.params?.groups);
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: authContext.entity.role === 'club' ? 'Teams' : 'Clubs',
+      title:
+        authContext.entity.role === Verbs.entityTypeClub
+          ? strings.teamTitle
+          : strings.clubstitle,
       headerRight: () => (
         <Text style={styles.nextButtonStyle} onPress={() => {}}>
           {strings.next}
@@ -58,18 +62,15 @@ export default function GroupsScreen({route, navigation}) {
 
   const userLeaveGroup = (item, indexObj) => {
     setloading(true);
-    console.log('Item==>', item);
     const groupId = item.group_id;
 
     const params = {};
     leaveTeam(params, groupId, authContext)
       .then(() => {
-        console.log('user leave group');
         setGroup((group) => group.filter((_, index) => index !== indexObj));
         setloading(false);
       })
       .catch((error) => {
-        console.log('userLeaveGroup error with userID', error);
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message);
@@ -79,13 +80,13 @@ export default function GroupsScreen({route, navigation}) {
   const renderTeamClubLeague = ({item, index}) => {
     let teamIcon = '';
     let teamImagePH = '';
-    if (item.entity_type === 'team') {
+    if (item.entity_type === Verbs.entityTypeTeam) {
       teamIcon = images.myTeams;
       teamImagePH = images.team_ph;
-    } else if (item.entity_type === 'club') {
+    } else if (item.entity_type === Verbs.entityTypeClub) {
       teamIcon = images.myClubs;
       teamImagePH = images.club_ph;
-    } else if (item.entity_type === 'league') {
+    } else if (item.entity_type === Verbs.entityTypeLeague) {
       teamIcon = images.myLeagues;
       teamImagePH = images.leaguePlaceholder;
     }
@@ -115,16 +116,15 @@ export default function GroupsScreen({route, navigation}) {
           <TouchableWithoutFeedback
             onPress={() => {
               Alert.alert(
-                `Are you sure your team wants to 
-leave  ${item.group_name}?`,
+                format(strings.areYouSureLeaveText, item.group_name),
                 '',
                 [
                   {
-                    text: 'Cancel',
+                    text: strings.cancel,
                     style: 'cancel',
                   },
                   {
-                    text: 'Leave',
+                    text: strings.leave,
                     style: 'destructive',
                     onPress: () => {
                       userLeaveGroup(item, index);
@@ -136,7 +136,7 @@ leave  ${item.group_name}?`,
               // }
             }}>
             <View style={styles.followingBtn}>
-              <Text style={styles.followingText}>Leave</Text>
+              <Text style={styles.followingText}>{strings.leave}</Text>
             </View>
           </TouchableWithoutFeedback>
         </View>

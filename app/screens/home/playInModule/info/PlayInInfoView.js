@@ -9,6 +9,7 @@ import PlaysInBasicInfo from './basicInfo/PlaysInBasicInfo';
 import PlaysInNTRP from './ntrp/PlaysInNTRP';
 import PlaysInHomePlace from './homePlace/PlaysInHomePlace';
 import {heightPercentageToDP as hp} from '../../../../utils';
+import Verbs from '../../../../Constants/Verbs';
 
 const PlayInInfoView = ({
   currentUserData,
@@ -39,8 +40,8 @@ const PlayInInfoView = ({
     <TCThickDivider />
 
     {/*  NTRP */}
-    {sportName === 'tennis' &&
-    (sportType === 'double' || sportType === 'single') ? (
+    {sportName === Verbs.tennisSport &&
+    (sportType === Verbs.doubleSport || sportType === Verbs.singleSport) ? (
       <>
         <PlaysInNTRP
           onSave={onSave}
@@ -54,7 +55,7 @@ const PlayInInfoView = ({
     ) : null}
 
     {/*  Home Place */}
-    {sportName === 'tennis' ? (
+    {sportName === Verbs.tennisSport ? (
       <>
         <PlaysInHomePlace
           onSave={onSave}

@@ -21,6 +21,7 @@ import {patchGroup} from '../../../api/Groups';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
 import {strings} from '../../../../Localization/translation';
+import Verbs from '../../../Constants/Verbs';
 
 export default function TeamJoinClubScreen({navigation, route}) {
   const [comeFrom] = useState(route?.params?.comeFrom);
@@ -64,7 +65,7 @@ export default function TeamJoinClubScreen({navigation, route}) {
           onPress={() => {
             onSavePressed();
           }}>
-          Save
+          {strings.save}
         </Text>
       ),
     });
@@ -112,8 +113,8 @@ export default function TeamJoinClubScreen({navigation, route}) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const onSavePressed = () => {
     if (
-      authContext.entity.role === 'team' ||
-      authContext.entity.role === 'club'
+      authContext.entity.role === Verbs.entityTypeTeam ||
+      authContext.entity.role === Verbs.entityTypeClub
     ) {
       saveTeam();
     }
@@ -145,7 +146,9 @@ export default function TeamJoinClubScreen({navigation, route}) {
       style={styles.mainContainer}
       showsVerticalScrollIndicator={false}>
       <ActivityLoader visible={loading} />
-      <Text style={styles.opetionsTitle}>{'What team can join the club?'}</Text>
+      <Text style={styles.opetionsTitle}>
+        {strings.whatTeamCanJoinClubText}
+      </Text>
       <FlatList
         data={teamCanJoinClubOpetions}
         keyExtractor={(item, index) => index.toString()}

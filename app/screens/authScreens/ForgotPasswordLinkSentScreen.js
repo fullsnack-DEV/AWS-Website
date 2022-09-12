@@ -29,7 +29,7 @@ export default function ForgotPasswordLinkSentScreen({navigation}) {
         <Text style={styles.resetText}>{strings.checkEmailDescText}</Text>
       </View>
       <TCButton
-        title={'LOG IN'}
+        title={strings.LOGIN}
         onPress={() => {
           navigation.navigate('LoginScreen');
         }}

@@ -37,10 +37,11 @@ import {
 import AuthContext from '../../auth/context';
 import UserListShimmer from '../../components/shimmer/commonComponents/UserListShimmer';
 import TCGroupNameBadge from '../../components/TCGroupNameBadge';
+import { strings } from '../../../Localization/translation';
 
 const MessageEditInviteeScreen = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
-  const TAB_ITEMS = ['All', 'People', 'Teams', 'Clubs', 'Leagues'];
+  const TAB_ITEMS = [strings.allType, strings.peopleTitleText, strings.teamsTitleText, strings.clubsTitleText, strings.leaguesTitleText];
   const [currentTab, setCurrentTab] = useState(0);
   const [loading, setLoading] = useState(true);
   const [selectedInvitees, setSelectedInvitees] = useState([]);
@@ -230,7 +231,7 @@ const MessageEditInviteeScreen = ({navigation, route}) => {
             (item) => item === user?.id,
           );
           if (!route?.params?.isAdmin && fromExistingUser !== -1) {
-            Alert.alert('TownsCup', 'Group admin can remove user');
+            Alert.alert(strings.titleBasic, strings.groupAdminCan);
           } else {
             const uIndex = selectedInvitees.findIndex(
               (item) => user?.id === item?.id,
@@ -328,7 +329,7 @@ const MessageEditInviteeScreen = ({navigation, route}) => {
           marginTop: hp(2),
           color: colors.userPostTimeColor,
         }}>
-        No Records Found
+        {strings.noRecordFoundText}
       </Text>
     ),
     [],
@@ -415,8 +416,6 @@ const MessageEditInviteeScreen = ({navigation, route}) => {
       QBupdateDialogInvitees(dialogId, addUsers, removeUsers)
         .then((res) => {
           setSelectedInvitees([]);
-          console.log('RRRRRRRRRR', res);
-          // onPressDone(res)
           navigation.navigate('MessageChat', {dialog: res});
         })
         .catch((error) => {
@@ -558,7 +557,7 @@ const MessageEditInviteeScreen = ({navigation, route}) => {
           value={searchText}
           onChangeText={setSearchText}
           style={styles.textInputStyle}
-          placeholder={'Search'}
+          placeholder={strings.searchText}
         />
       </View>
       <View style={styles.sperateLine} />

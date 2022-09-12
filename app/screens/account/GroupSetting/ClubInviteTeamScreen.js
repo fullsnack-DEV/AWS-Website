@@ -51,7 +51,7 @@ export default function ClubInviteTeamScreen({navigation, route}) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: () => (
-        <Text style={styles.headerTitle}>Can Club Invite Team</Text>
+        <Text style={styles.headerTitle}>{strings.canClubInviteTeamText}</Text>
       ),
       headerRight: () => (
         <Text
@@ -59,7 +59,7 @@ export default function ClubInviteTeamScreen({navigation, route}) {
           onPress={() => {
             onSavePressed();
           }}>
-          Save
+          {strings.save}
         </Text>
       ),
     });
@@ -138,7 +138,7 @@ export default function ClubInviteTeamScreen({navigation, route}) {
       showsVerticalScrollIndicator={false}>
       <ActivityLoader visible={loading} />
       <Text style={styles.opetionsTitle}>
-        {'Can a club invite your team to join the club?'}
+        {strings.canClubInviteYourTeamText}
       </Text>
       <FlatList
         data={clubInviteTeamOpetions}

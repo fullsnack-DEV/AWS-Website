@@ -47,21 +47,6 @@ export default function RefereeApprovalScreen({navigation, route}) {
 
     setbodyParams(reservationObj);
   }, [isFocused]);
-  // useLayoutEffect(() => {
-  //   navigation.setOptions({
-  //     title: getNavigationTitle(),
-  //   });
-  // }, [navigation, bodyParams]);
-
-  // const getNavigationTitle = () => {
-  //   if (
-  //     bodyParams?.status === RefereeReservationStatus.offered
-  //     || bodyParams?.status === RefereeReservationStatus.declined
-  //   ) {
-  //     return strings.refereeRequestScreenTitle;
-  //   }
-  //   return strings.refereeScreenTitle;
-  // };
 
   const approveReservation = (reservationID) => {
     setloading(true);
@@ -74,9 +59,8 @@ export default function RefereeApprovalScreen({navigation, route}) {
       {},
       authContext,
     )
-      .then((response) => {
+      .then(() => {
         setloading(false);
-        console.log('referee approve request :=>', response);
         navigation.goBack();
       })
       .catch((e) => {
@@ -98,9 +82,8 @@ export default function RefereeApprovalScreen({navigation, route}) {
       {},
       authContext,
     )
-      .then((response) => {
+      .then(() => {
         setloading(false);
-        console.log('referee disapprove request :=>', response);
         navigation.goBack();
       })
       .catch((e) => {
@@ -151,9 +134,6 @@ export default function RefereeApprovalScreen({navigation, route}) {
         marginTop={15}
         onPress={() => {
           approveReservation(reservationObj.reservation_id);
-          // Alert.alert(
-          //   'Please modify atleast one field for alter request.',
-          // );
         }}
       />
       <Text
@@ -168,11 +148,10 @@ export default function RefereeApprovalScreen({navigation, route}) {
         onPress={() => {
           disApproveReservation(reservationObj.reservation_id);
         }}>
-        {'DISAPPROVE'}
+        {strings.disapprove}
       </Text>
     </View>
   );
-  console.log('Referee bodyparams:', bodyParams);
   return (
     <TCKeyboardView>
       <ActivityLoader visible={loading} />
@@ -192,7 +171,7 @@ export default function RefereeApprovalScreen({navigation, route}) {
                   : `${getRequester(bodyParams).first_name} ${
                       getRequester(bodyParams).last_name
                     }`
-              } wants to hire a referee for a game between you and them at their own cost. Would you like to approve this referee for the game?`}
+              } ${strings.wantToHireReferee}`}
             </Text>
             <View
               style={{
@@ -204,7 +183,7 @@ export default function RefereeApprovalScreen({navigation, route}) {
               <View style={styles.challengerView}>
                 <View style={styles.teamView}>
                   <Image source={images.reqIcon} style={styles.reqOutImage} />
-                  <Text style={styles.challengerText}>Hiring Team</Text>
+                  <Text style={styles.challengerText}>{strings.hiringTeam}</Text>
                 </View>
 
                 <View style={styles.teamView}>
@@ -230,7 +209,7 @@ export default function RefereeApprovalScreen({navigation, route}) {
               <View style={[styles.challengeeView, {marginTop: 10}]}>
                 <View style={styles.teamView}>
                   <Image source={images.refIcon} style={styles.reqOutImage} />
-                  <Text style={styles.challengeeText}>Referee</Text>
+                  <Text style={styles.challengeeText}>{strings.Referee}</Text>
                 </View>
 
                 <View style={styles.teamView}>
@@ -275,7 +254,7 @@ export default function RefereeApprovalScreen({navigation, route}) {
                   fontSize: 16,
                   color: colors.greenColorCard,
                 }}>
-                {'Approved'}
+                {strings.approved}
               </Text>
             )}
             {type === RefereeReservationStatus.declined && (
@@ -287,7 +266,7 @@ export default function RefereeApprovalScreen({navigation, route}) {
                   fontSize: 16,
                   color: colors.lightBlackColor,
                 }}>
-                {'Declined'}
+                {strings.Decline}
               </Text>
             )}
             {type === 'expired' && (
@@ -299,7 +278,7 @@ export default function RefereeApprovalScreen({navigation, route}) {
                   fontSize: 16,
                   color: colors.greenColorCard,
                 }}>
-                {'Expired'}
+                {strings.expired2}
               </Text>
             )}
 
@@ -368,7 +347,6 @@ export default function RefereeApprovalScreen({navigation, route}) {
                             flexDirection: 'row',
                             justifyContent: 'flex-end',
                           }}>
-                          {/* <Text style={styles.dateTimeText}> </Text> */}
                           <Text style={styles.timeZoneText}>
                             {strings.timezone}{' '}
                             <Text
@@ -377,7 +355,7 @@ export default function RefereeApprovalScreen({navigation, route}) {
                                 fontSize: 14,
                                 color: colors.lightBlackColor,
                               }}>
-                              Vancouver
+                              {strings.vancouver}
                             </Text>
                           </Text>
                         </View>
@@ -456,12 +434,12 @@ export default function RefereeApprovalScreen({navigation, route}) {
                 marginTop: 10,
               }}
             />
-            <Text style={styles.rulesTitle}>General Rules</Text>
+            <Text style={styles.rulesTitle}>{strings.gameRulesSubTitle1}</Text>
             <Text style={styles.rulesDetail}>
               {bodyParams?.game?.general_rules}
             </Text>
             <View style={{marginBottom: 10}} />
-            <Text style={styles.rulesTitle}>Special Rules</Text>
+            <Text style={styles.rulesTitle}>{strings.gameRulesSubTitle2}</Text>
             <Text style={[styles.rulesDetail, {marginBottom: 25}]}>
               {bodyParams?.game?.special_rules}
             </Text>

@@ -1,3 +1,4 @@
+/* eslint-disable no-empty */
 /* eslint-disable no-unsafe-optional-chaining */
 import React, {
   useContext,
@@ -29,6 +30,8 @@ import images from '../../Constants/ImagePath';
 import TCThinDivider from '../../components/TCThinDivider';
 import UserInfoAddRole from '../../components/Home/User/UserInfoAddRole';
 import {patchPlayer} from '../../api/Users';
+import {strings} from '../../../Localization/translation';
+import Verbs from '../../Constants/Verbs';
 
 let image_url = '';
 
@@ -46,12 +49,11 @@ export default function SportActivityTagScreen({navigation}) {
   // eslint-disable-next-line no-unused-vars
   const [entitySource, setEntitySource] = useState(
     authContext?.entity?.obj?.sport_setting?.entity_order || [
-      'Player',
-      'Referee',
-      'Scorekeeper',
+      Verbs.entityTypePlayer,
+      Verbs.entityTypeReferee,
+      Verbs.entityTypeScorekeeper,
     ],
   );
-  console.log('authContext?.entity?.obj', authContext?.entity?.obj);
   const [activityList, setActivityList] = useState(
     authContext?.entity?.obj?.sport_setting?.activity_order || [
       ...(authContext?.entity?.obj?.registered_sports?.filter(
@@ -66,7 +68,6 @@ export default function SportActivityTagScreen({navigation}) {
     ],
   );
   Utility.getStorage('appSetting').then((setting) => {
-    console.log('APPSETTING:=', setting);
     image_url = setting.base_url_sporticon;
   });
 
@@ -81,7 +82,7 @@ export default function SportActivityTagScreen({navigation}) {
             color: colors.lightBlackColor,
             marginRight: 15,
           }}>
-          Save
+          {strings.save}
         </Text>
       ),
     });
@@ -100,7 +101,6 @@ export default function SportActivityTagScreen({navigation}) {
       },
     };
 
-    console.log('userObj::::=>', userObj);
     patchPlayer(userObj, authContext)
       .then(async (res) => {
         setloading(false);
@@ -119,14 +119,15 @@ export default function SportActivityTagScreen({navigation}) {
   };
   const renderSportsView = useCallback(
     ({item, drag}) =>
-      item.sport !== 'All' && (
+      item.sport !== Verbs.allVerb && (
         <View style={styles.sportsBackgroundView}>
           <View style={{flexDirection: 'row'}}>
             <Image
               source={
-                (item === 'Player' && images.playerIcon) ||
-                (item === 'Scorekeeper' && images.scorekeeperIcon) ||
-                (item === 'Referee' && images.refereeIcon)
+                (item === Verbs.entityTypePlayer && images.playerIcon) ||
+                (item === Verbs.entityTypeScorekeeper &&
+                  images.scorekeeperIcon) ||
+                (item === Verbs.entityTypeReferee && images.refereeIcon)
               }
               style={styles.sportsIcon}
             />
@@ -142,7 +143,7 @@ export default function SportActivityTagScreen({navigation}) {
 
   const renderSportsActivityView = useCallback(
     ({item, drag}) =>
-      item.sport !== 'All' && (
+      item.sport !== Verbs.allVerb && (
         <View style={styles.sportsBackgroundView}>
           <View style={{flexDirection: 'row'}}>
             <Image
@@ -174,7 +175,7 @@ export default function SportActivityTagScreen({navigation}) {
       <ScrollView scrollEnabled={false}>
         <ActivityLoader visible={loading} />
 
-        <Text style={styles.listTitle}>Preview</Text>
+        <Text style={styles.listTitle}>{strings.preview}</Text>
         <FlatList
           horizontal={true}
           showsHorizontalScrollIndicator={false}
@@ -206,9 +207,7 @@ export default function SportActivityTagScreen({navigation}) {
           onPress={() => {
             setSelectedRadio(0);
           }}>
-          <Text style={styles.radioTitle}>
-            Display the later-done sports activity first
-          </Text>
+          <Text style={styles.radioTitle}>{strings.laterDoneActivity}</Text>
           <Image
             source={
               selectedRadio === 0
@@ -233,8 +232,7 @@ export default function SportActivityTagScreen({navigation}) {
                 style={styles.checkImage}
               />
               <Text style={styles.radioTitle}>
-                Classfy sports activites by categoires and display the
-                categories in the order below.
+                {strings.classifySportActivity}
               </Text>
             </TouchableOpacity>
 
@@ -259,31 +257,26 @@ export default function SportActivityTagScreen({navigation}) {
                   let list = [];
                   setEntitySource(data);
                   data.forEach((element) => {
-                    if (element === 'Player') {
+                    if (element === Verbs.entityTypePlayer) {
                       list = [
                         ...list,
                         ...(authContext?.entity?.obj?.registered_sports ?? []),
                       ];
-                      console.log('PLAYER LIST:=', list);
                     }
-                    if (element === 'Referee') {
+                    if (element === Verbs.entityTypeReferee) {
                       list = [
                         ...list,
                         ...(authContext?.entity?.obj?.referee_data ?? []),
                       ];
-                      console.log('REFEREE LIST:=', list);
                     }
-                    if (element === 'Scorekeeper') {
+                    if (element === Verbs.entityTypeScorekeeper) {
                       list = [
                         ...list,
                         ...(authContext?.entity?.obj?.scorekeeper_data ?? []),
                       ];
-                      console.log('SCOREKEEPER LIST:=', list);
                     }
                   });
                   setActivityList([...list]);
-
-                  console.log('DATATATATATA:=', [...list]);
                 }}
               />
             </View>
@@ -294,7 +287,7 @@ export default function SportActivityTagScreen({navigation}) {
           onPress={() => {
             setSelectedRadio(1);
           }}>
-          <Text style={styles.radioTitle}>Display in the fixed order</Text>
+          <Text style={styles.radioTitle}>{strings.displayInFixOrder}</Text>
           <Image
             source={
               selectedRadio === 1
@@ -327,7 +320,6 @@ export default function SportActivityTagScreen({navigation}) {
             }}
             onMoveEnd={(data) => {
               setActivityList([...data]);
-              console.log('DATATATATATA:=', data);
             }}
           />
         )}
@@ -335,21 +327,18 @@ export default function SportActivityTagScreen({navigation}) {
         <ActionSheet
           ref={actionSheet}
           options={[
-            'Add New Sports Activity',
-            'sports Activity Tags Order',
-            'List / Unlist',
-            'Cancel',
+            strings.addSportActivity,
+            strings.sportActivityTagOrder,
+            strings.listUnlist,
+            strings.cancel,
           ]}
           cancelButtonIndex={3}
           onPress={(index) => {
             if (index === 0) {
-              console.log('0');
             } else if (index === 1) {
-              console.log('1');
             } else if (index === 2) {
               navigation.navigate('SportActivityScreen');
             } else if (index === 3) {
-              console.log('3');
             }
           }}
         />

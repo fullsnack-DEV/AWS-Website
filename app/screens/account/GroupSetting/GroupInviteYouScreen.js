@@ -10,6 +10,7 @@ import {
   Text,
   Alert,
 } from 'react-native';
+import {format} from 'react-string-format';
 
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import AuthContext from '../../../auth/context';
@@ -156,10 +157,13 @@ export default function GroupInviteYouScreen({navigation, route}) {
       style={styles.mainContainer}
       showsVerticalScrollIndicator={false}>
       <ActivityLoader visible={loading} />
-      <Text
-        style={
-          styles.opetionsTitle
-        }>{`Can a ${route?.params?.type} invite you to join the ${route?.params?.type}?`}</Text>
+      <Text style={styles.opetionsTitle}>
+        {format(
+          strings.canInviteYouToJoinText,
+          route?.params?.type,
+          route?.params?.type,
+        )}
+      </Text>
       <FlatList
         data={groupInviteOpetions}
         keyExtractor={(item, index) => index.toString()}

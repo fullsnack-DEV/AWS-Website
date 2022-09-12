@@ -254,7 +254,7 @@ export default function SportActivitiesScreen({navigation}) {
       </View>
       <ActionSheet
         ref={actionSheet}
-        options={['Order', 'Hide & Unhide', 'Cancel']}
+        options={['Order', 'Hide & Unhide', strings.cancel]}
         cancelButtonIndex={2}
         onPress={(index) => {
           if (index === 0) {

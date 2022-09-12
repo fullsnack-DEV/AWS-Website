@@ -3,16 +3,19 @@
 import React, {memo, useContext} from 'react';
 import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
 
+import {format} from 'react-string-format';
 import AuthContext from '../auth/context';
 
 import images from '../Constants/ImagePath';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import {getSportName} from '../utils';
+import {strings} from '../../Localization/translation';
+import Verbs from '../Constants/Verbs';
 
 const TCChallengerCard = ({
   data = {full_name: 'Towns Cup'},
-  entityType = 'player',
+  entityType = Verbs.entityTypePlayer,
   selectedSport = 'soccer',
   sportType = 'soccer',
   onPress,
@@ -22,40 +25,43 @@ const TCChallengerCard = ({
   let entityName = 'Towns Cup',
     sportText;
 
-  if (entityType === 'player') {
+  if (entityType === Verbs.entityTypePlayer) {
     entityName = data.full_name;
   } else {
     entityName = data.group_name;
   }
 
-  if (entityType === 'player') {
-    if (selectedSport !== 'All') {
+  if (entityType === Verbs.entityTypePlayer) {
+    if (selectedSport !== Verbs.allVerb) {
       const filterdData = (data?.registered_sports || []).filter(
         (obj) =>
           obj.sport === selectedSport &&
           obj.sport_type === sportType &&
-          obj?.setting?.availibility === 'On',
+          obj?.setting?.availibility === Verbs.on,
       );
-      console.log('filterdData', filterdData);
       if (filterdData.length > 0) {
         sportText = getSportName(filterdData[0], authContext);
       }
     } else {
       const filterdData = (data?.registered_sports || []).filter(
-        (obj) => obj?.setting?.availibility === 'On',
+        (obj) => obj?.setting?.availibility === Verbs.on,
       );
-      console.log('filterdData', filterdData);
 
       if (filterdData.length === 1) {
         sportText = getSportName(filterdData[0], authContext);
       }
       if (filterdData.length === 2) {
-        sportText = `${getSportName(filterdData[0], authContext)} and`;
+        sportText = format(
+          strings.andN,
+          getSportName(filterdData[0], authContext),
+        );
       }
       if (filterdData.length > 2) {
-        sportText = `${getSportName(filterdData[0], authContext)} and  ${
-          filterdData.length - 1
-        } more`;
+        sportText = format(
+          strings.andmore,
+          getSportName(filterdData[0], authContext),
+          filterdData.length - 1,
+        );
       }
     }
   } else {
@@ -84,7 +90,7 @@ const TCChallengerCard = ({
             />
             <View style={{width: 100}}>
               <Text style={styles.entityTitle} numberOfLines={2}>
-                {entityName ?? 'Towns Cup'}
+                {entityName ?? strings.appName}
               </Text>
             </View>
           </View>
@@ -111,10 +117,10 @@ const TCChallengerCard = ({
                 }}
               /> */}
               <Text style={styles.amountTitle} numberOfLines={2}>
-                LV 13
+                {strings.levelsCount}
               </Text>
               <Text style={styles.sportTitle} numberOfLines={2}>
-                {sportText ?? 'Soccer'}
+                {sportText ?? Verbs.soccer}
               </Text>
             </View>
           </View>

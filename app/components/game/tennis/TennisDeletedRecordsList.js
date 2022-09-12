@@ -398,7 +398,7 @@ export default function TennisDeletedRecordsList({matchData, isAdmin}) {
         '',
         [
           {
-            text: 'Cancel',
+            text: strings.cancel,
             style: 'cancel',
           },
           {

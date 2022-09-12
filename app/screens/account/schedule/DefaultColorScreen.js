@@ -282,7 +282,7 @@ export default function DefaultColorScreen({navigation}) {
           <TouchableOpacity
             style={{padding: 2, fontFamily: fonts.RMedium, fontSize: 10}}
             onPress={onDonePress}>
-            <Text>Save</Text>
+            <Text>{strings.save}</Text>
           </TouchableOpacity>
         }
       />
@@ -327,9 +327,8 @@ export default function DefaultColorScreen({navigation}) {
         onBackdropPress={() => setModalVisible(false)}
         cancelImageSource={images.cancelImage}
         onCancelImagePress={() => setModalVisible(false)}
-        headerCenterText={'Add color'}
+        headerCenterText={strings.addColor}
         onColorSelected={(selectColor) => {
-          console.log('selected color: => ', selectColor);
           setAddColorDoneButton(true);
           //  setSelectedColor(selectColor);
           if (pressAddEventColor === 'Created Events') {

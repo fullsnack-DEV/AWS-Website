@@ -580,7 +580,7 @@ function ScorekeeperInfoSection({
           {`$${
             scorekeeperSetting?.game_fee?.fee
               ? scorekeeperSetting?.game_fee?.fee
-              : 'N/A'
+              : strings.NAText
           }`}{' '}
           <Text
             style={{

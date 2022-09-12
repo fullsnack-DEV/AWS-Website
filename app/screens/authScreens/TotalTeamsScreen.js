@@ -12,6 +12,7 @@ import FastImage from 'react-native-fast-image';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
+import {strings} from '../../../Localization/translation';
 
 const DELAY_PAGE_TIME = 2000;
 export default function TotalTeamsScreen({navigation, route}) {
@@ -50,9 +51,9 @@ export default function TotalTeamsScreen({navigation, route}) {
       <View style={styles.sectionStyle}>
         <Image source={images.groupIcon} style={styles.groupsImg} />
         <Text style={styles.LocationText}>
-          <Text style={styles.foundText}> We found </Text>
+          <Text style={styles.foundText}> {strings.weFound} </Text>
           <Text style={styles.LocationText}>{route.params.totalTeams}</Text>
-          <Text style={styles.foundText}> teams in </Text>
+          <Text style={styles.foundText}> {strings.teamsIn} </Text>
           <Text style={styles.LocationText}>
             {route.params.city}, {route.params.state}
           </Text>

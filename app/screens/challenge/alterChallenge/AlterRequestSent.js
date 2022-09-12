@@ -4,6 +4,7 @@ import ImageSequence from 'react-native-image-sequence-2';
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
+import {strings} from '../../../../Localization/translation';
 
 export default function AlterRequestSent({navigation}) {
   const imagesSet = [
@@ -33,7 +34,9 @@ export default function AlterRequestSent({navigation}) {
             style={styles.rotateImage}
           />
         </View>
-        <Text style={styles.invitationText}>{'Alteration Request sent'}</Text>
+        <Text style={styles.invitationText}>
+          {strings.alterRequestSendText}
+        </Text>
       </View>
 
       {/* {route && route.params && route.params.teamObj && <TCBorderButton

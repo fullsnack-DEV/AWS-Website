@@ -36,6 +36,7 @@ import AuthContext from '../../../auth/context';
 import {getQBAccountType, QBupdateUser} from '../../../utils/QuickBlox';
 import images from '../../../Constants/ImagePath';
 import TCImage from '../../../components/TCImage';
+import Verbs from '../../../Constants/Verbs';
 
 // import ToggleView from '../../../components/Schedule/ToggleView';
 
@@ -113,7 +114,6 @@ export default function EditPersonalProfileScreen({navigation, route}) {
   const getUserInformation = async () => {
     const entity = authContext.entity;
     const userDetails = entity.obj;
-    console.log('user Details:=>', userDetails);
     setProfile({
       ...userDetails,
       location: `${userDetails.city}, ${userDetails.state_abbr}, ${userDetails.country}`,
@@ -187,7 +187,7 @@ export default function EditPersonalProfileScreen({navigation, route}) {
           })
           .catch((e) => {
             setTimeout(() => {
-              Alert.alert('Towns Cup', e.messages);
+              Alert.alert(strings.appName, e.messages);
             }, 0.1);
             setloading(false);
           });
@@ -207,16 +207,15 @@ export default function EditPersonalProfileScreen({navigation, route}) {
   };
 
   const callUpdateUserAPI = (userProfile) => {
-    console.log('userProfileuserProfile', userProfile);
-
     updateUserProfile(userProfile, authContext).then((response) => {
       if (response && response.status === true) {
         const entity = authContext.entity;
         entity.obj = response.payload;
         entity.auth.user = response.payload;
-        const entity_id = ['user', 'player']?.includes(
-          response?.payload?.entity_type,
-        )
+        const entity_id = [
+          Verbs.entityTypeUser,
+          Verbs.entityTypePlayer,
+        ]?.includes(response?.payload?.entity_type)
           ? response?.payload?.user_id
           : response?.payload?.group_id;
         const accountType = getQBAccountType(response?.payload?.entity_type);
@@ -240,7 +239,7 @@ export default function EditPersonalProfileScreen({navigation, route}) {
       } else {
         setloading(false);
         setTimeout(() => {
-          Alert.alert('Towns Cup', 'Something went wrong');
+          Alert.alert(strings.appName, strings.defaultError);
         }, 0.1);
       }
     });
@@ -288,34 +287,12 @@ export default function EditPersonalProfileScreen({navigation, route}) {
     }
   };
 
-  // const openCamera = (width = 400, height = 400) => {
-  //   let cropCircle = false;
-  //   if (currentImageSelection === 1) cropCircle = true;
-  //   ImagePicker.openCamera({
-  //     width,
-  //     height,
-  //     cropping: true,
-  //     cropperCircleOverlay: cropCircle,
-  //   }).then((data) => {
-  //     // 1 means profile, 0 - means background
-  //     if (currentImageSelection === 1) {
-  //       setProfile({ ...profile, thumbnail: data.path })
-  //       setProfileImageChanged(true)
-  //     } else {
-  //       setProfile({ ...profile, background_thumbnail: data.path })
-  //       setBackgroundImageChanged(true)
-  //     }
-  //   });
-  // }
-
   const openCamera = (width = 400, height = 400) => {
     check(PERMISSIONS.IOS.CAMERA)
       .then((result) => {
         switch (result) {
           case RESULTS.UNAVAILABLE:
-            Alert.alert(
-              'This feature is not available (on this device / in this context)',
-            );
+            Alert.alert(strings.thisFeaturesNotAvailableText);
             break;
           case RESULTS.DENIED:
             request(PERMISSIONS.IOS.CAMERA).then(() => {
@@ -514,7 +491,7 @@ export default function EditPersonalProfileScreen({navigation, route}) {
           <View>
             <TCLabel title={strings.slogan} />
             <TCTextField
-              placeholder={'Enter your slogan'}
+              placeholder={strings.enterSloganPlaceholder}
               onChangeText={(text) =>
                 setProfile({...profile, description: text})
               }

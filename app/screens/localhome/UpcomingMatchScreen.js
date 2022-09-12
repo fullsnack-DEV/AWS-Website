@@ -282,7 +282,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
                 gameId: item?.game_id,
               });
             } else {
-              Alert.alert('Game ID does not exist.');
+              Alert.alert(strings.gameIDNotExitsTitle);
             }
           }}
         />
@@ -407,7 +407,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
           color: colors.grayColor,
           fontSize: 26,
         }}>
-        No Games
+        {strings.noGames}
       </Text>
     </View>
   );
@@ -567,9 +567,9 @@ export default function UpcomingMatchScreen({navigation, route}) {
                 <Text
                   onPress={() => setSettingPopup(false)}
                   style={styles.cancelText}>
-                  Cancel
+                  {strings.cancel}
                 </Text>
-                <Text style={styles.locationText}>Filter</Text>
+                <Text style={styles.locationText}>{strings.filter}</Text>
                 <Text
                   style={styles.doneText}
                   onPress={() => {
@@ -613,14 +613,14 @@ export default function UpcomingMatchScreen({navigation, route}) {
                     }, 100);
                     console.log('DONE::');
                   }}>
-                  {'Apply'}
+                  {strings.apply}
                 </Text>
               </View>
               <TCThinDivider width={'100%'} marginBottom={15} />
               <View>
                 <View style={{flexDirection: 'column', margin: 15}}>
                   <View>
-                    <Text style={styles.filterTitle}>Location</Text>
+                    <Text style={styles.filterTitle}>{strings.locationTitleText}</Text>
                   </View>
                   <View style={{marginTop: 10, marginLeft: 10}}>
                     <View
@@ -629,7 +629,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
                         marginBottom: 10,
                         justifyContent: 'space-between',
                       }}>
-                      <Text style={styles.filterTitle}>World</Text>
+                      <Text style={styles.filterTitle}>{strings.world}</Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(0);
@@ -654,7 +654,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
                         marginBottom: 10,
                         justifyContent: 'space-between',
                       }}>
-                      <Text style={styles.filterTitle}>Home City</Text>
+                      <Text style={styles.filterTitle}>{strings.currentCity}</Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(1);
@@ -689,7 +689,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
                         marginBottom: 10,
                         justifyContent: 'space-between',
                       }}>
-                      <Text style={styles.filterTitle}>Current City</Text>
+                      <Text style={styles.filterTitle}>{strings.currrentCityTitle}</Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(2);
@@ -729,7 +729,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
 
                         <View style={styles.searchCityContainer}>
                           <Text style={styles.searchCityText}>
-                            {route?.params?.locationText || 'Search City'}
+                            {route?.params?.locationText || strings.searchCityText}
                           </Text>
                         </View>
                         <View
@@ -757,12 +757,12 @@ export default function UpcomingMatchScreen({navigation, route}) {
                       justifyContent: 'space-between',
                     }}>
                     <View style={{}}>
-                      <Text style={styles.filterTitle}>Sport</Text>
+                      <Text style={styles.filterTitle}>{strings.sport}</Text>
                     </View>
                     <View style={{marginTop: 10}}>
                       <TCPicker
                         dataSource={sports}
-                        placeholder={'Select Sport'}
+                        placeholder={strings.selectSportTitleText}
                         onValueChange={(value) => {
                           if (value === 'All') {
                             setSelectedSport({
@@ -786,7 +786,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
                 </View>
                 <View style={{flexDirection: 'column', margin: 15}}>
                   <View>
-                    <Text style={styles.filterTitle}>Time</Text>
+                    <Text style={styles.filterTitle}>{strings.timeText}</Text>
                   </View>
                   <View style={{marginTop: 10}}>
                     <View style={{flexDirection: 'row', marginBottom: 10}}>
@@ -797,7 +797,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
                             justifyContent: 'center',
                           }}>
                           <Text style={styles.fieldTitle} numberOfLines={1}>
-                            From
+                            {strings.from}
                           </Text>
                         </View>
                         <TouchableOpacity
@@ -811,7 +811,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
                               ? `${moment(fromDate).format(
                                   'MMM DD, YYYY',
                                 )}      ${moment(fromDate).format('h:mm a')}`
-                              : 'Select Date'}
+                              : strings.selectDate}
                           </Text>
                         </TouchableOpacity>
                         {fromDate && (
@@ -835,7 +835,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
                             justifyContent: 'center',
                           }}>
                           <Text style={styles.fieldTitle} numberOfLines={1}>
-                            To
+                            {strings.to}
                           </Text>
                         </View>
                         <TouchableOpacity
@@ -849,7 +849,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
                               ? `${moment(toDate).format(
                                   'MMM DD, YYYY',
                                 )}      ${moment(toDate).format('h:mm a')}`
-                              : 'Select Date'}
+                              : strings.selectDate}
                           </Text>
                         </TouchableOpacity>
                         {toDate && (
@@ -873,7 +873,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
                         textAlign: 'right',
                         marginTop: 10,
                       }}>
-                      Time zone{' '}
+                      {strings.timezone}{' '}
                       <Text
                         style={{
                           fontSize: 12,
@@ -881,7 +881,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
                           color: colors.lightBlackColor,
                           textDecorationLine: 'underline',
                         }}>
-                        Vancouver
+                        {strings.vancouver}
                       </Text>
                     </Text>
                   </View>
@@ -956,7 +956,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
                     justifyContent: 'space-between',
                   }}>
                   <View style={{}}>
-                    <Text style={styles.filterTitle}>Team Or Player</Text>
+                    <Text style={styles.filterTitle}>{strings.teamOrPlayer}</Text>
                   </View>
                   <View style={{marginTop: 10}}>
                     <View
@@ -977,7 +977,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
                             : searchName
                         }
                         style={styles.teamNameTextView}
-                        placeholder={'Team or player name'}
+                        placeholder={strings.teamOrPlayerName}
                         autoCorrect={false}
                         clearButtonMode={'always'}
                         placeholderTextColor={colors.userPostTimeColor}
@@ -1016,23 +1016,23 @@ export default function UpcomingMatchScreen({navigation, route}) {
             style={styles.resetButton}
             onPress={() => {
               Alert.alert(
-                'Are you sure want to reset filters?',
+                strings.areYouSureRemoveFilterText,
                 '',
                 [
                   {
-                    text: 'Cancel',
+                    text: strings.cancel,
                     onPress: () => console.log('Cancel Pressed'),
                     style: 'cancel',
                   },
                   {
-                    text: 'OK',
+                    text: strings.okTitleText,
                     onPress: () => onPressReset(),
                   },
                 ],
                 {cancelable: false},
               );
             }}>
-            <Text style={styles.resetTitle}>Reset</Text>
+            <Text style={styles.resetTitle}>{strings.resetTitleText}</Text>
           </TouchableOpacity>
         </View>
         <DateTimePickerView

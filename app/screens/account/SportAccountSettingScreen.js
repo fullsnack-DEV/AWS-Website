@@ -20,12 +20,15 @@ import {
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import {useIsFocused} from '@react-navigation/native';
 
+import {format} from 'react-string-format';
 import fonts from '../../Constants/Fonts';
 import Header from '../../components/Home/Header';
 import AuthContext from '../../auth/context';
 import colors from '../../Constants/Colors';
 import {getSportName} from '../../utils';
 import images from '../../Constants/ImagePath';
+import {strings} from '../../../Localization/translation';
+import Verbs from '../../Constants/Verbs';
 
 export default function SportAccountSettingScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
@@ -47,7 +50,6 @@ export default function SportAccountSettingScreen({navigation, route}) {
     setIsAccountDeactivated(false);
     setPointEvent('auto');
     if (isFocused) {
-      console.log('its called....', authContext.entity.role);
       if (authContext?.entity?.obj?.is_pause === true) {
         setIsAccountDeactivated(true);
         setPointEvent('none');
@@ -67,19 +69,24 @@ export default function SportAccountSettingScreen({navigation, route}) {
   ]);
 
   const getUserSettingMenu = useCallback(() => {
-    if (sport?.sport_type === 'single' || type !== 'player') {
+    if (sport?.sport_type === 'single' || type !== Verbs.entityTypePlayer) {
       setUserSetting([
         {
-          key: `${type === 'player' ? 'Challenge' : 'Reservation'} settings`,
+          key: format(
+            strings.challengeSetting,
+            type === Verbs.entityTypePlayer
+              ? strings.challenge
+              : strings.reservation,
+          ),
           id: 1,
         },
-        {key: 'Looking for club', id: 2},
-        {key: 'Deactivate this activity', id: 3},
+        {key: strings.lookingForClubText, id: 2},
+        {key: strings.deactivateActivityText, id: 3},
       ]);
     } else {
       setUserSetting([
-        {key: 'Looking for club', id: 1},
-        {key: 'Deactivate this activity', id: 2},
+        {key: strings.lookingForClubText, id: 1},
+        {key: strings.deactivateActivityText, id: 2},
       ]);
     }
   }, [sport?.sport_type, type]);
@@ -89,14 +96,14 @@ export default function SportAccountSettingScreen({navigation, route}) {
   }, [getUserSettingMenu]);
 
   const handleOpetions = (opetions) => {
-    if (opetions === 'Challenge settings') {
+    if (opetions === strings.challengeSettingText) {
       navigation.navigate('ManageChallengeScreen', {
         groupObj: authContext.entity.obj,
         sportName: sport.sport,
         sportType: sport.sport_type,
       });
-    } else if (opetions === 'Reservation settings') {
-      if (type === 'referee') {
+    } else if (opetions === strings.reservationSettingText) {
+      if (type === Verbs.entityTypeReferee) {
         navigation.navigate('RefereeReservationSetting', {
           sportName: sport.sport,
         });
@@ -105,12 +112,12 @@ export default function SportAccountSettingScreen({navigation, route}) {
           sportName: sport.sport,
         });
       }
-    } else if (opetions === 'Looking for club') {
+    } else if (opetions === strings.lookingForClubText) {
       navigation.navigate('LookingForSettingScreen', {
         type,
         sport,
       });
-    } else if (opetions === 'Deactivate this activity') {
+    } else if (opetions === strings.deactivateActivityText) {
       navigation.navigate('DeactivateSportScreen', {
         sport,
       });
@@ -157,7 +164,8 @@ export default function SportAccountSettingScreen({navigation, route}) {
               textAlign: 'center',
               fontFamily: fonts.RBold,
             }}>
-            Settings{'\n'}
+            {strings.settingsTitleText}
+            {'\n'}
             <Text
               style={{
                 fontSize: 12,

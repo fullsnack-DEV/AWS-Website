@@ -48,6 +48,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import {useIsFocused} from '@react-navigation/native';
 import {Portal} from 'react-native-portalize';
 import {Modalize} from 'react-native-modalize';
+import {format} from 'react-string-format';
 import BackgroundProfile from '../../components/Home/BackgroundProfile';
 import Header from '../../components/Home/Header';
 import images from '../../Constants/ImagePath';
@@ -146,46 +147,17 @@ import TCGameCard from '../../components/TCGameCard';
 import * as settingUtils from '../challenge/manageChallenge/settingUtility';
 import {getCalendarIndex, getGameIndex} from '../../api/elasticSearch';
 import TCAccountDeactivate from '../../components/TCAccountDeactivate';
+import {
+  TAB_ITEMS_REFEREE,
+  TAB_ITEMS_SCOREKEEPER,
+  league_Data,
+  history_Data,
+} from '../../utils/constant';
+import Verbs from '../../Constants/Verbs';
 // import { getSetting } from '../challenge/manageChallenge/settingUtility';
 let entityObject = {};
-const TAB_ITEMS = ['Info', 'Refereed Match', 'Reviews'];
-const TAB_ITEMS_SCOREKEEPER = ['Info', 'Scorekeepers Match', 'Reviews'];
 
 const {width} = Dimensions.get('window');
-
-const league_Data = [
-  {
-    group_name: 'Premiereague League',
-    thumbnail: 'image',
-  },
-  {
-    group_name: 'Premiereague League',
-  },
-  {
-    group_name: 'La Liga',
-    thumbnail: 'image',
-  },
-  {
-    group_name: 'Premier League',
-  },
-];
-
-const history_Data = [
-  {
-    name: 'TownsCup',
-    year: '2013',
-    winner: true,
-  },
-  {
-    name: 'Premier League',
-    year: '2009-2010',
-    winner: false,
-  },
-  {
-    name: 'Established',
-    year: '2002',
-  },
-];
 
 const HomeScreen = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
@@ -229,7 +201,7 @@ const HomeScreen = ({navigation, route}) => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [currentUserData, setCurrentUserData] = useState({});
   const [myGroupDetail] = useState(
-    authContext.entity.role === 'team' && authContext.entity.obj,
+    authContext.entity.role === Verbs.entityTypeTeam && authContext.entity.obj,
   );
 
   const [loading, setloading] = useState(false);
@@ -318,7 +290,6 @@ const HomeScreen = ({navigation, route}) => {
     setIsAccountDeactivated(false);
     setPointEvent('auto');
     if (isFocused) {
-      console.log('its called....', authContext.entity.role);
       if (authContext?.entity?.obj?.is_pause === true) {
         setIsAccountDeactivated(true);
         setPointEvent('none');
@@ -364,13 +335,11 @@ const HomeScreen = ({navigation, route}) => {
 
       Utility.getCalendar(uid, new Date().getTime() / 1000)
         .then((response) => {
-          console.log('Events response:=>', response);
-
           response = (response || []).filter((obj) => {
-            if (obj.cal_type === 'blocked') {
+            if (obj.cal_type === Verbs.blockedVerb) {
               return obj;
             }
-            if (obj.cal_type === 'event') {
+            if (obj.cal_type === Verbs.eventVerb) {
               if (obj?.expiry_datetime) {
                 if (
                   obj?.expiry_datetime >=
@@ -383,13 +352,11 @@ const HomeScreen = ({navigation, route}) => {
               }
             }
           });
-          console.log('filter list:=>', response);
 
           eventTimeTableData = [...response];
           let gameIDs = [...new Set(response.map((item) => item.game_id))];
 
           gameIDs = (gameIDs || []).filter((item) => item !== undefined);
-          console.log('gameIds  list:=>', gameIDs);
 
           if (gameIDs.length > 0) {
             const gameList = {
@@ -409,36 +376,6 @@ const HomeScreen = ({navigation, route}) => {
 
           configureEvents(eventTimeTableData);
           setloading(false);
-
-          // eventTimeTableData = response;
-          // setEventData(eventTimeTableData);
-          // setTimeTable(eventTimeTableData);
-          // eventTimeTableData.filter((event_item) => {
-          //   const startDate = new Date(event_item.start_datetime * 1000);
-          //   const eventDate = moment(startDate).format('YYYY-MM-DD');
-          //   if (eventDate === date) {
-          //     eventdata.push(event_item);
-          //   }
-          //   return null;
-          // });
-          // setFilterEventData(eventdata);
-          // eventTimeTableData.filter((timetable_item) => {
-          //   const timetable_date = new Date(
-          //     timetable_item.start_datetime * 1000,
-          //   );
-          //   const endDate = new Date(timetable_item.end_datetime * 1000);
-          //   const timetabledate = moment(timetable_date).format('YYYY-MM-DD');
-          //   if (timetabledate === date) {
-          //     const obj = {
-          //       ...timetable_item,
-          //       start: moment(timetable_date).format('YYYY-MM-DD hh:mm:ss'),
-          //       end: moment(endDate).format('YYYY-MM-DD hh:mm:ss'),
-          //     };
-          //     timetabledata.push(obj);
-          //   }
-          //   return null;
-          // });
-          // setFilterTimeTable(timetabledata);
         })
         .catch((e) => {
           setTimeout(() => {
@@ -448,7 +385,6 @@ const HomeScreen = ({navigation, route}) => {
 
       getScroreboardGameDetails(uid, authContext)
         .then((res) => {
-          console.log('Get Scoreboard Game Details Res :-', res);
           setScoreboardGameData(res.payload);
         })
         .catch((error) => {
@@ -536,8 +472,6 @@ const HomeScreen = ({navigation, route}) => {
         authContext,
       )
         .then((res) => {
-          console.log('Get team Review Data Res ::--', res?.payload);
-
           if (res?.payload) {
             // setAverageTeamReview(teamProperty);
             setTeamReviewData(res?.payload);
@@ -558,7 +492,6 @@ const HomeScreen = ({navigation, route}) => {
     Promise.all(promises)
       .then(([res1, res2]) => {
         const userDetails = res1.payload;
-        console.log('Get user detail by ID:=>', userDetails);
         if (!userDetails.games) {
           userDetails.games = [];
         }
@@ -598,7 +531,6 @@ const HomeScreen = ({navigation, route}) => {
         setFirstTimeLoading(false);
       })
       .catch((errResponse) => {
-        console.log('promise error', errResponse);
         setFirstTimeLoading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, errResponse);
@@ -658,8 +590,8 @@ const HomeScreen = ({navigation, route}) => {
 
             <Image
               source={
-                (currentUserData.entity_type === 'team' && images.teamPatch) ||
-                (currentUserData.entity_type === 'club' && images.clubPatch)
+                (currentUserData.entity_type === Verbs.entityTypeTeam && images.teamPatch) ||
+                (currentUserData.entity_type === Verbs.entityTypeClub && images.clubPatch)
               }
               style={{
                 height: 15,
@@ -706,16 +638,19 @@ const HomeScreen = ({navigation, route}) => {
     settingUtils
       .getSetting(
         route?.params?.uid ?? authContext.entity.uid,
-        authContext.entity.role === ('user' || 'player') ? 'user' : 'team',
+        authContext.entity.role ===
+          (Verbs.entityTypeUser || Verbs.entityTypePlayer)
+          ? Verbs.entityTypeUser
+          : Verbs.entityTypeTeam,
         details.sport,
         authContext,
-        authContext.entity.role === ('user' || 'player')
+        authContext.entity.role ===
+          (Verbs.entityTypeUser || Verbs.entityTypePlayer)
           ? details.sport_type
           : '',
       )
       .then((res3) => {
         setSettingObject(res3);
-        console.log('res3 setting:::=>', res3);
       })
       .catch(() => {
         setFirstTimeLoading(false);
@@ -726,18 +661,22 @@ const HomeScreen = ({navigation, route}) => {
     settingUtils
       .getSetting(
         authContext?.entity?.uid,
-        authContext.entity.role === ('user' || 'player') ? 'user' : 'team',
-        authContext.entity.role === ('user' || 'player')
+        authContext.entity.role ===
+          (Verbs.entityTypeUser || Verbs.entityTypePlayer)
+          ? Verbs.entityTypeUser
+          : Verbs.entityTypeTeam,
+        authContext.entity.role ===
+          (Verbs.entityTypeUser || Verbs.entityTypePlayer)
           ? currentPlayInObject?.sport
           : currentUserData?.sport,
         authContext,
-        authContext.entity.role === ('user' || 'player')
+        authContext.entity.role ===
+          (Verbs.entityTypeUser || Verbs.entityTypePlayer)
           ? currentPlayInObject?.sport_type
           : currentUserData?.sport_type,
       )
       .then((res4) => {
         setMySettingObject(res4);
-        console.log('res4 my setting:::=>', res4);
       })
       .catch(() => {
         setFirstTimeLoading(false);
@@ -747,10 +686,9 @@ const HomeScreen = ({navigation, route}) => {
   };
 
   const getData = async (uid, role, admin) => {
-    const userHome = role === 'user';
-    const clubHome = role === 'club';
-    const teamHome = role === 'team';
-    console.log('home screen');
+    const userHome = role === Verbs.entityTypeUser;
+    const clubHome = role === Verbs.entityTypeClub;
+    const teamHome = role === Verbs.entityTypeTeam;
 
     // setloading(true);
     if (userHome) {
@@ -767,15 +705,11 @@ const HomeScreen = ({navigation, route}) => {
         .then(([res1, res2, res3]) => {
           const groupDetails = {...res1.payload};
           setCurrentUserData(res1.payload);
-          console.log('promises:::=>', res1);
-          console.log('res11:::=>', res1);
-          console.log('res1:::=>', res1.payload);
-          console.log('res2:::=>', res2.payload);
+
           if (res1?.payload?.avg_review) {
             let array = Object.keys(res1?.payload?.avg_review);
             array = array.filter((e) => e !== 'total_avg');
             const teamProperty = [];
-            console.log('array Review Data Res ::--', array);
 
             for (let i = 0; i < array.length; i++) {
               const obj = {
@@ -793,10 +727,8 @@ const HomeScreen = ({navigation, route}) => {
           groupDetails.joined_members = res2.payload;
           if (clubHome) {
             groupDetails.joined_teams = res3.payload;
-            console.log('Club teams list:=>', res3);
           }
 
-          console.log('groupDetailsgroupDetailsgroupDetails::', groupDetails);
           entityObject = groupDetails;
           setCurrentUserData({...groupDetails});
           setIsClubHome(clubHome);
@@ -804,7 +736,6 @@ const HomeScreen = ({navigation, route}) => {
           setIsUserHome(userHome);
           setUserID(uid);
           setFirstTimeLoading(false);
-          console.log('authContext.entity.role:::-->', authContext.entity.role);
           getSettingOfBoth(groupDetails);
         })
         .catch(() => {
@@ -838,11 +769,8 @@ const HomeScreen = ({navigation, route}) => {
           tagged: tagsOfEntity ?? [],
           format_tagged_data,
         };
-        console.log('createPostAfterUpload in home', data);
         createPostAfterUpload(dataParams);
       } else if (data) {
-        console.log('createPostAfterUpload in home else', data);
-
         const imageArray = data.map((dataItem) => dataItem);
         const dataParams = {
           text: postDesc && postDesc,
@@ -888,14 +816,11 @@ const HomeScreen = ({navigation, route}) => {
     setCurrentUserData({...currentUserData});
 
     const params = {
-      entity_type: 'player',
+      entity_type: Verbs.entityTypePlayer,
     };
     followUser(params, userID, authContext)
-      .then(() => {
-        console.log('follow user');
-      })
+      .then(() => {})
       .catch((error) => {
-        console.log('callFollowUser error with userID', error, userID);
         currentUserData.is_following = false;
         currentUserData.follower_count -= 1;
         entityObject = currentUserData;
@@ -917,14 +842,11 @@ const HomeScreen = ({navigation, route}) => {
     setCurrentUserData({...currentUserData});
 
     const params = {
-      entity_type: 'player',
+      entity_type: Verbs.entityTypePlayer,
     };
     unfollowUser(params, userID, authContext)
-      .then(() => {
-        console.log('unfollow user');
-      })
+      .then(() => {})
       .catch((error) => {
-        console.log('callUnfollowUser error with userID', error, userID);
         currentUserData.is_following = true;
         currentUserData.follower_count += 1;
         entityObject = currentUserData;
@@ -949,14 +871,16 @@ const HomeScreen = ({navigation, route}) => {
         setTimeout(() => {
           Alert.alert(
             strings.alertmessagetitle,
-            `“${currentUserData.first_name} ${currentUserData.last_name}“ is invited successfully`,
+            format(
+              strings.entityInvitedSuccessfully,
+              `${currentUserData.first_name} ${currentUserData.last_name}`,
+            ),
           );
         }, 10);
       })
       .catch((error) => {
         setloading(false);
 
-        console.log('clubInviteUser error with userID', error, userID);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message);
         }, 10);
@@ -974,11 +898,8 @@ const HomeScreen = ({navigation, route}) => {
       entity_type: currentUserData.entity_type,
     };
     followGroup(params, userID, authContext)
-      .then(() => {
-        console.log('follow group');
-      })
+      .then(() => {})
       .catch((error) => {
-        console.log('callFollowGroup error with userID', error, userID);
         currentUserData.is_following = false;
         currentUserData.follower_count -= 1;
         entityObject = currentUserData;
@@ -1005,11 +926,8 @@ const HomeScreen = ({navigation, route}) => {
       entity_type: currentUserData.entity_type,
     };
     unfollowGroup(params, userID, authContext)
-      .then(() => {
-        console.log('unfollow user');
-      })
+      .then(() => {})
       .catch((error) => {
-        console.log('callUnfollowGroup error with userID', error, userID);
         currentUserData.is_following = true;
         currentUserData.follower_count += 1;
         entityObject = currentUserData;
@@ -1033,12 +951,8 @@ const HomeScreen = ({navigation, route}) => {
     const params = {};
     joinTeam(params, userID, authContext)
       .then(async (response) => {
-        console.log('user join group');
         const entity = authContext.entity;
-        console.log(
-          'Register player response for club IS:: ',
-          response.payload,
-        );
+
         entity.auth.user = response.payload;
         entity.obj = response.payload;
         authContext.setEntity({...entity});
@@ -1047,7 +961,6 @@ const HomeScreen = ({navigation, route}) => {
         await Utility.setStorage('authContextEntity', {...entity});
       })
       .catch((error) => {
-        console.log('userJoinGroup error with userID', error, userID);
         currentUserData.is_joined = false;
         currentUserData.member_count -= 1;
         entityObject = currentUserData;
@@ -1069,11 +982,8 @@ const HomeScreen = ({navigation, route}) => {
     setCurrentUserData({...currentUserData});
     const params = {};
     leaveTeam(params, userID, authContext)
-      .then(() => {
-        console.log('user leave group');
-      })
+      .then(() => {})
       .catch((error) => {
-        console.log('userLeaveGroup error with userID', error, userID);
         currentUserData.is_joined = true;
         currentUserData.member_count += 1;
         entityObject = currentUserData;
@@ -1123,12 +1033,8 @@ const HomeScreen = ({navigation, route}) => {
     setCurrentUserData({...currentUserData});
     joinTeam({}, userID, authContext)
       .then(async (response) => {
-        console.log('club join');
         const entity = authContext.entity;
-        console.log(
-          'Register player response for team IS:: ',
-          response.payload,
-        );
+
         entity.auth.user = response.payload;
         entity.obj = response.payload;
         authContext.setEntity({...entity});
@@ -1137,7 +1043,6 @@ const HomeScreen = ({navigation, route}) => {
         await Utility.setStorage('authContextEntity', {...entity});
       })
       .catch((error) => {
-        console.log('clubJoinTeam error with userID', error, userID);
         delete e.obj.parent_group_id;
 
         if (currentUserData.joined_teams) {
@@ -1159,9 +1064,10 @@ const HomeScreen = ({navigation, route}) => {
   };
 
   const onMessageButtonPress = (user) => {
-    console.log('message click:=>');
-
-    const uid = user?.entity_type === 'player' ? user?.user_id : user?.group_id;
+    const uid =
+      user?.entity_type === Verbs.entityTypePlayer
+        ? user?.user_id
+        : user?.group_id;
 
     navigation.navigate('MessageChat', {userId: uid});
   };
@@ -1183,11 +1089,8 @@ const HomeScreen = ({navigation, route}) => {
     setCurrentUserData({...currentUserData});
     const params = {};
     leaveTeam(params, userID, authContext)
-      .then(() => {
-        console.log('club leave');
-      })
+      .then(() => {})
       .catch((error) => {
-        console.log('clubLeaveTeam error with userID', error, userID);
         e.obj.parent_group_id = userID;
         authContext.setEntity({...e});
         Utility.setStorage('authContextEntity', {...e});
@@ -1214,20 +1117,20 @@ const HomeScreen = ({navigation, route}) => {
   const onUserAction = useCallback(
     (action) => {
       switch (action) {
-        case 'follow':
+        case Verbs.followVerb:
           callFollowUser();
           break;
-        case 'unfollow':
+        case Verbs.unfollowVerb:
           callUnfollowUser();
           break;
-        case 'invite':
+        case Verbs.inviteVerb:
           clubInviteUser();
           break;
-        case 'message':
+        case Verbs.messageVerb:
           // onMessageButtonPress(currentUserData);
           groupMessageActionSheet.current.show();
           break;
-        case 'edit':
+        case Verbs.editVerb:
           // navigation.navigate('EditPersonalProfileScreen');
           // navigation.navigate('PersonalInformationScreen');
           navigation.navigate('PersonalInformationScreen', {
@@ -1249,22 +1152,20 @@ const HomeScreen = ({navigation, route}) => {
 
   const onClubAction = useCallback(
     (action) => {
-      console.log('Current User data', currentUserData);
-
       switch (action) {
-        case 'follow':
+        case Verbs.followVerb:
           callFollowGroup();
           break;
-        case 'unfollow':
+        case Verbs.unfollowVerb:
           callUnfollowGroup();
           break;
-        case 'join':
+        case Verbs.joinVerb:
           userJoinGroup();
           break;
-        case 'leave':
+        case Verbs.leaveVerb:
           userLeaveGroup();
           break;
-        case 'joinTeam':
+        case Verbs.joinTeamVerb:
           // console.log('authContext?.entity?.obj?.parent_groups',authContext?.entity?.obj?.parent_groups);
           // console.log('currentUserData?.group_id',currentUserData?.group_id);
           // if (
@@ -1282,20 +1183,20 @@ const HomeScreen = ({navigation, route}) => {
           // }
           clubJoinTeam();
           break;
-        case 'leaveTeam':
+        case Verbs.leaveTeamVerb:
           clubLeaveTeam();
           break;
-        case 'message':
+        case Verbs.messageVerb:
           onMessageButtonPress(currentUserData);
           break;
-        case 'edit':
+        case Verbs.editVerb:
           navigation.navigate('EditGroupProfileScreen', {
             placeholder:
-              authContext.entity.role === 'team'
+              authContext.entity.role === Verbs.entityTypeTeam
                 ? strings.teamNamePlaceholder
                 : strings.clubNameplaceholder,
             nameTitle:
-              authContext.entity.role === 'team'
+              authContext.entity.role === Verbs.entityTypeTeam
                 ? strings.teamName
                 : strings.clubName,
             sportType: currentUserData.sports_string,
@@ -1322,38 +1223,37 @@ const HomeScreen = ({navigation, route}) => {
 
   const onTeamAction = useCallback(
     (action) => {
-      console.log('Current User data', currentUserData.sport_type);
       switch (action) {
-        case 'follow':
+        case Verbs.followVerb:
           callFollowGroup();
           break;
-        case 'unfollow':
+        case Verbs.unfollowVerb:
           callUnfollowGroup();
           break;
-        case 'join':
+        case Verbs.joinVerb:
           userJoinGroup();
           break;
-        case 'leave':
+        case Verbs.leaveVerb:
           userLeaveGroup();
           break;
-        case 'invite':
+        case Verbs.inviteVerb:
           clubInviteTeam();
           break;
-        case 'message':
+        case Verbs.messageVerb:
           onMessageButtonPress(currentUserData);
           break;
-        case 'dot':
+        case Verbs.dotVerb:
           onDotPress();
           break;
-        case 'edit':
+        case Verbs.editVerb:
           // edit code here
           navigation.navigate('EditGroupProfileScreen', {
             placeholder:
-              authContext.entity.role === 'team'
+              authContext.entity.role === Verbs.entityTypeTeam
                 ? strings.teamNamePlaceholder
                 : strings.clubNameplaceholder,
             nameTitle:
-              authContext.entity.role === 'team'
+              authContext.entity.role === Verbs.entityTypeTeam
                 ? strings.teamName
                 : strings.clubName,
             sportType: currentUserData.sport_type,
@@ -1402,8 +1302,6 @@ const HomeScreen = ({navigation, route}) => {
 
   const scorekeeperInModal = useCallback(
     (scorekeeperInObject) => {
-      console.log('ScorekeeperInObject', currentUserData);
-
       if (scorekeeperInObject) {
         const entity = authContext.entity;
         let languagesListName = [];
@@ -1416,8 +1314,6 @@ const HomeScreen = ({navigation, route}) => {
         setSelectScorekeeperData(scorekeeperSport);
         languagesListName = scorekeeperSport.language;
 
-        console.log('scorekeeperITEM::=>', scorekeeperSport);
-
         if (scorekeeperSport?.avg_review) {
           let array = Object.keys(scorekeeperSport.avg_review);
           array = array.filter((e) => e !== 'total_avg');
@@ -1429,7 +1325,6 @@ const HomeScreen = ({navigation, route}) => {
             };
             scorekeeperProperty.push(obj);
           }
-          console.log('scorekeeperProperty ::--', scorekeeperProperty);
           setAverageScorekeeperReview(scorekeeperProperty);
         } else {
           setAverageScorekeeperReview();
@@ -1440,7 +1335,6 @@ const HomeScreen = ({navigation, route}) => {
               language_string + (index ? ', ' : '') + langItem.language_name;
             return null;
           });
-          console.log('Language string::=>', language_string);
           setLanguagesName(language_string);
         }
         setScorekeeperInModalVisible(!scorekeeperInModalVisible);
@@ -1455,7 +1349,6 @@ const HomeScreen = ({navigation, route}) => {
             const date = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
             const recentMatch = [];
             const upcomingMatch = [];
-            console.log('Recentest Match API Response::->', res);
             if (res.payload.length > 0) {
               res.payload.filter((event_item) => {
                 const eventStartDate = new Date(
@@ -1487,8 +1380,6 @@ const HomeScreen = ({navigation, route}) => {
           authContext,
         )
           .then((res) => {
-            console.log('Get scorekeeper Review Data Res ::--', res?.payload);
-
             if (res?.payload) {
               setScorekeeperReviewData(res?.payload);
             } else {
@@ -1502,13 +1393,12 @@ const HomeScreen = ({navigation, route}) => {
         settingUtils
           .getSetting(
             route?.params?.uid || entity.uid,
-            'scorekeeper',
+            Verbs.entityTypeScorekeeper,
             scorekeeperInObject.sport,
             authContext,
           )
           .then((response) => {
             setScorekeeperSettingObject(response);
-            console.log('res3:::=>', response);
           })
           .catch(() => {
             setFirstTimeLoading(false);
@@ -1535,13 +1425,10 @@ const HomeScreen = ({navigation, route}) => {
           setSelectRefereeData(refereeSport);
           languagesListName = refereeSport.language;
 
-          console.log('refereeITEM::=>', refereeSport);
-
           if (refereeSport?.avg_review) {
             let array = Object.keys(refereeSport.avg_review);
             array = array.filter((e) => e !== 'total_avg');
             const refereeProperty = [];
-            console.log('array referee Review Data Res ::--', array);
 
             for (let i = 0; i < array.length; i++) {
               const obj = {
@@ -1575,7 +1462,6 @@ const HomeScreen = ({navigation, route}) => {
             const currentDateTime = new Date().getTime();
             const recentMatch = [];
             const upcomingMatch = [];
-            console.log('Recentest Match API Response::->', res);
             if (res.payload.length > 0) {
               res.payload.map((event_item) => {
                 const eventStartDate = event_item.start_datetime * 1000;
@@ -1606,8 +1492,6 @@ const HomeScreen = ({navigation, route}) => {
           authContext,
         )
           .then((res) => {
-            console.log('Get Referee Review Data Res ::--', res?.payload);
-
             if (res?.payload) {
               setRefereeReviewData(res?.payload);
             } else {
@@ -1621,13 +1505,12 @@ const HomeScreen = ({navigation, route}) => {
         settingUtils
           .getSetting(
             route?.params?.uid || entity.uid,
-            'referee',
+            Verbs.entityTypeReferee,
             refereeInObject.sport,
             authContext,
           )
           .then((response) => {
             setRefereeSettingObject(response);
-            console.log('res3:::=>', response);
           })
           .catch(() => {
             setFirstTimeLoading(false);
@@ -1719,7 +1602,6 @@ const HomeScreen = ({navigation, route}) => {
 
   const goToScorekeeperReservationDetail = useCallback(
     (data) => {
-      console.log('Screen data:=>', data);
       const scorekeeperObj = data?.game?.scorekeepers?.filter(
         (obj) => obj?.scorekeeper_id === authContext.entity.uid,
       )?.[0];
@@ -1730,8 +1612,6 @@ const HomeScreen = ({navigation, route}) => {
         authContext,
       ).then((obj) => {
         setloading(false);
-        console.log('Screen name:=>', obj.screenName);
-        console.log('Screen navigator:=>', navigation);
 
         navigation.navigate(obj.screenName, {
           reservationObj: obj.reservationObj || obj.reservationObj[0],
@@ -1745,7 +1625,6 @@ const HomeScreen = ({navigation, route}) => {
   const playInModel = useCallback(
     (playInObject) => {
       if (playInObject) {
-        console.log('playInObject1::=>', playInObject);
         setSportName(Utility.getSportName(playInObject, authContext));
 
         setTimeout(() => {
@@ -1775,14 +1654,12 @@ const HomeScreen = ({navigation, route}) => {
       let user_id = authContext?.entity?.uid;
       if (route?.params?.role) entity_type = route?.params?.role;
       if (route?.params?.uid) user_id = route?.params?.uid;
-      if (tab === 'following') {
-        console.log('route?.params?.uid', route?.params?.uid);
-        console.log('route?.params?.role', route?.params?.role);
+      if (tab === Verbs.followingVerb) {
         navigation.navigate('JoinedTeamsScreen', {
           uid: route?.params?.uid,
           role: route?.params?.role,
         });
-      } else if (tab !== 'members') {
+      } else if (tab !== Verbs.privacyTypeMembers) {
         navigation.navigate('UserConnections', {tab, entity_type, user_id});
       } else {
         navigation.navigate('GroupMembersScreen', {groupID: user_id});
@@ -1800,23 +1677,27 @@ const HomeScreen = ({navigation, route}) => {
   const actionSheetOpetions = useCallback(() => {
     if (selectedEventItem !== null && selectedEventItem.game) {
       if (refereeFound(selectedEventItem)) {
-        return ['Referee Reservation Details', 'Change Events Color', 'Cancel'];
+        return [
+          strings.refereeReservationDetail,
+          strings.changeEventColorText,
+          strings.cancel,
+        ];
       }
       if (scorekeeperFound(selectedEventItem)) {
         return [
-          'Scorekeeper Reservation Details',
-          'Change Events Color',
-          'Cancel',
+          strings.scorekeeperReservationDetail,
+          strings.changeEventColorText,
+          strings.cancel,
         ];
       }
       return [
-        'Game Reservation Details',
-        'Referee Reservation Details',
-        'Change Events Color',
-        'Cancel',
+        strings.gameReservationDetails,
+        strings.refereeReservationDetail,
+        strings.changeEventColorText,
+        strings.cancel,
       ];
     }
-    return ['Edit', 'Delete', 'Cancel'];
+    return [strings.editText, strings.deleteText, strings.cancel];
   }, [refereeFound, selectedEventItem]);
 
   const renderRefereesTabContainer = (tabKey) => (
@@ -1872,8 +1753,14 @@ const HomeScreen = ({navigation, route}) => {
       {tabKey === 1 && (
         <View>
           <ScheduleTabView
-            firstTabTitle={`Completed (${refereeRecentMatch.length})`}
-            secondTabTitle={`Upcoming (${refereeUpcomingMatch.length})`}
+            firstTabTitle={format(
+              strings.completedNGame,
+              refereeRecentMatch.length,
+            )}
+            secondTabTitle={format(
+              strings.upcomingNGame,
+              refereeUpcomingMatch.length,
+            )}
             indexCounter={scoreboardTabNumber}
             eventPrivacyContianer={{width: wp('70%')}}
             onFirstTabPress={() => setScroboardTabNumber(0)}
@@ -1974,8 +1861,14 @@ const HomeScreen = ({navigation, route}) => {
       {tabKey === 1 && (
         <View>
           <ScheduleTabView
-            firstTabTitle={`Completed (${refereeRecentMatch.length})`}
-            secondTabTitle={`Upcoming (${refereeUpcomingMatch.length})`}
+            firstTabTitle={format(
+              strings.completedNGame,
+              refereeRecentMatch.length,
+            )}
+            secondTabTitle={format(
+              strings.upcomingNGame,
+              refereeUpcomingMatch.length,
+            )}
             indexCounter={scoreboardTabNumber}
             eventPrivacyContianer={{width: wp('70%')}}
             onFirstTabPress={() => setScroboardTabNumber(0)}
@@ -2050,7 +1943,7 @@ const HomeScreen = ({navigation, route}) => {
         }
       } else {
         getEventById(
-          entity.role === 'user' ? 'users' : 'groups',
+          entity.role === Verbs.entityTypeUser ? 'users' : 'groups',
           entity.uid || entity.auth.user_id,
           item.cal_id,
           authContext,
@@ -2092,7 +1985,7 @@ const HomeScreen = ({navigation, route}) => {
     ({item: itemValue}) => {
       const entity = authContext.entity;
       return (
-        itemValue.cal_type === 'event' && (
+        itemValue.cal_type === Verbs.eventVerb && (
           <EventInCalender
             onPress={async () => {
               if (itemValue?.game_id) {
@@ -2104,7 +1997,7 @@ const HomeScreen = ({navigation, route}) => {
                 }
               } else {
                 getEventById(
-                  entity.role === 'user' ? 'users' : 'groups',
+                  entity.role === Verbs.entityTypeUser ? 'users' : 'groups',
                   entity.uid || entity.auth.user_id,
                   itemValue.cal_id,
                   authContext,
@@ -2217,8 +2110,8 @@ const HomeScreen = ({navigation, route}) => {
           scrollToFirst={true}
           renderEvent={(event) => {
             let event_color = colors.themeColor;
-            let eventTitle = 'Game';
-            let eventDesc = 'Game With';
+            let eventTitle = strings.Game;
+            let eventDesc = strings.gameWith;
             let eventDesc2 = '';
             if (event.color && event.color.length > 0) {
               if (event.color[0] !== '#') {
@@ -2238,7 +2131,7 @@ const HomeScreen = ({navigation, route}) => {
             }
             return (
               <View style={{flex: 1}}>
-                {event.cal_type === 'event' && (
+                {event.cal_type === Verbs.eventVerb && (
                   <CalendarTimeTableView
                     title={eventTitle}
                     summary={`${eventDesc} ${eventDesc2}`}
@@ -2249,7 +2142,7 @@ const HomeScreen = ({navigation, route}) => {
                     eventTitleStyle={{color: event_color}}
                   />
                 )}
-                {event.cal_type === 'blocked' && (
+                {event.cal_type === Verbs.blockedVerb && (
                   <View
                     style={[
                       styles.blockedViewStyle,
@@ -2274,10 +2167,10 @@ const HomeScreen = ({navigation, route}) => {
             scrollEnabled={false}
             showsHorizontalScrollIndicator={false}
             renderItem={({item: blockItem}) => {
-              if (blockItem.cal_type === 'blocked') {
+              if (blockItem.cal_type === Verbs.blockedVerb) {
                 return (
                   <EventBlockTimeTableView
-                    blockText={'Blocked Zone'}
+                    blockText={strings.blockedZone}
                     blockZoneTime={`${moment(blockItem.start).format(
                       'hh:mma',
                     )} - ${moment(blockItem.end).format('hh:mma')}`}
@@ -2310,8 +2203,6 @@ const HomeScreen = ({navigation, route}) => {
   );
 
   const moveToMainInfoTab = () => {
-    console.log('move to EntityInfoScreen');
-    console.log('Admin condition:', currentUserData, authContext.entity.uid);
     navigation.navigate('EntityInfoScreen', {
       uid: route?.params?.uid || authContext.entity.uid,
       isAdmin: route?.params?.uid === authContext.entity.uid,
@@ -2324,43 +2215,39 @@ const HomeScreen = ({navigation, route}) => {
   };
 
   const moveToScoreboardTab = () => {
-    console.log('move to EntityScoreboardScreen');
     navigation.navigate('EntityScoreboardScreen', {
       uid: route?.params?.uid || authContext.entity.uid,
       isAdmin,
     });
   };
 
-  const renderMainScoreboardTab = () => {
-    console.log('onScoreboardSearchTextChange', onScoreboardSearchTextChange);
-    return (
-      <View style={{flex: 1}}>
-        <TCSearchBox
-          onChangeText={onScoreboardSearchTextChange}
-          marginTop={20}
-          marginBottom={5}
-          alignSelf={'center'}
-          width={wp('94%')}
-          borderRadius={0}
-          backgroundColor={colors.grayBackgroundColor}
-          height={40}
-          shadowOpacity={0}
-        />
-        <ScoreboardSportsScreen
-          sportsData={
-            scoreboardSearchText.length > 0
-              ? filterScoreboardGameData
-              : scoreboardGameData
-          }
-          navigation={navigation}
-          onItemPress={() => {
-            setRefereeMatchModalVisible(false);
-            setRefereesInModalVisible(false);
-          }}
-        />
-      </View>
-    );
-  };
+  const renderMainScoreboardTab = () => (
+    <View style={{flex: 1}}>
+      <TCSearchBox
+        onChangeText={onScoreboardSearchTextChange}
+        marginTop={20}
+        marginBottom={5}
+        alignSelf={'center'}
+        width={wp('94%')}
+        borderRadius={0}
+        backgroundColor={colors.grayBackgroundColor}
+        height={40}
+        shadowOpacity={0}
+      />
+      <ScoreboardSportsScreen
+        sportsData={
+          scoreboardSearchText.length > 0
+            ? filterScoreboardGameData
+            : scoreboardGameData
+        }
+        navigation={navigation}
+        onItemPress={() => {
+          setRefereeMatchModalVisible(false);
+          setRefereesInModalVisible(false);
+        }}
+      />
+    </View>
+  );
 
   const renderMainScheduleTab = useMemo(
     () => (
@@ -2372,8 +2259,8 @@ const HomeScreen = ({navigation, route}) => {
             alignItems: 'center',
           }}>
           <ScheduleTabView
-            firstTabTitle={'Events'}
-            secondTabTitle={'Calender'}
+            firstTabTitle={strings.events}
+            secondTabTitle={strings.calender}
             indexCounter={scheduleIndexCounter}
             onFirstTabPress={() => setScheduleIndexCounter(0)}
             onSecondTabPress={() => setScheduleIndexCounter(1)}
@@ -2402,8 +2289,8 @@ const HomeScreen = ({navigation, route}) => {
               />
               <View>
                 <TwoTabView
-                  firstTabTitle={'Events'}
-                  secondTabTitle={'Timetable'}
+                  firstTabTitle={strings.events}
+                  secondTabTitle={strings.timetable}
                   indexCounter={calenderInnerIndexCounter}
                   onFirstTabPress={() => setCalenderInnerIdexCounter(0)}
                   onSecondTabPress={() => setCalenderInnerIdexCounter(1)}
@@ -2457,7 +2344,7 @@ const HomeScreen = ({navigation, route}) => {
                 }
                 centerComponent={
                   <Text style={styles.headerCenterStyle}>
-                    {'Choose a referee'}
+                    {strings.chooseRefereeText}
                   </Text>
                 }
               />
@@ -2491,13 +2378,11 @@ const HomeScreen = ({navigation, route}) => {
           onPress={(index) => {
             if (index === 0) {
               if (index === 0 && selectedEventItem.game) {
-                console.log('selected Event Item:', selectedEventItem);
                 if (refereeFound(selectedEventItem)) {
                   goToRefereReservationDetail(selectedEventItem);
                 } else if (scorekeeperFound(selectedEventItem)) {
                   goToScorekeeperReservationDetail(selectedEventItem);
                 } else {
-                  console.log('Selected Event Item::', selectedEventItem);
                   goToChallengeDetail(selectedEventItem.game);
                 }
               } else {
@@ -2512,10 +2397,10 @@ const HomeScreen = ({navigation, route}) => {
                 if (refereeFound(selectedEventItem)) {
                   Alert.alert(
                     strings.appName,
-                    'Change Event color feature is pending',
+                    strings.pendingFunctionality,
                     [
                       {
-                        text: 'OK',
+                        text: strings.okTitleText,
                         onPress: async () => {},
                       },
                     ],
@@ -2533,8 +2418,6 @@ const HomeScreen = ({navigation, route}) => {
                     authContext,
                   )
                     .then((res) => {
-                      console.log('Res :-', res);
-
                       const myReferee = (res?.payload || []).filter(
                         (e) => e.initiated_by === authContext.entity.uid,
                       );
@@ -2547,10 +2430,10 @@ const HomeScreen = ({navigation, route}) => {
                         setTimeout(() => {
                           Alert.alert(
                             strings.appName,
-                            'No referees invited or booked by you for this game',
+                            strings.noRefereeInvitedText,
                             [
                               {
-                                text: 'OK',
+                                text: strings.okTitleText,
                                 onPress: async () => {},
                               },
                             ],
@@ -2560,23 +2443,25 @@ const HomeScreen = ({navigation, route}) => {
                       }
                     })
                     .catch((error) => {
-                      console.log('Error :-', error);
+                      Alert.alert(error.message);
                     });
                 }
               } else {
                 Alert.alert(
-                  'Do you want to delete this event ?',
+                  strings.deleteThisEventText,
                   '',
                   [
                     {
-                      text: 'Delete',
+                      text: strings.deleteText,
                       style: 'destructive',
                       onPress: async () => {
                         setloading(true);
                         const entity = authContext.entity;
                         const uid = entity.uid || entity.auth.user_id;
                         const entityRole =
-                          entity.role === 'user' ? 'users' : 'groups';
+                          entity.role === Verbs.entityTypeUser
+                            ? 'users'
+                            : 'groups';
                         deleteEvent(
                           entityRole,
                           uid,
@@ -2600,7 +2485,7 @@ const HomeScreen = ({navigation, route}) => {
                       },
                     },
                     {
-                      text: 'Cancel',
+                      text: strings.cancel,
                       style: 'cancel',
                     },
                   ],
@@ -2615,10 +2500,10 @@ const HomeScreen = ({navigation, route}) => {
                 } else {
                   Alert.alert(
                     strings.appName,
-                    'Change Event color feature is pending',
+                    strings.pendingFunctionality,
                     [
                       {
-                        text: 'OK',
+                        text: strings.okTitleText,
                         onPress: async () => {},
                       },
                     ],
@@ -2700,7 +2585,6 @@ const HomeScreen = ({navigation, route}) => {
     [averageTeamReview, reviewerDetailModal, teamReviewData],
   );
   const moveToSchedule = () => {
-    console.log('move to schedule');
     navigation.navigate('ScheduleScreen', {
       isBackVisible: true,
       uid: route?.params?.uid || authContext?.entity?.uid,
@@ -2709,7 +2593,6 @@ const HomeScreen = ({navigation, route}) => {
   };
 
   const moveToGallary = () => {
-    console.log('move to EntityGallaryScreen');
     navigation.navigate('EntityGallaryScreen', {
       currentUserData,
       isAdmin,
@@ -2720,7 +2603,6 @@ const HomeScreen = ({navigation, route}) => {
     });
   };
   const moveToReview = () => {
-    console.log('move to EntityReviewScreen', averageTeamReview);
     navigation.navigate('EntityReviewScreen', {
       averageTeamReview,
       teamReviewData,
@@ -2729,7 +2611,6 @@ const HomeScreen = ({navigation, route}) => {
   };
 
   const moveToStats = () => {
-    console.log('move to EntityStatScreen', userID);
     navigation.navigate('EntityStatScreen', {
       entityData: entityObject,
     });
@@ -2771,8 +2652,7 @@ const HomeScreen = ({navigation, route}) => {
     const opetionArray = [];
     let a = [];
     let b = [];
-    console.log('Auth:=>', authContext.entity);
-    console.log('Team data:::::=>', currentUserData);
+
     a = authContext?.entity?.obj?.referee_data?.filter(
       (obj) => obj.sport === currentUserData?.sport,
     );
@@ -2799,51 +2679,53 @@ const HomeScreen = ({navigation, route}) => {
             source={{uri: bgImage}}
             resizeMode={'cover'}
             style={styles.bgImageStyle}>
-            {currentUserData.entity_type !== 'club' && !hideScore && (
-              <ImageBackground
-                source={images.profileLevel}
-                style={{
-                  height: 58,
-                  width: 93,
-
-                  resizeMode: 'contain',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  alignSelf: 'flex-start',
-                }}>
-                <View
+            {currentUserData.entity_type !== Verbs.entityTypeClub &&
+              !hideScore && (
+                <ImageBackground
+                  source={images.profileLevel}
                   style={{
-                    flexDirection: 'row',
+                    height: 58,
+                    width: 93,
+
+                    resizeMode: 'contain',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    marginBottom: 8,
+                    alignSelf: 'flex-start',
                   }}>
-                  <FastImage
-                    source={images.tc_message_top_icon}
-                    resizeMode={'contain'}
-                    style={{height: 35, width: 35}}
-                  />
-                  <View style={{flexDirection: 'column', alignItems: 'center'}}>
-                    <Text
-                      style={{
-                        fontFamily: fonts.RBold,
-                        fontSize: 16,
-                        color: colors.lightBlackColor,
-                      }}>
-                      {currentUserData?.point ?? 0}
-                    </Text>
-                    <Text
-                      style={{
-                        fontFamily: fonts.RMedium,
-                        fontSize: 10,
-                        color: colors.lightBlackColor,
-                      }}>
-                      POINTS
-                    </Text>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      marginBottom: 8,
+                    }}>
+                    <FastImage
+                      source={images.tc_message_top_icon}
+                      resizeMode={'contain'}
+                      style={{height: 35, width: 35}}
+                    />
+                    <View
+                      style={{flexDirection: 'column', alignItems: 'center'}}>
+                      <Text
+                        style={{
+                          fontFamily: fonts.RBold,
+                          fontSize: 16,
+                          color: colors.lightBlackColor,
+                        }}>
+                        {currentUserData?.point ?? 0}
+                      </Text>
+                      <Text
+                        style={{
+                          fontFamily: fonts.RMedium,
+                          fontSize: 10,
+                          color: colors.lightBlackColor,
+                        }}>
+                        {strings.points}
+                      </Text>
+                    </View>
                   </View>
-                </View>
-              </ImageBackground>
-            )}
+                </ImageBackground>
+              )}
           </FastImage>
         </View>
       );
@@ -2851,7 +2733,7 @@ const HomeScreen = ({navigation, route}) => {
     return (
       <View style={{marginLeft: 10, marginRight: 10}}>
         <View style={styles.bgImageStyle}>
-          {currentUserData.entity_type !== 'club' && !hideScore && (
+          {currentUserData.entity_type !== Verbs.entityTypeClub && !hideScore && (
             <ImageBackground
               source={images.profileLevel}
               style={{
@@ -2889,7 +2771,7 @@ const HomeScreen = ({navigation, route}) => {
                       fontSize: 10,
                       color: colors.lightBlackColor,
                     }}>
-                    POINTS
+                    {strings.points}
                   </Text>
                 </View>
               </View>
@@ -3007,9 +2889,8 @@ const HomeScreen = ({navigation, route}) => {
     ],
   );
 
-  const renderHomeTabs = useCallback(({item, index}) => {
-    console.log('Render feed:=>', item);
-    return (
+  const renderHomeTabs = useCallback(
+    ({item, index}) => (
       <TouchableOpacity
         style={{margin: 10}}
         onPress={() => {
@@ -3059,32 +2940,30 @@ const HomeScreen = ({navigation, route}) => {
           </Text>
         </View>
       </TouchableOpacity>
-    );
-  }, []);
+    ),
+    [],
+  );
 
   const challengeButtonType = () => {
-    console.log('mySettingObject', mySettingObject);
-    console.log('settingObject', settingObject);
-
     if (
       mySettingObject !== null &&
       settingObject !== null &&
-      settingObject?.availibility === 'On' &&
-      mySettingObject?.availibility === 'On'
+      settingObject?.availibility === Verbs.on &&
+      mySettingObject?.availibility === strings.onngs.on
     ) {
-      return 'both';
+      return Verbs.bothVerb;
     }
     if (settingObject === null && mySettingObject === null) {
-      return 'invite';
+      return Verbs.inviteVerb;
     }
     if (
       authContext.entity.obj.sport.toLowerCase() ===
         currentUserData.sport.toLowerCase() &&
       (settingObject?.game_duration || settingObject?.score_rules) &&
       settingObject?.availibility &&
-      settingObject?.availibility === 'On' &&
+      settingObject?.availibility === strings.onngs.onngs.on &&
       (mySettingObject?.availibility === undefined ||
-        mySettingObject?.availibility === 'Off') &&
+        mySettingObject?.availibility === Verbs.off) &&
       settingObject?.special_rules !== undefined &&
       settingObject?.general_rules !== undefined &&
       settingObject?.responsible_for_referee &&
@@ -3095,17 +2974,17 @@ const HomeScreen = ({navigation, route}) => {
       settingObject?.home_away &&
       settingObject?.game_type
     ) {
-      return 'challenge';
+      return Verbs.challengeVerb;
     }
     if (
       authContext.entity.obj.sport.toLowerCase() ===
         currentUserData.sport.toLowerCase() &&
       mySettingObject !== undefined &&
       (settingObject?.availibility === undefined ||
-        settingObject?.availibility === 'Off') &&
+        settingObject?.availibility === Verbs.off) &&
       (mySettingObject?.game_duration || mySettingObject?.score_rules) &&
       (mySettingObject?.availibility !== undefined ||
-        mySettingObject?.availibility === 'On') &&
+        mySettingObject?.availibility === strings.onngs.onngs.on) &&
       mySettingObject?.special_rules !== undefined &&
       mySettingObject?.general_rules !== undefined &&
       mySettingObject?.responsible_for_referee &&
@@ -3116,15 +2995,15 @@ const HomeScreen = ({navigation, route}) => {
       mySettingObject?.home_away &&
       mySettingObject?.game_type
     ) {
-      return 'invite';
+      return Verbs.inviteVerb;
     }
-    return 'challenge';
+    return Verbs.challengeVerb;
   };
 
   const onChallengePress = () => {
-    if (challengeButtonType() === 'both') {
+    if (challengeButtonType() === Verbs.bothVerb) {
       setChallengePopup(true);
-    } else if (challengeButtonType() === 'challenge') {
+    } else if (challengeButtonType() === Verbs.challengeVerb) {
       setChallengePopup(true);
 
       // navigation.navigate('ChallengeScreen', {
@@ -3132,11 +3011,10 @@ const HomeScreen = ({navigation, route}) => {
       //   sportName: currentUserData.sport,
       //   groupObj: currentUserData,
       // });
-    } else if (challengeButtonType() === 'invite') {
-      console.log('ok invite');
-      if (settingObject.availibility === 'On') {
+    } else if (challengeButtonType() === Verbs.inviteVerb) {
+      if (settingObject.availibility === Verbs.on) {
         if (
-          myGroupDetail.sport_type === 'double' &&
+          myGroupDetail.sport_type === Verbs.doubleSport &&
           (!('player_deactivated' in myGroupDetail) ||
             !myGroupDetail?.player_deactivated) &&
           (!('player_leaved' in currentUserData) ||
@@ -3144,7 +3022,7 @@ const HomeScreen = ({navigation, route}) => {
           (!('player_leaved' in myGroupDetail) || !myGroupDetail?.player_leaved)
         ) {
           if (myGroupDetail.is_pause === true) {
-            Alert.alert(`${myGroupDetail.group_name} is paused.`);
+            Alert.alert(format(strings.groupPaused, myGroupDetail.group_name));
           } else {
             navigation.navigate('InviteChallengeScreen', {
               setting: mySettingObject,
@@ -3155,29 +3033,31 @@ const HomeScreen = ({navigation, route}) => {
           }
         } else {
           console.log('in else');
-          if (myGroupDetail.sport_type === 'double') {
+          if (myGroupDetail.sport_type === Verbs.doubleSport) {
             if (
               'player_deactivated' in myGroupDetail &&
               myGroupDetail?.player_deactivated
             ) {
-              Alert.alert('Player deactiveted sport.');
+              Alert.alert(strings.playerDeactivatedSport);
             } else if (
               'player_leaved' in currentUserData &&
               currentUserData?.player_leaved
             ) {
               Alert.alert(
-                `${currentUserData?.group_name} have't 2 players in team.`,
+                format(strings.groupHaveNo2Player, currentUserData?.group_name),
               );
             } else if (
               'player_leaved' in myGroupDetail &&
               myGroupDetail?.player_leaved
             ) {
-              Alert.alert('You have’t 2 players in team.');
+              Alert.alert(strings.youHaveNo2Player);
             }
           } else {
             console.log('invite block');
             if (myGroupDetail.is_pause === true) {
-              Alert.alert(`${myGroupDetail.group_name} is paused.`);
+              Alert.alert(
+                format(strings.groupPaused, myGroupDetail.group_name),
+              );
             } else {
               navigation.navigate('InviteChallengeScreen', {
                 setting: mySettingObject,
@@ -3191,13 +3071,16 @@ const HomeScreen = ({navigation, route}) => {
       } else {
         console.log('manage block');
         if (currentUserData?.is_pause === true) {
-          Alert.alert('Your team is paused.');
+          Alert.alert(strings.yourTeamPaused);
         } else if (
           currentUserData?.player_deactivated === true &&
-          currentUserData.sport_type === 'double'
+          currentUserData.sport_type === Verbs.doubleSport
         ) {
           Alert.alert(
-            `${currentUserData.group_name}'s player have sport activity deactivated.`,
+            format(
+              strings.groupSportActivityDeactivated,
+              currentUserData.group_name,
+            ),
           );
         } else {
           navigation.navigate('ManageChallengeScreen', {
@@ -3214,7 +3097,7 @@ const HomeScreen = ({navigation, route}) => {
     if (
       !loading &&
       isTeamHome &&
-      authContext.entity.role === 'team' &&
+      authContext.entity.role === Verbs.entityTypeTeam &&
       authContext.entity.obj.sport.toLowerCase() ===
         currentUserData?.sport?.toLowerCase()
     ) {
@@ -3237,21 +3120,21 @@ const HomeScreen = ({navigation, route}) => {
                       alignItems: 'center',
                       justifyContent: 'center',
                     }}>
-                    {(challengeButtonType() === 'both' ||
-                      challengeButtonType() === 'challenge') && (
+                    {(challengeButtonType() === Verbs.bothVerb ||
+                      challengeButtonType() === Verbs.challengeVerb) && (
                       <Text style={styles.challengeButtonTitle}>
                         {strings.challenge}
                         {settingObject?.game_fee?.fee && (
                           <Text>{` $${settingObject?.game_fee?.fee} ${
                             currentUserData?.currency_type ??
                             strings.defaultCurrency
-                          }${' / match'}`}</Text>
+                          } ${strings.perMatch}`}</Text>
                         )}
                       </Text>
                     )}
-                    {challengeButtonType() === 'invite' && (
+                    {challengeButtonType() === Verbs.inviteVerb && (
                       <Text style={styles.challengeButtonTitle}>
-                        {'Invite to challenge'}
+                        {strings.inviteToChallenge}
                       </Text>
                     )}
                   </View>
@@ -3281,7 +3164,7 @@ const HomeScreen = ({navigation, route}) => {
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
               }}>
-              Timeline
+              {strings.timeline}
             </Text>
             <View
               style={{
@@ -3290,7 +3173,7 @@ const HomeScreen = ({navigation, route}) => {
                 marginBottom: 20,
               }}>
               <TCProfileButton
-                title={'Gallery'}
+                title={strings.galleryTitle}
                 style={{marginRight: 15, alignItems: 'center'}}
                 showArrow={false}
                 textStyle={styles.buttonTextStyle}
@@ -3306,7 +3189,7 @@ const HomeScreen = ({navigation, route}) => {
                 }}
               />
               <TCProfileButton
-                title={'Scoreboard'}
+                title={strings.scoreboard}
                 style={styles.firstButtonStyle}
                 showArrow={false}
                 textStyle={styles.buttonTextStyle}
@@ -3337,8 +3220,18 @@ const HomeScreen = ({navigation, route}) => {
               showsHorizontalScrollIndicator={false}
               data={
                 isTeamHome
-                  ? ['Info', 'Scoreboard', 'Gallery', 'Review', 'Stats']
-                  : ['Info', 'Scoreboard', 'Gallery']
+                  ? [
+                      strings.infoTitle,
+                      strings.scoreboard,
+                      strings.galleryTitle,
+                      strings.reviewTitle,
+                      strings.statsTitle,
+                    ]
+                  : [
+                      strings.infoTitle,
+                      strings.scoreboard,
+                      strings.galleryTitle,
+                    ]
               }
               horizontal
               renderItem={renderHomeTabs}
@@ -3350,13 +3243,13 @@ const HomeScreen = ({navigation, route}) => {
           //     isTeamHome
           //       ? [
           //           'Post',
-          //           'Info',
-          //           'Scoreboard',
+          //           strings.infoTitle,
+          //           strings.scoreboard,
           //           'Schedule',
-          //           'Gallery',
+          //           strings.galleryTitle,
           //           'Review',
           //         ]
-          //       : ['Post', 'Info', 'Scoreboard', 'Schedule', 'Gallery']
+          //       : ['Post', strings.infoTitle, strings.scoreboard, 'Schedule', strings.galleryTitle]
           //   }
           //   currentTab={currentTab}
           //   onTabPress={setCurrentTab}
@@ -3408,9 +3301,7 @@ const HomeScreen = ({navigation, route}) => {
         activity_id: item.id,
       };
       createReaction(bodyParams, authContext)
-        .then((response) => {
-          console.log('Like review feed res::=>', response);
-        })
+        .then(() => {})
         .catch((e) => {
           Alert.alert('', e.messages);
         });
@@ -3431,29 +3322,15 @@ const HomeScreen = ({navigation, route}) => {
     [],
   );
 
-  // const onProfilePress = useCallback((item) => {
-  //   if (item?.actor?.id) {
-  //     if (item?.actor?.id !== authContext?.entity?.uid) {
-  //       navigation.navigate('HomeScreen', {
-  //         uid: item.actor.id,
-  //         backButtonVisible: true,
-  //         role: item?.actor?.data?.entity_type === 'player' ? 'user' : item?.actor?.data?.entity_type,
-  //       })
-  //     }
-  //   }
-  // }, [])
   const renderNewsFeed = useCallback(
     ({item}) => {
-      console.log('Render feed:=>', item);
       // const onDeleteButtonPress = () => onDeletePost(item)
       // const onProfileButtonPress = () => onProfilePress(item)
       // const onLikeButtonPress = () => onLikePress(item)
-      const onDeleteButtonPress = () => alert('Delete');
+      const onDeleteButtonPress = () => Alert.alert(strings.deleteText);
       const onProfileButtonPress = () => {
-        console.log('Profile pressed');
         // setReviewDetailModalVisible(!reviewDetailModalVisible)
         // setRefereeInfoModalVisible(!refereeInfoModalVisible)
-
         // onProfilePress(item)
       };
       const onLikeButtonPress = () => onLikePress(item);
@@ -3476,17 +3353,13 @@ const HomeScreen = ({navigation, route}) => {
 
   const renderScorekeeperFeed = useCallback(
     ({item}) => {
-      console.log('Profile Object::=>', currentUserData);
-      console.log('Render feed:=>', item);
       // const onDeleteButtonPress = () => onDeletePost(item)
       // const onProfileButtonPress = () => onProfilePress(item)
       // const onLikeButtonPress = () => onLikePress(item)
-      const onDeleteButtonPress = () => alert('Delete');
+      const onDeleteButtonPress = () => Alert.alert(strings.deleteText);
       const onProfileButtonPress = () => {
-        console.log('Profile pressed');
         // setReviewDetailModalVisible(!reviewDetailModalVisible)
         // setRefereeInfoModalVisible(!refereeInfoModalVisible)
-
         //  onProfilePress(item)
       };
       const onLikeButtonPress = () => onLikePress(item);
@@ -3559,14 +3432,14 @@ const HomeScreen = ({navigation, route}) => {
   const switchQBAccount = async (accountData, entity) => {
     let currentEntity = entity;
     const entityType = accountData?.entity_type;
-    const uid = entityType === 'player' ? 'user_id' : 'group_id';
+    const uid = entityType === Verbs.entityTypePlayer ? 'user_id' : 'group_id';
     QBLogout()
       .then(() => {
         const {USER, CLUB, LEAGUE, TEAM} = QB_ACCOUNT_TYPE;
         let accountType = USER;
-        if (entityType === 'club') accountType = CLUB;
-        else if (entityType === 'team') accountType = TEAM;
-        else if (entityType === 'league') accountType = LEAGUE;
+        if (entityType === Verbs.entityTypeClub) accountType = CLUB;
+        else if (entityType === Verbs.entityTypeTeam) accountType = TEAM;
+        else if (entityType === Verbs.entityTypeLeague) accountType = LEAGUE;
         QBlogin(
           accountData[uid],
           {
@@ -3576,7 +3449,6 @@ const HomeScreen = ({navigation, route}) => {
           accountType,
         )
           .then(async (res) => {
-            console.log('QB LOGIN:=>', res);
             currentEntity = {
               ...currentEntity,
               QB: {...res.user, connected: true, token: res?.session?.token},
@@ -3618,25 +3490,25 @@ const HomeScreen = ({navigation, route}) => {
   const switchProfile = async (item) => {
     let currentEntity = authContext.entity;
 
-    if (item.entity_type === 'player') {
+    if (item.entity_type === Verbs.entityTypePlayer) {
       currentEntity = {
         ...currentEntity,
         uid: item.user_id,
-        role: 'user',
+        role: Verbs.entityTypeUser,
         obj: item,
       };
-    } else if (item.entity_type === 'team') {
+    } else if (item.entity_type === Verbs.entityTypeTeam) {
       currentEntity = {
         ...currentEntity,
         uid: item.group_id,
-        role: 'team',
+        role: Verbs.entityTypeTeam,
         obj: item,
       };
-    } else if (item.entity_type === 'club') {
+    } else if (item.entity_type === Verbs.entityTypeClub) {
       currentEntity = {
         ...currentEntity,
         uid: item.group_id,
-        role: 'club',
+        role: Verbs.entityTypeClub,
         obj: item,
       };
     }
@@ -3654,10 +3526,8 @@ const HomeScreen = ({navigation, route}) => {
         setVisibleSportsModal(false);
 
         setTimeout(() => {
-          console.log('Sport name:=>', item.sport);
-
           if (currentUserData?.is_pause === true) {
-            Alert.alert('Your team is paused.');
+            Alert.alert(strings.yourTeamPaused);
           } else {
             navigation.navigate('ManageChallengeScreen', {
               groupObj: currentUserData,
@@ -3701,7 +3571,7 @@ const HomeScreen = ({navigation, route}) => {
           color: colors.lightBlackColor,
           marginLeft: 15,
         }}>
-        Choose a game that you want to referee.
+        {strings.chooseGameForreferee}
       </Text>
     </View>
   );
@@ -3716,7 +3586,7 @@ const HomeScreen = ({navigation, route}) => {
           color: colors.lightBlackColor,
           marginLeft: 15,
         }}>
-        Choose a game that you want to scorekeeper.
+        {strings.chooseGameForScorekeeper}
       </Text>
     </View>
   );
@@ -3779,7 +3649,6 @@ const HomeScreen = ({navigation, route}) => {
         data={item}
         cardWidth={'88%'}
         onPress={() => {
-          console.log('Selected game:=>', item);
           gameListScorekeeperModalRef.current.close();
           navigation.navigate('ScorekeeperBookingDateAndTime', {
             gameData: item,
@@ -3797,7 +3666,7 @@ const HomeScreen = ({navigation, route}) => {
 
   const listEmptyComponent = () => (
     <View style={styles.emptyContainer}>
-      <Text style={styles.emptyText}>No Games Yet</Text>
+      <Text style={styles.emptyText}>{strings.noGamesYet}</Text>
     </View>
   );
 
@@ -3858,7 +3727,6 @@ const HomeScreen = ({navigation, route}) => {
       sort: [{start_datetime: 'asc'}],
     };
 
-    console.log('Json string:=>', JSON.stringify(gameListWithFilter));
     const refereeList = {
       query: {
         bool: {
@@ -3871,7 +3739,7 @@ const HomeScreen = ({navigation, route}) => {
                 },
               },
             },
-            {term: {'cal_type.keyword': 'event'}},
+            {term: {'cal_type.keyword': Verbs.eventVerb}},
             {match: {blocked: true}},
           ],
         },
@@ -3886,8 +3754,6 @@ const HomeScreen = ({navigation, route}) => {
     return Promise.all(promiseArr)
       .then(([gameList, eventList]) => {
         setloading(false);
-        console.log('gameList', gameList);
-        console.log('refereeList', eventList);
 
         for (const game of gameList) {
           game.isAvailable = true;
@@ -3940,9 +3806,9 @@ const HomeScreen = ({navigation, route}) => {
               style={styles.refereesImageStyle}
               resizeMode={'contain'}
             />
-            <Text style={styles.playInTextStyle}>{`Referees in ${
-              sportName || ''
-            }`}</Text>
+            <Text style={styles.playInTextStyle}>
+              {format(strings.refereeInSport, sportName || '')}
+            </Text>
           </View>
         }
         rightComponent={
@@ -3975,9 +3841,9 @@ const HomeScreen = ({navigation, route}) => {
               style={styles.refereesImageStyle}
               resizeMode={'contain'}
             />
-            <Text style={styles.playInTextStyle}>{`Scorekeeper in ${
-              sportName || ''
-            }`}</Text>
+            <Text style={styles.playInTextStyle}>
+              {format(strings.scorekeeperInSport, sportName || '')}
+            </Text>
           </View>
         }
         rightComponent={
@@ -4031,7 +3897,6 @@ const HomeScreen = ({navigation, route}) => {
       sort: [{start_datetime: 'asc'}],
     };
 
-    console.log('Json string:=>', JSON.stringify(gameListWithFilter));
     const scorekeeperList = {
       query: {
         bool: {
@@ -4044,7 +3909,7 @@ const HomeScreen = ({navigation, route}) => {
                 },
               },
             },
-            {term: {'cal_type.keyword': 'event'}},
+            {term: {'cal_type.keyword': Verbs.eventVerb}},
             {match: {blocked: true}},
           ],
         },
@@ -4059,8 +3924,6 @@ const HomeScreen = ({navigation, route}) => {
     return Promise.all(promiseArr)
       .then(([gameList, eventList]) => {
         setloading(false);
-        console.log('gameList', gameList);
-        console.log('scorekeeperList', eventList);
 
         for (const game of gameList) {
           game.isAvailable = true;
@@ -4105,7 +3968,6 @@ const HomeScreen = ({navigation, route}) => {
     groupUnpaused(authContext)
       .then(async (response) => {
         setIsAccountDeactivated(false);
-        console.log('deactivate account ', response);
         setloading(false);
         const entity = authContext.entity;
         entity.obj = response.payload;
@@ -4124,7 +3986,6 @@ const HomeScreen = ({navigation, route}) => {
     setloading(true);
     userActivate(authContext)
       .then(async (response) => {
-        console.log('deactivate account ', response);
         setloading(false);
         const entity = authContext.entity;
         entity.auth.user = response.payload;
@@ -4149,26 +4010,29 @@ const HomeScreen = ({navigation, route}) => {
       {isAccountDeactivated && (
         <TCAccountDeactivate
           type={
-            authContext?.entity?.obj?.is_pause === true ? 'pause' : 'deactivate'
+            authContext?.entity?.obj?.is_pause === true
+              ? Verbs.pauseVerb
+              : Verbs.deactivateVerb
           }
           onPress={() => {
             Alert.alert(
-              `Are you sure you want to ${
+              format(
+                strings.pauseUnpauseAccountText,
                 authContext?.entity?.obj?.is_pause === true
-                  ? 'unpause'
-                  : 'reactivate'
-              } this account?`,
+                  ? Verbs.unpauseVerb
+                  : Verbs.reactivateVerb,
+              ),
               '',
               [
                 {
-                  text: 'Cancel',
+                  text: strings.cancel,
                   style: 'cancel',
                 },
                 {
                   text:
                     authContext?.entity?.obj?.is_pause === true
-                      ? 'Unpause'
-                      : 'Reactivate',
+                      ? Verbs.unpauseVerb
+                      : Verbs.reactivateVerb,
                   style: 'destructive',
                   onPress: () => {
                     if (authContext?.entity?.obj?.is_pause === true) {
@@ -4224,16 +4088,16 @@ const HomeScreen = ({navigation, route}) => {
 
               const entity = authContext.entity;
 
-              if (entity.role === 'user') {
+              if (entity.role === Verbs.entityTypeUser) {
                 if (entity?.obj?.registered_sports?.length > 0) {
                   setVisibleSportsModal(true);
                 } else {
-                  Alert.alert('There is no registerd sports.');
+                  Alert.alert(strings.noregisterdSportValication);
                 }
               }
-              if (entity.role === 'team') {
+              if (entity.role === Verbs.entityTypeTeam) {
                 if (currentUserData?.is_pause === true) {
-                  Alert.alert('Your team is paused.');
+                  Alert.alert(strings.yourTeamPaused);
                 } else {
                   navigation.navigate('ManageChallengeScreen', {
                     groupObj: currentUserData,
@@ -4272,7 +4136,7 @@ const HomeScreen = ({navigation, route}) => {
                 ),
                 settingUtils.getSetting(
                   authContext?.entity?.uid,
-                  'referee',
+                  Verbs.entityTypeReferee,
                   currentUserData?.sport,
                   authContext,
                 ),
@@ -4280,8 +4144,7 @@ const HomeScreen = ({navigation, route}) => {
 
               Promise.all(promiseArr).then(([gameList, refereeSetting]) => {
                 setloading(false);
-                console.log('Game slots:=>', gameList);
-                console.log('refereeSetting:=>', refereeSetting);
+
                 if (gameList) {
                   setMatchData([...gameList]);
                 }
@@ -4318,7 +4181,7 @@ const HomeScreen = ({navigation, route}) => {
                 ),
                 settingUtils.getSetting(
                   authContext?.entity?.uid,
-                  'scorekeeper',
+                  Verbs.entityTypeScorekeeper,
                   currentUserData?.sport,
                   authContext,
                 ),
@@ -4326,8 +4189,7 @@ const HomeScreen = ({navigation, route}) => {
 
               Promise.all(promiseArr).then(([gameList, scorekeeperSetting]) => {
                 setloading(false);
-                console.log('Game slots:=>', gameList);
-                console.log('scorekeeperSetting:=>', scorekeeperSetting);
+
                 if (gameList.length > 0) {
                   setMatchData([...gameList]);
                 }
@@ -4341,9 +4203,7 @@ const HomeScreen = ({navigation, route}) => {
                   setScorekeeperSettingObject(scorekeeperSetting);
                 } else {
                   setTimeout(() => {
-                    Alert.alert(
-                      'You can’t send offer, please configure your scorekeeper setting first.',
-                    );
+                    Alert.alert(strings.cannotSendOfferSettingConfigure);
                   }, 10);
                 }
               });
@@ -4355,7 +4215,7 @@ const HomeScreen = ({navigation, route}) => {
           ref={groupMessageActionSheet}
           options={[
             currentUserData.group_name,
-            'With all members',
+            strings.withAllMember,
             strings.cancel,
           ]}
           cancelButtonIndex={3}
@@ -4376,13 +4236,15 @@ const HomeScreen = ({navigation, route}) => {
           {/* {!isUserHome && renderTopFixedButtons} */}
           {/* {!isUserHome && fixedHeader} */}
           {firstTimeLoading &&
-            (route?.params?.role === 'user' ??
-              authContext?.entity?.role === 'user') && (
+            (route?.params?.role === Verbs.entityTypeUser ??
+              authContext?.entity?.role === Verbs.entityTypeUser) && (
               <UserProfileScreenShimmer />
             )}
           {firstTimeLoading &&
-            (route?.params?.role !== 'user' ??
-              authContext?.entity?.role !== 'user') && <ProfileScreenShimmer />}
+            (route?.params?.role !== Verbs.entityTypeUser ??
+              authContext?.entity?.role !== Verbs.entityTypeUser) && (
+              <ProfileScreenShimmer />
+            )}
           {!firstTimeLoading && (
             <HomeFeed
               onFeedScroll={handleMainRefOnScroll}
@@ -4479,13 +4341,13 @@ const HomeScreen = ({navigation, route}) => {
                         sportName,
                       });
                     } else {
-                      Alert.alert('Referee setting not configured yet.');
+                      Alert.alert(strings.refereeSettingNotConfigureValidation);
                     }
                   }}
                 />
 
                 <TCScrollableProfileTabs
-                  tabItem={TAB_ITEMS}
+                  tabItem={TAB_ITEMS_REFEREE}
                   onChangeTab={(ChangeTab) => setRefereeCurrentTab(ChangeTab.i)}
                   currentTab={currentRefereeTab}
                   renderTabContain={renderRefereesTabContainer}
@@ -4531,7 +4393,9 @@ const HomeScreen = ({navigation, route}) => {
                           style={styles.refereesImageStyle}
                           resizeMode={'contain'}
                         />
-                        <Text style={styles.playInTextStyle}>{'Reviews'}</Text>
+                        <Text style={styles.playInTextStyle}>
+                          {strings.reviews}
+                        </Text>
                       </View>
                     }
                     rightComponent={
@@ -4567,7 +4431,7 @@ const HomeScreen = ({navigation, route}) => {
                     // onEndReachedThreshold={0.5}
                     // refreshing={pullRefresh}
                     // onRefresh={newsFeedOnRefresh}
-                    keyExtractor={(item) => `feeds${item?.id?.toString()}`}
+                    keyExtractor={(item) => `test${item?.id?.toString()}`}
                   />
                   {/* <NewsFeedPostItems
           // pullRefresh={pullRefresh}
@@ -4625,7 +4489,9 @@ const HomeScreen = ({navigation, route}) => {
                           style={styles.refereesImageStyle}
                           resizeMode={'contain'}
                         />
-                        <Text style={styles.playInTextStyle}>{'Info'}</Text>
+                        <Text style={styles.playInTextStyle}>
+                          {strings.infoTitle}
+                        </Text>
                       </View>
                     }
                     rightComponent={
@@ -4679,7 +4545,6 @@ const HomeScreen = ({navigation, route}) => {
                           }
                         })
                         .catch((error) => {
-                          console.log('error coming', error);
                           Alert.alert(strings.alertmessagetitle, error.message);
                         });
                     }}
@@ -4731,7 +4596,7 @@ const HomeScreen = ({navigation, route}) => {
                             resizeMode={'contain'}
                           />
                           <Text style={styles.playInTextStyle}>
-                            {'Scoreboard'}
+                            {strings.scoreboard}
                           </Text>
                         </View>
                       }
@@ -4748,8 +4613,14 @@ const HomeScreen = ({navigation, route}) => {
                     />
                   </View>
                   <ScheduleTabView
-                    firstTabTitle={`Completed (${refereeRecentMatch.length})`}
-                    secondTabTitle={`Upcoming (${refereeUpcomingMatch.length})`}
+                    firstTabTitle={format(
+                      strings.completedNGame,
+                      refereeRecentMatch.length,
+                    )}
+                    secondTabTitle={format(
+                      strings.upcomingNGame,
+                      refereeUpcomingMatch.length,
+                    )}
                     indexCounter={scoreboardTabNumber}
                     eventPrivacyContianer={{width: wp('70%')}}
                     onFirstTabPress={() => setScroboardTabNumber(0)}
@@ -4824,7 +4695,7 @@ const HomeScreen = ({navigation, route}) => {
                             resizeMode={'contain'}
                           />
                           <Text style={styles.playInTextStyle}>
-                            {'Reviews'}
+                            {strings.reviews}
                           </Text>
                         </View>
                       }
@@ -4843,7 +4714,7 @@ const HomeScreen = ({navigation, route}) => {
                   <ReviewSection
                     reviewsData={averageRefereeReview}
                     reviewsFeed={refereeReviewData}
-                    onFeedPress={() => alert(3)}
+                    onFeedPress={() => Alert.alert(3)}
                     onReadMorePress={() => {
                       reviewerDetailModal();
                     }}
@@ -4897,7 +4768,7 @@ const HomeScreen = ({navigation, route}) => {
                                 resizeMode={'contain'}
                               />
                               <Text style={styles.playInTextStyle}>
-                                {'Reviews'}
+                                {strings.reviews}
                               </Text>
                             </View>
                           }
@@ -5004,7 +4875,7 @@ const HomeScreen = ({navigation, route}) => {
                         sportName,
                       });
                     } else {
-                      Alert.alert('Scorekeeper setting not configured yet.');
+                      Alert.alert(strings.scorekeeperSetiingNotValidation);
                     }
                   }}
                 />
@@ -5059,7 +4930,9 @@ const HomeScreen = ({navigation, route}) => {
                           style={styles.refereesImageStyle}
                           resizeMode={'contain'}
                         />
-                        <Text style={styles.playInTextStyle}>{'Reviews'}</Text>
+                        <Text style={styles.playInTextStyle}>
+                          {strings.reviews}
+                        </Text>
                       </View>
                     }
                     rightComponent={
@@ -5153,7 +5026,9 @@ const HomeScreen = ({navigation, route}) => {
                           style={styles.refereesImageStyle}
                           resizeMode={'contain'}
                         />
-                        <Text style={styles.playInTextStyle}>{'Info'}</Text>
+                        <Text style={styles.playInTextStyle}>
+                          {strings.infoTitle}
+                        </Text>
                       </View>
                     }
                     rightComponent={
@@ -5206,7 +5081,6 @@ const HomeScreen = ({navigation, route}) => {
                           }
                         })
                         .catch((error) => {
-                          console.log('error coming', error);
                           Alert.alert(strings.alertmessagetitle, error.message);
                         });
                     }}
@@ -5260,7 +5134,7 @@ const HomeScreen = ({navigation, route}) => {
                             resizeMode={'contain'}
                           />
                           <Text style={styles.playInTextStyle}>
-                            {'Scoreboard'}
+                            {strings.scoreboard}
                           </Text>
                         </View>
                       }
@@ -5279,8 +5153,14 @@ const HomeScreen = ({navigation, route}) => {
                     />
                   </View>
                   <ScheduleTabView
-                    firstTabTitle={`Completed (${scorekeeperRecentMatch.length})`}
-                    secondTabTitle={`Upcoming (${scorekeeperUpcomingMatch.length})`}
+                    firstTabTitle={format(
+                      strings.completedNGame,
+                      scorekeeperRecentMatch.length,
+                    )}
+                    secondTabTitle={format(
+                      strings.upcomingNGame,
+                      scorekeeperUpcomingMatch.length,
+                    )}
                     indexCounter={scoreboardTabNumber}
                     eventPrivacyContianer={{width: wp('70%')}}
                     onFirstTabPress={() => setScroboardTabNumber(0)}
@@ -5355,7 +5235,7 @@ const HomeScreen = ({navigation, route}) => {
                             resizeMode={'contain'}
                           />
                           <Text style={styles.playInTextStyle}>
-                            {'Reviews'}
+                            {strings.reviewsTitle}
                           </Text>
                         </View>
                       }
@@ -5428,7 +5308,7 @@ const HomeScreen = ({navigation, route}) => {
                                 resizeMode={'contain'}
                               />
                               <Text style={styles.playInTextStyle}>
-                                {'Reviews'}
+                                {strings.reviewsTitle}
                               </Text>
                             </View>
                           }
@@ -5521,7 +5401,7 @@ const HomeScreen = ({navigation, route}) => {
                     (route?.params?.entityObj?.thumbnail && {
                       uri: route?.params?.entityObj?.thumbnail,
                     }) ||
-                    route?.params?.role === 'club'
+                    route?.params?.role === Verbs.entityTypeClub
                       ? images.clubPlaceholder
                       : images.teamGreenPH
                   }
@@ -5557,7 +5437,7 @@ const HomeScreen = ({navigation, route}) => {
                     }}>
                     <Image
                       source={
-                        route?.params?.role === 'team'
+                        route?.params?.role === Verbs.entityTypeTeam
                           ? images.teamPatch
                           : images.clubPatch
                       }
@@ -5566,14 +5446,14 @@ const HomeScreen = ({navigation, route}) => {
                   </View>
                 </View>
                 <Text style={[styles.foundText, {fontFamily: fonts.RRegular}]}>
-                  {'has been created.'}
+                  {strings.hasBeenCreated}
                 </Text>
                 <Text style={[styles.manageChallengeDetailTitle, {margin: 15}]}>
-                  {`Your account has been switched to the ${route?.params?.groupName} account.`}
+                  {format(strings.accountSwitchWith, route?.params?.groupName)}
                 </Text>
               </View>
 
-              {route?.params?.role === 'team' && (
+              {route?.params?.role === Verbs.entityTypeTeam && (
                 <Text style={styles.manageChallengeDetailTitle}>
                   {strings.manageChallengeDetailText}
                 </Text>
@@ -5582,9 +5462,9 @@ const HomeScreen = ({navigation, route}) => {
                 style={styles.goToProfileButton}
                 onPress={() => {
                   confirmationRef.current.close();
-                  if (route?.params?.role !== 'club') {
+                  if (route?.params?.role !== Verbs.entityTypeClub) {
                     if (currentUserData?.is_pause === true) {
-                      Alert.alert('Your team is paused.');
+                      Alert.alert(strings.yourTeamPaused);
                     } else {
                       navigation.navigate('ManageChallengeScreen', {
                         groupObj: currentUserData,
@@ -5595,8 +5475,8 @@ const HomeScreen = ({navigation, route}) => {
                   }
                 }}>
                 <Text style={styles.goToProfileTitle}>
-                  {route?.params?.role === 'club'
-                    ? 'OK'
+                  {route?.params?.role === Verbs.entityTypeClub
+                    ? strings.okTitleText
                     : strings.manageChallengeText}
                 </Text>
               </TouchableOpacity>
@@ -5710,16 +5590,16 @@ const HomeScreen = ({navigation, route}) => {
                   styles.doubleSportCreatedText,
                   {fontFamily: fonts.RRegular},
                 ]}>
-                {`You have completed all the process to create a team at your end. An invite will be sent to ${route?.params?.name}.`}
+                {format(strings.inviteSendTo, route?.params?.name)}
               </Text>
 
               <Text style={styles.inviteText}>
-                When
+                {strings.when}
                 <Text style={{fontFamily: fonts.RBold}}>
                   {' '}
                   {route?.params?.name}{' '}
                 </Text>
-                accepts your invite, the team will be created.
+                {strings.acceptYourInvite}
               </Text>
               <Image
                 source={images.doubleTeamCreated}
@@ -5735,7 +5615,7 @@ const HomeScreen = ({navigation, route}) => {
                   setIsDoubleSportTeamCreatedVisible(false);
                 }, 10);
               }}>
-              <Text style={styles.goToProfileTitle}>OK</Text>
+              <Text style={styles.goToProfileTitle}>{strings.okTitleText}</Text>
             </TouchableOpacity>
           </View>
         </Modal>
@@ -5757,9 +5637,9 @@ const HomeScreen = ({navigation, route}) => {
               <Text
                 onPress={() => setChallengePopup(false)}
                 style={styles.cancelText}>
-                Cancel
+                {strings.cancel}
               </Text>
-              <Text style={styles.locationText}>Challenge</Text>
+              <Text style={styles.locationText}>{strings.challenge}</Text>
               <Text style={styles.locationText}> </Text>
             </View>
             <TCThinDivider width={'100%'} marginBottom={15} />
@@ -5767,9 +5647,9 @@ const HomeScreen = ({navigation, route}) => {
               onPress={() => {
                 setSelectedChallengeOption(0);
                 const obj = settingObject;
-                if (obj?.availibility === 'On') {
+                if (obj?.availibility === Verbs.on) {
                   if (
-                    currentUserData.sport_type === 'double' &&
+                    currentUserData.sport_type === Verbs.doubleSport &&
                     (!('player_deactivated' in currentUserData) ||
                       !currentUserData?.player_deactivated) &&
                     (!('player_leaved' in currentUserData) ||
@@ -5790,8 +5670,6 @@ const HomeScreen = ({navigation, route}) => {
                       obj?.home_away &&
                       obj?.game_type
                     ) {
-                      console.log('currentUserData1111', currentUserData);
-
                       setChallengePopup(false);
                       navigation.navigate('ChallengeScreen', {
                         setting: obj,
@@ -5800,30 +5678,31 @@ const HomeScreen = ({navigation, route}) => {
                         groupObj: currentUserData,
                       });
                     } else {
-                      Alert.alert(
-                        'This team has no completed challenge setting.',
-                      );
+                      Alert.alert(strings.teamHaveNoCompletedSetting);
                     }
                   } else {
                     console.log('in else continue :', currentUserData);
-                    if (currentUserData.sport_type === 'double') {
+                    if (currentUserData.sport_type === Verbs.doubleSport) {
                       if (
                         'player_deactivated' in currentUserData &&
                         currentUserData?.player_deactivated
                       ) {
-                        Alert.alert('Player deactiveted sport.');
+                        Alert.alert(strings.playerDeactivatedSport);
                       } else if (
                         'player_leaved' in currentUserData &&
                         currentUserData?.player_leaved
                       ) {
                         Alert.alert(
-                          `${currentUserData?.group_name} have't 2 players in team.`,
+                          format(
+                            strings.groupHaveNo2Player,
+                            currentUserData?.group_name,
+                          ),
                         );
                       } else if (
                         'player_leaved' in myGroupDetail &&
                         myGroupDetail?.player_leaved
                       ) {
-                        Alert.alert("You have't 2 players in team.");
+                        Alert.alert(strings.youHaveNo2Player);
                       }
                     } else {
                       setChallengePopup(false);
@@ -5837,9 +5716,7 @@ const HomeScreen = ({navigation, route}) => {
                     }
                   }
                 } else {
-                  Alert.alert(
-                    'Opponent player or team not availble for challenge.',
-                  );
+                  Alert.alert(strings.oppTeamNotForChallenge);
                 }
                 // setTimeout(() => {
                 //   setChallengePopup(false);
@@ -5858,13 +5735,13 @@ const HomeScreen = ({navigation, route}) => {
                       styles.curruentLocationText,
                       {color: colors.whiteColor},
                     ]}>
-                    Continue to Challenge
+                    {strings.continueToChallenge}
                   </Text>
                 </LinearGradient>
               ) : (
                 <View style={styles.backgroundView}>
                   <Text style={styles.curruentLocationText}>
-                    Continue to Challenge
+                    {strings.continueToChallenge}
                   </Text>
                 </View>
               )}
@@ -5874,9 +5751,9 @@ const HomeScreen = ({navigation, route}) => {
                 setSelectedChallengeOption(1);
 
                 const obj = mySettingObject;
-                if (obj?.availibility === 'On') {
+                if (obj?.availibility === Verbs.on) {
                   if (
-                    myGroupDetail.sport_type === 'double' &&
+                    myGroupDetail.sport_type === Verbs.doubleSport &&
                     (!('player_deactivated' in myGroupDetail) ||
                       !myGroupDetail?.player_deactivated) &&
                     (!('player_leaved' in currentUserData) ||
@@ -5899,7 +5776,9 @@ const HomeScreen = ({navigation, route}) => {
                     ) {
                       setChallengePopup(false);
                       if (myGroupDetail.is_pause === true) {
-                        Alert.alert(`${myGroupDetail.group_name} is paused.`);
+                        Alert.alert(
+                          format(strings.groupPaused, myGroupDetail.group_name),
+                        );
                       } else {
                         navigation.navigate('InviteChallengeScreen', {
                           setting: obj,
@@ -5911,18 +5790,18 @@ const HomeScreen = ({navigation, route}) => {
                     } else {
                       setTimeout(() => {
                         Alert.alert(
-                          'Please complete your all setting before send a challenge invitation.',
+                          strings.completeSettingBeforeInvite,
                           '',
                           [
                             {
-                              text: 'Cancel',
+                              text: strings.cancel,
                               onPress: () => console.log('Cancel Pressed!'),
                             },
                             {
-                              text: 'OK',
+                              text: strings.okTitleText,
                               onPress: () => {
                                 if (currentUserData?.is_pause === true) {
-                                  Alert.alert('Your team is paused.');
+                                  Alert.alert(strings.yourTeamPaused);
                                 } else {
                                   navigation.navigate('ManageChallengeScreen', {
                                     groupObj: currentUserData,
@@ -5937,45 +5816,44 @@ const HomeScreen = ({navigation, route}) => {
                         );
                       }, 1000);
                     }
+                  } else if (myGroupDetail.sport_type === Verbs.doubleSport) {
+                    if (
+                      'player_deactivated' in myGroupDetail &&
+                      myGroupDetail?.player_deactivated
+                    ) {
+                      Alert.alert(strings.playerDeactivatedSport);
+                    } else if (
+                      'player_leaved' in currentUserData ||
+                      currentUserData?.player_leaved
+                    ) {
+                      Alert.alert(
+                        format(
+                          strings.groupHaveNo2Player,
+                          currentUserData?.group_name,
+                        ),
+                      );
+                    } else if (
+                      'player_leaved' in myGroupDetail ||
+                      myGroupDetail?.player_leaved
+                    ) {
+                      Alert.alert(strings.youHaveNo2Player);
+                    }
                   } else {
-                    console.log('in else');
-                    if (myGroupDetail.sport_type === 'double') {
-                      if (
-                        'player_deactivated' in myGroupDetail &&
-                        myGroupDetail?.player_deactivated
-                      ) {
-                        Alert.alert('Player deactiveted sport.');
-                      } else if (
-                        'player_leaved' in currentUserData ||
-                        currentUserData?.player_leaved
-                      ) {
-                        Alert.alert(
-                          `${currentUserData?.group_name} have't 2 players in team.`,
-                        );
-                      } else if (
-                        'player_leaved' in myGroupDetail ||
-                        myGroupDetail?.player_leaved
-                      ) {
-                        Alert.alert("You have't 2 players in team.");
-                      }
+                    setChallengePopup(false);
+                    if (myGroupDetail.is_pause === true) {
+                      Alert.alert(strings.yourTeamPaused);
                     } else {
-                      console.log('invite block');
                       setChallengePopup(false);
-                      if (myGroupDetail.is_pause === true) {
-                        Alert.alert('Your team is paused.');
-                      } else {
-                        setChallengePopup(false);
-                        navigation.navigate('InviteChallengeScreen', {
-                          setting: obj,
-                          sportName: currentUserData?.sport,
-                          sportType: currentUserData?.sport_type,
-                          groupObj: currentUserData,
-                        });
-                      }
+                      navigation.navigate('InviteChallengeScreen', {
+                        setting: obj,
+                        sportName: currentUserData?.sport,
+                        sportType: currentUserData?.sport_type,
+                        groupObj: currentUserData,
+                      });
                     }
                   }
                 } else {
-                  Alert.alert('Your availability for challenge is off.');
+                  Alert.alert(strings.availibilityOff);
                 }
               }}>
               {selectedChallengeOption === 1 ? (
@@ -5983,12 +5861,14 @@ const HomeScreen = ({navigation, route}) => {
                   colors={[colors.yellowColor, colors.orangeGradientColor]}
                   style={styles.backgroundView}>
                   <Text style={[styles.myCityText, {color: colors.whiteColor}]}>
-                    Invite to Challenge
+                    {strings.inviteToChallenge}
                   </Text>
                 </LinearGradient>
               ) : (
                 <View style={styles.backgroundView}>
-                  <Text style={styles.myCityText}>Invite to Challenge</Text>
+                  <Text style={styles.myCityText}>
+                    {strings.inviteToChallenge}
+                  </Text>
                 </View>
               )}
             </TouchableWithoutFeedback>
@@ -6044,7 +5924,7 @@ const HomeScreen = ({navigation, route}) => {
                   fontFamily: fonts.RBold,
                   color: colors.lightBlackColor,
                 }}>
-                Sports
+                {strings.sportsEventsTitle}
               </Text>
 
               <Text

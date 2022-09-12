@@ -50,6 +50,7 @@ import {
   getLocationNameWithLatLong,
 } from '../../../api/External';
 import TCThinDivider from '../../../components/TCThinDivider';
+import {mobileCountryCode} from '../../../utils/constant';
 
 export default function BasicInfoScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
@@ -110,7 +111,6 @@ export default function BasicInfoScreen({navigation, route}) {
   ]);
 
   useEffect(() => {
-    console.log('route?.params?.city', route?.params?.city);
     if (isFocused) {
       if (
         route?.params?.city &&
@@ -155,27 +155,23 @@ export default function BasicInfoScreen({navigation, route}) {
       ).then((result) => {
         switch (result) {
           case RESULTS.UNAVAILABLE:
-            console.log(
-              'This feature is not available (on this device / in this context)',
-            );
+            console.log(strings.featuresNotAvailableText);
             break;
           case RESULTS.DENIED:
-            console.log(
-              'The permission has not been requested / is denied but requestable',
-            );
+            console.log(strings.permissionNotRequested);
 
             break;
           case RESULTS.LIMITED:
-            console.log('The permission is limited: some actions are possible');
+            console.log(strings.permissionLimitedText);
 
             break;
           case RESULTS.GRANTED:
-            console.log('The permission is granted');
+            console.log(strings.permissionGrantedText);
             setloading(true);
             getCurrentLocation();
             break;
           case RESULTS.BLOCKED:
-            console.log('The permission is denied and not requestable anymore');
+            console.log(strings.permissionDenitedText);
             break;
           default:
         }
@@ -187,18 +183,11 @@ export default function BasicInfoScreen({navigation, route}) {
     Geolocation.requestAuthorization();
     Geolocation.getCurrentPosition(
       (position) => {
-        console.log('Lat/long to position::=>', position);
-        console.log('222');
-
         getLocationNameWithLatLong(
           position?.coords?.latitude,
           position?.coords?.longitude,
           authContext,
         ).then((res) => {
-          console.log(
-            'Lat/long to address::=>',
-            res.results[0].address_components,
-          );
           const userData = {};
           // let stateAbbr, city, country;
 
@@ -212,15 +201,13 @@ export default function BasicInfoScreen({navigation, route}) {
               userData.country = e.long_name;
             }
           });
-          console.log('www', userData);
+
           setCurrentLocation(userData);
           setloading(false);
         });
-        console.log('444');
         setloading(false);
       },
       (error) => {
-        console.log('555');
         setloading(false);
         // See error code charts below.
         console.log(error.code, error.message);
@@ -234,7 +221,6 @@ export default function BasicInfoScreen({navigation, route}) {
       PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
     ])
       .then((result) => {
-        console.log('Data :::::', JSON.stringify(result));
         if (
           result['android.permission.ACCESS_COARSE_LOCATION'] &&
           result['android.permission.ACCESS_FINE_LOCATION'] === 'granted'
@@ -274,7 +260,6 @@ export default function BasicInfoScreen({navigation, route}) {
     setLocationPopup(false);
   };
   const getTeamsDataByCurrentLocation = async () => {
-    console.log('Curruent location data:=>', currentLocation);
     setCity(currentLocation.city);
     setState(currentLocation.state);
     setCountry(currentLocation.country);
@@ -283,42 +268,41 @@ export default function BasicInfoScreen({navigation, route}) {
 
   // Form Validation
   const checkValidation = () => {
-    console.log('userInfo', userInfo);
     if (userInfo.email) {
       if (!Utility.validateEmail(userInfo.email)) {
-        Alert.alert(strings.appName, 'Please enter valid email address.');
+        Alert.alert(strings.appName, strings.validEmailValidation);
         return false;
       }
     }
     if (userInfo.first_name === '') {
-      Alert.alert(strings.appName, 'First name cannot be blank');
+      Alert.alert(strings.appName, strings.firstnamevalidation);
       return false;
     }
     if (userInfo.last_name === '') {
-      Alert.alert(strings.appName, 'Last name cannot be blank');
+      Alert.alert(strings.appName, strings.lastnamevalidation);
       return false;
     }
     if (userInfo.city && userInfo.state_abbr && userInfo.country === '') {
-      Alert.alert(strings.appName, 'Location cannot be blank');
+      Alert.alert(strings.appName, strings.locationvalidation);
       return false;
     }
     if (userInfo.height) {
       if (!userInfo.height.height_type) {
-        Alert.alert(strings.appName, 'Please select height measurement');
+        Alert.alert(strings.appName, strings.heightValidation);
         return false;
       }
       if (userInfo.height.height <= 0 || userInfo.height.height >= 1000) {
-        Alert.alert(strings.appName, 'Please enter valid height.');
+        Alert.alert(strings.appName, strings.validHeightValidation);
         return false;
       }
     }
     if (userInfo.weight) {
       if (!userInfo.weight.weight_type) {
-        Alert.alert('Towns Cup', 'Please select weight measurement.');
+        Alert.alert(strings.appName, strings.weightValidation);
         return false;
       }
       if (userInfo.weight.weight <= 0 || userInfo.weight.weight >= 1000) {
-        Alert.alert(strings.appName, 'Please enter valid weight.');
+        Alert.alert(strings.appName, strings.validWeightValidation);
         return false;
       }
     }
@@ -327,7 +311,6 @@ export default function BasicInfoScreen({navigation, route}) {
 
   const onSavePress = () => {
     setloading(true);
-    console.log('checkValidation()', checkValidation());
 
     if (checkValidation()) {
       const bodyParams = {...userInfo};
@@ -456,12 +439,12 @@ export default function BasicInfoScreen({navigation, route}) {
         </View>
         <RNPickerSelect
           placeholder={{
-            label: 'Height type',
+            label: strings.heightTypeText,
             value: null,
           }}
           items={[
-            {label: 'cm', value: 'cm'},
-            {label: 'ft', value: 'ft'},
+            {label: strings.cm, value: strings.cm},
+            {label: strings.ft, value: strings.ft},
           ]}
           onValueChange={(value) => {
             setUserInfo({
@@ -538,12 +521,12 @@ export default function BasicInfoScreen({navigation, route}) {
         </View>
         <RNPickerSelect
           placeholder={{
-            label: 'Weight type',
+            label: strings.weightTypeText,
             value: null,
           }}
           items={[
-            {label: 'kg', value: 'kg'},
-            {label: 'pound', value: 'pound'},
+            {label: strings.kg, value: strings.kg},
+            {label: strings.pound, value: strings.pound},
           ]}
           onValueChange={(value) => {
             setUserInfo({
@@ -602,10 +585,7 @@ export default function BasicInfoScreen({navigation, route}) {
             label: strings.selectCode,
             value: null,
           }}
-          items={[
-            {label: 'Canada(+1)', value: 'Canada(+1)'},
-            {label: 'United States(+1)', value: 'United States(+1)'},
-          ]}
+          items={mobileCountryCode}
           onValueChange={(value) => {
             const tmpphoneNumbers = [...phoneNumbers];
             tmpphoneNumbers[index].country_code = value;
@@ -709,7 +689,7 @@ export default function BasicInfoScreen({navigation, route}) {
               textAlign: 'center',
               fontFamily: fonts.RBold,
             }}>
-            Basic info
+            {strings.basicinfotitle}
           </Text>
         }
         rightComponent={
@@ -720,7 +700,7 @@ export default function BasicInfoScreen({navigation, route}) {
               // else
               onSavePress();
             }}>
-            Update
+            {strings.update}
           </Text>
         }
       />
@@ -750,13 +730,13 @@ export default function BasicInfoScreen({navigation, route}) {
           </View>
         </View>
 
-        <TCLabel title={'Height'} />
+        <TCLabel title={strings.height} />
         {heightView()}
 
-        <TCLabel title={'Weight'} />
+        <TCLabel title={strings.weight} />
         {weightView()}
 
-        <TCLabel title={'Phone'} />
+        <TCLabel title={strings.phone} />
         <FlatList
           scrollEnabled={false}
           data={phoneNumbers}
@@ -765,7 +745,7 @@ export default function BasicInfoScreen({navigation, route}) {
         />
 
         <View>
-          <TCLabel title={'Mailing Address'} />
+          <TCLabel title={strings.mailingAddressText} />
           <TCTextField
             value={streetAddress}
             onChangeText={(text) => setStreetAddress(text)}
@@ -852,9 +832,7 @@ export default function BasicInfoScreen({navigation, route}) {
               />
             </View>
             {noData && searchText?.length > 0 && (
-              <Text style={styles.noDataText}>
-                Please, enter at least 3 characters to see cities.
-              </Text>
+              <Text style={styles.noDataText}>{strings.enter3CharText}</Text>
             )}
             {noData && searchText?.length === 0 && (
               <View style={{flex: 1}}>
@@ -867,7 +845,7 @@ export default function BasicInfoScreen({navigation, route}) {
                       {currentLocation?.country}
                     </Text>
                     <Text style={styles.curruentLocationText}>
-                      Current Location
+                      {strings.currentLocationText}
                     </Text>
 
                     <TCThinDivider
