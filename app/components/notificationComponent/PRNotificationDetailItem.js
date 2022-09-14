@@ -12,6 +12,7 @@ import TCProfileImage from '../TCProfileImage';
 import colors from '../../Constants/Colors';
 // import AuthContext from '../../auth/context'
 import {parseInviteRequest} from '../../screens/notificationsScreen/PRNotificationParser';
+import NotificationType from '../../Constants/NotificationType';
 
 function PRNotificationDetailItem({
   item,
@@ -21,6 +22,8 @@ function PRNotificationDetailItem({
   onPressFirstEntity,
   disabled = false,
   accessibilityLabel,
+  isTrash = false,
+  entityType = 'user',
 }) {
   //   const authContext = useContext(AuthContext)
   const [dataDictionary, setDataDictionary] = useState();
@@ -79,10 +82,33 @@ function PRNotificationDetailItem({
                     {dataDictionary.doneByTitle}{' '}
                   </Text>
                 )}
-                <Text style={styles.timeStyle}>
-                  {dataDictionary.notificationTime}
-                </Text>
+
+                {!isTrash && (
+                  <Text style={styles.timeStyle}>
+                    {dataDictionary.notificationTime}
+                  </Text>
+                )}
               </Text>
+              {isTrash && entityType === 'user' && (
+                <Text style={styles.timeStyle}>
+                  {(NotificationType.deleted && 'Deleted') ||
+                    (NotificationType.accepted && 'Accepted') ||
+                    (NotificationType.declined && 'declined')}{' '}
+                  <Text>{dataDictionary.notificationTime}</Text>
+                </Text>
+              )}
+              {isTrash && entityType === 'group' && (
+                <Text style={styles.timeStyle}>
+                  {(NotificationType.deleted && 'Deleted') ||
+                    (NotificationType.accepted && 'Accepted') ||
+                    (NotificationType.declined && 'Declined')}
+                  <Text>
+                    {' '}
+                    by {item.activities[0].remove_by?.data?.full_name}{' '}
+                    {dataDictionary.notificationTime}
+                  </Text>
+                </Text>
+              )}
               {(dataDictionary.isExpired ||
                 dataDictionary.isGameTimePassed) && (
                 <Text style={[{marginTop: 8}, styles.smallBoldStyle]}>
@@ -108,10 +134,17 @@ function PRNotificationDetailItem({
                 }>
                 <TouchableOpacity
                   testID={`${accessibilityLabel}`}
-                  style={styles.detailBtnStyle}
+                  style={
+                    isTrash ? styles.disabledBtnStyle : styles.detailBtnStyle
+                  }
                   onPress={onDetailPress}
-                  disabled={disabled}>
-                  <Text style={styles.detailBtnTextStyle}>
+                  disabled={isTrash}>
+                  <Text
+                    style={
+                      isTrash
+                        ? styles.disableBtnTitleTextStyle
+                        : styles.detailBtnTextStyle
+                    }>
                     {strings.detailText}
                   </Text>
                 </TouchableOpacity>
@@ -173,10 +206,24 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     justifyContent: 'center',
   },
+  disabledBtnStyle: {
+    width: '96%',
+    height: 25,
+    borderWidth: 1,
+    borderColor: colors.grayColor,
+    borderRadius: 5,
+    justifyContent: 'center',
+  },
   detailBtnTextStyle: {
     fontSize: 12,
     fontFamily: fonts.RBold,
     color: '#FF8A01',
+    textAlign: 'center',
+  },
+  disableBtnTitleTextStyle: {
+    fontSize: 12,
+    fontFamily: fonts.RBold,
+    color: colors.grayColor,
     textAlign: 'center',
   },
 

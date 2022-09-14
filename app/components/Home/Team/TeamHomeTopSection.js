@@ -8,7 +8,7 @@ import TCProfileButton from '../../TCProfileButton';
 import fonts from '../../../Constants/Fonts';
 import TCActionButton from '../../TCActionButton';
 
-export default function UserTeamTopSection({
+export default function TeamHomeTopSection({
   teamDetails,
   isAdmin,
   loggedInEntity,

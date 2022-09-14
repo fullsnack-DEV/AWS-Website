@@ -1,6 +1,6 @@
 /* eslint-disable array-callback-return */
 /* eslint-disable no-shadow */
-import React, {useState, useEffect, useContext} from 'react';
+import React, {useState, useContext} from 'react';
 import {
   Text,
   View,
@@ -22,63 +22,37 @@ import AuthContext from '../../../auth/context';
 import TCGradientButton from '../../../components/TCGradientButton';
 import * as Utility from '../../../utils';
 
-let entity = {};
-const privacyData = ['everyone', 'followers', 'members', 'admins'];
 export default function MembersViewPrivacyScreen({navigation}) {
   // For activity indigator
-  const [loading, setloading] = useState(false);
-  const [switchUser, setSwitchUser] = useState({});
-  const [member, setMember] = useState(0);
-  const [follower, setFollower] = useState(0);
-  const [profile, setProfile] = useState(0);
   const authContext = useContext(AuthContext);
 
-  useEffect(() => {
-    const getAuthEntity = async () => {
-      entity = authContext.entity;
-      setSwitchUser(entity);
-    };
-    getAuthEntity();
-    getSelectedData();
-  }, []);
+  const [loading, setloading] = useState(false);
+  const [member, setMember] = useState(
+    authContext.entity.obj.who_can_see_member ?? 0,
+  );
+  const [follower, setFollower] = useState(
+    authContext.entity.obj.who_can_see_follower ?? 0,
+  );
+  const [profile, setProfile] = useState(
+    authContext.entity.obj.who_can_see_member_profile ?? 0,
+  );
 
-  const getSelectedData = () => {
-    const privacyMember = entity?.auth?.user?.privacy_members;
-    const privacyFollowers = entity?.auth?.user?.privacy_followers;
-    const privacyProfile = entity?.auth?.user?.privacy_profile;
-    const getIndexFromPrivacy = (privacy) =>
-      privacyData?.findIndex((item) => item === privacy);
-    setMember(getIndexFromPrivacy(privacyMember));
-    setFollower(getIndexFromPrivacy(privacyFollowers));
-    if (privacyProfile === 'members') setProfile(0);
-    else setProfile(1);
-  };
-  const sendClubSetting = async () => {
+  const saveGroupSetting = () => {
     setloading(true);
     const bodyParams = {
-      privacy_members:
-        (member === 0 && 'everyone') ||
-        (member === 1 && 'followers') ||
-        (member === 2 && 'members') ||
-        (member === 3 && 'admins'),
-      privacy_followers:
-        (follower === 0 && 'everyone') ||
-        (follower === 1 && 'followers') ||
-        (follower === 2 && 'members') ||
-        (follower === 3 && 'admins'),
-      privacy_profile:
-        (profile === 0 && 'members') || (profile === 1 && 'admins'),
+      who_can_see_member: member,
+      who_can_see_follower: follower,
+      who_can_see_member_profile: profile,
     };
     console.log('BODY :', bodyParams);
-    patchGroup(switchUser.uid, bodyParams, authContext)
+    patchGroup(authContext.entity.uid, bodyParams, authContext)
       .then(async (response) => {
         console.log('Response :', response.payload);
-        const cloneEntity = JSON.parse(JSON.stringify(entity));
-        cloneEntity.auth.user = response.payload;
-        authContext.setUser({...response.payload});
-        authContext.setEntity({...cloneEntity});
-        await Utility.setStorage('authContextEntity', {...cloneEntity});
-        await Utility.setStorage('authContextUser', {...response.payload});
+        const entity = authContext.entity;
+        entity.obj = response.payload;
+        authContext.setEntity({...entity});
+
+        await Utility.setStorage('authContextEntity', {...entity});
         setloading(false);
         navigation.goBack();
       })
@@ -99,7 +73,7 @@ export default function MembersViewPrivacyScreen({navigation}) {
           <Text
             style={
               styles.privacyNameStyle
-            }>{`Who can see members in ${switchUser.role} connections?`}</Text>
+            }>{`Who can see members in ${authContext.entity.role} connections?`}</Text>
           <View style={styles.radioMainView}>
             <TouchableOpacity
               style={styles.radioButtonView}
@@ -152,7 +126,7 @@ export default function MembersViewPrivacyScreen({navigation}) {
           <Text
             style={
               styles.privacyNameStyle
-            }>{`Who can see followers in ${switchUser.role} connections?`}</Text>
+            }>{`Who can see followers in ${authContext.entity.role} connections?`}</Text>
           <View style={styles.radioMainView}>
             <TouchableOpacity
               style={styles.radioButtonView}
@@ -233,7 +207,7 @@ export default function MembersViewPrivacyScreen({navigation}) {
       </ScrollView>
       <TCGradientButton
         title={strings.saveTitle}
-        onPress={() => sendClubSetting()}
+        onPress={() => saveGroupSetting()}
       />
     </SafeAreaView>
   );

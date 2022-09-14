@@ -39,17 +39,17 @@ export default function WhoCanInviteMemberScreen({navigation, route}) {
   const [loading, setloading] = useState(false);
 
   const [whoCanInvite, setWhoCanInvite] = useState(
-    (route?.params?.whoCanInviteGroup === 0 && {
+    (route?.params?.whoCanInviteGroup === 1 && {
       key: `${
         authContext.entity.role === 'team' ? 'Team & members' : 'Club & members'
       }`,
-      id: 0,
+      id: 1,
     }) ||
-      (route?.params?.whoCanInviteGroup === 1 && {
+      (route?.params?.whoCanInviteGroup === 0 && {
         key: `${
           authContext.entity.role === 'team' ? 'Team Only' : 'Club only'
         }`,
-        id: 1,
+        id: 2,
       }),
   );
 

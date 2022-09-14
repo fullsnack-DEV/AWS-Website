@@ -1021,7 +1021,7 @@ const HomeScreen = ({navigation, route}) => {
       });
   };
 
-  const userJoinGroup = async () => {
+  const userJoinGroup = () => {
     currentUserData.is_joined = true;
     currentUserData.member_count += 1;
     if (currentUserData.is_following === false) {
@@ -1032,19 +1032,8 @@ const HomeScreen = ({navigation, route}) => {
     setCurrentUserData({...currentUserData});
     const params = {};
     joinTeam(params, userID, authContext)
-      .then(async (response) => {
-        console.log('user join group');
-        const entity = authContext.entity;
-        console.log(
-          'Register player response for club IS:: ',
-          response.payload,
-        );
-        entity.auth.user = response.payload;
-        entity.obj = response.payload;
-        authContext.setEntity({...entity});
-        authContext.setUser(response.payload);
-        await Utility.setStorage('authContextUser', response.payload);
-        await Utility.setStorage('authContextEntity', {...entity});
+      .then((response) => {
+        console.log('user join group', response);
       })
       .catch((error) => {
         console.log('userJoinGroup error with userID', error, userID);
@@ -1059,7 +1048,7 @@ const HomeScreen = ({navigation, route}) => {
       });
   };
 
-  const userLeaveGroup = async () => {
+  const userLeaveGroup = () => {
     currentUserData.is_joined = false;
     if (currentUserData.member_count > 0) {
       currentUserData.member_count -= 1;

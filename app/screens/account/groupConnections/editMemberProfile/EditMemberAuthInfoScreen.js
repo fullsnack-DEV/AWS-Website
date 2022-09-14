@@ -92,11 +92,11 @@ export default function EditMemberAuthInfoScreen({navigation, route}) {
                       authContext,
                     ).then(() => {
                       setLoading(false);
-                      navigation.goBack();
+                      navigation.pop(2);
                     });
                   } else {
                     setLoading(false);
-                    navigation.goBack();
+                    navigation.pop(2);
                   }
                 })
                 .catch((e) => {
@@ -119,7 +119,7 @@ export default function EditMemberAuthInfoScreen({navigation, route}) {
       )
         .then(() => {
           setLoading(false);
-          navigation.goBack();
+          navigation.pop(2);
         })
         .catch((e) => {
           setLoading(false);

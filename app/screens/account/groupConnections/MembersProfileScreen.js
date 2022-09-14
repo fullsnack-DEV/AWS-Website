@@ -647,6 +647,8 @@ const styles = StyleSheet.create({
     marginTop: 5,
     marginBottom: 3,
     marginLeft: 25,
+    marginRight: 25,
+    textAlign: 'justify',
   },
   inviteButtonContainer: {
     height: 35,

@@ -62,6 +62,7 @@ export default function GroupMembersScreen({navigation, route}) {
   // const [allSelected, setAllSelected] = useState(false);
   // const [filter, setFilter] = useState([]);
   const [members, setMembers] = useState();
+
   const [switchUser, setSwitchUser] = useState({});
   const [groupID] = useState(route.params?.groupID);
 
@@ -105,58 +106,19 @@ export default function GroupMembersScreen({navigation, route}) {
     });
   }, [navigation, switchUser]);
 
-  // const toggleModal = () => {
-  //   setModalVisible(!isModalVisible);
-  // };
-  // const isIconCheckedOrNot = ({ item, index }) => {
-  //   console.log('SELECTED:::', index);
-  //   // eslint-disable-next-line no-param-reassign
-  //   item.isSelected = !item.isSelected;
-
-  //   setFilter([...filter]);
-
-  //   for (const temp of filter) {
-  //     if (temp.isSelected) {
-  //       setFilter.push(temp.data);
-  //     }
-  //   }
-  // };
-  // const makAllSelected = () => {
-  //   setAllSelected(!allSelected)
-  //   const arr = filterArray.map((el) => (
-  //     // eslint-disable-next-line no-return-assign
-  //     el.data.map((d) => (
-  //     // eslint-disable-next-line no-param-reassign
-  //       d.isSelected = !allSelected
-  //     ))
-  //   ))
-  //   setFilter(arr);
-  // }
   const searchFilterFunction = (text) => {
-    const result = (searchMember ?? []).filter(
-      (x) => x?.first_name?.includes(text) || x?.last_name?.includes(text),
+    const result = members.filter(
+      (x) =>
+        x.first_name.toLowerCase().includes(text.toLowerCase()) ||
+        x.last_name.toLowerCase().includes(text.toLowerCase()),
     );
-    setMembers(result);
+    console.log('result::=>', result);
+    if (text.length > 0) {
+      setMembers(result);
+    } else {
+      setMembers(searchMember);
+    }
   };
-  // const renderFilterItem = ({ item, index }) => (
-  //   <TouchableWithoutFeedback onPress={() => {
-  //     isIconCheckedOrNot({ item, index });
-  //   }}>
-
-  //     {item.isSelected ? <LinearGradient
-  //      colors={[colors.greenGradientStart, colors.greenGradientEnd]}
-  //      style={styles.rowStyleSelected}>
-  //       <Text style={styles.rowTitle}>{item.innerOptionName}</Text>
-  //       <Image source={images.checkGreen} style={styles.checkGreenImage}/>
-  //     </LinearGradient>
-  //       : <View
-  //       style={styles.rowStyleUnSelected}>
-  //         <Text style={styles.rowTitleBlack}>{item.innerOptionName}</Text>
-  //         <Image source={images.uncheckWhite} style={styles.rowCheckImage}/>
-  //       </View>
-  //     }
-  //   </TouchableWithoutFeedback>
-  // );
 
   const navigateToGroupMessage = () => {
     setloading(true);
@@ -212,26 +174,6 @@ export default function GroupMembersScreen({navigation, route}) {
     },
     [navigation, groupID],
   );
-
-  // const onPressMessage = useCallback(
-  //   (item) => {
-  //     const accountType = getQBAccountType(item?.entity_type);
-  //     QBcreateUser(item?.user_id, item, accountType)
-  //       .then(() => {
-  //         navigation.navigate('MessageChat', {
-  //           screen: 'MessageChat',
-  //           params: {userId: item.user_id},
-  //         });
-  //       })
-  //       .catch(() => {
-  //         navigation.navigate('MessageChat', {
-  //           screen: 'MessageChat',
-  //           params: {userId: item.user_id},
-  //         });
-  //       });
-  //   },
-  //   [navigation],
-  // );
 
   const callFollowUser = async (data, index) => {
     const tempMember = [...members];
@@ -297,7 +239,7 @@ export default function GroupMembersScreen({navigation, route}) {
     (item) => {
       console.log('Profile photo & title press', item);
       if (item.connected) {
-        navigation.navigate('HomeScreen', {
+        navigation.push('HomeScreen', {
           uid: item?.user_id,
           role: 'user',
           backButtonVisible: true,
@@ -413,16 +355,20 @@ export default function GroupMembersScreen({navigation, route}) {
               </TouchableOpacity>
             )
           ) : data.is_following ? (
-            <TCFollowUnfollwButton
-              outerContainerStyle={styles.firstButtonOuterStyle}
-              style={styles.firstButtonStyle}
-              title={strings.following}
-              isFollowing={data.is_following}
-              onPress={() => {
-                onUserAction('following', data, index);
-              }}
-            />
-          ) : (
+            authContext.entity.uid !== data?.user_id && data?.connected ? (
+              <TCFollowUnfollwButton
+                outerContainerStyle={styles.firstButtonOuterStyle}
+                style={styles.firstButtonStyle}
+                title={strings.following}
+                isFollowing={data.is_following}
+                onPress={() => {
+                  onUserAction('following', data, index);
+                }}
+              />
+            ) : (
+              <View />
+            )
+          ) : authContext.entity.uid !== data?.user_id && data?.connected ? (
             <TCFollowUnfollwButton
               outerContainerStyle={styles.firstButtonOuterStyle}
               style={styles.firstButtonStyle}
@@ -432,12 +378,22 @@ export default function GroupMembersScreen({navigation, route}) {
                 onUserAction('follow', data, index);
               }}
             />
+          ) : (
+            <View />
           )}
         </View>
         <TCThinDivider marginTop={20} />
       </>
     ),
-    [authContext.entity.role, onPressProfile, onUserAction],
+    [
+      authContext.entity.role,
+      authContext.entity.uid,
+      groupID,
+      onPressProfile,
+      onPressProfilePhotoAndTitle,
+      onUserAction,
+      renderFirstNameAndLastName,
+    ],
   );
 
   return (
@@ -446,7 +402,7 @@ export default function GroupMembersScreen({navigation, route}) {
       <View tabLabel={strings.membersTitle} style={{flex: 1}}>
         <View style={styles.searchBarView}>
           <TCSearchBox
-            editable={members?.length > 0}
+            // editable={members?.length > 0}
             onChangeText={(text) => searchFilterFunction(text)}
           />
         </View>
@@ -489,7 +445,7 @@ export default function GroupMembersScreen({navigation, route}) {
                 strings.cancel,
               ]
         }
-        cancelButtonIndex={switchUser.role === strings.entityTypeClub ? 5 : 6}
+        cancelButtonIndex={switchUser.role === strings.entityTypeClub ? 7 : 6}
         // destructiveButtonIndex={1}
         onPress={(index) => {
           if (index === 0) {

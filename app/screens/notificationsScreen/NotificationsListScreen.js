@@ -664,7 +664,8 @@ function NotificationsListScreen({navigation}) {
     verb.includes(NotificationType.invitePlayerToJoingame) ||
     verb.includes(NotificationType.inviteToDoubleTeam) ||
     verb.includes(NotificationType.inviteToEvent) ||
-    verb.includes(NotificationType.sendBasicInfoToMember);
+    verb.includes(NotificationType.sendBasicInfoToMember) ||
+    verb.includes(NotificationType.userRequestedJoingroup);
   const openHomePage = (item) => {
     if (activeScreen) {
       if (item?.entityType && item?.entityId) {

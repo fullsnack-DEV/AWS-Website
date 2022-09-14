@@ -29,7 +29,7 @@ function ChooseVenueScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
 
   const [venueFooter, setVenueFooter] = useState(
-    venues[venues.length - 1].isCustom
+    venues?.[venues.length - 1]?.isCustom
       ? {
           isCustom: true,
           name: venues[venues.length - 1].name,
@@ -44,7 +44,7 @@ function ChooseVenueScreen({navigation, route}) {
       : {isCustom: true},
   );
   const [isChanged, setIsChanged] = useState(
-    !venues[venues.length - 1].isCustom,
+    !venues[venues.length - 1]?.isCustom,
   );
 
   const [selectedVenue, setSelectedVenue] = useState();
@@ -274,7 +274,7 @@ function ChooseVenueScreen({navigation, route}) {
   );
 
   const preparedVenueList = () => {
-    if (venues[venues.length - 1].isCustom) {
+    if (venues[venues.length - 1]?.isCustom) {
       venues[venues.length - 1] = venueFooter;
       return venues;
     }

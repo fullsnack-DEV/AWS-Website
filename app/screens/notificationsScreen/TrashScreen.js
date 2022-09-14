@@ -319,7 +319,11 @@ function TrashScreen({navigation, route}) {
     verb.includes(NotificationType.invitePlayerToJoinTeam) ||
     verb.includes(NotificationType.invitePlayerToJoinClub) ||
     verb.includes(NotificationType.inviteToConnectProfile) ||
-    verb.includes(NotificationType.invitePlayerToJoingame);
+    verb.includes(NotificationType.invitePlayerToJoingame) ||
+    verb.includes(NotificationType.inviteToDoubleTeam) ||
+    verb.includes(NotificationType.inviteToEvent) ||
+    verb.includes(NotificationType.sendBasicInfoToMember) ||
+    verb.includes(NotificationType.userRequestedJoingroup);
 
   const openHomePage = (item) => {
     if (item?.entityType && item?.entityId) {
@@ -522,6 +526,13 @@ function TrashScreen({navigation, route}) {
       ) {
         return (
           <PRNotificationTeamInvite
+            isTrash={true}
+            entityType={
+              authContext.entity.role === 'user' ||
+              authContext.entity.role === 'player'
+                ? 'user'
+                : 'group'
+            }
             item={item}
             selectedEntity={selectedEntity}
             // onAccept={() => onAccept(item.activities[0].id)}
@@ -536,6 +547,13 @@ function TrashScreen({navigation, route}) {
       ) {
         return (
           <PRNotificationTeamInvite
+            isTrash={true}
+            entityType={
+              authContext.entity.role === 'user' ||
+              authContext.entity.role === 'player'
+                ? 'user'
+                : 'group'
+            }
             item={item}
             selectedEntity={selectedEntity}
             onRespond={() => onRespond(item)} // JSON.parse(item.activities[0].object))
@@ -573,6 +591,13 @@ function TrashScreen({navigation, route}) {
     ) {
       return (
         <PRNotificationDetailItem
+          isTrash={true}
+          entityType={
+            authContext.entity.role === 'user' ||
+            authContext.entity.role === 'player'
+              ? 'user'
+              : 'group'
+          }
           item={item}
           selectedEntity={selectedEntity}
           onDetailPress={() => onDetailPress(item)}

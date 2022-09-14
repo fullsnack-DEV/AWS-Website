@@ -23,7 +23,7 @@ export default function CreateMemberProfileClubForm2({navigation, route}) {
   entity = authContext.entity;
   const [setting, setSetting] = useState({
     is_member: true,
-    is_admin: true,
+    is_admin: false,
   });
 
   // const [memberDetail, setMemberDetail] = useState({
@@ -103,7 +103,7 @@ export default function CreateMemberProfileClubForm2({navigation, route}) {
               />
             </TouchableOpacity>
           </View>
-          <View style={styles.checkBoxContainer}>
+          <View style={[styles.checkBoxContainer, {opacity: 0.5}]}>
             <Text style={[styles.checkBoxItemText, {marginLeft: 0}]}>
               {format(
                 strings.adminText_dy,

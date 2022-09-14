@@ -141,16 +141,14 @@ export default function GroupMembersSettingScreen({navigation, route}) {
         }
       }
       if (item === userSetting[1].key) {
-        console.log('whoCanInviteGroup === 0', whoCanInviteGroup === 0);
-
-        if (whoCanInviteGroup === 0) {
+        if (whoCanInviteGroup === 1) {
           return `${
             authContext.entity.role === 'team'
               ? 'Team & members'
               : 'Club & members'
           }`;
         }
-        if (whoCanInviteGroup === 1) {
+        if (whoCanInviteGroup === 0) {
           return `${
             authContext.entity.role === 'team' ? 'Team only' : 'Club only'
           }`;

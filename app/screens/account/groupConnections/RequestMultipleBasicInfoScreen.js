@@ -127,12 +127,16 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
       sendBasicInfoRequest(route?.params?.groupID, selectedList, authContext)
         .then((response) => {
           setloading(false);
+
           setTimeout(() => {
             Alert.alert(
               strings.alertmessagetitle,
               `Requests for basic info were sent to ${selectedList?.length} members.`,
+              [{text: 'OK', onPress: () => navigation.goBack()}],
+              {cancelable: false},
             );
           }, 10);
+
           console.log('sendBasicInfoRequest', response);
         })
         .catch((e) => {

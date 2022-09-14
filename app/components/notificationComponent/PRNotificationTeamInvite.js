@@ -17,12 +17,13 @@ function PRNotificationTeamInvite({
 }) {
   const [dataDictionary, setDataDictionary] = useState();
 
-  console.log('Invite request component:=>', item);
   useEffect(() => {
     parseInviteRequest(item, selectedEntity).then((data) => {
+      console.log('Invite request component:=>', data);
+
       setDataDictionary(data);
     });
-  }, []);
+  }, [item, selectedEntity]);
 
   return (
     <View style={{backgroundColor: colors.whiteColor, flex: 1}}>

@@ -591,7 +591,7 @@ export const parseInviteRequest = async (data) => {
       `${data.created_at}+0000`,
     );
   }
-
+  console.log('finalStringfinalStringfinalString', finalString);
   return finalString;
 };
 
