@@ -3,6 +3,7 @@ import {View, StyleSheet, Alert, Text, FlatList} from 'react-native';
 
 import {useIsFocused} from '@react-navigation/native';
 
+import {format} from 'react-string-format';
 import AuthContext from '../../../auth/context';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import AppleStyleSwipeableRow from '../../../components/notificationComponent/AppleStyleSwipeableRow';
@@ -39,7 +40,6 @@ export default function PayoutMethodList({navigation}) {
     new Promise((resolve, reject) => {
       payoutMethods(authContext)
         .then((response) => {
-          console.log('payout method:=>', response);
           setCards([...response.payload]);
           setloading(false);
 
@@ -57,7 +57,7 @@ export default function PayoutMethodList({navigation}) {
   const onDeleteCard = (item) => {
     Alert.alert(
       strings.alertmessagetitle,
-      `Do you want remove account ending with ${item.last4} from your account to ?`,
+      format(strings.removeAccountText, item.last4),
       [
         {
           text: strings.cancel,
@@ -147,7 +147,9 @@ export default function PayoutMethodList({navigation}) {
   const ListEmptyComponent = useMemo(
     () => (
       <View>
-        <Text style={styles.notAvailableTextStyle}>No Payout Method Yet</Text>
+        <Text style={styles.notAvailableTextStyle}>
+          {strings.noPayoutMethodText}
+        </Text>
       </View>
     ),
     [],

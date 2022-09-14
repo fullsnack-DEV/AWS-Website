@@ -47,6 +47,7 @@ import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import {strings} from '../../../../Localization/translation';
 import {getHitSlop} from '../../../utils';
+import Verbs from '../../../Constants/Verbs';
 
 // eslint-disable-next-line no-unused-vars
 let entity = {};
@@ -146,8 +147,6 @@ export default function GameDetailRecord({navigation, route}) {
         //   setActionByTeamID(gameObj?.away_team?.group_id);
         // }
         setloading(false);
-
-        console.log('GAME RESPONSE::', response.payload);
       })
       .catch((e) => {
         setloading(false);
@@ -174,7 +173,6 @@ export default function GameDetailRecord({navigation, route}) {
       // getTimeDifferent(new Date().getTime(), new Date().getTime()),
       setTimelineTimer('00 : 00 : 00');
     } else if (obj?.status === GameStatus.paused) {
-      console.log('last status::=', obj?.status);
       setTimelineTimer(
         getTimeDifferent(
           obj?.pause_datetime * 1000,
@@ -183,7 +181,6 @@ export default function GameDetailRecord({navigation, route}) {
       );
     } else if (date) {
       if (GameStatus.playing === obj?.status) {
-        console.log('playing');
         setTimelineTimer(
           getTimeDifferent(
             obj?.actual_startdatetime * 1000,
@@ -191,7 +188,6 @@ export default function GameDetailRecord({navigation, route}) {
           ),
         );
       } else {
-        console.log('Come here');
         setTimelineTimer(
           getTimeDifferent(new Date().getTime(), new Date(date).getTime()),
         );
@@ -257,19 +253,19 @@ export default function GameDetailRecord({navigation, route}) {
       gameObj.status === GameStatus.accepted ||
       gameObj.status === GameStatus.reset
     ) {
-      Alert.alert('Please, start the game first.');
+      Alert.alert(strings.startGameFirstValidation);
       return false;
     }
     if (gameObj.status === GameStatus.paused) {
-      Alert.alert('Game is paused.');
+      Alert.alert(strings.gamePaused);
       return false;
     }
     if (gameObj.status === GameStatus.ended) {
-      Alert.alert('Game is ended.');
+      Alert.alert(strings.gameEnded);
       return false;
     }
     if (!selectedMemberID) {
-      Alert.alert('Please, select a player first');
+      Alert.alert(strings.selectPlayerFirstValidation);
       return false;
     }
     return true;
@@ -279,45 +275,50 @@ export default function GameDetailRecord({navigation, route}) {
     return moment(new Date(dateValue)).format('hh : mm a, MMM DD');
   };
   const getGameRosterDetail = (gameId) => {
-    console.log('getGameRosterDetail called');
-
     getGameRoster(gameId, authContext)
       .then((res2) => {
         setloading(false);
-        console.log('ROSTER RESPONSE::', JSON.stringify(res2.payload));
         setHomeField(
           res2.payload.home_team.roster.filter(
-            (obj) => obj.field_status === 'onField' && obj.role === 'player',
+            (obj) =>
+              obj.field_status === 'onField' &&
+              obj.role === Verbs.entityTypePlayer,
           ),
         );
         setHomeBench(
           res2.payload.home_team.roster.filter(
             (obj) =>
               (obj.field_status === 'onBench' || !obj.field_status) &&
-              obj.role === 'player',
+              obj.role === Verbs.entityTypePlayer,
           ),
         );
         setAwayField(
           res2.payload.away_team.roster.filter(
-            (obj) => obj.field_status === 'onField' && obj.role === 'player',
+            (obj) =>
+              obj.field_status === 'onField' &&
+              obj.role === Verbs.entityTypePlayer,
           ),
         );
         setAwayBench(
           res2.payload.away_team.roster.filter(
             (obj) =>
               (obj.field_status === 'onBench' || !obj.field_status) &&
-              obj.role === 'player',
+              obj.role === Verbs.entityTypePlayer,
           ),
         );
         if (
           res2.payload.home_team.roster.filter(
-            (obj) => obj.field_status === 'onField' && obj.role === 'player',
+            (obj) =>
+              obj.field_status === 'onField' &&
+              obj.role === Verbs.entityTypePlayer,
           ).length <= 0
         ) {
           setIsLineUpSet('Your team does not configure lineup yet.');
         } else if (
           res2.payload.away_team.roster.filter(
-            (obj) => obj.field_status === 'onField' && obj.role === 'player',
+            (obj) =>
+              obj.field_status === 'onField' &&
+              obj.role === Verbs.entityTypePlayer,
           ).length <= 0
         ) {
           setIsLineUpSet('Away team does not configure lineup yet.');
@@ -1260,7 +1261,7 @@ export default function GameDetailRecord({navigation, route}) {
               )}
               sections={[
                 {
-                  title: 'ON FIELD',
+                  title: strings.onField,
                   data: homeField,
                   // data: [
                   //   {
@@ -1271,14 +1272,14 @@ export default function GameDetailRecord({navigation, route}) {
                   //       && gameObj.home_team.group_id,
                   //     profile: {
                   //       first_name: 'No Specific',
-                  //       last_name: 'Player',
+                  //       last_name: Verbs.entityTypePlayer,
                   //     },
                   //   },
                   //   ...homeField,
                   // ],
                 },
                 {
-                  title: 'ON BENCH',
+                  title: strings.onBench,
                   data: homeBench,
                 },
               ]}
@@ -1310,7 +1311,7 @@ export default function GameDetailRecord({navigation, route}) {
               )}
               sections={[
                 {
-                  title: 'ON FIELD',
+                  title: strings.onField,
                   data: awayField,
                   // data: [
                   //   {
@@ -1321,14 +1322,14 @@ export default function GameDetailRecord({navigation, route}) {
                   //       && gameObj.away_team.group_id,
                   //     profile: {
                   //       first_name: 'No Specific',
-                  //       last_name: 'Player',
+                  //       last_name: Verbs.entityTypePlayer,
                   //     },
                   //   },
                   //   ...awayField,
                   // ],
                 },
                 {
-                  title: 'ON BENCH',
+                  title: strings.onBench,
                   data: awayBench,
                 },
               ]}
@@ -1367,7 +1368,7 @@ export default function GameDetailRecord({navigation, route}) {
                 (gameObj &&
                   gameObj.status &&
                   gameObj.status === GameStatus.reset)
-                  ? 'Game start at now'
+                  ? strings.gameStartAtNow
                   : getDateFormat(date ? new Date(date.getTime()) : new Date())}
               </Text>
               <Image source={images.dropDownArrow} style={styles.downArrow} />
@@ -1412,7 +1413,7 @@ export default function GameDetailRecord({navigation, route}) {
             <View style={styles.gameRecordButtonView}>
               {gameObj.status === GameStatus.accepted && (
                 <TCGameButton
-                  title="Start"
+                  title={strings.starts}
                   onPress={() => {
                     if (
                       gameObj.start_datetime >
@@ -1425,16 +1426,13 @@ export default function GameDetailRecord({navigation, route}) {
                         (ReservationStatus.pendingrequestpayment ||
                           ReservationStatus.pendingpayment)
                       ) {
-                        Alert.alert(
-                          'Game cannot be start unless the payment goes through',
-                        );
+                        Alert.alert(strings.gameNotStartWithoutPayment);
                       } else {
                         lastTimeStamp = date
                           ? parseFloat(
                               date.setMilliseconds(0, 0) / 1000,
                             ).toFixed(0)
                           : parseFloat(new Date().getTime() / 1000).toFixed(0);
-                        console.log('lastTimeStamp:=>', lastTimeStamp);
                         lastVerb = GameVerb.Start;
                         const body = [
                           {
@@ -1446,7 +1444,7 @@ export default function GameDetailRecord({navigation, route}) {
                         addGameRecordDetail(gameObj.game_id, body);
                       }
                     } else {
-                      Alert.alert('Game cannot be start because its expired.');
+                      Alert.alert(strings.gameNotStartExpired);
                     }
                   }}
                   gradientColor={[colors.yellowColor, colors.themeColor]}
@@ -1457,7 +1455,7 @@ export default function GameDetailRecord({navigation, route}) {
               )}
               {gameObj.status === GameStatus.paused && (
                 <TCGameButton
-                  title="Resume"
+                  title={strings.resume}
                   onPress={() => {
                     lastTimeStamp = parseFloat(
                       new Date().getTime() / 1000,
@@ -1481,7 +1479,7 @@ export default function GameDetailRecord({navigation, route}) {
               {(gameObj.status === GameStatus.playing ||
                 gameObj.status === GameStatus.resume) && (
                 <TCGameButton
-                  title="Pause"
+                  title={strings.pause}
                   onPress={() => {
                     lastTimeStamp = parseFloat(
                       new Date().getTime() / 1000,
@@ -1506,7 +1504,7 @@ export default function GameDetailRecord({navigation, route}) {
                 gameObj.status === GameStatus.paused ||
                 gameObj.status === GameStatus.resume) && (
                 <TCGameButton
-                  title="Match End"
+                  title={strings.matchEnd}
                   onPress={() => {
                     lastTimeStamp = parseFloat(
                       new Date().getTime() / 1000,
@@ -1522,7 +1520,7 @@ export default function GameDetailRecord({navigation, route}) {
                     addGameRecordDetail(gameObj.game_id, body);
                   }}
                   gradientColor={[colors.yellowColor, colors.themeColor]}
-                  buttonTitle={'END'}
+                  buttonTitle={strings.END}
                   buttonTextColor={colors.whiteColor}
                   textColor={colors.themeColor}
                   imageSize={15}
@@ -1534,7 +1532,7 @@ export default function GameDetailRecord({navigation, route}) {
                 gameObj.status === GameStatus.ended ||
                 gameObj.status === GameStatus.resume) && (
                 <TCGameButton
-                  title="Records"
+                  title={strings.records}
                   onPress={() => {
                     clearInterval(timer);
                     navigation.navigate('SoccerRecordList', {
@@ -1554,7 +1552,7 @@ export default function GameDetailRecord({navigation, route}) {
                 gameObj.status === GameStatus.ended ||
                 gameObj.status === GameStatus.resume) && (
                 <TCGameButton
-                  title="Simple"
+                  title={strings.simple}
                   onPress={() => {
                     navigation.goBack();
                   }}
@@ -1573,9 +1571,9 @@ export default function GameDetailRecord({navigation, route}) {
             ref={actionSheet}
             // title={'News Feed Post'}
             options={[
-              'Edit Roster and Non-roster',
-              'Reset Match Records',
-              'Cancel',
+              strings.editRosterNonRoster,
+              strings.resetMatchRecords,
+              strings.cancel,
             ]}
             cancelButtonIndex={2}
             destructiveButtonIndex={1}
@@ -1584,24 +1582,24 @@ export default function GameDetailRecord({navigation, route}) {
                 console.log('o');
               } else if (index === 1) {
                 Alert.alert(
-                  'Do you want to reset all the match records?',
+                  strings.resetMatchRecord,
                   '',
                   [
                     {
-                      text: 'Cancel',
+                      text: strings.cancel,
                       style: 'cancel',
                     },
                     {
-                      text: 'Reset',
+                      text: strings.resetTitleText,
                       style: 'destructive',
                       onPress: () => {
                         if (
                           gameObj.status === GameStatus.accepted ||
                           gameObj.status === GameStatus.reset
                         ) {
-                          Alert.alert('Game not started yet.');
+                          Alert.alert(strings.gameNotStarted);
                         } else if (gameObj.status === GameStatus.ended) {
-                          Alert.alert('Game is ended.');
+                          Alert.alert(strings.gameEnded);
                         } else {
                           resetGameDetail(gameObj.game_id);
                         }

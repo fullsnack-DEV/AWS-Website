@@ -31,8 +31,6 @@ export default function RespondForInviteScreen({navigation, route}) {
   const [groupObj] = useState(route?.params?.groupObj);
 
   const entityObject = groupObj;
-
-  console.log('route obj:=>', groupObj);
   const authContext = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [groupObject, setGroupObject] = useState();
@@ -52,7 +50,6 @@ export default function RespondForInviteScreen({navigation, route}) {
       authContext,
     )
       .then((response) => {
-        console.log('group api res:=>', response.payload);
         setGroupObject(response.payload);
         getGroupMembers(
           JSON.parse(groupObj.activities[0].object).group.group_id,
@@ -60,7 +57,6 @@ export default function RespondForInviteScreen({navigation, route}) {
         )
           .then((members) => {
             setMembersList(members.payload);
-            console.log('members.payload', members.payload);
             setLoading(false);
           })
           .catch((e) => {
@@ -72,7 +68,6 @@ export default function RespondForInviteScreen({navigation, route}) {
       })
       .catch((e) => {
         setLoading(false);
-
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
@@ -100,7 +95,6 @@ export default function RespondForInviteScreen({navigation, route}) {
   const keyExtractor = useCallback((item, index) => index.toString(), []);
 
   const onAccept = () => {
-    console.log('On Accept:=>', groupObj);
     setLoading(true);
     acceptRequest(groupObj.activities[0].id, authContext)
       .then(() => {
@@ -176,7 +170,7 @@ export default function RespondForInviteScreen({navigation, route}) {
                         fontSize: 10,
                         color: colors.lightBlackColor,
                       }}>
-                      POINTS
+                      {strings.points}
                     </Text>
                   </View>
                 </View>
@@ -226,7 +220,7 @@ export default function RespondForInviteScreen({navigation, route}) {
                       fontSize: 10,
                       color: colors.lightBlackColor,
                     }}>
-                    POINTS
+                    {strings.points}
                   </Text>
                 </View>
               </View>
@@ -301,7 +295,7 @@ export default function RespondForInviteScreen({navigation, route}) {
               }}>
               {groupObject?.group_name}
             </Text>{' '}
-            invited you to join the team.
+            {strings.inviteYouToJoinTeam}
           </Text>
           <View>
             <Text
@@ -323,7 +317,7 @@ export default function RespondForInviteScreen({navigation, route}) {
                 marginLeft: 15,
                 marginRight: 15,
               }}>
-              Signed up in{' '}
+              {`${strings.signedupin} `}
               {new Date(groupObject?.createdAt * 1000).getFullYear()}
             </Text>
           </View>
@@ -334,7 +328,7 @@ export default function RespondForInviteScreen({navigation, route}) {
               margin: 15,
               justifyContent: 'space-between',
             }}>
-            <Text style={styles.lightTextStyle}>Sports</Text>
+            <Text style={styles.lightTextStyle}>{strings.sportsTitleText}</Text>
             <Text style={styles.regularTextStyle}>{groupObject?.sport}</Text>
           </View>
 
@@ -345,9 +339,9 @@ export default function RespondForInviteScreen({navigation, route}) {
               marginTop: 0,
               justifyContent: 'space-between',
             }}>
-            <Text style={styles.lightTextStyle}>Member’s age</Text>
+            <Text style={styles.lightTextStyle}>{strings.membersage}</Text>
             <Text style={styles.regularTextStyle}>
-              Min {groupObject?.min_age} Max {groupObject?.max_age}
+              {strings.minPlaceholder} {groupObject?.min_age} {strings.maxPlaceholder} {groupObject?.max_age}
             </Text>
           </View>
 
@@ -358,7 +352,7 @@ export default function RespondForInviteScreen({navigation, route}) {
               marginTop: 0,
               justifyContent: 'space-between',
             }}>
-            <Text style={styles.lightTextStyle}>Language</Text>
+            <Text style={styles.lightTextStyle}>{strings.languageTitle}</Text>
             <Text style={styles.regularTextStyle}>
               {groupObject?.languages?.toString()}
             </Text>
@@ -371,7 +365,7 @@ export default function RespondForInviteScreen({navigation, route}) {
               marginTop: 0,
               justifyContent: 'space-between',
             }}>
-            <Text style={styles.lightTextStyle}>Office</Text>
+            <Text style={styles.lightTextStyle}>{strings.office}</Text>
             <Text style={styles.regularTextStyle} numberOfLines={3}>
               {groupObject?.office_address}
             </Text>
@@ -387,10 +381,10 @@ export default function RespondForInviteScreen({navigation, route}) {
               justifyContent: 'space-between',
             }}>
             <Text style={styles.lightTextStyle}>
-              Membership registration fee
+              {strings.membershipregfee}
             </Text>
             <Text style={styles.regularTextStyle}>
-              ${groupObject?.registration_fee} CAD
+              ${groupObject?.registration_fee} {strings.CAD}
             </Text>
           </View>
 
@@ -401,9 +395,9 @@ export default function RespondForInviteScreen({navigation, route}) {
               marginTop: 0,
               justifyContent: 'space-between',
             }}>
-            <Text style={styles.lightTextStyle}>Membership fee</Text>
+            <Text style={styles.lightTextStyle}>{strings.membershipFee}</Text>
             <Text style={styles.regularTextStyle} numberOfLines={3}>
-              ${groupObject?.membership_fee} CAD /{' '}
+              ${groupObject?.membership_fee} {strings.CAD} /{' '}
               {groupObject?.membership_fee_type}
             </Text>
           </View>
@@ -411,9 +405,9 @@ export default function RespondForInviteScreen({navigation, route}) {
           <TCThickDivider marginTop={15} />
 
           <View style={{margin: 15}}>
-            <Text style={styles.lightTextStyle}>Bylow</Text>
+            <Text style={styles.lightTextStyle}>{strings.bylow}</Text>
             <Text style={styles.regularTextStyle} numberOfLines={3}>
-              {groupObject?.bylaw ? groupObject?.bylaw : 'No Bylows'}
+              {groupObject?.bylaw ? groupObject?.bylaw : strings.noBylows}
             </Text>
           </View>
 
@@ -423,12 +417,12 @@ export default function RespondForInviteScreen({navigation, route}) {
             <TCGradientButton
               startGradientColor={colors.kHexColorFF8A01}
               endGradientColor={colors.darkThemeColor}
-              title={'JOIN'}
+              title={strings.JOIN}
               onPress={() => onAccept()}
               textStyle={{fontSize: 16}}
             />
             <Text style={styles.declineButtonStyle} onPress={() => onDecline()}>
-              DECLINE
+              {strings.declineTitle}
             </Text>
           </View>
         </ScrollView>

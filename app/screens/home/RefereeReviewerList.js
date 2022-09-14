@@ -6,6 +6,7 @@ import ActivityLoader from '../../components/loader/ActivityLoader';
 import colors from '../../Constants/Colors';
 import AuthContext from '../../auth/context';
 import RefereeReviewItem from '../../components/Home/RefereeReviewItem';
+import Verbs from '../../Constants/Verbs';
 
 export default function RefereeReviewerList({
   navigation,
@@ -25,8 +26,8 @@ export default function RefereeReviewerList({
       backButtonVisible: true,
       menuBtnVisible: false,
       role:
-        item.actor.data.entity_type === 'player'
-          ? 'user'
+        item.actor.data.entity_type === Verbs.entityTypePlayer
+          ? Verbs.entityTypeUser
           : item.actor.data.entity_type,
     });
   };

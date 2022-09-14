@@ -22,6 +22,7 @@ import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
 import TCLabel from '../../../../components/TCLabel';
 import images from '../../../../Constants/ImagePath';
+import Verbs from '../../../../Constants/Verbs';
 
 export default function HomeAway({navigation, route}) {
   const authContext = useContext(AuthContext);
@@ -48,7 +49,7 @@ export default function HomeAway({navigation, route}) {
           onPress={() => {
             onSavePressed();
           }}>
-          Save
+          {strings.save}
         </Text>
       ),
     });
@@ -65,7 +66,7 @@ export default function HomeAway({navigation, route}) {
     const bodyParams = {
       sport: sportName,
       sport_type: sportType,
-      entity_type: 'player',
+      entity_type: Verbs.entityTypePlayer,
       home_away:
         authContext?.entity?.uid === teams?.[0]?.user_id ||
         authContext?.entity?.uid === teams?.[0]?.group_id
@@ -198,7 +199,7 @@ export default function HomeAway({navigation, route}) {
 
         <View>
           <View style={styles.teamContainer}>
-            <Text style={styles.homeLableStyle}>HOME</Text>
+            <Text style={styles.homeLableStyle}>{strings.home}</Text>
             <View style={styles.teamViewStyle}>
               <View style={styles.imageShadowView}>
                 <Image
@@ -214,8 +215,8 @@ export default function HomeAway({navigation, route}) {
                 <Text style={styles.teamNameLable}>
                   {teams[0]?.name
                     ? 'Challenger'
-                    : teams[0]?.entity_type === 'user' ||
-                      teams[0]?.entity_type === 'player'
+                    : teams[0]?.entity_type === Verbs.entityTypeUser ||
+                      teams[0]?.entity_type === Verbs.entityTypePlayer
                     ? teams[0]?.full_name
                     : teams[0]?.group_name}
                 </Text>
@@ -233,7 +234,7 @@ export default function HomeAway({navigation, route}) {
             <Image source={images.swapTeam} style={styles.swapImageStyle} />
           </TouchableOpacity>
           <View style={styles.teamContainer}>
-            <Text style={styles.homeLableStyle}>AWAY</Text>
+            <Text style={styles.homeLableStyle}>{strings.away}</Text>
             <View style={styles.teamViewStyle}>
               <View style={styles.imageShadowView}>
                 <Image
@@ -249,8 +250,8 @@ export default function HomeAway({navigation, route}) {
                 <Text style={styles.teamNameLable}>
                   {teams[1]?.name
                     ? 'Challenger'
-                    : teams[1]?.entity_type === 'user' ||
-                      teams[1]?.entity_type === 'player'
+                    : teams[1]?.entity_type === Verbs.entityTypeUser ||
+                      teams[1]?.entity_type === Verbs.entityTypePlayer
                     ? teams[1]?.full_name
                     : teams[1]?.group_name}
                 </Text>

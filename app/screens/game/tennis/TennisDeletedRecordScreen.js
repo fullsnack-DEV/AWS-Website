@@ -6,6 +6,7 @@ import Header from '../../../components/Home/Header';
 import fonts from '../../../Constants/Fonts';
 import {widthPercentageToDP as wp} from '../../../utils';
 import TennisDeletedRecordsList from '../../../components/game/tennis/TennisDeletedRecordsList';
+import {strings} from '../../../../Localization/translation';
 
 export default function TennisDeletedRecordScreen({route, navigation}) {
   return (
@@ -17,7 +18,7 @@ export default function TennisDeletedRecordScreen({route, navigation}) {
           </TouchableOpacity>
         }
         centerComponent={
-          <Text style={styles.eventTextStyle}>Deleted records</Text>
+          <Text style={styles.eventTextStyle}>{strings.deletedRecords}</Text>
         }
       />
       <View style={styles.sperateLine} />

@@ -5,6 +5,7 @@ import {StyleSheet, View, Text, Image} from 'react-native';
 import moment from 'moment';
 import {useIsFocused} from '@react-navigation/native';
 
+import { format } from 'react-string-format';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
 import AuthContext from '../../../auth/context';
@@ -27,6 +28,8 @@ import {
 } from '../../../utils/gameUtils';
 import TCProfileView from '../../../components/TCProfileView';
 import ScorekeeperReservationStatus from '../../../Constants/ScorekeeperReservationStatus';
+import { strings } from '../../../../Localization/translation';
+
 
 let entity = {};
 
@@ -104,8 +107,6 @@ export default function CurruentScorekeeperReservationScreen({
       teampObj.requested_by = teampObj.created_by.uid;
     }
 
-    console.log('Temp Object::', teampObj);
-    console.log(`${teampObj?.requested_by}:::${entity.uid}`);
     if (teampObj?.requested_by === entity.uid) {
       return 'sender';
     }
@@ -155,8 +156,6 @@ export default function CurruentScorekeeperReservationScreen({
       teampObj.requested_by = teampObj.created_by.uid;
     }
 
-    console.log('Temp Object::', teampObj);
-    console.log(`${teampObj?.requested_by}:::${entity.uid}`);
     if (entity.uid === teampObj?.scorekeeper?.user_id) {
       if (teampObj?.requested_by === entity.uid) {
         return 'scorekeeper';
@@ -182,7 +181,7 @@ export default function CurruentScorekeeperReservationScreen({
       }
       return `${reservationObj?.game?.away_team.group_name}`;
     }
-    console.log('user challenge');
+    
     if (
       reservationObj?.initiated_by === reservationObj?.game?.home_team?.user_id
     ) {
@@ -310,7 +309,7 @@ export default function CurruentScorekeeperReservationScreen({
                       styles.challengeMessage,
                       {color: colors.googleColor},
                     ]}>
-                    EXPIRED
+                    {strings.expired}
                   </Text>
                 ) : (
                   <Text
@@ -318,17 +317,16 @@ export default function CurruentScorekeeperReservationScreen({
                       styles.challengeMessage,
                       {color: colors.requestSentColor},
                     ]}>
-                    SENT
+                    {strings.reservationRequestSent}
                   </Text>
                 )}
                 {bodyParams.expiry_datetime > new Date().getTime() ? (
                   <Text style={styles.challengeText}>
-                    Your scorekeeper reservation request has been expired.
+                    {strings.scorekeeperReservationSent}
                   </Text>
                 ) : (
                   <Text style={styles.challengeText}>
-                    Your team sent a match reservation request to{' '}
-                    {getEntityName(bodyParams)}. This request will be expired in{' '}
+                    {format(strings.teamSentMatchReservation, getEntityName(bodyParams))}
                     <Text style={styles.timeText}>
                       {getDayTimeDifferent(
                         bodyParams?.expiry_datetime * 1000,
@@ -349,7 +347,7 @@ export default function CurruentScorekeeperReservationScreen({
                       styles.challengeMessage,
                       {color: colors.googleColor},
                     ]}>
-                    EXPIRED
+                    {strings.expired}
                   </Text>
                 ) : (
                   <Text
@@ -357,18 +355,16 @@ export default function CurruentScorekeeperReservationScreen({
                       styles.challengeMessage,
                       {color: colors.requestSentColor},
                     ]}>
-                    PENDING
+                    {strings.reservationRequestPending}
                   </Text>
                 )}
                 {bodyParams.expiry_datetime > new Date().getTime() ? (
                   <Text style={styles.challengeText}>
-                    The scorekeeper reservation request from{' '}
-                    {getEntityName(bodyParams)} has been expired.
+                    {format(strings.scorekeeperReservationSentExpired,getEntityName(bodyParams))}
                   </Text>
                 ) : (
                   <Text style={styles.challengeText}>
-                    You received a scorekeeper reservation request from{' '}
-                    {getEntityName(bodyParams)}. Please, respond within{' '}
+                    {format(strings.scorekeeperReservationRequestResond,getEntityName(bodyParams))}
                     <Text style={styles.timeText}>
                       {getDayTimeDifferent(
                         bodyParams.expiry_datetime * 1000,
@@ -385,17 +381,15 @@ export default function CurruentScorekeeperReservationScreen({
             bodyParams.status ===
               ScorekeeperReservationStatus.pendingpayment && (
               <View>
-                <Text style={styles.challengeMessage}>AWAITING PAYMENT</Text>
+                <Text style={styles.challengeMessage}>{strings.reservationAwaitingPayment}</Text>
                 <Text style={styles.challengeText}>
-                  You accepted a scorekeeper reservation from{' '}
-                  {getEntityName(bodyParams)}, but the payment hasn't gone
-                  through yet.
+                  {format(strings.acceptScorekeeperReservationPaymentFail,getEntityName(bodyParams))}
                 </Text>
                 <Text style={styles.pendingRequestText}>
-                  {`This reservation will be canceled unless the payment goes through within ${getDayTimeDifferent(
+                  {format(strings.reservationCancelPaymentNotMade, getDayTimeDifferent(
                     bodyParams.expiry_datetime * 1000,
                     new Date().getTime(),
-                  )}.\nYou can cancel the scorekeeper reservation without a penalty before the payment will go through.`}
+                  ))}
                 </Text>
               </View>
             )}
@@ -403,19 +397,15 @@ export default function CurruentScorekeeperReservationScreen({
             bodyParams.status ===
               ScorekeeperReservationStatus.pendingpayment && (
               <View>
-                <Text style={styles.challengeMessage}>AWAITING PAYMENT</Text>
+                <Text style={styles.challengeMessage}>{strings.reservationAwaitingPayment}</Text>
                 <Text style={styles.challengeText}>
-                  {getEntityName(bodyParams)} has accepted your scorekeeper
-                  reservation, but your payment hasn't gone through yet.
+                  {format(strings.acceptScorekeeperReservationPaymentNotGone,getEntityName(bodyParams))}
                 </Text>
                 <Text style={styles.awatingNotesText}>
-                  This reservation will be canceled unless the payment goes
-                  through within{' '}
-                  {getDayTimeDifferent(
+                  {format(strings.reservationCancelPaymentNotMade2,getDayTimeDifferent(
                     bodyParams.expiry_datetime * 1000,
                     new Date().getTime(),
-                  )}
-                  .
+                  ))}
                 </Text>
               </View>
             )}
@@ -432,16 +422,16 @@ export default function CurruentScorekeeperReservationScreen({
                     styles.challengeMessage,
                     {color: colors.requestConfirmColor},
                   ]}>
-                    CONFIRMED
+                    {strings.reservationConfirmed}
                   </Text>
                   <Text style={styles.challengeText}>
                     {checkScorekeeperOrTeam(bodyParams) === 'scorekeeper'
-                    ? `You have a confirmed scorekeeper reservation booked by ${getEntityName(
-                        bodyParams,
-                      )}.`
-                    : `Your team has the confirmed scorekeeper reservation for ${getEntityName(
-                        bodyParams,
-                      )}.`}
+                    ? format(strings.confirmScorekeeperReservation,getEntityName(
+                      bodyParams,
+                    ))
+                    : format(strings.teamConfirmScorekeeperReservation,getEntityName(
+                      bodyParams,
+                    ))}
                   </Text>
                 </View>
             )}
@@ -456,12 +446,12 @@ export default function CurruentScorekeeperReservationScreen({
                     styles.challengeMessage,
                     {color: colors.requestConfirmColor},
                   ]}>
-                    CONFIRMED
+                    {strings.reservationConfirmed}
                   </Text>
                   <Text style={styles.challengeText}>
-                    {`${getEntityName(
-                    bodyParams,
-                  )} has confirmed scorekeeper reservation request sent by you.`}
+                    {format(strings.confirmScorekeeperReservationSent,getEntityName(
+                      bodyParams,
+                    ))}
                   </Text>
                 </View>
             )}
@@ -475,16 +465,16 @@ export default function CurruentScorekeeperReservationScreen({
                     styles.challengeMessage,
                     {color: colors.googleColor},
                   ]}>
-                  DECLINED
+                  {strings.reservationDeclined}
                 </Text>
                 <Text style={styles.challengeText}>
                   {checkScorekeeperOrTeam(bodyParams) === 'scorekeeper'
-                    ? `You have declined a scorekeeper request from ${getEntityName(
-                        bodyParams,
-                      )}.`
-                    : `Your team have declined scorekeeper reservation request from ${getEntityName(
-                        bodyParams,
-                      )}.`}
+                    ? format(strings.declineScorekeeperRequest,getEntityName(
+                      bodyParams,
+                    ))
+                    : format(strings.teamDeclineScorekeeperRequest,getEntityName(
+                      bodyParams,
+                    ))}
                 </Text>
               </View>
             )}
@@ -496,17 +486,16 @@ export default function CurruentScorekeeperReservationScreen({
                     styles.challengeMessage,
                     {color: colors.googleColor},
                   ]}>
-                  DECLINED
+                  {strings.reservationDeclined}
                 </Text>
                 <Text style={styles.challengeText}>
                   {checkScorekeeperOrTeam(bodyParams) === 'scorekeeper'
-                    ? `${getEntityName(
-                        bodyParams,
-                      )} has declined a scorekeeper request from your team.`
-                    : `${getEntityName(
-                        bodyParams,
-                      )} have declined a scorekeeper reservation request sent by you.`}
-                  .
+                    ? format(strings.declineScorekeeperRequestTeam,getEntityName(
+                      bodyParams,
+                    ))
+                    : format(strings.declineScorekeeperRequestYou,getEntityName(
+                      bodyParams,
+                    ))}
                 </Text>
               </View>
             )}
@@ -520,16 +509,16 @@ export default function CurruentScorekeeperReservationScreen({
                     styles.challengeMessage,
                     {color: colors.googleColor},
                   ]}>
-                  RESERVATION CANCELLED
+                  {strings.reservationCancelled2}
                 </Text>
                 <Text style={styles.challengeText}>
                   {checkScorekeeperOrTeam(bodyParams) === 'scorekeeper'
-                    ? `You cancelled the scorekeeper reservation request booked by ${getEntityName(
-                        bodyParams,
-                      )}.`
-                    : `Your team has cancelled the scorekeeper reservation for ${getEntityName(
-                        bodyParams,
-                      )}.`}
+                    ? format(strings.cancelledScorekeeperReservation,getEntityName(
+                      bodyParams,
+                    ))
+                    : format(strings.teamCancelledScorekeeperReservation,getEntityName(
+                      bodyParams,
+                    ))}
                 </Text>
               </View>
             )}
@@ -541,16 +530,16 @@ export default function CurruentScorekeeperReservationScreen({
                     styles.challengeMessage,
                     {color: colors.googleColor},
                   ]}>
-                  RESERVATION CANCELLED
+                  {strings.reservationCancelled2}
                 </Text>
                 <Text style={styles.challengeText}>
                   {checkScorekeeperOrTeam(bodyParams) === 'scorekeeper'
-                    ? `${getEntityName(
-                        bodyParams,
-                      )} has cancelled the scorekeeper reservation request booked by your team.`
-                    : `${getEntityName(
-                        bodyParams,
-                      )} has cancelled the scorekeeper reservation request for you.`}
+                    ? format(strings.cancelledScorekeeperReservationTeam,getEntityName(
+                      bodyParams,
+                    ))
+                    : format(strings.cancelledScorekeeperReservationYou,getEntityName(
+                      bodyParams,
+                    ))}
                 </Text>
               </View>
             )}
@@ -558,7 +547,7 @@ export default function CurruentScorekeeperReservationScreen({
           {bodyParams?.scorekeeper?.user_id !== entity.uid &&
             bodyParams.status === ReservationStatus.pendingpayment && (
               <TCGradientButton
-                title={'TRY TO PAY AGAIN'}
+                title={strings.tryToPayText}
                 onPress={() => {
                   navigation.navigate('PayAgainScorekeeperScreen', {
                     body: bodyParams,
@@ -569,32 +558,10 @@ export default function CurruentScorekeeperReservationScreen({
               />
             )}
 
-          {/* {!(
-              bodyParams.status === ReservationStatus.offered
-              || bodyParams.status === ReservationStatus.cancelled
-              || bodyParams.status === ReservationStatus.declined
-            ) && (
-              <TCBorderButton
-                title={'GAME HOME'}
-                onPress={() => {
-                  if (`${bodyParams.sport}`.toLowerCase() === 'soccer') {
-                    navigation.navigate('SoccerHome', {
-                      gameId: bodyParams.game_id,
-                    });
-                  } else {
-                    navigation.navigate('TennisHome', {
-                      gameId: bodyParams.game_id,
-                    });
-                  }
-                }}
-                marginBottom={15}
-              />
-            )} */}
-
           <TCThickDivider marginTop={15} />
           {/* Name and country */}
           <View style={styles.contentContainer}>
-            <Title text={'Scorekeeper'} />
+            <Title text={strings.scorekeeper} />
             <View style={{marginVertical: 10}}>
               <TCProfileView
                 type={'medium'}
@@ -611,7 +578,7 @@ export default function CurruentScorekeeperReservationScreen({
           <TCThickDivider />
           {bodyParams && (
             <View>
-              <TCLabel title="Match" />
+              <TCLabel title={strings.match} />
               {bodyParams?.game && (
                 <TCGameCard
                   data={bodyParams?.game}
@@ -629,9 +596,9 @@ export default function CurruentScorekeeperReservationScreen({
               {bodyParams?.game && (
                 <View>
                   <View style={styles.contentContainer}>
-                    <Title text={'Date & Time'} />
+                    <Title text={strings.dateAndTimeCam} />
                     <TCInfoField
-                      title={'Date'}
+                      title={strings.Date}
                       value={
                         bodyParams?.start_datetime &&
                         moment(bodyParams?.start_datetime * 1000).format(
@@ -645,7 +612,7 @@ export default function CurruentScorekeeperReservationScreen({
                     />
                     <Seperator height={2} />
                     <TCInfoField
-                      title={'Time'}
+                      title={strings.timeText}
                       value={
                         bodyParams?.start_datetime && bodyParams?.end_datetime
                           ? getDateDuration(
@@ -664,9 +631,9 @@ export default function CurruentScorekeeperReservationScreen({
 
                   {/* Venue */}
                   <View style={styles.contentContainer}>
-                    <Title text={'Venue'} />
+                    <Title text={strings.place} />
                     <TCInfoField
-                      title={'Venue'}
+                      title={strings.place}
                       value={bodyParams?.game?.venue?.title}
                       titleStyle={{
                         alignSelf: 'flex-start',
@@ -674,7 +641,7 @@ export default function CurruentScorekeeperReservationScreen({
                       }}
                     />
                     <TCInfoField
-                      title={'Address'}
+                      title={strings.address}
                       value={bodyParams?.game?.venue?.address}
                       titleStyle={{
                         alignSelf: 'flex-start',
@@ -701,7 +668,7 @@ export default function CurruentScorekeeperReservationScreen({
           <TCThickDivider />
           {bodyParams && (
             <View>
-              <TCLabel title={'Rules of the match'} />
+              <TCLabel title={strings.rulesOfMatch} />
               <Text style={styles.rulesText}>
                 {bodyParams?.game?.special_rule}
               </Text>
@@ -712,8 +679,8 @@ export default function CurruentScorekeeperReservationScreen({
           <TCLabel
             title={
               checkSenderOrReceiver(bodyParams) === 'sender'
-                ? 'Payment'
-                : 'Earning'
+                ? strings.payment
+                : strings.earning
             }
           />
 

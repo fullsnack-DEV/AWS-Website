@@ -266,7 +266,7 @@ export default function GroupInfo({
         />
         <TCInfoField
           title={strings.language}
-          value={groupDetails?.languages?.toString() ?? 'n/a'}
+          value={groupDetails?.languages?.toString() ?? strings.NAText}
           marginLeft={10}
         />
         <TCInfoField
@@ -287,7 +287,7 @@ export default function GroupInfo({
               showNextArrow={true}
               title={strings.membersTitle}
               showEditButton={isAdmin}
-              // subTitle={groupDetails?.setting?.game_fee?.fee ? `$${groupDetails?.setting?.game_fee?.fee} ${groupDetails?.setting?.game_fee?.currency_type} / match` : 'n/a'}
+              // subTitle={groupDetails?.setting?.game_fee?.fee ? `$${groupDetails?.setting?.game_fee?.fee} ${groupDetails?.setting?.game_fee?.currency_type} / match` : strings.NAText}
               subTitleTextStyle={{
                 marginLeft: 28,
                 fontFamily: fonts.RRegular,
@@ -329,7 +329,7 @@ export default function GroupInfo({
               subTitle={
                 groupDetails?.setting?.game_fee?.fee
                   ? `$${groupDetails?.setting?.game_fee?.fee} ${groupDetails?.setting?.game_fee?.currency_type} / match`
-                  : 'n/a'
+                  : strings.NAText
               }
               subTitleTextStyle={{
                 marginLeft: 28,

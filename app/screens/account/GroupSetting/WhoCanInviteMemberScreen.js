@@ -10,7 +10,7 @@ import {
   Text,
   Alert,
 } from 'react-native';
-
+import {format} from 'react-string-format';
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import AuthContext from '../../../auth/context';
 import images from '../../../Constants/ImagePath';
@@ -21,15 +21,16 @@ import {patchGroup} from '../../../api/Groups';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
 import {strings} from '../../../../Localization/translation';
+import Verbs from '../../../Constants/Verbs';
 
 const whoCanInviteTeamOpetions = [
-  {key: 'Team & members', id: 1},
-  {key: 'Team only', id: 2},
+  {key: strings.teamAndMembersText, id: 1},
+  {key: strings.teamOnly, id: 2},
 ];
 
 const whoCanInviteClubOpetions = [
-  {key: 'Club & members', id: 1},
-  {key: 'Club only', id: 2},
+  {key: strings.clubAndMembersText, id: 1},
+  {key: strings.clubOnly, id: 2},
 ];
 export default function WhoCanInviteMemberScreen({navigation, route}) {
   const [comeFrom] = useState(route?.params?.comeFrom);
@@ -41,13 +42,17 @@ export default function WhoCanInviteMemberScreen({navigation, route}) {
   const [whoCanInvite, setWhoCanInvite] = useState(
     (route?.params?.whoCanInviteGroup === 0 && {
       key: `${
-        authContext.entity.role === 'team' ? 'Team & members' : 'Club & members'
+        authContext.entity.role === Verbs.entityTypeTeam
+          ? strings.teamAndMembersText
+          : strings.clubAndMembersText
       }`,
       id: 0,
     }) ||
       (route?.params?.whoCanInviteGroup === 1 && {
         key: `${
-          authContext.entity.role === 'team' ? 'Team Only' : 'Club only'
+          authContext.entity.role === Verbs.entityTypeTeam
+            ? strings.teamOnly
+            : strings.clubOnly
         }`,
         id: 1,
       }),
@@ -56,7 +61,7 @@ export default function WhoCanInviteMemberScreen({navigation, route}) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: () => (
-        <Text style={styles.headerTitle}>Who Can Invite Member</Text>
+        <Text style={styles.headerTitle}>{strings.whoCanInviteMemberText}</Text>
       ),
       headerRight: () => (
         <Text
@@ -64,7 +69,7 @@ export default function WhoCanInviteMemberScreen({navigation, route}) {
           onPress={() => {
             onSavePressed();
           }}>
-          Save
+          {strings.save}
         </Text>
       ),
     });
@@ -73,7 +78,7 @@ export default function WhoCanInviteMemberScreen({navigation, route}) {
   const saveTeam = () => {
     const bodyParams = {};
 
-    if (authContext.entity.role === 'team') {
+    if (authContext.entity.role === Verbs.entityTypeTeam) {
       if (whoCanInvite.key === whoCanInviteTeamOpetions[0].key) {
         bodyParams.who_can_invite_member = 1;
       }
@@ -118,8 +123,8 @@ export default function WhoCanInviteMemberScreen({navigation, route}) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const onSavePressed = () => {
     if (
-      authContext.entity.role === 'team' ||
-      authContext.entity.role === 'club'
+      authContext.entity.role === Verbs.entityTypeTeam ||
+      authContext.entity.role === Verbs.entityTypeClub
     ) {
       saveTeam();
     }
@@ -151,14 +156,13 @@ export default function WhoCanInviteMemberScreen({navigation, route}) {
       style={styles.mainContainer}
       showsVerticalScrollIndicator={false}>
       <ActivityLoader visible={loading} />
-      <Text
-        style={
-          styles.opetionsTitle
-        }>{`Who can invite a member to ${authContext.entity.role}?`}</Text>
+      <Text style={styles.opetionsTitle}>
+        {format(strings.whoCanInviteMemberToText, authContext.entity.role)}
+      </Text>
       <FlatList
         // ItemSeparatorComponent={() => <TCThinDivider />}
         data={
-          authContext.entity.role === 'team'
+          authContext.entity.role === Verbs.entityTypeTeam
             ? whoCanInviteTeamOpetions
             : whoCanInviteClubOpetions
         }

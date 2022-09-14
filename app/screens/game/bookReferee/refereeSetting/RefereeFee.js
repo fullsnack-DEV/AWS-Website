@@ -54,7 +54,7 @@ export default function RefereeFee({navigation, route}) {
           onPress={() => {
             onSavePressed();
           }}>
-          Save
+          {strings.save}
         </Text>
       ),
     });
@@ -68,7 +68,7 @@ export default function RefereeFee({navigation, route}) {
 
   const onSavePressed = () => {
     if (basicFee < 1 && basicFee > 0) {
-      Alert.alert('User should not allow less than $1 match fee.');
+      Alert.alert(strings.lessThanDollerFee);
     } else if (
       comeFrom === 'InviteChallengeScreen' ||
       comeFrom === 'EditChallenge'
@@ -113,14 +113,12 @@ export default function RefereeFee({navigation, route}) {
         ...authContext?.entity?.obj,
         referee_data: registerdRefereeData,
       };
-      console.log('Body::::--->', body);
 
       patchPlayer(body, authContext)
         .then(async (response) => {
           if (response.status === true) {
             setloading(false);
             const entity = authContext.entity;
-            console.log('Register referee response IS:: ', response.payload);
             entity.auth.user = response.payload;
             entity.obj = response.payload;
             authContext.setEntity({...entity});
@@ -135,7 +133,6 @@ export default function RefereeFee({navigation, route}) {
           } else {
             Alert.alert(strings.appName, response.messages);
           }
-          console.log('RESPONSE IS:: ', response);
           setloading(false);
         })
         .catch((e) => {
@@ -196,7 +193,7 @@ export default function RefereeFee({navigation, route}) {
         onPress={() => {
           setVisibleCurrencyModal(true);
         }}>
-        {'Change currency'}
+        {strings.changeCurrency}
       </Text>
       <Modal
         isVisible={visibleCurrencyModal}
@@ -247,7 +244,7 @@ export default function RefereeFee({navigation, route}) {
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
               }}>
-              Currency Setting
+              {strings.currencySetting}
             </Text>
 
             <Text

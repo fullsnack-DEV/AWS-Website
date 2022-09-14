@@ -351,7 +351,7 @@ export default function ScorekeeperReservationScreen({navigation, route}) {
                     bodyParams?.game?.status === GameStatus.reset
                   )
                 ) {
-                  Alert.alert('aa');
+                  Alert.alert(strings.aa);
                 } else if (
                   bodyParams?.game?.start_datetime <
                   new Date().getTime() / 1000
@@ -551,7 +551,7 @@ export default function ScorekeeperReservationScreen({navigation, route}) {
               <View style={styles.challengerView}>
                 <View style={styles.teamView}>
                   <Image source={images.reqIcon} style={styles.reqOutImage} />
-                  <Text style={styles.challengerText}>Requester</Text>
+                  <Text style={styles.challengerText}>{strings.requester}</Text>
                 </View>
 
                 <View style={styles.teamView}>
@@ -577,7 +577,7 @@ export default function ScorekeeperReservationScreen({navigation, route}) {
               <View style={styles.challengeeView}>
                 <View style={styles.teamView}>
                   <Image source={images.refIcon} style={styles.reqOutImage} />
-                  <Text style={styles.challengeeText}>Scorekeeper</Text>
+                  <Text style={styles.challengeeText}>{strings.scorekeeper}</Text>
                 </View>
 
                 <View style={styles.teamView}>
@@ -661,7 +661,7 @@ export default function ScorekeeperReservationScreen({navigation, route}) {
               bodyParams.status ===
                 ScorekeeperReservationStatus.pendingpayment && (
                 <TCGradientButton
-                  title={'TRY TO PAY AGAIN'}
+                  title={strings.tryToPayText}
                   onPress={() => {
                     navigation.navigate('PayAgainScorekeeperScreen', {
                       body: bodyParams,
@@ -742,7 +742,7 @@ export default function ScorekeeperReservationScreen({navigation, route}) {
                           <Text style={styles.timeZoneText}>
                             {strings.timezone}{' '}
                             <Text style={{fontFamily: fonts.RRegular}}>
-                              Vancouver
+                              {strings.vancouver}
                             </Text>
                           </Text>
                         </View>
@@ -820,12 +820,12 @@ export default function ScorekeeperReservationScreen({navigation, route}) {
                 marginTop: 10,
               }}
             />
-            <Text style={styles.rulesTitle}>General Rules</Text>
+            <Text style={styles.rulesTitle}>{strings.gameRulesSubTitle1}</Text>
             <Text style={styles.rulesDetail}>
               {bodyParams?.game?.general_rules}
             </Text>
             <View style={{marginBottom: 10}} />
-            <Text style={styles.rulesTitle}>Special Rules</Text>
+            <Text style={styles.rulesTitle}>{strings.gameRulesSubTitle2}</Text>
             <Text style={[styles.rulesDetail, {marginBottom: 25}]}>
               {bodyParams?.game?.special_rules}
             </Text>
@@ -845,7 +845,7 @@ export default function ScorekeeperReservationScreen({navigation, route}) {
                 title={strings.refundpolicy.toUpperCase()}
                 value={bodyParams?.refund_policy}
                 tooltipText={
-                  '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the match fee and service fee are not refunded.'
+                  strings.cancellationPolicyDesc
                 }
                 tooltipHeight={heightPercentageToDP('18%')}
                 tooltipWidth={widthPercentageToDP('50%')}

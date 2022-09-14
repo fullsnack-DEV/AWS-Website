@@ -36,6 +36,7 @@ import PostDescription from './PostDescription';
 import TCThinDivider from '../TCThinDivider';
 import WriteCommentItems from '../newsFeed/WriteCommentItems';
 import AuthContext from '../../auth/context';
+import {strings} from '../../../Localization/translation';
 
 function ReviewerItemView({
   item,
@@ -575,7 +576,7 @@ function ReviewerItemView({
           </View>
           <ActionSheet
             ref={actionSheet}
-            options={['Report', 'Cancel']}
+            options={['Report', strings.cancel]}
             cancelButtonIndex={1}
             // destructiveButtonIndex={1}
             onPress={(index) => {

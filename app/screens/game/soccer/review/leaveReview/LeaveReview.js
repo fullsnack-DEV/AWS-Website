@@ -27,7 +27,6 @@ import ActivityLoader from '../../../../../components/loader/ActivityLoader';
 
 const LeaveReview = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
-  console.log('route?.params?.selectedTeam', route?.params?.selectedTeam);
   const [currentForm, setCurrentForm] = useState(
     route?.params?.selectedTeam === 'home' ? 1 : 2,
   );
@@ -56,10 +55,6 @@ const LeaveReview = ({navigation, route}) => {
         },
   );
   useEffect(() => {
-    console.log(
-      'route?.params?.gameReviewData?.results[0]?.object',
-      route?.params?.gameReviewData,
-    );
     if (route?.params?.gameReviewData) {
       // const reviewObj = JSON.parse(
       //   route?.params?.gameReviewData?.results?.[0]?.object,
@@ -125,7 +120,7 @@ const LeaveReview = ({navigation, route}) => {
       ),
       headerRight: () => (
         <Text onPress={createReview} style={styles.nextButtonStyle}>
-          Done
+          {strings.done}
         </Text>
       ),
     });
@@ -297,11 +292,11 @@ const LeaveReview = ({navigation, route}) => {
           </TouchableOpacity>
         }
         centerComponent={
-          <Text style={styles.eventTextStyle}>Leave a match review</Text>
+          <Text style={styles.eventTextStyle}>{strings.leaveMatchReview}</Text>
         }
         rightComponent={
           <Text onPress={createReview} style={styles.nextButtonStyle}>
-            Done
+            {strings.done}
           </Text>
         }
       />

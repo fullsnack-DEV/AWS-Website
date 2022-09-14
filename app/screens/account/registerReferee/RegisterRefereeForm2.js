@@ -57,7 +57,7 @@ export default function RegisterRefereeForm2({navigation, route}) {
       (item) => item?.title && (!item?.thumbnail || !item?.url),
     );
     if (findCertiTitleIndex !== -1) {
-      Alert.alert(strings.appName, 'Add certificate');
+      Alert.alert(strings.appName, strings.addCertificate);
       return false;
     }
 
@@ -65,7 +65,7 @@ export default function RegisterRefereeForm2({navigation, route}) {
       (item) => !item?.title && (item?.thumbnail || item?.url),
     );
     if (findIndex !== -1) {
-      Alert.alert(strings.appName, 'Add title for certificate');
+      Alert.alert(strings.appName, strings.addTitleForCertificateText);
       return false;
     }
 
@@ -121,11 +121,9 @@ export default function RegisterRefereeForm2({navigation, route}) {
           referee_data: registerdRefereeData,
         };
 
-        console.log('All data:=>', body);
         patchRegisterRefereeDetails(body, authContext)
           .then(async (res) => {
             setloading(false);
-            console.log('User data:=>', res.payload);
             const entity = authContext.entity;
 
             entity.auth.user = res.payload;
@@ -140,7 +138,7 @@ export default function RegisterRefereeForm2({navigation, route}) {
               '',
               [
                 {
-                  text: 'OK',
+                  text: strings.okTitleText,
                   onPress: () => {
                     navigation.pop(2);
                   },
@@ -309,7 +307,7 @@ export default function RegisterRefereeForm2({navigation, route}) {
                     color: colors.yellowColor,
                     marginLeft: 5,
                   }}>
-                  Uploading...
+                  {strings.uploadingText}
                 </Text>
               </View>
             )}

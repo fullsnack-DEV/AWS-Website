@@ -24,6 +24,7 @@ import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 import AuthContext from '../../auth/context';
 import {strings} from '../../../Localization/translation';
+import Verbs from '../../Constants/Verbs';
 
 export default function JoinedTeamsScreen({route}) {
   const [teamList, setTeamList] = useState([]);
@@ -31,9 +32,6 @@ export default function JoinedTeamsScreen({route}) {
   const [loading, setloading] = useState(false);
   const [uid] = useState(route?.params?.uid);
   const [role] = useState(route?.params?.role);
-
-  console.log('route?.params?.uid', route?.params?.uid);
-  console.log('route?.params?.role', route?.params?.role);
 
   useEffect(() => {
     getFollowingList();
@@ -43,7 +41,7 @@ export default function JoinedTeamsScreen({route}) {
     setloading(true);
     getUserFollowerFollowing(
       uid,
-      role === 'user' ? 'players' : 'groups',
+      role === Verbs.entityTypeUser ? 'players' : 'groups',
       'following',
       authContext,
     )
@@ -52,7 +50,6 @@ export default function JoinedTeamsScreen({route}) {
         setTeamList(res.payload);
       })
       .catch((error) => {
-        console.log('error coming', error);
         setloading(false);
         Alert.alert(strings.alertmessagetitle, error.message);
       });

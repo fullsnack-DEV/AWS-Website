@@ -44,6 +44,7 @@ import RegisterScorekeeperForm2 from '../screens/account/registerScorekeeper/Reg
 import RegisterScorekeeperSuccess from '../screens/account/registerScorekeeper/RegisterScorekeeperSuccess';
 
 import SearchLocationScreen from '../screens/account/commonScreen/SearchLocationScreen';
+import {strings} from '../../Localization/translation';
 
 const Stack = createStackNavigator();
 
@@ -196,7 +197,7 @@ const LocalHomeNavigator = () => (
       name="RecruitingPlayerScreen"
       component={RecruitingPlayerScreen}
       options={{
-        title: 'Recruiting players',
+        title: strings.recruitingPlayerText,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

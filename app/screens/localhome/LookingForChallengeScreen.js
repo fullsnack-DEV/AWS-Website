@@ -39,6 +39,7 @@ import {getEntityIndex} from '../../api/elasticSearch';
 import TCTagsFilter from '../../components/TCTagsFilter';
 import TCPicker from '../../components/TCPicker';
 import TCAvailableForChallenge from '../../components/TCAvailableForChallenge';
+import Verbs from '../../Constants/Verbs';
 
 let stopFetchMore = true;
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
@@ -89,7 +90,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
   useEffect(() => {
     const list = [
       {
-        label: 'All',
+        label: strings.all,
         value: 'All',
       },
     ];
@@ -123,7 +124,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
               {
                 bool: {
                   must: [
-                    {match: {'setting.availibility': 'On'}},
+                    {match: {'setting.availibility': Verbs.on}},
                     {term: {entity_type: 'team'}},
                   ],
                 },
@@ -141,7 +142,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
                               {
                                 match: {
                                   'registered_sports.setting.availibility':
-                                    'On',
+                                    Verbs.on,
                                 },
                               },
                             ],
@@ -412,15 +413,15 @@ export default function LookingForChallengeScreen({navigation, route}) {
 
   const applyValidation = useCallback(() => {
     if (Number(minFee) > 0 && Number(maxFee) <= 0) {
-      Alert.alert('Please enter correct game max fee.');
+      Alert.alert(strings.pleaseEnterCorrectMaxFee);
       return false;
     }
     if (Number(minFee) <= 0 && Number(maxFee) > 0) {
-      Alert.alert('Please enter correct game min fee.');
+      Alert.alert(strings.pleaseEnterCorrectMinFee);
       return false;
     }
     if (Number(minFee) > Number(maxFee)) {
-      Alert.alert('Please enter correct match fee.');
+      Alert.alert(strings.pleaseEnterCorrectFee);
       return false;
     }
     return true;
@@ -433,7 +434,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
           color: colors.grayColor,
           fontSize: 26,
         }}>
-        No Teams Or Player
+        {strings.noTeamsOrPlayer}
       </Text>
     </View>
   );
@@ -527,9 +528,9 @@ export default function LookingForChallengeScreen({navigation, route}) {
                 <Text
                   onPress={() => setSettingPopup(false)}
                   style={styles.cancelText}>
-                  Cancel
+                  {strings.cancel}
                 </Text>
-                <Text style={styles.locationText}>Filter</Text>
+                <Text style={styles.locationText}>{strings.filter}</Text>
                 <Text
                   style={styles.doneText}
                   onPress={() => {
@@ -554,14 +555,14 @@ export default function LookingForChallengeScreen({navigation, route}) {
                       console.log('DONE::');
                     }
                   }}>
-                  {'Apply'}
+                  {strings.apply}
                 </Text>
               </View>
               <TCThinDivider width={'100%'} marginBottom={15} />
               <View>
                 <View style={{flexDirection: 'column', margin: 15}}>
                   <View>
-                    <Text style={styles.filterTitle}>Location</Text>
+                    <Text style={styles.filterTitle}>{strings.locationTitleText}</Text>
                   </View>
                   <View style={{marginTop: 10, marginLeft: 10}}>
                     <View
@@ -570,7 +571,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
                         marginBottom: 10,
                         justifyContent: 'space-between',
                       }}>
-                      <Text style={styles.filterTitle}>World</Text>
+                      <Text style={styles.filterTitle}>{strings.world}</Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(0);
@@ -596,7 +597,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
                         marginBottom: 10,
                         justifyContent: 'space-between',
                       }}>
-                      <Text style={styles.filterTitle}>Home City</Text>
+                      <Text style={styles.filterTitle}>{strings.currentCity}</Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(1);
@@ -631,7 +632,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
                         marginBottom: 10,
                         justifyContent: 'space-between',
                       }}>
-                      <Text style={styles.filterTitle}>Current City</Text>
+                      <Text style={styles.filterTitle}>{strings.locationTitle}</Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(2);
@@ -666,7 +667,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
                             {route?.params?.locationText ||
                               (filters.location !== 'world' &&
                                 filters.location) ||
-                              'Search City'}
+                              strings.searchCityText}
                           </Text>
                         </View>
                         <View
@@ -694,12 +695,12 @@ export default function LookingForChallengeScreen({navigation, route}) {
                       justifyContent: 'space-between',
                     }}>
                     <View style={{}}>
-                      <Text style={styles.filterTitle}>Sport</Text>
+                      <Text style={styles.filterTitle}>{strings.sportsEventsTitle}</Text>
                     </View>
                     <View style={{marginTop: 10}}>
                       <TCPicker
                         dataSource={sports}
-                        placeholder={'Select Sport'}
+                        placeholder={strings.selectSportTitleText}
                         onValueChange={(value) => {
                           console.log('VALUE:=>', value);
 
@@ -869,7 +870,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
                     justifyContent: 'space-between',
                   }}>
                   <View style={{}}>
-                    <Text style={styles.filterTitle}>Match fee</Text>
+                    <Text style={styles.filterTitle}>{strings.matchFeesTitle}</Text>
                   </View>
                   <View style={{marginTop: 10}}>
                     <View
@@ -881,7 +882,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
                         onChangeText={(text) => setMinFee(text)}
                         value={minFee}
                         style={styles.minFee}
-                        placeholder={'Min'}
+                        placeholder={strings.minPlaceholder}
                         autoCorrect={false}
                         // clearButtonMode={'always'}
                         keyboardType={'numeric'}
@@ -891,7 +892,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
                         onChangeText={(text) => setMaxFee(text)}
                         value={maxFee}
                         style={styles.minFee}
-                        placeholder={'Max'}
+                        placeholder={strings.maxPlaceholder}
                         autoCorrect={false}
                         // clearButtonMode={'always'}
                         keyboardType={'numeric'}
@@ -909,23 +910,23 @@ export default function LookingForChallengeScreen({navigation, route}) {
             style={styles.resetButton}
             onPress={() => {
               Alert.alert(
-                'Are you sure want to reset filters?',
+                strings.areYouSureRemoveFilterText,
                 '',
                 [
                   {
-                    text: 'Cancel',
+                    text: strings.cancel,
                     onPress: () => console.log('Cancel Pressed'),
                     style: 'cancel',
                   },
                   {
-                    text: 'OK',
+                    text: strings.okTitleText,
                     onPress: () => onPressReset(),
                   },
                 ],
                 {cancelable: false},
               );
             }}>
-            <Text style={styles.resetTitle}>Reset</Text>
+            <Text style={styles.resetTitle}>{strings.resetTitleText}</Text>
           </TouchableOpacity>
         </View>
         {/* <DateTimePickerView

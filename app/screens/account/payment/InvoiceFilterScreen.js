@@ -472,7 +472,7 @@ export default function InvoiceFilterScreen({navigation}) {
 
       <ActionSheet
         ref={actionSheet}
-        options={['Canceled Invoices', 'Cancel']}
+        options={['Canceled Invoices', strings.cancel]}
         cancelButtonIndex={1}
         // destructiveButtonIndex={2}
         onPress={(index) => {

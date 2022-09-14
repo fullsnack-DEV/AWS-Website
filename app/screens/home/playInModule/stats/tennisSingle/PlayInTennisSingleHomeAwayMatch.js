@@ -45,7 +45,7 @@ const PlayInTennisSingleHomeAwayMatch = () => {
     <View style={{flex: 1}}>
       {/*    Home And Away Matches */}
       <TopHeader
-        title={'Home & Away'}
+        title={strings.homeAndAway}
         selectWeekMonth={selectWeekMonth}
         setSelectWeekMonth={setSelectWeekMonth}
       />
@@ -56,25 +56,25 @@ const PlayInTennisSingleHomeAwayMatch = () => {
           <GradiantIndicator
             gradiantColor={[colors.blueGradiantStart, colors.blueGradiantEnd]}
           />
-          <Text>Win</Text>
+          <Text>{strings.win}</Text>
         </View>
         <View style={{...styles.teamIndicatorContentContainer}}>
           <GradiantIndicator
             gradiantColor={[colors.greenGradientStart, colors.greenGradientEnd]}
           />
-          <Text>{'Draws'}</Text>
+          <Text>{strings.draws}</Text>
         </View>
         <View style={{...styles.teamIndicatorContentContainer}}>
           <GradiantIndicator
             gradiantColor={[colors.themeColor, colors.yellowColor]}
           />
-          <Text>Losses</Text>
+          <Text>{strings.losses}</Text>
         </View>
       </View>
       <View style={{paddingHorizontal: 15}}>
         {/* Home Team */}
         <TCWinDrawLooseChart
-          heading={'Home'}
+          heading={strings.home}
           totalCount={80}
           winCount={22}
           drawCount={16}
@@ -82,7 +82,7 @@ const PlayInTennisSingleHomeAwayMatch = () => {
         />
         {/* Away Team */}
         <TCWinDrawLooseChart
-          heading={'Away'}
+          heading={strings.away}
           totalCount={33}
           winCount={8}
           drawCount={10}

@@ -74,7 +74,6 @@ const ScorekeeperBookingDateAndTime = ({navigation, route}) => {
           authContext,
         )
           .then((response) => {
-            console.log('Payment res', response.payload);
             body.hourly_game_fee = response?.payload?.hourly_game_fee ?? 0;
             body.currency_type =
               response?.payload?.currency_type ?? strings.defaultCurrency;
@@ -91,7 +90,6 @@ const ScorekeeperBookingDateAndTime = ({navigation, route}) => {
             // body = { ...body, hourly_game_fee: hFee, currency_type: cType };
             setChallengeObject(body);
 
-            console.log('Payment body', body);
             setLoading(false);
           })
           .catch(() => {
@@ -124,7 +122,7 @@ const ScorekeeperBookingDateAndTime = ({navigation, route}) => {
 
   const handleOnNext = () => {
     if (!gameData?.game_id) {
-      Alert.alert(strings.appName, "You don't have any selected match");
+      Alert.alert(strings.appName, strings.notSelectedMatch);
       return false;
     }
 
@@ -166,14 +164,12 @@ const ScorekeeperBookingDateAndTime = ({navigation, route}) => {
       !bodyParams?.source &&
       !route?.params?.isHirer
     ) {
-      Alert.alert(strings.appName, 'Select Payment Method');
+      Alert.alert(strings.appName, strings.selectPaymentText);
       return false;
     }
     if (Number(bodyParams.hourly_game_fee) === 0) delete bodyParams.source;
 
     delete bodyParams.hourly_game_fee;
-
-    console.log('bodyParams', bodyParams);
 
     setLoading(true);
     createUserReservation('scorekeepers', bodyParams, authContext)
@@ -184,11 +180,11 @@ const ScorekeeperBookingDateAndTime = ({navigation, route}) => {
         //   navigationScreenName: navigationName,
         // });
         Alert.alert(
-          'Scorekeeper approval request sent.',
+          strings.scorekeeperRequestSent,
           '',
           [
             {
-              text: 'OK',
+              text: strings.okTitleText,
               onPress: () => {
                 navigation.pop(2);
               },
@@ -374,8 +370,10 @@ const ScorekeeperBookingDateAndTime = ({navigation, route}) => {
                     justifyContent: 'flex-end',
                   }}>
                   <Text style={styles.timeZoneText}>
-                    Time zone{' '}
-                    <Text style={{fontFamily: fonts.RRegular}}>Vancouver</Text>
+                    {strings.timezone}{' '}
+                    <Text style={{fontFamily: fonts.RRegular}}>
+                      {strings.vancouver}
+                    </Text>
                   </Text>
                 </View>
               </View>
@@ -460,9 +458,7 @@ const ScorekeeperBookingDateAndTime = ({navigation, route}) => {
             }}
             valueStyle={{marginTop: 10, marginBottom: 10}}
             value={route?.params?.settingObj?.refund_policy}
-            tooltipText={
-              '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the match fee and service fee are not refunded.'
-            }
+            tooltipText={strings.cancellationPolicyDesc}
             tooltipHeight={Utility.heightPercentageToDP('18%')}
             tooltipWidth={Utility.widthPercentageToDP('50%')}
             isEdit={false}

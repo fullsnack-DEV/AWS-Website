@@ -1,8 +1,11 @@
 import {Text, View, StyleSheet, FlatList, TouchableOpacity} from 'react-native';
 import React from 'react';
+import {string} from 'prop-types';
 import fonts from '../../../../../Constants/Fonts';
 import colors from '../../../../../Constants/Colors';
 import TCTextTableView from './TCTextTableView';
+import {statsData} from '../../../../../utils/constant';
+import {strings} from '../../../../../../Localization/translation';
 
 const TopHeader = ({title}) => (
   <View
@@ -19,28 +22,19 @@ const TopHeader = ({title}) => (
   </View>
 );
 
-const statsData = [
-  {key: 'Ace', value: '12'},
-  {key: 'Double Faults', value: '4'},
-  {key: '1st serve in %', value: '64%'},
-  {key: '1st serve pts won %', value: '87%'},
-  {key: '2nd serve pts won %', value: '52%'},
-  {key: 'Winners ', value: '17'},
-  {key: 'Unforced errors ', value: '12'},
-  {key: 'Break Points Won ', value: '3/4'},
-  {key: 'Total Points Won ', value: '57'},
-];
 const PlayInTennisSingleFiveSetsGame = () => (
   <View style={{flex: 1}}>
-    <TopHeader title={'STATS Per game ( 5 sets )'} />
+    <TopHeader title={string.statsPerGame} />
 
     <View style={{padding: 15}}>
       <Text style={styles.mainTitle}>
-        Total <Text style={{fontFamily: fonts.RBold}}>59</Text> Games
+        {strings.totalText} <Text style={{fontFamily: fonts.RBold}}>59</Text>{' '}
+        {strings.games}
       </Text>
 
       <Text style={styles.mainTitle}>
-        Match Time : <Text style={{fontFamily: fonts.RBold}}>57 m</Text>
+        {strings.matchTime} :{' '}
+        <Text style={{fontFamily: fonts.RBold}}>57 m</Text>
       </Text>
 
       <FlatList
@@ -54,7 +48,7 @@ const PlayInTennisSingleFiveSetsGame = () => (
         )}
       />
       <TouchableOpacity>
-        <Text style={styles.detailText}>Detail info about ratings</Text>
+        <Text style={styles.detailText}>{strings.detailInfoRating}</Text>
       </TouchableOpacity>
     </View>
   </View>

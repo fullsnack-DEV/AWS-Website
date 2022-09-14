@@ -12,6 +12,7 @@ import {
 // import { useIsFocused } from '@react-navigation/native';
 
 // import ActivityLoader from '../../../components/loader/ActivityLoader';
+import {format} from 'react-string-format';
 
 import LinearGradient from 'react-native-linear-gradient';
 import ActionSheet from 'react-native-actionsheet';
@@ -47,17 +48,14 @@ export default function InvoiceDetailScreen({navigation}) {
     });
   }, [navigation]);
 
-  const renderLogView = ({item}) => {
-    console.log('item', item);
-    return (
-      <PaymentLogs
-        data={item}
-        onPressCard={() => {
-          navigation.navigate('LogDetailScreen');
-        }}
-      />
-    );
-  };
+  const renderLogView = ({item}) => (
+    <PaymentLogs
+      data={item}
+      onPressCard={() => {
+        navigation.navigate('LogDetailScreen');
+      }}
+    />
+  );
 
   return (
     <View style={styles.mainContainer}>
@@ -136,7 +134,7 @@ export default function InvoiceDetailScreen({navigation}) {
             fontSize: 16,
             color: colors.lightBlackColor,
           }}>
-          {'Description '}
+          {strings.descriptionText}
         </Text>
 
         <Text
@@ -145,20 +143,10 @@ export default function InvoiceDetailScreen({navigation}) {
             fontSize: 16,
             color: colors.lightBlackColor,
           }}>
-          Membership fee for May
+          {format(strings.membershipFeeForMonthText, 'May')}
         </Text>
       </View>
 
-      {/* <View style={{ marginBottom: 50, backgroundColor: 'red' }}>
-        <TCTouchableLabel
-            title={strings.addOptionMessage}
-            showNextArrow={true}
-            onPress={() => {
-              Alert.alert('Open card screen');
-            }}
-            style={{ backgroundColor: colors.blackColor }}
-          />
-      </View> */}
       <View style={styles.paymentContainer}>
         <Text style={styles.cardDetailText}>Visa Visa **** 4242</Text>
         <Image style={styles.nextIconStyle} source={images.nextArrow} />
@@ -167,22 +155,10 @@ export default function InvoiceDetailScreen({navigation}) {
       <LinearGradient
         colors={[colors.yellowColor, colors.darkThemeColor]}
         style={styles.activeEventPricacy}>
-        <TouchableOpacity onPress={() => Alert.alert('Add payment')}>
-          <Text style={styles.activeEventPrivacyText}>{'PAY NOW'}</Text>
+        <TouchableOpacity onPress={() => Alert.alert(strings.addPaymentText)}>
+          <Text style={styles.activeEventPrivacyText}>{strings.PAYNOW}</Text>
         </TouchableOpacity>
       </LinearGradient>
-
-      {/* <LinearGradient
-        colors={[colors.yellowColor, colors.darkThemeColor]}
-        style={styles.activeEventPricacy}>
-          <TouchableOpacity
-          onPress={() => Alert.alert('Add payment')}
-          style={styles.activeEventPricacy}>
-            <Text style={styles.activeEventPrivacyText}>
-              {'+Add Payment or Refund'}
-            </Text>
-          </TouchableOpacity>
-        </LinearGradient> */}
 
       <Text
         style={{
@@ -191,7 +167,7 @@ export default function InvoiceDetailScreen({navigation}) {
           color: colors.lightBlackColor,
           margin: 15,
         }}>
-        Log
+        {strings.log}
       </Text>
       <FlatList
         data={['1', '2', '3', '4', '5']}
@@ -201,11 +177,11 @@ export default function InvoiceDetailScreen({navigation}) {
 
       <ActionSheet
         ref={actionSheet}
-        options={['Delete This Invoice', 'Cancel']}
+        options={[strings.deleteInvoiceText, strings.cancel]}
         cancelButtonIndex={1}
         onPress={(index) => {
           if (index === 0) {
-            Alert.alert('Delete');
+            Alert.alert(strings.deleteTitle);
           }
         }}
       />

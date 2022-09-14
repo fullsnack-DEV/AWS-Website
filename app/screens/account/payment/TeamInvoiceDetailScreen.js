@@ -26,6 +26,8 @@ import {
 
 // import ActivityLoader from '../../../components/loader/ActivityLoader';
 import moment from 'moment';
+import {format} from 'react-string-format';
+
 import {Modalize} from 'react-native-modalize';
 import {Portal} from 'react-native-portalize';
 import LinearGradient from 'react-native-linear-gradient';
@@ -112,7 +114,7 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
   const onDeleteLog = (item) => {
     Alert.alert(
       strings.alertmessagetitle,
-      'Do you want remove this log for this invoice',
+      strings.removeLogText,
       [
         {
           text: strings.cancel,
@@ -180,16 +182,16 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
         <Text
           style={styles.cancelText}
           onPress={() => resendModalRef.current.close()}>
-          Cancel
+          {strings.cancel}
         </Text>
 
-        <Text style={styles.titleText}>Resend Invoice</Text>
+        <Text style={styles.titleText}>{strings.resendInvoiceText}</Text>
         <Text
           style={styles.sendText}
           onPress={() => {
             resendInvoiceByID();
           }}>
-          Send
+          {strings.send}
         </Text>
       </View>
 
@@ -254,19 +256,18 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
           fontSize: 16,
           color: colors.lightBlackColor,
         }}>
-        No Logs Found
+        {strings.noLogFoundText}
       </Text>
     ),
     [],
   );
 
   const actionSheetOpetions = () => {
-    console.log('invoiceDetail', invoiceDetail);
     if (from === 'user') {
       // if (!invoiceDetail?.logs) {
-      //   return ['Delete Invoice', 'Cancel'];
+      //   return ['Delete Invoice', strings.cancel];
       // }
-      return ['Delete Invoice', 'Cancel'];
+      return [strings.deleteInvoice, strings.cancel];
     }
   };
 
@@ -292,17 +293,17 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
           }, 10);
         });
     } else {
-      Alert.alert('Please choose payment method.');
+      Alert.alert(strings.choosePayment);
     }
   };
 
   const stripeRefundValidation = () => {
     if (logsList.length <= 0) {
-      Alert.alert('Please pay this invoice with stripe payment first.');
+      Alert.alert(strings.payInvoiceFirstValidation);
       return false;
     }
     if (logsList?.[0]?.payment_mode !== 'card') {
-      Alert.alert('You did not paid this invoice with stripe.');
+      Alert.alert(strings.didNotPaidInvoiceValidation);
       return false;
     }
 
@@ -352,7 +353,7 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
                 fontSize: 16,
                 color: colors.lightBlackColor,
               }}>
-              {`Invoice no.: ${invoiceDetail?.invoice_id}`}
+              {`${strings.invoiceNumberText} ${invoiceDetail?.invoice_id}`}
             </Text>
             <Text
               style={{
@@ -360,9 +361,12 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
                 fontSize: 16,
                 color: colors.lightBlackColor,
               }}>
-              {`Due at: ${moment(
-                new Date(invoiceDetail?.due_date * 1000),
-              ).format('MMM DD, YYYY')}`}
+              {format(
+                strings.dueAtNText,
+                moment(new Date(invoiceDetail?.due_date * 1000)).format(
+                  'MMM DD, YYYY',
+                ),
+              )}
             </Text>
           </View>
 
@@ -428,19 +432,15 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
               color: colors.userPostTimeColor,
               marginLeft: 15,
             }}>
-            {`Logged by ${invoiceDetail?.created_by?.first_name} ${
-              invoiceDetail?.created_by?.last_name
-            } at ${moment(new Date(invoiceDetail?.created_date * 1000)).format(
-              'MMM DD, YYYY hh:mma',
-            )}`}
+            {format(
+              strings.loggedByText,
+              invoiceDetail?.created_by?.first_name,
+              invoiceDetail?.created_by?.last_name,
+              moment(new Date(invoiceDetail?.created_date * 1000)).format(
+                'MMM DD, YYYY hh:mma',
+              ),
+            )}
           </Text>
-          {/* <TouchableOpacity
-  style={styles.paymentContainer}
-  onPress={() => {
-    Alert.alert('ADD PAYMENT OR REFUND');
-  }}>
-  <Text style={styles.cardDetailText}>+Add Payment or Refund</Text>
-</TouchableOpacity> */}
 
           {from !== 'user' && (
             <TouchableOpacity
@@ -448,7 +448,7 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
               onPress={() => {
                 navigation.navigate('AddLogScreen', {invoiceDetail});
               }}>
-              <Text style={styles.cardDetailText}>Log Manually</Text>
+              <Text style={styles.cardDetailText}>{strings.logManually}</Text>
             </TouchableOpacity>
           )}
 
@@ -486,7 +486,7 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
                     color: colors.lightBlackColor,
                     margin: 15,
                   }}>
-                  Log
+                  {strings.log}
                 </Text>
                 <FlatList
                   data={logsList}
@@ -510,7 +510,7 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
                     colors={[colors.yellowColor, colors.darkThemeColor]}
                     style={styles.activeEventPricacy}>
                     <Text style={styles.activeEventPrivacyText}>
-                      {'PAY NOW'}
+                      {strings.PAYNOW}
                     </Text>
                   </LinearGradient>
                 </TouchableOpacity>
@@ -521,17 +521,16 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
           <ActionSheet
             ref={actionSheet}
             options={[
-              'Refund',
-              'Resend Invoice',
-              'Cancel Invoice',
-              'Delete Invoice',
-              'Cancel',
+              strings.refund,
+              strings.resendInvoiceText,
+              strings.cancelInvoiceText,
+              strings.deleteInvoice,
+              strings.cancel,
             ]}
             cancelButtonIndex={4}
             destructiveButtonIndex={3}
             onPress={(index) => {
               if (index === 0) {
-                console.log('Invoice obj:=>', invoiceDetail);
                 if (stripeRefundValidation()) {
                   setloading(true);
                   const body = {};
@@ -554,15 +553,15 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
               } else if (index === 2) {
                 if (from === 'member' || from === 'batch') {
                   Alert.alert(
-                    'Are you sure that you want to cancel this invoice?',
+                    strings.cancelThisInvoiceText,
                     '',
                     [
                       {
-                        text: 'Back',
+                        text: strings.back,
                         style: 'cancel',
                       },
                       {
-                        text: 'Yes',
+                        text: strings.yes,
 
                         // style: 'destructive',
                         onPress: () => {
@@ -580,15 +579,15 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
                 if (invoiceDetail?.amount_paid !== 0) {
                   if (from === 'member' || from === 'batch') {
                     Alert.alert(
-                      'Are you sure that you want to delete this invoice?',
+                      strings.cancelThisInvoiceText,
                       '',
                       [
                         {
-                          text: 'Back',
+                          text: strings.back,
                           style: 'cancel',
                         },
                         {
-                          text: 'Yes',
+                          text: strings.yes,
 
                           // style: 'destructive',
                           onPress: () => {
@@ -602,9 +601,7 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
                     recipientModalRef.current.open();
                   }
                 }
-                Alert.alert(
-                  "You can't delete this invoice because you did not paid anything.",
-                );
+                Alert.alert(strings.cannotDeleteInvoicetext);
               }
             }}
           />
@@ -615,13 +612,13 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
             cancelButtonIndex={1}
             destructiveButtonIndex={0}
             onPress={(index) => {
-              if (actionSheetOpetions()[index] === 'Delete Invoice') {
+              if (actionSheetOpetions()[index] === strings.deleteInvoice) {
                 deleteInvoiceByID();
               }
-              if (actionSheetOpetions()[index] === 'Cancel Invoice') {
+              if (actionSheetOpetions()[index] === strings.cancelInvoicesText) {
                 cancelInvoiceByID();
               }
-              if (actionSheetOpetions()[index] === 'Cancel') {
+              if (actionSheetOpetions()[index] === strings.cancel) {
                 console.log('cancel');
               }
             }}
@@ -659,7 +656,7 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
                         fontSize: 16,
                         color: colors.lightBlackColor,
                       }}>
-                      Invoice Title
+                      {strings.invoiceTitle}
                     </Text>
                     <Text
                       style={{
@@ -677,7 +674,7 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
                         fontSize: 16,
                         color: colors.lightBlackColor,
                       }}>
-                      Invoice Description
+                      {strings.invoiceDescriptionText}
                     </Text>
                     <Text
                       style={{
@@ -695,7 +692,7 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
                         fontSize: 16,
                         color: colors.lightBlackColor,
                       }}>
-                      Invoice Amount
+                      {strings.invoiceAmountText}
                     </Text>
                     <Text
                       style={{
@@ -713,7 +710,7 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
                         fontSize: 16,
                         color: colors.lightBlackColor,
                       }}>
-                      Due at
+                      {strings.dueAt}
                     </Text>
                     <Text
                       style={{

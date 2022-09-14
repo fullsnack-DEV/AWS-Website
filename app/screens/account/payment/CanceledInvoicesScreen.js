@@ -5,6 +5,7 @@ import {View, StyleSheet, FlatList, Alert} from 'react-native';
 
 import {useIsFocused} from '@react-navigation/native';
 
+import {format} from 'react-string-format';
 import AuthContext from '../../../auth/context';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 
@@ -13,6 +14,7 @@ import {getCancelledInvoice} from '../../../api/Invoice';
 import {strings} from '../../../../Localization/translation';
 import InvoiceView from '../../../components/invoice/InvoiceView';
 import InvoiceRefundAmount from '../../../components/invoice/InvoiceRefundAmount';
+import Verbs from '../../../Constants/Verbs';
 
 let entity = {};
 export default function CanceledInvoicesScreen({navigation}) {
@@ -30,20 +32,17 @@ export default function CanceledInvoicesScreen({navigation}) {
   const [refundAmount, setrefundAmount] = useState(0);
   const [notRefundAmount, setNotRefundAmount] = useState(0);
 
-  const renderInvoiceView = ({item}) => {
-    console.log('item', item);
-    return (
-      <InvoiceView
-        data={item}
-        onPressCard={() =>
-          navigation.navigate('TeamInvoiceDetailScreen', {
-            from: 'member',
-            invoiceObj: item,
-          })
-        }
-      />
-    );
-  };
+  const renderInvoiceView = ({item}) => (
+    <InvoiceView
+      data={item}
+      onPressCard={() =>
+        navigation.navigate('TeamInvoiceDetailScreen', {
+          from: 'member',
+          invoiceObj: item,
+        })
+      }
+    />
+  );
 
   useEffect(() => {
     if (isFocused) {
@@ -64,7 +63,6 @@ export default function CanceledInvoicesScreen({navigation}) {
           setTotalAmount(totalInvoiced);
           setNotRefundAmount(refundedInvoice);
           setrefundAmount(nonRefundedInvoice);
-          console.log('cancelled invoice :=>', response);
         })
         .catch((e) => {
           setloading(false);
@@ -77,8 +75,6 @@ export default function CanceledInvoicesScreen({navigation}) {
 
   const invoiceListByFilter = useCallback(
     (status) => {
-      console.log('Status', status);
-
       if (status === 'All') {
         return invoiceList;
       }
@@ -106,11 +102,18 @@ export default function CanceledInvoicesScreen({navigation}) {
 
         <TCTabView
           totalTabs={3}
-          firstTabTitle={`Not Refunded (${
-            invoiceListByFilter('norefund').length
-          })`}
-          secondTabTitle={`Refunded (${invoiceListByFilter('refund').length})`}
-          thirdTabTitle={`All (${invoiceListByFilter('All').length})`}
+          firstTabTitle={format(
+            strings.notRefundedNText,
+            invoiceListByFilter(Verbs.norefund).length,
+          )}
+          secondTabTitle={format(
+            strings.refundedNText,
+            invoiceListByFilter(strings.refund).length,
+          )}
+          thirdTabTitle={format(
+            strings.allNText,
+            invoiceListByFilter(Verbs.allStatus).length,
+          )}
           indexCounter={tabNumber}
           eventPrivacyContianer={{width: 100}}
           onFirstTabPress={() => setTabNumber(0)}
@@ -120,9 +123,9 @@ export default function CanceledInvoicesScreen({navigation}) {
 
         <FlatList
           data={
-            (tabNumber === 0 && invoiceListByFilter('norefund')) ||
-            (tabNumber === 1 && invoiceListByFilter('refund')) ||
-            (tabNumber === 2 && invoiceListByFilter('All'))
+            (tabNumber === 0 && invoiceListByFilter(Verbs.norefund)) ||
+            (tabNumber === 1 && invoiceListByFilter(Verbs.refundStatus)) ||
+            (tabNumber === 2 && invoiceListByFilter(Verbs.allStatus))
           }
           renderItem={renderInvoiceView}
           keyExtractor={(item, index) => index.toString()}

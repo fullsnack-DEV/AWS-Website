@@ -10,7 +10,7 @@ import {
   Text,
   Alert,
 } from 'react-native';
-
+import {format} from 'react-string-format';
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import AuthContext from '../../../auth/context';
 import images from '../../../Constants/ImagePath';
@@ -21,6 +21,7 @@ import {patchGroup} from '../../../api/Groups';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
 import {strings} from '../../../../Localization/translation';
+import Verbs from '../../../Constants/Verbs';
 
 export default function WhoCanJoinTeamScreen({navigation, route}) {
   const [comeFrom] = useState(route?.params?.comeFrom);
@@ -32,9 +33,12 @@ export default function WhoCanJoinTeamScreen({navigation, route}) {
   const whoCanJoinGroupOpetions = [
     {key: strings.everyoneRadio, id: 1},
     {
-      key: `A person whose request has been accepted by ${
-        authContext.entity.role === 'team' ? 'team admins' : 'club'
-      }`,
+      key: format(
+        strings.personWhoseRequestText,
+        authContext.entity.role === Verbs.entityTypeTeam
+          ? strings.teamAdminsText
+          : Verbs.entityTypeClub,
+      ),
       id: 2,
     },
     {key: strings.inviteOnly, id: 3},
@@ -60,7 +64,10 @@ export default function WhoCanJoinTeamScreen({navigation, route}) {
     navigation.setOptions({
       headerTitle: () => (
         <Text style={styles.headerTitle}>
-          Who Can Join {Utility.capitalize(authContext.entity.role)}
+          {format(
+            strings.whoCanJoinGroupText,
+            Utility.capitalize(authContext.entity.role),
+          )}
         </Text>
       ),
       headerRight: () => (
@@ -69,7 +76,7 @@ export default function WhoCanJoinTeamScreen({navigation, route}) {
           onPress={() => {
             onSavePressed();
           }}>
-          Save
+          {strings.save}
         </Text>
       ),
     });
@@ -150,10 +157,9 @@ export default function WhoCanJoinTeamScreen({navigation, route}) {
       style={styles.mainContainer}
       showsVerticalScrollIndicator={false}>
       <ActivityLoader visible={loading} />
-      <Text
-        style={
-          styles.opetionsTitle
-        }>{`Who can join the ${authContext.entity.role}?`}</Text>
+      <Text style={styles.opetionsTitle}>
+        {format(strings.whoCanJounGroupText, authContext.entity.role)}
+      </Text>
       <FlatList
         // ItemSeparatorComponent={() => <TCThinDivider />}
         data={whoCanJoinGroupOpetions}

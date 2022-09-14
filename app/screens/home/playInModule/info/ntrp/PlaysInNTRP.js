@@ -40,7 +40,11 @@ const PlaysInNTRP = ({
       </EditEventItem>
       <ActionSheet
         ref={actionSheet}
-        options={['Edit NTRP', strings.privacySettingText, 'Cancel']}
+        options={[
+          strings.editNTRPText,
+          strings.privacySettingText,
+          strings.cancel,
+        ]}
         cancelButtonIndex={2}
         onPress={(index) => {
           if (index === 0) setEditModalType(strings.ntrpTitle);

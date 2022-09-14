@@ -13,6 +13,7 @@ import TennisMatchRecordsList from './TennisMatchRecordsList';
 import Header from '../../../components/Home/Header';
 import fonts from '../../../Constants/Fonts';
 import {widthPercentageToDP as wp} from '../../../utils';
+import {strings} from '../../../../Localization/translation';
 
 export default function TennisRecordList({route, navigation}) {
   const matchRecords3DotRef = useRef();
@@ -28,7 +29,7 @@ export default function TennisRecordList({route, navigation}) {
           </TouchableOpacity>
         }
         centerComponent={
-          <Text style={styles.eventTextStyle}>Match records</Text>
+          <Text style={styles.eventTextStyle}>{strings.matchRecords}</Text>
         }
         rightComponent={
           route?.params?.isAdmin && (

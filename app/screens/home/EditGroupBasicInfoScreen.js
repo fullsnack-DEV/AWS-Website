@@ -39,6 +39,7 @@ import TCKeyboardView from '../../components/TCKeyboardView';
 import DataSource from '../../Constants/DataSource';
 import AuthContext from '../../auth/context';
 import TCThinDivider from '../../components/TCThinDivider';
+import Verbs from '../../Constants/Verbs';
 
 export default function EditGroupBasicInfoScreen({navigation, route}) {
   // For activity indicator
@@ -65,9 +66,6 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
 
   const onSaveButtonClicked = useCallback(() => {
     if (checkValidation()) {
-      console.log('groupData', groupData);
-
-      console.log('selectedSports', selectedSports);
       const newArray = selectedSports.map((obj) => {
         delete obj.isChecked;
         delete obj.entity_type;
@@ -88,20 +86,17 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
       groupProfile.office_address =
         groupData.office_address && groupData.office_address;
 
-      console.log('updating values', groupProfile);
-
       patchGroup(groupData.group_id, groupProfile, authContext)
         .then(async (response) => {
           setloading(false);
           if (response && response.status === true) {
-            console.log('response', response);
             const entity = await Utility.getStorage('loggedInEntity');
             entity.obj = response.payload;
             Utility.setStorage('loggedInEntity', entity);
             navigation.goBack();
           } else {
             setTimeout(() => {
-              Alert.alert(strings.alertmessagetitle, 'Something went wrong');
+              Alert.alert(strings.alertmessagetitle, strings.defaultError);
             }, 0.1);
           }
         })
@@ -163,9 +158,6 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
     const minAgeArray = [];
     const maxAgeArray = [];
 
-    console.log('MIN AGE:=>', minAge);
-    console.log('MAX AGE:=>', maxAge);
-
     for (let i = 1; i <= maxAge; i++) {
       const dataSource = {
         label: `${i}`,
@@ -195,7 +187,6 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
 
     const arr = [];
     for (const tempData of sportArr) {
-      console.log('tempData', tempData);
       const sportsArray = selectedSports.filter(
         (spo) =>
           spo.sport === tempData.sport &&
@@ -208,13 +199,11 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
       obj.isChecked = sportsArray.length > 0;
       arr.push(obj);
     }
-    console.log('Sport array:=>', arr);
     setSportList(arr);
   };
 
   useEffect(() => {
     let sportText = '';
-    console.log('selectedSports:=>', selectedSports);
     if (selectedSports.length > 0) {
       selectedSports.map((sportItem, index) => {
         sportText =
@@ -232,22 +221,16 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
   };
 
   const checkValidation = () => {
-    if (!('sport' in groupData) && groupData.sport === '') {
+    if (!(Verbs.sportType in groupData) && groupData.sport === '') {
       Alert.alert(strings.alertmessagetitle, strings.sportcannotbeblank);
       return false;
     }
     if (groupData.registration_fee >= 1000) {
-      Alert.alert(
-        strings.alertmessagetitle,
-        'Membership Registration fee can not be biggger than 1000.',
-      );
+      Alert.alert(strings.alertmessagetitle, strings.membershipRegister);
       return false;
     }
     if (groupData.membership_fee >= 1000) {
-      Alert.alert(
-        strings.alertmessagetitle,
-        'Membership fee can not be biggger than 1000.',
-      );
+      Alert.alert(strings.alertmessagetitle, strings.membershipFeeNotBigger);
       return false;
     }
 
@@ -271,12 +254,10 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
 
   const toggleLanguageModal = () => {
     const selectedLanguages = groupLanguages || [];
-    console.log('groupLanguages', groupLanguages);
 
     // if (groupLanguages) {
     //   selectedLanguages = groupLanguages.split(', ');
     // }
-    console.log('Utility.languages', Utility.languageList);
     const arr = [];
     for (const tempData of Utility.languageList) {
       if (selectedLanguages.includes(tempData.language)) {
@@ -362,9 +343,12 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
         {/* Sport */}
         <View>
           <View style={{flexDirection: 'row'}}>
-            <TCLabel title={'Sport'} style={styles.titleStyle} />
+            <TCLabel
+              title={strings.sportsEventsTitle}
+              style={styles.titleStyle}
+            />
           </View>
-          {groupData.entity_type === 'club' && (
+          {groupData.entity_type === Verbs.entityTypeClub && (
             <TouchableOpacity style={styles.languageView} onPress={toggleModal}>
               <Text
                 style={
@@ -373,11 +357,11 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
                     : styles.languagePlaceholderText
                 }
                 numberOfLines={50}>
-                {sportsName || 'Sports'}
+                {sportsName || strings.sportsEventsTitle}
               </Text>
             </TouchableOpacity>
           )}
-          {groupData.entity_type === 'team' && (
+          {groupData.entity_type === Verbs.entityTypeTeam && (
             <View style={{marginHorizontal: 25, marginTop: 5}}>
               <Text style={{fontFamily: fonts.RRegular, fontSize: 16}}>
                 {Utility.capitalize(groupData.sport)}
@@ -388,7 +372,7 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
         {/* Member's gender */}
         <View>
           <TCLabel title={strings.genderTitle} style={styles.titleStyle} />
-          {groupData.entity_type === 'club' && (
+          {groupData.entity_type === Verbs.entityTypeClub && (
             <View style={{height: 40, marginHorizontal: 15}}>
               <RNPickerSelect
                 placeholder={{
@@ -414,7 +398,7 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
               />
             </View>
           )}
-          {groupData.entity_type === 'team' && (
+          {groupData.entity_type === Verbs.entityTypeTeam && (
             <View style={{marginHorizontal: 25, marginTop: 5}}>
               <Text style={{fontFamily: fonts.RRegular, fontSize: 16}}>
                 {groupData.gender
@@ -634,7 +618,7 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
               }}>
-              Sports
+              {strings.sportsEventsTitle}
             </Text>
             <TouchableOpacity
               onPress={() => {
@@ -650,7 +634,7 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
                   fontFamily: fonts.RRegular,
                   color: colors.themeColor,
                 }}>
-                Apply
+                {strings.apply}
               </Text>
             </TouchableOpacity>
           </View>

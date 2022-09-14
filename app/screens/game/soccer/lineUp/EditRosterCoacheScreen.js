@@ -19,6 +19,7 @@ import TCLabel from '../../../../components/TCLabel';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import LineUpPlayerView from '../../../../components/game/soccer/home/lineUp/LineUpPlayerView';
 import colors from '../../../../Constants/Colors';
+import {strings} from '../../../../../Localization/translation';
 
 export default function EditLineUpCoachScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
@@ -34,7 +35,6 @@ export default function EditLineUpCoachScreen({navigation, route}) {
           style={styles.nextButtonStyle}
           onPress={() => {
             setLoading(true);
-            console.log('roster Data', roster);
             const modifiedData = roster.filter((e) => e.modified === true);
             const tempArray = [];
             // eslint-disable-next-line array-callback-return
@@ -54,7 +54,6 @@ export default function EditLineUpCoachScreen({navigation, route}) {
               body.member_id = e.profile.user_id;
               tempNonRosterArray.push(body);
             });
-            console.log('Modified Data', modifiedData);
 
             if (tempArray.length > 0) {
               if (
@@ -70,9 +69,7 @@ export default function EditLineUpCoachScreen({navigation, route}) {
                   route.params.gameObj.game_id,
                   tempArray,
                   authContext,
-                ).then((response) => {
-                  console.log('Response:::', response.payload);
-
+                ).then(() => {
                   if (tempNonRosterArray.length > 0) {
                     deleteGameLineUp(
                       route.params.selectedTeam === 'home'
@@ -105,10 +102,10 @@ export default function EditLineUpCoachScreen({navigation, route}) {
               });
             } else {
               setLoading(false);
-              Alert.alert('Please modify coaches first');
+              Alert.alert(strings.modifyCoachesValidation);
             }
           }}>
-          Save
+          {strings.save}
         </Text>
       ),
     });
@@ -146,8 +143,6 @@ export default function EditLineUpCoachScreen({navigation, route}) {
       setRoster(rosterData.filter((el) => el.role === 'coach'));
       setSearchRoster([...roster]);
       setSearchNonRoster(nonRosterData);
-      console.log('roseter :: ', roster);
-      console.log('roseter api data:: ', JSON.stringify(response.payload));
     });
   };
   const renderNonRoster = ({item}) => (
@@ -165,8 +160,6 @@ export default function EditLineUpCoachScreen({navigation, route}) {
           setRoster([...roster]);
           setNonRoster([...nonRoster]);
         }
-        console.log('ITEM BTYPE::', bType);
-        console.log('ITEM PRESSED::', item);
       }}
     />
   );
@@ -184,8 +177,6 @@ export default function EditLineUpCoachScreen({navigation, route}) {
           setRoster([...roster]);
           setNonRoster([...nonRoster]);
         }
-        console.log('ITEM BTYPE::', bType);
-        console.log('ITEM PRESSED::', item);
       }}
     />
   );
@@ -214,7 +205,7 @@ export default function EditLineUpCoachScreen({navigation, route}) {
         <View>
           <TCLabel title={'Coaches'} />
           {roster.length === 0 ? (
-            <Text style={styles.noDataView}>No Coches</Text>
+            <Text style={styles.noDataView}>{strings.noCoaches}</Text>
           ) : (
             <FlatList
               data={roster}
@@ -227,7 +218,9 @@ export default function EditLineUpCoachScreen({navigation, route}) {
         <View>
           <TCLabel title={'Members'} />
           {nonRoster.length === 0 ? (
-            <Text style={styles.noDataView}>No Player</Text>
+            <Text style={styles.noDataView}>
+              {strings.lookingTeamsPlaceholderText}
+            </Text>
           ) : (
             <FlatList
               data={nonRoster}

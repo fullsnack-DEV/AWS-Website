@@ -41,8 +41,9 @@ import LineUpPlayerView from '../../../../components/game/soccer/home/lineUp/Lin
 import images from '../../../../Constants/ImagePath';
 import {strings} from '../../../../../Localization/translation';
 import LineUpPlayerMultiSelectionView from '../../../../components/game/soccer/home/lineUp/LineUpPlayerMultiSelectionView';
+import {moveToData} from '../../../../utils/constant';
+import Verbs from '../../../../Constants/Verbs';
 
-const moveToData = ['Starting', 'Subs', 'Non-roster'];
 export default function EditLineUpScreen({navigation, route}) {
   const actionSheet = useRef();
   const authContext = useContext(AuthContext);
@@ -111,7 +112,6 @@ export default function EditLineUpScreen({navigation, route}) {
       setTempararyNonRoster(nonRosterData);
       setTempararyStarting(starting);
       setTempararySubs(subs);
-      console.log('roseter api data:: ', JSON.stringify(response.payload));
     });
   };
 
@@ -141,7 +141,6 @@ export default function EditLineUpScreen({navigation, route}) {
     tempararySubs,
   ]);
   const toggleModal = () => {
-    console.log('Pressed Toggel::');
     setModalVisible(!isModalVisible);
   };
 
@@ -171,8 +170,6 @@ export default function EditLineUpScreen({navigation, route}) {
           setSelectedMember(item);
           toggleModal();
         }
-        console.log('ITEM BTYPE::', bType);
-        console.log('ITEM PRESSED::', item);
       }}
       OnRowPress={() => {}}
     />
@@ -184,11 +181,9 @@ export default function EditLineUpScreen({navigation, route}) {
       onButtonPress={(checked) => {
         setEnabledSection(sectionNumber());
 
-        console.log('ENABLED::', enabledSection);
         const tempNonRoster = [...nonRoster];
         const index = nonRoster.findIndex((obj) => obj === item);
         tempNonRoster[index].selected = !checked;
-        console.log('ITEM BTYPE::', tempNonRoster[index].selected);
         setNonRoster([...tempNonRoster]);
         setSelectedPosition();
         setEnabledSection(sectionNumber());
@@ -258,7 +253,7 @@ export default function EditLineUpScreen({navigation, route}) {
           navigation.push('HomeScreen', {
             uid: userInfo.profile.user_id,
             backButtonVisible: true,
-            role: 'user',
+            role: Verbs.entityTypeUser,
             menuBtnVisible: false,
           });
         }
@@ -331,8 +326,6 @@ export default function EditLineUpScreen({navigation, route}) {
   );
 
   const saveButtonPress = () => {
-    console.log('This is ok');
-
     const modifiedData = roster.filter((e) => e.modified === true);
     const tempArray = [];
     // eslint-disable-next-line array-callback-return
@@ -340,7 +333,7 @@ export default function EditLineUpScreen({navigation, route}) {
       const body = {};
       body.lineup = e.lineup;
       body.member_id = e.profile.user_id;
-      body.role = 'player';
+      body.role = Verbs.entityTypePlayer;
       tempArray.push(body);
     });
 
@@ -415,7 +408,7 @@ export default function EditLineUpScreen({navigation, route}) {
         });
     } else {
       setLoading(false);
-      Alert.alert('Please modify lineup first');
+      Alert.alert(strings.modifyLineUpFirst);
     }
   };
 
@@ -428,8 +421,8 @@ export default function EditLineUpScreen({navigation, route}) {
           onChangeText={(text) => searchFilterFunction(text)}
         /> */}
         <TCGreenSwitcher
-          firstTabText={'Single selection'}
-          secondTabText={'Multi Selection'}
+          firstTabText={strings.singleSelection}
+          secondTabText={strings.multiSelection}
           selectedTab={selected}
           onFirstTabPress={() => setSelected(1)}
           onSecondTabPress={() => setSelected(2)}
@@ -445,10 +438,12 @@ export default function EditLineUpScreen({navigation, route}) {
                   color: colors.lightBlackColor,
                   marginLeft: 25,
                 }}>
-                Starting
+                {strings.starting}
               </Text>
               {starting.length === 0 ? (
-                <Text style={styles.noDataView}>No Player</Text>
+                <Text style={styles.noDataView}>
+                  {strings.lookingTeamsPlaceholderText}
+                </Text>
               ) : (
                 <FlatList
                   data={starting}
@@ -465,10 +460,12 @@ export default function EditLineUpScreen({navigation, route}) {
                   marginLeft: 25,
                   marginTop: 20,
                 }}>
-                Subs
+                {strings.subs}
               </Text>
               {subs.length === 0 ? (
-                <Text style={styles.noDataView}>No Player</Text>
+                <Text style={styles.noDataView}>
+                  {strings.lookingTeamsPlaceholderText}
+                </Text>
               ) : (
                 <FlatList
                   data={subs}
@@ -485,7 +482,7 @@ export default function EditLineUpScreen({navigation, route}) {
 
                   alignItems: 'center',
                 }}>
-                <TCLabel title={'Non-Roster'} style={{height: 50}} />
+                <TCLabel title={strings.nonRoster} style={{height: 50}} />
 
                 {search ? (
                   <View style={{flex: 1, marginLeft: 15, marginRight: 15}}>
@@ -527,7 +524,9 @@ export default function EditLineUpScreen({navigation, route}) {
                 )}
               </View>
               {nonRoster.length === 0 ? (
-                <Text style={styles.noDataView}>No Player</Text>
+                <Text style={styles.noDataView}>
+                  {strings.lookingTeamsPlaceholderText}
+                </Text>
               ) : (
                 <FlatList
                   data={nonRoster}
@@ -547,7 +546,7 @@ export default function EditLineUpScreen({navigation, route}) {
         ) : (
           <View style={{flex: 1}}>
             <ScrollView>
-              <TCLabel title={'Roster'} />
+              <TCLabel title={strings.roster} />
               <Text
                 style={{
                   fontFamily: fonts.RRegular,
@@ -555,11 +554,13 @@ export default function EditLineUpScreen({navigation, route}) {
                   color: colors.lightBlackColor,
                   marginLeft: 25,
                 }}>
-                Starting
+                {strings.starting}
               </Text>
 
               {starting.length === 0 ? (
-                <Text style={styles.noDataView}>No Player</Text>
+                <Text style={styles.noDataView}>
+                  {strings.lookingTeamsPlaceholderText}
+                </Text>
               ) : (
                 <FlatList
                   data={starting}
@@ -577,10 +578,12 @@ export default function EditLineUpScreen({navigation, route}) {
                   marginLeft: 25,
                   marginTop: 20,
                 }}>
-                Subs
+                {strings.subs}
               </Text>
               {subs.length === 0 ? (
-                <Text style={styles.noDataView}>No Player</Text>
+                <Text style={styles.noDataView}>
+                  {strings.lookingTeamsPlaceholderText}
+                </Text>
               ) : (
                 <FlatList
                   data={subs}
@@ -597,7 +600,7 @@ export default function EditLineUpScreen({navigation, route}) {
 
                   alignItems: 'center',
                 }}>
-                <TCLabel title={'Non-Roster'} style={{height: 50}} />
+                <TCLabel title={strings.nonRoster} style={{height: 50}} />
 
                 {search ? (
                   <View style={{flex: 1, marginLeft: 15, marginRight: 15}}>
@@ -640,7 +643,9 @@ export default function EditLineUpScreen({navigation, route}) {
               </View>
 
               {nonRoster.length === 0 ? (
-                <Text style={styles.noDataView}>No Player</Text>
+                <Text style={styles.noDataView}>
+                  {strings.lookingTeamsPlaceholderText}
+                </Text>
               ) : (
                 <FlatList
                   data={nonRoster}
@@ -688,9 +693,9 @@ export default function EditLineUpScreen({navigation, route}) {
               marginRight: 10,
             }}>
             <Text onPress={toggleModal} style={styles.cancelTitle}>
-              Cancel
+              {strings.cancel}
             </Text>
-            <Text style={styles.modelTitle}>Move To</Text>
+            <Text style={styles.modelTitle}>{strings.moveTo}</Text>
             <TouchableOpacity
               disabled={
                 !(
@@ -756,8 +761,6 @@ export default function EditLineUpScreen({navigation, route}) {
                     );
                     setSubs(roster.filter((el) => el.lineup === 'subs'));
                   }
-                  console.log('NON', nonRoster);
-                  console.log('ROS', roster);
                 }
                 if (selected === 2) {
                   if (enabledSection === 1 || enabledSection === 2) {
@@ -832,11 +835,9 @@ export default function EditLineUpScreen({navigation, route}) {
                     );
                     setSubs(roster.filter((el) => el.lineup === 'subs'));
                   }
-                  console.log('NON', nonRoster);
-                  console.log('ROS', roster);
                 }
               }}>
-              <Text style={styles.doneTitle}>Done</Text>
+              <Text style={styles.doneTitle}>{strings.done}</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.separatorLine}></View>
@@ -851,7 +852,11 @@ export default function EditLineUpScreen({navigation, route}) {
       <ActionSheet
         ref={actionSheet}
         // title={'News Feed Post'}
-        options={['Clear all starting', 'Clear all subs', 'Cancel']}
+        options={[
+          strings.clearAllStarting,
+          strings.clearAllSubs,
+          strings.cancel,
+        ]}
         cancelButtonIndex={2}
         // destructiveButtonIndex={1}
         onPress={(index) => {

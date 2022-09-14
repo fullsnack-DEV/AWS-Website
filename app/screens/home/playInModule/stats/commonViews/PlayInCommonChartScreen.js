@@ -14,7 +14,11 @@ import colors from '../../../../../Constants/Colors';
 import fonts from '../../../../../Constants/Fonts';
 import StatsSelectionView from '../../../../../components/Home/StatsSelectionView';
 import {strings} from '../../../../../../Localization/translation';
-import {monthsSelectionData} from '../../../../../utils/constant';
+import {
+  monthsSelectionData,
+  shortMonthNames,
+} from '../../../../../utils/constant';
+import Verbs from '../../../../../Constants/Verbs';
 
 const Gradient = () => (
   <Defs key={'gradient'}>
@@ -28,27 +32,16 @@ const Gradient = () => (
 export default function PlayInCommonChartScreen({
   gameChartData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   gameStatsData,
-  gameChartMonths = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'July',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
-  ],
+  gameChartMonths = shortMonthNames,
   selectWeekMonth,
   setSelectWeekMonth,
 }) {
   const [pieData, setPieData] = useState([]);
   useEffect(() => {
     const data = Object.keys(gameStatsData)
-      ?.filter((item) => ['winner', 'draw', 'looser']?.includes(item))
+      ?.filter((item) =>
+        [Verbs.winnerVerb, Verbs.drawVerb, Verbs.looserVerb]?.includes(item),
+      )
       ?.map((item) => ({
         key: item,
         value:
@@ -69,13 +62,13 @@ export default function PlayInCommonChartScreen({
   const GradientView = ({keyName}) => {
     let startColor = colors.googleColor;
     let endColor = colors.googleColor;
-    if (keyName === 'winner') {
+    if (keyName === Verbs.winnerVerb) {
       startColor = colors.blueGradiantEnd;
       endColor = colors.blueGradiantStart;
-    } else if (keyName === 'draw') {
+    } else if (keyName === Verbs.drawVerb) {
       startColor = colors.greenGradientEnd;
       endColor = colors.greenGradientStart;
-    } else if (keyName === 'looser') {
+    } else if (keyName === Verbs.looserVerb) {
       startColor = colors.themeColor;
       endColor = colors.yellowColor;
     }
@@ -100,7 +93,7 @@ export default function PlayInCommonChartScreen({
           paddingHorizontal: 15,
         }}>
         <View style={styles.totalGameViewStyle}>
-          <Text style={styles.totalGameTextStyle}>{'Total Matches'}</Text>
+          <Text style={styles.totalGameTextStyle}>{strings.totalMatches}</Text>
           <Text style={styles.totalGameCounterText}>
             {gameStatsData ? gameStatsData.total_games : ''}
           </Text>
@@ -133,7 +126,7 @@ export default function PlayInCommonChartScreen({
               progressBarStyle={{backgroundColor: colors.lightgrayColor}}
             />
             <WinProgressView
-              titleText={'Draws'}
+              titleText={strings.draws}
               percentageCount={gameStatsData ? gameStatsData.draw : ''}
               progress={
                 isNaN(gameStatsData.winner / gameStatsData.total_games)
@@ -149,7 +142,7 @@ export default function PlayInCommonChartScreen({
               progressBarStyle={{backgroundColor: colors.lightgrayColor}}
             />
             <WinProgressView
-              titleText={'Losses'}
+              titleText={strings.losses}
               percentageCount={gameStatsData ? gameStatsData.looser : ''}
               progress={
                 isNaN(gameStatsData.winner / gameStatsData.total_games)
@@ -183,9 +176,9 @@ export default function PlayInCommonChartScreen({
             radius={60}
             outerRadius={60}
             innerRadius={52}>
-            <GradientView keyName={'looser'} />
-            <GradientView keyName={'draw'} />
-            <GradientView keyName={'winner'} />
+            <GradientView keyName={Verbs.looserVerb} />
+            <GradientView keyName={Verbs.drawVerb} />
+            <GradientView keyName={strings.winner} />
           </SVGPieChart>
           <View style={styles.winPercentageView}>
             <View style={{flexDirection: 'row'}}>
@@ -195,7 +188,7 @@ export default function PlayInCommonChartScreen({
                   : (100 * gameStatsData.winner) / gameStatsData.total_games}
               </Text>
             </View>
-            <Text style={styles.winTextStyle}>{'Winning\nPercentage'}</Text>
+            <Text style={styles.winTextStyle}>{strings.winningPercentage}</Text>
           </View>
         </View>
       </View>

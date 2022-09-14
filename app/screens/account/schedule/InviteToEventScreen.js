@@ -53,11 +53,11 @@ export default function InviteToEventScreen({navigation, route}) {
         setloading(false);
         console.log('Response of Invitation sent:', response);
         Alert.alert(
-          'An invitation was sent.',
+          strings.inviteWasSendText,
           '',
           [
             {
-              text: 'OK',
+              text: strings.okTitleText,
               onPress: () => {
                 navigation.goBack();
               },
@@ -101,7 +101,6 @@ export default function InviteToEventScreen({navigation, route}) {
       }
       getUserIndex(membersQuery)
         .then((response) => {
-          console.log('User list:->', response);
           setloading(false);
           if (response.length > 0) {
             const result = response.map((obj) => {
@@ -131,7 +130,6 @@ export default function InviteToEventScreen({navigation, route}) {
       return obj;
     });
     setSelectedList(selectedPlayers);
-    console.log('Selected Item:', selectedPlayers);
   };
 
   const renderPlayer = ({item, index}) => (
@@ -163,7 +161,7 @@ export default function InviteToEventScreen({navigation, route}) {
           color: colors.grayColor,
           fontSize: 26,
         }}>
-        No Players
+        {strings.noPlayer}
       </Text>
     </View>
   );
@@ -199,17 +197,6 @@ export default function InviteToEventScreen({navigation, route}) {
         titleKey={'full_name'}
         onTagCancelPress={handleTagPress}
       />
-      {/* <FlatList
-        data={players}
-        renderItem={renderPlayer}
-        keyExtractor={(item, index) => index.toString()}
-        onScroll={onScrollHandler}
-        onEndReachedThreshold={0.01}
-        onScrollBeginDrag={() => {
-          stopFetchMore = false;
-        }}
-      /> */}
-
       <FlatList
         extraData={players}
         showsVerticalScrollIndicator={false}

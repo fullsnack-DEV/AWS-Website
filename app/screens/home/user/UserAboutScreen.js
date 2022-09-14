@@ -53,7 +53,7 @@ export default function UserAboutScreen({navigation, route}) {
         navigation.goBack();
       } else {
         setTimeout(() => {
-          Alert.alert(strings.appName, 'Something went wrong');
+          Alert.alert(strings.appName, strings.defaultError);
         }, 0.1);
       }
     });

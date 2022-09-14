@@ -19,6 +19,7 @@ import colors from '../../Constants/Colors';
 import Header from '../../components/Home/Header';
 import ReviewRecentMatch from '../../components/Home/ReviewRecentMatch';
 import fonts from '../../Constants/Fonts';
+import {strings} from '../../../Localization/translation';
 // import { useIsFocused } from '@react-navigation/native';
 
 // const entity = {};
@@ -92,7 +93,9 @@ export default function EntityReviewScreen({navigation, route}) {
                       style={styles.refereesImageStyle}
                       resizeMode={'contain'}
                     />
-                    <Text style={styles.playInTextStyle}>{'Reviews'}</Text>
+                    <Text style={styles.playInTextStyle}>
+                      {strings.reviews}
+                    </Text>
                   </View>
                 }
                 rightComponent={

@@ -4,6 +4,7 @@ import ActionSheet from 'react-native-actionsheet';
 
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
+import {strings} from '../../../../Localization/translation';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
@@ -85,7 +86,7 @@ export default function RefereesProfileSection({
 
       <ActionSheet
         ref={actionSheetSettingRef}
-        options={['Deactivate This Activity', 'Cancel']}
+        options={['Deactivate This Activity', strings.cancel]}
         cancelButtonIndex={1}
         // destructiveButtonIndex={2}
         onPress={(index) => {

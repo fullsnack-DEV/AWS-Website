@@ -20,6 +20,7 @@ import SingleImageRender from '../../components/Home/SingleImageRender';
 import MultipleImageRender from '../../components/Home/MultipleImageRender';
 import SingleVideoRender from '../../components/Home/SingleVideoRender';
 import MultipleVideoRender from '../../components/Home/MultipleVideoRender';
+import {strings} from '../../../Localization/translation';
 
 const AllInOneGallery = ({
   isAdmin,
@@ -168,7 +169,7 @@ const AllInOneGallery = ({
               fontFamily: fonts.RLight,
               fontSize: 16,
             }}>
-            No Gallery Found
+            {strings.noGalleryFound}
           </Text>
         }
         data={finalGalleryData}

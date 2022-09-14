@@ -5,6 +5,7 @@ import {
   expectToBeVisibleByLabel,
   loginFlow,
 } from '../../app/utils/testCaseHelper';
+import {strings} from '../../Localization/translation';
 
 const loginInputData = {
   email: 'makani20@gmail.com',
@@ -80,7 +81,7 @@ describe('TownsCup login flow', () => {
       await element(by.text('CONFIRM AND PAY')).tap();
     }
 
-    await element(by.text('OK')).tap();
+    await element(by.text(strings.okTitleText)).tap();
     await element(by.id('account-tab')).tap();
     await expect(element(by.id('account-screen'))).toBeVisible();
 

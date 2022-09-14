@@ -18,6 +18,7 @@ import colors from '../../../Constants/Colors';
 import Header from '../../../components/Home/Header';
 import fonts from '../../../Constants/Fonts';
 import TCInnerLoader from '../../../components/TCInnerLoader';
+import {strings} from '../../../../Localization/translation';
 
 const AddSetGameModal = ({
   headingTitle,
@@ -90,7 +91,7 @@ const AddSetGameModal = ({
                   fontFamily: fonts.RLight,
                   color: colors.blocklightgraycolor,
                 }}>
-                {'Cancel'}
+                {strings.cancel}
               </Text>
             </TouchableOpacity>
           }
@@ -107,7 +108,7 @@ const AddSetGameModal = ({
                   fontFamily: fonts.RLight,
                   color: colors.themeColor,
                 }}>
-                {'Done'}
+                {strings.done}
               </Text>
             </TouchableOpacity>
           }
@@ -171,7 +172,7 @@ const AddSetGameModal = ({
             {/* Ends */}
             <StartsEndComponent
               onPress={() => toggleDateTimePicker(2)}
-              title={'Ends'}
+              title={strings.endsText}
               date={endsDate}
             />
             {toggleDateTimePickerFor === 2 && (
@@ -227,7 +228,7 @@ const StartsEndComponent = ({title, date, onPress}) => (
           color: colors.themeColor,
         }}>
         {'  '}
-        {date && '(3h 55m)'}
+        {date && strings.dummyTime}
       </Text>
     </View>
   </TouchableOpacity>

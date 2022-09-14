@@ -578,7 +578,7 @@ function RefereeInfoSection({
           {`$${
             refereeSetting?.game_fee?.fee
               ? refereeSetting?.game_fee?.fee
-              : 'N/A'
+              : strings.NAText
           }`}{' '}
           <Text
             style={{

@@ -49,16 +49,13 @@ export default function PayAgainScreen({navigation, route}) {
     setloading(true);
     paymentMethods(authContext)
       .then((response) => {
-        console.log('Payment api called', response.payload);
         const matchCard = response.payload.find((card) => card.id === source);
         if (matchCard) {
-          console.log('default payment method', matchCard);
           setDefaultCard(matchCard);
         }
         setloading(false);
       })
       .catch((e) => {
-        console.log('error in payment method', e);
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
@@ -111,63 +108,13 @@ export default function PayAgainScreen({navigation, route}) {
     }
   };
 
-  //   const getFeeDetail = () => {
-  //     console.log('FEE CALLED:');
-  //     if (route && route.params && route.params.body) {
-  //       const feeBody = { ...route.params.body };
-  //       console.log('FEE BODY AVAILABLE:', feeBody);
-  //       feeBody.start_datetime = parseFloat(
-  //         (feeBody.start_datetime / 1000).toFixed(0),
-  //       );
-  //       feeBody.end_datetime = parseFloat(
-  //         (feeBody.end_datetime / 1000).toFixed(0),
-  //       );
-  //       feeBody.manual_fee = false;
-  //       setloading(true);
-  //       let entityID;
-  //       if (route.params.body.home_team.group_id === entity.uid || route.params.body.home_team.user_id === entity.uid) {
-  //         entityID = route.params.body.away_team.group_id || route.params.body.away_team.user_id
-  //       } else {
-  //         entityID = route.params.body.home_team.group_id || route.params.body.home_team.user_id
-  //       }
-  //       getFeesEstimation(
-  //         entityID,
-  //         feeBody,
-  //         authContext,
-  //       )
-  //         .then((response) => {
-  //           if (route && route.params && route.params.body) {
-  //             const body = route.params.body;
-  //             body.total_payout = response.payload.total_payout;
-  //             body.service_fee1_charges = response.payload.total_service_fee1;
-  //             body.service_fee2_charges = response.payload.total_service_fee2;
-  //             body.total_charges = response.payload.total_amount;
-  //             body.total_game_fee = response.payload.total_game_fee;
-  //             setEstimationFee({ ...body });
-  //           }
-
-  //           setloading(false);
-  //         })
-  //         .catch((e) => {
-  //           setloading(false);
-  //           setTimeout(() => {
-  //             Alert.alert(strings.alertmessagetitle, e.message);
-  //           }, 10);
-  //         });
-  //     }
-  //   };
-
   return (
     <TCKeyboardView>
       <ActivityLoader visible={loading} />
 
       <View style={styles.viewMarginStyle}>
-        <TCLabel title={'Payment'} />
-        {/* paymentData={paymentInfo} homeTeam={homeTeam && homeTeam} awayTeam={awayTeam && awayTeam} */}
-        {/* <MatchFeesCard
-          challengeObj={challengeObj}
-          senderOrReceiver={'sender'}
-        /> */}
+        <TCLabel title={strings.payment} />
+
         <GameFeeCard
           feeObject={{
             total_game_fee: challengeObj?.total_game_fee,
@@ -184,7 +131,7 @@ export default function PayAgainScreen({navigation, route}) {
       </View>
 
       <View style={styles.viewMarginStyle}>
-        <TCLabel title={'Payment Method'} />
+        <TCLabel title={strings.paymentMethod} />
         <View>
           <TCTouchableLabel
             title={
@@ -207,14 +154,12 @@ export default function PayAgainScreen({navigation, route}) {
       </View>
 
       <View style={styles.viewMarginStyle}>
-        <TCLabel title={'Cancellation Policy'} />
+        <TCLabel title={strings.refundPolicy} />
         <Text style={styles.responsibilityText}>
-          When you cancel this game reservation before 3:55pm on August 11, you
-          will get a 50% refund, minus the service fee.{' '}
+          {strings.cancellationPolicyText}{' '}
         </Text>
         <Text style={styles.responsibilityNote}>
-          By selecting the button below, I agree to the cancellation policy, and
-          also agree to pay the total amount shown above.
+          {strings.agreeCancellationPolicy}
         </Text>
       </View>
       <View style={{flex: 1}} />

@@ -31,7 +31,7 @@ export default function TeamSettingPrivacyScreen({navigation, route}) {
 
   const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
   const [pointEvent, setPointEvent] = useState('auto');
-  const [teamSetting] = useState([{key: 'What Team Can Join Club', id: 0}]);
+  const [teamSetting] = useState([{key: strings.whatTeamJoinClub, id: 0}]);
   const [teamCanJoinClub, setTeamCanJoinClub] = useState(
     route?.params?.teamCanJoinClub
       ? route?.params?.teamCanJoinClub
@@ -39,7 +39,7 @@ export default function TeamSettingPrivacyScreen({navigation, route}) {
   );
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: () => <Text style={styles.headerTitle}>Team</Text>,
+      headerTitle: () => <Text style={styles.headerTitle}>{strings.team}</Text>,
     });
   }, [navigation]);
 
@@ -69,7 +69,6 @@ export default function TeamSettingPrivacyScreen({navigation, route}) {
     setIsAccountDeactivated(false);
     setPointEvent('auto');
     if (isFocused) {
-      console.log('its called....', authContext.entity.role);
       if (authContext?.entity?.obj?.is_pause === true) {
         setIsAccountDeactivated(true);
         setPointEvent('none');
@@ -90,14 +89,12 @@ export default function TeamSettingPrivacyScreen({navigation, route}) {
 
   const getSettingValue = useCallback(
     (item) => {
-      console.log('item.key', item);
-
       if (item === teamSetting[0].key) {
         if (teamCanJoinClub === 0) {
           return strings.everyTeam;
         }
         if (teamCanJoinClub === 1) {
-          return 'Accepted';
+          return strings.camAccepted;
         }
         if (teamCanJoinClub === 2) {
           return strings.inviteOnly;

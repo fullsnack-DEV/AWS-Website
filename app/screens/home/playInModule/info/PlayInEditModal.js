@@ -16,6 +16,7 @@ import fonts from '../../../../Constants/Fonts';
 import TCInnerLoader from '../../../../components/TCInnerLoader';
 import TCKeyboardView from '../../../../components/TCKeyboardView';
 import TCGradientDivider from '../../../../components/TCThinGradientDivider';
+import {strings} from '../../../../../Localization/translation';
 
 const PlayInEditModal = ({
   visible = false,
@@ -70,7 +71,7 @@ const PlayInEditModal = ({
                   fontFamily: fonts.RLight,
                   color: colors.lightBlackColor,
                 }}>
-                {'Save'}
+                {strings.save}
               </Text>
             </TouchableOpacity>
           }

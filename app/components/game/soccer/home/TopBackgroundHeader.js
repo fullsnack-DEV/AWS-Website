@@ -395,7 +395,7 @@ const TopBackgroundHeader = ({
             options.push('Reset Match');
             destructiveButtonIndex = options?.length - 1;
           }
-          options.push('Cancel');
+          options.push(strings.cancel);
           const cancelButtonIndex = options?.length - 1;
           const onItemPress = (index) => {
             const item = options[index];
@@ -409,7 +409,7 @@ const TopBackgroundHeader = ({
                 '',
                 [
                   {
-                    text: 'Cancel',
+                    text: strings.cancel,
                     style: 'cancel',
                   },
                   {

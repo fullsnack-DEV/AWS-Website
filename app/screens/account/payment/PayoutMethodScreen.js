@@ -73,13 +73,12 @@ export default function PayoutMethodScreen({navigation}) {
         setTimeout(() => {
           Alert.alert(
             strings.alertmessagetitle,
-            'Your Account Added Successfully',
-            [{text: 'OK', onPress: () => navigation.goBack()}],
+            strings.accountAddedSuccessfully,
+            [{text: strings.okTitleText, onPress: () => navigation.goBack()}],
           );
         }, 10);
       })
       .catch((e) => {
-        console.log('error in payout method callAddMercentAccountAPI', e);
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);

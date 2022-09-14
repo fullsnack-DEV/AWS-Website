@@ -529,7 +529,7 @@ const Referees = ({
         {renderBookRefereeButton}
         <ActionSheet
           ref={actionSheet}
-          options={['Referee Reservation Details', 'Cancel']}
+          options={['Referee Reservation Details', strings.cancel]}
           cancelButtonIndex={1}
           onPress={(index) => {
             if (index === 0) {

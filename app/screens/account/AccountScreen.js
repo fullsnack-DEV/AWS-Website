@@ -32,6 +32,7 @@ import firebase from '@react-native-firebase/app';
 import ExpanableList from 'react-native-expandable-section-flatlist';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import {useIsFocused} from '@react-navigation/native';
+import {format} from 'react-string-format';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
@@ -69,6 +70,7 @@ import {getSportIcon} from '../../utils/index';
 import TCAccountDeactivate from '../../components/TCAccountDeactivate';
 import {userActivate} from '../../api/Users';
 import {strings} from '../../../Localization/translation';
+import Verbs from '../../Constants/Verbs';
 
 export default function AccountScreen({navigation}) {
   const scrollRef = useRef();
@@ -90,9 +92,7 @@ export default function AccountScreen({navigation}) {
   const [sportsSelection, setSportsSelection] = useState();
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
 
-  const [clickedUserType, setClickedUserType] = useState(
-    strings.entityTypeUser,
-  );
+  const [clickedUserType, setClickedUserType] = useState(Verbs.entityTypeUser);
 
   // for set/get teams
   const [teamList, setTeamList] = useState([]);
@@ -140,8 +140,8 @@ export default function AccountScreen({navigation}) {
   ];
   const teamMenu = [
     {key: strings.reservationsTitleText},
-    {key: 'Challenge Settings'},
-    {key: 'Members'},
+    {key: strings.challengeSettingText},
+    {key: strings.membersTitle},
 
     {key: strings.clubstitle, member: [{opetions: strings.createClubText}]},
     // {key: 'Leagues',member: [{ opetions: 'Create League' }]},
@@ -157,7 +157,7 @@ export default function AccountScreen({navigation}) {
     {key: strings.settingsTitleText},
   ];
   const clubMenu = [
-    {key: 'Members'},
+    {key: strings.membersTitle},
     {key: strings.teamstitle, member: [{opetions: strings.createTeamText}]},
     // {key: 'My Leagues'},
     // {key: 'Invite Teams'},
@@ -176,7 +176,6 @@ export default function AccountScreen({navigation}) {
     setIsAccountDeactivated(false);
     setPointEvent('auto');
     if (isFocused) {
-      console.log('its called....', authContext.entity.role);
       if (authContext?.entity?.obj?.is_pause === true) {
         setIsAccountDeactivated(true);
         setPointEvent('none');
@@ -221,7 +220,9 @@ export default function AccountScreen({navigation}) {
                     : styles.roundBadge
                 }>
                 <Text style={styles.notificationCounterStyle}>
-                  {notificationCounter > 9 ? '9+' : notificationCounter}
+                  {notificationCounter > 9
+                    ? strings.ninePlus
+                    : notificationCounter}
                 </Text>
               </View>
             )}
@@ -235,19 +236,16 @@ export default function AccountScreen({navigation}) {
   const getData = () =>
     new Promise((resolve, reject) => {
       setloading(true);
-      console.log('get data Promise Called..');
       const entity = authContext.entity;
       const promises = [
         getNotificationUnreadCount(entity),
         getTeamsList(entity),
       ];
-      if (entity.role !== strings.entityTypeClub)
+      if (entity.role !== Verbs.entityTypeClub)
         promises.push(getClubList(entity));
       Promise.all(promises)
         .then(() => {
           resolve(true);
-
-          console.log('get data Promise resolved Called..');
         })
 
         // eslint-disable-next-line prefer-promise-reject-errors
@@ -274,7 +272,6 @@ export default function AccountScreen({navigation}) {
 
   const getParentClub = useCallback(
     async (item) => {
-      console.log('parent club  Called..');
       getGroupDetails(item.group_id, authContext)
         .then((response) => {
           if (!response?.payload?.club) {
@@ -282,7 +279,6 @@ export default function AccountScreen({navigation}) {
           } else {
             setParentGroup();
           }
-          console.log('parent club done Called..');
         })
         .catch((e) => {
           setloading(false);
@@ -297,12 +293,8 @@ export default function AccountScreen({navigation}) {
 
   const getNotificationUnreadCount = useCallback(
     async (currentEntity) => {
-      console.log('unread api  Called..');
-
       getUnreadCount(authContext)
         .then((response) => {
-          console.log('unread api  Called..', response.payload);
-
           const {teams} = response.payload;
           const {clubs} = response.payload;
           const {user} = response.payload;
@@ -314,14 +306,14 @@ export default function AccountScreen({navigation}) {
           setTeam(teams);
           setClub(clubs);
           setNotificationCounter(switchEntityObject?.[0]?.unread);
-          if (currentEntity.role === strings.entityTypeUser) {
+          if (currentEntity.role === Verbs.entityTypeUser) {
             setGroupList([...clubs, ...teams]);
-          } else if (currentEntity.role === strings.entityTypeTeam) {
+          } else if (currentEntity.role === Verbs.entityTypeTeam) {
             const updatedTeam = teams.filter(
               (item) => item.group_id !== authContext.entity.uid,
             );
             setGroupList([{...user}, ...clubs, ...updatedTeam]);
-          } else if (authContext.entity.role === strings.entityTypeClub) {
+          } else if (authContext.entity.role === Verbs.entityTypeClub) {
             const updatedClub = clubs.filter(
               (item) => item.group_id !== authContext.entity.uid,
             );
@@ -334,8 +326,6 @@ export default function AccountScreen({navigation}) {
           // } else {
           //   onSwitchProfile(authContext?.entity)
           // }
-
-          console.log('unread api done Called..');
         })
         .catch((e) => {
           console.log('catch -> Account Screen unread count api');
@@ -349,38 +339,20 @@ export default function AccountScreen({navigation}) {
 
   const getTeamsList = useCallback(
     async (currentEntity) => {
-      console.log('team list api Called..');
       setloading(true);
-      if (currentEntity.role === strings.entityTypeClub) {
-        console.log('team of club api Called..');
-
+      if (currentEntity.role === Verbs.entityTypeClub) {
         getTeamsOfClub(authContext.entity.uid, authContext)
           .then((response) => {
             setTeamList(response.payload);
-            console.log('team list api done Called..');
           })
           .catch((e) => {
             setloading(false);
-            console.log('2');
             setTimeout(() => {
               Alert.alert(strings.alertmessagetitle, e.message);
             }, 10);
           });
       } else {
-        console.log('join group api Called..');
-
         getTeamData();
-        // getJoinedGroups(strings.entityTypeTeam, authContext)
-        //   .then((response) => {
-        //     console.log('join group api done Called..');
-        //   })
-        //   .catch((e) => {
-        //     setloading(false);
-        //     console.log('1');
-        //     setTimeout(() => {
-        //       Alert.alert(strings.alertmessagetitle, e.message);
-        //     }, 10);
-        //   });
       }
     },
     [authContext],
@@ -389,9 +361,8 @@ export default function AccountScreen({navigation}) {
   const getTeamData = () =>
     new Promise((resolve, reject) => {
       setloading(true);
-      console.log('get data Promise Called..');
       const promises = [
-        getJoinedGroups(strings.entityTypeTeam, authContext),
+        getJoinedGroups(Verbs.entityTypeTeam, authContext),
         getTeamPendingRequest(authContext),
       ];
       Promise.all(promises)
@@ -399,7 +370,6 @@ export default function AccountScreen({navigation}) {
           setloading(false);
           resolve(true);
           setTeamList([...res1.payload, ...res2.payload]);
-          console.log('Joined groups', res1.payload);
         })
         // eslint-disable-next-line prefer-promise-reject-errors
         .catch(() => reject('error'));
@@ -407,12 +377,10 @@ export default function AccountScreen({navigation}) {
 
   const getClubList = useCallback(async () => {
     // setloading(true);
-    console.log('club list api Called..');
 
-    getJoinedGroups(strings.entityTypeClub, authContext)
+    getJoinedGroups(Verbs.entityTypeClub, authContext)
       .then((response) => {
         setClubList(response.payload);
-        console.log('club list api done Called..', response.payload);
       })
       .catch((e) => {
         setloading(false);
@@ -430,11 +398,11 @@ export default function AccountScreen({navigation}) {
         setloading(false);
         if (response.status) {
           setTimeout(() => {
-            Alert.alert('Your team request cancelled.');
+            Alert.alert(strings.teamRequestCancelledText);
           }, 10);
         } else {
           setTimeout(() => {
-            Alert.alert('Something wrong with your request, please try again.');
+            Alert.alert(strings.somethingWrongWithRequestText);
           }, 10);
         }
         getTeamsList(authContext.entity);
@@ -443,7 +411,6 @@ export default function AccountScreen({navigation}) {
       })
       .catch((e) => {
         setloading(false);
-        console.log('3');
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
@@ -453,63 +420,62 @@ export default function AccountScreen({navigation}) {
   const switchProfile = useCallback(
     async (item) => {
       setloading(true);
-      console.log('switch profile Called..');
 
       let currentEntity = authContext.entity;
       // delete currentEntity?.QB;
       if (
-        item?.entity_type === 'player' ||
-        item?.entity_type === strings.entityTypeUser
+        item?.entity_type === Verbs.entityTypePlayer ||
+        item?.entity_type === Verbs.entityTypeUser
       ) {
-        if (currentEntity.obj.entity_type === strings.entityTypeTeam) {
+        if (currentEntity.obj.entity_type === Verbs.entityTypeTeam) {
           team.push(currentEntity.obj);
-        } else if (currentEntity.obj.entity_type === strings.entityTypeClub) {
+        } else if (currentEntity.obj.entity_type === Verbs.entityTypeClub) {
           club.push(currentEntity.obj);
         }
         // setGroupList([...club, ...team]);
         currentEntity = {
           ...currentEntity,
           uid: item?.user_id,
-          role: strings.entityTypeUser,
+          role: Verbs.entityTypeUser,
           obj: item,
         };
         setParentGroup();
-      } else if (item?.entity_type === strings.entityTypeTeam) {
+      } else if (item?.entity_type === Verbs.entityTypeTeam) {
         const i = team.indexOf(item);
         if (
-          currentEntity.obj.entity_type === 'player' ||
-          currentEntity.obj.entity_type === strings.entityTypeUser
+          currentEntity.obj.entity_type === Verbs.entityTypePlayer ||
+          currentEntity.obj.entity_type === Verbs.entityTypeUser
         ) {
           team.splice(i, 1);
-        } else if (currentEntity.obj.entity_type === strings.entityTypeTeam) {
+        } else if (currentEntity.obj.entity_type === Verbs.entityTypeTeam) {
           team.splice(i, 1, currentEntity.obj);
-        } else if (currentEntity.obj.entity_type === strings.entityTypeClub) {
+        } else if (currentEntity.obj.entity_type === Verbs.entityTypeClub) {
           club.push(currentEntity.obj);
         }
         currentEntity = {
           ...currentEntity,
           uid: item?.group_id,
-          role: strings.entityTypeTeam,
+          role: Verbs.entityTypeTeam,
           obj: item,
         };
         getParentClub(item);
-      } else if (item?.entity_type === strings.entityTypeClub) {
+      } else if (item?.entity_type === Verbs.entityTypeClub) {
         const i = club.indexOf(item);
         if (
-          currentEntity.obj.entity_type === 'player' ||
-          currentEntity.obj.entity_type === strings.entityTypeUser
+          currentEntity.obj.entity_type === Verbs.entityTypePlayer ||
+          currentEntity.obj.entity_type === Verbs.entityTypeUser
         ) {
           club.splice(i, 1);
-        } else if (currentEntity.obj.entity_type === strings.entityTypeTeam) {
+        } else if (currentEntity.obj.entity_type === Verbs.entityTypeTeam) {
           club.splice(i, 1);
           team.push(currentEntity.obj);
-        } else if (currentEntity.obj.entity_type === strings.entityTypeClub) {
+        } else if (currentEntity.obj.entity_type === Verbs.entityTypeClub) {
           club.splice(i, 1, currentEntity.obj);
         }
         currentEntity = {
           ...currentEntity,
           uid: item?.group_id,
-          role: strings.entityTypeClub,
+          role: Verbs.entityTypeClub,
           obj: item,
         };
         setParentGroup();
@@ -532,15 +498,16 @@ export default function AccountScreen({navigation}) {
       let currentEntity = entity;
       const entityType = accountData?.entity_type;
       const uid =
-        entityType === 'player' || entityType === strings.entityTypeUser
+        entityType === Verbs.entityTypePlayer ||
+        entityType === Verbs.entityTypeUser
           ? 'user_id'
           : 'group_id';
       QBLogout()
         .then(() => {
           const {USER, CLUB, LEAGUE, TEAM} = QB_ACCOUNT_TYPE;
           let accountType = USER;
-          if (entityType === strings.entityTypeClub) accountType = CLUB;
-          else if (entityType === strings.entityTypeTeam) accountType = TEAM;
+          if (entityType === Verbs.entityTypeClub) accountType = CLUB;
+          else if (entityType === Verbs.entityTypeTeam) accountType = TEAM;
           else if (entityType === 'league') accountType = LEAGUE;
           QBlogin(
             accountData[uid],
@@ -623,11 +590,11 @@ export default function AccountScreen({navigation}) {
       'Are you sure want to logout?',
       [
         {
-          text: 'Cancel',
+          text: strings.cancel,
           style: 'cancel',
         },
         {
-          text: 'OK',
+          text: strings.okTitleText,
           onPress: onLogout,
         },
       ],
@@ -650,33 +617,32 @@ export default function AccountScreen({navigation}) {
       navigation.navigate('CreateClubForm1');
     } else if (section === strings.settingsTitleText) {
       const entity = authContext.entity;
-      if (entity.role === strings.entityTypeUser) {
+      if (entity.role === Verbs.entityTypeUser) {
         navigation.navigate('UserSettingPrivacyScreen');
       } else {
         console.log('clubs==>', club);
         console.log('clubs list==>', clubList);
         navigation.navigate('GroupSettingPrivacyScreen', {
           groups:
-            authContext?.entity?.role === strings.entityTypeTeam
+            authContext?.entity?.role === Verbs.entityTypeTeam
               ? clubList
               : teamList,
         });
       }
-    } else if (section === 'Members') {
+    } else if (section === strings.membersTitle) {
       const entity = authContext.entity;
       navigation.navigate('GroupMembersScreen', {groupID: entity.uid});
-    } else if (section === 'Challenge Settings') {
-      setClickedUserType(strings.entityTypeUser);
+    } else if (section === strings.challengeSettingText) {
+      setClickedUserType(Verbs.entityTypeUser);
       const entity = authContext.entity;
 
-      if (entity.role === strings.entityTypeUser) {
+      if (entity.role === Verbs.entityTypeUser) {
         if (entity?.obj?.registered_sports?.length > 0) {
           setVisibleSportsModal(true);
         } else {
-          Alert.alert('There is no registerd sports.');
+          Alert.alert(strings.noregisterdSportValication);
         }
       } else {
-        console.log('entity?.obj?.sport1:=>', entity?.obj);
         navigation.navigate('ManageChallengeScreen', {
           groupObj: authContext.entity.obj,
           sportName: entity?.obj?.sport,
@@ -684,11 +650,11 @@ export default function AccountScreen({navigation}) {
         });
       }
     } else if (section === 'Referee Reservation Settings') {
-      setClickedUserType('referee');
+      setClickedUserType(Verbs.entityTypeReferee);
 
       const entity = authContext.entity;
       console.log('entity?.objentity?.obj-->', entity?.obj, entity?.obj?.sport);
-      if (entity.role === strings.entityTypeUser) {
+      if (entity.role === Verbs.entityTypeUser) {
         if (entity?.obj?.referee_data?.length > 0) {
           setVisibleSportsModal(true);
         } else {
@@ -700,11 +666,11 @@ export default function AccountScreen({navigation}) {
         });
       }
     } else if (section === 'Scorekeeper Reservation Settings') {
-      setClickedUserType('scorekeeper');
+      setClickedUserType(Verbs.entityTypeScorekeeper);
 
       const entity = authContext.entity;
 
-      if (entity.role === strings.entityTypeUser) {
+      if (entity.role === Verbs.entityTypeUser) {
         if (entity?.obj?.scorekeeper_data?.length > 0) {
           setVisibleSportsModal(true);
         } else {
@@ -730,10 +696,10 @@ export default function AccountScreen({navigation}) {
       } else if (options === strings.addSportsTitle) {
         navigation.navigate('RegisterPlayer');
       } else if (options === strings.createTeamText) {
-        setCreateEntity(strings.entityTypeTeam);
+        setCreateEntity(Verbs.entityTypeTeam);
 
         const entity = authContext.entity;
-        if (entity.role === strings.entityTypeUser) {
+        if (entity.role === Verbs.entityTypeUser) {
           setIsRulesModalVisible(false);
           navigation.navigate('CreateTeamForm1');
         } else {
@@ -741,8 +707,8 @@ export default function AccountScreen({navigation}) {
         }
       } else if (options === strings.createClubText) {
         const entity = authContext.entity;
-        setCreateEntity(strings.entityTypeClub);
-        if (entity.role === strings.entityTypeUser) {
+        setCreateEntity(Verbs.entityTypeClub);
+        if (entity.role === Verbs.entityTypeUser) {
           navigation.navigate('CreateClubForm1');
         } else {
           setIsRulesModalVisible(true);
@@ -779,7 +745,7 @@ export default function AccountScreen({navigation}) {
         onPress={() => {
           console.log('renderSportsList', item);
           navigation.navigate('SportAccountSettingScreen', {
-            type: 'player',
+            type: Verbs.entityTypePlayer,
             sport: item,
           });
         }}>
@@ -805,7 +771,7 @@ export default function AccountScreen({navigation}) {
         onPress={() => {
           console.log('renderRefereesList', item);
           navigation.navigate('SportAccountSettingScreen', {
-            type: 'referee',
+            type: Verbs.entityTypeReferee,
             sport: item,
           });
         }}>
@@ -829,9 +795,8 @@ export default function AccountScreen({navigation}) {
       <TouchableOpacity
         style={styles.listContainer}
         onPress={() => {
-          console.log('renderSportsList', item);
           navigation.navigate('SportAccountSettingScreen', {
-            type: 'scorekeeper',
+            type: Verbs.entityTypeScorekeeper,
             sport: item,
           });
         }}>
@@ -874,7 +839,7 @@ export default function AccountScreen({navigation}) {
               />
             </View>
           )}
-          {item.entity_type === strings.entityTypeClub && (
+          {item.entity_type === Verbs.entityTypeClub && (
             <View style={styles.placeholderView}>
               <Image
                 source={
@@ -893,7 +858,7 @@ export default function AccountScreen({navigation}) {
               )}
             </View>
           )}
-          {item.entity_type === strings.entityTypeTeam && (
+          {item.entity_type === Verbs.entityTypeTeam && (
             <View style={styles.placeholderView}>
               <Image
                 source={
@@ -955,20 +920,20 @@ export default function AccountScreen({navigation}) {
                   ...styles.badgeCounter,
                   ...(item.unread > 9 ? {paddingHorizontal: 5} : {width: 15}),
                 }}>
-                {item.unread > 9 ? `+${9}` : item.unread}
+                {item.unread > 9 ? strings.ninePlus : item.unread}
               </Text>
             </View>
           )}
         </View>
 
         <View style={styles.textContainer}>
-          {item.entity_type === 'player' && (
+          {item.entity_type === Verbs.entityTypePlayer && (
             <Text style={styles.entityNameText}>{item.full_name}</Text>
           )}
-          {item.entity_type === strings.entityTypeTeam && (
+          {item.entity_type === Verbs.entityTypeTeam && (
             <Text style={styles.entityNameText}>{item.group_name}</Text>
           )}
-          {item.entity_type === strings.entityTypeClub && (
+          {item.entity_type === Verbs.entityTypeClub && (
             <Text style={styles.entityNameText}>{item.group_name}</Text>
           )}
           <Text style={styles.entityLocationText}>
@@ -988,21 +953,23 @@ export default function AccountScreen({navigation}) {
           style={styles.listContainer}
           onPress={() => {
             const uid =
-              item?.entity_type === 'player' ? item?.user_id : item?.group_id;
+              item?.entity_type === Verbs.entityTypePlayer
+                ? item?.user_id
+                : item?.group_id;
             if (uid && item?.entity_type) {
               navigation.navigate('HomeScreen', {
                 uid,
                 backButtonVisible: true,
                 role:
-                  item?.entity_type === 'player'
-                    ? strings.entityTypeUser
+                  item?.entity_type === Verbs.entityTypePlayer
+                    ? Verbs.entityTypeUser
                     : item?.entity_type,
               });
             }
           }}>
           <View style={styles.entityTextContainer}>
             <View style={styles.smallProfileContainer}>
-              {item?.entity_type === strings.entityTypeTeam && (
+              {item?.entity_type === Verbs.entityTypeTeam && (
                 <Image
                   source={
                     item?.thumbnail
@@ -1012,7 +979,7 @@ export default function AccountScreen({navigation}) {
                   style={styles.smallProfileImg}
                 />
               )}
-              {item?.entity_type === strings.entityTypeClub && (
+              {item?.entity_type === Verbs.entityTypeClub && (
                 <Image
                   source={
                     item.thumbnail
@@ -1045,7 +1012,7 @@ export default function AccountScreen({navigation}) {
             onPress={() => oncalcelTeamRequest('cancel', item?.request_id)}>
             <View style={styles.buttonView}>
               <Text style={styles.textStyle} numberOfLines={1}>
-                Cancel request
+                {strings.cancelRequestText}
               </Text>
             </View>
           </TouchableWithoutFeedback>
@@ -1060,7 +1027,6 @@ export default function AccountScreen({navigation}) {
       <TouchableWithoutFeedback
         style={styles.listContainer}
         onPress={() => {
-          console.log('Pressed Team..');
           navigation.navigate('HomeScreen', {
             uid: item.group_id,
             role: item.entity_type,
@@ -1080,7 +1046,7 @@ export default function AccountScreen({navigation}) {
           <Text style={styles.entityName}>{item?.group_name}</Text>
           <Text
             style={
-              item.entity_type === strings.entityTypeTeam
+              item.entity_type === Verbs.entityTypeTeam
                 ? styles.teamSportView
                 : styles.clubSportView
             }>
@@ -1097,7 +1063,7 @@ export default function AccountScreen({navigation}) {
   const renderMenuItems = useCallback(
     (rowItem, rowId, sectionId) => (
       <View>
-        {authContext.entity.role === strings.entityTypeUser &&
+        {authContext.entity.role === Verbs.entityTypeUser &&
           sectionId === 1 &&
           !isAccountDeactivated && (
             <FlatList
@@ -1113,7 +1079,7 @@ export default function AccountScreen({navigation}) {
               scrollEnabled={false}
             />
           )}
-        {authContext.entity.role === strings.entityTypeUser &&
+        {authContext.entity.role === Verbs.entityTypeUser &&
           sectionId === 2 &&
           !isAccountDeactivated && (
             <FlatList
@@ -1127,7 +1093,7 @@ export default function AccountScreen({navigation}) {
               scrollEnabled={false}
             />
           )}
-        {authContext.entity.role === strings.entityTypeUser &&
+        {authContext.entity.role === Verbs.entityTypeUser &&
           sectionId === 3 &&
           !isAccountDeactivated && (
             <FlatList
@@ -1141,7 +1107,7 @@ export default function AccountScreen({navigation}) {
               scrollEnabled={false}
             />
           )}
-        {authContext.entity.role === strings.entityTypeUser &&
+        {authContext.entity.role === Verbs.entityTypeUser &&
           !isAccountDeactivated &&
           (sectionId === 4 || sectionId === 5) && (
             <FlatList
@@ -1155,7 +1121,7 @@ export default function AccountScreen({navigation}) {
               scrollEnabled={false}
             />
           )}
-        {authContext.entity.role === strings.entityTypeTeam &&
+        {authContext.entity.role === Verbs.entityTypeTeam &&
           !isAccountDeactivated &&
           sectionId === 3 && (
             <FlatList
@@ -1170,7 +1136,7 @@ export default function AccountScreen({navigation}) {
             />
           )}
 
-        {authContext.entity.role === strings.entityTypeClub &&
+        {authContext.entity.role === Verbs.entityTypeClub &&
           sectionId === 1 &&
           !isAccountDeactivated && (
             <FlatList
@@ -1212,7 +1178,7 @@ export default function AccountScreen({navigation}) {
             {rowItem.opetions === strings.createClubText && (
               <Image source={images.createClub} style={styles.subMenuItem} />
             )}
-            {rowItem.opetions === 'Create a League' && (
+            {rowItem.opetions === strings.createLeagueText && (
               <Image source={images.createLeague} style={styles.subMenuItem} />
             )}
             <View style={{marginVertical: 5}}>
@@ -1273,9 +1239,9 @@ export default function AccountScreen({navigation}) {
   );
 
   let placeHolder = images.teamSqure;
-  if (authContext.entity.role === strings.entityTypeClub) {
+  if (authContext.entity.role === Verbs.entityTypeClub) {
     placeHolder = images.clubPlaceholderSmall;
-  } else if (authContext.entity.role === strings.entityTypeTeam) {
+  } else if (authContext.entity.role === Verbs.entityTypeTeam) {
     placeHolder = images.teamPlaceholderSmall;
   } else {
     placeHolder = images.profilePlaceHolder;
@@ -1284,15 +1250,15 @@ export default function AccountScreen({navigation}) {
   const onNextPressed = () => {
     setIsRulesModalVisible(false);
     const entity = authContext.entity;
-    if (createEntity === strings.entityTypeTeam) {
-      if (entity.role === strings.entityTypeUser) {
+    if (createEntity === Verbs.entityTypeTeam) {
+      if (entity.role === Verbs.entityTypeUser) {
         navigation.navigate('CreateTeamForm1');
       }
-      if (entity.role === strings.entityTypeClub) {
+      if (entity.role === Verbs.entityTypeClub) {
         navigation.navigate('CreateTeamForm1', {clubObject: group});
       }
     }
-    if (createEntity === strings.entityTypeClub) {
+    if (createEntity === Verbs.entityTypeClub) {
       navigation.navigate('CreateClubForm1');
     }
   };
@@ -1304,20 +1270,19 @@ export default function AccountScreen({navigation}) {
         setSportsSelection(item);
         setVisibleSportsModal(false);
         setTimeout(() => {
-          console.log('Sport name:=>', item?.sport, item?.sport_type);
-          if (clickedUserType === strings.entityTypeUser) {
+          if (clickedUserType === Verbs.entityTypeUser) {
             navigation.navigate('ManageChallengeScreen', {
               groupObj: authContext.entity.obj,
               sportName: item.sport,
               sportType: item.sport_type,
             });
           }
-          if (clickedUserType === 'referee') {
+          if (clickedUserType === Verbs.entityTypeReferee) {
             navigation.navigate('RefereeReservationSetting', {
               sportName: item.sport,
             });
           }
-          if (clickedUserType === 'scorekeeper') {
+          if (clickedUserType === Verbs.entityTypeScorekeeper) {
             navigation.navigate('ScorekeeperReservationSetting', {
               sportName: item.sport,
             });
@@ -1384,8 +1349,6 @@ export default function AccountScreen({navigation}) {
     setloading(true);
     userActivate(authContext)
       .then((response) => {
-        console.log('deactivate account ', response);
-
         const accountType = getQBAccountType(response?.payload?.entity_type);
         QBupdateUser(
           response?.payload?.user_id,
@@ -1432,15 +1395,16 @@ export default function AccountScreen({navigation}) {
           }
           onPress={() => {
             Alert.alert(
-              `Are you sure you want to ${
+              format(
+                strings.pauseUnpauseAccountText,
                 authContext?.entity?.obj?.is_pause === true
-                  ? 'unpause'
-                  : 'reactivate'
-              } this account?`,
+                  ? Verbs.unpauseVerb
+                  : Verbs.reactivateVerb,
+              ),
               '',
               [
                 {
-                  text: 'Cancel',
+                  text: strings.cancel,
                   style: 'cancel',
                 },
                 {
@@ -1487,7 +1451,7 @@ export default function AccountScreen({navigation}) {
                 }}>
                 <TCNavigationHeader
                   name={parentGroup?.group_name}
-                  groupType={strings.entityTypeClub}
+                  groupType={Verbs.entityTypeClub}
                   image={parentGroup?.thumbnail}
                 />
               </View>
@@ -1503,7 +1467,7 @@ export default function AccountScreen({navigation}) {
 			  </TouchableOpacity>
 			</View> */}
         </View>
-        {authContext.entity.role === strings.entityTypeUser && (
+        {authContext.entity.role === Verbs.entityTypeUser && (
           <View style={styles.profileView}>
             <ImageBackground
               source={
@@ -1518,7 +1482,7 @@ export default function AccountScreen({navigation}) {
                 onPress={() => {
                   navigation.navigate('HomeScreen', {
                     uid: authContext.entity.uid,
-                    role: strings.entityTypeUser,
+                    role: Verbs.entityTypeUser,
                     backButtonVisible: true,
                     menuBtnVisible: false,
                   });
@@ -1618,8 +1582,8 @@ export default function AccountScreen({navigation}) {
             </ImageBackground>
           </View>
         )}
-        {(authContext.entity.role === strings.entityTypeTeam ||
-          authContext.entity.role === strings.entityTypeClub) && (
+        {(authContext.entity.role === Verbs.entityTypeTeam ||
+          authContext.entity.role === Verbs.entityTypeClub) && (
           <View style={styles.profileView}>
             <ImageBackground
               source={
@@ -1733,7 +1697,7 @@ export default function AccountScreen({navigation}) {
 
                     <Image
                       source={
-                        authContext.entity.role === strings.entityTypeTeam
+                        authContext.entity.role === Verbs.entityTypeTeam
                           ? images.teamPatch
                           : images.clubPatch
                       }
@@ -1781,9 +1745,9 @@ export default function AccountScreen({navigation}) {
 
         <ExpanableList
           dataSource={
-            (authContext.entity.role === strings.entityTypeTeam && teamMenu) ||
-            (authContext.entity.role === strings.entityTypeClub && clubMenu) ||
-            (authContext.entity.role === strings.entityTypeUser && userMenu)
+            (authContext.entity.role === Verbs.entityTypeTeam && teamMenu) ||
+            (authContext.entity.role === Verbs.entityTypeClub && clubMenu) ||
+            (authContext.entity.role === Verbs.entityTypeUser && userMenu)
           }
           style={{marginTop: 15}}
           headerKey={'key'}
@@ -1855,13 +1819,13 @@ export default function AccountScreen({navigation}) {
                         style={{...styles.menuItem}}
                       />
                     )}
-                    {section === 'Leagues' && (
+                    {section === strings.leaguesTitle && (
                       <Image
                         source={images.accountMyLeagues}
                         style={{...styles.menuItem}}
                       />
                     )}
-                    {section === 'Challenge Settings' && (
+                    {section === strings.challengeSettingText && (
                       <Image
                         source={images.manageChallengeIcon}
                         style={styles.menuItem}
@@ -1882,13 +1846,13 @@ export default function AccountScreen({navigation}) {
                       />
                     )}
 
-                    {section === 'Log out' && (
+                    {section === strings.logOut && (
                       <Image
                         source={images.logoutIcon}
                         style={{...styles.menuItem}}
                       />
                     )}
-                    {section === 'Members' && (
+                    {section === strings.membersTitle && (
                       <Image
                         source={images.Members}
                         style={{...styles.menuItem}}
@@ -1898,7 +1862,7 @@ export default function AccountScreen({navigation}) {
                   <Text accessibilityLabel={section} style={styles.listItems}>
                     {section}
                   </Text>
-                  {section !== 'Log out' && (
+                  {section !== strings.logOut && (
                     <>
                       {secData?.member ? (
                         <Image
@@ -1996,7 +1960,7 @@ export default function AccountScreen({navigation}) {
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
               }}>
-              {createEntity === strings.entityTypeClub
+              {createEntity === Verbs.entityTypeClub
                 ? strings.createClubText
                 : strings.createTeamText}
             </Text>
@@ -2004,18 +1968,16 @@ export default function AccountScreen({navigation}) {
           <View style={styles.separatorLine} />
           <View style={{flex: 1}}>
             <Text style={[styles.rulesText, {margin: 15}]}>
-              {'When your team creates a club:'}
+              {strings.teamCreateClubsText}
             </Text>
             <Text style={[styles.rulesText, {marginLeft: 15}]}>
-              {'\n• your team will belong to the club initially.'}
+              {strings.yourTeamWillBelogText}
             </Text>
             <Text style={[styles.rulesText, {marginLeft: 15}]}>
-              {'\n• your team can leave the club anytime later.'}
+              {strings.teamCanLeaveClubText}
             </Text>
             <Text style={[styles.rulesText, {marginLeft: 15}]}>
-              {
-                '\n• the admins of your team will be the admins of the club initially.'
-              }
+              {strings.adminOfTeamWillClubAdminText}
             </Text>
           </View>
           <TCGradientButton title={strings.nextTitle} onPress={onNextPressed} />
@@ -2072,7 +2034,7 @@ export default function AccountScreen({navigation}) {
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
               }}>
-              Sports
+              {strings.sportsTitleText}
             </Text>
 
             <Text
@@ -2088,16 +2050,16 @@ export default function AccountScreen({navigation}) {
           <FlatList
             ItemSeparatorComponent={() => <TCThinDivider />}
             data={
-              (clickedUserType === strings.entityTypeUser &&
+              (clickedUserType === Verbs.entityTypeUser &&
                 authContext?.entity?.obj?.registered_sports?.filter(
                   (obj) =>
                     obj?.sport &&
                     obj?.sport_type &&
                     obj.sport_type === 'single',
                 )) ||
-              (clickedUserType === 'referee' &&
+              (clickedUserType === Verbs.entityTypeReferee &&
                 authContext?.entity?.obj?.referee_data) ||
-              (clickedUserType === 'scorekeeper' &&
+              (clickedUserType === Verbs.entityTypeScorekeeper &&
                 authContext?.entity?.obj?.scorekeeper_data)
             }
             keyExtractor={(item, index) => index.toString()}

@@ -15,6 +15,8 @@ import {
   Alert,
 } from 'react-native';
 import moment from 'moment';
+import {format} from 'react-string-format';
+
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
@@ -33,6 +35,7 @@ import DateTimePickerView from '../../../components/Schedule/DateTimePickerModal
 import BlockAvailableTabView from '../../../components/Schedule/BlockAvailableTabView';
 import EventTimeSelectItem from '../../../components/Schedule/EventTimeSelectItem';
 import EventMonthlySelection from '../../../components/Schedule/EventMonthlySelection';
+import Verbs from '../../../Constants/Verbs';
 
 export default function EditChallengeAvailability({navigation}) {
   const authContext = useContext(AuthContext);
@@ -122,16 +125,16 @@ export default function EditChallengeAvailability({navigation}) {
           <TouchableOpacity
             onPress={() => {
               Alert.alert(
-                'Are you sure you want to quit to edit challenge availibility?',
+                strings.areYouSureQuitEditChallengeAvailibilityText,
                 '',
                 [
                   {
-                    text: 'Cancel',
+                    text: strings.cancel,
                     onPress: () => console.log('Cancel Pressed'),
                     style: 'cancel',
                   },
                   {
-                    text: 'Quit',
+                    text: strings.quit,
                     onPress: () => navigation.goBack(),
                   },
                 ],
@@ -142,7 +145,9 @@ export default function EditChallengeAvailability({navigation}) {
           </TouchableOpacity>
         }
         centerComponent={
-          <Text style={styles.eventTextStyle}>Edit Challenge Availability</Text>
+          <Text style={styles.eventTextStyle}>
+            {strings.editChallengeAvailibility}
+          </Text>
         }
         rightComponent={
           <TouchableOpacity
@@ -151,15 +156,11 @@ export default function EditChallengeAvailability({navigation}) {
               setLoading(true);
               const entity = authContext.entity;
               const uid = entity.uid || entity.auth.user_id;
-              const entityRole = entity.role === 'user' ? 'users' : 'groups';
+              const entityRole =
+                entity.role === Verbs.entityTypeUser ? 'users' : 'groups';
               const filterData = [];
               let obj = {};
               challengeAvailable.map((challenge_item) => {
-                console.log(
-                  'new Date(challenge_item.startDateTime)',
-                  new Date(challenge_item.start_datetime),
-                );
-
                 obj = {
                   blocked: challenge_item.isBlock,
                   allDay: challenge_item.allDay,
@@ -224,7 +225,7 @@ export default function EditChallengeAvailability({navigation}) {
                   console.log('Error ::--', error);
                 });
             }}>
-            <Text>Done</Text>
+            <Text>{strings.done}</Text>
           </TouchableOpacity>
         }
       />
@@ -235,296 +236,290 @@ export default function EditChallengeAvailability({navigation}) {
             <FlatList
               data={challengeAvailable}
               showsHorizontalScrollIndicator={false}
-              renderItem={({item: data, index}) => {
-                console.log('item challenge:', data);
-                return (
-                  <View style={{marginTop: 10}}>
-                    <View style={styles.toggleViewStyle}>
-                      <Text
-                        style={styles.deleteTextStyle}
+              renderItem={({item: data, index}) => (
+                <View style={{marginTop: 10}}>
+                  <View style={styles.toggleViewStyle}>
+                    <Text
+                      style={styles.deleteTextStyle}
+                      onPress={() => {
+                        deleteItemById(data.id);
+                      }}>
+                      {strings.delete}
+                    </Text>
+                    <View style={{flexDirection: 'row'}}>
+                      <Text style={styles.allDayText}>{strings.allDay}</Text>
+                      <TouchableOpacity
+                        style={styles.checkbox}
                         onPress={() => {
-                          deleteItemById(data.id);
+                          const tempChallenge = [...challengeAvailable];
+                          tempChallenge[index].allDay =
+                            !tempChallenge[index].allDay;
+                          setChallengeAvailable(tempChallenge);
                         }}>
-                        Delete
-                      </Text>
-                      <View style={{flexDirection: 'row'}}>
-                        <Text style={styles.allDayText}>{strings.allDay}</Text>
-                        <TouchableOpacity
-                          style={styles.checkbox}
-                          onPress={() => {
-                            const tempChallenge = [...challengeAvailable];
-                            tempChallenge[index].allDay =
-                              !tempChallenge[index].allDay;
-                            setChallengeAvailable(tempChallenge);
-                          }}>
-                          <Image
-                            source={
-                              challengeAvailable[index].allDay
-                                ? images.checkWhiteLanguage
-                                : images.uncheckWhite
-                            }
-                            style={styles.checkboxImg}
-                            resizeMode={'contain'}
-                          />
-                        </TouchableOpacity>
-                      </View>
+                        <Image
+                          source={
+                            challengeAvailable[index].allDay
+                              ? images.checkWhiteLanguage
+                              : images.uncheckWhite
+                          }
+                          style={styles.checkboxImg}
+                          resizeMode={'contain'}
+                        />
+                      </TouchableOpacity>
                     </View>
-                    <EventTimeSelectItem
-                      title={strings.starts}
-                      toggle={!challengeAvailable[index].allDay}
-                      headerTextStyle={{paddingLeft: 0}}
-                      date={
-                        challengeAvailable[index].start_datetime
-                          ? moment(
-                              new Date(
-                                challengeAvailable[index].start_datetime,
-                              ),
-                            ).format('ll')
-                          : moment(new Date()).format('ll')
-                      }
-                      time={
-                        challengeAvailable[index].start_datetime
-                          ? moment(
-                              new Date(
-                                challengeAvailable[index].start_datetime,
-                              ),
-                            ).format('h:mm a')
-                          : moment(new Date()).format('h:mm a')
-                      }
-                      onDatePress={() => setStartDateVisible(!startDateVisible)}
-                    />
-                    <EventTimeSelectItem
-                      title={strings.ends}
-                      toggle={!challengeAvailable[index].allDay}
-                      headerTextStyle={{paddingLeft: 0}}
-                      date={
-                        challengeAvailable[index].end_datetime
-                          ? moment(
-                              new Date(challengeAvailable[index].end_datetime),
-                            ).format('ll')
-                          : moment(new Date()).format('ll')
-                      }
-                      time={
-                        challengeAvailable[index].end_datetime
-                          ? moment(
-                              new Date(challengeAvailable[index].end_datetime),
-                            ).format('h:mm a')
-                          : moment(new Date()).format('h:mm a')
-                      }
-                      containerStyle={{marginBottom: 8}}
-                      onDatePress={() => setEndDateVisible(!endDateVisible)}
-                    />
-
-                    <EventMonthlySelection
-                      title={strings.repeat}
-                      dataSource={[
-                        {label: 'Daily', value: 'Daily'},
-                        {label: 'Weekly', value: 'Weekly'},
-                        {
-                          label: `Monthly on ${countNumberOfWeekFromDay()} ${getTodayDay()}`,
-                          value: `Monthly on ${countNumberOfWeekFromDay()} ${getTodayDay()}`,
-                        },
-                        {
-                          label: `Monthly on ${ordinal_suffix_of(
-                            new Date().getDate(),
-                          )} day`,
-                          value: `Monthly on ${ordinal_suffix_of(
-                            new Date().getDate(),
-                          )} day`,
-                        },
-                        {label: 'Yearly', value: 'Yearly'},
-                      ]}
-                      placeholder={'Does not repeat'}
-                      value={challengeAvailable[index].repeat}
-                      onValueChange={(value) => {
-                        console.log('LLLLLLL---', value);
-                        const tempChallenge = [...challengeAvailable];
-                        tempChallenge[index].is_recurring = value !== '';
-                        tempChallenge[index].repeat = value;
-                        setChallengeAvailable(tempChallenge);
-                      }}
-                    />
-                    {challengeAvailable[index].is_recurring === true && (
-                      <EventTimeSelectItem
-                        title={strings.until}
-                        toggle={!challengeAvailable[index].allDay}
-                        date={
-                          challengeAvailable[index].untilDate
-                            ? moment(
-                                challengeAvailable[index].untilDate,
-                              ).format('ll')
-                            : moment(new Date()).format('ll')
-                        }
-                        time={
-                          challengeAvailable[index].untilDate
-                            ? moment(
-                                challengeAvailable[index].untilDate,
-                              ).format('h:mm a')
-                            : moment(new Date()).format('h:mm a')
-                        }
-                        containerStyle={{marginBottom: 12}}
-                        onDatePress={() => {
-                          setUntilDateVisible(!untilDateVisible);
-                        }}
-                      />
-                    )}
-
-                    <BlockAvailableTabView
-                      blocked={challengeAvailable[index].isBlock}
-                      firstTabTitle={strings.block}
-                      secondTabTitle={strings.setAvailable}
-                      onFirstTabPress={() => {
-                        const tempChallenge = [...challengeAvailable];
-                        tempChallenge[index].isBlock = true;
-                        setChallengeAvailable(tempChallenge);
-                      }}
-                      onSecondTabPress={() => {
-                        const tempChallenge = [...challengeAvailable];
-                        tempChallenge[index].isBlock = false;
-                        setChallengeAvailable(tempChallenge);
-                      }}
-                      style={styles.blockStyle}
-                      activeEventPricacy={styles.activeEventPricacy}
-                      inactiveEventPricacy={styles.inactiveEventPricacy}
-                      activeEventPrivacyText={styles.activeEventPrivacyText}
-                      inactiveEventPrivacyText={styles.activeEventPrivacyText}
-                    />
-
-                    <DateTimePickerView
-                      title={
-                        challengeAvailable[index].allDay
-                          ? 'Choose a date'
-                          : 'Choose a date & time'
-                      }
-                      // date={new Date(eventStartDateTime)}
-                      visible={startDateVisible}
-                      onDone={(date) => {
-                        const tempChallenge = [...challengeAvailable];
-                        tempChallenge[index].start_datetime = tempChallenge[
-                          index
-                        ].allDay
-                          ? new Date(
-                              date.getFullYear(),
-                              date.getMonth(),
-                              date.getDate(),
-                              0,
-                              0,
-                              0,
-                            )
-                          : new Date(date);
-                        tempChallenge[index].end_datetime = tempChallenge[index]
-                          .allDay
-                          ? new Date(
-                              date.getFullYear(),
-                              date.getMonth(),
-                              date.getDate(),
-                              23,
-                              59,
-                              59,
-                            )
-                          : new Date(moment(date).add(5, 'm').toDate());
-                        tempChallenge[index].untilDate = tempChallenge[index]
-                          .allDay
-                          ? new Date(
-                              date.getFullYear(),
-                              date.getMonth(),
-                              date.getDate(),
-                              23,
-                              59,
-                              59,
-                            )
-                          : new Date(moment(date).add(5, 'm').toDate());
-                        setChallengeAvailable(tempChallenge);
-
-                        setStartDateVisible(!startDateVisible);
-                      }}
-                      onCancel={handleCancelPress}
-                      onHide={handleCancelPress}
-                      minimumDate={new Date()}
-                      mode={
-                        challengeAvailable[index].allDay ? 'date' : 'datetime'
-                      }
-                    />
-                    <DateTimePickerView
-                      title={
-                        challengeAvailable[index].allDay
-                          ? 'Choose a date'
-                          : 'Choose a date & time'
-                      }
-                      // date={new Date(eventEndDateTime)}
-                      visible={endDateVisible}
-                      onDone={(date) => {
-                        console.log('End date:=>', date);
-                        const tempChallenge = [...challengeAvailable];
-                        tempChallenge[index].end_datetime = tempChallenge[index]
-                          .allDay
-                          ? new Date(
-                              date.getFullYear(),
-                              date.getMonth(),
-                              date.getDate(),
-                              23,
-                              59,
-                              59,
-                            )
-                          : new Date(moment(date).add(5, 'm').toDate());
-                        setChallengeAvailable(tempChallenge);
-                        setEndDateVisible(!endDateVisible);
-                        console.log(
-                          'tempChallengetempChallenge',
-                          tempChallenge,
-                        );
-                      }}
-                      onCancel={handleCancelPress}
-                      onHide={handleCancelPress}
-                      minimumDate={new Date(
-                        challengeAvailable[index].end_datetime,
-                      ).setMinutes(
-                        new Date(
-                          challengeAvailable[index].end_datetime,
-                        ).getMinutes() + 5,
-                      )}
-                      mode={
-                        challengeAvailable[index].allDay ? 'date' : 'datetime'
-                      }
-                    />
-                    <DateTimePickerView
-                      // date={new Date(challengeAvailable[index].untilDate * 1000)}
-                      visible={untilDateVisible}
-                      onDone={(date) => {
-                        console.log('Index:=>', index);
-                        setUntilDateVisible(!untilDateVisible);
-
-                        const tempChallenge = challengeAvailable;
-                        tempChallenge[index].untilDate = tempChallenge[index]
-                          .allDay
-                          ? new Date(
-                              date.getFullYear(),
-                              date.getMonth(),
-                              date.getDate(),
-                              23,
-                              59,
-                              59,
-                            )
-                          : new Date(moment(date).add(5, 'm').toDate());
-                        setChallengeAvailable([...tempChallenge]);
-                      }}
-                      onCancel={handleCancelPress}
-                      onHide={handleCancelPress}
-                      minimumDate={
-                        new Date(
-                          moment(challengeAvailable[index].end_datetime)
-                            .add(5, 'm')
-                            .toDate(),
-                        )
-                      }
-                      minutesGap={5}
-                      mode={
-                        challengeAvailable[index].allDay ? 'date' : 'datetime'
-                      }
-                    />
                   </View>
-                );
-              }}
+                  <EventTimeSelectItem
+                    title={strings.starts}
+                    toggle={!challengeAvailable[index].allDay}
+                    headerTextStyle={{paddingLeft: 0}}
+                    date={
+                      challengeAvailable[index].start_datetime
+                        ? moment(
+                            new Date(challengeAvailable[index].start_datetime),
+                          ).format('ll')
+                        : moment(new Date()).format('ll')
+                    }
+                    time={
+                      challengeAvailable[index].start_datetime
+                        ? moment(
+                            new Date(challengeAvailable[index].start_datetime),
+                          ).format('h:mm a')
+                        : moment(new Date()).format('h:mm a')
+                    }
+                    onDatePress={() => setStartDateVisible(!startDateVisible)}
+                  />
+                  <EventTimeSelectItem
+                    title={strings.ends}
+                    toggle={!challengeAvailable[index].allDay}
+                    headerTextStyle={{paddingLeft: 0}}
+                    date={
+                      challengeAvailable[index].end_datetime
+                        ? moment(
+                            new Date(challengeAvailable[index].end_datetime),
+                          ).format('ll')
+                        : moment(new Date()).format('ll')
+                    }
+                    time={
+                      challengeAvailable[index].end_datetime
+                        ? moment(
+                            new Date(challengeAvailable[index].end_datetime),
+                          ).format('h:mm a')
+                        : moment(new Date()).format('h:mm a')
+                    }
+                    containerStyle={{marginBottom: 8}}
+                    onDatePress={() => setEndDateVisible(!endDateVisible)}
+                  />
+
+                  <EventMonthlySelection
+                    title={strings.repeat}
+                    dataSource={[
+                      {label: strings.daily, value: strings.daily},
+                      {label: strings.weeklyText, value: strings.weeklyText},
+                      {
+                        label: format(
+                          strings.monthlyOnText,
+                          `${countNumberOfWeekFromDay()} ${getTodayDay()}`,
+                        ),
+                        value: format(
+                          strings.monthlyOnText,
+                          `${countNumberOfWeekFromDay()} ${getTodayDay()}`,
+                        ),
+                      },
+                      {
+                        label: format(
+                          strings.monthlyOnDayText,
+                          ordinal_suffix_of(new Date().getDate()),
+                        ),
+
+                        value: format(
+                          strings.monthlyOnDayText,
+                          ordinal_suffix_of(new Date().getDate()),
+                        ),
+                      },
+                      {label: strings.yearly, value: strings.yearly},
+                    ]}
+                    placeholder={strings.doesNotRepeat}
+                    value={challengeAvailable[index].repeat}
+                    onValueChange={(value) => {
+                      const tempChallenge = [...challengeAvailable];
+                      tempChallenge[index].is_recurring = value !== '';
+                      tempChallenge[index].repeat = value;
+                      setChallengeAvailable(tempChallenge);
+                    }}
+                  />
+                  {challengeAvailable[index].is_recurring === true && (
+                    <EventTimeSelectItem
+                      title={strings.until}
+                      toggle={!challengeAvailable[index].allDay}
+                      date={
+                        challengeAvailable[index].untilDate
+                          ? moment(challengeAvailable[index].untilDate).format(
+                              'll',
+                            )
+                          : moment(new Date()).format('ll')
+                      }
+                      time={
+                        challengeAvailable[index].untilDate
+                          ? moment(challengeAvailable[index].untilDate).format(
+                              'h:mm a',
+                            )
+                          : moment(new Date()).format('h:mm a')
+                      }
+                      containerStyle={{marginBottom: 12}}
+                      onDatePress={() => {
+                        setUntilDateVisible(!untilDateVisible);
+                      }}
+                    />
+                  )}
+
+                  <BlockAvailableTabView
+                    blocked={challengeAvailable[index].isBlock}
+                    firstTabTitle={strings.block}
+                    secondTabTitle={strings.setAvailable}
+                    onFirstTabPress={() => {
+                      const tempChallenge = [...challengeAvailable];
+                      tempChallenge[index].isBlock = true;
+                      setChallengeAvailable(tempChallenge);
+                    }}
+                    onSecondTabPress={() => {
+                      const tempChallenge = [...challengeAvailable];
+                      tempChallenge[index].isBlock = false;
+                      setChallengeAvailable(tempChallenge);
+                    }}
+                    style={styles.blockStyle}
+                    activeEventPricacy={styles.activeEventPricacy}
+                    inactiveEventPricacy={styles.inactiveEventPricacy}
+                    activeEventPrivacyText={styles.activeEventPrivacyText}
+                    inactiveEventPrivacyText={styles.activeEventPrivacyText}
+                  />
+
+                  <DateTimePickerView
+                    title={
+                      challengeAvailable[index].allDay
+                        ? strings.choosedateText
+                        : strings.chooseDateTimeText
+                    }
+                    // date={new Date(eventStartDateTime)}
+                    visible={startDateVisible}
+                    onDone={(date) => {
+                      const tempChallenge = [...challengeAvailable];
+                      tempChallenge[index].start_datetime = tempChallenge[index]
+                        .allDay
+                        ? new Date(
+                            date.getFullYear(),
+                            date.getMonth(),
+                            date.getDate(),
+                            0,
+                            0,
+                            0,
+                          )
+                        : new Date(date);
+                      tempChallenge[index].end_datetime = tempChallenge[index]
+                        .allDay
+                        ? new Date(
+                            date.getFullYear(),
+                            date.getMonth(),
+                            date.getDate(),
+                            23,
+                            59,
+                            59,
+                          )
+                        : new Date(moment(date).add(5, 'm').toDate());
+                      tempChallenge[index].untilDate = tempChallenge[index]
+                        .allDay
+                        ? new Date(
+                            date.getFullYear(),
+                            date.getMonth(),
+                            date.getDate(),
+                            23,
+                            59,
+                            59,
+                          )
+                        : new Date(moment(date).add(5, 'm').toDate());
+                      setChallengeAvailable(tempChallenge);
+
+                      setStartDateVisible(!startDateVisible);
+                    }}
+                    onCancel={handleCancelPress}
+                    onHide={handleCancelPress}
+                    minimumDate={new Date()}
+                    mode={
+                      challengeAvailable[index].allDay ? 'date' : 'datetime'
+                    }
+                  />
+                  <DateTimePickerView
+                    title={
+                      challengeAvailable[index].allDay
+                        ? strings.choosedateText
+                        : strings.chooseDateTimeText
+                    }
+                    // date={new Date(eventEndDateTime)}
+                    visible={endDateVisible}
+                    onDone={(date) => {
+                      const tempChallenge = [...challengeAvailable];
+                      tempChallenge[index].end_datetime = tempChallenge[index]
+                        .allDay
+                        ? new Date(
+                            date.getFullYear(),
+                            date.getMonth(),
+                            date.getDate(),
+                            23,
+                            59,
+                            59,
+                          )
+                        : new Date(moment(date).add(5, 'm').toDate());
+                      setChallengeAvailable(tempChallenge);
+                      setEndDateVisible(!endDateVisible);
+                    }}
+                    onCancel={handleCancelPress}
+                    onHide={handleCancelPress}
+                    minimumDate={new Date(
+                      challengeAvailable[index].end_datetime,
+                    ).setMinutes(
+                      new Date(
+                        challengeAvailable[index].end_datetime,
+                      ).getMinutes() + 5,
+                    )}
+                    mode={
+                      challengeAvailable[index].allDay ? 'date' : 'datetime'
+                    }
+                  />
+                  <DateTimePickerView
+                    // date={new Date(challengeAvailable[index].untilDate * 1000)}
+                    visible={untilDateVisible}
+                    onDone={(date) => {
+                      setUntilDateVisible(!untilDateVisible);
+
+                      const tempChallenge = challengeAvailable;
+                      tempChallenge[index].untilDate = tempChallenge[index]
+                        .allDay
+                        ? new Date(
+                            date.getFullYear(),
+                            date.getMonth(),
+                            date.getDate(),
+                            23,
+                            59,
+                            59,
+                          )
+                        : new Date(moment(date).add(5, 'm').toDate());
+                      setChallengeAvailable([...tempChallenge]);
+                    }}
+                    onCancel={handleCancelPress}
+                    onHide={handleCancelPress}
+                    minimumDate={
+                      new Date(
+                        moment(challengeAvailable[index].end_datetime)
+                          .add(5, 'm')
+                          .toDate(),
+                      )
+                    }
+                    minutesGap={5}
+                    mode={
+                      challengeAvailable[index].allDay ? 'date' : 'datetime'
+                    }
+                  />
+                </View>
+              )}
               ListFooterComponent={() => (
                 <AddTimeItem
                   addTimeText={strings.addTime}

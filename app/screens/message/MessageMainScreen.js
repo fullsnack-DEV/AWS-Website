@@ -15,6 +15,7 @@ import {
   Alert,
 } from 'react-native';
 
+import { format } from 'react-string-format';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import QB from 'quickblox-react-native-sdk';
 import {useIsFocused, StackActions} from '@react-navigation/native';
@@ -190,14 +191,14 @@ const MessageMainScreen = ({navigation}) => {
           title={fullName}
           subTitle={
             item?.lastMessage === '[attachment]'
-              ? 'Attachment'
+              ? strings.attachment
               : item?.lastMessage
           }
           numberOfMembers={item?.occupantsIds}
           lastMessageDate={new Date(item?.lastMessageDateSent)}
           numberOfUnreadMessages={
             Number(item?.unreadMessagesCount) > 99
-              ? '+ 99'
+              ? strings.plus99
               : item?.unreadMessagesCount
           }
         />
@@ -236,8 +237,8 @@ const MessageMainScreen = ({navigation}) => {
           <Text style={styles.startText}>Start a Chat</Text>
         </TouchableOpacity> */}
         <View style={styles.centerMsgContainer}>
-          <Text style={styles.noMsgText}>No Chat</Text>
-          <Text style={styles.msgAppearText}>New chats will appear here.</Text>
+          <Text style={styles.noMsgText}>{strings.noChat}</Text>
+          <Text style={styles.msgAppearText}>{strings.newChatsAppear}</Text>
         </View>
       </View>
     ),
@@ -300,8 +301,6 @@ const MessageMainScreen = ({navigation}) => {
     groupUnpaused(authContext)
       .then((response) => {
         setIsAccountDeactivated(false);
-        console.log('deactivate account ', response);
-
         const accountType = getQBAccountType(response?.payload?.entity_type);
         QBupdateUser(
           response?.payload?.user_id,
@@ -330,8 +329,6 @@ const MessageMainScreen = ({navigation}) => {
     setLoading(true);
     userActivate(authContext)
       .then((response) => {
-        console.log('deactivate account ', response);
-
         const accountType = getQBAccountType(response?.payload?.entity_type);
         QBupdateUser(
           response?.payload?.user_id,
@@ -375,22 +372,19 @@ const MessageMainScreen = ({navigation}) => {
           }
           onPress={() => {
             Alert.alert(
-              `Are you sure you want to ${
-                authContext?.entity?.obj?.is_pause === true
-                  ? 'unpause'
-                  : 'reactivate'
-              } this account?`,
-              '',
+              format(strings.pauseUnpauseAccountText, authContext?.entity?.obj?.is_pause === true
+                ? strings.unpausesmall
+                : strings.reactivatesmall),'',
               [
                 {
-                  text: 'Cancel',
+                  text: strings.cancel,
                   style: 'cancel',
                 },
                 {
                   text:
                     authContext?.entity?.obj?.is_pause === true
-                      ? 'Unpause'
-                      : 'Reactivate',
+                      ? strings.unpause
+                      : strings.reactivate,
                   style: 'destructive',
                   onPress: () => {
                     if (authContext?.entity?.obj?.is_pause === true) {

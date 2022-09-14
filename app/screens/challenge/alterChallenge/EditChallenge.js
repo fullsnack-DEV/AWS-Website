@@ -22,6 +22,7 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import Modal from 'react-native-modal';
+import {format} from 'react-string-format';
 import * as Utility from '../../../utils';
 import {paymentMethods} from '../../../api/Users';
 import GameFeeCard from '../../../components/challenge/GameFeeCard';
@@ -50,13 +51,12 @@ import CurruentReservationView from './CurrentReservationView';
 import RefereeAgreementView from '../../../components/challenge/RefereeAgreementView';
 import ScorekeeperAgreementView from '../../../components/challenge/ScorekeeperAgreementView';
 import TCGameDetailRules from '../../../components/TCGameDetailRules';
+import Verbs from '../../../Constants/Verbs';
 
 let entity = {};
 export default function EditChallenge({navigation, route}) {
   const [sportName] = useState(route?.params?.sportName);
   const [groupObj] = useState(route?.params?.groupObj);
-
-  console.log('settingObjsettingObj:=>', route?.params?.settingObj);
 
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
@@ -129,7 +129,9 @@ export default function EditChallenge({navigation, route}) {
     setloading(true);
     getSetting(
       challengeObj?.challengee,
-      authContext.entity.role === 'user' ? 'player' : 'team',
+      authContext.entity.role === Verbs.entityTypeUser
+        ? Verbs.entityTypePlayer
+        : Verbs.entityTypeTeam,
       sportName,
       authContext,
     )
@@ -270,7 +272,7 @@ export default function EditChallenge({navigation, route}) {
     <>
       <TCChallengeTitle
         containerStyle={{marginLeft: 25, marginTop: 5, marginBottom: 5}}
-        title={'Interval'}
+        title={strings.interval}
         titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
         value={item.interval}
         valueStyle={{
@@ -279,11 +281,11 @@ export default function EditChallenge({navigation, route}) {
           color: colors.greenColorCard,
           marginRight: 2,
         }}
-        staticValueText={'min.'}
+        staticValueText={strings.minuteText}
       />
       <TCChallengeTitle
         containerStyle={{marginLeft: 25, marginTop: 5, marginBottom: 5}}
-        title={`${getNumberSuffix(index + 2)} Period`}
+        title={format(strings.nPeriod, getNumberSuffix(index + 2))}
         titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
         value={item.period}
         valueStyle={{
@@ -292,7 +294,7 @@ export default function EditChallenge({navigation, route}) {
           color: colors.greenColorCard,
           marginRight: 2,
         }}
-        staticValueText={'min.'}
+        staticValueText={strings.minuteText}
       />
     </>
   );
@@ -301,7 +303,7 @@ export default function EditChallenge({navigation, route}) {
     <>
       <TCChallengeTitle
         containerStyle={{marginLeft: 25, marginTop: 5, marginBottom: 5}}
-        title={'Interval'}
+        title={strings.interval}
         titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
         value={item.interval}
         valueStyle={{
@@ -310,11 +312,11 @@ export default function EditChallenge({navigation, route}) {
           color: colors.greenColorCard,
           marginRight: 2,
         }}
-        staticValueText={'min.'}
+        staticValueText={strings.minuteText}
       />
       <TCChallengeTitle
         containerStyle={{marginLeft: 25, marginTop: 5, marginBottom: 5}}
-        title={`${getNumberSuffix(index + 1)} Over time`}
+        title={format(strings.NoverTime, getNumberSuffix(index + 1))}
         titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
         value={item.overTime}
         valueStyle={{
@@ -323,7 +325,7 @@ export default function EditChallenge({navigation, route}) {
           color: colors.greenColorCard,
           marginRight: 2,
         }}
-        staticValueText={'min.'}
+        staticValueText={strings.minuteText}
       />
     </>
   );
@@ -468,8 +470,8 @@ export default function EditChallenge({navigation, route}) {
       <ActivityLoader visible={loading} />
       <TCTabView
         totalTabs={2}
-        firstTabTitle={'ALTERATION REQUEST'}
-        secondTabTitle={'CURRENT RESERVATION'}
+        firstTabTitle={strings.alterRequest}
+        secondTabTitle={strings.currentReservation}
         indexCounter={maintabNumber}
         eventPrivacyContianer={{width: 100}}
         onFirstTabPress={() => setMaintabNumber(0)}
@@ -481,8 +483,7 @@ export default function EditChallenge({navigation, route}) {
         <View style={{marginBottom: 15}}>
           <View>
             <Text style={styles.buttonText}>
-              Please edit the reservation details below before you send the
-              alteration request.
+              {strings.editReservationDetails}
             </Text>
 
             <View
@@ -495,7 +496,9 @@ export default function EditChallenge({navigation, route}) {
               <View style={styles.challengerView}>
                 <View style={styles.teamView}>
                   <Image source={images.reqIcon} style={styles.reqOutImage} />
-                  <Text style={styles.challengerText}>Challenger</Text>
+                  <Text style={styles.challengerText}>
+                    {strings.challenger}
+                  </Text>
                 </View>
 
                 <View style={styles.teamView}>
@@ -521,7 +524,9 @@ export default function EditChallenge({navigation, route}) {
               <View style={styles.challengeeView}>
                 <View style={styles.teamView}>
                   <Image source={images.reqeIcon} style={styles.reqOutImage} />
-                  <Text style={styles.challengeeText}>Challengee</Text>
+                  <Text style={styles.challengeeText}>
+                    {strings.challengee}
+                  </Text>
                 </View>
 
                 <View style={styles.teamView}>
@@ -549,7 +554,7 @@ export default function EditChallenge({navigation, route}) {
             <TCThickDivider marginTop={15} />
             <View>
               <TCChallengeTitle
-                title={'Home & Away'}
+                title={strings.homeAndAway}
                 isNew={
                   challengeObj?.home_team?.group_id !==
                     oldVersion?.home_team?.group_id ||
@@ -566,7 +571,7 @@ export default function EditChallenge({navigation, route}) {
                 }}
               />
               <View style={styles.teamContainer}>
-                <Text style={styles.homeLableStyle}>Home</Text>
+                <Text style={styles.homeLableStyle}>{strings.home}</Text>
                 <View style={styles.teamViewStyle}>
                   <Image
                     source={
@@ -592,7 +597,7 @@ export default function EditChallenge({navigation, route}) {
               </View>
 
               <View style={styles.teamContainer}>
-                <Text style={styles.homeLableStyle}>Away</Text>
+                <Text style={styles.homeLableStyle}>{strings.away}</Text>
                 <View style={styles.teamViewStyle}>
                   <Image
                     source={
@@ -618,10 +623,10 @@ export default function EditChallenge({navigation, route}) {
               </View>
               <TCThickDivider marginTop={20} />
             </View>
-            {challengeObj?.sport?.toLowerCase() === 'tennis' ? (
+            {challengeObj?.sport?.toLowerCase() === Verbs.tennisSport ? (
               <View>
                 <TCChallengeTitle
-                  title={'Sets, Games & Duration'}
+                  title={strings.setGamesDuration}
                   isEdit={true}
                   isNew={
                     !_.isEqual(
@@ -650,7 +655,7 @@ export default function EditChallenge({navigation, route}) {
             ) : (
               <View>
                 <TCChallengeTitle
-                  title={'Game Duration'}
+                  title={strings.gameDuration}
                   isEdit={true}
                   isNew={
                     !_.isEqual(
@@ -672,7 +677,7 @@ export default function EditChallenge({navigation, route}) {
                     marginTop: 15,
                     marginBottom: 5,
                   }}
-                  title={'1st period'}
+                  title={strings.firstPeriodText}
                   titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
                   value={challengeObj?.game_duration?.first_period}
                   valueStyle={{
@@ -681,7 +686,7 @@ export default function EditChallenge({navigation, route}) {
                     color: colors.greenColorCard,
                     marginRight: 2,
                   }}
-                  staticValueText={'min.'}
+                  staticValueText={strings.minuteText}
                 />
 
                 <FlatList
@@ -707,7 +712,7 @@ export default function EditChallenge({navigation, route}) {
             )}
             <View>
               <TCChallengeTitle
-                title={'Date & Time'}
+                title={strings.dateAndTimeCam}
                 isEdit={true}
                 isNew={
                   challengeObj?.start_datetime !== oldVersion?.start_datetime ||
@@ -723,7 +728,7 @@ export default function EditChallenge({navigation, route}) {
 
               <View>
                 <View style={styles.dateTimeValue}>
-                  <Text style={styles.dateTimeText}>Start </Text>
+                  <Text style={styles.dateTimeText}>{strings.starts} </Text>
                   <Text style={styles.dateTimeText}>
                     {moment(
                       new Date(
@@ -734,7 +739,7 @@ export default function EditChallenge({navigation, route}) {
                   </Text>
                 </View>
                 <View style={styles.dateTimeValue}>
-                  <Text style={styles.dateTimeText}>End </Text>
+                  <Text style={styles.dateTimeText}>{strings.ends} </Text>
                   <Text style={styles.dateTimeText}>
                     {moment(
                       new Date(
@@ -747,8 +752,10 @@ export default function EditChallenge({navigation, route}) {
                 <View style={styles.dateTimeValue}>
                   <Text style={styles.dateTimeText}> </Text>
                   <Text style={styles.timeZoneText}>
-                    Time zone{' '}
-                    <Text style={{fontFamily: fonts.RRegular}}>Vancouver</Text>
+                    {strings.timezone}{' '}
+                    <Text style={{fontFamily: fonts.RRegular}}>
+                      {strings.vancouver}
+                    </Text>
                   </Text>
                 </View>
               </View>
@@ -758,7 +765,7 @@ export default function EditChallenge({navigation, route}) {
 
             <View>
               <TCChallengeTitle
-                title={'Venue'}
+                title={strings.venue}
                 isEdit={true}
                 isNew={!_.isEqual(challengeObj?.venue, oldVersion?.venue)}
                 onEditPress={() => {
@@ -793,11 +800,9 @@ export default function EditChallenge({navigation, route}) {
             </View>
 
             <TCChallengeTitle
-              title={'Game Type'}
+              title={strings.gameType}
               value={challengeObj?.game_type}
-              tooltipText={
-                'The game result has an effect on TC points of the challengee and you.'
-              }
+              tooltipText={strings.gamePointsAffectText}
               tooltipHeight={hp('6%')}
               tooltipWidth={wp('50%')}
               isEdit={true}
@@ -813,9 +818,12 @@ export default function EditChallenge({navigation, route}) {
             <TCThickDivider />
 
             <TCChallengeTitle
-              title={'Match Fee'}
+              title={strings.gameFee}
               value={challengeObj?.game_fee?.fee}
-              staticValueText={`${challengeObj?.game_fee?.currency_type} /Game`}
+              staticValueText={format(
+                strings.perGame,
+                challengeObj?.game_fee?.currency_type,
+              )}
               valueStyle={{
                 fontFamily: fonts.RBold,
                 fontSize: 16,
@@ -839,7 +847,7 @@ export default function EditChallenge({navigation, route}) {
                 <View>
                   <View>
                     <TCLabel
-                      title={'Payment Method'}
+                      title={strings.paymentMethod}
                       style={{marginBottom: 10}}
                     />
                     <View style={styles.viewMarginStyle}>
@@ -867,7 +875,7 @@ export default function EditChallenge({navigation, route}) {
               )}
 
             <TCChallengeTitle
-              title={'Game Rules'}
+              title={strings.gameRules}
               isEdit={true}
               isNew={
                 !!(
@@ -883,12 +891,12 @@ export default function EditChallenge({navigation, route}) {
                 });
               }}
             />
-            <Text style={styles.rulesTitle}>General Rules</Text>
+            <Text style={styles.rulesTitle}>{strings.gameRulesSubTitle1}</Text>
             <Text style={styles.rulesDetail}>
               {challengeObj?.general_rules}
             </Text>
             <View style={{marginBottom: 10}} />
-            <Text style={styles.rulesTitle}>Special Rules</Text>
+            <Text style={styles.rulesTitle}>{strings.gameRulesSubTitle2}</Text>
             <Text style={styles.rulesDetail}>
               {challengeObj?.special_rules}
             </Text>
@@ -1014,7 +1022,9 @@ export default function EditChallenge({navigation, route}) {
             <TCThickDivider />
             <TCChallengeTitle
               title={
-                challengeObj?.challenger === entity.uid ? 'Payment' : 'Earning'
+                challengeObj?.challenger === entity.uid
+                  ? strings.payment
+                  : strings.earning
               }
               isEdit={false}
               onEditPress={() => {
@@ -1057,11 +1067,9 @@ export default function EditChallenge({navigation, route}) {
          }}
        /> */}
           <TCChallengeTitle
-            title={'Refund Policy'}
+            title={strings.refundpolicy}
             value={challengeObj?.refund_policy}
-            tooltipText={
-              '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the match fee and service fee are not refunded.'
-            }
+            tooltipText={strings.cancellationPolicyDesc}
             tooltipHeight={hp('18%')}
             tooltipWidth={wp('50%')}
             isEdit={false}
@@ -1136,7 +1144,7 @@ export default function EditChallenge({navigation, route}) {
 
           <View style={styles.mailContainer}>
             <Text style={styles.invitationText}>
-              {'Alteration request\nsent'}
+              {strings.alterRequestSend}
             </Text>
             <View style={styles.imageContainer}>
               <Image
@@ -1153,7 +1161,7 @@ export default function EditChallenge({navigation, route}) {
                 setAlterModalVisible(false);
                 navigation.popToTop();
               }}>
-              <Text style={styles.goToProfileTitle}>OK</Text>
+              <Text style={styles.goToProfileTitle}>{strings.okTitleText}</Text>
             </TouchableOpacity>
           </SafeAreaView>
         </View>

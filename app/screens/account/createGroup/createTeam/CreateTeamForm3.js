@@ -27,6 +27,7 @@ import TCGradientButton from '../../../../components/TCGradientButton';
 import TCThinDivider from '../../../../components/TCThinDivider';
 import TCPlayerImageInfo from '../../../../components/TCPlayerImageInfo';
 import {getSportName} from '../../../../utils';
+import Verbs from '../../../../Constants/Verbs';
 
 export default function CreateTeamForm3({navigation, route}) {
   const [createTeamForm2] = useState(route?.params?.createTeamForm2);
@@ -165,7 +166,7 @@ export default function CreateTeamForm3({navigation, route}) {
     setloading(true);
     const bodyParams = {
       ...createTeamForm2,
-      entity_type: strings.entityTypeTeam,
+      entity_type: Verbs.entityTypeTeam,
     };
 
     if (bodyParams?.player1) {
@@ -218,9 +219,9 @@ export default function CreateTeamForm3({navigation, route}) {
           createGroupRequest(
             bodyParams,
             entity.uid,
-            entity.role === strings.entityTypeClub
-              ? strings.entityTypeClub
-              : strings.entityTypeUser,
+            entity.role === Verbs.entityTypeClub
+              ? Verbs.entityTypeClub
+              : Verbs.entityTypeUser,
             authContext,
           )
             .then(() => {
@@ -257,9 +258,9 @@ export default function CreateTeamForm3({navigation, route}) {
       createGroupRequest(
         bodyParams,
         entity.uid,
-        entity.role === strings.entityTypeClub
-          ? strings.entityTypeClub
-          : strings.entityTypeUser,
+        entity.role === Verbs.entityTypeClub
+          ? Verbs.entityTypeClub
+          : Verbs.entityTypeUser,
         authContext,
       )
         .then(() => {
@@ -287,7 +288,7 @@ export default function CreateTeamForm3({navigation, route}) {
     setloading(true);
     const bodyParams = {
       ...createTeamForm2,
-      entity_type: strings.entityTypeTeam,
+      entity_type: Verbs.entityTypeTeam,
     };
 
     if (thumbnail) {
@@ -420,7 +421,7 @@ export default function CreateTeamForm3({navigation, route}) {
         <TCThinDivider marginTop={5} marginBottom={3} />
 
         {createTeamForm2?.sport?.toLowerCase() ===
-          strings.tennisDoubleSport.toLowerCase() && (
+          Verbs.tennisDoubleSport.toLowerCase() && (
           <View>
             <TCPlayerImageInfo
               title={strings.playerTitle}
@@ -451,7 +452,7 @@ export default function CreateTeamForm3({navigation, route}) {
         <TCThinDivider marginTop={5} marginBottom={3} />
 
         {createTeamForm2?.sport?.toLowerCase() !==
-          strings.tennisDoubleSport.toLowerCase() && (
+          Verbs.tennisDoubleSport.toLowerCase() && (
           <View>
             <TCInfoField
               title={strings.membersgender}
@@ -496,8 +497,8 @@ export default function CreateTeamForm3({navigation, route}) {
         title={strings.doneTitle}
         style={{marginBottom: 30, marginTop: 20}}
         onPress={
-          createTeamForm2?.sport === strings.tennisSport &&
-          createTeamForm2?.sport_type === strings.doubleSport
+          createTeamForm2?.sport === Verbs.tennisSport &&
+          createTeamForm2?.sport_type === Verbs.doubleSport
             ? doubleNextPressed
             : singleNextPressed
           // entity.role === 'club' ? clubNextPressed : userNextPressed

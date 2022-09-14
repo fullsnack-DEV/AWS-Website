@@ -34,11 +34,11 @@ export default function SignupFromLoginScreen({navigation, route}) {
 
   const validate = () => {
     if (fName === '') {
-      Alert.alert(strings.appName, 'First name cannot be blank');
+      Alert.alert(strings.appName, strings.firstnamevalidation);
       return false;
     }
     if (lName === '') {
-      Alert.alert(strings.appName, 'Last name cannot be blank');
+      Alert.alert(strings.appName, strings.lastnamevalidation);
       return false;
     }
     return true;
@@ -167,7 +167,7 @@ export default function SignupFromLoginScreen({navigation, route}) {
         />
 
         <TCButton
-          title={'CONTINUE'}
+          title={strings.continueCapTitle}
           extraStyle={{marginTop: hp('10%')}}
           onPress={() => {
             if (validate()) {

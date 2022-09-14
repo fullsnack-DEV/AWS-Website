@@ -10,6 +10,7 @@ import TCLabel from '../../../../components/TCLabel';
 import ToggleView from '../../../../components/Schedule/ToggleView';
 import * as Utility from '../../../../utils';
 import {patchPlayer} from '../../../../api/Users';
+import Verbs from '../../../../Constants/Verbs';
 
 export default function AvailibilityScorekeeoer({navigation, route}) {
   const [comeFrom] = useState(route?.params?.comeFrom);
@@ -19,7 +20,7 @@ export default function AvailibilityScorekeeoer({navigation, route}) {
   const [loading, setloading] = useState(false);
   const [acceptChallenge, setAcceptChallenge] = useState(
     route?.params?.settingObj?.scorekeeper_availibility
-      ? route?.params?.settingObj?.scorekeeper_availibility === 'On'
+      ? route?.params?.settingObj?.scorekeeper_availibility === Verbs.on
       : true,
   );
 
@@ -46,7 +47,7 @@ export default function AvailibilityScorekeeoer({navigation, route}) {
       ...scorekeeperSetting,
       sport: sportName,
       entity_type: 'scorekeeper',
-      scorekeeper_availibility: acceptChallenge ? 'On' : 'Off',
+      scorekeeper_availibility: acceptChallenge ? Verbs.on : Verbs.off,
     };
 
     setloading(true);
@@ -69,14 +70,12 @@ export default function AvailibilityScorekeeoer({navigation, route}) {
       ...authContext?.entity?.obj,
       scorekeeper_data: registerdScorekeeperData,
     };
-    console.log('Body::::--->', body);
 
     patchPlayer(body, authContext)
       .then(async (response) => {
         if (response.status === true) {
           setloading(false);
           const entity = authContext.entity;
-          console.log('Register scorekeeper response IS:: ', response.payload);
           entity.auth.user = response.payload;
           entity.obj = response.payload;
           authContext.setEntity({...entity});
@@ -91,7 +90,6 @@ export default function AvailibilityScorekeeoer({navigation, route}) {
         } else {
           Alert.alert(strings.appName, response.messages);
         }
-        console.log('RESPONSE IS:: ', response);
         setloading(false);
       })
       .catch((e) => {

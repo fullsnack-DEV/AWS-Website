@@ -2,29 +2,7 @@ import {FlatList, View} from 'react-native';
 import React, {useState} from 'react';
 import EventItemRender from '../../../../components/Schedule/EventItemRender';
 import RadioBtnItem from '../../../../components/Schedule/RadioBtnItem';
-
-const privacy_Data = [
-  {
-    id: 0,
-    title: 'Everyone',
-    isSelected: true,
-  },
-  {
-    id: 1,
-    title: 'Followers',
-    isSelected: false,
-  },
-  {
-    id: 2,
-    title: 'Members in groups',
-    isSelected: false,
-  },
-  {
-    id: 3,
-    title: 'Only me',
-    isSelected: false,
-  },
-];
+import {privacy_Data} from '../../../../utils/constant';
 
 const PlaysInEditPrivacySettings = ({title}) => {
   const [privacyData, setPrivacyData] = useState(privacy_Data);

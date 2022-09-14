@@ -19,6 +19,7 @@ import moment from 'moment';
 
 import Modal from 'react-native-modal';
 import {useIsFocused} from '@react-navigation/native';
+import {format} from 'react-string-format';
 import {strings} from '../../../../Localization/translation';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
@@ -61,6 +62,7 @@ import CurruentReservationView from '../alterChallenge/CurrentReservationView';
 import ScorekeeperAgreementView from '../../../components/challenge/ScorekeeperAgreementView';
 import {paymentMethods} from '../../../api/Users';
 import TCGameDetailRules from '../../../components/TCGameDetailRules';
+import Verbs from '../../../Constants/Verbs';
 
 let entity = {};
 export default function ChallengePreviewScreen({navigation, route}) {
@@ -422,7 +424,7 @@ export default function ChallengePreviewScreen({navigation, route}) {
     <>
       <TCChallengeTitle
         containerStyle={{marginLeft: 25, marginTop: 5, marginBottom: 5}}
-        title={'Interval'}
+        title={strings.intervalText}
         titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
         value={item.interval}
         valueStyle={{
@@ -431,7 +433,7 @@ export default function ChallengePreviewScreen({navigation, route}) {
           color: colors.greenColorCard,
           marginRight: 2,
         }}
-        staticValueText={'min.'}
+        staticValueText={strings.minuteText}
       />
       <TCChallengeTitle
         containerStyle={{marginLeft: 25, marginTop: 5, marginBottom: 5}}
@@ -444,7 +446,7 @@ export default function ChallengePreviewScreen({navigation, route}) {
           color: colors.greenColorCard,
           marginRight: 2,
         }}
-        staticValueText={'min.'}
+        staticValueText={strings.minuteText}
       />
     </>
   );
@@ -462,7 +464,7 @@ export default function ChallengePreviewScreen({navigation, route}) {
           color: colors.greenColorCard,
           marginRight: 2,
         }}
-        staticValueText={'min.'}
+        staticValueText={strings.minuteText}
       />
       <TCChallengeTitle
         containerStyle={{marginLeft: 25, marginTop: 5, marginBottom: 5}}
@@ -475,7 +477,7 @@ export default function ChallengePreviewScreen({navigation, route}) {
           color: colors.greenColorCard,
           marginRight: 2,
         }}
-        staticValueText={'min.'}
+        staticValueText={strings.minuteText}
       />
     </>
   );
@@ -989,7 +991,7 @@ export default function ChallengePreviewScreen({navigation, route}) {
             <View style={styles.challengerView}>
               <View style={styles.teamView}>
                 <Image source={images.reqIcon} style={styles.reqOutImage} />
-                <Text style={styles.challengerText}>Challenger</Text>
+                <Text style={styles.challengerText}>{strings.challenger}</Text>
               </View>
 
               <View style={styles.teamView}>
@@ -1015,7 +1017,7 @@ export default function ChallengePreviewScreen({navigation, route}) {
             <View style={styles.challengeeView}>
               <View style={styles.teamView}>
                 <Image source={images.reqeIcon} style={styles.reqOutImage} />
-                <Text style={styles.challengeeText}>Challengee</Text>
+                <Text style={styles.challengeeText}>{strings.challengee}</Text>
               </View>
 
               <View style={styles.teamView}>
@@ -1042,13 +1044,13 @@ export default function ChallengePreviewScreen({navigation, route}) {
           <TCThickDivider />
           <View>
             <TCLabel
-              title={`Game · ${Utility.getSportName(
-                challengeData,
-                authContext,
-              )}`}
+              title={format(
+                strings.matchSport,
+                Utility.getSportName(challengeData, authContext),
+              )}
             />
             <TCInfoImageField
-              title={'Home'}
+              title={strings.home}
               image={
                 challengeData?.home_team?.thumbnail
                   ? {uri: challengeData?.home_team?.thumbnail}
@@ -1064,7 +1066,7 @@ export default function ChallengePreviewScreen({navigation, route}) {
             />
             <TCThinDivider />
             <TCInfoImageField
-              title={'Away'}
+              title={strings.away}
               image={
                 challengeData?.away_team?.thumbnail
                   ? {uri: challengeData?.away_team?.thumbnail}
@@ -1080,7 +1082,7 @@ export default function ChallengePreviewScreen({navigation, route}) {
             />
             <TCThinDivider />
             <TCInfoField
-              title={'Time'}
+              title={strings.timeText}
               value={`${moment(
                 new Date(challengeData?.start_datetime * 1000),
               ).format('MMM DD, YYYY  hh:mm a')} -\n${moment(
@@ -1094,14 +1096,14 @@ export default function ChallengePreviewScreen({navigation, route}) {
             />
             <TCThinDivider />
             <TCInfoField
-              title={'Venue'}
+              title={strings.venue}
               value={challengeData?.venue?.name}
               marginLeft={30}
               titleStyle={{fontSize: 16}}
             />
             <TCThinDivider />
             <TCInfoField
-              title={'Address'}
+              title={strings.addressPlaceholder}
               value={challengeData?.venue?.address}
               marginLeft={30}
               titleStyle={{fontSize: 16}}
@@ -1115,17 +1117,15 @@ export default function ChallengePreviewScreen({navigation, route}) {
           </View>
 
           <TCChallengeTitle
-            title={'Game Type'}
+            title={strings.gameType}
             value={challengeData?.game_type}
-            tooltipText={
-              'The game result has an effect on TC points of the challengee and you.'
-            }
+            tooltipText={strings.gamePointsAffectText}
             tooltipHeight={heightPercentageToDP('6%')}
             tooltipWidth={widthPercentageToDP('50%')}
           />
           <TCThickDivider />
 
-          {challengeData?.sport?.toLowerCase() === 'tennis' ? (
+          {challengeData?.sport?.toLowerCase() === Verbs.tennisSport ? (
             <View>
               <TCGameDetailRules
                 gameRules={challengeData?.score_rules}
@@ -1138,14 +1138,14 @@ export default function ChallengePreviewScreen({navigation, route}) {
             </View>
           ) : (
             <View>
-              <TCLabel title={'Game Duration'} />
+              <TCLabel title={strings.gameDuration} />
               <TCChallengeTitle
                 containerStyle={{
                   marginLeft: 25,
                   marginTop: 15,
                   marginBottom: 5,
                 }}
-                title={'1st period'}
+                title={strings.firstPeriodText}
                 titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
                 value={challengeData?.game_duration?.first_period}
                 valueStyle={{
@@ -1154,7 +1154,7 @@ export default function ChallengePreviewScreen({navigation, route}) {
                   color: colors.greenColorCard,
                   marginRight: 2,
                 }}
-                staticValueText={'min.'}
+                staticValueText={strings.minuteText}
               />
 
               <FlatList
@@ -1180,13 +1180,13 @@ export default function ChallengePreviewScreen({navigation, route}) {
           )}
 
           <View>
-            <TCChallengeTitle title={'Game Rules'} />
-            <Text style={styles.rulesTitle}>General Rules</Text>
+            <TCChallengeTitle title={strings.gameRules} />
+            <Text style={styles.rulesTitle}>{strings.gameRulesSubTitle1}</Text>
             <Text style={styles.rulesDetail}>
               {challengeData?.general_rules}
             </Text>
             <View style={{marginBottom: 10}} />
-            <Text style={styles.rulesTitle}>Special Rules</Text>
+            <Text style={styles.rulesTitle}>{strings.gameRulesSubTitle2}</Text>
             <Text style={styles.rulesDetail}>
               {challengeData?.special_rules}
             </Text>
@@ -1243,11 +1243,9 @@ export default function ChallengePreviewScreen({navigation, route}) {
 
           <View>
             <TCChallengeTitle
-              title={'Refund Policy'}
+              title={strings.refundpolicy}
               value={challengeData?.refund_policy}
-              tooltipText={
-                '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the match fee and service fee are not refunded.'
-              }
+              tooltipText={strings.cancellationPolicyDesc}
               tooltipHeight={heightPercentageToDP('18%')}
               tooltipWidth={widthPercentageToDP('50%')}
               isEdit={false}
@@ -1256,7 +1254,9 @@ export default function ChallengePreviewScreen({navigation, route}) {
           </View>
           <TCLabel
             title={
-              challengeData?.challenger === entity.uid ? 'Payment' : 'Earning'
+              challengeData?.challenger === entity.uid
+                ? strings.payment
+                : strings.earning
             }
             style={{marginBottom: 15}}
           />
@@ -1280,7 +1280,7 @@ export default function ChallengePreviewScreen({navigation, route}) {
             challengeData?.challenger === entity.uid && (
               <View>
                 <View>
-                  <TCLabel title={'Payment Method'} />
+                  <TCLabel title={strings.paymentMethod} />
                   <View style={styles.viewMarginStyle}>
                     <TCTouchableLabel
                       disabled={
@@ -1358,12 +1358,15 @@ export default function ChallengePreviewScreen({navigation, route}) {
 
           {challengeStatus === 'sent' && (
             <View style={styles.mailContainer}>
-              <Text style={styles.invitationText}>Challenge sent</Text>
+              <Text style={styles.invitationText}>
+                {strings.challengeSentText}
+              </Text>
               <Text style={styles.infoText}>
-                When{' '}
-                {groupObject?.group_name ??
-                  `${groupObject?.first_name} ${groupObject?.last_name}`}{' '}
-                accepts your match reservation request, you will be notified.
+                {format(
+                  strings.whenGroupNotifyText,
+                  groupObject?.group_name ??
+                    `${groupObject?.first_name} ${groupObject?.last_name}`,
+                )}
               </Text>
             </View>
           )}
@@ -1371,53 +1374,55 @@ export default function ChallengePreviewScreen({navigation, route}) {
           {challengeStatus !== 'sent' && (
             <View style={styles.mailContainer}>
               <Text style={styles.invitationText}>
-                {(challengeStatus === 'accept' && 'Challenge accepted') ||
-                  (challengeStatus === 'decline' && 'Challenge declined') ||
-                  (challengeStatus === 'cancel' && 'Challenge cancelled') ||
-                  (challengeStatus === 'restored' && 'Challenge Restored')}
+                {(challengeStatus === 'accept' && strings.challengeAccepted) ||
+                  (challengeStatus === 'decline' &&
+                    strings.challengeDeclined) ||
+                  (challengeStatus === 'cancel' &&
+                    strings.challengeCancelled) ||
+                  (challengeStatus === 'restored' && strings.challengeRestored)}
               </Text>
 
               {challengeStatus === 'accept' && (
                 <Text style={styles.infoText}>
-                  A match between{' '}
+                  {strings.matchBetween}{' '}
                   <Text style={styles.entityNameBoldText}>
                     {teamObject?.group_name
                       ? teamObject?.group_name
                       : teamObject?.first_name + teamObject?.last_name}
                   </Text>{' '}
-                  and {teamObject?.group_name ? 'your team' : 'you'} has been
-                  scheduled.
+                  {format(
+                    strings.betweenScheduledDesc,
+                    teamObject?.group_name ? strings.yourTeamText : strings.you,
+                  )}
                 </Text>
               )}
 
               {challengeStatus === 'decline' && (
                 <Text style={styles.infoText}>
-                  A match reservation request from{' '}
+                  {strings.reservationRequestFrom}{' '}
                   <Text style={styles.entityNameBoldText}>
                     {teamObject?.group_name
                       ? teamObject?.group_name
                       : teamObject?.first_name + teamObject?.last_name}
                   </Text>{' '}
-                  has been declined.
+                  {strings.matchDeclined}
                 </Text>
               )}
 
               {challengeStatus === 'cancel' && (
                 <Text style={styles.infoText}>
-                  A match reservation from{' '}
+                  {strings.reservationRequestFrom}{' '}
                   <Text style={styles.entityNameBoldText}>
                     {teamObject?.group_name
                       ? teamObject?.group_name
                       : teamObject?.first_name + teamObject?.last_name}
                   </Text>{' '}
-                  has been cancelled.
+                  {strings.matchCancelled}
                 </Text>
               )}
 
               {challengeStatus === 'restored' && (
-                <Text style={styles.infoText}>
-                  Reservation alteration request restored.
-                </Text>
+                <Text style={styles.infoText}>{strings.requestRestored}</Text>
               )}
 
               {challengeStatus !== 'sent' && (
@@ -1444,7 +1449,7 @@ export default function ChallengePreviewScreen({navigation, route}) {
                           },
                     ]}
                   />
-                  <Text style={styles.vsText}>VS</Text>
+                  <Text style={styles.vsText}>{strings.VS}</Text>
                   <Image
                     source={
                       teamObject?.thumbnail
@@ -1476,17 +1481,20 @@ export default function ChallengePreviewScreen({navigation, route}) {
                 onPress={() => {
                   navigation.popToTop();
                 }}>
-                <Text style={styles.goToProfileTitle}>OK</Text>
+                <Text style={styles.goToProfileTitle}>
+                  {strings.okTitleText}
+                </Text>
               </TouchableOpacity>
             </SafeAreaView>
           ) : (
             <SafeAreaView>
               <View style={{height: 95, justifyContent: 'space-between'}}>
                 <TCBorderButton
-                  title={`GO TO ${
+                  title={format(
+                    strings.GOTOButtonTitle,
                     teamObject?.group_name?.toUpperCase() ||
-                    `${teamObject?.first_name?.toUpperCase()} ${teamObject?.last_name?.toUpperCase()}`
-                  }`}
+                      `${teamObject?.first_name?.toUpperCase()} ${teamObject?.last_name?.toUpperCase()}`,
+                  )}
                   textColor={colors.whiteColor}
                   borderColor={colors.whiteColor}
                   backgroundColor={'transparent'}
@@ -1525,7 +1533,7 @@ export default function ChallengePreviewScreen({navigation, route}) {
                           gameId: teamObject?.game_id ?? challengeData?.game_id,
                         });
                       } else {
-                        Alert.alert('Game ID does not exist.');
+                        Alert.alert(strings.gameIDNotExitsTitle);
                       }
                     }}
                   />
@@ -1561,7 +1569,9 @@ export default function ChallengePreviewScreen({navigation, route}) {
 
           {challengeStatus === 'sent' && (
             <View style={styles.mailContainer}>
-              <Text style={styles.invitationText}>Alteration request sent</Text>
+              <Text style={styles.invitationText}>
+                {strings.alterRequestSendText}
+              </Text>
               <View style={styles.imageContainer}>
                 <Image
                   source={images.challengeSentPlane}
@@ -1575,13 +1585,13 @@ export default function ChallengePreviewScreen({navigation, route}) {
             <View style={styles.mailContainer}>
               <Text style={styles.invitationText}>
                 {(challengeStatus === 'accept' &&
-                  'Alteration request\naccepted') ||
+                  strings.alterRequestAccepted) ||
                   (challengeStatus === 'decline' &&
-                    'Alteration request\ndeclined') ||
+                    strings.alterRequestDeclined) ||
                   (challengeStatus === 'cancel' &&
-                    'Alteration request\ncancelled') ||
+                    strings.alterRequestCancelled) ||
                   (challengeStatus === 'restored' &&
-                    'Alteration request\nRestored')}
+                    strings.alterRequestRestored)}
               </Text>
             </View>
           )}
@@ -1592,7 +1602,7 @@ export default function ChallengePreviewScreen({navigation, route}) {
                 setAlterModalVisible(false);
                 navigation.popToTop();
               }}>
-              <Text style={styles.goToProfileTitle}>OK</Text>
+              <Text style={styles.goToProfileTitle}>{strings.okTitleText}</Text>
             </TouchableOpacity>
           </SafeAreaView>
         </View>

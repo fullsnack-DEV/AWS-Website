@@ -22,6 +22,7 @@ import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
 import TCLable from '../../../../components/TCLabel';
 import {strings} from '../../../../../Localization/translation';
+import Verbs from '../../../../Constants/Verbs';
 
 const gameTypeList = [
   {key: strings.officialOnly, id: 1},
@@ -37,10 +38,11 @@ export default function GameType({navigation, route}) {
 
   const [loading, setloading] = useState(false);
   const [typeSelection, setTypeSelection] = useState(
-    (route?.params?.settingObj?.game_type === 'Official' && gameTypeList[0]) ||
-      (route?.params?.settingObj?.game_type === 'Friendly' &&
+    (route?.params?.settingObj?.game_type === strings.officialGameType &&
+      gameTypeList[0]) ||
+      (route?.params?.settingObj?.game_type === strings.friendlyGameType &&
         gameTypeList[1]) ||
-      (route?.params?.settingObj?.game_type === 'All' && gameTypeList[2]),
+      (route?.params?.settingObj?.game_type === strings.all && gameTypeList[2]),
   );
 
   useLayoutEffect(() => {
@@ -51,7 +53,7 @@ export default function GameType({navigation, route}) {
           onPress={() => {
             onSavePressed();
           }}>
-          Save
+          {strings.save}
         </Text>
       ),
     });
@@ -63,9 +65,11 @@ export default function GameType({navigation, route}) {
       sport_type: sportType,
       entity_type: 'player',
       game_type:
-        (typeSelection.key === strings.officialOnly && 'Official') ||
-        (typeSelection.key === strings.friendlyOnly && 'Friendly') ||
-        (typeSelection.key === strings.allType && 'All'),
+        (typeSelection.key === strings.officialOnly &&
+          strings.officialGameType) ||
+        (typeSelection.key === strings.friendlyOnly &&
+          strings.friendlyGameType) ||
+        (typeSelection.key === strings.allType && strings.all),
     };
     setloading(true);
     const registerdPlayerData =
@@ -127,11 +131,13 @@ export default function GameType({navigation, route}) {
     const bodyParams = {
       sport: sportName,
       sport_type: sportType,
-      entity_type: 'team',
+      entity_type: Verbs.entityTypeTeam,
       game_type:
-        (typeSelection.key === strings.officialOnly && 'Official') ||
-        (typeSelection.key === strings.friendlyOnly && 'Friendly') ||
-        (typeSelection.key === strings.allType && 'All'),
+        (typeSelection.key === strings.officialOnly &&
+          strings.officialGameType) ||
+        (typeSelection.key === strings.friendlyOnly &&
+          strings.friendlyGameType) ||
+        (typeSelection.key === strings.allType && strings.all),
     };
     setloading(true);
     const selectedTeam = authContext?.entity?.obj;
@@ -170,11 +176,13 @@ export default function GameType({navigation, route}) {
     if (comeFrom === 'InviteChallengeScreen' || comeFrom === 'EditChallenge') {
       navigation.navigate(comeFrom, {
         gameType:
-          (typeSelection.key === strings.officialOnly && 'Official') ||
-          (typeSelection.key === strings.friendlyOnly && 'Friendly') ||
-          (typeSelection.key === strings.allType && 'All'),
+          (typeSelection.key === strings.officialOnly &&
+            strings.officialGameType) ||
+          (typeSelection.key === strings.friendlyOnly &&
+            strings.friendlyGameType) ||
+          (typeSelection.key === strings.allType && strings.all),
       });
-    } else if (authContext.entity.role === 'team') {
+    } else if (authContext.entity.role === Verbs.entityTypeTeam) {
       saveTeam();
     } else {
       saveUser();

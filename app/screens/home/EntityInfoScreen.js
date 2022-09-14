@@ -28,10 +28,8 @@ export default function EntityInfoScreen({navigation, route}) {
     if (isFocused) {
       getGroupDetails(uid, authContext)
         .then((response) => {
-          console.log('response group:=>', response);
           getGroupMembers(response.payload.group_id, authContext)
             .then((members) => {
-              console.log('members:=>', members);
               setLoading(false);
               setMembersData(members.payload);
             })
@@ -56,10 +54,6 @@ export default function EntityInfoScreen({navigation, route}) {
   useEffect(() => {
     const obj = [];
     if (route?.params?.selectedVenueObj) {
-      console.log(
-        'route?.params?.selectedVenueObj',
-        route?.params?.selectedVenueObj,
-      );
       obj.push(route?.params?.selectedVenueObj);
     } else {
       obj.push(currentUserData?.setting?.venue?.[0]);

@@ -17,8 +17,6 @@ export default function EntityGallaryScreen({navigation, route}) {
 
   const [currentUserData] = useState(route?.params?.currentUserData);
 
-  console.log('currentUserData', currentUserData);
-
   const authContext = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
 

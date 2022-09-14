@@ -14,60 +14,7 @@ import PlayInTennisSingleRDMPercentage from './PlayInTennisSingleRDMPercentage';
 import PlayInTennisSingleFiveSetsGame from './PlayInTennisSingleFiveSetsGame';
 import PlayInTennisSingleThreeSetsGame from './PlayInTennisSingleThreeSetsGame';
 import PlayInCommonScoreTypesData from '../commonViews/PlayInCommonScoreTypesData';
-import images from '../../../../../Constants/ImagePath';
-import {monthsSelectionData} from '../../../../../utils/constant';
-
-const game_data = [
-  {
-    id: 0,
-    image: images.gamesImage,
-    selectImage: images.gamesSelected,
-    title: 'Match',
-    total: 139,
-    isSelected: true,
-  },
-
-  {
-    id: 1,
-    image: images.tennisGeneral,
-    selectImage: images.goalsSelected,
-    title: 'General',
-    total: 12,
-    isSelected: false,
-  },
-  {
-    id: 2,
-    image: images.tennisAce,
-    selectImage: images.assistsSelected,
-    title: 'Ace',
-    total: 5,
-    isSelected: false,
-  },
-  {
-    id: 3,
-    image: images.tennisWinner,
-    selectImage: images.yellowCardSelected,
-    title: 'Winner',
-    total: 6,
-    isSelected: false,
-  },
-  {
-    id: 4,
-    image: images.tennisUnForced,
-    selectImage: images.yellowCardSelected,
-    title: 'Unforced',
-    total: 2,
-    isSelected: false,
-  },
-  {
-    id: 5,
-    image: images.tennisFault,
-    selectImage: images.yellowCardSelected,
-    title: 'Fault',
-    total: 2,
-    isSelected: false,
-  },
-];
+import {game_data, monthsSelectionData} from '../../../../../utils/constant';
 
 const PlayInTennisSingleStatsView = ({
   playInObject,

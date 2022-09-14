@@ -42,11 +42,11 @@ export default function ChangePasswordScreen({navigation}) {
   };
   const checkValidation = () => {
     if (oldPassword === '') {
-      Alert.alert(strings.appName, 'Old Password cannot be blank.');
+      Alert.alert(strings.appName, strings.oldPasswordCanNotBlankValidation);
       return false;
     }
     if (newPassword === '') {
-      Alert.alert(strings.appName, 'New Password cannot be blank.');
+      Alert.alert(strings.appName, strings.newPasswordCanNotBlankValidation);
       return false;
     }
     if (confirmPassword === '') {
@@ -59,17 +59,11 @@ export default function ChangePasswordScreen({navigation}) {
     }
 
     if (newPassword !== confirmPassword) {
-      Alert.alert(
-        strings.appName,
-        'New Password and Confirm Password should be same.',
-      );
+      Alert.alert(strings.appName, strings.passwordSamevalidation);
       return false;
     }
     if (newPassword === oldPassword) {
-      Alert.alert(
-        strings.appName,
-        'New Password and Old Password cannot be same.',
-      );
+      Alert.alert(strings.appName, strings.passwordMustSameValidation);
       return false;
     }
 
@@ -88,12 +82,10 @@ export default function ChangePasswordScreen({navigation}) {
   const onSavePress = () => {
     if (checkValidation()) {
       setloading(true);
-      console.log('EMAIL::', authContext?.entity?.obj?.email);
       const credential = firebase.auth.EmailAuthProvider.credential(
         authContext?.entity?.obj?.email,
         oldPassword,
       );
-      console.log('CREDENTIAL::', credential);
       firebase
         .auth()
         .currentUser.reauthenticateWithCredential(credential)
@@ -117,10 +109,7 @@ export default function ChangePasswordScreen({navigation}) {
           setloading(false);
           if (error.code === 'auth/wrong-password') {
             setTimeout(() => {
-              Alert.alert(
-                'TownsCup',
-                'The email and password you entered dont match',
-              );
+              Alert.alert(strings.townsCupTitle, strings.emailPasswordWrong);
             }, 10);
           }
         });
@@ -142,7 +131,7 @@ export default function ChangePasswordScreen({navigation}) {
               textAlign: 'center',
               fontFamily: fonts.RBold,
             }}>
-            Change Password
+            {strings.changePassword}
           </Text>
         }
         rightComponent={
@@ -153,7 +142,7 @@ export default function ChangePasswordScreen({navigation}) {
                 fontFamily: fonts.RMedium,
                 color: colors.lightBlackColor,
               }}>
-              Save
+              {strings.save}
             </Text>
           </TouchableOpacity>
         }
@@ -205,7 +194,7 @@ export default function ChangePasswordScreen({navigation}) {
                   fontSize: 10,
                   fontFamily: fonts.RLight,
                 }}>
-                {hideNewPassword ? 'SHOW' : 'HIDE'}
+                {hideNewPassword ? strings.SHOW : strings.HIDE}
               </Text>
             </TouchableOpacity>
           </View>
@@ -235,7 +224,7 @@ export default function ChangePasswordScreen({navigation}) {
                   fontSize: 10,
                   fontFamily: fonts.RLight,
                 }}>
-                {hideConfirmPassword ? 'SHOW' : 'HIDE'}
+                {hideConfirmPassword ? strings.SHOW : strings.HIDE}
               </Text>
             </TouchableOpacity>
           </View>

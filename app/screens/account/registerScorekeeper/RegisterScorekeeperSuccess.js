@@ -9,6 +9,7 @@ import FastImage from 'react-native-fast-image';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
+import {strings} from '../../../../Localization/translation';
 
 const RegisterScorekeeperSuccess = ({navigation}) => {
   useEffect(() => {
@@ -46,7 +47,7 @@ const RegisterScorekeeperSuccess = ({navigation}) => {
             fontSize: 20,
             marginTop: 10,
           }}>
-          Registered{'\n'}as a scorekeeper
+          {strings.registerScorekeeperTitle}
         </Text>
       </LinearGradient>
     </View>

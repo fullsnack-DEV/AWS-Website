@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useContext, useLayoutEffect} from 'react';
+import React, {useState, useContext, useLayoutEffect} from 'react';
 import {
   StyleSheet,
   Text,
@@ -10,7 +10,6 @@ import {
   FlatList,
 } from 'react-native';
 
-import {useIsFocused} from '@react-navigation/native';
 import * as Utility from '../../utils/index';
 import {updateUserProfile} from '../../api/Users';
 import AuthContext from '../../auth/context';
@@ -24,7 +23,6 @@ import TCLabel from '../../components/TCLabel';
 import Header from '../../components/Home/Header';
 
 export default function CurrencySettingScreen({navigation}) {
-  const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
   const [loading, setloading] = useState(false);
 
@@ -37,12 +35,6 @@ export default function CurrencySettingScreen({navigation}) {
       headerShown: false,
     });
   });
-
-  useEffect(() => {
-    if (isFocused) {
-      console.log('Called', authContext);
-    }
-  }, []);
 
   const updateCurrency = (currencyType) => {
     setloading(true);
@@ -106,7 +98,7 @@ export default function CurrencySettingScreen({navigation}) {
               textAlign: 'center',
               fontFamily: fonts.RBold,
             }}>
-            Currency
+            {strings.currencyText}
           </Text>
         }
         rightComponent={
@@ -117,7 +109,7 @@ export default function CurrencySettingScreen({navigation}) {
                 fontFamily: fonts.RMedium,
                 color: colors.lightBlackColor,
               }}>
-              Done
+              {strings.done}
             </Text>
           </TouchableOpacity>
         }

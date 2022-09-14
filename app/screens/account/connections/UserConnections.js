@@ -15,6 +15,7 @@ import {
 } from '../../../api/Users';
 import UserListShimmer from '../../../components/shimmer/commonComponents/UserListShimmer';
 import {strings} from '../../../../Localization/translation';
+import Verbs from '../../../Constants/Verbs';
 
 export default function UserConnections({navigation, route}) {
   const isFocused = useIsFocused();
@@ -37,9 +38,9 @@ export default function UserConnections({navigation, route}) {
 
       getUserFollowerFollowing(
         user_id,
-        eType === strings.entityTypeUser
-          ? strings.entityTypePlayers
-          : strings.entityTypeGroups,
+        eType === Verbs.entityTypeUser
+          ? Verbs.entityTypePlayers
+          : Verbs.entityTypeGroups,
         tab,
         authContext,
       )
@@ -71,20 +72,20 @@ export default function UserConnections({navigation, route}) {
             keyExtractor={(item, index) => index.toString()}
             renderItem={({item}) => {
               const showFollowUnfollowButton =
-                userRole === strings.entityTypeUser;
+                userRole === Verbs.entityTypeUser;
               return (
                 <TCUserList
                   onProfilePress={() => {
                     navigation.push('HomeScreen', {
                       role: [
-                        strings.entityTypePlayer,
-                        strings.entityTypeUser,
+                        Verbs.entityTypePlayer,
+                        Verbs.entityTypeUser,
                       ]?.includes(item?.entity_type)
-                        ? strings.entityTypeUser
+                        ? Verbs.entityTypeUser
                         : item?.entity_type,
                       uid: [
-                        strings.entityTypePlayer,
-                        strings.entityTypeUser,
+                        Verbs.entityTypePlayer,
+                        Verbs.entityTypeUser,
                       ]?.includes(item?.entity_type)
                         ? item?.user_id
                         : item?.group_id,
@@ -96,7 +97,7 @@ export default function UserConnections({navigation, route}) {
                   profileImage={item?.full_image}
                   entityType={item?.entity_type}
                   title={
-                    item?.entity_type === strings.entityTypePlayer
+                    item?.entity_type === Verbs.entityTypePlayer
                       ? item?.full_name
                       : item?.group_name
                   }
@@ -105,7 +106,7 @@ export default function UserConnections({navigation, route}) {
                   followUnfollowPress={(wantToFollow) => {
                     const entity_type = item?.entity_type;
                     const uid =
-                      item?.entity_type === strings.entityTypePlayer
+                      item?.entity_type === Verbs.entityTypePlayer
                         ? item?.user_id
                         : item?.group_id;
                     if (wantToFollow) {

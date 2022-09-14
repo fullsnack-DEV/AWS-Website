@@ -62,6 +62,7 @@ import {
 } from '../../utils/QuickBlox';
 import MessageChatShimmer from '../shimmer/message/MessageChatShimmer';
 import {ShimmerView} from '../shimmer/commonComponents/ShimmerCommonComponents';
+import {strings} from '../../../Localization/translation';
 
 const QbMessageEmitter = new NativeEventEmitter(QB.chat);
 
@@ -307,12 +308,12 @@ const MessageChat = ({route, navigation}) => {
       'Are you sure want to delete message?',
       [
         {
-          text: 'Cancel',
+          text: strings.cancel,
           onPress: () => console.log('Cancel Pressed'),
           style: 'cancel',
         },
         {
-          text: 'OK',
+          text: strings.okTitleText,
           onPress: () => {
             QBDeleteMessage(item.id, authContext)
               .then((respose) => {
@@ -524,9 +525,9 @@ const MessageChat = ({route, navigation}) => {
 
         QB.content
           .subscribeUploadProgress(subscribeProgressParam)
-          .then(() => 
+          .then(() =>
             // subscribed to upload progress events for this file
-             QB.content.upload(contentUploadParam)
+            QB.content.upload(contentUploadParam),
           )
           .then((file) => {
             // file uploaded successfully
@@ -879,7 +880,7 @@ const MessageChat = ({route, navigation}) => {
         `${occupantsData.length > 2 ? 'leave' : 'delete'} this chatroom?`,
       [
         {
-          text: 'Cancel',
+          text: strings.cancel,
           onPress: () => console.log('Cancel Pressed'),
           style: 'cancel',
         },
@@ -901,18 +902,18 @@ const MessageChat = ({route, navigation}) => {
     <View style={styles.searchContainer}>
       <View style={styles.sectionStyle}>
         <TextInput
-            style={styles.textInput}
-            placeholder={'Search'}
-            clearButtonMode="always"
-            placeholderTextColor={colors.userPostTimeColor}
-            onChangeText={(text) => searchMessage(text)}
-          />
+          style={styles.textInput}
+          placeholder={'Search'}
+          clearButtonMode="always"
+          placeholderTextColor={colors.userPostTimeColor}
+          onChangeText={(text) => searchMessage(text)}
+        />
       </View>
       <TouchableOpacity onPress={() => setHideSearchView(true)}>
         <Image source={images.closeSearch} style={styles.searchClose} />
       </TouchableOpacity>
     </View>
-    );
+  );
 
   return (
     <SafeAreaView style={styles.mainContainer}>

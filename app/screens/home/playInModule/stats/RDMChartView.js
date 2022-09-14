@@ -30,8 +30,7 @@ const TopHeader = ({title, selectWeekMonth, setSelectWeekMonth}) => (
   </View>
 );
 
-const RDMChartView = ({RDMData, name}) => {
-  console.log('RDM CHART', RDMData, name);
+const RDMChartView = ({RDMData}) => {
   const [selectWeekMonth, setSelectWeekMonth] = useState(
     monthsSelectionData[3]?.value,
   );
@@ -39,7 +38,7 @@ const RDMChartView = ({RDMData, name}) => {
   return (
     <View style={{flex: 1}}>
       <TopHeader
-        title={'RDM Percentage'}
+        title={strings.RDMPercentage}
         selectWeekMonth={selectWeekMonth}
         setSelectWeekMonth={setSelectWeekMonth}
       />
@@ -48,7 +47,7 @@ const RDMChartView = ({RDMData, name}) => {
       <View style={{paddingHorizontal: 15}}>
         {/* Home Team */}
         <TCRangeChart
-          heading={'RDMs/R&Ts'}
+          heading={strings.RDMRT}
           totalCount={RDMData?.total_games}
           progressCount={RDMData?.approved_games}
         />
@@ -56,13 +55,13 @@ const RDMChartView = ({RDMData, name}) => {
 
       <View style={{padding: 15}}>
         <TCTextTableView
-          leftTitle={'Total Matches'}
+          leftTitle={strings.totalMatches}
           rightTitle={RDMData?.total_games}
         />
 
         <TCTextTableView
-          leftTitle={'RDMs'}
-          leftSubTitle={'(Result-Dissapproved Matches)'}
+          leftTitle={strings.RDMs}
+          leftSubTitle={strings.resultDisapprovedMatches}
           rightTitle={RDMData?.disapproved_games}
         />
         <View style={{marginVertical: 10}}>
@@ -70,8 +69,8 @@ const RDMChartView = ({RDMData, name}) => {
         </View>
 
         <TCTextTableView
-          leftTitle={'R&Ts'}
-          leftSubTitle={'(RDMs + Total Matches)'}
+          leftTitle={strings.RTs}
+          leftSubTitle={strings.RDMTotalMatches}
           rightTitle={RDMData?.total_games}
         />
       </View>

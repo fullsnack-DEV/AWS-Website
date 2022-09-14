@@ -17,6 +17,7 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import {format} from 'react-string-format';
 import GameFeeCard from '../../../components/challenge/GameFeeCard';
 import {getFeesEstimation} from '../../../api/Challenge';
 
@@ -35,6 +36,7 @@ import {getNumberSuffix} from '../../../utils/gameUtils';
 import EventMapView from '../../../components/Schedule/EventMapView';
 import TCFormProgress from '../../../components/TCFormProgress';
 import TCGameDetailRules from '../../../components/TCGameDetailRules';
+import Verbs from '../../../Constants/Verbs';
 
 let entity = {};
 export default function InviteChallengeScreen({navigation, route}) {
@@ -189,7 +191,7 @@ export default function InviteChallengeScreen({navigation, route}) {
           color: colors.greenColorCard,
           marginRight: 2,
         }}
-        staticValueText={'min.'}
+        staticValueText={strings.minuteText}
       />
       <TCChallengeTitle
         containerStyle={{marginLeft: 25, marginTop: 5, marginBottom: 5}}
@@ -202,7 +204,7 @@ export default function InviteChallengeScreen({navigation, route}) {
           color: colors.greenColorCard,
           marginRight: 2,
         }}
-        staticValueText={'min.'}
+        staticValueText={strings.minuteText}
       />
     </>
   );
@@ -211,7 +213,7 @@ export default function InviteChallengeScreen({navigation, route}) {
     <>
       <TCChallengeTitle
         containerStyle={{marginLeft: 25, marginTop: 5, marginBottom: 5}}
-        title={'Interval'}
+        title={strings.intervalText}
         titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
         value={item.interval}
         valueStyle={{
@@ -220,7 +222,7 @@ export default function InviteChallengeScreen({navigation, route}) {
           color: colors.greenColorCard,
           marginRight: 2,
         }}
-        staticValueText={'min.'}
+        staticValueText={strings.minuteText}
       />
       <TCChallengeTitle
         containerStyle={{marginLeft: 25, marginTop: 5, marginBottom: 5}}
@@ -233,7 +235,7 @@ export default function InviteChallengeScreen({navigation, route}) {
           color: colors.greenColorCard,
           marginRight: 2,
         }}
-        staticValueText={'min.'}
+        staticValueText={strings.minuteText}
       />
     </>
   );
@@ -268,7 +270,9 @@ export default function InviteChallengeScreen({navigation, route}) {
       res_secure_referee.push({
         ...settingObject?.responsible_for_referee?.who_secure[i],
         responsible_team_id:
-          sportType === 'single' ? teams?.[0]?.user_id : teams?.[0]?.group_id,
+          sportType === Verbs.singleSport
+            ? teams?.[0]?.user_id
+            : teams?.[0]?.group_id,
       });
     }
     for (
@@ -279,7 +283,9 @@ export default function InviteChallengeScreen({navigation, route}) {
       res_secure_scorekeeper.push({
         ...settingObject?.responsible_for_scorekeeper?.who_secure[i],
         responsible_team_id:
-          sportType === 'single' ? teams?.[0]?.user_id : teams?.[0]?.group_id,
+          sportType === Verbs.singleSport
+            ? teams?.[0]?.user_id
+            : teams?.[0]?.group_id,
       });
     }
 
@@ -292,22 +298,26 @@ export default function InviteChallengeScreen({navigation, route}) {
       start_datetime: route?.params?.startTime / 1000,
       end_datetime: route?.params?.endTime / 1000,
       challenger:
-        sportType === 'single' ? teams?.[1]?.user_id : teams?.[1]?.group_id,
+        sportType === Verbs.singleSport
+          ? teams?.[1]?.user_id
+          : teams?.[1]?.group_id,
       challengee:
-        sportType === 'single' ? teams?.[0]?.user_id : teams?.[0]?.group_id,
+        sportType === Verbs.singleSport
+          ? teams?.[0]?.user_id
+          : teams?.[0]?.group_id,
       home_team:
         settingObject?.home_away === 'Home'
           ? entity?.uid
-          : sportType === 'single'
+          : sportType === Verbs.singleSport
           ? groupObj?.user_id
           : groupObj?.group_id,
       away_team:
         settingObject?.home_away === 'Home'
-          ? sportType === 'single'
+          ? sportType === Verbs.singleSport
             ? groupObj?.user_id
             : groupObj?.group_id
           : entity?.uid,
-      user_challenge: sportType === 'single',
+      user_challenge: sportType === Verbs.singleSport,
     };
     if (res_secure_referee?.length > 0) {
       body.responsible_for_referee.who_secure = res_secure_referee;
@@ -373,7 +383,7 @@ export default function InviteChallengeScreen({navigation, route}) {
           <View style={styles.challengerView}>
             <View style={styles.teamView}>
               <Image source={images.reqIcon} style={styles.reqOutImage} />
-              <Text style={styles.challengerText}>Challenger</Text>
+              <Text style={styles.challengerText}>{strings.challenger}</Text>
             </View>
 
             <View style={styles.teamView}>
@@ -388,7 +398,7 @@ export default function InviteChallengeScreen({navigation, route}) {
                 />
               </View>
               <Text style={styles.teamNameText}>
-                {sportType === 'single'
+                {sportType === Verbs.singleSport
                   ? `${teams?.[1]?.first_name} ${teams?.[1]?.last_name}`
                   : `${teams?.[1]?.group_name}`}
               </Text>
@@ -412,7 +422,7 @@ export default function InviteChallengeScreen({navigation, route}) {
                 />
               </View>
               <Text style={styles.teamNameText}>
-                {sportType === 'single'
+                {sportType === Verbs.singleSport
                   ? `${teams?.[0]?.first_name} ${teams?.[0]?.last_name}`
                   : `${teams?.[0]?.group_name}`}
               </Text>
@@ -423,11 +433,9 @@ export default function InviteChallengeScreen({navigation, route}) {
         <TCThickDivider marginTop={15} />
 
         <TCChallengeTitle
-          title={'Type of Game'}
+          title={strings.typeOfGameText}
           value={settingObject?.game_type}
-          tooltipText={
-            'The game result has an effect on TC points of the challengee and you.'
-          }
+          tooltipText={strings.gameResuleAffect}
           tooltipHeight={hp('6%')}
           tooltipWidth={wp('50%')}
           isEdit={true}
@@ -443,11 +451,12 @@ export default function InviteChallengeScreen({navigation, route}) {
         <TCThickDivider />
 
         <TCChallengeTitle
-          title={'Match Fee'}
+          title={strings.gameFee}
           value={settingObject?.game_fee?.fee}
-          staticValueText={`${
-            settingObject?.game_fee?.currency_type || ''
-          } /Game`}
+          staticValueText={format(
+            strings.perGame,
+            settingObject?.game_fee?.currency_type || '',
+          )}
           valueStyle={{
             fontFamily: fonts.RBold,
             fontSize: 16,
@@ -467,11 +476,9 @@ export default function InviteChallengeScreen({navigation, route}) {
         <TCThickDivider />
 
         <TCChallengeTitle
-          title={'Refund Policy'}
+          title={strings.refundpolicy}
           value={settingObject?.refund_policy}
-          tooltipText={
-            '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the match fee and service fee are not refunded.'
-          }
+          tooltipText={strings.cancellationPolicyDesc}
           tooltipHeight={hp('18%')}
           tooltipWidth={wp('50%')}
           isEdit={true}
@@ -488,7 +495,7 @@ export default function InviteChallengeScreen({navigation, route}) {
       </View>
       <View>
         <TCChallengeTitle
-          title={'Home & Away'}
+          title={strings.homeAndAway}
           isEdit={true}
           onEditPress={() => {
             navigation.navigate('HomeAway', {
@@ -499,7 +506,7 @@ export default function InviteChallengeScreen({navigation, route}) {
           }}
         />
         <View style={styles.teamContainer}>
-          <Text style={styles.homeLableStyle}>Home</Text>
+          <Text style={styles.homeLableStyle}>{strings.home}</Text>
           <View style={styles.teamViewStyle}>
             <Image
               source={
@@ -535,7 +542,7 @@ export default function InviteChallengeScreen({navigation, route}) {
         </View>
 
         <View style={styles.teamContainer}>
-          <Text style={styles.homeLableStyle}>Away</Text>
+          <Text style={styles.homeLableStyle}>{strings.away}</Text>
           <View style={styles.teamViewStyle}>
             <Image
               source={
@@ -575,7 +582,7 @@ export default function InviteChallengeScreen({navigation, route}) {
         {sportName?.toLowerCase() === 'tennis' ? (
           <View>
             <TCChallengeTitle
-              title={'Sets, Games & Duration'}
+              title={strings.setGamesDuration}
               isEdit={true}
               onEditPress={() => {
                 navigation.navigate('GameTennisDuration', {
@@ -598,7 +605,7 @@ export default function InviteChallengeScreen({navigation, route}) {
         ) : (
           <View>
             <TCChallengeTitle
-              title={'Game Duration'}
+              title={strings.gameDuration}
               isEdit={true}
               onEditPress={() => {
                 navigation.navigate('GameDuration', {
@@ -611,7 +618,7 @@ export default function InviteChallengeScreen({navigation, route}) {
             />
             <TCChallengeTitle
               containerStyle={{marginLeft: 25, marginTop: 15, marginBottom: 5}}
-              title={'1st period'}
+              title={strings.firstPeriodText}
               titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
               value={settingObject?.game_duration?.first_period}
               valueStyle={{
@@ -620,7 +627,7 @@ export default function InviteChallengeScreen({navigation, route}) {
                 color: colors.greenColorCard,
                 marginRight: 2,
               }}
-              staticValueText={'min.'}
+              staticValueText={strings.minuteText}
             />
 
             <FlatList
@@ -647,7 +654,7 @@ export default function InviteChallengeScreen({navigation, route}) {
 
         <View>
           <TCChallengeTitle
-            title={'Date & Time'}
+            title={strings.dateAndTimeCam}
             isEdit={!!route?.params?.endTime}
             onEditPress={() => {
               navigation.navigate('ChooseTimeSlotScreen', {
@@ -660,7 +667,7 @@ export default function InviteChallengeScreen({navigation, route}) {
           {route?.params?.endTime ? (
             <View>
               <View style={styles.dateTimeValue}>
-                <Text style={styles.dateTimeText}>Start </Text>
+                <Text style={styles.dateTimeText}>{strings.starts} </Text>
                 <Text style={styles.dateTimeText}>
                   {moment(route?.params?.startTime).format(
                     'MMM DD, YYYY hh:mm a',
@@ -668,7 +675,7 @@ export default function InviteChallengeScreen({navigation, route}) {
                 </Text>
               </View>
               <View style={styles.dateTimeValue}>
-                <Text style={styles.dateTimeText}>End </Text>
+                <Text style={styles.dateTimeText}>{strings.ends} </Text>
                 <Text style={styles.dateTimeText}>
                   {moment(route?.params?.endTime).format(
                     'MMM DD, YYYY hh:mm a',
@@ -678,8 +685,10 @@ export default function InviteChallengeScreen({navigation, route}) {
               <View style={styles.dateTimeValue}>
                 <Text style={styles.dateTimeText}> </Text>
                 <Text style={styles.timeZoneText}>
-                  Time zone{' '}
-                  <Text style={{fontFamily: fonts.RRegular}}>Vancouver</Text>
+                  {strings.timeZoneText}{' '}
+                  <Text style={{fontFamily: fonts.RRegular}}>
+                    {strings.vancouver}
+                  </Text>
                 </Text>
               </View>
             </View>
@@ -694,7 +703,7 @@ export default function InviteChallengeScreen({navigation, route}) {
               <View style={[styles.borderButtonView, styles.shadowView]}>
                 <View />
                 <Text style={styles.detailButtonText}>
-                  {'CHOOSE DATE & TIME'}
+                  {strings.chooseDateTime}
                 </Text>
                 <Image
                   source={images.arrowGraterthan}
@@ -708,7 +717,7 @@ export default function InviteChallengeScreen({navigation, route}) {
 
         <View>
           <TCChallengeTitle
-            title={'Venue'}
+            title={strings.venue}
             isEdit={!!venue && settingObject?.venue?.length > 1}
             onEditPress={() => {
               navigation.navigate('ChooseVenueScreen', {
@@ -739,7 +748,9 @@ export default function InviteChallengeScreen({navigation, route}) {
               }}>
               <View style={[styles.borderButtonView, styles.shadowView]}>
                 <View />
-                <Text style={styles.detailButtonText}>CHOOSE A VENUE</Text>
+                <Text style={styles.detailButtonText}>
+                  {strings.chooseVenue}
+                </Text>
                 <Image
                   source={images.arrowGraterthan}
                   style={styles.arrowImage}
@@ -752,7 +763,7 @@ export default function InviteChallengeScreen({navigation, route}) {
         </View>
 
         <TCChallengeTitle
-          title={'Game Rules'}
+          title={strings.gameRules}
           isEdit={true}
           onEditPress={() => {
             navigation.navigate('GameRules', {
@@ -763,10 +774,10 @@ export default function InviteChallengeScreen({navigation, route}) {
             });
           }}
         />
-        <Text style={styles.rulesTitle}>General Rules</Text>
+        <Text style={styles.rulesTitle}>{strings.gameRulesSubTitle1}</Text>
         <Text style={styles.rulesDetail}>{settingObject?.general_rules}</Text>
         <View style={{marginBottom: 10}} />
-        <Text style={styles.rulesTitle}>Special Rules</Text>
+        <Text style={styles.rulesTitle}>{strings.gameRulesSubTitle2}</Text>
         <Text style={styles.rulesDetail}>{settingObject?.special_rules}</Text>
         <TCThickDivider marginTop={20} />
         {/*
@@ -870,7 +881,7 @@ export default function InviteChallengeScreen({navigation, route}) {
 
         {!totalZero && (
           <View>
-            <TCLabel title={'Income'} style={{marginBottom: 15}} />
+            <TCLabel title={strings.earning} style={{marginBottom: 15}} />
             <GameFeeCard
               feeObject={feeObj}
               currency={settingObject?.game_fee?.currency_type}
@@ -892,10 +903,7 @@ export default function InviteChallengeScreen({navigation, route}) {
           if (
             new Date(route?.params?.startTime).getTime() < new Date().getTime()
           ) {
-            Alert.alert(
-              strings.alertmessagetitle,
-              'Please choose future time for challenge.',
-            );
+            Alert.alert(strings.alertmessagetitle, strings.chooseFutureTime);
           } else {
             onNextPress();
           }

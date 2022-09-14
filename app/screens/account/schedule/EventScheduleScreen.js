@@ -8,9 +8,10 @@ import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import AuthContext from '../../../auth/context';
 import TCEventCard from '../../../components/Schedule/TCEventCard';
+import {strings} from '../../../../Localization/translation';
+import Verbs from '../../../Constants/Verbs';
 
 const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-// const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July','Aug','Sep','Oct','Nov','Dec'];
 
 export default function EventScheduleScreen({
   onItemPress,
@@ -27,9 +28,6 @@ export default function EventScheduleScreen({
   const [filterData, setFilterData] = useState(null);
 
   useEffect(() => {
-    // const d = new Date(dateString);
-    // var dayName = days[d.getDay()];
-
     let events = eventData.filter(
       (obj) => (obj?.game_id && obj?.game) || obj?.title,
     );
@@ -52,10 +50,18 @@ export default function EventScheduleScreen({
       );
     }
 
-    if (['player', 'user', 'club'].includes(authContext.entity.role)) {
+    if (
+      [
+        Verbs.entityTypePlayer,
+        Verbs.entityTypeUser,
+        Verbs.entityTypeClub,
+      ].includes(authContext.entity.role)
+    ) {
       if (
         filterOpetions.sort === 2 &&
-        ['player', 'user'].includes(authContext.entity.role)
+        [Verbs.entityTypePlayer, Verbs.entityTypeUser].includes(
+          authContext.entity.role,
+        )
       ) {
         if (selectedFilter.title.sport !== 'All') {
           if (selectedFilter.title === 'Matches') {
@@ -138,7 +144,6 @@ export default function EventScheduleScreen({
         filData.push(temp);
       }
       setFilterData([...filData]);
-      console.log('resultresult', filData);
     } else {
       setFilterData([]);
     }
@@ -152,14 +157,13 @@ export default function EventScheduleScreen({
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
             <View style={{marginTop: 15}}>
-              <Text style={styles.noEventText}>No Events</Text>
+              <Text style={styles.noEventText}>{strings.noEventText}</Text>
               <Text style={styles.dataNotFoundText}>
-                New events will appear here.
+                {strings.newEventWillAppearHereText}
               </Text>
             </View>
           }
           renderItem={({item}) => {
-            console.log('render event item:=>', item);
             if (item.cal_type === 'event') {
               if (item?.game_id && item?.game) {
                 return (

@@ -11,6 +11,7 @@ import {
   Alert,
   SafeAreaView,
 } from 'react-native';
+import {format} from 'react-string-format';
 
 import {patchGroup} from '../../../api/Groups';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
@@ -21,9 +22,15 @@ import {strings} from '../../../../Localization/translation';
 import AuthContext from '../../../auth/context';
 import TCGradientButton from '../../../components/TCGradientButton';
 import * as Utility from '../../../utils';
+import Verbs from '../../../Constants/Verbs';
 
 let entity = {};
-const privacyData = ['everyone', 'followers', 'members', 'admins'];
+const privacyData = [
+  Verbs.privacyTypeEveryone,
+  Verbs.privacyTypeFollowers,
+  Verbs.privacyTypeMembers,
+  Verbs.privacyTypeAdmins,
+];
 export default function MembersViewPrivacyScreen({navigation}) {
   // For activity indigator
   const [loading, setloading] = useState(false);
@@ -50,24 +57,25 @@ export default function MembersViewPrivacyScreen({navigation}) {
       privacyData?.findIndex((item) => item === privacy);
     setMember(getIndexFromPrivacy(privacyMember));
     setFollower(getIndexFromPrivacy(privacyFollowers));
-    if (privacyProfile === 'members') setProfile(0);
+    if (privacyProfile === Verbs.privacyTypeMembers) setProfile(0);
     else setProfile(1);
   };
   const sendClubSetting = async () => {
     setloading(true);
     const bodyParams = {
       privacy_members:
-        (member === 0 && 'everyone') ||
-        (member === 1 && 'followers') ||
-        (member === 2 && 'members') ||
-        (member === 3 && 'admins'),
+        (member === 0 && Verbs.privacyTypeEveryone) ||
+        (member === 1 && Verbs.privacyTypeFollowers) ||
+        (member === 2 && Verbs.privacyTypeMembers) ||
+        (member === 3 && Verbs.privacyTypeAdmins),
       privacy_followers:
-        (follower === 0 && 'everyone') ||
-        (follower === 1 && 'followers') ||
-        (follower === 2 && 'members') ||
-        (follower === 3 && 'admins'),
+        (follower === 0 && Verbs.privacyTypeEveryone) ||
+        (follower === 1 && Verbs.privacyTypeFollowers) ||
+        (follower === 2 && Verbs.privacyTypeMembers) ||
+        (follower === 3 && Verbs.privacyTypeAdmins),
       privacy_profile:
-        (profile === 0 && 'members') || (profile === 1 && 'admins'),
+        (profile === 0 && Verbs.privacyTypeMembers) ||
+        (profile === 1 && Verbs.privacyTypeAdmins),
     };
     console.log('BODY :', bodyParams);
     patchGroup(switchUser.uid, bodyParams, authContext)
@@ -94,12 +102,11 @@ export default function MembersViewPrivacyScreen({navigation}) {
     <SafeAreaView style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
       <ScrollView>
-        <Text style={styles.titleStyle}>Connections</Text>
+        <Text style={styles.titleStyle}>{strings.connections}</Text>
         <View style={styles.privacyCell}>
-          <Text
-            style={
-              styles.privacyNameStyle
-            }>{`Who can see members in ${switchUser.role} connections?`}</Text>
+          <Text style={styles.privacyNameStyle}>
+            {format(strings.whoCanSeeMembersText, switchUser.role)}
+          </Text>
           <View style={styles.radioMainView}>
             <TouchableOpacity
               style={styles.radioButtonView}
@@ -110,7 +117,7 @@ export default function MembersViewPrivacyScreen({navigation}) {
                 }
                 style={styles.radioImage}
               />
-              <Text style={styles.radioText}>Everyone</Text>
+              <Text style={styles.radioText}>{strings.everyoneTitleText}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.radioButtonView}
@@ -121,7 +128,7 @@ export default function MembersViewPrivacyScreen({navigation}) {
                 }
                 style={styles.radioImage}
               />
-              <Text style={styles.radioText}>Followers</Text>
+              <Text style={styles.radioText}>{strings.followerTitleText}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.radioButtonView}
@@ -132,7 +139,9 @@ export default function MembersViewPrivacyScreen({navigation}) {
                 }
                 style={styles.radioImage}
               />
-              <Text style={styles.radioText}>Club {'&'} Team Members</Text>
+              <Text style={styles.radioText}>
+                {strings.clubTeamMembersText}
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.radioButtonView}
@@ -143,16 +152,17 @@ export default function MembersViewPrivacyScreen({navigation}) {
                 }
                 style={styles.radioImage}
               />
-              <Text style={styles.radioText}>Only Club {'&'} Team Admins</Text>
+              <Text style={styles.radioText}>
+                {strings.onlyClubTeamAdminsText}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
 
         <View style={styles.privacyCell}>
-          <Text
-            style={
-              styles.privacyNameStyle
-            }>{`Who can see followers in ${switchUser.role} connections?`}</Text>
+          <Text style={styles.privacyNameStyle}>
+            {format(strings.whoCanSeeFollowersText, switchUser.role)}
+          </Text>
           <View style={styles.radioMainView}>
             <TouchableOpacity
               style={styles.radioButtonView}
@@ -163,7 +173,7 @@ export default function MembersViewPrivacyScreen({navigation}) {
                 }
                 style={styles.radioImage}
               />
-              <Text style={styles.radioText}>Everyone</Text>
+              <Text style={styles.radioText}>{strings.everyoneTitleText}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.radioButtonView}
@@ -174,7 +184,7 @@ export default function MembersViewPrivacyScreen({navigation}) {
                 }
                 style={styles.radioImage}
               />
-              <Text style={styles.radioText}>Followers</Text>
+              <Text style={styles.radioText}>{strings.followerTitleText}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.radioButtonView}
@@ -185,7 +195,9 @@ export default function MembersViewPrivacyScreen({navigation}) {
                 }
                 style={styles.radioImage}
               />
-              <Text style={styles.radioText}>Club {'&'} Team Members</Text>
+              <Text style={styles.radioText}>
+                {strings.clubTeamMembersText}
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.radioButtonView}
@@ -196,14 +208,16 @@ export default function MembersViewPrivacyScreen({navigation}) {
                 }
                 style={styles.radioImage}
               />
-              <Text style={styles.radioText}>Only Club {'&'} Team Admins</Text>
+              <Text style={styles.radioText}>
+                {strings.onlyClubTeamAdminsText}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
 
         <View style={styles.privacyCell}>
           <Text style={styles.privacyNameStyle}>
-            Who can see a member profile?
+            {strings.whoCanSeeMemberProfileText}
           </Text>
           <View style={styles.radioMainView}>
             <TouchableOpacity
@@ -215,7 +229,7 @@ export default function MembersViewPrivacyScreen({navigation}) {
                 }
                 style={styles.radioImage}
               />
-              <Text style={styles.radioText}>Club Members</Text>
+              <Text style={styles.radioText}>{strings.clubMembersRadio}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.radioButtonView}
@@ -226,7 +240,9 @@ export default function MembersViewPrivacyScreen({navigation}) {
                 }
                 style={styles.radioImage}
               />
-              <Text style={styles.radioText}>Only Club {'&'} Team Admins</Text>
+              <Text style={styles.radioText}>
+                {strings.onlyClubTeamAdminsText}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>

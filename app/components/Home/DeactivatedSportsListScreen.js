@@ -265,7 +265,7 @@ export default function DeactivatedSportsListScreen({navigation}) {
       </View>
       <ActionSheet
         ref={actionSheet}
-        options={['Sports Activity Tags Order', 'Cancel']}
+        options={['Sports Activity Tags Order', strings.cancel]}
         cancelButtonIndex={1}
         onPress={(index) => {
           if (index === 0) {

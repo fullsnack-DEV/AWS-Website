@@ -17,6 +17,7 @@ import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 
 import Modal from 'react-native-modal';
 
+import {format} from 'react-string-format';
 import images from '../../../Constants/ImagePath';
 import {strings} from '../../../../Localization/translation';
 import colors from '../../../Constants/Colors';
@@ -113,27 +114,21 @@ export default function RegisterReferee({navigation}) {
 
   const checkValidation = () => {
     if (!sports) {
-      Alert.alert(strings.appName, 'Sports cannot be blank');
+      Alert.alert(strings.appName, strings.sportcannotbeblank);
       return false;
     }
     if (selectedLanguages.length <= 0) {
-      Alert.alert(strings.appName, 'Language cannot be blank');
+      Alert.alert(strings.appName, strings.languageCannotBlank);
       return false;
     }
     if (description === '') {
-      Alert.alert(strings.appName, 'Description cannot be blank');
+      Alert.alert(strings.appName, strings.descriptionCanNotBlank);
       return false;
     }
-    console.log('refereesData', refereesData);
-
-    console.log('sports', sports);
 
     const isExist = refereesData?.filter((item) => item?.sport === sports);
     if (isExist?.length) {
-      Alert.alert(
-        strings.appName,
-        `You are already registrated as a referee in ${sports}`,
-      );
+      Alert.alert(strings.appName, format(strings.youAlreadyRegister, sports));
       return false;
     }
     return true;
@@ -304,7 +299,7 @@ export default function RegisterReferee({navigation}) {
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
               }}>
-              Languages
+              {strings.languages}
             </Text>
             <TouchableOpacity
               onPress={() => {
@@ -324,7 +319,7 @@ export default function RegisterReferee({navigation}) {
                   fontFamily: fonts.RMedium,
                   color: colors.lightBlackColor,
                 }}>
-                Apply
+                {strings.apply}
               </Text>
             </TouchableOpacity>
           </View>
@@ -386,7 +381,7 @@ export default function RegisterReferee({navigation}) {
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
               }}>
-              Sports
+              {strings.sportsTitleText}
             </Text>
             <TouchableOpacity
               onPress={() => {
@@ -401,7 +396,7 @@ export default function RegisterReferee({navigation}) {
                   fontFamily: fonts.RMedium,
                   color: colors.lightBlackColor,
                 }}>
-                Apply
+                {strings.apply}
               </Text>
             </TouchableOpacity>
           </View>

@@ -74,7 +74,7 @@ export default function AddBirthdayScreen({navigation, route}) {
             const userParams = {birthday: new Date(dateValue).getTime() / 1000};
             navigateToGenderScreen(userParams);
           }}>
-          Next
+          {strings.next}
         </Text>
       ),
     });
@@ -89,14 +89,11 @@ export default function AddBirthdayScreen({navigation, route}) {
     setMaxDateValue(maxdate);
   }, []);
   const navigateToGenderScreen = (userParams) => {
-    console.log('route?.params?.signupInfo', route?.params?.signupInfo);
-    console.log('userParams', userParams);
-
     const profileData = {
       ...route?.params?.signupInfo,
       birthday: userParams.birthday,
     };
-    console.log('Profile data gender ', profileData);
+
     navigation.navigate('ChooseGenderScreen', {
       signupInfo: {...profileData},
     });
@@ -160,16 +157,6 @@ export default function AddBirthdayScreen({navigation, route}) {
           <Text style={styles.birthDateChangeNote}>
             {strings.birthDateChangeNote}
           </Text>
-          {/* <TCButton
-          title={strings.continueCapTitle}
-          onPress={() => {
-            const userParams = {birthday: new Date(dateValue).getTime() / 1000};
-            updateProfile(userParams, () => {
-              navigation.navigate('ChooseGenderScreen');
-            });
-          }}
-          extraStyle={{marginTop: 50}}
-        /> */}
         </View>
       </SafeAreaView>
     </LinearGradient>

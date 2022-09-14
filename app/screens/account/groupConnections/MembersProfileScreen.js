@@ -19,6 +19,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
+import {format} from 'react-string-format';
 
 import ActionSheet from 'react-native-actionsheet';
 import {getGroupMembersInfo, deleteMember} from '../../../api/Groups';
@@ -38,27 +39,13 @@ import GroupMembership from '../../../components/groupConnections/GroupMembershi
 import TCInnerLoader from '../../../components/TCInnerLoader';
 import TCMemberProfile from '../../../components/TCMemberProfile';
 import {getUserIndex} from '../../../api/elasticSearch';
+import {shortMonthNames} from '../../../utils/constant';
+import Verbs from '../../../Constants/Verbs';
 
 let entity = {};
 export default function MembersProfileScreen({navigation, route}) {
-  const monthNames = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'June',
-    'July',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
-  ];
   const actionSheet = useRef();
   const authContext = useContext(AuthContext);
-
-  console.log('authcontext', authContext);
 
   const isFocused = useIsFocused();
   const [loading, setloading] = useState(false);
@@ -102,16 +89,9 @@ export default function MembersProfileScreen({navigation, route}) {
 
   useEffect(() => {
     if (isFocused) {
-      console.log('--useEffect called--');
       getMemberInformation();
     }
   }, [isFocused]);
-
-  // useEffect(() => {
-  //   if(route?.params?.modifiedMemberDetail){
-  //     setMemberDetail({...memberDetail,...route?.params?.modifiedMemberDetail})
-  //   }
-  // }, [memberDetail, route?.params?.modifiedMemberDetail]);
 
   const getAge = (dateString) => {
     const today = new Date();
@@ -132,15 +112,14 @@ export default function MembersProfileScreen({navigation, route}) {
 
     getGroupMembersInfo(groupID, memberID, authContext)
       .then((response) => {
-        console.log('PROFILE RESPONSE11::', response.payload);
         setMemberDetail(response?.payload);
 
-        if (entity.role === 'team') {
+        if (entity.role === Verbs.entityTypeTeam) {
           setEditProfile(true);
           setEditBasicInfo(true);
           setEditTeam(true);
           setEditMembership(true);
-        } else if (entity.role === 'club') {
+        } else if (entity.role === Verbs.entityTypeClub) {
           if (response?.payload?.group?.parent_groups?.includes(entity.uid)) {
             setEditProfile(true);
             setEditBasicInfo(true);
@@ -181,15 +160,13 @@ export default function MembersProfileScreen({navigation, route}) {
 
   const getMemberPhoneNumber = () => {
     let numbersString;
-    console.log('memberDetail', memberDetail);
     if (memberDetail?.phone_numbers) {
-      console.log('PHONE NUMBER ARRAY::', memberDetail?.phone_numbers);
       const numbers = memberDetail?.phone_numbers.map(
         (e) => `${e.country_code} ${e.phone_number}`,
       );
       numbersString = numbers.join('\n');
     } else {
-      numbersString = 'N/A';
+      numbersString = strings.NAText;
     }
     return numbersString;
   };
@@ -266,23 +243,21 @@ export default function MembersProfileScreen({navigation, route}) {
             </View>
             {memberDetail?.group?.updatedBy && (
               <Text style={styles.undatedTimeText} numberOfLines={2}>
-                Joined club on{' '}
-                {
-                  monthNames[
+                {format(
+                  strings.joinedClubOnText,
+                  shortMonthNames[
                     new Date(memberDetail.group.joined_date).getMonth()
-                  ]
-                }{' '}
-                {new Date(memberDetail.group.joined_date).getDate()} ,
-                {new Date(memberDetail.group.joined_date).getFullYear()}
-                {'\n'}Last updated by {memberDetail.group.updatedBy.first_name}{' '}
-                {memberDetail.group.updatedBy.last_name} on{' '}
-                {
-                  monthNames[
+                  ],
+                  new Date(memberDetail.group.joined_date).getDate(),
+                  new Date(memberDetail.group.joined_date).getFullYear(),
+                  memberDetail.group.updatedBy.first_name,
+                  memberDetail.group.updatedBy.last_name,
+                  shortMonthNames[
                     new Date(memberDetail.group.updated_date).getMonth()
-                  ]
-                }{' '}
-                {new Date(memberDetail.group.updated_date).getDate()} ,
-                {new Date(memberDetail.group.updated_date).getFullYear()}
+                  ],
+                  new Date(memberDetail.group.updated_date).getDate(),
+                  new Date(memberDetail.group.updated_date).getFullYear(),
+                )}
               </Text>
             )}
             {!memberDetail.connected && (
@@ -307,7 +282,6 @@ export default function MembersProfileScreen({navigation, route}) {
                   };
 
                   getUserIndex(getUserByEmailQuery).then((players) => {
-                    console.log('getUserByEmailQuery', players);
                     setloading(false);
                     if (players?.length > 0) {
                       // const signUpUser = players.filter((e) => e.signedup_user)
@@ -326,7 +300,7 @@ export default function MembersProfileScreen({navigation, route}) {
                 }}>
                 <View style={styles.inviteButtonContainer}>
                   <Text style={styles.inviteTextStyle}>
-                    Invite or Connect to an Account
+                    {strings.inviteOrConnectAccountText}
                   </Text>
                 </View>
               </TouchableOpacity>
@@ -335,7 +309,9 @@ export default function MembersProfileScreen({navigation, route}) {
           <TCThickDivider marginTop={20} />
           <View>
             <View style={styles.sectionEditView}>
-              <Text style={styles.basicInfoTitle}>Basic Info</Text>
+              <Text style={styles.basicInfoTitle}>
+                {strings.basicinfotitle}
+              </Text>
               {editBasicInfo && (
                 <TouchableWithoutFeedback
                   onPress={() =>
@@ -348,12 +324,12 @@ export default function MembersProfileScreen({navigation, route}) {
               )}
             </View>
             <TCInfoField
-              title={'E-mail'}
-              value={memberDetail.email ? memberDetail.email : 'N/A'}
+              title={strings.emailPlaceHolder}
+              value={memberDetail.email ? memberDetail.email : strings.NAText}
             />
             <TCInfoField title={'Phone'} value={getMemberPhoneNumber()} />
             <TCInfoField
-              title={'Address'}
+              title={strings.addressPlaceholder}
               value={
                 memberDetail.street_address
                   ? `${memberDetail?.street_address}, ${memberDetail?.city}, ${memberDetail?.state_abbr}, ${memberDetail?.country}`
@@ -361,32 +337,36 @@ export default function MembersProfileScreen({navigation, route}) {
                     memberDetail?.state_abbr &&
                     memberDetail?.country
                   ? `${memberDetail?.city}, ${memberDetail?.state_abbr}, ${memberDetail?.country}`
-                  : 'N/A'
+                  : strings.NAText
               }
             />
             <TCInfoField
-              title={'Age'}
+              title={strings.age}
               value={
                 memberDetail?.birthday
                   ? getAge(new Date(memberDetail?.birthday))
-                  : 'N/A'
+                  : strings.NAText
               }
             />
             <TCInfoField
-              title={'Birthday'}
+              title={strings.birthDatePlaceholder}
               value={
                 memberDetail.birthday
                   ? `${
-                      monthNames[new Date(memberDetail?.birthday).getMonth()]
+                      shortMonthNames[
+                        new Date(memberDetail?.birthday).getMonth()
+                      ]
                     } ${new Date(memberDetail?.birthday).getDate()} ,${new Date(
                       memberDetail?.birthday,
                     ).getFullYear()}`
-                  : 'N/A'
+                  : strings.NAText
               }
             />
             <TCInfoField
               title={strings.gender}
-              value={memberDetail?.gender ? memberDetail?.gender : 'N/A'}
+              value={
+                memberDetail?.gender ? memberDetail?.gender : strings.NAText
+              }
             />
           </View>
           <TCThickDivider marginTop={20} />
@@ -394,7 +374,7 @@ export default function MembersProfileScreen({navigation, route}) {
             <>
               <View>
                 <View style={styles.sectionEditView}>
-                  <Text style={styles.basicInfoTitle}>Family</Text>
+                  <Text style={styles.basicInfoTitle}>{strings.family}</Text>
                   <TouchableWithoutFeedback>
                     <Image
                       source={images.editSection}
@@ -404,7 +384,10 @@ export default function MembersProfileScreen({navigation, route}) {
                 </View>
                 <View style={styles.familyView}>
                   <TCProfileView type={'medium'} />
-                  <TCMessageButton title={'Email'} color={colors.googleColor} />
+                  <TCMessageButton
+                    title={strings.emailPlaceHolder}
+                    color={colors.googleColor}
+                  />
                 </View>
                 <TCThinDivider />
                 <View style={styles.familyView}>
@@ -422,20 +405,12 @@ export default function MembersProfileScreen({navigation, route}) {
 
             <View style={styles.sectionEditView}>
               <Text style={styles.basicInfoTitle}>
-                {entity.role === 'team' ? 'Roles & Status' : 'Membership'}
+                {entity.role === Verbs.entityTypeTeam
+                  ? strings.rolesStatusText
+                  : strings.membershipTitle}
               </Text>
-              {/* {editMembership && (
-                <TouchableWithoutFeedback
-                  onPress={() =>
-                    navigation.navigate('EditClubNotesScreen', {
-                      memberInfo: memberDetail.group,
-                    })
-                  }>
-                  <Image source={images.editSection} style={styles.editImage} />
-                </TouchableWithoutFeedback>
-              )} */}
             </View>
-            {memberDetail.group && entity.role === 'club' && (
+            {memberDetail.group && entity.role === Verbs.entityTypeClub && (
               <GroupMembership
                 groupData={memberDetail.group}
                 switchID={entity.uid}
@@ -464,7 +439,7 @@ export default function MembersProfileScreen({navigation, route}) {
             )}
             <FlatList
               data={
-                entity.role === 'club'
+                entity.role === Verbs.entityTypeClub
                   ? memberDetail?.teams
                   : [
                       {
@@ -504,7 +479,9 @@ export default function MembersProfileScreen({navigation, route}) {
           <TCThickDivider marginTop={20} />
           <View>
             <View style={styles.sectionEditView}>
-              <Text style={styles.basicInfoTitle}>Note</Text>
+              <Text style={styles.basicInfoTitle}>
+                {strings.writeNotesPlaceholder}
+              </Text>
               {editMembership && (
                 <TouchableWithoutFeedback
                   onPress={() =>
@@ -524,16 +501,16 @@ export default function MembersProfileScreen({navigation, route}) {
             ref={actionSheet}
             // title={'News Feed Post'}
             options={
-              switchUser.role === 'team'
+              switchUser.role === Verbs.entityTypeTeam
                 ? [
-                    'Membership & Admin Authority',
-                    'Delete Member from Team',
-                    'Cancel',
+                    strings.membershipAdminAuthText,
+                    strings.deleteMemberFromTeamText,
+                    strings.cancel,
                   ]
                 : [
-                    'Membership & Admin Authority',
-                    'Delete Member from Club',
-                    'Cancel',
+                    strings.membershipAdminAuthText,
+                    strings.deleteMemberFromClubText,
+                    strings.cancel,
                   ]
             }
             cancelButtonIndex={2}
@@ -543,39 +520,24 @@ export default function MembersProfileScreen({navigation, route}) {
                 navigation.navigate('EditMemberAuthInfoScreen', {
                   groupMemberDetail: memberDetail,
                 });
-              }
-              // else if (index === 1) {
-              //   Alert.alert(
-              //     'The basic info in this profile will be updated with the info in the member’s account.',
-              //     '',
-              //     [
-              //       {
-              //         text: 'Yes',
-              //         onPress: async () => {
-              //           getMemberInformation();
-              //         },
-              //       },
-              //       {
-              //         text: 'Cancel',
-              //         style: 'cancel',
-              //       },
-              //     ],
-              //     {cancelable: false},
-              //   );
-              // }
-              else if (index === 1) {
-                // Alert.alert('ok')
+              } else if (index === 1) {
                 Alert.alert(
                   strings.alertmessagetitle,
-                  `Do you want to remove ${memberDetail.first_name} ${memberDetail.last_name} from ${switchUser.obj.group_name}?`,
+                  format(
+                    strings.doYouWantToRemoText_dy,
+                    memberDetail.first_name,
+                    memberDetail.last_name,
+                    switchUser.obj.group_name,
+                  ),
+
                   [
                     {
-                      text: 'Cancel',
+                      text: strings.cancel,
                       onPress: () => console.log('Cancel cancel'),
                       style: 'cancel',
                     },
                     {
-                      text: 'Ok',
+                      text: strings.okTitleText,
                       onPress: () =>
                         deleteMemberProfile(
                           switchUser.uid,

@@ -7,6 +7,7 @@ import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 import {strings} from '../../../../Localization/translation';
+import Verbs from '../../../Constants/Verbs';
 
 export default function PlayInProfileViewSection({
   isPatch = false,
@@ -34,9 +35,9 @@ export default function PlayInProfileViewSection({
               colors={[colors.themeColor, colors.darkThemeColor]}
               style={styles.patchStyle}>
               <Text style={styles.patchText}>
-                {patchType === 'club'
-                  ? 'Looking for club!'
-                  : 'Looking for team!'}
+                {patchType === Verbs.entityTypeClub
+                  ? strings.lookingForClubText
+                  : strings.lookingForTeamText}
               </Text>
             </LinearGradient>
           )}

@@ -16,6 +16,7 @@ import {ScrollView} from 'react-native-gesture-handler';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import Header from '../../components/Home/Header';
+import {strings} from '../../../Localization/translation';
 
 function EditEventModal({
   isModalVisible,
@@ -58,7 +59,7 @@ function EditEventModal({
                     fontFamily: fonts.RRegular,
                     color: colors.lightBlackColor,
                   }}>
-                  Done
+                  {strings.done}
                 </Text>
               </TouchableOpacity>
             }

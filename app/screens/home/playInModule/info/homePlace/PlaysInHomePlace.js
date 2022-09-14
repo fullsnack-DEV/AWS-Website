@@ -65,7 +65,11 @@ const PlaysInHomePlace = ({
       </EditEventItem>
       <ActionSheet
         ref={actionSheet}
-        options={['Edit Home Place', strings.privacySettingText, 'Cancel']}
+        options={[
+          strings.editHomePlaceText,
+          strings.privacySettingText,
+          strings.cancel,
+        ]}
         cancelButtonIndex={2}
         onPress={(index) => {
           if (index === 0) setEditModalType(strings.homePlaceTitle);
@@ -134,7 +138,9 @@ const EditPlaysInModal = ({
       visible={visible}
       onClose={closeEditPlayInModal}
       heading={`${
-        editModalType !== strings.privacySettings ? 'Edit ' : ''
+        editModalType !== strings.privacySettings
+          ? `${strings.editTitleText} `
+          : ''
       }${editModalType}`}
       onSavePress={onSavePress}>
       <ModalLocationSearch

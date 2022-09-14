@@ -25,6 +25,7 @@ import {commentPostTimeCalculate} from '../../Constants/LoaderImages';
 
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
+import {strings} from '../../../Localization/translation';
 
 function RefereeReviewItem({
   navigation,
@@ -301,7 +302,7 @@ function RefereeReviewItem({
         <ActionSheet
           ref={actionSheet}
           title={'News Feed Post'}
-          options={['Edit Post', 'Delete Post', 'Cancel']}
+          options={['Edit Post', 'Delete Post', strings.cancel]}
           cancelButtonIndex={2}
           destructiveButtonIndex={1}
           onPress={(index) => {

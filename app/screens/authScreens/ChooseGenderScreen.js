@@ -34,6 +34,7 @@ import fonts from '../../Constants/Fonts';
 import AuthContext from '../../auth/context';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import {getLocationNameWithLatLong, searchNearByCity} from '../../api/External';
+import Verbs from '../../Constants/Verbs';
 
 export default function ChooseGenderScreen({navigation, route}) {
   const [currentLocation, setCurrentLocation] = useState();
@@ -42,23 +43,20 @@ export default function ChooseGenderScreen({navigation, route}) {
   const [enableNext, setEnableNext] = useState(false);
 
   const authContext = useContext(AuthContext);
-  console.log('authContextauthContext', authContext);
   const [selected, setSelected] = useState(
     authContext?.entity?.obj?.gender
-      ? (authContext?.entity?.obj?.gender === 'male' && 0) ||
-          (authContext?.entity?.obj?.gender === 'female' && 1) ||
-          (authContext?.entity?.obj?.gender === 'other' && 2)
+      ? (authContext?.entity?.obj?.gender === Verbs.male && 0) ||
+          (authContext?.entity?.obj?.gender === Verbs.female && 1) ||
+          (authContext?.entity?.obj?.gender === strings.other && 2)
       : 0,
   );
   const [loading, setLoading] = useState(false);
   const navigateToChooseLocationScreen = useCallback(
     (genderParam) => {
       setLoading(false);
-      console.log('basicInfo=====>', route?.params?.signupInfo);
       const uniqueObjArray = [
         ...new Map(nearCity.map((item) => [item.description, item])).values(),
       ];
-      console.log('uniqueObjArray===>', uniqueObjArray);
       setTimeout(() => {
         navigation.navigate('ChooseLocationScreen', {
           signupInfo: {
@@ -75,7 +73,6 @@ export default function ChooseGenderScreen({navigation, route}) {
   );
   const fetchNearestCity = useCallback(
     (gender) => {
-      console.log('Latlong', latLong.coords);
       searchNearByCity(
         latLong.coords.latitude,
         latLong.coords.longitude,
@@ -85,7 +82,6 @@ export default function ChooseGenderScreen({navigation, route}) {
         .then((response) => {
           const places = []; // This Array WIll contain locations received from google
           const cities = [];
-          console.log('Places=====>', response.results);
           for (const googlePlace of response.results) {
             const place = {};
             const lat = googlePlace.geometry.location.lat;
@@ -99,11 +95,6 @@ export default function ChooseGenderScreen({navigation, route}) {
               coordinate.longitude,
               authContext,
             ).then((res) => {
-              console.log('res====>', res);
-              console.log(
-                'Lat/long to address::=>',
-                res.results[0].address_components,
-              );
               let stateAbbr, city, country;
               // eslint-disable-next-line array-callback-return
               res.results[0].address_components.map((e) => {
@@ -126,27 +117,13 @@ export default function ChooseGenderScreen({navigation, route}) {
             place.placeId = googlePlace.place_id;
             place.placeName = googlePlace.name;
             places.push(place);
-            console.log('places--->', places);
-
-            // const position = { coords: { latitude: 49.11637199697782, longitude: -122.7776695216056 } }
           }
           setNearCity(cities);
           setLoading(false);
 
-          console.log('nearCity--->', nearCity);
-          // navigation.navigate('ChooseLocationScreen', {
-          //   signupInfo: {
-          //     ...route?.params?.signupInfo,
-          //     gender,
-          //     location: currentLocation,
-          //     locationPosition: latLong,
-          //     nearCity,
-          //   },
-          // });
           navigateToChooseLocationScreen(gender);
         })
         .catch((e) => {
-          console.log('cathh ---error', e);
           navigateToChooseLocationScreen(gender);
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
@@ -157,66 +134,59 @@ export default function ChooseGenderScreen({navigation, route}) {
   );
 
   useLayoutEffect(() => {
-    console.log('000000', nearCity);
     navigation.setOptions({
-      headerRight: () => (
-        <Text
-          testID={'next-signupGender-button'}
-          style={styles.nextButtonStyle}
-          onPress={async () => {
-            let gender = {};
-            if (selected === 0) gender = 'male';
-            else if (selected === 1) gender = 'female';
-            else if (selected === 2) gender = 'other';
+      headerRight: () =>
+        enableNext ? (
+          <Text
+            testID={'next-signupGender-button'}
+            style={styles.nextButtonStyle}
+            onPress={async () => {
+              let gender = {};
+              if (selected === 0) gender = Verbs.male;
+              else if (selected === 1) gender = Verbs.female;
+              else if (selected === 2) gender = strings.other;
 
-            check(
-              PERMISSIONS.IOS.LOCATION_ALWAYS,
-              PERMISSIONS.IOS.LOCATION_WHEN_IN_USE,
-            )
-              .then((result) => {
-                switch (result) {
-                  case RESULTS.UNAVAILABLE:
-                    console.log(
-                      'This feature is not available (on this device / in this context)',
-                    );
-                    navigateToChooseLocationScreen(gender);
-                    break;
-                  case RESULTS.DENIED:
-                    console.log(
-                      'The permission has not been requested / is denied but requestable',
-                    );
-                    navigateToChooseLocationScreen(gender);
-                    break;
-                  case RESULTS.LIMITED:
-                    console.log(
-                      'The permission is limited: some actions are possible',
-                    );
-                    navigateToChooseLocationScreen(gender);
-                    break;
-                  case RESULTS.GRANTED:
-                    console.log('The permission is granted');
-                    setLoading(true);
-                    fetchNearestCity(gender);
+              check(
+                PERMISSIONS.IOS.LOCATION_ALWAYS,
+                PERMISSIONS.IOS.LOCATION_WHEN_IN_USE,
+              )
+                .then((result) => {
+                  switch (result) {
+                    case RESULTS.UNAVAILABLE:
+                      console.log(strings.thisFeaturesNotAvailableText);
+                      navigateToChooseLocationScreen(gender);
+                      break;
+                    case RESULTS.DENIED:
+                      console.log(strings.permissionNotRequested);
+                      navigateToChooseLocationScreen(gender);
+                      break;
+                    case RESULTS.LIMITED:
+                      console.log(strings.permissionLimitedText);
+                      navigateToChooseLocationScreen(gender);
+                      break;
+                    case RESULTS.GRANTED:
+                      setLoading(true);
+                      fetchNearestCity(gender);
 
-                    break;
-                  case RESULTS.BLOCKED:
-                    console.log(
-                      'The permission is denied and not requestable anymore',
-                    );
-                    navigateToChooseLocationScreen(gender);
-                    break;
-                  default:
-                    navigateToChooseLocationScreen(gender);
-                }
-              })
-              .catch((error) => {
-                console.log('error', error);
-                // …
-              });
-          }}>
-          Next
-        </Text>
-      ),
+                      break;
+                    case RESULTS.BLOCKED:
+                      console.log(strings.permissionDenitedText);
+                      navigateToChooseLocationScreen(gender);
+                      break;
+                    default:
+                      navigateToChooseLocationScreen(gender);
+                  }
+                })
+                .catch((error) => {
+                  console.log('error', error);
+                  // …
+                });
+            }}>
+            {strings.next}
+          </Text>
+        ) : (
+          <View></View>
+        ),
       headerLeft: () => (
         <TouchableOpacity
           onPress={() => {
@@ -246,35 +216,30 @@ export default function ChooseGenderScreen({navigation, route}) {
     if (Platform.OS === 'android') {
       requestPermission();
     } else {
-      console.log('111');
       request(
         PERMISSIONS.IOS.LOCATION_ALWAYS,
         PERMISSIONS.IOS.LOCATION_WHEN_IN_USE,
       ).then((result) => {
         switch (result) {
           case RESULTS.UNAVAILABLE:
-            console.log(
-              'This feature is not available (on this device / in this context)',
-            );
+            console.log(strings.thisFeaturesNotAvailableText);
             setEnableNext(true);
             break;
           case RESULTS.DENIED:
-            console.log(
-              'The permission has not been requested / is denied but requestable',
-            );
+            console.log(strings.permissionNotRequested);
             setEnableNext(true);
             break;
           case RESULTS.LIMITED:
-            console.log('The permission is limited: some actions are possible');
+            console.log(strings.permissionLimitedText);
             setEnableNext(true);
             break;
           case RESULTS.GRANTED:
-            console.log('The permission is granted');
+            console.log(strings.permissionGrantedText);
             setLoading(true);
             getLocation();
             break;
           case RESULTS.BLOCKED:
-            console.log('The permission is denied and not requestable anymore');
+            console.log(strings.permissionDenitedText);
             setEnableNext(true);
             break;
           default:
@@ -287,19 +252,12 @@ export default function ChooseGenderScreen({navigation, route}) {
     Geolocation.requestAuthorization();
     Geolocation.getCurrentPosition(
       (position) => {
-        console.log('Lat/long to position::=>', position);
-        console.log('222');
-
         setlatLong(position);
         getLocationNameWithLatLong(
           position?.coords?.latitude,
           position?.coords?.longitude,
           authContext,
         ).then((res) => {
-          console.log(
-            'Lat/long to address::=>',
-            res.results[0].address_components,
-          );
           let stateAbbr, city, country;
           // eslint-disable-next-line array-callback-return
           res.results[0].address_components.map((e) => {
@@ -311,16 +269,13 @@ export default function ChooseGenderScreen({navigation, route}) {
               country = e.long_name;
             }
           });
-          console.log('333');
           setCurrentLocation({stateAbbr, city, country});
           setLoading(false);
           setEnableNext(true);
         });
-        console.log('444');
         setLoading(false);
       },
       (error) => {
-        console.log('555');
         setLoading(false);
         setEnableNext(true);
         // See error code charts below.
@@ -335,7 +290,6 @@ export default function ChooseGenderScreen({navigation, route}) {
       PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
     ])
       .then((result) => {
-        console.log('Data :::::', JSON.stringify(result));
         if (
           result['android.permission.ACCESS_COARSE_LOCATION'] &&
           result['android.permission.ACCESS_FINE_LOCATION'] === 'granted'
@@ -378,26 +332,6 @@ export default function ChooseGenderScreen({navigation, route}) {
       </TouchableOpacity>
     </View>
   );
-  /*
-  const updateProfile = async (params, callback) => {
-    setLoading(true);
-    updateUserProfile(params, authContext)
-      .then(async (userResoponse) => {
-        const userData = userResoponse?.payload;
-        const entity = {...authContext?.entity};
-        entity.auth.user = userData;
-        entity.obj = userData;
-        await Utility.setStorage('loggedInEntity', {...entity});
-        await Utility.setStorage('authContextEntity', {...entity});
-        await Utility.setStorage('authContextUser', {...userData});
-        await authContext.setUser({...userData});
-        await authContext.setEntity({...entity});
-        setLoading(false);
-        callback();
-      })
-      .catch(() => setLoading(false));
-  };
-*/
 
   return (
     <LinearGradient

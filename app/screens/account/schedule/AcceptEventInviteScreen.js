@@ -14,6 +14,7 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import {format} from 'react-string-format';
 import ActionSheet from 'react-native-actionsheet';
 import FastImage from 'react-native-fast-image';
 import EventItemRender from '../../../components/Schedule/EventItemRender';
@@ -32,6 +33,7 @@ import {getGroupIndex, getUserIndex} from '../../../api/elasticSearch';
 import TCProfileView from '../../../components/TCProfileView';
 import TCGradientButton from '../../../components/TCGradientButton';
 import {acceptRequest, declineRequest} from '../../../api/Notificaitons';
+import Verbs from '../../../Constants/Verbs';
 
 export default function AcceptEventInviteScreen({navigation, route}) {
   const actionSheet = useRef();
@@ -104,7 +106,6 @@ export default function AcceptEventInviteScreen({navigation, route}) {
       getGroupIndex(getGroupDetailQuery)
         .then((res) => {
           setOrganizer(res[0]);
-          console.log('dsfdsfasd', res[0]);
         })
         .catch((e) => {
           setTimeout(() => {
@@ -119,7 +120,6 @@ export default function AcceptEventInviteScreen({navigation, route}) {
           )?.[0];
           setOrganizer(org);
           setGoing(res);
-          console.log('dsfdsfasd', res);
         })
         .catch((e) => {
           setTimeout(() => {
@@ -207,7 +207,7 @@ export default function AcceptEventInviteScreen({navigation, route}) {
               color: colors.lightBlackColor,
             }}>
             {' '}
-            invited you to join the event.
+            {strings.inviteYouToJoinEventText}
           </Text>
         </Text>
 
@@ -328,7 +328,11 @@ export default function AcceptEventInviteScreen({navigation, route}) {
         <View style={styles.sepratorViewStyle} />
         <EventItemRender title={strings.numberOfAttend}>
           <Text style={styles.textValueStyle}>
-            {`MIN ${eventData?.min_attendees}   MAX ${eventData?.max_attendees}`}
+            {format(
+              strings.minMaxText_dy,
+              eventData?.min_attendees,
+              eventData?.max_attendees,
+            )}
           </Text>
         </EventItemRender>
 
@@ -362,7 +366,7 @@ export default function AcceptEventInviteScreen({navigation, route}) {
 
         <View style={styles.sepratorViewStyle} />
         <TCGradientButton
-          title={'JOIN'}
+          title={strings.JOIN}
           onPress={() => {
             onAccept(requestID);
           }}
@@ -380,13 +384,13 @@ export default function AcceptEventInviteScreen({navigation, route}) {
               textAlign: 'center',
               textDecorationLine: 'underline',
             }}>
-            DECLINE
+            {strings.DECLINE}
           </Text>
         </TouchableOpacity>
       </ScrollView>
       <ActionSheet
         ref={actionSheet}
-        options={['Edit', 'Delete', 'Cancel']}
+        options={[strings.edit, strings.delete, strings.cancel]}
         cancelButtonIndex={2}
         destructiveButtonIndex={1}
         onPress={(index) => {
@@ -400,18 +404,18 @@ export default function AcceptEventInviteScreen({navigation, route}) {
             }
           } else if (index === 1) {
             Alert.alert(
-              'Do you want to delete this event ?',
+              strings.deleteThisEventText,
               '',
               [
                 {
-                  text: 'Delete',
+                  text: strings.delete,
                   style: 'destructive',
                   onPress: async () => {
                     setloading(true);
                     const entity = authContext.entity;
                     const uid = entity.uid || entity.auth.user_id;
                     const entityRole =
-                      entity.role === 'user' ? 'users' : 'groups';
+                      entity.role === Verbs.entityTypeUser ? 'users' : 'groups';
                     deleteEvent(entityRole, uid, eventData.cal_id, authContext)
                       .then(() => navigation.goBack())
                       .catch((e) => {
@@ -421,7 +425,7 @@ export default function AcceptEventInviteScreen({navigation, route}) {
                   },
                 },
                 {
-                  text: 'Cancel',
+                  text: strings.cancel,
                   style: 'cancel',
                 },
               ],
@@ -432,7 +436,7 @@ export default function AcceptEventInviteScreen({navigation, route}) {
       />
       <ActionSheet
         ref={editactionsheet}
-        options={['Change Event Color', 'Hide', 'Cancel']}
+        options={[strings.changeEventColor, strings.hide, strings.cancel]}
         cancelButtonIndex={2}
         // destructiveButtonIndex={1}
         onPress={() => {}}

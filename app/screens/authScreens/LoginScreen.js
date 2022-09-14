@@ -57,7 +57,7 @@ const LoginScreen = ({navigation}) => {
   const validate = useCallback(() => {
     if (email === '') {
       setloading(false);
-      Alert.alert('Email cannot be blank');
+      Alert.alert(strings.emailNotBlankText);
       return false;
     }
     if (validateEmail(email) === false) {
@@ -83,7 +83,6 @@ const LoginScreen = ({navigation}) => {
   const getRedirectionScreenName = useCallback(
     (townscupUser) =>
       new Promise((resolve, reject) => {
-        console.log('screen name object:=>', townscupUser);
         if (!townscupUser.birthday) resolve({screen: 'AddBirthdayScreen'});
         else if (!townscupUser.gender) resolve({screen: 'ChooseGenderScreen'});
         else if (!townscupUser.city) resolve({screen: 'ChooseLocationScreen'});
@@ -96,7 +95,7 @@ const LoginScreen = ({navigation}) => {
               country: townscupUser?.country,
             },
           });
-        else reject(new Error({error: 'completed user profile'}));
+        else reject(new Error({error: strings.completeProfile}));
       }),
     [],
   );
@@ -106,7 +105,6 @@ const LoginScreen = ({navigation}) => {
       const entity = {...dummyAuthContext.entity};
       const userData = {...townscupUser};
 
-      console.log('User Data/townscupUser:', townscupUser);
       entity.auth.user = {...userData};
       entity.obj = {...userData};
       await authContext.setTokenData(dummyAuthContext?.tokenData);
@@ -127,7 +125,6 @@ const LoginScreen = ({navigation}) => {
         });
         // eslint-disable-next-line no-underscore-dangle
       } else if (firebaseUser?._user?.emailVerified) {
-        console.log('User Data:', userData);
         getRedirectionScreenName(userData)
           .then((responseScreen) => {
             navigation.replace(responseScreen?.screen, {
@@ -140,13 +137,11 @@ const LoginScreen = ({navigation}) => {
             await Utility.setStorage('loggedInEntity', {...entity});
             getAppSettingsWithoutAuth()
               .then(async (response) => {
-                console.log('Settings without auth:=>', response);
                 await Utility.setStorage('appSetting', response.payload.app);
                 await authContext.setEntity({...entity});
               })
               .catch((e) => {
                 setTimeout(() => {
-                  console.log('catch -> location screen setting api');
                   Alert.alert(strings.alertmessagetitle, e.message);
                 }, 10);
               });
@@ -168,9 +163,6 @@ const LoginScreen = ({navigation}) => {
     (firebaseUser, townscupUser) => {
       const response = {...townscupUser};
       let qbEntity = {...dummyAuthContext?.entity};
-
-      console.log('response : ', response);
-      console.log('qbEntity : ', qbEntity);
 
       QBlogin(qbEntity.uid, response)
         .then(async (res) => {
@@ -200,7 +192,6 @@ const LoginScreen = ({navigation}) => {
             token: idTokenResult.token,
             expirationTime: idTokenResult.expirationTime,
           };
-          console.log('token:=>', token);
           dummyAuthContext.tokenData = token;
           Utility.setStorage('eventColor', eventDefaultColorsData);
           Utility.setStorage('groupEventValue', true);
@@ -234,7 +225,10 @@ const LoginScreen = ({navigation}) => {
                 navigateToAddBirthdayScreen(user);
               } else {
                 setloading(false);
-                setTimeout(() => Alert.alert('TownsCup', error.message), 100);
+                setTimeout(
+                  () => Alert.alert(strings.appName, error.message),
+                  100,
+                );
               }
             });
         });
@@ -252,7 +246,6 @@ const LoginScreen = ({navigation}) => {
     const token = {...dummyAuthContext?.tokenData};
     await authContext.setTokenData(token);
     await authContext.setEntity(entity);
-    console.log('Entity ===>', entity);
     user.sendEmailVerification();
     setloading(false);
     navigation.navigate('EmailVerificationScreen', {
@@ -281,12 +274,10 @@ const LoginScreen = ({navigation}) => {
   };
   const login = useCallback(async () => {
     await Utility.clearStorage();
-    console.log('firebase:=>', firebase);
     firebase
       .auth()
       .signInWithEmailAndPassword(email, password)
       .then(() => {
-        console.log('then:=>');
         const loginOnAuthStateChanged = firebase
           .auth()
           .onAuthStateChanged(onAuthStateChanged);
@@ -294,13 +285,12 @@ const LoginScreen = ({navigation}) => {
       })
       .catch((error) => {
         setloading(false);
-        console.log('catch:=>');
         let message = error.message;
         if (error.code === 'auth/user-not-found') {
           message = strings.userNotFound;
         }
         if (error.code === 'auth/email-already-in-use') {
-          message = 'That email address is already in use!';
+          message = strings.emailAlreadyInUse;
         }
         if (error.code === 'auth/invalid-email') {
           message = strings.validEmailMessage;
@@ -309,16 +299,16 @@ const LoginScreen = ({navigation}) => {
           message = strings.terminationAlert;
         }
         if (error.code === 'auth/wrong-password') {
-          message = 'The email and password you entered do not match.';
+          message = strings.userNotFound;
         }
         if (error.code === 'auth/too-many-requests') {
-          message = 'Too many request for login ,try after sometime';
+          message = strings.manyRequestForLogin;
         }
         if (error.code === 'auth/network-request-failed') {
           message = strings.networkConnectivityErrorMessage;
         }
         if (message !== '')
-          setTimeout(() => Alert.alert('TownsCup', message), 100);
+          setTimeout(() => Alert.alert(strings.appName, message), 100);
       });
   }, [email, onAuthStateChanged, password]);
 
@@ -372,7 +362,6 @@ const LoginScreen = ({navigation}) => {
 
   const onLogin = useCallback(async () => {
     setloading(true);
-    console.log('Valide', validate());
     if (validate()) {
       if (authContext.networkConnected) {
         login();
@@ -387,7 +376,7 @@ const LoginScreen = ({navigation}) => {
       <View style={{marginTop: hp('4.31%')}}>
         <TCButton
           testID={'login-button'}
-          title={'LOG IN'}
+          title={strings.LOGIN}
           extraStyle={{marginTop: hp('0%')}}
           onPress={onLogin}
         />
@@ -474,7 +463,7 @@ const LoginScreen = ({navigation}) => {
                   textDecorationLine: 'underline',
                   fontFamily: fonts.RBold,
                 }}>
-                Sign Up
+                {strings.signUp}
               </Text>
             </Text>
           </TouchableOpacity>

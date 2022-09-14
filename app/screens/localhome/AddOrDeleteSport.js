@@ -26,6 +26,7 @@ import fonts from '../../Constants/Fonts';
 import SportsListView from '../../components/localHome/SportsListView';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import images from '../../Constants/ImagePath';
+import { strings } from '../../../Localization/translation';
 
 let selectedSports = [];
 
@@ -41,7 +42,7 @@ export default function AddOrDeleteSport({navigation, route}) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: () => (
-        <Text style={styles.navTitle}>{'Add or Delete Sports'}</Text>
+        <Text style={styles.navTitle}>{strings.addDeleteSports}</Text>
       ),
       headerRight: () => (
         <Text
@@ -66,9 +67,6 @@ export default function AddOrDeleteSport({navigation, route}) {
   }, [navigation, sportsSource, systemSports, defaultSportsList, route.params]);
 
   useEffect(() => {
-    // selectedSports = systemSports.filter((e) => e.isChecked);
-    console.log('selectedSports::1::=>', selectedSports);
-
     const arr = [];
 
     const refereeSport = authContext?.entity?.auth?.user?.referee_data || [];
@@ -83,18 +81,15 @@ export default function AddOrDeleteSport({navigation, route}) {
       ...scorekeeperSport,
       ...playerSport,
     ];
-    console.log('allSports :=>', allSports);
     const uniqSports = {};
     const uniqueSports = allSports.filter(
       (obj) => !uniqSports[obj.sport] && (uniqSports[obj.sport] = true),
     );
-    console.log('Unique sport:=>', uniqSports);
 
     const result = uniqueSports.map((obj) => ({
       sport: obj.sport,
     }));
     setDefaultSportsList(result);
-    console.log('Unique sport results:=>', result);
   }, [authContext, systemSports]);
 
   useEffect(() => {
@@ -114,8 +109,6 @@ export default function AddOrDeleteSport({navigation, route}) {
           }
         }
         setSystemSports(arr);
-
-        console.log('All system sports:=>', arr);
         setTimeout(() => setloading(false), 1000);
       }
     }
@@ -126,7 +119,6 @@ export default function AddOrDeleteSport({navigation, route}) {
       navigation.pop();
       route.params.pressBack();
     });
-    console.log('DONE::', selectedSports);
   };
 
   const isIconCheckedOrNot = useCallback(
@@ -138,8 +130,6 @@ export default function AddOrDeleteSport({navigation, route}) {
       if (obj.isChecked) {
         selectedSports.push(obj);
       }
-
-      console.log('Slected sports', selectedSports);
     },
     [systemSports],
   );

@@ -681,7 +681,7 @@ function ShortsVideoView({
         <ActionSheet
           ref={shareActionSheet}
           // title={'News Feed Post'}
-          options={['Report Video', 'Something went wrong', 'Cancel']}
+          options={['Report Video', 'Something went wrong', strings.cancel]}
           cancelButtonIndex={2}
           onPress={onShareActionSheetItemPress}
         />

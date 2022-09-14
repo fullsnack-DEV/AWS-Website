@@ -73,8 +73,7 @@ export default function PersonalInformationScreen({navigation, route}) {
   const [city, setCity] = useState(
     route?.params?.city ? route?.params?.city : authContext?.entity?.obj?.city,
   );
-  console.log('Current city1', route?.params?.city);
-  console.log('Current city2', authContext?.entity?.obj?.city);
+
   const [state, setState] = useState(
     route?.params?.state
       ? route?.params?.state
@@ -113,7 +112,6 @@ export default function PersonalInformationScreen({navigation, route}) {
   const getLocationData = async (searchLocationText) => {
     if (searchLocationText.length >= 3) {
       searchLocations(searchLocationText).then((response) => {
-        console.log('search response =>', response);
         setNoData(false);
         setCityData(response.predictions);
       });
@@ -140,7 +138,6 @@ export default function PersonalInformationScreen({navigation, route}) {
   ]);
 
   useEffect(() => {
-    console.log('route?.params?.city', route?.params?.city);
     if (isFocused) {
       if (
         route?.params?.city &&
@@ -177,34 +174,29 @@ export default function PersonalInformationScreen({navigation, route}) {
     if (Platform.OS === 'android') {
       requestPermission();
     } else {
-      console.log('111');
       request(
         PERMISSIONS.IOS.LOCATION_ALWAYS,
         PERMISSIONS.IOS.LOCATION_WHEN_IN_USE,
       ).then((result) => {
         switch (result) {
           case RESULTS.UNAVAILABLE:
-            console.log(
-              'This feature is not available (on this device / in this context)',
-            );
+            console.log(strings.thisFeaturesNotAvailableText);
             break;
           case RESULTS.DENIED:
-            console.log(
-              'The permission has not been requested / is denied but requestable',
-            );
+            console.log(strings.permissionNotRequested);
 
             break;
           case RESULTS.LIMITED:
-            console.log('The permission is limited: some actions are possible');
+            console.log(strings.permissionLimitedText);
 
             break;
           case RESULTS.GRANTED:
-            console.log('The permission is granted');
+            console.log(strings.permissionGrantedText);
             setloading(true);
             getCurrentLocation();
             break;
           case RESULTS.BLOCKED:
-            console.log('The permission is denied and not requestable anymore');
+            console.log(strings.permissionDenitedText);
             break;
           default:
         }
@@ -216,18 +208,11 @@ export default function PersonalInformationScreen({navigation, route}) {
     Geolocation.requestAuthorization();
     Geolocation.getCurrentPosition(
       (position) => {
-        console.log('Lat/long to position::=>', position);
-        console.log('222');
-
         getLocationNameWithLatLong(
           position?.coords?.latitude,
           position?.coords?.longitude,
           authContext,
         ).then((res) => {
-          console.log(
-            'Lat/long to address::=>',
-            res.results[0].address_components,
-          );
           const userData = {};
           // let stateAbbr, city, country;
 
@@ -241,15 +226,12 @@ export default function PersonalInformationScreen({navigation, route}) {
               userData.country = e.long_name;
             }
           });
-          console.log('www', userData);
           setCurrentLocation(userData);
           setloading(false);
         });
-        console.log('444');
         setloading(false);
       },
       (error) => {
-        console.log('555');
         setloading(false);
         // See error code charts below.
         console.log(error.code, error.message);
@@ -263,7 +245,6 @@ export default function PersonalInformationScreen({navigation, route}) {
       PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
     ])
       .then((result) => {
-        console.log('Data :::::', JSON.stringify(result));
         if (
           result['android.permission.ACCESS_COARSE_LOCATION'] &&
           result['android.permission.ACCESS_FINE_LOCATION'] === 'granted'
@@ -303,7 +284,6 @@ export default function PersonalInformationScreen({navigation, route}) {
     setLocationPopup(false);
   };
   const getTeamsDataByCurrentLocation = async () => {
-    console.log('Curruent location data:=>', currentLocation);
     setCity(currentLocation.city);
     setState(currentLocation.state);
     setCountry(currentLocation.country);
@@ -312,10 +292,9 @@ export default function PersonalInformationScreen({navigation, route}) {
 
   // Form Validation
   const checkValidation = () => {
-    console.log('userInfo', userInfo);
     if (userInfo.email) {
       if (!Utility.validateEmail(userInfo.email)) {
-        Alert.alert(strings.appName, 'Please enter valid email address.');
+        Alert.alert(strings.appName, strings.validEmailValidation);
         return false;
       }
     }
@@ -324,7 +303,7 @@ export default function PersonalInformationScreen({navigation, route}) {
       return false;
     }
     if (Utility.validatedName(userInfo.first_name) === false) {
-      Alert.alert(strings.appName, 'Please use only letters in first name.');
+      Alert.alert(strings.appName, strings.useOnlyLettersInFnameValidation);
       return false;
     }
     if (userInfo.last_name === '') {
@@ -332,30 +311,30 @@ export default function PersonalInformationScreen({navigation, route}) {
       return false;
     }
     if (Utility.validatedName(userInfo.last_name) === false) {
-      Alert.alert(strings.appName, 'Please use only letters in last name.');
+      Alert.alert(strings.appName, strings.useOnlyLettersInLnameValidation);
       return false;
     }
     if (userInfo.city && userInfo.state_abbr && userInfo.country === '') {
-      Alert.alert(strings.appName, 'Location cannot be blank');
+      Alert.alert(strings.appName, strings.locationvalidation);
       return false;
     }
     if (userInfo.height) {
       if (!userInfo.height.height_type) {
-        Alert.alert(strings.appName, 'Please select height measurement');
+        Alert.alert(strings.appName, strings.heightValidation);
         return false;
       }
       if (userInfo.height.height <= 0 || userInfo.height.height >= 1000) {
-        Alert.alert(strings.appName, 'Please enter valid height.');
+        Alert.alert(strings.appName, strings.validHeightValidation);
         return false;
       }
     }
     if (userInfo.weight) {
       if (!userInfo.weight.weight_type) {
-        Alert.alert('Towns Cup', 'Please select weight measurement.');
+        Alert.alert(strings.appName, strings.weightValidation);
         return false;
       }
       if (userInfo.weight.weight <= 0 || userInfo.weight.weight >= 1000) {
-        Alert.alert(strings.appName, 'Please enter valid weight.');
+        Alert.alert(strings.appName, strings.validWeightValidation);
         return false;
       }
     }
@@ -490,9 +469,7 @@ export default function PersonalInformationScreen({navigation, route}) {
       .then((result) => {
         switch (result) {
           case RESULTS.UNAVAILABLE:
-            Alert.alert(
-              'This feature is not available (on this device / in this context)',
-            );
+            Alert.alert(strings.thisFeaturesNotAvailableText);
             break;
           case RESULTS.DENIED:
             request(PERMISSIONS.IOS.CAMERA).then(() => {
@@ -514,7 +491,7 @@ export default function PersonalInformationScreen({navigation, route}) {
             });
             break;
           case RESULTS.LIMITED:
-            console.log('The permission is limited: some actions are possible');
+            console.log(strings.permissionLimitedText);
             break;
           case RESULTS.GRANTED:
             {
@@ -536,7 +513,7 @@ export default function PersonalInformationScreen({navigation, route}) {
             }
             break;
           case RESULTS.BLOCKED:
-            console.log('The permission is denied and not requestable anymore');
+            console.log(strings.permissionDenitedText);
             break;
         }
       })
@@ -566,7 +543,9 @@ export default function PersonalInformationScreen({navigation, route}) {
               textAlign: 'center',
               fontFamily: fonts.RBold,
             }}>
-            {route?.params?.isEditProfile ? 'Edit Profile' : 'Profile'}
+            {route?.params?.isEditProfile
+              ? strings.editprofiletitle
+              : strings.profile}
           </Text>
         }
         rightComponent={
@@ -577,7 +556,7 @@ export default function PersonalInformationScreen({navigation, route}) {
               // else
               onSavePress();
             }}>
-            Update
+            {strings.update}
           </Text>
         }
       />
@@ -611,7 +590,7 @@ export default function PersonalInformationScreen({navigation, route}) {
             />
           </TouchableOpacity>
         </View>
-        <TCLabel title={'Name'} required={true} />
+        <TCLabel title={strings.nameText} required={true} />
         <View style={{marginHorizontal: 15, flexDirection: 'row'}}>
           <TextInput
             placeholder={strings.fnameText}
@@ -669,7 +648,7 @@ export default function PersonalInformationScreen({navigation, route}) {
         <View>
           <TCLabel title={strings.slogan} style={{bottom: 5}} />
           <TCTextField
-            placeholder={'Slogan'}
+            placeholder={strings.slogan}
             onChangeText={(text) =>
               setUserInfo({...userInfo, description: text})
             }
@@ -680,186 +659,6 @@ export default function PersonalInformationScreen({navigation, route}) {
             style={{backgroundColor: colors.textFieldBackground}}
           />
         </View>
-
-        {/* <TCThickDivider marginTop={25} marginBottom={15} />
-
-        <View>
-          <TCLabel title={strings.gender} />
-          <View style={styles.staticTextView}>
-            <Text style={styles.staticText}>{userInfo.gender}</Text>
-          </View>
-        </View>
-
-        <View>
-          <TCLabel title={strings.birthDatePlaceholder} />
-          <View style={styles.staticTextView}>
-            <Text style={styles.staticText}>
-              {moment(userInfo?.birthday * 1000).format('MMM DD,YYYY')}
-            </Text>
-          </View>
-        </View>
-
-        <TCLabel title={'Height'} />
-        {heightView()}
-
-        <TCLabel title={'Weight'} />
-        {weightView()}
-
-        <TCLabel title={'Phone'} />
-        <FlatList
-          scrollEnabled={false}
-          data={phoneNumbers}
-          keyExtractor={(index) => index.toString()}
-          renderItem={renderPhoneNumber}
-        />
-
-        <TCMessageButton
-          title={strings.addPhone}
-          width={85}
-          alignSelf="center"
-          marginTop={15}
-          onPress={() => addPhoneNumber()}
-        />
-
-        <TCLabel title={strings.languageTitle} />
-        <TouchableOpacity
-          style={{...styles.searchView}}
-          onPress={() => {
-            // eslint-disable-next-line no-unused-expressions
-            toggleModal();
-          }}>
-          <TextInput
-            style={styles.searchTextField}
-            placeholder={strings.languagePlaceholder}
-            value={userInfo.language ? languagesName : ''}
-            editable={false}
-            pointerEvents="none"
-          />
-        </TouchableOpacity>
-        <TCLabel title={'E-mail'} />
-        <TextInput
-          placeholder={strings.emailPlaceHolder}
-          style={{...styles.matchFeeTxt}}
-          editable={false}
-          value={userInfo.email}
-        />
-
-        <View>
-          <TCLabel title={'Address'} />
-          <TCTextField
-            value={streetAddress}
-            onChangeText={(text) => setStreetAddress(text)}
-            placeholder={strings.addressPlaceholder}
-            keyboardType={'default'}
-            autoCapitalize="none"
-            autoCorrect={false}
-            // onFocus={() => setLocationFieldVisible(true)}
-          />
-        </View>
-
-        <TouchableOpacity
-          onPress={() =>
-            navigation.navigate('SearchLocationScreen', {
-              comeFrom: 'PersonalInformationScreen',
-            })
-          }>
-          <TextInput
-            placeholder={strings.searchCityPlaceholder}
-            placeholderTextColor={colors.userPostTimeColor}
-            style={[styles.matchFeeTxt, {marginBottom: 5}]}
-            value={`${city}, ${state}, ${country}`}
-            editable={false}
-            pointerEvents="none"></TextInput>
-        </TouchableOpacity>
-
-        <View>
-          <TCTextField
-            value={postalCode}
-            onChangeText={(text) => setPostalCode(text)}
-            placeholder={strings.postalCodeText}
-            keyboardType={'default'}
-          />
-        </View> */}
-        {/* <Modal
-          isVisible={isModalVisible}
-          backdropColor="black"
-          hasBackdrop={true}
-          onBackdropPress={() => {
-            setModalVisible(false);
-          }}
-          backdropOpacity={0}
-          style={{marginLeft: 0, marginRight: 0, marginBottom: 0}}>
-          <View
-            style={{
-              width: '100%',
-              height: Dimensions.get('window').height / 2,
-              backgroundColor: 'white',
-              position: 'absolute',
-              bottom: 0,
-              left: 0,
-              borderTopLeftRadius: 30,
-              borderTopRightRadius: 30,
-              shadowColor: '#000',
-              shadowOffset: {width: 0, height: 1},
-              shadowOpacity: 0.5,
-              shadowRadius: 5,
-              elevation: 10,
-            }}>
-            <Header
-              mainContainerStyle={{marginTop: 15}}
-              centerComponent={
-                <Text style={styles.headerCenterStyle}>{'Languages'}</Text>
-              }
-              rightComponent={
-                <TouchableOpacity
-                  hitSlop={Utility.getHitSlop(15)}
-                  onPress={() => {
-                    setModalVisible(false);
-                  }}>
-                  <Image
-                    source={images.cancelImage}
-                    style={styles.cancelImageStyle}
-                    resizeMode={'contain'}
-                  />
-                </TouchableOpacity>
-              }
-            />
-            <View style={styles.sepratorStyle} />
-            <View style={styles.separatorLine}></View>
-            <FlatList
-              data={languageData}
-              keyExtractor={(index) => index.toString()}
-              renderItem={renderLanguage}
-              style={{marginBottom: '25%'}}
-            />
-            <View
-              style={{
-                width: '100%',
-                height: '25%',
-                backgroundColor: 'white',
-                position: 'absolute',
-                bottom: 0,
-                left: 0,
-                shadowColor: '#000',
-                shadowOffset: {width: 0, height: 1},
-                shadowOpacity: 0.5,
-                shadowRadius: 5,
-              }}>
-              <TouchableOpacity
-                onPress={() => {
-                  toggleModal();
-                }}>
-                <LinearGradient
-                  colors={[colors.yellowColor, colors.themeColor]}
-                  style={styles.languageApplyButton}>
-                  <Text style={styles.nextButtonText}>
-                    {strings.applyTitle}
-                  </Text>
-                </LinearGradient>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal> */}
       </TCKeyboardView>
       <Modal
         onBackdropPress={() => setLocationPopup(false)}
@@ -885,7 +684,7 @@ export default function PersonalInformationScreen({navigation, route}) {
               }}>
               <Image source={images.crossImage} style={styles.closeButton} />
             </TouchableOpacity>
-            <Text style={styles.moreText}>Home City</Text>
+            <Text style={styles.moreText}>{strings.homeCityTitleText}</Text>
           </View>
           <TCThinDivider
             width={'100%'}
@@ -921,7 +720,7 @@ export default function PersonalInformationScreen({navigation, route}) {
                     {currentLocation?.country}
                   </Text>
                   <Text style={styles.curruentLocationText}>
-                    Current Location
+                    {strings.currentLocationText}
                   </Text>
 
                   <TCThinDivider

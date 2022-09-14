@@ -20,11 +20,13 @@ import {
 
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import {useIsFocused} from '@react-navigation/native';
+import {format} from 'react-string-format';
 import AuthContext from '../../../auth/context';
 import images from '../../../Constants/ImagePath';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
 import {strings} from '../../../../Localization/translation';
+import Verbs from '../../../Constants/Verbs';
 
 export default function GroupInviteSettingPrivacyScreen({navigation, route}) {
   const isFocused = useIsFocused();
@@ -35,17 +37,18 @@ export default function GroupInviteSettingPrivacyScreen({navigation, route}) {
   const [pointEvent, setPointEvent] = useState('auto');
   const [groupInviteYouSetting] = useState([
     {
-      key: `Can ${
+      key: format(
+        strings.canInviteYouText,
         route?.params?.type.charAt(0).toUpperCase() +
-        route?.params?.type.slice(1)
-      } Invite You`,
+          route?.params?.type.slice(1),
+      ),
       id: 0,
     },
   ]);
   const [groupInviteYou, setGroupInviteYou] = useState(
     route?.params?.groupInviteYou
       ? route?.params?.groupInviteYou
-      : route?.params?.type === 'team'
+      : route?.params?.type === Verbs.entityTypeTeam
       ? authContext.entity?.obj?.who_can_invite_for_team
       : authContext.entity?.obj?.who_can_invite_for_club,
   );

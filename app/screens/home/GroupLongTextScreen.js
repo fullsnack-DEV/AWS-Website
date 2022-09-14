@@ -61,7 +61,7 @@ export default function GroupLongTextScreen({navigation, route}) {
         navigation.goBack();
       } else {
         setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, 'Something went wrong');
+          Alert.alert(strings.alertmessagetitle, strings.defaultError);
         }, 0.1);
       }
     });

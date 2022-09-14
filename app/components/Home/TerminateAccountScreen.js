@@ -163,7 +163,7 @@ export default function TerminateAccountScreen({navigation, route}) {
               '',
               [
                 {
-                  text: 'Cancel',
+                  text: strings.cancel,
                   style: 'cancel',
                 },
                 {

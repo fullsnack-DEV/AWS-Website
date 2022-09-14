@@ -47,10 +47,7 @@ function TrashScreen({navigation, route}) {
   const [loadMore, setLoadMore] = useState(false);
 
   const onDetailPress = (item) => {
-    console.log('Group ITEM ID:::::=>', item);
-
     const verb = item.activities[0].verb;
-
     if (
       verb.includes(NotificationType.initialChallengePaymentFail) ||
       verb.includes(NotificationType.alterChallengePaymentFail) ||
@@ -70,7 +67,6 @@ function TrashScreen({navigation, route}) {
       setloading(true);
       getChallengeDetail(a, authContext)
         .then((obj) => {
-          console.log('challenge utils res:=>', obj);
           navigation.navigate(obj.screenName, {
             challengeObj: obj.challengeObj,
             isTrash: true,
@@ -105,8 +101,6 @@ function TrashScreen({navigation, route}) {
       getRefereeReservationDetail(a, authContext.entity.uid, authContext)
         .then((obj) => {
           const reservationObj = obj.reservationObj || obj.reservationObj[0];
-
-          console.log('reservationObj:1>=>', reservationObj);
           if (reservationObj?.referee?.user_id === authContext.entity.uid) {
             navigation.navigate(obj.screenName, {
               reservationObj,
@@ -205,21 +199,6 @@ function TrashScreen({navigation, route}) {
       verb.includes(NotificationType.scorekeeperRequest) ||
       verb.includes(NotificationType.changeScorekeeperRequest)
     ) {
-      // const a = JSON.parse(item.activities[0].object)?.reservationObject
-      //   ?.reservation_id;
-      // setloading(true);
-      // ScorekeeperUtils.getScorekeeperReservationDetail(
-      //   a,
-      //   authContext.entity.uid,
-      //   authContext,
-      // )
-      //   .then((obj) => {
-      //     navigation.navigate(obj.screenName, {
-      //       reservationObj: obj.reservationObj || obj.reservationObj[0],
-      //     });
-      //     setloading(false);
-      //   })
-      //   .catch(() => setloading(false));
       const a =
         JSON.parse(item.activities[0].object)?.reservationObject
           ?.reservation_id ||
@@ -228,7 +207,6 @@ function TrashScreen({navigation, route}) {
       getScorekeeperReservationDetail(a, authContext.entity.uid, authContext)
         .then((obj) => {
           const reservationObj = obj.reservationObj || obj.reservationObj[0];
-          console.log('reservationObj:1>=>', reservationObj);
           if (reservationObj?.scorekeeper?.user_id === authContext.entity.uid) {
             navigation.navigate(obj.screenName, {
               reservationObj,
@@ -361,15 +339,8 @@ function TrashScreen({navigation, route}) {
   };
 
   const onRespond = (groupObj) => {
-    console.log('groupObj11:=>', groupObj);
-
     const groupId = JSON.parse(groupObj?.activities?.[0]?.object).groupData
       ?.group_id;
-    console.log(
-      'groupObject:=>',
-      JSON.parse(groupObj?.activities?.[0]?.object),
-    );
-
     if (
       groupObj.activities[0].verb.includes(NotificationType.inviteToJoinClub)
     ) {
@@ -390,9 +361,8 @@ function TrashScreen({navigation, route}) {
             requestID: groupObj?.activities?.[0].id,
           });
         })
-        .catch((e) => {
+        .catch(() => {
           setloading(false);
-          console.log('Error :-', e);
         });
     } else if (
       groupObj.activities[0].verb.includes(
@@ -407,9 +377,8 @@ function TrashScreen({navigation, route}) {
     } else {
       setloading(true);
       getRequestDetail(groupId, authContext)
-        .then((response) => {
+        .then(() => {
           setloading(false);
-          console.log('details: =>', response.payload);
         })
         .catch((error) => {
           setloading(false);
@@ -424,8 +393,6 @@ function TrashScreen({navigation, route}) {
   };
 
   const onNotificationClick = (notificationItem) => {
-    console.log('Notification detail::=>', notificationItem);
-    console.log(notificationItem?.verb);
     const verb = notificationItem?.verb?.split('_');
     const postVerbTypes = [
       NotificationType.clap,
@@ -460,8 +427,6 @@ function TrashScreen({navigation, route}) {
       getScorekeeperReservationDetail(a, authContext.entity.uid, authContext)
         .then((obj) => {
           const reservationObj = obj.reservationObj || obj.reservationObj[0];
-          console.log('reservationObj:1>=>', reservationObj);
-
           navigation.navigate(obj.screenName, {
             reservationObj,
           });
@@ -480,9 +445,6 @@ function TrashScreen({navigation, route}) {
       getRefereeReservationDetail(a, authContext.entity.uid, authContext)
         .then((obj) => {
           const reservationObj = obj.reservationObj || obj.reservationObj[0];
-
-          console.log('reservationObj:1>=>', reservationObj);
-
           navigation.navigate(obj.screenName, {
             reservationObj,
           });
@@ -499,9 +461,6 @@ function TrashScreen({navigation, route}) {
       getChallengeDetail(a, authContext)
         .then((obj) => {
           const challengeObj = obj.challengeObj || obj.challengeObj[0];
-
-          console.log('challengeObj:1>=>', challengeObj);
-
           navigation.navigate(obj.screenName, {
             challengeObj,
           });
@@ -513,7 +472,6 @@ function TrashScreen({navigation, route}) {
   };
 
   const notificationComponentType = ({item}) => {
-    console.log('VERB::=>', item);
     if (isInvite(item.activities[0].verb)) {
       if (
         item.activities[0].verb.includes(NotificationType.inviteToDoubleTeam) ||
@@ -583,21 +541,6 @@ function TrashScreen({navigation, route}) {
     }
 
     return (
-      //   <PRNotificationDetailMessageItem
-      //     onPress={() => onNotificationClick(item)}
-      //     item={item}
-      //     isTrash={true}
-      //     entityType={
-      //       authContext.entity.role === 'user' ||
-      //       authContext.entity.role === 'player'
-      //         ? 'user'
-      //         : 'group'
-      //     } // user or group
-      //     disabled={true}
-      //     onDetailPress={() => onDetailPress(item)}
-      //     selectedEntity={selectedEntity}
-      //     onPressFirstEntity={openHomePage}
-      //   />
       <NotificationItem
         isTrash={true}
         entityType={
@@ -679,7 +622,6 @@ function TrashScreen({navigation, route}) {
         e.nativeEvent.contentSize.height - paddingToBottom
       ) {
         if (!loadMore) {
-          console.log('next page');
           setLoadMore(true);
           setTimeout(() => {
             getNextTrashData();
@@ -704,7 +646,7 @@ function TrashScreen({navigation, route}) {
           onScroll={onLoadMore}
         />
       ) : (
-        <TCNoDataView title={'No records found'} />
+        <TCNoDataView title={strings.noRecordFoundText} />
       )}
       {loadMore && (
         <TCInnerLoader allowMargin={false} size={60} visible={loadMore} />

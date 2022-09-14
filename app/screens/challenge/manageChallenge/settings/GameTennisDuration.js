@@ -15,6 +15,7 @@ import {
 
 // import { useIsFocused } from '@react-navigation/native';
 import Modal from 'react-native-modal';
+import {format} from 'react-string-format';
 import AuthContext from '../../../../auth/context';
 import {patchPlayer} from '../../../../api/Users';
 import {patchGroup} from '../../../../api/Groups';
@@ -136,7 +137,7 @@ export default function GameTennisDuration({navigation, route}) {
               saveUser();
             }
           }}>
-          Save
+          {strings.save}
         </Text>
       ),
     });
@@ -280,7 +281,11 @@ export default function GameTennisDuration({navigation, route}) {
           justifyContent: 'space-between',
         }}>
         <Text style={styles.languageList}>
-          Best of {item} {item === 1 ? 'set' : 'sets'}
+          {format(
+            strings.bestOfSets,
+            item,
+            item === 1 ? strings.set : strings.sets,
+          )}
         </Text>
         <View>
           {matchSetting.total_sets === item ? (

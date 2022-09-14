@@ -28,6 +28,7 @@ import images from '../../Constants/ImagePath';
 import AuthContext from '../../auth/context';
 import {QBleaveDialog} from '../../utils/QuickBlox';
 import TCGroupNameBadge from '../TCGroupNameBadge';
+import {strings} from '../../../Localization/translation';
 
 const MessageInviteeDrawerScreen = ({
   navigation,
@@ -145,7 +146,7 @@ const MessageInviteeDrawerScreen = ({
       'Are you sure you want to \n' + 'Leave this chatroom?',
       [
         {
-          text: 'Cancel',
+          text: strings.cancel,
           onPress: () => console.log('Cancel Pressed'),
           style: 'cancel',
         },

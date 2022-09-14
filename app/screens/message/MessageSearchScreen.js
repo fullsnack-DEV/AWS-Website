@@ -25,6 +25,7 @@ import {
 } from '../../utils/QuickBlox';
 import {widthPercentageToDP as wp} from '../../utils';
 import UserListShimmer from '../../components/shimmer/commonComponents/UserListShimmer';
+import { strings } from '../../../Localization/translation';
 
 const MessageSearchScreen = ({navigation}) => {
   const [loading, setLoading] = useState(false);
@@ -119,7 +120,7 @@ const MessageSearchScreen = ({navigation}) => {
           lastMessageDate={new Date(item?.lastMessageDateSent)}
           numberOfUnreadMessages={
             Number(item?.unreadMessagesCount) > 99
-              ? '+ 99'
+              ? strings.plus99
               : item?.unreadMessagesCount
           }
         />
@@ -210,7 +211,7 @@ const MessageSearchScreen = ({navigation}) => {
           value={searchText}
           onChangeText={setSearchText}
           style={styles.textInputStyle}
-          placeholder={'Search'}
+          placeholder={strings.searchText}
         />
       </View>
       <View style={styles.sperateLine} />

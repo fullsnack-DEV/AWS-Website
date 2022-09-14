@@ -38,7 +38,7 @@ const PlayInTennisSingleRDMPercentage = () => {
   return (
     <View style={{flex: 1}}>
       <TopHeader
-        title={'RDM Percentage'}
+        title={strings.RDMPercentage}
         selectWeekMonth={selectWeekMonth}
         setSelectWeekMonth={setSelectWeekMonth}
       />
@@ -47,18 +47,18 @@ const PlayInTennisSingleRDMPercentage = () => {
       <View style={{paddingHorizontal: 15}}>
         {/* Home Team */}
         <TCRangeChart
-          heading={'RDMs/R&Ts'}
+          heading={strings.RDMRT}
           totalCount={100}
           progressCount={22}
         />
       </View>
 
       <View style={{padding: 15}}>
-        <TCTextTableView leftTitle={'Total Matches'} rightTitle={102} />
+        <TCTextTableView leftTitle={strings.totalMatches} rightTitle={102} />
 
         <TCTextTableView
-          leftTitle={'RDMs'}
-          leftSubTitle={'(Result-Dissapproved Matches)'}
+          leftTitle={strings.RDMs}
+          leftSubTitle={strings.resultDisapprovedMatches}
           rightTitle={2}
         />
         <View style={{marginVertical: 10}}>
@@ -66,8 +66,8 @@ const PlayInTennisSingleRDMPercentage = () => {
         </View>
 
         <TCTextTableView
-          leftTitle={'R&Ts'}
-          leftSubTitle={'(RDMs + Total Matches)'}
+          leftTitle={strings.RTs}
+          leftSubTitle={strings.RDMTotalMatches}
           rightTitle={104}
         />
       </View>

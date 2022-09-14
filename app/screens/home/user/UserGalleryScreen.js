@@ -5,6 +5,7 @@ import {ScrollView, StyleSheet} from 'react-native';
 
 import AllInOneGallery from '../AllInOneGallery';
 import AuthContext from '../../../auth/context';
+import Verbs from '../../../Constants/Verbs';
 
 export default function UserGalleryScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
@@ -15,14 +16,15 @@ export default function UserGalleryScreen({navigation, route}) {
 
   const [callFunction] = useState(route?.params?.callFunction);
 
-  console.log('callFunctioncallFunction', callFunction);
   return (
     <ScrollView style={styles.mainContainer}>
       <AllInOneGallery
         isAdmin={authContext.entity.uid === currentUserData.group_id}
         ref={galleryRef}
         entity_type={
-          ['user', 'player'].includes(entityType) ? 'player' : entityType
+          [Verbs.entityTypeUser, Verbs.entityTypePlayer].includes(entityType)
+            ? Verbs.entityTypePlayer
+            : entityType
         }
         entity_id={entityID}
         onAddPhotoPress={(pickImages) => {

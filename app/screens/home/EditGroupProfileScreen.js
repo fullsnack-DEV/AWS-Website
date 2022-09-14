@@ -55,6 +55,7 @@ import images from '../../Constants/ImagePath';
 import TCKeyboardView from '../../components/TCKeyboardView';
 import {getQBAccountType, QBupdateUser} from '../../utils/QuickBlox';
 import TCThinDivider from '../../components/TCThinDivider';
+import Verbs from '../../Constants/Verbs';
 
 export default function EditGroupProfileScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
@@ -82,7 +83,7 @@ export default function EditGroupProfileScreen({navigation, route}) {
     navigation.setOptions({
       title: route.params.isEditProfileTitle
         ? strings.editprofiletitle
-        : 'Profile',
+        : strings.profileText,
       headerLeft: () => (
         <View style={styles.backIconViewStyle}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -137,7 +138,6 @@ export default function EditGroupProfileScreen({navigation, route}) {
   const getLocationData = async (searchLocationText) => {
     if (searchLocationText.length >= 3) {
       searchLocations(searchLocationText).then((response) => {
-        console.log('search response =>', response);
         setNoData(false);
         setCityData(response.predictions);
       });
@@ -150,34 +150,29 @@ export default function EditGroupProfileScreen({navigation, route}) {
     if (Platform.OS === 'android') {
       requestPermission();
     } else {
-      console.log('111');
       request(
         PERMISSIONS.IOS.LOCATION_ALWAYS,
         PERMISSIONS.IOS.LOCATION_WHEN_IN_USE,
       ).then((result) => {
         switch (result) {
           case RESULTS.UNAVAILABLE:
-            console.log(
-              'This feature is not available (on this device / in this context)',
-            );
+            console.log(strings.thisFeaturesNotAvailableText);
             break;
           case RESULTS.DENIED:
-            console.log(
-              'The permission has not been requested / is denied but requestable',
-            );
+            console.log(strings.permissionNotRequested);
 
             break;
           case RESULTS.LIMITED:
-            console.log('The permission is limited: some actions are possible');
+            console.log(strings.permissionLimitedText);
 
             break;
           case RESULTS.GRANTED:
-            console.log('The permission is granted');
+            console.log(strings.permissionGrantedText);
             setloading(true);
             getCurrentLocation();
             break;
           case RESULTS.BLOCKED:
-            console.log('The permission is denied and not requestable anymore');
+            console.log(strings.permissionDenitedText);
             break;
           default:
         }
@@ -187,7 +182,6 @@ export default function EditGroupProfileScreen({navigation, route}) {
 
   useEffect(() => {
     let sportText = '';
-    console.log('selectedSports:=>', selectedSports);
     if (selectedSports.length > 0) {
       selectedSports.map((sportItem, index) => {
         sportText =
@@ -221,25 +215,17 @@ export default function EditGroupProfileScreen({navigation, route}) {
       obj.isChecked = false;
       arr.push(obj);
     }
-    console.log('Sport array:=>', arr);
     setSportList(arr);
   };
   const getCurrentLocation = async () => {
     Geolocation.requestAuthorization();
     Geolocation.getCurrentPosition(
       (position) => {
-        console.log('Lat/long to position::=>', position);
-        console.log('222');
-
         getLocationNameWithLatLong(
           position?.coords?.latitude,
           position?.coords?.longitude,
           authContext,
         ).then((res) => {
-          console.log(
-            'Lat/long to address::=>',
-            res.results[0].address_components,
-          );
           const userData = {};
           // let stateAbbr, city, country;
 
@@ -275,7 +261,6 @@ export default function EditGroupProfileScreen({navigation, route}) {
       PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
     ])
       .then((result) => {
-        console.log('Data :::::', JSON.stringify(result));
         if (
           result['android.permission.ACCESS_COARSE_LOCATION'] &&
           result['android.permission.ACCESS_FINE_LOCATION'] === 'granted'
@@ -287,22 +272,19 @@ export default function EditGroupProfileScreen({navigation, route}) {
         console.warn(error);
       });
   };
-  const renderItem = ({item, index}) => {
-    console.log('Location item:=>', item);
-    return (
-      <TouchableWithoutFeedback
-        style={styles.listItem}
-        onPress={() => getTeamsData(item)}>
-        <View>
-          <Text style={styles.cityList}>{cityData[index].bio}</Text>
-          <TCThinDivider
-            width={'100%'}
-            backgroundColor={colors.grayBackgroundColor}
-          />
-        </View>
-      </TouchableWithoutFeedback>
-    );
-  };
+  const renderItem = ({item, index}) => (
+    <TouchableWithoutFeedback
+      style={styles.listItem}
+      onPress={() => getTeamsData(item)}>
+      <View>
+        <Text style={styles.cityList}>{cityData[index].bio}</Text>
+        <TCThinDivider
+          width={'100%'}
+          backgroundColor={colors.grayBackgroundColor}
+        />
+      </View>
+    </TouchableWithoutFeedback>
+  );
   const isIconCheckedOrNot = ({item, index}) => {
     sportList[index].isChecked = !item.isChecked;
     setSportList([...sportList]);
@@ -349,7 +331,6 @@ export default function EditGroupProfileScreen({navigation, route}) {
     setLocationPopup(false);
   };
   const getTeamsDataByCurrentLocation = async () => {
-    console.log('Curruent location data:=>', currentLocation);
     setGroupProfile({
       ...groupProfile,
       location: currentLocation,
@@ -372,7 +353,7 @@ export default function EditGroupProfileScreen({navigation, route}) {
       return false;
     }
     if (groupProfile.location === '') {
-      Alert.alert(strings.appName, 'Location cannot be blank');
+      Alert.alert(strings.appName, strings.locationvalidation);
       return false;
     }
     return true;
@@ -391,7 +372,6 @@ export default function EditGroupProfileScreen({navigation, route}) {
     Keyboard.dismiss();
     if (checkValidation()) {
       setloading(true);
-      console.log('hhhh', sportsName);
       setGroupProfile({
         ...groupProfile,
         sports_string: sportsName,
@@ -454,14 +434,14 @@ export default function EditGroupProfileScreen({navigation, route}) {
   };
 
   const callUpdateUserAPI = (userProfile, paramGroupID) => {
-    console.log('Update profile -->', userProfile);
     setloading(true);
     patchGroup(paramGroupID, userProfile, authContext)
       .then((response) => {
         // entity.auth.user = response.payload;
-        const entity_id = ['user', 'player']?.includes(
-          response?.payload?.entity_type,
-        )
+        const entity_id = [
+          Verbs.entityTypeUser,
+          Verbs.entityTypePlayer,
+        ]?.includes(response?.payload?.entity_type)
           ? response?.payload?.user_id
           : response?.payload?.group_id;
         const accountType = getQBAccountType(response?.payload?.entity_type);
@@ -492,7 +472,6 @@ export default function EditGroupProfileScreen({navigation, route}) {
   };
 
   const onLocationClicked = async () => {
-    console.log('call on location');
     // navigation.navigate('SearchLocationScreen', {
     //   comeFrom: 'EditGroupProfileScreen',
     // });
@@ -630,7 +609,7 @@ export default function EditGroupProfileScreen({navigation, route}) {
             }
             // profileImagePlaceholder={images.teamPlaceholder}
             profileImagePlaceholder={
-              route?.params?.role === 'club'
+              route?.params?.role === Verbs.entityTypeClub
                 ? images.teamGreenPH
                 : images.teamGreenPH
             }
@@ -678,29 +657,11 @@ export default function EditGroupProfileScreen({navigation, route}) {
               }}
             />
           </View>
-          {/* <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              marginRight: 15,
-            }}>
-            <TCLabel title={strings.hiringPlayers} style={{marginTop: 15}} />
-            <ToggleView
-              isOn={groupProfile?.hiringPlayers}
-              onToggle={() => {
-                setGroupProfile({
-                  ...groupProfile,
-                  hiringPlayers: !groupProfile?.hiringPlayers,
-                });
-              }}
-              onColor={colors.themeColor}
-              offColor={colors.grayBackgroundColor}
-            />
-          </View> */}
-          {authContext.entity.role === 'club' && (
+
+          {authContext.entity.role === Verbs.entityTypeClub && (
             <View>
               <TCLabel
-                title={'Sports'}
+                title={strings.sportsEventsTitle}
                 style={{marginTop: 31}}
                 required={true}
               />
@@ -722,14 +683,17 @@ export default function EditGroupProfileScreen({navigation, route}) {
                       : styles.languagePlaceholderText
                   }
                   numberOfLines={50}>
-                  {sportsName || 'Sports'}
+                  {sportsName || strings.sportsEventsTitle}
                 </Text>
               </TouchableOpacity>
             </View>
           )}
-          {authContext.entity.role === 'team' && (
+          {authContext.entity.role === Verbs.entityTypeTeam && (
             <View>
-              <TCLabel title={'Sports'} style={{marginTop: 31}} />
+              <TCLabel
+                title={strings.sportsEventsTitle}
+                style={{marginTop: 31}}
+              />
               <Text style={styles.sport}>{route?.params?.sportType}</Text>
             </View>
           )}
@@ -738,9 +702,9 @@ export default function EditGroupProfileScreen({navigation, route}) {
             <TCLabel title={strings.slogan} style={{marginTop: 31}} />
             <TCTextField
               placeholder={
-                authContext.entity.role === 'club'
-                  ? 'Write your club slogan..'
-                  : 'Write your team slogan..'
+                authContext.entity.role === Verbs.entityTypeClub
+                  ? strings.writeClubSlogan
+                  : strings.writeTeamSlogan
               }
               onChangeText={(text) =>
                 setGroupProfile({...groupProfile, bio: text})
@@ -801,9 +765,7 @@ export default function EditGroupProfileScreen({navigation, route}) {
               />
             </View>
             {noData && searchText?.length > 0 && (
-              <Text style={styles.noDataText}>
-                Please, enter at least 3 characters to see cities.
-              </Text>
+              <Text style={styles.noDataText}>{strings.enter3CharText}</Text>
             )}
             {noData && searchText?.length === 0 && (
               <View style={{flex: 1}}>
@@ -816,7 +778,7 @@ export default function EditGroupProfileScreen({navigation, route}) {
                       {currentLocation?.country}
                     </Text>
                     <Text style={styles.curruentLocationText}>
-                      Current Location
+                      {strings.currentLocationText}
                     </Text>
 
                     <TCThinDivider
@@ -887,7 +849,7 @@ export default function EditGroupProfileScreen({navigation, route}) {
                   fontFamily: fonts.RBold,
                   color: colors.lightBlackColor,
                 }}>
-                Sports
+                {strings.sportsEventsTitle}
               </Text>
               <TouchableOpacity
                 onPress={() => {
@@ -905,7 +867,7 @@ export default function EditGroupProfileScreen({navigation, route}) {
                     fontFamily: fonts.RRegular,
                     color: colors.themeColor,
                   }}>
-                  Apply
+                  {strings.apply}
                 </Text>
               </TouchableOpacity>
             </View>
