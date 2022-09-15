@@ -40,7 +40,6 @@ export default function GroupEventScreen({navigation}) {
 
     const checkedGroup = groupsList.filter((obj) => obj.isSelected);
     const resultOfIds = checkedGroup.map((obj) => obj.group_id);
-    console.log('resultOfIds', resultOfIds);
 
     if (checkedGroup.length > 0) {
       const params = {
@@ -48,7 +47,6 @@ export default function GroupEventScreen({navigation}) {
       };
       saveUserSettings(params, authContext)
         .then(async (response) => {
-          console.log('After save setting', response);
           await Utility.setStorage(
             'scheduleSetting',
             response.payload.schedule_group,
@@ -61,7 +59,7 @@ export default function GroupEventScreen({navigation}) {
           Alert.alert('', e.messages);
         });
     } else {
-      Alert.alert('Please select any of the group.');
+      Alert.alert(strings.selectGroupText);
     }
   }, [authContext, groupsList, navigation]);
 
@@ -69,7 +67,7 @@ export default function GroupEventScreen({navigation}) {
     navigation.setOptions({
       headerRight: () => (
         <Text style={styles.doneButtonStyle} onPress={() => onDonePress()}>
-          Save
+          {strings.save}
         </Text>
       ),
     });
@@ -118,28 +116,6 @@ export default function GroupEventScreen({navigation}) {
         Alert.alert('', e.messages);
       });
   }, [authContext]);
-
-  // useEffect(() => {
-  //   const unsubscribe = navigation.addListener('focus', async () => {
-  //     const allSelectValue = await Utility.getStorage('groupEventValue');
-  //     setCheckBoxSelect(allSelectValue);
-  //     eventGroupsData.filter(async (event_item) => {
-  //       const event_data = event_item;
-  //       if (allSelectValue) {
-  //         event_data.isSelected = true;
-  //         setCheckBoxSelect(true);
-  //       } else {
-  //         event_data.isSelected = false;
-  //         setCheckBoxSelect(false);
-  //       }
-  //       return null;
-  //     });
-  //     setEventGroupsData([...eventGroupsData]);
-  //   });
-  //   return () => {
-  //     unsubscribe();
-  //   };
-  // }, []);
 
   const renderGroups = ({item, index}) => (
     <GroupEventItems

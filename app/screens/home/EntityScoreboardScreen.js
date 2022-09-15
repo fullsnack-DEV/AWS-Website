@@ -22,13 +22,11 @@ export default function EntityScoreboardScreen({navigation, route}) {
     useState(false);
   const [refereesInModalVisible, setRefereesInModalVisible] = useState(false);
 
-  console.log('currentUserData:=>', isAdmin);
   useEffect(() => {
     setLoading(true);
     getScroreboardGameDetails(uid, authContext)
       .then((res) => {
         setLoading(false);
-        console.log('Get Scoreboard Game Details Res :-', res);
         setScoreboardGameData(res.payload);
       })
       .catch((error) => {
@@ -54,17 +52,6 @@ export default function EntityScoreboardScreen({navigation, route}) {
     <SafeAreaView style={{flex: 1}}>
       <ActivityLoader visible={loading} />
       <View style={{flex: 1}}>
-        {/* <TCSearchBox
-          onChangeText={onScoreboardSearchTextChange}
-          marginTop={20}
-          marginBottom={5}
-          alignSelf={'center'}
-          width={wp('94%')}
-          borderRadius={0}
-          backgroundColor={colors.grayBackgroundColor}
-          height={40}
-          shadowOpacity={0}
-        /> */}
         <ScoreboardSportsScreen
           sportsData={
             scoreboardSearchText.length > 0

@@ -4,29 +4,8 @@ import EventItemRender from '../../../../components/Schedule/EventItemRender';
 import RadioBtnItem from '../../../../components/Schedule/RadioBtnItem';
 import TCThinDivider from '../../../../components/TCThinDivider';
 import {strings} from '../../../../../Localization/translation';
+import {privacy_Data} from '../../../../utils/constant';
 
-const privacy_Data = [
-  {
-    id: 0,
-    title: 'Everyone',
-    isSelected: true,
-  },
-  {
-    id: 1,
-    title: 'Followers',
-    isSelected: false,
-  },
-  {
-    id: 2,
-    title: 'Members in groups',
-    isSelected: false,
-  },
-  {
-    id: 3,
-    title: 'Only me',
-    isSelected: false,
-  },
-];
 const RenderPrivacySettingSection = ({title, privacyData, setPrivacyData}) => (
   <EventItemRender title={title} containerStyle={{marginTop: 10, padding: 15}}>
     <FlatList
@@ -60,7 +39,7 @@ const PlaysInEditBasicInfoPrivacySettings = () => {
   const [privacyData, setPrivacyData] = useState(privacy_Data);
   return (
     <EventItemRender
-      title={'Who can see each category in Basic Info?'}
+      title={strings.whoCanSeeCategory}
       containerStyle={{marginTop: 10}}>
       {/*  Gender */}
       <RenderPrivacySettingSection
@@ -72,7 +51,7 @@ const PlaysInEditBasicInfoPrivacySettings = () => {
 
       {/*  Year of Birth */}
       <RenderPrivacySettingSection
-        title={'Year of Birth'}
+        title={strings.yearOfBirth}
         privacyData={privacyData}
         setPrivacyData={setPrivacyData}
       />
@@ -80,7 +59,7 @@ const PlaysInEditBasicInfoPrivacySettings = () => {
 
       {/* Height */}
       <RenderPrivacySettingSection
-        title={'Height'}
+        title={strings.height}
         privacyData={privacyData}
         setPrivacyData={setPrivacyData}
       />
@@ -88,7 +67,7 @@ const PlaysInEditBasicInfoPrivacySettings = () => {
 
       {/* Width */}
       <RenderPrivacySettingSection
-        title={'Width'}
+        title={strings.weight}
         privacyData={privacyData}
         setPrivacyData={setPrivacyData}
       />
@@ -96,7 +75,7 @@ const PlaysInEditBasicInfoPrivacySettings = () => {
 
       {/* Most used foot */}
       <RenderPrivacySettingSection
-        title={'Most used foot'}
+        title={strings.mostUsedFoot}
         privacyData={privacyData}
         setPrivacyData={setPrivacyData}
       />
@@ -104,7 +83,7 @@ const PlaysInEditBasicInfoPrivacySettings = () => {
 
       {/* Current City */}
       <RenderPrivacySettingSection
-        title={'Current City'}
+        title={strings.currrentCityTitle}
         privacyData={privacyData}
         setPrivacyData={setPrivacyData}
       />

@@ -22,6 +22,7 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import FastImage from 'react-native-fast-image';
 import Config from 'react-native-config';
+import {format} from 'react-string-format';
 import AuthContext from '../../auth/context';
 import images from '../../Constants/ImagePath';
 import {strings} from '../../../Localization/translation';
@@ -70,7 +71,6 @@ export default function EmailVerificationScreen({navigation, route}) {
   const getRedirectionScreenName = useCallback(
     (townscupUser) =>
       new Promise((resolve, reject) => {
-        console.log('screen name object:=>', townscupUser);
         if (!townscupUser.birthday) resolve({screen: 'AddBirthdayScreen'});
         else if (!townscupUser.gender) resolve({screen: 'ChooseGenderScreen'});
         else if (!townscupUser.city) resolve({screen: 'ChooseLocationScreen'});
@@ -83,7 +83,7 @@ export default function EmailVerificationScreen({navigation, route}) {
               country: townscupUser?.country,
             },
           });
-        else reject(new Error({error: 'completed user profile'}));
+        else reject(new Error({error: strings.completeProfile}));
       }),
     [],
   );
@@ -102,7 +102,6 @@ export default function EmailVerificationScreen({navigation, route}) {
       await setStorage('loggedInEntity', entity);
       await authContext.setEntity({...entity});
 
-      console.log('User Data:', userData);
       getRedirectionScreenName(userData)
         .then((responseScreen) => {
           setLoading(false);
@@ -116,13 +115,11 @@ export default function EmailVerificationScreen({navigation, route}) {
           await setStorage('loggedInEntity', {...entity});
           getAppSettingsWithoutAuth()
             .then(async (response) => {
-              console.log('Settings without auth:=>', response);
               await setStorage('appSetting', response.payload.app);
               await authContext.setEntity({...entity});
             })
             .catch((e) => {
               setTimeout(() => {
-                console.log('catch -> location screen setting api');
                 Alert.alert(strings.alertmessagetitle, e.message);
               }, 10);
             });
@@ -142,9 +139,6 @@ export default function EmailVerificationScreen({navigation, route}) {
     (firebaseUser, townscupUser) => {
       const response = {...townscupUser};
       let qbEntity = {...dummyAuthContext?.entity};
-
-      console.log('response : ', response);
-      console.log('qbEntity : ', qbEntity);
 
       QBlogin(qbEntity.uid, response)
         .then(async (res) => {
@@ -175,7 +169,6 @@ export default function EmailVerificationScreen({navigation, route}) {
             token: idTokenResult.token,
             expirationTime: idTokenResult.expirationTime,
           };
-          console.log('token:=>', token);
           dummyAuthContext.tokenData = token;
 
           setStorage('groupEventValue', true);
@@ -184,10 +177,8 @@ export default function EmailVerificationScreen({navigation, route}) {
             url: `${Config.BASE_URL}/users/${user?.uid}`,
             headers: {Authorization: `Bearer ${token?.token}`},
           };
-          console.log('Login Request:=>', userConfig);
           apiCall(userConfig)
             .then((response) => {
-              console.log('ressssss==>', response);
               if (response.status) {
                 dummyAuthContext.entity = {
                   uid: user.uid,
@@ -247,15 +238,13 @@ export default function EmailVerificationScreen({navigation, route}) {
       .then((res) => {
         setLoading(false);
         if (res.user.emailVerified) {
-          console.log('firebase user data', res);
-
           const loginOnAuthStateChanged = firebase
             .auth()
             .onAuthStateChanged(onAuthStateChanged);
           loginOnAuthStateChanged();
         } else {
           setTimeout(() => {
-            Alert.alert('Your email hasn’t been verified yet.');
+            Alert.alert(strings.emailNotVerifiedText);
           }, 100);
         }
       })
@@ -281,8 +270,7 @@ export default function EmailVerificationScreen({navigation, route}) {
         let message = '';
         setLoading(false);
         if (e.code === 'auth/too-many-requests') {
-          message =
-            'Email Verification Link is already Sent, Try after some moment';
+          message = strings.emailVerificationLintNotSendText;
         } else {
           message = e.message;
         }
@@ -292,11 +280,11 @@ export default function EmailVerificationScreen({navigation, route}) {
       });
   };
 
-  const getVerificationEmailText = `We have sent an email to ${
-    route?.params?.signupInfo?.emailAddress ?? ''
-  }. You need to verify your email to continue. If you have not received the verification email, please check your spam folder or click the resend button below.`;
+  const getVerificationEmailText = format(
+    strings.emailVerificationDescription,
+    route?.params?.signupInfo?.emailAddress ?? '',
+  );
 
-  // const auth = await firebase?.auth()?.currentUser;
   return (
     <LinearGradient
       colors={[colors.themeColor1, colors.themeColor3]}
@@ -315,7 +303,7 @@ export default function EmailVerificationScreen({navigation, route}) {
             color: colors.whiteColor,
             marginBottom: 25,
           }}>
-          Please verify your email.
+          {strings.verifyEmailText}
         </Text>
         <Text style={{fontSize: 16, color: 'white', fontFamily: fonts.RMedium}}>
           {getVerificationEmailText}
@@ -346,8 +334,8 @@ export default function EmailVerificationScreen({navigation, route}) {
             fontWeight: '700',
           }}>
           {timer !== 0
-            ? `YOU CAN SEND VERIFICATION EMAIL AGAIN AFTER ${timer} SECONDS.`
-            : 'SEND VERIFICATION EMAIL AGAIN'}
+            ? format(strings.sentVerificationEmailAfterSecond, timer)
+            : strings.sentEmailAgainTExt}
         </Text>
       </TouchableOpacity>
 
@@ -372,7 +360,7 @@ export default function EmailVerificationScreen({navigation, route}) {
               color: colors.darkYellowColor,
             }}>
             {' '}
-            I’VE VERIFIED MY EMAIL ADDRESS
+            {strings.iHaveVerifiedEmail}
           </Text>
         </View>
       </TouchableOpacity>

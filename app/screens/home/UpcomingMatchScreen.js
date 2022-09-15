@@ -12,6 +12,8 @@ import fonts from '../../Constants/Fonts';
 import AuthContext from '../../auth/context';
 import {getEventById} from '../../api/Schedule';
 import {getGameHomeScreen} from '../../utils/gameUtils';
+import {strings} from '../../../Localization/translation';
+import Verbs from '../../Constants/Verbs';
 
 export default function UpcomingMatchScreen({
   sportsData,
@@ -36,15 +38,15 @@ export default function UpcomingMatchScreen({
         nextWeek: '[Future]',
         sameElse: '[Future]',
       });
-      if (dateText === 'Today') {
+      if (dateText === Verbs.todayVerb) {
         todayData.push(item_filter);
         dataNotFound = false;
       }
-      if (dateText === 'Tomorrow') {
+      if (dateText === Verbs.tomorrowVerb) {
         tomorrowData.push(item_filter);
         dataNotFound = false;
       }
-      if (dateText === 'Future') {
+      if (dateText === Verbs.futureVerb) {
         futureData.push(item_filter);
         dataNotFound = false;
       }
@@ -52,11 +54,11 @@ export default function UpcomingMatchScreen({
     });
     filterData = [];
     if (todayData?.length > 0)
-      filterData.push({title: 'Today', data: todayData});
+      filterData.push({title: Verbs.todayVerb, data: todayData});
     if (tomorrowData?.length > 0)
-      filterData.push({title: 'Tomorrow', data: tomorrowData});
+      filterData.push({title: Verbs.tomorrowVerb, data: tomorrowData});
     if (futureData?.length > 0)
-      filterData.push({title: 'Future', data: futureData});
+      filterData.push({title: Verbs.futureVerb, data: futureData});
   }
 
   const onGameCardClick = (item) => {
@@ -74,7 +76,7 @@ export default function UpcomingMatchScreen({
         }
       } else {
         getEventById(
-          entity.role === 'user' ? 'users' : 'groups',
+          entity.role === Verbs.entityTypeUser ? 'users' : 'groups',
           entity.uid || entity.auth.user_id,
           item.cal_id,
           authContext,
@@ -94,7 +96,7 @@ export default function UpcomingMatchScreen({
   return (
     <KeyboardAvoidingView style={styles.mainContainer}>
       {dataNotFound ? (
-        <Text style={styles.dataNotFoundText}>Data Not Found!</Text>
+        <Text style={styles.dataNotFoundText}>{strings.dataNotFound}</Text>
       ) : (
         <SectionList
           renderItem={({item}) => {

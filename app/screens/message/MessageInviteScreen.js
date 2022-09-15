@@ -37,10 +37,11 @@ import {
 import AuthContext from '../../auth/context';
 import UserListShimmer from '../../components/shimmer/commonComponents/UserListShimmer';
 import TCGroupNameBadge from '../../components/TCGroupNameBadge';
+import { strings } from '../../../Localization/translation';
 
 const MessageInviteScreen = ({navigation}) => {
   const authContext = useContext(AuthContext);
-  const TAB_ITEMS = ['All', 'People', 'Teams', 'Clubs', 'Leagues'];
+  const TAB_ITEMS = [strings.allType, strings.peopleTitleText, strings.teamsTitleText, strings.clubsTitleText, strings.leaguesTitleText];
   const [currentTab, setCurrentTab] = useState(0);
   const [loading, setLoading] = useState(true);
   const [selectedInvitees, setSelectedInvitees] = useState([]);
@@ -285,7 +286,7 @@ const MessageInviteScreen = ({navigation}) => {
           marginTop: hp(2),
           color: colors.userPostTimeColor,
         }}>
-        No Records Found
+       {strings.noRecordFoundText}
       </Text>
     ),
     [],
@@ -373,7 +374,7 @@ const MessageInviteScreen = ({navigation}) => {
         });
       }
     } else {
-      Alert.alert('Select Members');
+      Alert.alert(strings.selectMembers);
     }
   }, [navigation, selectedInvitees]);
 
@@ -402,8 +403,8 @@ const MessageInviteScreen = ({navigation}) => {
                 opacity: selectedInvitees.length < 1 ? 0.5 : 1,
               }}>
               {selectedInvitees && selectedInvitees.length > 1
-                ? 'Next'
-                : 'Create'}
+                ? strings.next
+                : strings.create}
             </Text>
           </TouchableOpacity>
         }
@@ -516,7 +517,7 @@ const MessageInviteScreen = ({navigation}) => {
           value={searchText}
           onChangeText={setSearchText}
           style={styles.textInputStyle}
-          placeholder={'Search'}
+          placeholder={strings.searchText}
         />
       </View>
       <View style={styles.sperateLine} />

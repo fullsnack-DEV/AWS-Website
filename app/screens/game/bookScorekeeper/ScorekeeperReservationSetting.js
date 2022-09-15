@@ -42,13 +42,13 @@ export default function ScorekeeperReservationSetting({navigation, route}) {
   }, [authContext, getSettings, route?.params?.settingObj, sportName]);
 
   const challengeSettingMenu = [
-    {key: 'Availability', id: 1},
-    {key: 'Scorekeeper Fee', id: 2},
-    {key: 'Refund Policy', id: 3},
-    {key: 'Available Area', id: 4},
+    {key: strings.availability, id: 1},
+    {key: strings.scorekeeperFee, id: 2},
+    {key: strings.refundpolicy, id: 3},
+    {key: strings.availableAreaText, id: 4},
   ];
   const handleOpetions = async (opetions) => {
-    if (opetions === 'Availability') {
+    if (opetions === strings.availability) {
       if (settingObject) {
         navigation.navigate('AvailibilityScorekeeper', {
           settingObj: settingObject,
@@ -61,7 +61,7 @@ export default function ScorekeeperReservationSetting({navigation, route}) {
           sportName,
         });
       }
-    } else if (opetions === 'Scorekeeper Fee') {
+    } else if (opetions === strings.scorekeeperFee) {
       if (settingObject) {
         navigation.navigate('ScorekeeperFee', {
           settingObj: settingObject,
@@ -74,7 +74,7 @@ export default function ScorekeeperReservationSetting({navigation, route}) {
           sportName,
         });
       }
-    } else if (opetions === 'Refund Policy') {
+    } else if (opetions === strings.refundpolicy) {
       if (settingObject) {
         navigation.navigate('RefundPolicyScorekeeper', {
           settingObj: settingObject,
@@ -87,7 +87,7 @@ export default function ScorekeeperReservationSetting({navigation, route}) {
           sportName,
         });
       }
-    } else if (opetions === 'Available Area') {
+    } else if (opetions === strings.availableAreaText) {
       console.log(settingObject);
       if (settingObject) {
         navigation.navigate('AvailableAreaScorekeeper', {
@@ -104,30 +104,30 @@ export default function ScorekeeperReservationSetting({navigation, route}) {
     }
   };
   const getSettingValue = (item) => {
-    if (item.key === 'Availability') {
+    if (item.key === strings.availability) {
       if (settingObject?.scorekeeper_availibility) {
         return settingObject?.scorekeeper_availibility;
       }
     }
 
-    if (item.key === 'Scorekeeper Fee') {
+    if (item.key === strings.scorekeeperFee) {
       if (settingObject?.game_fee) {
         return `${settingObject?.game_fee?.fee} ${settingObject?.game_fee?.currency_type}`;
       }
     }
-    if (item.key === 'Refund Policy') {
+    if (item.key === strings.refundpolicy) {
       if (settingObject?.refund_policy) {
         return settingObject?.refund_policy;
       }
     }
 
-    if (item.key === 'Available Area') {
+    if (item.key === strings.availableAreaText) {
       if (settingObject?.available_area) {
-        return 'Complated';
+        return strings.completedTitleText;
       }
     }
 
-    return 'incomplete';
+    return strings.incomplete;
   };
   const renderMenu = ({item}) => (
     <TouchableWithoutFeedback
@@ -138,10 +138,10 @@ export default function ScorekeeperReservationSetting({navigation, route}) {
       <View style={{flexDirection: 'row'}}>
         <Text style={styles.listItems}>{item.key}</Text>
 
-        {getSettingValue(item) === 'incomplete' ? (
+        {getSettingValue(item) === strings.incomplete ? (
           <Text style={styles.incompleteStyle}>
             {/* {getSettingValue(item)} */}
-            incomplete
+            {strings.incomplete}
           </Text>
         ) : (
           <Text style={styles.completeStyle}>

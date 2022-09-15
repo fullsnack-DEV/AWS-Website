@@ -45,7 +45,7 @@ const HomeAwayStatsView = ({home, away}) => {
     <View style={{flex: 1}}>
       {/*    Home And Away Matches */}
       <TopHeader
-        title={'Home & Away'}
+        title={strings.homeAndAway}
         selectWeekMonth={selectWeekMonth}
         setSelectWeekMonth={setSelectWeekMonth}
       />
@@ -56,25 +56,25 @@ const HomeAwayStatsView = ({home, away}) => {
           <GradiantIndicator
             gradiantColor={[colors.blueGradiantStart, colors.blueGradiantEnd]}
           />
-          <Text>Win</Text>
+          <Text>{strings.win}</Text>
         </View>
         <View style={{...styles.teamIndicatorContentContainer}}>
           <GradiantIndicator
             gradiantColor={[colors.greenGradientStart, colors.greenGradientEnd]}
           />
-          <Text>{'Draws'}</Text>
+          <Text>{strings.draws}</Text>
         </View>
         <View style={{...styles.teamIndicatorContentContainer}}>
           <GradiantIndicator
             gradiantColor={[colors.themeColor, colors.yellowColor]}
           />
-          <Text>Losses</Text>
+          <Text>{strings.losses}</Text>
         </View>
       </View>
       <View style={{paddingHorizontal: 15}}>
         {/* Home Team */}
         <TCWinDrawLooseChart
-          heading={'Home'}
+          heading={strings.home}
           totalCount={home?.total_games ? home.total_games : 0}
           winCount={home?.winner ? home.winner : 0}
           drawCount={home?.draw ? home.draw : 0}
@@ -82,7 +82,7 @@ const HomeAwayStatsView = ({home, away}) => {
         />
         {/* Away Team */}
         <TCWinDrawLooseChart
-          heading={'Away'}
+          heading={strings.away}
           totalCount={away?.total_games ? away.total_games : 0}
           winCount={away?.winner ? away.winner : 0}
           drawCount={away?.draw ? away.draw : 0}

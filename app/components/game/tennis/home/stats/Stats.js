@@ -12,6 +12,7 @@ import TCThickDivider from '../../../../TCThickDivider';
 import TCTeamVS from '../../../../TCTeamVS';
 import TCThinDivider from '../../../../TCThinDivider';
 import GameStatus from '../../../../../Constants/GameStatus';
+import {strings} from '../../../../../../Localization/translation';
 
 const Stats = ({gameData, getGameStatsData}) => {
   console.log('stats gamedata:=>', gameData);
@@ -127,7 +128,7 @@ const Stats = ({gameData, getGameStatsData}) => {
       <Text style={styles.matchTimeText}>
         {gameData?.status === GameStatus.accepted ||
         gameData?.status === GameStatus.reset
-          ? 'N/A'
+          ? strings.NAText
           : getTimeDifferent(
               new Date().getTime(),
               gameData?.actual_startdatetime * 1000,

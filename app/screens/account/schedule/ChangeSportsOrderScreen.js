@@ -29,6 +29,7 @@ import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 import {getUserSettings, saveUserSettings} from '../../../api/Users';
+import {strings} from '../../../../Localization/translation';
 
 let image_url = '';
 
@@ -59,8 +60,8 @@ export default function ChangeSportsOrderScreen({navigation, route}) {
     ];
 
     const res = sportsList.map((obj) => ({
-        sport: obj.sport,
-      }));
+      sport: obj.sport,
+    }));
     const data = Utility.uniqueArray(res, 'sport');
     console.log('resresres', data);
 
@@ -75,9 +76,12 @@ export default function ChangeSportsOrderScreen({navigation, route}) {
         ) {
           setAddedSport([...setting?.payload?.user?.schedule_sport_filter]);
           setRemovedSport(
-            data.filter((e) => !setting?.payload?.user?.schedule_sport_filter?.some(
-                (item) => item.sport === e.sport,
-              )),
+            data.filter(
+              (e) =>
+                !setting?.payload?.user?.schedule_sport_filter?.some(
+                  (item) => item.sport === e.sport,
+                ),
+            ),
           );
         } else {
           setAddedSport([]);
@@ -312,7 +316,7 @@ export default function ChangeSportsOrderScreen({navigation, route}) {
             'Add New Sports Activity',
             'sports Activity Tags Order',
             'List / Unlist',
-            'Cancel',
+            strings.cancel,
           ]}
           cancelButtonIndex={3}
           onPress={(index) => {

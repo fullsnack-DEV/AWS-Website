@@ -24,6 +24,7 @@ import fonts from '../../../../Constants/Fonts';
 import TCKeyboardView from '../../../../components/TCKeyboardView';
 import uploadImages from '../../../../utils/imageAction';
 import TCFormProgress from '../../../../components/TCFormProgress';
+import Verbs from '../../../../Constants/Verbs';
 
 export default function CreateTeamForm4({navigation, route}) {
   const [selected, setSelected] = useState(0);
@@ -58,7 +59,7 @@ export default function CreateTeamForm4({navigation, route}) {
     bodyParams.privacy_events = 'everyone';
     bodyParams.is_joined = false;
     bodyParams.privacy_followers = 'everyone';
-    bodyParams.entity_type = strings.entityTypeTeam;
+    bodyParams.entity_type = Verbs.entityTypeTeam;
     bodyParams.is_admin = false;
     bodyParams.should_hide = false;
     console.log('bodyPARAMS:: ', bodyParams);
@@ -95,8 +96,8 @@ export default function CreateTeamForm4({navigation, route}) {
           }
           createGroup(
             bodyParams,
-            entity.role === strings.entityTypeClub && entity.uid,
-            entity.role === strings.entityTypeClub && strings.entityTypeClub,
+            entity.role === Verbs.entityTypeClub && entity.uid,
+            entity.role === Verbs.entityTypeClub && Verbs.entityTypeClub,
             authContext,
           )
             .then((response) => {
@@ -125,8 +126,8 @@ export default function CreateTeamForm4({navigation, route}) {
     } else {
       createGroup(
         bodyParams,
-        entity.role === strings.entityTypeClub && entity.uid,
-        entity.role === strings.entityTypeClub && strings.entityTypeClub,
+        entity.role === Verbs.entityTypeClub && entity.uid,
+        entity.role === Verbs.entityTypeClub && Verbs.entityTypeClub,
         authContext,
       )
         .then((response) => {

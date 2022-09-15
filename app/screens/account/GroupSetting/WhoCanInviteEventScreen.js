@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
+import {format} from 'react-string-format';
 import AuthContext from '../../../auth/context';
 import images from '../../../Constants/ImagePath';
 import * as Utility from '../../../utils';
@@ -21,6 +22,7 @@ import {patchGroup} from '../../../api/Groups';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
 import {strings} from '../../../../Localization/translation';
+import Verbs from '../../../Constants/Verbs';
 
 export default function WhoCanInviteEventScreen({navigation, route}) {
   const [comeFrom] = useState(route?.params?.comeFrom);
@@ -31,11 +33,21 @@ export default function WhoCanInviteEventScreen({navigation, route}) {
 
   const eventsSettingOpetions = [
     {
-      key: `${authContext.entity.role === 'team' ? 'Team' : 'Club'} & members`,
+      key: format(
+        strings.groupMembersText,
+        authContext.entity.role === Verbs.entityTypeTeam
+          ? strings.team
+          : strings.club,
+      ),
       id: 0,
     },
     {
-      key: `${authContext.entity.role === 'team' ? 'Team' : 'Club'} only`,
+      key: format(
+        strings.groupOnlyText,
+        authContext.entity.role === Verbs.entityTypeTeam
+          ? strings.team
+          : strings.club,
+      ),
       id: 1,
     },
   ];
@@ -54,7 +66,9 @@ export default function WhoCanInviteEventScreen({navigation, route}) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: () => (
-        <Text style={styles.headerTitle}>To What Event Can People Invite</Text>
+        <Text style={styles.headerTitle}>
+          {strings.toWhatEventPeopleInviteText}
+        </Text>
       ),
       headerRight: () => (
         <Text
@@ -62,7 +76,7 @@ export default function WhoCanInviteEventScreen({navigation, route}) {
           onPress={() => {
             onSavePressed();
           }}>
-          Save
+          {strings.save}
         </Text>
       ),
     });
@@ -107,8 +121,8 @@ export default function WhoCanInviteEventScreen({navigation, route}) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const onSavePressed = () => {
     if (
-      authContext.entity.role === 'team' ||
-      authContext.entity.role === 'club'
+      authContext.entity.role === Verbs.entityTypeTeam ||
+      authContext.entity.role === Verbs.entityTypeClub
     ) {
       saveTeam();
     }
@@ -140,9 +154,14 @@ export default function WhoCanInviteEventScreen({navigation, route}) {
       style={styles.mainContainer}
       showsVerticalScrollIndicator={false}>
       <ActivityLoader visible={loading} />
-      <Text style={styles.opetionsTitle}>{`Who can invite people to your ${
-        authContext.entity.role === 'team' ? 'team' : 'club'
-      } event?`}</Text>
+      <Text style={styles.opetionsTitle}>
+        {format(
+          strings.whoCanInviteToYourEventText,
+          authContext.entity.role === Verbs.entityTypeTeam
+            ? Verbs.entityTypeTeam
+            : Verbs.entityTypeClub,
+        )}
+      </Text>
       <FlatList
         data={eventsSettingOpetions}
         keyExtractor={(item, index) => index.toString()}

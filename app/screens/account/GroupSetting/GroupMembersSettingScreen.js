@@ -43,7 +43,7 @@ export default function GroupMembersSettingScreen({navigation, route}) {
       id: 1,
     },
     {key: 'Who Can Invite Member', id: 2},
-    {key: 'Recruiting Player', id: 3},
+    {key: strings.recruitingPlayerText, id: 3},
     {key: 'Members Profile', id: 4},
   ]);
 
@@ -82,7 +82,7 @@ export default function GroupMembersSettingScreen({navigation, route}) {
         sportName: authContext.entity?.obj?.sport,
         sportType: authContext.entity?.obj?.sport_type,
       });
-    } else if (opetions === 'Recruiting Player') {
+    } else if (opetions === strings.recruitingPlayerText) {
       navigation.navigate('RecruitingMemberScreen', {
         settingObj: hiringPlayersObject,
         comeFrom: 'GroupMembersSettingScreen',
@@ -121,7 +121,7 @@ export default function GroupMembersSettingScreen({navigation, route}) {
   const getSettingValue = useCallback(
     (item) => {
       console.log('item.key', item);
-      if (item === 'Recruiting Player') {
+      if (item === strings.recruitingPlayerText) {
         if (hiringPlayersObject?.hiringPlayers) {
           return hiringPlayersObject?.hiringPlayers;
         }
@@ -174,7 +174,7 @@ export default function GroupMembersSettingScreen({navigation, route}) {
           flexDirection: 'row',
         }}>
         <Text style={styles.listItems}>{item.key}</Text>
-        {item.key === 'Recruiting Player' && (
+        {item.key === strings.recruitingPlayerText && (
           <Text style={styles.currencyTypeStyle}>
             {getSettingValue(item.key)}
           </Text>

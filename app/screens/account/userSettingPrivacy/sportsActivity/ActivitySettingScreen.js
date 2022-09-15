@@ -17,6 +17,7 @@ import {
 } from 'react-native';
 
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
+import {strings} from '../../../../../Localization/translation';
 
 import AuthContext from '../../../../auth/context';
 import colors from '../../../../Constants/Colors';
@@ -39,18 +40,16 @@ export default function ActivitySettingScreen({navigation, route}) {
     });
   }, [authContext, navigation, sportObj]);
 
-  console.log('authContext?.entity?.obj', authContext);
-
   const getSettingMenu = useCallback(() => {
     if (getSportName(sportObj, authContext) === 'Tennis') {
       setUserSetting([
-        {key: 'Looking For Club', id: 1},
-        {key: 'Deactivate This Activity', id: 2},
+        {key: strings.lookingForClubText, id: 1},
+        {key: strings.deactivateActivityText, id: 2},
       ]);
     } else {
       setUserSetting([
-        {key: 'Looking For Team', id: 1},
-        {key: 'Deactivate This Activity', id: 2},
+        {key: strings.lookingForTeamText, id: 1},
+        {key: strings.deactivateActivityText, id: 2},
       ]);
     }
   }, [authContext, sportObj]);
@@ -60,17 +59,16 @@ export default function ActivitySettingScreen({navigation, route}) {
   }, [getSettingMenu]);
 
   const handleOpetions = async (opetions) => {
-    if (opetions === 'Looking For Team') {
+    if (opetions === strings.lookingForTeamText) {
       navigation.navigate('LookingForSettingScreen', {
         sport: sportObj,
       });
     }
-    if (opetions === 'Looking For Club') {
+    if (opetions === strings.lookingForClubText) {
       navigation.navigate('LookingForSettingScreen', {
         sport: sportObj,
       });
-    } else if (opetions === 'Deactivate This Activity') {
-      console.log('click on sport setting');
+    } else if (opetions === strings.deactivateActivityText) {
       navigation.navigate('DeactivateSportScreen', {
         sport: sportObj,
       });
@@ -84,10 +82,10 @@ export default function ActivitySettingScreen({navigation, route}) {
       }}>
       <View style={{flexDirection: 'row'}}>
         <Text style={styles.listItems}>{item.key}</Text>
-        {(item.key === 'Looking For Team' ||
-          item.key === 'Looking For Club') && (
+        {(item.key === strings.lookingForTeamText ||
+          item.key === strings.lookingForClubText) && (
           <Text style={styles.currencyTypeStyle}>
-            {sportObj.is_active ? 'Yes' : 'No'}
+            {sportObj.is_active ? strings.yes : strings.no}
           </Text>
         )}
         <Image source={images.nextArrow} style={styles.nextArrow} />

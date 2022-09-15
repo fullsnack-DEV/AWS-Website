@@ -1,4 +1,5 @@
 import Config from 'react-native-config';
+import images from '../Constants/ImagePath';
 
 // AsyncConstants
 export const authToken = 'authToken';
@@ -26,6 +27,86 @@ export const localize_language = [
   {name: 'French', code: 'fr'},
 ];
 
+export const mostUsedFeet = [
+  {label: 'Right', value: 'Right'},
+  {label: 'Left', value: 'Left'},
+  {label: 'Pose', value: 'Pose'},
+];
+
+export const privacy_Data = [
+  {
+    id: 0,
+    title: 'Everyone',
+    isSelected: true,
+  },
+  {
+    id: 1,
+    title: 'Followers',
+    isSelected: false,
+  },
+  {
+    id: 2,
+    title: 'Members in groups',
+    isSelected: false,
+  },
+  {
+    id: 3,
+    title: 'Only me',
+    isSelected: false,
+  },
+];
+
+export const moveToData = ['Starting', 'Subs', 'Non-roster'];
+
+export const TAB_ITEMS = ['Summary', 'Line-up', 'Stats', 'Gallery'];
+
+export const TAB_ITEMS_REFEREE = ['Info', 'Refereed Match', 'Reviews'];
+export const TAB_ITEMS_SCOREKEEPER = ['Info', 'Scorekeepers Match', 'Reviews'];
+
+export const league_Data = [
+  {
+    group_name: 'Premiereague League',
+    thumbnail: 'image',
+  },
+  {
+    group_name: 'Premiereague League',
+  },
+  {
+    group_name: 'La Liga',
+    thumbnail: 'image',
+  },
+  {
+    group_name: 'Premier League',
+  },
+];
+
+export const history_Data = [
+  {
+    name: 'TownsCup',
+    year: '2013',
+    winner: true,
+  },
+  {
+    name: 'Premier League',
+    year: '2009-2010',
+    winner: false,
+  },
+  {
+    name: 'Established',
+    year: '2002',
+  },
+];
+
+export const recordButtonList = [
+  'General',
+  'Ace',
+  'Winner',
+  'Unforced',
+  'Fault',
+  'Foot Fault',
+  'Let',
+];
+
 export const monthNames = [
   'January',
   'February',
@@ -41,7 +122,92 @@ export const monthNames = [
   'December',
 ];
 
+export const shortMonthNames = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'June',
+  'July',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
+
+export const reservationOpetions = [
+  'All',
+  'Matches',
+  'Refeering',
+  'Scorekeepering',
+  'Others',
+];
+
+export const mobileCountryCode = [
+  {label: 'Canada(+1)', value: 'Canada(+1)'},
+  {label: 'United States(+1)', value: 'United States(+1)'},
+];
+
 export const groupsType = [{type: 'Teams'}, {type: 'Clubs'}, {type: 'Leagues'}];
+
+export const game_data = [
+  {
+    id: 0,
+    image: images.gamesImage,
+    selectImage: images.gamesSelected,
+    title: 'Match',
+    total: 139,
+    isSelected: true,
+  },
+
+  {
+    id: 1,
+    image: images.goalsImage,
+    selectImage: images.goalsSelected,
+    title: 'Goals',
+    total: 12,
+    isSelected: false,
+  },
+  {
+    id: 2,
+    image: images.assistsImage,
+    selectImage: images.assistsSelected,
+    title: 'Assists',
+    total: 5,
+    isSelected: false,
+  },
+  {
+    id: 3,
+    image: images.yellowCardImage,
+    selectImage: images.yellowCardSelected,
+    title: 'Yellow card',
+    total: 6,
+    isSelected: false,
+  },
+  {
+    id: 4,
+    image: images.yellowCardImage,
+    selectImage: images.yellowCardSelected,
+    title: 'Red card',
+    total: 2,
+    isSelected: false,
+  },
+];
+
+export const statsData = [
+  {key: 'Ace', value: '12'},
+  {key: 'Double Faults', value: '4'},
+  {key: '1st serve in %', value: '64%'},
+  {key: '1st serve pts won %', value: '87%'},
+  {key: '2nd serve pts won %', value: '52%'},
+  {key: 'Winners ', value: '17'},
+  {key: 'Unforced errors ', value: '12'},
+  {key: 'Break Points Won ', value: '3/4'},
+  {key: 'Total Points Won ', value: '57'},
+];
+
 export const gameData = {
   challenge_referee: [
     {is_chief: true, responsible_team_id: 'aCqH9ixc23SSPyrwzUbNDDw3YGG3'},

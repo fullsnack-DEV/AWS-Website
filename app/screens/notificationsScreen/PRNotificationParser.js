@@ -596,7 +596,6 @@ export const parseInviteRequest = async (data) => {
 };
 
 const parseNormalNotification = async (data) => {
-  console.log('ALL DATA:=>', data);
   const activity = data.activities[0];
   let activity2;
 
@@ -607,7 +606,6 @@ const parseNormalNotification = async (data) => {
   if (activity.object) {
     notificationObject = JSON.parse(activity.object);
   }
-  console.log('Activity notificationObject:=>', activity.object);
   finalString.text = notificationObject.text;
   finalString.entityType =
     activity?.actor?.data?.entity_type === 'player'
@@ -645,7 +643,6 @@ const parseNormalNotification = async (data) => {
     );
   }
 
-  console.log('final string==>', finalString);
   return finalString;
 };
 

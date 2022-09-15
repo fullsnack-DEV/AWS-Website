@@ -16,6 +16,7 @@ import TCGroupNameBadge from '../../../../components/TCGroupNameBadge';
 import TCThinDivider from '../../../../components/TCThinDivider';
 import TCFormProgress from '../../../../components/TCFormProgress';
 import {strings} from '../../../../../Localization/translation';
+import Verbs from '../../../../Constants/Verbs';
 
 let entity = {};
 export default function CreateMemberProfileClubForm2({navigation, route}) {
@@ -77,7 +78,7 @@ export default function CreateMemberProfileClubForm2({navigation, route}) {
           </View>
           <TCGroupNameBadge
             name={((entity || {}).obj || {}).group_name || ''}
-            groupType={strings.entityTypeClub}
+            groupType={Verbs.entityTypeClub}
           />
         </View>
         <View style={styles.mainCheckBoxContainer}>

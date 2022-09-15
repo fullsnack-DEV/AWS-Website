@@ -19,6 +19,7 @@ import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 import AuthContext from '../../auth/context';
+import { strings } from '../../../Localization/translation';
 
 export default function SportSettingScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
@@ -29,7 +30,7 @@ export default function SportSettingScreen({navigation, route}) {
     navigation.setOptions({
       headerRight: () => (
         <Text style={styles.nextButtonStyle} onPress={() => onPressSave()}>
-          Save
+          {strings.save}
         </Text>
       ),
     });
@@ -102,7 +103,7 @@ export default function SportSettingScreen({navigation, route}) {
               sports: sportsSource,
             });
           }}>
-          <Text style={styles.addSportsTitle}>Add or delete Sports</Text>
+          <Text style={styles.addSportsTitle}>{strings.addDeleteSports}</Text>
         </TouchableOpacity>
       </SafeAreaView>
     </View>

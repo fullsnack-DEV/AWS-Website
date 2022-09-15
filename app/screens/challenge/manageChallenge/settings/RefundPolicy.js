@@ -56,7 +56,7 @@ export default function RefundPolicy({navigation, route}) {
           onPress={() => {
             onSavePressed();
           }}>
-          Save
+          {strings.save}
         </Text>
       ),
     });

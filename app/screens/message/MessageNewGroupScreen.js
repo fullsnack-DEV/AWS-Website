@@ -68,7 +68,7 @@ const MessageNewGroupScreen = ({route, navigation}) => {
 
   const checkValidation = () => {
     if (groupName === '') {
-      Alert.alert('Enter Chatroom Name');
+      Alert.alert(strings.enterChatroomName);
       return false;
     }
     return true;
@@ -162,7 +162,6 @@ const MessageNewGroupScreen = ({route, navigation}) => {
           accountType,
         )
           .then(async (res) => {
-            console.log('QB LOGIN:=>', res);
             currentEntity = {
               ...currentEntity,
               QB: {...res.user, connected: true, token: res?.session?.token},
@@ -300,7 +299,7 @@ const MessageNewGroupScreen = ({route, navigation}) => {
           </TouchableOpacity>
         }
         centerComponent={
-          <Text style={styles.eventTitleTextStyle}>New Group</Text>
+          <Text style={styles.eventTitleTextStyle}>{strings.newGroup}</Text>
         }
         rightComponent={
           <TouchableOpacity style={{padding: 2}} onPress={onSaveButtonClicked}>
@@ -420,11 +419,11 @@ const MessageNewGroupScreen = ({route, navigation}) => {
           />
         </TouchableOpacity>
         <View style={styles.inputBoxContainer}>
-          <Text style={styles.chatRoomName}>Chatroom Name</Text>
+          <Text style={styles.chatRoomName}>{strings.chatroomName}</Text>
           <View>
             <TCInputBox
               style={{borderRadius: 10}}
-              placeHolderText={'New Group'}
+              placeHolderText={strings.newGroup}
               value={groupName}
               onChangeText={setGroupName}
             />

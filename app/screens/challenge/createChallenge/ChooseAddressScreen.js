@@ -111,7 +111,7 @@ export default function ChooseAddressScreen({navigation, route}) {
             keyExtractor={(item, index) => index.toString()}
           />
         ) : (
-          <TCNoDataView title={'No Venue Found'} />
+          <TCNoDataView title={strings.noVenueFound} />
         )}
       </View>
     </TCKeyboardView>

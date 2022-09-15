@@ -77,39 +77,28 @@ export default function AvailableAreaScorekeeper({navigation, route}) {
         <Text
           style={styles.saveButtonStyle}
           onPress={() => {
-            console.log('searchAddress::', searchAddress?.address);
-            console.log(
-              'searchAddress?.description::',
-              searchAddress?.description,
-            );
-
-            console.log(
-              '!route?.params?.settingObj?.available_area?.address::',
-              !route?.params?.settingObj?.available_area?.address,
-            );
-
             if (areaRadio === 0) {
               const addresses = addressList.filter(
                 (obj) => obj?.address === '',
               );
 
               if (addresses.length > 0) {
-                Alert.alert('Please fill all address fields.');
+                Alert.alert(strings.fillAddressFieldValidation);
               } else {
                 onSavePressed();
               }
             } else if (selectedDistanceOption === undefined) {
-              Alert.alert('Please selected type of distance.');
+              Alert.alert(strings.typeDistanceValidation);
             } else if (
               searchAddress?.address === '' ||
               searchAddress?.description === ''
             ) {
-              Alert.alert('Please selected address for calculate range.');
+              Alert.alert(strings.selectAddressValidation);
             } else {
               onSavePressed();
             }
           }}>
-          Save
+          {strings.save}
         </Text>
       ),
     });
@@ -132,15 +121,11 @@ export default function AvailableAreaScorekeeper({navigation, route}) {
         return o;
       });
 
-      console.log('list', list);
-
       availableArea = {
         is_specific_address: areaRadio === 0,
         address_list: list,
       };
     }
-
-    console.log('availableArea', availableArea);
 
     const scorekeeperSetting = (
       authContext?.entity?.obj?.scorekeeper_data ?? []
@@ -174,7 +159,6 @@ export default function AvailableAreaScorekeeper({navigation, route}) {
       ...authContext?.entity?.obj,
       scorekeeper_data: registerdScorekeeperData,
     };
-    console.log('Body::::--->', body);
 
     patchPlayer(body, authContext)
       .then(async (response) => {
@@ -196,7 +180,6 @@ export default function AvailableAreaScorekeeper({navigation, route}) {
         } else {
           Alert.alert(strings.appName, response.messages);
         }
-        console.log('RESPONSE IS:: ', response);
         setloading(false);
       })
       .catch((e) => {
@@ -230,7 +213,7 @@ export default function AvailableAreaScorekeeper({navigation, route}) {
                 addressList.splice(index, 1);
                 setAddressList([...addressList]);
               }}>
-              Delete
+              {strings.delete}
             </Text>
           )}
         </View>
@@ -305,7 +288,7 @@ export default function AvailableAreaScorekeeper({navigation, route}) {
               style={styles.buttonView}
               onPress={() => addAddress()}>
               <Text style={styles.textStyle} numberOfLines={1}>
-                {'+ Add Area'}
+                {strings.addArea}
               </Text>
             </TouchableOpacity>
           </View>
@@ -326,9 +309,9 @@ export default function AvailableAreaScorekeeper({navigation, route}) {
               <Text
                 onPress={() => setDistancePopup(false)}
                 style={styles.cancelText}>
-                Cancel
+                {strings.cancel}
               </Text>
-              <Text style={styles.locationText}>Range</Text>
+              <Text style={styles.locationText}>{strings.range}</Text>
               <Text style={styles.cancelText}>{'       '}</Text>
             </View>
             <TCThinDivider width={'100%'} marginBottom={15} />
@@ -348,12 +331,12 @@ export default function AvailableAreaScorekeeper({navigation, route}) {
                       styles.curruentLocationText,
                       {color: colors.whiteColor},
                     ]}>
-                    Mi
+                    {strings.mi}
                   </Text>
                 </LinearGradient>
               ) : (
                 <View style={styles.backgroundView}>
-                  <Text style={styles.curruentLocationText}>Mi</Text>
+                  <Text style={styles.curruentLocationText}>{strings.mi}</Text>
                 </View>
               )}
             </TouchableOpacity>
@@ -369,12 +352,12 @@ export default function AvailableAreaScorekeeper({navigation, route}) {
                   colors={[colors.yellowColor, colors.orangeGradientColor]}
                   style={styles.backgroundView}>
                   <Text style={[styles.myCityText, {color: colors.whiteColor}]}>
-                    Km
+                    {strings.km}
                   </Text>
                 </LinearGradient>
               ) : (
                 <View style={styles.backgroundView}>
-                  <Text style={styles.myCityText}>Km</Text>
+                  <Text style={styles.myCityText}>{strings.km}</Text>
                 </View>
               )}
             </TouchableOpacity>
@@ -387,14 +370,10 @@ export default function AvailableAreaScorekeeper({navigation, route}) {
           visible={addressModalVisible}
           addressType={addressType}
           onSelect={(data) => {
-            console.log('select:', data);
-
             if (addressType === 'short') {
               const obj = [...addressList];
               obj[addressListIndex].address = data.description;
               setAddressList(obj);
-
-              console.log('select:', data.description);
             } else {
               setSearchAddress(data);
             }

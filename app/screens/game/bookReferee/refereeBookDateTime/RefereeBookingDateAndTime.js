@@ -16,6 +16,7 @@ import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
 import _ from 'lodash';
 
+import {format} from 'react-string-format';
 import AuthContext from '../../../../auth/context';
 import EventMapView from '../../../../components/Schedule/EventMapView';
 import colors from '../../../../Constants/Colors';
@@ -54,7 +55,6 @@ const RefereeBookingDateAndTime = ({navigation, route}) => {
   useEffect(() => {
     if (route?.params?.paymentMethod) {
       setDefaultCard(route?.params?.paymentMethod);
-      console.log('route?.params?.paymentMethod', route?.params?.paymentMethod);
     }
     getFeeDetail(route?.params?.paymentMethod ?? defaultCard);
   }, [route?.params?.paymentMethod]);
@@ -69,7 +69,6 @@ const RefereeBookingDateAndTime = ({navigation, route}) => {
     if (gameData) {
       getGameRefereeReservation(gameData?.game_id, false, true, authContext)
         .then((response) => {
-          console.log('resp:=>', response);
           setRefereeReservationList(response.payload);
         })
         .catch((e) => {
@@ -95,15 +94,12 @@ const RefereeBookingDateAndTime = ({navigation, route}) => {
           source: paymentObj?.id,
         };
 
-        console.log('Body', body);
         getRefereeGameFeeEstimation(
           route?.params?.isHirer ? authContext.entity.uid : userData?.user_id,
           body,
           authContext,
         )
           .then((response) => {
-            console.log('Estimate referee::=>', response.payload);
-
             body.hourly_game_fee = response?.payload?.hourly_game_fee ?? 0;
             body.currency_type =
               response?.payload?.currency_type ?? strings.defaultCurrency;
@@ -122,7 +118,6 @@ const RefereeBookingDateAndTime = ({navigation, route}) => {
             setLoading(false);
           })
           .catch((error) => {
-            console.log('Estimate Error::=>', error);
             setLoading(false);
             setTimeout(() => {
               Alert.alert(strings.alertmessagetitle, error);
@@ -153,24 +148,11 @@ const RefereeBookingDateAndTime = ({navigation, route}) => {
     />
   );
 
-  console.log('gameData:=>', gameData);
-
   const handleOnNext = () => {
     if (!gameData?.game_id) {
-      Alert.alert(strings.appName, "You don't have any selected match");
+      Alert.alert(strings.appName, strings.notSelectedMatch);
       return false;
     }
-
-    // if (
-    //   chiefOrAssistant === 'chief'
-    //   && !gameData?.challenge_referee?.who_secure?.[0]?.is_chief
-    // ) {
-    //   Alert.alert(
-    //     strings.appName,
-    //     'You can’t book the chief referee for this match.',
-    //   );
-    //   return false;
-    // }
 
     const bodyParams = {
       ...challengeObject,
@@ -210,14 +192,12 @@ const RefereeBookingDateAndTime = ({navigation, route}) => {
       !bodyParams?.source &&
       !route?.params?.isHirer
     ) {
-      Alert.alert(strings.appName, 'Select Payment Method');
+      Alert.alert(strings.appName, strings.selectPaymentText);
       return false;
     }
     if (Number(bodyParams.hourly_game_fee) === 0) delete bodyParams.source;
 
     delete bodyParams.hourly_game_fee;
-
-    console.log('bodyParams', bodyParams);
 
     setLoading(true);
     createUserReservation('referees', bodyParams, authContext)
@@ -228,11 +208,11 @@ const RefereeBookingDateAndTime = ({navigation, route}) => {
         //   navigationScreenName: navigationName,
         // });
         Alert.alert(
-          'Referee approval request sent.',
+          strings.refereeApprovalRequestSent,
           '',
           [
             {
-              text: 'OK',
+              text: strings.okTitleText,
               onPress: () => {
                 navigation.pop(2);
               },
@@ -247,7 +227,6 @@ const RefereeBookingDateAndTime = ({navigation, route}) => {
       .finally(() => setLoading(false));
     return true;
   };
-  console.log('GD : ', sportName);
   return (
     <>
       <ScrollView bounces={false} style={{flex: 1}}>
@@ -394,7 +373,9 @@ const RefereeBookingDateAndTime = ({navigation, route}) => {
                   {/* <Text style={styles.dateTimeText}> </Text> */}
                   <Text style={styles.timeZoneText}>
                     {strings.timezone}{' '}
-                    <Text style={{fontFamily: fonts.RRegular}}>Vancouver</Text>
+                    <Text style={{fontFamily: fonts.RRegular}}>
+                      {strings.vancouver}
+                    </Text>
                   </Text>
                 </View>
               </View>
@@ -489,7 +470,7 @@ const RefereeBookingDateAndTime = ({navigation, route}) => {
                   fontSize: 16,
                   color: colors.lightBlackColor,
                 }}>
-                {_.startCase(item)} Referee
+                {_.startCase(item)} {strings.refereeText}
               </Text>
               <TouchableOpacity
                 style={{
@@ -508,9 +489,7 @@ const RefereeBookingDateAndTime = ({navigation, route}) => {
                       refereeReservationList.filter((obj) => obj.chief_referee)
                         .length > 0
                     ) {
-                      Alert.alert(
-                        'You can’t book the chief referee for this game.',
-                      );
+                      Alert.alert(strings.chiefRefereeValidation);
                     } else {
                       setChiefOrAssistant(item);
                     }
@@ -520,11 +499,12 @@ const RefereeBookingDateAndTime = ({navigation, route}) => {
                       .length
                   ) {
                     Alert.alert(
-                      `You can’t book more than ${
+                      format(
+                        strings.cannotBookMoreThanReferee,
                         refereeReservationList.filter(
                           (obj) => !obj.chief_referee,
-                        ).length
-                      } assistant referees for this game. You can change the number of referees in the reservation details.`,
+                        ).length,
+                      ),
                     );
                   } else {
                     setChiefOrAssistant(item);
@@ -556,9 +536,7 @@ const RefereeBookingDateAndTime = ({navigation, route}) => {
             valueStyle={{marginTop: 10, marginBottom: 10}}
             title={strings.refundpolicy.toUpperCase()}
             value={route?.params?.settingObj?.refund_policy}
-            tooltipText={
-              '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the match fee and service fee are not refunded.'
-            }
+            tooltipText={strings.cancellationPolicyDesc}
             tooltipHeight={Utility.heightPercentageToDP('18%')}
             tooltipWidth={Utility.widthPercentageToDP('50%')}
             isEdit={false}

@@ -25,6 +25,7 @@ import {
 // import { useIsFocused } from '@react-navigation/native';
 
 // import ActivityLoader from '../../../components/loader/ActivityLoader';
+import {format} from 'react-string-format';
 
 import {Modalize} from 'react-native-modalize';
 import {Portal} from 'react-native-portalize';
@@ -51,17 +52,18 @@ import DataSource from '../../../Constants/DataSource';
 import EventAgendaSection from '../../../components/Schedule/EventAgendaSection';
 import DateTimePickerView from '../../../components/Schedule/DateTimePickerModal';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
+import Verbs from '../../../Constants/Verbs';
 
 let totalInvoiced, paidInvoice, openInvoice;
 
 export default function InvoiceScreen({navigation}) {
   const filterByDate = [
-    'All invoices',
-    'Past 90 days',
+    strings.allInvoiceText,
+    strings.past90DaysText,
     moment().subtract(1, 'month').format('MMMM'),
     moment().format('YYYY'),
     moment().format('YYYY') - 1,
-    'Choose a date range',
+    strings.chooseDateRangeText,
   ];
   const [loading, setloading] = useState(false);
   const isFocused = useIsFocused();
@@ -156,7 +158,6 @@ export default function InvoiceScreen({navigation}) {
       setloading(true);
       getTeamInvoice(authContext)
         .then((response) => {
-          console.log('Invoice list updated....');
           setloading(false);
 
           setMemberList(response.payload.members);
@@ -174,35 +175,29 @@ export default function InvoiceScreen({navigation}) {
     }
   }, [authContext, isFocused]);
 
-  const renderMemberView = ({item}) => {
-    console.log('item', item);
-    return (
-      <MemberInvoiceView
-        data={item}
-        onPressCard={() =>
-          navigation.navigate('MembersDetailScreen', {
-            from: 'member',
-            memberData: item,
-          })
-        }
-      />
-    );
-  };
+  const renderMemberView = ({item}) => (
+    <MemberInvoiceView
+      data={item}
+      onPressCard={() =>
+        navigation.navigate('MembersDetailScreen', {
+          from: 'member',
+          memberData: item,
+        })
+      }
+    />
+  );
 
-  const renderBatchView = ({item}) => {
-    console.log('item', item);
-    return (
-      <BatchFeeView
-        data={item}
-        onPressCard={() =>
-          navigation.navigate('BatchDetailScreen', {
-            from: 'batch',
-            batchData: item,
-          })
-        }
-      />
-    );
-  };
+  const renderBatchView = ({item}) => (
+    <BatchFeeView
+      data={item}
+      onPressCard={() =>
+        navigation.navigate('BatchDetailScreen', {
+          from: 'batch',
+          batchData: item,
+        })
+      }
+    />
+  );
 
   const createInvoiceModalHeader = () => (
     <View style={styles.headerStyle}>
@@ -210,10 +205,10 @@ export default function InvoiceScreen({navigation}) {
         <Text
           style={styles.cancelText}
           onPress={() => createInvoiceModalRef.current.close()}>
-          Cancel
+          {strings.cancel}
         </Text>
 
-        <Text style={styles.titleText}>New Invoice</Text>
+        <Text style={styles.titleText}>{strings.newInvoice}</Text>
         <Text
           style={styles.sendText}
           onPress={() => {
@@ -233,7 +228,6 @@ export default function InvoiceScreen({navigation}) {
               console.log(body);
               createInvoice(body, authContext)
                 .then((response) => {
-                  console.log('Create invoice res:=>', response.payload);
                   setloading(false);
                   createInvoiceModalRef?.current?.close();
                   getTeamInvoice(authContext)
@@ -261,7 +255,7 @@ export default function InvoiceScreen({navigation}) {
                 });
             }
           }}>
-          Send
+          {strings.send}
         </Text>
       </View>
 
@@ -275,10 +269,10 @@ export default function InvoiceScreen({navigation}) {
         <Text
           style={styles.cancelText}
           onPress={() => recipientModalRef.current.close()}>
-          Cancel
+          {strings.cancel}
         </Text>
 
-        <Text style={styles.titleText}>Recipients</Text>
+        <Text style={styles.titleText}>{strings.recipients}</Text>
         <Text
           style={styles.sendText}
           onPress={() => {
@@ -292,7 +286,7 @@ export default function InvoiceScreen({navigation}) {
             setSelectedRecipient(result);
             recipientModalRef.current.close();
           }}>
-          Done
+          {strings.done}
         </Text>
       </View>
 
@@ -306,16 +300,16 @@ export default function InvoiceScreen({navigation}) {
         <Text
           style={styles.cancelText}
           onPress={() => filterModalRef.current.close()}>
-          Cancel
+          {strings.cancel}
         </Text>
 
-        <Text style={styles.titleText}>Filter</Text>
+        <Text style={styles.titleText}>{strings.filter}</Text>
         <Text
           style={styles.sendText}
           onPress={() => {
             filterModalRef.current.close();
           }}>
-          Apply
+          {strings.apply}
         </Text>
       </View>
 
@@ -363,15 +357,11 @@ export default function InvoiceScreen({navigation}) {
 
   const getSelectedDayEvents = useCallback((date) => {
     const markedDates = {};
-    console.log('MARKED::', Object.keys(markedDates));
     markedDates[date] = {selected: true};
     setMarkingDays(markedDates);
-    console.log('MARKED DATES::', JSON.stringify(markedDates));
   }, []);
 
   const handleStartDatePress = (date) => {
-    console.log('Date::=>', new Date(new Date(date).getTime()));
-
     setFilterFromDate(
       toggle
         ? new Date(date).setHours(0, 0, 0, 0)
@@ -394,7 +384,6 @@ export default function InvoiceScreen({navigation}) {
     let dateValue = new Date();
     if (toggle) {
       dateValue = `${moment(date).format('ddd MMM DD YYYY')} 11:59:59 PM`;
-      console.log('Date Value :-', dateValue);
       setFilterToDate(dateValue);
     } else {
       setFilterToDate(date);
@@ -405,27 +394,27 @@ export default function InvoiceScreen({navigation}) {
   const createInvoiceValidation = () => {
     console.log(selectedDueDate);
     if (selectedRecipient.length <= 0) {
-      Alert.alert('Please select recipients.');
+      Alert.alert(strings.selectRecipientValidation);
       return false;
     }
     if (!selectedDueDate) {
-      Alert.alert('Please select due date.');
+      Alert.alert(strings.dueDateValidation);
       return false;
     }
     if (new Date(selectedDueDate) < new Date()) {
-      Alert.alert('Please select valid due date.');
+      Alert.alert(strings.validDueDateValidation);
       return false;
     }
     if (!invoiceTitle) {
-      Alert.alert('Please select invoice title.');
+      Alert.alert(strings.invoiceTitleValidation);
       return false;
     }
     if (!amount) {
-      Alert.alert('Please select due amount.');
+      Alert.alert(strings.dueAmountValidation);
       return false;
     }
     if (amount < 1 && amount >= 0) {
-      Alert.alert('User should not allow less than $1 amount.');
+      Alert.alert(strings.lessThan1AmountValidation);
       return false;
     }
     return true;
@@ -433,9 +422,7 @@ export default function InvoiceScreen({navigation}) {
 
   const memberListByFilter = useCallback(
     (status) => {
-      console.log('Status', status);
-
-      if (status === 'All') {
+      if (status === Verbs.allStatus) {
         return memberList;
       }
       if (status === 'Paid') {
@@ -459,9 +446,7 @@ export default function InvoiceScreen({navigation}) {
 
   const batchListByFilter = useCallback(
     (status) => {
-      console.log('Status', status);
-
-      if (status === 'All') {
+      if (status === Verbs.allStatus) {
         return batchList;
       }
       if (status === 'Paid') {
@@ -498,8 +483,8 @@ export default function InvoiceScreen({navigation}) {
       <View style={{flex: 1}}>
         <TCTabView
           totalTabs={2}
-          firstTabTitle={`MEMBERS (${memberList.length})`}
-          secondTabTitle={`BATCHES (${batchList.length})`}
+          firstTabTitle={format(strings.membersNText, memberList.length)}
+          secondTabTitle={format(strings.batchesNText, batchList.length)}
           indexCounter={maintabNumber}
           eventPrivacyContianer={{width: 100}}
           onFirstTabPress={() => setMaintabNumber(0)}
@@ -510,28 +495,31 @@ export default function InvoiceScreen({navigation}) {
 
         <InvoiceAmount
           currencyType={strings.defaultCurrency}
-          totalAmount={totalInvoiced ?? '00.00'}
-          paidAmount={paidInvoice ?? '00.00'}
-          openAmount={openInvoice ?? '00.00'}
+          totalAmount={totalInvoiced ?? strings.total00}
+          paidAmount={paidInvoice ?? strings.total00}
+          openAmount={openInvoice ?? strings.total00}
         />
 
         <TCTabView
           totalTabs={3}
-          firstTabTitle={`Open (${
+          firstTabTitle={format(
+            strings.openNInvoice,
             maintabNumber === 0
               ? memberListByFilter('Open').length
-              : batchListByFilter('Open').length
-          })`}
-          secondTabTitle={`Paid (${
+              : batchListByFilter('Open').length,
+          )}
+          secondTabTitle={format(
+            strings.paidNInvoice,
             maintabNumber === 0
               ? memberListByFilter('Paid').length
-              : batchListByFilter('Paid').length
-          })`}
-          thirdTabTitle={`All (${
+              : batchListByFilter('Paid').length,
+          )}
+          thirdTabTitle={format(
+            strings.allNInvoice,
             maintabNumber === 0
               ? memberListByFilter('All').length
-              : batchListByFilter('All').length
-          })`}
+              : batchListByFilter('All').length,
+          )}
           indexCounter={tabNumber}
           eventPrivacyContianer={{width: 100}}
           onFirstTabPress={() => {
@@ -574,7 +562,7 @@ export default function InvoiceScreen({navigation}) {
 
       <ActionSheet
         ref={actionSheet}
-        options={['Canceled Invoices', 'Cancel']}
+        options={[strings.cancelledInvoiceText, strings.cancel]}
         cancelButtonIndex={1}
         // destructiveButtonIndex={2}
         onPress={(index) => {
@@ -624,8 +612,8 @@ export default function InvoiceScreen({navigation}) {
                       : styles.recipientText
                   }>
                   {selectedRecipient.length > 0
-                    ? `${selectedRecipient.length} Recipients`
-                    : 'Recipients'}
+                    ? format(strings.NreciepientText, selectedRecipient.length)
+                    : strings.recipients}
                 </Text>
                 <Image style={styles.nextIconStyle} source={images.nextArrow} />
               </TouchableOpacity>
@@ -650,7 +638,7 @@ export default function InvoiceScreen({navigation}) {
                     fontSize: 16,
                     color: colors.lightBlackColor,
                   }}>
-                  Due Date
+                  {strings.dueDate}
                 </Text>
                 <Text
                   style={
@@ -660,7 +648,7 @@ export default function InvoiceScreen({navigation}) {
                   }>
                   {selectedDueDate
                     ? moment(selectedDueDate).format('MMM DD, YYYY')
-                    : 'Please select'}
+                    : strings.pleaseSelectText}
                 </Text>
               </TouchableOpacity>
               <TCThinDivider
@@ -780,7 +768,7 @@ export default function InvoiceScreen({navigation}) {
                       fontSize: 16,
                       color: colors.lightBlackColor,
                     }}>
-                    All
+                    {strings.all}
                   </Text>
                   {/* <Image source={images.orangeCheckBox} style={styles.checkButton} /> */}
                   <TouchableOpacity
@@ -815,7 +803,7 @@ export default function InvoiceScreen({navigation}) {
                     fontSize: 16,
                     color: colors.lightBlackColor,
                   }}>
-                  Members
+                  {strings.membersTitle}
                 </Text>
                 <FlatList
                   data={recipientData}

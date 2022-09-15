@@ -9,6 +9,7 @@ import FastImage from 'react-native-fast-image';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
+import {strings} from '../../../../Localization/translation';
 
 const BookRefereeSuccess = ({navigation, route}) => {
   const navigationScreenName = route?.params?.navigationScreenName;
@@ -51,7 +52,7 @@ const BookRefereeSuccess = ({navigation, route}) => {
             marginTop: 10,
             textAlign: 'center',
           }}>
-          Referee booking request{'\n'}sent.
+          {strings.refereeBookingSent}
         </Text>
       </LinearGradient>
     </View>

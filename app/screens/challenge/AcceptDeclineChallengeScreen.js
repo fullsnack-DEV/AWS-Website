@@ -3,6 +3,7 @@ import React, {useEffect, useState, useContext} from 'react';
 import {StyleSheet, View, Text, Image, FlatList, Alert} from 'react-native';
 import moment from 'moment';
 import {useIsFocused, useFocusEffect} from '@react-navigation/native';
+import {format} from 'react-string-format';
 import {acceptDeclineChallenge} from '../../api/Challenge';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import {strings} from '../../../Localization/translation';
@@ -25,6 +26,7 @@ import MatchFeesCard from '../../components/challenge/MatchFeesCard';
 import ReservationNumber from '../../components/reservations/ReservationNumber';
 import {getGameHomeScreen} from '../../utils/gameUtils';
 import TCGameDetailRules from '../../components/TCGameDetailRules';
+import Verbs from '../../Constants/Verbs';
 
 let entity = {};
 let timer;
@@ -345,7 +347,7 @@ export default function AcceptDeclineChallengeScreen({navigation, route}) {
             <View style={styles.challengerView}>
               <View style={styles.teamView}>
                 <Image source={images.requestOut} style={styles.reqOutImage} />
-                <Text style={styles.challengerText}>Challenger</Text>
+                <Text style={styles.challengerText}>{strings.challenger}</Text>
               </View>
 
               <View style={styles.teamView}>
@@ -367,7 +369,7 @@ export default function AcceptDeclineChallengeScreen({navigation, route}) {
             <View style={styles.challengeeView}>
               <View style={styles.teamView}>
                 <Image source={images.requestIn} style={styles.reqOutImage} />
-                <Text style={styles.challengeeText}>Challengee</Text>
+                <Text style={styles.challengeeText}>{strings.challengee}</Text>
               </View>
 
               <View style={styles.teamView}>
@@ -401,21 +403,24 @@ export default function AcceptDeclineChallengeScreen({navigation, route}) {
               <View>
                 {bodyParams.offer_expiry * 1000 < new Date().getTime() ? (
                   <Text style={styles.challengeMessage}>
-                    RESERVATION REQUEST EXPIRED
+                    {strings.reservationRequestExpired}
                   </Text>
                 ) : (
                   <Text style={styles.challengeMessage}>
-                    RESERVATION REQUEST SENT
+                    {strings.reservationRequestSentText}
                   </Text>
                 )}
                 {bodyParams.offer_expiry * 1000 < new Date().getTime() ? (
                   <Text style={styles.challengeText}>
-                    Your match reservation request has been expired.
+                    {strings.hasBeenExpired}
                   </Text>
                 ) : (
                   <Text style={styles.challengeText}>
-                    {singlePlayerText()} sent a match reservation request to{' '}
-                    {getTeamName(bodyParams)}. This request will be expired in{' '}
+                    {format(
+                      strings.sentRequestToDate,
+                      singlePlayerText(),
+                      getTeamName(bodyParams),
+                    )}
                     <Text style={styles.timeText}>
                       {getDayTimeDifferent(
                         bodyParams.offer_expiry * 1000,
@@ -432,23 +437,27 @@ export default function AcceptDeclineChallengeScreen({navigation, route}) {
               <View>
                 {bodyParams.offer_expiry * 1000 < new Date().getTime() ? (
                   <Text style={styles.challengeMessage}>
-                    RESERVATION REQUEST EXPIRED
+                    {strings.reservationRequestExpired}
                   </Text>
                 ) : (
                   <Text style={styles.challengeMessage}>
-                    RESERVATION REQUEST PENDING
+                    {strings.reservationRequestPendingText}
                   </Text>
                 )}
                 {bodyParams.offer_expiry * 1000 < new Date().getTime() ? (
                   <Text style={styles.challengeText}>
-                    The match reservation request from {getTeamName(bodyParams)}{' '}
-                    has been expired.
+                    {format(
+                      strings.requestExpiredFrom,
+                      getTeamName(bodyParams),
+                    )}
                   </Text>
                 ) : (
                   <Text style={styles.challengeText}>
-                    {singlePlayerText()} received a match reservation request
-                    from {getTeamName(bodyParams)}. This request will be expired
-                    in{' '}
+                    {format(
+                      strings.receivedRequestToDate,
+                      singlePlayerText(),
+                      getTeamName(bodyParams),
+                    )}
                     <Text style={styles.timeText}>
                       {getDayTimeDifferent(
                         bodyParams.offer_expiry * 1000,
@@ -470,10 +479,9 @@ export default function AcceptDeclineChallengeScreen({navigation, route}) {
                   but your payment hasnt gone through yet.
                 </Text>
                 <Text style={styles.pendingRequestText}>
-                  {
-                    'This reservation will be canceled unless the payment goes through within '
-                  }
-                  <Text style={{color: colors.themeColor}}>{countDown}</Text>
+                  {strings.paymentGoesWith}
+                  <Text
+                    style={{color: colors.themeColor}}>{` ${countDown}`}</Text>
                   {'.'}
                 </Text>
               </View>
@@ -488,13 +496,11 @@ export default function AcceptDeclineChallengeScreen({navigation, route}) {
                   yet.
                 </Text>
                 <Text style={styles.awatingNotesText}>
-                  {
-                    'This reservation will be canceled unless the payment goes through within '
-                  }
-                  <Text style={{color: colors.themeColor}}>{countDown}</Text>
-                  {
-                    '.\nYou can cancel the game reservation without a penalty before the payment will go through.'
-                  }
+                  {strings.paymentGoesWith}
+
+                  <Text
+                    style={{color: colors.themeColor}}>{` ${countDown}`}</Text>
+                  {strings.youCanCancelReservationText}
                 </Text>
               </View>
             )}
@@ -510,11 +516,14 @@ export default function AcceptDeclineChallengeScreen({navigation, route}) {
                     styles.challengeMessage,
                     {color: colors.greenGradientStart},
                   ]}>
-                  RESERVATION CONFIRMED
+                  {strings.reservationConfirmedText}
                 </Text>
                 <Text style={styles.challengeText}>
-                  {singlePlayerText()} has the confirmed match reservation
-                  against {getTeamName(bodyParams)}.
+                  {format(
+                    strings.confirmedReservationAgainst,
+                    singlePlayerText(),
+                    getTeamName(bodyParams),
+                  )}
                 </Text>
               </View>
             )}
@@ -528,11 +537,14 @@ export default function AcceptDeclineChallengeScreen({navigation, route}) {
                     styles.challengeMessage,
                     {color: colors.greenGradientStart},
                   ]}>
-                  RESERVATION CONFIRMED
+                  {strings.reservationConfirmedText}
                 </Text>
                 <Text style={styles.challengeText}>
-                  {getTeamName(bodyParams)} has the confirmed match reservation
-                  against {singlePlayerText()}.
+                  {format(
+                    strings.confirmedReservationAgainst,
+                    getTeamName(bodyParams),
+                    singlePlayerText(),
+                  )}
                 </Text>
               </View>
             )}
@@ -546,11 +558,14 @@ export default function AcceptDeclineChallengeScreen({navigation, route}) {
                     styles.challengeMessage,
                     {color: colors.googleColor},
                   ]}>
-                  RESERVATION REQUEST DECLINED
+                  {strings.reservationRequestDeclined}
                 </Text>
                 <Text style={styles.challengeText}>
-                  {singlePlayerText()} declined the match reservation request
-                  from {getTeamName(bodyParams)}.
+                  {format(
+                    strings.declinedRequestFrom,
+                    singlePlayerText(),
+                    getTeamName(bodyParams),
+                  )}
                 </Text>
               </View>
             )}
@@ -562,11 +577,10 @@ export default function AcceptDeclineChallengeScreen({navigation, route}) {
                     styles.challengeMessage,
                     {color: colors.googleColor},
                   ]}>
-                  RESERVATION REQUEST DECLINED
+                  {strings.reservationRequestDeclined}
                 </Text>
                 <Text style={styles.challengeText}>
-                  {getTeamName(bodyParams)} declined your match reservation
-                  request.
+                  {format(strings.fromDeclinedRequest, getTeamName(bodyParams))}
                 </Text>
               </View>
             )}
@@ -580,11 +594,14 @@ export default function AcceptDeclineChallengeScreen({navigation, route}) {
                     styles.challengeMessage,
                     {color: colors.googleColor},
                   ]}>
-                  RESERVATION CANCELLED
+                  {strings.reservationCancelledText}
                 </Text>
                 <Text style={styles.challengeText}>
-                  {singlePlayerText()} cancelled the match reservation from{' '}
-                  {getTeamName(bodyParams)}.
+                  {format(
+                    strings.cancelledReservationfrom,
+                    singlePlayerText(),
+                    getTeamName(bodyParams),
+                  )}
                 </Text>
               </View>
             )}
@@ -596,10 +613,13 @@ export default function AcceptDeclineChallengeScreen({navigation, route}) {
                     styles.challengeMessage,
                     {color: colors.googleColor},
                   ]}>
-                  RESERVATION CANCELLED
+                  {strings.reservationCancelledText}
                 </Text>
                 <Text style={styles.challengeText}>
-                  {getTeamName(bodyParams)} cancelled your match reservation.
+                  {format(
+                    strings.cancelledYourReservation,
+                    getTeamName(bodyParams),
+                  )}
                 </Text>
               </View>
             )}
@@ -607,7 +627,7 @@ export default function AcceptDeclineChallengeScreen({navigation, route}) {
           {checkSenderOrReceiver(bodyParams) === 'sender' &&
             bodyParams.status === ReservationStatus.pendingpayment && (
               <TCGradientButton
-                title={'TRY TO PAY AGAIN'}
+                title={strings.tryToPayText}
                 onPress={() => {
                   navigation.navigate('PayAgainScreen', {
                     body: bodyParams,
@@ -625,7 +645,7 @@ export default function AcceptDeclineChallengeScreen({navigation, route}) {
             bodyParams.status === ReservationStatus.pendingpayment
           ) && (
             <TCBorderButton
-              title={'GAME HOME'}
+              title={strings.gameHomeText}
               onPress={() => {
                 const gameHome = getGameHomeScreen(bodyParams?.sport);
                 if (gameHome && bodyParams?.game_id) {
@@ -642,13 +662,14 @@ export default function AcceptDeclineChallengeScreen({navigation, route}) {
           {bodyParams && (
             <View>
               <TCLabel
-                title={`Match · ${
+                title={format(
+                  strings.matchSport,
                   bodyParams.sport.charAt(0).toUpperCase() +
-                  bodyParams.sport.slice(1)
-                }`}
+                    bodyParams.sport.slice(1),
+                )}
               />
               <TCInfoImageField
-                title={'Home'}
+                title={strings.home}
                 image={
                   bodyParams?.home_team?.thumbnail &&
                   bodyParams.home_team.thumbnail
@@ -661,7 +682,7 @@ export default function AcceptDeclineChallengeScreen({navigation, route}) {
               />
               <TCThinDivider />
               <TCInfoImageField
-                title={'Away'}
+                title={strings.away}
                 image={
                   bodyParams?.away_team?.thumbnail &&
                   bodyParams.away_team.thumbnail
@@ -674,7 +695,7 @@ export default function AcceptDeclineChallengeScreen({navigation, route}) {
               />
               <TCThinDivider />
               <TCInfoField
-                title={'Time'}
+                title={strings.timeText}
                 value={`${getDateFormat(
                   bodyParams.start_datetime * 1000,
                 )} -\n${getDateFormat(
@@ -688,14 +709,14 @@ export default function AcceptDeclineChallengeScreen({navigation, route}) {
               />
               <TCThinDivider />
               <TCInfoField
-                title={'Venue'}
+                title={strings.venue}
                 value={bodyParams.venue.title}
                 marginLeft={30}
                 titleStyle={{fontSize: 16}}
               />
               <TCThinDivider />
               <TCInfoField
-                title={'Address'}
+                title={strings.address}
                 value={bodyParams.venue.address || bodyParams.venue.description}
                 marginLeft={30}
                 titleStyle={{fontSize: 16}}
@@ -719,7 +740,7 @@ export default function AcceptDeclineChallengeScreen({navigation, route}) {
 
           {bodyParams && (
             <View>
-              <TCLabel title={'Responsibility  to Secure Venue'} />
+              <TCLabel title={strings.responsibilityToSecureVenue} />
               <View style={styles.viewContainer}>
                 <View style={styles.fieldValue}>
                   <Image
@@ -736,12 +757,12 @@ export default function AcceptDeclineChallengeScreen({navigation, route}) {
           )}
           {bodyParams && (
             <View>
-              <TCLabel title={'Rules'} />
+              <TCLabel title={strings.rules} />
               <Text style={styles.rulesText}>{bodyParams.special_rule}</Text>
             </View>
           )}
           <TCThickDivider marginTop={20} />
-          {bodyParams?.sport.toLowerCase() === 'tennis' && (
+          {bodyParams?.sport.toLowerCase() === Verbs.tennisSport && (
             <View>
               <TCGameDetailRules gameRules={bodyParams?.gameRules} />
               <TCThickDivider marginTop={20} />
@@ -749,7 +770,7 @@ export default function AcceptDeclineChallengeScreen({navigation, route}) {
           )}
 
           <View>
-            <TCLabel title={'Responsibility to Secure Referees'} />
+            <TCLabel title={strings.secureRefereesText} />
             {bodyParams && (
               <FlatList
                 data={bodyParams.referee}
@@ -761,7 +782,7 @@ export default function AcceptDeclineChallengeScreen({navigation, route}) {
           </View>
           <TCThickDivider marginTop={10} />
           <View>
-            <TCLabel title={'Responsibility to Secure ScoreKeeper'} />
+            <TCLabel title={strings.secureScorekeeperText} />
             {bodyParams && (
               <FlatList
                 data={bodyParams.scorekeeper}
@@ -773,7 +794,11 @@ export default function AcceptDeclineChallengeScreen({navigation, route}) {
           </View>
           <TCThickDivider marginTop={10} />
           <TCLabel
-            title={bodyParams.invited_by === entity.uid ? 'Payment' : 'Earning'}
+            title={
+              bodyParams.invited_by === entity.uid
+                ? strings.payment
+                : strings.earning
+            }
           />
           <MatchFeesCard
             challengeObj={{
@@ -786,16 +811,15 @@ export default function AcceptDeclineChallengeScreen({navigation, route}) {
             }
           />
           <Text style={styles.responsibilityNote}>
-            These match fee doesn’t include the{' '}
+            {`${strings.feeNotInclude} `}
             <Text style={styles.responsibilityNoteMedium}>
-              Match Place Fee, Referee Fee
-            </Text>{' '}
-            and{' '}
+              {strings.matchFeeRefereeFeeText}
+            </Text>
+            {` ${strings.and} `}
             <Text style={styles.responsibilityNoteMedium}>
-              Scorekeeper Fee.
+              {strings.scorekeeperFeeText}
             </Text>{' '}
-            The match place, referees and scorekeepers should be secured by the
-            team who has charge of them at its own expense.
+            {strings.refereesScorekeepersText}
           </Text>
           {checkSenderOrReceiver(bodyParams) === 'sender' &&
             bodyParams.status === ReservationStatus.offered &&

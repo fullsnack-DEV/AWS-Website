@@ -11,12 +11,16 @@ import {
   SafeAreaView,
 } from 'react-native';
 
+import {format} from 'react-string-format';
+
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import {useIsFocused} from '@react-navigation/native';
 import AuthContext from '../../../auth/context';
 import images from '../../../Constants/ImagePath';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
+import {strings} from '../../../../Localization/translation';
+import Verbs from '../../../Constants/Verbs';
 
 export default function EventSettingPrivacyScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
@@ -25,8 +29,8 @@ export default function EventSettingPrivacyScreen({navigation, route}) {
   const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
   const [pointEvent, setPointEvent] = useState('auto');
   const [teamSetting] = useState([
-    {key: 'Who Can Create Event', id: 0},
-    {key: 'Who Can Invite People', id: 1},
+    {key: strings.whoCanCreateEventText, id: 0},
+    {key: strings.whoCanInvitePeopleText, id: 1},
   ]);
   const [whoCreateEvent, setWhoCreateEvent] = useState(
     route?.params?.whoCreateEvent
@@ -40,7 +44,9 @@ export default function EventSettingPrivacyScreen({navigation, route}) {
   );
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: () => <Text style={styles.headerTitle}>Event</Text>,
+      headerTitle: () => (
+        <Text style={styles.headerTitle}>{strings.event}</Text>
+      ),
     });
   }, [navigation]);
 
@@ -82,7 +88,6 @@ export default function EventSettingPrivacyScreen({navigation, route}) {
     setIsAccountDeactivated(false);
     setPointEvent('auto');
     if (isFocused) {
-      console.log('its called....', authContext.entity.role);
       if (authContext?.entity?.obj?.is_pause === true) {
         setIsAccountDeactivated(true);
         setPointEvent('none');
@@ -102,26 +107,40 @@ export default function EventSettingPrivacyScreen({navigation, route}) {
   ]);
 
   const getSettingValue = (item) => {
-    console.log('item.key', item);
-
     if (item === teamSetting[0].key) {
       if (whoCreateEvent === 1) {
-        return `${
-          authContext.entity.role === 'team' ? 'Team' : 'Club'
-        } & members`;
+        return format(
+          strings.groupMembersText,
+          authContext.entity.role === Verbs.entityTypeTeam
+            ? strings.team
+            : strings.club,
+        );
       }
       if (whoCreateEvent === 0) {
-        return `${authContext.entity.role === 'team' ? 'Team' : 'Club'} only`;
+        return format(
+          strings.groupOnlyText,
+          authContext.entity.role === Verbs.entityTypeTeam
+            ? strings.team
+            : strings.club,
+        );
       }
     }
     if (item === teamSetting[1].key) {
       if (whoInviteEvent === 1) {
-        return `${
-          authContext.entity.role === 'team' ? 'Team' : 'Club'
-        } & members`;
+        return format(
+          strings.groupMembersText,
+          authContext.entity.role === Verbs.entityTypeTeam
+            ? strings.team
+            : strings.club,
+        );
       }
       if (whoInviteEvent === 0) {
-        return `${authContext.entity.role === 'team' ? 'Team' : 'Club'} only`;
+        return format(
+          strings.groupOnlyText,
+          authContext.entity.role === Verbs.entityTypeTeam
+            ? strings.team
+            : strings.club,
+        );
       }
     }
   };

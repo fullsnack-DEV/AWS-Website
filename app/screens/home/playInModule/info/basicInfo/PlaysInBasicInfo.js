@@ -15,6 +15,7 @@ import DateTimePickerView from '../../../../../components/Schedule/DateTimePicke
 import ModalLocationSearch from '../../../../../components/Home/ModalLocationSearch';
 import PlaysInEditBasicInfoPrivacySettings from '../PlaysInEditBasicInfoPrivacySettings';
 import DataSource from '../../../../../Constants/DataSource';
+import {mostUsedFeet} from '../../../../../utils/constant';
 // import AuthContext from '../../../../../auth/context';
 // import * as Utility from '../../../../../utils';
 
@@ -23,7 +24,6 @@ const PlaysInBasicInfo = ({isAdmin, currentUserData, onSave}) => {
   const [showEditPlaysInModal, setShowEditPlaysInModal] = useState(false);
   const [editModalType, setEditModalType] = useState('');
 
-  console.log('showEditPlaysInModal', showEditPlaysInModal);
   return (
     <View>
       <EditEventItem
@@ -71,7 +71,11 @@ const PlaysInBasicInfo = ({isAdmin, currentUserData, onSave}) => {
       </EditEventItem>
       <ActionSheet
         ref={actionSheet}
-        options={['Edit Basic Info', strings.privacySettingText, 'Cancel']}
+        options={[
+          strings.editbasicinfotitle,
+          strings.privacySettingText,
+          strings.cancel,
+        ]}
         cancelButtonIndex={2}
         onPress={(index) => {
           if (index === 0) setEditModalType(strings.basicinfotitle);
@@ -125,8 +129,7 @@ const EditPlaysInModal = ({
         most_used_foot: userData?.most_used_foot,
       };
       onSave(params)
-        .then((res) => {
-          console.log('respppppp:', res);
+        .then(() => {
           closeEditPlayInModal();
           // setTimeout(async() => {
           //   const entity = authContext.entity;
@@ -150,7 +153,9 @@ const EditPlaysInModal = ({
       visible={visible}
       onClose={closeEditPlayInModal}
       heading={`${
-        editModalType !== strings.privacySettings ? 'Edit ' : ''
+        editModalType !== strings.privacySettings
+          ? `${strings.editTitleText} `
+          : ''
       }${editModalType}`}
       onSavePress={onSavePress}>
       <ModalLocationSearch
@@ -204,13 +209,15 @@ const EditPlaysInModal = ({
             containerStyle={{marginTop: 15}}>
             <EventTextInput
               value={userData?.height}
-              placeholder={'Enter Height'}
+              placeholder={strings.enterHeightText}
               onChangeText={(text) => {
                 setUserData({...userData, height: text});
               }}
               displayLastTitle={true}
               keyboardType={'numeric'}
-              valueEndTitle={userData?.height?.trim().length > 0 ? ' cm' : ''}
+              valueEndTitle={
+                userData?.height?.trim().length > 0 ? strings.cm : ''
+              }
             />
           </EventItemRender>
 
@@ -220,7 +227,7 @@ const EditPlaysInModal = ({
             containerStyle={{marginTop: 15}}>
             <EventTextInput
               value={userData?.weight}
-              placeholder={'Enter Weight'}
+              placeholder={strings.enterWeightText}
               onChangeText={(text) => {
                 setUserData({...userData, weight: text});
               }}
@@ -236,12 +243,8 @@ const EditPlaysInModal = ({
             containerStyle={{marginTop: 15}}>
             <View style={{marginTop: 8}}>
               <TCPicker
-                dataSource={[
-                  {label: 'Right', value: 'Right'},
-                  {label: 'Left', value: 'Left'},
-                  {label: 'Pose', value: 'Pose'},
-                ]}
-                placeholder={'Select Most Used Foot'}
+                dataSource={mostUsedFeet}
+                placeholder={strings.selectMostUsedFootText}
                 value={userData?.most_used_foot}
                 onValueChange={(value) => {
                   setUserData({...userData, most_used_foot: value});

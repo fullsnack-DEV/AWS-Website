@@ -12,6 +12,7 @@ import Video from 'react-native-video';
 import MediaControls, {PLAYER_STATES} from 'react-native-media-controls';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
+import {strings} from '../../../Localization/translation';
 
 export default function NewsFeedVideoPlayer({navigation, route}) {
   const [currentTime, setCurrentTime] = useState(0);
@@ -120,7 +121,7 @@ export default function NewsFeedVideoPlayer({navigation, route}) {
         playerState={playerState}>
         <MediaControls.Toolbar>
           <View style={styles.toolbar}>
-            <Text style={{color: colors.red}}>Im a custom toolbar </Text>
+            <Text style={{color: colors.red}}>{strings.iamCustomToolbar}</Text>
           </View>
         </MediaControls.Toolbar>
       </MediaControls>

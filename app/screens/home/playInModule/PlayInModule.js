@@ -22,6 +22,7 @@ import React, {
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
 import ActionSheet from 'react-native-actionsheet';
+import {format} from 'react-string-format';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import colors from '../../../Constants/Colors';
 import images from '../../../Constants/ImagePath';
@@ -41,6 +42,7 @@ import TCGradientDivider from '../../../components/TCThinGradientDivider';
 import PlayInReviewsView from './stats/PlayInReviewsView';
 import TCScrollableTabs from '../../../components/TCScrollableTabs';
 import * as Utils from '../../challenge/manageChallenge/settingUtility';
+import Verbs from '../../../Constants/Verbs';
 
 let TAB_ITEMS = [];
 
@@ -56,8 +58,6 @@ const PlayInModule = ({
   navigation,
   openPlayInModal,
 }) => {
-  console.log('userDatauserData', userData);
-
   const actionSheetRef = useRef();
   const actionSheetSettingRef = useRef();
   const [singlePlayerGame, setSinglePlayerGame] = useState(true);
@@ -69,8 +69,6 @@ const PlayInModule = ({
   const [challengeType, setChallengeType] = useState();
 
   const [loading, setloading] = useState(false);
-
-  console.log('authContext?.entity111', authContext?.entity);
 
   const onClose = useCallback(() => {
     onModalClose();
@@ -86,27 +84,39 @@ const PlayInModule = ({
 
   useEffect(() => {
     if (
-      playInObject?.sport !== 'tennis' &&
-      playInObject?.sport_type !== 'single'
+      playInObject?.sport !== Verbs.tennisSport &&
+      playInObject?.sport_type !== Verbs.singleSport
     ) {
-      TAB_ITEMS = ['Info', 'Scoreboard', 'Stats'];
+      TAB_ITEMS = [strings.infoTitle, strings.scoreboard, strings.stats];
       setSinglePlayerGame(false);
-    } else TAB_ITEMS = ['Info', 'Scoreboard', 'Stats', 'Reviews'];
+    } else
+      TAB_ITEMS = [
+        strings.infoTitle,
+        strings.scoreboard,
+        strings.stats,
+        strings.reviews,
+      ];
   }, [playInObject]);
 
   useEffect(() => {
     if (playInObject.sport) {
       if (
-        playInObject.sport === 'tennis' &&
-        playInObject.sport_type === 'single'
+        playInObject.sport === Verbs.tennisSport &&
+        playInObject.sport_type === Verbs.singleSport
       ) {
         setMainTitle({
-          title: `Player in ${Utility.getSportName(playInObject, authContext)}`,
+          title: format(
+            strings.playerIn,
+            Utility.getSportName(playInObject, authContext),
+          ),
           titleIcon: images.tennisSingleHeaderIcon,
         });
       } else {
         setMainTitle({
-          title: `Play in ${Utility.getSportName(playInObject, authContext)}`,
+          title: format(
+            strings.playIn,
+            Utility.getSportName(playInObject, authContext),
+          ),
           titleIcon: images.soccerImage,
         });
       }
@@ -259,8 +269,8 @@ const PlayInModule = ({
     if (
       currentTab === 0 &&
       authContext?.entity?.uid !== currentUserData?.user_id &&
-      (authContext?.entity?.role === 'user' ||
-        authContext?.entity?.role === 'player') &&
+      (authContext?.entity?.role === Verbs.entityTypeUser ||
+        authContext?.entity?.role === Verbs.entityTypePlayer) &&
       mySport?.length > 0
     ) {
       return (
@@ -338,8 +348,8 @@ const PlayInModule = ({
     if (
       mySetting !== undefined &&
       oppSetting !== undefined &&
-      oppSetting?.availibility === 'On' &&
-      mySetting?.availibility === 'On'
+      oppSetting?.availibility === Verbs.on &&
+      mySetting?.availibility === Verbs.on
     ) {
       console.log('===1====');
       console.log('both123:=>');
@@ -347,9 +357,9 @@ const PlayInModule = ({
     } else if (
       (oppSetting?.game_duration || oppSetting?.score_rules) &&
       oppSetting?.availibility &&
-      oppSetting?.availibility === 'On' &&
+      oppSetting?.availibility === Verbs.on &&
       (mySetting?.availibility === undefined ||
-        mySetting?.availibility === 'Off') &&
+        mySetting?.availibility === Verbs.off) &&
       oppSetting?.special_rules !== undefined &&
       oppSetting?.general_rules !== undefined &&
       oppSetting?.responsible_for_referee &&
@@ -366,10 +376,10 @@ const PlayInModule = ({
     } else if (
       mySetting !== undefined &&
       (oppSetting?.availibility === undefined ||
-        oppSetting?.availibility === 'Off') &&
+        oppSetting?.availibility === Verbs.off) &&
       (mySetting?.game_duration || mySetting?.score_rules) &&
       (mySetting?.availibility !== undefined ||
-        mySetting?.availibility === 'On') &&
+        mySetting?.availibility === Verbs.on) &&
       mySetting?.special_rules !== undefined &&
       mySetting?.general_rules !== undefined &&
       mySetting?.responsible_for_referee &&
@@ -425,7 +435,7 @@ const PlayInModule = ({
     } else if (challengeType === 'challenge') {
       actionSheetRef.current.show();
     } else if (challengeType === 'invite') {
-      if (mySetting.availibility === 'On') {
+      if (mySetting.availibility === Verbs.on) {
         onClose();
         console.log('currentUserDatacurrentUserData', playInObject);
         navigation.navigate('InviteChallengeScreen', {
@@ -469,7 +479,9 @@ const PlayInModule = ({
               () => (
                 <PlayInProfileViewSection
                   isPatch={!!playInObject?.lookingForTeamClub}
-                  patchType={playInObject?.sport === 'tennis' ? 'club' : 'team'}
+                  patchType={
+                    playInObject?.sport === Verbs.tennisSport ? 'club' : 'team'
+                  }
                   onSettingPress={() => {
                     actionSheetSettingRef.current.show();
                   }}
@@ -510,7 +522,11 @@ const PlayInModule = ({
 
       <ActionSheet
         ref={actionSheetRef}
-        options={['Continue to Challenge', 'Invite to Challenge', 'Cancel']}
+        options={[
+          'Continue to Challenge',
+          'Invite to Challenge',
+          strings.cancel,
+        ]}
         cancelButtonIndex={2}
         // destructiveButtonIndex={3}
         onPress={(index) => {
@@ -534,7 +550,7 @@ const PlayInModule = ({
                 setloading(false);
                 console.log('challenge setting:::::=>', obj);
 
-                if (obj?.availibility === 'On') {
+                if (obj?.availibility === Verbs.on) {
                   if (
                     (obj?.game_duration || obj?.score_rules) &&
                     obj?.availibility &&
@@ -587,7 +603,7 @@ const PlayInModule = ({
               .then((obj) => {
                 setloading(false);
                 console.log('challenge setting:::::=>', obj);
-                if (obj?.availibility === 'On') {
+                if (obj?.availibility === Verbs.on) {
                   if (
                     (obj?.game_duration || obj?.score_rules) &&
                     obj?.availibility &&
@@ -612,15 +628,15 @@ const PlayInModule = ({
                   } else {
                     setTimeout(() => {
                       Alert.alert(
-                        'Please complete your all setting before send a challenge invitation.',
+                        strings.completeSettingBeforeInvite,
                         '',
                         [
                           {
-                            text: 'Cancel',
+                            text: strings.cancel,
                             onPress: () => console.log('Cancel Pressed!'),
                           },
                           {
-                            text: 'OK',
+                            text: strings.okTitleText,
                             onPress: () => {
                               onClose();
 
@@ -652,7 +668,11 @@ const PlayInModule = ({
       />
       <ActionSheet
         ref={actionSheetSettingRef}
-        options={['Looking for club', 'Deactivate This Activity', 'Cancel']}
+        options={[
+          'Looking for club',
+          'Deactivate This Activity',
+          strings.cancel,
+        ]}
         cancelButtonIndex={2}
         // destructiveButtonIndex={2}
         onPress={(index) => {

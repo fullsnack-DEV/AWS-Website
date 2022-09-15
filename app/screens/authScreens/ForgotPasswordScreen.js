@@ -37,7 +37,7 @@ export default function ForgotPasswordScreen({navigation}) {
               forgotPassword(email);
             }
           }}>
-          Next
+          {strings.next}
         </Text>
       ),
       headerLeft: () => (
@@ -61,7 +61,7 @@ export default function ForgotPasswordScreen({navigation}) {
   // Basic input validation
   const checkValidation = () => {
     if (email === '') {
-      Alert.alert(strings.appName, 'Email cannot be blank');
+      Alert.alert(strings.appName, strings.emailNotBlankText);
       return false;
     }
     if (ValidateEmail(email) === false) {

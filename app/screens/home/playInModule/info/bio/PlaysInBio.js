@@ -38,7 +38,11 @@ const PlaysInBio = ({isAdmin, currentUserData, sportName, onSave}) => {
       </EditEventItem>
       <ActionSheet
         ref={actionSheet}
-        options={['Edit Bio', strings.privacySettingText, 'Cancel']}
+        options={[
+          strings.editBioText,
+          strings.privacySettingText,
+          strings.cancel,
+        ]}
         cancelButtonIndex={2}
         onPress={(index) => {
           if (index === 0) setEditModalType(strings.bio);
@@ -96,7 +100,9 @@ const EditPlaysInModal = ({
       visible={visible}
       onClose={closeEditPlayInModal}
       heading={`${
-        editModalType !== strings.privacySettings ? 'Edit ' : ''
+        editModalType !== strings.privacySettings
+          ? `${strings.editTitleText} `
+          : ''
       }${editModalType}`}
       onSavePress={onSavePress}>
       {editModalType === strings.bio ? (

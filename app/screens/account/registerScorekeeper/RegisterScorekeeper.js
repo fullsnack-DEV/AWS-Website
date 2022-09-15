@@ -14,6 +14,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
+import {format} from 'react-string-format';
 
 import Modal from 'react-native-modal';
 
@@ -112,22 +113,22 @@ export default function RegisterScorekeeper({navigation}) {
 
   const checkValidation = () => {
     if (!sports) {
-      Alert.alert(strings.appName, 'Sports cannot be blank');
+      Alert.alert(strings.appName, strings.sportcannotbeblank);
       return false;
     }
     if (selectedLanguages.length <= 0) {
-      Alert.alert(strings.appName, 'Language cannot be blank');
+      Alert.alert(strings.appName, strings.languageCannotBlank);
       return false;
     }
     if (description === '') {
-      Alert.alert(strings.appName, 'Description cannot be blank');
+      Alert.alert(strings.appName, strings.descriptionCanNotBlank);
       return false;
     }
     const isExist = scorekeepersData?.filter((item) => item?.sport === sports);
     if (isExist?.length) {
       Alert.alert(
         strings.appName,
-        `You are already registrated as a scorekeeper in ${sports}`,
+        format(strings.youAlreadyRegisterScorekeeper, sports),
       );
       return false;
     }
@@ -298,7 +299,7 @@ export default function RegisterScorekeeper({navigation}) {
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
               }}>
-              Languages
+              {strings.languages}
             </Text>
             <TouchableOpacity
               onPress={() => {
@@ -318,7 +319,7 @@ export default function RegisterScorekeeper({navigation}) {
                   fontFamily: fonts.RRegular,
                   color: colors.themeColor,
                 }}>
-                Apply
+                {strings.apply}
               </Text>
             </TouchableOpacity>
           </View>
@@ -380,7 +381,7 @@ export default function RegisterScorekeeper({navigation}) {
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
               }}>
-              Sports
+              {strings.sportsTitleText}
             </Text>
             <TouchableOpacity
               onPress={() => {
@@ -395,7 +396,7 @@ export default function RegisterScorekeeper({navigation}) {
                   fontFamily: fonts.RRegular,
                   color: colors.themeColor,
                 }}>
-                Apply
+                {strings.apply}
               </Text>
             </TouchableOpacity>
           </View>

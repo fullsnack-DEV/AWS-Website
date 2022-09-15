@@ -9,27 +9,28 @@ import images from '../Constants/ImagePath';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import {getSportName} from '../utils';
+import {strings} from '../../Localization/translation';
+import Verbs from '../Constants/Verbs';
 
 const TCRecruitingPlayers = ({data, entityType, selectedSport, onPress}) => {
   const authContext = useContext(AuthContext);
 
   let entityName, sportText, gameFee, currency;
 
-  if (entityType === 'player') {
+  if (entityType === Verbs.entityTypePlayer) {
     entityName = data.full_name;
   } else {
     entityName = data.group_name;
   }
 
-  if (entityType === 'player') {
-    if (selectedSport.sport !== 'All') {
+  if (entityType === Verbs.entityTypePlayer) {
+    if (selectedSport.sport !== Verbs.allVerb) {
       const filterdData = (data?.registered_sports || []).filter(
         (obj) =>
           obj.sport === selectedSport.sport &&
           obj.sport_type === selectedSport.sport_type &&
-          obj?.setting?.availibility === 'On',
+          obj?.setting?.availibility === Verbs.on,
       );
-      console.log('filterdData', filterdData);
       if (filterdData.length > 0) {
         sportText = `${getSportName(filterdData[0], authContext)}`;
         gameFee = filterdData?.[0]?.setting?.game_fee?.fee;
@@ -37,9 +38,8 @@ const TCRecruitingPlayers = ({data, entityType, selectedSport, onPress}) => {
       }
     } else {
       const filterdData = (data?.registered_sports || []).filter(
-        (obj) => obj?.setting?.availibility === 'On',
+        (obj) => obj?.setting?.availibility === Verbs.on,
       );
-      console.log('filterdData', filterdData);
 
       if (filterdData.length === 1) {
         sportText = getSportName(filterdData[0], authContext);
@@ -81,9 +81,9 @@ const TCRecruitingPlayers = ({data, entityType, selectedSport, onPress}) => {
           </Text>
           <Image
             source={
-              (entityType === 'team' && images.teamT) ||
-              (entityType === 'club' && images.clubC) ||
-              (entityType === 'league' && images.leagueL)
+              (entityType === Verbs.entityTypeTeam && images.teamT) ||
+              (entityType === Verbs.entityTypeClub && images.clubC) ||
+              (entityType === Verbs.entityTypeLeague && images.leagueL)
             }
             style={styles.teamTImage}
           />
@@ -95,7 +95,7 @@ const TCRecruitingPlayers = ({data, entityType, selectedSport, onPress}) => {
         </View>
         <View>
           <Text style={styles.amountTitle} numberOfLines={2}>
-            {gameFee && `LV 13 · ${gameFee} ${currency}`}
+            {gameFee && `${strings.levelsCount} · ${gameFee} ${currency}`}
           </Text>
         </View>
       </View>

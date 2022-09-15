@@ -606,7 +606,7 @@ const NewsFeedPostItems = memo(
         <ActionSheet
           ref={actionSheet}
           title={'News Feed Post'}
-          options={['Edit Post', 'Delete Post', 'Cancel']}
+          options={['Edit Post', 'Delete Post', strings.cancel]}
           cancelButtonIndex={2}
           destructiveButtonIndex={1}
           onPress={onActionSheetItemPress}
@@ -615,7 +615,7 @@ const NewsFeedPostItems = memo(
         <ActionSheet
           ref={shareActionSheet}
           title={'News Feed Post'}
-          options={['Repost', 'Copy Link', 'More', 'Cancel']} // ['Repost', 'Copy Link', 'More', 'Cancel']
+          options={['Repost', 'Copy Link', 'More', strings.cancel]} // ['Repost', 'Copy Link', 'More', strings.cancel]
           cancelButtonIndex={3}
           onPress={onShareActionSheetItemPress}
         />

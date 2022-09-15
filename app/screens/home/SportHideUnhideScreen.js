@@ -1,3 +1,4 @@
+/* eslint-disable no-empty */
 /* eslint-disable consistent-return */
 /* eslint-disable no-unsafe-optional-chaining */
 import React, {
@@ -30,6 +31,8 @@ import TCThinDivider from '../../components/TCThinDivider';
 import UserInfoAddRole from '../../components/Home/User/UserInfoAddRole';
 import {patchPlayer} from '../../api/Users';
 import ToggleView from '../../components/Schedule/ToggleView';
+import {strings} from '../../../Localization/translation';
+import Verbs from '../../Constants/Verbs';
 
 let image_url = '';
 
@@ -41,9 +44,9 @@ export default function SportHideUnhideScreen({navigation}) {
   // eslint-disable-next-line no-unused-vars
   const [entitySource, setEntitySource] = useState(
     authObject?.sport_setting?.entity_order || [
-      'Player',
-      'Referee',
-      'Scorekeeper',
+      Verbs.entityTypePlayer,
+      Verbs.entityTypeReferee,
+      Verbs.entityTypeScorekeeper,
     ],
   );
   console.log('authContext?.entity?.obj', authContext?.entity?.obj);
@@ -142,7 +145,7 @@ export default function SportHideUnhideScreen({navigation}) {
                   authObject?.sport_setting?.activity_order &&
                   authObject?.sport_setting?.activity_order?.length > 0
                 ) {
-                  if (item?.type === 'player') {
+                  if (item?.type === Verbs.entityTypePlayer) {
                     finalObject = authObject?.sport_setting?.activity_order.map(
                       (obj) => {
                         if (
@@ -174,27 +177,26 @@ export default function SportHideUnhideScreen({navigation}) {
                       },
                     );
                   }
-                  console.log('final object::', finalObject);
                   const tempOrder = {...authObject};
                   tempOrder.sport_setting.activity_order = finalObject;
                   tempOrder.registered_sports = finalObject.filter(
-                    (obj) => obj.type === 'player',
+                    (obj) => obj.type === Verbs.entityTypePlayer,
                   );
                   tempOrder.referee_data = finalObject.filter(
-                    (obj) => obj.type === 'referee',
+                    (obj) => obj.type === Verbs.entityTypeReferee,
                   );
                   tempOrder.scorekeeper_data = finalObject.filter(
-                    (obj) => obj.type === 'scorekeeper',
+                    (obj) => obj.type === Verbs.entityTypeScorekeeper,
                   );
                   setAuthObject({...tempOrder});
                   setActivityList(finalObject);
                   setActivityOrder(finalObject);
                 } else {
                   console.log('else block');
-                  if (item.type === 'player') {
+                  if (item.type === Verbs.entityTypePlayer) {
                     const temp = authObject?.registered_sports?.filter(
                       (obj) =>
-                        obj.type === 'player' &&
+                        obj.type === Verbs.entityTypePlayer &&
                         (!('is_active' in obj) || obj.is_active !== false),
                     );
                     temp[index].is_hide = !temp[index].is_hide;
@@ -211,10 +213,10 @@ export default function SportHideUnhideScreen({navigation}) {
                       ...authObject?.referee_data,
                       ...authObject?.scorekeeper_data,
                     ]);
-                  } else if (item.type === 'referee') {
+                  } else if (item.type === Verbs.entityTypeReferee) {
                     const temp = authObject?.referee_data?.filter(
                       (obj) =>
-                        obj.type === 'referee' &&
+                        obj.type === Verbs.entityTypeReferee &&
                         (!('is_active' in obj) || obj.is_active !== false),
                     );
                     temp[index].is_hide = !temp[index].is_hide;
@@ -235,7 +237,7 @@ export default function SportHideUnhideScreen({navigation}) {
                   } else {
                     const temp = authObject?.scorekeeper_data?.filter(
                       (obj) =>
-                        obj.type === 'scorekeeper' &&
+                        obj.type === Verbs.entityTypeScorekeeper &&
                         (!('is_active' in obj) || obj.is_active !== false),
                     );
                     temp[index].is_hide = !temp[index].is_hide;
@@ -270,7 +272,7 @@ export default function SportHideUnhideScreen({navigation}) {
       <ActivityLoader visible={loading} />
 
       <View>
-        <Text style={styles.listTitle}>Preview</Text>
+        <Text style={styles.listTitle}>{strings.preview}</Text>
         <FlatList
           horizontal={true}
           showsHorizontalScrollIndicator={false}
@@ -305,14 +307,15 @@ export default function SportHideUnhideScreen({navigation}) {
       </View>
       <ScrollView style={{flex: 1}}>
         {authObject?.registered_sports?.filter(
-          (obj) => obj.type === 'player' && obj.is_active === true,
+          (obj) =>
+            obj.type === Verbs.entityTypePlayer && obj.is_active === true,
         )?.length > 0 && (
           <View>
-            <Text style={styles.listTitle}>Playing</Text>
+            <Text style={styles.listTitle}>{strings.playingTitleText}</Text>
             <FlatList
               showsHorizontalScrollIndicator={false}
               data={authObject?.registered_sports
-                ?.filter((obj) => obj.type === 'player')
+                ?.filter((obj) => obj.type === Verbs.entityTypePlayer)
                 .sort((a, b) => a.sport.localeCompare(b.sport))}
               keyExtractor={keyExtractor}
               renderItem={renderSportsActivityView}
@@ -320,14 +323,15 @@ export default function SportHideUnhideScreen({navigation}) {
           </View>
         )}
         {authObject?.referee_data?.filter(
-          (obj) => obj.type === 'referee' && obj.is_active === true,
+          (obj) =>
+            obj.type === Verbs.entityTypeReferee && obj.is_active === true,
         )?.length > 0 && (
           <View>
             <Text style={styles.listTitle}>Refereeing</Text>
             <FlatList
               showsHorizontalScrollIndicator={false}
               data={authObject?.referee_data
-                ?.filter((obj) => obj.type === 'referee')
+                ?.filter((obj) => obj.type === Verbs.entityTypeReferee)
                 .sort((a, b) => a.sport.localeCompare(b.sport))}
               keyExtractor={keyExtractor}
               renderItem={renderSportsActivityView}
@@ -335,14 +339,15 @@ export default function SportHideUnhideScreen({navigation}) {
           </View>
         )}
         {authObject?.scorekeeper_data?.filter(
-          (obj) => obj.type === 'scorekeeper' && obj.is_active === true,
+          (obj) =>
+            obj.type === Verbs.entityTypeScorekeeper && obj.is_active === true,
         )?.length > 0 && (
           <View>
-            <Text style={styles.listTitle}>Scorekeeper</Text>
+            <Text style={styles.listTitle}>{strings.scorekeeper}</Text>
             <FlatList
               showsHorizontalScrollIndicator={false}
               data={authObject?.scorekeeper_data
-                ?.filter((obj) => obj.type === 'scorekeeper')
+                ?.filter((obj) => obj.type === Verbs.entityTypeScorekeeper)
                 .sort((a, b) => a.sport.localeCompare(b.sport))}
               keyExtractor={keyExtractor}
               renderItem={renderSportsActivityView}
@@ -354,21 +359,18 @@ export default function SportHideUnhideScreen({navigation}) {
       <ActionSheet
         ref={actionSheet}
         options={[
-          'Add New Sports Activity',
-          'sports Activity Tags Order',
-          'List / Unlist',
-          'Cancel',
+          strings.addSportActivity,
+          strings.sportActivityTagOrder,
+          strings.listUnlist,
+          strings.cancel,
         ]}
         cancelButtonIndex={3}
         onPress={(index) => {
           if (index === 0) {
-            console.log('0');
           } else if (index === 1) {
-            console.log('1');
           } else if (index === 2) {
             navigation.navigate('SportActivityScreen');
           } else if (index === 3) {
-            console.log('3');
           }
         }}
       />

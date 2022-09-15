@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
 import {Modalize} from 'react-native-modalize';
+import {format} from 'react-string-format';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import TopBackgroundHeader from '../../../components/game/tennis/home/TopBackgroundHeader';
 import TCScrollableProfileTabs from '../../../components/TCScrollableProfileTabs';
@@ -59,6 +60,7 @@ import GameStatus from '../../../Constants/GameStatus';
 import {ImageUploadContext} from '../../../context/ImageUploadContext';
 import ScorekeeperReservationStatus from '../../../Constants/ScorekeeperReservationStatus';
 import RefereeReservationStatus from '../../../Constants/RefereeReservationStatus';
+import Verbs from '../../../Constants/Verbs';
 
 const TAB_ITEMS = ['Summary', 'Stats', 'Gallery'];
 
@@ -111,8 +113,6 @@ const TennisHome = ({navigation, route}) => {
     const tennisSportData = authContext?.sports?.filter(
       (item) => item.sport === gameData?.sport,
     )[0];
-
-    console.log('tennisSportData', authContext?.sports);
 
     const teamReviewProp = tennisSportData?.team_review_properties ?? [];
     const playerReviewProp = tennisSportData?.player_review_properties ?? [];
@@ -213,7 +213,6 @@ const TennisHome = ({navigation, route}) => {
       const homeID = homeTeam?.group_id ?? homeTeam?.user_id;
       const awayID = awayTeam?.group_id ?? awayTeam?.user_id;
 
-      console.log('gameObject::=>', gameObject);
       let reviewFillingStatus = 0;
 
       if (
@@ -221,7 +220,6 @@ const TennisHome = ({navigation, route}) => {
         awayID === authContext.entity.uid
       ) {
         if (homeID === authContext.entity.uid) {
-          console.log('homeIIID');
           if (gameObject?.away_review_id) {
             const refereeReviews = gameObject?.referees?.filter(
               (obj) => obj?.review_id,
@@ -257,8 +255,6 @@ const TennisHome = ({navigation, route}) => {
           }
         }
         if (awayID === authContext.entity.uid) {
-          console.log('awayIIID');
-
           if (gameObject?.home_review_id) {
             const refereeReviews = gameObject?.referees?.filter(
               (obj) => obj?.review_id,
@@ -276,7 +272,6 @@ const TennisHome = ({navigation, route}) => {
               reviewFillingStatus = 1;
             }
           } else {
-            console.log('awayELSEIIID');
             const refereeReviews = gameObject?.referees?.filter(
               (obj) => obj?.review_id,
             );
@@ -310,12 +305,12 @@ const TennisHome = ({navigation, route}) => {
       }
 
       if (reviewFillingStatus === 0) {
-        return 'LEAVE REVIEW';
+        return strings.leaveReview;
       }
       if (reviewFillingStatus === 1) {
-        return 'LEAVE OR EDIT A REVIEW';
+        return strings.leaveEditReview;
       }
-      return 'EDIT REVIEW';
+      return strings.editReview;
     },
     [
       authContext.entity.uid,
@@ -343,7 +338,6 @@ const TennisHome = ({navigation, route}) => {
 
             setHomeTeam(res.payload.home_team);
             setAwayTeam(res.payload.away_team);
-            console.log('GET GAME DETAIL::', res.payload);
             if (res.status) {
               const entity = authContext.entity;
               setUserRole(entity?.role);
@@ -591,7 +585,6 @@ const TennisHome = ({navigation, route}) => {
           }
           return false;
         });
-        console.log('referee reservation:=>', cloneRefData);
         setReferee([...cloneRefData]);
       });
     }
@@ -599,7 +592,6 @@ const TennisHome = ({navigation, route}) => {
 
   useEffect(() => {
     getScorekeeperReservation(tennisGameId).then((res) => {
-      console.log('Scorekeeper reservation::=>', res);
       const refData = res?.payload?.filter(
         (item) =>
           ![
@@ -690,7 +682,6 @@ const TennisHome = ({navigation, route}) => {
         const reviewObj = {
           ...teamReview,
         };
-        console.log('Edited Review Object::=>', gameData);
         patchScorekeeperReview(
           scorekeeper_id,
           tennisGameId,
@@ -772,7 +763,6 @@ const TennisHome = ({navigation, route}) => {
         const reviewObj = {
           ...teamReview,
         };
-        console.log('Edited Review Object::=>', teamReview);
         patchRefereeReview(
           referee_id,
           tennisGameId,
@@ -879,7 +869,6 @@ const TennisHome = ({navigation, route}) => {
       setLoading(true);
       getGameReview(tennisGameId, item?.review_id, authContext)
         .then((response) => {
-          console.log('Get review of referee::=>', response.payload);
           modalizeRef.current.close();
           navigation.navigate('RefereeReviewScreen', {
             gameReviewData: response.payload,
@@ -893,7 +882,7 @@ const TennisHome = ({navigation, route}) => {
         })
         .catch((error) => {
           setLoading(false);
-          setTimeout(() => Alert.alert('TownsCup', error?.message), 100);
+          setTimeout(() => Alert.alert(strings.appName, error?.message), 100);
         });
     },
     [
@@ -912,7 +901,6 @@ const TennisHome = ({navigation, route}) => {
       setLoading(true);
       getGameReview(tennisGameId, item?.review_id, authContext)
         .then((response) => {
-          console.log('Get review of scorekeeper::=>', response.payload);
           modalizeRef.current.close();
           navigation.navigate('ScorekeeperReviewScreen', {
             gameReviewData: response.payload,
@@ -926,7 +914,7 @@ const TennisHome = ({navigation, route}) => {
         })
         .catch((error) => {
           setLoading(false);
-          setTimeout(() => Alert.alert('TownsCup', error?.message), 100);
+          setTimeout(() => Alert.alert(strings.appName, error?.message), 100);
         });
     },
     [
@@ -942,7 +930,6 @@ const TennisHome = ({navigation, route}) => {
 
   const isCheckReviewButton = useCallback(
     (reservationDetail) => {
-      console.log('gameData?.status', isScorekeeperAdmin);
       if (
         gameData?.status === GameStatus.ended &&
         ![
@@ -1045,7 +1032,6 @@ const TennisHome = ({navigation, route}) => {
           ...teamReview,
         };
 
-        console.log('Edited Review Object::=>', reviewObj);
         patchGameReview(gameData?.game_id, reviewID, reviewObj, authContext)
           .then(() => {
             setLoading(false);
@@ -1060,11 +1046,7 @@ const TennisHome = ({navigation, route}) => {
           })
           .catch((error) => {
             setLoading(false);
-            console.log(
-              'strings.alertmessagetitle, error?.message',
-              strings.alertmessagetitle,
-              error?.message,
-            );
+
             setTimeout(
               () => Alert.alert(strings.alertmessagetitle, error?.message),
               100,
@@ -1072,7 +1054,6 @@ const TennisHome = ({navigation, route}) => {
             // navigation.goBack();
           });
       } else {
-        console.log('New Review Object::=>', reviewsData);
         setLoading(true);
         addGameReview(gameData?.game_id, reviewsData, authContext)
           .then(() => {
@@ -1121,8 +1102,6 @@ const TennisHome = ({navigation, route}) => {
       const reviewObj = {
         ...teamReview,
       };
-
-      console.log('Edited Review Object::=>', reviewObj);
 
       patchPlayerReview(
         currentForm === 1
@@ -1204,7 +1183,7 @@ const TennisHome = ({navigation, route}) => {
         })
         .catch((error) => {
           setLoading(false);
-          setTimeout(() => Alert.alert('TownsCup', error?.message), 100);
+          setTimeout(() => Alert.alert(strings.appName, error?.message), 100);
         });
     },
     [
@@ -1220,7 +1199,6 @@ const TennisHome = ({navigation, route}) => {
   const renderTeams = useCallback(
     ({item}) => {
       const reservationDetail = item; // item?.reservation
-      console.log('reservationDetail teams', reservationDetail);
       let isReviewed = false;
       if (reservationDetail?.isHome) {
         if (gameData?.home_review_id) {
@@ -1293,7 +1271,6 @@ const TennisHome = ({navigation, route}) => {
   const renderReferees = useCallback(
     ({item}) => {
       const reservationDetail = item; // item?.reservation
-      console.log('reservation detail referees::=>>>', reservationDetail);
 
       return (
         <EntityReviewView
@@ -1305,7 +1282,6 @@ const TennisHome = ({navigation, route}) => {
           subTitle={item?.chief_referee ? 'Chief' : 'Assistant'}
           profileImage={reservationDetail?.referee?.thumbnail}
           onReviewPress={() => {
-            console.log('Referee Pressed item?.referee:=>', item?.referee);
             if (item?.referee?.review_id) {
               getRefereeReviewsData(item?.referee);
             } else {
@@ -1438,7 +1414,7 @@ const TennisHome = ({navigation, route}) => {
             color: colors.lightBlackColor,
             textAlign: 'center',
           }}>
-          Please leave a review.
+          {strings.pleaseLeaveReview}
         </Text>
         <Text
           style={{
@@ -1448,17 +1424,10 @@ const TennisHome = ({navigation, route}) => {
             textAlign: 'center',
             marginTop: 15,
           }}>
-          {'The review period will be expires within '}
-          <Text
-            style={{
-              fontSize: 14,
-              fontFamily: fonts.RBold,
-              color: colors.darkThemeColor,
-              textAlign: 'center',
-              marginTop: 15,
-            }}>
-            {reviewExpiredDate(gameData?.review_expired_period)}.
-          </Text>
+          {format(
+            strings.reviewPeriodExpires,
+            reviewExpiredDate(gameData?.review_expired_period),
+          )}
         </Text>
         <Text
           style={{
@@ -1469,9 +1438,12 @@ const TennisHome = ({navigation, route}) => {
             margin: 30,
             marginTop: 15,
           }}>
-          {`Your reviews will be displayed after the review period expires or all ${
-            gameData?.sport_type === 'single' ? 'players' : 'teams'
-          }, referees, scorekeepers complete their reviews.`}
+          {format(
+            strings.yourReviewWillDisplayDesc,
+            gameData?.sport_type === Verbs.singleSport
+              ? Verbs.entityTypePlayers
+              : Verbs.entityTypeTeams,
+          )}
         </Text>
         <SafeAreaView>
           {!isShowReviewRow ? (
@@ -1490,7 +1462,9 @@ const TennisHome = ({navigation, route}) => {
               {(isAdmin || isRefereeAdmin || isScorekeeperAdmin) && (
                 <View>
                   <Text style={styles.refereeTitle}>
-                    {gameData?.sport_type === 'single' ? 'Players' : 'Teams'}
+                    {gameData?.sport_type === Verbs.singleSport
+                      ? strings.playerTitle
+                      : strings.teamstitle}
                   </Text>
                   <FlatList
                     data={getTeams()}
@@ -1502,7 +1476,9 @@ const TennisHome = ({navigation, route}) => {
 
               {!isRefereeAdmin && !isScorekeeperAdmin && referee.length > 0 && (
                 <View>
-                  <Text style={styles.refereeTitle}>Referees</Text>
+                  <Text style={styles.refereeTitle}>
+                    {strings.refereesTitle}
+                  </Text>
                   <FlatList
                     data={referee}
                     renderItem={renderReferees}
@@ -1515,7 +1491,9 @@ const TennisHome = ({navigation, route}) => {
                 !isRefereeAdmin &&
                 scorekeeper.length > 0 && (
                   <View>
-                    <Text style={styles.scorekeeperTitle}>Scorekeepers</Text>
+                    <Text style={styles.scorekeeperTitle}>
+                      {strings.scorekeeperTitle}
+                    </Text>
 
                     <FlatList
                       data={scorekeeper}

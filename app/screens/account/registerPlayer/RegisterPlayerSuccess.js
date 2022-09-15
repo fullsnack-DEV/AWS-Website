@@ -9,6 +9,7 @@ import FastImage from 'react-native-fast-image';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
+import {strings} from '../../../../Localization/translation';
 
 const RegisterPlayerSuccess = ({navigation}) => {
   useEffect(() => {
@@ -45,7 +46,7 @@ const RegisterPlayerSuccess = ({navigation}) => {
             marginTop: 10,
             textAlign: 'center',
           }}>
-          Registered as {'\n'}a player
+          {strings.registerAsPlayerText}
         </Text>
       </LinearGradient>
     </View>

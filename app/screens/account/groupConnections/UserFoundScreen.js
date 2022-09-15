@@ -1,6 +1,7 @@
 import React, {useState, useContext} from 'react';
 import {Text, View, StyleSheet, Image, SafeAreaView, Alert} from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
+import {format} from 'react-string-format';
 import AuthContext from '../../../auth/context';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import images from '../../../Constants/ImagePath';
@@ -10,6 +11,7 @@ import {strings} from '../../../../Localization/translation';
 import TCProfileView from '../../../components/TCProfileView';
 import TCBorderButton from '../../../components/TCBorderButton';
 import {connectProfile} from '../../../api/Groups';
+import Verbs from '../../../Constants/Verbs';
 
 export default function UserFoundScreen({navigation, route}) {
   const {signUpObj, memberObj, groupID} = route?.params;
@@ -20,7 +22,7 @@ export default function UserFoundScreen({navigation, route}) {
   const getLocation = (entityType) => {
     let locationString = '';
 
-    if (entityType === 'team') {
+    if (entityType === Verbs.entityTypeTeam) {
       locationString = entity?.city;
       if (entity?.state_abbr) {
         locationString = `${locationString}, ${entity?.state_abbr}`;
@@ -39,8 +41,6 @@ export default function UserFoundScreen({navigation, route}) {
     }
     return locationString;
   };
-  console.log('signup:=>', signUpObj);
-  console.log('member:=>', memberObj);
 
   const connectMemberProfile = () => {
     setloading(true);
@@ -70,7 +70,7 @@ export default function UserFoundScreen({navigation, route}) {
             }}>
             <View style={styles.topContainer}>
               <Text style={styles.foundUserText}>
-                We found a user whose e-mail account is
+                {strings.weFoundUserWhoseEmailText}
               </Text>
 
               {/* <Image source={ memberObj.thumbnail ? { uri: memberObj.thumbnail } : images.profilePlaceHolder } style={ styles.profileImage } /> */}
@@ -82,7 +82,7 @@ export default function UserFoundScreen({navigation, route}) {
                 }
                 style={styles.profileImage}
                 name={`${signUpObj?.first_name} ${signUpObj?.last_name}`}
-                location={getLocation('user')}
+                location={getLocation(Verbs.entityTypeUser)}
                 color={colors.whiteColor}
               />
               <Text style={styles.emailText}>{memberObj.email}</Text>
@@ -90,8 +90,10 @@ export default function UserFoundScreen({navigation, route}) {
             <View style={styles.deviderView}></View>
             <View style={styles.topContainer}>
               <Text style={styles.connectProfileText}>
-                Would you like to connect this user’s account to{' '}
-                {`${signUpObj.first_name}'s`} profile in your team?
+                {format(
+                  strings.whouldYouLikeToConnectText,
+                  signUpObj.first_name,
+                )}
               </Text>
               <TCProfileView
                 image={

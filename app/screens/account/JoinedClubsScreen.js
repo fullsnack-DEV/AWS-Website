@@ -3,7 +3,6 @@ import {
   View,
   Text,
   Image,
-  TouchableWithoutFeedback,
   FlatList,
   ScrollView,
   StyleSheet,
@@ -21,13 +20,14 @@ import images from '../../Constants/ImagePath';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 import {strings} from '../../../Localization/translation';
+import Verbs from '../../Constants/Verbs';
 
 export default function JoinedClubsScreen() {
   const authContext = useContext(AuthContext);
   const [clubList, setClubList] = useState([]);
 
   useEffect(() => {
-    getJoinedGroups('club', authContext)
+    getJoinedGroups(Verbs.entityTypeClub, authContext)
       .then((response) => {
         setClubList(response.payload);
       })
@@ -43,11 +43,7 @@ export default function JoinedClubsScreen() {
       <FlatList
         data={clubList}
         renderItem={({item}) => (
-          <TouchableWithoutFeedback
-            style={styles.listContainer}
-            onPress={() => {
-              console.log('Pressed club..');
-            }}>
+          <View style={styles.listContainer}>
             <View>
               {item.full_image ? (
                 <Image
@@ -66,11 +62,8 @@ export default function JoinedClubsScreen() {
                 {item.city}, {item.state_abbr}, {item.country}
               </Text>
             </View>
-          </TouchableWithoutFeedback>
+          </View>
         )}
-        // ItemSeparatorComponent={() => (
-        //   <View style={styles.separatorLine}></View>
-        // )}
         scrollEnabled={false}
       />
     </ScrollView>

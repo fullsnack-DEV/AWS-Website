@@ -17,6 +17,7 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import QB from 'quickblox-react-native-sdk';
+import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import Config from 'react-native-config';
 import {createUser} from '../../api/Users';
@@ -50,27 +51,6 @@ export default function ChooseSportsScreen({navigation, route}) {
   const dummyAuthContext = {...authContext};
   const selectedSports = [];
 
-  // useLayoutEffect(() => {
-  //   navigation.setOptions({
-  //     headerLeft: () => (
-  //       <TouchableOpacity
-  //         onPress={() => {
-
-  //           navigation.pop();
-  //         }}>
-  //         <Image
-  //           source={images.backArrow}
-  //           style={{
-  //             height: 20,
-  //             width: 15,
-  //             marginLeft: 15,
-  //             tintColor: colors.whiteColor,
-  //           }}
-  //         />
-  //       </TouchableOpacity>
-  //     ),
-  //   });
-  // }, [navigation]);
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
@@ -97,7 +77,7 @@ export default function ChooseSportsScreen({navigation, route}) {
             if (selected.length > 0) {
               getTeamsData();
             } else {
-              Alert.alert(strings.appName, 'Please choose at least one sport.');
+              Alert.alert(strings.appName, strings.chooseOneSportText);
               return false;
             }
           }}>
@@ -107,13 +87,8 @@ export default function ChooseSportsScreen({navigation, route}) {
     });
   });
   useEffect(() => {
-    console.log('authContext', authContext);
-    console.log('authContext token', authContext.tokenData);
-
     getSportsList(authContext)
       .then((response) => {
-        console.log('Sport list:::', response);
-
         const arrData = [];
         for (const outer of response.payload) {
           for (const inner of outer.format) {
@@ -125,12 +100,8 @@ export default function ChooseSportsScreen({navigation, route}) {
           }
         }
 
-        console.log('AAA:->', arrData);
-
         Utility.getStorage('appSetting').then((setting) => {
-          console.log('appSetting', setting);
           setImageBaseUrl(setting.base_url_sporticon);
-          console.log('IMAGE_BASE_URL', setting.base_url_sporticon);
         });
 
         const arr = [];
@@ -140,10 +111,8 @@ export default function ChooseSportsScreen({navigation, route}) {
         }
         setSports(arr);
         setTimeout(() => setloading(false), 1000);
-        console.log('Loading closed ');
       })
       .catch((e) => {
-        console.log('eeeee', e);
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
@@ -152,8 +121,6 @@ export default function ChooseSportsScreen({navigation, route}) {
   }, []);
 
   const isIconCheckedOrNot = ({item, index}) => {
-    console.log('SELECTED:::', item);
-
     sports[index].isChecked = !item.isChecked;
 
     setSports([...sports]);
@@ -168,9 +135,6 @@ export default function ChooseSportsScreen({navigation, route}) {
   };
 
   const navigateToFollowScreen = (response) => {
-    console.log('route?.params?.locationInfo', route?.params?.locationInfo);
-    console.log('selected sport', selected);
-    console.log('Response', response);
     if (response.length > 0) {
       navigation.navigate('FollowTeams', {
         sportInfo: {
@@ -180,16 +144,10 @@ export default function ChooseSportsScreen({navigation, route}) {
         },
       });
     } else {
-      console.log('else....');
       finalStepSignUp();
     }
   };
   const getTeamsData = async () => {
-    console.log('Call getTeamData');
-    console.log('City =====>', route?.params?.locationInfo?.city);
-    console.log('country =====>', route?.params?.locationInfo?.country);
-    console.log('state =====>', route?.params?.locationInfo?.state_abbr);
-    console.log('locationInfo =====>', route?.params?.locationInfo);
     setloading(true);
     const queryParams = {
       size: 100,
@@ -218,28 +176,6 @@ export default function ChooseSportsScreen({navigation, route}) {
         },
       });
     }
-
-    // if (selected.length === 1) {
-    //   queryParams.query.bool.must[0].bool.should.push({
-    //     multi_match: {
-    //       query: `${selected[0]}`,
-    //       fields: ['sport', 'sports.sport'],
-    //     },
-    //   });
-    // } else if (selected.length === 2) {
-    //   queryParams.query.bool.must[0].bool.should.push({
-    //     multi_match: {
-    //       query: `${selected[0]}`,
-    //       fields: ['sport', 'sports.sport'],
-    //     },
-    //   });
-    //   queryParams.query.bool.must[0].bool.should.push({
-    //     multi_match: {
-    //       query: `${selected[1]}`,
-    //       fields: ['sport', 'sports.sport'],
-    //     },
-    //   });
-    // }
 
     if (route.params.locationInfo.city !== '') {
       queryParams.query.bool.must[1].bool.should.push({
@@ -284,25 +220,10 @@ export default function ChooseSportsScreen({navigation, route}) {
         },
       },
     });
-    console.log('query --->', JSON.stringify(queryParams));
     getGroupIndex(queryParams)
       .then((response) => {
         setloading(false);
-        console.log('groupIndex:=>', response);
-        // updateProfile({sports: selected}, () => {
-        //   if (response) {
-        //     navigation.navigate('FollowTeams', {
-        //       teamData: response,
-        //       city: route.params.city,
-        //       state: route.params.state,
-        //       country: route.params.country,
-        //       sports: selected,
-        //     });
-        //   } else {
-        //     setloading(false);
-        //     finalStepSignUp();
-        //   }
-        // });
+
         navigateToFollowScreen(response);
       })
       .catch((e) => {
@@ -312,7 +233,7 @@ export default function ChooseSportsScreen({navigation, route}) {
   };
 
   const renderItem = ({item, index}) => (
-    <TouchableOpacity
+    <TouchableWithoutFeedback
       style={styles.listItem}
       onPress={() => {
         isIconCheckedOrNot({item, index});
@@ -339,7 +260,7 @@ export default function ChooseSportsScreen({navigation, route}) {
         )}
       </View>
       <Separator />
-    </TouchableOpacity>
+    </TouchableWithoutFeedback>
   );
   const setDummyAuthContext = (key, value) => {
     dummyAuthContext[key] = value;
@@ -354,9 +275,6 @@ export default function ChooseSportsScreen({navigation, route}) {
       url: `${Config.BASE_URL}/pre-signed-url?count=2`,
       headers: {Authorization: `Bearer ${authToken}`},
     };
-    console.log('authToken', authToken);
-    console.log('uploadImageConfig', uploadImageConfig);
-    console.log('profilePic', route?.params);
 
     if (route?.params?.locationInfo?.profilePic) {
       const apiResponse = await apiCall(uploadImageConfig);
@@ -381,7 +299,6 @@ export default function ChooseSportsScreen({navigation, route}) {
           const uploadedProfilePic = {full_image: fullImage, thumbnail};
           userData.uploadedProfilePic = uploadedProfilePic;
 
-          console.log('Uploaded pic', uploadedProfilePic);
           setloading(false);
           signUpToTownsCup(userData);
         })
@@ -394,10 +311,6 @@ export default function ChooseSportsScreen({navigation, route}) {
   };
   // Signup to Towncup
   const signUpToTownsCup = async (param) => {
-    console.log('Signup data1111 ==>', route?.params?.sportInfo);
-    console.log('selectedSports', selectedSports);
-    console.log('selected', selected);
-    console.log('userData', param);
     const data = {
       first_name: route?.params?.locationInfo?.first_name,
       last_name: route?.params?.locationInfo?.last_name,
@@ -410,17 +323,14 @@ export default function ChooseSportsScreen({navigation, route}) {
       sports: selected,
     };
     if (route?.params?.locationInfo?.profilePicData?.thumbnail) {
-      console.log('llllllll');
       data.thumbnail = route?.params?.sportInfo?.profilePicData.thumbnail;
       data.full_image = route?.params?.sportInfo?.profilePicData.full_image;
     } else if (param?.uploadedProfilePic) {
       data.thumbnail = param.uploadedProfilePic.thumbnail;
       data.full_image = param.uploadedProfilePic.full_image;
     }
-    console.log('Data before cretae a user on choose sport screen ===>', data);
     await createUser(data, authContext)
       .then((createdUser) => {
-        console.log('QB CreatedUser:', createdUser);
         const authEntity = {...dummyAuthContext.entity};
         authEntity.obj = createdUser?.payload;
         authEntity.auth.user = createdUser?.payload;
@@ -437,13 +347,9 @@ export default function ChooseSportsScreen({navigation, route}) {
       });
   };
   const signUpWithQB = async (response) => {
-    console.log('QB signUpWithQB : ', response);
-
     let qbEntity = {...dummyAuthContext.entity};
-    console.log('QB qbEntity : ', qbEntity);
 
     const setting = await Utility.getStorage('appSetting');
-    console.log('App QB Setting:=>', setting);
 
     authContext.setQBCredential(setting);
     QB.settings.enableAutoReconnect({enable: true});

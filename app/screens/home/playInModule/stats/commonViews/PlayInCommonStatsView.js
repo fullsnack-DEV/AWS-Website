@@ -9,52 +9,7 @@ import AuthContext from '../../../../../auth/context';
 import PlayInCommonChartScreen from './PlayInCommonChartScreen';
 import TCInnerLoader from '../../../../../components/TCInnerLoader';
 import PlayInCommonScoreTypesData from './PlayInCommonScoreTypesData';
-import images from '../../../../../Constants/ImagePath';
-import {monthsSelectionData} from '../../../../../utils/constant';
-
-const game_data = [
-  {
-    id: 0,
-    image: images.gamesImage,
-    selectImage: images.gamesSelected,
-    title: 'Match',
-    total: 139,
-    isSelected: true,
-  },
-
-  {
-    id: 1,
-    image: images.goalsImage,
-    selectImage: images.goalsSelected,
-    title: 'Goals',
-    total: 12,
-    isSelected: false,
-  },
-  {
-    id: 2,
-    image: images.assistsImage,
-    selectImage: images.assistsSelected,
-    title: 'Assists',
-    total: 5,
-    isSelected: false,
-  },
-  {
-    id: 3,
-    image: images.yellowCardImage,
-    selectImage: images.yellowCardSelected,
-    title: 'Yellow card',
-    total: 6,
-    isSelected: false,
-  },
-  {
-    id: 4,
-    image: images.yellowCardImage,
-    selectImage: images.yellowCardSelected,
-    title: 'Red card',
-    total: 2,
-    isSelected: false,
-  },
-];
+import {game_data, monthsSelectionData} from '../../../../../utils/constant';
 
 const PlayInCommonStatsView = ({playInObject, currentUserData, sportName}) => {
   const authContext = useContext(AuthContext);

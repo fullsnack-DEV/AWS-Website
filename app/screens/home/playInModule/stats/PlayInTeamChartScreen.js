@@ -10,6 +10,7 @@ import fonts from '../../../../Constants/Fonts';
 import StatsSelectionView from '../../../../components/Home/StatsSelectionView';
 import {strings} from '../../../../../Localization/translation';
 import {monthsSelectionData} from '../../../../utils/constant';
+import Verbs from '../../../../Constants/Verbs';
 
 export default function PlayInTeamChartScreen({
   gameStatsData,
@@ -20,7 +21,9 @@ export default function PlayInTeamChartScreen({
 
   useEffect(() => {
     const data = Object.keys(gameStatsData)
-      ?.filter((item) => ['winner', 'draw', 'looser']?.includes(item))
+      ?.filter((item) =>
+        [Verbs.winnerVerb, Verbs.drawVerb, Verbs.looserVerb]?.includes(item),
+      )
       ?.map((item) => ({
         key: item,
         value:
@@ -41,13 +44,13 @@ export default function PlayInTeamChartScreen({
   const GradientView = ({keyName}) => {
     let startColor = colors.googleColor;
     let endColor = colors.googleColor;
-    if (keyName === 'winner') {
+    if (keyName === Verbs.winnerVerb) {
       startColor = colors.blueGradiantEnd;
       endColor = colors.blueGradiantStart;
-    } else if (keyName === 'draw') {
+    } else if (keyName === Verbs.drawVerb) {
       startColor = colors.greenGradientEnd;
       endColor = colors.greenGradientStart;
-    } else if (keyName === 'looser') {
+    } else if (keyName === Verbs.looserVerb) {
       startColor = colors.themeColor;
       endColor = colors.yellowColor;
     }
@@ -71,7 +74,7 @@ export default function PlayInTeamChartScreen({
           paddingHorizontal: 15,
         }}>
         <View style={styles.totalGameViewStyle}>
-          <Text style={styles.totalGameTextStyle}>{'Total Matches'}</Text>
+          <Text style={styles.totalGameTextStyle}>{strings.totalMatches}</Text>
           <Text style={styles.totalGameCounterText}>
             {gameStatsData ? gameStatsData.total_games : ''}
           </Text>
@@ -100,9 +103,9 @@ export default function PlayInTeamChartScreen({
             radius={60}
             outerRadius={60}
             innerRadius={52}>
-            <GradientView keyName={'looser'} />
-            <GradientView keyName={'draw'} />
-            <GradientView keyName={'winner'} />
+            <GradientView keyName={Verbs.looserVerb} />
+            <GradientView keyName={Verbs.drawVerb} />
+            <GradientView keyName={Verbs.winnerVerb} />
           </SVGPieChart>
           <View style={styles.winPercentageView}>
             <View style={{flexDirection: 'row'}}>
@@ -113,13 +116,13 @@ export default function PlayInTeamChartScreen({
                 ).toFixed(1)}
               </Text>
             </View>
-            <Text style={styles.winTextStyle}>{'Winning\nPercentage'}</Text>
+            <Text style={styles.winTextStyle}>{strings.winningPercentage}</Text>
           </View>
         </View>
         <View>
           <View style={{flex: 1, justifyContent: 'center'}}>
             <WinProgressView
-              titleText={'Wins'}
+              titleText={strings.wins}
               percentageCount={gameStatsData ? gameStatsData.winner : ''}
               progress={
                 gameStatsData.winner !== 0
@@ -136,7 +139,7 @@ export default function PlayInTeamChartScreen({
               progressBarStyle={{backgroundColor: colors.lightgrayColor}}
             />
             <WinProgressView
-              titleText={'Draws'}
+              titleText={strings.draws}
               percentageCount={gameStatsData ? gameStatsData.draw : ''}
               progress={
                 gameStatsData.draw !== 0
@@ -152,7 +155,7 @@ export default function PlayInTeamChartScreen({
               progressBarStyle={{backgroundColor: colors.lightgrayColor}}
             />
             <WinProgressView
-              titleText={'Losses'}
+              titleText={strings.losses}
               percentageCount={gameStatsData ? gameStatsData.looser : ''}
               progress={
                 gameStatsData.looser !== 0

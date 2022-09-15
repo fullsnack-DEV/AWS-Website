@@ -24,6 +24,7 @@ import AuthContext from '../../auth/context';
 import images from '../../Constants/ImagePath';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
+import { strings } from '../../../Localization/translation';
 
 export default function WriteCommentScreen({
   navigation,
@@ -83,9 +84,9 @@ export default function WriteCommentScreen({
             <Text style={styles.writePostTextStyle}>
               {commentData.length > 0
                 ? (commentData.length === 1 &&
-                    `${commentData.length} Comment`) ||
-                  (commentData.length > 1 && `${commentData.length} Comments`)
-                : 'Write Comments'}
+                    `${commentData.length} ${strings.comment}`) ||
+                  (commentData.length > 1 && `${commentData.length} ${strings.comments}`)
+                : strings.writeComments}
             </Text>
           </View>
           <View style={styles.doneViewStyle}>
@@ -125,7 +126,7 @@ export default function WriteCommentScreen({
           </View>
           <View style={styles.onlyMeViewStyle}>
             <TextInput
-              placeholder={'Write a comment'}
+              placeholder={strings.writeComment}
               placeholderTextColor={colors.userPostTimeColor}
               multiline={true}
               textAlignVertical={'top'}
@@ -171,7 +172,7 @@ export default function WriteCommentScreen({
                       console.log(e);
                     });
                 }}>
-                <Text style={styles.sendTextStyle}>SEND</Text>
+                <Text style={styles.sendTextStyle}>{strings.SEND}</Text>
               </TouchableOpacity>
             )}
           </View>

@@ -1,6 +1,7 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {Alert, FlatList, StyleSheet, Text, View} from 'react-native';
 
+import {format} from 'react-string-format';
 import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
 import TCSearchBox from '../../../../components/TCSearchBox';
@@ -32,7 +33,6 @@ const RefereeSelectMatch = ({navigation, route}) => {
       route.params.editableAlter &&
       route.params.body
     ) {
-      console.log('EDIT Games::', route.params.body);
       bodyParams = {
         ...route.params.body,
       };
@@ -40,7 +40,6 @@ const RefereeSelectMatch = ({navigation, route}) => {
   }, [route]);
 
   useEffect(() => {
-    console.log('route?.params?.comeFrom:::::=>', route?.params?.comeFrom);
     setLoading(true);
     const headers = {};
     headers.caller_id = authContext?.entity?.uid;
@@ -51,21 +50,6 @@ const RefereeSelectMatch = ({navigation, route}) => {
         setMatchData([...res]);
       },
     );
-    // getGameSlots(
-    //   'referees',
-    //   userData?.user_id,
-    //   `status=accepted&sport=${sport}&refereeDetail=true`,
-    //   headers,
-    //   authContext,
-    // ).then((res) => {
-    //   setLoading(false);
-    //     setMatchData([...res?.payload]);
-    //   }).catch((e) => {
-    //     setLoading(false);
-    //     setTimeout(() => {
-    //       Alert.alert(strings.alertmessagetitle, e.messages);
-    //     }, 10);
-    //   });
   }, [authContext, userData]);
 
   const getGamesForReferee = async (refereeId, teamId) => {
@@ -129,8 +113,6 @@ const RefereeSelectMatch = ({navigation, route}) => {
     return Promise.all(promiseArr)
       .then(([gameList, eventList]) => {
         setLoading(false);
-        console.log('gameList', gameList);
-        console.log('refereeList', eventList);
 
         for (const game of gameList) {
           game.isAvailable = true;
@@ -194,7 +176,7 @@ const RefereeSelectMatch = ({navigation, route}) => {
           {/*  Search Bar */}
           <TCSearchBox
             value={searchText}
-            placeholderText={'Search'}
+            placeholderText={strings.searchText}
             onChangeText={onSearchTextChange}
           />
 
@@ -223,8 +205,7 @@ const RefereeSelectMatch = ({navigation, route}) => {
                     // const assistantCnt = game?.referees?.filter((chal_ref) => !chal_ref?.chief_referee)?.length;
                     let message = '';
                     if (isSameReferee) {
-                      message =
-                        'This referee has already been booked for this game.';
+                      message = strings.refereeAlreadyBookedValidation;
                     }
                     // else if (!game.isAvailable) {
                     //   message = 'There is no available slot of a referee who you can book in this game.';
@@ -262,8 +243,8 @@ const RefereeSelectMatch = ({navigation, route}) => {
             ListEmptyComponent={
               <Text style={styles.emptySectionListItem}>
                 {searchText === ''
-                  ? 'No game found'
-                  : `No game found for '${searchText}'`}
+                  ? strings.noGameFound
+                  : format(strings.noGameFoundFor, searchText)}
               </Text>
             }
           />

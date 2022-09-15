@@ -4,6 +4,7 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 import TCGameCard from '../../components/TCGameCard';
+import { strings } from '../../../Localization/translation';
 
 const RowTitleWithTextInput = memo(({title, selectedText, onPress}) => (
   <View
@@ -45,7 +46,7 @@ const RowTitleWithTextInput = memo(({title, selectedText, onPress}) => (
             fontFamily: fonts.RRegular,
             color: selectedText ? colors.lightBlackColor : colors.grayColor,
           }}>
-          {selectedText ?? `Select ${title}`}
+          {selectedText ?? `${strings.select} ${title}`}
         </Text>
       </TouchableOpacity>
     </View>
@@ -79,16 +80,16 @@ const TagMatches = ({gamesData, selectedMatch, onSelectMatch}) => {
   const ListHeaderComponent = () => (
     <View>
       {/* First Team Name */}
-      <RowTitleWithTextInput title={'Team 1'} />
+      <RowTitleWithTextInput title={`${strings.team} 1`} />
 
       {/* Second Team Name */}
-      <RowTitleWithTextInput title={'Team 2'} />
+      <RowTitleWithTextInput title={`${strings.team} 2`} />
 
       {/* Sports */}
-      <RowTitleWithTextInput title={'Sports'} />
+      <RowTitleWithTextInput title={strings.sportsTitleText} />
 
       {/* Date */}
-      <RowTitleWithTextInput title={'Date'} />
+      <RowTitleWithTextInput title={strings.Date} />
     </View>
   );
 

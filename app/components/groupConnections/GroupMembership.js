@@ -15,6 +15,7 @@ import fonts from '../../Constants/Fonts';
 import TCInfoField from '../TCInfoField';
 import TCUserRoleBadge from '../TCUserRoleBadge';
 import AuthContext from '../../auth/context';
+import {strings} from '../../../Localization/translation';
 
 const GroupMembership = ({
   groupData,
@@ -97,24 +98,28 @@ const GroupMembership = ({
             value={
               groupData?.positions?.length && groupData?.positions[0] !== ''
                 ? groupData.positions.join(', ')
-                : 'N/A'
+                : strings.NAText
             }
             marginLeft={25}
             marginTop={30}
           />
           <TCInfoField
             title={'Jersey Number'}
-            value={groupData.jersey_number ? groupData.jersey_number : 'N/A'}
+            value={
+              groupData.jersey_number ? groupData.jersey_number : strings.NAText
+            }
             marginLeft={25}
           />
           <TCInfoField
             title={'Appearance'}
-            value={groupData.appearance ? groupData.appearance : 'N/A'}
+            value={groupData.appearance ? groupData.appearance : strings.NAText}
             marginLeft={25}
           />
           <TCInfoField
             title={'Status'}
-            value={groupData.status ? groupData.status.join(', ') : 'N/A'}
+            value={
+              groupData.status ? groupData.status.join(', ') : strings.NAText
+            }
             marginLeft={25}
             color={colors.themeColor}
           />

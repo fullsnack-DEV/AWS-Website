@@ -1,9 +1,11 @@
 import React from 'react';
 import {View, StyleSheet, Image, Text, TouchableOpacity} from 'react-native';
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
+import {format} from 'react-string-format';
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
+import {strings} from '../../../../Localization/translation';
 // import TCBorderButton from '../../../components/TCBorderButton';
 
 export default function ChallengeSentScreen({navigation, route}) {
@@ -22,15 +24,16 @@ export default function ChallengeSentScreen({navigation, route}) {
         <Image style={styles.backButtonImage} source={images.backArrow} />
       </TouchableOpacity> */}
       <View style={styles.mailContainer}>
-        <Text style={styles.invitationText}>Challenge sent</Text>
+        <Text style={styles.invitationText}>{strings.challengeSentText}</Text>
         <Text style={styles.infoText}>
-          When{' '}
-          {route &&
-            route.params &&
-            route.params.groupObj &&
-            (route.params.groupObj.group_name ||
-              `${route.params.groupObj.first_name} ${route.params.groupObj.last_name}`)}{' '}
-          accepts your match reservation request, you will be notified.
+          {format(
+            strings.whenAcceptReservationText,
+            route &&
+              route.params &&
+              route.params.groupObj &&
+              (route.params.groupObj.group_name ||
+                `${route.params.groupObj.first_name} ${route.params.groupObj.last_name}`),
+          )}
         </Text>
         <View style={styles.imageContainer}>
           <Image
@@ -39,27 +42,13 @@ export default function ChallengeSentScreen({navigation, route}) {
           />
         </View>
       </View>
-      {/* {route && route.params && route.params.groupObj && <TCBorderButton
-      title={`GO TO ${(route.params.groupObj.group_name)?.toUpperCase() || `${route.params.groupObj.first_name?.toUpperCase()} ${route.params.groupObj.last_name?.toUpperCase()}`}`}
-      textColor={colors.whiteColor}
-      borderColor={colors.whiteColor}
-      backgroundColor={'transparent'}
-      height={40} shadow={true}
-      marginBottom={60}
-      onPress={() => {
-        navigation.navigate('HomeScreen', {
-          uid: route.params.groupObj.group_id ? route.params.groupObj.group_id : route.params.groupObj.user_id,
-          backButtonVisible: true,
-          role: route.params.groupObj.entity_type === 'player' ? 'user' : route.params.groupObj.entity_type,
-          menuBtnVisible: false,
-        })
-      }}/>} */}
+
       <TouchableOpacity
         style={styles.goToProfileButton}
         onPress={() => {
           navigation.popToTop();
         }}>
-        <Text style={styles.goToProfileTitle}>OK</Text>
+        <Text style={styles.goToProfileTitle}>{strings.okTitleText}</Text>
       </TouchableOpacity>
     </View>
   );

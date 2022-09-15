@@ -22,7 +22,6 @@ export default function EditRefereeFeeScreen({navigation, route}) {
       route.params.editableAlter &&
       route.params.body
     ) {
-      console.log('EDIT FEES::', route.params.body);
       bodyParams = {
         ...route.params.body,
       };
@@ -31,7 +30,7 @@ export default function EditRefereeFeeScreen({navigation, route}) {
   }, [route]);
   return (
     <View style={styles.mainContainer}>
-      <TCLabel title={'Referee Fee'} />
+      <TCLabel title={strings.refereeFee} />
       <View style={styles.matchFeeView}>
         <TextInput
           placeholder={strings.enterFeePlaceholder}
@@ -45,7 +44,7 @@ export default function EditRefereeFeeScreen({navigation, route}) {
           }}
           value={basicFee}
           keyboardType={'decimal-pad'}></TextInput>
-        <Text style={styles.curruency}>CAD</Text>
+        <Text style={styles.curruency}>{strings.CAD}</Text>
       </View>
       <TCGradientButton
         title={strings.doneTitle}
@@ -56,7 +55,6 @@ export default function EditRefereeFeeScreen({navigation, route}) {
         shadow={true}
         marginTop={15}
         onPress={() => {
-          console.log('BASIC FEE::', basicFee);
           if (basicFee <= 0.0 || basicFee >= 1.0) {
             navigation.navigate(comeFrom, {
               reservationObj: {

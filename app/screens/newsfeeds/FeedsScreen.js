@@ -10,6 +10,7 @@ import React, {
   useMemo,
   useRef,
 } from 'react';
+import { format } from 'react-string-format';
 import {StyleSheet, View, Alert, Text} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import FastImage from 'react-native-fast-image';
@@ -564,22 +565,20 @@ const FeedsScreen = ({navigation}) => {
           }
           onPress={() => {
             Alert.alert(
-              `Are you sure you want to ${
-                authContext?.entity?.obj?.is_pause === true
-                  ? 'unpause'
-                  : 'reactivate'
-              } this account?`,
+              format(strings.pauseUnpauseAccountText, (authContext?.entity?.obj?.is_pause === true
+                ? strings.unpausesmall
+                : strings.reactivatesmall)),
               '',
               [
                 {
-                  text: 'Cancel',
+                  text: strings.cancel,
                   style: 'cancel',
                 },
                 {
                   text:
                     authContext?.entity?.obj?.is_pause === true
-                      ? 'Unpause'
-                      : 'Reactivate',
+                      ? strings.unpause
+                      : strings.reactivate,
                   style: 'destructive',
                   onPress: () => {
                     if (authContext?.entity?.obj?.is_pause === true) {

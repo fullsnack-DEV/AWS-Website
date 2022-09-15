@@ -136,7 +136,7 @@ export const showAlert = (message) => {
   Alert.alert(
     strings.titleBasic,
     message,
-    [{text: 'OK', onPress: () => console.log('OK Pressed')}],
+    [{text: strings.okTitleText, onPress: () => console.log('OK Pressed')}],
     {cancelable: false},
   );
 };
@@ -147,7 +147,7 @@ export const showAlertWithCallBack = (msg, onOkClick) => {
     msg,
     [
       {
-        text: 'OK',
+        text: strings.okTitleText,
         onPress: () => {
           console.log(' CLICK CALLED ');
           onOkClick();

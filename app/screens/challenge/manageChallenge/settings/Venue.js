@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
+import {format} from 'react-string-format';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import {patchPlayer} from '../../../../api/Users';
 import {patchGroup} from '../../../../api/Groups';
@@ -52,7 +53,6 @@ export default function Venue({navigation, route}) {
   useEffect(() => {
     if (route?.params?.venueObj) {
       getLatLongData(route?.params?.venueObj?.description);
-      console.log('Venue Object', route?.params?.venueObj);
     }
   }, [route?.params?.venueObj]);
 
@@ -66,12 +66,12 @@ export default function Venue({navigation, route}) {
               (obj) => obj.name === '' || obj.address === '',
             );
             if (result.length > 0) {
-              Alert.alert('Please fill all fields.');
+              Alert.alert(strings.fillAllFields);
             } else {
               onSavePressed();
             }
           }}>
-          Save
+          {strings.save}
         </Text>
       ),
     });
@@ -96,7 +96,9 @@ export default function Venue({navigation, route}) {
       <View style={styles.viewTitleContainer}>
         <ActivityLoader visible={loading} />
 
-        <Text style={styles.venueCountTitle}>Venue {index + 1}</Text>
+        <Text style={styles.venueCountTitle}>
+          {format(strings.venuesN, index + 1)}
+        </Text>
         {index !== 0 && (
           <Text
             style={styles.deleteButton}
@@ -104,7 +106,7 @@ export default function Venue({navigation, route}) {
               venue.splice(index, 1);
               setVenue([...venue]);
             }}>
-            Delete
+            {strings.delete}
           </Text>
         )}
       </View>

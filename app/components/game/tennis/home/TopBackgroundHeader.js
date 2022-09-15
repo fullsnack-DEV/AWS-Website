@@ -30,6 +30,7 @@ import GameStatus from '../../../../Constants/GameStatus';
 import ActivityLoader from '../../../loader/ActivityLoader';
 import AuthContext from '../../../../auth/context';
 import {getChallengeDetail} from '../../../../screens/challenge/ChallengeUtility';
+import {strings} from '../../../../../Localization/translation';
 
 const updating = false;
 let lastDistance = null;
@@ -208,7 +209,7 @@ const TopBackgroundHeader = ({
       '',
       [
         {
-          text: 'Cancel',
+          text: strings.cancel,
           style: 'cancel',
         },
         {
@@ -467,7 +468,7 @@ const TopBackgroundHeader = ({
             options.push('Reset Match');
             destructiveButtonIndex = options?.length - 1;
           }
-          options.push('Cancel');
+          options.push(strings.cancel);
           const cancelButtonIndex = options?.length - 1;
           const onItemPress = (index) => {
             const item = options[index];

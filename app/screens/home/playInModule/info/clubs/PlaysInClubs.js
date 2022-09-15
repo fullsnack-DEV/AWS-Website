@@ -8,6 +8,7 @@ import PlaysInEditPrivacySettings from '../PlaysInEditPrivacySettings';
 import TCThinDivider from '../../../../../components/TCThinDivider';
 import images from '../../../../../Constants/ImagePath';
 import TeamClubLeagueView from '../../../../../components/Home/TeamClubLeagueView';
+import Verbs from '../../../../../Constants/Verbs';
 
 const PlaysInClubs = ({
   closePlayInModal,
@@ -25,13 +26,13 @@ const PlaysInClubs = ({
   const renderTeamClubLeague = ({item}) => {
     let teamIcon = '';
     let teamImagePH = '';
-    if (item.entity_type === 'team') {
+    if (item.entity_type === Verbs.entityTypeTeam) {
       teamIcon = images.myTeams;
       teamImagePH = images.team_ph;
-    } else if (item.entity_type === 'club') {
+    } else if (item.entity_type === Verbs.entityTypeClub) {
       teamIcon = images.myClubs;
       teamImagePH = images.club_ph;
-    } else if (item.entity_type === 'league') {
+    } else if (item.entity_type === Verbs.entityTypeLeague) {
       teamIcon = images.myLeagues;
       teamImagePH = images.leaguePlaceholder;
     }
@@ -43,11 +44,15 @@ const PlaysInClubs = ({
             setTimeout(() => {
               navigation.push('HomeScreen', {
                 onBackPress: () => openPlayInModal(),
-                uid: ['user', 'player']?.includes(item?.entity_type)
+                uid: [Verbs.entityTypeUser, Verbs.entityTypePlayer]?.includes(
+                  item?.entity_type,
+                )
                   ? item?.user_id
                   : item?.group_id,
-                role: ['user', 'player']?.includes(item?.entity_type)
-                  ? 'user'
+                role: [Verbs.entityTypeUser, Verbs.entityTypePlayer]?.includes(
+                  item?.entity_type,
+                )
+                  ? Verbs.entityTypeUser
                   : item.entity_type,
                 backButtonVisible: true,
                 menuBtnVisible: false,
@@ -80,7 +85,7 @@ const PlaysInClubs = ({
       </EditEventItem>
       <ActionSheet
         ref={actionSheet}
-        options={[strings.privacySettingText, 'Cancel']}
+        options={[strings.privacySettingText, strings.cancel]}
         cancelButtonIndex={1}
         onPress={(index) => {
           if (index === 0) {
@@ -117,7 +122,9 @@ const EditPlaysInModal = ({
       visible={visible}
       onClose={onClose}
       heading={`${
-        editModalType !== strings.privacySettings ? 'Edit ' : ''
+        editModalType !== strings.privacySettings
+          ? `${strings.editTitleText} `
+          : ''
       }${editModalType}`}
       onSavePress={onSavePress}>
       <PlaysInEditPrivacySettings title={strings.clubPrivacyTitle} />

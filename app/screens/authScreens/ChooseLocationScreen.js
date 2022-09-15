@@ -70,7 +70,6 @@ export default function ChooseLocationScreen({navigation, route}) {
 
   const [loading, setLoading] = useState(false);
   const routes = useNavigationState((state) => state);
-  console.log('route?.signupInfo?', route?.params?.signupInfo);
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
@@ -93,8 +92,6 @@ export default function ChooseLocationScreen({navigation, route}) {
   }, [navigation]);
 
   useEffect(() => {
-    console.log('searchText', searchText);
-
     // getNearestCity();
     getLocationData(searchText);
   }, [searchText]);
@@ -103,7 +100,6 @@ export default function ChooseLocationScreen({navigation, route}) {
     if (Platform.OS === 'android') {
       requestPermission();
     } else {
-      console.log('111');
       getLocation();
     }
   }, []);
@@ -114,7 +110,6 @@ export default function ChooseLocationScreen({navigation, route}) {
       url: `http://getnearbycities.geobytes.com/GetNearbyCities?radius=${radious}&latitude=${lat}&longitude=${long}&limit=500`,
     })
       .then((response) => {
-        console.log('nearby city :=>', response.data);
         const cityList = response.data.map((obj) => ({
           description: obj[1],
           city: obj[1],
@@ -127,23 +122,18 @@ export default function ChooseLocationScreen({navigation, route}) {
       })
       .catch((e) => {
         setTimeout(() => {
-          console.log('catch -> location screen setting api');
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
   };
 
   useEffect(() => {
-    console.log('Settings useEffect clled:=>');
-
     getAppSettingsWithoutAuth()
       .then(async (response) => {
-        console.log('Settings:=>', response);
         await Utility.setStorage('appSetting', response.payload.app);
       })
       .catch((e) => {
         setTimeout(() => {
-          console.log('catch -> location screen setting api');
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
@@ -155,7 +145,6 @@ export default function ChooseLocationScreen({navigation, route}) {
       PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
     ])
       .then((result) => {
-        console.log('Data :::::', JSON.stringify(result));
         if (
           result['android.permission.ACCESS_COARSE_LOCATION'] &&
           result['android.permission.ACCESS_FINE_LOCATION'] === 'granted'
@@ -192,14 +181,11 @@ export default function ChooseLocationScreen({navigation, route}) {
               country = e.long_name;
             }
           });
-          console.log('333');
           setCurrentLocation({stateAbbr, city, country});
         });
-        console.log('444');
         console.log(position.coords.latitude);
       },
       (error) => {
-        console.log('555');
         // See error code charts below.
         console.log(error.code, error.message);
       },
@@ -211,7 +197,6 @@ export default function ChooseLocationScreen({navigation, route}) {
     if (searchLocationText.length >= 3) {
       searchLocations(searchLocationText)
         .then((response) => {
-          console.log('Response ---8888', response);
           setNoData(false);
           setCityData(response.predictions);
         })
@@ -221,8 +206,6 @@ export default function ChooseLocationScreen({navigation, route}) {
           }, 10);
         });
     } else {
-      console.log('Response ---9999');
-
       setNoData(true);
       setCityData([]);
     }
@@ -230,45 +213,17 @@ export default function ChooseLocationScreen({navigation, route}) {
 
   const getTeamsDataByCurrentLocation = async () => {
     setLoading(true);
-    console.log('Curruent location data:=>', currentLocation);
     const userData = {
       city: currentLocation?.city,
       state_abbr: currentLocation?.stateAbbr,
       country: currentLocation?.country,
     };
-    // updateProfile(userData, () => {
-    //   navigation.navigate('ChooseSportsScreen', {
-    //     city: currentLocation?.city,
-    //     state: currentLocation?.stateAbbr,
-    //     country: currentLocation?.country,
-    //   });
-    // });
+
     navigateToChooseSportScreen(userData);
   };
-  /*
-  const updateProfile = async (params, callback) => {
-    setLoading(true);
-    updateUserProfile(params, authContext)
-      .then(async (userResoponse) => {
-        const userData = userResoponse?.payload;
-        const entity = {...authContext?.entity};
-        entity.auth.user = userData;
-        entity.obj = userData;
-        await Utility.setStorage('loggedInEntity', {...entity});
-        await Utility.setStorage('authContextEntity', {...entity});
-        await Utility.setStorage('authContextUser', {...userData});
-        await authContext.setUser({...userData});
-        await authContext.setEntity({...entity});
-        setLoading(false);
-        callback();
-      })
-      .catch(() => setLoading(false));
-  };
-*/
+
   const navigateToChooseSportScreen = (params) => {
     setLoading(false);
-    console.log('genderInfo', route?.params?.signupInfo);
-    console.log('location data', params);
 
     navigation.navigate('ChooseSportsScreen', {
       locationInfo: {
@@ -279,7 +234,6 @@ export default function ChooseLocationScreen({navigation, route}) {
   };
 
   const getTeamsData = async (item) => {
-    console.log('item location data:=>', item);
     setLoading(true);
     const userData = {
       city: item?.city ?? item?.terms?.[0]?.value,
@@ -333,27 +287,22 @@ export default function ChooseLocationScreen({navigation, route}) {
         />
       </View>
       {noData && searchText?.length > 0 && (
-        <Text style={styles.noDataText}>
-          Please, enter at least 3 characters to see addresses.
-        </Text>
+        <Text style={styles.noDataText}>{strings.enter3CharText}</Text>
       )}
       {noData && searchText?.length === 0 && nearByCity.length > 0 && (
         <SafeAreaView style={{flex: 1}}>
           <FlatList
             data={nearByCity}
-            renderItem={({item}) => {
-              console.log('Near city1111 ==>', nearByCity);
-              return (
-                <TouchableWithoutFeedback
-                  style={styles.listItem}
-                  onPress={() => getTeamsData(item)}>
-                  <Text style={styles.cityList}>
-                    {item?.city}, {item?.state_abbr}, {item?.country}
-                  </Text>
-                  <Separator />
-                </TouchableWithoutFeedback>
-              );
-            }}
+            renderItem={({item}) => (
+              <TouchableWithoutFeedback
+                style={styles.listItem}
+                onPress={() => getTeamsData(item)}>
+                <Text style={styles.cityList}>
+                  {item?.city}, {item?.state_abbr}, {item?.country}
+                </Text>
+                <Separator />
+              </TouchableWithoutFeedback>
+            )}
             ListHeaderComponent={() => (
               <TouchableWithoutFeedback
                 style={styles.listItem}
@@ -364,7 +313,7 @@ export default function ChooseLocationScreen({navigation, route}) {
                     {currentLocation?.country}
                   </Text>
                   <Text style={styles.curruentLocationText}>
-                    Current Location
+                    {strings.currentLocationText}
                   </Text>
                 </View>
                 <Separator />

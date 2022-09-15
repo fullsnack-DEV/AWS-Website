@@ -89,7 +89,7 @@ export default function AlterScorekeeperScreen({navigation, route}) {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: 'Scorekeeper Reservation',
+      title: strings.scorekeeperScreenTitle,
     });
   }, [navigation, bodyParams]);
   useEffect(() => {
@@ -139,13 +139,9 @@ export default function AlterScorekeeperScreen({navigation, route}) {
             manual_fee: reservationObj[0]?.manual_fee,
           });
         }
-        console.log('challenge Object::', reservationObj[0]);
-
-        console.log('Payment Object::', paymentCard);
       } else {
         if (isOld === false) {
           setbodyParams(reservationObj);
-          // oldVersion = { ...body };
           setOldVersion(reservationObj);
           setIsOld(true);
         } else {
@@ -179,9 +175,6 @@ export default function AlterScorekeeperScreen({navigation, route}) {
             manual_fee: reservationObj?.manual_fee,
           });
         }
-        console.log('challenge Object::', reservationObj);
-
-        console.log('Payment Object::', paymentCard);
       }
 
       getPaymentMethods(reservationObj[0] ?? reservationObj);
@@ -210,8 +203,6 @@ export default function AlterScorekeeperScreen({navigation, route}) {
       } else {
         setEditRules(false);
       }
-      // console.log('OLD:', oldVersion.responsible_to_secure_venue);
-      // console.log('NEW:', bodyParams.responsible_to_secure_venue);
       if (
         bodyParams.responsible_to_secure_venue !==
         oldVersion.responsible_to_secure_venue
@@ -253,8 +244,6 @@ export default function AlterScorekeeperScreen({navigation, route}) {
 
   const getFeesEstimationDetail = () => {
     const body = {};
-    // parseFloat((bodyParams.start_datetime / 1000).toFixed(0)
-
     body.source = bodyParams?.source;
     body.reservation_id = bodyParams.reservation_id;
     body.start_datetime = bodyParams?.start_datetime;
@@ -276,7 +265,6 @@ export default function AlterScorekeeperScreen({navigation, route}) {
     )
       .then((response) => {
         setloading(false);
-        console.log('fee data :', response.payload);
         setPaymentCard({
           ...paymentCard,
           total_game_fee: response.payload.total_game_fee,
@@ -474,8 +462,6 @@ export default function AlterScorekeeperScreen({navigation, route}) {
       setloading(true);
       paymentMethods(authContext)
         .then((response) => {
-          console.log('source ID:', obj?.source);
-          console.log('payment method', response.payload);
           for (const tempCard of response?.payload) {
             if (tempCard?.id === obj?.source) {
               setDefaultCard(tempCard);
@@ -483,11 +469,7 @@ export default function AlterScorekeeperScreen({navigation, route}) {
             }
           }
 
-          // setCards([...response.payload])
           setloading(false);
-          // if (response.payload.length === 0) {
-          //   openNewCardScreen();
-          // }
         })
         .catch((e) => {
           console.log('error in payment method', e);
@@ -551,7 +533,6 @@ export default function AlterScorekeeperScreen({navigation, route}) {
       teampObj.requested_by = teampObj.created_by.uid;
     }
 
-    console.log('Temp Object::', teampObj);
     console.log(`${teampObj?.requested_by}:::${entity.uid}`);
     if (teampObj?.requested_by === entity.uid) {
       return 'sender';
@@ -564,7 +545,6 @@ export default function AlterScorekeeperScreen({navigation, route}) {
     const body = {};
     body.scorekeeper_id = bodyParams?.scorekeeper?.user_id;
     body.game_id = bodyParams?.game?.game_id;
-    console.log('Payment card data::', paymentCard);
     body.total_service_fee1 = paymentCard?.total_service_fee1;
     body.total_game_fee = paymentCard?.total_game_fee;
     body.total_service_fee2 = paymentCard?.total_service_fee2;
@@ -592,7 +572,6 @@ export default function AlterScorekeeperScreen({navigation, route}) {
     }
 
     const reservationId = bodyParams?.reservation_id;
-    console.log('FINAL BODY PARAMS::', body);
     let callerId = '';
     if (bodyParams?.scorekeeper?.user_id !== entity.uid) {
       callerId = entity.uid;
@@ -676,7 +655,6 @@ export default function AlterScorekeeperScreen({navigation, route}) {
           game_id: bodyParams?.game_id,
           sport: bodyParams?.sport,
         };
-        console.log('OBJ RESPONSE::', Obj);
         if (status === 'accept') {
           navigation.push('ReservationAcceptDeclineScreen', {
             teamObj: Obj,
@@ -720,8 +698,8 @@ export default function AlterScorekeeperScreen({navigation, route}) {
       <ActivityLoader visible={loading} />
       <TCTabView
         totalTabs={2}
-        firstTabTitle={'ALTERATION REQUEST'}
-        secondTabTitle={'CURRENT RESERVATION'}
+        firstTabTitle={strings.alterRequest}
+        secondTabTitle={strings.currentReservation}
         indexCounter={maintabNumber}
         eventPrivacyContianer={{width: 100}}
         onFirstTabPress={() => setMaintabNumber(0)}
@@ -732,13 +710,12 @@ export default function AlterScorekeeperScreen({navigation, route}) {
       {homeTeam && awayTeam && bodyParams && maintabNumber === 0 && (
         <View style={{marginBottom: 15}}>
           {!isPendingRequestPayment && (
-            <TouchableOpacity onPress={() => console.log('OK')}>
+            <TouchableOpacity onPress={() => console.log(strings.okTitleText)}>
               <LinearGradient
                 colors={[colors.yellowColor, colors.themeColor]}
                 style={styles.containerStyle}>
                 <Text style={styles.buttonText}>
-                  Please edit the reservation details below before you send the
-                  alteration request.
+                  {strings.editReservationDetails}
                 </Text>
               </LinearGradient>
             </TouchableOpacity>
@@ -790,7 +767,7 @@ export default function AlterScorekeeperScreen({navigation, route}) {
             <View style={styles.challengeeView}>
               <View style={styles.teamView}>
                 <Image source={images.refIcon} style={styles.reqOutImage} />
-                <Text style={styles.challengeeText}>Scorekeeper</Text>
+                <Text style={styles.challengeeText}>{strings.scorekeeper}</Text>
               </View>
 
               <View style={styles.teamView}>
@@ -881,7 +858,7 @@ export default function AlterScorekeeperScreen({navigation, route}) {
                     alignItems: 'center',
                     justifyContent: 'space-between',
                   }}>
-                  <Title text={'Game'} />
+                  <Title text={strings.Game} />
 
                   {!isPendingRequestPayment && (
                     <TouchableOpacity
@@ -915,9 +892,9 @@ export default function AlterScorekeeperScreen({navigation, route}) {
               {bodyParams?.game && (
                 <View>
                   <View style={styles.contentContainer}>
-                    <Title text={'Date & Time'} />
+                    <Title text={strings.dateAndTimeCam} />
                     <TCInfoField
-                      title={'Date'}
+                      title={strings.Date}
                       value={
                         bodyParams?.timestamp &&
                         moment(bodyParams?.game?.start_datetime * 1000).format(
@@ -931,7 +908,7 @@ export default function AlterScorekeeperScreen({navigation, route}) {
                     />
                     <Seperator height={2} />
                     <TCInfoField
-                      title={'Time'}
+                      title={strings.timeText}
                       value={
                         bodyParams?.game?.start_datetime &&
                         bodyParams?.game?.end_datetime
@@ -951,9 +928,9 @@ export default function AlterScorekeeperScreen({navigation, route}) {
 
                   {/* Venue */}
                   <View style={styles.contentContainer}>
-                    <Title text={'Venue'} />
+                    <Title text={strings.place} />
                     <TCInfoField
-                      title={'Venue'}
+                      title={strings.place}
                       value={bodyParams?.game?.venue?.name}
                       titleStyle={{
                         alignSelf: 'flex-start',
@@ -961,7 +938,7 @@ export default function AlterScorekeeperScreen({navigation, route}) {
                       }}
                     />
                     <TCInfoField
-                      title={'Address'}
+                      title={strings.addressPlaceholder}
                       value={bodyParams?.game?.venue?.address}
                       titleStyle={{
                         alignSelf: 'flex-start',
@@ -990,7 +967,7 @@ export default function AlterScorekeeperScreen({navigation, route}) {
             </View>
           )}
           <TCLabel
-            title={'Game Rules'}
+            title={strings.gameRules}
             style={{marginTop: 0, marginBottom: 10}}
           />
           <Text style={styles.rulesTitle}>General Rules</Text>
@@ -1006,10 +983,10 @@ export default function AlterScorekeeperScreen({navigation, route}) {
 
           <View>
             <TCChallengeTitle
-              title={'Refund Policy'}
+              title={strings.refundpolicy}
               value={bodyParams?.refund_policy}
               tooltipText={
-                '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the match fee and service fee are not refunded.'
+                strings.cancellationPolicyDesc
               }
               tooltipHeight={heightPercentageToDP('18%')}
               tooltipWidth={widthPercentageToDP('50%')}
@@ -1028,8 +1005,8 @@ export default function AlterScorekeeperScreen({navigation, route}) {
               <TCLabel
                 title={
                   checkSenderForPayment(bodyParams) === 'sender'
-                    ? 'Payment'
-                    : 'Earning'
+                    ? strings.payment
+                    : strings.earning
                 }
                 isNew={editPayment}
               />
@@ -1063,7 +1040,7 @@ export default function AlterScorekeeperScreen({navigation, route}) {
             (bodyParams?.total_game_fee > 0 &&
               checkSenderForPayment(bodyParams) === 'sender')) && (
             <View style={styles.contentContainer}>
-              <Title text={'Payment Method'} />
+              <Title text={strings.paymentMethod} />
               <View style={{marginTop: 10}}>
                 <TCTouchableLabel
                   title={
@@ -1086,13 +1063,13 @@ export default function AlterScorekeeperScreen({navigation, route}) {
           {editPayment && (
             <View style={{marginTop: 15}}>
               <Text style={styles.differenceText}>
-                Difference{' '}
+                {`${strings.Difference} `}
                 <Text style={styles.differenceSmallText}>
                   (New payment - Current payment)
                 </Text>
               </Text>
               <View style={styles.differeceView}>
-                <Text style={styles.differenceTextTitle}>Difference</Text>
+                <Text style={styles.differenceTextTitle}>{strings.Difference}</Text>
                 <Text style={styles.diffenceAmount}>{`$${parseFloat(
                   bodyParams?.total_game_fee - oldVersion?.total_game_fee,
                 ).toFixed(2)} ${
@@ -1202,7 +1179,7 @@ export default function AlterScorekeeperScreen({navigation, route}) {
                       updateReservationDetail();
                     } else {
                       Alert.alert(
-                        'Please modify atleast one field for alter request.',
+                        strings.alterModificationMsg,
                       );
                     }
                   }}
@@ -1256,11 +1233,11 @@ export default function AlterScorekeeperScreen({navigation, route}) {
                       new Date().getTime()
                     ) {
                       Alert.alert(
-                        'Reservation cannot be cancel after game time passed or offer expired.',
+                        strings.cannotCancelReservationText,
                       );
                     } else {
                       Alert.alert(
-                        'Reservation can not be change after game has been started.',
+                        strings.cannotAcceptText,
                       );
                     }
                   }}
@@ -1288,7 +1265,7 @@ export default function AlterScorekeeperScreen({navigation, route}) {
                     });
                   } else {
                     Alert.alert(
-                      'Reservation cannot be change after game time passed or offer expired.',
+                      strings.reservationCannotChange,
                     );
                   }
                 }}
@@ -1324,11 +1301,11 @@ export default function AlterScorekeeperScreen({navigation, route}) {
                       new Date().getTime()
                     ) {
                       Alert.alert(
-                        'Reservation cannot be cancel after game time passed or offer expired.',
+                        strings.cannotCancelReservationText,
                       );
                     } else {
                       Alert.alert(
-                        'Reservation can not be change after game has been started.',
+                        strings.cannotAcceptText,
                       );
                     }
                   }}

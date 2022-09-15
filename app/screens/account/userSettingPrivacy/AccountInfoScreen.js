@@ -85,18 +85,15 @@ export default function AccountInfoScreen({navigation, route}) {
 
   const checkValidation = () => {
     if (userInfo.email === '') {
-      Alert.alert(strings.appName, 'Email cannot be blank.');
+      Alert.alert(strings.appName, strings.emailNotBlankText);
       return false;
     }
     if (oldPassword === '') {
-      Alert.alert(strings.appName, 'Password cannot be blank.');
+      Alert.alert(strings.appName, strings.passwordCanNotBlank);
       return false;
     }
     if (authContext?.entity?.obj?.email === userInfo.email) {
-      Alert.alert(
-        strings.appName,
-        'This email address already in your profile, please provide new email address for update.',
-      );
+      Alert.alert(strings.appName, strings.addNewEmailValidation);
       return false;
     }
 
@@ -138,11 +135,11 @@ export default function AccountInfoScreen({navigation, route}) {
                   setloading(false);
                   setTimeout(() => {
                     Alert.alert(
-                      'Please check your inbox to verify email, once it will verify your email will changed automatically.',
+                      strings.checkInboxText,
                       '',
                       [
                         {
-                          text: 'OK',
+                          text: strings.okTitleText,
                           onPress: () => onLogout(),
                         },
                       ],
@@ -190,7 +187,7 @@ export default function AccountInfoScreen({navigation, route}) {
               textAlign: 'center',
               fontFamily: fonts.RBold,
             }}>
-            Account info
+            {strings.accountInfo}
           </Text>
         }
         rightComponent={
@@ -199,7 +196,7 @@ export default function AccountInfoScreen({navigation, route}) {
             onPress={() => {
               onSavePress();
             }}>
-            Update
+            {strings.update}
           </Text>
         }
       />
@@ -212,7 +209,7 @@ export default function AccountInfoScreen({navigation, route}) {
       />
       <TCKeyboardView>
         <ActivityLoader visible={loading} />
-        <TCLabel title={'E-mail'} />
+        <TCLabel title={strings.email} />
 
         <TCTextField
           style={styles.textFieldStyle}
@@ -244,7 +241,7 @@ export default function AccountInfoScreen({navigation, route}) {
               fontSize: 16,
               textDecorationLine: 'underline',
             }}
-            title={'Change password'}></TCLabel>
+            title={strings.changePassword}></TCLabel>
         </TouchableOpacity>
       </TCKeyboardView>
     </SafeAreaView>

@@ -24,6 +24,8 @@ import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 import {getGroups} from '../../../api/Groups';
+import {strings} from '../../../../Localization/translation';
+import Verbs from '../../../Constants/Verbs';
 
 export default function ChangeOtherListScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
@@ -93,9 +95,12 @@ export default function ChangeOtherListScreen({navigation, route}) {
           ) {
             setAddedGroups([...setting?.payload?.user?.schedule_group_filter]);
             setremovedGroups([
-              ...[...teams, ...clubs].filter((e) => !setting?.payload?.user?.schedule_group_filter.some(
-                  (item) => item.group_id === e.group_id,
-                )),
+              ...[...teams, ...clubs].filter(
+                (e) =>
+                  !setting?.payload?.user?.schedule_group_filter.some(
+                    (item) => item.group_id === e.group_id,
+                  ),
+              ),
             ]);
           } else {
             const groups = [...teams, ...clubs].map((obj) => ({
@@ -116,7 +121,7 @@ export default function ChangeOtherListScreen({navigation, route}) {
 
   const renderCheckedOrganizers = useCallback(
     ({item, drag}) =>
-      item.sport !== 'All' && (
+      item.sport !== Verbs.allStatus && (
         <View style={styles.sportsBackgroundView}>
           <View style={{flexDirection: 'row'}}>
             <TouchableOpacity
@@ -139,17 +144,7 @@ export default function ChangeOtherListScreen({navigation, route}) {
                 style={styles.addIconStyle}
               />
             </TouchableOpacity>
-            {/* <FastImage
-              source={{
-                uri: `${image_url}${Utility.getSportImage(
-                  item.sport,
-                  item.type,
-                  authContext,
-                )}`,
-              }}
-              style={styles.sportsIcon}
-              resizeMode={'contain'}
-            /> */}
+
             <Text style={styles.sportNameTitle}>{item.group_name}</Text>
           </View>
           <TouchableOpacity onLongPress={drag} style={{alignSelf: 'center'}}>
@@ -162,7 +157,7 @@ export default function ChangeOtherListScreen({navigation, route}) {
 
   const renderUnCheckedOrganizers = useCallback(
     ({item}) =>
-      item.sport !== 'All' && (
+      item.sport !== Verbs.allStatus && (
         <View style={styles.sportsBackgroundView}>
           <View style={{flexDirection: 'row'}}>
             <TouchableOpacity
@@ -180,9 +175,7 @@ export default function ChangeOtherListScreen({navigation, route}) {
                   addedGroups.push(temp);
                   setAddedGroups([...addedGroups]);
                 } else {
-                  Alert.alert(
-                    'You can add up to 10 organizers to the filter bar.',
-                  );
+                  Alert.alert(strings.addUpTo10Organizers);
                 }
               }}
               style={{alignSelf: 'center'}}>
@@ -210,11 +203,9 @@ export default function ChangeOtherListScreen({navigation, route}) {
     <SafeAreaView style={{flex: 1}}>
       <ActivityLoader visible={loading} />
       <Text style={styles.mainTextStyle}>
-        Organizers displayed in filter bar
+        {strings.organizerDisplayInFilterBartext}
       </Text>
-      <Text style={styles.subTitle}>
-        Upto 10 organizers can be displayed in the filter bar.
-      </Text>
+      <Text style={styles.subTitle}>{strings.upTo10OrganizerText}</Text>
 
       {addedGroups.length > 0 ? (
         <FlatList
@@ -237,16 +228,14 @@ export default function ChangeOtherListScreen({navigation, route}) {
           }}
           onMoveEnd={(data) => {
             setAddedGroups([...data]);
-
-            console.log('DATATATATATA:=', data);
           }}
         />
       ) : (
         <View style={{marginTop: 15}}>
-          <Text style={styles.noEventText}>No Organizers</Text>
+          <Text style={styles.noEventText}>{strings.noOrganizers}</Text>
         </View>
       )}
-      <Text style={styles.otherTitle}>Other Organizers</Text>
+      <Text style={styles.otherTitle}>{strings.otherOrganizers}</Text>
 
       {removedGroups.length > 0 ? (
         <FlatList
@@ -264,13 +253,12 @@ export default function ChangeOtherListScreen({navigation, route}) {
         />
       ) : (
         <View style={{marginTop: 15}}>
-          <Text style={styles.noEventText}>No Organizers</Text>
+          <Text style={styles.noEventText}>{strings.noOrganizers}</Text>
         </View>
       )}
 
       <Text style={styles.headerTextStyle}>
-        Some organizers of events you are going to join or joined are not
-        visible here.
+        {strings.someOrganizerJoinEventText}
       </Text>
     </SafeAreaView>
   );

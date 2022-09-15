@@ -21,6 +21,7 @@ import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
 import TCLable from '../../../components/TCLabel';
 import {strings} from '../../../../Localization/translation';
+import Verbs from '../../../Constants/Verbs';
 
 const hiringPlayersOptions = [
   {key: strings.yes, id: 0},
@@ -33,8 +34,8 @@ export default function RecruitingMemberScreen({navigation, route}) {
 
   const [loading, setloading] = useState(false);
   const [hiringPlayersSelection, setHiringPlayersSelection] = useState(
-    (route?.params?.settingObj?.hiringPlayers === 'Yes' && 1) ||
-      (route?.params?.settingObj?.hiringPlayers === 'No' && 0),
+    (route?.params?.settingObj?.hiringPlayers === strings.yes && 1) ||
+      (route?.params?.settingObj?.hiringPlayers === strings.no && 0),
   );
 
   useLayoutEffect(() => {
@@ -45,7 +46,7 @@ export default function RecruitingMemberScreen({navigation, route}) {
           onPress={() => {
             onSavePressed();
           }}>
-          Save
+          {strings.save}
         </Text>
       ),
     });
@@ -62,8 +63,6 @@ export default function RecruitingMemberScreen({navigation, route}) {
     patchGroup(authContext.entity.uid, bodyParams, authContext)
       .then(async (response) => {
         if (response.status === true) {
-          console.log('Team patch::::--->', response.payload);
-
           setloading(false);
           const entity = authContext.entity;
           entity.obj = response.payload;
@@ -89,8 +88,8 @@ export default function RecruitingMemberScreen({navigation, route}) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const onSavePressed = () => {
     if (
-      authContext.entity.role === 'team' ||
-      authContext.entity.role === 'club'
+      authContext.entity.role === Verbs.entityTypeTeam ||
+      authContext.entity.role === Verbs.entityTypeClub
     ) {
       saveTeam();
     }

@@ -6,9 +6,11 @@ import {View, StyleSheet, Text} from 'react-native';
 // import ActivityLoader from '../../../components/loader/ActivityLoader';
 import moment from 'moment';
 
+import {format} from 'react-string-format';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import TCThinDivider from '../../../components/TCThinDivider';
+import {strings} from '../../../../Localization/translation';
 
 export default function LogDetailScreen({route}) {
   const [data] = useState(route?.params?.data);
@@ -27,13 +29,13 @@ export default function LogDetailScreen({route}) {
             fontSize: 16,
             color: colors.lightBlackColor,
           }}>
-          Transaction no.: {data?.transaction_id}
+          {strings.transactionNumberText} {data?.transaction_id}
         </Text>
       </View>
 
       <View style={styles.containerStyle}>
         <View style={styles.containerView}>
-          <Text style={styles.titleText}>Amount</Text>
+          <Text style={styles.titleText}>{strings.amountTitle}</Text>
           <Text
             style={{
               fontSize: 16,
@@ -45,7 +47,7 @@ export default function LogDetailScreen({route}) {
         </View>
 
         <View style={styles.containerView}>
-          <Text style={styles.titleText}>Type</Text>
+          <Text style={styles.titleText}>{strings.type}</Text>
           <Text
             style={{
               fontSize: 16,
@@ -58,14 +60,14 @@ export default function LogDetailScreen({route}) {
         </View>
 
         <View style={styles.containerView}>
-          <Text style={styles.titleText}>Method</Text>
+          <Text style={styles.titleText}>{strings.method}</Text>
           <Text
             style={{
               fontSize: 16,
               fontFamily: fonts.RMedium,
               color: colors.lightBlackColor,
             }}>
-            {`By ${data?.payment_mode}`}
+            {`${strings.by} ${data?.payment_mode}`}
           </Text>
         </View>
       </View>
@@ -79,7 +81,7 @@ export default function LogDetailScreen({route}) {
             fontSize: 16,
             color: colors.lightBlackColor,
           }}>
-          {'Note'}
+          {strings.noteTitle}
         </Text>
 
         <Text
@@ -99,11 +101,14 @@ export default function LogDetailScreen({route}) {
           color: colors.userPostTimeColor,
           marginLeft: 15,
         }}>
-        {`Logged by ${data?.done_by?.first_name} ${
-          data?.done_by?.last_name
-        } at ${moment(new Date(data?.transaction_date * 1000)).format(
-          'MMM DD, YYYY hh:mma',
-        )}`}
+        {format(
+          strings.loggedByText,
+          data?.done_by?.first_name,
+          data?.done_by?.last_name,
+          moment(new Date(data?.transaction_date * 1000)).format(
+            'MMM DD, YYYY hh:mma',
+          ),
+        )}
       </Text>
     </View>
   );

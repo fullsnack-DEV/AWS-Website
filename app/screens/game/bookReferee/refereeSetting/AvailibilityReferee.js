@@ -11,6 +11,7 @@ import TCLabel from '../../../../components/TCLabel';
 import ToggleView from '../../../../components/Schedule/ToggleView';
 import * as Utility from '../../../../utils';
 import {patchPlayer} from '../../../../api/Users';
+import Verbs from '../../../../Constants/Verbs';
 
 export default function AvailibilityReferee({navigation, route}) {
   const [comeFrom] = useState(route?.params?.comeFrom);
@@ -20,7 +21,7 @@ export default function AvailibilityReferee({navigation, route}) {
   const [loading, setloading] = useState(false);
   const [acceptChallenge, setAcceptChallenge] = useState(
     route?.params?.settingObj?.referee_availibility
-      ? route?.params?.settingObj?.referee_availibility === 'On'
+      ? route?.params?.settingObj?.referee_availibility === Verbs.on
       : true,
   );
 
@@ -47,9 +48,8 @@ export default function AvailibilityReferee({navigation, route}) {
       ...refereeSetting,
       sport: sportName,
       entity_type: 'referee',
-      referee_availibility: acceptChallenge ? 'On' : 'Off',
+      referee_availibility: acceptChallenge ? Verbs.on : Verbs.off,
     };
-    console.log('data::=>', modifiedSetting);
     setloading(true);
 
     const registerdRefereeData = authContext?.entity?.obj?.referee_data?.filter(
@@ -70,14 +70,12 @@ export default function AvailibilityReferee({navigation, route}) {
       ...authContext?.entity?.obj,
       referee_data: registerdRefereeData,
     };
-    console.log('Body::::--->', body);
 
     patchPlayer(body, authContext)
       .then(async (response) => {
         if (response.status === true) {
           setloading(false);
           const entity = authContext.entity;
-          console.log('Register referee response IS:: ', response.payload);
           entity.auth.user = response.payload;
           entity.obj = response.payload;
           authContext.setEntity({...entity});
@@ -92,7 +90,6 @@ export default function AvailibilityReferee({navigation, route}) {
         } else {
           Alert.alert(strings.appName, response.messages);
         }
-        console.log('RESPONSE IS:: ', response);
         setloading(false);
       })
       .catch((e) => {

@@ -161,7 +161,7 @@ export default function RegisterPlayerForm2({navigation, route}) {
             '',
             [
               {
-                text: 'OK',
+                text: strings.okTitleText,
                 onPress: () => {
                   navigation.navigate('AccountScreen', {
                     createdSportName: route?.params?.bodyParams?.sport,
@@ -175,7 +175,6 @@ export default function RegisterPlayerForm2({navigation, route}) {
         } else {
           Alert.alert(strings.appName, response.messages);
         }
-        console.log('RESPONSE IS:: ', response);
         setloading(false);
       })
       .catch(() => setloading(false));
@@ -271,7 +270,7 @@ export default function RegisterPlayerForm2({navigation, route}) {
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
               }}>
-              Languages
+              {strings.languages}
             </Text>
             <TouchableOpacity
               onPress={() => {
@@ -291,7 +290,7 @@ export default function RegisterPlayerForm2({navigation, route}) {
                   fontFamily: fonts.RRegular,
                   color: colors.themeColor,
                 }}>
-                Apply
+                {strings.apply}
               </Text>
             </TouchableOpacity>
           </View>

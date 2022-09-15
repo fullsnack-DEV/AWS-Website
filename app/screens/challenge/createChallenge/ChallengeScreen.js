@@ -19,6 +19,7 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import {format} from 'react-string-format';
 import TCFormProgress from '../../../components/TCFormProgress';
 import {getFeesEstimation} from '../../../api/Challenge';
 import {getNumberSuffix} from '../../../utils/gameUtils';
@@ -39,6 +40,7 @@ import EventMapView from '../../../components/Schedule/EventMapView';
 import GameFeeCard from '../../../components/challenge/GameFeeCard';
 import TCArrowView from '../../../components/TCArrowView';
 import TCGameDetailRules from '../../../components/TCGameDetailRules';
+import Verbs from '../../../Constants/Verbs';
 
 let entity = {};
 const bodyParams = {};
@@ -119,7 +121,7 @@ export default function ChallengeScreen({navigation, route}) {
           color: colors.greenColorCard,
           marginRight: 2,
         }}
-        staticValueText={'min.'}
+        staticValueText={strings.minuteText}
       />
       <TCChallengeTitle
         containerStyle={{marginLeft: 15, marginTop: 5, marginBottom: 5}}
@@ -132,7 +134,7 @@ export default function ChallengeScreen({navigation, route}) {
           color: colors.greenColorCard,
           marginRight: 2,
         }}
-        staticValueText={'min.'}
+        staticValueText={strings.minuteText}
       />
     </>
   );
@@ -141,7 +143,7 @@ export default function ChallengeScreen({navigation, route}) {
     <>
       <TCChallengeTitle
         containerStyle={{marginLeft: 15, marginTop: 5, marginBottom: 5}}
-        title={'Interval'}
+        title={strings.intervalText}
         titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
         value={item.interval}
         valueStyle={{
@@ -150,11 +152,11 @@ export default function ChallengeScreen({navigation, route}) {
           color: colors.greenColorCard,
           marginRight: 2,
         }}
-        staticValueText={'min.'}
+        staticValueText={strings.minuteText}
       />
       <TCChallengeTitle
         containerStyle={{marginLeft: 15, marginTop: 5, marginBottom: 5}}
-        title={`${getNumberSuffix(index + 1)} Over time`}
+        title={format(strings.NoverTime, getNumberSuffix(index + 1))}
         titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
         value={item.overTime}
         valueStyle={{
@@ -163,7 +165,7 @@ export default function ChallengeScreen({navigation, route}) {
           color: colors.greenColorCard,
           marginRight: 2,
         }}
-        staticValueText={'min.'}
+        staticValueText={strings.minuteText}
       />
     </>
   );
@@ -196,7 +198,7 @@ export default function ChallengeScreen({navigation, route}) {
             }}>
             <Image
               source={
-                sportType !== 'single'
+                sportType !== Verbs.singleSport
                   ? groupObj?.thumbnail
                     ? {uri: groupObj?.thumbnail}
                     : images.teamPlaceholder
@@ -214,9 +216,7 @@ export default function ChallengeScreen({navigation, route}) {
                 style={
                   styles.locationLable
                 }>{`${groupObj?.city}, ${groupObj?.state_abbr}`}</Text>
-              <Text style={styles.locationLable}>
-                TC Level 15 TC points 3,000
-              </Text>
+              <Text style={styles.locationLable}>{strings.TCLevelPoints}</Text>
             </View>
           </View>
         </View>
@@ -237,7 +237,9 @@ export default function ChallengeScreen({navigation, route}) {
               }}>
               <View style={[styles.borderButtonView, styles.shadowView]}>
                 <View />
-                <Text style={styles.detailButtonText}>CHECK AVAILIBILITY</Text>
+                <Text style={styles.detailButtonText}>
+                  {strings.checkAvailibility}
+                </Text>
                 <Image
                   source={images.arrowGraterthan}
                   style={styles.arrowImage}
@@ -288,8 +290,10 @@ export default function ChallengeScreen({navigation, route}) {
               <View style={styles.dateTimeValue}>
                 <Text style={styles.dateTimeText}> </Text>
                 <Text style={styles.timeZoneText}>
-                  Time zone{' '}
-                  <Text style={{fontFamily: fonts.RRegular}}>Vancouver</Text>
+                  {`${strings.timezone} `}
+                  <Text style={{fontFamily: fonts.RRegular}}>
+                    {strings.vancouver}
+                  </Text>
                 </Text>
               </View>
             </View>
@@ -301,9 +305,7 @@ export default function ChallengeScreen({navigation, route}) {
           title={strings.typeOfGame.toUpperCase()}
           titleStyle={{...styles.titleText}}
           value={settingObject?.game_type}
-          tooltipText={
-            'The game result has an effect on TC points of the challengee and you.'
-          }
+          tooltipText={strings.gamePointsAffectText}
           tooltipHeight={hp('6%')}
           tooltipWidth={wp('50%')}
           containerStyle={{marginTop: 25, marginBottom: 25}}
@@ -314,7 +316,10 @@ export default function ChallengeScreen({navigation, route}) {
           title={strings.matchFee.toUpperCase()}
           titleStyle={{...styles.titleText}}
           value={settingObject?.game_fee?.fee}
-          staticValueText={`${settingObject?.game_fee?.currency_type} /Game`}
+          staticValueText={format(
+            strings.perGame,
+            settingObject?.game_fee?.currency_type,
+          )}
           valueStyle={{
             fontFamily: fonts.RBold,
             fontSize: 16,
@@ -329,9 +334,7 @@ export default function ChallengeScreen({navigation, route}) {
           title={strings.refundPolicy.toUpperCase()}
           titleStyle={{...styles.titleText}}
           value={settingObject?.refund_policy}
-          tooltipText={
-            '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the match fee and service fee are not refunded.'
-          }
+          tooltipText={strings.cancellationPolicyDesc}
           tooltipHeight={hp('18%')}
           tooltipWidth={wp('50%')}
           containerStyle={{marginTop: 25, marginBottom: 25}}
@@ -346,7 +349,7 @@ export default function ChallengeScreen({navigation, route}) {
           containerStyle={{marginTop: 25}}
         />
         <View style={styles.teamContainer}>
-          <Text style={styles.homeLableStyle}>HOME</Text>
+          <Text style={styles.homeLableStyle}>{strings.home}</Text>
           <View style={styles.teamViewStyle}>
             <Image
               source={
@@ -382,7 +385,7 @@ export default function ChallengeScreen({navigation, route}) {
         </View>
 
         <View style={styles.teamContainer}>
-          <Text style={styles.homeLableStyle}>AWAY</Text>
+          <Text style={styles.homeLableStyle}>{strings.away}</Text>
           <View style={styles.teamViewStyle}>
             <Image
               source={
@@ -439,7 +442,7 @@ export default function ChallengeScreen({navigation, route}) {
             />
             <TCChallengeTitle
               containerStyle={{marginLeft: 15, marginTop: 15, marginBottom: 5}}
-              title={'1st period'}
+              title={strings.firstPeriodText}
               titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
               value={settingObject?.game_duration?.first_period}
               valueStyle={{
@@ -448,7 +451,7 @@ export default function ChallengeScreen({navigation, route}) {
                 color: colors.greenColorCard,
                 marginRight: 2,
               }}
-              staticValueText={'min.'}
+              staticValueText={strings.minuteText}
             />
 
             <FlatList
@@ -618,10 +621,7 @@ export default function ChallengeScreen({navigation, route}) {
           if (
             new Date(route?.params?.startTime).getTime() < new Date().getTime()
           ) {
-            Alert.alert(
-              strings.alertmessagetitle,
-              'Please choose future time for challenge.',
-            );
+            Alert.alert(strings.alertmessagetitle, strings.chooseFutureTime);
           } else {
             entity = authContext.entity;
             const body = {
@@ -633,21 +633,20 @@ export default function ChallengeScreen({navigation, route}) {
               start_datetime: route?.params?.startTime / 1000,
               end_datetime: route?.params?.endTime / 1000,
               challenger:
-                sportType === 'single'
+                sportType === Verbs.singleSport
                   ? teams?.[0]?.user_id
                   : teams?.[0]?.group_id,
               challengee:
-                sportType === 'single'
+                sportType === Verbs.singleSport
                   ? teams?.[1]?.user_id
                   : teams?.[1]?.group_id,
               home_team:
                 settingObject?.home_away === 'Home' ? groupObj : entity?.obj,
               away_team:
                 settingObject?.home_away === 'Home' ? entity?.obj : groupObj,
-              user_challenge: sportType === 'single',
+              user_challenge: sportType === Verbs.singleSport,
             };
 
-            console.log('conti. challnege obj:=>', body);
             navigation.push('RefereeAgreementScreen', {
               challengeObj: body,
               groupObj,

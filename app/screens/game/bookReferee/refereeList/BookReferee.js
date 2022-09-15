@@ -28,6 +28,7 @@ import {
 import Modal from 'react-native-modal';
 import moment from 'moment';
 import Geolocation from '@react-native-community/geolocation';
+import {format} from 'react-string-format';
 import * as Utils from '../../../challenge/manageChallenge/settingUtility';
 import AuthContext from '../../../../auth/context';
 
@@ -45,6 +46,7 @@ import {getUserIndex} from '../../../../api/elasticSearch';
 import RenderReferee from './RenderReferee';
 import TCTagsFilter from '../../../../components/TCTagsFilter';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
+import Verbs from '../../../../Constants/Verbs';
 
 let stopFetchMore = true;
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
@@ -74,14 +76,11 @@ export default function BookReferee({navigation, route}) {
   const [location, setLocation] = useState(route?.params?.filters.location);
   const [selectedReferee, setSelectedReferee] = useState(null);
 
-  console.log('Referee location Filter:=>', route?.params?.filters.location);
-
   useLayoutEffect(() => {
-    console.log('ENTER BOOK REFEREE');
     navigation.setOptions({
       headerRight: () => (
         <Text style={styles.nextButtonStyle} onPress={() => onPressNext()}>
-          {selectedReferee !== null ? 'Next' : ''}
+          {selectedReferee !== null ? strings.next : ''}
         </Text>
       ),
     });
@@ -94,7 +93,6 @@ export default function BookReferee({navigation, route}) {
       setLocationFilterOpetion(0);
     }
     if (route?.params?.locationText) {
-      console.log('route?.params?.locationText', route?.params?.locationText);
       setSettingPopup(true);
       setTimeout(() => {
         setLocation(route?.params?.locationText);
@@ -126,7 +124,7 @@ export default function BookReferee({navigation, route}) {
                           term: {
                             'referee_data.setting.referee_availibility.keyword':
                               {
-                                value: 'On',
+                                value: Verbs.on,
                               },
                           },
                         },
@@ -167,7 +165,6 @@ export default function BookReferee({navigation, route}) {
           },
         });
       }
-      console.log('refereeQuery:=>', JSON.stringify(refereeQuery));
 
       // Referee query
 
@@ -195,8 +192,6 @@ export default function BookReferee({navigation, route}) {
   }, []);
 
   const onPressNext = () => {
-    console.log('gameData111:=>', gameData);
-
     setLoading(true);
     Utils.getSetting(
       authContext?.entity?.uid,
@@ -207,7 +202,6 @@ export default function BookReferee({navigation, route}) {
     )
       .then((response) => {
         setLoading(false);
-        console.log('setting of group or player:::=>', response);
         if (
           response?.responsible_for_referee?.who_secure?.length >
           (gameData?.referees?.length ?? 0)
@@ -221,7 +215,6 @@ export default function BookReferee({navigation, route}) {
           )
             .then((res) => {
               setLoading(false);
-              console.log('res3:::=>', res);
               if (
                 res?.referee_availibility &&
                 res?.game_fee &&
@@ -236,7 +229,7 @@ export default function BookReferee({navigation, route}) {
                 });
               } else {
                 setTimeout(() => {
-                  Alert.alert('Referee setting not configured yet.');
+                  Alert.alert(strings.refereeSettingNotConfigureValidation);
                 }, 10);
               }
             })
@@ -250,7 +243,10 @@ export default function BookReferee({navigation, route}) {
         } else {
           Alert.alert(
             strings.appName,
-            `You can't book more than ${response?.responsible_for_referee?.who_secure?.length} referee for this match. You can change the number of referees in the reservation details.`,
+            format(
+              strings.canNotBookMoreThanreferee,
+              response?.responsible_for_referee?.who_secure?.length,
+            ),
           );
         }
       })
@@ -307,7 +303,6 @@ export default function BookReferee({navigation, route}) {
   };
   const handleTagPress = ({item}) => {
     const tempFilter = filters;
-    console.log('tempFilter', tempFilter);
     Object.keys(tempFilter).forEach((key) => {
       if (key === Object.keys(item)[0]) {
         if (Object.keys(item)[0] === 'location') {
@@ -320,7 +315,6 @@ export default function BookReferee({navigation, route}) {
         // delete tempFilter[key];
       }
     });
-    console.log('Temp filter', tempFilter);
     setFilters({...tempFilter});
     // applyFilter();
     setTimeout(() => {
@@ -333,27 +327,19 @@ export default function BookReferee({navigation, route}) {
   const getLocation = () => {
     Geolocation.getCurrentPosition(
       (position) => {
-        console.log('Lat/long to position::=>', position);
         // const position = { coords: { latitude: 49.11637199697782, longitude: -122.7776695216056 } }
         getLocationNameWithLatLong(
           position.coords.latitude,
           position.coords.longitude,
           authContext,
         ).then((res) => {
-          console.log(
-            'Lat/long to address::=>',
-            res.results[0].address_components,
-          );
           let city;
           res.results[0].address_components.map((e) => {
             if (e.types.includes('administrative_area_level_2')) {
               city = e.short_name;
             }
           });
-          console.log(
-            'Location:=>',
-            city.charAt(0).toUpperCase() + city.slice(1),
-          );
+
           setLocation(city.charAt(0).toUpperCase() + city.slice(1));
           // setFilters({
           //   ...filters,
@@ -376,15 +362,15 @@ export default function BookReferee({navigation, route}) {
 
   const applyValidation = useCallback(() => {
     if (Number(minFee) > 0 && Number(maxFee) <= 0) {
-      Alert.alert('Please enter correct referee max fee.');
+      Alert.alert(strings.refereeFeeMax);
       return false;
     }
     if (Number(minFee) <= 0 && Number(maxFee) > 0) {
-      Alert.alert('Please enter correct referee min fee.');
+      Alert.alert(strings.refereeFeeMin);
       return false;
     }
     if (Number(minFee) > Number(maxFee)) {
-      Alert.alert('Please enter correct referee fee.');
+      Alert.alert(strings.refereeFeeCorrect);
       return false;
     }
     return true;
@@ -397,7 +383,7 @@ export default function BookReferee({navigation, route}) {
           color: colors.grayColor,
           fontSize: 26,
         }}>
-        No Referees
+        {strings.noReferees}
       </Text>
     </View>
   );
@@ -498,9 +484,9 @@ export default function BookReferee({navigation, route}) {
                 <Text
                   onPress={() => setSettingPopup(false)}
                   style={styles.cancelText}>
-                  Cancel
+                  {strings.cancel}
                 </Text>
-                <Text style={styles.locationText}>Filter</Text>
+                <Text style={styles.locationText}>{strings.filter}</Text>
                 <Text
                   style={styles.doneText}
                   onPress={() => {
@@ -521,10 +507,9 @@ export default function BookReferee({navigation, route}) {
                         setReferees([]);
                         applyFilter(tempFilter);
                       }, 100);
-                      console.log('DONE::');
                     }
                   }}>
-                  {'Apply'}
+                  {strings.apply}
                 </Text>
               </View>
               <TCThinDivider width={'100%'} marginBottom={15} />
@@ -540,7 +525,7 @@ export default function BookReferee({navigation, route}) {
                         marginBottom: 10,
                         justifyContent: 'space-between',
                       }}>
-                      <Text style={styles.filterTitle}>World</Text>
+                      <Text style={styles.filterTitle}>{strings.world}</Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(0);
@@ -566,7 +551,9 @@ export default function BookReferee({navigation, route}) {
                         marginBottom: 10,
                         justifyContent: 'space-between',
                       }}>
-                      <Text style={styles.filterTitle}>Home City</Text>
+                      <Text style={styles.filterTitle}>
+                        {strings.homeCityTitleText}
+                      </Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(1);
@@ -601,7 +588,9 @@ export default function BookReferee({navigation, route}) {
                         marginBottom: 10,
                         justifyContent: 'space-between',
                       }}>
-                      <Text style={styles.filterTitle}>Current City</Text>
+                      <Text style={styles.filterTitle}>
+                        {strings.locationTitle}
+                      </Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(2);
@@ -643,7 +632,7 @@ export default function BookReferee({navigation, route}) {
                           <Text style={styles.searchCityText}>
                             {route?.params?.locationText ||
                               (location !== 'world' && location) ||
-                              'Search City'}
+                              strings.searchCityText}
                           </Text>
                         </View>
                         <View
@@ -682,7 +671,7 @@ export default function BookReferee({navigation, route}) {
                             justifyContent: 'center',
                           }}>
                           <Text style={styles.fieldTitle} numberOfLines={1}>
-                            From
+                            {strings.from}
                           </Text>
                         </View>
                         <View style={{marginRight: 15, flexDirection: 'row'}}>
@@ -708,7 +697,7 @@ export default function BookReferee({navigation, route}) {
                             justifyContent: 'center',
                           }}>
                           <Text style={styles.fieldTitle} numberOfLines={1}>
-                            To
+                            {strings.to}
                           </Text>
                         </View>
                         <View style={{marginRight: 15, flexDirection: 'row'}}>
@@ -729,7 +718,7 @@ export default function BookReferee({navigation, route}) {
                         textAlign: 'right',
                         marginTop: 10,
                       }}>
-                      Time zone{' '}
+                      {strings.timezone}{' '}
                       <Text
                         style={{
                           fontSize: 12,
@@ -737,72 +726,12 @@ export default function BookReferee({navigation, route}) {
                           color: colors.lightBlackColor,
                           textDecorationLine: 'underline',
                         }}>
-                        Vancouver
+                        {strings.vancouver}
                       </Text>
                     </Text>
                   </View>
                 </View>
               </View>
-              {/* Rate View */}
-              {/* <View>
-             <View
-               style={{
-                 flexDirection: 'row',
-                 margin: 15,
-                 marginTop: 0,
-                 justifyContent: 'space-between',
-               }}>
-               <View style={{ flex: 0.2 }}>
-                 <Text style={styles.filterTitle}>Rating</Text>
-               </View>
-               <View
-                 style={{
-                   marginLeft: 15,
-                   flex: 0.6,
-                   alignSelf: 'flex-end',
-                 }}>
-                 <View
-                   style={{
-                     flexDirection: 'row',
-                     marginBottom: 10,
-                     alignItems: 'center',
-                     justifyContent: 'space-between',
-                   }}>
-                   <Text style={styles.minMaxTitle}>Min</Text>
-                   <AirbnbRating
-                     count={5}
-                     fractions={1}
-                     showRating={false}
-                     defaultRating={0}
-                     size={20}
-                     isDisabled={false}
-                     selectedColor={'#f49c20'}
-                   />
-                   <Text style={styles.starCount}>2.0</Text>
-                 </View>
-                 <View
-                   style={{
-                     flexDirection: 'row',
-                     alignItems: 'center',
-                     justifyContent: 'space-between',
-                   }}>
-                   <Text style={styles.minMaxTitle}>Max</Text>
-                   <AirbnbRating
-                     count={5}
-                     fractions={1}
-                     showRating={false}
-                     defaultRating={0}
-                     size={20}
-                     isDisabled={false}
-                     selectedColor={'#f49c20'}
-                   />
-                   <Text style={styles.starCount}>2.0</Text>
-                 </View>
-               </View>
-             </View>
-
-           </View> */}
-              {/* Rate View */}
 
               <View
                 style={{
@@ -811,7 +740,9 @@ export default function BookReferee({navigation, route}) {
                   justifyContent: 'space-between',
                 }}>
                 <View style={{}}>
-                  <Text style={styles.filterTitle}>Referee fee</Text>
+                  <Text style={styles.filterTitle}>
+                    {strings.refereeFeecardText}
+                  </Text>
                 </View>
                 <View style={{marginTop: 10}}>
                   <View
@@ -823,7 +754,7 @@ export default function BookReferee({navigation, route}) {
                       onChangeText={(text) => setMinFee(text)}
                       value={minFee}
                       style={styles.minFee}
-                      placeholder={'Min'}
+                      placeholder={strings.minPlaceholder}
                       autoCorrect={false}
                       // clearButtonMode={'always'}
                       keyboardType={'numeric'}
@@ -833,7 +764,7 @@ export default function BookReferee({navigation, route}) {
                       onChangeText={(text) => setMaxFee(text)}
                       value={maxFee}
                       style={styles.minFee}
-                      placeholder={'Max'}
+                      placeholder={strings.maxPlaceholder}
                       autoCorrect={false}
                       // clearButtonMode={'always'}
                       keyboardType={'numeric'}
@@ -851,23 +782,23 @@ export default function BookReferee({navigation, route}) {
             style={styles.resetButton}
             onPress={() => {
               Alert.alert(
-                'Are you sure want to reset filters?',
+                strings.areYouSureRemoveFilterText,
                 '',
                 [
                   {
-                    text: 'Cancel',
+                    text: strings.cancel,
                     onPress: () => console.log('Cancel Pressed'),
                     style: 'cancel',
                   },
                   {
-                    text: 'OK',
+                    text: strings.okTitleText,
                     onPress: () => onPressReset(),
                   },
                 ],
                 {cancelable: false},
               );
             }}>
-            <Text style={styles.resetTitle}>Reset</Text>
+            <Text style={styles.resetTitle}>{strings.resetTitleText}</Text>
           </TouchableOpacity>
         </View>
         <DateTimePickerView

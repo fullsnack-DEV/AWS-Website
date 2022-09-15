@@ -88,8 +88,6 @@ function NotificationsListScreen({navigation}) {
   const [loadMore, setLoadMore] = useState(false);
   const [IDLT, setIDLT] = useState();
   const onDetailPress = (item) => {
-    console.log('Group ITEM ID:::::=>', item);
-
     if (activeScreen) {
       const verb = item.activities[0].verb;
 
@@ -116,7 +114,6 @@ function NotificationsListScreen({navigation}) {
         challengeUtility
           .getChallengeDetail(a, authContext)
           .then((obj) => {
-            console.log('challenge utils res:=>', obj);
             navigation.navigate(obj.screenName, {
               challengeObj: obj.challengeObj,
             });
@@ -154,8 +151,6 @@ function NotificationsListScreen({navigation}) {
         )
           .then((obj) => {
             const reservationObj = obj.reservationObj || obj.reservationObj[0];
-
-            console.log('reservationObj:1>=>', reservationObj);
             if (reservationObj?.referee?.user_id === authContext.entity.uid) {
               navigation.navigate(obj.screenName, {
                 reservationObj,
@@ -256,21 +251,6 @@ function NotificationsListScreen({navigation}) {
         verb.includes(NotificationType.scorekeeperRequest) ||
         verb.includes(NotificationType.changeScorekeeperRequest)
       ) {
-        // const a = JSON.parse(item.activities[0].object)?.reservationObject
-        //   ?.reservation_id;
-        // setloading(true);
-        // ScorekeeperUtils.getScorekeeperReservationDetail(
-        //   a,
-        //   authContext.entity.uid,
-        //   authContext,
-        // )
-        //   .then((obj) => {
-        //     navigation.navigate(obj.screenName, {
-        //       reservationObj: obj.reservationObj || obj.reservationObj[0],
-        //     });
-        //     setloading(false);
-        //   })
-        //   .catch(() => setloading(false));
         const a =
           JSON.parse(item.activities[0].object)?.reservationObject
             ?.reservation_id ||
@@ -283,7 +263,6 @@ function NotificationsListScreen({navigation}) {
         )
           .then((obj) => {
             const reservationObj = obj.reservationObj || obj.reservationObj[0];
-            console.log('reservationObj:1>=>', reservationObj);
             if (
               reservationObj?.scorekeeper?.user_id === authContext.entity.uid
             ) {
@@ -366,9 +345,6 @@ function NotificationsListScreen({navigation}) {
           data: item,
         });
       }
-      // else if (verb.includes(NotificationType.scorekeeperRequest)) {
-      //   Alert.alert('Remain Functionality')
-      // }
     } else {
       showSwitchProfilePopup();
     }
@@ -512,15 +488,15 @@ function NotificationsListScreen({navigation}) {
         ? `${selectedEntity.first_name} ${selectedEntity.last_name}`
         : selectedEntity.group_name;
     Alert.alert(
-      `Do you want to switch account to ${name}?`,
+      `${strings.doYouWantSwitchAc} ${name}?`,
       '',
       [
         {
-          text: 'Cancel',
+          text: strings.cancel,
           onPress: () => console.log('Cancel Pressed'),
           style: 'cancel',
         },
-        {text: 'Yes', onPress: () => onSwitchProfile(selectedEntity)},
+        {text: strings.yes, onPress: () => onSwitchProfile(selectedEntity)},
       ],
       {cancelable: true},
     );
@@ -539,7 +515,7 @@ function NotificationsListScreen({navigation}) {
         })
         .catch(() => {
           setloading(false);
-          Alert.alert('Failed to move to trash. Try again later');
+          Alert.alert(strings.failedToMove);
         });
     } else {
       showSwitchProfilePopup();
@@ -587,14 +563,8 @@ function NotificationsListScreen({navigation}) {
   };
 
   const onRespond = (groupObj) => {
-    console.log('groupObj11:=>', groupObj);
-
     const groupId = JSON.parse(groupObj?.activities?.[0]?.object).groupData
       ?.group_id;
-    console.log(
-      'groupObject:=>',
-      JSON.parse(groupObj?.activities?.[0]?.object),
-    );
 
     if (activeScreen) {
       if (
@@ -638,7 +608,6 @@ function NotificationsListScreen({navigation}) {
         getRequestDetail(groupId, authContext)
           .then((response) => {
             setloading(false);
-            console.log('details: =>', response.payload);
             setGroupData(response.payload);
             setIsRulesModalVisible(true);
           })
@@ -681,8 +650,6 @@ function NotificationsListScreen({navigation}) {
     }
   };
   const onNotificationClick = (notificationItem) => {
-    console.log('Notification detail::=>', notificationItem);
-    console.log(notificationItem?.verb);
     const verb = notificationItem?.verb?.split('_');
     const postVerbTypes = [
       NotificationType.clap,
@@ -721,8 +688,6 @@ function NotificationsListScreen({navigation}) {
       )
         .then((obj) => {
           const reservationObj = obj.reservationObj || obj.reservationObj[0];
-          console.log('reservationObj:1>=>', reservationObj);
-
           navigation.navigate(obj.screenName, {
             reservationObj,
           });
@@ -745,9 +710,6 @@ function NotificationsListScreen({navigation}) {
       )
         .then((obj) => {
           const reservationObj = obj.reservationObj || obj.reservationObj[0];
-
-          console.log('reservationObj:1>=>', reservationObj);
-
           navigation.navigate(obj.screenName, {
             reservationObj,
           });
@@ -764,9 +726,6 @@ function NotificationsListScreen({navigation}) {
         .getChallengeDetail(a, authContext)
         .then((obj) => {
           const challengeObj = obj.challengeObj || obj.challengeObj[0];
-
-          console.log('challengeObj:1>=>', challengeObj);
-
           navigation.navigate(obj.screenName, {
             challengeObj,
           });
@@ -778,7 +737,6 @@ function NotificationsListScreen({navigation}) {
   };
 
   const notificationComponentType = (item) => {
-    console.log('VERB::=>', item);
     if (isInvite(item.activities[0].verb)) {
       if (
         item.activities[0].verb.includes(NotificationType.inviteToDoubleTeam) ||
@@ -865,7 +823,6 @@ function NotificationsListScreen({navigation}) {
   };
 
   const renderNotificationComponent = ({item}) => {
-    console.log('Item notification:=>', item);
     if (item.activities[0].is_request) {
       return (
         <AppleStyleSwipeableRow
@@ -892,7 +849,6 @@ function NotificationsListScreen({navigation}) {
   };
 
   const RenderSections = ({item, section}) => {
-    console.log('section:', section);
     if (section.section === strings.pendingrequests) {
       return renderPendingRequestComponent({item: {...item, type: 'request'}});
     }
@@ -1127,7 +1083,6 @@ function NotificationsListScreen({navigation}) {
         e.nativeEvent.contentSize.height - paddingToBottom
       ) {
         if (!loadMore) {
-          console.log('next page');
           setLoadMore(true);
           setTimeout(() => {
             getNextNotificationData();
@@ -1187,16 +1142,16 @@ function NotificationsListScreen({navigation}) {
             alignItems: 'center',
             justifyContent: 'center',
           }}>
-          <Text style={styles.noEventText}>No Notification</Text>
+          <Text style={styles.noEventText}>{strings.noNotification}</Text>
           <Text style={styles.dataNotFoundText}>
-            New notification will appear here.
+            {strings.newNotificationn}
           </Text>
         </View>
       )}
 
       <ActionSheet
         ref={actionSheet}
-        options={['Trash', 'Cancel']}
+        options={[strings.trash, strings.cancel]}
         cancelButtonIndex={1}
         onPress={(index) => {
           if (index === 0) {
@@ -1251,24 +1206,24 @@ function NotificationsListScreen({navigation}) {
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
               }}>
-              Respond to invite to create team
+              {strings.respondToInviteCreateTeam}
             </Text>
           </View>
           <View style={styles.separatorLine} />
           <View style={{flex: 1}}>
             <ScrollView>
               <Text style={[styles.rulesText, {margin: 15}]}>
-                {'When your team creates a club:'}
+                {strings.teamCreateClubsText}
               </Text>
               <Text style={[styles.rulesText, {marginLeft: 15}]}>
-                {'\n• your team will belong to the club initially.'}
+                {strings.yourTeamWillBelogText}
               </Text>
               <Text style={[styles.rulesText, {marginLeft: 15}]}>
-                {'\n• your team can leave the club anytime later.'}
+                {strings.teamCanLeaveClubText}
               </Text>
               <Text style={[styles.rulesText, {marginLeft: 15}]}>
                 {
-                  '\n• the admins of your team will be the admins of the club initially.'
+                  strings.adminOfTeamWillClubAdminText
                 }
               </Text>
             </ScrollView>

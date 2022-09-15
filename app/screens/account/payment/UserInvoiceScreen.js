@@ -5,6 +5,7 @@ import {View, StyleSheet, FlatList, Alert} from 'react-native';
 
 import {useIsFocused} from '@react-navigation/native';
 
+import {format} from 'react-string-format';
 import AuthContext from '../../../auth/context';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 
@@ -34,7 +35,6 @@ export default function UserInvoiceScreen({navigation}) {
       setloading(true);
       getMemberInvoice(authContext)
         .then((response) => {
-          console.log('Invoice list updated....', response);
           setloading(false);
 
           setInvoiceList(response.payload);
@@ -78,8 +78,6 @@ export default function UserInvoiceScreen({navigation}) {
 
   const memberListByFilter = useCallback(
     (status) => {
-      console.log('Status', status);
-
       if (status === 'All') {
         return invoiceList;
       }
@@ -105,16 +103,25 @@ export default function UserInvoiceScreen({navigation}) {
 
       <InvoiceAmount
         currencyType={strings.defaultCurrency}
-        totalAmount={totalAmount ?? '00.00'}
-        paidAmount={paidAmount ?? '00.00'}
-        openAmount={openAmount ?? '00.00'}
+        totalAmount={totalAmount ?? strings.total00}
+        paidAmount={paidAmount ?? strings.total00}
+        openAmount={openAmount ?? strings.total00}
       />
 
       <TCTabView
         totalTabs={3}
-        firstTabTitle={`Open (${memberListByFilter('Open').length})`}
-        secondTabTitle={`Paid (${memberListByFilter('Paid').length})`}
-        thirdTabTitle={`All (${memberListByFilter('All').length})`}
+        firstTabTitle={format(
+          strings.openNInvoice,
+          memberListByFilter('Open').length,
+        )}
+        secondTabTitle={format(
+          strings.paidNInvoice,
+          memberListByFilter('Paid').length,
+        )}
+        thirdTabTitle={format(
+          strings.allNText,
+          memberListByFilter('All').length,
+        )}
         indexCounter={tabNumber}
         eventPrivacyContianer={{width: 100}}
         onFirstTabPress={() => setTabNumber(0)}

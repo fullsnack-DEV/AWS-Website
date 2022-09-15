@@ -137,7 +137,7 @@ export default function DeactivateSportScreen({navigation, route}) {
               '',
               [
                 {
-                  text: 'Cancel',
+                  text: strings.cancel,
                   style: 'cancel',
                 },
                 {

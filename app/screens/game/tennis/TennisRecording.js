@@ -59,18 +59,10 @@ import TennisScoreView from '../../../components/game/tennis/TennisScoreView';
 import {strings} from '../../../../Localization/translation';
 
 import TennisMatchRecordsList from './TennisMatchRecordsList';
+import {recordButtonList} from '../../../utils/constant';
 
 const {width} = Dimensions.get('window');
 
-const recordButtonList = [
-  'General',
-  'Ace',
-  'Winner',
-  'Unforced',
-  'Fault',
-  'Foot Fault',
-  'Let',
-];
 let entity = {};
 let timerForTimeline;
 let lastTimeStamp;
@@ -160,7 +152,7 @@ export default function TennisRecording({navigation, route}) {
     matchRecordsRef?.current?.refreshMatchRecords();
 
   const configurePeriodOpetions = (data) => {
-    const opetions = ['End Match', 'Cancel'];
+    const opetions = [strings.endMatch, strings.cancel];
     if (data?.scoreboard?.game_inprogress) {
       if (
         !(
@@ -168,18 +160,17 @@ export default function TennisRecording({navigation, route}) {
           data?.scoreboard?.game_inprogress?.end_datetime
         )
       ) {
-        opetions.unshift('End Game');
+        opetions.unshift(strings.endGame);
       }
       // const reverseData = data?.scoreboard?.sets
       const reverseData = data?.scoreboard?.sets.reverse();
       if (!(reverseData[0].winner || reverseData[0].end_datetime)) {
-        opetions.unshift('End Set');
+        opetions.unshift(strings.endSet);
       }
     }
     setPeriodOpetions(opetions);
   };
   const defineServingTeamID = (data) => {
-    console.log('serving:', isServingPressed);
     if (!isServingPressed) {
       if (
         data?.scoreboard?.game_inprogress &&
@@ -216,14 +207,12 @@ export default function TennisRecording({navigation, route}) {
     // setAwayMatchPoint(0);
     let homePoint = 0;
     let awayPoint = 0;
-    console.log('SETS::->', data?.scoreboard?.sets);
     (data?.scoreboard?.sets || []).map((e) => {
       if (e?.winner) {
         if (
           e.winner === (data?.home_team?.user_id || data.home_team.group_id)
         ) {
           homePoint += 1;
-          console.log('SETS NO::->', homePoint);
           // setHomeMatchPoint(homeTeamMatchPoint + 1)
         } else {
           awayPoint += 1;
@@ -254,19 +243,19 @@ export default function TennisRecording({navigation, route}) {
       gameObj.status === GameStatus.accepted ||
       gameObj.status === GameStatus.reset
     ) {
-      Alert.alert('Please, start the game first.');
+      Alert.alert(strings.startGameFirstValidation);
       return false;
     }
     if (gameObj.status === GameStatus.ended) {
-      Alert.alert('Game is ended.');
+      Alert.alert(strings.gameEnded);
       return false;
     }
     if (gameObj.status === GameStatus.paused) {
-      Alert.alert('Game is paused.');
+      Alert.alert(strings.gamePaused);
       return false;
     }
     if (!selectedTeam) {
-      Alert.alert('Please, select a player first');
+      Alert.alert(strings.selectPlayerFirstValidation);
       return false;
     }
     return true;
@@ -287,37 +276,37 @@ export default function TennisRecording({navigation, route}) {
       onPress={() => {
         if (validate()) {
           openToast();
-          if (item === 'General') {
+          if (item === strings.generalText) {
             lastTimeStamp = date
               ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0)
               : parseFloat(new Date().setMilliseconds(0, 0) / 1000).toFixed(0);
             lastVerb = GameVerb.Score;
-          } else if (item === 'Ace') {
+          } else if (item === strings.ace) {
             lastTimeStamp = date
               ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0)
               : parseFloat(new Date().setMilliseconds(0, 0) / 1000).toFixed(0);
             lastVerb = GameVerb.Ace;
-          } else if (item === 'Winner') {
+          } else if (item === strings.winner) {
             lastTimeStamp = date
               ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0)
               : parseFloat(new Date().setMilliseconds(0, 0) / 1000).toFixed(0);
             lastVerb = GameVerb.Winner;
-          } else if (item === 'Unforced') {
+          } else if (item === strings.unforced) {
             lastTimeStamp = date
               ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0)
               : parseFloat(new Date().setMilliseconds(0, 0) / 1000).toFixed(0);
             lastVerb = GameVerb.Unforced;
-          } else if (item === 'Fault') {
+          } else if (item === strings.fault) {
             lastTimeStamp = date
               ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0)
               : parseFloat(new Date().setMilliseconds(0, 0) / 1000).toFixed(0);
             lastVerb = GameVerb.Fault;
-          } else if (item === 'Foot Fault') {
+          } else if (item === strings.footFault) {
             lastTimeStamp = date
               ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0)
               : parseFloat(new Date().setMilliseconds(0, 0) / 1000).toFixed(0);
             lastVerb = GameVerb.FeetFault;
-          } else if (item === 'Let') {
+          } else if (item === strings.let) {
             lastTimeStamp = date
               ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0)
               : parseFloat(new Date().setMilliseconds(0, 0) / 1000).toFixed(0);
@@ -339,32 +328,28 @@ export default function TennisRecording({navigation, route}) {
       }}
       buttonColor={colors.whiteColor}
       imageName={
-        (item === 'General' && images.tennisGeneral) ||
-        (item === 'Ace' && images.tennisAce) ||
-        (item === 'Winner' && images.tennisWinner) ||
-        (item === 'Unforced' && images.tennisUnForced) ||
-        (item === 'Fault' && images.tennisFault) ||
-        (item === 'Foot Fault' && images.tennisFootFault) ||
-        (item === 'Let' && images.tennisLet)
+        (item === strings.generalText && images.tennisGeneral) ||
+        (item === strings.ace && images.tennisAce) ||
+        (item === strings.winner && images.tennisWinner) ||
+        (item === strings.unforced && images.tennisUnForced) ||
+        (item === strings.fault && images.tennisFault) ||
+        (item === strings.footFault && images.tennisFootFault) ||
+        (item === strings.let && images.tennisLet)
       }
       textColor={colors.googleColor}
       imageSize={32}
     />
   );
   const onChange = (selectedDate) => {
-    console.log('selected Date::', selectedDate);
     date = selectedDate;
     startStopTimerTimeline();
     setPickerShow(Platform.OS === 'ios' || Platform.OS === 'android');
   };
   // eslint-disable-next-line consistent-return
   const getTimeDifferent = (sDate, eDate) => {
-    console.log('sDate:', sDate);
-    console.log('eDate:', eDate);
     let breakTime = 0;
     if (gameObj && gameObj.breakTime) {
       breakTime = gameObj.breakTime;
-      console.log('Break time:', breakTime);
     }
     if (date) {
       // eslint-disable-next-line no-param-reassign
@@ -424,19 +409,19 @@ export default function TennisRecording({navigation, route}) {
         : `${gameObj.away_team.group_name}`;
     }
     if (lastVerb === GameVerb.Score) {
-      verbString = 'score a point';
+      verbString = strings.scorePoint;
     } else if (lastVerb === GameVerb.Ace) {
-      verbString = 'smacked an ace';
+      verbString = strings.smackedAnAce;
     } else if (lastVerb === GameVerb.Winner) {
-      verbString = 'marked as a winner';
+      verbString = strings.markedWinner;
     } else if (lastVerb === GameVerb.Unforced) {
-      verbString = 'done an unforced error';
+      verbString = strings.unforcedError;
     } else if (lastVerb === GameVerb.FeetFault) {
-      verbString = 'committed a feet fault';
+      verbString = strings.commitFeetFault;
     } else if (lastVerb === GameVerb.Fault) {
-      verbString = 'committed a fault';
+      verbString = strings.commitFault;
     } else if (lastVerb === GameVerb.LetScore) {
-      verbString = 'committed a let';
+      verbString = strings.commitLet;
     }
     return `${name} ${verbString}`;
   };
@@ -493,7 +478,7 @@ export default function TennisRecording({navigation, route}) {
   const resetGameDetail = (gameId) => {
     setloading(true);
     resetGame(gameId, authContext)
-      .then((response) => {
+      .then(() => {
         setTimelineTimer('00 : 00 : 00');
         date = null;
         startStopTimerTimeline();
@@ -503,8 +488,6 @@ export default function TennisRecording({navigation, route}) {
         setloading(false);
 
         // setDate();
-
-        console.log('RESET GAME RESPONSE::', response.payload);
       })
       .catch((e) => {
         setloading(false);
@@ -514,13 +497,11 @@ export default function TennisRecording({navigation, route}) {
       });
   };
   const getGameDetail = (gameId, isLoading) => {
-    console.log('Game detail tennis recording called');
     if (isLoading) {
       // setloading(true);
     }
     getGameByGameID(gameId, authContext)
       .then((response) => {
-        console.log('GAME RESPONSE::', JSON.stringify(response.payload));
         setGameObj(response.payload);
 
         if (
@@ -551,7 +532,7 @@ export default function TennisRecording({navigation, route}) {
   const decreaseGameScoreRecord = (teamId, gameId) => {
     setloading(true);
     decreaseGameScore(teamId, gameId, authContext)
-      .then((response) => {
+      .then(() => {
         if (
           selectedTeam ===
           (gameObj?.home_team?.group_id || gameObj?.home_team?.user_id)
@@ -569,7 +550,6 @@ export default function TennisRecording({navigation, route}) {
         setloading(false);
         setUndoTeamID(selectedTeam);
         getGameDetail(route?.params?.gameDetail?.game_id, true);
-        console.log('DECREASE GAME RESPONSE::', response.payload);
       })
       .catch((e) => {
         setloading(false);
@@ -581,9 +561,8 @@ export default function TennisRecording({navigation, route}) {
   const addGameRecordDetail = (gameId, params) => {
     setloading(true);
     addGameRecord(gameId, params, authContext)
-      .then((response) => {
+      .then(() => {
         setIsServingPressed(false);
-        console.log('response of game record::', response);
         setloading(false);
         // setDate();
         date = null;
@@ -629,7 +608,6 @@ export default function TennisRecording({navigation, route}) {
         }
         getGameDetail(gameId, true);
         refreshMatchRecords();
-        console.log('GAME RESPONSE::', response.payload);
       })
       .catch((e) => {
         setloading(false);
@@ -643,9 +621,9 @@ export default function TennisRecording({navigation, route}) {
       gameObj.status === GameStatus.accepted ||
       gameObj.status === GameStatus.reset
     ) {
-      Alert.alert('Please, start the game first.');
+      Alert.alert(strings.startGameFirstValidation);
     } else if (gameObj.status === GameStatus.ended) {
-      Alert.alert('Game is ended.');
+      Alert.alert(strings.gameEnded);
     } else {
       lastTimeStamp = parseFloat(new Date().getTime() / 1000).toFixed(0);
       lastVerb = GameVerb.End;
@@ -759,21 +737,19 @@ export default function TennisRecording({navigation, route}) {
                     Alert.alert(strings.canNotChangeServing);
                   } else {
                     Alert.alert(
-                      'Do you want to change the serving player?',
+                      strings.doYouWantChangeServing,
                       '',
                       [
                         {
-                          text: 'Cancel',
+                          text: strings.cancel,
                           style: 'cancel',
                         },
                         {
-                          text: 'Ok',
+                          text: strings.OkText,
                           style: 'default',
                           onPress: () => {
                             if (gameObj?.game_inprogress?.winner) {
-                              Alert.alert(
-                                'You can not change serving player during game.',
-                              );
+                              Alert.alert(strings.canNotChangeServing);
                             } else if (
                               (gameObj?.home_team?.user_id ||
                                 gameObj?.home_team?.group_id) === servingTeamID
@@ -789,7 +765,6 @@ export default function TennisRecording({navigation, route}) {
                               );
                             }
                             setIsServingPressed(true);
-                            console.log('OK Pressed');
                           },
                         },
                       ],
@@ -798,7 +773,7 @@ export default function TennisRecording({navigation, route}) {
                   }
                 }}>
                 <View>
-                  <Text style={styles.centerSetText}>SET SCORES</Text>
+                  <Text style={styles.centerSetText}>{strings.setScore}</Text>
                   <View style={styles.centerView}>
                     <Text style={styles.centerText}>{homeTeamMatchPoint}</Text>
                     <Image
@@ -991,14 +966,13 @@ export default function TennisRecording({navigation, route}) {
                         ? getDateFormat(
                             date ? new Date(date.getTime()) : new Date(),
                           )
-                        : 'Game start at now'
+                        : strings.gameStartAtNow
                       : getDateFormat(
                           date ? new Date(date.getTime()) : new Date(),
                         )}
                   </Text>
                   <TouchableOpacity
                     onPress={() => {
-                      console.log('Arrow Pressed.');
                       toggleView(() => setFooterUp(!footerUp), 200);
                     }}>
                     <Image
@@ -1012,16 +986,6 @@ export default function TennisRecording({navigation, route}) {
                   <View>
                     {pickerShow && (
                       <View>
-                        {/* <RNDateTimePicker
-                    locale={'en'}
-                    display="spinner"
-                    value={date || new Date()}
-                    onChange={onChange}
-                    mode={'datetime'}
-                    minimumDate={gameObj.status === GameStatus.accepted || gameObj.status === GameStatus.reset ? new Date(1950, 0, 1) : new Date(gameObj.actual_startdatetime * 1000)}
-                    maximumDate={new Date()}
-                    // gameObj.status === GameStatus.accepted || gameObj.status === GameStatus.reset ? new Date(1950, 0, 1) : new Date()
-                  /> */}
                         <DatePicker
                           testID={'startsDateDateTimePicker'}
                           style={styles.dateTimePickerStyle}
@@ -1160,13 +1124,13 @@ export default function TennisRecording({navigation, route}) {
                               gameObj.status === GameStatus.accepted ||
                               gameObj.status === GameStatus.reset
                             ) {
-                              Alert.alert('Game not started yet.');
+                              Alert.alert(strings.gameNotStarted);
                             } else if (gameObj.status === GameStatus.paused) {
-                              Alert.alert('Game is paused.');
+                              Alert.alert(strings.gamePaused);
                             } else if (gameObj.status === GameStatus.ended) {
-                              Alert.alert('Game is ended.');
+                              Alert.alert(strings.gameEnded);
                             } else if (!selectedTeam) {
-                              Alert.alert('Select Team');
+                              Alert.alert(strings.selectTeam);
                             } else {
                               lastTimeStamp = date
                                 ? parseFloat(
@@ -1222,11 +1186,11 @@ export default function TennisRecording({navigation, route}) {
                                 '',
                                 [
                                   {
-                                    text: 'Cancel',
+                                    text: strings.cancel,
                                     style: 'cancel',
                                   },
                                   {
-                                    text: 'Ok',
+                                    text: strings.OkText,
                                     style: 'default',
                                     onPress: () => {
                                       decreaseGameScoreRecord(
@@ -1281,16 +1245,6 @@ export default function TennisRecording({navigation, route}) {
                           <TCGameButton
                             title="Start"
                             onPress={() => {
-                              console.log(
-                                'Start time:',
-                                gameObj.start_datetime,
-                              );
-                              console.log(
-                                'now time time:',
-                                Number(
-                                  (new Date().getTime() / 1000).toFixed(0),
-                                ),
-                              );
                               if (
                                 gameObj.start_datetime >
                                 Number((new Date().getTime() / 1000).toFixed(0))
@@ -1301,7 +1255,7 @@ export default function TennisRecording({navigation, route}) {
                                     ReservationStatus.pendingpayment)
                                 ) {
                                   Alert.alert(
-                                    'Game cannot be start unless the payment goes through',
+                                    strings.gameNotStartWithoutPayment,
                                   );
                                 } else {
                                   lastTimeStamp = date
@@ -1322,9 +1276,7 @@ export default function TennisRecording({navigation, route}) {
                                   addGameRecordDetail(gameObj.game_id, body);
                                 }
                               } else {
-                                Alert.alert(
-                                  'Game cannot be start because its expired.',
-                                );
+                                Alert.alert(strings.gameNotStartExpired);
                               }
                             }}
                             gradientColor={[
@@ -1338,7 +1290,7 @@ export default function TennisRecording({navigation, route}) {
                         )}
                         {gameObj.status === GameStatus.paused && (
                           <TCGameButton
-                            title="Resume"
+                            title={strings.resume}
                             onPress={() => {
                               lastTimeStamp = parseFloat(
                                 new Date().getTime() / 1000,
@@ -1365,7 +1317,7 @@ export default function TennisRecording({navigation, route}) {
                         {(gameObj.status === GameStatus.playing ||
                           gameObj.status === GameStatus.resume) && (
                           <TCGameButton
-                            title="Pause"
+                            title={strings.pause}
                             onPress={() => {
                               lastTimeStamp = parseFloat(
                                 new Date().getTime() / 1000,
@@ -1393,18 +1345,18 @@ export default function TennisRecording({navigation, route}) {
                           gameObj.status === GameStatus.paused ||
                           gameObj.status === GameStatus.resume) && (
                           <TCGameButton
-                            title="Match End"
+                            title={strings.matchEnd}
                             onPress={() => {
                               Alert.alert(
-                                'Do you want to end match?',
+                                strings.doYouWantEndMatch,
                                 '',
                                 [
                                   {
-                                    text: 'Cancel',
+                                    text: strings.cancel,
                                     // style: 'cancel',
                                   },
                                   {
-                                    text: 'Ok',
+                                    text: strings.OkText,
 
                                     // style: 'destructive',
                                     onPress: () => {
@@ -1419,7 +1371,7 @@ export default function TennisRecording({navigation, route}) {
                               colors.yellowColor,
                               colors.themeColor,
                             ]}
-                            buttonTitle={'END'}
+                            buttonTitle={strings.END}
                             buttonTextColor={colors.whiteColor}
                             textColor={colors.themeColor}
                             imageSize={15}
@@ -1429,26 +1381,22 @@ export default function TennisRecording({navigation, route}) {
                           gameObj.status === GameStatus.resume ||
                           gameObj.status === GameStatus.paused) && (
                           <TCGameButton
-                            title="End"
+                            title={strings.endText}
                             onPress={() => {
-                              console.log(
-                                'lenth of opetions::',
-                                periodOpetions.length,
-                              );
                               actionSheet.current.show();
                             }}
                             gradientColor={[
                               colors.yellowColor,
                               colors.themeColor,
                             ]}
-                            buttonTitle={'PERIOD'}
+                            buttonTitle={strings.PERIOD}
                             buttonTextColor={colors.whiteColor}
                             textColor={colors.themeColor}
                             imageSize={15}
                           />
                         )}
                         <TCGameButton
-                          title="Records"
+                          title={strings.records}
                           onPress={() => {
                             toggleView(() => setFooterUp(false), 200);
                             scrollView.current?.scrollToEnd({animated: true});
@@ -1501,7 +1449,7 @@ export default function TennisRecording({navigation, route}) {
         cancelButtonIndex={periodOpetions.length - 1}
         // destructiveButtonIndex={1}
         onPress={(index) => {
-          if (periodOpetions[index] === 'End Game') {
+          if (periodOpetions[index] === strings.endGame) {
             lastTimeStamp = parseFloat(
               new Date().setMilliseconds(0, 0) / 1000,
             ).toFixed(0);
@@ -1514,7 +1462,7 @@ export default function TennisRecording({navigation, route}) {
               },
             ];
             addGameRecordDetail(gameObj.game_id, body);
-          } else if (periodOpetions[index] === 'End Set') {
+          } else if (periodOpetions[index] === strings.endSet) {
             lastTimeStamp = parseFloat(
               new Date().setMilliseconds(0, 0) / 1000,
             ).toFixed(0);
@@ -1527,7 +1475,7 @@ export default function TennisRecording({navigation, route}) {
               },
             ];
             addGameRecordDetail(gameObj.game_id, body);
-          } else if (periodOpetions[index] === 'End Match') {
+          } else if (periodOpetions[index] === strings.endMatch) {
             matchEnd();
           }
         }}
@@ -1540,17 +1488,17 @@ export default function TennisRecording({navigation, route}) {
           gameObj?.status === GameStatus.paused ||
           gameObj?.status === GameStatus.resume
             ? [
-                'Game Reservation Detail',
-                'Add Set or Game',
-                'Deleted Records',
-                'Reset Match',
-                'Cancel',
+                strings.gameReservationDetail,
+                strings.addSetOrGame,
+                strings.deletedRecords,
+                strings.resetMatch,
+                strings.cancel,
               ]
             : [
-                'Game Reservation Detail',
-                'Add Set or Game',
-                'Deleted Records',
-                'Cancel',
+                strings.gameReservationDetail,
+                strings.addSetOrGame,
+                strings.deletedRecords,
+                strings.cancel,
               ]
         }
         cancelButtonIndex={
@@ -1571,11 +1519,6 @@ export default function TennisRecording({navigation, route}) {
             setloading(true);
             Utils.getChallengeDetail(gameObj.challenge_id, authContext)
               .then((obj) => {
-                console.log(
-                  'Challenge Object:',
-                  JSON.stringify(obj.challengeObj),
-                );
-                console.log('Screen name of challenge:', obj.screenName);
                 navigation.navigate(obj.screenName, {
                   challengeObj: obj.challengeObj || obj.challengeObj[0],
                 });
@@ -1598,24 +1541,24 @@ export default function TennisRecording({navigation, route}) {
               gameObj?.status === GameStatus.resume
             ) {
               Alert.alert(
-                'Do you want to reset all the match records?',
+                strings.resetMatchRecord,
                 '',
                 [
                   {
-                    text: 'Cancel',
+                    text: strings.cancel,
                     style: 'cancel',
                   },
                   {
-                    text: 'Reset',
+                    text: strings.resetTitleText,
                     style: 'destructive',
                     onPress: () => {
                       if (
                         gameObj.status === GameStatus.accepted ||
                         gameObj.status === GameStatus.reset
                       ) {
-                        Alert.alert('Game not started yet.');
+                        Alert.alert(strings.gameNotStarted);
                       } else if (gameObj.status === GameStatus.ended) {
-                        Alert.alert('Game is ended.');
+                        Alert.alert(strings.gameEnded);
                       } else {
                         resetGameDetail(gameObj.game_id);
                       }

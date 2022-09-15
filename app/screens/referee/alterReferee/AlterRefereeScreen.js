@@ -92,7 +92,7 @@ export default function AlterRefereeScreen({navigation, route}) {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: 'Referee Reservation',
+      title: strings.refereeScreenTitle,
     });
   }, [navigation, bodyParams]);
   useEffect(() => {
@@ -324,9 +324,8 @@ export default function AlterRefereeScreen({navigation, route}) {
       versionNo,
       authContext,
     )
-      .then((response) => {
+      .then(() => {
         setloading(false);
-        console.log('ACCEPT RESPONSE::', JSON.stringify(response.payload));
         navigation.push('RefereeRequestSent', {
           operationType: strings.reservationRequestCancelled,
           imageAnimation: false,
@@ -486,7 +485,6 @@ export default function AlterRefereeScreen({navigation, route}) {
           // }
         })
         .catch((e) => {
-          console.log('error in payment method', e);
           setloading(false);
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
@@ -704,8 +702,8 @@ export default function AlterRefereeScreen({navigation, route}) {
       <ActivityLoader visible={loading} />
       <TCTabView
         totalTabs={2}
-        firstTabTitle={'ALTERATION REQUEST'}
-        secondTabTitle={'CURRENT RESERVATION'}
+        firstTabTitle={strings.alterRequest}
+        secondTabTitle={strings.currentReservation}
         indexCounter={maintabNumber}
         eventPrivacyContianer={{width: 100}}
         onFirstTabPress={() => setMaintabNumber(0)}
@@ -716,13 +714,12 @@ export default function AlterRefereeScreen({navigation, route}) {
       {homeTeam && awayTeam && bodyParams && maintabNumber === 0 && (
         <View style={{marginBottom: 15}}>
           {!isPendingRequestPayment && (
-            <TouchableOpacity onPress={() => console.log('OK')}>
+            <TouchableOpacity onPress={() => console.log(strings.okTitleText)}>
               <LinearGradient
                 colors={[colors.yellowColor, colors.themeColor]}
                 style={styles.containerStyle}>
                 <Text style={styles.buttonText}>
-                  Please edit the reservation details below before you send the
-                  alteration request.
+                  {strings.editReservationDetails}
                 </Text>
               </LinearGradient>
             </TouchableOpacity>
@@ -749,7 +746,7 @@ export default function AlterRefereeScreen({navigation, route}) {
             <View style={styles.challengerView}>
               <View style={styles.teamView}>
                 <Image source={images.reqIcon} style={styles.reqOutImage} />
-                <Text style={styles.challengerText}>Requester</Text>
+                <Text style={styles.challengerText}>{strings.requester}</Text>
               </View>
 
               <View style={styles.teamView}>
@@ -775,7 +772,7 @@ export default function AlterRefereeScreen({navigation, route}) {
             <View style={styles.challengeeView}>
               <View style={styles.teamView}>
                 <Image source={images.refIcon} style={styles.reqOutImage} />
-                <Text style={styles.challengeeText}>Referee</Text>
+                <Text style={styles.challengeeText}>{strings.Referee}</Text>
               </View>
 
               <View style={styles.teamView}>
@@ -981,7 +978,7 @@ export default function AlterRefereeScreen({navigation, route}) {
                         <Text style={styles.timeZoneText}>
                           {strings.timezone}{' '}
                           <Text style={{fontFamily: fonts.RRegular}}>
-                            Vancouver
+                            {strings.vancouver}
                           </Text>
                         </Text>
                       </View>
@@ -1055,12 +1052,12 @@ export default function AlterRefereeScreen({navigation, route}) {
               marginTop: 25,
             }}
           />
-          <Text style={styles.rulesTitle}>General Rules</Text>
+          <Text style={styles.rulesTitle}>{strings.gameRulesSubTitle1}</Text>
           <Text style={styles.rulesDetail}>
             {bodyParams?.game?.general_rules}
           </Text>
           <View style={{marginBottom: 10}} />
-          <Text style={styles.rulesTitle}>Special Rules</Text>
+          <Text style={styles.rulesTitle}>{strings.gameRulesSubTitle2}</Text>
           <Text style={[styles.rulesDetail, {marginBottom: 10}]}>
             {bodyParams?.game?.special_rules}
           </Text>
@@ -1094,8 +1091,8 @@ export default function AlterRefereeScreen({navigation, route}) {
                   fontSize: 16,
                   color: colors.lightBlackColor,
                 }}>
-                {_.startCase(bodyParams?.chief_referee ? 'Chief' : 'Assistant')}{' '}
-                Referee
+                {_.startCase(bodyParams?.chief_referee ? strings.chief : strings.assistant)}{' '}
+                {strings.Referee}
               </Text>
             </View>
           </View>
@@ -1113,7 +1110,7 @@ export default function AlterRefereeScreen({navigation, route}) {
               title={strings.refundpolicy.toUpperCase()}
               value={bodyParams?.refund_policy}
               tooltipText={
-                '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the match fee and service fee are not refunded.'
+                strings.cancellationPolicyDesc
               }
               tooltipHeight={heightPercentageToDP('18%')}
               tooltipWidth={widthPercentageToDP('50%')}
@@ -1216,13 +1213,13 @@ export default function AlterRefereeScreen({navigation, route}) {
           {editPayment && (
             <View style={{marginTop: 15}}>
               <Text style={styles.differenceText}>
-                Difference{' '}
+                {`${strings.Difference} `}
                 <Text style={styles.differenceSmallText}>
-                  (New payment - Current payment)
+                  {strings.newCurrentPayment}
                 </Text>
               </Text>
               <View style={styles.differeceView}>
-                <Text style={styles.differenceTextTitle}>Difference</Text>
+                <Text style={styles.differenceTextTitle}>{strings.Difference}</Text>
                 <Text style={styles.diffenceAmount}>{`$${parseFloat(
                   bodyParams?.total_game_fee - oldVersion?.total_game_fee,
                 ).toFixed(2)} ${
@@ -1332,7 +1329,7 @@ export default function AlterRefereeScreen({navigation, route}) {
                       updateReservationDetail();
                     } else {
                       Alert.alert(
-                        'Please modify atleast one field for alter request.',
+                        strings.alterModificationMsg,
                       );
                     }
                   }}
@@ -1386,11 +1383,11 @@ export default function AlterRefereeScreen({navigation, route}) {
                       new Date().getTime()
                     ) {
                       Alert.alert(
-                        'Reservation cannot be cancel after game time passed or offer expired.',
+                        strings.cannotCancelReservationText,
                       );
                     } else {
                       Alert.alert(
-                        'Reservation can not be change after game has been started.',
+                        strings.cannotAcceptText,
                       );
                     }
                   }}
@@ -1418,7 +1415,7 @@ export default function AlterRefereeScreen({navigation, route}) {
                     });
                   } else {
                     Alert.alert(
-                      'Reservation cannot be change after game time passed or offer expired.',
+                      strings.reservationCannotChange,
                     );
                   }
                 }}
@@ -1454,11 +1451,11 @@ export default function AlterRefereeScreen({navigation, route}) {
                       new Date().getTime()
                     ) {
                       Alert.alert(
-                        'Reservation cannot be cancel after game time passed or offer expired.',
+                        strings.cannotCancelReservationText,
                       );
                     } else {
                       Alert.alert(
-                        'Reservation can not be change after game has been started.',
+                        strings.cannotAcceptText,
                       );
                     }
                   }}

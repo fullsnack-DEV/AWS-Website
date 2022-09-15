@@ -9,6 +9,7 @@ import {strings} from '../../../../Localization/translation';
 import TCRemoveUser from '../connections/TCRemoveUser';
 import {removeAttendeeFromEvent} from '../../../api/Schedule';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
+import Verbs from '../../../Constants/Verbs';
 
 export default function GoingListScreen({navigation, route}) {
   const [going, setGoing] = useState([]);
@@ -66,16 +67,22 @@ export default function GoingListScreen({navigation, route}) {
           data={going}
           keyExtractor={(index) => index.toString()}
           renderItem={({item}) => {
-            const showFollowUnfollowButton = userRole === 'user';
+            const showFollowUnfollowButton = userRole === Verbs.entityTypeUser;
             if (showRemove) {
               return (
                 <TCRemoveUser
                   onProfilePress={() => {
                     navigation.push('HomeScreen', {
-                      role: ['player', 'user']?.includes(item?.entity_type)
-                        ? 'user'
+                      role: [
+                        Verbs.entityTypePlayer,
+                        Verbs.entityTypeUser,
+                      ]?.includes(item?.entity_type)
+                        ? Verbs.entityTypeUser
                         : item?.entity_type,
-                      uid: ['player', 'user']?.includes(item?.entity_type)
+                      uid: [
+                        Verbs.entityTypePlayer,
+                        Verbs.entityTypeUser,
+                      ]?.includes(item?.entity_type)
                         ? item?.user_id
                         : item?.group_id,
                       backButtonVisible: true,
@@ -85,7 +92,7 @@ export default function GoingListScreen({navigation, route}) {
                   profileImage={item?.full_image}
                   entityType={item?.entity_type}
                   title={
-                    item?.entity_type === 'player'
+                    item?.entity_type === Verbs.entityTypePlayer
                       ? item?.full_name
                       : item?.group_name
                   }
@@ -93,16 +100,16 @@ export default function GoingListScreen({navigation, route}) {
                   is_following={item?.is_following}
                   onRemovePress={() => {
                     Alert.alert(
-                      'Are you sure you want to remove?',
+                      strings.areYouSureWantToRemoveText,
                       '',
                       [
                         {
-                          text: 'Cancel',
+                          text: strings.cancel,
                           onPress: () => console.log('Cancel Pressed'),
                           style: 'cancel',
                         },
                         {
-                          text: 'OK',
+                          text: strings.okTitleText,
                           onPress: () => {
                             removeAttendee(item);
                           },
@@ -118,10 +125,16 @@ export default function GoingListScreen({navigation, route}) {
               <TCUserList
                 onProfilePress={() => {
                   navigation.push('HomeScreen', {
-                    role: ['player', 'user']?.includes(item?.entity_type)
-                      ? 'user'
+                    role: [
+                      Verbs.entityTypePlayer,
+                      Verbs.entityTypeUser,
+                    ]?.includes(item?.entity_type)
+                      ? Verbs.entityTypeUser
                       : item?.entity_type,
-                    uid: ['player', 'user']?.includes(item?.entity_type)
+                    uid: [
+                      Verbs.entityTypePlayer,
+                      Verbs.entityTypeUser,
+                    ]?.includes(item?.entity_type)
                       ? item?.user_id
                       : item?.group_id,
                     backButtonVisible: true,
@@ -132,7 +145,7 @@ export default function GoingListScreen({navigation, route}) {
                 profileImage={item?.full_image}
                 entityType={item?.entity_type}
                 title={
-                  item?.entity_type === 'player'
+                  item?.entity_type === Verbs.entityTypePlayer
                     ? item?.full_name
                     : item?.group_name
                 }
@@ -141,7 +154,7 @@ export default function GoingListScreen({navigation, route}) {
                 followUnfollowPress={(wantToFollow) => {
                   const entity_type = item?.entity_type;
                   const uid =
-                    item?.entity_type === 'player'
+                    item?.entity_type === Verbs.entityTypePlayer
                       ? item?.user_id
                       : item?.group_id;
                   if (wantToFollow) {

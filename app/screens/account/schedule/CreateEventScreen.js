@@ -35,6 +35,7 @@ import ImagePicker from 'react-native-image-crop-picker';
 
 import {check, PERMISSIONS, RESULTS, request} from 'react-native-permissions';
 
+import {format} from 'react-string-format';
 import AuthContext from '../../../auth/context';
 import EventItemRender from '../../../components/Schedule/EventItemRender';
 import EventMapView from '../../../components/Schedule/EventMapView';
@@ -62,11 +63,12 @@ import NumberOfAttendees from '../../../components/Schedule/NumberOfAttendees';
 import {getGroups} from '../../../api/Groups';
 import GroupEventItems from '../../../components/Schedule/GroupEvent/GroupEventItems';
 import uploadImages from '../../../utils/imageAction';
+import Verbs from '../../../Constants/Verbs';
 
 export default function CreateEventScreen({navigation, route}) {
   const eventPostedList = [
-    {value: 0, text: 'Schedule only'},
-    {value: 1, text: 'Schedule & posts'},
+    {value: 0, text: strings.scheduleOnlyText},
+    {value: 1, text: strings.scheduleAndPostText},
   ];
   const actionSheet = useRef();
   const actionSheetWithDelete = useRef();
@@ -77,7 +79,7 @@ export default function CreateEventScreen({navigation, route}) {
   const [eventDescription, setEventDescription] = useState('');
   const [eventPosted, setEventPosted] = useState({
     value: 0,
-    text: 'Schedule only',
+    text: strings.scheduleOnlyText,
   });
   const [minAttendees, setMinAttendees] = useState();
   const [maxAttendees, setMaxAttendees] = useState();
@@ -108,11 +110,11 @@ export default function CreateEventScreen({navigation, route}) {
 
   const [whoOpetion, setWhoOpetion] = useState();
   const [whoCanJoinOpetion, setWhoCanJoinOpetion] = useState({
-    text: 'Everyone',
+    text: strings.everyoneRadio,
     value: 0,
   });
   const [whoCanSeeOpetion, setWhoCanSeeOpetion] = useState({
-    text: 'Everyone',
+    text: strings.everyoneRadio,
     value: 0,
   });
 
@@ -130,7 +132,7 @@ export default function CreateEventScreen({navigation, route}) {
   const [backgroundImageChanged, setBackgroundImageChanged] = useState(false);
 
   const whoCanJoinUser = [
-    {text: 'Everyone', value: 0},
+    {text: strings.everyoneRadio, value: 0},
     {
       text: 'Followers',
       value: 1,
@@ -138,7 +140,7 @@ export default function CreateEventScreen({navigation, route}) {
     {text: 'Invited only', value: 2},
   ];
   const whoCanSeeUser = [
-    {text: 'Everyone', value: 0},
+    {text: strings.everyoneRadio, value: 0},
     {
       text: 'Followers',
       value: 1,
@@ -146,7 +148,7 @@ export default function CreateEventScreen({navigation, route}) {
     {text: 'Only me', value: 2},
   ];
   const whoCanJoinGroup = [
-    {text: 'Everyone', value: 0},
+    {text: strings.everyoneRadio, value: 0},
     {
       text: 'Follower',
       value: 1,
@@ -158,17 +160,17 @@ export default function CreateEventScreen({navigation, route}) {
     {text: 'Invite only', value: 3},
   ];
   const whoCanSeeGroup = [
-    {text: 'Everyone', value: 0},
+    {text: strings.everyoneRadio, value: 0},
     {
       text: 'Follower',
       value: 1,
     },
 
     {
-      text: 'Member',
+      text: strings.member,
       value: 2,
     },
-    {text: 'Team only', value: 3},
+    {text: strings.teamOnly, value: 3},
   ];
   const countNumberOfWeekFromDay = () => {
     const date = new Date();
@@ -203,7 +205,6 @@ export default function CreateEventScreen({navigation, route}) {
     return dt.format('dddd');
   };
   const handleStartDatePress = (date) => {
-    console.log('Date::=>', new Date(new Date(date).getTime()));
     setEventStartdateTime(
       toggle ? new Date(date).setHours(0, 0, 0, 0) : new Date(date),
     );
@@ -229,7 +230,6 @@ export default function CreateEventScreen({navigation, route}) {
     let dateValue = new Date();
     if (toggle) {
       dateValue = `${moment(date).format('ddd MMM DD YYYY')} 11:59:59 PM`;
-      console.log('Date Value :-', dateValue);
       setEventEnddateTime(new Date(dateValue));
       setEventUntildateTime(new Date(moment(dateValue).add(5, 'm').toDate()));
     } else {
@@ -250,16 +250,16 @@ export default function CreateEventScreen({navigation, route}) {
         <TouchableOpacity
           onPress={() => {
             Alert.alert(
-              'Are you sure you want to quit to create this event?',
+              strings.areYouSureQuitCreateEvent,
               '',
               [
                 {
-                  text: 'Cancel',
+                  text: strings.cancel,
                   onPress: () => console.log('Cancel Pressed'),
                   style: 'cancel',
                 },
                 {
-                  text: 'Quit',
+                  text: strings.quit,
                   onPress: () => navigation.goBack(),
                 },
               ],
@@ -273,7 +273,7 @@ export default function CreateEventScreen({navigation, route}) {
         <TouchableOpacity
           style={{padding: 2, marginRight: 15}}
           onPress={onDonePress}>
-          <Text>Done</Text>
+          <Text>{strings.done}</Text>
         </TouchableOpacity>
       ),
     });
@@ -567,9 +567,7 @@ export default function CreateEventScreen({navigation, route}) {
       .then((result) => {
         switch (result) {
           case RESULTS.UNAVAILABLE:
-            Alert.alert(
-              'This feature is not available (on this device / in this context)',
-            );
+            Alert.alert(strings.thisFeaturesNotAvailable);
             break;
           case RESULTS.DENIED:
             request(PERMISSIONS.IOS.CAMERA).then(() => {
@@ -588,7 +586,6 @@ export default function CreateEventScreen({navigation, route}) {
             });
             break;
           case RESULTS.LIMITED:
-            console.log('The permission is limited: some actions are possible');
             break;
           case RESULTS.GRANTED:
             ImagePicker.openCamera({
@@ -605,7 +602,6 @@ export default function CreateEventScreen({navigation, route}) {
               });
             break;
           case RESULTS.BLOCKED:
-            console.log('The permission is denied and not requestable anymore');
             break;
         }
       })
@@ -620,58 +616,49 @@ export default function CreateEventScreen({navigation, route}) {
     //   return false;
     // }
     if (eventTitle === '') {
-      Alert.alert(strings.appName, 'Please Enter Event Title.');
+      Alert.alert(strings.appName, strings.eventTitleValidation);
       return false;
     }
     if (sportsSelection === undefined) {
-      Alert.alert(strings.appName, 'Please choose sport.');
+      Alert.alert(strings.appName, strings.chooseSportText);
       return false;
     }
     if (eventDescription === '') {
-      Alert.alert(strings.appName, 'Please Enter Event Description.');
+      Alert.alert(strings.appName, strings.eventDescriptionValidation);
       return false;
     }
     if (eventStartDateTime === '') {
-      Alert.alert(strings.appName, 'Please Select Event Start Date and Time.');
+      Alert.alert(strings.appName, strings.eventStartDateValidation);
       return false;
     }
     if (eventEndDateTime === '') {
-      Alert.alert(strings.appName, 'Please Select Event End Date and Time.');
+      Alert.alert(strings.appName, strings.eventEndDateValidation);
       return false;
     }
-    if (eventEndDateTime === '') {
-      Alert.alert(strings.appName, 'Please Select Event End Date and Time.');
-      return false;
-    }
+
     if (!locationDetail?.venue_name || locationDetail?.venue_name?.length < 1) {
-      Alert.alert(strings.appName, 'Please enter venue name.');
+      Alert.alert(strings.appName, strings.enterVenueNameValidation);
       return false;
     }
     if (
       !locationDetail?.venue_detail ||
       locationDetail?.venue_detail?.length < 1
     ) {
-      Alert.alert(strings.appName, 'Please enter venue description.');
+      Alert.alert(strings.appName, strings.enterVenueDescriptionValidation);
       return false;
     }
 
     if (Number(minAttendees) > 0 && Number(maxAttendees) > 0) {
       if (Number(minAttendees) === 0) {
-        Alert.alert(
-          strings.appName,
-          'Please enter valid minimum attendees number(0 not allowed).',
-        );
+        Alert.alert(strings.appName, strings.enterValidAttendee);
         return false;
       }
       if (Number(maxAttendees) === 0) {
-        Alert.alert(
-          strings.appName,
-          'Please enter valid maximum attendees number(0 not allowed).',
-        );
+        Alert.alert(strings.appName, strings.enterValidMaxAtendeeValidation);
         return false;
       }
       if (Number(minAttendees) > Number(maxAttendees)) {
-        Alert.alert(strings.appName, 'Please enter valid attendees number.');
+        Alert.alert(strings.appName, strings.enterValidAtendeeValidation);
         return false;
       }
     }
@@ -692,7 +679,8 @@ export default function CreateEventScreen({navigation, route}) {
   const createEventDone = (data) => {
     const entity = authContext.entity;
     const uid = entity.uid || entity.auth.user_id;
-    const entityRole = entity.role === 'user' ? 'users' : 'groups';
+    const entityRole =
+      entity.role === Verbs.entityTypeUser ? 'users' : 'groups';
 
     let rule = '';
     if (
@@ -722,8 +710,6 @@ export default function CreateEventScreen({navigation, route}) {
       data[0].rrule = `FREQ=${rule}`;
     }
 
-    console.log('DADADADAD', data);
-
     createEvent(entityRole, uid, data, authContext)
       .then((response) => {
         console.log('Response :-', response);
@@ -743,7 +729,8 @@ export default function CreateEventScreen({navigation, route}) {
     if (checkValidation()) {
       setloading(true);
       const entity = authContext.entity;
-      const entityRole = entity.role === 'user' ? 'users' : 'groups';
+      const entityRole =
+        entity.role === Verbs.entityTypeUser ? 'users' : 'groups';
       const data = [
         {
           title: eventTitle,
@@ -777,8 +764,8 @@ export default function CreateEventScreen({navigation, route}) {
           min_attendees: Number(minAttendees),
           max_attendees: Number(maxAttendees),
           entity_type:
-            authContext.entity.role === 'user'
-              ? 'player'
+            authContext.entity.role === Verbs.entityTypeUser
+              ? Verbs.entityTypePlayer
               : authContext.entity.role,
           participants: [
             {
@@ -802,7 +789,7 @@ export default function CreateEventScreen({navigation, route}) {
       if (whoCanSeeOpetion.value === 2) {
         const checkedGroup = groupsSeeList.filter((obj) => obj.isSelected);
         const resultOfIds = checkedGroup.map((obj) => obj.group_id);
-        if (authContext.entity.role === 'user') {
+        if (authContext.entity.role === Verbs.entityTypeUser) {
           data[0].who_can_see.group_ids = resultOfIds;
         } else {
           data[0].who_can_see.group_ids = [authContext.entity.uid];
@@ -812,14 +799,12 @@ export default function CreateEventScreen({navigation, route}) {
       if (whoCanJoinOpetion.value === 2) {
         const checkedGroup = groupsJoinList.filter((obj) => obj.isSelected);
         const resultOfIds = checkedGroup.map((obj) => obj.group_id);
-        if (authContext.entity.role === 'user') {
+        if (authContext.entity.role === Verbs.entityTypeUser) {
           data[0].who_can_join.group_ids = resultOfIds;
         } else {
           data[0].who_can_join.group_ids = [authContext.entity.uid];
         }
       }
-
-      console.log('create event', data);
 
       if (backgroundImageChanged) {
         const imageArray = [];
@@ -950,29 +935,37 @@ export default function CreateEventScreen({navigation, route}) {
               <EventMonthlySelection
                 title={strings.repeat}
                 dataSource={[
-                  {label: 'Daily', value: 'Daily'},
-                  {label: 'Weekly', value: 'Weekly'},
+                  {label: strings.daily, value: strings.daily},
+                  {label: strings.weeklyText, value: strings.weeklyText},
                   {
-                    label: `Monthly on ${countNumberOfWeekFromDay()} ${getTodayDay()}`,
-                    value: `Monthly on ${countNumberOfWeekFromDay()} ${getTodayDay()}`,
+                    label: format(
+                      strings.monthlyOnText,
+                      `${countNumberOfWeekFromDay()} ${getTodayDay()}`,
+                    ),
+                    value: format(
+                      strings.monthlyOnText,
+                      `${countNumberOfWeekFromDay()} ${getTodayDay()}`,
+                    ),
                   },
                   {
-                    label: `Monthly on ${ordinal_suffix_of(
-                      new Date().getDate(),
-                    )} day`,
-                    value: `Monthly on ${ordinal_suffix_of(
-                      new Date().getDate(),
-                    )} day`,
+                    label: format(
+                      strings.monthlyOnDayText,
+                      ordinal_suffix_of(new Date().getDate()),
+                    ),
+                    value: format(
+                      strings.monthlyOnDayText,
+                      ordinal_suffix_of(new Date().getDate()),
+                    ),
                   },
-                  {label: 'Yearly', value: 'Yearly'},
+                  {label: strings.yearly, value: strings.yearly},
                 ]}
-                placeholder={'Never'}
+                placeholder={strings.never}
                 value={selectWeekMonth}
                 onValueChange={(value) => {
                   setSelectWeekMonth(value);
                 }}
               />
-              {selectWeekMonth !== 'Never' && (
+              {selectWeekMonth !== strings.never && (
                 <EventTimeSelectItem
                   title={strings.until}
                   toggle={!toggle}
@@ -998,8 +991,8 @@ export default function CreateEventScreen({navigation, route}) {
               </Text>
               <BlockAvailableTabView
                 blocked={is_Blocked}
-                firstTabTitle={'Blocked'}
-                secondTabTitle={'Available'}
+                firstTabTitle={strings.blocked}
+                secondTabTitle={strings.availableText}
                 onFirstTabPress={() => setIsBlocked(true)}
                 onSecondTabPress={() => setIsBlocked(false)}
               />
@@ -1007,7 +1000,7 @@ export default function CreateEventScreen({navigation, route}) {
 
             <EventItemRender title={strings.place} isRequired={true}>
               <TextInput
-                placeholder={'Venue name'}
+                placeholder={strings.venueNamePlaceholder}
                 style={styles.textInputStyle}
                 onChangeText={(value) => {
                   setLocationDetail({...locationDetail, venue_name: value});
@@ -1048,7 +1041,7 @@ export default function CreateEventScreen({navigation, route}) {
                 }}
               />
               <TextInput
-                placeholder={'Details'}
+                placeholder={strings.venueDetailsPlaceholder}
                 style={styles.detailsInputStyle}
                 onChangeText={(value) => {
                   setLocationDetail({...locationDetail, venue_detail: value});
@@ -1100,7 +1093,7 @@ export default function CreateEventScreen({navigation, route}) {
               </TouchableOpacity>
             </View>
             {whoCanJoinOpetion.value === 2 &&
-              authContext.entity.role === 'user' && (
+              authContext.entity.role === Verbs.entityTypeUser && (
                 <View>
                   <View style={styles.allStyle}>
                     <Text style={styles.titleTextStyle}>{strings.all}</Text>
@@ -1140,8 +1133,7 @@ export default function CreateEventScreen({navigation, route}) {
                 <Text style={styles.opetionalTextStyle}>{' opetional'}</Text>
               </Text>
               <Text style={styles.subTitleText}>
-                The event may be canceled by the organizer if the minimum number
-                of the attendees isn’t met.
+                {strings.eventMayBeCancelledByOrganizerText}
               </Text>
               <NumberOfAttendees
                 onChangeMinText={setMinAttendees}
@@ -1165,7 +1157,7 @@ export default function CreateEventScreen({navigation, route}) {
                   textAlignVertical={'center'}
                   placeholderTextColor={colors.userPostTimeColor}
                 />
-                <Text style={styles.currencyStyle}>CAD</Text>
+                <Text style={styles.currencyStyle}>{strings.CAD}</Text>
               </View>
             </View>
 
@@ -1175,26 +1167,25 @@ export default function CreateEventScreen({navigation, route}) {
               </Text>
               <Text
                 style={{fontSize: 14, fontFamily: fonts.RBold, marginTop: 15}}>
-                {'Primary Refund Policy'}
+                {strings.primaryRefundPolicy}
               </Text>
               <Text style={[styles.subTitleText, {marginTop: 10}]}>
-                Attendees must be refunded if the event is canceled or
-                rescheduled.
+                {strings.attendeesMustRefundedText}
                 <Text
                   style={{
                     fontSize: 12,
                     fontFamily: fonts.RRegular,
                     textDecorationLine: 'underline',
                   }}>
-                  {'\n'}Read payment policy for more information.
+                  {strings.readPaymentPolicyText}
                 </Text>
               </Text>
               <Text
                 style={{fontSize: 14, fontFamily: fonts.RBold, marginTop: 15}}>
-                {'Additional Refund Policy'}
+                {strings.additionalRefundPolicy}
               </Text>
               <TextInput
-                placeholder={'Refund Policy'}
+                placeholder={strings.refundpolicy}
                 style={styles.detailsInputStyle}
                 onChangeText={(value) => setRefundPolicy(value)}
                 value={refundPolicy}
@@ -1235,7 +1226,7 @@ export default function CreateEventScreen({navigation, route}) {
               </TouchableOpacity>
             </View>
             {whoCanSeeOpetion.value === 2 &&
-              authContext.entity.role === 'user' && (
+              authContext.entity.role === Verbs.entityTypeUser && (
                 <View>
                   <View style={styles.allStyle}>
                     <Text style={styles.titleTextStyle}>{strings.all}</Text>
@@ -1358,7 +1349,7 @@ export default function CreateEventScreen({navigation, route}) {
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
               }}>
-              Sports
+              {strings.sportsTitleText}
             </Text>
 
             <Text
@@ -1375,7 +1366,7 @@ export default function CreateEventScreen({navigation, route}) {
                   setVisibleSportsModal(false);
                 }, 300);
               }}>
-              Apply
+              {strings.apply}
             </Text>
           </View>
           <View style={styles.separatorLine} />
@@ -1439,7 +1430,7 @@ export default function CreateEventScreen({navigation, route}) {
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
               }}>
-              strings.privacySettingText
+              {strings.privacySettingText}
             </Text>
 
             <Text

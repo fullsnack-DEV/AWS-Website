@@ -12,6 +12,8 @@ import RecentMatchItems from '../../components/Home/RecentMatchItems';
 import AuthContext from '../../auth/context';
 import {getEventById} from '../../api/Schedule';
 import {getGameHomeScreen} from '../../utils/gameUtils';
+import {strings} from '../../../Localization/translation';
+import Verbs from '../../Constants/Verbs';
 
 export default function ScoreboardSportsScreen({
   sportsData,
@@ -87,7 +89,7 @@ export default function ScoreboardSportsScreen({
         }
       } else {
         getEventById(
-          entity.role === 'user' ? 'users' : 'groups',
+          entity.role === Verbs.entityTypeUser ? 'users' : 'groups',
           entity.uid || entity.auth.user_id,
           item.cal_id,
           authContext,
@@ -108,7 +110,9 @@ export default function ScoreboardSportsScreen({
   return (
     <KeyboardAvoidingView style={styles.mainContainer}>
       {dataNotFound ? (
-        <Text style={styles.dataNotFoundText}>Data Not Found!</Text>
+        <Text style={styles.dataNotFoundText}>
+          {strings.noScorekeeperFound}
+        </Text>
       ) : (
         <SectionList
           renderItem={({item}) => {

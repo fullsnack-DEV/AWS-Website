@@ -20,6 +20,7 @@ import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import {getGroupList, getUserList} from '../../api/elasticSearch';
+import { strings } from '../../../Localization/translation';
 
 export default function TagUserScreen({backBtnPress, onItemPress}) {
   const [searchUser, setSearchUser] = useState('');
@@ -33,7 +34,6 @@ export default function TagUserScreen({backBtnPress, onItemPress}) {
         setUserData(response);
       })
       .catch((e) => {
-        console.log('eeeee Get Users :-', e.response);
         Alert.alert('', e.messages);
       });
   }, []);
@@ -44,7 +44,6 @@ export default function TagUserScreen({backBtnPress, onItemPress}) {
         setGroupData(response);
       })
       .catch((e) => {
-        console.log('eeeee Get Group Users :-', e.response);
         Alert.alert('', e.messages);
       });
   }, []);
@@ -79,7 +78,7 @@ export default function TagUserScreen({backBtnPress, onItemPress}) {
             </TouchableOpacity>
           </View>
           <View style={styles.writePostViewStyle}>
-            <Text style={styles.writePostTextStyle}>{'Tag User'}</Text>
+            <Text style={styles.writePostTextStyle}>{strings.tagUser}</Text>
           </View>
           <View style={styles.doneViewStyle}>
             {/* <Text
@@ -96,7 +95,7 @@ export default function TagUserScreen({backBtnPress, onItemPress}) {
           <Image source={images.searchUser} style={styles.searchImageStyle} />
         </View>
         <TextInput
-          placeholder={'Search User....'}
+          placeholder={strings.searchUser}
           placeholderTextColor={colors.disableColor}
           style={styles.searchUserTextStyle}
           autoCorrect={false}

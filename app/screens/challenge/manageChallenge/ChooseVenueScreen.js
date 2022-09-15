@@ -75,7 +75,7 @@ function ChooseVenueScreen({navigation, route}) {
                     selectedVenueObj: selectedVenue,
                   });
                 } else {
-                  Alert.alert('Please fill all details of venue.');
+                  Alert.alert(strings.fillAllVenueDetailValidation);
                 }
               } else if (comeFrom === 'EditChallenge') {
                 navigation.navigate(comeFrom, {
@@ -92,7 +92,7 @@ function ChooseVenueScreen({navigation, route}) {
                 });
               }
             } else {
-              Alert.alert('Please choose any one venue.');
+              Alert.alert(strings.chooseAnyOneVenue);
             }
           }}>
           Save
@@ -153,7 +153,7 @@ function ChooseVenueScreen({navigation, route}) {
               marginRight: 15,
               marginTop: 10,
             }}>
-            Change
+            {strings.change}
           </Text>
         )}
       </View>
@@ -162,8 +162,6 @@ function ChooseVenueScreen({navigation, route}) {
 
   const getLatLongData = (addressDescription) => {
     getLatLong(addressDescription, authContext).then((response) => {
-      console.log('Lat/Long response::=>', response);
-
       let city, state, country;
       response.results[0].address_components.map((e) => {
         if (e?.types?.includes('country')) {
@@ -196,7 +194,6 @@ function ChooseVenueScreen({navigation, route}) {
         longitudeDelta: 0.0421,
       };
       setVenueFooter({...venueFooter, ...ven});
-      console.log('Ven:=>', {...venueFooter, ...ven});
     });
   };
 
@@ -207,7 +204,6 @@ function ChooseVenueScreen({navigation, route}) {
         <TouchableOpacity
           style={{flex: 0.1}}
           onPress={() => {
-            console.log('Custom venue item:=>', item);
             setSelectedVenue(item);
           }}>
           {selectedVenue === item ? (

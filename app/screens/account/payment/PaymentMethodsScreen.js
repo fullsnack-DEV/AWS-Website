@@ -7,6 +7,7 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 // import stripe from 'tipsi-stripe';
 
 import LinearGradient from 'react-native-linear-gradient';
+import {format} from 'react-string-format';
 import AuthContext from '../../../auth/context';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import AppleStyleSwipeableRow from '../../../components/notificationComponent/AppleStyleSwipeableRow';
@@ -59,7 +60,7 @@ export default function PaymentMethodsScreen({navigation, route}) {
               Alert.alert(strings.selectAnyCard);
             }
           }}>
-          Done
+          {strings.done}
         </Text>
       ),
     });
@@ -98,7 +99,7 @@ export default function PaymentMethodsScreen({navigation, route}) {
   const onDeleteCard = (item) => {
     Alert.alert(
       strings.alertmessagetitle,
-      `Do you want remove card ending with ${item.card.last4} from your account to ?`,
+      format(strings.removeCardText, item.card.last4),
       [
         {
           text: strings.cancel,
@@ -187,7 +188,11 @@ export default function PaymentMethodsScreen({navigation, route}) {
                     fontSize: 14,
                     marginTop: 5,
                   }}>
-                  Expires {item.card.exp_month} / {item.card.exp_year}
+                  {format(
+                    strings.cardExpiresText,
+                    item.card.exp_month,
+                    item.card.exp_year,
+                  )}
                 </Text>
               </View>
             </View>
@@ -255,7 +260,11 @@ export default function PaymentMethodsScreen({navigation, route}) {
                   fontSize: 14,
                   marginTop: 5,
                 }}>
-                Expires {item.card.exp_month} / {item.card.exp_year}
+                {format(
+                  strings.cardExpiresText,
+                  item.card.exp_month,
+                  item.card.exp_year,
+                )}
               </Text>
             </View>
           </TouchableOpacity>

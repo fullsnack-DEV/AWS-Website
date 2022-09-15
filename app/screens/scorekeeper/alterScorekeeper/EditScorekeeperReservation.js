@@ -77,10 +77,10 @@ export default function EditScorekeeperReservation({navigation, route}) {
   const {reservationObj} = route.params ?? {};
   const getNavigationTitle = useCallback(() => {
     if (bodyParams?.status === ScorekeeperReservationStatus.changeRequest) {
-      return 'Scorekeeper Reservation';
+      return strings.scorekeeperScreenTitle;
     }
 
-    return 'Change Scorekeeper Reservation';
+    return strings.changeScorekeeperReservation;
   }, [bodyParams?.status]);
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -621,8 +621,8 @@ export default function EditScorekeeperReservation({navigation, route}) {
       <ActivityLoader visible={loading} />
       <TCTabView
         totalTabs={2}
-        firstTabTitle={'ALTERATION REQUEST'}
-        secondTabTitle={'CURRENT RESERVATION'}
+        firstTabTitle={strings.alterRequest}
+        secondTabTitle={strings.currentReservation}
         indexCounter={maintabNumber}
         eventPrivacyContianer={{width: 100}}
         onFirstTabPress={() => setMaintabNumber(0)}
@@ -637,8 +637,7 @@ export default function EditScorekeeperReservation({navigation, route}) {
             (bodyParams.status === ScorekeeperReservationStatus.declined &&
               isDeclined)) && (
             <Text style={styles.buttonText}>
-              Please edit the reservation details below before you send the
-              alteration request.
+              {strings.editReservationDetails}
             </Text>
           )}
           {/* <View
@@ -662,7 +661,7 @@ export default function EditScorekeeperReservation({navigation, route}) {
             <View style={styles.challengerView}>
               <View style={styles.teamView}>
                 <Image source={images.reqIcon} style={styles.reqOutImage} />
-                <Text style={styles.challengerText}>Requester</Text>
+                <Text style={styles.challengerText}>{strings.requester}</Text>
               </View>
 
               <View style={styles.teamView}>
@@ -688,7 +687,7 @@ export default function EditScorekeeperReservation({navigation, route}) {
             <View style={styles.challengeeView}>
               <View style={styles.teamView}>
                 <Image source={images.refIcon} style={styles.reqOutImage} />
-                <Text style={styles.challengeeText}>Scorekeeper</Text>
+                <Text style={styles.challengeeText}>{strings.scorekeeper}</Text>
               </View>
 
               <View style={styles.teamView}>
@@ -819,7 +818,7 @@ export default function EditScorekeeperReservation({navigation, route}) {
                         <Text style={styles.timeZoneText}>
                           {strings.timezone}{' '}
                           <Text style={{fontFamily: fonts.RRegular}}>
-                            Vancouver
+                            {strings.vancouver}
                           </Text>
                         </Text>
                       </View>
@@ -891,12 +890,12 @@ export default function EditScorekeeperReservation({navigation, route}) {
                   marginTop: 25,
                 }}
               />
-              <Text style={styles.rulesTitle}>General Rules</Text>
+              <Text style={styles.rulesTitle}>{strings.gameRulesSubTitle1}</Text>
               <Text style={styles.rulesDetail}>
                 {bodyParams?.game?.general_rules}
               </Text>
               <View style={{marginBottom: 10}} />
-              <Text style={styles.rulesTitle}>Special Rules</Text>
+              <Text style={styles.rulesTitle}>{strings.gameRulesSubTitle2}</Text>
               <Text style={[styles.rulesDetail, {marginBottom: 10}]}>
                 {bodyParams?.game?.special_rules}
               </Text>
@@ -919,9 +918,7 @@ export default function EditScorekeeperReservation({navigation, route}) {
             <TCChallengeTitle
               title={strings.refundpolicy.toUpperCase()}
               value={bodyParams?.refund_policy}
-              tooltipText={
-                '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the match fee and service fee are not refunded.'
-              }
+              tooltipText={strings.cancellationPolicyDesc}
               tooltipHeight={Utility.heightPercentageToDP('18%')}
               tooltipWidth={Utility.widthPercentageToDP('50%')}
               isEdit={false}
@@ -966,7 +963,7 @@ export default function EditScorekeeperReservation({navigation, route}) {
                     fontSize: 16,
                     marginTop: 10,
                   }}>
-                  Edit
+                  {strings.editTitleText}
                 </Text>
               </TouchableOpacity>
             )}
@@ -1015,13 +1012,13 @@ export default function EditScorekeeperReservation({navigation, route}) {
           {editPayment && (
             <View style={{marginTop: 15}}>
               <Text style={styles.differenceText}>
-                Difference{' '}
+                {`${strings.Difference} `}
                 <Text style={styles.differenceSmallText}>
-                  (New payment - Current payment)
+                  {strings.newCurrentPayment}
                 </Text>
               </Text>
               <View style={styles.differeceView}>
-                <Text style={styles.differenceTextTitle}>Difference</Text>
+                <Text style={styles.differenceTextTitle}>{strings.Difference}</Text>
                 <Text style={styles.diffenceAmount}>{`$${parseFloat(
                   bodyParams?.total_game_fee - oldVersion?.total_game_fee,
                 ).toFixed(2)} ${
@@ -1113,7 +1110,7 @@ export default function EditScorekeeperReservation({navigation, route}) {
                     updateReservationDetail();
                   } else {
                     Alert.alert(
-                      'Please modify atleast one field for alter request.',
+                      strings.alterModificationMsg,
                     );
                   }
                 }}
@@ -1164,7 +1161,7 @@ export default function EditScorekeeperReservation({navigation, route}) {
                     );
                   } else {
                     Alert.alert(
-                      'Reservation cannot be cancel after game time passed or offer expired.',
+                      strings.cannotCancelReservationText,
                     );
                   }
                 }}
@@ -1224,11 +1221,11 @@ export default function EditScorekeeperReservation({navigation, route}) {
                       new Date().getTime()
                     ) {
                       Alert.alert(
-                        'Reservation cannot be cancel after game time passed or offer expired.',
+                        strings.cannotCancelReservationText,
                       );
                     } else {
                       Alert.alert(
-                        'Reservation can not be change after game has been started.',
+                        strings.cannotAcceptText,
                       );
                     }
                   }}

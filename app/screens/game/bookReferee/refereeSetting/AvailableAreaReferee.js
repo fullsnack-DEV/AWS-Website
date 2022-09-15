@@ -40,10 +40,6 @@ export default function AvailableAreaReferee({navigation, route}) {
   const authContext = useContext(AuthContext);
   // const [selectedAddressIndex, setSelectedAddressIndex] = useState();
 
-  console.log(
-    'route?.params?.settingObj?.available_area?.address',
-    route?.params?.settingObj?.available_area?.address,
-  );
   const [loading, setloading] = useState(false);
   const [areaRadio, setAreaRadio] = useState(0);
   const [addressType, setAddressType] = useState();
@@ -61,10 +57,6 @@ export default function AvailableAreaReferee({navigation, route}) {
       : 1,
   );
 
-  // const [radious, setRadious] = useState(
-  //   route?.params?.settingObj?.available_area?.radious &&
-  //     `${route?.params?.settingObj?.available_area?.radious}`,
-  // );
   const [addressList, setAddressList] = useState(
     route?.params?.settingObj?.available_area?.address_list
       ? route?.params?.settingObj?.available_area?.address_list
@@ -82,39 +74,28 @@ export default function AvailableAreaReferee({navigation, route}) {
         <Text
           style={styles.saveButtonStyle}
           onPress={() => {
-            console.log('searchAddress::', searchAddress?.address);
-            console.log(
-              'searchAddress?.description::',
-              searchAddress?.description,
-            );
-
-            console.log(
-              '!route?.params?.settingObj?.available_area?.address::',
-              !route?.params?.settingObj?.available_area?.address,
-            );
-
             if (areaRadio === 0) {
               const addresses = addressList.filter(
                 (obj) => obj?.address === '',
               );
 
               if (addresses.length > 0) {
-                Alert.alert('Please fill all address fields.');
+                Alert.alert(strings.fillAddressFieldValidation);
               } else {
                 onSavePressed();
               }
             } else if (selectedDistanceOption === undefined) {
-              Alert.alert('Please selected type of distance.');
+              Alert.alert(strings.typeDistanceValidation);
             } else if (
               searchAddress?.address === '' ||
               searchAddress?.description === ''
             ) {
-              Alert.alert('Please selected address for calculate range.');
+              Alert.alert(strings.selectAddressValidation);
             } else {
               onSavePressed();
             }
           }}>
-          Save
+          {strings.save}
         </Text>
       ),
     });
@@ -137,15 +118,11 @@ export default function AvailableAreaReferee({navigation, route}) {
         return o;
       });
 
-      console.log('list', list);
-
       availableArea = {
         is_specific_address: areaRadio === 0,
         address_list: list,
       };
     }
-
-    console.log('availableArea', availableArea);
 
     const refereeSetting = (
       authContext?.entity?.obj?.referee_data ?? []
@@ -178,14 +155,12 @@ export default function AvailableAreaReferee({navigation, route}) {
       ...authContext?.entity?.obj,
       referee_data: registerdRefereeData,
     };
-    console.log('Body::::--->', body);
 
     patchPlayer(body, authContext)
       .then(async (response) => {
         if (response.status === true) {
           setloading(false);
           const entity = authContext.entity;
-          console.log('Register referee response IS:: ', response.payload);
           entity.auth.user = response.payload;
           entity.obj = response.payload;
           authContext.setEntity({...entity});
@@ -200,7 +175,6 @@ export default function AvailableAreaReferee({navigation, route}) {
         } else {
           Alert.alert(strings.appName, response.messages);
         }
-        console.log('RESPONSE IS:: ', response);
         setloading(false);
       })
       .catch((e) => {
@@ -234,7 +208,7 @@ export default function AvailableAreaReferee({navigation, route}) {
                 addressList.splice(index, 1);
                 setAddressList([...addressList]);
               }}>
-              Delete
+              {strings.delete}
             </Text>
           )}
         </View>
@@ -310,7 +284,7 @@ export default function AvailableAreaReferee({navigation, route}) {
               style={styles.buttonView}
               onPress={() => addAddress()}>
               <Text style={styles.textStyle} numberOfLines={1}>
-                {'+ Add Area'}
+                {strings.addArea}
               </Text>
             </TouchableOpacity>
           </View>
@@ -331,9 +305,9 @@ export default function AvailableAreaReferee({navigation, route}) {
               <Text
                 onPress={() => setDistancePopup(false)}
                 style={styles.cancelText}>
-                Cancel
+                {strings.cancel}
               </Text>
-              <Text style={styles.locationText}>Range</Text>
+              <Text style={styles.locationText}>{strings.range}</Text>
               <Text style={styles.cancelText}>{'       '}</Text>
             </View>
             <TCThinDivider width={'100%'} marginBottom={15} />
@@ -353,12 +327,12 @@ export default function AvailableAreaReferee({navigation, route}) {
                       styles.curruentLocationText,
                       {color: colors.whiteColor},
                     ]}>
-                    Mi
+                    {strings.mi}
                   </Text>
                 </LinearGradient>
               ) : (
                 <View style={styles.backgroundView}>
-                  <Text style={styles.curruentLocationText}>Mi</Text>
+                  <Text style={styles.curruentLocationText}>{strings.mi}</Text>
                 </View>
               )}
             </TouchableOpacity>
@@ -374,12 +348,12 @@ export default function AvailableAreaReferee({navigation, route}) {
                   colors={[colors.yellowColor, colors.orangeGradientColor]}
                   style={styles.backgroundView}>
                   <Text style={[styles.myCityText, {color: colors.whiteColor}]}>
-                    Km
+                    {strings.km}
                   </Text>
                 </LinearGradient>
               ) : (
                 <View style={styles.backgroundView}>
-                  <Text style={styles.myCityText}>Km</Text>
+                  <Text style={styles.myCityText}>{strings.km}</Text>
                 </View>
               )}
             </TouchableOpacity>
@@ -392,14 +366,10 @@ export default function AvailableAreaReferee({navigation, route}) {
           visible={addressModalVisible}
           addressType={addressType}
           onSelect={(data) => {
-            console.log('select:', data);
-
             if (addressType === 'short') {
               const obj = [...addressList];
               obj[addressListIndex].address = data.description;
               setAddressList(obj);
-
-              console.log('select:', data.description);
             } else {
               setSearchAddress(data);
             }

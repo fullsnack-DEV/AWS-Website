@@ -18,6 +18,7 @@ import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
 import {strings} from '../../../../Localization/translation';
 import images from '../../../Constants/ImagePath';
+import Verbs from '../../../Constants/Verbs';
 
 export default function LookingForSettingScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
@@ -26,22 +27,22 @@ export default function LookingForSettingScreen({navigation, route}) {
   const [sportObj] = useState(route?.params?.sport);
   const [type] = useState(route?.params?.type);
   const lookingOpetions = [
-    {key: 'Yes', id: 1},
-    {key: 'No', id: 2},
+    {key: strings.yes, id: 1},
+    {key: strings.no, id: 2},
   ];
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: () => (
         <Text style={styles.titleTextStyle}>
-          {sportObj.sport.toLowerCase() === 'tennis'
-            ? 'Looking for Club'
-            : 'Looking for Team'}
+          {sportObj.sport.toLowerCase() === Verbs.tennisSport
+            ? strings.lookingForClubText
+            : strings.lookingForTeamText}
         </Text>
       ),
       headerRight: () => (
         <Text style={styles.doneButtonStyle} onPress={() => updateProfile()}>
-          Save
+          {strings.save}
         </Text>
       ),
     });
@@ -49,11 +50,11 @@ export default function LookingForSettingScreen({navigation, route}) {
 
   useEffect(() => {
     let selectedSport;
-    if (type === 'referee') {
+    if (type === Verbs.entityTypeReferee) {
       selectedSport = authContext?.entity?.obj?.referee_data?.filter(
         (obj) => obj?.sport === sportObj?.sport,
       )[0];
-    } else if (type === 'scorekeeper') {
+    } else if (type === Verbs.entityTypeScorekeeper) {
       selectedSport = authContext?.entity?.obj?.scorekeeper_data?.filter(
         (obj) => obj?.sport === sportObj?.sport,
       )[0];
@@ -77,15 +78,14 @@ export default function LookingForSettingScreen({navigation, route}) {
   const updateProfile = () => {
     setloading(true);
     let registerdData, refereeData, scorekeeperData, selectedSport;
-    if (type === 'referee') {
+    if (type === Verbs.entityTypeReferee) {
       refereeData = authContext?.entity?.obj?.referee_data?.filter(
         (obj) => obj?.sport !== sportObj?.sport,
       );
-      console.log('rerererer', refereeData);
       selectedSport = authContext?.entity?.obj?.referee_data?.filter(
         (obj) => obj?.sport === sportObj?.sport,
       )[0];
-    } else if (type === 'scorekeeper') {
+    } else if (type === Verbs.entityTypeScorekeeper) {
       scorekeeperData = authContext?.entity?.obj?.scorekeeper_data?.filter(
         (obj) => obj?.sport !== sportObj?.sport,
       );
@@ -105,22 +105,17 @@ export default function LookingForSettingScreen({navigation, route}) {
       )[0];
     }
 
-    console.log('registerdPlayerData:', registerdData);
-    console.log('refereeData:', refereeData);
-    console.log('scorekeeperData:', scorekeeperData);
-
     selectedSport.lookingForTeamClub = lookingFor;
-    console.log('selectedSport:', selectedSport);
 
     let body = {};
-    if (type === 'referee') {
+    if (type === Verbs.entityTypeReferee) {
       refereeData.push(selectedSport);
 
       body = {
         ...authContext?.entity?.obj,
         referee_data: refereeData,
       };
-    } else if (type === 'scorekeeper') {
+    } else if (type === Verbs.entityTypeScorekeeper) {
       scorekeeperData.push(selectedSport);
 
       body = {
@@ -135,14 +130,12 @@ export default function LookingForSettingScreen({navigation, route}) {
         registered_sports: registerdData,
       };
     }
-    console.log('Body::::--->', body);
 
     patchPlayer(body, authContext)
       .then(async (response) => {
         if (response.status === true) {
           setloading(false);
           const entity = authContext.entity;
-          console.log('Register player response IS:: ', response.payload);
           entity.auth.user = response.payload;
           entity.obj = response.payload;
           authContext.setEntity({...entity});
@@ -153,7 +146,6 @@ export default function LookingForSettingScreen({navigation, route}) {
         } else {
           Alert.alert(strings.appName, response.messages);
         }
-        console.log('RESPONSE IS:: ', response);
         setloading(false);
       })
       .catch((e) => {
@@ -172,7 +164,7 @@ export default function LookingForSettingScreen({navigation, route}) {
       <View style={styles.radioItem}>
         <Text style={styles.languageList}>{item.key}</Text>
         <View style={styles.checkbox}>
-          {item?.key === (lookingFor ? 'Yes' : 'No') ? (
+          {item?.key === (lookingFor ? strings.yes : strings.no) ? (
             <Image
               source={images.radioCheckYellow}
               style={styles.checkboxImg}
@@ -188,10 +180,7 @@ export default function LookingForSettingScreen({navigation, route}) {
   return (
     <SafeAreaView style={{flex: 1}}>
       <ActivityLoader visible={loading} />
-      <Text style={styles.screenTitle}>
-        Are you Looking for a new team? Your profile may be displayed on Local
-        Home if you choose “Yes”.
-      </Text>
+      <Text style={styles.screenTitle}>{strings.lookingNewTeam}</Text>
       <View
         style={{
           flexDirection: 'row',

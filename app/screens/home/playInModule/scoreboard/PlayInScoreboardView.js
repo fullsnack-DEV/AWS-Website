@@ -1,6 +1,7 @@
 import {View} from 'react-native';
 import React, {memo, useContext, useEffect, useState} from 'react';
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
+import {format} from 'react-string-format';
 import ScheduleTabView from '../../../../components/Home/ScheduleTabView';
 import ScoreboardSportsScreen from '../../ScoreboardSportsScreen';
 import UpcomingMatchScreen from '../../UpcomingMatchScreen';
@@ -8,6 +9,8 @@ import {getGameScoreboardEvents} from '../../../../api/Games';
 import AuthContext from '../../../../auth/context';
 import TCInnerLoader from '../../../../components/TCInnerLoader';
 import GameStatus from '../../../../Constants/GameStatus';
+import {strings} from '../../../../../Localization/translation';
+import Verbs from '../../../../Constants/Verbs';
 
 const PlayInScoreboardView = ({
   sportName,
@@ -25,7 +28,7 @@ const PlayInScoreboardView = ({
     const entity = authContext?.entity;
     const params = {
       sport: sportName,
-      role: 'player',
+      role: Verbs.entityTypePlayer,
     };
     getGameScoreboardEvents(
       entity.uid || entity.auth.user_id,
@@ -59,8 +62,14 @@ const PlayInScoreboardView = ({
   return (
     <View style={{flex: 1}}>
       <ScheduleTabView
-        firstTabTitle={`Completed (${recentMatchData?.length ?? 0})`}
-        secondTabTitle={`Upcoming (${upcomingMatchData?.length ?? 0})`}
+        firstTabTitle={format(
+          strings.completedNGame,
+          recentMatchData?.length ?? 0,
+        )}
+        secondTabTitle={format(
+          strings.upcomingNGame,
+          upcomingMatchData?.length ?? 0,
+        )}
         indexCounter={scoreboardTabNumber}
         eventPrivacyContianer={{width: wp('70%')}}
         onFirstTabPress={() => setScroboardTabNumber(0)}

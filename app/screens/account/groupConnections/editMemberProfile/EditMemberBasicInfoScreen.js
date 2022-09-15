@@ -465,7 +465,6 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
         <View>
           <TouchableOpacity
             onPress={() => {
-              console.log('OK');
               // navigation.navigate('RequestBasicInfoScreen', {memberInfo});
               sendRequestForBasicInfo();
             }}

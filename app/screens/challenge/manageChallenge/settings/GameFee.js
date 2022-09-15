@@ -185,7 +185,7 @@ export default function GameFee({navigation, route}) {
 
   const onSavePressed = () => {
     if (basicFee < 1 && basicFee > 0) {
-      Alert.alert('User should not allow less than $1 match fee.');
+      Alert.alert(strings.lessThanDollerFee);
     } else if (
       comeFrom === 'InviteChallengeScreen' ||
       comeFrom === 'EditChallenge'
@@ -260,7 +260,7 @@ export default function GameFee({navigation, route}) {
         onPress={() => {
           setVisibleCurrencyModal(true);
         }}>
-        {'Change currency'}
+        {strings.changeCurrency}
       </Text>
       <Modal
         isVisible={visibleCurrencyModal}
@@ -312,7 +312,7 @@ export default function GameFee({navigation, route}) {
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
               }}>
-              Currency Setting
+              {strings.currencySetting}
             </Text>
 
             <Text

@@ -27,6 +27,7 @@ import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 import Header from '../../../components/Home/Header';
 import {strings} from '../../../../Localization/translation';
+import Verbs from '../../../Constants/Verbs';
 
 export default function UserSettingPrivacyScreen({navigation}) {
   const authContext = useContext(AuthContext);
@@ -45,7 +46,6 @@ export default function UserSettingPrivacyScreen({navigation}) {
     setIsAccountDeactivated(false);
     setPointEvent('auto');
     if (isFocused) {
-      console.log('its called....', authContext.entity.role);
       if (authContext?.entity?.obj?.is_pause === true) {
         setIsAccountDeactivated(true);
         setPointEvent('none');
@@ -69,33 +69,33 @@ export default function UserSettingPrivacyScreen({navigation}) {
       .then(async (providerData) => {
         if ((providerData || []).includes('password')) {
           setUserSetting([
-            {key: 'Account Info', id: 1},
-            {key: 'Profile', id: 2},
-            {key: 'Basic Info', id: 3},
-            {key: 'Sports Activities', id: 4},
-            {key: 'Team', id: 5},
-            {key: 'Club', id: 6},
-            {key: 'Event', id: 7},
-            {key: 'Time Zone', id: 8},
+            {key: strings.accountInfo, id: 1},
+            {key: strings.profileText, id: 2},
+            {key: strings.basicInfoText, id: 3},
+            {key: strings.sportActivityText, id: 4},
+            {key: strings.team, id: 5},
+            {key: strings.club, id: 6},
+            {key: strings.event, id: 7},
+            {key: strings.timezoneText, id: 8},
             {key: strings.appLanguage, id: 12},
-            {key: 'Currency', id: 9},
+            {key: strings.currencyText, id: 9},
             // {key: 'Change Password', id: 7},
-            {key: 'Deactivate Account', id: 10},
-            {key: 'Terminate Account', id: 11},
+            {key: strings.deactivateAccountText, id: 10},
+            {key: strings.terminateAccountText, id: 11},
             // {key: strings.privacySettingText,id:3}
           ]);
         } else {
           setUserSetting([
-            {key: 'Account Info', id: 1},
-            {key: 'Profile', id: 2},
-            {key: 'Basic Info', id: 3},
-            {key: 'Sports Activities', id: 4},
-            {key: 'Team', id: 5},
-            {key: 'Club', id: 6},
-            {key: 'Event', id: 7},
-            {key: 'Time Zone', id: 8},
+            {key: strings.accountInfo, id: 1},
+            {key: strings.profileText, id: 2},
+            {key: strings.basicInfoText, id: 3},
+            {key: strings.sportActivityText, id: 4},
+            {key: strings.team, id: 5},
+            {key: strings.club, id: 6},
+            {key: strings.event, id: 7},
+            {key: strings.timezoneText, id: 8},
             {key: strings.appLanguage, id: 10},
-            {key: 'Currency', id: 9},
+            {key: strings.currencyText, id: 9},
 
             // {key: strings.privacySettingText,id:3}
           ]);
@@ -129,14 +129,13 @@ export default function UserSettingPrivacyScreen({navigation}) {
     });
 
   const handleOpetions = async (opetions) => {
-    if (opetions === 'Account Info') {
+    if (opetions === strings.accountInfo) {
       navigation.navigate('AccountInfoScreen');
-    } else if (opetions === 'Profile') {
+    } else if (opetions === strings.profileText) {
       navigation.navigate('PersonalInformationScreen');
-    } else if (opetions === 'Basic Info') {
+    } else if (opetions === strings.basicInfoText) {
       navigation.navigate('BasicInfoScreen');
-    } else if (opetions === 'Sports Activities') {
-      console.log('click on sport setting');
+    } else if (opetions === strings.sportActivityText) {
       navigation.navigate('SportActivityScreen');
     }
     //  else if (opetions === 'Currency') {
@@ -146,15 +145,19 @@ export default function UserSettingPrivacyScreen({navigation}) {
       navigation.navigate('LanguageSettingScreen');
     } else if (opetions === strings.privacySettingText) {
       // groupOpetionActionSheet.show();
-    } else if (opetions === 'Deactivate Account') {
+    } else if (opetions === strings.deactivateAccountText) {
       navigation.navigate('DeactivateAccountScreen');
-    } else if (opetions === 'Terminate Account') {
+    } else if (opetions === strings.terminateAccountText) {
       navigation.navigate('TerminateAccountScreen');
-    } else if (opetions === 'Team') {
-      navigation.navigate('GroupInviteSettingPrivacyScreen', {type: 'team'});
-    } else if (opetions === 'Club') {
-      navigation.navigate('GroupInviteSettingPrivacyScreen', {type: 'club'});
-    } else if (opetions === 'Event') {
+    } else if (opetions === strings.team) {
+      navigation.navigate('GroupInviteSettingPrivacyScreen', {
+        type: Verbs.entityTypeTeam,
+      });
+    } else if (opetions === strings.club) {
+      navigation.navigate('GroupInviteSettingPrivacyScreen', {
+        type: Verbs.entityTypeClub,
+      });
+    } else if (opetions === strings.event) {
       navigation.navigate('UserEventSettingPrivacyScreen');
     }
   };
@@ -199,7 +202,7 @@ export default function UserSettingPrivacyScreen({navigation}) {
               textAlign: 'center',
               fontFamily: fonts.RBold,
             }}>
-            Settings
+            {strings.settingsTitleText}
           </Text>
         }
       />

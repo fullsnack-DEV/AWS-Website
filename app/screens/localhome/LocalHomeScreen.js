@@ -34,7 +34,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import Carousel from 'react-native-snap-carousel';
 import FastImage from 'react-native-fast-image';
 import {useIsFocused} from '@react-navigation/native';
-
+import { format } from 'react-string-format';
 import {getLocationNameWithLatLong} from '../../api/External';
 import AuthContext from '../../auth/context';
 import images from '../../Constants/ImagePath';
@@ -75,6 +75,7 @@ import Header from '../../components/Home/Header';
 import {groupUnpaused} from '../../api/Groups';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import {getQBAccountType, QBupdateUser} from '../../utils/QuickBlox';
+import Verbs from '../../Constants/Verbs';
 
 const defaultPageSize = 5;
 export default function LocalHomeScreen({navigation, route}) {
@@ -118,15 +119,10 @@ export default function LocalHomeScreen({navigation, route}) {
     sport_type: sportType,
     location,
   });
-
-  console.log('Auth Object', authContext.entity.obj);
-
-  console.log('authContextttt::=>', authContext.entity.role);
   useEffect(() => {
     setIsAccountDeactivated(false);
     setPointEvent('auto');
     if (isFocused) {
-      console.log('its called....', authContext.entity.role);
       if (authContext?.entity?.obj?.is_pause === true) {
         setIsAccountDeactivated(true);
         setPointEvent('none');
@@ -149,13 +145,10 @@ export default function LocalHomeScreen({navigation, route}) {
     if (isFocused) {
       getUserSettings(authContext)
         .then(async (response) => {
-          console.log('Settings:=>', response);
-
           await Utility.setStorage('appSetting', response.payload.app);
         })
         .catch((e) => {
           setTimeout(() => {
-            console.log('catch -> local home Screen setting api');
             Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
         });
@@ -164,7 +157,6 @@ export default function LocalHomeScreen({navigation, route}) {
 
   useEffect(() => {
     getSportsList(authContext).then(async (res) => {
-      console.log('sports list', res.payload);
       await authContext.setSports([...res.payload]);
       const sport = [];
       res.payload.map((item) =>
@@ -189,25 +181,12 @@ export default function LocalHomeScreen({navigation, route}) {
 
   useEffect(() => {
     if (isFocused) {
-      console.log(
-        'authContext?.entity?.obj?.sports',
-        authContext?.entity?.obj?.sports,
-      );
       Utility.getStorage('appSetting').then((setting) => {
-        console.log('appSetting', setting);
         setImageBaseUrl(setting.base_url_sporticon);
-        console.log('IMAGE_BASE_URL', setting.base_url_sporticon);
       });
 
       Utility.getStorage('sportSetting')
         .then((setting) => {
-          console.log('Setting::1::=>', setting);
-          console.log('Favourite sport==>', authContext?.entity?.obj?.sports);
-          console.log(
-            'registered sport==>',
-            authContext?.entity?.auth?.user?.registered_sports,
-          );
-
           if (setting === null) {
             const playerSport =
               authContext?.entity?.auth?.user?.registered_sports || [];
@@ -232,9 +211,6 @@ export default function LocalHomeScreen({navigation, route}) {
               ) {
                 unique.push(o);
               }
-              // if (!unique.some((obj) => obj.sport === o.sport)) {
-              //   unique.push(o);
-              // }
               return unique;
             }, []);
             setSports(result);
@@ -258,7 +234,6 @@ export default function LocalHomeScreen({navigation, route}) {
             const uniqueSports = allSport.filter(
               (obj) => !uniqSports[obj.sport] && (uniqSports[obj.sport] = true),
             );
-            console.log('unique ==>', uniqueSports);
             setSports([...uniqueSports]);
           }
         })
@@ -285,9 +260,6 @@ export default function LocalHomeScreen({navigation, route}) {
             ) {
               unique.push(o);
             }
-            // if (!unique.some((obj) => obj.sport === o.sport)) {
-            //   unique.push(o);
-            // }
             return unique;
           }, []);
 
@@ -300,14 +272,12 @@ export default function LocalHomeScreen({navigation, route}) {
     if (isFocused) {
       getShortsList(location === 'world' ? '_world_' : location, authContext)
         .then((res) => {
-          console.log('Shorts list response:=>', res);
           setloading(false);
           if (res.payload) {
             setShortsList(res.payload.results);
           }
         })
         .catch((e) => {
-          console.log('catch -> shorts list api');
           setloading(false);
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
@@ -364,9 +334,7 @@ export default function LocalHomeScreen({navigation, route}) {
         });
       }
       // Recent match query
-
       // Upcoming match query
-
       const upcomingMatchQuery = {
         size: defaultPageSize,
         query: {
@@ -409,13 +377,6 @@ export default function LocalHomeScreen({navigation, route}) {
           },
         });
       }
-      console.log(
-        'Upcoming match Query:=>',
-        JSON.stringify(upcomingMatchQuery),
-      );
-
-      // Upcoming match query
-
       // Looking Challengee query
       const availableForchallengeQuery = {
         size: defaultPageSize,
@@ -425,7 +386,7 @@ export default function LocalHomeScreen({navigation, route}) {
               {
                 bool: {
                   must: [
-                    {match: {'setting.availibility': 'On'}},
+                    {match: {'setting.availibility': Verbs.on}},
                     {term: {entity_type: 'team'}},
                     {term: {is_pause: false}},
                     {term: {player_deactivated: false}},
@@ -445,7 +406,7 @@ export default function LocalHomeScreen({navigation, route}) {
                               {
                                 match: {
                                   'registered_sports.setting.availibility':
-                                    'On',
+                                    Verbs.on,
                                 },
                               },
                             ],
@@ -556,12 +517,6 @@ export default function LocalHomeScreen({navigation, route}) {
           },
         });
       }
-
-      console.log(
-        'availableForchallengeQuery:=>',
-        JSON.stringify(availableForchallengeQuery),
-      );
-
       // Hiring player query
 
       // Looking team query
@@ -640,12 +595,6 @@ export default function LocalHomeScreen({navigation, route}) {
       };
 
       if (location !== 'world') {
-        // refereeQuery.query.bool.must[0].nested.query.bool.must.push({
-        //   multi_match: {
-        //     query: `${location}`,
-        //     fields: ['city', 'country', 'state'],
-        //   },
-        // });
         refereeQuery.query.bool.must.push({
           multi_match: {
             query: `${location}`,
@@ -705,8 +654,6 @@ export default function LocalHomeScreen({navigation, route}) {
       console.log('Recent match query :=>', recentMatchQuery);
 
       getGameIndex(recentMatchQuery).then((games) => {
-        console.log('Recent match response :=>', games);
-
         Utility.getGamesList(games).then((gamedata) => {
           if (games?.length > 0) {
             setRecentMatch(gamedata);
@@ -717,8 +664,6 @@ export default function LocalHomeScreen({navigation, route}) {
       });
 
       getGameIndex(upcomingMatchQuery).then((games) => {
-        console.log('Upcoming match response :=>', games);
-
         Utility.getGamesList(games).then((gamedata) => {
           if (games?.length > 0) {
             setUpcomingMatch(gamedata);
@@ -729,27 +674,22 @@ export default function LocalHomeScreen({navigation, route}) {
       });
 
       getEntityIndex(availableForchallengeQuery).then((entity) => {
-        console.log('challengee:=>', entity);
         setChallengeeMatch(entity);
       });
 
       getGroupIndex(recruitingPlayersQuery).then((teams) => {
-        console.log('hiringPlayers::=>', teams);
         setHiringPlayers(teams);
       });
 
       getUserIndex(lookingQuery).then((players) => {
-        console.log('lookingTeams', players);
         setLookingTeam(players);
       });
 
       getUserIndex(refereeQuery).then((res) => {
-        console.log('res referee list:=>', res);
         setReferees([...res]);
       });
 
       getUserIndex(scorekeeperQuery).then((res) => {
-        console.log('res scorekeeper list:=>', res);
         setScorekeepers([...res]);
       });
 
@@ -760,11 +700,6 @@ export default function LocalHomeScreen({navigation, route}) {
   const sportsListView = useCallback(
     ({item, index}) => {
       console.log('Localhome item:=>', item);
-      console.log('item.sport', item.sport);
-      console.log('sportType');
-
-      console.log('selectedSport', selectedSport);
-
       return (
         <Text
           style={
@@ -781,7 +716,6 @@ export default function LocalHomeScreen({navigation, route}) {
               index,
               viewPosition: 0.8,
             });
-            console.log('selected sport::=>', item);
             if (item.sport === strings.moreText) {
               setTimeout(() => {
                 setSettingPopup(true);
@@ -1000,20 +934,12 @@ export default function LocalHomeScreen({navigation, route}) {
           position.coords.longitude,
           authContext,
         ).then((res) => {
-          console.log(
-            'Lat/long to address::=>',
-            res.results[0].address_components,
-          );
           let city;
           res.results[0].address_components.map((e) => {
             if (e.types.includes('administrative_area_level_2')) {
               city = e.short_name;
             }
           });
-          console.log(
-            'Location:=>',
-            city?.charAt(0).toUpperCase() + city?.slice(1),
-          );
           setLocation(city?.charAt(0).toUpperCase() + city?.slice(1));
           setFilters({
             ...filters,
@@ -1322,22 +1248,20 @@ export default function LocalHomeScreen({navigation, route}) {
           }
           onPress={() => {
             Alert.alert(
-              `Are you sure you want to ${
-                authContext?.entity?.obj?.is_pause === true
-                  ? 'unpause'
-                  : 'reactivate'
-              } this account?`,
+              format(strings.pauseUnpauseAccountText,(authContext?.entity?.obj?.is_pause === true
+                ? strings.unpausesmall
+                : strings.reactivatesmall)),
               '',
               [
                 {
-                  text: 'Cancel',
+                  text: strings.cancel,
                   style: 'cancel',
                 },
                 {
                   text:
                     authContext?.entity?.obj?.is_pause === true
-                      ? 'Unpause'
-                      : 'Reactivate',
+                      ? strings.unpause
+                      : strings.reactivate,
                   style: 'destructive',
                   onPress: () => {
                     if (authContext?.entity?.obj?.is_pause === true) {
@@ -1450,7 +1374,7 @@ export default function LocalHomeScreen({navigation, route}) {
                     data={gameData}
                     cardWidth={'94%'}
                     placeholderText={strings.upcomingMatchPlaceholderText}
-                    onStartPress={() => Alert.alert('ok')}
+                    onStartPress={() => Alert.alert(strings.okTitleText)}
                   />
                 )}
               />
@@ -1555,9 +1479,9 @@ export default function LocalHomeScreen({navigation, route}) {
                   navigation.navigate('RecruitingPlayerScreen', {
                     filters: {
                       ...filters,
-                      groupTeam: 'Teams',
-                      groupClub: 'Clubs',
-                      groupLeague: 'Leagues',
+                      groupTeam: strings.teamstitle,
+                      groupClub: strings.clubstitle,
+                      groupLeague: strings.leaguesTitle,
                     },
                   });
                 }}
@@ -1640,7 +1564,7 @@ export default function LocalHomeScreen({navigation, route}) {
             <Text
               onPress={() => setLocationPopup(false)}
               style={styles.cancelText}>
-              Cancel
+              {strings.cancel}
             </Text>
             <Text style={styles.locationText}>Location</Text>
           </View>
@@ -1667,12 +1591,12 @@ export default function LocalHomeScreen({navigation, route}) {
                     styles.curruentLocationText,
                     {color: colors.whiteColor},
                   ]}>
-                  Current city
+                  {strings.locationTitle}
                 </Text>
               </LinearGradient>
             ) : (
               <View style={styles.backgroundView}>
-                <Text style={styles.curruentLocationText}>Current city</Text>
+                <Text style={styles.curruentLocationText}>{strings.locationTitle}</Text>
               </View>
             )}
           </TouchableWithoutFeedback>
@@ -1704,12 +1628,12 @@ export default function LocalHomeScreen({navigation, route}) {
                 colors={[colors.yellowColor, colors.orangeGradientColor]}
                 style={styles.backgroundView}>
                 <Text style={[styles.myCityText, {color: colors.whiteColor}]}>
-                  Home city
+                  {strings.homeCityText}
                 </Text>
               </LinearGradient>
             ) : (
               <View style={styles.backgroundView}>
-                <Text style={styles.myCityText}>Home city</Text>
+                <Text style={styles.myCityText}>{strings.homeCityText}</Text>
               </View>
             )}
           </TouchableWithoutFeedback>
@@ -1732,22 +1656,21 @@ export default function LocalHomeScreen({navigation, route}) {
                 colors={[colors.yellowColor, colors.orangeGradientColor]}
                 style={styles.backgroundView}>
                 <Text style={[styles.worldText, {color: colors.whiteColor}]}>
-                  World
+                  {strings.world}
                 </Text>
               </LinearGradient>
             ) : (
               <View style={styles.backgroundView}>
-                <Text style={styles.worldText}>World</Text>
+                <Text style={styles.worldText}>{strings.world}</Text>
               </View>
             )}
           </TouchableWithoutFeedback>
-          <Text style={styles.orText}>Or</Text>
+          <Text style={styles.orText}>{strings.OrCaps}</Text>
 
           <TouchableOpacity
             style={styles.sectionStyle}
             onPress={() => {
               setLocationPopup(false);
-
               navigation.navigate('SearchCityScreen', {
                 comeFrom: 'LocalHomeScreen',
               });
@@ -1780,7 +1703,7 @@ export default function LocalHomeScreen({navigation, route}) {
               }}>
               <Image source={images.crossImage} style={styles.closeButton} />
             </TouchableOpacity>
-            <Text style={styles.moreText}>More</Text>
+            <Text style={styles.moreText}>{strings.more}</Text>
           </View>
           <TCThinDivider width={'100%'} marginBottom={15} />
           <FlatList
@@ -1805,7 +1728,7 @@ export default function LocalHomeScreen({navigation, route}) {
                     pressBack: getBack,
                   });
                 }}>
-                <Text style={styles.addSportsTitle}>Add or delete Sports</Text>
+                <Text style={styles.addSportsTitle}>{strings.addDeleteSports}</Text>
               </TouchableOpacity>
             )}
           />
