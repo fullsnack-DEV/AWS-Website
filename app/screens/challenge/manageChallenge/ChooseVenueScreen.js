@@ -274,7 +274,9 @@ function ChooseVenueScreen({navigation, route}) {
       venues[venues.length - 1] = venueFooter;
       return venues;
     }
-    return [...venues, venueFooter];
+    return comeFrom === 'EntityInfoScreen'
+      ? [...venues]
+      : [...venues, venueFooter];
   };
   return (
     <SafeAreaView>

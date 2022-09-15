@@ -67,6 +67,7 @@ import {getQBAccountType, QBupdateUser} from '../../../utils/QuickBlox';
 import TCThinDivider from '../../../components/TCThinDivider';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import {reservationOpetions} from '../../../utils/constant';
+import Verbs from '../../../Constants/Verbs';
 
 export default function ScheduleScreen({navigation, route}) {
   let authContext = useContext(AuthContext);

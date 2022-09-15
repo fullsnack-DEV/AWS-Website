@@ -6,7 +6,6 @@ import React, {
   useCallback,
 } from 'react';
 import {Text, View, StyleSheet, FlatList, Alert} from 'react-native';
-import {format} from 'react-string-format';
 
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import {strings} from '../../../../Localization/translation';

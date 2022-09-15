@@ -11,7 +11,6 @@ import {
   Alert,
   SafeAreaView,
 } from 'react-native';
-import {format} from 'react-string-format';
 
 import {patchGroup} from '../../../api/Groups';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
@@ -22,7 +21,6 @@ import {strings} from '../../../../Localization/translation';
 import AuthContext from '../../../auth/context';
 import TCGradientButton from '../../../components/TCGradientButton';
 import * as Utility from '../../../utils';
-import Verbs from '../../../Constants/Verbs';
 
 export default function MembersViewPrivacyScreen({navigation}) {
   // For activity indigator
