@@ -97,7 +97,7 @@ export default function LocalHomeScreen({navigation, route}) {
   const [selectedLocationOption, setSelectedLocationOption] = useState();
   const [location, setLocation] = useState(
     authContext?.entity?.obj?.city?.charAt(0).toUpperCase() +
-      authContext?.entity?.obj?.city.slice(1),
+      authContext?.entity?.obj?.city?.slice(1),
   );
   const [selectedSport, setSelectedSport] = useState(strings.allType);
   const [sportType, setSportType] = useState(strings.allType);

@@ -34,7 +34,7 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
   const [playerStatus, setPlayerStatus] = useState([]);
   const [setting, setSetting] = useState({
     is_member: true,
-    is_admin: true,
+    is_admin: false,
   });
   // const [groups, setGroups] = useState({
   //   createdAt: 0.0,
@@ -253,7 +253,7 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
               />
             </TouchableOpacity>
           </View>
-          <View style={styles.checkBoxContainer}>
+          <View style={[styles.checkBoxContainer, {opacity: 0.5}]}>
             <Text style={[styles.checkBoxItemText, {marginLeft: 0}]}>
               {format(
                 strings.adminText_dy,
@@ -261,6 +261,7 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
               )}
             </Text>
             <TouchableOpacity
+              disabled={true}
               onPress={() => {
                 const admin_setting = !setting.is_admin;
                 setSetting({

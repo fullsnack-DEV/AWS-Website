@@ -1,6 +1,6 @@
 /* eslint-disable array-callback-return */
 /* eslint-disable no-shadow */
-import React, {useState, useEffect, useContext} from 'react';
+import React, {useState, useContext} from 'react';
 import {
   Text,
   View,
@@ -11,7 +11,6 @@ import {
   Alert,
   SafeAreaView,
 } from 'react-native';
-import {format} from 'react-string-format';
 
 import {patchGroup} from '../../../api/Groups';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
@@ -22,71 +21,38 @@ import {strings} from '../../../../Localization/translation';
 import AuthContext from '../../../auth/context';
 import TCGradientButton from '../../../components/TCGradientButton';
 import * as Utility from '../../../utils';
-import Verbs from '../../../Constants/Verbs';
 
-let entity = {};
-const privacyData = [
-  Verbs.privacyTypeEveryone,
-  Verbs.privacyTypeFollowers,
-  Verbs.privacyTypeMembers,
-  Verbs.privacyTypeAdmins,
-];
 export default function MembersViewPrivacyScreen({navigation}) {
   // For activity indigator
-  const [loading, setloading] = useState(false);
-  const [switchUser, setSwitchUser] = useState({});
-  const [member, setMember] = useState(0);
-  const [follower, setFollower] = useState(0);
-  const [profile, setProfile] = useState(0);
   const authContext = useContext(AuthContext);
 
-  useEffect(() => {
-    const getAuthEntity = async () => {
-      entity = authContext.entity;
-      setSwitchUser(entity);
-    };
-    getAuthEntity();
-    getSelectedData();
-  }, []);
+  const [loading, setloading] = useState(false);
+  const [member, setMember] = useState(
+    authContext.entity.obj.who_can_see_member ?? 0,
+  );
+  const [follower, setFollower] = useState(
+    authContext.entity.obj.who_can_see_follower ?? 0,
+  );
+  const [profile, setProfile] = useState(
+    authContext.entity.obj.who_can_see_member_profile ?? 0,
+  );
 
-  const getSelectedData = () => {
-    const privacyMember = entity?.auth?.user?.privacy_members;
-    const privacyFollowers = entity?.auth?.user?.privacy_followers;
-    const privacyProfile = entity?.auth?.user?.privacy_profile;
-    const getIndexFromPrivacy = (privacy) =>
-      privacyData?.findIndex((item) => item === privacy);
-    setMember(getIndexFromPrivacy(privacyMember));
-    setFollower(getIndexFromPrivacy(privacyFollowers));
-    if (privacyProfile === Verbs.privacyTypeMembers) setProfile(0);
-    else setProfile(1);
-  };
-  const sendClubSetting = async () => {
+  const saveGroupSetting = () => {
     setloading(true);
     const bodyParams = {
-      privacy_members:
-        (member === 0 && Verbs.privacyTypeEveryone) ||
-        (member === 1 && Verbs.privacyTypeFollowers) ||
-        (member === 2 && Verbs.privacyTypeMembers) ||
-        (member === 3 && Verbs.privacyTypeAdmins),
-      privacy_followers:
-        (follower === 0 && Verbs.privacyTypeEveryone) ||
-        (follower === 1 && Verbs.privacyTypeFollowers) ||
-        (follower === 2 && Verbs.privacyTypeMembers) ||
-        (follower === 3 && Verbs.privacyTypeAdmins),
-      privacy_profile:
-        (profile === 0 && Verbs.privacyTypeMembers) ||
-        (profile === 1 && Verbs.privacyTypeAdmins),
+      who_can_see_member: member,
+      who_can_see_follower: follower,
+      who_can_see_member_profile: profile,
     };
     console.log('BODY :', bodyParams);
-    patchGroup(switchUser.uid, bodyParams, authContext)
+    patchGroup(authContext.entity.uid, bodyParams, authContext)
       .then(async (response) => {
         console.log('Response :', response.payload);
-        const cloneEntity = JSON.parse(JSON.stringify(entity));
-        cloneEntity.auth.user = response.payload;
-        authContext.setUser({...response.payload});
-        authContext.setEntity({...cloneEntity});
-        await Utility.setStorage('authContextEntity', {...cloneEntity});
-        await Utility.setStorage('authContextUser', {...response.payload});
+        const entity = authContext.entity;
+        entity.obj = response.payload;
+        authContext.setEntity({...entity});
+
+        await Utility.setStorage('authContextEntity', {...entity});
         setloading(false);
         navigation.goBack();
       })
@@ -104,9 +70,10 @@ export default function MembersViewPrivacyScreen({navigation}) {
       <ScrollView>
         <Text style={styles.titleStyle}>{strings.connections}</Text>
         <View style={styles.privacyCell}>
-          <Text style={styles.privacyNameStyle}>
-            {format(strings.whoCanSeeMembersText, switchUser.role)}
-          </Text>
+          <Text
+            style={
+              styles.privacyNameStyle
+            }>{`Who can see members in ${authContext.entity.role} connections?`}</Text>
           <View style={styles.radioMainView}>
             <TouchableOpacity
               style={styles.radioButtonView}
@@ -160,9 +127,10 @@ export default function MembersViewPrivacyScreen({navigation}) {
         </View>
 
         <View style={styles.privacyCell}>
-          <Text style={styles.privacyNameStyle}>
-            {format(strings.whoCanSeeFollowersText, switchUser.role)}
-          </Text>
+          <Text
+            style={
+              styles.privacyNameStyle
+            }>{`Who can see followers in ${authContext.entity.role} connections?`}</Text>
           <View style={styles.radioMainView}>
             <TouchableOpacity
               style={styles.radioButtonView}
@@ -249,7 +217,7 @@ export default function MembersViewPrivacyScreen({navigation}) {
       </ScrollView>
       <TCGradientButton
         title={strings.saveTitle}
-        onPress={() => sendClubSetting()}
+        onPress={() => saveGroupSetting()}
       />
     </SafeAreaView>
   );

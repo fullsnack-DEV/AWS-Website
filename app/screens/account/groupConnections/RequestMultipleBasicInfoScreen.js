@@ -6,7 +6,6 @@ import React, {
   useCallback,
 } from 'react';
 import {Text, View, StyleSheet, FlatList, Alert} from 'react-native';
-import {format} from 'react-string-format';
 
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import {strings} from '../../../../Localization/translation';
@@ -127,17 +126,16 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
       sendBasicInfoRequest(route?.params?.groupID, selectedList, authContext)
         .then((response) => {
           setloading(false);
+
           setTimeout(() => {
             Alert.alert(
               strings.alertmessagetitle,
-              format(
-                strings.requestForBasicInfoWereSentText,
-                selectedList?.length,
-              ),
+              `Requests for basic info were sent to ${selectedList?.length} members.`,
               [{text: 'OK', onPress: () => navigation.goBack()}],
               {cancelable: false},
             );
           }, 10);
+
           console.log('sendBasicInfoRequest', response);
         })
         .catch((e) => {

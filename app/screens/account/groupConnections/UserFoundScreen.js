@@ -47,10 +47,7 @@ export default function UserFoundScreen({navigation, route}) {
     connectProfile(groupID, memberObj?.user_id, authContext)
       .then((response) => {
         setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, response.messages);
-        }, 10);
-
+        console.log('response:=>', response.messages);
         navigation.goBack();
       })
       .catch((e) => {

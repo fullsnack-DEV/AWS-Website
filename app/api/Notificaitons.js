@@ -46,6 +46,7 @@ export const acceptRequest = (requestId, authContext) =>
     method: 'post',
     url: `${Config.BASE_URL}requests/${requestId}/accept`,
     authContext,
+    data: {},
   });
 
 export const declineRequest = (requestId, authContext) =>
@@ -53,6 +54,7 @@ export const declineRequest = (requestId, authContext) =>
     method: 'post',
     url: `${Config.BASE_URL}requests/${requestId}/reject`,
     authContext,
+    data: {},
   });
 
 export const getRequestDetail = (requestId, authContext) =>

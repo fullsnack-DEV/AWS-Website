@@ -40,21 +40,21 @@ export default function WhoCanInviteMemberScreen({navigation, route}) {
   const [loading, setloading] = useState(false);
 
   const [whoCanInvite, setWhoCanInvite] = useState(
-    (route?.params?.whoCanInviteGroup === 0 && {
+    (route?.params?.whoCanInviteGroup === 1 && {
       key: `${
         authContext.entity.role === Verbs.entityTypeTeam
           ? strings.teamAndMembersText
           : strings.clubAndMembersText
       }`,
-      id: 0,
+      id: 1,
     }) ||
-      (route?.params?.whoCanInviteGroup === 1 && {
+      (route?.params?.whoCanInviteGroup === 0 && {
         key: `${
           authContext.entity.role === Verbs.entityTypeTeam
             ? strings.teamOnly
             : strings.clubOnly
         }`,
-        id: 1,
+        id: 2,
       }),
   );
 

@@ -28,7 +28,7 @@ export default function MemberProfileCreatedScreen({navigation, route}) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <TouchableOpacity onPress={() => navigation.popToTop()}>
+        <TouchableOpacity onPress={() => navigation.pop(3)}>
           <Image
             source={images.backArrow}
             style={{

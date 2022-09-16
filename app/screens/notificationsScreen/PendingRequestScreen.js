@@ -49,7 +49,11 @@ function PendingRequestScreen({navigation}) {
     verb.includes(NotificationType.invitePlayerToJoinTeam) ||
     verb.includes(NotificationType.invitePlayerToJoinClub) ||
     verb.includes(NotificationType.inviteToConnectProfile) ||
-    verb.includes(NotificationType.invitePlayerToJoingame);
+    verb.includes(NotificationType.invitePlayerToJoingame) ||
+    verb.includes(NotificationType.inviteToDoubleTeam) ||
+    verb.includes(NotificationType.inviteToEvent) ||
+    verb.includes(NotificationType.sendBasicInfoToMember) ||
+    verb.includes(NotificationType.userRequestedJoingroup);
 
   const openHomePage = (item) => {
     if (item?.entityType && item?.entityId) {

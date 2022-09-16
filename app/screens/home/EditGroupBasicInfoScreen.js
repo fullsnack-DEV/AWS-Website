@@ -156,9 +156,9 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
   // Generating min and max age values
   useEffect(() => {
     const minAgeArray = [];
-    const maxAgeArray = [];
+    let maxAgeArray = [];
 
-    for (let i = 1; i <= maxAge; i++) {
+    for (let i = 1; i <= 120; i++) {
       const dataSource = {
         label: `${i}`,
         value: i,
@@ -166,12 +166,16 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
       minAgeArray.push(dataSource);
     }
 
-    for (let i = minAge; i <= 70; i++) {
+    for (let i = minAge; i <= 120; i++) {
       const dataSource = {
         label: `${i}`,
         value: i,
       };
       maxAgeArray.push(dataSource);
+    }
+    if (minAge === 0) {
+      maxAgeArray = [];
+      setMaxAge(maxAgeArray);
     }
     setMinAgeValue(minAgeArray);
     setMaxAgeValue(maxAgeArray);
