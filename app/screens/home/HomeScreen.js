@@ -4302,6 +4302,7 @@ const HomeScreen = ({navigation, route}) => {
                   isAdmin={isAdmin}
                   navigation={navigation}
                   sport_name={sportName}
+                  sportObj={selectRefereeData}
                   bookRefereeButtonVisible={
                     authContext?.entity?.uid !== currentUserData?.user_id
                   }
@@ -4836,6 +4837,7 @@ const HomeScreen = ({navigation, route}) => {
                   isAdmin={isAdmin}
                   navigation={navigation}
                   sport_name={sportName}
+                  sportObj={selectScorekeeperData}
                   bookRefereeButtonVisible={
                     authContext?.entity?.uid !== currentUserData?.user_id
                   }

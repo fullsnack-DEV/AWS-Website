@@ -685,7 +685,7 @@ const PlayInModule = ({
           if (index === 1) {
             onClose();
             navigation.navigate('DeactivateSportScreen', {
-              sportName: playInObject?.sport,
+              sportObj: playInObject,
               type: 'player',
             });
           }

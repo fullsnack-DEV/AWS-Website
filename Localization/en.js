@@ -1899,6 +1899,8 @@ export default {
   wins: 'en_Wins',
   lookingNewTeam:
     "Are you Looking for a new team? Your profile may be displayed on Local Home if you choose 'Yes'.",
+  lookingNewClub:
+    "Are you Looking for a new club? Your profile may be displayed on Local Home if you choose 'Yes'.",
   scoreboard: 'en_Scoreboard',
   stats: 'en_Stats',
   reviews: 'en_Reviews',

@@ -21,6 +21,7 @@ export default function RefereesProfileSection({
   onBookRefereePress,
   onModalClose = () => {},
   bookRefereeButtonVisible = true,
+  sportObj,
 }) {
   const actionSheetSettingRef = useRef();
 
@@ -95,6 +96,7 @@ export default function RefereesProfileSection({
             if (isReferee) {
               navigation.navigate('DeactivateSportScreen', {
                 sport_name,
+                sportObj,
                 type:
                   (isReferee === true && 'referee') ||
                   (isReferee === false && 'scorekeeper') ||
@@ -104,6 +106,7 @@ export default function RefereesProfileSection({
             } else {
               navigation.navigate('DeactivateSportScreen', {
                 sport_name,
+                sportObj,
                 type:
                   (isReferee === true && 'referee') ||
                   (isReferee === false && 'scorekeeper') ||

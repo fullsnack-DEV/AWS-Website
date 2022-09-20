@@ -41,7 +41,7 @@ export default function ActivitySettingScreen({navigation, route}) {
   }, [authContext, navigation, sportObj]);
 
   const getSettingMenu = useCallback(() => {
-    if (getSportName(sportObj, authContext) === 'Tennis') {
+    if (sportObj?.sport_type === 'single') {
       setUserSetting([
         {key: strings.lookingForClubText, id: 1},
         {key: strings.deactivateActivityText, id: 2},
