@@ -35,7 +35,7 @@ export default function LookingForSettingScreen({navigation, route}) {
     navigation.setOptions({
       headerTitle: () => (
         <Text style={styles.titleTextStyle}>
-          {sportObj.sport.toLowerCase() === Verbs.tennisSport
+          {sportObj?.sport_type === 'single'
             ? strings.lookingForClubText
             : strings.lookingForTeamText}
         </Text>
@@ -180,7 +180,11 @@ export default function LookingForSettingScreen({navigation, route}) {
   return (
     <SafeAreaView style={{flex: 1}}>
       <ActivityLoader visible={loading} />
-      <Text style={styles.screenTitle}>{strings.lookingNewTeam}</Text>
+      {sportObj?.sport_type === 'single' ? (
+        <Text style={styles.screenTitle}>{strings.lookingNewClub}</Text>
+      ) : (
+        <Text style={styles.screenTitle}>{strings.lookingNewTeam}</Text>
+      )}
       <View
         style={{
           flexDirection: 'row',

@@ -22,7 +22,7 @@ import images from '../../Constants/ImagePath';
 import {getGroups} from '../../api/Groups';
 
 export default function DeactivateSportScreen({navigation, route}) {
-  const [sportObj] = useState(route?.params?.sport);
+  const [sportObj] = useState(route?.params?.sportObj);
   const authContext = useContext(AuthContext);
   const [modalVisible, setModalVisible] = useState(false);
   // eslint-disable-next-line no-unused-vars
@@ -59,20 +59,19 @@ export default function DeactivateSportScreen({navigation, route}) {
   }, [authContext]);
 
   const getSpportText = () => {
-    if (sportObj.type === 'referee') {
+    if (sportObj?.type === 'referee') {
       return `${sportObj.sport} in Referee deactivated`;
     }
-    if (sportObj.type === 'scorekeeper') {
+    if (sportObj?.type === 'scorekeeper') {
       return `${sportObj.sport} in Scorekeeper deactivated`;
     }
-    if (sportObj.type === 'player') {
+    if (sportObj?.type === 'player') {
       return `${sportObj.sport} in Playing deactivated`;
     }
     return null;
   };
   const deactivateSport = () => {
     setloading(true);
-
     const body = {
       sport: sportObj.sport,
       sport_type: sportObj.sport_type,

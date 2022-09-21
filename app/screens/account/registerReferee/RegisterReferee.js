@@ -38,6 +38,8 @@ export default function RegisterReferee({navigation}) {
   const [sportList, setSportList] = useState([]);
   const [sports, setSports] = useState('');
   const [sportsSelection, setSportsSelection] = useState();
+  const [sportTypeSelection, setSportTypeSelection] = useState();
+
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
 
   const [description, onChangeText] = useState('');
@@ -136,7 +138,10 @@ export default function RegisterReferee({navigation}) {
   const renderSports = ({item}) => (
     <TouchableWithoutFeedback
       style={styles.listItem}
-      onPress={() => setSportsSelection(item)}>
+      onPress={() => {
+        setSportTypeSelection(item?.format[0]?.sport_type);
+        setSportsSelection(item);
+      }}>
       <View
         style={{
           padding: 20,
@@ -165,6 +170,7 @@ export default function RegisterReferee({navigation}) {
     if (isValid) {
       const bodyParams = {
         sport: sportsSelection.sport,
+        sport_type: sportTypeSelection,
         descriptions: description,
         is_active: true,
       };
