@@ -26,7 +26,7 @@ import TCFormProgress from '../../../../components/TCFormProgress';
 import TCGradientButton from '../../../../components/TCGradientButton';
 import TCThinDivider from '../../../../components/TCThinDivider';
 import TCPlayerImageInfo from '../../../../components/TCPlayerImageInfo';
-import {getSportName} from '../../../../utils';
+import {deleteConfirmation, getSportName} from '../../../../utils';
 import Verbs from '../../../../Constants/Verbs';
 
 export default function CreateTeamForm3({navigation, route}) {
@@ -99,6 +99,10 @@ export default function CreateTeamForm3({navigation, route}) {
   };
 
   const openCamera = (width = 400, height = 400) => {
+    let cropCircle = false;
+    if (currentImageSelection === 1) {
+      cropCircle = true;
+    }
     check(PERMISSIONS.IOS.CAMERA)
       .then((result) => {
         switch (result) {
@@ -135,6 +139,7 @@ export default function CreateTeamForm3({navigation, route}) {
               width,
               height,
               cropping: true,
+              cropperCircleOverlay: cropCircle,
             })
               .then((data) => {
                 // 1 means profile, 0 - means background
@@ -226,11 +231,10 @@ export default function CreateTeamForm3({navigation, route}) {
           )
             .then(() => {
               setloading(false);
-
-              navigation.push('HomeScreen', {
+              navigation.navigate('HomeScreen', {
                 uid: entity.uid,
                 role: entity.role,
-                backButtonVisible: false,
+                backButtonVisible: true,
                 menuBtnVisible: false,
                 isDoubleSportTeamCreated: true,
                 name: player2?.full_name,
@@ -266,10 +270,10 @@ export default function CreateTeamForm3({navigation, route}) {
         .then(() => {
           setloading(false);
 
-          navigation.push('HomeScreen', {
+          navigation.navigate('HomeScreen', {
             uid: entity.uid,
             role: entity.role,
-            backButtonVisible: false,
+            backButtonVisible: true,
             menuBtnVisible: false,
             isDoubleSportTeamCreated: true,
             name: player2?.full_name,
@@ -339,10 +343,10 @@ export default function CreateTeamForm3({navigation, route}) {
             .then((response) => {
               setloading(false);
 
-              navigation.push('HomeScreen', {
+              navigation.navigate('HomeScreen', {
                 uid: response.payload.group_id,
                 role: response.payload.entity_type,
-                backButtonVisible: false,
+                backButtonVisible: true,
                 menuBtnVisible: false,
                 isEntityCreated: true,
                 groupName: response.payload.group_name,
@@ -372,10 +376,10 @@ export default function CreateTeamForm3({navigation, route}) {
         .then((response) => {
           setloading(false);
 
-          navigation.push('HomeScreen', {
+          navigation.navigate('HomeScreen', {
             uid: response.payload.group_id,
             role: response.payload.entity_type,
-            backButtonVisible: false,
+            backButtonVisible: true,
             menuBtnVisible: false,
             isEntityCreated: true,
             groupName: response.payload.group_name,
@@ -542,7 +546,11 @@ export default function CreateTeamForm3({navigation, route}) {
               openImagePicker(750, 348);
             }
           } else if (index === 2) {
-            deleteImage();
+            deleteConfirmation(
+              strings.appName,
+              strings.deleteConfirmationText,
+              () => deleteImage(),
+            );
           }
         }}
       />

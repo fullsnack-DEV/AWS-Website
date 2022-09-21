@@ -216,7 +216,7 @@ export default function EditLineUpCoachScreen({navigation, route}) {
           )}
         </View>
         <View>
-          <TCLabel title={'Members'} />
+          <TCLabel title={strings.membersTitle} />
           {nonRoster.length === 0 ? (
             <Text style={styles.noDataView}>
               {strings.lookingTeamsPlaceholderText}

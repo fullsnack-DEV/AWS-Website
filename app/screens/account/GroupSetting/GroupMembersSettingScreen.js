@@ -13,11 +13,13 @@ import {
 import {useIsFocused} from '@react-navigation/native';
 
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
+import {format} from 'react-string-format';
 import AuthContext from '../../../auth/context';
 import images from '../../../Constants/ImagePath';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
 import {strings} from '../../../../Localization/translation';
+import Verbs from '../../../Constants/Verbs';
 
 export default function GroupMembersSettingScreen({navigation, route}) {
   const isFocused = useIsFocused();
@@ -37,14 +39,15 @@ export default function GroupMembersSettingScreen({navigation, route}) {
 
   const [userSetting] = useState([
     {
-      key: `Who Can Join ${
-        authContext.entity.role === 'team' ? 'Team' : 'Club'
-      }`,
+      key: format(
+        strings.whoCanJoinGroupText,
+        authContext.entity.role === Verbs.entityTypeTeam ? 'Team' : 'Club',
+      ),
       id: 1,
     },
-    {key: 'Who Can Invite Member', id: 2},
+    {key: strings.whoCanInviteMemberText, id: 2},
     {key: strings.recruitingPlayerText, id: 3},
-    {key: 'Members Profile', id: 4},
+    {key: strings.membersProfile, id: 4},
   ]);
 
   useEffect(() => {
@@ -75,28 +78,28 @@ export default function GroupMembersSettingScreen({navigation, route}) {
         sportName: authContext.entity?.obj?.sport,
         sportType: authContext.entity?.obj?.sport_type,
       });
-    } else if (opetions === 'Who Can Invite Member') {
+    } else if (opetions === userSetting[1].key) {
       navigation.navigate('WhoCanInviteMemberScreen', {
         whoCanInviteGroup,
         comeFrom: 'GroupMembersSettingScreen',
         sportName: authContext.entity?.obj?.sport,
         sportType: authContext.entity?.obj?.sport_type,
       });
-    } else if (opetions === strings.recruitingPlayerText) {
+    } else if (opetions === userSetting[2].key) {
       navigation.navigate('RecruitingMemberScreen', {
         settingObj: hiringPlayersObject,
         comeFrom: 'GroupMembersSettingScreen',
         sportName: authContext.entity?.obj?.sport,
         sportType: authContext.entity?.obj?.sport_type,
       });
-    } else if (opetions === 'Members Profile') {
+    } else if (opetions === userSetting[3].key) {
       const entity = authContext.entity;
       navigation.navigate('GroupMembersScreen', {groupID: entity.uid});
     }
   };
   const getSettings = useCallback(() => {
     if (
-      authContext.entity.role === 'team' ||
+      authContext.entity.role === Verbs.entityTypeTeam ||
       authContext.entity.role === 'club'
     ) {
       console.log('Au:::=>', authContext);
@@ -121,19 +124,16 @@ export default function GroupMembersSettingScreen({navigation, route}) {
   const getSettingValue = useCallback(
     (item) => {
       console.log('item.key', item);
-      if (item === strings.recruitingPlayerText) {
-        if (hiringPlayersObject?.hiringPlayers) {
-          return hiringPlayersObject?.hiringPlayers;
-        }
-        return 'No';
-      }
+
       if (item === userSetting[0].key) {
         if (whoCanJoinGroup === 0) {
           return strings.everyoneRadio;
         }
         if (whoCanJoinGroup === 1) {
           return `${
-            authContext.entity.role === 'team' ? 'Team Admin' : 'Club'
+            authContext.entity.role === Verbs.entityTypeTeam
+              ? strings.teamAdmin
+              : 'Club'
           }`;
         }
         if (whoCanJoinGroup === 2) {
@@ -143,15 +143,25 @@ export default function GroupMembersSettingScreen({navigation, route}) {
       if (item === userSetting[1].key) {
         if (whoCanInviteGroup === 1) {
           return `${
-            authContext.entity.role === 'team'
-              ? 'Team & members'
-              : 'Club & members'
+            authContext.entity.role === Verbs.entityTypeTeam
+              ? strings.teamAndMembersText
+              : strings.clubAndMembersText
           }`;
         }
         if (whoCanInviteGroup === 0) {
           return `${
-            authContext.entity.role === 'team' ? 'Team only' : 'Club only'
+            authContext.entity.role === Verbs.entityTypeTeam
+              ? strings.teamOnly
+              : strings.clubOnly
           }`;
+        }
+      }
+      if (item === userSetting[2].key) {
+        if (hiringPlayersObject?.hiringPlayers === 1) {
+          return strings.yes;
+        }
+        if (hiringPlayersObject?.hiringPlayers === 0) {
+          return strings.no;
         }
       }
     },

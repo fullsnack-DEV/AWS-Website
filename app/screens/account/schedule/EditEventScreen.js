@@ -56,7 +56,12 @@ import TCKeyboardView from '../../../components/TCKeyboardView';
 import TCTouchableLabel from '../../../components/TCTouchableLabel';
 import EventBackgroundPhoto from '../../../components/Schedule/EventBackgroundPhoto';
 import TCThinDivider from '../../../components/TCThinDivider';
-import {getHitSlop, getNearDateTime, getSportName} from '../../../utils';
+import {
+  deleteConfirmation,
+  getHitSlop,
+  getNearDateTime,
+  getSportName,
+} from '../../../utils';
 import NumberOfAttendees from '../../../components/Schedule/NumberOfAttendees';
 import {getGroups} from '../../../api/Groups';
 import GroupEventItems from '../../../components/Schedule/GroupEvent/GroupEventItems';
@@ -1431,7 +1436,11 @@ export default function EditEventScreen({navigation, route}) {
           } else if (index === 1) {
             openImagePicker(750, 348);
           } else if (index === 2) {
-            deleteImage();
+            deleteConfirmation(
+              strings.appName,
+              strings.deleteConfirmationText,
+              () => deleteImage(),
+            );
           }
         }}
       />

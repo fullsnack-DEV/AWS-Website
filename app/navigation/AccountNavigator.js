@@ -473,7 +473,7 @@ const AccountNavigator = () => (
       name="GroupMembersScreen"
       component={GroupMembersScreen}
       options={{
-        title: 'Members',
+        title: strings.membersTitle,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -2768,7 +2768,7 @@ const AccountNavigator = () => (
       name="HomeAway"
       component={HomeAway}
       options={{
-        title: 'Home & Away',
+        title: strings.homeAndAway,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -3016,6 +3016,7 @@ const AccountNavigator = () => (
         },
       }}
     />
+
     <Stack.Screen
       name="ChallengePreviewScreen"
       component={ChallengePreviewScreen}
@@ -3567,7 +3568,7 @@ const AccountNavigator = () => (
       name="GroupMembersSettingScreen"
       component={GroupMembersSettingScreen}
       options={{
-        title: 'Members',
+        title: strings.membersTitle,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -3584,7 +3585,7 @@ const AccountNavigator = () => (
       name="RecruitingMemberScreen"
       component={RecruitingMemberScreen}
       options={{
-        title: 'Recruiting Member',
+        title: strings.hiringPlayerTitle,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -3779,7 +3780,7 @@ const AccountNavigator = () => (
       name="TeamJoinClubScreen"
       component={TeamJoinClubScreen}
       options={{
-        title: 'What Team Can Join Club',
+        title: strings.whatTeamJoinClub,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

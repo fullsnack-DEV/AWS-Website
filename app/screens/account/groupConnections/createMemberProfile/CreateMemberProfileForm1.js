@@ -36,7 +36,11 @@ import TCMessageButton from '../../../../components/TCMessageButton';
 import TCTouchableLabel from '../../../../components/TCTouchableLabel';
 import AuthContext from '../../../../auth/context';
 import DataSource from '../../../../Constants/DataSource';
-import {monthNames, widthPercentageToDP} from '../../../../utils';
+import {
+  deleteConfirmation,
+  monthNames,
+  widthPercentageToDP,
+} from '../../../../utils';
 import TCFormProgress from '../../../../components/TCFormProgress';
 import TCKeyboardView from '../../../../components/TCKeyboardView';
 import DateTimePickerView from '../../../../components/Schedule/DateTimePickerModal';
@@ -506,7 +510,11 @@ export default function CreateMemberProfileForm1({navigation, route}) {
           } else if (index === 1) {
             openImagePicker();
           } else if (index === 2) {
-            deleteImage();
+            deleteConfirmation(
+              strings.appName,
+              strings.deleteConfirmationText,
+              () => deleteImage(),
+            );
           }
         }}
       />

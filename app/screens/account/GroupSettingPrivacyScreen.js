@@ -14,7 +14,6 @@ import {
 
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import {useIsFocused} from '@react-navigation/native';
-import {format} from 'react-string-format';
 import AuthContext from '../../auth/context';
 import images from '../../Constants/ImagePath';
 import Header from '../../components/Home/Header';
@@ -48,16 +47,14 @@ export default function GroupSettingPrivacyScreen({navigation}) {
         id: 3,
       },
       {key: strings.event, id: 4},
-      {key: strings.account, id: 5},
+      //   {key: strings.account, id: 5},
 
-      {key: strings.privacyText, id: 6},
+      //   {key: strings.privacyText, id: 6},
       {
-        key: format(
-          strings.pauseGroup,
+        key:
           authContext.entity.role === Verbs.entityTypeClub
-            ? strings.club
-            : strings.team,
-        ),
+            ? strings.pauseClubTitle
+            : strings.pauseTeamTitle,
         id: 7,
       },
       {key: strings.terminateAccountText, id: 8},
@@ -93,12 +90,9 @@ export default function GroupSettingPrivacyScreen({navigation}) {
     } else if (opetions === strings.privacyText) {
       Alert.alert(strings.thisFeatureisUnderDevelopment);
     } else if (
-      opetions ===
-      `Pause ${
-        authContext.entity.role === Verbs.entityTypeClub
-          ? strings.club
-          : strings.team
-      }`
+      (opetions === authContext.entity.role) === Verbs.entityTypeClub
+        ? strings.pauseClubTitle
+        : strings.pauseTeamTitle
     ) {
       navigation.navigate('PauseGroupScreen');
     } else if (opetions === strings.terminateAccountText) {

@@ -33,9 +33,16 @@ export default function RecruitingMemberScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
 
   const [loading, setloading] = useState(false);
+  console.log('route?.params?.settingObj', route?.params?.settingObj);
   const [hiringPlayersSelection, setHiringPlayersSelection] = useState(
-    (route?.params?.settingObj?.hiringPlayers === strings.yes && 1) ||
-      (route?.params?.settingObj?.hiringPlayers === strings.no && 0),
+    (route?.params?.settingObj?.hiringPlayers === 1 && {
+      key: strings.yes,
+      id: 0,
+    }) ||
+      (route?.params?.settingObj?.hiringPlayers === 0 && {
+        key: strings.no,
+        id: 1,
+      }),
   );
 
   useLayoutEffect(() => {

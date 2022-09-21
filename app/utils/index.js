@@ -1108,3 +1108,21 @@ export const getHoursMinutesFromString = (timeString) => {
     minute: arr[1].slice(0, -1),
   };
 };
+
+export const deleteConfirmation = (title, subTitle, okClick) => {
+  Alert.alert(
+    title,
+    subTitle,
+    [
+      {
+        text: strings.cancel,
+        style: 'cancel',
+      },
+      {
+        text: strings.okTitleText,
+        onPress: okClick,
+      },
+    ],
+    {cancelable: false},
+  );
+};

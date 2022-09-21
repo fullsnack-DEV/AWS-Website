@@ -292,7 +292,7 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
           <TextInput
             placeholder={strings.height}
             style={{...styles.halffeeText, ...shadowStyle}}
-            keyboardType={'number-pad'}
+            keyboardType={'decimal-pad'}
             onChangeText={(text) => {
               setMemberInfo({
                 ...memberInfo,
@@ -372,7 +372,7 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
           <TextInput
             placeholder={strings.weight}
             style={{...styles.halffeeText, ...shadowStyle}}
-            keyboardType={'number-pad'}
+            keyboardType={'decimal-pad'}
             onChangeText={(text) => {
               setMemberInfo({
                 ...memberInfo,

@@ -7,9 +7,12 @@ import {strings} from '../../../../Localization/translation';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import AuthContext from '../../../auth/context';
+import ActivityLoader from '../../../components/loader/ActivityLoader';
 
 export default function InviteMembersByEmailScreen({navigation}) {
   const authContext = useContext(AuthContext);
+  const [loading, setloading] = useState(false);
+
   const [email, setEmail] = useState([
     {
       id: 0,
@@ -46,6 +49,7 @@ export default function InviteMembersByEmailScreen({navigation}) {
   };
 
   const sendInvitation = () => {
+    setloading(true);
     const entity = authContext.entity;
 
     const resultEmails = email.filter((obj) => obj.email === '');
@@ -72,9 +76,13 @@ export default function InviteMembersByEmailScreen({navigation}) {
               email: '',
             },
           ]);
+          setloading(false);
+
           navigation.navigate('InvitationSentScreen');
         })
         .catch((e) => {
+          setloading(false);
+
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
@@ -98,6 +106,8 @@ export default function InviteMembersByEmailScreen({navigation}) {
 
   return (
     <View style={styles.mainContainer}>
+      <ActivityLoader visible={loading} />
+
       <Text style={styles.infoTextStyle}>{strings.inviteEmailText}</Text>
       <FlatList
         data={email}

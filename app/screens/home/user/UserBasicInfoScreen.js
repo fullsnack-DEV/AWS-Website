@@ -157,6 +157,7 @@ export default function UserBasicInfoScreen({navigation, route}) {
         <TCTextField
           placeholder={strings.heightplaceholder}
           onChangeText={(text) => setUserData({...userData, height: text})}
+          keyboardType={'decimal-pad'}
           value={userData.height}
         />
       </View>

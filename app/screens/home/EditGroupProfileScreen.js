@@ -38,7 +38,12 @@ import TCTextField from '../../components/TCTextField';
 import TCLabel from '../../components/TCLabel';
 import TCProfileImageControl from '../../components/TCProfileImageControl';
 import {patchGroup} from '../../api/Groups';
-import {getHitSlop, widthPercentageToDP, getSportName} from '../../utils';
+import {
+  getHitSlop,
+  widthPercentageToDP,
+  getSportName,
+  deleteConfirmation,
+} from '../../utils';
 
 import {
   searchLocationPlaceDetail,
@@ -596,7 +601,11 @@ export default function EditGroupProfileScreen({navigation, route}) {
                 openImagePicker(750, 348);
               }
             } else if (index === 2) {
-              deleteImage();
+              deleteConfirmation(
+                strings.appName,
+                strings.deleteConfirmationText,
+                () => deleteImage(),
+              );
             }
           }}
         />

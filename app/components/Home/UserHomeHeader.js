@@ -174,7 +174,9 @@ const UserHomeHeader = ({
                   )}
                 </View>
               </View>
-
+              <Text style={styles.fullNameTextStyle}>
+                {entityData?.fullName}
+              </Text>
               <Text
                 style={
                   styles.cityTextStyle
@@ -317,8 +319,8 @@ const styles = StyleSheet.create({
     marginBottom: 0,
   },
   sloganTextStyle: {
-    textAlign: 'left',
-    fontFamily: fonts.RLight,
+    textAlign: 'justify',
+    fontFamily: fonts.RMedium,
     fontSize: 14,
     color: colors.lightBlackColor,
     // fontStyle: 'italic',
@@ -329,6 +331,11 @@ const styles = StyleSheet.create({
   cityTextStyle: {
     fontSize: 14,
     fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
+  },
+  fullNameTextStyle: {
+    fontSize: 14,
+    fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
   },
   firstButtonStyle: {

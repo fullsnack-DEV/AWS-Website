@@ -37,6 +37,7 @@ import {getQBAccountType, QBupdateUser} from '../../../utils/QuickBlox';
 import images from '../../../Constants/ImagePath';
 import TCImage from '../../../components/TCImage';
 import Verbs from '../../../Constants/Verbs';
+import {deleteConfirmation} from '../../../utils';
 
 // import ToggleView from '../../../components/Schedule/ToggleView';
 
@@ -406,7 +407,11 @@ export default function EditPersonalProfileScreen({navigation, route}) {
               openImagePicker(750, 348);
             }
           } else if (index === 2) {
-            deleteImage();
+            deleteConfirmation(
+              strings.appName,
+              strings.deleteConfirmationText,
+              () => deleteImage(),
+            );
           }
         }}
       />

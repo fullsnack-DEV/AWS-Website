@@ -21,6 +21,7 @@ import TCFormProgress from '../../../../components/TCFormProgress';
 import TCGradientButton from '../../../../components/TCGradientButton';
 import TCThinDivider from '../../../../components/TCThinDivider';
 import Verbs from '../../../../Constants/Verbs';
+import {deleteConfirmation} from '../../../../utils';
 
 export default function CreateClubForm3({navigation, route}) {
   const [createClubForm2] = useState(route?.params?.createClubForm2);
@@ -369,7 +370,11 @@ export default function CreateClubForm3({navigation, route}) {
               openImagePicker(750, 348);
             }
           } else if (index === 2) {
-            deleteImage();
+            deleteConfirmation(
+              strings.appName,
+              strings.deleteConfirmationText,
+              () => deleteImage(),
+            );
           }
         }}
       />
