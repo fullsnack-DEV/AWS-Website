@@ -42,14 +42,6 @@ export default function BackgroundProfile({
       etData.country = currentUserData?.country ?? '';
       etData.teamCount = currentUserData?.joined_teams?.length ?? 0;
       setEntityData({...etData});
-
-      console.log('CurrentUserData:=>', currentUserData);
-      console.log(
-        'CurrentUserData entity_type:=>',
-        currentUserData?.entity_type,
-      );
-      console.log('ETDATA:=>', etData);
-      console.log('hiringPlayers', currentUserData.hiringPlayers);
     }
   }, [currentUserData]);
 
@@ -163,7 +155,7 @@ export default function BackgroundProfile({
           )}
           {currentUserData.entity_type !== 'club' && (
             <View style={styles.statusViewStyle}>
-              {currentUserData.following_count !== undefined ? (
+              {currentUserData.following_count !== undefined && (
                 <TouchableOpacity
                   onPress={() => onConnectionButtonPress('following')}
                   style={styles.statusInnerViewStyle}>
@@ -174,7 +166,8 @@ export default function BackgroundProfile({
                     </Text>
                   </Text>
                 </TouchableOpacity>
-              ) : (
+              )}
+              {currentUserData.following_count === undefined && (
                 <TouchableOpacity
                   onPress={() => onConnectionButtonPress('members')}
                   style={styles.statusInnerViewStyle}>
@@ -282,7 +275,7 @@ export default function BackgroundProfile({
                 colors={[colors.themeColor1, colors.themeColor3]}
                 style={styles.recruitingView}>
                 <Text style={styles.recruitingMembersText}>
-                  Recruiting Members
+                  {strings.hiringPlayerTitle}
                 </Text>
               </LinearGradient>
             )}

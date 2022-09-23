@@ -1,1 +1,13 @@
-TownsCup
+Steps for run android app in your machine
+
+1. follow initial steps of configure react native https://reactnative.dev/docs/environment-setup
+
+2. setup environments files, we have 4 environments file (.env, .env.qa, .env.production, .env.development, .env.staging)
+
+3. add stuff in to env file according to environments
+
+4. add local.properties file in android rool level
+
+5. add Android SDK path in this file e.g. sdk.dir=/Users/kishanmakani/Library/Android/sdk
+
+6. run android with env e.g. ENVFILE=.env npx react-native run-android --variant=DevelopmentDebug

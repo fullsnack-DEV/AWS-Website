@@ -34,7 +34,7 @@ export default function MembersViewPrivacyScreen({navigation}) {
     authContext.entity.obj.who_can_see_follower ?? 0,
   );
   const [profile, setProfile] = useState(
-    authContext.entity.obj.who_can_see_member_profile ?? 0,
+    authContext.entity.obj.who_can_see_member_profile ?? 2,
   );
 
   const saveGroupSetting = () => {
@@ -190,10 +190,10 @@ export default function MembersViewPrivacyScreen({navigation}) {
           <View style={styles.radioMainView}>
             <TouchableOpacity
               style={styles.radioButtonView}
-              onPress={() => setProfile(0)}>
+              onPress={() => setProfile(2)}>
               <Image
                 source={
-                  profile === 0 ? images.radioSelect : images.radioUnselect
+                  profile === 2 ? images.radioSelect : images.radioUnselect
                 }
                 style={styles.radioImage}
               />
@@ -201,10 +201,10 @@ export default function MembersViewPrivacyScreen({navigation}) {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.radioButtonView}
-              onPress={() => setProfile(1)}>
+              onPress={() => setProfile(3)}>
               <Image
                 source={
-                  profile === 1 ? images.radioSelect : images.radioUnselect
+                  profile === 3 ? images.radioSelect : images.radioUnselect
                 }
                 style={styles.radioImage}
               />

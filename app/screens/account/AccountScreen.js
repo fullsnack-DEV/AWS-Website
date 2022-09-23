@@ -1378,7 +1378,9 @@ export default function AccountScreen({navigation}) {
       <ActivityLoader visible={loading} />
 
       <Header
-        leftComponent={<Text style={styles.eventTitleTextStyle}>Account</Text>}
+        leftComponent={
+          <Text style={styles.eventTitleTextStyle}>{strings.account}</Text>
+        }
         showBackgroundColor={true}
         rightComponent={renderTopRightNotificationButton()}
       />
@@ -1547,7 +1549,9 @@ export default function AccountScreen({navigation}) {
                       }>
                       {authContext?.entity?.obj?.full_name || ''}
                     </Text>
-
+                    <Text>
+                      {authContext?.entity?.obj?.background_thumbnail}
+                    </Text>
                     <Image
                       source={images.arrowGraterthan}
                       style={{
@@ -1585,84 +1589,88 @@ export default function AccountScreen({navigation}) {
         {(authContext.entity.role === Verbs.entityTypeTeam ||
           authContext.entity.role === Verbs.entityTypeClub) && (
           <View style={styles.profileView}>
-            <ImageBackground
-              source={
-                authContext?.entity?.obj?.background_thumbnail
-                  ? {uri: authContext?.entity?.obj?.background_thumbnail}
-                  : images.ImageBackground
-              }
-              style={styles.profileView}
-              blurRadius={10}>
-              <TouchableOpacity
-                onPress={() => {
-                  navigation.navigate('HomeScreen', {
-                    uid: authContext.entity.uid,
-                    role: authContext.entity.role,
-                    backButtonVisible: true,
-                    menuBtnVisible: false,
-                  });
-                }}
-                style={{
-                  flexDirection: 'row',
-                  marginLeft: 20,
-                  marginRight: 20,
-                  alignContent: 'center',
-                }}>
-                <View style={styles.profileImageContainer}>
-                  {authContext?.entity?.obj?.thumbnail ? (
-                    <Image
-                      source={{uri: authContext?.entity?.obj?.thumbnail}}
-                      style={styles.profileImg}
-                    />
-                  ) : (
-                    <View
-                      style={{
-                        height: '100%',
-                        width: '100%',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}>
+            {authContext?.entity?.obj?.background_thumbnail ? (
+              <ImageBackground
+                source={
+                  authContext?.entity?.obj?.background_thumbnail
+                    ? {
+                        uri:
+                          authContext?.entity?.obj?.background_thumbnail ?? '',
+                      }
+                    : images.ImageBackground
+                }
+                style={styles.profileView}
+                blurRadius={10}>
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.navigate('HomeScreen', {
+                      uid: authContext.entity.uid,
+                      role: authContext.entity.role,
+                      backButtonVisible: true,
+                      menuBtnVisible: false,
+                    });
+                  }}
+                  style={{
+                    flexDirection: 'row',
+                    marginLeft: 20,
+                    marginRight: 20,
+                    alignContent: 'center',
+                  }}>
+                  <View style={styles.profileImageContainer}>
+                    {authContext?.entity?.obj?.thumbnail ? (
                       <Image
-                        source={placeHolder}
-                        style={{...styles.profileImg, resizeMode: 'contain'}}
+                        source={{uri: authContext?.entity?.obj?.thumbnail}}
+                        style={styles.profileImg}
                       />
+                    ) : (
                       <View
                         style={{
-                          justifyContent: 'center',
+                          height: '100%',
+                          width: '100%',
                           alignItems: 'center',
-                          alignSelf: 'center',
-                          position: 'absolute',
-                          top: 0,
-                          bottom: 0,
-                          right: 0,
-                          left: 0,
+                          justifyContent: 'center',
                         }}>
-                        <Text
+                        <Image
+                          source={placeHolder}
+                          style={{...styles.profileImg, resizeMode: 'contain'}}
+                        />
+                        <View
                           style={{
-                            marginTop: -5,
-                            textAlign: 'center',
-                            color: colors.whiteColor,
-                            fontFamily: fonts.RBold,
-                            fontSize: 16,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            alignSelf: 'center',
+                            position: 'absolute',
+                            top: 0,
+                            bottom: 0,
+                            right: 0,
+                            left: 0,
                           }}>
-                          {authContext?.entity?.obj?.group_name[0]}
-                        </Text>
+                          <Text
+                            style={{
+                              marginTop: -5,
+                              textAlign: 'center',
+                              color: colors.whiteColor,
+                              fontFamily: fonts.RBold,
+                              fontSize: 16,
+                            }}>
+                            {authContext?.entity?.obj?.group_name[0]}
+                          </Text>
+                        </View>
                       </View>
-                    </View>
-                  )}
-                </View>
-                <View
-                  style={{
-                    marginLeft: 15,
-                    width: Dimensions.get('window').width / 1.6,
-                  }}>
+                    )}
+                  </View>
                   <View
                     style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      marginRight: 10,
+                      marginLeft: 15,
+                      width: Dimensions.get('window').width / 1.6,
                     }}>
-                    {/* <MarqueeText
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        marginRight: 10,
+                      }}>
+                      {/* <MarqueeText
                       style={
                         authContext?.entity?.obj?.background_thumbnail
                           ? [styles.nameText, {alignSelf: 'flex-start'}]
@@ -1679,7 +1687,139 @@ export default function AccountScreen({navigation}) {
                       loop={true}>
                       {authContext?.entity?.obj?.group_name}
                     </MarqueeText> */}
+                      <Text
+                        style={
+                          authContext?.entity?.obj?.background_thumbnail
+                            ? [styles.nameText, {alignSelf: 'flex-start'}]
+                            : [
+                                styles.nameText,
+                                {
+                                  alignSelf: 'flex-start',
+                                  color: colors.lightBlackColor,
+                                },
+                              ]
+                        }>
+                        {' '}
+                        {authContext?.entity?.obj?.group_name}
+                      </Text>
+
+                      <Image
+                        source={
+                          authContext.entity.role === Verbs.entityTypeTeam
+                            ? images.teamPatch
+                            : images.clubPatch
+                        }
+                        style={{
+                          height: 15,
+                          width: 15,
+                          marginLeft: 5,
+                          resizeMode: 'cover',
+                        }}
+                      />
+                      <Image
+                        source={images.arrowGraterthan}
+                        style={{
+                          height: 14,
+                          width: 8,
+                          marginLeft: 5,
+                          resizeMode: 'cover',
+                          tintColor: authContext?.entity?.obj
+                            ?.background_thumbnail
+                            ? colors.whiteColor
+                            : colors.lightBlackColor,
+                        }}
+                      />
+                    </View>
                     <Text
+                      style={
+                        authContext?.entity?.obj?.background_thumbnail
+                          ? [styles.locationText, {alignSelf: 'flex-start'}]
+                          : [
+                              styles.locationText,
+                              {
+                                alignSelf: 'flex-start',
+                                color: colors.lightBlackColor,
+                              },
+                            ]
+                      }>
+                      {authContext?.entity?.obj?.city},{' '}
+                      {authContext?.entity?.obj?.state_abbr}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              </ImageBackground>
+            ) : (
+              <View style={styles.profileView} blurRadius={10}>
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.navigate('HomeScreen', {
+                      uid: authContext.entity.uid,
+                      role: authContext.entity.role,
+                      backButtonVisible: true,
+                      menuBtnVisible: false,
+                    });
+                  }}
+                  style={{
+                    flexDirection: 'row',
+                    marginLeft: 20,
+                    marginRight: 20,
+                    alignContent: 'center',
+                  }}>
+                  <View style={styles.profileImageContainer}>
+                    {authContext?.entity?.obj?.thumbnail ? (
+                      <Image
+                        source={{uri: authContext?.entity?.obj?.thumbnail}}
+                        style={styles.profileImg}
+                      />
+                    ) : (
+                      <View
+                        style={{
+                          height: '100%',
+                          width: '100%',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}>
+                        <Image
+                          source={placeHolder}
+                          style={{...styles.profileImg, resizeMode: 'contain'}}
+                        />
+                        <View
+                          style={{
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            alignSelf: 'center',
+                            position: 'absolute',
+                            top: 0,
+                            bottom: 0,
+                            right: 0,
+                            left: 0,
+                          }}>
+                          <Text
+                            style={{
+                              marginTop: -5,
+                              textAlign: 'center',
+                              color: colors.whiteColor,
+                              fontFamily: fonts.RBold,
+                              fontSize: 16,
+                            }}>
+                            {authContext?.entity?.obj?.group_name[0]}
+                          </Text>
+                        </View>
+                      </View>
+                    )}
+                  </View>
+                  <View
+                    style={{
+                      marginLeft: 15,
+                      width: Dimensions.get('window').width / 1.6,
+                    }}>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        marginRight: 10,
+                      }}>
+                      {/* <MarqueeText
                       style={
                         authContext?.entity?.obj?.background_thumbnail
                           ? [styles.nameText, {alignSelf: 'flex-start'}]
@@ -1690,56 +1830,74 @@ export default function AccountScreen({navigation}) {
                                 color: colors.lightBlackColor,
                               },
                             ]
-                      }>
-                      {' '}
-                      {authContext?.entity?.obj?.group_name}
-                    </Text>
-
-                    <Image
-                      source={
-                        authContext.entity.role === Verbs.entityTypeTeam
-                          ? images.teamPatch
-                          : images.clubPatch
                       }
-                      style={{
-                        height: 15,
-                        width: 15,
-                        marginLeft: 5,
-                        resizeMode: 'cover',
-                      }}
-                    />
-                    <Image
-                      source={images.arrowGraterthan}
-                      style={{
-                        height: 14,
-                        width: 8,
-                        marginLeft: 5,
-                        resizeMode: 'cover',
-                        tintColor: authContext?.entity?.obj
-                          ?.background_thumbnail
-                          ? colors.whiteColor
-                          : colors.lightBlackColor,
-                      }}
-                    />
+                      duration={3000}
+                      marqueeOnStart
+                      loop={true}>
+                      {authContext?.entity?.obj?.group_name}
+                    </MarqueeText> */}
+                      <Text
+                        style={
+                          authContext?.entity?.obj?.background_thumbnail
+                            ? [styles.nameText, {alignSelf: 'flex-start'}]
+                            : [
+                                styles.nameText,
+                                {
+                                  alignSelf: 'flex-start',
+                                  color: colors.lightBlackColor,
+                                },
+                              ]
+                        }>
+                        {' '}
+                        {authContext?.entity?.obj?.group_name}
+                      </Text>
+
+                      <Image
+                        source={
+                          authContext.entity.role === Verbs.entityTypeTeam
+                            ? images.teamPatch
+                            : images.clubPatch
+                        }
+                        style={{
+                          height: 15,
+                          width: 15,
+                          marginLeft: 5,
+                          resizeMode: 'cover',
+                        }}
+                      />
+                      <Image
+                        source={images.arrowGraterthan}
+                        style={{
+                          height: 14,
+                          width: 8,
+                          marginLeft: 5,
+                          resizeMode: 'cover',
+                          tintColor: authContext?.entity?.obj
+                            ?.background_thumbnail
+                            ? colors.whiteColor
+                            : colors.lightBlackColor,
+                        }}
+                      />
+                    </View>
+                    <Text
+                      style={
+                        authContext?.entity?.obj?.background_thumbnail
+                          ? [styles.locationText, {alignSelf: 'flex-start'}]
+                          : [
+                              styles.locationText,
+                              {
+                                alignSelf: 'flex-start',
+                                color: colors.lightBlackColor,
+                              },
+                            ]
+                      }>
+                      {authContext?.entity?.obj?.city},{' '}
+                      {authContext?.entity?.obj?.state_abbr}
+                    </Text>
                   </View>
-                  <Text
-                    style={
-                      authContext?.entity?.obj?.background_thumbnail
-                        ? [styles.locationText, {alignSelf: 'flex-start'}]
-                        : [
-                            styles.locationText,
-                            {
-                              alignSelf: 'flex-start',
-                              color: colors.lightBlackColor,
-                            },
-                          ]
-                    }>
-                    {authContext?.entity?.obj?.city},{' '}
-                    {authContext?.entity?.obj?.state_abbr}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            </ImageBackground>
+                </TouchableOpacity>
+              </View>
+            )}
           </View>
         )}
 
@@ -1914,7 +2072,7 @@ export default function AccountScreen({navigation}) {
             handleLogOut();
           }}>
           <Image source={images.logoutIcon} style={styles.switchAccountIcon} />
-          <Text style={styles.switchAccount}>Log out</Text>
+          <Text style={styles.switchAccount}>{strings.logOut}</Text>
         </TouchableWithoutFeedback>
       </ScrollView>
       {/* Rules notes modal */}
@@ -2399,7 +2557,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontFamily: fonts.RBold,
     color: colors.lightBlackColor,
-    width: 100,
+    width: 200,
   },
   separateLine: {
     borderColor: colors.veryLightGray,

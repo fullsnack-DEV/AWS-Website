@@ -9,7 +9,7 @@ export const searchLocations = async (query, types = 'regions') =>
 export const searchCityState = async (query) =>
   makeAPIRequest({
     method: 'get',
-    url: `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${query}`,
+    url: `https://maps.googleapis.com/maps/api/place/autocomplete/json?types=(cities)&input=${query}`,
   });
 
 export const searchVenue = async (query) =>

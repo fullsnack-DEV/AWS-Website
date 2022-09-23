@@ -461,7 +461,11 @@ const MessageNewGroupScreen = ({route, navigation}) => {
           } else if (index === 1) {
             openImagePicker();
           } else if (index === 2) {
-            deleteImage();
+            Utility.deleteConfirmation(
+              strings.appName,
+              strings.deleteConfirmationText,
+              () => deleteImage(),
+            );
           }
         }}
       />

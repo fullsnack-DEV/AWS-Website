@@ -25,6 +25,7 @@ import fonts from '../../Constants/Fonts';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
+  deleteConfirmation,
 } from '../../utils';
 import {QBupdateDialogNameAndPhoto} from '../../utils/QuickBlox';
 import TCInputBox from '../../components/TCInputBox';
@@ -270,7 +271,11 @@ const MessageEditGroupScreen = ({route, navigation}) => {
           } else if (index === 1) {
             openImagePicker();
           } else if (index === 2) {
-            deleteImage();
+            deleteConfirmation(
+              strings.appName,
+              strings.deleteConfirmationText,
+              () => deleteImage(),
+            );
           }
         }}
       />

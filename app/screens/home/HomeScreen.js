@@ -548,9 +548,19 @@ const HomeScreen = ({navigation, route}) => {
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             {route?.params?.backButtonVisible === true && (
               <TouchableOpacity
-                onPress={() => navigation.goBack()}
+                onPress={() => {
+                  if (
+                    route?.params?.isEntityCreated &&
+                    route?.params?.backButtonVisible
+                  ) {
+                    navigation.pop(4);
+                  } else {
+                    navigation.goBack();
+                  }
+                }}
                 hitSlop={Utility.getHitSlop(20)}
-                disabled={!route?.params?.backButtonVisible}>
+                // disabled={!route?.params?.backButtonVisible}
+              >
                 <Image
                   source={images.backArrow}
                   style={{
@@ -703,6 +713,7 @@ const HomeScreen = ({navigation, route}) => {
       }
       Promise.all(promises)
         .then(([res1, res2, res3]) => {
+          console.log('Group details api res:=>', res1);
           const groupDetails = {...res1.payload};
           setCurrentUserData(res1.payload);
 
@@ -2647,10 +2658,14 @@ const HomeScreen = ({navigation, route}) => {
     let b = [];
 
     a = authContext?.entity?.obj?.referee_data?.filter(
-      (obj) => obj.sport === currentUserData?.sport,
+      (obj) =>
+        obj.sport === currentUserData?.sport &&
+        obj.sport_type === currentUserData?.sport_type,
     );
     b = authContext?.entity?.obj?.scorekeeper_data?.filter(
-      (obj) => obj.sport === currentUserData?.sport,
+      (obj) =>
+        obj.sport === currentUserData?.sport &&
+        obj.sport_type === currentUserData?.sport_type,
     );
 
     if (a?.length > 0) {
@@ -2659,7 +2674,9 @@ const HomeScreen = ({navigation, route}) => {
     if (b?.length > 0) {
       opetionArray.push(strings.scorekeeperOffer);
     }
-    opetionArray.push(strings.cancel);
+    if (a?.length > 0 || b?.length > 0) {
+      opetionArray.push(strings.cancel);
+    }
 
     return opetionArray;
   };
@@ -2853,6 +2870,7 @@ const HomeScreen = ({navigation, route}) => {
           isAdmin={isAdmin}
           loggedInEntity={authContext.entity}
           onAction={onTeamAction}
+          isThreeDotShow={offerOpetions().length > 0}
         />
       ),
     [isTeamHome, authContext.entity, currentUserData, isAdmin, onTeamAction],
@@ -3157,7 +3175,7 @@ const HomeScreen = ({navigation, route}) => {
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
               }}>
-              {strings.timeline}
+              {strings.postsTitleText}
             </Text>
             <View
               style={{
@@ -3181,7 +3199,7 @@ const HomeScreen = ({navigation, route}) => {
                   });
                 }}
               />
-              <TCProfileButton
+              {/* <TCProfileButton
                 title={strings.scoreboard}
                 style={styles.firstButtonStyle}
                 showArrow={false}
@@ -3191,7 +3209,7 @@ const HomeScreen = ({navigation, route}) => {
                     uid: route?.params?.uid ?? authContext.entity?.uid,
                   });
                 }}
-              />
+              /> */}
             </View>
             <TCThinDivider width={'100%'} />
           </View>

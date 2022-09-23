@@ -437,7 +437,7 @@ const NewsFeedNavigator = () => (
       name="GroupMembersScreen"
       component={GroupMembersScreen}
       options={{
-        title: 'Members',
+        title: strings.membersTitle,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -902,6 +902,7 @@ const NewsFeedNavigator = () => (
         },
       }}
     />
+
     <Stack.Screen
       name="ChallengePreviewScreen"
       component={ChallengePreviewScreen}
@@ -1088,7 +1089,7 @@ const NewsFeedNavigator = () => (
       name="HomeAway"
       component={HomeAway}
       options={{
-        title: 'Home & Away',
+        title: strings.homeAndAway,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

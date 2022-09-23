@@ -221,7 +221,7 @@ export default function CurruentReservationView({reservationObj}) {
 
         <TCThickDivider marginTop={15} />
         <View>
-          <TCChallengeTitle title={'Home & Away'} isEdit={false} />
+          <TCChallengeTitle title={strings.homeAndAway} isEdit={false} />
           <View style={styles.teamContainer}>
             <Text style={styles.homeLableStyle}>Home</Text>
             <View style={styles.teamViewStyle}>

@@ -36,9 +36,9 @@ export default function HomeAway({navigation, route}) {
   const [teams, setteams] = useState(
     route?.params?.settingObj?.home_away
       ? route?.params?.settingObj?.home_away === 'Home'
-        ? [{name: 'Challenger'}, authContext?.entity?.obj]
-        : [authContext?.entity?.obj, {name: 'Challenger'}]
-      : [authContext?.entity?.obj, {name: 'Challenger'}],
+        ? [{name: strings.challenger}, authContext?.entity?.obj]
+        : [authContext?.entity?.obj, {name: strings.challenger}]
+      : [authContext?.entity?.obj, {name: strings.challenger}],
   );
 
   useLayoutEffect(() => {
@@ -214,7 +214,7 @@ export default function HomeAway({navigation, route}) {
               <View style={styles.teamTextContainer}>
                 <Text style={styles.teamNameLable}>
                   {teams[0]?.name
-                    ? 'Challenger'
+                    ? strings.challenger
                     : teams[0]?.entity_type === Verbs.entityTypeUser ||
                       teams[0]?.entity_type === Verbs.entityTypePlayer
                     ? teams[0]?.full_name
@@ -249,7 +249,7 @@ export default function HomeAway({navigation, route}) {
               <View style={styles.teamTextContainer}>
                 <Text style={styles.teamNameLable}>
                   {teams[1]?.name
-                    ? 'Challenger'
+                    ? strings.challenger
                     : teams[1]?.entity_type === Verbs.entityTypeUser ||
                       teams[1]?.entity_type === Verbs.entityTypePlayer
                     ? teams[1]?.full_name

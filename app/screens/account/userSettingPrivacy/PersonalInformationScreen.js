@@ -770,7 +770,11 @@ export default function PersonalInformationScreen({navigation, route}) {
           } else if (index === 1) {
             openImagePicker();
           } else if (index === 2) {
-            deleteImage();
+            Utility.deleteConfirmation(
+              strings.appName,
+              strings.deleteConfirmationText,
+              () => deleteImage(),
+            );
           }
         }}
       />

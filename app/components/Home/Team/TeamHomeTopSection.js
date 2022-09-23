@@ -13,6 +13,7 @@ export default function TeamHomeTopSection({
   isAdmin,
   loggedInEntity,
   onAction,
+  isThreeDotShow,
 }) {
   console.log('teamDetailsteamDetails', teamDetails);
 
@@ -82,7 +83,7 @@ export default function TeamHomeTopSection({
                 />
               )}
 
-              {teamDetails && (
+              {teamDetails && isThreeDotShow && (
                 <TCActionButton
                   outerContainerStyle={{width: 50, height: 28, marginLeft: 5}}
                   style={{

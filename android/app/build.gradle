@@ -188,6 +188,9 @@ android {
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
             signingConfig signingConfigs.release
+			firebaseCrashlytics {
+        		mappingFileUploadEnabled true
+      		}
         }
     }
 
@@ -196,21 +199,34 @@ android {
             applicationId "com.townscup"
             minSdkVersion rootProject.ext.minSdkVersion
             targetSdkVersion rootProject.ext.targetSdkVersion
-        }
+			firebaseCrashlytics {
+        		mappingFileUploadEnabled true
+			}
+      	}
+        
         Staging{
             applicationId "com.townscup"
             minSdkVersion rootProject.ext.minSdkVersion
             targetSdkVersion rootProject.ext.targetSdkVersion
+			firebaseCrashlytics {
+        		mappingFileUploadEnabled true
+			}
         }
         Qa{
             applicationId "com.townscup"
             minSdkVersion rootProject.ext.minSdkVersion
             targetSdkVersion rootProject.ext.targetSdkVersion
+			firebaseCrashlytics {
+        		mappingFileUploadEnabled true
+			}
         }
         Production{
             applicationId "com.townscup"
             minSdkVersion rootProject.ext.minSdkVersion
             targetSdkVersion rootProject.ext.targetSdkVersion
+			firebaseCrashlytics {
+        		mappingFileUploadEnabled true
+			}
         }
     }
 

@@ -57,7 +57,7 @@ export default function TeamJoinClubScreen({navigation, route}) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: () => (
-        <Text style={styles.headerTitle}>What Team Can Join Club</Text>
+        <Text style={styles.headerTitle}>{strings.whatTeamJoinClub}</Text>
       ),
       headerRight: () => (
         <Text
@@ -146,9 +146,7 @@ export default function TeamJoinClubScreen({navigation, route}) {
       style={styles.mainContainer}
       showsVerticalScrollIndicator={false}>
       <ActivityLoader visible={loading} />
-      <Text style={styles.opetionsTitle}>
-        {strings.whatTeamCanJoinClubText}
-      </Text>
+      <Text style={styles.opetionsTitle}>{strings.whatTeamJoinClub}</Text>
       <FlatList
         data={teamCanJoinClubOpetions}
         keyExtractor={(item, index) => index.toString()}

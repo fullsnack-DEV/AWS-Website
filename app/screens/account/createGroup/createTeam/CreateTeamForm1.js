@@ -210,13 +210,13 @@ export default function CreateTeamForm1({navigation, route}) {
     });
   };
 
-  const renderLocationItem = ({item, index}) => {
+  const renderLocationItem = ({item}) => {
     console.log('Location item:=>', item);
     return (
       <TouchableOpacity
         style={styles.listItem}
         onPress={() => getTeamsData(item)}>
-        <Text style={styles.cityList}>{cityData[index].description}</Text>
+        <Text style={styles.cityList}>{item.description}</Text>
       </TouchableOpacity>
     );
   };
@@ -415,7 +415,7 @@ export default function CreateTeamForm1({navigation, route}) {
               />
             </View>
             <FlatList
-              data={cityData}
+              data={cityData.filter((obj) => obj.terms.length === 3)}
               renderItem={renderLocationItem}
               keyExtractor={(item, index) => index.toString()}
               onScroll={Keyboard.dismiss}

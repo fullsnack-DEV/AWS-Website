@@ -5,7 +5,7 @@ import makeAPIRequest from '../utils/Global';
 export const getGroupDetails = (groupID, authContext) =>
   makeAPIRequest({
     method: 'get',
-    url: `${Config.BASE_URL}/groups/${groupID}`,
+    url: `${Config.BASE_URL}/groups/${groupID}?is_privacy=true`,
     authContext,
   });
 
@@ -98,7 +98,7 @@ export const getGroupFollowers = (group_id, authContext) =>
 export const getGroupMembers = (group_id, authContext) =>
   makeAPIRequest({
     method: 'get',
-    url: `${Config.BASE_URL}/groups/${group_id}/members`,
+    url: `${Config.BASE_URL}/groups/${group_id}/members?is_privacy=true`,
     authContext,
   });
 

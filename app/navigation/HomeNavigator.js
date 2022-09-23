@@ -411,7 +411,7 @@ const HomeNavigator = () => (
       name="GroupMembersScreen"
       component={GroupMembersScreen}
       options={{
-        title: 'Members',
+        title: strings.membersTitle,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

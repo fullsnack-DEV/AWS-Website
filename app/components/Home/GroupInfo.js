@@ -1,7 +1,16 @@
 import React, {useContext} from 'react';
-import {View, Text, StyleSheet, FlatList, Image} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  Image,
+  Dimensions,
+} from 'react-native';
+import Carousel from 'react-native-snap-carousel';
 import {strings} from '../../../Localization/translation';
 import TCEditHeader from '../TCEditHeader';
+import {widthPercentageToDP} from '../../utils';
 
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
@@ -21,12 +30,11 @@ export default function GroupInfo({
   groupDetails,
   isAdmin,
   onGroupPress,
-  selectedVenue,
   onGroupListPress,
 }) {
   const authContext = useContext(AuthContext);
 
-  console.log('groupDetails?????', groupDetails);
+  console.log('groupDetails?????', authContext);
   const members =
     groupDetails?.joined_members && groupDetails?.joined_members?.length > 0;
 
@@ -171,7 +179,22 @@ export default function GroupInfo({
       signUpDate * 1000,
     ).getDate()}, ${new Date(signUpDate * 1000).getFullYear()}`;
 
-  // const region = Utility.getRegionFromMarkers(coordinates)
+  const renderVenues = ({item}) => {
+    console.log('venue item:=>', item);
+    return (
+      <View style={styles.venueContainer}>
+        <Text style={styles.venueTitle}>{item.name}</Text>
+        <Text style={styles.venueAddress}>{item.address}</Text>
+
+        <EventMapView
+          coordinate={item.coordinate}
+          region={item.region}
+          style={{width: Dimensions.get('window').width - 60}}
+        />
+      </View>
+    );
+  };
+
   return (
     <View style={{flex: 1}}>
       {/* Bio section */}
@@ -358,31 +381,43 @@ export default function GroupInfo({
         <View>
           <View style={styles.sectionStyle}>
             <TCEditHeader
-              title={'Available Venues'}
+              title={
+                groupDetails?.setting?.venue &&
+                groupDetails.setting.venue.length > 1
+                  ? strings.availableVenuesForMatch
+                  : strings.availableVenues
+              }
               showEditButton={isAdmin}
               onEditPress={() => {
-                navigation.navigate('ChooseVenueScreen', {
-                  venues: groupDetails?.setting?.venue || [],
+                navigation.navigate('Venue', {
+                  settingObj: authContext?.entity?.obj?.setting ?? {},
                   comeFrom: 'EntityInfoScreen',
+                  sportName: groupDetails.sport,
+                  sportType: groupDetails.sport_type,
                 });
               }}
             />
           </View>
-          {selectedVenue.length > 0 && (
-            <View style={styles.venueContainer}>
-              <Text style={styles.venueTitle}>{selectedVenue?.[0]?.name}</Text>
-              <Text style={styles.venueAddress}>
-                {selectedVenue?.[0]?.address}
-              </Text>
 
-              <EventMapView
-                coordinate={selectedVenue?.[0]?.coordinate}
-                region={selectedVenue?.[0]?.region}
-                style={styles.map}
-              />
-            </View>
+          {groupDetails?.setting?.venue &&
+          groupDetails.setting.venue.length > 0 ? (
+            <Carousel
+              data={groupDetails?.setting?.venue ?? []} // recentMatch
+              scrollEnabled={
+                groupDetails?.setting?.venue &&
+                groupDetails.setting.venue.length > 1
+              }
+              renderItem={renderVenues}
+              inactiveSlideScale={1}
+              inactiveSlideOpacity={1}
+              sliderWidth={widthPercentageToDP(100)}
+              itemWidth={widthPercentageToDP(100)}
+            />
+          ) : (
+            <Text style={styles.venuePlaceholderTitle}>
+              {strings.noVenueFound}
+            </Text>
           )}
-
           <TCThickDivider marginTop={10} />
         </View>
       )}
@@ -412,71 +447,6 @@ export default function GroupInfo({
             }}></View>
         </View>
       )}
-
-      {/* TC Ranking section
-      {groupDetails?.entity_type === 'team' && (
-        <View>
-          <View style={styles.sectionStyle}>
-            <TCEditHeader
-              title={strings.tcranking}
-              showEditButton={isAdmin}
-              onEditPress={() => {}}
-            />
-            <TCInfoField
-              titleStyle={styles.infoFieldTitle}
-              title={'Vancouver'}
-              value={'7 th'}
-              marginLeft={10}
-              marginTop={20}
-            />
-            <TCInfoField
-              titleStyle={styles.infoFieldTitle}
-              title={'BC'}
-              value={'24 th'}
-              marginLeft={10}
-            />
-            <TCInfoField
-              titleStyle={styles.infoFieldTitle}
-              title={'Canada'}
-              value={'100 th'}
-              marginLeft={10}
-            />
-            <TCInfoField
-              titleStyle={styles.infoFieldTitle}
-              title={'World'}
-              value={'-'}
-              marginLeft={10}
-            />
-          </View>
-          <View
-            style={{
-              height: 7,
-              backgroundColor: colors.grayBackgroundColor,
-            }}></View>
-        </View>
-      )} */}
-
-      {/* Match Fee section */}
-      {/* Remove this section because fetch from manage challenge  */}
-
-      {/* groupDetails?.entity_type === 'team' && <View>
-        <View style={styles.sectionStyle}>
-          <TCEditHeader title= {strings.gamefeetitle} subTitle={strings.perhoursinbracket}
-          showEditButton={isAdmin}
-          onEditPress={() => {
-            navigation.navigate('GameFeeEditScreen', {
-              groupDetails?,
-            });
-          }}/>
-          <TCInfoField
-          title={strings.gamefeeperhour}
-          value={groupDetails?.game_fee ? `$${groupDetails?.game_fee} ${groupDetails?.currency_type}` : undefined }
-          titleStyle = {{ flex: 0.40 }}
-          marginLeft={10} marginTop={20}/>
-        </View>
-        {/* Gray divider */}
-      {/* <View style={{ height: 7, backgroundColor: colors.grayBackgroundColor }}></View>
-      </View>} */}
 
       {/* Members section */}
       {members && (
@@ -639,16 +609,34 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     fontSize: 16,
     color: colors.lightBlackColor,
+    width: Dimensions.get('window').width - 60,
   },
   venueContainer: {
-    marginLeft: 15,
-    marginRight: 15,
+    marginTop: 5,
+    marginBottom: 5,
+    margin: 15,
+    padding: 15,
+    backgroundColor: colors.whiteColor,
+    width: Dimensions.get('window').width - 30,
+    borderRadius: 8,
+
+    shadowColor: colors.googleColor,
+    shadowOffset: {width: 0, height: 3},
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 5,
   },
   venueTitle: {
     fontFamily: fonts.RBold,
     fontSize: 16,
     color: colors.lightBlackColor,
-
+    marginBottom: 5,
+  },
+  venuePlaceholderTitle: {
+    fontFamily: fonts.RRegular,
+    fontSize: 16,
+    color: colors.grayColor,
+    textAlign: 'center',
     marginBottom: 5,
   },
 });

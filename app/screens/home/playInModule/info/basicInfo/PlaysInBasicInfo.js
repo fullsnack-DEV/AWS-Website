@@ -214,7 +214,7 @@ const EditPlaysInModal = ({
                 setUserData({...userData, height: text});
               }}
               displayLastTitle={true}
-              keyboardType={'numeric'}
+              keyboardType={'decimal-pad'}
               valueEndTitle={
                 userData?.height?.trim().length > 0 ? strings.cm : ''
               }
@@ -232,7 +232,7 @@ const EditPlaysInModal = ({
                 setUserData({...userData, weight: text});
               }}
               displayLastTitle={true}
-              keyboardType={'numeric'}
+              keyboardType={'decimal-pad'}
               valueEndTitle={userData?.weight?.trim().length > 0 ? ' kg' : ''}
             />
           </EventItemRender>

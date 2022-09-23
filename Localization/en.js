@@ -1238,8 +1238,7 @@ export default {
   recruitingPlayerText: 'en_Recruiting Player',
   areYouSureLeaveText: 'en_Are you sure your team wants to leave {0}?',
   leave: 'en_Leave',
-  whatTeamCanJoinClubText: 'en_What team can join the club?',
-  whatTeamJoinClub: 'en_What Team Can Join Club',
+  whatTeamJoinClub: 'en_Which Team Can Join Club',
   canPeopleInviteYouText: 'en_Can People Invite You Their Events',
   toWhatEventPeopleInviteText: 'en_To What Event Can People Invite',
   canPeopleInviteTheirEventText: 'en_Can people invite you to their events ?',
@@ -1251,6 +1250,7 @@ export default {
   clubOnly: 'en_Club only',
   whoCanInviteMemberText: 'en_Who Can Invite Member',
   whoCanInviteMemberToText: 'en_Who can invite a member to {0}?',
+  membersProfile: 'en_Members Profile',
 
   personWhoseRequestText: 'en_A person whose request has been accepted by {0}',
   dueAmountValidation: 'en_Please select due amount.',
@@ -1475,6 +1475,8 @@ export default {
   account: 'en_Account',
   privacyText: 'en_Privacy',
   pauseGroup: 'en_Pause {0}',
+  pauseTeamTitle: 'en_Pause Team',
+  pauseClubTitle: 'en_Pause Club',
 
   thisFeatureisUnderDevelopment: 'en_This feature is in development.',
 
@@ -2075,4 +2077,8 @@ export default {
   selectDate: 'en_Select Date',
   teamOrPlayer: 'en_Team Or Player',
   teamOrPlayerName: 'en_Team or player name',
+  teamAdmin: 'en_Team Admin',
+  availableVenues: 'en_Available Venues',
+  availableVenuesForMatch: 'en_Available Venues For Match',
+  deleteConfirmationText: 'en_Are you sure you want to delete this picture?',
 };

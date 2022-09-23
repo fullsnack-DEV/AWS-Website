@@ -446,7 +446,6 @@ export default function GroupMembersScreen({navigation, route}) {
                 strings.cancel,
               ]
         }
-
         cancelButtonIndex={switchUser.role === strings.entityTypeClub ? 7 : 6}
         // destructiveButtonIndex={1}
         onPress={(index) => {
