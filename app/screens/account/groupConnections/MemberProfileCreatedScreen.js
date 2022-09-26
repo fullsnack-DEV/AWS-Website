@@ -140,7 +140,10 @@ export default function MemberProfileCreatedScreen({navigation, route}) {
         borderColor={colors.whiteColor}
         marginTop={20}
         onPress={() =>
-          navigation.navigate('GroupMembersScreen', {groupID: entity.uid})
+          navigation.navigate('GroupMembersScreen', {
+            groupID: entity.uid,
+            groupObj: entity.obj,
+          })
         }
         fontSize={16}
         marginBottom={50}

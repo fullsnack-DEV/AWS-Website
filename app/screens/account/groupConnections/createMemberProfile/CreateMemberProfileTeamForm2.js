@@ -57,7 +57,11 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
   //   join_type: 'anyone',
   //   is_joined: false,
   // });
-  const [groupMemberDetail, setGroupMemberDetail] = useState({});
+  const [groupMemberDetail, setGroupMemberDetail] = useState({
+    is_player: true,
+    is_coach: false,
+    is_others: false,
+  });
   const [positions, setPositions] = useState([
     {
       id: 0,
@@ -69,7 +73,7 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
     navigation.setOptions({
       headerRight: () => (
         <Text style={styles.nextButtonStyle} onPress={() => createMember()}>
-          Done
+          {strings.done}
         </Text>
       ),
     });
@@ -193,59 +197,110 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
     />
   );
   return (
-    <TCKeyboardView>
-      <ActivityLoader visible={loading} />
+    <>
       <TCFormProgress totalSteps={2} curruentStep={2} />
+      <TCKeyboardView>
+        <ActivityLoader visible={loading} />
 
-      <Text
-        style={[
-          styles.checkBoxTitle,
-          {marginTop: 15, marginBottom: 0, marginLeft: 15},
-        ]}>
-        Membership {'&'} Admin Authority
-      </Text>
-      <View style={styles.mainCheckBoxContainer}>
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
+        <Text
+          style={[
+            styles.checkBoxTitle,
+            {marginTop: 15, marginBottom: 0, marginLeft: 15},
+          ]}>
+          Membership {'&'} Admin Authority
+        </Text>
+        <View style={styles.mainCheckBoxContainer}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
 
-            marginRight: 15,
-          }}>
-          <View style={styles.profileView}>
-            <Image
-              source={
-                entity?.obj?.thumbnail
-                  ? {uri: entity?.obj?.thumbnail}
-                  : images.teamPlaceholder
-              }
-              style={styles.profileImage}
+              marginRight: 15,
+            }}>
+            <View style={styles.profileView}>
+              <Image
+                source={
+                  entity?.obj?.thumbnail
+                    ? {uri: entity?.obj?.thumbnail}
+                    : images.teamPlaceholder
+                }
+                style={styles.profileImage}
+              />
+            </View>
+            <TCGroupNameBadge
+              name={entity.obj.group_name}
+              groupType={entity.role}
             />
           </View>
-          <TCGroupNameBadge
-            name={entity.obj.group_name}
-            groupType={entity.role}
-          />
+
+          <View style={styles.mainCheckBoxContainer}>
+            <View style={[styles.checkBoxContainer, {opacity: 0.5}]}>
+              <Text style={[styles.checkBoxItemText, {marginLeft: 0}]}>
+                Member
+              </Text>
+              <TouchableOpacity
+                disabled={true}
+                onPress={() => {
+                  const member_setting = !setting.is_member;
+                  setSetting({
+                    ...setting,
+                    is_member: member_setting,
+                  });
+                }}>
+                <Image
+                  source={
+                    // item.join_membership_acceptedadmin === false
+                    setting.is_member
+                      ? images.orangeCheckBox
+                      : images.uncheckWhite
+                  }
+                  style={{height: 22, width: 22, resizeMode: 'contain'}}
+                />
+              </TouchableOpacity>
+            </View>
+            <View style={[styles.checkBoxContainer, {opacity: 0.5}]}>
+              <Text style={[styles.checkBoxItemText, {marginLeft: 0}]}>
+                {format(
+                  strings.adminText_dy,
+                  entity.role.charAt(0).toUpperCase() + entity.role.slice(1),
+                )}
+              </Text>
+              <TouchableOpacity
+                disabled={true}
+                onPress={() => {
+                  const admin_setting = !setting.is_admin;
+                  setSetting({
+                    ...setting,
+                    is_admin: admin_setting,
+                  });
+                }}>
+                <Image
+                  source={
+                    setting.is_admin
+                      ? images.orangeCheckBox
+                      : images.uncheckWhite
+                  }
+                  style={{height: 22, width: 22, resizeMode: 'contain'}}
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
         </View>
 
         <View style={styles.mainCheckBoxContainer}>
-          <View style={[styles.checkBoxContainer, {opacity: 0.5}]}>
-            <Text style={[styles.checkBoxItemText, {marginLeft: 0}]}>
-              Member
-            </Text>
+          <Text style={styles.checkBoxTitle}>Roles</Text>
+          <View style={styles.checkBoxContainer}>
+            <Text style={styles.checkBoxItemText}>{strings.player}</Text>
             <TouchableOpacity
-              disabled={true}
               onPress={() => {
-                const member_setting = !setting.is_member;
-                setSetting({
-                  ...setting,
-                  is_member: member_setting,
+                setGroupMemberDetail({
+                  ...groupMemberDetail,
+                  is_player: !groupMemberDetail.is_player,
                 });
               }}>
               <Image
                 source={
-                  // item.join_membership_acceptedadmin === false
-                  setting.is_member
+                  groupMemberDetail.is_player
                     ? images.orangeCheckBox
                     : images.uncheckWhite
                 }
@@ -253,237 +308,192 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
               />
             </TouchableOpacity>
           </View>
-          <View style={[styles.checkBoxContainer, {opacity: 0.5}]}>
-            <Text style={[styles.checkBoxItemText, {marginLeft: 0}]}>
-              {format(
-                strings.adminText_dy,
-                entity.role.charAt(0).toUpperCase() + entity.role.slice(1),
-              )}
-            </Text>
+          <View style={styles.checkBoxContainer}>
+            <Text style={styles.checkBoxItemText}>{strings.coach}</Text>
             <TouchableOpacity
-              disabled={true}
               onPress={() => {
-                const admin_setting = !setting.is_admin;
-                setSetting({
-                  ...setting,
-                  is_admin: admin_setting,
+                setGroupMemberDetail({
+                  ...groupMemberDetail,
+                  is_coach: !groupMemberDetail.is_coach,
                 });
               }}>
               <Image
                 source={
-                  setting.is_admin ? images.orangeCheckBox : images.uncheckWhite
+                  groupMemberDetail.is_coach
+                    ? images.orangeCheckBox
+                    : images.uncheckWhite
+                }
+                style={{height: 22, width: 22, resizeMode: 'contain'}}
+              />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.checkBoxContainer}>
+            <Text style={styles.checkBoxItemText}>{strings.othersText}</Text>
+            <TouchableOpacity
+              onPress={() => {
+                setGroupMemberDetail({
+                  ...groupMemberDetail,
+                  is_others: !groupMemberDetail.is_others,
+                });
+              }}>
+              <Image
+                source={
+                  groupMemberDetail.is_others
+                    ? images.orangeCheckBox
+                    : images.uncheckWhite
                 }
                 style={{height: 22, width: 22, resizeMode: 'contain'}}
               />
             </TouchableOpacity>
           </View>
         </View>
-      </View>
-
-      <View style={styles.mainCheckBoxContainer}>
-        <Text style={styles.checkBoxTitle}>Roles</Text>
-        <View style={styles.checkBoxContainer}>
-          <Text style={styles.checkBoxItemText}>{strings.player}</Text>
-          <TouchableOpacity
-            onPress={() => {
-              setGroupMemberDetail({
-                ...groupMemberDetail,
-                is_player: !groupMemberDetail.is_player,
-              });
-            }}>
-            <Image
-              source={
-                groupMemberDetail.is_player
-                  ? images.orangeCheckBox
-                  : images.uncheckWhite
-              }
-              style={{height: 22, width: 22, resizeMode: 'contain'}}
-            />
-          </TouchableOpacity>
+        <View>
+          <TCLable title={strings.positionPlaceholder} />
+          <FlatList
+            data={positions}
+            renderItem={renderPosition}
+            keyExtractor={(item, index) => index.toString()}
+            // style={styles.flateListStyle}
+          ></FlatList>
         </View>
-        <View style={styles.checkBoxContainer}>
-          <Text style={styles.checkBoxItemText}>{strings.coach}</Text>
-          <TouchableOpacity
-            onPress={() => {
-              setGroupMemberDetail({
-                ...groupMemberDetail,
-                is_coach: !groupMemberDetail.is_coach,
-              });
-            }}>
-            <Image
-              source={
-                groupMemberDetail.is_coach
-                  ? images.orangeCheckBox
-                  : images.uncheckWhite
-              }
-              style={{height: 22, width: 22, resizeMode: 'contain'}}
-            />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.checkBoxContainer}>
-          <Text style={styles.checkBoxItemText}>{strings.othersText}</Text>
-          <TouchableOpacity
-            onPress={() => {
-              setGroupMemberDetail({
-                ...groupMemberDetail,
-                is_others: !groupMemberDetail.is_others,
-              });
-            }}>
-            <Image
-              source={
-                groupMemberDetail.is_others
-                  ? images.orangeCheckBox
-                  : images.uncheckWhite
-              }
-              style={{height: 22, width: 22, resizeMode: 'contain'}}
-            />
-          </TouchableOpacity>
-        </View>
-      </View>
-      <View>
-        <TCLable title={strings.positionPlaceholder} />
-        <FlatList
-          data={positions}
-          renderItem={renderPosition}
-          keyExtractor={(item, index) => index.toString()}
-          // style={styles.flateListStyle}
-        ></FlatList>
-      </View>
-      <TCMessageButton
-        title={strings.addPosition}
-        width={95}
-        alignSelf="center"
-        marginTop={15}
-        onPress={() => addPosition()}
-      />
-      <View>
-        <TCLable title={strings.jerseyNumberPlaceholder} />
-        <TCTextField
-          value={groupMemberDetail.jersey_number}
-          onChangeText={(text) =>
-            setGroupMemberDetail({...groupMemberDetail, jersey_number: text})
-          }
-          placeholder={strings.jerseyNumberPlaceholder}
-          keyboardType={'number-pad'}
+        <TCMessageButton
+          title={strings.addPosition}
+          width={95}
+          alignSelf="center"
+          marginTop={15}
+          onPress={() => addPosition()}
         />
-      </View>
-      <View>
-        <TCLable title={strings.AppearancePlaceholder} />
-        <TCTextField
-          value={groupMemberDetail.appearance}
-          onChangeText={(text) =>
-            setGroupMemberDetail({...groupMemberDetail, appearance: text})
-          }
-          placeholder={strings.AppearancePlaceholder}
-          keyboardType={'default'}
-        />
-      </View>
-      <View style={styles.mainCheckBoxContainer}>
-        <Text style={styles.checkBoxTitle}>Status</Text>
-        <View style={styles.checkBoxContainer}>
-          <Text style={styles.checkBoxItemText}>
-            {strings.injuredPlaceholder}
-          </Text>
-          <TouchableOpacity
-            onPress={() => {
-              if (playerStatus.indexOf(strings.injuredPlaceholder) !== -1) {
-                const i = playerStatus.indexOf(strings.injuredPlaceholder);
-                playerStatus.splice(i, 1);
-              } else {
-                playerStatus.push(strings.injuredPlaceholder);
-              }
-              setPlayerStatus(playerStatus);
-              setGroupMemberDetail({
-                ...groupMemberDetail,
-                status: playerStatus,
-              });
-            }}>
-            <Image
-              source={
-                playerStatus.indexOf(strings.injuredPlaceholder) !== -1
-                  ? images.orangeCheckBox
-                  : images.uncheckWhite
-              }
-              style={{height: 22, width: 22, resizeMode: 'contain'}}
-            />
-          </TouchableOpacity>
+        <View>
+          <TCLable title={strings.jerseyNumberPlaceholder} />
+          <TCTextField
+            value={groupMemberDetail.jersey_number}
+            onChangeText={(text) =>
+              setGroupMemberDetail({...groupMemberDetail, jersey_number: text})
+            }
+            placeholder={strings.jerseyNumberPlaceholder}
+            keyboardType={'number-pad'}
+          />
         </View>
-        <View style={styles.checkBoxContainer}>
-          <Text style={styles.checkBoxItemText}>
-            {strings.longTermAwayPlaceholder}
-          </Text>
-          <TouchableOpacity
-            onPress={() => {
-              if (
-                playerStatus.indexOf(strings.longTermAwayPlaceholder) !== -1
-              ) {
-                const i = playerStatus.indexOf(strings.longTermAwayPlaceholder);
-                playerStatus.splice(i, 1);
-              } else {
-                playerStatus.push(strings.longTermAwayPlaceholder);
-              }
-              setPlayerStatus(playerStatus);
-              setGroupMemberDetail({
-                ...groupMemberDetail,
-                status: playerStatus,
-              });
-            }}>
-            <Image
-              source={
-                playerStatus.some(
-                  (el) => el === strings.longTermAwayPlaceholder,
-                )
-                  ? images.orangeCheckBox
-                  : images.uncheckWhite
-              }
-              style={{height: 22, width: 22, resizeMode: 'contain'}}
-            />
-          </TouchableOpacity>
+        <View>
+          <TCLable title={strings.AppearancePlaceholder} />
+          <TCTextField
+            value={groupMemberDetail.appearance}
+            onChangeText={(text) =>
+              setGroupMemberDetail({...groupMemberDetail, appearance: text})
+            }
+            placeholder={strings.AppearancePlaceholder}
+            keyboardType={'default'}
+          />
         </View>
-        <View style={styles.checkBoxContainer}>
-          <Text style={styles.checkBoxItemText}>
-            {strings.suspendedPlaceholder}
-          </Text>
-          <TouchableOpacity
-            onPress={() => {
-              if (playerStatus.indexOf(strings.suspendedPlaceholder) !== -1) {
-                const i = playerStatus.indexOf(strings.suspendedPlaceholder);
-                playerStatus.splice(i, 1);
-              } else {
-                playerStatus.push(strings.suspendedPlaceholder);
-              }
-              setPlayerStatus(playerStatus);
-              setGroupMemberDetail({
-                ...groupMemberDetail,
-                status: playerStatus,
-              });
-            }}>
-            <Image
-              source={
-                playerStatus.some((el) => el === strings.suspendedPlaceholder)
-                  ? images.orangeCheckBox
-                  : images.uncheckWhite
-              }
-              style={{height: 22, width: 22, resizeMode: 'contain'}}
-            />
-          </TouchableOpacity>
+        <View style={styles.mainCheckBoxContainer}>
+          <Text style={styles.checkBoxTitle}>Status</Text>
+          <View style={styles.checkBoxContainer}>
+            <Text style={styles.checkBoxItemText}>
+              {strings.injuredPlaceholder}
+            </Text>
+            <TouchableOpacity
+              onPress={() => {
+                if (playerStatus.indexOf(strings.injuredPlaceholder) !== -1) {
+                  const i = playerStatus.indexOf(strings.injuredPlaceholder);
+                  playerStatus.splice(i, 1);
+                } else {
+                  playerStatus.push(strings.injuredPlaceholder);
+                }
+                setPlayerStatus(playerStatus);
+                setGroupMemberDetail({
+                  ...groupMemberDetail,
+                  status: playerStatus,
+                });
+              }}>
+              <Image
+                source={
+                  playerStatus.indexOf(strings.injuredPlaceholder) !== -1
+                    ? images.orangeCheckBox
+                    : images.uncheckWhite
+                }
+                style={{height: 22, width: 22, resizeMode: 'contain'}}
+              />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.checkBoxContainer}>
+            <Text style={styles.checkBoxItemText}>
+              {strings.longTermAwayPlaceholder}
+            </Text>
+            <TouchableOpacity
+              onPress={() => {
+                if (
+                  playerStatus.indexOf(strings.longTermAwayPlaceholder) !== -1
+                ) {
+                  const i = playerStatus.indexOf(
+                    strings.longTermAwayPlaceholder,
+                  );
+                  playerStatus.splice(i, 1);
+                } else {
+                  playerStatus.push(strings.longTermAwayPlaceholder);
+                }
+                setPlayerStatus(playerStatus);
+                setGroupMemberDetail({
+                  ...groupMemberDetail,
+                  status: playerStatus,
+                });
+              }}>
+              <Image
+                source={
+                  playerStatus.some(
+                    (el) => el === strings.longTermAwayPlaceholder,
+                  )
+                    ? images.orangeCheckBox
+                    : images.uncheckWhite
+                }
+                style={{height: 22, width: 22, resizeMode: 'contain'}}
+              />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.checkBoxContainer}>
+            <Text style={styles.checkBoxItemText}>
+              {strings.suspendedPlaceholder}
+            </Text>
+            <TouchableOpacity
+              onPress={() => {
+                if (playerStatus.indexOf(strings.suspendedPlaceholder) !== -1) {
+                  const i = playerStatus.indexOf(strings.suspendedPlaceholder);
+                  playerStatus.splice(i, 1);
+                } else {
+                  playerStatus.push(strings.suspendedPlaceholder);
+                }
+                setPlayerStatus(playerStatus);
+                setGroupMemberDetail({
+                  ...groupMemberDetail,
+                  status: playerStatus,
+                });
+              }}>
+              <Image
+                source={
+                  playerStatus.some((el) => el === strings.suspendedPlaceholder)
+                    ? images.orangeCheckBox
+                    : images.uncheckWhite
+                }
+                style={{height: 22, width: 22, resizeMode: 'contain'}}
+              />
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
-      <View>
-        <TCLable title={strings.writeNotesPlaceholder} />
-        <TCTextField
-          value={groupMemberDetail.note}
-          height={100}
-          multiline={true}
-          onChangeText={(text) =>
-            setGroupMemberDetail({...groupMemberDetail, note: text})
-          }
-          placeholder={strings.writeNotesPlaceholder}
-          keyboardType={'default'}
-        />
-      </View>
-      <View style={{marginBottom: 30}} />
-    </TCKeyboardView>
+        <View>
+          <TCLable title={strings.writeNotesPlaceholder} />
+          <TCTextField
+            value={groupMemberDetail.note}
+            height={100}
+            multiline={true}
+            onChangeText={(text) =>
+              setGroupMemberDetail({...groupMemberDetail, note: text})
+            }
+            placeholder={strings.writeNotesPlaceholder}
+            keyboardType={'default'}
+          />
+        </View>
+        <View style={{marginBottom: 30}} />
+      </TCKeyboardView>
+    </>
   );
 }
 const styles = StyleSheet.create({

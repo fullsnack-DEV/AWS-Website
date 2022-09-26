@@ -141,7 +141,7 @@ export default function GameDuration({navigation, route}) {
                 period.splice(index, 1);
                 setPeriod([...period]);
               }}>
-              Delete
+              {strings.delete}
             </Text>
           )}
         </View>
@@ -153,7 +153,7 @@ export default function GameDuration({navigation, route}) {
             </Text>
             <View style={styles.textInputContainer}>
               <TextInput
-                keyboardType="numeric"
+                keyboardType="number-pad"
                 style={styles.textInput}
                 onChangeText={(text) => {
                   const per = [...period];
@@ -173,7 +173,7 @@ export default function GameDuration({navigation, route}) {
             </Text>
             <View style={styles.textInputContainer}>
               <TextInput
-                keyboardType="numeric"
+                keyboardType="number-pad"
                 style={styles.textInput}
                 onChangeText={(text) => {
                   const per = [...period];
@@ -214,7 +214,7 @@ export default function GameDuration({navigation, route}) {
             </Text>
             <View style={styles.textInputContainer}>
               <TextInput
-                keyboardType="numeric"
+                keyboardType="number-pad"
                 style={styles.textInput}
                 onChangeText={(text) => {
                   const over = [...overTime];
@@ -234,7 +234,7 @@ export default function GameDuration({navigation, route}) {
             </Text>
             <View style={styles.textInputContainer}>
               <TextInput
-                keyboardType="numeric"
+                keyboardType="number-pad"
                 style={styles.textInput}
                 onChangeText={(text) => {
                   const over = [...overTime];
@@ -476,7 +476,7 @@ export default function GameDuration({navigation, route}) {
             </Text>
             <View style={styles.textInputContainer}>
               <TextInput
-                keyboardType="numeric"
+                keyboardType="number-pad"
                 numeric
                 style={styles.textInput}
                 onChangeText={(text) => {

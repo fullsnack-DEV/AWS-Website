@@ -17,6 +17,7 @@ import {patchMember, deleteMember} from '../../../../api/Groups';
 import TCGroupNameBadge from '../../../../components/TCGroupNameBadge';
 import {strings} from '../../../../../Localization/translation';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
+import Verbs from '../../../../Constants/Verbs';
 
 let entity = {};
 export default function EditMemberAuthInfoScreen({navigation, route}) {
@@ -39,12 +40,12 @@ export default function EditMemberAuthInfoScreen({navigation, route}) {
     navigation.setOptions({
       headerTitle: () => (
         <Text style={styles.titleScreenText}>
-          Team Membership {'&'} Admin Authority
+          {strings.membershipAdminAuthText}
         </Text>
       ),
       headerRight: () => (
         <Text style={styles.nextButtonStyle} onPress={() => pressedNext()}>
-          Save
+          {strings.save}
         </Text>
       ),
     });
@@ -160,11 +161,21 @@ export default function EditMemberAuthInfoScreen({navigation, route}) {
         <View
           style={[
             styles.checkBoxContainer,
-            {opacity: groupMemberDetail?.teams ? 0.5 : 1},
+            {
+              opacity:
+                groupMemberDetail?.teams || entity.role === Verbs.entityTypeClub
+                  ? 0.5
+                  : 1,
+            },
           ]}>
-          <Text style={styles.checkBoxItemText}>Member</Text>
+          <Text style={styles.checkBoxItemText}>{strings.member}</Text>
           <TouchableOpacity
-            disabled={!!groupMemberDetail?.teams}
+            disabled={
+              !!(
+                !!groupMemberDetail?.teams ||
+                entity.role === Verbs.entityTypeClub
+              )
+            }
             onPress={() => {
               const member_setting = !setting.is_member;
               if (member_setting) {

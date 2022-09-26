@@ -1126,3 +1126,5 @@ export const deleteConfirmation = (title, subTitle, okClick) => {
     {cancelable: false},
   );
 };
+export const firstLetterCapital = (str) =>
+  str.charAt(0).toUpperCase() + str.slice(1);

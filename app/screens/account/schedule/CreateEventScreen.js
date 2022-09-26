@@ -641,17 +641,17 @@ export default function CreateEventScreen({navigation, route}) {
       return false;
     }
 
-    if (!locationDetail?.venue_name || locationDetail?.venue_name?.length < 1) {
-      Alert.alert(strings.appName, strings.enterVenueNameValidation);
-      return false;
-    }
-    if (
-      !locationDetail?.venue_detail ||
-      locationDetail?.venue_detail?.length < 1
-    ) {
-      Alert.alert(strings.appName, strings.enterVenueDescriptionValidation);
-      return false;
-    }
+    // if (!locationDetail?.venue_name || locationDetail?.venue_name?.length < 1) {
+    //   Alert.alert(strings.appName, strings.enterVenueNameValidation);
+    //   return false;
+    // }
+    // if (
+    //   !locationDetail?.venue_detail ||
+    //   locationDetail?.venue_detail?.length < 1
+    // ) {
+    //   Alert.alert(strings.appName, strings.enterVenueDescriptionValidation);
+    //   return false;
+    // }
 
     if (Number(minAttendees) > 0 && Number(maxAttendees) > 0) {
       if (Number(minAttendees) === 0) {
@@ -1003,7 +1003,7 @@ export default function CreateEventScreen({navigation, route}) {
               />
             </EventItemRender>
 
-            <EventItemRender title={strings.place} isRequired={true}>
+            <EventItemRender title={strings.place} isRequired={false}>
               <TextInput
                 placeholder={strings.venueNamePlaceholder}
                 style={styles.textInputStyle}
@@ -1020,7 +1020,7 @@ export default function CreateEventScreen({navigation, route}) {
                 placeholder={strings.searchHereText}
                 title={searchLocation}
                 showShadow={false}
-                showNextArrow={true}
+                showNextArrow={false}
                 onPress={() => {
                   navigation.navigate('SearchLocationScreen', {
                     comeFrom: 'CreateEventScreen',
