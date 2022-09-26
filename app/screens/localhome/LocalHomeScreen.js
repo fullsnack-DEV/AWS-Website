@@ -34,7 +34,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import Carousel from 'react-native-snap-carousel';
 import FastImage from 'react-native-fast-image';
 import {useIsFocused} from '@react-navigation/native';
-import { format } from 'react-string-format';
+import {format} from 'react-string-format';
 import {getLocationNameWithLatLong} from '../../api/External';
 import AuthContext from '../../auth/context';
 import images from '../../Constants/ImagePath';
@@ -203,10 +203,7 @@ export default function LocalHomeScreen({navigation, route}) {
               if (
                 !unique.some(
                   (obj) =>
-                    obj.sport === o.sport &&
-                    obj.sport_type === o.sport_type &&
-                    obj.sport_name === o.sport_name &&
-                    obj.player_image === o.player_image,
+                    obj.sport === o.sport && obj.sport_type === o.sport_type,
                 )
               ) {
                 unique.push(o);
@@ -1214,26 +1211,28 @@ export default function LocalHomeScreen({navigation, route}) {
               width: '90%',
             }}
           />
-          <Text
-            style={
-              selectedSport === strings.moreText
-                ? [
-                    styles.sportName,
-                    {
-                      color: colors.themeColor,
-                      fontFamily: fonts.RBlack,
-                      marginLeft: 0,
-                    },
-                  ]
-                : [styles.sportName, {marginLeft: 0}]
-            }
-            onPress={() => {
-              setTimeout(() => {
-                setSettingPopup(true);
-              }, 100);
-            }}>
-            {strings.moreText}
-          </Text>
+          {sports.length > 12 && (
+            <Text
+              style={
+                selectedSport === strings.moreText
+                  ? [
+                      styles.sportName,
+                      {
+                        color: colors.themeColor,
+                        fontFamily: fonts.RBlack,
+                        marginLeft: 0,
+                      },
+                    ]
+                  : [styles.sportName, {marginLeft: 0}]
+              }
+              onPress={() => {
+                setTimeout(() => {
+                  setSettingPopup(true);
+                }, 100);
+              }}>
+              {strings.moreText}
+            </Text>
+          )}
         </View>
       </View>
 
@@ -1248,9 +1247,12 @@ export default function LocalHomeScreen({navigation, route}) {
           }
           onPress={() => {
             Alert.alert(
-              format(strings.pauseUnpauseAccountText,(authContext?.entity?.obj?.is_pause === true
-                ? strings.unpausesmall
-                : strings.reactivatesmall)),
+              format(
+                strings.pauseUnpauseAccountText,
+                authContext?.entity?.obj?.is_pause === true
+                  ? strings.unpausesmall
+                  : strings.reactivatesmall,
+              ),
               '',
               [
                 {
@@ -1596,7 +1598,9 @@ export default function LocalHomeScreen({navigation, route}) {
               </LinearGradient>
             ) : (
               <View style={styles.backgroundView}>
-                <Text style={styles.curruentLocationText}>{strings.locationTitle}</Text>
+                <Text style={styles.curruentLocationText}>
+                  {strings.locationTitle}
+                </Text>
               </View>
             )}
           </TouchableWithoutFeedback>
@@ -1728,7 +1732,9 @@ export default function LocalHomeScreen({navigation, route}) {
                     pressBack: getBack,
                   });
                 }}>
-                <Text style={styles.addSportsTitle}>{strings.addDeleteSports}</Text>
+                <Text style={styles.addSportsTitle}>
+                  {strings.addDeleteSports}
+                </Text>
               </TouchableOpacity>
             )}
           />

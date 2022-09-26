@@ -4,6 +4,7 @@ import {StyleSheet, Platform, View, TextInput} from 'react-native';
 import FastImage from 'react-native-fast-image';
 
 import RNPickerSelect from 'react-native-picker-select';
+import {Country} from 'country-state-city';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import images from '../Constants/ImagePath';
@@ -15,8 +16,6 @@ const TCPhoneNumber = ({
   onValueChange,
   onChangeText,
 }) => {
-  console.log('this value', value);
-
   const onPhoneNumberCountryChanged = async (local_countryCode) => {
     if (onValueChange) {
       onValueChange(local_countryCode);
@@ -29,10 +28,14 @@ const TCPhoneNumber = ({
         placeholder={{
           label: placeholder,
         }}
-        items={[
-          {label: 'Canada(+1)', value: 'Canada(+1)'},
-          {label: 'United States(+1)', value: 'United States(+1)'},
-        ]}
+        items={Country.getAllCountries().map((obj) => ({
+          label: `${obj.isoCode}(${
+            obj.phonecode.includes('+') ? obj.phonecode : `+${obj.phonecode}`
+          })`,
+          value: `${obj.isoCode}(${
+            obj.phonecode.includes('+') ? obj.phonecode : `+${obj.phonecode}`
+          })`,
+        }))}
         onValueChange={onPhoneNumberCountryChanged}
         value={value}
         // disabled={ !editMode }

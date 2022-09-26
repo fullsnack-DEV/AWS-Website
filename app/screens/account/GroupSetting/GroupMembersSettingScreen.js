@@ -94,7 +94,10 @@ export default function GroupMembersSettingScreen({navigation, route}) {
       });
     } else if (opetions === userSetting[3].key) {
       const entity = authContext.entity;
-      navigation.navigate('GroupMembersScreen', {groupID: entity.uid});
+      navigation.navigate('GroupMembersScreen', {
+        groupID: entity.uid,
+        groupObj: entity.obj,
+      });
     }
   };
   const getSettings = useCallback(() => {

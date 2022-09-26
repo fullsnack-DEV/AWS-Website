@@ -77,7 +77,6 @@ import {
 import {createPost, createReaction} from '../../api/NewsFeeds';
 import {
   getGroupDetails,
-  getGroups,
   getTeamsOfClub,
   getGroupMembers,
   followGroup,
@@ -145,7 +144,11 @@ import TCProfileButton from '../../components/TCProfileButton';
 import UserProfileScreenShimmer from '../../components/shimmer/account/UserProfileScreenShimmer';
 import TCGameCard from '../../components/TCGameCard';
 import * as settingUtils from '../challenge/manageChallenge/settingUtility';
-import {getCalendarIndex, getGameIndex} from '../../api/elasticSearch';
+import {
+  getCalendarIndex,
+  getGameIndex,
+  getGroupIndex,
+} from '../../api/elasticSearch';
 import TCAccountDeactivate from '../../components/TCAccountDeactivate';
 import {
   TAB_ITEMS_REFEREE,
@@ -486,11 +489,12 @@ const HomeScreen = ({navigation, route}) => {
     }
   }, [authContext, isTeamHome, route?.params?.uid]);
 
-  const getUserData = async (uid, admin) => {
+  const getUserData = (uid, admin) => {
     // setloading(true);
-    const promises = [getUserDetails(uid, authContext), getGroups(authContext)];
-    Promise.all(promises)
-      .then(([res1, res2]) => {
+
+    getUserDetails(uid, authContext)
+      .then((res1) => {
+        console.log('dsffasdfasdfadfsa', res1);
         const userDetails = res1.payload;
         if (!userDetails.games) {
           userDetails.games = [];
@@ -517,20 +521,44 @@ const HomeScreen = ({navigation, route}) => {
           // userDetails.referee_data.push({ sport_name: strings.addRefereeing, item_type: 'add_new' })
         }
 
-        if (res2) {
-          userDetails.joined_teams = res2.payload.teams;
-          userDetails.joined_clubs = res2.payload.clubs;
-        }
+        console.log('sdfsadfsafsadfsdfsfsadfres1.payload', res1.payload);
+        const groupQuery = {
+          query: {
+            terms: {
+              _id: [
+                ...(res1?.payload?.teamIds ?? []),
+                ...(res1?.payload?.clubIds ?? []),
+              ],
+            },
+          },
+        };
+        getGroupIndex(groupQuery).then((res2) => {
+          userDetails.joined_teams = res2.filter(
+            (obj) => obj.entity_type === Verbs.entityTypeTeam,
+          );
+          userDetails.joined_clubs = res2.filter(
+            (obj) => obj.entity_type === Verbs.entityTypeClub,
+          );
 
-        setCurrentUserData({...userDetails});
-        entityObject = userDetails;
-        setIsClubHome(false);
-        setIsTeamHome(false);
-        setIsUserHome(true);
-        setUserID(uid);
-        setFirstTimeLoading(false);
+          setCurrentUserData({
+            ...userDetails,
+            joined_teams: res2.filter(
+              (obj) => obj.entity_type === Verbs.entityTypeTeam,
+            ),
+            joined_clubs: res2.filter(
+              (obj) => obj.entity_type === Verbs.entityTypeClub,
+            ),
+          });
+          entityObject = userDetails;
+          setIsClubHome(false);
+          setIsTeamHome(false);
+          setIsUserHome(true);
+          setUserID(uid);
+          setFirstTimeLoading(false);
+        });
       })
       .catch((errResponse) => {
+        console.log('error==>', errResponse);
         setFirstTimeLoading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, errResponse);
@@ -1658,15 +1686,26 @@ const HomeScreen = ({navigation, route}) => {
       let user_id = authContext?.entity?.uid;
       if (route?.params?.role) entity_type = route?.params?.role;
       if (route?.params?.uid) user_id = route?.params?.uid;
+
       if (tab === Verbs.followingVerb) {
-        navigation.navigate('JoinedTeamsScreen', {
-          uid: route?.params?.uid,
-          role: route?.params?.role,
-        });
-      } else if (tab !== Verbs.privacyTypeMembers) {
+        if (
+          entity_type === Verbs.entityTypeTeam ||
+          entity_type === Verbs.entityTypeClub
+        ) {
+          navigation.navigate('JoinedTeamsScreen', {
+            uid: route?.params?.uid,
+            role: route?.params?.role,
+          });
+        } else {
+          navigation.navigate('UserConnections', {tab, entity_type, user_id});
+        }
+      } else if (tab === Verbs.privacyTypeFollowers) {
         navigation.navigate('UserConnections', {tab, entity_type, user_id});
-      } else {
-        navigation.navigate('GroupMembersScreen', {groupID: user_id});
+      } else if (tab === Verbs.privacyTypeMembers) {
+        navigation.navigate('GroupMembersScreen', {
+          groupID: user_id,
+          groupObj: currentUserData,
+        });
       }
     },
     [

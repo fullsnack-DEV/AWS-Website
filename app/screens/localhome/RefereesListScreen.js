@@ -486,7 +486,9 @@ export default function RefereesListScreen({navigation, route}) {
               <View>
                 <View style={{flexDirection: 'column', margin: 15}}>
                   <View>
-                    <Text style={styles.filterTitle}>{strings.locationTitleText}</Text>
+                    <Text style={styles.filterTitle}>
+                      {strings.locationTitleText}
+                    </Text>
                   </View>
                   <View style={{marginTop: 10, marginLeft: 10}}>
                     <View
@@ -521,7 +523,9 @@ export default function RefereesListScreen({navigation, route}) {
                         marginBottom: 10,
                         justifyContent: 'space-between',
                       }}>
-                      <Text style={styles.filterTitle}>{strings.currentCity}</Text>
+                      <Text style={styles.filterTitle}>
+                        {strings.currentCity}
+                      </Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(1);
@@ -556,7 +560,9 @@ export default function RefereesListScreen({navigation, route}) {
                         marginBottom: 10,
                         justifyContent: 'space-between',
                       }}>
-                      <Text style={styles.filterTitle}>{strings.currrentCityTitle}</Text>
+                      <Text style={styles.filterTitle}>
+                        {strings.currrentCityTitle}
+                      </Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(2);
@@ -596,7 +602,8 @@ export default function RefereesListScreen({navigation, route}) {
 
                         <View style={styles.searchCityContainer}>
                           <Text style={styles.searchCityText}>
-                            {route?.params?.locationText || strings.searchCityText}
+                            {route?.params?.locationText ||
+                              strings.searchCityText}
                           </Text>
                         </View>
                         <View
@@ -646,7 +653,7 @@ export default function RefereesListScreen({navigation, route}) {
                           }
                         }}
                         value={
-                          selectedSport.sport !== 'All'
+                          selectedSport?.sport !== 'All'
                             ? Utility.getSportName(selectedSport, authContext)
                             : strings.all
                         }
@@ -794,7 +801,7 @@ export default function RefereesListScreen({navigation, route}) {
           </View> */}
               {/* Rate View */}
 
-              {selectedSport.sport !== 'All' && (
+              {selectedSport?.sport !== 'All' && (
                 <View
                   style={{
                     flexDirection: 'column',

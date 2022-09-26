@@ -477,7 +477,10 @@ function ScorekeeperInfoSection({
         }}
         containerStyle={{marginTop: 10, marginBottom: 12}}>
         <Text style={styles.bioTextStyle}>{bioText}</Text>
-        <Text style={styles.signUpTimeStyle}>{strings.signedUpTime}</Text>
+        <Text style={styles.signUpTimeStyle}>
+          {strings.signedupin}
+          {new Date(data?.created_at * 1000).getFullYear()}
+        </Text>
       </EditEventItem>
       <View style={styles.dividerStyle} />
       <EditEventItem
