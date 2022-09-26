@@ -115,6 +115,7 @@ const styles = StyleSheet.create({
     color: colors.whiteColor,
     fontSize: 12,
     fontFamily: fonts.RMedium,
+    textAlign: 'center',
   },
   settingButtonContainer: {
     justifyContent: 'center',
@@ -139,7 +140,7 @@ const styles = StyleSheet.create({
   },
   patchStyle: {
     height: 16,
-    width: 110,
+    width: 130,
     borderRadius: 5,
     justifyContent: 'center',
     alignItems: 'center',

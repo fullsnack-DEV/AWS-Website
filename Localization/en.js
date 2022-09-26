@@ -122,7 +122,6 @@ export default {
   reviewsTitle: 'en_Reviews',
   upcomingMatchTitle: 'en_Upcoming Match',
   statsTitle: 'en_Stats',
-  signedUpTime: 'en_Signed up in 2020',
   infoTeamTitle: 'en_Vancouver Teams FC',
   infoTeamCity: 'en_Vancouver, BC',
   ntrpTitle: 'en_NTRP',
@@ -143,6 +142,7 @@ export default {
   locationDescription:
     'en_Home city is the city where you currently reside or you mostly play sports.',
   locationPlaceholderText: 'en_Search by city or postal code',
+  addressSearchPlaceHolder: 'en_Search address',
   sportText: 'en_Select your favourite sports.',
 
   // Add Birthday screen
@@ -210,7 +210,7 @@ export default {
   birthdateText: 'en_Choose Date of birth',
   searchCityPlaceholder: 'en_Search by city or postal code',
   searchCityStatePlaceholder: 'en_City, state or country',
-  searchByCityStateText: 'en_Search by city, state or country',
+  searchByCityStateText: 'en_Search by city',
   cityText: 'en_City',
   stateText: 'en_State',
   countryText: 'en_Country',
@@ -401,7 +401,7 @@ export default {
     'en_A person whose request has been accepted by team admins',
   inviteOnly: 'en_Invite only',
   followersRadio: 'en_Followers',
-  clubMembersRadio: 'en_Club Members',
+  clubMembersRadio: 'en_Only Members',
   adminsRadio: 'en_Only Club & Team Admins',
   teamAdminsText: 'en_team admins',
 
@@ -1436,7 +1436,7 @@ export default {
   noregisterdSportValication: 'en_There is no registerd sports.',
   completeProfile: 'en_completed user profile',
   oldPasswordCanNotBlankValidation: 'en_Old Password cannot be blank.',
-  newPasswordCanNotBlankValidation: 'en_en_New Password cannot be blank.',
+  newPasswordCanNotBlankValidation: 'en_New Password cannot be blank.',
   emailNotVerifiedText: 'en_Your email hasn’t been verified yet.',
   passwordSamevalidation:
     'en_New Password and Confirm Password should be same.',
@@ -1480,8 +1480,8 @@ export default {
 
   thisFeatureisUnderDevelopment: 'en_This feature is in development.',
 
-  challengeSetting: 'en_{0} settings',
-  reservation: 'en_Reservation',
+  challengeSetting: 'en_{0} Settings',
+  reservation: 'Reservation',
   fNameCanNotBlank:
     'The first name cannot contain numbers or special characters.',
 
@@ -2081,4 +2081,6 @@ export default {
   availableVenues: 'en_Available Venues',
   availableVenuesForMatch: 'en_Available Venues For Match',
   deleteConfirmationText: 'en_Are you sure you want to delete this picture?',
+  searchAddress: 'en_Search Address',
+  chooseCityAndDetail: 'en_Choose city first and fill in the detail address.',
 };

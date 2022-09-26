@@ -65,10 +65,10 @@ export default function ScorekeeperListScreen({navigation, route}) {
   // eslint-disable-next-line no-unused-vars
   const [loadMore, setLoadMore] = useState(false);
   const [selectedSport, setSelectedSport] = useState({
-    sport: route?.params?.filters.sport,
-    sport_type: route?.params?.filters.sport_type,
+    sport: route?.params?.filters?.sport,
+    sport_type: route?.params?.filters?.sport_type,
   });
-  const [location, setLocation] = useState(route?.params?.filters.location);
+  const [location, setLocation] = useState(route?.params?.filters?.location);
 
   // console.log('Scorekeeper Filter:=>', filters);
 
@@ -89,7 +89,7 @@ export default function ScorekeeperListScreen({navigation, route}) {
     const list = [
       {
         label: strings.all,
-        value: 'All',
+        value: strings.allType,
       },
     ];
     authContext.sports.map((obj) => {
@@ -110,11 +110,23 @@ export default function ScorekeeperListScreen({navigation, route}) {
         from: pageFrom,
         query: {
           bool: {
-            must: [{term: {'scorekeeper_data.is_published': true}}],
+            must: [
+              {
+                nested: {
+                  path: 'scorekeeper_data',
+                  query: {
+                    bool: {
+                      must: [{term: {'scorekeeper_data.is_published': true}}],
+                    },
+                  },
+                },
+              },
+            ],
           },
         },
       };
-      if (filerScorekeeper.location !== 'world') {
+
+      if (filerScorekeeper?.location !== strings.worldTitleText) {
         scorekeeperQuery.query.bool.must.push({
           multi_match: {
             query: `${filerScorekeeper.location.toLowerCase()}`,
@@ -122,15 +134,16 @@ export default function ScorekeeperListScreen({navigation, route}) {
           },
         });
       }
-      if (filerScorekeeper.sport !== 'All') {
-        scorekeeperQuery.query.bool.must.push({
+      if (filerScorekeeper?.sport !== strings.allType) {
+        scorekeeperQuery.query.bool.must[0].nested.query.bool.must.push({
           term: {
             'scorekeeper_data.sport.keyword': {
-              value: filerScorekeeper.sport,
+              value: filerScorekeeper?.sport,
             },
           },
         });
       }
+
       if (filerScorekeeper.scorekeeperFee) {
         scorekeeperQuery.query.bool.must.push({
           range: {
@@ -231,17 +244,17 @@ export default function ScorekeeperListScreen({navigation, route}) {
     Object.keys(tempFilter).forEach((key) => {
       if (key === Object.keys(item)[0]) {
         if (Object.keys(item)[0] === 'sport') {
-          tempFilter.sport = 'All';
+          tempFilter.sport = strings.allType;
           delete tempFilter.refereeFee;
           setSelectedSport({
-            sort: 'All',
-            sport_type: 'All',
+            sort: strings.allType,
+            sport_type: strings.allType,
           });
           setMinFee(0);
           setMaxFee(0);
         }
         if (Object.keys(item)[0] === 'location') {
-          tempFilter.location = 'world';
+          tempFilter.location = strings.worldTitleText;
         }
         if (Object.keys(item)[0] === 'scorekeeperFee') {
           delete tempFilter[key];
@@ -301,6 +314,7 @@ export default function ScorekeeperListScreen({navigation, route}) {
   };
 
   const applyFilter = useCallback((fil) => {
+    console.log('filllllllllllll', fil);
     getScorekeepers(fil);
   }, []);
 
@@ -334,13 +348,13 @@ export default function ScorekeeperListScreen({navigation, route}) {
 
   const onPressReset = () => {
     setFilters({
-      location: 'world',
-      sport: 'All',
-      sport_type: 'All',
+      location: strings.worldTitleText,
+      sport: strings.allType,
+      sport_type: strings.allType,
     });
     setSelectedSport({
-      sort: 'All',
-      sport_type: 'All',
+      sort: strings.allType,
+      sport_type: strings.allType,
     });
     setMinFee(0);
     setMaxFee(0);
@@ -431,8 +445,8 @@ export default function ScorekeeperListScreen({navigation, route}) {
                       setSettingPopup(false);
                       setTimeout(() => {
                         const tempFilter = {...filters};
-                        tempFilter.sport = selectedSport.sport;
-                        tempFilter.sport_type = selectedSport.sport_type;
+                        tempFilter.sport = selectedSport?.sport;
+                        tempFilter.sport_type = selectedSport?.sport_type;
 
                         tempFilter.location = location;
 
@@ -456,7 +470,9 @@ export default function ScorekeeperListScreen({navigation, route}) {
               <View>
                 <View style={{flexDirection: 'column', margin: 15}}>
                   <View>
-                    <Text style={styles.filterTitle}>{strings.locationTitleText}</Text>
+                    <Text style={styles.filterTitle}>
+                      {strings.locationTitleText}
+                    </Text>
                   </View>
                   <View style={{marginTop: 10, marginLeft: 10}}>
                     <View
@@ -469,7 +485,7 @@ export default function ScorekeeperListScreen({navigation, route}) {
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(0);
-                          setLocation('world');
+                          setLocation(strings.worldTitleText);
                           // setFilters({
                           //   ...filters,
                           //   location: 'world',
@@ -491,7 +507,9 @@ export default function ScorekeeperListScreen({navigation, route}) {
                         marginBottom: 10,
                         justifyContent: 'space-between',
                       }}>
-                      <Text style={styles.filterTitle}>{strings.currentCity}</Text>
+                      <Text style={styles.filterTitle}>
+                        {strings.currentCity}
+                      </Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(1);
@@ -526,7 +544,9 @@ export default function ScorekeeperListScreen({navigation, route}) {
                         marginBottom: 10,
                         justifyContent: 'space-between',
                       }}>
-                      <Text style={styles.filterTitle}>{strings.currrentCityTitle}</Text>
+                      <Text style={styles.filterTitle}>
+                        {strings.currrentCityTitle}
+                      </Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(2);
@@ -565,7 +585,8 @@ export default function ScorekeeperListScreen({navigation, route}) {
                    /> */}
                         <View style={styles.searchCityContainer}>
                           <Text style={styles.searchCityText}>
-                            {route?.params?.locationText || strings.searchCityText}
+                            {route?.params?.locationText ||
+                              strings.searchCityText}
                           </Text>
                         </View>
                         <View
@@ -592,18 +613,20 @@ export default function ScorekeeperListScreen({navigation, route}) {
                       margin: 15,
                       justifyContent: 'space-between',
                     }}>
-                    <View style={{}}>
+                    <View>
                       <Text style={styles.filterTitle}>{strings.sport}</Text>
                     </View>
                     <View style={{marginTop: 10}}>
                       <TCPicker
                         dataSource={sports}
                         placeholder={'Select Sport'}
+                        // placeholderValue={strings.allType}
                         onValueChange={(value) => {
-                          if (value === 'All') {
+                          console.log('Sport value:=>', value);
+                          if (value === strings.allType) {
                             setSelectedSport({
-                              sport: 'All',
-                              sport_type: 'All',
+                              sport: strings.allType,
+                              sport_type: strings.allType,
                             });
                             setMinFee(0);
                             setMaxFee(0);
@@ -613,7 +636,11 @@ export default function ScorekeeperListScreen({navigation, route}) {
                             );
                           }
                         }}
-                        value={Utility.getSportName(selectedSport, authContext)}
+                        value={
+                          selectedSport?.sport !== strings.allType
+                            ? Utility.getSportName(selectedSport, authContext)
+                            : strings.all
+                        }
                       />
                     </View>
                   </View>
@@ -758,7 +785,7 @@ export default function ScorekeeperListScreen({navigation, route}) {
            </View> */}
               {/* Rate View */}
 
-              {selectedSport.sport !== 'All' && (
+              {selectedSport?.sport !== strings.allType && (
                 <View
                   style={{
                     flexDirection: 'column',
@@ -766,7 +793,9 @@ export default function ScorekeeperListScreen({navigation, route}) {
                     justifyContent: 'space-between',
                   }}>
                   <View style={{}}>
-                    <Text style={styles.filterTitle}>{strings.scorekeeperFee}</Text>
+                    <Text style={styles.filterTitle}>
+                      {strings.scorekeeperFee}
+                    </Text>
                   </View>
                   <View style={{marginTop: 10}}>
                     <View

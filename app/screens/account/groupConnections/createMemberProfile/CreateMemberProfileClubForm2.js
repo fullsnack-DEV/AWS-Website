@@ -104,7 +104,7 @@ export default function CreateMemberProfileClubForm2({navigation, route}) {
               />
             </TouchableOpacity>
           </View>
-          <View style={[styles.checkBoxContainer, {opacity: 0.5}]}>
+          <View style={styles.checkBoxContainer}>
             <Text style={[styles.checkBoxItemText, {marginLeft: 0}]}>
               {format(
                 strings.adminText_dy,

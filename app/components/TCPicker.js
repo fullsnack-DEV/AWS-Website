@@ -10,6 +10,7 @@ import images from '../Constants/ImagePath';
 export default function TCPicker({
   dataSource,
   placeholder,
+  placeholderValue = '',
   value = '',
   onValueChange = () => {},
   onDonePress = () => {},
@@ -21,7 +22,7 @@ export default function TCPicker({
       onDonePress={onDonePress}
       placeholder={{
         label: placeholder,
-        value: '',
+        value: placeholderValue,
       }}
       items={dataSource}
       onValueChange={onValueChange}

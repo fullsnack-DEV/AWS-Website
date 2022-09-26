@@ -631,7 +631,10 @@ export default function AccountScreen({navigation}) {
       }
     } else if (section === strings.membersTitle) {
       const entity = authContext.entity;
-      navigation.navigate('GroupMembersScreen', {groupID: entity.uid});
+      navigation.navigate('GroupMembersScreen', {
+        groupID: entity.uid,
+        groupObj: entity.obj,
+      });
     } else if (section === strings.challengeSettingText) {
       setClickedUserType(Verbs.entityTypeUser);
       const entity = authContext.entity;
@@ -781,13 +784,14 @@ export default function AccountScreen({navigation}) {
             style={styles.accountSportIcon}
           />
           <Text style={styles.entityName}>
-            {Utility.getSportName(item, authContext)}
+            {Utility.firstLetterCapital(item.sport)}
+            {/* {Utility.getSportName(item, authContext)} */}
           </Text>
         </View>
         <Image source={images.settingSport} style={styles.nextArrow} />
       </TouchableOpacity>
     ),
-    [authContext, navigation],
+    [navigation],
   );
 
   const renderScorekeepersList = useCallback(
@@ -806,7 +810,8 @@ export default function AccountScreen({navigation}) {
             style={styles.accountSportIcon}
           />
           <Text style={styles.entityName}>
-            {Utility.getSportName(item, authContext)}
+            {Utility.firstLetterCapital(item.sport)}
+            {/* {Utility.getSportName(item, authContext)} */}
           </Text>
         </View>
         <Image source={images.settingSport} style={styles.nextArrow} />

@@ -341,7 +341,8 @@ export default function RespondForInviteScreen({navigation, route}) {
             }}>
             <Text style={styles.lightTextStyle}>{strings.membersage}</Text>
             <Text style={styles.regularTextStyle}>
-              {strings.minPlaceholder} {groupObject?.min_age} {strings.maxPlaceholder} {groupObject?.max_age}
+              {strings.minPlaceholder} {groupObject?.min_age}{' '}
+              {strings.maxPlaceholder} {groupObject?.max_age}
             </Text>
           </View>
 
