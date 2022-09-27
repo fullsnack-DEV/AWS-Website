@@ -40,7 +40,6 @@ import {
   QBcreateDialog,
   QBgetUserDetail,
 } from '../../../utils/QuickBlox';
-import UserListShimmer from '../../../components/shimmer/commonComponents/UserListShimmer';
 import fonts from '../../../Constants/Fonts';
 import TCUserRoleBadge from '../../../components/TCUserRoleBadge';
 import TCThinDivider from '../../../components/TCThinDivider';
@@ -49,44 +48,41 @@ import {followUser, unfollowUser} from '../../../api/Users';
 import TCFollowUnfollwButton from '../../../components/TCFollowUnfollwButton';
 import Verbs from '../../../Constants/Verbs';
 
-let entity = {};
 export default function GroupMembersScreen({navigation, route}) {
   const actionSheet = useRef();
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
   // For activity indigator
   const [loading, setloading] = useState(false);
-  const [firstTimeLoading, setFirstTimeLoading] = useState(true);
   const actionSheetInvite = useRef();
   const [searchMember, setSearchMember] = useState();
   // const [isModalVisible, setModalVisible] = useState(false);
   // const [allSelected, setAllSelected] = useState(false);
   // const [filter, setFilter] = useState([]);
-  const [members, setMembers] = useState();
+  const [members, setMembers] = useState([]);
 
-  const [switchUser, setSwitchUser] = useState({});
+  const [switchUser] = useState(authContext.entity);
+  const [groupObj] = useState(route.params?.groupObj);
+
   const [groupID] = useState(route.params?.groupID);
 
   useEffect(() => {
-    console.log('NAVIGATION:', navigation);
-    const getAuthEntity = async () => {
-      entity = authContext.entity;
-      setSwitchUser(entity);
-    };
+    console.log('NAVIGATION:', groupObj);
+
     getMembers();
-    getAuthEntity();
   }, [isFocused]);
 
   const getMembers = async () => {
+    setloading(true);
     if (groupID) {
       getGroupMembers(groupID, authContext)
         .then((response) => {
           setMembers(response.payload);
           setSearchMember(response.payload);
-          setFirstTimeLoading(false);
+          setloading(false);
         })
         .catch((e) => {
-          setFirstTimeLoading(false);
+          setloading(false);
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
@@ -176,51 +172,62 @@ export default function GroupMembersScreen({navigation, route}) {
     [navigation, groupID],
   );
 
-  const callFollowUser = async (data, index) => {
-    const tempMember = [...members];
-    tempMember[index].is_following = true;
-    setMembers(tempMember);
+  const callFollowUser = useCallback(
+    (data, index) => {
+      const tempMember = [...members];
+      tempMember[index].is_following = true;
+      setMembers(tempMember);
 
-    const params = {
-      entity_type: 'player',
-    };
-    followUser(params, data.user_id, authContext)
-      .then(() => {
-        console.log('follow user');
-      })
-      .catch((error) => {
-        console.log('callFollowUser error with userID', error, data.user_id);
-        const tempMem = [...members];
-        tempMem[index].is_following = false;
-        setMembers(tempMem);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, error.message);
-        }, 10);
-      });
-  };
+      const params = {
+        entity_type: 'player',
+      };
+      followUser(params, data.user_id, authContext)
+        .then(() => {
+          console.log('follow user');
+        })
+        .catch((error) => {
+          console.log('callFollowUser error with userID', error, data.user_id);
+          const tempMem = [...members];
+          tempMem[index].is_following = false;
+          setMembers(tempMem);
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, error.message);
+          }, 10);
+        });
+    },
+    [authContext, members],
+  );
 
-  const callUnfollowUser = async (data, index) => {
-    const tempMember = [...members];
-    tempMember[index].is_following = false;
-    setMembers(tempMember);
+  const callUnfollowUser = useCallback(
+    (data, index) => {
+      console.log('unfollow');
+      const tempMember = [...members];
+      tempMember[index].is_following = false;
+      setMembers(tempMember);
 
-    const params = {
-      entity_type: 'player',
-    };
-    unfollowUser(params, data.user_id, authContext)
-      .then(() => {
-        console.log('unfollow user');
-      })
-      .catch((error) => {
-        console.log('callUnfollowUser error with userID', error, data.user_id);
-        const tempMem = [...members];
-        tempMem[index].is_following = true;
-        setMembers(tempMem);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, error.message);
-        }, 10);
-      });
-  };
+      const params = {
+        entity_type: 'player',
+      };
+      unfollowUser(params, data.user_id, authContext)
+        .then(() => {
+          console.log('unfollow user');
+        })
+        .catch((error) => {
+          console.log(
+            'callUnfollowUser error with userID',
+            error,
+            data.user_id,
+          );
+          const tempMem = [...members];
+          tempMem[index].is_following = true;
+          setMembers(tempMem);
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, error.message);
+          }, 10);
+        });
+    },
+    [authContext, members],
+  );
 
   const onUserAction = useCallback(
     (action, data, index) => {
@@ -234,7 +241,7 @@ export default function GroupMembersScreen({navigation, route}) {
         default:
       }
     },
-    [callFollowUser, callUnfollowUser, navigation],
+    [callFollowUser, callUnfollowUser],
   );
   const onPressProfilePhotoAndTitle = useCallback(
     (item) => {
@@ -270,6 +277,94 @@ export default function GroupMembersScreen({navigation, route}) {
       </Text>
     );
   }, []);
+
+  const renderFollowUnfollowArrow = useCallback(
+    (data, index) => {
+      console.log('Datatatatat', data);
+      if (
+        authContext.entity.role === 'club' ||
+        authContext.entity.role === 'team'
+      ) {
+        if (authContext.entity.uid === groupID) {
+          return (
+            <TouchableOpacity
+              style={styles.buttonContainer}
+              onPress={() => onPressProfile(data)}
+              hitSlop={getHitSlop(15)}>
+              <Image
+                source={images.arrowGraterthan}
+                style={styles.arrowStyle}
+              />
+            </TouchableOpacity>
+          );
+        }
+        return <View />;
+      }
+      if (data.is_following) {
+        if (authContext.entity.uid !== data?.user_id && data?.connected) {
+          return (
+            <View style={{flexDirection: 'row'}}>
+              <TCFollowUnfollwButton
+                outerContainerStyle={styles.firstButtonOuterStyle}
+                style={styles.firstButtonStyle}
+                title={strings.following}
+                isFollowing={data.is_following}
+                onPress={() => {
+                  onUserAction('unfollow', data, index);
+                }}
+              />
+              {groupObj?.who_can_see_member_profile === 2 && (
+                <TouchableOpacity
+                  style={[styles.buttonContainer, {marginLeft: 15}]}
+                  onPress={() => onPressProfile(data)}
+                  hitSlop={getHitSlop(15)}>
+                  <Image
+                    source={images.arrowGraterthan}
+                    style={styles.arrowStyle}
+                  />
+                </TouchableOpacity>
+              )}
+            </View>
+          );
+        }
+        return <View />;
+      }
+      if (authContext.entity.uid !== data?.user_id && data?.connected) {
+        return (
+          <View style={{flexDirection: 'row'}}>
+            <TCFollowUnfollwButton
+              outerContainerStyle={styles.firstButtonOuterStyle}
+              style={styles.firstButtonStyle}
+              title={strings.follow}
+              isFollowing={data.is_following}
+              onPress={() => {
+                onUserAction('follow', data, index);
+              }}
+            />
+            {groupObj?.who_can_see_member_profile === 2 && (
+              <TouchableOpacity
+                style={[styles.buttonContainer, {marginLeft: 15}]}
+                onPress={() => onPressProfile(data)}
+                hitSlop={getHitSlop(15)}>
+                <Image
+                  source={images.arrowGraterthan}
+                  style={styles.arrowStyle}
+                />
+              </TouchableOpacity>
+            )}
+          </View>
+        );
+      }
+      return <View />;
+    },
+    [
+      authContext.entity.role,
+      authContext.entity.uid,
+      groupID,
+      onPressProfile,
+      onUserAction,
+    ],
+  );
 
   const renderMembers = useCallback(
     ({item: data, index}) => (
@@ -342,58 +437,15 @@ export default function GroupMembersScreen({navigation, route}) {
               </View>
             </View>
           </View>
-          {authContext.entity.role === 'club' ||
-          authContext.entity.role === 'team' ? (
-            authContext.entity.uid === groupID && (
-              <TouchableOpacity
-                style={styles.buttonContainer}
-                onPress={() => onPressProfile(data)}
-                hitSlop={getHitSlop(15)}>
-                <Image
-                  source={images.arrowGraterthan}
-                  style={styles.arrowStyle}
-                />
-              </TouchableOpacity>
-            )
-          ) : data.is_following ? (
-            authContext.entity.uid !== data?.user_id && data?.connected ? (
-              <TCFollowUnfollwButton
-                outerContainerStyle={styles.firstButtonOuterStyle}
-                style={styles.firstButtonStyle}
-                title={strings.following}
-                isFollowing={data.is_following}
-                onPress={() => {
-                  onUserAction('following', data, index);
-                }}
-              />
-            ) : (
-              <View />
-            )
-          ) : authContext.entity.uid !== data?.user_id && data?.connected ? (
-            <TCFollowUnfollwButton
-              outerContainerStyle={styles.firstButtonOuterStyle}
-              style={styles.firstButtonStyle}
-              title={strings.follow}
-              isFollowing={data.is_following}
-              onPress={() => {
-                onUserAction('follow', data, index);
-              }}
-            />
-          ) : (
-            <View />
-          )}
+          {renderFollowUnfollowArrow(data, index)}
         </View>
         <TCThinDivider marginTop={20} />
       </>
     ),
     [
-      authContext.entity.role,
-      authContext.entity.uid,
-      groupID,
-      onPressProfile,
       onPressProfilePhotoAndTitle,
-      onUserAction,
       renderFirstNameAndLastName,
+      renderFollowUnfollowArrow,
     ],
   );
 
@@ -408,9 +460,7 @@ export default function GroupMembersScreen({navigation, route}) {
           />
         </View>
         {/* eslint-disable-next-line no-nested-ternary */}
-        {firstTimeLoading ? (
-          <UserListShimmer />
-        ) : members.length > 0 ? (
+        {members.length > 0 ? (
           <FlatList
             data={members}
             renderItem={renderMembers}

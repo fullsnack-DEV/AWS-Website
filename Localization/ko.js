@@ -114,7 +114,6 @@ export default {
   reviewsTitle: 'Reviews',
   upcomingMatchTitle: 'Upcoming Match',
   statsTitle: 'Stats',
-  signedUpTime: 'Signed up in 2020',
   infoTeamTitle: 'Vancouver Teams FC',
   infoTeamCity: 'Vancouver, BC',
   ntrpTitle: 'NTRP',

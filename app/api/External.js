@@ -6,6 +6,12 @@ export const searchLocations = async (query, types = 'regions') =>
     url: `https://maps.googleapis.com/maps/api/place/autocomplete/json?types=(${types})&input=${query}`,
   });
 
+export const searchAddress = async (query) =>
+  makeAPIRequest({
+    method: 'get',
+    url: `https://maps.googleapis.com/maps/api/geocode/json?address=${query}`,
+  });
+
 export const searchCityState = async (query) =>
   makeAPIRequest({
     method: 'get',

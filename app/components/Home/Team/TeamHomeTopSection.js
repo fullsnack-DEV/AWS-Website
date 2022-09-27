@@ -15,8 +15,6 @@ export default function TeamHomeTopSection({
   onAction,
   isThreeDotShow,
 }) {
-  console.log('teamDetailsteamDetails', teamDetails);
-
   return (
     <View style={{marginTop: !isAdmin ? 0 : 15, marginBottom: 15}}>
       {isAdmin && (

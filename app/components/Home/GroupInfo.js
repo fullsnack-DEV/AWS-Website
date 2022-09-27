@@ -319,6 +319,7 @@ export default function GroupInfo({
               }}
               onEditPress={() => {
                 navigation.navigate('GroupMembersScreen', {
+                  groupObj: groupDetails,
                   groupID: groupDetails?.group_id,
                   fromProfile: true,
                 });

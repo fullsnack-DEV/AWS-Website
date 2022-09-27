@@ -631,7 +631,10 @@ export default function AccountScreen({navigation}) {
       }
     } else if (section === strings.membersTitle) {
       const entity = authContext.entity;
-      navigation.navigate('GroupMembersScreen', {groupID: entity.uid});
+      navigation.navigate('GroupMembersScreen', {
+        groupID: entity.uid,
+        groupObj: entity.obj,
+      });
     } else if (section === strings.challengeSettingText) {
       setClickedUserType(Verbs.entityTypeUser);
       const entity = authContext.entity;

@@ -1666,7 +1666,14 @@ const HomeScreen = ({navigation, route}) => {
       } else if (tab !== Verbs.privacyTypeMembers) {
         navigation.navigate('UserConnections', {tab, entity_type, user_id});
       } else {
-        navigation.navigate('GroupMembersScreen', {groupID: user_id});
+        console.log(
+          'dfsdfsdfsdfgdgdfgsdfgsdfg fdgdfsgdsf gdsf gdsf gdf g',
+          currentUserData,
+        );
+        navigation.navigate('GroupMembersScreen', {
+          groupID: user_id,
+          groupObj: currentUserData,
+        });
       }
     },
     [

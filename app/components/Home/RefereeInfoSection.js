@@ -51,7 +51,7 @@ import TCKeyboardView from '../TCKeyboardView';
 import TCThinDivider from '../TCThinDivider';
 import DataSource from '../../Constants/DataSource';
 import MapPinWithRadious from '../Schedule/MapPinWithRadious';
-import {getSportName} from '../../utils';
+import {firstLetterCapital, getSportName} from '../../utils';
 
 const privacy_Data = [
   {
@@ -463,133 +463,137 @@ function RefereeInfoSection({
   };
   console.log('CERTI:', certificatesData);
   return (
-    <ScrollView style={styles.containerStyle}>
-      <EditEventItem
-        editButtonVisible={isAdmin}
-        title={strings.bio}
-        onEditPress={() => {
-          setEditPressTitle(strings.bio);
-          setTimeout(() => {
-            actionSheet.current.show();
-          }, 200);
-        }}
-        containerStyle={{marginTop: 10, marginBottom: 12}}>
-        <Text style={styles.bioTextStyle}>{bioText}</Text>
-        <Text style={styles.signUpTimeStyle}>{strings.signedUpTime}</Text>
-      </EditEventItem>
-      <View style={styles.dividerStyle} />
-      <EditEventItem
-        editButtonVisible={isAdmin}
-        title={strings.basicinfotitle}
-        onEditPress={() => {
-          setEditPressTitle(strings.basicinfotitle);
-          setTimeout(() => {
-            actionSheet.current.show();
-          }, 200);
-        }}>
-        <BasicInfoItem title={strings.gender} value={data.gender ?? '-'} />
-        <BasicInfoItem
-          title={strings.yearOfBirth}
-          value={
-            info.birthdayText ? moment(info.birthdayText).format('YYYY') : '-'
-          }
-        />
-        <BasicInfoItem
-          title={strings.language}
-          value={languagesName === '' ? '-' : languagesName}
-        />
-        <BasicInfoItem
-          title={strings.currrentCityTitle}
-          value={info.currentCity ?? '-'}
-          fieldView={{marginBottom: 10}}
-        />
-      </EditEventItem>
-      <View style={styles.dividerStyle} />
-      <EditEventItem
-        editButtonVisible={isAdmin}
-        title={strings.certificateTitle}
-        onEditPress={() => {
-          setEditPressTitle(strings.certificateTitle);
-          setTimeout(() => {
-            actionSheet.current.show();
-          }, 200);
-          setSelectedCerti([]);
-        }}>
-        <FlatList
-          data={certificatesData?.length > 0 ? certificatesData : []}
-          bounces={false}
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-          ItemSeparatorComponent={() => (
-            <View
-              style={{
-                marginHorizontal: 5,
-              }}
-            />
-          )}
-          ListEmptyComponent={
-            <Text style={styles.notAvailableTextStyle}>
-              No certificates found
-            </Text>
-          }
-          style={{marginTop: 5, marginBottom: 15}}
-          renderItem={({item: certItem}) => (
-            <CertificatesItemView
-              certificateImage={{uri: certItem.thumbnail}}
-              certificateName={certItem.title}
-              teamTitleTextStyle={{
-                color: colors.lightBlackColor,
-                fontFamily: fonts.RBold,
-              }}
-              profileImage={{
-                borderWidth: 0.5,
-                borderColor: colors.linesepratorColor,
-                borderRadius: 8,
-              }}
-            />
-          )}
-          keyExtractor={(item, index) => index.toString()}
-        />
-      </EditEventItem>
-      <View style={styles.dividerStyle} />
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          margin: 15,
-        }}>
-        <Text
-          style={{
-            fontFamily: fonts.RRegular,
-            fontSize: 20,
-            color: colors.lightBlackColor,
+    <>
+      <View style={styles.containerStyle}>
+        <EditEventItem
+          editButtonVisible={isAdmin}
+          title={strings.bio}
+          onEditPress={() => {
+            setEditPressTitle(strings.bio);
+            setTimeout(() => {
+              actionSheet.current.show();
+            }, 200);
+          }}
+          containerStyle={{marginTop: 10, marginBottom: 12}}>
+          <Text style={styles.bioTextStyle}>{bioText}</Text>
+          <Text style={styles.signUpTimeStyle}>{strings.signedupin}</Text>
+        </EditEventItem>
+        <View style={styles.dividerStyle} />
+        <EditEventItem
+          editButtonVisible={isAdmin}
+          title={strings.basicinfotitle}
+          onEditPress={() => {
+            setEditPressTitle(strings.basicinfotitle);
+            setTimeout(() => {
+              actionSheet.current.show();
+            }, 200);
           }}>
-          {strings.refereeFee}
-        </Text>
-
-        <Text
-          style={{
-            fontSize: 16,
-
-            color: colors.blackColor,
-            fontFamily: fonts.RBold,
+          <BasicInfoItem
+            title={strings.gender}
+            value={firstLetterCapital(data.gender) ?? '-'}
+          />
+          <BasicInfoItem
+            title={strings.yearOfBirth}
+            value={
+              info.birthdayText ? moment(info.birthdayText).format('YYYY') : '-'
+            }
+          />
+          <BasicInfoItem
+            title={strings.language}
+            value={languagesName === '' ? '-' : languagesName}
+          />
+          <BasicInfoItem
+            title={strings.currrentCityTitle}
+            value={info.currentCity ?? '-'}
+            fieldView={{marginBottom: 10}}
+          />
+        </EditEventItem>
+        <View style={styles.dividerStyle} />
+        <EditEventItem
+          editButtonVisible={isAdmin}
+          title={strings.certificateTitle}
+          onEditPress={() => {
+            setEditPressTitle(strings.certificateTitle);
+            setTimeout(() => {
+              actionSheet.current.show();
+            }, 200);
+            setSelectedCerti([]);
           }}>
-          {`$${
-            refereeSetting?.game_fee?.fee
-              ? refereeSetting?.game_fee?.fee
-              : strings.NAText
-          }`}{' '}
+          <FlatList
+            data={certificatesData?.length > 0 ? certificatesData : []}
+            bounces={false}
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+            ItemSeparatorComponent={() => (
+              <View
+                style={{
+                  marginHorizontal: 5,
+                }}
+              />
+            )}
+            ListEmptyComponent={
+              <Text style={styles.notAvailableTextStyle}>
+                No certificates found
+              </Text>
+            }
+            style={{marginTop: 5, marginBottom: 15}}
+            renderItem={({item: certItem}) => (
+              <CertificatesItemView
+                certificateImage={{uri: certItem.thumbnail}}
+                certificateName={certItem.title}
+                teamTitleTextStyle={{
+                  color: colors.lightBlackColor,
+                  fontFamily: fonts.RBold,
+                }}
+                profileImage={{
+                  borderWidth: 0.5,
+                  borderColor: colors.linesepratorColor,
+                  borderRadius: 8,
+                }}
+              />
+            )}
+            keyExtractor={(item, index) => index.toString()}
+          />
+        </EditEventItem>
+        <View style={styles.dividerStyle} />
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            margin: 15,
+          }}>
           <Text
             style={{
               fontFamily: fonts.RRegular,
+              fontSize: 20,
               color: colors.lightBlackColor,
             }}>
-            {strings.cadPerHourText}
+            {strings.refereeFee}
           </Text>
-        </Text>
-      </View>
-      {/* <EditEventItem
+
+          <Text
+            style={{
+              fontSize: 16,
+
+              color: colors.blackColor,
+              fontFamily: fonts.RBold,
+            }}>
+            {`$${
+              refereeSetting?.game_fee?.fee
+                ? refereeSetting?.game_fee?.fee
+                : strings.NAText
+            }`}{' '}
+            <Text
+              style={{
+                fontFamily: fonts.RRegular,
+                color: colors.lightBlackColor,
+              }}>
+              {strings.cadPerHourText}
+            </Text>
+          </Text>
+        </View>
+        {/* <EditEventItem
           editButtonVisible={isAdmin}
         title={strings.refereeFee}
         subTitle={strings.perHour}
@@ -602,8 +606,8 @@ function RefereeInfoSection({
       >
         <Text style={styles.ntrpValueStyle}>{`$${refereeFeeCount} CAD/match`}</Text>
       </EditEventItem> */}
-      <View style={styles.dividerStyle} />
-      {/* <EditEventItem
+        <View style={styles.dividerStyle} />
+        {/* <EditEventItem
         editButtonVisible={isAdmin}
         title={strings.cancellationPolicy}
         onEditPress={() => {
@@ -619,358 +623,125 @@ function RefereeInfoSection({
         </Text>
       </EditEventItem> */}
 
-      <View
-        style={{
-          margin: 15,
-        }}>
-        <Text
+        <View
           style={{
-            fontFamily: fonts.RRegular,
-            fontSize: 20,
-            color: colors.lightBlackColor,
-            marginBottom: 15,
+            margin: 15,
           }}>
-          {strings.availableAreaText}
-        </Text>
-        {refereeSetting?.available_area ? (
-          refereeSetting?.available_area?.is_specific_address ? (
-            <FlatList
-              data={
-                refereeSetting?.available_area?.address_list?.length > 0
-                  ? refereeSetting?.available_area?.address_list
-                  : []
-              }
-              bounces={false}
-              ListEmptyComponent={
-                <Text style={styles.notAvailableTextStyle}>
-                  {strings.noAreaFoundText}
-                </Text>
-              }
-              style={{marginTop: 5, marginBottom: 15}}
-              renderItem={({item}) => (
-                <View>
+          <Text
+            style={{
+              fontFamily: fonts.RRegular,
+              fontSize: 20,
+              color: colors.lightBlackColor,
+              marginBottom: 15,
+            }}>
+            {strings.availableAreaText}
+          </Text>
+          {refereeSetting?.available_area ? (
+            refereeSetting?.available_area?.is_specific_address ? (
+              <FlatList
+                data={
+                  refereeSetting?.available_area?.address_list?.length > 0
+                    ? refereeSetting?.available_area?.address_list
+                    : []
+                }
+                bounces={false}
+                ListEmptyComponent={
+                  <Text style={styles.notAvailableTextStyle}>
+                    {strings.noAreaFoundText}
+                  </Text>
+                }
+                style={{marginTop: 5, marginBottom: 15}}
+                renderItem={({item}) => (
+                  <View>
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        fontFamily: fonts.RRegular,
+                        color: colors.lightBlackColor,
+                        marginLeft: 10,
+                      }}>
+                      {item?.address}
+                    </Text>
+                    <View
+                      style={{
+                        backgroundColor: colors.grayBackgroundColor,
+                        height: 1,
+                        margin: 15,
+                        marginLeft: 0,
+                      }}
+                    />
+                  </View>
+                )}
+                keyExtractor={(item, index) => index.toString()}
+              />
+            ) : (
+              <View>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontFamily: fonts.RRegular,
+                    color: colors.lightBlackColor,
+                  }}>
+                  Within{' '}
                   <Text
                     style={{
-                      fontSize: 16,
-                      fontFamily: fonts.RRegular,
-                      color: colors.lightBlackColor,
-                      marginLeft: 10,
+                      color: colors.themeColor,
+                      fontFamily: fonts.RMedium,
                     }}>
-                    {item?.address}
-                  </Text>
-                  <View
+                    {refereeSetting?.available_area?.radious}{' '}
+                    {refereeSetting?.available_area?.distance_type}
+                  </Text>{' '}
+                  of{' '}
+                  <Text
                     style={{
-                      backgroundColor: colors.grayBackgroundColor,
-                      height: 1,
-                      margin: 15,
-                      marginLeft: 0,
-                    }}
-                  />
-                </View>
-              )}
-              keyExtractor={(item, index) => index.toString()}
-            />
+                      color: colors.themeColor,
+                      fontFamily: fonts.RMedium,
+                    }}>
+                    {refereeSetting?.available_area?.address}
+                  </Text>
+                </Text>
+                <MapPinWithRadious
+                  coordinate={refereeSetting?.available_area?.latlong}
+                  radious={
+                    refereeSetting?.available_area?.distance_type === 'Mi'
+                      ? refereeSetting?.available_area?.radious * 1609.344
+                      : refereeSetting?.available_area?.radious * 1000
+                  }
+                  region={{
+                    ...refereeSetting?.available_area?.latlong,
+                    latitudeDelta: 0.0922,
+                    longitudeDelta: 0.0421,
+                  }}
+                  style={styles.map}
+                />
+              </View>
+            )
           ) : (
             <View>
               <Text
                 style={{
+                  alignSelf: 'center',
                   fontSize: 16,
                   fontFamily: fonts.RRegular,
-                  color: colors.lightBlackColor,
+                  color: colors.grayColor,
                 }}>
-                Within{' '}
-                <Text
-                  style={{color: colors.themeColor, fontFamily: fonts.RMedium}}>
-                  {refereeSetting?.available_area?.radious}{' '}
-                  {refereeSetting?.available_area?.distance_type}
-                </Text>{' '}
-                of{' '}
-                <Text
-                  style={{color: colors.themeColor, fontFamily: fonts.RMedium}}>
-                  {refereeSetting?.available_area?.address}
-                </Text>
+                {strings.noSettingConfigureText}
               </Text>
-              <MapPinWithRadious
-                coordinate={refereeSetting?.available_area?.latlong}
-                radious={
-                  refereeSetting?.available_area?.distance_type === 'Mi'
-                    ? refereeSetting?.available_area?.radious * 1609.344
-                    : refereeSetting?.available_area?.radious * 1000
-                }
-                region={{
-                  ...refereeSetting?.available_area?.latlong,
-                  latitudeDelta: 0.0922,
-                  longitudeDelta: 0.0421,
-                }}
-                style={styles.map}
-              />
             </View>
-          )
-        ) : (
-          <View>
-            <Text
-              style={{
-                alignSelf: 'center',
-                fontSize: 16,
-                fontFamily: fonts.RRegular,
-                color: colors.grayColor,
-              }}>
-              {strings.noSettingConfigureText}
-            </Text>
-          </View>
-        )}
+          )}
+        </View>
+
+        <EditRefereeCertificate
+          certifiData={certificatesData?.length ? certificatesData : []}
+          onClose={() => setEditCertificateModal(false)}
+          visible={editCertificateModal}
+          onSavePress={(certiData) => {
+            setEditCertificateModal(false);
+            setCertificatesData([...certiData]);
+            onTopEditSavePress([...certiData]);
+          }}
+        />
       </View>
-
-      <Modal
-        isVisible={privacyModal}
-        backdropColor="black"
-        style={{
-          margin: 0,
-          justifyContent: 'flex-end',
-          backgroundColor: 'rgba(0,0,0,0)',
-        }}
-        hasBackdrop
-        onBackdropPress={() => setPrivacyModal(false)}
-        backdropOpacity={0}>
-        <SafeAreaView
-          style={[
-            styles.modalContainerViewStyle,
-            {backgroundColor: colors.whiteColor},
-          ]}>
-          <LinearGradient
-            colors={[colors.orangeColor, colors.yellowColor]}
-            end={{x: 0.0, y: 0.25}}
-            start={{x: 1, y: 0.5}}
-            style={styles.gradiantHeaderViewStyle}></LinearGradient>
-          <Header
-            mainContainerStyle={styles.headerMainContainerStyle}
-            leftComponent={
-              <TouchableOpacity onPress={() => setPrivacyModal(false)}>
-                <Image
-                  source={images.backArrow}
-                  style={styles.cancelImageStyle}
-                  resizeMode={'contain'}
-                />
-              </TouchableOpacity>
-            }
-            centerComponent={
-              <View style={styles.headerCenterViewStyle}>
-                <Image
-                  source={images.refereesInImage}
-                  style={styles.soccerImageStyle}
-                  resizeMode={'contain'}
-                />
-                <Text style={styles.playInTextStyle}>
-                  {strings.privacySettingText}
-                </Text>
-              </View>
-            }
-            rightComponent={
-              <TouchableOpacity onPress={() => setPrivacyModal(false)}>
-                <Text
-                  style={{
-                    fontSize: 16,
-                    fontFamily: fonts.RLight,
-                    color: colors.whiteColor,
-                  }}>
-                  {strings.save}
-                </Text>
-              </TouchableOpacity>
-            }
-          />
-          {(editPressTitle === strings.bio ||
-            editPressTitle === strings.certificateTitle ||
-            editPressTitle === strings.refereeFeesTitle) && (
-            <EventItemRender
-              title={
-                (editPressTitle === strings.bio && strings.bioPrivacyTitle) ||
-                (editPressTitle === strings.certificateTitle &&
-                  strings.certiPrivacyTitle) ||
-                (editPressTitle === strings.refereeFeesTitle &&
-                  strings.refereeFeePrivacyTitle)
-              }
-              containerStyle={{marginTop: 10}}>
-              <FlatList
-                data={privacyData ?? []}
-                style={{marginTop: 10}}
-                ItemSeparatorComponent={() => <View style={{height: 15}} />}
-                renderItem={({item}) => (
-                  <RadioBtnItem
-                    titleName={item.title}
-                    selected={item.isSelected}
-                    touchRadioBtnStyle={{marginRight: 5}}
-                    onRadioBtnPress={() => {
-                      privacyData.map((scheduleItem) => {
-                        const schedule = scheduleItem;
-                        if (schedule.id === item.id) {
-                          schedule.isSelected = true;
-                        } else {
-                          schedule.isSelected = false;
-                        }
-                        return null;
-                      });
-                      setPrivacyData([...privacyData]);
-                    }}
-                  />
-                )}
-                keyExtractor={(item, index) => index.toString()}
-              />
-            </EventItemRender>
-          )}
-          {editPressTitle === strings.basicinfotitle && (
-            <KeyboardAwareScrollView
-              enableOnAndroid={false}
-              showsVerticalScrollIndicator={false}>
-              <EventItemRender
-                title={
-                  editPressTitle === strings.basicinfotitle &&
-                  strings.basicInfoPrivacyTitle
-                }
-                containerStyle={{marginTop: 10}}>
-                <FlatList
-                  data={genderPrivacy ?? []}
-                  bounces={false}
-                  style={{marginTop: 10}}
-                  ListHeaderComponent={() => (
-                    <Text style={styles.privacySubTitleStyle}>
-                      {strings.gender}
-                    </Text>
-                  )}
-                  ItemSeparatorComponent={() => <View style={{height: 15}} />}
-                  renderItem={({item}) => (
-                    <RadioBtnItem
-                      titleName={item.title}
-                      selected={item.isSelected}
-                      touchRadioBtnStyle={{marginRight: 5}}
-                      onRadioBtnPress={() => {
-                        genderPrivacy.map((scheduleItem) => {
-                          const schedule = scheduleItem;
-                          if (schedule.id === item.id) {
-                            schedule.isSelected = true;
-                          } else {
-                            schedule.isSelected = false;
-                          }
-                          return null;
-                        });
-                        setGenderPrivacy([...genderPrivacy]);
-                      }}
-                    />
-                  )}
-                  keyExtractor={(item, index) => index.toString()}
-                />
-                <View style={styles.privacySepratorStyle} />
-                <FlatList
-                  data={yearOfBirthPrivacy ?? []}
-                  bounces={false}
-                  style={{marginTop: 10}}
-                  ListHeaderComponent={() => (
-                    <Text style={styles.privacySubTitleStyle}>
-                      {strings.yearOfBirth}
-                    </Text>
-                  )}
-                  ItemSeparatorComponent={() => <View style={{height: 15}} />}
-                  renderItem={({item}) => (
-                    <RadioBtnItem
-                      titleName={item.title}
-                      selected={item.isSelected}
-                      touchRadioBtnStyle={{marginRight: 5}}
-                      onRadioBtnPress={() => {
-                        yearOfBirthPrivacy.map((scheduleItem) => {
-                          const schedule = scheduleItem;
-                          if (schedule.id === item.id) {
-                            schedule.isSelected = true;
-                          } else {
-                            schedule.isSelected = false;
-                          }
-                          return null;
-                        });
-                        setYearOfBirthPrivacy([...yearOfBirthPrivacy]);
-                      }}
-                    />
-                  )}
-                  keyExtractor={(item, index) => index.toString()}
-                />
-                <View style={styles.privacySepratorStyle} />
-                <FlatList
-                  data={languagePrivacy ?? []}
-                  bounces={false}
-                  style={{marginTop: 10}}
-                  ListHeaderComponent={() => (
-                    <Text style={styles.privacySubTitleStyle}>
-                      {strings.language}
-                    </Text>
-                  )}
-                  ItemSeparatorComponent={() => <View style={{height: 15}} />}
-                  renderItem={({item}) => (
-                    <RadioBtnItem
-                      titleName={item.title}
-                      selected={item.isSelected}
-                      touchRadioBtnStyle={{marginRight: 5}}
-                      onRadioBtnPress={() => {
-                        languagePrivacy.map((scheduleItem) => {
-                          const schedule = scheduleItem;
-                          if (schedule.id === item.id) {
-                            schedule.isSelected = true;
-                          } else {
-                            schedule.isSelected = false;
-                          }
-                          return null;
-                        });
-                        setLanguagePrivacy([...languagePrivacy]);
-                      }}
-                    />
-                  )}
-                  keyExtractor={(item, index) => index.toString()}
-                />
-                <View style={styles.privacySepratorStyle} />
-                <FlatList
-                  data={currentCityPrivacy ?? []}
-                  bounces={false}
-                  style={{marginTop: 10}}
-                  ListHeaderComponent={() => (
-                    <Text style={styles.privacySubTitleStyle}>
-                      {strings.currrentCityTitle}
-                    </Text>
-                  )}
-                  ItemSeparatorComponent={() => <View style={{height: 15}} />}
-                  renderItem={({item}) => (
-                    <RadioBtnItem
-                      titleName={item.title}
-                      selected={item.isSelected}
-                      touchRadioBtnStyle={{marginRight: 5}}
-                      onRadioBtnPress={() => {
-                        currentCityPrivacy.map((scheduleItem) => {
-                          const schedule = scheduleItem;
-                          if (schedule.id === item.id) {
-                            schedule.isSelected = true;
-                          } else {
-                            schedule.isSelected = false;
-                          }
-                          return null;
-                        });
-                        setCurrentCityPrivacy([...currentCityPrivacy]);
-                      }}
-                    />
-                  )}
-                  keyExtractor={(item, index) => index.toString()}
-                />
-              </EventItemRender>
-            </KeyboardAwareScrollView>
-          )}
-        </SafeAreaView>
-      </Modal>
-
-      <EditRefereeCertificate
-        certifiData={certificatesData?.length ? certificatesData : []}
-        onClose={() => setEditCertificateModal(false)}
-        visible={editCertificateModal}
-        onSavePress={(certiData) => {
-          setEditCertificateModal(false);
-          setCertificatesData([...certiData]);
-          onTopEditSavePress([...certiData]);
-        }}
-      />
-
       <Modal
         isVisible={editModal}
         backdropColor="black"
@@ -1524,7 +1295,244 @@ function RefereeInfoSection({
           </Modal>
         </TCKeyboardView>
       </Modal>
-
+      <Modal
+        isVisible={privacyModal}
+        backdropColor="black"
+        style={{
+          margin: 0,
+          justifyContent: 'flex-end',
+          backgroundColor: 'rgba(0,0,0,0)',
+        }}
+        hasBackdrop
+        onBackdropPress={() => setPrivacyModal(false)}
+        backdropOpacity={0}>
+        <SafeAreaView
+          style={[
+            styles.modalContainerViewStyle,
+            {backgroundColor: colors.whiteColor},
+          ]}>
+          <LinearGradient
+            colors={[colors.orangeColor, colors.yellowColor]}
+            end={{x: 0.0, y: 0.25}}
+            start={{x: 1, y: 0.5}}
+            style={styles.gradiantHeaderViewStyle}></LinearGradient>
+          <Header
+            mainContainerStyle={styles.headerMainContainerStyle}
+            leftComponent={
+              <TouchableOpacity onPress={() => setPrivacyModal(false)}>
+                <Image
+                  source={images.backArrow}
+                  style={styles.cancelImageStyle}
+                  resizeMode={'contain'}
+                />
+              </TouchableOpacity>
+            }
+            centerComponent={
+              <View style={styles.headerCenterViewStyle}>
+                <Image
+                  source={images.refereesInImage}
+                  style={styles.soccerImageStyle}
+                  resizeMode={'contain'}
+                />
+                <Text style={styles.playInTextStyle}>
+                  {strings.privacySettingText}
+                </Text>
+              </View>
+            }
+            rightComponent={
+              <TouchableOpacity onPress={() => setPrivacyModal(false)}>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontFamily: fonts.RLight,
+                    color: colors.whiteColor,
+                  }}>
+                  {strings.save}
+                </Text>
+              </TouchableOpacity>
+            }
+          />
+          {(editPressTitle === strings.bio ||
+            editPressTitle === strings.certificateTitle ||
+            editPressTitle === strings.refereeFeesTitle) && (
+            <EventItemRender
+              title={
+                (editPressTitle === strings.bio && strings.bioPrivacyTitle) ||
+                (editPressTitle === strings.certificateTitle &&
+                  strings.certiPrivacyTitle) ||
+                (editPressTitle === strings.refereeFeesTitle &&
+                  strings.refereeFeePrivacyTitle)
+              }
+              containerStyle={{marginTop: 10}}>
+              <FlatList
+                data={privacyData ?? []}
+                style={{marginTop: 10}}
+                ItemSeparatorComponent={() => <View style={{height: 15}} />}
+                renderItem={({item}) => (
+                  <RadioBtnItem
+                    titleName={item.title}
+                    selected={item.isSelected}
+                    touchRadioBtnStyle={{marginRight: 5}}
+                    onRadioBtnPress={() => {
+                      privacyData.map((scheduleItem) => {
+                        const schedule = scheduleItem;
+                        if (schedule.id === item.id) {
+                          schedule.isSelected = true;
+                        } else {
+                          schedule.isSelected = false;
+                        }
+                        return null;
+                      });
+                      setPrivacyData([...privacyData]);
+                    }}
+                  />
+                )}
+                keyExtractor={(item, index) => index.toString()}
+              />
+            </EventItemRender>
+          )}
+          {editPressTitle === strings.basicinfotitle && (
+            <KeyboardAwareScrollView
+              enableOnAndroid={false}
+              showsVerticalScrollIndicator={false}>
+              <EventItemRender
+                title={
+                  editPressTitle === strings.basicinfotitle &&
+                  strings.basicInfoPrivacyTitle
+                }
+                containerStyle={{marginTop: 10}}>
+                <FlatList
+                  data={genderPrivacy ?? []}
+                  bounces={false}
+                  style={{marginTop: 10}}
+                  ListHeaderComponent={() => (
+                    <Text style={styles.privacySubTitleStyle}>
+                      {strings.gender}
+                    </Text>
+                  )}
+                  ItemSeparatorComponent={() => <View style={{height: 15}} />}
+                  renderItem={({item}) => (
+                    <RadioBtnItem
+                      titleName={item.title}
+                      selected={item.isSelected}
+                      touchRadioBtnStyle={{marginRight: 5}}
+                      onRadioBtnPress={() => {
+                        genderPrivacy.map((scheduleItem) => {
+                          const schedule = scheduleItem;
+                          if (schedule.id === item.id) {
+                            schedule.isSelected = true;
+                          } else {
+                            schedule.isSelected = false;
+                          }
+                          return null;
+                        });
+                        setGenderPrivacy([...genderPrivacy]);
+                      }}
+                    />
+                  )}
+                  keyExtractor={(item, index) => index.toString()}
+                />
+                <View style={styles.privacySepratorStyle} />
+                <FlatList
+                  data={yearOfBirthPrivacy ?? []}
+                  bounces={false}
+                  style={{marginTop: 10}}
+                  ListHeaderComponent={() => (
+                    <Text style={styles.privacySubTitleStyle}>
+                      {strings.yearOfBirth}
+                    </Text>
+                  )}
+                  ItemSeparatorComponent={() => <View style={{height: 15}} />}
+                  renderItem={({item}) => (
+                    <RadioBtnItem
+                      titleName={item.title}
+                      selected={item.isSelected}
+                      touchRadioBtnStyle={{marginRight: 5}}
+                      onRadioBtnPress={() => {
+                        yearOfBirthPrivacy.map((scheduleItem) => {
+                          const schedule = scheduleItem;
+                          if (schedule.id === item.id) {
+                            schedule.isSelected = true;
+                          } else {
+                            schedule.isSelected = false;
+                          }
+                          return null;
+                        });
+                        setYearOfBirthPrivacy([...yearOfBirthPrivacy]);
+                      }}
+                    />
+                  )}
+                  keyExtractor={(item, index) => index.toString()}
+                />
+                <View style={styles.privacySepratorStyle} />
+                <FlatList
+                  data={languagePrivacy ?? []}
+                  bounces={false}
+                  style={{marginTop: 10}}
+                  ListHeaderComponent={() => (
+                    <Text style={styles.privacySubTitleStyle}>
+                      {strings.language}
+                    </Text>
+                  )}
+                  ItemSeparatorComponent={() => <View style={{height: 15}} />}
+                  renderItem={({item}) => (
+                    <RadioBtnItem
+                      titleName={item.title}
+                      selected={item.isSelected}
+                      touchRadioBtnStyle={{marginRight: 5}}
+                      onRadioBtnPress={() => {
+                        languagePrivacy.map((scheduleItem) => {
+                          const schedule = scheduleItem;
+                          if (schedule.id === item.id) {
+                            schedule.isSelected = true;
+                          } else {
+                            schedule.isSelected = false;
+                          }
+                          return null;
+                        });
+                        setLanguagePrivacy([...languagePrivacy]);
+                      }}
+                    />
+                  )}
+                  keyExtractor={(item, index) => index.toString()}
+                />
+                <View style={styles.privacySepratorStyle} />
+                <FlatList
+                  data={currentCityPrivacy ?? []}
+                  bounces={false}
+                  style={{marginTop: 10}}
+                  ListHeaderComponent={() => (
+                    <Text style={styles.privacySubTitleStyle}>
+                      {strings.currrentCityTitle}
+                    </Text>
+                  )}
+                  ItemSeparatorComponent={() => <View style={{height: 15}} />}
+                  renderItem={({item}) => (
+                    <RadioBtnItem
+                      titleName={item.title}
+                      selected={item.isSelected}
+                      touchRadioBtnStyle={{marginRight: 5}}
+                      onRadioBtnPress={() => {
+                        currentCityPrivacy.map((scheduleItem) => {
+                          const schedule = scheduleItem;
+                          if (schedule.id === item.id) {
+                            schedule.isSelected = true;
+                          } else {
+                            schedule.isSelected = false;
+                          }
+                          return null;
+                        });
+                        setCurrentCityPrivacy([...currentCityPrivacy]);
+                      }}
+                    />
+                  )}
+                  keyExtractor={(item, index) => index.toString()}
+                />
+              </EventItemRender>
+            </KeyboardAwareScrollView>
+          )}
+        </SafeAreaView>
+      </Modal>
       <ActionSheet
         ref={actionSheet}
         options={[
@@ -1566,7 +1574,7 @@ function RefereeInfoSection({
           }
         }}
       />
-    </ScrollView>
+    </>
   );
 }
 
