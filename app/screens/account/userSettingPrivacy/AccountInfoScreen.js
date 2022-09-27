@@ -193,6 +193,7 @@ export default function AccountInfoScreen({navigation, route}) {
         rightComponent={
           <Text
             style={styles.headerRightButton}
+            numberOfLines={1}
             onPress={() => {
               onSavePress();
             }}>
@@ -266,6 +267,7 @@ const styles = StyleSheet.create({
   headerRightButton: {
     fontFamily: fonts.RRegular,
     fontSize: 16,
-    width: 52,
+    width: 100,
+    textAlign: 'right',
   },
 });

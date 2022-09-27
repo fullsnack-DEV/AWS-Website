@@ -7,12 +7,12 @@ import React, {
   useLayoutEffect,
   useRef,
   useState,
+  useEffect,
 } from 'react';
 import {
   View,
   StyleSheet,
   Text,
-  Image,
   Alert,
   FlatList,
   SafeAreaView,
@@ -21,6 +21,7 @@ import {
 
 import ActionSheet from 'react-native-actionsheet';
 import {widthPercentageToDP} from 'react-native-responsive-screen';
+import FastImage from 'react-native-fast-image';
 import * as Utility from '../../utils';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import AuthContext from '../../auth/context';
@@ -34,9 +35,11 @@ import ToggleView from '../../components/Schedule/ToggleView';
 import {strings} from '../../../Localization/translation';
 import Verbs from '../../Constants/Verbs';
 
-let image_url = '';
+// let image_url = '';
 
 export default function SportHideUnhideScreen({navigation}) {
+  const [image_base_url, setImageBaseUrl] = useState();
+
   const actionSheet = useRef();
   const authContext = useContext(AuthContext);
   const [loading, setloading] = useState(false);
@@ -66,11 +69,6 @@ export default function SportHideUnhideScreen({navigation}) {
     ],
   );
 
-  Utility.getStorage('appSetting').then((setting) => {
-    console.log('APPSETTING:=', setting);
-    image_url = setting.base_url_sporticon;
-  });
-
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -87,6 +85,12 @@ export default function SportHideUnhideScreen({navigation}) {
       ),
     });
   }, [navigation, activityList, entitySource, authObject, activityOrder]);
+
+  useEffect(() => {
+    Utility.getStorage('appSetting').then((setting) => {
+      setImageBaseUrl(setting.base_url_sporticon);
+    });
+  });
 
   const keyExtractor = useCallback((item, index) => index.toString(), []);
   const onSavePress = () => {
@@ -115,20 +119,20 @@ export default function SportHideUnhideScreen({navigation}) {
   };
 
   const renderSportsActivityView = ({item, index}) => {
-    console.log('index----', index);
     if (item?.is_active === true) {
       return (
         <View style={styles.sportsBackgroundView}>
           <View style={{flexDirection: 'row'}}>
-            <Image
+            <FastImage
               source={{
-                uri: `${image_url}${Utility.getSportImage(
+                uri: `${image_base_url}${Utility.getSportImage(
                   item.sport,
                   item.type,
                   authContext,
                 )}`,
               }}
               style={styles.sportsIcon}
+              resizeMode={'cover'}
             />
             <Text style={styles.sportNameTitle}>{`${Utility.getSportName(
               item,
@@ -287,7 +291,7 @@ export default function SportHideUnhideScreen({navigation}) {
                   thumbURL={
                     item?.type
                       ? {
-                          uri: `${image_url}${Utility.getSportImage(
+                          uri: `${image_base_url}${Utility.getSportImage(
                             item.sport,
                             item.type,
                             authContext,
