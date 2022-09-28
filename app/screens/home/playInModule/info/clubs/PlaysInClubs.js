@@ -16,7 +16,6 @@ const PlaysInClubs = ({
   currentUserData,
   onSave,
   navigation,
-  sportName,
   openPlayInModal = () => {},
 }) => {
   const actionSheet = useRef();
@@ -24,6 +23,7 @@ const PlaysInClubs = ({
   const [editModalType, setEditModalType] = useState('');
 
   const renderTeamClubLeague = ({item}) => {
+    console.log('jined clubs:=>', item);
     let teamIcon = '';
     let teamImagePH = '';
     if (item.entity_type === Verbs.entityTypeTeam) {
@@ -76,9 +76,10 @@ const PlaysInClubs = ({
         <FlatList
           ItemSeparatorComponent={() => <TCThinDivider />}
           data={
-            currentUserData?.joined_clubs?.filter(
-              (item) => item?.sport?.toLowerCase() === sportName?.toLowerCase(),
-            ) ?? []
+            currentUserData?.joined_clubs ?? []
+            // currentUserData?.joined_clubs?.filter(
+            //   (item) => item?.sport?.toLowerCase() === sportName?.toLowerCase(),
+            // ) ?? []
           }
           renderItem={renderTeamClubLeague}
         />

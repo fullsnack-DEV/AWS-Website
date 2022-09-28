@@ -34,7 +34,10 @@ const PlaysInBio = ({isAdmin, currentUserData, sportName, onSave}) => {
         <Text style={styles.bioTextStyle}>
           {registerSport?.descriptions ?? ''}
         </Text>
-        <Text style={styles.signUpTimeStyle}>{strings.signedupin}</Text>
+        <Text style={styles.signUpTimeStyle}>
+          {strings.signedupin}
+          {new Date(currentUserData?.created_at * 1000).getFullYear()}
+        </Text>
       </EditEventItem>
       <ActionSheet
         ref={actionSheet}

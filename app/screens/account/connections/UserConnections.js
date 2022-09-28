@@ -72,7 +72,8 @@ export default function UserConnections({navigation, route}) {
             keyExtractor={(item, index) => index.toString()}
             renderItem={({item}) => {
               const showFollowUnfollowButton =
-                userRole === Verbs.entityTypeUser;
+                userRole === Verbs.entityTypeUser &&
+                item.user_id !== authContext.entity.uid;
               return (
                 <TCUserList
                   onProfilePress={() => {
