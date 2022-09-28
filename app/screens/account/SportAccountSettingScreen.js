@@ -69,7 +69,28 @@ export default function SportAccountSettingScreen({navigation, route}) {
   ]);
 
   const getUserSettingMenu = useCallback(() => {
-    if (sport?.sport_type === 'single' || type !== Verbs.entityTypePlayer) {
+    if (type === 'player') {
+      if (sport?.sport_type === 'single') {
+        setUserSetting([
+          {
+            key: format(
+              strings.challengeSetting,
+              type === Verbs.entityTypePlayer
+                ? strings.challenge
+                : strings.reservation,
+            ),
+            id: 1,
+          },
+          {key: strings.lookingForClubText, id: 2},
+          {key: strings.deactivateActivityText, id: 3},
+        ]);
+      } else {
+        setUserSetting([
+          {key: strings.lookingForTeamText, id: 1},
+          {key: strings.deactivateActivityText, id: 2},
+        ]);
+      }
+    } else if (sport?.sport_type === 'single') {
       setUserSetting([
         {
           key: format(
@@ -80,14 +101,10 @@ export default function SportAccountSettingScreen({navigation, route}) {
           ),
           id: 1,
         },
-        {key: strings.lookingForClubText, id: 2},
-        {key: strings.deactivateActivityText, id: 3},
-      ]);
-    } else {
-      setUserSetting([
-        {key: strings.lookingForClubText, id: 1},
         {key: strings.deactivateActivityText, id: 2},
       ]);
+    } else {
+      setUserSetting([{key: strings.deactivateActivityText, id: 1}]);
     }
   }, [sport?.sport_type, type]);
 
@@ -96,13 +113,15 @@ export default function SportAccountSettingScreen({navigation, route}) {
   }, [getUserSettingMenu]);
 
   const handleOpetions = (opetions) => {
-    if (opetions === strings.challengeSettingText) {
+    if (opetions.toLowerCase() === strings.challengeSettingText.toLowerCase()) {
       navigation.navigate('ManageChallengeScreen', {
         groupObj: authContext.entity.obj,
         sportName: sport.sport,
         sportType: sport.sport_type,
       });
-    } else if (opetions === strings.reservationSettingText) {
+    } else if (
+      opetions.toLowerCase() === strings.reservationSettingText.toLowerCase()
+    ) {
       if (type === Verbs.entityTypeReferee) {
         navigation.navigate('RefereeReservationSetting', {
           sportName: sport.sport,
@@ -112,14 +131,17 @@ export default function SportAccountSettingScreen({navigation, route}) {
           sportName: sport.sport,
         });
       }
-    } else if (opetions === strings.lookingForClubText) {
+    } else if (
+      opetions === strings.lookingForClubText ||
+      opetions === strings.lookingForTeamText
+    ) {
       navigation.navigate('LookingForSettingScreen', {
         type,
         sport,
       });
     } else if (opetions === strings.deactivateActivityText) {
       navigation.navigate('DeactivateSportScreen', {
-        sport,
+        sportObj: sport,
       });
     }
   };

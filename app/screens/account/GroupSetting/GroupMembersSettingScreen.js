@@ -105,7 +105,6 @@ export default function GroupMembersSettingScreen({navigation, route}) {
       authContext.entity.role === Verbs.entityTypeTeam ||
       authContext.entity.role === 'club'
     ) {
-      console.log('Au:::=>', authContext);
       setHiringPlayersObject(authContext?.entity?.obj);
     }
   }, [authContext]);
@@ -127,7 +126,14 @@ export default function GroupMembersSettingScreen({navigation, route}) {
   const getSettingValue = useCallback(
     (item) => {
       console.log('item.key', item);
-
+      if (item === strings.recruitingPlayerText) {
+        if (hiringPlayersObject?.hiringPlayers) {
+          // return hiringPlayersObject?.hiringPlayers;
+          return strings.yes;
+        }
+        // return 'No';
+        return strings.no;
+      }
       if (item === userSetting[0].key) {
         if (whoCanJoinGroup === 0) {
           return strings.everyoneRadio;

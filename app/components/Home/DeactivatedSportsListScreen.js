@@ -48,7 +48,6 @@ export default function DeactivatedSportsListScreen({navigation}) {
   });
 
   const keyExtractor = useCallback((item, index) => index.toString(), []);
-
   useEffect(() => {
     if (isFocused) {
       setloading(true);
@@ -56,6 +55,7 @@ export default function DeactivatedSportsListScreen({navigation}) {
         .then((response) => {
           setloading(false);
           setUserObject(response.payload);
+          console.log('response====>', response.payload);
         })
         .catch((e) => {
           setloading(false);
@@ -262,6 +262,23 @@ export default function DeactivatedSportsListScreen({navigation}) {
             />
           </View>
         )}
+        {userObject?.registered_sports === undefined &&
+          userObject?.referee_data === undefined &&
+          userObject?.scorekeeper_data === undefined && (
+            <Text
+              style={{
+                color: colors.userPostTimeColor,
+                fontFamily: fonts.RLight,
+                fontSize: 16,
+                marginTop: 15,
+
+                textAlign: 'center',
+                alignSelf: 'center',
+                justifyContent: 'center',
+              }}>
+              No Data Found
+            </Text>
+          )}
       </View>
       <ActionSheet
         ref={actionSheet}
