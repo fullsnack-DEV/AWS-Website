@@ -28,7 +28,6 @@ import {getSportName} from '../../../../utils';
 export default function ActivitySettingScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const [sportObj] = useState(route?.params?.sport);
-
   const [userSetting, setUserSetting] = useState();
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -41,16 +40,22 @@ export default function ActivitySettingScreen({navigation, route}) {
   }, [authContext, navigation, sportObj]);
 
   const getSettingMenu = useCallback(() => {
-    if (sportObj?.sport_type === 'single') {
-      setUserSetting([
-        {key: strings.lookingForClubText, id: 1},
-        {key: strings.deactivateActivityText, id: 2},
-      ]);
+    if (sportObj?.type === 'player') {
+      if (sportObj?.sport_type === 'single') {
+        setUserSetting([
+          {key: strings.lookingForClubText, id: 1},
+          {key: strings.deactivateActivityText, id: 2},
+        ]);
+      } else {
+        setUserSetting([
+          {key: strings.lookingForTeamText, id: 1},
+          {key: strings.deactivateActivityText, id: 2},
+        ]);
+      }
+    } else if (sportObj?.sport_type === 'single') {
+      setUserSetting([{key: strings.deactivateActivityText, id: 1}]);
     } else {
-      setUserSetting([
-        {key: strings.lookingForTeamText, id: 1},
-        {key: strings.deactivateActivityText, id: 2},
-      ]);
+      setUserSetting([{key: strings.deactivateActivityText, id: 1}]);
     }
   }, [authContext, sportObj]);
 
@@ -70,7 +75,7 @@ export default function ActivitySettingScreen({navigation, route}) {
       });
     } else if (opetions === strings.deactivateActivityText) {
       navigation.navigate('DeactivateSportScreen', {
-        sport: sportObj,
+        sportObj,
       });
     }
   };

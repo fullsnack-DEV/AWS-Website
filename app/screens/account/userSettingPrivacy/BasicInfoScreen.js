@@ -95,6 +95,7 @@ export default function BasicInfoScreen({navigation, route}) {
   const [searchText, setSearchText] = useState('');
   const [cityData, setCityData] = useState([]);
   const [currentLocation, setCurrentLocation] = useState();
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: false,
@@ -695,6 +696,7 @@ export default function BasicInfoScreen({navigation, route}) {
         rightComponent={
           <Text
             style={styles.headerRightButton}
+            numberOfLines={1}
             onPress={() => {
               // if (!editMode) changeEditMode();
               // else
@@ -717,7 +719,10 @@ export default function BasicInfoScreen({navigation, route}) {
         <View>
           <TCLabel title={strings.gender} />
           <View style={styles.staticTextView}>
-            <Text style={styles.staticText}>{userInfo.gender}</Text>
+            <Text style={styles.staticText}>
+              {userInfo.gender.charAt(0).toUpperCase() +
+                userInfo.gender.slice(1)}
+            </Text>
           </View>
         </View>
 
@@ -900,7 +905,8 @@ const styles = StyleSheet.create({
   headerRightButton: {
     fontFamily: fonts.RRegular,
     fontSize: 16,
-    width: 52,
+    width: 100,
+    textAlign: 'right',
   },
   matchFeeTxt: {
     alignSelf: 'center',

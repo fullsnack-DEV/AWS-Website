@@ -388,7 +388,6 @@ export default function PersonalInformationScreen({navigation, route}) {
               bodyParams.full_image = attachments[0].thumbnail;
               bodyParams.thumbnail = attachments[0].url;
             }
-
             updateUser(bodyParams);
           })
           .catch((e) => {
@@ -398,8 +397,8 @@ export default function PersonalInformationScreen({navigation, route}) {
             setloading(false);
           });
       } else {
-        bodyParams.full_image = '';
-        bodyParams.thumbnail = '';
+        // bodyParams.full_image = '';
+        // bodyParams.thumbnail = '';
         updateUser(bodyParams);
       }
     }
@@ -551,6 +550,7 @@ export default function PersonalInformationScreen({navigation, route}) {
         rightComponent={
           <Text
             style={styles.headerRightButton}
+            numberOfLines={1}
             onPress={() => {
               // if (!editMode) changeEditMode();
               // else
@@ -796,7 +796,8 @@ const styles = StyleSheet.create({
   headerRightButton: {
     fontFamily: fonts.RRegular,
     fontSize: 16,
-    width: 52,
+    width: 100,
+    textAlign: 'right',
   },
 
   matchFeeTxt: {

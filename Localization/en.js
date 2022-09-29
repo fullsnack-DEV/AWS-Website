@@ -1412,7 +1412,7 @@ export default {
   checkInboxText:
     'en_Please check your inbox to verify email, once it will verify your email will changed automatically.',
   accountInfo: 'en_Account Info',
-  update: 'en_Update',
+  update: 'en_Save',
   email: 'en_E-mail',
   changePassword: 'en_Change password',
 
@@ -1479,7 +1479,6 @@ export default {
   pauseClubTitle: 'en_Pause Club',
 
   thisFeatureisUnderDevelopment: 'en_This feature is in development.',
-
   challengeSetting: 'en_{0} Settings',
   reservation: 'Reservation',
   fNameCanNotBlank:

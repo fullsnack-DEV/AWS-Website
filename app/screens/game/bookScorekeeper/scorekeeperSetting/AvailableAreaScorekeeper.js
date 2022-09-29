@@ -9,7 +9,6 @@ import {
   FlatList,
   SafeAreaView,
   TextInput,
-  Image,
   TouchableOpacity,
   Platform,
 } from 'react-native';
@@ -26,7 +25,6 @@ import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
 import TCKeyboardView from '../../../../components/TCKeyboardView';
 
-import images from '../../../../Constants/ImagePath';
 import TCThinDivider from '../../../../components/TCThinDivider';
 import LocationSearchModal from '../../../../components/Home/LocationSearchModal';
 import * as Utility from '../../../../utils';
@@ -261,7 +259,7 @@ export default function AvailableAreaScorekeeper({navigation, route}) {
             <Text style={[styles.radioTitleText, {flex: 0.9}]}>
               {strings.addAreaText}
             </Text>
-            <View style={{flex: 0.1}}>
+            {/* <View style={{flex: 0.1}}>
               {areaRadio === 0 ? (
                 <Image
                   source={images.radioCheckYellow}
@@ -273,7 +271,7 @@ export default function AvailableAreaScorekeeper({navigation, route}) {
                   style={styles.checkboxImg}
                 />
               )}
-            </View>
+            </View> */}
           </TouchableOpacity>
 
           <View pointerEvents={areaRadio === 0 ? 'auto' : 'none'}>
@@ -398,12 +396,6 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
   },
 
-  checkboxImg: {
-    width: 22,
-    height: 22,
-    resizeMode: 'contain',
-    alignSelf: 'center',
-  },
   checkBoxContainer: {
     flex: 1,
     width: '92%',
