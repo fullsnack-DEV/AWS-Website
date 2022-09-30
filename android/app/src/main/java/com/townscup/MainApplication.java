@@ -21,7 +21,7 @@ import java.util.List;
 import com.facebook.react.bridge.JSIModulePackage; // <- add
 import com.swmansion.reanimated.ReanimatedJSIModulePackage; // <- add
 import io.amarcruz.photoview.PhotoViewPackage;
-import com.zoontek.rnlocalize.RNLocalizePackage;
+//import com.zoontek.rnlocalize.RNLocalizePackage;
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -42,7 +42,7 @@ public class MainApplication extends Application implements ReactApplication {
           // packages.add(new MyReactNativePackage());
           //packages.add(new MapsPackage());
           packages.add(new PhotoViewPackage());
-		  packages.add(new RNLocalizePackage());
+		  //packages.add(new RNLocalizePackage());
 
           return packages;
         }
