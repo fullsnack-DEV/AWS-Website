@@ -65,10 +65,10 @@ export default function RefereesListScreen({navigation, route}) {
   // eslint-disable-next-line no-unused-vars
   const [loadMore, setLoadMore] = useState(false);
   const [selectedSport, setSelectedSport] = useState({
-    sport: route?.params?.filters.sport,
-    sport_type: route?.params?.filters.sport_type,
+    sport: route?.params?.filters?.sport,
+    sport_type: route?.params?.filters?.sport_type,
   });
-  const [location, setLocation] = useState(route?.params?.filters.location);
+  const [location, setLocation] = useState(route?.params?.filters?.location);
 
   // console.log('Referee Filter:=>', filters);
 
@@ -90,7 +90,7 @@ export default function RefereesListScreen({navigation, route}) {
     const list = [
       {
         label: strings.all,
-        value: 'All',
+        value: strings.allType,
       },
     ];
 
@@ -107,6 +107,7 @@ export default function RefereesListScreen({navigation, route}) {
 
   const getReferees = useCallback(
     (filerReferee) => {
+      // Referee query
       const refereeQuery = {
         size: pageSize,
         from: pageFrom,
@@ -117,15 +118,7 @@ export default function RefereesListScreen({navigation, route}) {
                 nested: {
                   path: 'referee_data',
                   query: {
-                    bool: {
-                      must: [
-                        {
-                          match: {
-                            'referee_data.is_published': true,
-                          },
-                        },
-                      ],
-                    },
+                    bool: {must: [{term: {'referee_data.is_published': true}}]},
                   },
                 },
               },
@@ -134,15 +127,16 @@ export default function RefereesListScreen({navigation, route}) {
         },
       };
 
-      if (filerReferee.location !== 'world') {
-        refereeQuery.query.bool.must[0].nested.query.bool.must.push({
+      if (filerReferee.location !== strings.worldTitleText) {
+        refereeQuery.query.bool.must.push({
           multi_match: {
             query: `${filerReferee.location.toLowerCase()}`,
-            fields: ['city', 'country', 'state_abbr'],
+            fields: ['city', 'country', 'state'],
           },
         });
       }
-      if (filerReferee.sport !== 'All') {
+
+      if (filerReferee.sport !== strings.allType) {
         refereeQuery.query.bool.must[0].nested.query.bool.must.push({
           term: {
             'referee_data.sport.keyword': {
@@ -151,6 +145,7 @@ export default function RefereesListScreen({navigation, route}) {
           },
         });
       }
+
       if (filerReferee.refereeFee) {
         refereeQuery.query.bool.must[0].nested.query.bool.must.push({
           range: {
@@ -251,17 +246,17 @@ export default function RefereesListScreen({navigation, route}) {
     Object.keys(tempFilter).forEach((key) => {
       if (key === Object.keys(item)[0]) {
         if (Object.keys(item)[0] === 'sport') {
-          tempFilter.sport = 'All';
+          tempFilter.sport = strings.allType;
           delete tempFilter.refereeFee;
           setSelectedSport({
-            sort: 'All',
-            sport_type: 'All',
+            sort: strings.allType,
+            sport_type: strings.allType,
           });
           setMinFee(0);
           setMaxFee(0);
         }
         if (Object.keys(item)[0] === 'location') {
-          tempFilter.location = 'world';
+          tempFilter.location = strings.worldTitleText;
         }
         if (Object.keys(item)[0] === 'refereeFee') {
           delete tempFilter.refereeFee;
@@ -321,6 +316,7 @@ export default function RefereesListScreen({navigation, route}) {
   };
 
   const applyFilter = useCallback((fil) => {
+    console.log('apply filter', fil);
     getReferees(fil);
   }, []);
 
@@ -365,13 +361,13 @@ export default function RefereesListScreen({navigation, route}) {
 
   const onPressReset = () => {
     setFilters({
-      location: 'world',
-      sport: 'All',
-      sport_type: 'All',
+      location: strings.worldTitleText,
+      sport: strings.allType,
+      sport_type: strings.allType,
     });
     setSelectedSport({
-      sort: 'All',
-      sport_type: 'All',
+      sort: strings.allType,
+      sport_type: strings.allType,
     });
     setMinFee(0);
     setMaxFee(0);
@@ -501,10 +497,10 @@ export default function RefereesListScreen({navigation, route}) {
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(0);
-                          setLocation('world');
+                          setLocation(strings.worldTitleText);
                           // setFilters({
                           //   ...filters,
-                          //   location: 'world',
+                          //   location: strings.worldTitleText,
                           // });
                         }}>
                         <Image
@@ -630,19 +626,20 @@ export default function RefereesListScreen({navigation, route}) {
                       margin: 15,
                       justifyContent: 'space-between',
                     }}>
-                    <View style={{}}>
+                    <View>
                       <Text style={styles.filterTitle}>{strings.sport}</Text>
                     </View>
                     <View style={{marginTop: 10}}>
                       <TCPicker
                         dataSource={sports}
                         placeholder={strings.selectSportTitleText}
+                        // placeholderValue={strings.allType}
                         onValueChange={(value) => {
                           console.log('Sport value:=>', value);
-                          if (value === 'All') {
+                          if (value === strings.allType) {
                             setSelectedSport({
-                              sport: 'All',
-                              sport_type: 'All',
+                              sport: strings.allType,
+                              sport_type: strings.allType,
                             });
                             setMinFee(0);
                             setMaxFee(0);
@@ -653,7 +650,7 @@ export default function RefereesListScreen({navigation, route}) {
                           }
                         }}
                         value={
-                          selectedSport?.sport !== 'All'
+                          selectedSport?.sport !== strings.allType
                             ? Utility.getSportName(selectedSport, authContext)
                             : strings.all
                         }
@@ -801,7 +798,7 @@ export default function RefereesListScreen({navigation, route}) {
           </View> */}
               {/* Rate View */}
 
-              {selectedSport?.sport !== 'All' && (
+              {selectedSport?.sport !== strings.allType && (
                 <View
                   style={{
                     flexDirection: 'column',

@@ -7,6 +7,7 @@ import {
   FlatList,
   TouchableOpacity,
 } from 'react-native';
+import {strings} from '../../Localization/translation';
 
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
@@ -19,8 +20,8 @@ function TCTagsFilter({dataSource, onTagCancelPress, filter, authContext}) {
 
     return (
       <>
-        {Object.values(item)[0] !== 'All' &&
-          Object.values(item)[0] !== 'world' &&
+        {Object.values(item)[0] !== strings.allType &&
+          Object.values(item)[0] !== strings.worldTitleText &&
           Object.keys(item)[0] !== 'entityID' &&
           Object.keys(item)[0] !== 'searchText' &&
           Object.keys(item)[0] !== 'sport_type' && (

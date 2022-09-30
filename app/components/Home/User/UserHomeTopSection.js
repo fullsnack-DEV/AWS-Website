@@ -173,7 +173,7 @@ const UserHomeTopSection = ({
       return (
         <UserInfoRefereesInItem
           isOpacity={isAdmin ? item?.is_hide : false}
-          title={Utility.getSportName(item, authContext)}
+          title={Utility.firstLetterCapital(item.sport)}
           thumbURL={
             item?.type
               ? {
@@ -201,7 +201,7 @@ const UserHomeTopSection = ({
       return (
         <UserInfoScorekeeperInItem
           isOpacity={isAdmin ? item?.is_hide : false}
-          title={Utility.getSportName(item, authContext)}
+          title={Utility.firstLetterCapital(item.sport)}
           thumbURL={
             item?.type
               ? {

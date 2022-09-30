@@ -267,7 +267,10 @@ export default function LocalHomeScreen({navigation, route}) {
 
   useEffect(() => {
     if (isFocused) {
-      getShortsList(location === 'world' ? '_world_' : location, authContext)
+      getShortsList(
+        location === strings.worldTitleText ? '_world_' : location,
+        authContext,
+      )
         .then((res) => {
           setloading(false);
           if (res.payload) {
@@ -306,7 +309,7 @@ export default function LocalHomeScreen({navigation, route}) {
         sort: [{actual_enddatetime: 'desc'}],
       };
 
-      if (location !== 'world') {
+      if (location !== strings.worldTitleText) {
         recentMatchQuery.query.bool.must.push({
           multi_match: {
             query: location,
@@ -350,7 +353,7 @@ export default function LocalHomeScreen({navigation, route}) {
         sort: [{actual_enddatetime: 'desc'}],
       };
 
-      if (location !== 'world') {
+      if (location !== strings.worldTitleText) {
         upcomingMatchQuery.query.bool.must.push({
           multi_match: {
             query: location,
@@ -419,7 +422,7 @@ export default function LocalHomeScreen({navigation, route}) {
         },
       };
 
-      if (location !== 'world') {
+      if (location !== strings.worldTitleText) {
         console.log('locationlocation', location);
         availableForchallengeQuery.query.bool.should[0].bool.must.push({
           multi_match: {
@@ -490,7 +493,7 @@ export default function LocalHomeScreen({navigation, route}) {
         },
       };
 
-      if (location !== 'world') {
+      if (location !== strings.worldTitleText) {
         recruitingPlayersQuery.query.bool.must.push({
           multi_match: {
             query: location,
@@ -543,7 +546,7 @@ export default function LocalHomeScreen({navigation, route}) {
         },
       };
 
-      if (location !== 'world') {
+      if (location !== strings.worldTitleText) {
         lookingQuery.query.bool.must.push({
           multi_match: {
             query: `${location}`,
@@ -591,7 +594,7 @@ export default function LocalHomeScreen({navigation, route}) {
         },
       };
 
-      if (location !== 'world') {
+      if (location !== strings.worldTitleText) {
         refereeQuery.query.bool.must.push({
           multi_match: {
             query: `${location}`,
@@ -630,7 +633,7 @@ export default function LocalHomeScreen({navigation, route}) {
           },
         },
       };
-      if (location !== 'world') {
+      if (location !== strings.worldTitleText) {
         scorekeeperQuery.query.bool.must[0].nested.query.bool.must.push({
           multi_match: {
             query: `${location}`,
@@ -1517,7 +1520,6 @@ export default function LocalHomeScreen({navigation, route}) {
                 onPress={() =>
                   navigation.navigate('LookingTeamScreen', {
                     filters,
-                    sportsList: sports,
                   })
                 }
               />
@@ -1645,10 +1647,10 @@ export default function LocalHomeScreen({navigation, route}) {
             onPress={() => {
               setSelectedLocationOption(2);
               navigation.setParams({locationText: null});
-              setLocation('world');
+              setLocation(strings.worldTitleText);
               setFilters({
                 ...filters,
-                location: 'world',
+                location: strings.worldTitleText,
               });
 
               setTimeout(() => {

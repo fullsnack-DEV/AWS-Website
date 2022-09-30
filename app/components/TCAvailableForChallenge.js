@@ -29,11 +29,11 @@ const TCAvailableForChallenge = ({
   }
 
   if (entityType === Verbs.entityTypePlayer) {
-    if (selectedSport.sport !== Verbs.allVerb) {
+    if (selectedSport?.sport !== Verbs.allVerb) {
       const filterdData = (data?.registered_sports || []).filter(
         (obj) =>
-          obj.sport === selectedSport.sport &&
-          obj.sport_type === selectedSport.sport_type &&
+          obj.sport === selectedSport?.sport &&
+          obj.sport_type === selectedSport?.sport_type &&
           obj?.setting?.availibility === Verbs.on,
       );
       if (filterdData.length > 0) {
