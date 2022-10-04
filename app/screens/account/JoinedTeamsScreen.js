@@ -27,7 +27,7 @@ import {strings} from '../../../Localization/translation';
 import Verbs from '../../Constants/Verbs';
 
 export default function JoinedTeamsScreen({route}) {
-  const [teamList, setTeamList] = useState([]);
+  const [entityList, setEntityList] = useState([]);
   const authContext = useContext(AuthContext);
   const [loading, setloading] = useState(false);
   const [uid] = useState(route?.params?.uid);
@@ -46,8 +46,9 @@ export default function JoinedTeamsScreen({route}) {
       authContext,
     )
       .then((res) => {
+        console.log('sdfsdfdsfsdfs', res);
         setloading(false);
-        setTeamList(res.payload);
+        setEntityList(res.payload);
       })
       .catch((error) => {
         setloading(false);
@@ -78,7 +79,7 @@ export default function JoinedTeamsScreen({route}) {
   return (
     <SafeAreaView>
       <ActivityLoader visible={loading} />
-      <FlatList data={teamList} renderItem={renderTeams} />
+      <FlatList data={entityList} renderItem={renderTeams} />
     </SafeAreaView>
   );
 }

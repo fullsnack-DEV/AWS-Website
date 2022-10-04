@@ -4,7 +4,6 @@ import {StyleSheet, Platform, View, TextInput} from 'react-native';
 import FastImage from 'react-native-fast-image';
 
 import RNPickerSelect from 'react-native-picker-select';
-// eslint-disable-next-line import/no-unresolved
 import {Country} from 'country-state-city';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';

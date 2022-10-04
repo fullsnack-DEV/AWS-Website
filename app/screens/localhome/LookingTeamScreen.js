@@ -63,11 +63,11 @@ export default function LookingTeamScreen({navigation, route}) {
   const [pageFrom, setPageFrom] = useState(0);
   // eslint-disable-next-line no-unused-vars
   const [loadMore, setLoadMore] = useState(false);
-  const [selectedSport, setSelectedSport] = useState(
-    route?.params?.filters.sport,
-  );
+  const [selectedSport, setSelectedSport] = useState({
+    sport: route?.params?.filters?.sport,
+    sport_type: route?.params?.filters?.sport_type,
+  });
   const [location, setLocation] = useState(route?.params?.filters.location);
-  const [sportsList] = useState(route?.params?.sportsList);
 
   useEffect(() => {
     if (route?.params?.locationText) {
@@ -85,20 +85,20 @@ export default function LookingTeamScreen({navigation, route}) {
   useEffect(() => {
     const list = [
       {
-        label: 'All',
-        value: 'All',
+        label: strings.allType,
+        value: strings.allType,
       },
     ];
-    sportsList.map((obj) => {
+    authContext.sports.map((obj) => {
       const dataSource = {
-        label: obj.sport_name,
-        value: obj.sport_name,
+        label: Utility.getSportName(obj, authContext),
+        value: Utility.getSportName(obj, authContext),
       };
       list.push(dataSource);
     });
 
     setSports(list);
-  }, [sportsList]);
+  }, [authContext]);
 
   const getLookingEntity = useCallback(
     (filerLookingEntity) => {
@@ -130,7 +130,7 @@ export default function LookingTeamScreen({navigation, route}) {
         },
       };
 
-      if (filerLookingEntity.location !== 'world') {
+      if (filerLookingEntity.location !== strings.worldTitleText) {
         lookingQuery.query.bool.must.push({
           multi_match: {
             query: `${filerLookingEntity.location}`,
@@ -138,7 +138,7 @@ export default function LookingTeamScreen({navigation, route}) {
           },
         });
       }
-      if (filerLookingEntity.sport !== 'All') {
+      if (filerLookingEntity.sport !== strings.allType) {
         lookingQuery.query.bool.must[0].nested.query.bool.must.push({
           term: {
             'registered_sports.sport_name.keyword': {
@@ -187,7 +187,7 @@ export default function LookingTeamScreen({navigation, route}) {
         <TCLookingForEntityView
           data={item}
           showStar={false}
-          sport={selectedSport}
+          sport={selectedSport?.sport}
           onPress={() => {
             navigation.navigate('HomeScreen', {
               uid: ['user', 'player']?.includes(item?.entity_type)
@@ -237,12 +237,15 @@ export default function LookingTeamScreen({navigation, route}) {
     Object.keys(tempFilter).forEach((key) => {
       if (key === Object.keys(item)[0]) {
         if (Object.keys(item)[0] === 'sport') {
-          tempFilter.sport = 'All';
+          tempFilter.sport = strings.allType;
           delete tempFilter.lookingEntityFee;
-          setSelectedSport('All');
+          setSelectedSport({
+            sort: strings.allType,
+            sport_type: strings.allType,
+          });
         }
         if (Object.keys(item)[0] === 'location') {
-          tempFilter.location = 'world';
+          tempFilter.location = strings.worldTitleText;
         }
 
         // delete tempFilter[key];
@@ -317,11 +320,14 @@ export default function LookingTeamScreen({navigation, route}) {
 
   const onPressReset = () => {
     setFilters({
-      location: 'world',
-      sport: 'All',
-      sport_type: 'All',
+      location: strings.worldTitleText,
+      sport: strings.allType,
+      sport_type: strings.allType,
     });
-    setSelectedSport('All');
+    setSelectedSport({
+      sort: strings.allType,
+      sport_type: strings.allType,
+    });
   };
   return (
     <SafeAreaView style={{flex: 1}}>
@@ -440,10 +446,10 @@ export default function LookingTeamScreen({navigation, route}) {
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(0);
-                          setLocation('world');
+                          setLocation(strings.worldTitleText);
                           // setFilters({
                           //   ...filters,
-                          //   location: 'world',
+                          //   location: strings.worldTitleText,
                           // });
                         }}>
                         <Image
@@ -462,7 +468,9 @@ export default function LookingTeamScreen({navigation, route}) {
                         marginBottom: 10,
                         justifyContent: 'space-between',
                       }}>
-                      <Text style={styles.filterTitle}>{strings.currentCity}</Text>
+                      <Text style={styles.filterTitle}>
+                        {strings.currentCity}
+                      </Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(1);
@@ -497,7 +505,9 @@ export default function LookingTeamScreen({navigation, route}) {
                         marginBottom: 10,
                         justifyContent: 'space-between',
                       }}>
-                      <Text style={styles.filterTitle}>{strings.currrentCityTitle}</Text>
+                      <Text style={styles.filterTitle}>
+                        {strings.currrentCityTitle}
+                      </Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(2);
@@ -529,7 +539,8 @@ export default function LookingTeamScreen({navigation, route}) {
                         }}>
                         <View style={styles.searchCityContainer}>
                           <Text style={styles.searchCityText}>
-                            {route?.params?.locationText || strings.searchCityText}
+                            {route?.params?.locationText ||
+                              strings.searchCityText}
                           </Text>
                         </View>
                         <View
@@ -557,19 +568,40 @@ export default function LookingTeamScreen({navigation, route}) {
                       justifyContent: 'space-between',
                     }}>
                     <View style={{}}>
-                      <Text style={styles.filterTitle}>{strings.sportsEventsTitle}</Text>
+                      <Text style={styles.filterTitle}>
+                        {strings.sportsEventsTitle}
+                      </Text>
                     </View>
                     <View style={{marginTop: 10}}>
                       <TCPicker
                         dataSource={sports}
                         placeholder={strings.selectSportTitleText}
-                        onValueChange={(value) => {
-                          setSelectedSport(value);
-
+                        onDonePress={() => {
+                          console.log('done oresssss');
                           setFilters({
                             ...filters,
-                            sport: value,
+                            sport: selectedSport?.sport,
+                            sport_type: selectedSport?.sport_type,
                           });
+                        }}
+                        onValueChange={(value) => {
+                          console.log('dsffsdafsadf', value);
+                          //   setSelectedSport(value);
+
+                          //   setFilters({
+                          //     ...filters,
+                          //     sport: value,
+                          //   });
+                          if (value === strings.allType) {
+                            setSelectedSport({
+                              sport: strings.allType,
+                              sport_type: strings.allType,
+                            });
+                          } else {
+                            setSelectedSport(
+                              Utility.getSportObjectByName(value, authContext),
+                            );
+                          }
                         }}
                         value={selectedSport}
                       />

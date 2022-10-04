@@ -25,7 +25,7 @@ import fonts from '../../Constants/Fonts';
 import Header from '../../components/Home/Header';
 import AuthContext from '../../auth/context';
 import colors from '../../Constants/Colors';
-import {getSportName} from '../../utils';
+import {firstLetterCapital, getSportName} from '../../utils';
 import images from '../../Constants/ImagePath';
 import {strings} from '../../../Localization/translation';
 import Verbs from '../../Constants/Verbs';
@@ -69,33 +69,15 @@ export default function SportAccountSettingScreen({navigation, route}) {
   ]);
 
   const getUserSettingMenu = useCallback(() => {
-    if (type === 'player') {
-      if (sport?.sport_type === 'single') {
-        setUserSetting([
-          {
-            key: format(
-              strings.challengeSetting,
-              type === Verbs.entityTypePlayer
-                ? strings.challenge
-                : strings.reservation,
-            ),
-            id: 1,
-          },
-          {key: strings.lookingForClubText, id: 2},
-          {key: strings.deactivateActivityText, id: 3},
-        ]);
-      } else {
-        setUserSetting([
-          {key: strings.lookingForTeamText, id: 1},
-          {key: strings.deactivateActivityText, id: 2},
-        ]);
-      }
-    } else if (sport?.sport_type === 'single') {
+    if (
+      sport?.sport_type === 'single' ||
+      ![Verbs.entityTypePlayer, Verbs.entityTypeUser].includes(type)
+    ) {
       setUserSetting([
         {
           key: format(
             strings.challengeSetting,
-            type === Verbs.entityTypePlayer
+            [Verbs.entityTypePlayer, Verbs.entityTypeUser].includes(type)
               ? strings.challenge
               : strings.reservation,
           ),
@@ -123,6 +105,7 @@ export default function SportAccountSettingScreen({navigation, route}) {
       opetions.toLowerCase() === strings.reservationSettingText.toLowerCase()
     ) {
       if (type === Verbs.entityTypeReferee) {
+        console.log('opetions:=>', opetions);
         navigation.navigate('RefereeReservationSetting', {
           sportName: sport.sport,
         });
@@ -195,7 +178,10 @@ export default function SportAccountSettingScreen({navigation, route}) {
                 textAlign: 'center',
                 fontFamily: fonts.RRegular,
               }}>
-              {getSportName(sport, authContext)}
+              {type === Verbs.entityTypeReferee ||
+              type === Verbs.entityTypeScorekeeper
+                ? firstLetterCapital(sport.sport)
+                : getSportName(sport, authContext)}
             </Text>
           </Text>
         }

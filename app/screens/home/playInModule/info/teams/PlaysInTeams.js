@@ -24,6 +24,7 @@ const PlaysInTeams = ({
   const [editModalType, setEditModalType] = useState('');
 
   const renderTeamClubLeague = ({item}) => {
+    console.log('dsfsdf asfsd fsad fasd', item);
     let teamIcon = '';
     let teamImagePH = '';
     if (item.entity_type === Verbs.entityTypeTeam) {

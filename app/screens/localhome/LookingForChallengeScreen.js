@@ -52,7 +52,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
 
   const [settingPopup, setSettingPopup] = useState(false);
   const [locationFilterOpetion, setLocationFilterOpetion] = useState(
-    filters.location !== 'world' ? 3 : 0,
+    filters.location !== strings.worldTitleText ? 3 : 0,
   );
 
   const [sports, setSports] = useState([]);
@@ -91,7 +91,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
     const list = [
       {
         label: strings.all,
-        value: 'All',
+        value: strings.allType,
       },
     ];
 
@@ -158,7 +158,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
         },
       };
 
-      if (filerdata.location !== 'world') {
+      if (filerdata.location !== strings.worldTitleText) {
         availableForchallengeQuery.query.bool.should[0].bool.must.push({
           multi_match: {
             query: filerdata.location,
@@ -189,7 +189,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
         });
       }
 
-      if (filerdata.sport !== 'All') {
+      if (filerdata?.sport !== strings.allType) {
         availableForchallengeQuery.query.bool.should[0].bool.must.push({
           term: {
             'sport.keyword': {
@@ -337,18 +337,18 @@ export default function LookingForChallengeScreen({navigation, route}) {
     Object.keys(tempFilter).forEach((key) => {
       if (key === Object.keys(item)[0]) {
         if (Object.keys(item)[0] === 'sport') {
-          tempFilter.sport = 'All';
-          tempFilter.sport_type = 'All';
+          tempFilter.sport = strings.allType;
+          tempFilter.sport_type = strings.allType;
           delete tempFilter.gameFee;
           setSelectedSport({
-            sort: 'All',
-            sport_type: 'All',
+            sort: strings.allType,
+            sport_type: strings.allType,
           });
           setMinFee(0);
           setMaxFee(0);
         }
         if (Object.keys(item)[0] === 'location') {
-          tempFilter.location = 'world';
+          tempFilter.location = strings.worldTitleText;
         }
         if (Object.keys(item)[0] === 'gameFee') {
           delete tempFilter.gameFee;
@@ -441,13 +441,13 @@ export default function LookingForChallengeScreen({navigation, route}) {
 
   const onPressReset = () => {
     setFilters({
-      location: 'world',
-      sport: 'All',
-      sport_type: 'All',
+      location: strings.worldTitleText,
+      sport: strings.allType,
+      sport_type: strings.allType,
     });
     setSelectedSport({
-      sort: 'All',
-      sport_type: 'All',
+      sort: strings.allType,
+      sport_type: strings.allType,
     });
     setMinFee(0);
     setMaxFee(0);
@@ -562,7 +562,9 @@ export default function LookingForChallengeScreen({navigation, route}) {
               <View>
                 <View style={{flexDirection: 'column', margin: 15}}>
                   <View>
-                    <Text style={styles.filterTitle}>{strings.locationTitleText}</Text>
+                    <Text style={styles.filterTitle}>
+                      {strings.locationTitleText}
+                    </Text>
                   </View>
                   <View style={{marginTop: 10, marginLeft: 10}}>
                     <View
@@ -575,10 +577,10 @@ export default function LookingForChallengeScreen({navigation, route}) {
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(0);
-                          setLocation('world');
+                          setLocation(strings.worldTitleText);
                           // setFilters({
                           //   ...filters,
-                          //   location: 'world',
+                          //   location: strings.worldTitleText,
                           // });
                         }}>
                         <Image
@@ -597,7 +599,9 @@ export default function LookingForChallengeScreen({navigation, route}) {
                         marginBottom: 10,
                         justifyContent: 'space-between',
                       }}>
-                      <Text style={styles.filterTitle}>{strings.currentCity}</Text>
+                      <Text style={styles.filterTitle}>
+                        {strings.currentCity}
+                      </Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(1);
@@ -632,7 +636,9 @@ export default function LookingForChallengeScreen({navigation, route}) {
                         marginBottom: 10,
                         justifyContent: 'space-between',
                       }}>
-                      <Text style={styles.filterTitle}>{strings.locationTitle}</Text>
+                      <Text style={styles.filterTitle}>
+                        {strings.locationTitle}
+                      </Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(2);
@@ -665,7 +671,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
                         <View style={styles.searchCityContainer}>
                           <Text style={styles.searchCityText}>
                             {route?.params?.locationText ||
-                              (filters.location !== 'world' &&
+                              (filters.location !== strings.worldTitleText &&
                                 filters.location) ||
                               strings.searchCityText}
                           </Text>
@@ -695,7 +701,9 @@ export default function LookingForChallengeScreen({navigation, route}) {
                       justifyContent: 'space-between',
                     }}>
                     <View style={{}}>
-                      <Text style={styles.filterTitle}>{strings.sportsEventsTitle}</Text>
+                      <Text style={styles.filterTitle}>
+                        {strings.sportsEventsTitle}
+                      </Text>
                     </View>
                     <View style={{marginTop: 10}}>
                       <TCPicker
@@ -704,10 +712,10 @@ export default function LookingForChallengeScreen({navigation, route}) {
                         onValueChange={(value) => {
                           console.log('VALUE:=>', value);
 
-                          if (value === 'All') {
+                          if (value === strings.allType) {
                             setSelectedSport({
-                              sport: 'All',
-                              sport_type: 'All',
+                              sport: strings.allType,
+                              sport_type: strings.allType,
                             });
                             setMinFee(0);
                             setMaxFee(0);
@@ -717,7 +725,11 @@ export default function LookingForChallengeScreen({navigation, route}) {
                             );
                           }
                         }}
-                        value={Utility.getSportName(selectedSport, authContext)}
+                        value={
+                          selectedSport?.sport !== strings.allType
+                            ? Utility.getSportName(selectedSport, authContext)
+                            : strings.all
+                        }
                       />
                     </View>
                   </View>
@@ -862,7 +874,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
            </View> */}
               {/* Rate View */}
 
-              {selectedSport.sport !== 'All' && (
+              {selectedSport?.sport !== strings.allType && (
                 <View
                   style={{
                     flexDirection: 'column',
@@ -870,7 +882,9 @@ export default function LookingForChallengeScreen({navigation, route}) {
                     justifyContent: 'space-between',
                   }}>
                   <View style={{}}>
-                    <Text style={styles.filterTitle}>{strings.matchFeesTitle}</Text>
+                    <Text style={styles.filterTitle}>
+                      {strings.matchFeesTitle}
+                    </Text>
                   </View>
                   <View style={{marginTop: 10}}>
                     <View

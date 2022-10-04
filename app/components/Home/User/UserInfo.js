@@ -161,7 +161,7 @@ export default function UserInfo({
               color: colors.userPostTimeColor,
             }}>
             {strings.signedupin}
-            {userDetails.sign_in}
+            {userDetails.created_at}
           </Text>
         </View>
       </View>

@@ -1436,7 +1436,7 @@ export default {
   noregisterdSportValication: 'en_There is no registerd sports.',
   completeProfile: 'en_completed user profile',
   oldPasswordCanNotBlankValidation: 'en_Old Password cannot be blank.',
-  newPasswordCanNotBlankValidation: 'en_en_New Password cannot be blank.',
+  newPasswordCanNotBlankValidation: 'en_New Password cannot be blank.',
   emailNotVerifiedText: 'en_Your email hasn’t been verified yet.',
   passwordSamevalidation:
     'en_New Password and Confirm Password should be same.',
@@ -1479,9 +1479,8 @@ export default {
   pauseClubTitle: 'en_Pause Club',
 
   thisFeatureisUnderDevelopment: 'en_This feature is in development.',
-
-  challengeSetting: '{0} settings',
-  reservation: 'en_Reservation',
+  challengeSetting: 'en_{0} Settings',
+  reservation: 'Reservation',
   fNameCanNotBlank:
     'The first name cannot contain numbers or special characters.',
 
