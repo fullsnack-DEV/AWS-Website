@@ -181,6 +181,7 @@ export default function PersonalInformationScreen({navigation, route}) {
         switch (result) {
           case RESULTS.UNAVAILABLE:
             console.log(strings.thisFeaturesNotAvailableText);
+            getCurrentLocation();
             break;
           case RESULTS.DENIED:
             console.log(strings.permissionNotRequested);

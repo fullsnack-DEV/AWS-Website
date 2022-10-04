@@ -118,7 +118,7 @@ export default function SportHideUnhideScreen({navigation}) {
       .finally(() => setloading(false));
   };
 
-  const renderSportsActivityView = ({item, index}) => {
+  const renderSportsActivityView = ({item}) => {
     if (item?.is_active === true) {
       return (
         <View style={styles.sportsBackgroundView}>
@@ -203,7 +203,8 @@ export default function SportHideUnhideScreen({navigation}) {
                         obj.type === Verbs.entityTypePlayer &&
                         (!('is_active' in obj) || obj.is_active !== false),
                     );
-                    temp[index].is_hide = !temp[index].is_hide;
+                    const i = temp.indexOf(item);
+                    temp[i].is_hide = !temp[i].is_hide;
                     const tempOrder = {...authObject};
                     tempOrder.registered_sports = temp;
                     setAuthObject({...tempOrder});
@@ -223,7 +224,10 @@ export default function SportHideUnhideScreen({navigation}) {
                         obj.type === Verbs.entityTypeReferee &&
                         (!('is_active' in obj) || obj.is_active !== false),
                     );
-                    temp[index].is_hide = !temp[index].is_hide;
+                    const i = temp.indexOf(item);
+                    temp[i].is_hide = !temp[i].is_hide;
+
+                    // temp[index].is_hide = !temp[index].is_hide;
                     const tempOrder = {...authObject};
                     tempOrder.referee_data = temp;
                     setAuthObject({...tempOrder});
@@ -244,7 +248,9 @@ export default function SportHideUnhideScreen({navigation}) {
                         obj.type === Verbs.entityTypeScorekeeper &&
                         (!('is_active' in obj) || obj.is_active !== false),
                     );
-                    temp[index].is_hide = !temp[index].is_hide;
+                    const i = temp.indexOf(item);
+                    temp[i].is_hide = !temp[i].is_hide;
+                    // temp[index].is_hide = !temp[index].is_hide;
                     const tempOrder = {...authObject};
                     tempOrder.scorekeeper_data = temp;
                     setAuthObject({...tempOrder});
