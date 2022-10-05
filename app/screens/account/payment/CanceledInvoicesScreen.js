@@ -108,7 +108,7 @@ export default function CanceledInvoicesScreen({navigation}) {
           )}
           secondTabTitle={format(
             strings.refundedNText,
-            invoiceListByFilter(strings.refund).length,
+            invoiceListByFilter(Verbs.refund).length,
           )}
           thirdTabTitle={format(
             strings.allNText,

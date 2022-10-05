@@ -157,6 +157,7 @@ export default function BasicInfoScreen({navigation, route}) {
         switch (result) {
           case RESULTS.UNAVAILABLE:
             console.log(strings.featuresNotAvailableText);
+            getCurrentLocation();
             break;
           case RESULTS.DENIED:
             console.log(strings.permissionNotRequested);

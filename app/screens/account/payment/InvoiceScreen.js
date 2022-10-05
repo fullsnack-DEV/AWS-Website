@@ -222,7 +222,8 @@ export default function InvoiceScreen({navigation}) {
               );
               body.invoice_title = invoiceTitle;
               body.amount_due = Number(parseFloat(amount).toFixed(2));
-              body.currency_type = authContext.entity.obj.currency_type;
+              body.currency_type =
+                authContext.entity.obj.currency_type ?? 'USD';
               body.invoice_description = note;
 
               console.log(body);
