@@ -16,11 +16,11 @@ import {
   TouchableWithoutFeedback,
   Alert,
   FlatList,
-  Dimensions,
   Platform,
   SafeAreaView,
   // eslint-disable-next-line react-native/split-platform-components
   PermissionsAndroid,
+  ScrollView,
 } from 'react-native';
 
 import ImagePicker from 'react-native-image-crop-picker';
@@ -671,11 +671,7 @@ export default function PersonalInformationScreen({navigation, route}) {
         style={{
           margin: 0,
         }}>
-        <View
-          style={[
-            styles.bottomPopupContainer,
-            {height: Dimensions.get('window').height - 50},
-          ]}>
+        <View style={styles.bottomPopupContainer}>
           <View style={styles.topHeaderContainer}>
             <TouchableOpacity
               hitSlop={getHitSlop(15)}
@@ -710,35 +706,37 @@ export default function PersonalInformationScreen({navigation, route}) {
               Please, enter at least 3 characters to see cities.
             </Text>
           )}
-          {noData && searchText?.length === 0 && (
-            <View style={{flex: 1}}>
-              <TouchableWithoutFeedback
-                style={styles.listItem}
-                onPress={() => getTeamsDataByCurrentLocation()}>
-                <View>
-                  <Text style={[styles.cityList, {marginBottom: 3}]}>
-                    {currentLocation?.city}, {currentLocation?.state},{' '}
-                    {currentLocation?.country}
-                  </Text>
-                  <Text style={styles.curruentLocationText}>
-                    {strings.currentLocationText}
-                  </Text>
+          <ScrollView>
+            {noData && searchText?.length === 0 && (
+              <View>
+                <TouchableWithoutFeedback
+                  style={styles.listItem}
+                  onPress={() => getTeamsDataByCurrentLocation()}>
+                  <View>
+                    <Text style={[styles.cityList, {marginBottom: 3}]}>
+                      {currentLocation?.city}, {currentLocation?.state},{' '}
+                      {currentLocation?.country}
+                    </Text>
+                    <Text style={styles.curruentLocationText}>
+                      {strings.currentLocationText}
+                    </Text>
 
-                  <TCThinDivider
-                    width={'100%'}
-                    backgroundColor={colors.grayBackgroundColor}
-                  />
-                </View>
-              </TouchableWithoutFeedback>
-            </View>
-          )}
-          {cityData.length > 0 && (
-            <FlatList
-              data={cityData}
-              renderItem={renderItem}
-              keyExtractor={(index) => index.toString()}
-            />
-          )}
+                    <TCThinDivider
+                      width={'100%'}
+                      backgroundColor={colors.grayBackgroundColor}
+                    />
+                  </View>
+                </TouchableWithoutFeedback>
+              </View>
+            )}
+            {cityData.length > 0 && (
+              <FlatList
+                data={cityData}
+                renderItem={renderItem}
+                keyExtractor={(index) => index.toString()}
+              />
+            )}
+          </ScrollView>
         </View>
       </Modal>
       <ActionSheet
@@ -842,6 +840,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     width: '100%',
+    height: '90%',
 
     ...Platform.select({
       ios: {
