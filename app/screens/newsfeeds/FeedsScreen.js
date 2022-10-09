@@ -10,7 +10,7 @@ import React, {
   useMemo,
   useRef,
 } from 'react';
-import { format } from 'react-string-format';
+import {format} from 'react-string-format';
 import {StyleSheet, View, Alert, Text} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import FastImage from 'react-native-fast-image';
@@ -41,6 +41,7 @@ import TCAccountDeactivate from '../../components/TCAccountDeactivate';
 import {userActivate} from '../../api/Users';
 import {groupUnpaused} from '../../api/Groups';
 import {getQBAccountType, QBupdateUser} from '../../utils/QuickBlox';
+import Verbs from '../../Constants/Verbs';
 
 const FeedsScreen = ({navigation}) => {
   const authContext = useContext(AuthContext);
@@ -133,8 +134,18 @@ const FeedsScreen = ({navigation}) => {
 
   const createPostAfterUpload = useCallback(
     (dataParams) => {
-      console.log('create post -> feedsScreen');
-      createPost(dataParams, authContext)
+      let body = dataParams;
+
+      if (
+        authContext.entity.role === Verbs.entityTypeClub ||
+        authContext.entity.role === Verbs.entityTypeTeam
+      ) {
+        body = {
+          ...dataParams,
+          group_id: authContext.entity.uid,
+        };
+      }
+      createPost(body, authContext)
         .then((response) => {
           setPostData((pData) => [response.payload, ...pData]);
         })
@@ -565,9 +576,12 @@ const FeedsScreen = ({navigation}) => {
           }
           onPress={() => {
             Alert.alert(
-              format(strings.pauseUnpauseAccountText, (authContext?.entity?.obj?.is_pause === true
-                ? strings.unpausesmall
-                : strings.reactivatesmall)),
+              format(
+                strings.pauseUnpauseAccountText,
+                authContext?.entity?.obj?.is_pause === true
+                  ? strings.unpausesmall
+                  : strings.reactivatesmall,
+              ),
               '',
               [
                 {

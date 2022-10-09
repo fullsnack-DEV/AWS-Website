@@ -50,7 +50,7 @@ export default function RegisterReferee({navigation}) {
   const selectedLanguage = [];
   useEffect(() => {
     setSportList(authContext.sports);
-
+    console.log('dsfsdf asdf', authContext.sports);
     getUserDetails(authContext?.entity?.uid, authContext).then((res) => {
       setRefereesData(res?.payload?.referee_data);
     });
@@ -171,6 +171,7 @@ export default function RegisterReferee({navigation}) {
       const bodyParams = {
         sport: sportsSelection.sport,
         sport_type: sportTypeSelection,
+        sport_image: sportsSelection.referee_image,
         descriptions: description,
         is_active: true,
       };

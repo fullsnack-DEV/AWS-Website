@@ -40,6 +40,7 @@ export default function SearchLocationScreen({navigation, route}) {
     if (searchLocationText.length >= 3) {
       searchCityState(searchLocationText).then((response) => {
         setNoData(false);
+        console.log('response.predictions', response.predictions);
         setCityData(response.predictions);
       });
     } else {

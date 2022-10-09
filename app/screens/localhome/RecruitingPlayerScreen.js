@@ -122,7 +122,7 @@ export default function RecruitingPlayerScreen({navigation, route}) {
         from: pageFrom,
         query: {
           bool: {
-            must: [{match: {hiringPlayers: true}}],
+            must: [{match: {hiringPlayers: 1}}],
           },
         },
       };
@@ -532,7 +532,9 @@ export default function RecruitingPlayerScreen({navigation, route}) {
               <View>
                 <View style={{flexDirection: 'column', margin: 15}}>
                   <View>
-                    <Text style={styles.filterTitle}>{strings.locationTitleText}</Text>
+                    <Text style={styles.filterTitle}>
+                      {strings.locationTitleText}
+                    </Text>
                   </View>
                   <View style={{marginTop: 10, marginLeft: 10}}>
                     <View

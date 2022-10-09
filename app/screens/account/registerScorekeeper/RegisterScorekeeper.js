@@ -171,6 +171,7 @@ export default function RegisterScorekeeper({navigation}) {
       const bodyParams = {
         sport: sportsSelection.sport,
         sport_type: sportTypeSelection,
+        sport_image: sportsSelection.scorekeeper_image,
         descriptions: description,
         is_active: true,
       };

@@ -1,10 +1,7 @@
 import React, {memo} from 'react';
 import {StyleSheet, View, Image, Text} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
@@ -17,10 +14,12 @@ function WritePost({postDataItem, onWritePostPress}) {
 
   return (
     <View style={styles.mainContainer}>
-      <Image
-        style={styles.profileImg}
-        source={userImage ? {uri: userImage} : images.profilePlaceHolder}
-      />
+      <View style={styles.writePostActorContainer}>
+        <Image
+          style={styles.profileImg}
+          source={userImage ? {uri: userImage} : images.profilePlaceHolder}
+        />
+      </View>
       <TouchableOpacity style={styles.writePostView} onPress={onWritePostPress}>
         <Text style={styles.writePostText}>Write a post...</Text>
       </TouchableOpacity>
@@ -40,9 +39,9 @@ const styles = StyleSheet.create({
     borderColor: colors.whiteColor,
     borderRadius: 35,
     borderWidth: 1,
-    height: hp('5%'),
+    height: 38,
     resizeMode: 'cover',
-    width: hp('5%'),
+    width: 38,
   },
   writePostView: {
     alignSelf: 'center',
@@ -63,6 +62,19 @@ const styles = StyleSheet.create({
     color: colors.userPostTimeColor,
     fontSize: 14,
     fontFamily: fonts.RRegular,
+  },
+  writePostActorContainer: {
+    backgroundColor: colors.whiteColor,
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 80,
+    shadowColor: colors.blackColor,
+    shadowOffset: {width: 0, height: 0.5},
+    shadowOpacity: 0.16,
+    shadowRadius: 1,
+    elevation: 1,
   },
 });
 

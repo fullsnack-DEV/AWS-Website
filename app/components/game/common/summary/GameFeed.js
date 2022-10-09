@@ -21,6 +21,7 @@ import {
 } from '../../../../api/NewsFeeds';
 import ActivityLoader from '../../../loader/ActivityLoader';
 import {ImageUploadContext} from '../../../../context/ImageUploadContext';
+import Verbs from '../../../../Constants/Verbs';
 
 const GameFeed = (
   {
@@ -59,7 +60,18 @@ const GameFeed = (
 
   const createPostAfterUpload = useCallback(
     (dataParams) => {
-      createGamePostData({...dataParams, game_id: gameData?.game_id})
+      let body = dataParams;
+
+      if (
+        authContext.entity.role === Verbs.entityTypeClub ||
+        authContext.entity.role === Verbs.entityTypeTeam
+      ) {
+        body = {
+          ...dataParams,
+          group_id: authContext.entity.uid,
+        };
+      }
+      createGamePostData({...body, game_id: gameData?.game_id})
         .then((response) => {
           setGameFeedData((gfData) => [response.payload, ...gfData]);
         })

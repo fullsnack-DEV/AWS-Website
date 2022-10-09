@@ -3,6 +3,7 @@ import React, {useCallback, useContext} from 'react';
 import {Alert, View} from 'react-native';
 import {createPost} from '../../../../api/NewsFeeds';
 import AuthContext from '../../../../auth/context';
+import Verbs from '../../../../Constants/Verbs';
 import {ImageUploadContext} from '../../../../context/ImageUploadContext';
 import AllInOneGallery from '../../../../screens/home/AllInOneGallery';
 
@@ -11,7 +12,18 @@ const Gallery = ({navigation, gameData, isAdmin, galleryRef}) => {
   const imageUploadContext = useContext(ImageUploadContext);
   const createPostAfterUpload = useCallback(
     (dataParams) => {
-      createPost({...dataParams, is_gallery: true}, authContext)
+      let body = dataParams;
+
+      if (
+        authContext.entity.role === Verbs.entityTypeClub ||
+        authContext.entity.role === Verbs.entityTypeTeam
+      ) {
+        body = {
+          ...dataParams,
+          group_id: authContext.entity.uid,
+        };
+      }
+      createPost({...body, is_gallery: true}, authContext)
         .then(() => {
           if (galleryRef?.current?.refreshGallery)
             galleryRef.current.refreshGallery();

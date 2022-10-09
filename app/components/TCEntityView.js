@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 import React, {memo} from 'react';
 import {View, Text, TouchableOpacity, StyleSheet, Image} from 'react-native';
 
@@ -6,7 +7,14 @@ import images from '../Constants/ImagePath';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 
-function TCEntityView({onPress, showStar = false, data, placeholder = false}) {
+function TCEntityView({
+  sportIcon,
+  onPress,
+  showStar = false,
+  data,
+  placeholder = false,
+}) {
+  console.log('sport icon:=>', sportIcon);
   return (
     <TouchableOpacity onPress={onPress}>
       <View style={styles.viewContainer}>
@@ -24,9 +32,6 @@ function TCEntityView({onPress, showStar = false, data, placeholder = false}) {
             <FastImage source={images.dummyPhoto} style={styles.profileImage} />
           )}
         </View>
-        <Text style={styles.entityName} numberOfLines={2}>
-          {placeholder ? 'Towns Cup' : data?.full_name}
-        </Text>
         {showStar && (
           <View
             style={{
@@ -34,12 +39,18 @@ function TCEntityView({onPress, showStar = false, data, placeholder = false}) {
               alignItems: 'center',
               marginTop: 5,
             }}>
-            <Image source={images.orangeStar} style={styles.starImage} />
+            <FastImage source={sportIcon} style={styles.sportImage} />
             <Text style={styles.starPoints} numberOfLines={2}>
-              5.0
+              ★
+              <Text style={styles.starPoints} numberOfLines={2}>
+                5.0
+              </Text>
             </Text>
           </View>
         )}
+        <Text style={styles.entityName} numberOfLines={2}>
+          {placeholder ? 'Towns Cup' : data?.full_name}
+        </Text>
       </View>
     </TouchableOpacity>
   );
@@ -82,15 +93,15 @@ const styles = StyleSheet.create({
     marginTop: 5,
     textAlign: 'center',
   },
-  starImage: {
+  sportImage: {
     resizeMode: 'cover',
-    height: 10,
-    width: 10,
+    height: 20,
+    width: 20,
   },
   starPoints: {
     fontSize: 14,
     fontFamily: fonts.RRegular,
-    color: colors.themeColor,
+    color: colors.grayColor,
     marginLeft: 5,
   },
 });
