@@ -16,7 +16,6 @@ import {
   TouchableWithoutFeedback,
   Alert,
   FlatList,
-  Dimensions,
   Platform,
   SafeAreaView,
   // eslint-disable-next-line react-native/split-platform-components
@@ -679,11 +678,7 @@ export default function PersonalInformationScreen({navigation, route}) {
         style={{
           margin: 0,
         }}>
-        <View
-          style={[
-            styles.bottomPopupContainer,
-            {height: Dimensions.get('window').height - 50},
-          ]}>
+        <View style={styles.bottomPopupContainer}>
           <View style={styles.topHeaderContainer}>
             <TouchableOpacity
               hitSlop={getHitSlop(15)}
@@ -855,6 +850,7 @@ const styles = StyleSheet.create({
 
     bottom: 0,
     width: '100%',
+    height: '90%',
 
     ...Platform.select({
       ios: {

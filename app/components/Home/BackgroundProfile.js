@@ -1,13 +1,6 @@
 /* eslint-disable react/jsx-indent */
 import React, {useEffect, useState, useContext} from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-  Animated,
-  Image,
-} from 'react-native';
+import {StyleSheet, View, Text, TouchableOpacity, Animated} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import colors from '../../Constants/Colors';
@@ -19,8 +12,6 @@ import AuthContext from '../../auth/context';
 
 export default function BackgroundProfile({
   currentUserData,
-  onAction,
-  loggedInEntity,
   onConnectionButtonPress,
   imageSize = 60,
 }) {
@@ -141,7 +132,7 @@ export default function BackgroundProfile({
                   {strings.followersRadio}
                 </Text>
               </TouchableOpacity>
-              {loggedInEntity.uid !== currentUserData.group_id && (
+              {/* {loggedInEntity.uid !== currentUserData.group_id && (
                 <TouchableOpacity
                   onPress={() => onAction('message')}
                   style={styles.statusInnerViewStyle}>
@@ -150,7 +141,7 @@ export default function BackgroundProfile({
                     source={images.messageIcon}
                   />
                 </TouchableOpacity>
-              )}
+              )} */}
             </View>
           )}
           {currentUserData.entity_type !== 'club' && (
@@ -192,37 +183,6 @@ export default function BackgroundProfile({
                   </Text>
                 </Text>
               </TouchableOpacity>
-
-              {loggedInEntity.role === 'team' &&
-                loggedInEntity.uid !== currentUserData.group_id && (
-                  <TouchableOpacity
-                    onPress={() => onAction('message')}
-                    style={styles.statusInnerViewStyle}>
-                    <Image
-                      style={styles.messageImage}
-                      source={images.messageIcon}
-                    />
-
-                    {/* <Text style={styles.followingTextStyle}>
-                      {strings.message}
-                    </Text> */}
-                  </TouchableOpacity>
-                )}
-
-              {loggedInEntity.role !== 'team' &&
-                currentUserData?.createdBy?.uid !== loggedInEntity.uid && (
-                  <TouchableOpacity
-                    onPress={() => onAction('message')}
-                    style={styles.statusInnerViewStyle}>
-                    <Image
-                      style={styles.messageImage}
-                      source={images.messageIcon}
-                    />
-                    {/* <Text style={styles.followingTextStyle}>
-                      {strings.message}
-                    </Text> */}
-                  </TouchableOpacity>
-                )}
             </View>
           )}
           <View style={styles.userViewStyle}>
@@ -306,12 +266,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     alignSelf: 'flex-start',
   },
-  messageImage: {
-    height: 13,
-    width: 13,
-    resizeMode: 'contain',
-    marginRight: 10,
-  },
+
   // statusViewStyle: {
   //   paddingHorizontal: 15,
   //   justifyContent: 'space-between',

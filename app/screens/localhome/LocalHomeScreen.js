@@ -702,6 +702,7 @@ export default function LocalHomeScreen({navigation, route}) {
       console.log('Localhome item:=>', item);
       return (
         <Text
+          suppressHighlighting={true}
           style={
             selectedSport === item.sport && sportType === item.sport_type
               ? [
