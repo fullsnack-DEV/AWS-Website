@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react';
+import React, {useState, useContext, useEffect} from 'react';
 import {
   StyleSheet,
   View,
@@ -7,12 +7,12 @@ import {
   FlatList,
   TouchableOpacity,
   Platform,
+  KeyboardAvoidingView,
+  Keyboard,
+  ScrollView,
 } from 'react-native';
 import Modal from 'react-native-modal';
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 
 import {strings} from '../../../Localization/translation';
 import AuthContext from '../../auth/context';
@@ -34,6 +34,27 @@ export default function LocationSearchModal({
   const authContext = useContext(AuthContext);
   const [cityData, setCityData] = useState([]);
 
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      () => {
+        setKeyboardVisible(true);
+      },
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      () => {
+        setKeyboardVisible(false);
+      },
+    );
+
+    return () => {
+      keyboardDidHideListener.remove();
+      keyboardDidShowListener.remove();
+    };
+  }, [isKeyboardVisible]);
   const getLocationData = (searchLocationText) => {
     if (addressType === 'short') {
       searchCityState(searchLocationText, authContext).then((response) => {
@@ -63,10 +84,10 @@ export default function LocationSearchModal({
           .catch(onClose);
       }}>
       <Text style={styles.cityList}>{cityData[index].description}</Text>
-
       <TCThinDivider />
     </TouchableOpacity>
   );
+
   return (
     <Modal
       onBackdropPress={onClose}
@@ -74,39 +95,50 @@ export default function LocationSearchModal({
       animationType="slide"
       hasBackdrop
       style={{
-        height: hp(94),
         margin: 0,
         backgroundColor: colors.whiteOpacityColor,
       }}
-      visible={visible}>
-      <View style={styles.bottomPopupContainer}>
-        <View style={styles.viewsContainer}>
-          <Text onPress={onClose} style={styles.cancelText}>
-            Cancel
-          </Text>
-          <Text style={styles.locationText}>Available Area</Text>
-          <Text style={styles.cancelText}>{'       '}</Text>
-        </View>
-        <TCThinDivider width={'100%'} />
+      visible={visible}
+      avoidKeyboard={false}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : ''}
+        style={{flex: 1}}>
+        <ScrollView
+          contentContainerStyle={{flex: 1}}
+          bounces={false}
+          keyboardShouldPersistTaps="always">
+          <View style={styles.bottomPopupContainer}>
+            <View style={styles.viewsContainer}>
+              <Text onPress={onClose} style={styles.cancelText}>
+                Cancel
+              </Text>
+              <Text style={styles.locationText}>Available Area</Text>
+              <Text style={styles.cancelText}>{'       '}</Text>
+            </View>
+            <TCThinDivider width={'100%'} />
 
-        <View style={{backgroundColor: colors.grayBackgroundColor}}>
-          <View style={styles.sectionStyle}>
-            <TextInput
-              style={styles.textInput}
-              placeholder={strings.searchByCityStateText}
-              clearButtonMode="always"
-              placeholderTextColor={colors.grayColor}
-              onChangeText={(text) => getLocationData(text)}
+            <View style={{backgroundColor: colors.grayBackgroundColor}}>
+              <View style={styles.sectionStyle}>
+                <TextInput
+                  style={styles.textInput}
+                  placeholder={strings.searchByCityStateText}
+                  clearButtonMode="always"
+                  placeholderTextColor={colors.grayColor}
+                  onChangeText={(text) => getLocationData(text)}
+                />
+              </View>
+            </View>
+
+            <FlatList
+              data={cityData}
+              renderItem={renderItem}
+              keyExtractor={(item, index) => index.toString()}
+              keyboardShouldPersistTaps="always"
+              style={{flex: 1}}
             />
           </View>
-        </View>
-
-        <FlatList
-          data={cityData}
-          renderItem={renderItem}
-          keyExtractor={(item, index) => index.toString()}
-        />
-      </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }
@@ -153,12 +185,15 @@ const styles = StyleSheet.create({
   },
 
   bottomPopupContainer: {
-    height: hp(94),
+    // height: hp(94),
+    flex: 1,
     paddingBottom: Platform.OS === 'ios' ? 34 : 0,
+    marginTop: Platform.OS === 'ios' ? 50 : 0,
+
     backgroundColor: colors.whiteColor,
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
-    position: 'absolute',
+    // position: 'absolute',
     bottom: 0,
     width: '100%',
 

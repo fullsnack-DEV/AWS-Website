@@ -1,6 +1,13 @@
 /* eslint-disable default-case */
 import React, {useState, useContext, useRef} from 'react';
-import {StyleSheet, View, Text, ScrollView, Alert} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  ScrollView,
+  Alert,
+  Platform,
+} from 'react-native';
 
 import ActionSheet from 'react-native-actionsheet';
 import ImagePicker from 'react-native-image-crop-picker';
@@ -91,7 +98,13 @@ export default function CreateClubForm3({navigation, route}) {
   };
 
   const openCamera = (width = 400, height = 400) => {
-    check(PERMISSIONS.IOS.CAMERA).then((result) => {
+    // check(PERMISSIONS.IOS.CAMERA)
+    check(
+      Platform.select({
+        ios: PERMISSIONS.IOS.CAMERA,
+        android: PERMISSIONS.ANDROID.CAMERA,
+      }),
+    ).then((result) => {
       switch (result) {
         case RESULTS.UNAVAILABLE:
           Alert.alert(

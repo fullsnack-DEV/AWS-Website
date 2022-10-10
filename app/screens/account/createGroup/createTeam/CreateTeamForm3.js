@@ -1,6 +1,13 @@
 /* eslint-disable default-case */
 import React, {useState, useContext, useRef} from 'react';
-import {StyleSheet, View, Text, ScrollView, Alert} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  ScrollView,
+  Alert,
+  Platform,
+} from 'react-native';
 
 // import {
 //   widthPercentageToDP as wp,
@@ -103,7 +110,13 @@ export default function CreateTeamForm3({navigation, route}) {
     if (currentImageSelection === 1) {
       cropCircle = true;
     }
-    check(PERMISSIONS.IOS.CAMERA)
+    // check(PERMISSIONS.IOS.CAMERA)
+    check(
+      Platform.select({
+        ios: PERMISSIONS.IOS.CAMERA,
+        android: PERMISSIONS.ANDROID.CAMERA,
+      }),
+    )
       .then((result) => {
         switch (result) {
           case RESULTS.UNAVAILABLE:

@@ -23,7 +23,6 @@ import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import {strings} from '../../../../../Localization/translation';
 import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
-import TCKeyboardView from '../../../../components/TCKeyboardView';
 
 import TCThinDivider from '../../../../components/TCThinDivider';
 import LocationSearchModal from '../../../../components/Home/LocationSearchModal';
@@ -240,26 +239,25 @@ export default function AvailableAreaScorekeeper({navigation, route}) {
   };
 
   return (
-    <TCKeyboardView>
-      <SafeAreaView>
-        <ActivityLoader visible={loading} />
+    <SafeAreaView>
+      <ActivityLoader visible={loading} />
 
-        <View>
-          <TouchableOpacity
-            style={[
-              styles.checkBoxContainer,
-              {
-                marginTop: 10,
-              },
-            ]}
-            onPress={() => {
-              setAreaRadio(0);
-              setAddressType('short');
-            }}>
-            <Text style={[styles.radioTitleText, {flex: 0.9}]}>
-              {strings.addAreaText}
-            </Text>
-            {/* <View style={{flex: 0.1}}>
+      <View>
+        <TouchableOpacity
+          style={[
+            styles.checkBoxContainer,
+            {
+              marginTop: 10,
+            },
+          ]}
+          onPress={() => {
+            setAreaRadio(0);
+            setAddressType('short');
+          }}>
+          <Text style={[styles.radioTitleText, {flex: 0.9}]}>
+            {strings.addAreaText}
+          </Text>
+          {/* <View style={{flex: 0.1}}>
               {areaRadio === 0 ? (
                 <Image
                   source={images.radioCheckYellow}
@@ -272,115 +270,114 @@ export default function AvailableAreaScorekeeper({navigation, route}) {
                 />
               )}
             </View> */}
+        </TouchableOpacity>
+
+        <View pointerEvents={areaRadio === 0 ? 'auto' : 'none'}>
+          <FlatList
+            data={addressList}
+            renderItem={renderAddress}
+            keyExtractor={(item, index) => index.toString()}
+            style={{marginBottom: 10}}
+          />
+
+          <TouchableOpacity
+            style={styles.buttonView}
+            onPress={() => addAddress()}>
+            <Text style={styles.textStyle} numberOfLines={1}>
+              {strings.addArea}
+            </Text>
           </TouchableOpacity>
-
-          <View pointerEvents={areaRadio === 0 ? 'auto' : 'none'}>
-            <FlatList
-              data={addressList}
-              renderItem={renderAddress}
-              keyExtractor={(item, index) => index.toString()}
-              style={{marginBottom: 10}}
-            />
-
-            <TouchableOpacity
-              style={styles.buttonView}
-              onPress={() => addAddress()}>
-              <Text style={styles.textStyle} numberOfLines={1}>
-                {strings.addArea}
-              </Text>
-            </TouchableOpacity>
-          </View>
         </View>
-        {/* Distance modal modal */}
-        <Modal
-          onBackdropPress={() => setDistancePopup(false)}
-          backdropOpacity={0.2}
-          animationType="slide"
-          hasBackdrop
-          style={{
-            margin: 0,
-            backgroundColor: colors.whiteOpacityColor,
-          }}
-          visible={distancePopup}>
-          <View style={styles.bottomPopupContainer}>
-            <View style={styles.viewsContainer}>
-              <Text
-                onPress={() => setDistancePopup(false)}
-                style={styles.cancelText}>
-                {strings.cancel}
-              </Text>
-              <Text style={styles.locationText}>{strings.range}</Text>
-              <Text style={styles.cancelText}>{'       '}</Text>
-            </View>
-            <TCThinDivider width={'100%'} marginBottom={15} />
-            <TouchableOpacity
-              onPress={() => {
-                setSelectedDistanceOption(0);
-                setTimeout(() => {
-                  setDistancePopup(false);
-                }, 600);
-              }}>
-              {selectedDistanceOption === 0 ? (
-                <LinearGradient
-                  colors={[colors.yellowColor, colors.orangeGradientColor]}
-                  style={styles.backgroundView}>
-                  <Text
-                    style={[
-                      styles.curruentLocationText,
-                      {color: colors.whiteColor},
-                    ]}>
-                    {strings.mi}
-                  </Text>
-                </LinearGradient>
-              ) : (
-                <View style={styles.backgroundView}>
-                  <Text style={styles.curruentLocationText}>{strings.mi}</Text>
-                </View>
-              )}
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                setSelectedDistanceOption(1);
-                setTimeout(() => {
-                  setDistancePopup(false);
-                }, 600);
-              }}>
-              {selectedDistanceOption === 1 ? (
-                <LinearGradient
-                  colors={[colors.yellowColor, colors.orangeGradientColor]}
-                  style={styles.backgroundView}>
-                  <Text style={[styles.myCityText, {color: colors.whiteColor}]}>
-                    {strings.km}
-                  </Text>
-                </LinearGradient>
-              ) : (
-                <View style={styles.backgroundView}>
-                  <Text style={styles.myCityText}>{strings.km}</Text>
-                </View>
-              )}
-            </TouchableOpacity>
+      </View>
+      {/* Distance modal modal */}
+      <Modal
+        onBackdropPress={() => setDistancePopup(false)}
+        backdropOpacity={0.2}
+        animationType="slide"
+        hasBackdrop
+        style={{
+          margin: 0,
+          backgroundColor: colors.whiteOpacityColor,
+        }}
+        visible={distancePopup}>
+        <View style={styles.bottomPopupContainer}>
+          <View style={styles.viewsContainer}>
+            <Text
+              onPress={() => setDistancePopup(false)}
+              style={styles.cancelText}>
+              {strings.cancel}
+            </Text>
+            <Text style={styles.locationText}>{strings.range}</Text>
+            <Text style={styles.cancelText}>{'       '}</Text>
           </View>
-        </Modal>
-        {/* Distance modal */}
+          <TCThinDivider width={'100%'} marginBottom={15} />
+          <TouchableOpacity
+            onPress={() => {
+              setSelectedDistanceOption(0);
+              setTimeout(() => {
+                setDistancePopup(false);
+              }, 600);
+            }}>
+            {selectedDistanceOption === 0 ? (
+              <LinearGradient
+                colors={[colors.yellowColor, colors.orangeGradientColor]}
+                style={styles.backgroundView}>
+                <Text
+                  style={[
+                    styles.curruentLocationText,
+                    {color: colors.whiteColor},
+                  ]}>
+                  {strings.mi}
+                </Text>
+              </LinearGradient>
+            ) : (
+              <View style={styles.backgroundView}>
+                <Text style={styles.curruentLocationText}>{strings.mi}</Text>
+              </View>
+            )}
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              setSelectedDistanceOption(1);
+              setTimeout(() => {
+                setDistancePopup(false);
+              }, 600);
+            }}>
+            {selectedDistanceOption === 1 ? (
+              <LinearGradient
+                colors={[colors.yellowColor, colors.orangeGradientColor]}
+                style={styles.backgroundView}>
+                <Text style={[styles.myCityText, {color: colors.whiteColor}]}>
+                  {strings.km}
+                </Text>
+              </LinearGradient>
+            ) : (
+              <View style={styles.backgroundView}>
+                <Text style={styles.myCityText}>{strings.km}</Text>
+              </View>
+            )}
+          </TouchableOpacity>
+        </View>
+      </Modal>
+      {/* Distance modal */}
 
-        {/* Address modal */}
-        <LocationSearchModal
-          visible={addressModalVisible}
-          addressType={addressType}
-          onSelect={(data) => {
-            if (addressType === 'short') {
-              const obj = [...addressList];
-              obj[addressListIndex].address = data.description;
-              setAddressList(obj);
-            } else {
-              setSearchAddress(data);
-            }
-          }}
-          onClose={onCloseLocationModal}
-        />
-        {/* Address modal */}
-      </SafeAreaView>
-    </TCKeyboardView>
+      {/* Address modal */}
+      <LocationSearchModal
+        visible={addressModalVisible}
+        addressType={addressType}
+        onSelect={(data) => {
+          if (addressType === 'short') {
+            const obj = [...addressList];
+            obj[addressListIndex].address = data.description;
+            setAddressList(obj);
+          } else {
+            setSearchAddress(data);
+          }
+        }}
+        onClose={onCloseLocationModal}
+      />
+      {/* Address modal */}
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
@@ -436,6 +433,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     height: 40,
     fontFamily: fonts.RRegular,
+    justifyContent: 'center',
+    flex: 1,
   },
 
   buttonView: {
@@ -454,6 +453,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 3,
     elevation: 3,
+    marginBottom: 5,
   },
   textStyle: {
     alignSelf: 'center',

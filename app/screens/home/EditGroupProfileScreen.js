@@ -162,7 +162,6 @@ export default function EditGroupProfileScreen({navigation, route}) {
         switch (result) {
           case RESULTS.UNAVAILABLE:
             console.log(strings.thisFeaturesNotAvailableText);
-            getCurrentLocation();
             break;
           case RESULTS.DENIED:
             console.log(strings.permissionNotRequested);
@@ -258,7 +257,7 @@ export default function EditGroupProfileScreen({navigation, route}) {
         // See error code charts below.
         console.log(error.code, error.message);
       },
-      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+      {enableHighAccuracy: false, timeout: 15000, maximumAge: 10000},
     );
   };
   const requestPermission = async () => {
@@ -283,7 +282,7 @@ export default function EditGroupProfileScreen({navigation, route}) {
       style={styles.listItem}
       onPress={() => getTeamsData(item)}>
       <View>
-        <Text style={styles.cityList}>{cityData[index].bio}</Text>
+        <Text style={styles.cityList}>{cityData[index].description}</Text>
         <TCThinDivider
           width={'100%'}
           backgroundColor={colors.grayBackgroundColor}
@@ -291,6 +290,7 @@ export default function EditGroupProfileScreen({navigation, route}) {
       </View>
     </TouchableWithoutFeedback>
   );
+
   const isIconCheckedOrNot = ({item, index}) => {
     sportList[index].isChecked = !item.isChecked;
     setSportList([...sportList]);
