@@ -12,7 +12,10 @@ import {
   ScrollView,
 } from 'react-native';
 import Modal from 'react-native-modal';
-import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
 
 import {strings} from '../../../Localization/translation';
 import AuthContext from '../../auth/context';
@@ -110,9 +113,11 @@ export default function LocationSearchModal({
           <View style={styles.bottomPopupContainer}>
             <View style={styles.viewsContainer}>
               <Text onPress={onClose} style={styles.cancelText}>
-                Cancel
+                {strings.cancel}
               </Text>
-              <Text style={styles.locationText}>Available Area</Text>
+              <Text style={styles.locationText}>
+                {strings.availableAreaText}
+              </Text>
               <Text style={styles.cancelText}>{'       '}</Text>
             </View>
             <TCThinDivider width={'100%'} />
@@ -187,8 +192,10 @@ const styles = StyleSheet.create({
   bottomPopupContainer: {
     // height: hp(94),
     flex: 1,
-    paddingBottom: Platform.OS === 'ios' ? 34 : 0,
-    marginTop: Platform.OS === 'ios' ? 50 : 0,
+    // paddingBottom: Platform.OS === 'ios' ? 34 : 0,
+    // marginTop: Platform.OS === 'ios' ? 50 : 0,
+    paddingBottom: Platform.OS === 'ios' ? hp(8) : 0,
+    marginTop: Platform.OS === 'ios' ? hp(6.5) : 0,
 
     backgroundColor: colors.whiteColor,
     borderTopLeftRadius: 30,

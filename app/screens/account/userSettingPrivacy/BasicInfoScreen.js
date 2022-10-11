@@ -180,7 +180,7 @@ export default function BasicInfoScreen({navigation, route}) {
   }, []);
 
   const getCurrentLocation = async () => {
-    Geolocation.requestAuthorization();
+    // Geolocation.requestAuthorization();
     Geolocation.getCurrentPosition(
       (position) => {
         getLocationNameWithLatLong(

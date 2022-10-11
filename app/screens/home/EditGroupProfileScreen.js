@@ -223,7 +223,7 @@ export default function EditGroupProfileScreen({navigation, route}) {
     setSportList(arr);
   };
   const getCurrentLocation = async () => {
-    Geolocation.requestAuthorization();
+    // Geolocation.requestAuthorization();
     Geolocation.getCurrentPosition(
       (position) => {
         getLocationNameWithLatLong(
@@ -280,7 +280,10 @@ export default function EditGroupProfileScreen({navigation, route}) {
   const renderItem = ({item, index}) => (
     <TouchableWithoutFeedback
       style={styles.listItem}
-      onPress={() => getTeamsData(item)}>
+      onPress={() => {
+        getTeamsData(item);
+        Keyboard.dismiss();
+      }}>
       <View>
         <Text style={styles.cityList}>{cityData[index].description}</Text>
         <TCThinDivider
@@ -804,6 +807,7 @@ export default function EditGroupProfileScreen({navigation, route}) {
                 data={cityData}
                 renderItem={renderItem}
                 keyExtractor={(index) => index.toString()}
+                keyboardShouldPersistTaps="always"
               />
             )}
           </View>
@@ -919,11 +923,15 @@ const styles = StyleSheet.create({
     top: 5,
   },
   bottomPopupContainer: {
-    paddingBottom: Platform.OS === 'ios' ? 30 : 0,
+    flex: 1,
+    // paddingBottom: Platform.OS === 'ios' ? 30 : 0,
+    // marginTop: Platform.OS === 'ios' ? 50 : 50,
+    paddingBottom: Platform.OS === 'ios' ? hp(8) : 0,
+    marginTop: Platform.OS === 'ios' ? hp(7) : 0,
     backgroundColor: colors.whiteColor,
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
-    position: 'absolute',
+    // position: 'absolute',
     bottom: 0,
     width: '100%',
 

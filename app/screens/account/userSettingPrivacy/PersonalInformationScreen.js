@@ -203,7 +203,7 @@ export default function PersonalInformationScreen({navigation, route}) {
   }, []);
 
   const getCurrentLocation = async () => {
-    Geolocation.requestAuthorization();
+    // Geolocation.requestAuthorization();
     Geolocation.getCurrentPosition(
       (position) => {
         console.log('Position', position);
@@ -713,6 +713,7 @@ export default function PersonalInformationScreen({navigation, route}) {
               Please, enter at least 3 characters to see cities.
             </Text>
           )}
+          {/* <ScrollView> */}
           {noData && searchText?.length === 0 && (
             <View style={{flex: 1}}>
               <TouchableWithoutFeedback
@@ -743,6 +744,7 @@ export default function PersonalInformationScreen({navigation, route}) {
               keyboardShouldPersistTaps="always"
             />
           )}
+          {/* </ScrollView> */}
         </View>
       </Modal>
       <ActionSheet
@@ -840,8 +842,10 @@ const styles = StyleSheet.create({
   },
   bottomPopupContainer: {
     flex: 1,
-    paddingBottom: Platform.OS === 'ios' ? 30 : 0,
-    marginTop: Platform.OS === 'ios' ? 50 : 50,
+    // paddingBottom: Platform.OS === 'ios' ? 30 : 0,
+    // marginTop: Platform.OS === 'ios' ? 50 : 50,
+    paddingBottom: Platform.OS === 'ios' ? hp(8) : 0,
+    marginTop: Platform.OS === 'ios' ? hp(7) : 0,
 
     backgroundColor: colors.whiteColor,
     borderTopLeftRadius: 30,
