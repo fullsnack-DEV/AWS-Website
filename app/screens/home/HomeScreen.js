@@ -282,7 +282,18 @@ const HomeScreen = ({navigation, route}) => {
   const manageChallengeActionSheet = useRef();
   const offerActionSheet = useRef();
   const groupMessageActionSheet = useRef();
-
+  const options =
+    authContext.entity.role === 'user'
+      ? [
+          strings.manageChallengeShhetItem,
+          strings.sportActivity,
+          strings.cancel,
+        ]
+      : [
+          strings.manageChallengeShhetItem,
+          // strings.sportActivity,
+          strings.cancel,
+        ];
   useEffect(() => {
     setTimeout(() => {
       SetHideScore(true);
@@ -4134,12 +4145,13 @@ const HomeScreen = ({navigation, route}) => {
 
         <ActionSheet
           ref={manageChallengeActionSheet}
-          options={[
-            strings.manageChallengeShhetItem,
-            strings.sportActivity,
-            strings.cancel,
-          ]}
-          cancelButtonIndex={2}
+          // options={[
+          //   strings.manageChallengeShhetItem,
+          //    strings.sportActivity,
+          //   strings.cancel,
+          // ]}
+          options={options}
+          cancelButtonIndex={authContext.entity.role === 'user' ? 2 : 1}
           onPress={(index) => {
             if (index === 0) {
               // Add Playing
@@ -4166,7 +4178,9 @@ const HomeScreen = ({navigation, route}) => {
               }
             } else if (index === 1) {
               // navigation.navigate('SportActivityScreen');
-              navigation.navigate('SportActivitiesScreen');
+              if (authContext.entity.role === 'user') {
+                navigation.navigate('SportActivitiesScreen');
+              }
             }
           }}
         />

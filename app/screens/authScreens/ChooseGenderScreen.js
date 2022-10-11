@@ -249,7 +249,7 @@ export default function ChooseGenderScreen({navigation, route}) {
   }, []);
 
   const getLocation = async () => {
-    Geolocation.requestAuthorization();
+    // Geolocation.requestAuthorization();
     Geolocation.getCurrentPosition(
       (position) => {
         setlatLong(position);

@@ -6,6 +6,7 @@ import {
   View,
   Text,
   Image,
+  Platform,
 } from 'react-native';
 import {
   heightPercentageToDP as hp,
@@ -142,7 +143,13 @@ export default function SignupScreen({navigation, route}) {
   };
 
   const openCamera = (width = 400, height = 400) => {
-    check(PERMISSIONS.IOS.CAMERA)
+    // check(PERMISSIONS.IOS.CAMERA)
+    check(
+      Platform.select({
+        ios: PERMISSIONS.IOS.CAMERA,
+        android: PERMISSIONS.ANDROID.CAMERA,
+      }),
+    )
       .then((result) => {
         switch (result) {
           case RESULTS.UNAVAILABLE:
