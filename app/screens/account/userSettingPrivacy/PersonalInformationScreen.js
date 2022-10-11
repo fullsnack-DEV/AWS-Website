@@ -170,6 +170,7 @@ export default function PersonalInformationScreen({navigation, route}) {
     }
     setLanguages(arr);
   }, []);
+
   useEffect(() => {
     if (Platform.OS === 'android') {
       requestPermission();

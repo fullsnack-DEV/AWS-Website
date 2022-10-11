@@ -4,10 +4,10 @@ import {StyleSheet, Platform, View, TextInput} from 'react-native';
 import FastImage from 'react-native-fast-image';
 
 import RNPickerSelect from 'react-native-picker-select';
-import {Country} from 'country-state-city';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import images from '../Constants/ImagePath';
+import {countryCode} from '../utils';
 
 const TCPhoneNumber = ({
   placeholder,
@@ -28,12 +28,12 @@ const TCPhoneNumber = ({
         placeholder={{
           label: placeholder,
         }}
-        items={Country.getAllCountries().map((obj) => ({
-          label: `${obj.isoCode}(${
-            obj.phonecode.includes('+') ? obj.phonecode : `+${obj.phonecode}`
+        items={countryCode.map((obj) => ({
+          label: `${obj.code}(${
+            obj.dial_code.includes('+') ? obj.dial_code : `+${obj.dial_code}`
           })`,
-          value: `${obj.isoCode}(${
-            obj.phonecode.includes('+') ? obj.phonecode : `+${obj.phonecode}`
+          value: `${obj.code}(${
+            obj.dial_code.includes('+') ? obj.dial_code : `+${obj.dial_code}`
           })`,
         }))}
         onValueChange={onPhoneNumberCountryChanged}

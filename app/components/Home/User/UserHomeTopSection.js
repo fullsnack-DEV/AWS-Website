@@ -54,11 +54,8 @@ const UserHomeTopSection = ({
     userDetails?.scorekeeper_data,
   ]);
 
-  Utility.getStorage('appSetting').then((setting) => {
-    image_url = setting.base_url_sporticon;
-    console.log('APPSETTING:= top', setting.base_url_sporticon);
-  });
   useEffect(() => {
+    image_url = global.sport_icon_baseurl;
     isSectionEnable();
   }, [isSectionEnable]);
 

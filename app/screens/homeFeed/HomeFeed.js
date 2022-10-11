@@ -26,6 +26,7 @@ import WritePost from '../../components/newsFeed/WritePost';
 import {strings} from '../../../Localization/translation';
 import colors from '../../Constants/Colors';
 import {ImageUploadContext} from '../../context/ImageUploadContext';
+import Verbs from '../../Constants/Verbs';
 
 let onEndReachedCalledDuringMomentum = true;
 const HomeFeed = ({
@@ -237,8 +238,18 @@ const HomeFeed = ({
 
   const createPostAfterUpload = useCallback(
     (dataParams) => {
-      console.log('create post -> homeFeed');
-      createPost(dataParams, authContext)
+      let body = dataParams;
+
+      if (
+        authContext.entity.role === Verbs.entityTypeClub ||
+        authContext.entity.role === Verbs.entityTypeTeam
+      ) {
+        body = {
+          ...dataParams,
+          group_id: authContext.entity.uid,
+        };
+      }
+      createPost(body, authContext)
         .then((response) => {
           setTotalUserPostCount((cnt) => cnt + 1);
           setPostData((pData) => [response.payload, ...pData]);
@@ -292,6 +303,7 @@ const HomeFeed = ({
           format_tagged_data,
           who_can_see: {...whoCanSee},
         };
+
         imageUploadContext.uploadData(
           authContext,
           dataParams,

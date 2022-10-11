@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 /* eslint-disable no-promise-executor-return */
 /* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable no-nested-ternary */
@@ -266,24 +267,22 @@ export default function LocalHomeScreen({navigation, route}) {
   }, [authContext, isFocused]);
 
   useEffect(() => {
-    if (isFocused) {
-      getShortsList(
-        location === strings.worldTitleText ? '_world_' : location,
-        authContext,
-      )
-        .then((res) => {
-          setloading(false);
-          if (res.payload) {
-            setShortsList(res.payload.results);
-          }
-        })
-        .catch((e) => {
-          setloading(false);
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
-        });
-    }
+    getShortsList(
+      location === strings.worldTitleText ? '_world_' : location,
+      authContext,
+    )
+      .then((res) => {
+        setloading(false);
+        if (res.payload) {
+          setShortsList(res.payload.results);
+        }
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
   }, [authContext, isFocused, location]);
 
   useEffect(() => {
@@ -488,7 +487,7 @@ export default function LocalHomeScreen({navigation, route}) {
         size: defaultPageSize,
         query: {
           bool: {
-            must: [{match: {hiringPlayers: true}}],
+            must: [{match: {hiringPlayers: 1}}],
           },
         },
       };
@@ -734,21 +733,15 @@ export default function LocalHomeScreen({navigation, route}) {
               });
             }
           }}>
-          {/* {item.sport === strings.allType
-            ? strings.allType
-            : item.sport === strings.moreText
-            ? strings.moreText
-            : Utility.getSportName(item, authContext)} */}
-
           {item.sport === strings.allType
             ? strings.allType
             : item.sport === strings.moreText
             ? strings.moreText
-            : Utility.convertFirstCharacterAllWordsToUppercase(item.sport)}
+            : Utility.getSportName(item, authContext)}
         </Text>
       );
     },
-    [filters, selectedSport, sportType],
+    [authContext, filters, selectedSport, sportType],
   );
 
   const onShortPress = useCallback(
@@ -874,29 +867,7 @@ export default function LocalHomeScreen({navigation, route}) {
     ({item}) => (
       <View style={{marginBottom: 15}}>
         <TCEntityView
-          data={item}
-          onPress={() => {
-            navigation.navigate('HomeScreen', {
-              uid: ['user', 'player']?.includes(item?.entity_type)
-                ? item?.user_id
-                : item?.group_id,
-              role: ['user', 'player']?.includes(item?.entity_type)
-                ? 'user'
-                : item.entity_type,
-              backButtonVisible: true,
-              menuBtnVisible: false,
-            });
-          }}
-        />
-      </View>
-    ),
-    [],
-  );
-
-  const renderRefereesScorekeeperListView = useCallback(
-    ({item}) => (
-      <View style={{marginBottom: 15}}>
-        <TCEntityView
+          sportIcon={getSportIcon(Verbs.entityTypePlayer, item)}
           data={item}
           showStar={true}
           onPress={() => {
@@ -916,11 +887,109 @@ export default function LocalHomeScreen({navigation, route}) {
     ),
     [],
   );
+
+  const renderRefereeListView = useCallback(
+    ({item}) => (
+      <View style={{marginBottom: 15}}>
+        <TCEntityView
+          sportIcon={getSportIcon(Verbs.entityTypeReferee, item)}
+          data={item}
+          showStar={true}
+          onPress={() => {
+            navigation.navigate('HomeScreen', {
+              uid: ['user', 'player']?.includes(item?.entity_type)
+                ? item?.user_id
+                : item?.group_id,
+              role: ['user', 'player']?.includes(item?.entity_type)
+                ? 'user'
+                : item.entity_type,
+              backButtonVisible: true,
+              menuBtnVisible: false,
+            });
+          }}
+        />
+      </View>
+    ),
+    [],
+  );
+
+  const renderScorekeeperListView = useCallback(
+    ({item}) => (
+      <View style={{marginBottom: 15}}>
+        <TCEntityView
+          sportIcon={getSportIcon(Verbs.entityTypeScorekeeper, item)}
+          data={item}
+          showStar={true}
+          onPress={() => {
+            navigation.navigate('HomeScreen', {
+              uid: ['user', 'player']?.includes(item?.entity_type)
+                ? item?.user_id
+                : item?.group_id,
+              role: ['user', 'player']?.includes(item?.entity_type)
+                ? 'user'
+                : item.entity_type,
+              backButtonVisible: true,
+              menuBtnVisible: false,
+            });
+          }}
+        />
+      </View>
+    ),
+    [],
+  );
+
+  const getSportIcon = useCallback(
+    (type, data) => {
+      console.log('typeeeeee', type);
+      if (type === Verbs.entityTypePlayer) {
+        if (selectedSport !== strings.all) {
+          const pSport = data.registered_sports.filter(
+            (obj) =>
+              obj.sport === selectedSport && obj.sport_type === sportType,
+          );
+          if (pSport.length > 0) {
+            return {uri: global.sport_icon_baseurl + pSport?.[0]?.sport_image};
+          }
+
+          return images.soccerImage;
+        }
+      }
+      if (type === Verbs.entityTypeReferee) {
+        if (selectedSport !== strings.all) {
+          const pSport = data.referee_data.filter(
+            (obj) =>
+              obj.sport === selectedSport && obj.sport_type === sportType,
+          );
+          if (pSport.length > 0) {
+            return {uri: global.sport_icon_baseurl + pSport?.[0]?.sport_image};
+          }
+
+          return images.soccerImage;
+        }
+      }
+      if (type === Verbs.entityTypeScorekeeper) {
+        if (selectedSport !== strings.all) {
+          const pSport = data.scorekeeper_data.filter(
+            (obj) =>
+              obj.sport === selectedSport && obj.sport_type === sportType,
+          );
+
+          if (pSport.length > 0) {
+            return {uri: global.sport_icon_baseurl + pSport?.[0]?.sport_image};
+          }
+
+          return images.soccerImage;
+        }
+      }
+    },
+    [selectedSport, sportType],
+  );
+
   const renderSeparator = () => (
     <View
       style={{
         height: 50,
-        width: 10,
+        width: 15,
       }}
     />
   );
@@ -961,8 +1030,18 @@ export default function LocalHomeScreen({navigation, route}) {
 
   const createPostAfterUpload = useCallback(
     (dataParams) => {
-      console.log('create post -> feedsScreen');
-      createPost(dataParams, authContext)
+      let body = dataParams;
+
+      if (
+        authContext.entity.role === Verbs.entityTypeClub ||
+        authContext.entity.role === Verbs.entityTypeTeam
+      ) {
+        body = {
+          ...dataParams,
+          group_id: authContext.entity.uid,
+        };
+      }
+      createPost(body, authContext)
         .then((response) => {
           console.log(response.payload);
         })
@@ -1436,7 +1515,7 @@ export default function LocalHomeScreen({navigation, route}) {
                 data={referees}
                 ItemSeparatorComponent={renderSeparator}
                 keyExtractor={keyExtractor}
-                renderItem={renderRefereesScorekeeperListView}
+                renderItem={renderRefereeListView}
                 style={{marginLeft: 15}}
                 ListEmptyComponent={() => (
                   <TCEntityListPlaceholder
@@ -1465,7 +1544,7 @@ export default function LocalHomeScreen({navigation, route}) {
                 data={scorekeepers}
                 ItemSeparatorComponent={renderSeparator}
                 keyExtractor={keyExtractor}
-                renderItem={renderRefereesScorekeeperListView}
+                renderItem={renderScorekeeperListView}
                 style={{marginLeft: 15}}
                 ListEmptyComponent={() => (
                   <TCEntityListPlaceholder

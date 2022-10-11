@@ -8,6 +8,7 @@ import AllInOneGallery from './AllInOneGallery';
 import {createPost} from '../../api/NewsFeeds';
 import {strings} from '../../../Localization/translation';
 import {ImageUploadContext} from '../../context/ImageUploadContext';
+import Verbs from '../../Constants/Verbs';
 // import { useIsFocused } from '@react-navigation/native';
 
 // const entity = {};
@@ -22,7 +23,18 @@ export default function EntityGallaryScreen({navigation, route}) {
 
   const createPostAfterUpload = useCallback(
     (dataParams) => {
-      createPost({...dataParams, is_gallery: true}, authContext)
+      let body = dataParams;
+
+      if (
+        authContext.entity.role === Verbs.entityTypeClub ||
+        authContext.entity.role === Verbs.entityTypeTeam
+      ) {
+        body = {
+          ...dataParams,
+          group_id: authContext.entity.uid,
+        };
+      }
+      createPost({...body, is_gallery: true}, authContext)
         .then(() => {
           if (galleryRef?.current?.refreshGallery) {
             galleryRef.current.refreshGallery();

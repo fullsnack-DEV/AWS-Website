@@ -41,6 +41,8 @@ import {
   getLocationNameWithLatLong,
   getLatLongFromPlaceID,
   searchNearByCity,
+  searchCityState,
+  searchLocationPlaceDetail,
 } from '../../api/External'; // getLatLongFromPlaceID
 import images from '../../Constants/ImagePath';
 import {strings} from '../../../Localization/translation';
@@ -93,7 +95,24 @@ export default function ChooseLocationScreen({navigation, route}) {
 
   useEffect(() => {
     // getNearestCity();
-    getLocationData(searchText);
+    if (searchText.length >= 3) {
+      searchCityState(searchText)
+        .then((response) => {
+          setNoData(false);
+
+          setCityData(
+            response.predictions.filter((obj) => obj.terms.length === 3),
+          );
+        })
+        .catch((e) => {
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
+    } else {
+      setNoData(true);
+      setCityData([]);
+    }
   }, [searchText]);
 
   useEffect(() => {
@@ -193,24 +212,6 @@ export default function ChooseLocationScreen({navigation, route}) {
     );
   };
 
-  const getLocationData = async (searchLocationText) => {
-    if (searchLocationText.length >= 3) {
-      searchLocations(searchLocationText)
-        .then((response) => {
-          setNoData(false);
-          setCityData(response.predictions);
-        })
-        .catch((e) => {
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
-        });
-    } else {
-      setNoData(true);
-      setCityData([]);
-    }
-  };
-
   const getTeamsDataByCurrentLocation = async () => {
     setLoading(true);
     const userData = {
@@ -235,22 +236,30 @@ export default function ChooseLocationScreen({navigation, route}) {
 
   const getTeamsData = async (item) => {
     setLoading(true);
-    const userData = {
+
+    let userData = {};
+
+    userData = {
+      ...userData,
       city: item?.city ?? item?.terms?.[0]?.value,
       state_abbr: item?.state_abbr ?? item?.terms?.[1]?.value,
       country: item?.country ?? item?.terms?.[2]?.value,
     };
+    console.log('Location data :=>', userData);
     navigateToChooseSportScreen(userData);
   };
 
-  const renderItem = ({item, index}) => (
-    <TouchableWithoutFeedback
-      style={styles.listItem}
-      onPress={() => getTeamsData(item)}>
-      <Text style={styles.cityList}>{cityData[index].description}</Text>
-      <Separator />
-    </TouchableWithoutFeedback>
-  );
+  const renderItem = ({item, index}) => {
+    console.log('Render city item:=>', item);
+    return (
+      <TouchableWithoutFeedback
+        style={styles.listItem}
+        onPress={() => getTeamsData(item)}>
+        <Text style={styles.cityList}>{cityData[index].description}</Text>
+        <Separator />
+      </TouchableWithoutFeedback>
+    );
+  };
 
   const removeExtendedSpecialCharacters = (str) =>
     str.replace(/[^\x20-\x7E]/g, '');

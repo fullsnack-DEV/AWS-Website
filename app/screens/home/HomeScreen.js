@@ -799,7 +799,18 @@ const HomeScreen = ({navigation, route}) => {
   };
 
   const createPostAfterUpload = (dataParams) => {
-    createPost({...dataParams, is_gallery: true}, authContext)
+    let body = dataParams;
+
+    if (
+      authContext.entity.role === Verbs.entityTypeClub ||
+      authContext.entity.role === Verbs.entityTypeTeam
+    ) {
+      body = {
+        ...dataParams,
+        group_id: authContext.entity.uid,
+      };
+    }
+    createPost({...body, is_gallery: true}, authContext)
       .then(() => {
         if (galleryRef?.current?.refreshGallery) {
           galleryRef.current.refreshGallery();

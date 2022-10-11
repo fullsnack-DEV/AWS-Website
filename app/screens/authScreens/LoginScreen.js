@@ -137,6 +137,10 @@ const LoginScreen = ({navigation}) => {
             await Utility.setStorage('loggedInEntity', {...entity});
             getAppSettingsWithoutAuth()
               .then(async (response) => {
+                console.log('without token api res', response.payload);
+                global.sport_icon_baseurl =
+                  response.payload.app.base_url_sporticon;
+
                 await Utility.setStorage('appSetting', response.payload.app);
                 await authContext.setEntity({...entity});
               })

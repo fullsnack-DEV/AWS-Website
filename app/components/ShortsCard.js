@@ -4,8 +4,10 @@ import {StyleSheet, View, Text} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import Video from 'react-native-video';
 import LinearGradient from 'react-native-linear-gradient';
+import FastImage from 'react-native-fast-image';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
+import images from '../Constants/ImagePath';
 
 function millisToMinutesAndSeconds(millis) {
   const minutes = Math.floor(millis / 60000);
@@ -15,10 +17,7 @@ function millisToMinutesAndSeconds(millis) {
 
 function ShortsCard({onPress, cardItem}) {
   const json = JSON.parse(cardItem.object) ?? {};
-  console.log(
-    'json?.attachments?.[0]?.thumbnail:=>',
-    json?.attachments?.[0]?.thumbnail,
-  );
+  console.log('json?.attachments?.[0]?.thumbnail:=>', cardItem);
   return (
     <TouchableOpacity onPress={() => onPress({cardItem})}>
       <View>
@@ -36,12 +35,38 @@ function ShortsCard({onPress, cardItem}) {
         <LinearGradient
           colors={['rgba(0,0,0,0.0)', 'rgba(0,0,0,0.3)']}
           style={styles.overlayStyle}>
-          <Text style={styles.entityLable} numberOfLines={2}>
-            {cardItem?.actor?.data?.entity_type === 'player'
-              ? cardItem?.actor?.data?.full_name
-              : cardItem?.actor?.data?.group_name}
-          </Text>
           <Text style={styles.viewsLable}>121 views</Text>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginLeft: 20,
+              marginRight: 15,
+              paddingBottom: 5,
+            }}>
+            <View
+              style={{
+                backgroundColor: colors.whiteColor,
+                height: 32,
+                width: 32,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 64,
+              }}>
+              <FastImage
+                source={
+                  cardItem?.actor?.data?.thumbnail
+                    ? {uri: cardItem?.actor?.data?.thumbnail}
+                    : images.teamPlaceholder
+                }
+                style={styles.profileImage}
+              />
+            </View>
+            <Text style={styles.entityLable} numberOfLines={2}>
+              {cardItem?.actor?.data?.full_name}
+            </Text>
+          </View>
         </LinearGradient>
       </View>
     </TouchableOpacity>
@@ -64,18 +89,17 @@ const styles = StyleSheet.create({
   },
   entityLable: {
     fontFamily: fonts.RBold,
-    fontSize: 16,
+    fontSize: 14,
     color: colors.whiteColor,
-    marginBottom: 5,
     marginLeft: 8,
-    marginTop: 15,
+    width: '90%',
   },
   viewsLable: {
     fontFamily: fonts.RRegular,
     fontSize: 14,
     color: colors.whiteColor,
     marginLeft: 8,
-    paddingBottom: 15,
+    paddingBottom: 5,
   },
   // shortsTextContainer: {
   //   position: 'absolute',
@@ -106,6 +130,13 @@ const styles = StyleSheet.create({
     right: 0,
 
     // bottom: 15,
+  },
+  profileImage: {
+    height: 30,
+    width: 30,
+    resizeMode: 'cover',
+
+    borderRadius: 15,
   },
 });
 
