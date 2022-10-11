@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-unused-styles */
 import React, {memo} from 'react';
-import {View, Text, StyleSheet, Image, Pressable} from 'react-native';
+import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
@@ -12,7 +12,7 @@ const UserInfoPlaysInItem = ({
   onPlayInPress,
   isOpacity = false,
 }) => (
-  <Pressable onPress={onPlayInPress}>
+  <TouchableOpacity onPress={onPlayInPress}>
     <View
       style={[styles.containerStyle, {flex: 1, opacity: isOpacity ? 0.4 : 1}]}>
       <Image source={thumbURL} style={styles.imageStyle} />
@@ -31,7 +31,7 @@ const UserInfoPlaysInItem = ({
         end={{x: 1, y: 1}}
         start={{x: 1, y: 0}}></LinearGradient>
     </View>
-  </Pressable>
+  </TouchableOpacity>
 );
 
 const styles = StyleSheet.create({

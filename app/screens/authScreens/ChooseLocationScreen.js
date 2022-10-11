@@ -226,6 +226,10 @@ export default function ChooseLocationScreen({navigation, route}) {
   const navigateToChooseSportScreen = (params) => {
     setLoading(false);
 
+    console.log('Location data :=>', {
+      ...route?.params?.signupInfo,
+      ...params,
+    });
     navigation.navigate('ChooseSportsScreen', {
       locationInfo: {
         ...route?.params?.signupInfo,
@@ -245,7 +249,6 @@ export default function ChooseLocationScreen({navigation, route}) {
       state_abbr: item?.state_abbr ?? item?.terms?.[1]?.value,
       country: item?.country ?? item?.terms?.[2]?.value,
     };
-    console.log('Location data :=>', userData);
     navigateToChooseSportScreen(userData);
   };
 

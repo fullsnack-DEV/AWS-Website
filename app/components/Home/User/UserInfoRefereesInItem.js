@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, StyleSheet, Image, Pressable} from 'react-native';
+import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
@@ -12,7 +12,7 @@ export default function UserInfoRefereesInItem({
 }) {
   console.log('isOpasity', isOpacity);
   return (
-    <Pressable style={styles.containerStyle} onPress={onRefereesInPress}>
+    <TouchableOpacity style={styles.containerStyle} onPress={onRefereesInPress}>
       <View
         style={{
           flex: 1,
@@ -36,7 +36,7 @@ export default function UserInfoRefereesInItem({
           end={{x: 1, y: 1}}
           start={{x: 1, y: 0}}></LinearGradient>
       </View>
-    </Pressable>
+    </TouchableOpacity>
   );
 }
 

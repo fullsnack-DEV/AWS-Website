@@ -1378,124 +1378,6 @@ export default function AccountScreen({navigation}) {
       });
   };
 
-  const renderSectionHeader = ({section, sectionID, isSectionOpen}) => {
-    const secData = userMenu?.find((item) => item.key === section);
-    return (
-      <View
-        style={{
-          opacity:
-            isAccountDeactivated && section !== strings.settingsTitleText
-              ? 0.5
-              : 1,
-        }}>
-        <TouchableWithoutFeedback
-          testID={`account-section${sectionID}`}
-          disabled={
-            isAccountDeactivated && section !== strings.settingsTitleText
-          }
-          style={styles.listContainer}
-          onPress={() => {
-            handleSections(section);
-          }}>
-          <View
-            style={{
-              alignSelf: 'center',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-            {section === strings.reservationsTitleText && (
-              <Image
-                source={images.accountMySchedule}
-                style={{...styles.menuItem}}
-              />
-            )}
-            {section === strings.playingTitleText && (
-              <Image
-                source={images.accountMySports}
-                style={{...styles.menuItem}}
-              />
-            )}
-            {section === strings.refereeingTitleText && (
-              <Image
-                source={images.accountMyRefereeing}
-                style={{...styles.menuItem}}
-              />
-            )}
-            {section === strings.scorekeepingTitleText && (
-              <Image
-                source={images.accountMyScoreKeeping}
-                style={{...styles.menuItem}}
-              />
-            )}
-            {section === strings.teamstitle && (
-              <Image
-                source={images.accountMyTeams}
-                style={{...styles.menuItem}}
-              />
-            )}
-            {section === strings.clubstitle && (
-              <Image
-                source={images.accountMyClubs}
-                style={{...styles.menuItem}}
-              />
-            )}
-            {section === strings.leaguesTitle && (
-              <Image
-                source={images.accountMyLeagues}
-                style={{...styles.menuItem}}
-              />
-            )}
-            {section === strings.challengeSettingText && (
-              <Image
-                source={images.manageChallengeIcon}
-                style={styles.menuItem}
-              />
-            )}
-
-            {section === strings.paymentPayoutText && (
-              <Image
-                source={images.accountPaymentPayout}
-                style={{...styles.menuItem}}
-              />
-            )}
-
-            {section === strings.settingsTitleText && (
-              <Image
-                source={images.accountSettingPrivacy}
-                style={{...styles.menuItem}}
-              />
-            )}
-
-            {section === strings.logOut && (
-              <Image source={images.logoutIcon} style={{...styles.menuItem}} />
-            )}
-            {section === strings.membersTitle && (
-              <Image source={images.Members} style={{...styles.menuItem}} />
-            )}
-          </View>
-          <Text accessibilityLabel={section} style={styles.listItems}>
-            {section}
-          </Text>
-          {section !== strings.logOut && (
-            <>
-              {secData?.member ? (
-                <Image
-                  source={images.nextArrow}
-                  style={{
-                    ...styles.nextArrow,
-                    transform: [{rotateZ: isSectionOpen ? '270deg' : '90deg'}],
-                  }}
-                />
-              ) : (
-                <Image source={images.nextArrow} style={styles.nextArrow} />
-              )}
-            </>
-          )}
-        </TouchableWithoutFeedback>
-      </View>
-    );
-  };
-
   return (
     <SafeAreaView style={styles.mainContainer} testID="account-screen">
       <ActivityLoader visible={loading} />
@@ -2037,9 +1919,136 @@ export default function AccountScreen({navigation}) {
           ItemSeparatorComponent={() => (
             <View style={styles.halfSeparatorLine} />
           )}
-          renderSectionHeaderX={(section, sectionID, isSectionOpen) =>
-            renderSectionHeader({section, sectionID, isSectionOpen})
-          }
+          renderSectionHeaderX={(section, sectionID, isSectionOpen) => {
+            const secData = userMenu?.find((item) => item.key === section);
+            return (
+              <View
+                style={{
+                  opacity:
+                    isAccountDeactivated &&
+                    section !== strings.settingsTitleText
+                      ? 0.5
+                      : 1,
+                }}>
+                <TouchableWithoutFeedback
+                  testID={`account-section${sectionID}`}
+                  disabled={
+                    isAccountDeactivated &&
+                    section !== strings.settingsTitleText
+                  }
+                  style={styles.listContainer}
+                  onPress={() => {
+                    handleSections(section);
+                  }}>
+                  <View
+                    style={{
+                      alignSelf: 'center',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}>
+                    {section === strings.reservationsTitleText && (
+                      <Image
+                        source={images.accountMySchedule}
+                        style={{...styles.menuItem}}
+                      />
+                    )}
+                    {section === strings.playingTitleText && (
+                      <Image
+                        source={images.accountMySports}
+                        style={{...styles.menuItem}}
+                      />
+                    )}
+                    {section === strings.refereeingTitleText && (
+                      <Image
+                        source={images.accountMyRefereeing}
+                        style={{...styles.menuItem}}
+                      />
+                    )}
+                    {section === strings.scorekeepingTitleText && (
+                      <Image
+                        source={images.accountMyScoreKeeping}
+                        style={{...styles.menuItem}}
+                      />
+                    )}
+                    {section === strings.teamstitle && (
+                      <Image
+                        source={images.accountMyTeams}
+                        style={{...styles.menuItem}}
+                      />
+                    )}
+                    {section === strings.clubstitle && (
+                      <Image
+                        source={images.accountMyClubs}
+                        style={{...styles.menuItem}}
+                      />
+                    )}
+                    {section === strings.leaguesTitle && (
+                      <Image
+                        source={images.accountMyLeagues}
+                        style={{...styles.menuItem}}
+                      />
+                    )}
+                    {section === strings.challengeSettingText && (
+                      <Image
+                        source={images.manageChallengeIcon}
+                        style={styles.menuItem}
+                      />
+                    )}
+
+                    {section === strings.paymentPayoutText && (
+                      <Image
+                        source={images.accountPaymentPayout}
+                        style={{...styles.menuItem}}
+                      />
+                    )}
+
+                    {section === strings.settingsTitleText && (
+                      <Image
+                        source={images.accountSettingPrivacy}
+                        style={{...styles.menuItem}}
+                      />
+                    )}
+
+                    {section === strings.logOut && (
+                      <Image
+                        source={images.logoutIcon}
+                        style={{...styles.menuItem}}
+                      />
+                    )}
+                    {section === strings.membersTitle && (
+                      <Image
+                        source={images.Members}
+                        style={{...styles.menuItem}}
+                      />
+                    )}
+                  </View>
+                  <Text accessibilityLabel={section} style={styles.listItems}>
+                    {section}
+                  </Text>
+                  {section !== strings.logOut && (
+                    <>
+                      {secData?.member ? (
+                        <Image
+                          source={images.nextArrow}
+                          style={{
+                            ...styles.nextArrow,
+                            transform: [
+                              {rotateZ: isSectionOpen ? '270deg' : '90deg'},
+                            ],
+                          }}
+                        />
+                      ) : (
+                        <Image
+                          source={images.nextArrow}
+                          style={styles.nextArrow}
+                        />
+                      )}
+                    </>
+                  )}
+                </TouchableWithoutFeedback>
+              </View>
+            );
+          }}
         />
 
         {groupList.length > 0 && (

@@ -215,7 +215,7 @@ export default function FollowTeams({route, navigation}) {
       gender: signUpData.gender,
       city: signUpData.city,
       country: signUpData.country,
-      state: signUpData.state,
+      state: signUpData.state_abbr,
       sports: signUpData.sports,
     };
     if (signUpData?.profilePicData?.thumbnail) {

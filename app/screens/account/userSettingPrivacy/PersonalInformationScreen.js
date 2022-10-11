@@ -16,11 +16,11 @@ import {
   TouchableWithoutFeedback,
   Alert,
   FlatList,
+  Dimensions,
   Platform,
   SafeAreaView,
   // eslint-disable-next-line react-native/split-platform-components
   PermissionsAndroid,
-  ScrollView,
 } from 'react-native';
 
 import ImagePicker from 'react-native-image-crop-picker';
@@ -75,8 +75,8 @@ export default function PersonalInformationScreen({navigation, route}) {
   );
 
   const [state, setState] = useState(
-    route?.params?.state
-      ? route?.params?.state
+    route?.params?.state_abbr
+      ? route?.params?.state_abbr
       : authContext?.entity?.obj?.state_abbr,
   );
   const [country, setCountry] = useState(
@@ -141,11 +141,11 @@ export default function PersonalInformationScreen({navigation, route}) {
     if (isFocused) {
       if (
         route?.params?.city &&
-        route?.params?.state &&
+        route?.params?.state_abbr &&
         route?.params?.country
       ) {
         setCity(route?.params?.city);
-        setState(route?.params?.state);
+        setState(route?.params?.state_abbr);
         setCountry(route?.params?.country);
       }
     }
@@ -153,7 +153,7 @@ export default function PersonalInformationScreen({navigation, route}) {
     isFocused,
     route?.params?.city,
     route?.params?.country,
-    route?.params?.state,
+    route?.params?.state_abbr,
   ]);
 
   useEffect(() => {
@@ -182,7 +182,6 @@ export default function PersonalInformationScreen({navigation, route}) {
         switch (result) {
           case RESULTS.UNAVAILABLE:
             console.log(strings.thisFeaturesNotAvailableText);
-            getCurrentLocation();
             break;
           case RESULTS.DENIED:
             console.log(strings.permissionNotRequested);
@@ -281,6 +280,12 @@ export default function PersonalInformationScreen({navigation, route}) {
         setCity(item?.terms?.[0]?.value ?? '');
         setState(item?.terms?.[1]?.value ?? '');
         setCountry(item?.terms?.[2]?.value ?? '');
+        setUserInfo({
+          ...userInfo,
+          city: item?.terms?.[0]?.value ?? '',
+          state: item?.terms?.[1]?.value ?? '',
+          country: item?.terms?.[2]?.value ?? '',
+        });
       }
     });
     setLocationPopup(false);
@@ -289,6 +294,7 @@ export default function PersonalInformationScreen({navigation, route}) {
     setCity(currentLocation.city);
     setState(currentLocation.state);
     setCountry(currentLocation.country);
+
     setLocationPopup(false);
   };
 
@@ -640,7 +646,7 @@ export default function PersonalInformationScreen({navigation, route}) {
                 ...styles.matchFeeTxt,
                 backgroundColor: colors.textFieldBackground,
               }}
-              value={`${city}, ${state}, ${country}`}
+              value={`${userInfo.city}, ${userInfo.state}, ${userInfo.country}`}
               editable={false}
               pointerEvents="none"
             />
@@ -672,7 +678,11 @@ export default function PersonalInformationScreen({navigation, route}) {
         style={{
           margin: 0,
         }}>
-        <View style={styles.bottomPopupContainer}>
+        <View
+          style={[
+            styles.bottomPopupContainer,
+            {height: Dimensions.get('window').height - 50},
+          ]}>
           <View style={styles.topHeaderContainer}>
             <TouchableOpacity
               hitSlop={getHitSlop(15)}
@@ -707,37 +717,35 @@ export default function PersonalInformationScreen({navigation, route}) {
               Please, enter at least 3 characters to see cities.
             </Text>
           )}
-          <ScrollView>
-            {noData && searchText?.length === 0 && (
-              <View>
-                <TouchableWithoutFeedback
-                  style={styles.listItem}
-                  onPress={() => getTeamsDataByCurrentLocation()}>
-                  <View>
-                    <Text style={[styles.cityList, {marginBottom: 3}]}>
-                      {currentLocation?.city}, {currentLocation?.state},{' '}
-                      {currentLocation?.country}
-                    </Text>
-                    <Text style={styles.curruentLocationText}>
-                      {strings.currentLocationText}
-                    </Text>
+          {noData && searchText?.length === 0 && (
+            <View style={{flex: 1}}>
+              <TouchableWithoutFeedback
+                style={styles.listItem}
+                onPress={() => getTeamsDataByCurrentLocation()}>
+                <View>
+                  <Text style={[styles.cityList, {marginBottom: 3}]}>
+                    {currentLocation?.city}, {currentLocation?.state_abbr},{' '}
+                    {currentLocation?.country}
+                  </Text>
+                  <Text style={styles.curruentLocationText}>
+                    {strings.currentLocationText}
+                  </Text>
 
-                    <TCThinDivider
-                      width={'100%'}
-                      backgroundColor={colors.grayBackgroundColor}
-                    />
-                  </View>
-                </TouchableWithoutFeedback>
-              </View>
-            )}
-            {cityData.length > 0 && (
-              <FlatList
-                data={cityData}
-                renderItem={renderItem}
-                keyExtractor={(index) => index.toString()}
-              />
-            )}
-          </ScrollView>
+                  <TCThinDivider
+                    width={'100%'}
+                    backgroundColor={colors.grayBackgroundColor}
+                  />
+                </View>
+              </TouchableWithoutFeedback>
+            </View>
+          )}
+          {cityData.length > 0 && (
+            <FlatList
+              data={cityData}
+              renderItem={renderItem}
+              keyExtractor={(index) => index.toString()}
+            />
+          )}
         </View>
       </Modal>
       <ActionSheet
@@ -841,7 +849,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     width: '100%',
-    height: '90%',
 
     ...Platform.select({
       ios: {
