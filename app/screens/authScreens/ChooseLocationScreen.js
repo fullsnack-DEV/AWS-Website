@@ -177,7 +177,7 @@ export default function ChooseLocationScreen({navigation, route}) {
   };
 
   const getLocation = () => {
-    Geolocation.requestAuthorization();
+    // Geolocation.requestAuthorization();
     Geolocation.getCurrentPosition(
       (position) => {
         getNearByCityData(

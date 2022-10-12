@@ -21,6 +21,7 @@ import {
   SafeAreaView,
   // eslint-disable-next-line react-native/split-platform-components
   PermissionsAndroid,
+  Keyboard,
 } from 'react-native';
 
 import ImagePicker from 'react-native-image-crop-picker';
@@ -181,23 +182,20 @@ export default function PersonalInformationScreen({navigation, route}) {
       ).then((result) => {
         switch (result) {
           case RESULTS.UNAVAILABLE:
-            console.log(strings.thisFeaturesNotAvailableText);
             break;
           case RESULTS.DENIED:
-            console.log(strings.permissionNotRequested);
-
+            console.log('2', strings.permissionNotRequested);
             break;
           case RESULTS.LIMITED:
-            console.log(strings.permissionLimitedText);
-
+            console.log('3', strings.permissionLimitedText);
             break;
           case RESULTS.GRANTED:
-            console.log(strings.permissionGrantedText);
+            console.log('4', strings.permissionGrantedText);
             setloading(true);
             getCurrentLocation();
             break;
           case RESULTS.BLOCKED:
-            console.log(strings.permissionDenitedText);
+            console.log('5', strings.permissionDenitedText);
             break;
           default:
         }
@@ -206,9 +204,10 @@ export default function PersonalInformationScreen({navigation, route}) {
   }, []);
 
   const getCurrentLocation = async () => {
-    Geolocation.requestAuthorization();
+    // Geolocation.requestAuthorization();
     Geolocation.getCurrentPosition(
       (position) => {
+        console.log('Position', position);
         getLocationNameWithLatLong(
           position?.coords?.latitude,
           position?.coords?.longitude,
@@ -216,7 +215,6 @@ export default function PersonalInformationScreen({navigation, route}) {
         ).then((res) => {
           const userData = {};
           // let stateAbbr, city, country;
-
           // eslint-disable-next-line array-callback-return
           res.results[0].address_components.map((e) => {
             if (e.types.includes('administrative_area_level_1')) {
@@ -235,9 +233,9 @@ export default function PersonalInformationScreen({navigation, route}) {
       (error) => {
         setloading(false);
         // See error code charts below.
-        console.log(error.code, error.message);
+        console.log('location error', error.code, error.message);
       },
-      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+      {enableHighAccuracy: false, timeout: 15000, maximumAge: 10000},
     );
   };
   const requestPermission = async () => {
@@ -252,9 +250,10 @@ export default function PersonalInformationScreen({navigation, route}) {
         ) {
           getCurrentLocation();
         }
+        console.log('Android Location permition result', result);
       })
       .catch((error) => {
-        console.warn(error);
+        console.warn('android location errro', error);
       });
   };
   const renderItem = ({item, index}) => {
@@ -262,7 +261,10 @@ export default function PersonalInformationScreen({navigation, route}) {
     return (
       <TouchableWithoutFeedback
         style={styles.listItem}
-        onPress={() => getTeamsData(item)}>
+        onPress={() => {
+          getTeamsData(item);
+          Keyboard.dismiss();
+        }}>
         <View>
           <Text style={styles.cityList}>{cityData[index].description}</Text>
           <TCThinDivider
@@ -472,7 +474,13 @@ export default function PersonalInformationScreen({navigation, route}) {
   };
 
   const openCamera = (width = 400, height = 400) => {
-    check(PERMISSIONS.IOS.CAMERA)
+    // check(PERMISSIONS.IOS.CAMERA)
+    check(
+      Platform.select({
+        ios: PERMISSIONS.IOS.CAMERA,
+        android: PERMISSIONS.ANDROID.CAMERA,
+      }),
+    )
       .then((result) => {
         switch (result) {
           case RESULTS.UNAVAILABLE:
@@ -717,6 +725,7 @@ export default function PersonalInformationScreen({navigation, route}) {
               Please, enter at least 3 characters to see cities.
             </Text>
           )}
+          {/* <ScrollView> */}
           {noData && searchText?.length === 0 && (
             <View style={{flex: 1}}>
               <TouchableWithoutFeedback
@@ -724,7 +733,7 @@ export default function PersonalInformationScreen({navigation, route}) {
                 onPress={() => getTeamsDataByCurrentLocation()}>
                 <View>
                   <Text style={[styles.cityList, {marginBottom: 3}]}>
-                    {currentLocation?.city}, {currentLocation?.state_abbr},{' '}
+                    {currentLocation?.city}, {currentLocation?.state},{' '}
                     {currentLocation?.country}
                   </Text>
                   <Text style={styles.curruentLocationText}>
@@ -744,8 +753,10 @@ export default function PersonalInformationScreen({navigation, route}) {
               data={cityData}
               renderItem={renderItem}
               keyExtractor={(index) => index.toString()}
+              keyboardShouldPersistTaps="always"
             />
           )}
+          {/* </ScrollView> */}
         </View>
       </Modal>
       <ActionSheet
@@ -842,11 +853,17 @@ const styles = StyleSheet.create({
     width: 22,
   },
   bottomPopupContainer: {
-    paddingBottom: Platform.OS === 'ios' ? 30 : 0,
+    flex: 1,
+    // paddingBottom: Platform.OS === 'ios' ? 30 : 0,
+    // marginTop: Platform.OS === 'ios' ? 50 : 50,
+    paddingBottom: Platform.OS === 'ios' ? hp(8) : 0,
+    marginTop: Platform.OS === 'ios' ? hp(7) : 0,
+
     backgroundColor: colors.whiteColor,
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
-    position: 'absolute',
+    // position: 'absolute',
+
     bottom: 0,
     width: '100%',
 

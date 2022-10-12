@@ -280,7 +280,6 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
       body.source = route?.params?.paymentMethod?.id;
       body.payment_method_type = 'card';
       body.currency_type = authContext.entity.obj.currency_type;
-
       payStripeInvoice(invoiceObj?.invoice_id, body, authContext)
         .then(() => {
           setloading(false);
