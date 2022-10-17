@@ -493,7 +493,7 @@ export default function PersonalInformationScreen({navigation, route}) {
                   setProfileImageChanged(true);
                 })
                 .catch((e) => {
-                  Alert.alert(e);
+                  console.log(e);
                 });
             });
             break;
@@ -515,7 +515,7 @@ export default function PersonalInformationScreen({navigation, route}) {
                   setProfileImageChanged(true);
                 })
                 .catch((e) => {
-                  Alert.alert(e);
+                  console.log(e);
                 });
             }
             break;

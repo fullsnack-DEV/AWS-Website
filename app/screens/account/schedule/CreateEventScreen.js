@@ -24,6 +24,7 @@ import {
   FlatList,
   Dimensions,
   Platform,
+  // eslint-disable-next-line react-native/split-platform-components
 } from 'react-native';
 import moment from 'moment';
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
@@ -300,6 +301,13 @@ export default function CreateEventScreen({navigation, route}) {
   ]);
 
   useEffect(() => {
+    // Set default value by AV to avaoid crash
+    const obj = {
+      lat: 0.0,
+      lng: 0.0,
+    };
+    setLocationDetail(obj);
+
     if (isFocused) {
       getSports();
       if (route?.params?.locationName) {
@@ -310,6 +318,7 @@ export default function CreateEventScreen({navigation, route}) {
   }, [isFocused, route.params]);
 
   useEffect(() => {
+    console.log('route.params.comeName', route.params.comeName);
     const unsubscribe = navigation.addListener('focus', async () => {
       if (route.params.comeName) {
         Geolocation.getCurrentPosition(
@@ -593,7 +602,7 @@ export default function CreateEventScreen({navigation, route}) {
                   setBackgroundImageChanged(true);
                 })
                 .catch((e) => {
-                  Alert.alert(e);
+                  console.log(e);
                 });
             });
             break;
@@ -610,7 +619,7 @@ export default function CreateEventScreen({navigation, route}) {
                 setBackgroundImageChanged(true);
               })
               .catch((e) => {
-                Alert.alert(e);
+                console.log('error', e);
               });
             break;
           case RESULTS.BLOCKED:
@@ -836,7 +845,7 @@ export default function CreateEventScreen({navigation, route}) {
             data[0].background_thumbnail = bgInfo.thumbnail;
             data[0].background_full_image = bgInfo.url;
             setBackgroundImageChanged(false);
-
+            console.log('Data==>', data);
             createEventDone(data);
           })
           .catch((e) => {
@@ -845,6 +854,7 @@ export default function CreateEventScreen({navigation, route}) {
             }, 0.1);
           });
       } else {
+        console.log('Data==>', data);
         createEventDone(data);
       }
     }
@@ -891,6 +901,7 @@ export default function CreateEventScreen({navigation, route}) {
                   placeholder={strings.sportPlaceholder}
                   style={styles.textInputStyle}
                   pointerEvents={'none'}
+                  editable={false}
                   // onChangeText={onChangeText}
                   value={getSportName(sportsSelection, authContext)}
                   textAlignVertical={'center'}
@@ -926,7 +937,9 @@ export default function CreateEventScreen({navigation, route}) {
                     ? moment(eventStartDateTime).format('h:mm a')
                     : moment(new Date()).format('h:mm a')
                 }
-                onDatePress={() => setStartDateVisible(!startDateVisible)}
+                onDatePress={() => {
+                  setStartDateVisible(!startDateVisible);
+                }}
               />
               <EventTimeSelectItem
                 title={strings.ends}
@@ -1015,6 +1028,9 @@ export default function CreateEventScreen({navigation, route}) {
                 placeholder={strings.venueNamePlaceholder}
                 style={styles.textInputStyle}
                 onChangeText={(value) => {
+                  console.log('details', locationDetail);
+                  console.log('venue_name', value);
+
                   setLocationDetail({...locationDetail, venue_name: value});
                 }}
                 value={locationDetail?.venue_name}
@@ -1042,20 +1058,22 @@ export default function CreateEventScreen({navigation, route}) {
               />
               <EventMapView
                 region={{
-                  latitude: locationDetail ? locationDetail.lat : 0.0,
-                  longitude: locationDetail ? locationDetail.lng : 0.0,
+                  latitude: locationDetail ? locationDetail?.lat : 0.0,
+                  longitude: locationDetail ? locationDetail?.lng : 0.0,
                   latitudeDelta: 0.0922,
                   longitudeDelta: 0.0421,
                 }}
                 coordinate={{
-                  latitude: locationDetail ? locationDetail.lat : 0.0,
-                  longitude: locationDetail ? locationDetail.lng : 0.0,
+                  latitude: locationDetail ? locationDetail?.lat : 0.0,
+                  longitude: locationDetail ? locationDetail?.lng : 0.0,
                 }}
               />
               <TextInput
                 placeholder={strings.venueDetailsPlaceholder}
                 style={styles.detailsInputStyle}
                 onChangeText={(value) => {
+                  console.log('location details', locationDetail);
+                  console.log('vanue details', value);
                   setLocationDetail({...locationDetail, venue_detail: value});
                 }}
                 value={locationDetail?.venue_detail}
@@ -1162,10 +1180,10 @@ export default function CreateEventScreen({navigation, route}) {
               <View style={styles.feeContainer}>
                 <TextInput
                   style={styles.eventFeeStyle}
-                  placeholder={`${eventFee}`}
+                  placeholder={'0'}
                   keyboardType={'decimal-pad'}
                   onChangeText={(value) => setEventFee(value)}
-                  // value={eventFee}
+                  value={eventFee}
                   textAlignVertical={'center'}
                   placeholderTextColor={colors.userPostTimeColor}
                 />

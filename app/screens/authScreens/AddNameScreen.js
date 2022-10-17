@@ -169,7 +169,7 @@ export default function SignupScreen({navigation, route}) {
                   setProfilePic(pickImages);
                 })
                 .catch((e) => {
-                  Alert.alert(e);
+                  console.log(e);
                 });
             });
             break;
@@ -190,7 +190,7 @@ export default function SignupScreen({navigation, route}) {
                   setProfilePic(pickImages);
                 })
                 .catch((e) => {
-                  Alert.alert(e);
+                  console.log(e);
                 });
             }
             break;
@@ -341,7 +341,7 @@ export default function SignupScreen({navigation, route}) {
           <TCTextField
             testID="lname-signup-input"
             placeholderTextColor={colors.darkYellowColor}
-            style={styles.textFieldStyle}
+            style={{...styles.textFieldStyle, marginBottom: 40}}
             placeholder={strings.lnameText}
             onChangeText={(text) => setLName(text)}
             value={lName}

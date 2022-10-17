@@ -285,7 +285,7 @@ export default function CreateMemberProfileForm1({navigation, route}) {
                   setMemberInfo({...memberInfo, full_image: data.path});
                 })
                 .catch((e) => {
-                  Alert.alert(e);
+                  console.log(e);
                 });
             });
             break;
@@ -302,7 +302,7 @@ export default function CreateMemberProfileForm1({navigation, route}) {
                 setMemberInfo({...memberInfo, full_image: data.path});
               })
               .catch((e) => {
-                Alert.alert(e);
+                console.log(e);
               });
             break;
           case RESULTS.BLOCKED:

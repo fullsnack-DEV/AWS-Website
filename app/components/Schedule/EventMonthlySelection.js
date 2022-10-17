@@ -55,7 +55,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RLight,
     color: colors.lightBlackColor,
-    width: wp('20'),
+    // av
+    width: wp('22'),
     paddingLeft: 5,
   },
   inputAndroid: {
@@ -69,7 +70,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingRight: 30,
     paddingVertical: 12,
-    width: '100%',
+    // width: '100%',
+    // Add new by av
+    width: wp('50'),
+    marginLeft: 25,
+    marginRight: 10,
   },
   inputIOS: {
     alignSelf: 'center',
@@ -77,7 +82,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RRegular,
     height: 30,
-    paddingHorizontal: '30%',
+    // paddingHorizontal: '30%',
+    // Av
+    width: wp('50'),
+    marginLeft: 41,
+    marginRight: 10,
   },
   downArrow: {
     height: 15,

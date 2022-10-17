@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   textInput: {
-    height: '100%',
+    height: 100,
     flex: 1,
     fontFamily: fonts.RRegular,
     fontSize: 16,
