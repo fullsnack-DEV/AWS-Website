@@ -21,6 +21,7 @@ import MultipleImageRender from '../../components/Home/MultipleImageRender';
 import SingleVideoRender from '../../components/Home/SingleVideoRender';
 import MultipleVideoRender from '../../components/Home/MultipleVideoRender';
 import {strings} from '../../../Localization/translation';
+import {widthPercentageToDP} from '../../utils';
 
 const AllInOneGallery = ({
   isAdmin,
@@ -92,8 +93,8 @@ const AllInOneGallery = ({
           <AddPhotoItem
             onAddPhotoPress={() => {
               ImagePicker.openPicker({
-                width: 300,
-                height: 400,
+                height: widthPercentageToDP(32.3),
+                width: widthPercentageToDP(32.3),
                 multiple: true,
                 maxFiles: MAX_UPLOAD_POST_ASSETS,
               }).then((pickImages) => {
@@ -120,9 +121,6 @@ const AllInOneGallery = ({
     },
     [authContext.entity.uid, entity_id, onAddPhotoPress],
   );
-
-  console.log('isAdminisAdmin', isAdmin);
-  console.log('authContext.entity.uid', authContext.entity.uid);
 
   const finalGalleryData =
     authContext.entity.uid === entity_id || isAdmin

@@ -16,6 +16,7 @@ import TCTouchableLabel from '../../components/TCTouchableLabel';
 import MatchFeesCard from '../../components/challenge/MatchFeesCard';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import * as Utility from '../../utils';
+import Verbs from '../../Constants/Verbs';
 
 export default function PayAgainRefereeScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
@@ -59,7 +60,7 @@ export default function PayAgainRefereeScreen({navigation, route}) {
     const bodyParams = {};
     if (defaultCard) {
       bodyParams.source = defaultCard.id;
-      bodyParams.payment_method_type = 'card';
+      bodyParams.payment_method_type = Verbs.card;
       if (sorceScreen === ReservationStatus.pendingrequestpayment) {
         payAgainAlterReferee(
           reservationObj.reservation_id,
@@ -136,7 +137,7 @@ export default function PayAgainRefereeScreen({navigation, route}) {
           {strings.cancellationPolicyText}
         </Text>
         <Text style={styles.responsibilityNote}>
-         {strings.agreeCancellationPolicy}
+          {strings.agreeCancellationPolicy}
         </Text>
       </View>
       <View style={{flex: 1}} />

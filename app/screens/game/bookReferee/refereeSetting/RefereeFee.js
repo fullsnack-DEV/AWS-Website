@@ -25,6 +25,7 @@ import {patchPlayer} from '../../../../api/Users';
 import DataSource from '../../../../Constants/DataSource';
 import TCThinDivider from '../../../../components/TCThinDivider';
 import images from '../../../../Constants/ImagePath';
+import Verbs from '../../../../Constants/Verbs';
 
 export default function RefereeFee({navigation, route}) {
   const [comeFrom] = useState(route?.params?.comeFrom);
@@ -41,7 +42,7 @@ export default function RefereeFee({navigation, route}) {
   const [currencyType, setCurruencyType] = useState(
     route?.params?.settingObj?.game_fee
       ? route?.params?.settingObj?.game_fee?.currency_type
-      : authContext?.entity?.obj?.currency_type ?? strings.defaultCurrency,
+      : authContext?.entity?.obj?.currency_type ?? Verbs.usd,
   );
 
   const [visibleCurrencyModal, setVisibleCurrencyModal] = useState(false);

@@ -56,6 +56,7 @@ const styles = StyleSheet.create({
   imagesViewStyle: {
     flexDirection: 'row',
     margin: 1.5,
+    marginTop: 0,
     borderWidth: 0.5,
     borderColor: colors.disableColor,
     height: wp(32.3),

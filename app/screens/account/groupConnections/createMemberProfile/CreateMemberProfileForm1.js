@@ -576,8 +576,8 @@ export default function CreateMemberProfileForm1({navigation, route}) {
               placeholder={strings.searchByCityStateText}
               placeholderTextColor={colors.userPostTimeColor}
               style={[styles.matchFeeTxt, {marginBottom: 5}]}
-              value={`${city && `${city} ,`} ${state && `${state} ,`} ${
-                country && country
+              value={`${city ? `${city} ,` : ''} ${state ? `${state} ,` : ''} ${
+                country || ''
               }`}
               editable={false}
               pointerEvents="none"></TextInput>

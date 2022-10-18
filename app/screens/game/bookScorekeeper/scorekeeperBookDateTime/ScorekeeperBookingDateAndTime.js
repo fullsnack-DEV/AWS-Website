@@ -31,6 +31,7 @@ import {strings} from '../../../../../Localization/translation';
 import TCFormProgress from '../../../../components/TCFormProgress';
 import TCChallengeTitle from '../../../../components/TCChallengeTitle';
 import TCThickDivider from '../../../../components/TCThickDivider';
+import Verbs from '../../../../Constants/Verbs';
 
 let body = {};
 const ScorekeeperBookingDateAndTime = ({navigation, route}) => {
@@ -75,8 +76,7 @@ const ScorekeeperBookingDateAndTime = ({navigation, route}) => {
         )
           .then((response) => {
             body.hourly_game_fee = response?.payload?.hourly_game_fee ?? 0;
-            body.currency_type =
-              response?.payload?.currency_type ?? strings.defaultCurrency;
+            body.currency_type = response?.payload?.currency_type ?? Verbs.usd;
             body.total_payout = response?.payload?.total_payout ?? 0;
             body.total_service_fee1 =
               response?.payload?.total_service_fee1 ?? 0;
@@ -86,7 +86,7 @@ const ScorekeeperBookingDateAndTime = ({navigation, route}) => {
             body.total_game_fee = response?.payload?.total_game_fee ?? 0;
             body.international_card_fee =
               response?.payload?.international_card_fee ?? 0;
-            body.payment_method_type = 'card';
+            body.payment_method_type = Verbs.card;
             // body = { ...body, hourly_game_fee: hFee, currency_type: cType };
             setChallengeObject(body);
 

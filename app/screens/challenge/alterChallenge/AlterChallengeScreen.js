@@ -56,6 +56,7 @@ import ChallengeStatusView from '../../../components/challenge/ChallengeStatusVi
 import GameStatus from '../../../Constants/GameStatus';
 import RefereeAgreementView from '../../../components/challenge/RefereeAgreementView';
 import ScorekeeperAgreementView from '../../../components/challenge/ScorekeeperAgreementView';
+import Verbs from '../../../Constants/Verbs';
 
 let entity = {};
 export default function AlterChallengeScreen({navigation, route}) {
@@ -477,7 +478,7 @@ export default function AlterChallengeScreen({navigation, route}) {
     const feeBody = {};
     console.log('bodyParams check:=>', bodyParams);
     feeBody.challenge_id = bodyParams?.challenge_id;
-    feeBody.payment_method_type = 'card';
+    feeBody.payment_method_type = Verbs.card;
     feeBody.currency_type = bodyParams?.game_fee?.currency_type?.toLowerCase();
     feeBody.total_game_fee = Number(
       parseFloat(bodyParams?.game_fee?.fee).toFixed(2),
@@ -900,7 +901,7 @@ export default function AlterChallengeScreen({navigation, route}) {
                 if (route?.params?.paymentMethod) {
                   paymentObj = {
                     source: route?.params?.paymentMethod?.id,
-                    payment_method_type: 'card',
+                    payment_method_type: Verbs.card,
                   };
                 }
 

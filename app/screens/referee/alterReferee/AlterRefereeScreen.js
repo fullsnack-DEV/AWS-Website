@@ -59,6 +59,7 @@ import CurruentRefereeReservationView from './CurrentRefereeReservationView';
 import TCChallengeTitle from '../../../components/TCChallengeTitle';
 import TCTouchableLabel from '../../../components/TCTouchableLabel';
 import RefereeReservationTitle from '../../../components/reservations/RefereeReservationTitle';
+import Verbs from '../../../Constants/Verbs';
 
 let entity = {};
 const scroll = React.createRef();
@@ -272,8 +273,8 @@ export default function AlterRefereeScreen({navigation, route}) {
     body.reservation_id = bodyParams.reservation_id;
     body.start_datetime = bodyParams?.start_datetime;
     body.end_datetime = bodyParams?.end_datetime;
-    body.currency_type = bodyParams?.currency_type || strings.defaultCurrency;
-    body.payment_method_type = 'card';
+    body.currency_type = bodyParams?.currency_type ?? Verbs.usd;
+    body.payment_method_type = Verbs.card;
     body.sport = bodyParams?.sport;
     body.manual_fee = bodyParams?.manual_fee;
     if (bodyParams?.manual_fee) {
@@ -566,7 +567,7 @@ export default function AlterRefereeScreen({navigation, route}) {
     body.total_amount = paymentCard?.total_amount;
     body.total_payout = paymentCard?.total_payout;
     body.manual_fee = bodyParams?.manual_fee;
-    body.payment_method_type = 'card';
+    body.payment_method_type = Verbs.card;
     body.currency_type = bodyParams?.currency_type;
 
     if (
@@ -1091,7 +1092,9 @@ export default function AlterRefereeScreen({navigation, route}) {
                   fontSize: 16,
                   color: colors.lightBlackColor,
                 }}>
-                {_.startCase(bodyParams?.chief_referee ? strings.chief : strings.assistant)}{' '}
+                {_.startCase(
+                  bodyParams?.chief_referee ? strings.chief : strings.assistant,
+                )}{' '}
                 {strings.Referee}
               </Text>
             </View>
@@ -1109,9 +1112,7 @@ export default function AlterRefereeScreen({navigation, route}) {
             <TCChallengeTitle
               title={strings.refundpolicy.toUpperCase()}
               value={bodyParams?.refund_policy}
-              tooltipText={
-                strings.cancellationPolicyDesc
-              }
+              tooltipText={strings.cancellationPolicyDesc}
               tooltipHeight={heightPercentageToDP('18%')}
               tooltipWidth={widthPercentageToDP('50%')}
               isEdit={false}
@@ -1219,7 +1220,9 @@ export default function AlterRefereeScreen({navigation, route}) {
                 </Text>
               </Text>
               <View style={styles.differeceView}>
-                <Text style={styles.differenceTextTitle}>{strings.Difference}</Text>
+                <Text style={styles.differenceTextTitle}>
+                  {strings.Difference}
+                </Text>
                 <Text style={styles.diffenceAmount}>{`$${parseFloat(
                   bodyParams?.total_game_fee - oldVersion?.total_game_fee,
                 ).toFixed(2)} ${
@@ -1269,7 +1272,7 @@ export default function AlterRefereeScreen({navigation, route}) {
                     let paymentObj = {};
                     paymentObj = {
                       source: defaultCard?.id,
-                      payment_method_type: 'card',
+                      payment_method_type: Verbs.card,
                       total_game_fee: paymentCard?.total_game_fee,
                       total_service_fee1: paymentCard?.total_service_fee1,
                       total_service_fee2: paymentCard?.total_service_fee2,
@@ -1328,9 +1331,7 @@ export default function AlterRefereeScreen({navigation, route}) {
                     if (editInfo || editPayment) {
                       updateReservationDetail();
                     } else {
-                      Alert.alert(
-                        strings.alterModificationMsg,
-                      );
+                      Alert.alert(strings.alterModificationMsg);
                     }
                   }}
                 />
@@ -1382,13 +1383,9 @@ export default function AlterRefereeScreen({navigation, route}) {
                       bodyParams.start_datetime * 1000 <
                       new Date().getTime()
                     ) {
-                      Alert.alert(
-                        strings.cannotCancelReservationText,
-                      );
+                      Alert.alert(strings.cannotCancelReservationText);
                     } else {
-                      Alert.alert(
-                        strings.cannotAcceptText,
-                      );
+                      Alert.alert(strings.cannotAcceptText);
                     }
                   }}
                 />
@@ -1414,9 +1411,7 @@ export default function AlterRefereeScreen({navigation, route}) {
                       reservationObj: oldVersion,
                     });
                   } else {
-                    Alert.alert(
-                      strings.reservationCannotChange,
-                    );
+                    Alert.alert(strings.reservationCannotChange);
                   }
                 }}
               />
@@ -1450,13 +1445,9 @@ export default function AlterRefereeScreen({navigation, route}) {
                       bodyParams.start_datetime * 1000 <
                       new Date().getTime()
                     ) {
-                      Alert.alert(
-                        strings.cannotCancelReservationText,
-                      );
+                      Alert.alert(strings.cannotCancelReservationText);
                     } else {
-                      Alert.alert(
-                        strings.cannotAcceptText,
-                      );
+                      Alert.alert(strings.cannotAcceptText);
                     }
                   }}
                 />

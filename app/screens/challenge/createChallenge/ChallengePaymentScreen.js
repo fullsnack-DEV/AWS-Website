@@ -47,6 +47,7 @@ import {
   getFeesEstimation,
 } from '../../../api/Challenge';
 import TCFormProgress from '../../../components/TCFormProgress';
+import Verbs from '../../../Constants/Verbs';
 
 let entity = {};
 export default function ChallengePaymentScreen({route, navigation}) {
@@ -134,7 +135,7 @@ export default function ChallengePaymentScreen({route, navigation}) {
 
     feeBody.source = route?.params?.paymentMethod?.id;
     feeBody.challenge_id = challengeData?.challenge_id;
-    feeBody.payment_method_type = 'card';
+    feeBody.payment_method_type = Verbs.card;
     feeBody.currency_type =
       challengeData?.game_fee?.currency_type?.toLowerCase();
     feeBody.total_game_fee = Number(
@@ -190,7 +191,7 @@ export default function ChallengePaymentScreen({route, navigation}) {
 
     const body = {
       ...challengeData,
-      payment_method_type: 'card',
+      payment_method_type: Verbs.card,
       start_datetime: Number(
         parseFloat(challengeData?.start_datetime).toFixed(0),
       ),
@@ -545,7 +546,7 @@ export default function ChallengePaymentScreen({route, navigation}) {
             if (challengeData?.total_game_fee !== 0) {
               challengeObj = {
                 source: defaultCard?.id,
-                payment_method_type: 'card',
+                payment_method_type: Verbs.card,
                 total_game_fee: challengeData?.total_game_fee,
                 total_service_fee1: challengeData?.total_service_fee1,
                 total_service_fee2: challengeData?.total_service_fee2,

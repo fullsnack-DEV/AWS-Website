@@ -21,13 +21,14 @@ import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 import TCLabel from '../../components/TCLabel';
 import Header from '../../components/Home/Header';
+import Verbs from '../../Constants/Verbs';
 
 export default function CurrencySettingScreen({navigation}) {
   const authContext = useContext(AuthContext);
   const [loading, setloading] = useState(false);
 
   const [curruency, setCurruency] = useState(
-    authContext.entity.obj.currency_type ?? strings.defaultCurrency,
+    authContext.entity.obj.currency_type ?? Verbs.usd,
   );
 
   useLayoutEffect(() => {

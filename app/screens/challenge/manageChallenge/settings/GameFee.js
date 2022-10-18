@@ -25,6 +25,7 @@ import * as Utility from '../../../../utils';
 import TCThinDivider from '../../../../components/TCThinDivider';
 import images from '../../../../Constants/ImagePath';
 import DataSource from '../../../../Constants/DataSource';
+import Verbs from '../../../../Constants/Verbs';
 
 export default function GameFee({navigation, route}) {
   const [comeFrom] = useState(route?.params?.comeFrom);
@@ -43,7 +44,7 @@ export default function GameFee({navigation, route}) {
   const [currencyType, setCurruencyType] = useState(
     route?.params?.settingObj?.game_fee
       ? route?.params?.settingObj?.game_fee?.currency_type
-      : authContext?.entity?.obj?.currency_type ?? strings.defaultCurrency,
+      : authContext?.entity?.obj?.currency_type ?? Verbs.usd,
   );
 
   useLayoutEffect(() => {

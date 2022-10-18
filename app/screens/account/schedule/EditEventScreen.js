@@ -67,6 +67,7 @@ import {getGroups} from '../../../api/Groups';
 import GroupEventItems from '../../../components/Schedule/GroupEvent/GroupEventItems';
 import uploadImages from '../../../utils/imageAction';
 import {editEvent} from '../../../api/Schedule';
+import Verbs from '../../../Constants/Verbs';
 
 export default function EditEventScreen({navigation, route}) {
   console.log('EVENT DATA==>', route?.params?.data);
@@ -738,7 +739,7 @@ export default function EditEventScreen({navigation, route}) {
         event_posted_at: eventPosted,
         event_fee: {
           value: Number(eventFee),
-          currency_type: strings.defaultCurrency,
+          currency_type: Verbs.usd,
         },
         refund_policy: refundPolicy,
         min_attendees: Number(minAttendees),

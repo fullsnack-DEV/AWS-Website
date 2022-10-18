@@ -336,7 +336,7 @@ export default function EditChallenge({navigation, route}) {
 
     feeBody.source = challengeObj?.source;
     feeBody.challenge_id = challengeObj?.challenge_id;
-    feeBody.payment_method_type = 'card';
+    feeBody.payment_method_type = Verbs.card;
     feeBody.currency_type =
       challengeObj?.game_fee?.currency_type?.toLowerCase();
     feeBody.total_game_fee = Number(

@@ -64,6 +64,16 @@ const Verbs = {
   todayVerb: 'Today',
   tomorrowVerb: 'Tomorrow',
   futureVerb: 'Future',
+  challenge: 'Challenge',
+  reservation: 'Reservation',
+  usd: 'USD',
+  cad: 'CAD',
+  strictText: 'Strict',
+  moderateText: 'Moderate',
+  flexibleText: 'Flexible',
+  card: 'card',
+  friendly: 'Friendly',
+  official: 'Official',
 };
 
 export default Verbs;
