@@ -24,6 +24,7 @@ import {
   Platform,
   Alert,
   Dimensions,
+  Pressable,
 } from 'react-native';
 
 import {TouchableOpacity} from 'react-native-gesture-handler';
@@ -701,7 +702,6 @@ export default function LocalHomeScreen({navigation, route}) {
       console.log('Localhome item:=>', item);
       return (
         <Text
-          suppressHighlighting={true}
           style={
             selectedSport === item.sport && sportType === item.sport_type
               ? [
@@ -1781,14 +1781,14 @@ export default function LocalHomeScreen({navigation, route}) {
             {height: Dimensions.get('window').height - 50},
           ]}>
           <View style={styles.topHeaderContainer}>
-            <TouchableOpacity
+            <Pressable
               hitSlop={getHitSlop(15)}
               style={styles.closeButton}
               onPress={() => {
                 setSettingPopup(false);
               }}>
               <Image source={images.crossImage} style={styles.closeButton} />
-            </TouchableOpacity>
+            </Pressable>
             <Text style={styles.moreText}>{strings.more}</Text>
           </View>
           <TCThinDivider width={'100%'} marginBottom={15} />

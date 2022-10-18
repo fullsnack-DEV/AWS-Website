@@ -136,6 +136,11 @@ export default function ChooseSportsScreen({navigation, route}) {
 
   const navigateToFollowScreen = (response) => {
     if (response.length > 0) {
+      console.log('Location data :=>', {
+        ...route?.params?.locationInfo,
+        teamData: response,
+        sports: selected,
+      });
       navigation.navigate('FollowTeams', {
         sportInfo: {
           ...route?.params?.locationInfo,

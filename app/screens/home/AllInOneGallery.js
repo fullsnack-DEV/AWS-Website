@@ -132,17 +132,17 @@ const AllInOneGallery = ({
     <View>
       <View
         style={{
+          height: 35,
           flexDirection: 'row',
-          paddingHorizontal: 10,
+
           borderBottomColor: colors.lightgrayColor,
           borderBottomWidth: 1,
-          marginBottom: 15,
         }}>
         {showSubTabs &&
           [GALLERY_TYPE.FROMME, GALLERY_TYPE.TAGGED].map((item) => (
             <TouchableOpacity
               key={item}
-              style={{padding: 10}}
+              style={{paddingLeft: 20, paddingBottom: 5, paddingTop: 10}}
               onPress={() => {
                 setGalleryData([]);
                 setGalleryType(item);

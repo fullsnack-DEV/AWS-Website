@@ -16,6 +16,7 @@ import {
   TouchableWithoutFeedback,
   Alert,
   FlatList,
+  Dimensions,
   Platform,
   SafeAreaView,
   // eslint-disable-next-line react-native/split-platform-components
@@ -75,8 +76,8 @@ export default function PersonalInformationScreen({navigation, route}) {
   );
 
   const [state, setState] = useState(
-    route?.params?.state
-      ? route?.params?.state
+    route?.params?.state_abbr
+      ? route?.params?.state_abbr
       : authContext?.entity?.obj?.state_abbr,
   );
   const [country, setCountry] = useState(
@@ -141,11 +142,11 @@ export default function PersonalInformationScreen({navigation, route}) {
     if (isFocused) {
       if (
         route?.params?.city &&
-        route?.params?.state &&
+        route?.params?.state_abbr &&
         route?.params?.country
       ) {
         setCity(route?.params?.city);
-        setState(route?.params?.state);
+        setState(route?.params?.state_abbr);
         setCountry(route?.params?.country);
       }
     }
@@ -153,7 +154,7 @@ export default function PersonalInformationScreen({navigation, route}) {
     isFocused,
     route?.params?.city,
     route?.params?.country,
-    route?.params?.state,
+    route?.params?.state_abbr,
   ]);
 
   useEffect(() => {
@@ -181,7 +182,6 @@ export default function PersonalInformationScreen({navigation, route}) {
       ).then((result) => {
         switch (result) {
           case RESULTS.UNAVAILABLE:
-            console.log('1', strings.thisFeaturesNotAvailableText);
             break;
           case RESULTS.DENIED:
             console.log('2', strings.permissionNotRequested);
@@ -282,6 +282,12 @@ export default function PersonalInformationScreen({navigation, route}) {
         setCity(item?.terms?.[0]?.value ?? '');
         setState(item?.terms?.[1]?.value ?? '');
         setCountry(item?.terms?.[2]?.value ?? '');
+        setUserInfo({
+          ...userInfo,
+          city: item?.terms?.[0]?.value ?? '',
+          state: item?.terms?.[1]?.value ?? '',
+          country: item?.terms?.[2]?.value ?? '',
+        });
       }
     });
     setLocationPopup(false);
@@ -290,6 +296,7 @@ export default function PersonalInformationScreen({navigation, route}) {
     setCity(currentLocation.city);
     setState(currentLocation.state);
     setCountry(currentLocation.country);
+
     setLocationPopup(false);
   };
 
@@ -647,7 +654,7 @@ export default function PersonalInformationScreen({navigation, route}) {
                 ...styles.matchFeeTxt,
                 backgroundColor: colors.textFieldBackground,
               }}
-              value={`${city}, ${state}, ${country}`}
+              value={`${userInfo.city}, ${userInfo.state}, ${userInfo.country}`}
               editable={false}
               pointerEvents="none"
             />
@@ -679,7 +686,11 @@ export default function PersonalInformationScreen({navigation, route}) {
         style={{
           margin: 0,
         }}>
-        <View style={styles.bottomPopupContainer}>
+        <View
+          style={[
+            styles.bottomPopupContainer,
+            {height: Dimensions.get('window').height - 50},
+          ]}>
           <View style={styles.topHeaderContainer}>
             <TouchableOpacity
               hitSlop={getHitSlop(15)}
@@ -855,7 +866,6 @@ const styles = StyleSheet.create({
 
     bottom: 0,
     width: '100%',
-    height: '90%',
 
     ...Platform.select({
       ios: {
