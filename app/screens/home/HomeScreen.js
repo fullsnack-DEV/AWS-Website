@@ -3512,11 +3512,11 @@ const HomeScreen = ({navigation, route}) => {
     const uid = entityType === Verbs.entityTypePlayer ? 'user_id' : 'group_id';
     QBLogout()
       .then(() => {
-        const {USER, CLUB, LEAGUE, TEAM} = QB_ACCOUNT_TYPE;
+        const {USER, CLUB, TEAM} = QB_ACCOUNT_TYPE;
         let accountType = USER;
         if (entityType === Verbs.entityTypeClub) accountType = CLUB;
         else if (entityType === Verbs.entityTypeTeam) accountType = TEAM;
-        else if (entityType === Verbs.entityTypeLeague) accountType = LEAGUE;
+
         QBlogin(
           accountData[uid],
           {

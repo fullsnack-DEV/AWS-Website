@@ -2085,4 +2085,5 @@ export default {
   editOrder: 'en_Edit Order',
   hideUnhide: 'en_Hide & Unhide',
   addSportsActivity: 'en_+ Add Sports Activities',
+  logoutText: 'en_Are you sure want to logout?',
 };

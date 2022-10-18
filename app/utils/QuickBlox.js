@@ -92,14 +92,13 @@ export const QB_ACCOUNT_TYPE = {
   USER: 'U_',
   TEAM: 'T_',
   CLUB: 'C_',
-  LEAGUE: 'L_',
 };
 
 export const getQBAccountType = (entity_type) => {
   let accountType = QB_ACCOUNT_TYPE.USER;
   if (entity_type === 'team') accountType = QB_ACCOUNT_TYPE.TEAM;
   if (entity_type === 'club') accountType = QB_ACCOUNT_TYPE.CLUB;
-  if (entity_type === 'league') accountType = QB_ACCOUNT_TYPE.LEAGUE;
+
   return accountType;
 };
 export const QB_DIALOG_TYPE = {
@@ -112,18 +111,9 @@ export const QBChatConnected = async () => QB.chat.isConnected();
 export const getQBProfilePic = (dialogType, entityType, originalImage) => {
   if (!originalImage) {
     if (dialogType === QB.chat.DIALOG_TYPE.CHAT) {
-      if (
-        [
-          QB_ACCOUNT_TYPE.LEAGUE,
-          QB_ACCOUNT_TYPE.TEAM,
-          QB_ACCOUNT_TYPE.CLUB,
-        ].includes(entityType)
-      ) {
+      if ([QB_ACCOUNT_TYPE.TEAM, QB_ACCOUNT_TYPE.CLUB].includes(entityType)) {
         if (entityType === QB_ACCOUNT_TYPE.TEAM) return images.teamPlaceholder;
         if (entityType === QB_ACCOUNT_TYPE.CLUB) return images.clubPlaceholder;
-        if (entityType === QB_ACCOUNT_TYPE.LEAGUE) {
-          return images.leaguePlaceholder;
-        }
       }
       return images.profilePlaceHolder;
     }
@@ -367,7 +357,8 @@ export const QBgetDialogByID = async (dialogID) => {
   }
   return 'error';
 };
-export const QBgetMessages = (dialogId, skipCount = 0) => QBChatConnected().then((connected) => {
+export const QBgetMessages = (dialogId, skipCount = 0) =>
+  QBChatConnected().then((connected) => {
     if (connected) {
       const query = {
         dialogId,
@@ -452,13 +443,13 @@ export const QBupdateDialogNameAndPhoto = (
         data: update,
       })
         .then((res) => ({
-            dialogId: res?._id,
-            name: res?.name,
-            occupantsIds: res?.occupants_ids,
-            dialogType: res?.type,
-            photo: res?.photo,
-            created_at: res?.created_at,
-          }))
+          dialogId: res?._id,
+          name: res?.name,
+          occupantsIds: res?.occupants_ids,
+          dialogType: res?.type,
+          photo: res?.photo,
+          created_at: res?.created_at,
+        }))
         .catch((error) => ({status: 'error', error}));
     }
     throw new Error('server-not-connected');
@@ -479,9 +470,10 @@ export const QBupdateDialogInvitees = async (
 
       return QB.chat
         .updateDialog(update)
-        .then((updatedDialog) => 
-          // handle as necessarys
-           updatedDialog
+        .then(
+          (updatedDialog) =>
+            // handle as necessarys
+            updatedDialog,
         )
         .catch((e) => {
           // handle error
