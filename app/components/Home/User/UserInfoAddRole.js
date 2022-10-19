@@ -3,17 +3,25 @@ import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
 
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
+import {strings} from '../../../../Localization/translation';
 
 const UserInfoAddRole = ({title, onPress, thumbURL, isOpacity = false}) => (
-  <TouchableOpacity onPress={onPress}>
-    <View style={[styles.containerStyle, {opacity: isOpacity ? 0.4 : 1}]}>
-      <Image source={thumbURL} style={styles.imageStyle} />
-      <View style={{marginLeft: 10, marginRight: 12}}>
-        <Text
-          style={[styles.titleStyle, {fontSize: title.length > 9 ? 12 : 14}]}>
-          {title}
-        </Text>
-      </View>
+  <TouchableOpacity
+    onPress={onPress}
+    style={[
+      styles.containerStyle,
+      {
+        opacity: isOpacity ? 0.4 : 1,
+        marginRight: [strings.addrole, strings.moreText].includes(title)
+          ? 15
+          : 0,
+      },
+    ]}>
+    <Image source={thumbURL} style={styles.imageStyle} />
+    <View style={{marginLeft: 10, marginRight: 12}}>
+      <Text style={[styles.titleStyle, {fontSize: title.length > 9 ? 12 : 14}]}>
+        {title}
+      </Text>
     </View>
   </TouchableOpacity>
 );

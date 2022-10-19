@@ -15,6 +15,7 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
+  Platform,
 } from 'react-native';
 
 import {useIsFocused} from '@react-navigation/native';
@@ -289,7 +290,13 @@ export default function EditPersonalProfileScreen({navigation, route}) {
   };
 
   const openCamera = (width = 400, height = 400) => {
-    check(PERMISSIONS.IOS.CAMERA)
+    // check(PERMISSIONS.IOS.CAMERA)
+    check(
+      Platform.select({
+        ios: PERMISSIONS.IOS.CAMERA,
+        android: PERMISSIONS.ANDROID.CAMERA,
+      }),
+    )
       .then((result) => {
         switch (result) {
           case RESULTS.UNAVAILABLE:

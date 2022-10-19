@@ -130,7 +130,7 @@ const UserHomeHeader = ({
                         style={styles.firstButtonStyle}
                         textStyle={[
                           styles.buttonTextStyle,
-                          {color: colors.darkYellowColor},
+                          {color: colors.themeColor},
                         ]}
                         title={strings.follow}
                         onPress={() => {
@@ -158,7 +158,7 @@ const UserHomeHeader = ({
                               style={styles.firstButtonStyle}
                               textStyle={[
                                 styles.buttonTextStyle,
-                                {color: colors.darkYellowColor},
+                                {color: colors.themeColor},
                               ]}
                               startGradientColor={colors.whiteColor}
                               endGradientColor={colors.whiteColor}
@@ -225,7 +225,22 @@ const UserHomeHeader = ({
                     {strings.followersRadio}
                   </Text>
                 </TouchableOpacity>
+
                 <View style={styles.followingSepratorView} />
+                {!isAdmin && (
+                  <TouchableOpacity
+                    onPress={() => onAction('message')}
+                    style={styles.statusInnerViewStyle}>
+                    <Image
+                      style={styles.messageImage}
+                      source={images.messageIcon}
+                    />
+
+                    <Text style={styles.followingTextStyle}>
+                      {strings.message}
+                    </Text>
+                  </TouchableOpacity>
+                )}
               </View>
             )}
           </View>
@@ -332,6 +347,12 @@ const styles = StyleSheet.create({
   buttonTextStyle: {
     fontFamily: fonts.RBold,
     fontSize: 14,
+  },
+  messageImage: {
+    height: 13,
+    width: 13,
+    resizeMode: 'contain',
+    marginRight: 10,
   },
 });
 

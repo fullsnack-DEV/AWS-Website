@@ -37,8 +37,9 @@ function TCRefereeView({onPress, showStar = false, data, sport}) {
           </Text>
           <Text style={styles.locationText} numberOfLines={1}>
             {data?.city}
-            {` · ${getSportName(sportObj?.[0], authContext)}`}
-            {/* {` · ${sportObj.map((obj) => getSportName(obj, authContext))}`} */}
+            {sportObj.length === 1
+              ? ` · ${getSportName(sportObj?.[0], authContext)}`
+              : ''}
           </Text>
           {showStar && (
             <Text style={styles.starPoints} numberOfLines={1}>

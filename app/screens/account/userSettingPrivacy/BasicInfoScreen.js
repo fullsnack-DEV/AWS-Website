@@ -12,7 +12,6 @@ import {
   FlatList,
   Dimensions,
   Platform,
-  SafeAreaView,
   // eslint-disable-next-line react-native/split-platform-components
   PermissionsAndroid,
 } from 'react-native';
@@ -149,7 +148,6 @@ export default function BasicInfoScreen({navigation, route}) {
     if (Platform.OS === 'android') {
       requestPermission();
     } else {
-      console.log('111');
       request(
         PERMISSIONS.IOS.LOCATION_ALWAYS,
         PERMISSIONS.IOS.LOCATION_WHEN_IN_USE,
@@ -157,7 +155,6 @@ export default function BasicInfoScreen({navigation, route}) {
         switch (result) {
           case RESULTS.UNAVAILABLE:
             console.log(strings.featuresNotAvailableText);
-            getCurrentLocation();
             break;
           case RESULTS.DENIED:
             console.log(strings.permissionNotRequested);
@@ -182,7 +179,7 @@ export default function BasicInfoScreen({navigation, route}) {
   }, []);
 
   const getCurrentLocation = async () => {
-    Geolocation.requestAuthorization();
+    // Geolocation.requestAuthorization();
     Geolocation.getCurrentPosition(
       (position) => {
         getLocationNameWithLatLong(
@@ -214,7 +211,7 @@ export default function BasicInfoScreen({navigation, route}) {
         // See error code charts below.
         console.log(error.code, error.message);
       },
-      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+      {enableHighAccuracy: false, timeout: 15000, maximumAge: 10000},
     );
   };
   const requestPermission = async () => {
@@ -676,7 +673,7 @@ export default function BasicInfoScreen({navigation, route}) {
   );
 
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <>
       <Header
         leftComponent={
           <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -793,6 +790,7 @@ export default function BasicInfoScreen({navigation, route}) {
             style={{backgroundColor: colors.textFieldBackground}}
           />
         </View>
+        <View style={{paddingBottom: 20}} />
         <Modal
           onBackdropPress={() => setLocationPopup(false)}
           isVisible={locationPopup}
@@ -872,7 +870,7 @@ export default function BasicInfoScreen({navigation, route}) {
           </View>
         </Modal>
       </TCKeyboardView>
-    </SafeAreaView>
+    </>
   );
 }
 const styles = StyleSheet.create({

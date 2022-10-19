@@ -30,6 +30,7 @@ const styles = StyleSheet.create({
     width: wp(32.3),
     alignItems: 'center',
     justifyContent: 'center',
+    margin: 1.5,
   },
   addPhotoTextStyle: {
     fontSize: 16,

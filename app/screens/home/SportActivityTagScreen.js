@@ -12,13 +12,11 @@ import {
   StyleSheet,
   Text,
   Image,
-  ScrollView,
   TouchableOpacity,
   Alert,
-  SafeAreaView,
+  FlatList,
 } from 'react-native';
 
-import FlatList from 'react-native-drag-flatlist';
 import ActionSheet from 'react-native-actionsheet';
 import {widthPercentageToDP} from 'react-native-responsive-screen';
 import * as Utility from '../../utils';
@@ -32,6 +30,7 @@ import UserInfoAddRole from '../../components/Home/User/UserInfoAddRole';
 import {patchPlayer} from '../../api/Users';
 import {strings} from '../../../Localization/translation';
 import Verbs from '../../Constants/Verbs';
+import TCFlatlist from '../../components/TCFlatlist';
 
 let image_url = '';
 
@@ -67,9 +66,8 @@ export default function SportActivityTagScreen({navigation}) {
       ) || []),
     ],
   );
-  Utility.getStorage('appSetting').then((setting) => {
-    image_url = setting.base_url_sporticon;
-  });
+
+  image_url = global.sport_icon_baseurl;
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -171,10 +169,10 @@ export default function SportActivityTagScreen({navigation}) {
     [],
   );
   return (
-    <SafeAreaView>
-      <ScrollView scrollEnabled={false}>
-        <ActivityLoader visible={loading} />
+    <>
+      <ActivityLoader visible={loading} />
 
+      <View>
         <Text style={styles.listTitle}>{strings.preview}</Text>
         <FlatList
           horizontal={true}
@@ -201,149 +199,146 @@ export default function SportActivityTagScreen({navigation}) {
           style={{margin: 15}}
         />
         <TCThinDivider width={'100%'} marginBottom={15} />
+      </View>
 
-        <TouchableOpacity
-          style={styles.radioView}
-          onPress={() => {
-            setSelectedRadio(0);
-          }}>
-          <Text style={styles.radioTitle}>{strings.laterDoneActivity}</Text>
-          <Image
-            source={
-              selectedRadio === 0
-                ? images.radioSelectYellow
-                : images.radioUnselect
-            }
-            style={styles.radioImage}
-          />
-        </TouchableOpacity>
-
-        {selectedRadio === 0 && (
-          <View>
-            <TouchableOpacity
-              style={styles.checkView}
-              onPress={() => {
-                setSelectedCheck(!selectedCheck);
-              }}>
-              <Image
-                source={
-                  selectedCheck ? images.orangeCheckBox : images.uncheckBox
-                }
-                style={styles.checkImage}
-              />
-              <Text style={styles.radioTitle}>
-                {strings.classifySportActivity}
-              </Text>
-            </TouchableOpacity>
-
-            <View
-              pointerEvents={selectedCheck ? 'auto' : 'none'}
-              style={{
-                opacity: selectedCheck ? 1 : 0.4,
-              }}>
-              <FlatList
-                showsHorizontalScrollIndicator={false}
-                data={entitySource}
-                keyExtractor={keyExtractor}
-                renderItem={renderSportsView}
-                style={{
-                  width: '100%',
-                  alignContent: 'center',
-                  marginBottom: 15,
-                  paddingVertical: 15,
-                  opacity: selectedCheck ? 1 : 0.4,
-                }}
-                onMoveEnd={(data) => {
-                  let list = [];
-                  setEntitySource(data);
-                  data.forEach((element) => {
-                    if (element === Verbs.entityTypePlayer) {
-                      list = [
-                        ...list,
-                        ...(authContext?.entity?.obj?.registered_sports ?? []),
-                      ];
-                    }
-                    if (element === Verbs.entityTypeReferee) {
-                      list = [
-                        ...list,
-                        ...(authContext?.entity?.obj?.referee_data ?? []),
-                      ];
-                    }
-                    if (element === Verbs.entityTypeScorekeeper) {
-                      list = [
-                        ...list,
-                        ...(authContext?.entity?.obj?.scorekeeper_data ?? []),
-                      ];
-                    }
-                  });
-                  setActivityList([...list]);
-                }}
-              />
-            </View>
-          </View>
-        )}
-        <TouchableOpacity
-          style={styles.radioView}
-          onPress={() => {
-            setSelectedRadio(1);
-          }}>
-          <Text style={styles.radioTitle}>{strings.displayInFixOrder}</Text>
-          <Image
-            source={
-              selectedRadio === 1
-                ? images.radioSelectYellow
-                : images.radioUnselect
-            }
-            style={styles.radioImage}
-          />
-        </TouchableOpacity>
-        {selectedRadio === 1 && (
-          <FlatList
-            showsHorizontalScrollIndicator={false}
-            data={activityList.filter(
-              (obj) => obj?.type && obj?.is_active === true,
-            )}
-            keyExtractor={keyExtractor}
-            renderItem={renderSportsActivityView}
-            style={{
-              flex: 1,
-              width: '100%',
-              alignContent: 'center',
-              marginBottom: 15,
-              paddingVertical: 15,
-            }}
-            dragHitSlop={{
-              top: 15,
-              bottom: 15,
-              left: 15,
-              right: 15,
-            }}
-            onMoveEnd={(data) => {
-              setActivityList([...data]);
-            }}
-          />
-        )}
-
-        <ActionSheet
-          ref={actionSheet}
-          options={[
-            strings.addSportActivity,
-            strings.sportActivityTagOrder,
-            strings.listUnlist,
-            strings.cancel,
-          ]}
-          cancelButtonIndex={3}
-          onPress={(index) => {
-            if (index === 0) {
-            } else if (index === 1) {
-            } else if (index === 2) {
-              navigation.navigate('SportActivityScreen');
-            } else if (index === 3) {
-            }
-          }}
+      <TouchableOpacity
+        style={styles.radioView}
+        onPress={() => {
+          setSelectedRadio(0);
+        }}>
+        <Text style={styles.radioTitle}>{strings.laterDoneActivity}</Text>
+        <Image
+          source={
+            selectedRadio === 0
+              ? images.radioSelectYellow
+              : images.radioUnselect
+          }
+          style={styles.radioImage}
         />
-      </ScrollView>
-    </SafeAreaView>
+      </TouchableOpacity>
+
+      {selectedRadio === 0 && (
+        <View>
+          <TouchableOpacity
+            style={styles.checkView}
+            onPress={() => {
+              setSelectedCheck(!selectedCheck);
+            }}>
+            <Image
+              source={selectedCheck ? images.orangeCheckBox : images.uncheckBox}
+              style={styles.checkImage}
+            />
+            <Text style={styles.radioTitle}>
+              {strings.classifySportActivity}
+            </Text>
+          </TouchableOpacity>
+
+          <View
+            pointerEvents={selectedCheck ? 'auto' : 'none'}
+            style={{
+              opacity: selectedCheck ? 1 : 0.4,
+            }}>
+            <FlatList
+              showsHorizontalScrollIndicator={false}
+              data={entitySource}
+              keyExtractor={keyExtractor}
+              renderItem={renderSportsView}
+              style={{
+                width: '100%',
+                alignContent: 'center',
+                marginBottom: 15,
+                paddingVertical: 15,
+                opacity: selectedCheck ? 1 : 0.4,
+              }}
+              onMoveEnd={(data) => {
+                let list = [];
+                setEntitySource(data);
+                data.forEach((element) => {
+                  if (element === Verbs.entityTypePlayer) {
+                    list = [
+                      ...list,
+                      ...(authContext?.entity?.obj?.registered_sports ?? []),
+                    ];
+                  }
+                  if (element === Verbs.entityTypeReferee) {
+                    list = [
+                      ...list,
+                      ...(authContext?.entity?.obj?.referee_data ?? []),
+                    ];
+                  }
+                  if (element === Verbs.entityTypeScorekeeper) {
+                    list = [
+                      ...list,
+                      ...(authContext?.entity?.obj?.scorekeeper_data ?? []),
+                    ];
+                  }
+                });
+                setActivityList([...list]);
+              }}
+            />
+          </View>
+        </View>
+      )}
+      <TouchableOpacity
+        style={styles.radioView}
+        onPress={() => {
+          setSelectedRadio(1);
+        }}>
+        <Text style={styles.radioTitle}>{strings.displayInFixOrder}</Text>
+        <Image
+          source={
+            selectedRadio === 1
+              ? images.radioSelectYellow
+              : images.radioUnselect
+          }
+          style={styles.radioImage}
+        />
+      </TouchableOpacity>
+      {selectedRadio === 1 && (
+        //   <FlatList
+        //     data={activityList.filter(
+        //       (obj) => obj?.type && obj?.is_active === true,
+        //     )}
+        //     keyExtractor={keyExtractor}
+        //     renderItem={renderSportsActivityView}
+        //     dragHitSlop={{
+        //       top: 15,
+        //       bottom: 15,
+        //       left: 15,
+        //       right: 15,
+        //     }}
+        //     onMoveEnd={(data) => {
+        //       setActivityList([...data]);
+        //     }}
+        //   />
+        <TCFlatlist
+          data={activityList.filter(
+            (obj) => obj?.type && obj?.is_active === true,
+          )}
+          renderItem={renderSportsActivityView}
+          keyExtractor={keyExtractor}
+        />
+      )}
+
+      <ActionSheet
+        ref={actionSheet}
+        options={[
+          strings.addSportActivity,
+          strings.sportActivityTagOrder,
+          strings.listUnlist,
+          strings.cancel,
+        ]}
+        cancelButtonIndex={3}
+        onPress={(index) => {
+          if (index === 0) {
+          } else if (index === 1) {
+          } else if (index === 2) {
+            navigation.navigate('SportActivityScreen');
+          } else if (index === 3) {
+          }
+        }}
+      />
+    </>
   );
 }
 const styles = StyleSheet.create({
@@ -353,6 +348,7 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     marginTop: 15,
     marginLeft: 15,
+    marginBottom: 15,
   },
   radioTitle: {
     flex: 1,

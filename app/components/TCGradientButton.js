@@ -58,11 +58,11 @@ const styles = StyleSheet.create({
   outerContainerStyle: {
     width: '92%',
     alignSelf: 'center',
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.16,
-    shadowRadius: 1,
-    elevation: 1.5,
+    // shadowColor: colors.blackColor,
+    // shadowOffset: {width: 0, height: 1},
+    // shadowOpacity: 0.16,
+    // shadowRadius: 3,
+    // elevation: 1.5,
   },
   containerStyle: {
     flexDirection: 'row',

@@ -16,11 +16,12 @@ import {
   TouchableWithoutFeedback,
   Alert,
   FlatList,
+  Dimensions,
   Platform,
   SafeAreaView,
   // eslint-disable-next-line react-native/split-platform-components
   PermissionsAndroid,
-  ScrollView,
+  Keyboard,
 } from 'react-native';
 
 import ImagePicker from 'react-native-image-crop-picker';
@@ -75,8 +76,8 @@ export default function PersonalInformationScreen({navigation, route}) {
   );
 
   const [state, setState] = useState(
-    route?.params?.state
-      ? route?.params?.state
+    route?.params?.state_abbr
+      ? route?.params?.state_abbr
       : authContext?.entity?.obj?.state_abbr,
   );
   const [country, setCountry] = useState(
@@ -141,11 +142,11 @@ export default function PersonalInformationScreen({navigation, route}) {
     if (isFocused) {
       if (
         route?.params?.city &&
-        route?.params?.state &&
+        route?.params?.state_abbr &&
         route?.params?.country
       ) {
         setCity(route?.params?.city);
-        setState(route?.params?.state);
+        setState(route?.params?.state_abbr);
         setCountry(route?.params?.country);
       }
     }
@@ -153,7 +154,7 @@ export default function PersonalInformationScreen({navigation, route}) {
     isFocused,
     route?.params?.city,
     route?.params?.country,
-    route?.params?.state,
+    route?.params?.state_abbr,
   ]);
 
   useEffect(() => {
@@ -181,24 +182,20 @@ export default function PersonalInformationScreen({navigation, route}) {
       ).then((result) => {
         switch (result) {
           case RESULTS.UNAVAILABLE:
-            console.log(strings.thisFeaturesNotAvailableText);
-            getCurrentLocation();
             break;
           case RESULTS.DENIED:
-            console.log(strings.permissionNotRequested);
-
+            console.log('2', strings.permissionNotRequested);
             break;
           case RESULTS.LIMITED:
-            console.log(strings.permissionLimitedText);
-
+            console.log('3', strings.permissionLimitedText);
             break;
           case RESULTS.GRANTED:
-            console.log(strings.permissionGrantedText);
+            console.log('4', strings.permissionGrantedText);
             setloading(true);
             getCurrentLocation();
             break;
           case RESULTS.BLOCKED:
-            console.log(strings.permissionDenitedText);
+            console.log('5', strings.permissionDenitedText);
             break;
           default:
         }
@@ -207,9 +204,10 @@ export default function PersonalInformationScreen({navigation, route}) {
   }, []);
 
   const getCurrentLocation = async () => {
-    Geolocation.requestAuthorization();
+    // Geolocation.requestAuthorization();
     Geolocation.getCurrentPosition(
       (position) => {
+        console.log('Position', position);
         getLocationNameWithLatLong(
           position?.coords?.latitude,
           position?.coords?.longitude,
@@ -217,7 +215,6 @@ export default function PersonalInformationScreen({navigation, route}) {
         ).then((res) => {
           const userData = {};
           // let stateAbbr, city, country;
-
           // eslint-disable-next-line array-callback-return
           res.results[0].address_components.map((e) => {
             if (e.types.includes('administrative_area_level_1')) {
@@ -236,9 +233,9 @@ export default function PersonalInformationScreen({navigation, route}) {
       (error) => {
         setloading(false);
         // See error code charts below.
-        console.log(error.code, error.message);
+        console.log('location error', error.code, error.message);
       },
-      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+      {enableHighAccuracy: false, timeout: 15000, maximumAge: 10000},
     );
   };
   const requestPermission = async () => {
@@ -253,9 +250,10 @@ export default function PersonalInformationScreen({navigation, route}) {
         ) {
           getCurrentLocation();
         }
+        console.log('Android Location permition result', result);
       })
       .catch((error) => {
-        console.warn(error);
+        console.warn('android location errro', error);
       });
   };
   const renderItem = ({item, index}) => {
@@ -263,7 +261,10 @@ export default function PersonalInformationScreen({navigation, route}) {
     return (
       <TouchableWithoutFeedback
         style={styles.listItem}
-        onPress={() => getTeamsData(item)}>
+        onPress={() => {
+          getTeamsData(item);
+          Keyboard.dismiss();
+        }}>
         <View>
           <Text style={styles.cityList}>{cityData[index].description}</Text>
           <TCThinDivider
@@ -281,6 +282,12 @@ export default function PersonalInformationScreen({navigation, route}) {
         setCity(item?.terms?.[0]?.value ?? '');
         setState(item?.terms?.[1]?.value ?? '');
         setCountry(item?.terms?.[2]?.value ?? '');
+        setUserInfo({
+          ...userInfo,
+          city: item?.terms?.[0]?.value ?? '',
+          state: item?.terms?.[1]?.value ?? '',
+          country: item?.terms?.[2]?.value ?? '',
+        });
       }
     });
     setLocationPopup(false);
@@ -289,6 +296,7 @@ export default function PersonalInformationScreen({navigation, route}) {
     setCity(currentLocation.city);
     setState(currentLocation.state);
     setCountry(currentLocation.country);
+
     setLocationPopup(false);
   };
 
@@ -466,7 +474,13 @@ export default function PersonalInformationScreen({navigation, route}) {
   };
 
   const openCamera = (width = 400, height = 400) => {
-    check(PERMISSIONS.IOS.CAMERA)
+    // check(PERMISSIONS.IOS.CAMERA)
+    check(
+      Platform.select({
+        ios: PERMISSIONS.IOS.CAMERA,
+        android: PERMISSIONS.ANDROID.CAMERA,
+      }),
+    )
       .then((result) => {
         switch (result) {
           case RESULTS.UNAVAILABLE:
@@ -640,7 +654,7 @@ export default function PersonalInformationScreen({navigation, route}) {
                 ...styles.matchFeeTxt,
                 backgroundColor: colors.textFieldBackground,
               }}
-              value={`${city}, ${state}, ${country}`}
+              value={`${userInfo.city}, ${userInfo.state}, ${userInfo.country}`}
               editable={false}
               pointerEvents="none"
             />
@@ -672,7 +686,11 @@ export default function PersonalInformationScreen({navigation, route}) {
         style={{
           margin: 0,
         }}>
-        <View style={styles.bottomPopupContainer}>
+        <View
+          style={[
+            styles.bottomPopupContainer,
+            {height: Dimensions.get('window').height - 50},
+          ]}>
           <View style={styles.topHeaderContainer}>
             <TouchableOpacity
               hitSlop={getHitSlop(15)}
@@ -707,37 +725,38 @@ export default function PersonalInformationScreen({navigation, route}) {
               Please, enter at least 3 characters to see cities.
             </Text>
           )}
-          <ScrollView>
-            {noData && searchText?.length === 0 && (
-              <View>
-                <TouchableWithoutFeedback
-                  style={styles.listItem}
-                  onPress={() => getTeamsDataByCurrentLocation()}>
-                  <View>
-                    <Text style={[styles.cityList, {marginBottom: 3}]}>
-                      {currentLocation?.city}, {currentLocation?.state},{' '}
-                      {currentLocation?.country}
-                    </Text>
-                    <Text style={styles.curruentLocationText}>
-                      {strings.currentLocationText}
-                    </Text>
+          {/* <ScrollView> */}
+          {noData && searchText?.length === 0 && (
+            <View style={{flex: 1}}>
+              <TouchableWithoutFeedback
+                style={styles.listItem}
+                onPress={() => getTeamsDataByCurrentLocation()}>
+                <View>
+                  <Text style={[styles.cityList, {marginBottom: 3}]}>
+                    {currentLocation?.city}, {currentLocation?.state},{' '}
+                    {currentLocation?.country}
+                  </Text>
+                  <Text style={styles.curruentLocationText}>
+                    {strings.currentLocationText}
+                  </Text>
 
-                    <TCThinDivider
-                      width={'100%'}
-                      backgroundColor={colors.grayBackgroundColor}
-                    />
-                  </View>
-                </TouchableWithoutFeedback>
-              </View>
-            )}
-            {cityData.length > 0 && (
-              <FlatList
-                data={cityData}
-                renderItem={renderItem}
-                keyExtractor={(index) => index.toString()}
-              />
-            )}
-          </ScrollView>
+                  <TCThinDivider
+                    width={'100%'}
+                    backgroundColor={colors.grayBackgroundColor}
+                  />
+                </View>
+              </TouchableWithoutFeedback>
+            </View>
+          )}
+          {cityData.length > 0 && (
+            <FlatList
+              data={cityData}
+              renderItem={renderItem}
+              keyExtractor={(index) => index.toString()}
+              keyboardShouldPersistTaps="always"
+            />
+          )}
+          {/* </ScrollView> */}
         </View>
       </Modal>
       <ActionSheet
@@ -834,14 +853,19 @@ const styles = StyleSheet.create({
     width: 22,
   },
   bottomPopupContainer: {
-    paddingBottom: Platform.OS === 'ios' ? 30 : 0,
+    flex: 1,
+    // paddingBottom: Platform.OS === 'ios' ? 30 : 0,
+    // marginTop: Platform.OS === 'ios' ? 50 : 50,
+    paddingBottom: Platform.OS === 'ios' ? hp(8) : 0,
+    marginTop: Platform.OS === 'ios' ? hp(7) : 0,
+
     backgroundColor: colors.whiteColor,
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
-    position: 'absolute',
+    // position: 'absolute',
+
     bottom: 0,
     width: '100%',
-    height: '90%',
 
     ...Platform.select({
       ios: {

@@ -2082,4 +2082,7 @@ export default {
   deleteConfirmationText: 'en_Are you sure you want to delete this picture?',
   searchAddress: 'en_Search Address',
   chooseCityAndDetail: 'en_Choose city first and fill in the detail address.',
+  editOrder: 'en_Edit Order',
+  hideUnhide: 'en_Hide & Unhide',
+  addSportsActivity: 'en_+ Add Sports Activities',
 };

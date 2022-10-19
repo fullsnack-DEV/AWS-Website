@@ -140,6 +140,7 @@ import ProfileScreenShimmer from '../../components/shimmer/account/ProfileScreen
 import {ImageUploadContext} from '../../context/GetContexts';
 import GameStatus from '../../Constants/GameStatus';
 import UserHomeHeader from '../../components/Home/UserHomeHeader';
+import TCProfileButton from '../../components/TCProfileButton';
 import UserProfileScreenShimmer from '../../components/shimmer/account/UserProfileScreenShimmer';
 import TCGameCard from '../../components/TCGameCard';
 import * as settingUtils from '../challenge/manageChallenge/settingUtility';
@@ -156,7 +157,6 @@ import {
   history_Data,
 } from '../../utils/constant';
 import Verbs from '../../Constants/Verbs';
-import TCGrayButton from '../../components/TCGrayButton';
 // import { getSetting } from '../challenge/manageChallenge/settingUtility';
 let entityObject = {};
 
@@ -282,7 +282,18 @@ const HomeScreen = ({navigation, route}) => {
   const manageChallengeActionSheet = useRef();
   const offerActionSheet = useRef();
   const groupMessageActionSheet = useRef();
-
+  const options =
+    authContext.entity.role === 'user'
+      ? [
+          strings.manageChallengeShhetItem,
+          strings.sportActivity,
+          strings.cancel,
+        ]
+      : [
+          strings.manageChallengeShhetItem,
+          // strings.sportActivity,
+          strings.cancel,
+        ];
   useEffect(() => {
     setTimeout(() => {
       SetHideScore(true);
@@ -643,19 +654,6 @@ const HomeScreen = ({navigation, route}) => {
         centerComponent={<View></View>}
         rightComponent={
           <View>
-            {!isAdmin && (
-              <TouchableOpacity
-                onPress={() => {
-                  // groupMessageActionSheet.current.show();
-                  onMessageButtonPress(currentUserData);
-                }}>
-                <Image
-                  style={styles.messageImage}
-                  source={images.messageIcon}
-                />
-              </TouchableOpacity>
-            )}
-
             {isAdmin && (isUserHome || isTeamHome) && (
               <View
                 style={{opacity: isAccountDeactivated ? 0.5 : 1}}
@@ -1583,6 +1581,10 @@ const HomeScreen = ({navigation, route}) => {
   const onAddRolePress = useCallback(() => {
     addRoleActionSheet.current.show();
   }, [addRoleActionSheet]);
+
+  const onMoreRolePress = useCallback(() => {
+    navigation.navigate('SportActivitiesScreen');
+  }, []);
 
   const refereeFound = useCallback(
     (data) =>
@@ -2894,6 +2896,7 @@ const HomeScreen = ({navigation, route}) => {
           isAdmin={isAdmin}
           loggedInEntity={authContext.entity}
           onAddRolePress={onAddRolePress}
+          onMoreRolePress={onMoreRolePress}
           onRefereesInPress={refereesInModal}
           onScorekeeperInPress={scorekeeperInModal}
           onPlayInPress={playInModel}
@@ -2997,6 +3000,11 @@ const HomeScreen = ({navigation, route}) => {
             justifyContent: 'center',
             backgroundColor: colors.grayBackgroundColor,
             paddingHorizontal: 10,
+            shadowColor: colors.blackColor,
+            shadowOffset: {width: 0, height: 2},
+            shadowOpacity: 0.1,
+            shadowRadius: 3,
+            elevation: 3,
           }}>
           <Text
             style={{
@@ -3018,7 +3026,7 @@ const HomeScreen = ({navigation, route}) => {
       mySettingObject !== null &&
       settingObject !== null &&
       settingObject?.availibility === Verbs.on &&
-      mySettingObject?.availibility === Verbs.on
+      mySettingObject?.availibility === strings.on
     ) {
       return Verbs.bothVerb;
     }
@@ -3030,7 +3038,7 @@ const HomeScreen = ({navigation, route}) => {
         currentUserData.sport.toLowerCase() &&
       (settingObject?.game_duration || settingObject?.score_rules) &&
       settingObject?.availibility &&
-      settingObject?.availibility === Verbs.on &&
+      settingObject?.availibility === strings.on &&
       (mySettingObject?.availibility === undefined ||
         mySettingObject?.availibility === Verbs.off) &&
       settingObject?.special_rules !== undefined &&
@@ -3053,7 +3061,7 @@ const HomeScreen = ({navigation, route}) => {
         settingObject?.availibility === Verbs.off) &&
       (mySettingObject?.game_duration || mySettingObject?.score_rules) &&
       (mySettingObject?.availibility !== undefined ||
-        mySettingObject?.availibility === Verbs.on) &&
+        mySettingObject?.availibility === strings.on) &&
       mySettingObject?.special_rules !== undefined &&
       mySettingObject?.general_rules !== undefined &&
       mySettingObject?.responsible_for_referee &&
@@ -3241,7 +3249,7 @@ const HomeScreen = ({navigation, route}) => {
                 marginTop: 15,
                 marginBottom: 20,
               }}>
-              <TCGrayButton
+              <TCProfileButton
                 title={strings.galleryTitle}
                 style={{marginRight: 15, alignItems: 'center'}}
                 showArrow={false}
@@ -3257,6 +3265,17 @@ const HomeScreen = ({navigation, route}) => {
                   });
                 }}
               />
+              {/* <TCProfileButton
+                title={strings.scoreboard}
+                style={styles.firstButtonStyle}
+                showArrow={false}
+                textStyle={styles.buttonTextStyle}
+                onPressProfile={() => {
+                  navigation.navigate('UserScoreboardScreen', {
+                    uid: route?.params?.uid ?? authContext.entity?.uid,
+                  });
+                }}
+              /> */}
             </View>
             <TCThinDivider width={'100%'} />
           </View>
@@ -4134,12 +4153,13 @@ const HomeScreen = ({navigation, route}) => {
 
         <ActionSheet
           ref={manageChallengeActionSheet}
-          options={[
-            strings.manageChallengeShhetItem,
-            strings.sportActivity,
-            strings.cancel,
-          ]}
-          cancelButtonIndex={2}
+          // options={[
+          //   strings.manageChallengeShhetItem,
+          //    strings.sportActivity,
+          //   strings.cancel,
+          // ]}
+          options={options}
+          cancelButtonIndex={authContext.entity.role === 'user' ? 2 : 1}
           onPress={(index) => {
             if (index === 0) {
               // Add Playing
@@ -4166,7 +4186,9 @@ const HomeScreen = ({navigation, route}) => {
               }
             } else if (index === 1) {
               // navigation.navigate('SportActivityScreen');
-              navigation.navigate('SportActivitiesScreen');
+              if (authContext.entity.role === 'user') {
+                navigation.navigate('SportActivitiesScreen');
+              }
             }
           }}
         />
@@ -6384,11 +6406,6 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     marginTop: 15,
     left: -15,
-  },
-  messageImage: {
-    height: 25,
-    width: 25,
-    resizeMode: 'contain',
   },
 });
 

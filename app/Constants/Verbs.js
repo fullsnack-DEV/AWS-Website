@@ -25,7 +25,6 @@ const Verbs = {
   open: 'open',
   paid: 'paid',
   norefund: 'norefund',
-  refund: 'refund',
   refundStatus: 'refund',
   allStatus: 'All',
   male: 'male',

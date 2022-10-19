@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable consistent-return */
 import React, {
   memo,
@@ -28,6 +29,7 @@ const UserHomeTopSection = ({
   onScorekeeperInPress,
   onPlayInPress,
   onAddRolePress,
+  onMoreRolePress,
 }) => {
   const authContext = useContext(AuthContext);
   console.log('authContext:=>>', authContext);
@@ -70,7 +72,6 @@ const UserHomeTopSection = ({
           ...(userDetails?.sport_setting?.activity_order.filter(
             (obj) => obj.is_active === true,
           ) ?? []),
-          {sport_name: strings.addrole, item_type: EntityStatus.addNew},
         ];
       }
       return [
@@ -79,7 +80,6 @@ const UserHomeTopSection = ({
             (!('is_hide' in obj) || obj?.is_hide === false) &&
             obj.is_active === true,
         ) ?? []),
-        {sport_name: strings.addrole, item_type: EntityStatus.addNew},
       ];
     }
     return [
@@ -98,7 +98,6 @@ const UserHomeTopSection = ({
           obj.is_published &&
           (obj?.is_active === true || !('is_active' in obj)),
       ) ?? []),
-      {sport_name: strings.addrole, item_type: EntityStatus.addNew},
     ];
   };
 
@@ -117,9 +116,27 @@ const UserHomeTopSection = ({
     return null;
   }, [isAdmin, onAddRolePress]);
 
+  const renderMoreRole = useCallback(() => {
+    if (isAdmin) {
+      return (
+        <UserInfoAddRole
+          title={strings.moreText}
+          thumbURL={images.moreIcon}
+          onPress={() => {
+            if (onMoreRolePress) onMoreRolePress();
+          }}
+        />
+      );
+    }
+    return null;
+  }, [isAdmin, onMoreRolePress]);
+
   const renderUserRole = useCallback(({item}) => {
     if (item?.item_type === EntityStatus.addNew) {
       return renderAddRole();
+    }
+    if (item?.item_type === EntityStatus.moreActivity) {
+      return renderMoreRole();
     }
     if (item?.type === EntityStatus.playin) {
       return renderPlayIn({item});
@@ -294,7 +311,25 @@ const UserHomeTopSection = ({
         <FlatList
           horizontal={true}
           showsHorizontalScrollIndicator={false}
-          data={oneLineSection()}
+          data={
+            oneLineSection().length < 1
+              ? [{sport_name: strings.addrole, item_type: EntityStatus.addNew}]
+              : oneLineSection().length > 10
+              ? [
+                  ...oneLineSection().slice(0, 10),
+                  {
+                    sport_name: strings.more,
+                    item_type: EntityStatus.moreActivity,
+                  },
+                ]
+              : [
+                  ...oneLineSection(),
+                  {
+                    sport_name: strings.more,
+                    item_type: EntityStatus.moreActivity,
+                  },
+                ]
+          }
           keyExtractor={keyExtractor}
           renderItem={renderUserRole}
         />

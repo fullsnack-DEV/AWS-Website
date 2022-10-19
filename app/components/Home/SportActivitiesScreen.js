@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-key */
 /* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable array-callback-return */
 import React, {
@@ -11,7 +12,6 @@ import React, {
 import {
   View,
   StyleSheet,
-  FlatList,
   Text,
   Image,
   ScrollView,
@@ -30,6 +30,8 @@ import images from '../../Constants/ImagePath';
 import {getUserDetails} from '../../api/Users';
 import {strings} from '../../../Localization/translation';
 import ActivityLoader from '../loader/ActivityLoader';
+import TCProfileButton from '../TCProfileButton';
+import Verbs from '../../Constants/Verbs';
 
 let image_url = '';
 
@@ -43,11 +45,6 @@ export default function SportActivitiesScreen({navigation}) {
 
   const authContext = useContext(AuthContext);
   console.log('authContext', authContext.entity.obj);
-
-  Utility.getStorage('appSetting').then((setting) => {
-    console.log('APPSETTING:=', setting);
-    image_url = setting.base_url_sporticon;
-  });
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -64,9 +61,8 @@ export default function SportActivitiesScreen({navigation}) {
     });
   }, [navigation]);
 
-  const keyExtractor = useCallback((item, index) => index.toString(), []);
-
   useEffect(() => {
+    image_url = global.sport_icon_baseurl;
     if (isFocused) {
       setloading(true);
       getUserDetails(authContext?.entity?.uid, authContext)
@@ -93,15 +89,15 @@ export default function SportActivitiesScreen({navigation}) {
       <View style={styles.sportView}>
         <LinearGradient
           colors={
-            (item?.type === 'player' && [
+            (item?.type === Verbs.entityTypePlayer && [
               colors.yellowColor,
               colors.orangeGradientColor,
             ]) ||
-            (item?.type === 'referee' && [
+            (item?.type === Verbs.entityTypeReferee && [
               colors.yellowColor,
               colors.darkThemeColor,
             ]) ||
-            (item?.type === 'scorekeeper' && [
+            (item?.type === Verbs.entityTypeScorekeeper && [
               colors.blueGradiantEnd,
               colors.blueGradiantStart,
             ])
@@ -195,66 +191,78 @@ export default function SportActivitiesScreen({navigation}) {
   );
 
   return (
-    <ScrollView>
-      <ActivityLoader visible={loading} />
-      <View>
-        {userObject?.registered_sports?.filter(
-          (obj) => obj.type === 'player' && obj.is_active === true,
-        )?.length > 0 && (
-          <View style={styles.listContainer}>
-            <Text style={styles.listTitle}>Playing</Text>
-            <FlatList
-              showsHorizontalScrollIndicator={false}
-              data={userObject?.registered_sports
-                ?.filter(
-                  (obj) => obj.type === 'player' && obj.is_active === true,
-                )
-                .sort((a, b) => a.sport.localeCompare(b.sport))}
-              keyExtractor={keyExtractor}
-              renderItem={sportsView}
-            />
-          </View>
-        )}
+    <>
+      {!loading && (
+        <ScrollView>
+          <ActivityLoader visible={loading} />
+          <View>
+            {userObject?.registered_sports?.filter(
+              (obj) =>
+                obj.type === Verbs.entityTypePlayer && obj.is_active === true,
+            )?.length > 0 && (
+              <View style={styles.listContainer}>
+                <Text style={styles.listTitle}>Playing</Text>
+                {userObject?.registered_sports
+                  ?.filter(
+                    (obj) =>
+                      obj.type === Verbs.entityTypePlayer &&
+                      obj.is_active === true,
+                  )
+                  .sort((a, b) => a.sport.localeCompare(b.sport))
+                  .map((item) => sportsView({item}))}
+              </View>
+            )}
 
-        {userObject?.referee_data?.filter(
-          (obj) => obj.type === 'referee' && obj.is_active === true,
-        )?.length > 0 && (
-          <View style={styles.listContainer}>
-            <Text style={styles.listTitle}>Refereeing</Text>
-            <FlatList
-              showsHorizontalScrollIndicator={false}
-              data={userObject?.referee_data
-                ?.filter(
-                  (obj) => obj.type === 'referee' && obj.is_active === true,
-                )
-                .sort((a, b) => a.sport.localeCompare(b.sport))}
-              keyExtractor={keyExtractor}
-              renderItem={refereeSportsView}
-            />
-          </View>
-        )}
+            {userObject?.referee_data?.filter(
+              (obj) =>
+                obj.type === Verbs.entityTypeReferee && obj.is_active === true,
+            )?.length > 0 && (
+              <View style={styles.listContainer}>
+                <Text style={styles.listTitle}>Refereeing</Text>
+                {userObject?.referee_data
+                  ?.filter(
+                    (obj) =>
+                      obj.type === Verbs.entityTypeReferee &&
+                      obj.is_active === true,
+                  )
+                  .sort((a, b) => a.sport.localeCompare(b.sport))
+                  .map((item) => refereeSportsView({item}))}
+              </View>
+            )}
 
-        {userObject?.scorekeeper_data?.filter(
-          (obj) => obj.type === 'scorekeeper' && obj.is_active === true,
-        )?.length > 0 && (
-          <View style={styles.listContainer}>
-            <Text style={styles.listTitle}>Scorekeeping</Text>
-            <FlatList
-              showsHorizontalScrollIndicator={false}
-              data={userObject?.scorekeeper_data
-                ?.filter(
-                  (obj) => obj.type === 'scorekeeper' && obj.is_active === true,
-                )
-                .sort((a, b) => a.sport.localeCompare(b.sport))}
-              keyExtractor={keyExtractor}
-              renderItem={scorekeeperSportsView}
-            />
+            {userObject?.scorekeeper_data?.filter(
+              (obj) =>
+                obj.type === Verbs.entityTypeScorekeeper &&
+                obj.is_active === true,
+            )?.length > 0 && (
+              <View style={styles.listContainer}>
+                <Text style={styles.listTitle}>Scorekeeping</Text>
+                {userObject?.scorekeeper_data
+                  ?.filter(
+                    (obj) =>
+                      obj.type === Verbs.entityTypeScorekeeper &&
+                      obj.is_active === true,
+                  )
+                  .sort((a, b) => a.sport.localeCompare(b.sport))
+                  .map((item) => scorekeeperSportsView({item}))}
+              </View>
+            )}
           </View>
-        )}
-      </View>
+
+          <TCProfileButton
+            title={strings.addSportsActivity}
+            onPressProfile={() => {
+              addRoleActionSheet.current.show();
+            }}
+            showArrow={false}
+            style={{marginBottom: 50, width: 180, alignSelf: 'center'}}
+          />
+        </ScrollView>
+      )}
+
       <ActionSheet
         ref={actionSheet}
-        options={['Order', 'Hide & Unhide', strings.cancel]}
+        options={[strings.editOrder, strings.hideUnhide, strings.cancel]}
         cancelButtonIndex={2}
         onPress={(index) => {
           if (index === 0) {
@@ -290,7 +298,7 @@ export default function SportActivitiesScreen({navigation}) {
           }
         }}
       />
-    </ScrollView>
+    </>
   );
 }
 const styles = StyleSheet.create({

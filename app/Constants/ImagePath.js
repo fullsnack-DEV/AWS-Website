@@ -431,6 +431,7 @@ const images = {
   blockedChallenge: require('../assets/images/blocked_challenge.png'),
   backgroudPlaceholder: require('../assets/images/backgroudPlaceholder.png'),
   backgroundPlaceholder: require('../assets/images/backgroudPlaceholder.png'),
+  moreIcon: require('../assets/images/moreIcon.png'),
 };
 
 export default images;

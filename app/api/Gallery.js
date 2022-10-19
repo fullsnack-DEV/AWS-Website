@@ -3,7 +3,7 @@ import makeAPIRequest from '../utils/Global';
 
 export const GALLERY_TYPE = {
   ALL: 'All',
-  FROMME: 'From Me',
+  FROMME: 'Uploaded',
   TAGGED: 'Tagged',
 };
 export const getWholeGallery = (

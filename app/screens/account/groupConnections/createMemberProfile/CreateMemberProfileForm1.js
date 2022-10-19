@@ -20,6 +20,7 @@ import {
   TextInput,
   Dimensions,
   Keyboard,
+  Platform,
 } from 'react-native';
 
 import ActionSheet from 'react-native-actionsheet';
@@ -261,7 +262,13 @@ export default function CreateMemberProfileForm1({navigation, route}) {
   // }
 
   const openCamera = (width = 400, height = 400) => {
-    check(PERMISSIONS.IOS.CAMERA)
+    // check(PERMISSIONS.IOS.CAMERA)
+    check(
+      Platform.select({
+        ios: PERMISSIONS.IOS.CAMERA,
+        android: PERMISSIONS.ANDROID.CAMERA,
+      }),
+    )
       .then((result) => {
         switch (result) {
           case RESULTS.UNAVAILABLE:
