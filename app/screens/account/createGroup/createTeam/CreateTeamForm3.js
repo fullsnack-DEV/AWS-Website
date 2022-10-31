@@ -140,7 +140,7 @@ export default function CreateTeamForm3({navigation, route}) {
                   }
                 })
                 .catch((e) => {
-                  Alert.alert(e);
+                  console.log(e);
                 });
             });
             break;

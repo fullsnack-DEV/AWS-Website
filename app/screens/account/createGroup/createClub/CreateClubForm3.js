@@ -128,9 +128,7 @@ export default function CreateClubForm3({navigation, route}) {
                   setBackgroundThumbnail(data.path);
                 }
               })
-              .catch((e) => {
-                Alert.alert(e);
-              });
+              .catch(() => {});
           });
           break;
         case RESULTS.LIMITED:
@@ -153,7 +151,7 @@ export default function CreateClubForm3({navigation, route}) {
               }
             })
             .catch((e) => {
-              Alert.alert(e);
+              console.log(e);
             });
           break;
         case RESULTS.BLOCKED:

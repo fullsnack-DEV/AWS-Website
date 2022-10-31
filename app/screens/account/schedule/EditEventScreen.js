@@ -561,7 +561,7 @@ export default function EditEventScreen({navigation, route}) {
                   setBackgroundImageChanged(true);
                 })
                 .catch((e) => {
-                  Alert.alert(e);
+                  console.log(e);
                 });
             });
             break;
@@ -579,7 +579,7 @@ export default function EditEventScreen({navigation, route}) {
                 setBackgroundImageChanged(true);
               })
               .catch((e) => {
-                Alert.alert(e);
+                console.log(e);
               });
             break;
           case RESULTS.BLOCKED:

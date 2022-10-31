@@ -322,7 +322,7 @@ export default function EditPersonalProfileScreen({navigation, route}) {
                   }
                 })
                 .catch((e) => {
-                  Alert.alert(e);
+                  console.log(e);
                 });
             });
             break;
@@ -349,7 +349,7 @@ export default function EditPersonalProfileScreen({navigation, route}) {
                   }
                 })
                 .catch((e) => {
-                  Alert.alert(e);
+                  console.log(e);
                 });
             }
             break;
