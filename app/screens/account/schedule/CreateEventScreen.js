@@ -779,7 +779,7 @@ export default function CreateEventScreen({navigation, route}) {
           event_posted_at: eventPosted,
           event_fee: {
             value: Number(eventFee),
-            currency_type: strings.defaultCurrency,
+            currency_type: Verbs.usd,
           },
           refund_policy: refundPolicy,
           min_attendees: Number(minAttendees),

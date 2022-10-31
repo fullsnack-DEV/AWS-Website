@@ -22,12 +22,13 @@ import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
 import TCLable from '../../../../components/TCLabel';
 import {strings} from '../../../../../Localization/translation';
+import Verbs from '../../../../Constants/Verbs';
 
 export default function RefundPolicyReferee({navigation, route}) {
   const policiesTypeList = [
-    {key: strings.strictText, id: 1},
-    {key: strings.moderateText, id: 2},
-    {key: strings.flexibleText, id: 3},
+    {key: Verbs.strictText, id: 1},
+    {key: Verbs.moderateText, id: 2},
+    {key: Verbs.flexibleText, id: 3},
   ];
 
   const [comeFrom] = useState(route?.params?.comeFrom);
@@ -37,11 +38,11 @@ export default function RefundPolicyReferee({navigation, route}) {
   const [loading, setloading] = useState(false);
 
   const [typeSelection, setTypeSelection] = useState(
-    (route?.params?.settingObj?.refund_policy === strings.strictText &&
+    (route?.params?.settingObj?.refund_policy === Verbs.strictText &&
       policiesTypeList[0]) ||
-      (route?.params?.settingObj?.refund_policy === strings.moderateText &&
+      (route?.params?.settingObj?.refund_policy === Verbs.moderateText &&
         policiesTypeList[1]) ||
-      (route?.params?.settingObj?.refund_policy === strings.flexibleText &&
+      (route?.params?.settingObj?.refund_policy === Verbs.flexibleText &&
         policiesTypeList[2]),
   );
 

@@ -12,17 +12,15 @@ const Gallery = ({navigation, gameData, isAdmin, galleryRef}) => {
   const imageUploadContext = useContext(ImageUploadContext);
   const createPostAfterUpload = useCallback(
     (dataParams) => {
-      let body = dataParams;
+      const body = dataParams;
 
       if (
         authContext.entity.role === Verbs.entityTypeClub ||
         authContext.entity.role === Verbs.entityTypeTeam
       ) {
-        body = {
-          ...dataParams,
-          group_id: authContext.entity.uid,
-        };
+        body.group_id = authContext.entity.uid;
       }
+
       createPost({...body, is_gallery: true}, authContext)
         .then(() => {
           if (galleryRef?.current?.refreshGallery)
@@ -37,6 +35,7 @@ const Gallery = ({navigation, gameData, isAdmin, galleryRef}) => {
 
   const callthis = useCallback(
     (data, postDesc, tagsOfEntity, format_tagged_data = []) => {
+      console.log('dataParamsdataParamsdataParams', gameData);
       if (postDesc.trim().length > 0 && data?.length === 0) {
         const dataParams = {
           text: postDesc,
@@ -48,10 +47,12 @@ const Gallery = ({navigation, gameData, isAdmin, galleryRef}) => {
         const imageArray = data.map((dataItem) => dataItem);
         const dataParams = {
           text: postDesc && postDesc,
+          game_id: gameData?.game_id,
           attachments: [],
           tagged: tagsOfEntity ?? [],
           format_tagged_data,
         };
+
         imageUploadContext.uploadData(
           authContext,
           dataParams,

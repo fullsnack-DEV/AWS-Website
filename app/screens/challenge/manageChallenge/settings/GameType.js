@@ -38,11 +38,12 @@ export default function GameType({navigation, route}) {
 
   const [loading, setloading] = useState(false);
   const [typeSelection, setTypeSelection] = useState(
-    (route?.params?.settingObj?.game_type === strings.officialGameType &&
+    (route?.params?.settingObj?.game_type === Verbs.official &&
       gameTypeList[0]) ||
-      (route?.params?.settingObj?.game_type === strings.friendlyGameType &&
+      (route?.params?.settingObj?.game_type === Verbs.friendly &&
         gameTypeList[1]) ||
-      (route?.params?.settingObj?.game_type === strings.all && gameTypeList[2]),
+      (route?.params?.settingObj?.game_type === Verbs.allStatus &&
+        gameTypeList[2]),
   );
 
   useLayoutEffect(() => {
@@ -65,11 +66,9 @@ export default function GameType({navigation, route}) {
       sport_type: sportType,
       entity_type: 'player',
       game_type:
-        (typeSelection.key === strings.officialOnly &&
-          strings.officialGameType) ||
-        (typeSelection.key === strings.friendlyOnly &&
-          strings.friendlyGameType) ||
-        (typeSelection.key === strings.allType && strings.all),
+        (typeSelection.key === strings.officialOnly && Verbs.official) ||
+        (typeSelection.key === strings.friendlyOnly && Verbs.friendly) ||
+        (typeSelection.key === strings.allType && Verbs.allStatus),
     };
     setloading(true);
     const registerdPlayerData =
@@ -133,11 +132,9 @@ export default function GameType({navigation, route}) {
       sport_type: sportType,
       entity_type: Verbs.entityTypeTeam,
       game_type:
-        (typeSelection.key === strings.officialOnly &&
-          strings.officialGameType) ||
-        (typeSelection.key === strings.friendlyOnly &&
-          strings.friendlyGameType) ||
-        (typeSelection.key === strings.allType && strings.all),
+        (typeSelection.key === strings.officialOnly && Verbs.official) ||
+        (typeSelection.key === strings.friendlyOnly && Verbs.friendly) ||
+        (typeSelection.key === strings.allType && Verbs.allStatus),
     };
     setloading(true);
     const selectedTeam = authContext?.entity?.obj;

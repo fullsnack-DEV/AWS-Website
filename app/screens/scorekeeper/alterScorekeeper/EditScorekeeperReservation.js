@@ -52,6 +52,7 @@ import TCTabView from '../../../components/TCTabView';
 import TCThinDivider from '../../../components/TCThinDivider';
 import CurruentScorekeeperReservationView from './CurruentScorekeeperReservationView';
 import TCChallengeTitle from '../../../components/TCChallengeTitle';
+import Verbs from '../../../Constants/Verbs';
 
 let entity = {};
 const scroll = React.createRef();
@@ -205,8 +206,8 @@ export default function EditScorekeeperReservation({navigation, route}) {
     body.reservation_id = bodyParams.reservation_id;
     body.start_datetime = bodyParams?.start_datetime;
     body.end_datetime = bodyParams?.end_datetime;
-    body.currency_type = bodyParams?.currency_type || strings.defaultCurrency;
-    body.payment_method_type = 'card';
+    body.currency_type = bodyParams?.currency_type ?? Verbs.usd;
+    body.payment_method_type = Verbs.card;
     body.sport = bodyParams?.sport;
     body.manual_fee = bodyParams?.manual_fee;
     if (bodyParams?.manual_fee) {
@@ -505,7 +506,7 @@ export default function EditScorekeeperReservation({navigation, route}) {
     body.manual_fee = bodyParams?.manual_fee;
     body.international_card_fee = bodyParams?.international_card_fee;
 
-    body.payment_method_type = 'card';
+    body.payment_method_type = Verbs.card;
     body.currency_type = bodyParams?.currency_type;
 
     if (
@@ -890,12 +891,16 @@ export default function EditScorekeeperReservation({navigation, route}) {
                   marginTop: 25,
                 }}
               />
-              <Text style={styles.rulesTitle}>{strings.gameRulesSubTitle1}</Text>
+              <Text style={styles.rulesTitle}>
+                {strings.gameRulesSubTitle1}
+              </Text>
               <Text style={styles.rulesDetail}>
                 {bodyParams?.game?.general_rules}
               </Text>
               <View style={{marginBottom: 10}} />
-              <Text style={styles.rulesTitle}>{strings.gameRulesSubTitle2}</Text>
+              <Text style={styles.rulesTitle}>
+                {strings.gameRulesSubTitle2}
+              </Text>
               <Text style={[styles.rulesDetail, {marginBottom: 10}]}>
                 {bodyParams?.game?.special_rules}
               </Text>
@@ -1018,12 +1023,12 @@ export default function EditScorekeeperReservation({navigation, route}) {
                 </Text>
               </Text>
               <View style={styles.differeceView}>
-                <Text style={styles.differenceTextTitle}>{strings.Difference}</Text>
+                <Text style={styles.differenceTextTitle}>
+                  {strings.Difference}
+                </Text>
                 <Text style={styles.diffenceAmount}>{`$${parseFloat(
                   bodyParams?.total_game_fee - oldVersion?.total_game_fee,
-                ).toFixed(2)} ${
-                  bodyParams.currency_type || strings.defaultCurrency
-                }`}</Text>
+                ).toFixed(2)} ${bodyParams.currency_type ?? Verbs.usd}`}</Text>
                 {/* <Text style={styles.diffenceAmount}>{checkSenderOrReceiver(bodyParams) === 'sender' ? `$${bodyParams.total_charges - oldVersion.total_charges} CAD` : `$${bodyParams.total_payout - oldVersion.total_payout} CAD`}</Text> */}
               </View>
             </View>
@@ -1109,9 +1114,7 @@ export default function EditScorekeeperReservation({navigation, route}) {
                   if (editInfo || editPayment || editMatch) {
                     updateReservationDetail();
                   } else {
-                    Alert.alert(
-                      strings.alterModificationMsg,
-                    );
+                    Alert.alert(strings.alterModificationMsg);
                   }
                 }}
               />
@@ -1160,9 +1163,7 @@ export default function EditScorekeeperReservation({navigation, route}) {
                       'cancel',
                     );
                   } else {
-                    Alert.alert(
-                      strings.cannotCancelReservationText,
-                    );
+                    Alert.alert(strings.cannotCancelReservationText);
                   }
                 }}
               />
@@ -1220,13 +1221,9 @@ export default function EditScorekeeperReservation({navigation, route}) {
                       bodyParams.start_datetime * 1000 <
                       new Date().getTime()
                     ) {
-                      Alert.alert(
-                        strings.cannotCancelReservationText,
-                      );
+                      Alert.alert(strings.cannotCancelReservationText);
                     } else {
-                      Alert.alert(
-                        strings.cannotAcceptText,
-                      );
+                      Alert.alert(strings.cannotAcceptText);
                     }
                   }}
                 />

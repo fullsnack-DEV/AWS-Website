@@ -189,7 +189,7 @@ export default function ChallengePreviewScreen({navigation, route}) {
       const feeBody = {};
       console.log('challengeObj check:=>', challengeData);
       feeBody.challenge_id = challengeData?.challenge_id;
-      feeBody.payment_method_type = 'card';
+      feeBody.payment_method_type = Verbs.card;
       feeBody.currency_type =
         challengeData?.game_fee?.currency_type?.toLowerCase();
       feeBody.total_game_fee = Number(
@@ -726,7 +726,7 @@ export default function ChallengePreviewScreen({navigation, route}) {
 
                   paymentObj = {
                     source: defaultCard?.id,
-                    payment_method_type: 'card',
+                    payment_method_type: Verbs.card,
                     total_game_fee: challengeData?.total_game_fee,
                     total_service_fee1: challengeData?.total_service_fee1,
                     total_service_fee2: challengeData?.total_service_fee2,
@@ -868,7 +868,7 @@ export default function ChallengePreviewScreen({navigation, route}) {
 
   const topButtons = () => {
     if (
-      checkSenderOrReceiver(challengeData) === 'sender' &&
+      challengeData.challenger === authContext.entity.uid &&
       [
         ReservationStatus.pendingrequestpayment,
         ReservationStatus.pendingpayment,
@@ -888,7 +888,7 @@ export default function ChallengePreviewScreen({navigation, route}) {
       );
     }
     if (
-      checkSenderOrReceiver(challengeData) === 'receiver' &&
+      challengeData.challengee === authContext.entity.uid &&
       [ReservationStatus.pendingrequestpayment].includes(challengeData?.status)
     ) {
       return (

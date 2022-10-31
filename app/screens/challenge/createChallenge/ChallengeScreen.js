@@ -83,7 +83,7 @@ export default function ChallengeScreen({navigation, route}) {
 
   const getFeeDetail = () => {
     const feeBody = {};
-    feeBody.payment_method_type = 'card';
+    feeBody.payment_method_type = Verbs.card;
     feeBody.currency_type =
       settingObject?.game_fee?.currency_type?.toLowerCase();
     feeBody.total_game_fee = Number(settingObject?.game_fee?.fee?.toString());

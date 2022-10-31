@@ -73,7 +73,7 @@ const getGameFeed = async (game_id, authContext) =>
 const getGameTimeline = async (game_id, authContext) =>
   makeAPIRequest({
     method: 'get',
-    url: `${Config.BASE_URL}/timeline/${game_id}`,
+    url: `${Config.BASE_URL}/games/timeline/${game_id}`,
     authContext,
   });
 

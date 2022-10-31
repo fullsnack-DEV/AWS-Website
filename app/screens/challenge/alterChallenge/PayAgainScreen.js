@@ -16,6 +16,7 @@ import TCTouchableLabel from '../../../components/TCTouchableLabel';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import * as Utility from '../../../utils';
 import GameFeeCard from '../../../components/challenge/GameFeeCard';
+import Verbs from '../../../Constants/Verbs';
 
 let entity = {};
 
@@ -67,7 +68,7 @@ export default function PayAgainScreen({navigation, route}) {
     const bodyParams = {};
     if (defaultCard !== {} || defaultCard !== undefined) {
       bodyParams.source = defaultCard.id;
-      bodyParams.payment_method_type = 'card';
+      bodyParams.payment_method_type = Verbs.card;
 
       bodyParams.total_game_fee = challengeObj?.total_game_fee;
       bodyParams.total_service_fee1 = challengeObj?.total_service_fee1;

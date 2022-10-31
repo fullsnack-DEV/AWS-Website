@@ -23,6 +23,7 @@ import {patchPlayer} from '../../../../api/Users';
 import TCThinDivider from '../../../../components/TCThinDivider';
 import DataSource from '../../../../Constants/DataSource';
 import images from '../../../../Constants/ImagePath';
+import Verbs from '../../../../Constants/Verbs';
 
 export default function ScorekeeperFee({navigation, route}) {
   const [comeFrom] = useState(route?.params?.comeFrom);
@@ -38,7 +39,7 @@ export default function ScorekeeperFee({navigation, route}) {
   const [currencyType, setCurruencyType] = useState(
     route?.params?.settingObj?.game_fee
       ? route?.params?.settingObj?.game_fee?.currency_type
-      : authContext?.entity?.obj?.currency_type ?? strings.defaultCurrency,
+      : authContext?.entity?.obj?.currency_type ?? Verbs.usd,
   );
   const [visibleCurrencyModal, setVisibleCurrencyModal] = useState(false);
 

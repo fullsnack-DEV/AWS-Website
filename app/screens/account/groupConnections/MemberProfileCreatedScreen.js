@@ -123,15 +123,6 @@ export default function MemberProfileCreatedScreen({navigation, route}) {
             }}
             fontSize={16}
           />
-          <TCBorderButton
-            title={strings.createOtherProfile}
-            textColor={colors.whiteColor}
-            borderColor={colors.whiteColor}
-            marginTop={20}
-            onPress={() => navigation.navigate('CreateMemberProfileForm1')}
-            fontSize={16}
-            backgroundColor={'transparent'}
-          />
         </View>
       )}
 

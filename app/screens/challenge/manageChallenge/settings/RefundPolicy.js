@@ -24,12 +24,13 @@ import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
 import TCLable from '../../../../components/TCLabel';
 import {strings} from '../../../../../Localization/translation';
+import Verbs from '../../../../Constants/Verbs';
 
 export default function RefundPolicy({navigation, route}) {
   const policiesTypeList = [
-    {key: strings.strictText, id: 1},
-    {key: strings.moderateText, id: 2},
-    {key: strings.flexibleText, id: 3},
+    {key: Verbs.strictText, id: 1},
+    {key: Verbs.moderateText, id: 2},
+    {key: Verbs.flexibleText, id: 3},
   ];
   const [comeFrom] = useState(route?.params?.comeFrom);
   const [sportName] = useState(route?.params?.sportName);
@@ -40,11 +41,11 @@ export default function RefundPolicy({navigation, route}) {
   const [loading, setloading] = useState(false);
 
   const [typeSelection, setTypeSelection] = useState(
-    (route?.params?.settingObj?.refund_policy === strings.strictText &&
+    (route?.params?.settingObj?.refund_policy === Verbs.strictText &&
       policiesTypeList[0]) ||
-      (route?.params?.settingObj?.refund_policy === strings.moderateText &&
+      (route?.params?.settingObj?.refund_policy === Verbs.moderateText &&
         policiesTypeList[1]) ||
-      (route?.params?.settingObj?.refund_policy === strings.flexibleText &&
+      (route?.params?.settingObj?.refund_policy === Verbs.flexibleText &&
         policiesTypeList[2]),
   );
 
@@ -212,9 +213,9 @@ export default function RefundPolicy({navigation, route}) {
         keyExtractor={(item, index) => index.toString()}
         renderItem={renderPolicyTypes}
       />
-      {typeSelection.key === strings.strictText && (
+      {typeSelection.key === Verbs.strictText && (
         <View style={styles.policyTypeNotes}>
-          <Text style={styles.policyTypeHeading}>{strings.strictText}</Text>
+          <Text style={styles.policyTypeHeading}>{Verbs.strictText}</Text>
           <Text style={styles.policyTypeTitle}>
             {strings.strictPoint1Title}
           </Text>
@@ -236,9 +237,9 @@ export default function RefundPolicy({navigation, route}) {
         </View>
       )}
 
-      {typeSelection.key === strings.moderateText && (
+      {typeSelection.key === Verbs.moderateText && (
         <View style={styles.policyTypeNotes}>
-          <Text style={styles.policyTypeHeading}>{strings.moderateText}</Text>
+          <Text style={styles.policyTypeHeading}>{Verbs.moderateText}</Text>
           <Text style={styles.policyTypeTitle}>
             {strings.moderatePoint1Title}
           </Text>
@@ -262,9 +263,9 @@ export default function RefundPolicy({navigation, route}) {
         </View>
       )}
 
-      {typeSelection.key === strings.flexibleText && (
+      {typeSelection.key === Verbs.flexibleText && (
         <View style={styles.policyTypeNotes}>
-          <Text style={styles.policyTypeHeading}>{strings.flexibleText}</Text>
+          <Text style={styles.policyTypeHeading}>{Verbs.flexibleText}</Text>
           <Text style={styles.policyTypeTitle}>
             {strings.flexiblePoint1Title}
           </Text>

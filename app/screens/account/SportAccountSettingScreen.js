@@ -70,7 +70,7 @@ export default function SportAccountSettingScreen({navigation, route}) {
 
   const getUserSettingMenu = useCallback(() => {
     if (
-      sport?.sport_type === 'single' ||
+      sport?.sport_type === Verbs.singleSport ||
       ![Verbs.entityTypePlayer, Verbs.entityTypeUser].includes(type)
     ) {
       setUserSetting([
@@ -78,8 +78,8 @@ export default function SportAccountSettingScreen({navigation, route}) {
           key: format(
             strings.challengeSetting,
             [Verbs.entityTypePlayer, Verbs.entityTypeUser].includes(type)
-              ? strings.challenge
-              : strings.reservation,
+              ? Verbs.challenge
+              : Verbs.reservation,
           ),
           id: 1,
         },
