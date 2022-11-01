@@ -148,10 +148,7 @@ export default function BasicInfoScreen({navigation, route}) {
     if (Platform.OS === 'android') {
       requestPermission();
     } else {
-      request(
-        PERMISSIONS.IOS.LOCATION_ALWAYS,
-        PERMISSIONS.IOS.LOCATION_WHEN_IN_USE,
-      ).then((result) => {
+      request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE).then((result) => {
         switch (result) {
           case RESULTS.UNAVAILABLE:
             console.log(strings.featuresNotAvailableText);

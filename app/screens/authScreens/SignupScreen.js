@@ -33,6 +33,7 @@ import TCTextField from '../../components/TCTextField';
 import AuthContext from '../../auth/context';
 import apiCall from '../../utils/apiCall';
 import {checkTownscupEmail} from '../../api/Users';
+
 import {getHitSlop} from '../../utils/index';
 
 export default function SignupScreen({navigation}) {
@@ -252,7 +253,8 @@ export default function SignupScreen({navigation}) {
           .onAuthStateChanged((user) => {
             if (user) {
               user.sendEmailVerification();
-
+              // console.log('Firebase user', user);
+              // callEmailVerification();
               saveUserDetails(user);
             }
           });
@@ -281,7 +283,21 @@ export default function SignupScreen({navigation}) {
           setTimeout(() => Alert.alert(strings.appName, message), 50);
       });
   };
-
+  /*
+  const callEmailVerification = () =>
+    new Promise((resolve) => {
+      console.log('email-->', email);
+      userEmailVerification(email)
+        .then(() => {
+          console.log('Email varification done');
+          resolve(true);
+        })
+        .catch((e) => {
+          console.log('Email varification failed', e);
+          resolve(false);
+        });
+    });
+*/
   const registerWithAnotherProvider = (param) =>
     new Promise((resolve, reject) => {
       if (param[0].includes('facebook')) {
@@ -437,7 +453,13 @@ export default function SignupScreen({navigation}) {
                 testID="password-signup-input"
                 style={{...styles.textInput, zIndex: 100}}
                 placeholder={strings.passwordText}
-                onChangeText={(text) => setPassword(text)}
+                onChangeText={(text) => {
+                  if (text.includes(' ')) {
+                    setPassword(text.trim());
+                  } else {
+                    setPassword(text);
+                  }
+                }}
                 value={password}
                 placeholderTextColor={colors.darkYellowColor}
                 secureTextEntry={hidePassword}
@@ -449,13 +471,13 @@ export default function SignupScreen({navigation}) {
                   style={{
                     alignItems: 'center',
                     justifyContent: 'center',
-                    marginLeft: wp('5%'),
+                    marginLeft: wp('3%'),
                     top: 10,
                   }}>
                   {hidePassword ? (
-                    <Text style={styles.passwordEyes}>SHOW</Text>
+                    <Text style={styles.passwordEyes}>{strings.SHOW}</Text>
                   ) : (
-                    <Text style={styles.passwordEyes}>HIDE</Text>
+                    <Text style={styles.passwordEyes}>{strings.HIDE}</Text>
                   )}
                 </TouchableOpacity>
               </View>
@@ -467,7 +489,13 @@ export default function SignupScreen({navigation}) {
                 autoCapitalize="none"
                 style={{...styles.textInput, zIndex: 100}}
                 placeholder={strings.confirmPasswordText}
-                onChangeText={setCPassword}
+                onChangeText={(text) => {
+                  if (text.includes(' ')) {
+                    setCPassword(text.trim());
+                  } else {
+                    setCPassword(text);
+                  }
+                }}
                 value={cPassword}
                 placeholderTextColor={colors.darkYellowColor}
                 secureTextEntry={hideConfirmPassword}
@@ -478,12 +506,12 @@ export default function SignupScreen({navigation}) {
                 style={{
                   alignItems: 'center',
                   justifyContent: 'center',
-                  marginLeft: wp('5%'),
+                  marginLeft: wp('3%'),
                 }}>
                 {hideConfirmPassword ? (
-                  <Text style={styles.passwordEyes}>strings.SHOW</Text>
+                  <Text style={styles.passwordEyes}>{strings.SHOW}</Text>
                 ) : (
-                  <Text style={styles.passwordEyes}>strings.HIDE</Text>
+                  <Text style={styles.passwordEyes}>{strings.HIDE}</Text>
                 )}
               </TouchableOpacity>
             </View>

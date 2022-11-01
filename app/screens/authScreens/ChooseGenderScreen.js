@@ -35,6 +35,8 @@ import AuthContext from '../../auth/context';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import {getLocationNameWithLatLong, searchNearByCity} from '../../api/External';
 import Verbs from '../../Constants/Verbs';
+import {getAppSettingsWithoutAuth} from '../../api/Users';
+import * as Utility from '../../utils/index';
 
 export default function ChooseGenderScreen({navigation, route}) {
   const [currentLocation, setCurrentLocation] = useState();
@@ -120,7 +122,6 @@ export default function ChooseGenderScreen({navigation, route}) {
           }
           setNearCity(cities);
           setLoading(false);
-
           navigateToChooseLocationScreen(gender);
         })
         .catch((e) => {
@@ -146,10 +147,7 @@ export default function ChooseGenderScreen({navigation, route}) {
               else if (selected === 1) gender = Verbs.female;
               else if (selected === 2) gender = strings.other;
 
-              check(
-                PERMISSIONS.IOS.LOCATION_ALWAYS,
-                PERMISSIONS.IOS.LOCATION_WHEN_IN_USE,
-              )
+              check(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE)
                 .then((result) => {
                   switch (result) {
                     case RESULTS.UNAVAILABLE:
@@ -167,7 +165,6 @@ export default function ChooseGenderScreen({navigation, route}) {
                     case RESULTS.GRANTED:
                       setLoading(true);
                       fetchNearestCity(gender);
-
                       break;
                     case RESULTS.BLOCKED:
                       console.log(strings.permissionDenitedText);
@@ -216,10 +213,7 @@ export default function ChooseGenderScreen({navigation, route}) {
     if (Platform.OS === 'android') {
       requestPermission();
     } else {
-      request(
-        PERMISSIONS.IOS.LOCATION_ALWAYS,
-        PERMISSIONS.IOS.LOCATION_WHEN_IN_USE,
-      ).then((result) => {
+      request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE).then((result) => {
         switch (result) {
           case RESULTS.UNAVAILABLE:
             console.log(strings.thisFeaturesNotAvailableText);
@@ -234,9 +228,19 @@ export default function ChooseGenderScreen({navigation, route}) {
             setEnableNext(true);
             break;
           case RESULTS.GRANTED:
-            console.log(strings.permissionGrantedText);
+            // console.log(strings.permissionGrantedText);
             setLoading(true);
-            getLocation();
+            // calling this method becasue gooleapp id getting as null in case of incomplet signup
+            getAppSettingsWithoutAuth()
+              .then(async (response) => {
+                await Utility.setStorage('appSetting', response.payload.app);
+                getLocation();
+              })
+              .catch((e) => {
+                setTimeout(() => {
+                  Alert.alert(strings.alertmessagetitle, e.message);
+                }, 10);
+              });
             break;
           case RESULTS.BLOCKED:
             console.log(strings.permissionDenitedText);

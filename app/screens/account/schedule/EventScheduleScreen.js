@@ -35,13 +35,12 @@ export default function EventScheduleScreen({
     console.log('events', events);
     console.log('filter Setting', filterOpetions);
     console.log('selectedFILTER', selectedFilter);
+    // Convert current time into GMT - Av
+    const dt = new Date();
+    const dateObj = new Date(dt.getTime() + dt.getTimezoneOffset() * 60000);
 
     if (filterOpetions.time === 0) {
-      events = events.filter(
-        (x) =>
-          x.start_datetime >
-          Number(parseFloat(new Date().getTime() / 1000).toFixed(0)),
-      );
+      events = events.filter((x) => x.start_datetime * 1000 > Number(dateObj));
     } else {
       events = events.filter(
         (x) =>
@@ -125,14 +124,12 @@ export default function EventScheduleScreen({
         }
       }
     }
-
     if (events.length > 0) {
       const result = _(events)
         .groupBy((v) =>
           moment(new Date(v.start_datetime * 1000)).format('MMM DD, YYYY'),
         )
         .value();
-
       const filData = [];
       for (const property in result) {
         let temp = {};

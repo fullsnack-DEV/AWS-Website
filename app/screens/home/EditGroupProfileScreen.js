@@ -156,7 +156,6 @@ export default function EditGroupProfileScreen({navigation, route}) {
       requestPermission();
     } else {
       request(
-        PERMISSIONS.IOS.LOCATION_ALWAYS,
         PERMISSIONS.IOS.LOCATION_WHEN_IN_USE,
       ).then((result) => {
         switch (result) {
