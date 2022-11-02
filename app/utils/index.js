@@ -2016,7 +2016,6 @@ export const getCalendar = async (
           },
         });
       }
-
       if (fromDate) {
         body.query.bool.must.push({
           range: {end_datetime: {gt: Number(fromDate.toFixed(0))}},
@@ -2027,7 +2026,6 @@ export const getCalendar = async (
           range: {start_datetime: {lt: Number(toDate.toFixed(0))}},
         });
       }
-
       console.log('calender elastic search :=>', JSON.stringify(body));
       return getCalendarIndex(body).then((response) => {
         console.log('elastic search 111:=>', response);

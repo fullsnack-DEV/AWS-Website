@@ -45,6 +45,7 @@ export default function AddBirthdayScreen({navigation, route}) {
   const [loading] = useState(false);
 
   const onChange = (selectedDate) => {
+    console.log('on date change call', selectedDate);
     setDateValue(selectedDate);
   };
   useLayoutEffect(() => {
@@ -84,7 +85,8 @@ export default function AddBirthdayScreen({navigation, route}) {
     const maxdate = new Date();
     mindate.setFullYear(mindate.getFullYear() - 13);
     maxdate.setFullYear(maxdate.getFullYear() - 123);
-    // setDateValue(mindate);
+    // Set minimum date as defaul date (13 YEAR)
+    setDateValue(mindate);
     setMinDateValue(mindate);
     setMaxDateValue(maxdate);
   }, []);

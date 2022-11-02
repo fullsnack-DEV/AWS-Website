@@ -115,6 +115,14 @@ export const getUsersByEmail = (email, authContext) =>
     url: `${Config.BASE_URL}/users?email=${email}`,
     authContext,
   });
+export const userEmailVerification = (email) =>
+  makeAPIWithoutAuthRequest({
+    method: 'get',
+    url: `${Config.BASE_URL}/users/emailverification?email=${email}`,
+    headers: {
+      setting_token: '3c5a5976-4831-41b3-a0cb-1aeb9d2e2c1c',
+    },
+  });
 
 export const getGallery = (userID, authContext) =>
   makeAPIRequest({

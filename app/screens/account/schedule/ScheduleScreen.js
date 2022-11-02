@@ -313,17 +313,14 @@ export default function ScheduleScreen({navigation, route}) {
       if (item?.game_id) {
         const gameObj =
           (games || []).filter((game) => game.game_id === item.game_id) ?? [];
-
         if (gameObj.length > 0) {
           item.game = gameObj[0];
         }
       } else {
         return item;
       }
-
       return item;
     });
-
     setEventData(
       (eventTimeTableData || []).sort(
         (a, b) =>
@@ -451,7 +448,6 @@ export default function ScheduleScreen({navigation, route}) {
 
   useEffect(() => {
     if (isFocused) {
-      console.log('get event list called');
       getEventsAndSlotsList();
     }
   }, [isFocused]);
@@ -555,7 +551,6 @@ export default function ScheduleScreen({navigation, route}) {
       // blockedSlots(entityRole, uid, authContext)
       .then((response) => {
         console.log('2222--');
-
         response = (response || []).filter((obj) => {
           if (obj.cal_type === 'blocked') {
             return obj;
@@ -588,9 +583,7 @@ export default function ScheduleScreen({navigation, route}) {
         onDayPress(new Date());
         setAllSlots(eventTimeTableData);
         let gameIDs = [...new Set(response.map((item) => item.game_id))];
-
         gameIDs = (gameIDs || []).filter((item) => item !== undefined);
-
         if (gameIDs.length > 0) {
           const gameList = {
             query: {
@@ -599,6 +592,7 @@ export default function ScheduleScreen({navigation, route}) {
               },
             },
           };
+
           console.log('5555--');
 
           getGameIndex(gameList).then((games) => {
@@ -621,6 +615,7 @@ export default function ScheduleScreen({navigation, route}) {
             });
           });
         }
+
         configureEvents(eventTimeTableData);
       })
       .catch((e) => {

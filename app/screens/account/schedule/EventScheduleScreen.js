@@ -35,7 +35,6 @@ export default function EventScheduleScreen({
     console.log('events', events);
     console.log('filter Setting', filterOpetions);
     console.log('selectedFILTER', selectedFilter);
-
     if (filterOpetions.time === 0) {
       events = events.filter(
         (x) =>
@@ -125,14 +124,12 @@ export default function EventScheduleScreen({
         }
       }
     }
-
     if (events.length > 0) {
       const result = _(events)
         .groupBy((v) =>
           moment(new Date(v.start_datetime * 1000)).format('MMM DD, YYYY'),
         )
         .value();
-
       const filData = [];
       for (const property in result) {
         let temp = {};
