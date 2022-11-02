@@ -25,7 +25,7 @@ import {
 } from '../../utils/QuickBlox';
 import {widthPercentageToDP as wp} from '../../utils';
 import UserListShimmer from '../../components/shimmer/commonComponents/UserListShimmer';
-import { strings } from '../../../Localization/translation';
+import {strings} from '../../../Localization/translation';
 
 const MessageSearchScreen = ({navigation}) => {
   const [loading, setLoading] = useState(false);
@@ -98,7 +98,7 @@ const MessageSearchScreen = ({navigation}) => {
         if (
           [
             QB_ACCOUNT_TYPE.USER,
-            QB_ACCOUNT_TYPE.LEAGUE,
+
             QB_ACCOUNT_TYPE.TEAM,
             QB_ACCOUNT_TYPE.CLUB,
           ].includes(firstTwoChar)

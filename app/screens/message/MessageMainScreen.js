@@ -15,7 +15,7 @@ import {
   Alert,
 } from 'react-native';
 
-import { format } from 'react-string-format';
+import {format} from 'react-string-format';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import QB from 'quickblox-react-native-sdk';
 import {useIsFocused, StackActions} from '@react-navigation/native';
@@ -172,7 +172,7 @@ const MessageMainScreen = ({navigation}) => {
         if (
           [
             QB_ACCOUNT_TYPE.USER,
-            QB_ACCOUNT_TYPE.LEAGUE,
+
             QB_ACCOUNT_TYPE.TEAM,
             QB_ACCOUNT_TYPE.CLUB,
           ].includes(firstTwoChar)
@@ -372,9 +372,13 @@ const MessageMainScreen = ({navigation}) => {
           }
           onPress={() => {
             Alert.alert(
-              format(strings.pauseUnpauseAccountText, authContext?.entity?.obj?.is_pause === true
-                ? strings.unpausesmall
-                : strings.reactivatesmall),'',
+              format(
+                strings.pauseUnpauseAccountText,
+                authContext?.entity?.obj?.is_pause === true
+                  ? strings.unpausesmall
+                  : strings.reactivatesmall,
+              ),
+              '',
               [
                 {
                   text: strings.cancel,

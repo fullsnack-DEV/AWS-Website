@@ -148,11 +148,11 @@ const MessageNewGroupScreen = ({route, navigation}) => {
     const uid = entityType === 'player' ? 'user_id' : 'group_id';
     QBLogout()
       .then(() => {
-        const {USER, CLUB, LEAGUE, TEAM} = QB_ACCOUNT_TYPE;
+        const {USER, CLUB, TEAM} = QB_ACCOUNT_TYPE;
         let accountType = USER;
         if (entityType === 'club') accountType = CLUB;
         else if (entityType === 'team') accountType = TEAM;
-        else if (entityType === 'league') accountType = LEAGUE;
+
         QBlogin(
           accountData[uid],
           {
