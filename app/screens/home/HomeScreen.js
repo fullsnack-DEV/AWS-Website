@@ -1119,7 +1119,8 @@ const HomeScreen = ({navigation, route}) => {
 
   const onMessageButtonPress = (user) => {
     const uid =
-      user?.entity_type === Verbs.entityTypePlayer
+      user?.entity_type === Verbs.entityTypePlayer ||
+      user?.entity_type === Verbs.entityTypeUser
         ? user?.user_id
         : user?.group_id;
 
@@ -1181,8 +1182,15 @@ const HomeScreen = ({navigation, route}) => {
           clubInviteUser();
           break;
         case Verbs.messageVerb:
-          // onMessageButtonPress(currentUserData);
-          groupMessageActionSheet.current.show();
+          if (
+            currentUserData.entity_type === Verbs.entityTypeUser ||
+            currentUserData.entity_type === Verbs.entityTypePlayer
+          ) {
+            onMessageButtonPress(currentUserData);
+          } else {
+            groupMessageActionSheet.current.show();
+          }
+
           break;
         case Verbs.editVerb:
           // navigation.navigate('EditPersonalProfileScreen');
@@ -1295,6 +1303,7 @@ const HomeScreen = ({navigation, route}) => {
           break;
         case Verbs.messageVerb:
           onMessageButtonPress(currentUserData);
+
           break;
         case Verbs.dotVerb:
           onDotPress();
@@ -4298,7 +4307,7 @@ const HomeScreen = ({navigation, route}) => {
             strings.withAllMember,
             strings.cancel,
           ]}
-          cancelButtonIndex={3}
+          cancelButtonIndex={2}
           onPress={(index) => {
             if (index === 0) {
               // Add Playing

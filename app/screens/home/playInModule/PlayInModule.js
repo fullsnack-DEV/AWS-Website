@@ -669,8 +669,10 @@ const PlayInModule = ({
       <ActionSheet
         ref={actionSheetSettingRef}
         options={[
-          'Looking for club',
-          'Deactivate This Activity',
+          playInObject?.sport_type === Verbs.singleSport
+            ? strings.lookingForClubText
+            : strings.lookingForTeamText,
+          strings.deactivateActivityText,
           strings.cancel,
         ]}
         cancelButtonIndex={2}

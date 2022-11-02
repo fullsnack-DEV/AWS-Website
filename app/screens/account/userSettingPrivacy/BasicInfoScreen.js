@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable default-case */
 import React, {useState, useEffect, useLayoutEffect, useContext} from 'react';
 import {
@@ -14,6 +15,7 @@ import {
   Platform,
   // eslint-disable-next-line react-native/split-platform-components
   PermissionsAndroid,
+  Pressable,
 } from 'react-native';
 
 import {useIsFocused} from '@react-navigation/native';
@@ -25,7 +27,6 @@ import moment from 'moment';
 import RNPickerSelect from 'react-native-picker-select';
 import Modal from 'react-native-modal';
 import Geolocation from '@react-native-community/geolocation';
-
 import {PERMISSIONS, RESULTS, request} from 'react-native-permissions';
 import {getHitSlop, widthPercentageToDP} from '../../../utils';
 
@@ -49,7 +50,7 @@ import {
   getLocationNameWithLatLong,
 } from '../../../api/External';
 import TCThinDivider from '../../../components/TCThinDivider';
-import {mobileCountryCode} from '../../../utils/constant';
+import TCCountryCodeModal from '../../../components/TCCountryCodeModal';
 
 export default function BasicInfoScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
@@ -80,16 +81,21 @@ export default function BasicInfoScreen({navigation, route}) {
   );
 
   const [phoneNumbers, setPhoneNumbers] = useState(
-    authContext.entity.obj.phone_numbers || [
-      {
-        id: 0,
-        phone_number: '',
-        country_code: '',
-      },
-    ],
+    authContext.entity.obj.phone_numbers.length > 0
+      ? authContext.entity.obj.phone_numbers
+      : [
+          {
+            id: 0,
+            phone_number: '',
+            country_code: '',
+          },
+        ],
   );
 
   const [locationPopup, setLocationPopup] = useState(false);
+  const [countryCodeVisible, setCountryCodeVisible] = useState(false);
+  const [selectedCountryCode, setSelectedCountryCode] = useState();
+
   const [noData, setNoData] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [cityData, setCityData] = useState([]);
@@ -305,13 +311,22 @@ export default function BasicInfoScreen({navigation, route}) {
         return false;
       }
     }
+
+    if (userInfo.phone_numbers[0]?.phone_number.length < 10) {
+      Alert.alert(strings.appName, strings.phoneNumberValidation);
+      return false;
+    }
+    if (!userInfo.phone_numbers[0]?.country_code.length) {
+      Alert.alert(strings.appName, strings.phoneCodeValidation);
+      return false;
+    }
+
     return true;
   };
 
   const onSavePress = () => {
-    setloading(true);
-
     if (checkValidation()) {
+      setloading(true);
       const bodyParams = {...userInfo};
       bodyParams.first_name = userInfo.first_name;
       bodyParams.last_name = userInfo.last_name;
@@ -332,6 +347,7 @@ export default function BasicInfoScreen({navigation, route}) {
       }
       if (phoneNumbers) {
         bodyParams.phone_numbers = userInfo.phone_numbers;
+        bodyParams.country_code = userInfo.country_code;
       }
 
       if (profileImageChanged) {
@@ -579,61 +595,27 @@ export default function BasicInfoScreen({navigation, route}) {
           marginRight: 15,
           justifyContent: 'space-between',
         }}>
-        <RNPickerSelect
-          placeholder={{
-            label: strings.selectCode,
-            value: null,
-          }}
-          items={mobileCountryCode}
-          onValueChange={(value) => {
-            const tmpphoneNumbers = [...phoneNumbers];
-            tmpphoneNumbers[index].country_code = value;
-            setPhoneNumbers(tmpphoneNumbers);
+        <Pressable
+          onPress={() => {
+            setCountryCodeVisible(true);
+          }}>
+          <View style={styles.codeContainer}>
+            <Text
+              style={{
+                color:
+                  selectedCountryCode || item.country_code
+                    ? colors.lightBlackColor
+                    : colors.grayColor,
+              }}>
+              {selectedCountryCode
+                ? `${`(+${selectedCountryCode.code})`}`
+                : item.country_code
+                ? `${`(+${item.country_code})`}`
+                : strings.countryCode}
+            </Text>
+          </View>
+        </Pressable>
 
-            const filteredNumber = phoneNumbers.filter(
-              (obj) =>
-                ![null, undefined, ''].includes(
-                  obj.phone_number && obj.country_code,
-                ),
-            );
-            setUserInfo({
-              ...userInfo,
-              phone_numbers: filteredNumber.map(
-                ({country_code, phone_number}) => ({
-                  country_code,
-                  phone_number,
-                }),
-              ),
-            });
-          }}
-          value={item.country_code}
-          useNativeAndroidPickerStyle={false}
-          style={{
-            inputIOS: {
-              fontSize: wp('3.5%'),
-              paddingVertical: 12,
-              paddingHorizontal: 15,
-              width: wp('45%'),
-              color: 'black',
-              paddingRight: 30,
-              backgroundColor: colors.textFieldBackground,
-              borderRadius: 5,
-            },
-            inputAndroid: {
-              fontSize: wp('4%'),
-              paddingVertical: 12,
-              paddingHorizontal: 15,
-              width: wp('45%'),
-              color: 'black',
-              paddingRight: 30,
-              backgroundColor: colors.textFieldBackground,
-              borderRadius: 5,
-            },
-          }}
-          Icon={() => (
-            <Image source={images.dropDownArrow} style={styles.miniDownArrow} />
-          )}
-        />
         <View
           style={{
             ...styles.halfMatchFeeView,
@@ -641,6 +623,7 @@ export default function BasicInfoScreen({navigation, route}) {
           }}>
           <TextInput
             placeholder={'Phone number'}
+            maxLength={10}
             style={{
               ...styles.halffeeText,
             }}
@@ -869,6 +852,37 @@ export default function BasicInfoScreen({navigation, route}) {
             )}
           </View>
         </Modal>
+
+        <TCCountryCodeModal
+          countryCodeVisible={countryCodeVisible}
+          onCloseModal={() => {
+            setCountryCodeVisible(false);
+          }}
+          countryCodeObj={(obj) => {
+            setSelectedCountryCode(obj);
+            setCountryCodeVisible(false);
+
+            const tmpphoneNumbers = [...phoneNumbers];
+            tmpphoneNumbers[0].country_code = obj.code;
+            setPhoneNumbers(tmpphoneNumbers);
+
+            const filteredNumber = phoneNumbers.filter(
+              (o) =>
+                ![null, undefined, ''].includes(
+                  o.phone_number && o.country_code,
+                ),
+            );
+            setUserInfo({
+              ...userInfo,
+              phone_numbers: filteredNumber.map(
+                ({country_code, phone_number}) => ({
+                  country_code,
+                  phone_number,
+                }),
+              ),
+            });
+          }}
+        />
       </TCKeyboardView>
     </>
   );
@@ -1052,5 +1066,14 @@ const styles = StyleSheet.create({
 
     textAlign: 'center',
     width: wp('90%'),
+  },
+  codeContainer: {
+    paddingVertical: 12,
+    paddingHorizontal: 15,
+    width: wp('45%'),
+    color: 'black',
+    paddingRight: 30,
+    backgroundColor: colors.textFieldBackground,
+    borderRadius: 5,
   },
 });

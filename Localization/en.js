@@ -211,6 +211,7 @@ export default {
   searchCityPlaceholder: 'en_Search by city or postal code',
   searchCityStatePlaceholder: 'en_City, state or country',
   searchByCityStateText: 'en_Search by city',
+  searchCountryCode: 'en_e.g India or IN or 91',
   cityText: 'en_City',
   stateText: 'en_State',
   countryText: 'en_Country',
@@ -620,6 +621,8 @@ export default {
   locationvalidation: 'en_Location cannot be blank',
   validEmailValidation: 'en_Please enter valid email address.',
   heightValidation: 'en_Please select height measurement',
+  phoneNumberValidation: 'en_Please enter proper phone number',
+  phoneCodeValidation: 'en_Please choose proper phone code',
   validHeightValidation: 'en_Please enter valid height.',
   weightValidation: 'en_Please select weight measurement',
   validWeightValidation: 'en_Please enter valid weight.',
@@ -2086,4 +2089,11 @@ export default {
   hideUnhide: 'en_Hide & Unhide',
   addSportsActivity: 'en_+ Add Sports Activities',
   logoutText: 'en_Are you sure want to logout?',
+  noRefereeData: 'en_No Referee Deactivated sports',
+  noScorekeeperData: 'en_No Scorekeeper Deactivated sports',
+  noSportsData: 'en_No Deactivated sports',
+  youWillLogout:
+    'en_Your new password has been set successfully, you will be logout',
+  countryCode: 'en_Country Code',
+  editEmail: 'en_Edit email',
 };

@@ -107,6 +107,7 @@ export default function RegisterPlayerForm2({navigation, route}) {
     bodyParams.type = 'player';
     bodyParams.currency_type = authContext?.entity?.obj?.currency_type;
     bodyParams.language = selectedLanguages;
+    bodyParams.lookingForTeamClub = true;
     const auth = {
       ...authContext?.entity?.obj,
       sport_setting: {},

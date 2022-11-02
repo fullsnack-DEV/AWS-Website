@@ -493,6 +493,7 @@ function TrashScreen({navigation, route}) {
             }
             item={item}
             selectedEntity={selectedEntity}
+            disabled={true}
             // onAccept={() => onAccept(item.activities[0].id)}
             onRespond={() => onRespond(item)} // JSON.parse(item.activities[0].object))
             onPress={() => onNotificationClick(item)}
@@ -513,6 +514,7 @@ function TrashScreen({navigation, route}) {
                 : 'group'
             }
             item={item}
+            disabled={true}
             selectedEntity={selectedEntity}
             onRespond={() => onRespond(item)} // JSON.parse(item.activities[0].object))
             onPress={() => onNotificationClick(item)}
@@ -550,6 +552,7 @@ function TrashScreen({navigation, route}) {
       return (
         <PRNotificationDetailItem
           isTrash={true}
+          disabled={true}
           entityType={
             authContext.entity.role === 'user' ||
             authContext.entity.role === 'player'
@@ -568,6 +571,7 @@ function TrashScreen({navigation, route}) {
     return (
       <NotificationItem
         isTrash={true}
+        disabled={true}
         entityType={
           authContext.entity.role === 'user' ||
           authContext.entity.role === 'player'
