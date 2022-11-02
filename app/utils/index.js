@@ -2016,11 +2016,9 @@ export const getCalendar = async (
           },
         });
       }
-      const dt = new Date(fromDate);
-      const frd = new Date(dt.getTime() + dt.getTimezoneOffset() * 60);
       if (fromDate) {
         body.query.bool.must.push({
-          range: {end_datetime: {gt: Number(frd)}},
+          range: {end_datetime: {gt: Number(fromDate.toFixed(0))}},
         });
       }
       if (toDate) {

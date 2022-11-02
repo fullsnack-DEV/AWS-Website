@@ -392,7 +392,7 @@ export default function CreateEventScreen({navigation, route}) {
   // eslint-disable-next-line no-unused-vars
   const convertDateToUTC = (date) => {
     const dt = new Date(date);
-    return new Date(dt.getTime() + dt.getTimezoneOffset() * 60);
+    return new Date(dt.getTime() + dt.getTimezoneOffset() * 60000);
   };
 
   const getSports = () => {

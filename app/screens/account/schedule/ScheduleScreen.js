@@ -568,7 +568,7 @@ export default function ScheduleScreen({navigation, route}) {
             }
           }
         });
-        console.log('3333--', response);
+        console.log('3333--');
 
         response.forEach((item) => {
           if (item?.rrule) {
@@ -578,7 +578,7 @@ export default function ScheduleScreen({navigation, route}) {
             eventTimeTableData.push(item);
           }
         });
-        console.log('4444--', eventTimeTableData);
+        console.log('4444--');
 
         onDayPress(new Date());
         setAllSlots(eventTimeTableData);
@@ -593,7 +593,7 @@ export default function ScheduleScreen({navigation, route}) {
             },
           };
 
-          console.log('5555--', gameIDs);
+          console.log('5555--');
 
           getGameIndex(gameList).then((games) => {
             const listObj = response.map((obj) => {

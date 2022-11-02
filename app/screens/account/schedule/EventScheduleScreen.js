@@ -35,12 +35,12 @@ export default function EventScheduleScreen({
     console.log('events', events);
     console.log('filter Setting', filterOpetions);
     console.log('selectedFILTER', selectedFilter);
-    // Convert current time into GMT - Av
-    const dt = new Date();
-    const dateObj = new Date(dt.getTime() + dt.getTimezoneOffset() * 60000);
-
     if (filterOpetions.time === 0) {
-      events = events.filter((x) => x.start_datetime * 1000 > Number(dateObj));
+      events = events.filter(
+        (x) =>
+          x.start_datetime >
+          Number(parseFloat(new Date().getTime() / 1000).toFixed(0)),
+      );
     } else {
       events = events.filter(
         (x) =>
