@@ -1,6 +1,4 @@
-/* eslint-disable react/jsx-indent */
 /* eslint-disable no-nested-ternary */
-/* eslint-disable array-callback-return */
 import React, {
   useEffect,
   useState,
@@ -23,11 +21,6 @@ import {
 } from 'react-native';
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import Modal from 'react-native-modal';
-
-// import ActionSheet from 'react-native-actionsheet';
-// import { useIsDrawerOpen } from '@react-navigation/drawer';
-// import MarqueeText from 'react-native-marquee';
-
 import firebase from '@react-native-firebase/app';
 import ExpanableList from 'react-native-expandable-section-flatlist';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
@@ -40,7 +33,6 @@ import ActivityLoader from '../../components/loader/ActivityLoader';
 import AuthContext from '../../auth/context';
 
 import {
-  getGroupDetails,
   getJoinedGroups,
   getTeamsOfClub,
   getGroupRequest,
@@ -53,7 +45,6 @@ import {getUnreadCount} from '../../api/Notificaitons';
 import * as Utility from '../../utils/index';
 
 import images from '../../Constants/ImagePath';
-import TCNavigationHeader from '../../components/TCNavigationHeader';
 import {
   QB_ACCOUNT_TYPE,
   QBconnectAndSubscribe,
@@ -65,112 +56,37 @@ import {
 
 import Header from '../../components/Home/Header';
 import TCGradientButton from '../../components/TCGradientButton';
-import TCThinDivider from '../../components/TCThinDivider';
-import {getSportIcon} from '../../utils/index';
+import {
+  prepareUserMenu,
+  prepareTeamMenu,
+  prepareClubMenu,
+} from './prepareMenuData';
 import TCAccountDeactivate from '../../components/TCAccountDeactivate';
 import {userActivate} from '../../api/Users';
 import {strings} from '../../../Localization/translation';
 import Verbs from '../../Constants/Verbs';
-
+import TCSwitchProfileRow from './connections/TCSwitchProfileRow';
+import AccountMenuRow from './connections/AccountMenuRow';
+// FIXME: fix all warning in useCallBack()
 export default function AccountScreen({navigation}) {
   const scrollRef = useRef();
   const isFocused = useIsFocused();
 
   const authContext = useContext(AuthContext);
-  // const [isSportCreateModalVisible, setIsSportCreateModalVisible] = useState(
-  //   false,
-  // );
   const [group, setGroup] = useState({});
-  const [parentGroup, setParentGroup] = useState();
-  const [groupList, setGroupList] = useState([]);
-  const [notificationCounter, setNotificationCounter] = useState(0);
-  const [team, setTeam] = useState([]);
-  const [club, setClub] = useState([]);
-  // eslint-disable-next-line no-unused-vars
+  // managedEntities are list of all accounts user control. Teams, clubs and user itself
+  const [managedEntities, setManagedEntityList] = useState([]);
+  const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
   const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
   const [pointEvent, setPointEvent] = useState('auto');
-  const [sportsSelection, setSportsSelection] = useState();
-  const [visibleSportsModal, setVisibleSportsModal] = useState(false);
 
-  const [clickedUserType, setClickedUserType] = useState(Verbs.entityTypeUser);
-
-  // for set/get teams
   const [teamList, setTeamList] = useState([]);
-  // for set/get clubs
   const [clubList, setClubList] = useState([]);
-  // For activity indigator
-  const [loading, setloading] = useState(false);
+  const [accountMenu, setAccountMenu] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const [isRulesModalVisible, setIsRulesModalVisible] = useState(false);
   const [createEntity, setCreateEntity] = useState('');
-
-  // Account menu
-  const userMenu = [
-    {key: strings.reservationsTitleText},
-    {
-      key: strings.playingTitleText,
-      member: [{opetions: strings.addSportsTitle}],
-    },
-    {
-      key: strings.refereeingTitleText,
-      member: [{opetions: strings.registerRefereeTitle}],
-    },
-    {
-      key: strings.scorekeepingTitleText,
-      member: [{opetions: strings.registerScorekeeperTitle}],
-    },
-    {key: strings.teamstitle, member: [{opetions: strings.createTeamText}]},
-    {key: strings.clubstitle, member: [{opetions: strings.createClubText}]},
-    // {key: 'My Leagues', member:[{opetions: 'Create a League'}]},
-    // {key: strings.registerRefereeTitle},
-    // {key: 'Register as a personal player'},
-    // {key: 'Create Group'},
-    // {key: strings.reservationsTitleText},
-    {
-      key: strings.paymentPayoutText,
-      member: [
-        {opetions: strings.paymentMethodTitle},
-        {opetions: strings.payoutMethodTitle},
-        {opetions: strings.invoicesTitle},
-        {opetions: strings.transactionsTitles},
-      ],
-    },
-    // { key: 'Currency' },
-    {key: strings.settingsTitleText},
-  ];
-  const teamMenu = [
-    {key: strings.reservationsTitleText},
-    {key: strings.challengeSettingText},
-    {key: strings.membersTitle},
-
-    {key: strings.clubstitle, member: [{opetions: strings.createClubText}]},
-    // {key: 'Leagues',member: [{ opetions: 'Create League' }]},
-    {
-      key: strings.paymentPayoutText,
-      member: [
-        {opetions: strings.paymentMethodTitle},
-        {opetions: strings.payoutMethodTitle},
-        {opetions: strings.invoicingTitleText},
-        {opetions: strings.transactionsTitles},
-      ],
-    },
-    {key: strings.settingsTitleText},
-  ];
-  const clubMenu = [
-    {key: strings.membersTitle},
-    {key: strings.teamstitle, member: [{opetions: strings.createTeamText}]},
-    // {key: 'My Leagues'},
-    // {key: 'Invite Teams'},
-    {
-      key: strings.paymentPayoutText,
-      member: [
-        {opetions: strings.paymentMethodTitle},
-        {opetions: strings.payoutMethodTitle},
-        {opetions: strings.transactionsTitles},
-      ],
-    },
-    {key: strings.settingsTitleText},
-  ];
 
   useEffect(() => {
     setIsAccountDeactivated(false);
@@ -207,22 +123,22 @@ export default function AccountScreen({navigation}) {
           hitSlop={Utility.getHitSlop(15)}>
           <ImageBackground
             source={
-              notificationCounter > 0
+              unreadNotificationCount > 0
                 ? images.notificationBell
                 : images.tab_notification
             }
             style={styles.headerRightImg}>
-            {notificationCounter > 0 && (
+            {unreadNotificationCount > 0 && (
               <View
                 style={
-                  notificationCounter > 9
+                  unreadNotificationCount > 9
                     ? styles.eclipseBadge
                     : styles.roundBadge
                 }>
                 <Text style={styles.notificationCounterStyle}>
-                  {notificationCounter > 9
+                  {unreadNotificationCount > 9
                     ? strings.ninePlus
-                    : notificationCounter}
+                    : unreadNotificationCount}
                 </Text>
               </View>
             )}
@@ -230,187 +146,120 @@ export default function AccountScreen({navigation}) {
         </TouchableOpacity>
       </View>
     ),
-    [isAccountDeactivated, navigation, notificationCounter, pointEvent],
+    [isAccountDeactivated, navigation, unreadNotificationCount, pointEvent],
   );
-
-  const getData = () =>
-    new Promise((resolve, reject) => {
-      setloading(true);
-      const entity = authContext.entity;
-      const promises = [
-        getNotificationUnreadCount(entity),
-        getTeamsList(entity),
-      ];
-      if (entity.role !== Verbs.entityTypeClub)
-        promises.push(getClubList(entity));
-      Promise.all(promises)
-        .then(() => {
-          resolve(true);
-        })
-
-        // eslint-disable-next-line prefer-promise-reject-errors
-        .catch(() => reject('error'));
-    });
-
-  // useEffect(() => {
-  //   if (isFocused) {
-  //     onSwitchProfile(authContext?.entity)
-  //   }
-  // }, [isFocused]);
 
   useEffect(() => {
-    if (isFocused) {
-      getData();
+    const entity = authContext.entity;
+    const promises = [getUnreadNotificationCount(entity), getTeamsList(entity)];
+    if (entity.role !== Verbs.entityTypeClub) {
+      promises.push(getClubList(entity));
     }
-  }, [authContext, isFocused]);
-
-  // useEffect(() => {
-  //   if (route?.params?.createdSportName) {
-  //     setIsSportCreateModalVisible(true);
-  //   }
-  // }, [route?.params?.createdSportName]);
-
-  const getParentClub = useCallback(
-    async (item) => {
-      getGroupDetails(item.group_id, authContext)
-        .then((response) => {
-          if (!response?.payload?.club) {
-            setParentGroup(response?.payload?.club);
-          } else {
-            setParentGroup();
-          }
-        })
-        .catch((e) => {
-          setloading(false);
-          console.log('6');
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
-        });
-    },
-    [authContext],
-  );
-
-  const getNotificationUnreadCount = useCallback(
-    async (currentEntity) => {
-      getUnreadCount(authContext)
-        .then((response) => {
-          const {teams} = response.payload;
-          const {clubs} = response.payload;
-          const {user} = response.payload;
-          const switchEntityObject = [{...user}, ...clubs, ...teams].filter(
-            (e) =>
-              e.group_id === authContext.entity.uid ||
-              e.user_id === authContext.entity.uid,
-          );
-          setTeam(teams);
-          setClub(clubs);
-          setNotificationCounter(switchEntityObject?.[0]?.unread);
-          if (currentEntity.role === Verbs.entityTypeUser) {
-            setGroupList([...clubs, ...teams]);
-          } else if (currentEntity.role === Verbs.entityTypeTeam) {
-            const updatedTeam = teams.filter(
-              (item) => item.group_id !== authContext.entity.uid,
-            );
-            setGroupList([{...user}, ...clubs, ...updatedTeam]);
-          } else if (authContext.entity.role === Verbs.entityTypeClub) {
-            const updatedClub = clubs.filter(
-              (item) => item.group_id !== authContext.entity.uid,
-            );
-            setGroupList([{...user}, ...updatedClub, ...teams]);
-          }
-          setloading(false);
-
-          // if (authContext?.entity?.QB) {
-          //   setloading(false);
-          // } else {
-          //   onSwitchProfile(authContext?.entity)
-          // }
-        })
-        .catch((e) => {
-          console.log('catch -> Account Screen unread count api');
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
-        });
-    },
-    [authContext],
-  );
-
-  const getTeamsList = useCallback(
-    async (currentEntity) => {
-      setloading(true);
-      if (currentEntity.role === Verbs.entityTypeClub) {
-        getTeamsOfClub(authContext.entity.uid, authContext)
-          .then((response) => {
-            setTeamList(response.payload);
-          })
-          .catch((e) => {
-            setloading(false);
-            setTimeout(() => {
-              Alert.alert(strings.alertmessagetitle, e.message);
-            }, 10);
-          });
-      } else {
-        getTeamData();
-      }
-    },
-    [authContext],
-  );
-
-  const getTeamData = () =>
-    new Promise((resolve, reject) => {
-      setloading(true);
-      const promises = [
-        getJoinedGroups(Verbs.entityTypeTeam, authContext),
-        getTeamPendingRequest(authContext),
-      ];
-      Promise.all(promises)
-        .then(([res1, res2]) => {
-          setloading(false);
-          resolve(true);
-          setTeamList([...res1.payload, ...res2.payload]);
-        })
-        // eslint-disable-next-line prefer-promise-reject-errors
-        .catch(() => reject('error'));
-    });
-
-  const getClubList = useCallback(async () => {
-    // setloading(true);
-
-    getJoinedGroups(Verbs.entityTypeClub, authContext)
-      .then((response) => {
-        setClubList(response.payload);
+    Promise.all(promises)
+      .then(() => {
+        getAccountMenu();
       })
       .catch((e) => {
-        setloading(false);
-        console.log('4');
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  }, [authContext, isFocused]);
+
+  const getAccountMenu = useCallback(() => {
+    let menu = [];
+    if (authContext.entity.role === Verbs.entityTypeClub) {
+      menu = prepareClubMenu(authContext, teamList, clubList);
+    } else if (authContext.entity.role === Verbs.entityTypeTeam) {
+      menu = prepareTeamMenu(authContext, teamList, clubList);
+    } else {
+      menu = prepareUserMenu(authContext, teamList, clubList);
+    }
+    setAccountMenu(menu);
+  }, [teamList, clubList]);
+
+  const getUnreadNotificationCount = useCallback(() => {
+    getUnreadCount(authContext)
+      .then((response) => {
+        const {teams, clubs, user} = response.payload;
+        // This API return list of all clubs and teams managed by logged-in user.
+        const allAccounts = [{...user}, ...clubs, ...teams];
+        const switchEntityObject = allAccounts.filter(
+          (e) =>
+            e.group_id === authContext.entity.uid ||
+            e.user_id === authContext.entity.uid,
+        );
+        setUnreadNotificationCount(switchEntityObject?.[0]?.unread);
+
+        setManagedEntityList(
+          allAccounts.filter(
+            (item) =>
+              item.group_id !== authContext.entity.uid &&
+              item.user_id !== authContext.entity.uid,
+          ),
+        );
+      })
+      .catch((e) => {
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
   }, [authContext]);
 
-  const oncalcelTeamRequest = (type, requestID) => {
-    setloading(true);
+  const getTeamsList = useCallback(
+    (currentEntity) => {
+      if (currentEntity.role === Verbs.entityTypeClub) {
+        getTeamsOfClub(authContext.entity.uid, authContext)
+          .then((response) => {
+            setTeamList(response.payload);
+          })
+          .catch((e) => {
+            setTimeout(() => {
+              Alert.alert(strings.alertmessagetitle, e.message);
+            }, 10);
+          });
+      } else {
+        const promises = [
+          getJoinedGroups(Verbs.entityTypeTeam, authContext),
+          getTeamPendingRequest(authContext),
+        ];
+        Promise.all(promises).then(([res1, res2]) => {
+          setTeamList([...res1.payload, ...res2.payload]);
+        });
+      }
+    },
+    [authContext],
+  );
+
+  const getClubList = useCallback(() => {
+    getJoinedGroups(Verbs.entityTypeClub, authContext)
+      .then((response) => {
+        setClubList(response.payload);
+      })
+      .catch((e) => {
+        console.log('4');
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  }, [authContext, clubList]);
+
+  const onCancelTeamRequest = (type, requestID) => {
+    setLoading(true);
     getGroupRequest(type, requestID, authContext)
       .then((response) => {
-        setloading(false);
-        if (response.status) {
-          setTimeout(() => {
-            Alert.alert(strings.teamRequestCancelledText);
-          }, 10);
-        } else {
-          setTimeout(() => {
-            Alert.alert(strings.somethingWrongWithRequestText);
-          }, 10);
-        }
+        setLoading(false);
         getTeamsList(authContext.entity);
+        if (response.status) {
+          Alert.alert(strings.teamRequestCancelledText);
+        } else {
+          Alert.alert(strings.somethingWrongWithRequestText);
+        }
 
         // }
       })
       .catch((e) => {
-        setloading(false);
+        setLoading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
@@ -418,81 +267,42 @@ export default function AccountScreen({navigation}) {
   };
 
   const switchProfile = useCallback(
-    async (item) => {
-      setloading(true);
-
+    (switchTo) => {
       let currentEntity = authContext.entity;
-      // delete currentEntity?.QB;
+      delete currentEntity?.QB;
       if (
-        item?.entity_type === Verbs.entityTypePlayer ||
-        item?.entity_type === Verbs.entityTypeUser
+        switchTo?.entity_type === Verbs.entityTypePlayer ||
+        switchTo?.entity_type === Verbs.entityTypeUser
       ) {
-        if (currentEntity.obj.entity_type === Verbs.entityTypeTeam) {
-          team.push(currentEntity.obj);
-        } else if (currentEntity.obj.entity_type === Verbs.entityTypeClub) {
-          club.push(currentEntity.obj);
-        }
-        // setGroupList([...club, ...team]);
         currentEntity = {
           ...currentEntity,
-          uid: item?.user_id,
+          uid: switchTo?.user_id,
           role: Verbs.entityTypeUser,
-          obj: item,
+          obj: switchTo,
         };
-        setParentGroup();
-      } else if (item?.entity_type === Verbs.entityTypeTeam) {
-        const i = team.indexOf(item);
-        if (
-          currentEntity.obj.entity_type === Verbs.entityTypePlayer ||
-          currentEntity.obj.entity_type === Verbs.entityTypeUser
-        ) {
-          team.splice(i, 1);
-        } else if (currentEntity.obj.entity_type === Verbs.entityTypeTeam) {
-          team.splice(i, 1, currentEntity.obj);
-        } else if (currentEntity.obj.entity_type === Verbs.entityTypeClub) {
-          club.push(currentEntity.obj);
-        }
+      } else if (switchTo?.entity_type === Verbs.entityTypeTeam) {
         currentEntity = {
           ...currentEntity,
-          uid: item?.group_id,
+          uid: switchTo?.group_id,
           role: Verbs.entityTypeTeam,
-          obj: item,
+          obj: switchTo,
         };
-        getParentClub(item);
-      } else if (item?.entity_type === Verbs.entityTypeClub) {
-        const i = club.indexOf(item);
-        if (
-          currentEntity.obj.entity_type === Verbs.entityTypePlayer ||
-          currentEntity.obj.entity_type === Verbs.entityTypeUser
-        ) {
-          club.splice(i, 1);
-        } else if (currentEntity.obj.entity_type === Verbs.entityTypeTeam) {
-          club.splice(i, 1);
-          team.push(currentEntity.obj);
-        } else if (currentEntity.obj.entity_type === Verbs.entityTypeClub) {
-          club.splice(i, 1, currentEntity.obj);
-        }
+      } else if (switchTo?.entity_type === Verbs.entityTypeClub) {
         currentEntity = {
           ...currentEntity,
-          uid: item?.group_id,
+          uid: switchTo?.group_id,
           role: Verbs.entityTypeClub,
-          obj: item,
+          obj: switchTo,
         };
-        setParentGroup();
-        setGroup(item);
+        setGroup(switchTo);
       }
-      // authContext.setEntity({ ...currentEntity });
-      // await Utility.setStorage('authContextEntity', { ...currentEntity });
-      console.log('switch profile done Called..');
-
       return currentEntity;
     },
-    [authContext, club, getParentClub, team],
+    [authContext],
   );
 
   const switchQBAccount = useCallback(
     (accountData, entity) => {
-      setloading(true);
       console.log('switch QB Called..');
 
       let currentEntity = entity;
@@ -504,11 +314,13 @@ export default function AccountScreen({navigation}) {
           : 'group_id';
       QBLogout()
         .then(() => {
-          const {USER, CLUB, LEAGUE, TEAM} = QB_ACCOUNT_TYPE;
+          const {USER, CLUB, TEAM} = QB_ACCOUNT_TYPE;
           let accountType = USER;
-          if (entityType === Verbs.entityTypeClub) accountType = CLUB;
-          else if (entityType === Verbs.entityTypeTeam) accountType = TEAM;
-          else if (entityType === 'league') accountType = LEAGUE;
+          if (entityType === Verbs.entityTypeClub) {
+            accountType = CLUB;
+          } else if (entityType === Verbs.entityTypeTeam) {
+            accountType = TEAM;
+          }
           QBlogin(
             accountData[uid],
             {
@@ -516,65 +328,37 @@ export default function AccountScreen({navigation}) {
               full_name: accountData.group_name,
             },
             accountType,
-          )
-            .then((res) => {
-              currentEntity = {
-                ...currentEntity,
-                QB: {...res.user, connected: true, token: res?.session?.token},
-              };
-              QBconnectAndSubscribe(currentEntity)
-                .then(async (qbRes) => {
-                  authContext.setEntity({...currentEntity});
-                  await Utility.setStorage('authContextEntity', {
-                    ...currentEntity,
-                  });
-                  setloading(false);
-                  console.log('switch QB done Called..');
-                  if (qbRes?.error) console.log(strings.appName, qbRes?.error);
-                })
-                .catch(async () => {
-                  authContext.setEntity({...currentEntity});
-                  await Utility.setStorage('authContextEntity', {
-                    ...currentEntity,
-                  });
-                  setloading(false);
-                });
-            })
-            .catch(async () => {
-              authContext.setEntity({...currentEntity});
-              await Utility.setStorage('authContextEntity', {...currentEntity});
-              setloading(false);
+          ).then(async (res) => {
+            currentEntity = {
+              ...currentEntity,
+              QB: {...res.user, connected: true, token: res?.session?.token},
+            };
+            authContext.setEntity({...currentEntity});
+            await Utility.setStorage('authContextEntity', {
+              ...currentEntity,
             });
+            QBconnectAndSubscribe(currentEntity).then(() => {
+              setTimeout(() => {
+                setLoading(false);
+              }, 10);
+            });
+          });
         })
         .catch((error) => {
           console.log('QB Issue', error);
-          setloading(false);
+          setLoading(false);
         });
     },
     [authContext],
   );
 
-  const onSwitchProfile = useCallback(
-    ({item}) => {
-      console.log('on switch profile  Called..');
-      switchProfile(item)
-        .then((currentEntity) => {
-          scrollRef.current.scrollTo({x: 0, y: 0});
-          console.log('switch currentEntity', currentEntity);
-          authContext.setEntity({...currentEntity});
-          Utility.setStorage('authContextEntity', {...currentEntity});
-          switchQBAccount(item, currentEntity);
-        })
-        .catch((e) => {
-          setloading(false);
-          console.log('5');
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
-        });
-    },
-    [switchProfile, switchQBAccount],
-  );
+  const onSwitchProfile = useCallback(({item}) => {
+    const currentEntity = switchProfile(item);
+    scrollRef.current.scrollTo({x: 0, y: 0});
+    authContext.setEntity({...currentEntity});
+    Utility.setStorage('authContextEntity', {...currentEntity});
+    switchQBAccount(item, currentEntity);
+  }, []);
 
   const onLogout = useCallback(async () => {
     QBLogout();
@@ -587,7 +371,7 @@ export default function AccountScreen({navigation}) {
   const handleLogOut = useCallback(async () => {
     Alert.alert(
       strings.appName,
-      'Are you sure want to logout?',
+      strings.logoutText,
       [
         {
           text: strings.cancel,
@@ -602,645 +386,67 @@ export default function AccountScreen({navigation}) {
     );
   }, [onLogout]);
 
-  const handleSections = async (section) => {
-    if (section === strings.reservationsTitleText) {
-      navigation.navigate('ReservationNavigator', {
-        screen: 'ReservationScreen',
-      });
-    } else if (section === strings.registerRefereeTitle) {
-      navigation.navigate('RegisterReferee');
-    } else if (section === 'Register as a personal player') {
-      navigation.navigate('RegisterPlayer');
-    } else if (section === strings.registerScorekeeperTitle) {
-      navigation.navigate('RegisterScorekeeper');
-    } else if (section === strings.createClubText) {
-      navigation.navigate('CreateClubForm1');
-    } else if (section === strings.settingsTitleText) {
-      const entity = authContext.entity;
-      if (entity.role === Verbs.entityTypeUser) {
-        navigation.navigate('UserSettingPrivacyScreen');
-      } else {
-        console.log('clubs==>', club);
-        console.log('clubs list==>', clubList);
-        navigation.navigate('GroupSettingPrivacyScreen', {
-          groups:
-            authContext?.entity?.role === Verbs.entityTypeTeam
-              ? clubList
-              : teamList,
-        });
-      }
-    } else if (section === strings.membersTitle) {
-      const entity = authContext.entity;
-      navigation.navigate('GroupMembersScreen', {
-        groupID: entity.uid,
-        groupObj: entity.obj,
-      });
-    } else if (section === strings.challengeSettingText) {
-      setClickedUserType(Verbs.entityTypeUser);
-      const entity = authContext.entity;
-
-      if (entity.role === Verbs.entityTypeUser) {
-        if (entity?.obj?.registered_sports?.length > 0) {
-          setVisibleSportsModal(true);
-        } else {
-          Alert.alert(strings.noregisterdSportValication);
-        }
-      } else {
-        navigation.navigate('ManageChallengeScreen', {
-          groupObj: authContext.entity.obj,
-          sportName: entity?.obj?.sport,
-          sportType: entity?.obj?.sport_type,
-        });
-      }
-    } else if (section === 'Referee Reservation Settings') {
-      setClickedUserType(Verbs.entityTypeReferee);
-
-      const entity = authContext.entity;
-      console.log('entity?.objentity?.obj-->', entity?.obj, entity?.obj?.sport);
-      if (entity.role === Verbs.entityTypeUser) {
-        if (entity?.obj?.referee_data?.length > 0) {
-          setVisibleSportsModal(true);
-        } else {
-          Alert.alert('There is no registerd sports as a referee.');
-        }
-      } else {
-        navigation.navigate('RefereeReservationSetting', {
-          sportName: entity?.obj?.sport,
-        });
-      }
-    } else if (section === 'Scorekeeper Reservation Settings') {
-      setClickedUserType(Verbs.entityTypeScorekeeper);
-
-      const entity = authContext.entity;
-
-      if (entity.role === Verbs.entityTypeUser) {
-        if (entity?.obj?.scorekeeper_data?.length > 0) {
-          setVisibleSportsModal(true);
-        } else {
-          Alert.alert('There is no registerd sports as a scorekeeper.');
-        }
-      } else {
-        navigation.navigate('ScorekeeperReservationSetting', {
-          sportName: entity?.obj?.sport,
-        });
-      }
-    } else if (section === 'Log out') {
+  const handleSectionClick = async (rowObj) => {
+    console.log('clicked: handleSectionClick');
+    console.log('rowObj', rowObj);
+    navigation.navigate(rowObj.navigateTo.screenName, rowObj.navigateTo.data);
+    if (rowObj.option === 'Log out') {
       handleLogOut();
     }
   };
 
-  const handleOptions = useCallback(
-    (options) => {
-      // navigation.closeDrawer();
-      if (options === strings.registerRefereeTitle) {
-        navigation.navigate('RegisterReferee');
-      } else if (options === strings.registerScorekeeperTitle) {
-        navigation.navigate('RegisterScorekeeper');
-      } else if (options === strings.addSportsTitle) {
-        navigation.navigate('RegisterPlayer');
-      } else if (options === strings.createTeamText) {
-        setCreateEntity(Verbs.entityTypeTeam);
+  const handleSectionMemberClick = useCallback(
+    (rowObj) => {
+      const option = rowObj.option;
 
-        const entity = authContext.entity;
-        if (entity.role === Verbs.entityTypeUser) {
-          setIsRulesModalVisible(false);
-          navigation.navigate('CreateTeamForm1');
-        } else {
-          setIsRulesModalVisible(true);
+      if (authContext.entity.role !== Verbs.entityTypeUser) {
+        setIsRulesModalVisible(
+          option === strings.createTeamText ||
+            option === strings.createClubText,
+        );
+
+        if (option === strings.createTeamText) {
+          setCreateEntity(Verbs.entityTypeTeam);
+        } else if (option === strings.createClubText) {
+          setCreateEntity(Verbs.entityTypeClub);
         }
-      } else if (options === strings.createClubText) {
-        const entity = authContext.entity;
-        setCreateEntity(Verbs.entityTypeClub);
-        if (entity.role === Verbs.entityTypeUser) {
-          navigation.navigate('CreateClubForm1');
-        } else {
-          setIsRulesModalVisible(true);
-        }
-      } else if (options === strings.paymentMethodTitle) {
-        navigation.navigate('Account', {
-          screen: 'PaymentMethodsScreen',
-          params: {
-            comeFrom: 'AccountScreen',
-          },
-        });
-      } else if (options === strings.payoutMethodTitle) {
-        // navigation.navigate('PayoutMethodScreen');
-        navigation.navigate('PayoutMethodList', {comeFrom: 'AccountScreen'});
-      } else if (options === strings.invoicingTitleText) {
-        navigation.navigate('InvoiceScreen');
-        // navigation.navigate('MembersDetailScreen');
-      } else if (options === strings.invoicesTitle) {
-        navigation.navigate('UserInvoiceScreen');
-      } else if (options === strings.transactionsTitles) {
-        // navigation.navigate('InvoiceScreen');
-        Alert.alert('Transaction section');
+      } else {
+        navigation.navigate(
+          rowObj.navigateTo.screenName,
+          rowObj.navigateTo.data,
+        );
       }
     },
     [authContext.entity, navigation],
   );
 
-  console.log('authContext?.entity?.obj', authContext?.entity?.obj);
-
-  const renderSportsList = useCallback(
-    ({item}) => (
-      <TouchableOpacity
-        style={styles.listContainer}
-        onPress={() => {
-          console.log('renderSportsList', item);
-          navigation.navigate('SportAccountSettingScreen', {
-            type: Verbs.entityTypePlayer,
-            sport: item,
-          });
-        }}>
-        <View style={styles.entityTextContainer}>
-          <Image
-            source={getSportIcon(item.sport)}
-            style={styles.accountSportIcon}
-          />
-          <Text style={styles.entityName}>
-            {Utility.getSportName(item, authContext)}
-          </Text>
-        </View>
-        <Image source={images.settingSport} style={styles.nextArrow} />
-      </TouchableOpacity>
-    ),
-    [authContext, navigation],
-  );
-
-  const renderRefereesList = useCallback(
-    ({item}) => (
-      <TouchableOpacity
-        style={styles.listContainer}
-        onPress={() => {
-          console.log('renderRefereesList', item);
-          navigation.navigate('SportAccountSettingScreen', {
-            type: Verbs.entityTypeReferee,
-            sport: item,
-          });
-        }}>
-        <View style={styles.entityTextContainer}>
-          <Image
-            source={getSportIcon(item.sport)}
-            style={styles.accountSportIcon}
-          />
-          <Text style={styles.entityName}>
-            {Utility.firstLetterCapital(item.sport)}
-            {/* {Utility.getSportName(item, authContext)} */}
-          </Text>
-        </View>
-        <Image source={images.settingSport} style={styles.nextArrow} />
-      </TouchableOpacity>
-    ),
-    [navigation],
-  );
-
-  const renderScorekeepersList = useCallback(
-    ({item}) => (
-      <TouchableOpacity
-        style={styles.listContainer}
-        onPress={() => {
-          navigation.navigate('SportAccountSettingScreen', {
-            type: Verbs.entityTypeScorekeeper,
-            sport: item,
-          });
-        }}>
-        <View style={styles.entityTextContainer}>
-          <Image
-            source={getSportIcon(item.sport)}
-            style={styles.accountSportIcon}
-          />
-          <Text style={styles.entityName}>
-            {Utility.firstLetterCapital(item.sport)}
-            {/* {Utility.getSportName(item, authContext)} */}
-          </Text>
-        </View>
-        <Image source={images.settingSport} style={styles.nextArrow} />
-      </TouchableOpacity>
-    ),
-    [],
-  );
-
   const keyExtractorID = useCallback((item, index) => index.toString(), []);
 
-  const renderSwitchProfile = useCallback(
-    ({item}) => (
-      <TouchableWithoutFeedback
-        style={styles.switchProfileListContainer}
-        onPress={() => {
-          onSwitchProfile({item});
-        }}>
-        <View>
-          {item.entity_type === 'player' && (
-            <View style={styles.placeholderView}>
-              <Image
-                source={
-                  item.thumbnail
-                    ? {uri: item.thumbnail}
-                    : images.profilePlaceHolder
-                }
-                style={
-                  item.thumbnail ? styles.playerProfileImg : styles.playerImg
-                }
-              />
-            </View>
-          )}
-          {item.entity_type === Verbs.entityTypeClub && (
-            <View style={styles.placeholderView}>
-              <Image
-                source={
-                  item.thumbnail
-                    ? {uri: item.thumbnail}
-                    : images.clubPlaceholder
-                }
-                style={
-                  item.thumbnail ? styles.entityProfileImg : styles.entityImg
-                }
-              />
-              {item.thumbnail ? null : (
-                <Text style={styles.oneCharacterText}>
-                  {item.group_name.charAt(0).toUpperCase()}
-                </Text>
-              )}
-            </View>
-          )}
-          {item.entity_type === Verbs.entityTypeTeam && (
-            <View style={styles.placeholderView}>
-              <Image
-                source={
-                  item.thumbnail
-                    ? {uri: item.thumbnail}
-                    : images.teamPlaceholder
-                }
-                style={
-                  item.thumbnail ? styles.entityProfileImg : styles.entityImg
-                }
-              />
-              {item.thumbnail ? null : (
-                <Text style={styles.oneCharacterText}>
-                  {item.group_name.charAt(0).toUpperCase()}
-                </Text>
-              )}
-            </View>
-          )}
-          {/*
-			{item.unread > 0 && (
-			  <View
-				style={
-				  item.thumbnail
-					? [styles.badgeView, { right: 10, top: 15 }]
-					: [
-						styles.badgeView,
-						{
-						  right: 10,
-						  top: 10,
-  
-						},
-				]
-				}>
-				<Text
-				  style={{
-					...styles.badgeCounter,
-					...(item.unread > 9 ? { paddingHorizontal: 5 } : { width: 15 }),
-				  }}>
-				  {item.unread > 9 ? `+${9}` : item.unread}
-				</Text>
-			  </View>
-			)} */}
-
-          {item.unread > 0 && (
-            <View
-              style={
-                item.thumbnail
-                  ? [styles.badgeView, {right: 10, top: 15}]
-                  : [
-                      styles.badgeView,
-                      {
-                        right: 10,
-                        top: 10,
-                      },
-                    ]
-              }>
-              <Text
-                style={{
-                  ...styles.badgeCounter,
-                  ...(item.unread > 9 ? {paddingHorizontal: 5} : {width: 15}),
-                }}>
-                {item.unread > 9 ? strings.ninePlus : item.unread}
-              </Text>
-            </View>
-          )}
-        </View>
-
-        <View style={styles.textContainer}>
-          {item.entity_type === Verbs.entityTypePlayer && (
-            <Text style={styles.entityNameText}>{item.full_name}</Text>
-          )}
-          {item.entity_type === Verbs.entityTypeTeam && (
-            <Text style={styles.entityNameText}>{item.group_name}</Text>
-          )}
-          {item.entity_type === Verbs.entityTypeClub && (
-            <Text style={styles.entityNameText}>{item.group_name}</Text>
-          )}
-          <Text style={styles.entityLocationText}>
-            {item.city},{item.state_abbr}
-          </Text>
-        </View>
-      </TouchableWithoutFeedback>
-    ),
-    [onSwitchProfile],
+  const renderSwitchProfileRows = ({item}) => (
+    <TCSwitchProfileRow
+      item={item}
+      onPress={() => {
+        setTimeout(() => {
+          setLoading(true);
+        }, 10);
+        setAccountMenu([]);
+        onSwitchProfile({item});
+      }}
+    />
   );
 
-  const renderEntityList = useCallback(
-    ({item}) => (
-      <View>
-        <TouchableWithoutFeedback
-          disabled={!item?.group_id}
-          style={styles.listContainer}
-          onPress={() => {
-            const uid =
-              item?.entity_type === Verbs.entityTypePlayer
-                ? item?.user_id
-                : item?.group_id;
-            if (uid && item?.entity_type) {
-              navigation.navigate('HomeScreen', {
-                uid,
-                backButtonVisible: true,
-                role:
-                  item?.entity_type === Verbs.entityTypePlayer
-                    ? Verbs.entityTypeUser
-                    : item?.entity_type,
-              });
-            }
-          }}>
-          <View style={styles.entityTextContainer}>
-            <View style={styles.smallProfileContainer}>
-              {item?.entity_type === Verbs.entityTypeTeam && (
-                <Image
-                  source={
-                    item?.thumbnail
-                      ? {uri: item?.thumbnail}
-                      : images.teamPlaceholder
-                  }
-                  style={styles.smallProfileImg}
-                />
-              )}
-              {item?.entity_type === Verbs.entityTypeClub && (
-                <Image
-                  source={
-                    item.thumbnail
-                      ? {uri: item.thumbnail}
-                      : images.clubPlaceholder
-                  }
-                  style={styles.smallProfileImg}
-                />
-              )}
-            </View>
-
-            <Text
-              style={
-                item?.group_name?.length > 26
-                  ? [styles.entityName, {width: wp('50%')}]
-                  : styles.entityName
-              }
-              numberOfLines={1}>
-              {item?.group_name}
-            </Text>
-            <Text style={styles.teamSportView}>
-              {' '}
-              {Utility.getSportName(item, authContext)}
-            </Text>
-          </View>
-          {/* <Image source={images.nextArrow} style={styles.nextArrow} /> */}
-        </TouchableWithoutFeedback>
-        {!item?.group_id && (
-          <TouchableWithoutFeedback
-            onPress={() => oncalcelTeamRequest('cancel', item?.request_id)}>
-            <View style={styles.buttonView}>
-              <Text style={styles.textStyle} numberOfLines={1}>
-                {strings.cancelRequestText}
-              </Text>
-            </View>
-          </TouchableWithoutFeedback>
-        )}
-      </View>
+  const renderAccountMenuRows = useCallback(
+    (rowItem) => (
+      <AccountMenuRow
+        item={rowItem}
+        isAccountDeactivated={isAccountDeactivated}
+        onPress={() => handleSectionMemberClick(rowItem)}
+        onPressCancelRequest={() =>
+          onCancelTeamRequest('cancel', rowItem?.option?.request_id)
+        }
+      />
     ),
-    [navigation],
-  );
-
-  const renderTeamsList = useCallback(
-    ({item}) => (
-      <TouchableWithoutFeedback
-        style={styles.listContainer}
-        onPress={() => {
-          navigation.navigate('HomeScreen', {
-            uid: item.group_id,
-            role: item.entity_type,
-            backButtonVisible: true,
-            menuBtnVisible: false,
-          });
-        }}>
-        <View style={styles.entityTextContainer}>
-          <View style={styles.smallProfileContainer}>
-            <Image
-              source={
-                item.thumbnail ? {uri: item.thumbnail} : images.teamPlaceholder
-              }
-              style={styles.smallProfileImg}
-            />
-          </View>
-          <Text style={styles.entityName}>{item?.group_name}</Text>
-          <Text
-            style={
-              item.entity_type === Verbs.entityTypeTeam
-                ? styles.teamSportView
-                : styles.clubSportView
-            }>
-            {' '}
-            {item.sport}
-          </Text>
-        </View>
-        <Image source={images.nextArrow} style={styles.nextArrow} />
-      </TouchableWithoutFeedback>
-    ),
-    [],
-  );
-
-  const renderMenuItems = useCallback(
-    (rowItem, rowId, sectionId) => (
-      <View>
-        {authContext.entity.role === Verbs.entityTypeUser &&
-          sectionId === 1 &&
-          !isAccountDeactivated && (
-            <FlatList
-              style={{marginVertical: 10}}
-              data={authContext?.entity?.obj?.registered_sports?.filter(
-                (obj) => obj?.sport && obj?.sport_type,
-              )}
-              keyExtractor={keyExtractorID}
-              renderItem={renderSportsList}
-              ItemSeparatorComponent={() => (
-                <View style={styles.subItemSeparator} />
-              )}
-              scrollEnabled={false}
-            />
-          )}
-        {authContext.entity.role === Verbs.entityTypeUser &&
-          sectionId === 2 &&
-          !isAccountDeactivated && (
-            <FlatList
-              style={{marginVertical: 10}}
-              data={authContext?.entity?.obj?.referee_data}
-              keyExtractor={keyExtractorID}
-              renderItem={renderRefereesList}
-              ItemSeparatorComponent={() => (
-                <View style={styles.subItemSeparator} />
-              )}
-              scrollEnabled={false}
-            />
-          )}
-        {authContext.entity.role === Verbs.entityTypeUser &&
-          sectionId === 3 &&
-          !isAccountDeactivated && (
-            <FlatList
-              style={{marginVertical: 10}}
-              data={authContext?.entity?.obj?.scorekeeper_data}
-              keyExtractor={keyExtractorID}
-              renderItem={renderScorekeepersList}
-              ItemSeparatorComponent={() => (
-                <View style={styles.subItemSeparator} />
-              )}
-              scrollEnabled={false}
-            />
-          )}
-        {authContext.entity.role === Verbs.entityTypeUser &&
-          !isAccountDeactivated &&
-          (sectionId === 4 || sectionId === 5) && (
-            <FlatList
-              style={{marginVertical: 10}}
-              data={sectionId === 4 ? teamList : clubList}
-              keyExtractor={keyExtractorID}
-              renderItem={renderEntityList}
-              ItemSeparatorComponent={() => (
-                <View style={styles.subItemSeparator} />
-              )}
-              scrollEnabled={false}
-            />
-          )}
-        {authContext.entity.role === Verbs.entityTypeTeam &&
-          !isAccountDeactivated &&
-          sectionId === 3 && (
-            <FlatList
-              style={{marginVertical: 10}}
-              data={clubList}
-              keyExtractor={keyExtractorID}
-              renderItem={renderEntityList}
-              ItemSeparatorComponent={() => (
-                <View style={styles.subItemSeparator} />
-              )}
-              scrollEnabled={false}
-            />
-          )}
-
-        {authContext.entity.role === Verbs.entityTypeClub &&
-          sectionId === 1 &&
-          !isAccountDeactivated && (
-            <FlatList
-              style={{marginVertical: 10}}
-              data={teamList}
-              keyExtractor={keyExtractorID}
-              renderItem={renderTeamsList}
-              ItemSeparatorComponent={() => (
-                <View style={styles.subItemSeparator} />
-              )}
-              scrollEnabled={false}
-            />
-          )}
-
-        {!isAccountDeactivated && (
-          <TouchableWithoutFeedback
-            style={styles.listContainer}
-            onPress={() => {
-              handleOptions(rowItem.opetions);
-            }}>
-            {rowItem.opetions === strings.addSportsTitle && (
-              <Image source={images.addSport} style={styles.subMenuItem} />
-            )}
-            {rowItem.opetions === strings.registerRefereeTitle && (
-              <Image
-                source={images.registerReferee}
-                style={styles.subMenuItem}
-              />
-            )}
-            {rowItem.opetions === strings.registerScorekeeperTitle && (
-              <Image
-                source={images.registerScorekeeper}
-                style={styles.subMenuItem}
-              />
-            )}
-            {rowItem.opetions === strings.createTeamText && (
-              <Image source={images.createTeam} style={styles.subMenuItem} />
-            )}
-            {rowItem.opetions === strings.createClubText && (
-              <Image source={images.createClub} style={styles.subMenuItem} />
-            )}
-            {rowItem.opetions === strings.createLeagueText && (
-              <Image source={images.createLeague} style={styles.subMenuItem} />
-            )}
-            <View style={{marginVertical: 5}}>
-              {rowItem.opetions === strings.paymentMethodTitle && (
-                <Image
-                  source={images.Payment_method}
-                  style={{...styles.subMenuItem}}
-                />
-              )}
-
-              {rowItem.opetions === strings.payoutMethodTitle && (
-                <Image
-                  source={images.Payout_method}
-                  style={{...styles.subMenuItem}}
-                />
-              )}
-              {rowItem.opetions === strings.invoicingTitleText && (
-                <Image
-                  source={images.Invoicing}
-                  style={{...styles.subMenuItem}}
-                />
-              )}
-              {rowItem.opetions === strings.invoicesTitle && (
-                <Image
-                  source={images.Invoicing}
-                  style={{...styles.subMenuItem}}
-                />
-              )}
-              {rowItem.opetions === strings.transactionsTitles && (
-                <Image
-                  source={images.Transations}
-                  style={{...styles.subMenuItem}}
-                />
-              )}
-            </View>
-            <Text style={styles.listItems}>{rowItem.opetions}</Text>
-            <Image source={images.nextArrow} style={styles.nextArrow} />
-          </TouchableWithoutFeedback>
-        )}
-      </View>
-    ),
-    [
-      authContext.entity?.obj?.referee_data,
-      authContext.entity?.obj?.registered_sports,
-      authContext.entity?.obj?.scorekeeper_data,
-      authContext.entity.role,
-      clubList,
-      handleOptions,
-      isAccountDeactivated,
-      keyExtractorID,
-      renderEntityList,
-      renderRefereesList,
-      renderScorekeepersList,
-      renderSportsList,
-      renderTeamsList,
-      teamList,
-    ],
+    [handleSectionMemberClick, isAccountDeactivated],
   );
 
   let placeHolder = images.teamSqure;
@@ -1252,75 +458,18 @@ export default function AccountScreen({navigation}) {
     placeHolder = images.profilePlaceHolder;
   }
 
-  const onNextPressed = () => {
+  const onNextPressOnRuleModal = () => {
     setIsRulesModalVisible(false);
-    const entity = authContext.entity;
     if (createEntity === Verbs.entityTypeTeam) {
-      if (entity.role === Verbs.entityTypeUser) {
-        navigation.navigate('CreateTeamForm1');
-      }
-      if (entity.role === Verbs.entityTypeClub) {
-        navigation.navigate('CreateTeamForm1', {clubObject: group});
-      }
+      navigation.navigate('CreateTeamForm1', {clubObject: group});
     }
     if (createEntity === Verbs.entityTypeClub) {
       navigation.navigate('CreateClubForm1');
     }
   };
 
-  const renderSports = ({item}) => (
-    <TouchableOpacity
-      style={styles.listItem}
-      onPress={() => {
-        setSportsSelection(item);
-        setVisibleSportsModal(false);
-        setTimeout(() => {
-          if (clickedUserType === Verbs.entityTypeUser) {
-            navigation.navigate('ManageChallengeScreen', {
-              groupObj: authContext.entity.obj,
-              sportName: item.sport,
-              sportType: item.sport_type,
-            });
-          }
-          if (clickedUserType === Verbs.entityTypeReferee) {
-            navigation.navigate('RefereeReservationSetting', {
-              sportName: item.sport,
-            });
-          }
-          if (clickedUserType === Verbs.entityTypeScorekeeper) {
-            navigation.navigate('ScorekeeperReservationSetting', {
-              sportName: item.sport,
-            });
-          }
-        }, 300);
-      }}>
-      <View
-        style={{
-          padding: 20,
-          alignItems: 'center',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-        }}>
-        <Text style={styles.languageList}>
-          {Utility.getSportName(item, authContext)}
-        </Text>
-        <View style={styles.checkbox}>
-          {sportsSelection?.sport === item?.sport &&
-          sportsSelection?.sport_type === item?.sport_type ? (
-            <Image
-              source={images.radioCheckYellow}
-              style={styles.checkboxImg}
-            />
-          ) : (
-            <Image source={images.radioUnselect} style={styles.checkboxImg} />
-          )}
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
-
   const unPauseGroup = () => {
-    setloading(true);
+    setLoading(true);
     groupUnpaused(authContext)
       .then((response) => {
         setIsAccountDeactivated(false);
@@ -1335,15 +484,15 @@ export default function AccountScreen({navigation}) {
           authContext,
         )
           .then(() => {
-            setloading(false);
+            setLoading(false);
           })
           .catch((error) => {
             console.log('QB error : ', error);
-            setloading(false);
+            setLoading(false);
           });
       })
       .catch((e) => {
-        setloading(false);
+        setLoading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
@@ -1351,7 +500,7 @@ export default function AccountScreen({navigation}) {
   };
 
   const reActivateUser = () => {
-    setloading(true);
+    setLoading(true);
     userActivate(authContext)
       .then((response) => {
         const accountType = getQBAccountType(response?.payload?.entity_type);
@@ -1363,15 +512,15 @@ export default function AccountScreen({navigation}) {
           authContext,
         )
           .then(() => {
-            setloading(false);
+            setLoading(false);
           })
           .catch((error) => {
             console.log('QB error : ', error);
-            setloading(false);
+            setLoading(false);
           });
       })
       .catch((e) => {
-        setloading(false);
+        setLoading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
@@ -1444,35 +593,7 @@ export default function AccountScreen({navigation}) {
             justifyContent: 'space-between',
             alignItems: 'center',
           }}>
-          {parentGroup ? (
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-              }}>
-              <Image source={images.clubLable} style={styles.clubLableView} />
-              <View
-                style={{
-                  flexDirection: 'row',
-                  marginLeft: 10,
-                }}>
-                <TCNavigationHeader
-                  name={parentGroup?.group_name}
-                  groupType={Verbs.entityTypeClub}
-                  image={parentGroup?.thumbnail}
-                />
-              </View>
-            </View>
-          ) : (
-            <View />
-          )}
-          {/* <View>
-			  <TouchableOpacity onPress={() => {
-				// navigation.closeDrawer()
-			  }} >
-				<Image source={images.menuClose} style={styles.closeMenu}/>
-			  </TouchableOpacity>
-			</View> */}
+          <View />
         </View>
         {authContext.entity.role === Verbs.entityTypeUser && (
           <View style={styles.profileView}>
@@ -1520,26 +641,6 @@ export default function AccountScreen({navigation}) {
                       alignItems: 'center',
                       marginRight: 10,
                     }}>
-                    {/* <MarqueeText
-                      style={
-                        authContext?.entity?.obj?.background_thumbnail
-                          ? [styles.nameText, {alignSelf: 'flex-start'}]
-                          : [
-                              styles.nameText,
-                              {
-                                alignSelf: 'flex-start',
-                                color: colors.lightBlackColor,
-                              },
-                            ]
-                      }
-                      duration={3000}
-                      marqueeOnStart
-                      loop={true}
-                      // marqueeDelay={0}
-                      // marqueeResetDelay={1000}
-                    >
-                      {authContext?.entity?.obj?.full_name || ''}
-                    </MarqueeText> */}
                     <Text
                       style={
                         authContext?.entity?.obj?.background_thumbnail
@@ -1675,23 +776,6 @@ export default function AccountScreen({navigation}) {
                         alignItems: 'center',
                         marginRight: 10,
                       }}>
-                      {/* <MarqueeText
-                      style={
-                        authContext?.entity?.obj?.background_thumbnail
-                          ? [styles.nameText, {alignSelf: 'flex-start'}]
-                          : [
-                              styles.nameText,
-                              {
-                                alignSelf: 'flex-start',
-                                color: colors.lightBlackColor,
-                              },
-                            ]
-                      }
-                      duration={3000}
-                      marqueeOnStart
-                      loop={true}>
-                      {authContext?.entity?.obj?.group_name}
-                    </MarqueeText> */}
                       <Text
                         style={
                           authContext?.entity?.obj?.background_thumbnail
@@ -1824,23 +908,6 @@ export default function AccountScreen({navigation}) {
                         alignItems: 'center',
                         marginRight: 10,
                       }}>
-                      {/* <MarqueeText
-                      style={
-                        authContext?.entity?.obj?.background_thumbnail
-                          ? [styles.nameText, {alignSelf: 'flex-start'}]
-                          : [
-                              styles.nameText,
-                              {
-                                alignSelf: 'flex-start',
-                                color: colors.lightBlackColor,
-                              },
-                            ]
-                      }
-                      duration={3000}
-                      marqueeOnStart
-                      loop={true}>
-                      {authContext?.entity?.obj?.group_name}
-                    </MarqueeText> */}
                       <Text
                         style={
                           authContext?.entity?.obj?.background_thumbnail
@@ -1907,20 +974,16 @@ export default function AccountScreen({navigation}) {
         )}
 
         <ExpanableList
-          dataSource={
-            (authContext.entity.role === Verbs.entityTypeTeam && teamMenu) ||
-            (authContext.entity.role === Verbs.entityTypeClub && clubMenu) ||
-            (authContext.entity.role === Verbs.entityTypeUser && userMenu)
-          }
+          dataSource={accountMenu}
           style={{marginTop: 15}}
           headerKey={'key'}
           memberKey="member"
-          renderRow={renderMenuItems}
+          renderRow={renderAccountMenuRows}
           ItemSeparatorComponent={() => (
             <View style={styles.halfSeparatorLine} />
           )}
           renderSectionHeaderX={(section, sectionID, isSectionOpen) => {
-            const secData = userMenu?.find((item) => item.key === section);
+            const secData = accountMenu.find((item) => item.key === section);
             return (
               <View
                 style={{
@@ -1938,7 +1001,7 @@ export default function AccountScreen({navigation}) {
                   }
                   style={styles.listContainer}
                   onPress={() => {
-                    handleSections(section);
+                    handleSectionClick(secData);
                   }}>
                   <View
                     style={{
@@ -1946,86 +1009,15 @@ export default function AccountScreen({navigation}) {
                       alignItems: 'center',
                       justifyContent: 'center',
                     }}>
-                    {section === strings.reservationsTitleText && (
-                      <Image
-                        source={images.accountMySchedule}
-                        style={{...styles.menuItem}}
-                      />
-                    )}
-                    {section === strings.playingTitleText && (
-                      <Image
-                        source={images.accountMySports}
-                        style={{...styles.menuItem}}
-                      />
-                    )}
-                    {section === strings.refereeingTitleText && (
-                      <Image
-                        source={images.accountMyRefereeing}
-                        style={{...styles.menuItem}}
-                      />
-                    )}
-                    {section === strings.scorekeepingTitleText && (
-                      <Image
-                        source={images.accountMyScoreKeeping}
-                        style={{...styles.menuItem}}
-                      />
-                    )}
-                    {section === strings.teamstitle && (
-                      <Image
-                        source={images.accountMyTeams}
-                        style={{...styles.menuItem}}
-                      />
-                    )}
-                    {section === strings.clubstitle && (
-                      <Image
-                        source={images.accountMyClubs}
-                        style={{...styles.menuItem}}
-                      />
-                    )}
-                    {section === strings.leaguesTitle && (
-                      <Image
-                        source={images.accountMyLeagues}
-                        style={{...styles.menuItem}}
-                      />
-                    )}
-                    {section === strings.challengeSettingText && (
-                      <Image
-                        source={images.manageChallengeIcon}
-                        style={styles.menuItem}
-                      />
-                    )}
-
-                    {section === strings.paymentPayoutText && (
-                      <Image
-                        source={images.accountPaymentPayout}
-                        style={{...styles.menuItem}}
-                      />
-                    )}
-
-                    {section === strings.settingsTitleText && (
-                      <Image
-                        source={images.accountSettingPrivacy}
-                        style={{...styles.menuItem}}
-                      />
-                    )}
-
-                    {section === strings.logOut && (
-                      <Image
-                        source={images.logoutIcon}
-                        style={{...styles.menuItem}}
-                      />
-                    )}
-                    {section === strings.membersTitle && (
-                      <Image
-                        source={images.Members}
-                        style={{...styles.menuItem}}
-                      />
-                    )}
+                    <Image
+                      source={secData?.icon}
+                      style={{...styles.menuItem}}
+                    />
                   </View>
                   <Text accessibilityLabel={section} style={styles.listItems}>
                     {section}
                   </Text>
-                  {section !== strings.logOut && (
+                  {
                     <>
                       {secData?.member ? (
                         <Image
@@ -2044,14 +1036,14 @@ export default function AccountScreen({navigation}) {
                         />
                       )}
                     </>
-                  )}
+                  }
                 </TouchableWithoutFeedback>
               </View>
             );
           }}
         />
 
-        {groupList.length > 0 && (
+        {managedEntities.length > 0 && (
           <>
             <View style={styles.separatorView}></View>
             <View style={{flexDirection: 'row'}}>
@@ -2064,9 +1056,9 @@ export default function AccountScreen({navigation}) {
           </>
         )}
         <FlatList
-          data={groupList}
+          data={managedEntities}
           keyExtractor={keyExtractorID}
-          renderItem={renderSwitchProfile}
+          renderItem={renderSwitchProfileRows}
           scrollEnabled={false}
         />
         <View style={styles.separatorView} />
@@ -2081,6 +1073,7 @@ export default function AccountScreen({navigation}) {
         </TouchableWithoutFeedback>
       </ScrollView>
       {/* Rules notes modal */}
+
       <Modal
         isVisible={isRulesModalVisible}
         onBackdropPress={() => setIsRulesModalVisible(false)}
@@ -2092,37 +1085,9 @@ export default function AccountScreen({navigation}) {
         style={{
           margin: 0,
         }}>
-        <SafeAreaView
-          style={{
-            height: Dimensions.get('window').height / 1.7,
-            backgroundColor: 'white',
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            borderTopLeftRadius: 30,
-            borderTopRightRadius: 30,
-            shadowColor: '#000',
-            shadowOffset: {width: 0, height: 1},
-            shadowOpacity: 0.5,
-            shadowRadius: 5,
-            elevation: 15,
-          }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              paddingHorizontal: 15,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            <Text
-              style={{
-                alignSelf: 'center',
-                marginVertical: 20,
-                fontSize: 16,
-                fontFamily: fonts.RBold,
-                color: colors.lightBlackColor,
-              }}>
+        <SafeAreaView style={styles.modalViewContainer}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalTitle}>
               {createEntity === Verbs.entityTypeClub
                 ? strings.createClubText
                 : strings.createTeamText}
@@ -2143,174 +1108,17 @@ export default function AccountScreen({navigation}) {
               {strings.adminOfTeamWillClubAdminText}
             </Text>
           </View>
-          <TCGradientButton title={strings.nextTitle} onPress={onNextPressed} />
-        </SafeAreaView>
-      </Modal>
-
-      {/* Rules notes modal */}
-
-      <Modal
-        isVisible={visibleSportsModal}
-        onBackdropPress={() => setVisibleSportsModal(false)}
-        onRequestClose={() => setVisibleSportsModal(false)}
-        animationInTiming={300}
-        animationOutTiming={800}
-        backdropTransitionInTiming={300}
-        backdropTransitionOutTiming={800}
-        style={{
-          margin: 0,
-        }}>
-        <View
-          style={{
-            width: '100%',
-            height: Dimensions.get('window').height / 1.3,
-            backgroundColor: 'white',
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            borderTopLeftRadius: 30,
-            borderTopRightRadius: 30,
-            shadowColor: '#000',
-            shadowOffset: {width: 0, height: 1},
-            shadowOpacity: 0.5,
-            shadowRadius: 5,
-            elevation: 15,
-          }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              paddingHorizontal: 15,
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}>
-            <TouchableOpacity
-              hitSlop={Utility.getHitSlop(15)}
-              style={styles.closeButton}
-              onPress={() => setVisibleSportsModal(false)}>
-              <Image source={images.cancelImage} style={styles.closeButton} />
-            </TouchableOpacity>
-            <Text
-              style={{
-                alignSelf: 'center',
-                marginVertical: 20,
-                fontSize: 16,
-                fontFamily: fonts.RBold,
-                color: colors.lightBlackColor,
-              }}>
-              {strings.sportsTitleText}
-            </Text>
-
-            <Text
-              style={{
-                alignSelf: 'center',
-                marginVertical: 20,
-                fontSize: 16,
-                fontFamily: fonts.RRegular,
-                color: colors.themeColor,
-              }}></Text>
-          </View>
-          <View style={styles.separatorLine} />
-          <FlatList
-            ItemSeparatorComponent={() => <TCThinDivider />}
-            data={
-              (clickedUserType === Verbs.entityTypeUser &&
-                authContext?.entity?.obj?.registered_sports?.filter(
-                  (obj) =>
-                    obj?.sport &&
-                    obj?.sport_type &&
-                    obj.sport_type === 'single',
-                )) ||
-              (clickedUserType === Verbs.entityTypeReferee &&
-                authContext?.entity?.obj?.referee_data) ||
-              (clickedUserType === Verbs.entityTypeScorekeeper &&
-                authContext?.entity?.obj?.scorekeeper_data)
-            }
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={renderSports}
+          <TCGradientButton
+            title={strings.nextTitle}
+            onPress={onNextPressOnRuleModal}
           />
-        </View>
+        </SafeAreaView>
       </Modal>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  badgeCounter: {
-    alignSelf: 'center',
-    color: colors.whiteColor,
-    fontFamily: fonts.RRegular,
-    fontSize: 10,
-    textAlign: 'center',
-    textAlignVertical: 'center',
-  },
-  badgeView: {
-    backgroundColor: colors.darkThemeColor,
-    borderRadius: 10,
-    height: 15,
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'absolute',
-    elevation: 3,
-  },
-
-  clubLableView: {
-    height: 34,
-    width: 230,
-    resizeMode: 'cover',
-    // backgroundColor: colors.themeColor,
-    position: 'absolute',
-    alignSelf: 'center',
-    // marginLeft:20,
-  },
-
-  clubSportView: {
-    color: colors.greeColor,
-    fontFamily: fonts.RRegular,
-    fontSize: 12,
-  },
-
-  entityImg: {
-    alignSelf: 'center',
-    borderRadius: 25,
-    height: 50,
-    margin: 15,
-    resizeMode: 'cover',
-    width: 50,
-  },
-  entityProfileImg: {
-    alignSelf: 'center',
-    borderRadius: 25,
-    height: 36,
-    margin: 15,
-    resizeMode: 'cover',
-    width: 36,
-  },
-  entityLocationText: {
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RLight,
-    fontSize: 14,
-    marginTop: 5,
-  },
-  entityName: {
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RMedium,
-    fontSize: 16,
-  },
-  entityNameText: {
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RBold,
-    fontSize: 16,
-  },
-
-  entityTextContainer: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    height: 55,
-    justifyContent: 'center',
-    marginLeft: 30,
-    marginRight: 20,
-    // width: wp('86%'),
-  },
   halfSeparatorLine: {
     alignSelf: 'center',
     backgroundColor: colors.grayBackgroundColor,
@@ -2324,11 +1132,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     flexDirection: 'row',
   },
-  switchProfileListContainer: {
-    flex: 1,
-    marginLeft: 20,
-    flexDirection: 'row',
-  },
+
   listItems: {
     flex: 1,
     marginLeft: 5,
@@ -2372,48 +1176,6 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
 
-  oneCharacterText: {
-    // alignSelf:'center',
-    position: 'absolute',
-    fontSize: 12,
-    fontFamily: fonts.RBlack,
-    color: colors.whiteColor,
-    paddingBottom: 5,
-  },
-  placeholderView: {
-    alignItems: 'center',
-    alignSelf: 'center',
-    borderRadius: 25,
-    height: 40,
-    backgroundColor: colors.whiteColor,
-    justifyContent: 'center',
-    margin: 15,
-    width: 40,
-    shadowColor: colors.blackColor,
-    shadowOffset: {width: 0, height: 1.5},
-    shadowOpacity: 0.16,
-    shadowRadius: 3,
-    elevation: 1.5,
-  },
-  playerImg: {
-    alignSelf: 'center',
-    borderColor: colors.offwhite,
-    borderRadius: 25,
-
-    borderWidth: 3,
-    height: 40,
-    margin: 15,
-    resizeMode: 'cover',
-    width: 40,
-  },
-  playerProfileImg: {
-    alignSelf: 'center',
-    borderRadius: 20,
-    height: 36,
-    margin: 15,
-    resizeMode: 'cover',
-    width: 36,
-  },
   profileImageContainer: {
     height: 55,
     width: 55,
@@ -2434,14 +1196,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     borderRadius: 25,
   },
-  // closeMenu: {
-  //   height: 14,
-  //   width: 14,
-  //   resizeMode: 'cover',
-  //   alignSelf: 'center',
-  //   marginRight: 20,
-  // },
-
   profileView: {
     height: 100,
     justifyContent: 'center',
@@ -2465,47 +1219,7 @@ const styles = StyleSheet.create({
     height: 7,
     width: wp('100%'),
   },
-  smallProfileContainer: {
-    justifyContent: 'center',
-    backgroundColor: colors.whiteColor,
-    margin: 15,
-    alignSelf: 'center',
-    borderRadius: 15,
-    height: 23,
-    width: 23,
-    resizeMode: 'cover',
-    shadowColor: colors.blackColor,
-    shadowOpacity: 0.16,
-    shadowOffset: {width: 0, height: 1.5},
-    shadowRadius: 3,
-    elevation: 1.5,
-  },
-  smallProfileImg: {
-    alignSelf: 'center',
-    borderColor: colors.offwhite,
-    borderRadius: 15,
 
-    borderWidth: 1,
-    height: 20,
-    margin: 15,
-    resizeMode: 'cover',
-    width: 20,
-  },
-  accountSportIcon: {
-    alignSelf: 'center',
-    height: 40,
-    margin: 15,
-    marginRight: 5,
-    resizeMode: 'contain',
-    width: 40,
-  },
-  subMenuItem: {
-    alignSelf: 'center',
-    height: 40,
-    marginLeft: 45,
-    resizeMode: 'contain',
-    width: 40,
-  },
   switchAccount: {
     fontFamily: fonts.RRegular,
     flex: 1,
@@ -2522,15 +1236,7 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     width: 40,
   },
-  teamSportView: {
-    color: colors.greeColor,
-    fontFamily: fonts.RRegular,
-    fontSize: 12,
-  },
-  textContainer: {
-    height: 80,
-    justifyContent: 'center',
-  },
+
   headerRightImg: {
     height: 25,
     width: 25,
@@ -2575,54 +1281,32 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
   },
 
-  closeButton: {
-    alignSelf: 'center',
-    width: 13,
-    height: 13,
-    marginLeft: 5,
-    resizeMode: 'contain',
+  modalViewContainer: {
+    height: Dimensions.get('window').height / 1.7,
+    backgroundColor: 'white',
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 1},
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
+    elevation: 15,
   },
-
-  languageList: {
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RRegular,
-    fontSize: wp('4%'),
-  },
-  checkboxImg: {
-    width: 22,
-    height: 22,
-    resizeMode: 'contain',
-    alignSelf: 'center',
-  },
-  subItemSeparator: {
-    marginLeft: 40,
-    marginRight: 20,
-    height: 1,
-    backgroundColor: colors.grayBackgroundColor,
-  },
-  buttonView: {
-    marginTop: 2,
+  modalView: {
     flexDirection: 'row',
-    alignItems: 'center',
+    paddingHorizontal: 15,
     justifyContent: 'center',
-    borderRadius: 5,
-    height: 25,
-    width: '30%',
-    marginBottom: 5,
-    marginLeft: 80,
-    backgroundColor: colors.whiteColor,
-    paddingHorizontal: 5,
-    shadowColor: colors.blackColor,
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
+    alignItems: 'center',
   },
-  textStyle: {
+  modalTitle: {
     alignSelf: 'center',
-    fontFamily: fonts.RMedium,
-    fontSize: 12,
-    textAlign: 'center',
+    marginVertical: 20,
+    fontSize: 16,
+    fontFamily: fonts.RBold,
     color: colors.lightBlackColor,
   },
 });

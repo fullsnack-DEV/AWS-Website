@@ -92,7 +92,7 @@ export default function CreateTeamForm1({navigation, route}) {
           setVisibleSportsModal(false);
           if (
             item?.sport === Verbs.tennisSport &&
-            item?.sport_type === Verbs.doubleSports &&
+            item?.sport_type === Verbs.doubleSport &&
             authContext?.entity?.role ===
               (Verbs.entityTypeUser || Verbs.entityTypePlayer)
           ) {
@@ -138,10 +138,9 @@ export default function CreateTeamForm1({navigation, route}) {
     let sportArr = [];
 
     authContext.sports.map((item) => {
+      console.log('itttem', item);
       const filterFormat = item.format.filter(
-        (obj) =>
-          obj.entity_type === Verbs.entityTypeTeam &&
-          obj.sport_type !== Verbs.doubleSport,
+        (obj) => obj.entity_type === Verbs.entityTypeTeam,
       );
       sportArr = [...sportArr, ...filterFormat];
       return null;
