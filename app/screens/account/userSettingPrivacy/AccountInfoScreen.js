@@ -19,8 +19,7 @@ import {
 import firebase from '@react-native-firebase/app';
 
 import {useIsFocused} from '@react-navigation/native';
-
-import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
+import TCTextField from '../../../components/TCTextField';
 import {QBLogout} from '../../../utils/QuickBlox';
 import AuthContext from '../../../auth/context';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
@@ -31,9 +30,9 @@ import fonts from '../../../Constants/Fonts';
 import TCLabel from '../../../components/TCLabel';
 import Header from '../../../components/Home/Header';
 import TCKeyboardView from '../../../components/TCKeyboardView';
-import TCTextField from '../../../components/TCTextField';
-import {clearStorage} from '../../../utils';
+import {clearStorage, widthPercentageToDP} from '../../../utils';
 import {updateUserProfile} from '../../../api/Users';
+import TCProfileButton from '../../../components/TCProfileButton';
 
 export default function AccountInfoScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
@@ -41,9 +40,10 @@ export default function AccountInfoScreen({navigation, route}) {
 
   // For activity indigator
   const [loading, setloading] = useState(false);
+  const [showEmailBox, setShowEmailBox] = useState(false);
+
   const [userInfo, setUserInfo] = useState(authContext.entity.obj);
   const [oldPassword, setOldPassword] = useState('');
-
   const [city, setCity] = useState(
     route?.params?.city ? route?.params?.city : authContext?.entity?.obj?.city,
   );
@@ -191,14 +191,18 @@ export default function AccountInfoScreen({navigation, route}) {
           </Text>
         }
         rightComponent={
-          <Text
-            style={styles.headerRightButton}
-            numberOfLines={1}
-            onPress={() => {
-              onSavePress();
-            }}>
-            {strings.update}
-          </Text>
+          showEmailBox ? (
+            <Text
+              style={styles.headerRightButton}
+              numberOfLines={1}
+              onPress={() => {
+                onSavePress();
+              }}>
+              {strings.update}
+            </Text>
+          ) : (
+            <View />
+          )
         }
       />
       <View
@@ -211,27 +215,39 @@ export default function AccountInfoScreen({navigation, route}) {
       <TCKeyboardView>
         <ActivityLoader visible={loading} />
         <TCLabel title={strings.email} />
+        <View style={styles.emailTextContainer}>
+          <Text style={styles.emailText}>{userInfo.email}</Text>
+          <TCProfileButton
+            title={strings.editEmail}
+            onPressProfile={() => setShowEmailBox(!showEmailBox)}
+            showArrow={false}
+          />
+        </View>
 
-        <TCTextField
-          style={styles.textFieldStyle}
-          placeholder={strings.emailPlaceHolder}
-          placeholderTextColor={colors.darkYellowColor}
-          autoCapitalize="none"
-          keyboardType="email-address"
-          onChangeText={(text) => setUserInfo({...userInfo, email: text})}
-          value={userInfo.email}
-        />
+        {showEmailBox && (
+          <View>
+            <TCTextField
+              style={styles.textFieldStyle}
+              placeholder={strings.emailPlaceHolder}
+              placeholderTextColor={colors.darkYellowColor}
+              autoCapitalize="none"
+              keyboardType="email-address"
+              onChangeText={(text) => setUserInfo({...userInfo, email: text})}
+              value={userInfo.email}
+            />
 
-        <TCTextField
-          style={styles.textFieldStyle}
-          placeholder={strings.passwordPlaceHolder}
-          // placeholderTextColor={colors.darkYellowColor}
-          autoCapitalize="none"
-          secureText={true}
-          onChangeText={(text) => setOldPassword(text)}
-          value={oldPassword}
-          textStyle={{color: colors.lightBlackColor}}
-        />
+            <TCTextField
+              style={styles.textFieldStyle}
+              placeholder={strings.passwordPlaceHolder}
+              // placeholderTextColor={colors.darkYellowColor}
+              autoCapitalize="none"
+              secureText={true}
+              onChangeText={(text) => setOldPassword(text)}
+              value={oldPassword}
+              textStyle={{color: colors.lightBlackColor}}
+            />
+          </View>
+        )}
         <TouchableOpacity
           onPress={() => {
             navigation.navigate('ChangePasswordScreen');
@@ -255,19 +271,42 @@ const styles = StyleSheet.create({
     tintColor: colors.lightBlackColor,
     resizeMode: 'contain',
   },
-  textFieldStyle: {
-    marginTop: 15,
-    width: wp('92%'),
-    backgroundColor: 'rgba(255,255,255,0.9)',
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 3},
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-  },
+  //   textFieldStyle: {
+  //     marginTop: 15,
+  //     width: wp('92%'),
+  //     backgroundColor: 'rgba(255,255,255,0.9)',
+  //     shadowColor: colors.googleColor,
+  //     shadowOffset: {width: 0, height: 3},
+  //     shadowOpacity: 0.3,
+  //     shadowRadius: 4,
+  //   },
   headerRightButton: {
     fontFamily: fonts.RRegular,
     fontSize: 16,
     width: 100,
     textAlign: 'right',
+  },
+  emailText: {
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
+    marginTop: 15,
+    marginBottom: 15,
+  },
+  emailTextContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginLeft: 15,
+    marginRight: 15,
+  },
+  textFieldStyle: {
+    marginTop: 15,
+    width: widthPercentageToDP('92%'),
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    shadowColor: colors.googleColor,
+    shadowOffset: {width: 0, height: 3},
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
   },
 });

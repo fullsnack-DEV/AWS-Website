@@ -211,74 +211,64 @@ export default function DeactivatedSportsListScreen({navigation}) {
     [],
   );
 
+  const noDataView = (text) => (
+    <Text
+      style={{
+        color: colors.userPostTimeColor,
+        fontFamily: fonts.RLight,
+        fontSize: 16,
+        marginTop: 15,
+
+        textAlign: 'center',
+        alignSelf: 'center',
+        justifyContent: 'center',
+      }}>
+      {text}
+    </Text>
+  );
+
   return (
     <ScrollView>
       <ActivityLoader visible={loading} />
       <View>
-        {userObject?.registered_sports?.filter(
-          (obj) => obj.type === 'player' && !obj.is_active,
-        )?.length > 0 && (
-          <View style={styles.listContainer}>
-            <Text style={styles.listTitle}>Playing</Text>
-            <FlatList
-              showsHorizontalScrollIndicator={false}
-              data={userObject?.registered_sports
-                ?.filter((obj) => obj.type === 'player' && !obj.is_active)
-                .sort((a, b) => a.sport.localeCompare(b.sport))}
-              keyExtractor={keyExtractor}
-              renderItem={sportsView}
-            />
-          </View>
-        )}
+        <View style={styles.listContainer}>
+          <Text style={styles.listTitle}>Playing</Text>
+          <FlatList
+            showsHorizontalScrollIndicator={false}
+            data={userObject?.registered_sports
+              ?.filter((obj) => obj.type === 'player' && !obj.is_active)
+              .sort((a, b) => a.sport.localeCompare(b.sport))}
+            keyExtractor={keyExtractor}
+            renderItem={sportsView}
+            ListEmptyComponent={noDataView(strings.noSportsData)}
+          />
+        </View>
 
-        {userObject?.referee_data?.filter(
-          (obj) => obj.type === 'referee' && !obj.is_active,
-        )?.length > 0 && (
-          <View style={styles.listContainer}>
-            <Text style={styles.listTitle}>Refereeing</Text>
-            <FlatList
-              showsHorizontalScrollIndicator={false}
-              data={userObject?.referee_data
-                ?.filter((obj) => obj.type === 'referee' && !obj.is_active)
-                .sort((a, b) => a.sport.localeCompare(b.sport))}
-              keyExtractor={keyExtractor}
-              renderItem={refereeSportsView}
-            />
-          </View>
-        )}
+        <View style={styles.listContainer}>
+          <Text style={styles.listTitle}>Refereeing</Text>
+          <FlatList
+            showsHorizontalScrollIndicator={false}
+            data={userObject?.referee_data
+              ?.filter((obj) => obj.type === 'referee' && !obj.is_active)
+              .sort((a, b) => a.sport.localeCompare(b.sport))}
+            keyExtractor={keyExtractor}
+            renderItem={refereeSportsView}
+            ListEmptyComponent={noDataView(strings.noRefereeData)}
+          />
+        </View>
 
-        {userObject?.scorekeeper_data?.filter(
-          (obj) => obj.type === 'scorekeeper' && !obj.is_active,
-        )?.length > 0 && (
-          <View style={styles.listContainer}>
-            <Text style={styles.listTitle}>Scorekeeping</Text>
-            <FlatList
-              showsHorizontalScrollIndicator={false}
-              data={userObject?.scorekeeper_data
-                ?.filter((obj) => obj.type === 'scorekeeper' && !obj.is_active)
-                .sort((a, b) => a.sport.localeCompare(b.sport))}
-              keyExtractor={keyExtractor}
-              renderItem={scorekeeperSportsView}
-            />
-          </View>
-        )}
-        {userObject?.registered_sports === undefined &&
-          userObject?.referee_data === undefined &&
-          userObject?.scorekeeper_data === undefined && (
-            <Text
-              style={{
-                color: colors.userPostTimeColor,
-                fontFamily: fonts.RLight,
-                fontSize: 16,
-                marginTop: 15,
-
-                textAlign: 'center',
-                alignSelf: 'center',
-                justifyContent: 'center',
-              }}>
-              No Data Found
-            </Text>
-          )}
+        <View style={styles.listContainer}>
+          <Text style={styles.listTitle}>Scorekeeping</Text>
+          <FlatList
+            showsHorizontalScrollIndicator={false}
+            data={userObject?.scorekeeper_data
+              ?.filter((obj) => obj.type === 'scorekeeper' && !obj.is_active)
+              .sort((a, b) => a.sport.localeCompare(b.sport))}
+            keyExtractor={keyExtractor}
+            renderItem={scorekeeperSportsView}
+            ListEmptyComponent={noDataView(strings.noScorekeeperData)}
+          />
+        </View>
       </View>
       <ActionSheet
         ref={actionSheet}
