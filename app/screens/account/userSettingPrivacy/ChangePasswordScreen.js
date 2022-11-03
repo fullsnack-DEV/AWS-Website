@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react';
+import React, {useState, useContext, useCallback} from 'react';
 import {
   View,
   Text,
@@ -20,6 +20,8 @@ import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import TCKeyboardView from '../../../components/TCKeyboardView';
 import Header from '../../../components/Home/Header';
+import {clearStorage} from '../../../utils';
+import {QBLogout} from '../../../utils/QuickBlox';
 
 export default function ChangePasswordScreen({navigation}) {
   // For activity indigator
@@ -79,6 +81,14 @@ export default function ChangePasswordScreen({navigation}) {
   //   }).catch((error) => { console.log(error); });
   // }
 
+  const onLogout = useCallback(async () => {
+    QBLogout();
+    await firebase.auth().signOut();
+    await clearStorage();
+    await authContext.setUser(null);
+    await authContext.setEntity(null);
+  }, [authContext]);
+
   const onSavePress = () => {
     if (checkValidation()) {
       setloading(true);
@@ -98,11 +108,18 @@ export default function ChangePasswordScreen({navigation}) {
               setOldPassword('');
               setConfirmPassword('');
               setloading(false);
-              // Alert.alert(
-              //   strings.appName,
-              //   'Your new password has beed set successfully',
-              // );
-              navigation.goBack();
+
+              Alert.alert(
+                strings.appName,
+                strings.youWillLogout,
+                [
+                  {
+                    text: 'OK',
+                    onPress: () => onLogout(),
+                  },
+                ],
+                {cancelable: false},
+              );
             });
         })
         .catch((error) => {

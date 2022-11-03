@@ -66,82 +66,42 @@ export default function BackgroundProfile({
                     images.profilePlaceHolder)
             }
           />
-          {/* <View style={styles.userViewStyle}>
-            {currentUserData.description?.length > 0 && (
-              <Text style={styles.sloganTextStyle}>
-                {currentUserData.description}
-              </Text>
-            )}
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-              <Text style={styles.cityTextStyle}>{`${entityData?.city}`}</Text>
-              {(currentUserData.entity_type === 'team' ||
-                (currentUserData.entity_type === 'club' &&
-                  currentUserData.sports_string)) && (
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                  }}>
-                  <View
-                    style={{
-                      backgroundColor: colors.lightBlackColor,
-                      marginHorizontal: 5,
-                      borderRadius: 2,
-                      height: 4,
-                      width: 4,
-                    }}
-                  />
-                  <Text style={styles.cityTextStyle}>
-                    {currentUserData.sports_string
-                      ? currentUserData.sports_string
-                      : Utility.getSportName(currentUserData, authContext) ??
-                        ''}
-                  </Text>
-                </View>
-              )}
-            </View>
-          </View> */}
-          {currentUserData.entity_type === 'club' && (
-            <View style={styles.statusViewStyle}>
-              {/* <TouchableOpacity
+          <View style={styles.statusViewStyle}>
+            {currentUserData.following_count !== undefined && (
+              <TouchableOpacity
                 onPress={() => onConnectionButtonPress('following')}
                 style={styles.statusInnerViewStyle}>
-                <Text style={styles.followingLengthText}>
-                  {entityData?.teamCount}
-                </Text>
                 <Text style={styles.followingTextStyle}>
-                  {strings.teamstitle}
-                </Text>
-              </TouchableOpacity> */}
-
-              <TouchableOpacity
-                onPress={() => onConnectionButtonPress('members')}
-                style={styles.statusInnerViewStyle}>
-                <Text style={styles.followingLengthText}>
-                  {entityData?.memberCount}
-                </Text>
-                <Text style={styles.followingTextStyle}>
-                  {strings.membersTitle}
+                  {strings.following}
+                  <Text style={styles.followingLengthText}>
+                    {entityData?.followingsCounter}
+                  </Text>
                 </Text>
               </TouchableOpacity>
+            )}
+            <TouchableOpacity
+              onPress={() => onConnectionButtonPress('members')}
+              style={styles.statusInnerViewStyle}>
+              <Text style={styles.followingLengthText}>
+                {entityData?.memberCount}
+              </Text>
+              <Text style={styles.followingTextStyle}>
+                {strings.membersTitle}
+              </Text>
+            </TouchableOpacity>
 
-              <TouchableOpacity
-                onPress={() => onConnectionButtonPress('followers')}
-                style={styles.statusInnerViewStyle}>
-                <Text style={styles.followingLengthText}>
-                  {entityData?.followersCounter}
-                </Text>
-                <Text style={styles.followingTextStyle}>
-                  {strings.followersRadio}
-                </Text>
-              </TouchableOpacity>
-              {loggedInEntity.uid !== currentUserData.group_id && (
+            <TouchableOpacity
+              onPress={() => onConnectionButtonPress('followers')}
+              style={styles.statusInnerViewStyle}>
+              <Text style={styles.followingLengthText}>
+                {entityData?.followersCounter}
+              </Text>
+              <Text style={styles.followingTextStyle}>
+                {strings.followersRadio}
+              </Text>
+            </TouchableOpacity>
+            {loggedInEntity.uid !== currentUserData.group_id &&
+              loggedInEntity.uid !== currentUserData?.createdBy?.uid && (
                 <TouchableOpacity
                   onPress={() => onAction('message')}
                   style={styles.statusInnerViewStyle}>
@@ -149,88 +109,13 @@ export default function BackgroundProfile({
                     style={styles.messageImage}
                     source={images.messageIcon}
                   />
-                </TouchableOpacity>
-              )}
-            </View>
-          )}
-          {currentUserData.entity_type !== 'club' && (
-            <View style={styles.statusViewStyle}>
-              {currentUserData.following_count !== undefined && (
-                <TouchableOpacity
-                  onPress={() => onConnectionButtonPress('following')}
-                  style={styles.statusInnerViewStyle}>
                   <Text style={styles.followingTextStyle}>
-                    {strings.following}
-                    <Text style={styles.followingLengthText}>
-                      {entityData?.followingsCounter}
-                    </Text>
+                    {strings.message}
                   </Text>
                 </TouchableOpacity>
               )}
-              {currentUserData.following_count === undefined && (
-                <TouchableOpacity
-                  onPress={() => onConnectionButtonPress('members')}
-                  style={styles.statusInnerViewStyle}>
-                  <Text style={styles.followingLengthText}>
-                    {entityData?.memberCount}
-                    <Text style={styles.followingTextStyle}>
-                      {'   '}
-                      {strings.membersTitle}
-                    </Text>
-                  </Text>
-                </TouchableOpacity>
-              )}
-
-              <TouchableOpacity
-                onPress={() => onConnectionButtonPress('followers')}
-                style={styles.statusInnerViewStyle}>
-                <Text style={styles.followingLengthText}>
-                  {entityData?.followersCounter}
-                  <Text style={styles.followingTextStyle}>
-                    {'   '}
-                    {strings.followersRadio}
-                  </Text>
-                </Text>
-              </TouchableOpacity>
-
-              {loggedInEntity.role === 'team' &&
-                loggedInEntity.uid !== currentUserData.group_id && (
-                  <TouchableOpacity
-                    onPress={() => onAction('message')}
-                    style={styles.statusInnerViewStyle}>
-                    <Image
-                      style={styles.messageImage}
-                      source={images.messageIcon}
-                    />
-
-                    {/* <Text style={styles.followingTextStyle}>
-                      {strings.message}
-                    </Text> */}
-                  </TouchableOpacity>
-                )}
-
-              {loggedInEntity.role !== 'team' &&
-                currentUserData?.createdBy?.uid !== loggedInEntity.uid && (
-                  <TouchableOpacity
-                    onPress={() => onAction('message')}
-                    style={styles.statusInnerViewStyle}>
-                    <Image
-                      style={styles.messageImage}
-                      source={images.messageIcon}
-                    />
-                    {/* <Text style={styles.followingTextStyle}>
-                      {strings.message}
-                    </Text> */}
-                  </TouchableOpacity>
-                )}
-            </View>
-          )}
+          </View>
           <View style={styles.userViewStyle}>
-            {/* {currentUserData.description?.length > 0 && (
-              <Text style={styles.sloganTextStyle}>
-                {currentUserData.description}
-              </Text>
-            )} */}
             <View
               style={{
                 flexDirection: 'row',

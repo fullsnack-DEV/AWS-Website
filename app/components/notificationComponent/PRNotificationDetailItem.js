@@ -138,7 +138,7 @@ function PRNotificationDetailItem({
                     isTrash ? styles.disabledBtnStyle : styles.detailBtnStyle
                   }
                   onPress={onDetailPress}
-                  disabled={isTrash}>
+                  disabled={disabled}>
                   <Text
                     style={
                       isTrash

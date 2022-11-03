@@ -281,7 +281,6 @@ const HomeScreen = ({navigation, route}) => {
   const addRoleActionSheet = useRef();
   const manageChallengeActionSheet = useRef();
   const offerActionSheet = useRef();
-  const groupMessageActionSheet = useRef();
   const options =
     authContext.entity.role === 'user'
       ? [
@@ -1119,7 +1118,8 @@ const HomeScreen = ({navigation, route}) => {
 
   const onMessageButtonPress = (user) => {
     const uid =
-      user?.entity_type === Verbs.entityTypePlayer
+      user?.entity_type === Verbs.entityTypePlayer ||
+      user?.entity_type === Verbs.entityTypeUser
         ? user?.user_id
         : user?.group_id;
 
@@ -1181,8 +1181,7 @@ const HomeScreen = ({navigation, route}) => {
           clubInviteUser();
           break;
         case Verbs.messageVerb:
-          // onMessageButtonPress(currentUserData);
-          groupMessageActionSheet.current.show();
+          onMessageButtonPress(currentUserData);
           break;
         case Verbs.editVerb:
           // navigation.navigate('EditPersonalProfileScreen');
@@ -1295,6 +1294,7 @@ const HomeScreen = ({navigation, route}) => {
           break;
         case Verbs.messageVerb:
           onMessageButtonPress(currentUserData);
+
           break;
         case Verbs.dotVerb:
           onDotPress();
@@ -4291,26 +4291,7 @@ const HomeScreen = ({navigation, route}) => {
             }
           }}
         />
-        <ActionSheet
-          ref={groupMessageActionSheet}
-          options={[
-            currentUserData.group_name,
-            strings.withAllMember,
-            strings.cancel,
-          ]}
-          cancelButtonIndex={3}
-          onPress={(index) => {
-            if (index === 0) {
-              // Add Playing
-              onMessageButtonPress(currentUserData);
-            } else if (index === 1) {
-              // Add Refereeing
-              onMessageButtonPress(currentUserData);
-            }
-          }}
-        />
         <ActivityLoader visible={loading} />
-
         <View style={{flex: 1}}>
           {/* renderUserTopFixedButtons */}
           {/* {!isUserHome && renderTopFixedButtons} */}

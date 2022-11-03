@@ -179,12 +179,6 @@ export default function EntitySearchScreen({navigation, route}) {
   }, [route?.params?.locationText]);
   useEffect(() => {
     getPlayersList();
-    // getRefereesList();
-    // getScoreKeepersList(filters);
-    // getTeamList(filters);
-    // getClubList(filters);
-    // getUpcomingGameList(filters);
-    // getCompletedGamesList(filters);
   }, [playerFilter]);
 
   useEffect(() => {
@@ -240,7 +234,7 @@ export default function EntitySearchScreen({navigation, route}) {
                 path: 'registered_sports',
                 query: {
                   bool: {
-                    must: [{term: {'registered_sports.is_active': true}}],
+                    must: [],
                   },
                 },
               },
@@ -250,17 +244,22 @@ export default function EntitySearchScreen({navigation, route}) {
         },
       },
     };
+    if (
+      currentSubTab === strings.playerTitle ||
+      playerFilter.sport !== strings.all
+    ) {
+      playersQuery.query.bool.must[0].nested.query.bool.must.push({
+        term: {'registered_sports.is_active': true},
+      });
+    }
 
     // Sport filter
     if (playerFilter.sport !== strings.all) {
-      playersQuery.query.bool.must[0].nested.query.bool.must.push(
-        {term: {'registered_sports.is_active': true}},
-        {
-          term: {
-            'registered_sports.sport.keyword': `${playerFilter.sport.toLowerCase()}`,
-          },
+      playersQuery.query.bool.must[0].nested.query.bool.must.push({
+        term: {
+          'registered_sports.sport.keyword': `${playerFilter.sport.toLowerCase()}`,
         },
-      );
+      });
     }
 
     // World filter
@@ -1303,6 +1302,8 @@ export default function EntitySearchScreen({navigation, route}) {
   }, []);
   const onPressSubTabs = useCallback((item) => {
     setCurrentSubTab(item);
+    searchFilterFunction('');
+    searchBoxRef.current.clear();
   }, []);
   const renderTabContain = useMemo(
     () => (
@@ -1693,16 +1694,6 @@ export default function EntitySearchScreen({navigation, route}) {
         />
       </View>
       <FlatList
-        extraData={
-          (currentSubTab === strings.generalText && playerList) ||
-          (currentSubTab === strings.playerTitle && playerList) ||
-          (currentSubTab === strings.refereesTitle && referees) ||
-          (currentSubTab === strings.scorekeeperTitle && scorekeepers) ||
-          (currentSubTab === strings.teamsTitleText && teams) ||
-          (currentSubTab === strings.clubsTitleText && clubs) ||
-          (currentSubTab === strings.completedTitleText && completedGame) ||
-          (currentSubTab === strings.upcomingTitleText && upcomingGame)
-        }
         showsHorizontalScrollIndicator={false}
         data={
           (currentSubTab === strings.generalText && playerList) ||

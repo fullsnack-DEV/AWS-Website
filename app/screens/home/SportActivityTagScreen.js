@@ -206,7 +206,7 @@ export default function SportActivityTagScreen({navigation}) {
         onPress={() => {
           setSelectedRadio(0);
         }}>
-        <Text style={styles.radioTitle}>{strings.laterDoneActivity}</Text>
+        <Text style={styles.radioTitle}>{strings.latestDoneActivity}</Text>
         <Image
           source={
             selectedRadio === 0

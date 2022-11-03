@@ -23,19 +23,19 @@ import Verbs from '../../../Constants/Verbs';
 export default function LookingForSettingScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const [loading, setloading] = useState(false);
-  const [lookingFor, setLookingFor] = useState(false);
+  const [lookingFor, setLookingFor] = useState(true);
   const [sportObj] = useState(route?.params?.sport);
   const [type] = useState(route?.params?.type);
   const lookingOpetions = [
     {key: strings.yes, id: 1},
-    {key: strings.no, id: 2},
+    {key: strings.no, id: 0},
   ];
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: () => (
         <Text style={styles.titleTextStyle}>
-          {sportObj?.sport_type === 'single'
+          {sportObj?.sport_type === Verbs.singleSport
             ? strings.lookingForClubText
             : strings.lookingForTeamText}
         </Text>

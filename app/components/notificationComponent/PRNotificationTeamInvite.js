@@ -6,9 +6,12 @@ import {strings} from '../../../Localization/translation';
 import TCProfileImage from '../TCProfileImage';
 import TCGradientButton from '../TCGradientButton';
 import {parseInviteRequest} from '../../screens/notificationsScreen/PRNotificationParser';
+import NotificationType from '../../Constants/NotificationType';
 
 function PRNotificationTeamInvite({
   item,
+  isTrash = false,
+  entityType = 'user',
   selectedEntity,
   onPress,
   onRespond,
@@ -43,10 +46,27 @@ function PRNotificationTeamInvite({
                     {`${dataDictionary.firstTitle} `}
                   </Text>
                   <Text>{`${dataDictionary.text} `}</Text>
-                  <Text style={styles.timeStyle}>
-                    {dataDictionary.notificationTime}
-                  </Text>
+                  {!isTrash && (
+                    <Text style={styles.timeStyle}>
+                      {dataDictionary.notificationTime}
+                    </Text>
+                  )}
                 </Text>
+
+                {isTrash && (
+                  <Text style={styles.timeStyle}>
+                    {(NotificationType.deleted && 'Deleted') ||
+                      (NotificationType.accepted && 'Accepted') ||
+                      (NotificationType.declined && 'Declined')}
+                    {entityType === 'group' && (
+                      <Text>
+                        {' '}
+                        by {item.activities[0].remove_by?.data?.full_name}{' '}
+                        {dataDictionary.notificationTime}
+                      </Text>
+                    )}
+                  </Text>
+                )}
               </View>
               <View
                 style={
@@ -56,7 +76,11 @@ function PRNotificationTeamInvite({
                 }>
                 <TCGradientButton
                   accessibilityLabel={`${accessibilityLabel}`}
-                  textStyle={styles.btnTextStyle}
+                  textStyle={
+                    isTrash
+                      ? [styles.btnTextStyle, {color: colors.grayColor}]
+                      : styles.btnTextStyle
+                  }
                   style={styles.acceptButtonInnerStyle}
                   title={strings.respond}
                   disabled={disabled}
