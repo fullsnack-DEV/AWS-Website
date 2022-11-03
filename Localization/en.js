@@ -2012,6 +2012,7 @@ export default {
   classifySportActivity:
     'en_Classfy sports activites by categoires and display the categories in the order below.',
   laterDoneActivity: 'en_Display the later-done sports activity first',
+  latestDoneActivity: 'en_Display most recent sports activity first',
 
   levelsCount: 'en_LV 13',
 
