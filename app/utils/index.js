@@ -2304,8 +2304,7 @@ export const validateEmail = (emailText) => {
   return false;
 };
 export const validatedName = (name) => {
-  // /^[a-zA-Z0-9]+$/.test(name)
-  if (/^$|^[A-Za-z]+$/.test(name)) {
+  if (/^[a-z ,.'-]+$/i.test(name)) {
     return true;
   }
   return false;
