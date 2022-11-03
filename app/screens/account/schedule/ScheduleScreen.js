@@ -152,7 +152,6 @@ export default function ScheduleScreen({navigation, route}) {
     setIsAccountDeactivated(false);
     setPointEvent('auto');
     if (isFocused) {
-      console.log('its called....', authContext.entity.role);
       if (authContext?.entity?.obj?.is_pause === true) {
         setIsAccountDeactivated(true);
         setPointEvent('none');
@@ -182,7 +181,6 @@ export default function ScheduleScreen({navigation, route}) {
   // };
 
   const getEventOccuranceFromRule = (event) => {
-    console.log('OFFSET:=>', Intl.DateTimeFormat().resolvedOptions().timeZone);
     const ruleObj = RRule.parseString(event.rrule);
 
     ruleObj.dtstart = new Date(
@@ -202,17 +200,10 @@ export default function ScheduleScreen({navigation, route}) {
 
     ruleObj.tzid = 'Asia/Calcutta';
 
-    console.log('ruleObj::=>', ruleObj);
     const rule = new RRule(ruleObj);
     const duration = event.end_datetime - event.start_datetime;
     let occr = rule.all();
-    console.log('occr::=>', occr);
     occr = occr.map((item) => {
-      // console.log(
-      //   'item::=>',
-      //   item.toLocaleDateString(),
-      //   item.toLocaleTimeString(),
-      // );
       const newEvent = {...event};
       const date = new Date(item);
       newEvent.start_datetime = Math.round(date.getTime() / 1000);
@@ -227,7 +218,6 @@ export default function ScheduleScreen({navigation, route}) {
     setloading(true);
     getUserSettings(authContext)
       .then((setting) => {
-        console.log('Settings:=>', setting);
         if (setting?.payload?.user !== {}) {
           if (
             setting?.payload?.user?.schedule_group_filter &&
@@ -243,7 +233,6 @@ export default function ScheduleScreen({navigation, route}) {
             getGroups(authContext)
               .then((response) => {
                 const {teams, clubs} = response.payload ?? [];
-                console.log('fdsfdsfsdfas', response);
 
                 if (response.payload.length > 0) {
                   setOrgenizerOpetions([
@@ -307,8 +296,6 @@ export default function ScheduleScreen({navigation, route}) {
   }, [authContext, isFocused]);
 
   const configureEvents = useCallback((eventsData, games) => {
-    console.log('gamesgames::::::->', games);
-    console.log('gaeventsDatamesgames', eventsData);
     const eventTimeTableData = eventsData.map((item) => {
       if (item?.game_id) {
         const gameObj =
@@ -365,21 +352,19 @@ export default function ScheduleScreen({navigation, route}) {
     return 2;
   };
   const goToChallengeDetail = (data) => {
-    console.log('Go To Challenge', data);
     // if (data?.responsible_to_secure_venue) { //Write condition for soccer
     if (data?.challenge_id) {
       setloading(true);
       Utils.getChallengeDetail(data?.challenge_id, authContext).then((obj) => {
         setloading(false);
-        console.log('Challenge Object:', JSON.stringify(obj.challengeObj));
-        console.log('Screen name of challenge:', obj.screenName);
+
         navigation.navigate(obj.screenName, {
           challengeObj: obj.challengeObj || obj.challengeObj[0],
         });
         setloading(false);
       });
     } else {
-      Alert.alert('This challenge is not confirmed yet.');
+      Alert.alert(strings.challengeNotConfirmedYet);
     }
     // }
   };
@@ -418,8 +403,7 @@ export default function ScheduleScreen({navigation, route}) {
       authContext,
     ).then((obj) => {
       setloading(false);
-      console.log('Reservation Object:', JSON.stringify(obj.reservationObj));
-      console.log('Screen name of Reservation:', obj.screenName);
+
       navigation.navigate(obj.screenName, {
         reservationObj: obj.reservationObj || obj.reservationObj[0],
       });
@@ -427,7 +411,6 @@ export default function ScheduleScreen({navigation, route}) {
     });
   };
   const goToScorekeeperReservationDetail = (data) => {
-    console.log('Reservation data:', JSON.stringify(data));
     setloading(true);
     ScorekeeperUtils.getScorekeeperReservationDetail(
       data?.reservation_id,
@@ -436,8 +419,7 @@ export default function ScheduleScreen({navigation, route}) {
     )
       .then((obj) => {
         setloading(false);
-        console.log('Reservation Object:', JSON.stringify(obj.reservationObj));
-        console.log('Screen name of Reservation:', obj.screenName);
+
         navigation.navigate(obj.screenName, {
           reservationObj: obj.reservationObj || obj.reservationObj[0],
         });
@@ -462,10 +444,6 @@ export default function ScheduleScreen({navigation, route}) {
 
   const onDayPress = useCallback(
     (dateObj) => {
-      console.log(
-        'date object pressed',
-        moment(new Date(dateObj)).format('YYYY-MM-DD'),
-      );
       const start = new Date(dateObj);
       start.setHours(0, 0, 0, 0);
 
@@ -475,16 +453,12 @@ export default function ScheduleScreen({navigation, route}) {
       for (const blockedSlot of allSlots) {
         const eventDate = new Date(blockedSlot.start_datetime * 1000);
         eventDate.setHours(0, 0, 0, 0);
-        console.log('eventDate.getTime()', eventDate.getTime());
-        console.log('start.getTime()', start.getTime());
+
         if (
           eventDate.getTime() === start.getTime() &&
           blockedSlot.blocked === true
         ) {
-          console.log('date match');
           temp.push(blockedSlot);
-        } else {
-          console.log('date not match');
         }
       }
 
@@ -499,17 +473,11 @@ export default function ScheduleScreen({navigation, route}) {
         );
         setSlots(timeSlots);
       }
-
-      console.log('timeSlotstimeSlots', timeSlots);
     },
     [allSlots],
   );
 
   const createCalenderTimeSlots = (startTime, hours, blockedSlots) => {
-    console.log('startTime::->', new Date(startTime * 1000));
-    console.log('hours::->', hours);
-    console.log('blockedSlots::->', blockedSlots);
-
     const tSlots = [];
     let startSlotTime = startTime;
     const lastSlotTime = startTime + hours * 60 * 60;
@@ -542,7 +510,6 @@ export default function ScheduleScreen({navigation, route}) {
 
   const getEventsAndSlotsList = useCallback(() => {
     setloading(true);
-    console.log('1111--');
     const eventTimeTableData = [];
     Utility.getCalendar(
       authContext?.entity?.uid,
@@ -550,8 +517,7 @@ export default function ScheduleScreen({navigation, route}) {
     )
       // blockedSlots(entityRole, uid, authContext)
       .then((response) => {
-        console.log('2222--');
-        response = (response || []).filter((obj) => {
+        const resCalenders = (response || []).filter((obj) => {
           if (obj.cal_type === 'blocked') {
             return obj;
           }
@@ -568,9 +534,8 @@ export default function ScheduleScreen({navigation, route}) {
             }
           }
         });
-        console.log('3333--');
 
-        response.forEach((item) => {
+        resCalenders.forEach((item) => {
           if (item?.rrule) {
             const rEvents = getEventOccuranceFromRule(item);
             eventTimeTableData.push(...rEvents);
@@ -578,11 +543,11 @@ export default function ScheduleScreen({navigation, route}) {
             eventTimeTableData.push(item);
           }
         });
-        console.log('4444--');
 
         onDayPress(new Date());
         setAllSlots(eventTimeTableData);
-        let gameIDs = [...new Set(response.map((item) => item.game_id))];
+        let gameIDs = [...new Set(resCalenders.map((item) => item.game_id))];
+
         gameIDs = (gameIDs || []).filter((item) => item !== undefined);
         if (gameIDs.length > 0) {
           const gameList = {
@@ -593,22 +558,19 @@ export default function ScheduleScreen({navigation, route}) {
             },
           };
 
-          console.log('5555--');
-
           getGameIndex(gameList).then((games) => {
-            const listObj = response.map((obj) => {
+            const listObj = resCalenders.map((obj) => {
               if (obj.game_id === obj.challenge_id) {
                 return obj.game;
               }
             });
 
             const pendingChallenge = listObj.filter((obj) => obj !== undefined);
-            console.log('6666--');
 
             Utility.getGamesList([
               ...games,
               ...pendingChallenge,
-              ...response.filter((obj) => obj.owner_id),
+              ...resCalenders.filter((obj) => obj.owner_id),
             ]).then((gamedata) => {
               setloading(false);
               configureEvents(eventTimeTableData, gamedata);
@@ -620,7 +582,6 @@ export default function ScheduleScreen({navigation, route}) {
       })
       .catch((e) => {
         setloading(false);
-        console.log('Error::=>', e);
         Alert.alert(strings.alertmessagetitle, e.message);
       });
   }, [authContext?.entity?.uid, configureEvents, onDayPress]);
@@ -630,7 +591,6 @@ export default function ScheduleScreen({navigation, route}) {
     groupUnpaused(authContext)
       .then((response) => {
         setIsAccountDeactivated(false);
-        console.log('deactivate account ', response);
 
         const accountType = getQBAccountType(response?.payload?.entity_type);
         QBupdateUser(
@@ -660,8 +620,6 @@ export default function ScheduleScreen({navigation, route}) {
     setloading(true);
     userActivate(authContext)
       .then((response) => {
-        console.log('deactivate account ', response);
-
         const accountType = getQBAccountType(response?.payload?.entity_type);
         QBupdateUser(
           response?.payload?.user_id,
@@ -699,8 +657,6 @@ export default function ScheduleScreen({navigation, route}) {
         return styles.sportName;
       }
       if (sortFilterOpetion === 1) {
-        console.log('opetions is 1');
-
         if (selectedOpetions.title.sport === item.sport) {
           return styles.sportSelectedName;
         }
@@ -726,7 +682,6 @@ export default function ScheduleScreen({navigation, route}) {
             index,
             viewPosition: 0.8,
           });
-          console.log('selected sport::=>', item);
           setSelectedOpetions({
             opetion: sortFilterOpetion,
             title: item,
@@ -743,53 +698,44 @@ export default function ScheduleScreen({navigation, route}) {
   );
 
   const sportOpetionsListView = useCallback(
-    ({item, index}) => {
-      console.log('iiitititiiit', item);
-      console.log('selectedOpetions.title', selectedOpetions.title);
-      return (
-        <Text
-          style={makeOpetionsSelected(item)}
-          onPress={() => {
-            refContainer.current.scrollToIndex({
-              animated: true,
-              index,
-              viewPosition: 0.5,
-            });
-            console.log('selected sport::=>', item);
-            setSelectedOpetions({
-              opetion: sortFilterOpetion,
-              title: item,
-            });
-          }}>
-          {item.sport[0].toUpperCase() + item.sport.slice(1)}
-        </Text>
-      );
-    },
+    ({item, index}) => (
+      <Text
+        style={makeOpetionsSelected(item)}
+        onPress={() => {
+          refContainer.current.scrollToIndex({
+            animated: true,
+            index,
+            viewPosition: 0.5,
+          });
+          setSelectedOpetions({
+            opetion: sortFilterOpetion,
+            title: item,
+          });
+        }}>
+        {item.sport[0].toUpperCase() + item.sport.slice(1)}
+      </Text>
+    ),
     [makeOpetionsSelected, selectedOpetions.title, sortFilterOpetion],
   );
 
   const orgenizerListView = useCallback(
-    ({item, index}) => {
-      console.log('selectedOpetions.title', selectedOpetions.title);
-      return (
-        <Text
-          style={makeOpetionsSelected(item)}
-          onPress={() => {
-            refContainer.current.scrollToIndex({
-              animated: true,
-              index,
-              viewPosition: 0.5,
-            });
-            console.log('selected sport::=>', item);
-            setSelectedOpetions({
-              opetion: sortFilterOpetion,
-              title: item,
-            });
-          }}>
-          {item.group_name}
-        </Text>
-      );
-    },
+    ({item, index}) => (
+      <Text
+        style={makeOpetionsSelected(item)}
+        onPress={() => {
+          refContainer.current.scrollToIndex({
+            animated: true,
+            index,
+            viewPosition: 0.5,
+          });
+          setSelectedOpetions({
+            opetion: sortFilterOpetion,
+            title: item,
+          });
+        }}>
+        {item.group_name}
+      </Text>
+    ),
     [makeOpetionsSelected, selectedOpetions.title, sortFilterOpetion],
   );
 
@@ -886,7 +832,6 @@ export default function ScheduleScreen({navigation, route}) {
   const datesBlacklistFunc = (startDate, endDate) => {
     const start = new Date(startDate);
     const end = new Date(endDate);
-    console.log('cacacaca');
     const dates = [];
 
     while (start <= end) {
@@ -1269,13 +1214,10 @@ export default function ScheduleScreen({navigation, route}) {
               } else if (index === 2) {
                 navigation.navigate('ViewPrivacyScreen');
               }
-            } else {
-              console.log('else block');
-              if (index === 0) {
-                navigation.navigate('DefaultColorScreen');
-              } else if (index === 1) {
-                navigation.navigate('ViewPrivacyScreen');
-              }
+            } else if (index === 0) {
+              navigation.navigate('DefaultColorScreen');
+            } else if (index === 1) {
+              navigation.navigate('ViewPrivacyScreen');
             }
           }}
         />
@@ -1480,7 +1422,6 @@ export default function ScheduleScreen({navigation, route}) {
                   authContext,
                 )
                   .then((res) => {
-                    console.log('Res :-', res);
                     const myReferee = (res?.payload || []).filter(
                       (e) => e.initiated_by === authContext.entity.uid,
                     );
@@ -1573,9 +1514,7 @@ export default function ScheduleScreen({navigation, route}) {
                 gameData: selectedEventItem,
               });
             }
-            if (actionSheetOpetions()?.[index] === 'Delete') {
-              console.log('Event Delete');
-            }
+
             setSelectedEventItem(null);
           }}
         />

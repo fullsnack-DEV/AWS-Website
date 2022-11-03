@@ -137,11 +137,9 @@ export default function UserSettingPrivacyScreen({navigation}) {
       navigation.navigate('BasicInfoScreen');
     } else if (opetions === strings.sportActivityText) {
       navigation.navigate('SportActivityScreen');
-    }
-    //  else if (opetions === 'Currency') {
-    //   navigation.navigate('CurrencySettingScreen');
-    // }
-    else if (opetions === strings.appLanguage) {
+    } else if (opetions === strings.currencyText) {
+      navigation.navigate('CurrencySettingScreen');
+    } else if (opetions === strings.appLanguage) {
       navigation.navigate('LanguageSettingScreen');
     } else if (opetions === strings.privacySettingText) {
       // groupOpetionActionSheet.show();

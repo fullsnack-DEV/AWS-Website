@@ -54,7 +54,7 @@ export default function RefereeAgreementScreen({navigation, route}) {
               challengeObj: {
                 ...challengeObj,
                 min_referee:
-                  opetion === 2
+                  opetion === 1
                     ? challengeObj?.responsible_for_referee?.who_secure
                         ?.length ?? 0
                     : 0,
