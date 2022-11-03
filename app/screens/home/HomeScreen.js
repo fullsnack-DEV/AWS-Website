@@ -281,7 +281,6 @@ const HomeScreen = ({navigation, route}) => {
   const addRoleActionSheet = useRef();
   const manageChallengeActionSheet = useRef();
   const offerActionSheet = useRef();
-  const groupMessageActionSheet = useRef();
   const options =
     authContext.entity.role === 'user'
       ? [
@@ -1182,15 +1181,7 @@ const HomeScreen = ({navigation, route}) => {
           clubInviteUser();
           break;
         case Verbs.messageVerb:
-          if (
-            currentUserData.entity_type === Verbs.entityTypeUser ||
-            currentUserData.entity_type === Verbs.entityTypePlayer
-          ) {
-            onMessageButtonPress(currentUserData);
-          } else {
-            groupMessageActionSheet.current.show();
-          }
-
+          onMessageButtonPress(currentUserData);
           break;
         case Verbs.editVerb:
           // navigation.navigate('EditPersonalProfileScreen');
@@ -4300,26 +4291,7 @@ const HomeScreen = ({navigation, route}) => {
             }
           }}
         />
-        <ActionSheet
-          ref={groupMessageActionSheet}
-          options={[
-            currentUserData.group_name,
-            strings.withAllMember,
-            strings.cancel,
-          ]}
-          cancelButtonIndex={2}
-          onPress={(index) => {
-            if (index === 0) {
-              // Add Playing
-              onMessageButtonPress(currentUserData);
-            } else if (index === 1) {
-              // Add Refereeing
-              onMessageButtonPress(currentUserData);
-            }
-          }}
-        />
         <ActivityLoader visible={loading} />
-
         <View style={{flex: 1}}>
           {/* renderUserTopFixedButtons */}
           {/* {!isUserHome && renderTopFixedButtons} */}
