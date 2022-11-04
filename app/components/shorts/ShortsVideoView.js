@@ -48,7 +48,7 @@ import colors from '../../Constants/Colors';
 import AuthContext from '../../auth/context';
 import {getTaggedText} from '../../utils';
 
-import {commentPostTimeCalculate} from '../../Constants/LoaderImages';
+import {formatTimestampForDisplay} from '../../utils/formatTimestampForDisplay';
 import PostDescSection from '../newsFeed/PostDescSection';
 import TagView from '../newsFeed/TagView';
 import ShortsPlayer from './ShortsPlayer';
@@ -566,7 +566,7 @@ function ShortsVideoView({
                         {profileItem?.full_name}
                       </Text>
                       <Text style={styles.activeTimeAgoTxt}>
-                        {commentPostTimeCalculate(multiAttachItem?.time, true)}
+                        {formatTimestampForDisplay(multiAttachItem?.time)}
                       </Text>
                     </View>
                   </View>

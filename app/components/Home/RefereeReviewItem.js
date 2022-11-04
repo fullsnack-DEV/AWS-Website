@@ -21,7 +21,7 @@ import VideoPost from '../newsFeed/VideoPost';
 import PostImageSet from '../newsFeed/PostImageSet';
 import MultiPostVideo from '../newsFeed/MultiPostVideo';
 import NewsFeedDescription from '../newsFeed/NewsFeedDescription';
-import {commentPostTimeCalculate} from '../../Constants/LoaderImages';
+import {formatTimestampForDisplay} from '../../utils/formatTimestampForDisplay';
 
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
@@ -107,7 +107,7 @@ function RefereeReviewItem({
           <View
             style={{flexDirection: 'row', alignItems: 'center', marginTop: 3}}>
             <Text style={styles.activeTimeAgoTxt}>
-              {commentPostTimeCalculate(item.time)}
+              {formatTimestampForDisplay(item.time)}
             </Text>
             <View style={styles.eventImageViewStyle}>
               <Image

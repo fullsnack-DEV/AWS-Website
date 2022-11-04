@@ -18,7 +18,7 @@ import FastImage from 'react-native-fast-image';
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors';
 import {getHitSlop, getScreenWidth} from '../../../utils';
-import {commentPostTimeCalculate} from '../../../Constants/LoaderImages';
+import {formatTimestampForDisplay} from '../../../utils/formatTimestampForDisplay';
 import fonts from '../../../Constants/Fonts';
 import AuthContext from '../../../auth/context';
 import FeedDescriptionSection from './FeedDescriptionSection';
@@ -261,7 +261,7 @@ const FeedAbsoluteTopView = memo(
                 {_.startCase(feedItem?.actor?.data?.full_name?.toLowerCase())}
               </Text>
               <Text style={styles.activeTimeAgoTxt}>
-                {commentPostTimeCalculate(feedItem?.time, true)}
+                {formatTimestampForDisplay(feedItem?.time)}
               </Text>
             </View>
           </View>
