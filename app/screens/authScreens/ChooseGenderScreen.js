@@ -237,6 +237,7 @@ export default function ChooseGenderScreen({navigation, route}) {
                 getLocation();
               })
               .catch((e) => {
+                setEnableNext(true);
                 setTimeout(() => {
                   Alert.alert(strings.alertmessagetitle, e.message);
                 }, 10);
@@ -302,6 +303,7 @@ export default function ChooseGenderScreen({navigation, route}) {
         }
       })
       .catch((error) => {
+        setEnableNext(true);
         console.warn(error);
       });
   };
