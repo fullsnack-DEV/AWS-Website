@@ -90,19 +90,35 @@ export default function InviteMembersByEmailScreen({navigation}) {
     }
   };
 
-  const renderItemEmail = ({item, index}) => (
-    <TCTextField
-      placeholder={strings.emailPlaceHolder}
-      keyboardType="email-address"
-      value={item.email}
-      onChangeText={(value) => {
-        const tempEmail = [...email];
-        tempEmail[index].email = value;
-        setEmail(tempEmail);
-      }}
-      style={{alignSelf: 'center', width: '85%', marginBottom: 10}}
-    />
-  );
+  const renderItemEmail = ({item, index}) => {
+    console.log('item');
+    return (
+      <View style={{marginBottom: 15}}>
+        <TCTextField
+          placeholder={strings.emailPlaceHolder}
+          keyboardType="email-address"
+          value={item?.email}
+          onChangeText={(value) => {
+            const tempEmail = [...email];
+            tempEmail[index].email = value;
+            setEmail(tempEmail);
+          }}
+          style={{alignSelf: 'center', width: '85%', marginBottom: 10}}
+        />
+        {index !== 0 && (
+          <Text
+            style={styles.deleteStyle}
+            onPress={() => {
+              const tempEmail = [...email];
+              tempEmail.splice(index, 1);
+              setEmail([...tempEmail]);
+            }}>
+            {strings.deleteTitle}
+          </Text>
+        )}
+      </View>
+    );
+  };
 
   return (
     <View style={styles.mainContainer}>
@@ -146,5 +162,12 @@ const styles = StyleSheet.create({
   flateListStyle: {
     paddingTop: 10,
     flexGrow: 0,
+  },
+  deleteStyle: {
+    textAlign: 'right',
+    marginRight: 30,
+    fontSize: 14,
+    fontFamily: fonts.RRegular,
+    color: colors.redColor,
   },
 });

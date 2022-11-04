@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable guard-for-in */
 /* eslint-disable array-callback-return */
@@ -29,13 +30,12 @@ import TCThinDivider from '../../../../components/TCThinDivider';
 import LocationSearchModal from '../../../../components/Home/LocationSearchModal';
 import * as Utility from '../../../../utils';
 import {patchPlayer} from '../../../../api/Users';
-// const entity = {};
+import Verbs from '../../../../Constants/Verbs';
+
 export default function AvailableAreaReferee({navigation, route}) {
   const [comeFrom] = useState(route?.params?.comeFrom);
   const [sportName] = useState(route?.params?.sportName);
-  // const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
-  // const [selectedAddressIndex, setSelectedAddressIndex] = useState();
 
   const [loading, setloading] = useState(false);
   const [areaRadio, setAreaRadio] = useState(0);
@@ -101,7 +101,6 @@ export default function AvailableAreaReferee({navigation, route}) {
     areaRadio,
     selectedDistanceOption,
     searchAddress,
-
     addressList,
     route?.params?.settingObj?.available_area?.address,
   ]);
@@ -193,44 +192,10 @@ export default function AvailableAreaReferee({navigation, route}) {
       Alert.alert(strings.titleBasic, strings.maxPeriod);
     }
   };
-  const deleteArea = useCallback((index) => {
-    addressList.splice(index, 1);
-    setAddressList([...addressList]);
-  }, []);
+
   const renderAddress = useCallback(
     ({index}) => (
       <View>
-        <View style={styles.viewTitleContainer}>
-          {index !== 0 && (
-            <Text
-              style={styles.deleteButton}
-              onPress={() => {
-                // addressList.splice(index, 1);
-                // setAddressList([...addressList]);
-
-                Alert.alert(
-                  '',
-                  'Are you sure, you want to delete this area from your refereeing list?',
-                  [
-                    {
-                      text: strings.cancel,
-                      onPress: () => console.log('Cancel Pressed'),
-                      style: 'cancel',
-                    },
-                    {
-                      text: 'Delete',
-                      onPress: () => deleteArea(index),
-                      style: 'destructive',
-                    },
-                  ],
-                  {cancelable: false},
-                );
-              }}>
-              {strings.delete}
-            </Text>
-          )}
-        </View>
-
         <TouchableOpacity
           style={styles.detailsSingleContainer}
           onPress={() => {
@@ -246,6 +211,34 @@ export default function AvailableAreaReferee({navigation, route}) {
             value={addressList[index].address}
           />
         </TouchableOpacity>
+        {index !== 0 && (
+          <Text
+            style={styles.deleteButton}
+            onPress={() => {
+              Alert.alert(
+                '',
+                strings.deleteAvailableArea,
+                [
+                  {
+                    text: strings.cancel,
+                    style: Verbs.cancelVerb,
+                  },
+                  {
+                    text: strings.delete,
+                    onPress: () => {
+                      const tempEmail = [...addressList];
+                      tempEmail.splice(index, 1);
+                      setAddressList([...tempEmail]);
+                    },
+                    style: 'destructive',
+                  },
+                ],
+                {cancelable: false},
+              );
+            }}>
+            {strings.delete}
+          </Text>
+        )}
       </View>
     ),
     [addressList],
@@ -256,7 +249,6 @@ export default function AvailableAreaReferee({navigation, route}) {
   };
 
   return (
-    // <TCKeyboardView>
     <SafeAreaView>
       <ActivityLoader visible={loading} />
 
@@ -275,19 +267,6 @@ export default function AvailableAreaReferee({navigation, route}) {
           <Text style={[styles.radioTitleText, {flex: 0.9}]}>
             {strings.addAreaText}
           </Text>
-          {/* <View style={{flex: 0.1}}>
-              {areaRadio === 0 ? (
-                <Image
-                  source={images.radioCheckYellow}
-                  style={styles.checkboxImg}
-                />
-              ) : (
-                <Image
-                  source={images.radioUnselect}
-                  style={styles.checkboxImg}
-                />
-              )}
-            </View> */}
         </TouchableOpacity>
 
         <View pointerEvents={areaRadio === 0 ? 'auto' : 'none'}>
@@ -397,7 +376,6 @@ export default function AvailableAreaReferee({navigation, route}) {
       />
     </SafeAreaView>
     // {/* Address modal */}
-    // </TCKeyboardView>
   );
 }
 const styles = StyleSheet.create({

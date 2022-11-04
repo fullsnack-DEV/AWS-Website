@@ -13,7 +13,6 @@ import {
   Platform,
 } from 'react-native';
 
-// import { useIsFocused } from '@react-navigation/native';
 import Modal from 'react-native-modal';
 import LinearGradient from 'react-native-linear-gradient';
 import AuthContext from '../../../../auth/context';
@@ -28,18 +27,13 @@ import TCThinDivider from '../../../../components/TCThinDivider';
 import LocationSearchModal from '../../../../components/Home/LocationSearchModal';
 import * as Utility from '../../../../utils';
 import {patchPlayer} from '../../../../api/Users';
-// const entity = {};
+import Verbs from '../../../../Constants/Verbs';
+
 export default function AvailableAreaScorekeeper({navigation, route}) {
   const [comeFrom] = useState(route?.params?.comeFrom);
   const [sportName] = useState(route?.params?.sportName);
-  // const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
-  // const [selectedAddressIndex, setSelectedAddressIndex] = useState();
 
-  console.log(
-    'route?.params?.settingObj?.available_area?.address',
-    route?.params?.settingObj?.available_area?.address,
-  );
   const [loading, setloading] = useState(false);
   const [areaRadio, setAreaRadio] = useState(0);
   const [addressType, setAddressType] = useState();
@@ -202,18 +196,6 @@ export default function AvailableAreaScorekeeper({navigation, route}) {
   const renderAddress = useCallback(
     ({index}) => (
       <View>
-        <View style={styles.viewTitleContainer}>
-          {index !== 0 && (
-            <Text
-              style={styles.deleteButton}
-              onPress={() => {
-                addressList.splice(index, 1);
-                setAddressList([...addressList]);
-              }}>
-              {strings.delete}
-            </Text>
-          )}
-        </View>
         <TouchableOpacity
           style={styles.detailsSingleContainer}
           onPress={() => {
@@ -229,6 +211,34 @@ export default function AvailableAreaScorekeeper({navigation, route}) {
             value={addressList[index].address}
           />
         </TouchableOpacity>
+        {index !== 0 && (
+          <Text
+            style={styles.deleteButton}
+            onPress={() => {
+              Alert.alert(
+                '',
+                strings.deleteAvailableArea,
+                [
+                  {
+                    text: strings.cancel,
+                    style: Verbs.cancelVerb,
+                  },
+                  {
+                    text: strings.delete,
+                    onPress: () => {
+                      const tempEmail = [...addressList];
+                      tempEmail.splice(index, 1);
+                      setAddressList([...tempEmail]);
+                    },
+                    style: 'destructive',
+                  },
+                ],
+                {cancelable: false},
+              );
+            }}>
+            {strings.delete}
+          </Text>
+        )}
       </View>
     ),
     [addressList],
@@ -257,19 +267,6 @@ export default function AvailableAreaScorekeeper({navigation, route}) {
           <Text style={[styles.radioTitleText, {flex: 0.9}]}>
             {strings.addAreaText}
           </Text>
-          {/* <View style={{flex: 0.1}}>
-              {areaRadio === 0 ? (
-                <Image
-                  source={images.radioCheckYellow}
-                  style={styles.checkboxImg}
-                />
-              ) : (
-                <Image
-                  source={images.radioUnselect}
-                  style={styles.checkboxImg}
-                />
-              )}
-            </View> */}
         </TouchableOpacity>
 
         <View pointerEvents={areaRadio === 0 ? 'auto' : 'none'}>

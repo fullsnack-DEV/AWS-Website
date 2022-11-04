@@ -23,6 +23,7 @@ import {useFocusEffect, useIsFocused} from '@react-navigation/native';
 import ActionSheet from 'react-native-actionsheet';
 import LinearGradient from 'react-native-linear-gradient';
 import DatePicker from 'react-native-date-picker';
+import {format} from 'react-string-format';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import GameStatus from '../../../Constants/GameStatus';
 import GameVerb from '../../../Constants/GameVerb';
@@ -839,7 +840,18 @@ export default function SoccerRecording({navigation, route}) {
                 <TCGameButton
                   title={strings.starts}
                   onPress={() => {
-                    if (
+                    if (gameObj.rem_referee > 0) {
+                      Alert.alert(
+                        format(strings.minRefereeRequired, gameObj.min_referee),
+                      );
+                    } else if (gameObj.rem_scorekeeper > 0) {
+                      Alert.alert(
+                        format(
+                          strings.minScorekeeperRequired,
+                          gameObj.min_scorekeeper,
+                        ),
+                      );
+                    } else if (
                       gameObj.start_datetime >
                       Number((new Date().getTime() / 1000).toFixed(0))
                     ) {

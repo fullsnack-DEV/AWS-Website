@@ -77,7 +77,6 @@ export default function PayAgainScreen({navigation, route}) {
       bodyParams.total_stripe_fee = challengeObj?.total_stripe_fee;
       bodyParams.total_payout = challengeObj?.total_payout;
       bodyParams.total_amount = challengeObj?.total_amount;
-
       console.log('body params::', bodyParams);
       if (sorceScreen === ReservationStatus.pendingrequestpayment) {
         payAgainAlter(challengeObj.challenge_id, bodyParams, authContext)
