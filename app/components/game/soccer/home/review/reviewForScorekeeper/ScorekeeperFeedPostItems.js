@@ -32,7 +32,7 @@ import Carousel from 'react-native-snap-carousel';
 import ActivityLoader from '../../../../../loader/ActivityLoader';
 import AuthContext from '../../../../../../auth/context';
 import images from '../../../../../../Constants/ImagePath';
-import {commentPostTimeCalculate} from '../../../../../../Constants/LoaderImages';
+import {formatTimestampForDisplay} from '../../../../../../utils/formatTimestampForDisplay';
 
 import {createReaction, getReactions} from '../../../../../../api/NewsFeeds';
 import colors from '../../../../../../Constants/Colors';
@@ -282,7 +282,7 @@ function ScorekeeperFeedPostItems({
             {item?.actor?.data?.full_name}
           </Text>
           <Text style={styles.activeTimeAgoTxt}>
-            {commentPostTimeCalculate(item?.time)}
+            {formatTimestampForDisplay(item?.time)}
           </Text>
         </View>
         {threeDotBtnDisplay && (

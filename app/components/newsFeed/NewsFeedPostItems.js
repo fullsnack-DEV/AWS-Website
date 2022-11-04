@@ -23,7 +23,7 @@ import VideoPost from './VideoPost';
 import PostImageSet from './PostImageSet';
 import MultiPostVideo from './MultiPostVideo';
 import NewsFeedDescription from './NewsFeedDescription';
-import {commentPostTimeCalculate} from '../../Constants/LoaderImages';
+import {formatTimestampForDisplay} from '../../utils/formatTimestampForDisplay';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import CommentModal from './CommentModal';
@@ -231,6 +231,7 @@ const NewsFeedPostItems = memo(
       const body = {
         ...temp,
         activity_id: item.id,
+        post_type :'repost'
       };
       createRePost(body, authContext)
         .then((response) => {
@@ -307,7 +308,7 @@ const NewsFeedPostItems = memo(
               {item?.actor?.data?.full_name}
             </Text>
             <Text style={styles.activeTimeAgoTxt}>
-              {commentPostTimeCalculate(item?.time, true)}
+              {formatTimestampForDisplay(item?.time)}
             </Text>
           </View>
 
@@ -444,7 +445,7 @@ const NewsFeedPostItems = memo(
                     {myData?.actor?.data?.full_name}
                   </Text>
                   <Text style={styles.activeTimeAgoTxt}>
-                    {commentPostTimeCalculate(myData?.time, true)}
+                    {formatTimestampForDisplay(myData?.time)}
                   </Text>
                 </View>
 
