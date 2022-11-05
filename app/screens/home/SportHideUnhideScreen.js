@@ -145,10 +145,7 @@ export default function SportHideUnhideScreen({navigation}) {
               onToggle={() => {
                 console.log('ITTTm??', item);
                 let finalObject = [];
-                if (
-                  authObject?.sport_setting?.activity_order &&
-                  authObject?.sport_setting?.activity_order?.length > 0
-                ) {
+                if (authObject?.sport_setting?.activity_order?.length > 0) {
                   if (item?.type === Verbs.entityTypePlayer) {
                     finalObject = authObject?.sport_setting?.activity_order.map(
                       (obj) => {

@@ -73,7 +73,7 @@ export default function ChooseGenderScreen({navigation, route}) {
     },
     [currentLocation, latLong, navigation, nearCity, route?.params?.signupInfo],
   );
-  const fetchNearestCity = useCallback(
+  const fetchNearestCityThenNavigate = useCallback(
     (gender) => {
       searchNearByCity(
         latLong.coords.latitude,
@@ -82,6 +82,7 @@ export default function ChooseGenderScreen({navigation, route}) {
         authContext,
       )
         .then((response) => {
+          console.log('search nearby cities1', response);
           const places = []; // This Array WIll contain locations received from google
           const cities = [];
           for (const googlePlace of response.results) {
@@ -97,6 +98,7 @@ export default function ChooseGenderScreen({navigation, route}) {
               coordinate.longitude,
               authContext,
             ).then((res) => {
+              console.log('search nearby cities2', response);
               let stateAbbr, city, country;
               // eslint-disable-next-line array-callback-return
               res.results[0].address_components.map((e) => {
@@ -125,6 +127,7 @@ export default function ChooseGenderScreen({navigation, route}) {
           navigateToChooseLocationScreen(gender);
         })
         .catch((e) => {
+          setLoading(false);
           navigateToChooseLocationScreen(gender);
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
@@ -149,29 +152,14 @@ export default function ChooseGenderScreen({navigation, route}) {
 
               check(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE)
                 .then((result) => {
-                  switch (result) {
-                    case RESULTS.UNAVAILABLE:
-                      console.log(strings.thisFeaturesNotAvailableText);
-                      navigateToChooseLocationScreen(gender);
-                      break;
-                    case RESULTS.DENIED:
-                      console.log(strings.permissionNotRequested);
-                      navigateToChooseLocationScreen(gender);
-                      break;
-                    case RESULTS.LIMITED:
-                      console.log(strings.permissionLimitedText);
-                      navigateToChooseLocationScreen(gender);
-                      break;
-                    case RESULTS.GRANTED:
-                      setLoading(true);
-                      fetchNearestCity(gender);
-                      break;
-                    case RESULTS.BLOCKED:
-                      console.log(strings.permissionDenitedText);
-                      navigateToChooseLocationScreen(gender);
-                      break;
-                    default:
-                      navigateToChooseLocationScreen(gender);
+                  if (
+                    result === RESULTS.GRANTED &&
+                    latLong?.coords?.latitude &&
+                    latLong?.coords?.longitude
+                  ) {
+                    fetchNearestCityThenNavigate(gender);
+                  } else {
+                    navigateToChooseLocationScreen(gender);
                   }
                 })
                 .catch((error) => {
@@ -207,47 +195,31 @@ export default function ChooseGenderScreen({navigation, route}) {
     selected,
     enableNext,
     navigateToChooseLocationScreen,
-    fetchNearestCity,
+    fetchNearestCityThenNavigate,
   ]);
   useEffect(() => {
     if (Platform.OS === 'android') {
       requestPermission();
     } else {
       request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE).then((result) => {
-        switch (result) {
-          case RESULTS.UNAVAILABLE:
-            console.log(strings.thisFeaturesNotAvailableText);
-            setEnableNext(true);
-            break;
-          case RESULTS.DENIED:
-            console.log(strings.permissionNotRequested);
-            setEnableNext(true);
-            break;
-          case RESULTS.LIMITED:
-            console.log(strings.permissionLimitedText);
-            setEnableNext(true);
-            break;
-          case RESULTS.GRANTED:
-            // console.log(strings.permissionGrantedText);
-            setLoading(true);
-            // calling this method becasue gooleapp id getting as null in case of incomplet signup
-            getAppSettingsWithoutAuth()
-              .then(async (response) => {
-                await Utility.setStorage('appSetting', response.payload.app);
-                getLocation();
-              })
-              .catch((e) => {
-                setEnableNext(true);
-                setTimeout(() => {
-                  Alert.alert(strings.alertmessagetitle, e.message);
-                }, 10);
-              });
-            break;
-          case RESULTS.BLOCKED:
-            console.log(strings.permissionDenitedText);
-            setEnableNext(true);
-            break;
-          default:
+        if (result === RESULTS.GRANTED) {
+          // console.log(strings.permissionGrantedText);
+          setLoading(true);
+          // calling this method becasue gooleapp id getting as null in case of incomplet signup
+          getAppSettingsWithoutAuth()
+            .then(async (response) => {
+              await Utility.setStorage('appSetting', response.payload.app);
+              getLocation();
+            })
+            .catch((e) => {
+              setEnableNext(true);
+              setTimeout(() => {
+                Alert.alert(strings.alertmessagetitle, e.message);
+              }, 10);
+            });
+        } else {
+          setLoading(false);
+          setEnableNext(true);
         }
       });
     }
@@ -283,6 +255,7 @@ export default function ChooseGenderScreen({navigation, route}) {
       (error) => {
         setLoading(false);
         setEnableNext(true);
+        console.log('errorr1', error);
         // See error code charts below.
         console.log(error.code, error.message);
       },
