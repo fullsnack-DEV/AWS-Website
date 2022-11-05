@@ -31,7 +31,6 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
-import Geolocation from '@react-native-community/geolocation';
 
 import LinearGradient from 'react-native-linear-gradient';
 import FastImage from 'react-native-fast-image';
@@ -59,19 +58,14 @@ import {getGroupIndex} from '../../api/elasticSearch';
 export default function ChooseLocationScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const [cityData, setCityData] = useState([]);
-  const [nearByCity, setNearByCity] = useState(
-    route?.params?.signupInfo?.nearCity,
-  );
+  const [nearbyCities, setNearbyCities] = useState([]);
 
   const [currentLocation, setCurrentLocation] = useState(
     route?.params?.signupInfo?.location,
   );
   const [noData, setNoData] = useState(false);
-  // const [searchText, setSearchText] = useState(authContext?.entity?.obj?.city);
   const [searchText, setSearchText] = useState('');
-
   const [loading, setLoading] = useState(false);
-  const routes = useNavigationState((state) => state);
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
@@ -94,12 +88,11 @@ export default function ChooseLocationScreen({navigation, route}) {
   }, [navigation]);
 
   useEffect(() => {
-    // getNearestCity();
     if (searchText.length >= 3) {
       searchCityState(searchText)
         .then((response) => {
+          console.log('city data list', response);
           setNoData(false);
-
           setCityData(
             response.predictions.filter((obj) => obj.terms.length === 3),
           );
@@ -116,26 +109,45 @@ export default function ChooseLocationScreen({navigation, route}) {
   }, [searchText]);
 
   useEffect(() => {
-    if (Platform.OS === 'android') {
-      requestPermission();
-    } else {
-      getLocation();
+    console.log('fetching getNearbyCityData', currentLocation);
+    // TODO: why not using nearby cities sent from previous screen
+    if (
+      currentLocation?.position?.coords?.latitude &&
+      currentLocation?.position?.coords?.longitude
+    ) {
+      getNearbyCityData(
+        currentLocation.position.coords.latitude,
+        currentLocation.position.coords.longitude,
+        100,
+      );
     }
   }, []);
 
-  const getNearByCityData = (lat, long, radious) => {
+  const getNearbyCityData = (lat, long, radius) => {
+    // TODO: move this to api common file
     axios({
       method: 'get',
-      url: `http://getnearbycities.geobytes.com/GetNearbyCities?radius=${radious}&latitude=${lat}&longitude=${long}&limit=500`,
+      url: `http://getnearbycities.geobytes.com/GetNearbyCities?radius=${radius}&latitude=${lat}&longitude=${long}&limit=500`,
     })
       .then((response) => {
+        console.log(
+          'file: ChooseLocationScreen.js ~ line 133 ~ .then ~ response',
+          response,
+        );
         const cityList = response.data.map((obj) => ({
           description: obj[1],
           city: obj[1],
           state_abbr: obj[2],
           country: obj[3],
         }));
-        setNearByCity(
+        const list = cityList.filter(
+          (obj) => obj?.city !== currentLocation?.city,
+        );
+        console.log(
+          'file: ChooseLocationScreen.js ~ line 144 ~ .then ~ _list',
+          list,
+        );
+        setNearbyCities(
           cityList.filter((obj) => obj?.city !== currentLocation?.city),
         );
       })
@@ -157,60 +169,6 @@ export default function ChooseLocationScreen({navigation, route}) {
         }, 10);
       });
   }, []);
-
-  const requestPermission = async () => {
-    await PermissionsAndroid.requestMultiple([
-      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-      PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
-    ])
-      .then((result) => {
-        if (
-          result['android.permission.ACCESS_COARSE_LOCATION'] &&
-          result['android.permission.ACCESS_FINE_LOCATION'] === 'granted'
-        ) {
-          getLocation();
-        }
-      })
-      .catch((error) => {
-        console.warn(error);
-      });
-  };
-
-  const getLocation = () => {
-    // Geolocation.requestAuthorization();
-    Geolocation.getCurrentPosition(
-      (position) => {
-        getNearByCityData(
-          position.coords.latitude,
-          position.coords.longitude,
-          100,
-        );
-        getLocationNameWithLatLong(
-          position.coords.latitude,
-          position.coords.longitude,
-          authContext,
-        ).then((res) => {
-          let stateAbbr, city, country;
-          res.results[0].address_components.map((e) => {
-            if (e.types.includes('administrative_area_level_1')) {
-              stateAbbr = e.short_name;
-            } else if (e.types.includes('locality')) {
-              city = e.short_name;
-            } else if (e.types.includes('country')) {
-              country = e.long_name;
-            }
-          });
-          setCurrentLocation({stateAbbr, city, country});
-        });
-        console.log(position.coords.latitude);
-      },
-      (error) => {
-        // See error code charts below.
-        console.log(error.code, error.message);
-      },
-      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
-    );
-  };
 
   const getTeamsDataByCurrentLocation = async () => {
     setLoading(true);
@@ -301,10 +259,10 @@ export default function ChooseLocationScreen({navigation, route}) {
       {noData && searchText?.length > 0 && (
         <Text style={styles.noDataText}>{strings.enter3CharText}</Text>
       )}
-      {noData && searchText?.length === 0 && nearByCity.length > 0 && (
+      {noData && searchText?.length === 0 && nearbyCities?.length > 0 && (
         <SafeAreaView style={{flex: 1}}>
           <FlatList
-            data={nearByCity}
+            data={nearbyCities}
             renderItem={({item}) => (
               <TouchableWithoutFeedback
                 style={styles.listItem}
@@ -339,7 +297,7 @@ export default function ChooseLocationScreen({navigation, route}) {
         <FlatList
           data={cityData}
           renderItem={renderItem}
-          keyExtractor={(index) => index.toString()}
+          keyExtractor={(item) => item.place_id}
         />
       )}
     </LinearGradient>
