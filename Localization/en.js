@@ -2102,4 +2102,7 @@ export default {
   minRefereeRequired: 'en_Minimum {0} referee required for start game.',
   minScorekeeperRequired: 'en_Minimum {0} scorekeeper required for start game.',
   challengeNotConfirmedYet: 'en_This challenge is not confirmed yet.',
+  likesTitle: 'en_Likes',
+  noLikesYet: 'en_No Likes Yet',
+  taggedTitle: 'en_Tagged',
 };

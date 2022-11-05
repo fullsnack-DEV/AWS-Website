@@ -8,6 +8,7 @@ import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import AuthContext from '../../../auth/context';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
+import * as Utility from '../../../utils/index';
 
 export default function InviteMembersByEmailScreen({navigation}) {
   const authContext = useContext(AuthContext);
@@ -42,26 +43,20 @@ export default function InviteMembersByEmailScreen({navigation}) {
     });
   }, [navigation, email]);
 
-  const ValidateEmail = (emailAddress) => {
-    const re =
-      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(String(emailAddress).toLowerCase());
-  };
-
   const sendInvitation = () => {
-    setloading(true);
     const entity = authContext.entity;
 
     const resultEmails = email.filter((obj) => obj.email === '');
     const invalidEmails = email.filter(
-      (obj) => ValidateEmail(obj.email) === 'false',
+      (obj) => Utility.validateEmail(obj.email) === false,
     );
 
     if (resultEmails.length > 0) {
       Alert.alert(strings.fillAllEmailText);
     } else if (invalidEmails.length > 0) {
-      Alert.alert('', strings.validEmailMessage);
+      Alert.alert(strings.validEmailMessage);
     } else {
+      setloading(true);
       const emails = email.map((i) => i.email);
       const obj = {
         entity_type: entity.role,

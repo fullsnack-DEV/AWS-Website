@@ -157,7 +157,7 @@ const FeedsScreen = ({navigation}) => {
   );
 
   const onPressDone = useCallback(
-    (data, postDesc, tagsOfEntity, format_tagged_data = []) => {
+    (data, postDesc, tagsOfEntity, who_can_see, format_tagged_data = []) => {
       let dataParams = {};
       const entityID =
         currentUserDetail?.group_id ?? currentUserDetail?.user_id;
@@ -181,6 +181,7 @@ const FeedsScreen = ({navigation}) => {
           ...dataParams,
           text: postDesc,
           tagged: tagsOfEntity ?? [],
+          who_can_see,
           format_tagged_data,
         };
 
@@ -192,6 +193,7 @@ const FeedsScreen = ({navigation}) => {
           text: postDesc && postDesc,
           attachments: [],
           tagged: tagsOfEntity ?? [],
+          who_can_see,
           format_tagged_data,
         };
         imageUploadContext.uploadData(
@@ -256,15 +258,23 @@ const FeedsScreen = ({navigation}) => {
   );
 
   const editPostDoneCall = useCallback(
-    (data, postDesc, selectEditItem, tagData, format_tagged_data) => {
+    (
+      data,
+      postDesc,
+      selectEditItem,
+      tagData,
+      who_can_see,
+      format_tagged_data,
+    ) => {
       const alreadyUrlDone = [];
       const createUrlData = [];
-      console.log('editPostDoneCall', editPostDoneCall);
+
       if (postDesc.trim().length > 0 && data?.length === 0) {
         const dataParams = {
           activity_id: selectEditItem.id,
           text: postDesc,
           tagged: tagData ?? [],
+          who_can_see,
           format_tagged_data,
         };
         updatePostAfterUpload(dataParams);
@@ -283,6 +293,7 @@ const FeedsScreen = ({navigation}) => {
           activity_id: selectEditItem.id,
           text: postDesc,
           tagged: tagData ?? [],
+          who_can_see,
           format_tagged_data,
           attachments: [...alreadyUrlDone],
         };
@@ -351,6 +362,7 @@ const FeedsScreen = ({navigation}) => {
 
   const onLikePress = useCallback(
     (item) => {
+      console.log('onLikePress clap', item);
       const bodyParams = {
         reaction_type: 'clap',
         activity_id: item.id,

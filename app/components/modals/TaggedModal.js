@@ -1,7 +1,14 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {Portal} from 'react-native-portalize';
-import {StyleSheet, Text, View} from 'react-native';
-import {Modalize} from 'react-native-modalize';
+import {
+  Dimensions,
+  Platform,
+  SectionList,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import Modal from 'react-native-modal';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
 import fonts from '../../Constants/Fonts';
@@ -9,14 +16,20 @@ import {strings} from '../../../Localization/translation';
 import TCGameCard from '../TCGameCard';
 import TaggedEntityView from '../shorts/TaggedEntityView';
 import {getGameHomeScreen} from '../../utils/gameUtils';
-import {heightPercentageToDP as hp} from '../../utils';
+import Verbs from '../../Constants/Verbs';
 
-const TaggedModal = ({taggedModalRef, navigation, taggedData}) => {
+const TaggedModal = ({
+  taggedModalRef,
+  navigation,
+  taggedData,
+  showTaggedModal,
+  onBackdropPress,
+}) => {
   const [gameTagList, setGameTagList] = useState([]);
   const [entityTagList, setEntityTagList] = useState([]);
 
   useEffect(() => {
-    if (taggedData) {
+    if (taggedData?.length) {
       const gData = taggedData?.filter((e) => e?.entity_type === 'game') ?? [];
       const eData = taggedData?.filter((e) => e?.entity_type !== 'game') ?? [];
       setGameTagList([...gData]);
@@ -56,16 +69,13 @@ const TaggedModal = ({taggedModalRef, navigation, taggedData}) => {
     ({item}) => {
       let teamIcon = '';
       let teamImagePH = '';
-      if (item?.entity_type === 'team') {
+      if (item?.entity_type === Verbs.entityTypeTeam) {
         teamIcon = images.myTeams;
         teamImagePH = images.team_ph;
-      } else if (item?.entity_type === 'club') {
+      } else if (item?.entity_type === Verbs.entityTypeClub) {
         teamIcon = images.myClubs;
         teamImagePH = images.club_ph;
-      } else if (item?.entity_type === 'league') {
-        teamIcon = images.myLeagues;
-        teamImagePH = images.leaguePlaceholder;
-      } else if (item?.entity_type === 'player') {
+      } else if (item?.entity_type === Verbs.entityTypePlayer) {
         teamImagePH = images.profilePlaceHolder;
       }
       return (
@@ -76,8 +86,10 @@ const TaggedModal = ({taggedModalRef, navigation, taggedData}) => {
             handleCloseModal();
             navigation.push('HomeScreen', {
               uid: item?.entity_id,
-              role: ['user', 'player']?.includes(item?.entity_type)
-                ? 'user'
+              role: [Verbs.entityTypePlayer, Verbs.entityTypeUser]?.includes(
+                item?.entity_type,
+              )
+                ? Verbs.entityTypeUser
                 : item?.entity_type,
               backButtonVisible: true,
               menuBtnVisible: false,
@@ -145,40 +157,46 @@ const TaggedModal = ({taggedModalRef, navigation, taggedData}) => {
   const ModalHeader = () => (
     <View style={styles.headerStyle}>
       <View style={styles.handleStyle} />
-      <Text style={styles.titleText}>Tagged</Text>
+      <Text style={styles.titleText}>{strings.taggedTitle}</Text>
       <View style={styles.headerSeparator} />
     </View>
   );
 
   return (
-    <Portal>
-      <Modalize
-        snapPoint={hp(50)}
-        withHandle={false}
-        overlayStyle={{backgroundColor: 'rgba(255,255,255,0.2)'}}
-        modalStyle={{
-          borderTopRightRadius: 25,
-          borderTopLeftRadius: 25,
-          shadowColor: colors.blackColor,
-          shadowOffset: {width: 0, height: -2},
-          shadowOpacity: 0.3,
-          shadowRadius: 10,
-          elevation: 10,
-        }}
-        tapGestureEnabled={false}
-        ref={taggedModalRef}
-        HeaderComponent={ModalHeader}
-        sectionListProps={{
-          bounces: false,
-          showsHorizontalScrollIndicator: false,
-          showsVerticalScrollIndicator: false,
-          ItemSeparatorComponent: renderSeparator,
-          stickySectionHeadersEnabled: true,
-          renderSectionHeader,
-          sections,
-        }}
-      />
-    </Portal>
+    <View>
+      <Portal>
+        <Modal
+          onBackdropPress={onBackdropPress}
+          isVisible={showTaggedModal}
+          animationInTiming={300}
+          animationOutTiming={800}
+          backdropTransitionInTiming={300}
+          backdropTransitionOutTiming={800}
+          style={{
+            margin: 0,
+          }}>
+          <View
+            style={[
+              styles.bottomPopupContainer,
+              {
+                height:
+                  Dimensions.get('window').height -
+                  Dimensions.get('window').height / 2.5,
+              },
+            ]}>
+            {ModalHeader()}
+            <SectionList
+              sections={sections}
+              showsVerticalScrollIndicator={false}
+              showsHorizontalScrollIndicator={false}
+              keyExtractor={(item, index) => item + index}
+              renderSectionHeader={renderSectionHeader}
+              ItemSeparatorComponent={renderSeparator}
+            />
+          </View>
+        </Modal>
+      </Portal>
+    </View>
   );
 };
 
@@ -220,12 +238,10 @@ const styles = StyleSheet.create({
   },
   closeStyle: {
     backgroundColor: colors.whiteColor,
-    height: 50,
+    height: 30,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingBottom: 10,
-    paddingTop: 10,
   },
   titleText: {
     color: colors.extraLightBlackColor,
@@ -239,6 +255,27 @@ const styles = StyleSheet.create({
     backgroundColor: colors.grayBackgroundColor,
     height: 2,
     marginBottom: 15,
+  },
+  bottomPopupContainer: {
+    paddingBottom: Platform.OS === 'ios' ? 30 : 0,
+    backgroundColor: colors.whiteColor,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+
+    ...Platform.select({
+      ios: {
+        shadowColor: colors.googleColor,
+        shadowOffset: {width: 0, height: 3},
+        shadowOpacity: 0.5,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 15,
+      },
+    }),
   },
 });
 
