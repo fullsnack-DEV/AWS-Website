@@ -1,6 +1,13 @@
 /* eslint-disable no-useless-escape */
 
-import React, {useState, useRef, useEffect, useMemo, useCallback} from 'react';
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useMemo,
+  useCallback,
+  useContext,
+} from 'react';
 import {
   View,
   Text,
@@ -14,12 +21,15 @@ import {
   Platform,
   FlatList,
   Alert,
+  Dimensions,
   // Keyboard,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import Modal from 'react-native-modal';
+
 import ImagePicker from 'react-native-image-crop-picker';
 import ParsedText from 'react-native-parsed-text';
 import _ from 'lodash';
@@ -31,11 +41,17 @@ import EditSelectedImages from '../../components/WritePost/EditSelectedImages';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
-import {getTaggedEntityData} from '../../utils';
+import {getHitSlop, getTaggedEntityData} from '../../utils';
 import {getPickedData, MAX_UPLOAD_POST_ASSETS} from '../../utils/imageAction';
 import TCGameCard from '../../components/TCGameCard';
 import {getGroupIndex, getUserIndex} from '../../api/elasticSearch';
 import {strings} from '../../../Localization/translation';
+import TCThinDivider from '../../components/TCThinDivider';
+import AuthContext from '../../auth/context';
+import {
+  whoCanDataSourceGroup,
+  whoCanDataSourceUser,
+} from '../../utils/constant';
 
 const urlRegex =
   /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gim;
@@ -43,6 +59,8 @@ const urlRegex =
 const tagRegex = /(?!\w)@\w+/gim;
 
 const EditPostScreen = ({navigation, route}) => {
+  const authContext = useContext(AuthContext);
+
   const {
     params: {data, onPressDone},
   } = route;
@@ -71,6 +89,13 @@ const EditPostScreen = ({navigation, route}) => {
   const [searchGroups, setSearchGroups] = useState([]);
   const [users, setUsers] = useState([]);
   const [groups, setGroups] = useState([]);
+  const [visibleWhoModal, setVisibleWhoModal] = useState(false);
+  const [privacySetting, setPrivacySetting] = useState(
+    editObject?.who_can_see ?? {
+      text: strings.everyoneTitleText,
+      value: 0,
+    },
+  );
 
   useEffect(() => {
     const userQuery = {
@@ -544,6 +569,39 @@ const EditPostScreen = ({navigation, route}) => {
     [selectImage],
   );
 
+  const renderWhoCan = ({item}) => (
+    <TouchableOpacity
+      style={styles.listItem}
+      onPress={() => {
+        setPrivacySetting(item);
+
+        setTimeout(() => {
+          setVisibleWhoModal(false);
+        }, 300);
+      }}>
+      <View
+        style={{
+          padding: 20,
+          alignItems: 'center',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          marginRight: 15,
+        }}>
+        <Text style={styles.languageList}>{item.text}</Text>
+        <View style={styles.checkbox}>
+          {privacySetting.value === item?.value ? (
+            <Image
+              source={images.radioCheckYellow}
+              style={styles.checkboxImg}
+            />
+          ) : (
+            <Image source={images.radioUnselect} style={styles.checkboxImg} />
+          )}
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+
   return (
     <KeyboardAvoidingView
       style={{flex: 1}}
@@ -588,11 +646,21 @@ const EditPostScreen = ({navigation, route}) => {
                 tagData.forEach((tData) => delete tData.entity_data);
                 navigation.goBack();
 
+                const who_can_see = {...privacySetting};
+                if (privacySetting.value === 2) {
+                  if (
+                    ['team', 'club', 'league'].includes(authContext.entity.role)
+                  ) {
+                    who_can_see.group_ids = [authContext.entity.uid];
+                  }
+                }
+
                 onPressDone(
                   selectImage,
                   searchText,
                   data,
                   tagData,
+                  who_can_see,
                   format_tagged_data,
                 );
               }
@@ -649,9 +717,9 @@ const EditPostScreen = ({navigation, route}) => {
             <ImageButton
               source={images.lock}
               imageStyle={{width: 30, height: 30}}
-              onImagePress={() => {}}
+              onImagePress={() => setVisibleWhoModal(true)}
             />
-            <Text style={styles.onlyMeTextStyle}>{strings.onlymeTitleText}</Text>
+            <Text style={styles.onlyMeTextStyle}>{privacySetting.text}</Text>
           </View>
           <View
             style={[
@@ -672,12 +740,84 @@ const EditPostScreen = ({navigation, route}) => {
                 navigation.navigate('UserTagSelectionListScreen', {
                   comeFrom: 'EditPostScreen',
                   onSelectMatch,
+                  taggedData: JSON.parse(JSON.stringify(tagsOfEntity)).map(
+                    (obj) => ({
+                      city: obj.entity_data.city,
+                      full_name: obj.entity_data.full_name,
+                      entity_id: obj.entity_id,
+                      entity_type: obj.entity_type,
+                    }),
+                  ),
                 });
               }}
             />
           </View>
         </View>
       </SafeAreaView>
+      <Modal
+        isVisible={visibleWhoModal}
+        onBackdropPress={() => setVisibleWhoModal(false)}
+        animationInTiming={300}
+        animationOutTiming={800}
+        backdropTransitionInTiming={50}
+        backdropTransitionOutTiming={50}
+        style={{
+          margin: 0,
+        }}>
+        <View
+          style={{
+            width: '100%',
+            height: Dimensions.get('window').height / 1.3,
+            backgroundColor: 'white',
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            borderTopLeftRadius: 30,
+            borderTopRightRadius: 30,
+            shadowColor: '#000',
+            shadowOffset: {width: 0, height: 1},
+            shadowOpacity: 0.5,
+            shadowRadius: 5,
+            elevation: 15,
+          }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              paddingHorizontal: 15,
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}>
+            <TouchableOpacity
+              hitSlop={getHitSlop(15)}
+              style={styles.closeButton}
+              onPress={() => setVisibleWhoModal(false)}>
+              <Image source={images.cancelImage} style={styles.closeButton} />
+            </TouchableOpacity>
+            <Text
+              style={{
+                alignSelf: 'center',
+                marginVertical: 20,
+                fontSize: 16,
+                fontFamily: fonts.RBold,
+                color: colors.lightBlackColor,
+              }}>
+              {strings.privacySettingText}
+            </Text>
+          </View>
+          <View style={styles.separatorLine} />
+          <FlatList
+            ItemSeparatorComponent={() => <TCThinDivider width="92%" />}
+            showsVerticalScrollIndicator={false}
+            data={
+              ['user', 'player'].includes(authContext.entity.role)
+                ? whoCanDataSourceUser
+                : whoCanDataSourceGroup
+            }
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={renderWhoCan}
+          />
+        </View>
+      </Modal>
     </KeyboardAvoidingView>
   );
 };
@@ -815,6 +955,39 @@ const styles = StyleSheet.create({
     borderColor: colors.grayBackgroundColor,
     padding: 8,
     borderRadius: 10,
+  },
+
+  checkboxImg: {
+    width: wp('5.5%'),
+    resizeMode: 'contain',
+    alignSelf: 'center',
+  },
+  checkbox: {
+    alignSelf: 'center',
+    position: 'absolute',
+    right: wp(0),
+  },
+
+  closeButton: {
+    alignSelf: 'center',
+    width: 13,
+    height: 13,
+    marginLeft: 5,
+    resizeMode: 'contain',
+  },
+
+  separatorLine: {
+    alignSelf: 'center',
+    backgroundColor: colors.grayColor,
+    height: 0.5,
+    marginTop: 14,
+    width: wp('92%'),
+  },
+
+  languageList: {
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RRegular,
+    fontSize: wp('4%'),
   },
 });
 export default EditPostScreen;

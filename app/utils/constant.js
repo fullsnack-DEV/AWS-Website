@@ -1,4 +1,5 @@
 import Config from 'react-native-config';
+import {strings} from '../../Localization/translation';
 import images from '../Constants/ImagePath';
 
 // AsyncConstants
@@ -1320,3 +1321,24 @@ export const gameData = {
   end_datetime: 1630436400,
   actual_startdatetime: 1611639970,
 };
+
+export const whoCanDataSourceUser = [
+  {text: strings.everyoneTitleText, value: 0},
+  {text: strings.onlymeTitleText, value: 1},
+  {
+    text: strings.followerTitleText,
+    value: 3,
+  },
+];
+export const whoCanDataSourceGroup = [
+  {text: strings.everyoneTitleText, value: 0},
+  {text: strings.onlymeTitleText, value: 1},
+  {
+    text: strings.memberInGroupText,
+    value: 2,
+  },
+  {
+    text: strings.followerTitleText,
+    value: 3,
+  },
+];
