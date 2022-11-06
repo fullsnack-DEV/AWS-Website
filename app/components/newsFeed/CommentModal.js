@@ -15,6 +15,9 @@ import {
   TouchableOpacity,
   SafeAreaView,
   TextInput,
+  Dimensions,
+  Platform,
+  FlatList,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
@@ -22,8 +25,9 @@ import {
 } from 'react-native-responsive-screen';
 import {Text} from 'react-native-elements';
 
-import {Modalize} from 'react-native-modalize';
+import Modal from 'react-native-modal';
 import {Portal} from 'react-native-portalize';
+
 import {useIsFocused} from '@react-navigation/native';
 import {
   createReaction,
@@ -39,12 +43,15 @@ import AuthContext from '../../auth/context';
 import WriteCommentItems from './WriteCommentItems';
 import SwipeableRow from '../gameRecordList/SwipeableRow';
 import ReportCommentModal from './ReportCommentModal';
+import Verbs from '../../Constants/Verbs';
 
 const CommentModal = ({
   item,
   updateCommentCount,
   commentModalRef,
   navigation,
+  showCommentModal,
+  onBackdropPress,
 }) => {
   const reportCommentModalRef = useRef(null);
   const authContext = useContext(AuthContext);
@@ -60,8 +67,6 @@ const CommentModal = ({
   const [editData, setEditData] = useState();
 
   const [currentUserDetail, setCurrentUserDetail] = useState(null);
-  const [showBottomWriteCommentSection, setShowBottomWriteCommentSection] =
-    useState(false);
   const [selectedCommentData, setSelectedCommentData] = useState(null);
 
   useEffect(() => {
@@ -75,12 +80,11 @@ const CommentModal = ({
       setCurrentUserDetail(entity.obj || entity.auth.user);
       const params = {
         activity_id: item?.id,
-        reaction_type: 'comment',
+        reaction_type: Verbs.comment,
       };
       getReactions(params, authContext)
         .then((response) => {
           setCommentData(response?.payload?.reverse());
-          console.log('Reaction data:=>', response?.payload?.reverse());
         })
         .catch((e) => {
           Alert.alert('', e.messages);
@@ -99,8 +103,8 @@ const CommentModal = ({
         uid: data?.user?.id,
         backButtonVisible: true,
         role:
-          data?.user?.entity_type === 'player'
-            ? 'user'
+          data?.user?.entity_type === Verbs.entityTypePlayer
+            ? Verbs.entityTypeUser
             : data?.user?.entity_type,
       });
     },
@@ -148,23 +152,18 @@ const CommentModal = ({
         setSelectedCommentData(data);
         reportCommentModalRef.current.open();
       } else if (key === 'edit') {
-        console.log('Edited item:=>', data);
         setCommentText(data.data.text);
         setEditData(data);
       } else {
-        console.log('Delete item:=>', data);
         deleteReactions(data.id, authContext)
-          .then((response) => {
+          .then(() => {
             const filtered = commentData.filter((e) => e.id !== data.id);
-            console.log('Filtered data:=>', filtered);
             setCommentData(filtered);
             updateCommentCount({
               id: item?.id,
               count: filtered?.length,
               data: filtered,
             });
-
-            console.log('comment delete data:=>', response);
           })
           .catch((e) => {
             Alert.alert('', e.messages);
@@ -201,7 +200,7 @@ const CommentModal = ({
 
   const onSendPress = () => {
     const bodyParams = {
-      reaction_type: 'comment',
+      reaction_type: Verbs.comment,
       activity_id: item?.id,
       data: {
         text: commentTxt,
@@ -226,7 +225,7 @@ const CommentModal = ({
 
   const onSavePress = () => {
     const bodyParams = {
-      reaction_type: 'comment',
+      reaction_type: Verbs.comment,
       activity_id: editData?.id,
       data: {
         text: commentTxt,
@@ -249,7 +248,7 @@ const CommentModal = ({
 
   const FooterComponent = () => (
     <SafeAreaView
-      pointerEvents={showBottomWriteCommentSection ? 'none' : 'auto'}
+      // pointerEvents={showBottomWriteCommentSection ? 'none' : 'auto'}
       style={styles.bottomSafeAreaStyle}>
       <View style={styles.bottomImgView}>
         <View style={styles.commentReportView}>
@@ -297,65 +296,40 @@ const CommentModal = ({
     </SafeAreaView>
   );
 
-  const flatListProps = {
-    showsVerticalScrollIndicator: false,
-    showsHorizontalScrollIndicator: false,
-    keyboardShouldPersistTaps: 'never',
-    bounces: false,
-    data: commentData,
-    renderItem: renderComments,
-    keyExtractor: (index) => index.toString(),
-    ListEmptyComponent: listEmptyComponent,
-  };
-
-  const FloatingComponent = () => (
-    <TouchableOpacity
-      activeOpacity={1}
-      style={{
-        position: 'absolute',
-        zIndex: 9999,
-        left: 0,
-        right: 0,
-        bottom: 0,
-      }}
-      onPress={() => {
-        commentModalRef.current.open('top');
-        setTimeout(() => {
-          writeCommentTextInputRef.current.focus(true);
-        }, 1000);
-      }}>
-      {showBottomWriteCommentSection && <FooterComponent />}
-    </TouchableOpacity>
-  );
-
   return (
     <View>
       <Portal>
-        <Modalize
-          onOpen={() => setShowBottomWriteCommentSection(true)}
-          snapPoint={hp(50)}
-          withHandle={false}
-          overlayStyle={{backgroundColor: 'rgba(255,255,255,0.2)'}}
-          modalStyle={{
-            borderTopRightRadius: 25,
-            borderTopLeftRadius: 25,
-            shadowColor: colors.blackColor,
-            shadowOffset: {width: 0, height: -2},
-            shadowOpacity: 0.3,
-            shadowRadius: 10,
-            elevation: 10,
-          }}
-          onPositionChange={(position) => {
-            if (position === 'top') {
-              setShowBottomWriteCommentSection(false);
-            }
-          }}
-          ref={commentModalRef}
-          HeaderComponent={ModalHeader}
-          flatListProps={flatListProps}
-          FloatingComponent={FloatingComponent}
-          FooterComponent={FooterComponent}
-        />
+        <Modal
+          onBackdropPress={onBackdropPress}
+          isVisible={showCommentModal}
+          animationInTiming={300}
+          animationOutTiming={800}
+          backdropTransitionInTiming={300}
+          backdropTransitionOutTiming={800}
+          style={{
+            margin: 0,
+          }}>
+          <View
+            style={[
+              styles.bottomPopupContainer,
+              {
+                height:
+                  Dimensions.get('window').height -
+                  Dimensions.get('window').height / 2.5,
+              },
+            ]}>
+            {ModalHeader()}
+            <FlatList
+              data={commentData}
+              keyExtractor={(index) => index.toString()}
+              renderItem={renderComments}
+              ListEmptyComponent={listEmptyComponent}
+              showsVerticalScrollIndicator={false}
+              showsHorizontalScrollIndicator={false}
+            />
+            {FooterComponent()}
+          </View>
+        </Modal>
       </Portal>
       <ReportCommentModal
         commentData={selectedCommentData}
@@ -436,6 +410,27 @@ const styles = StyleSheet.create({
     width: 40,
     borderRadius: 15,
     backgroundColor: '#DADBDA',
+  },
+  bottomPopupContainer: {
+    paddingBottom: Platform.OS === 'ios' ? 30 : 0,
+    backgroundColor: colors.whiteColor,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+
+    ...Platform.select({
+      ios: {
+        shadowColor: colors.googleColor,
+        shadowOffset: {width: 0, height: 3},
+        shadowOpacity: 0.5,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 15,
+      },
+    }),
   },
 });
 

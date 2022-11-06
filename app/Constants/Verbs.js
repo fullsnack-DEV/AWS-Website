@@ -73,6 +73,7 @@ const Verbs = {
   card: 'card',
   friendly: 'Friendly',
   official: 'Official',
+  comment: 'comment',
 };
 
 export default Verbs;

@@ -876,7 +876,7 @@ export default function ChallengePreviewScreen({navigation, route}) {
     ) {
       return (
         <TCGradientButton
-          title={'TRY TO PAY AGAIN'}
+          title={strings.tryToPayText}
           onPress={() => {
             navigation.navigate('PayAgainScreen', {
               body: {...challengeData},

@@ -6,7 +6,7 @@ import {
 } from 'react-native-responsive-screen';
 import FastImage from 'react-native-fast-image';
 import images from '../../Constants/ImagePath';
-import {commentPostTimeCalculate} from '../../Constants/LoaderImages';
+import {formatTimestampForDisplay} from '../../utils/formatTimestampForDisplay';
 
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
@@ -53,7 +53,7 @@ function WriteCommentItems({data, onProfilePress}) {
         </View>
         <View style={{flexDirection: 'row'}}>
           <Text style={styles.activeTimeAgoTxt}>
-            {commentPostTimeCalculate(commentTime)}
+            {formatTimestampForDisplay(commentTime, 0)}
           </Text>
           <TouchableOpacity>
             <Text

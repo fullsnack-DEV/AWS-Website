@@ -1,3 +1,4 @@
+/* eslint-disable import/named */
 /* eslint-disable consistent-return */
 /* eslint-disable react/jsx-indent */
 /* eslint-disable array-callback-return */
@@ -49,6 +50,10 @@ import {getGroupIndex, getUserIndex} from '../../api/elasticSearch';
 import TCThinDivider from '../../components/TCThinDivider';
 import AuthContext from '../../auth/context';
 import {strings} from '../../../Localization/translation';
+import {
+  whoCanDataSourceGroup,
+  whoCanDataSourceUser,
+} from '../../utils/constant';
 
 const urlRegex =
   /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gim;
@@ -100,27 +105,6 @@ export default function WritePostScreen({navigation, route}) {
     userName = postData.group_name;
   }
 
-  const whoCanDataSourceUser = [
-    {text: strings.everyoneTitleText, value: 0},
-    {text: strings.onlymeTitleText, value: 1},
-    {
-      text: strings.followerTitleText,
-      value: 3,
-    },
-  ];
-  const whoCanDataSourceGroup = [
-    {text: strings.everyoneTitleText, value: 0},
-    {text: strings.onlymeTitleText, value: 1},
-    {
-      text: strings.memberInGroupText,
-      value: 2,
-    },
-    {
-      text: strings.followerTitleText,
-      value: 3,
-    },
-  ];
-
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -170,8 +154,8 @@ export default function WritePostScreen({navigation, route}) {
                 selectImage,
                 searchText,
                 tagData,
-                format_tagged_data,
                 who_can_see,
+                format_tagged_data,
               );
               if (route?.params?.comeFrom) {
                 navigation.pop(2);
@@ -309,9 +293,7 @@ export default function WritePostScreen({navigation, route}) {
 
   useEffect(() => {
     if (route?.params?.comeFrom === 'LocalHomeScreen') {
-      Alert.alert(
-        strings.verticalVideo,
-      );
+      Alert.alert(strings.verticalVideo);
     }
   }, [route?.params?.comeFrom]);
 
@@ -704,8 +686,14 @@ export default function WritePostScreen({navigation, route}) {
     navigation.navigate('UserTagSelectionListScreen', {
       comeFrom: 'WritePostScreen',
       onSelectMatch,
+      taggedData: JSON.parse(JSON.stringify(tagsOfEntity)).map((obj) => ({
+        city: obj.entity_data.city,
+        full_name: obj.entity_data.full_name,
+        entity_id: obj.entity_id,
+        entity_type: obj.entity_type,
+      })),
     });
-  }, [navigation, onSelectMatch]);
+  }, [navigation, onSelectMatch, tagsOfEntity]);
 
   const removeTaggedGame = useCallback(
     (taggedGame) => {

@@ -23,7 +23,7 @@ import VideoPost from './VideoPost';
 import PostImageSet from './PostImageSet';
 import MultiPostVideo from './MultiPostVideo';
 import NewsFeedDescription from './NewsFeedDescription';
-import {commentPostTimeCalculate} from '../../Constants/LoaderImages';
+import {formatTimestampForDisplay} from '../../utils/formatTimestampForDisplay';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import CommentModal from './CommentModal';
@@ -60,7 +60,8 @@ const NewsFeedPostItems = memo(
     const [myItem, setMyItem] = useState();
     const [attachedImages, setAttachedImages] = useState([]);
     const [descriptions, setDescriptions] = useState('');
-
+    const [showCommentModal, setShowCommentModal] = useState(false);
+    const [showLikeModal, setShowLikeModal] = useState(false);
     useEffect(() => {
       let filterLike = [];
       if (item?.reaction_counts?.clap !== undefined) {
@@ -231,6 +232,7 @@ const NewsFeedPostItems = memo(
       const body = {
         ...temp,
         activity_id: item.id,
+        post_type :'repost'
       };
       createRePost(body, authContext)
         .then((response) => {
@@ -307,7 +309,7 @@ const NewsFeedPostItems = memo(
               {item?.actor?.data?.full_name}
             </Text>
             <Text style={styles.activeTimeAgoTxt}>
-              {commentPostTimeCalculate(item?.time, true)}
+              {formatTimestampForDisplay(item?.time)}
             </Text>
           </View>
 
@@ -397,7 +399,7 @@ const NewsFeedPostItems = memo(
       ],
     );
     const onWriteCommentPress = useCallback(() => {
-      commentModalRef.current.open();
+      setShowCommentModal(true);
     }, []);
 
     const renderPost = useMemo(() => {
@@ -444,7 +446,7 @@ const NewsFeedPostItems = memo(
                     {myData?.actor?.data?.full_name}
                   </Text>
                   <Text style={styles.activeTimeAgoTxt}>
-                    {commentPostTimeCalculate(myData?.time, true)}
+                    {formatTimestampForDisplay(myData?.time)}
                   </Text>
                 </View>
 
@@ -539,8 +541,7 @@ const NewsFeedPostItems = memo(
               <TouchableOpacity
                 style={{marginRight: 5}}
                 onPress={() => {
-                  console.log('Like obj:=>', item);
-                  likersModalRef.current.open();
+                  setShowLikeModal(true);
                 }}>
                 <Text
                   style={[
@@ -586,22 +587,26 @@ const NewsFeedPostItems = memo(
 
     console.log('ittttttm', myItem);
     return (
-      <View style={{flex: 1, marginBottom: 15}}>
+      <View style={{marginBottom: 15}}>
         {renderRepost}
         {renderPost}
         <LikersModal
           likersModalRef={likersModalRef}
           navigation={navigation}
           data={item}
+          showLikeModal={showLikeModal}
+          onBackdropPress={() => setShowLikeModal(false)}
         />
         <CommentModal
           navigation={navigation}
           commentModalRef={commentModalRef}
+          showCommentModal={showCommentModal}
           item={item}
           updateCommentCount={(updatedCommentData) => {
             updateCommentCount(updatedCommentData);
             setCommentCount(updatedCommentData?.count);
           }}
+          onBackdropPress={() => setShowCommentModal(false)}
         />
         <ActionSheet
           ref={actionSheet}

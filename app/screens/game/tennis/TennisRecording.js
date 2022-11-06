@@ -32,6 +32,7 @@ import {useFocusEffect, useIsFocused} from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
 // import RNDateTimePicker from '@react-native-community/datetimepicker';
 import ActionSheet from 'react-native-actionsheet';
+import {format} from 'react-string-format';
 import * as Utils from '../../challenge/ChallengeUtility';
 import {
   toggleView,
@@ -1243,9 +1244,23 @@ export default function TennisRecording({navigation, route}) {
                         {(gameObj.status === GameStatus.accepted ||
                           gameObj.status === GameStatus.reset) && (
                           <TCGameButton
-                            title="Start"
+                            title={strings.starts}
                             onPress={() => {
-                              if (
+                              if (gameObj.rem_referee > 0) {
+                                Alert.alert(
+                                  format(
+                                    strings.minRefereeRequired,
+                                    gameObj.min_referee,
+                                  ),
+                                );
+                              } else if (gameObj.rem_scorekeeper > 0) {
+                                Alert.alert(
+                                  format(
+                                    strings.minScorekeeperRequired,
+                                    gameObj.min_scorekeeper,
+                                  ),
+                                );
+                              } else if (
                                 gameObj.start_datetime >
                                 Number((new Date().getTime() / 1000).toFixed(0))
                               ) {

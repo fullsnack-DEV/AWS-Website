@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import images from '../../../Constants/ImagePath';
@@ -20,7 +20,7 @@ const TCUserList = ({
   onProfilePress = () => {},
 }) => {
   const [follow, setFollow] = useState(is_following);
-  useEffect(() => setFollow(is_following), [is_following]);
+
   return (
     <View>
       <View

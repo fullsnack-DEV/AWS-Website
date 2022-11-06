@@ -49,6 +49,10 @@ const FeedAbsoluteBottomView = ({
   const [like, setLike] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [commentCount, setCommentCount] = useState(0);
+  const [showCommentModal, setShowCommentModal] = useState(false);
+  const [showLikeModal, setShowLikeModal] = useState(false);
+  const [showTaggedModal, setShowTaggedModal] = useState(false);
+
   const videoDuration = Math.floor(videoMetaData?.duration ?? 0);
   useEffect(() => {
     if (feedItem) {
@@ -68,11 +72,11 @@ const FeedAbsoluteBottomView = ({
   }, [authContext?.entity?.uid, feedItem]);
 
   const onCommentButtonPress = useCallback(() => {
-    commentModalRef.current.open();
+    setShowCommentModal(true);
   }, []);
 
   const onTaggedPress = useCallback(() => {
-    taggedModalRef.current.open();
+    setShowTaggedModal(true);
   }, []);
 
   const taggedText = useMemo(
@@ -162,7 +166,7 @@ const FeedAbsoluteBottomView = ({
             }}>
             <TouchableOpacity
               onPress={() => {
-                likersModalRef.current.open();
+                setShowLikeModal(true);
               }}>
               <Text
                 style={[
@@ -386,18 +390,28 @@ const FeedAbsoluteBottomView = ({
         navigation={navigation}
         taggedModalRef={taggedModalRef}
         taggedData={feedSubItem?.format_tagged_data}
+        showTaggedModal={showTaggedModal}
+        onBackdropPress={() => setShowTaggedModal(false)}
       />
 
-      <LikersModal likersModalRef={likersModalRef} navigation={navigation} />
+      <LikersModal
+        likersModalRef={likersModalRef}
+        navigation={navigation}
+        data={feedItem}
+        showLikeModal={showLikeModal}
+        onBackdropPress={() => setShowLikeModal(false)}
+      />
 
       <CommentModal
-        commentModalRef={commentModalRef}
         navigation={navigation}
+        commentModalRef={commentModalRef}
+        showCommentModal={showCommentModal}
         item={feedItem}
         updateCommentCount={(updatedCommentData) => {
           setCommentCount(updatedCommentData?.count);
           updateCommentCount(updatedCommentData);
         }}
+        onBackdropPress={() => setShowCommentModal(false)}
       />
     </Fragment>
   );

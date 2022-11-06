@@ -1,5 +1,5 @@
 /* eslint-disable no-useless-escape */
-import React, {useContext, useCallback, useMemo, useRef} from 'react';
+import React, {useContext, useCallback, useMemo, useRef, useState} from 'react';
 import {StyleSheet, View, Text, FlatList} from 'react-native';
 import ReadMore from '@fawazahmed/react-native-read-more';
 
@@ -34,6 +34,7 @@ const NewsFeedDescription = ({
 }) => {
   const taggedModalRef = useRef(null);
   const authContext = useContext(AuthContext);
+  const [showTaggedModal, setShowTaggedModal] = useState(false);
 
   const getIndicesOf = useCallback(
     (searchStr, str = descriptions) => {
@@ -164,7 +165,7 @@ const NewsFeedDescription = ({
     () =>
       tagData?.length > 0 && (
         <View style={{marginVertical: 15}}>
-          <TouchableOpacity onPress={() => taggedModalRef.current.open()}>
+          <TouchableOpacity onPress={() => setShowTaggedModal(true)}>
             <TagView
               tagTextStyle={{color: colors.greeColor}}
               source={images.tagGreenImage}
@@ -232,6 +233,8 @@ const NewsFeedDescription = ({
           navigation={navigation}
           taggedModalRef={taggedModalRef}
           taggedData={tagData}
+          showTaggedModal={showTaggedModal}
+          onBackdropPress={() => setShowTaggedModal(false)}
         />
       </View>
       {renderGameTags}

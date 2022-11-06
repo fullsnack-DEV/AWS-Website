@@ -2097,4 +2097,12 @@ export default {
     'en_Your new password has been set successfully, you will be logout',
   countryCode: 'en_Country Code',
   editEmail: 'en_Edit email',
+  deleteAvailableArea:
+    'en_Are you sure, you want to delete this area from your refereeing list?',
+  minRefereeRequired: 'en_Minimum {0} referee required for start game.',
+  minScorekeeperRequired: 'en_Minimum {0} scorekeeper required for start game.',
+  challengeNotConfirmedYet: 'en_This challenge is not confirmed yet.',
+  likesTitle: 'en_Likes',
+  noLikesYet: 'en_No Likes Yet',
+  taggedTitle: 'en_Tagged',
 };

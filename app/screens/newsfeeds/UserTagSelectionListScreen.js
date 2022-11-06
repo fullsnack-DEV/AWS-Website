@@ -30,7 +30,7 @@ import ScrollableTabs from '../../components/ScrollableTabs';
 import TagMatches from './TagMatches';
 import {getAllGames} from '../../api/NewsFeeds';
 import {getGroupIndex, getUserIndex} from '../../api/elasticSearch';
-import { strings } from '../../../Localization/translation';
+import {strings} from '../../../Localization/translation';
 
 let stopFetchMore = true;
 
@@ -40,7 +40,9 @@ export default function UserTagSelectionListScreen({navigation, route}) {
   const [currentGrpupTab, setCurrentGroupTab] = useState('team');
   const [userData, setUserData] = useState([]);
   const [groupData, setGroupData] = useState([]);
-  const [selectedUsers, setSelectedUsers] = useState([]);
+  const [selectedUsers, setSelectedUsers] = useState(
+    route?.params?.taggedData ?? [],
+  );
   const [selectedMatch, setSelectedMatch] = useState([]);
   const [gamesData, setGamesData] = useState([]);
   const [pageSize] = useState(10);
@@ -237,6 +239,7 @@ export default function UserTagSelectionListScreen({navigation, route}) {
 
   const toggleSelection = useCallback(
     (isChecked, user) => {
+      console.log('useessees', user);
       const data = selectedUsers;
       if (isChecked) {
         const uIndex = data.findIndex(({id}) => user.id === id);
@@ -259,14 +262,14 @@ export default function UserTagSelectionListScreen({navigation, route}) {
           thumbnail = item.thumbnail;
         }
         if (item.title) {
-          fullName = item.title;
+          fullName = item.title ?? item.full_name;
         }
-        if (item.city && item.state_abbr) {
-          locationName = `${item.city}, ${item.state_abbr}`;
+        if (item.city) {
+          locationName = item.city;
         }
       }
       const isChecked = selectedUsers.some((val) => {
-        if (item.id === val.id) {
+        if ([val.entity_id, val.id].includes(item.id)) {
           return true;
         }
         return false;
@@ -496,7 +499,11 @@ export default function UserTagSelectionListScreen({navigation, route}) {
       {renderSearchBox}
       {renderSelectedEntity}
       <ScrollableTabs
-        tabs={[strings.peopleTitleText, strings.groupsTitleText, strings.matchesTitleText]}
+        tabs={[
+          strings.peopleTitleText,
+          strings.groupsTitleText,
+          strings.matchesTitleText,
+        ]}
         onTabPress={onTabPress}
         currentTab={currentTab}
       />

@@ -3,7 +3,7 @@ import {View, StyleSheet, Text, Image, TouchableOpacity} from 'react-native';
 import fonts from '../../Constants/Fonts';
 import PATH from '../../Constants/ImagePath';
 import Colors from '../../Constants/Colors';
-import {commentPostTimeCalculate} from '../../Constants/LoaderImages';
+import {formatTimestampForDisplay} from '../../utils/formatTimestampForDisplay';
 import TCFollowButton from '../TCFollowButton';
 
 function FollowNotification(data) {
@@ -53,7 +53,7 @@ function FollowNotification(data) {
                 color: Colors.lightBlackColor,
               }}>
               {notificationText}{' '}
-              {commentPostTimeCalculate(notificationCreatedAt)}
+              {formatTimestampForDisplay(notificationCreatedAt)}
             </Text>
           </Text>
           <TCFollowButton

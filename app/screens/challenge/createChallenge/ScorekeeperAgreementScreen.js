@@ -54,7 +54,7 @@ export default function ScorekeeperAgreementScreen({navigation, route}) {
               challengeObj: {
                 ...challengeObj,
                 min_scorekeeper:
-                  opetion === 2
+                  opetion === 1
                     ? challengeObj?.responsible_for_scorekeeper?.who_secure
                         ?.length ?? 0
                     : 0,
