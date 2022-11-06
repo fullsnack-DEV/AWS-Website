@@ -63,8 +63,13 @@ import TCThinDivider from '../../../components/TCThinDivider';
 import {
   deleteConfirmation,
   getHitSlop,
-  getNearDateTime,
   getSportName,
+  getTCDate,
+  ordinal_suffix_of,
+  getDayFromDate,
+  countNumberOfWeekFromDay,
+  countNumberOfWeeks,
+  getRoundedDate
 } from '../../../utils';
 import NumberOfAttendees from '../../../components/Schedule/NumberOfAttendees';
 import {getGroups} from '../../../api/Groups';
@@ -93,17 +98,8 @@ export default function CreateEventScreen({navigation, route}) {
   const [eventFee, setEventFee] = useState(0);
   const [refundPolicy, setRefundPolicy] = useState('');
   const [toggle] = useState(false);
-  const [eventStartDateTime, setEventStartdateTime] = useState(
-    toggle
-      ? new Date().setDate(new Date().getDate() + 1)
-      : getNearDateTime(new Date()),
-  );
-
-  const [eventEndDateTime, setEventEnddateTime] = useState(
-    toggle
-      ? new Date().setDate(new Date().getDate() + 1)
-      : moment(eventStartDateTime).add(5, 'm').toDate(),
-  );
+  const [eventStartDateTime, setEventStartdateTime] = useState(getRoundedDate(5));
+  const [eventEndDateTime, setEventEnddateTime] = useState(moment(getRoundedDate(5)).add(5, 'm').toDate());
   const [eventUntilDateTime, setEventUntildateTime] =
     useState(eventEndDateTime);
   const [searchLocation, setSearchLocation] = useState();
@@ -134,7 +130,7 @@ export default function CreateEventScreen({navigation, route}) {
   const [startDateVisible, setStartDateVisible] = useState(false);
   const [endDateVisible, setEndDateVisible] = useState(false);
   const [untilDateVisible, setUntilDateVisible] = useState(false);
-  const [selectWeekMonth, setSelectWeekMonth] = useState('Never');
+  const [selectWeekMonth, setSelectWeekMonth] = useState(Verbs.eventRecurringEnum.Never);
   const [backgroundThumbnail, setBackgroundThumbnail] = useState();
   const [backgroundImageChanged, setBackgroundImageChanged] = useState(false);
 
@@ -179,54 +175,27 @@ export default function CreateEventScreen({navigation, route}) {
     },
     {text: strings.teamOnly, value: 3},
   ];
-  const countNumberOfWeekFromDay = () => {
-    const date = new Date();
-    const startDate = new Date(date.getFullYear(), date.getMonth(), 1);
-    const endDate = date;
-    const givenDay = new Date().getDay();
-    let numberOfDates = 0;
-    while (startDate < endDate) {
-      if (startDate.getDay() === givenDay) {
-        numberOfDates++;
-      }
-      startDate.setDate(startDate.getDate() + 1);
-    }
-    return ordinal_suffix_of(numberOfDates);
-  };
-  const countNumberOfWeeks = () => {
-    const date = new Date();
-    const startDate = new Date(date.getFullYear(), date.getMonth(), 1);
-    const endDate = date;
-    const givenDay = new Date().getDay();
-    let numberOfDates = 0;
-    while (startDate < endDate) {
-      if (startDate.getDay() === givenDay) {
-        numberOfDates++;
-      }
-      startDate.setDate(startDate.getDate() + 1);
-    }
-    return numberOfDates;
-  };
-  const getTodayDay = () => {
-    const dt = moment(new Date(), 'YYYY-MM-DD HH:mm:ss');
-    return dt.format('dddd');
-  };
+
   const handleStartDatePress = (date) => {
-    setEventStartdateTime(
-      toggle ? new Date(date).setHours(0, 0, 0, 0) : new Date(date),
-    );
-    setEventEnddateTime(
-      toggle
-        ? new Date(date).setHours(23, 59, 59, 0)
-        : new Date(moment(date).add(5, 'm').toDate()),
-    );
-    setEventUntildateTime(
-      toggle
-        ? new Date(date).setHours(23, 59, 59, 0)
-        : new Date(moment(date).add(5, 'm').toDate()),
-    );
+    const startDateTime = toggle ? new Date(date).setHours(0, 0, 0, 0) : date
+    setEventStartdateTime(startDateTime);
+    let endDateTime = eventEndDateTime;
+    const unitDate = eventUntilDateTime;
+    
+    if (endDateTime.getTime() <= startDateTime.getTime()){
+      endDateTime = toggle ? date.setHours(23,59,59,0)
+      :  moment(startDateTime).add(5, 'm').toDate();
+    }
+
+    setEventEnddateTime(endDateTime)
+
+    if(!unitDate || endDateTime.getTime() > unitDate.getTime()){
+      setEventUntildateTime(moment(endDateTime).add(5, 'm').toDate())
+    }
+
     setStartDateVisible(!startDateVisible);
   };
+
   const handleCancelPress = () => {
     setStartDateVisible(false);
     setEndDateVisible(false);
@@ -234,20 +203,18 @@ export default function CreateEventScreen({navigation, route}) {
   };
 
   const handleEndDatePress = (date) => {
-    let dateValue = new Date();
-    if (toggle) {
-      dateValue = `${moment(date).format('ddd MMM DD YYYY')} 11:59:59 PM`;
-      setEventEnddateTime(new Date(dateValue));
-      setEventUntildateTime(new Date(moment(dateValue).add(5, 'm').toDate()));
-    } else {
-      setEventEnddateTime(new Date(date));
-      setEventUntildateTime(new Date(moment(date).add(5, 'm').toDate()));
+    const endDateTime = toggle ? date.setHours(23,59,59,0): date;
+    const unitDate = eventUntilDateTime
+    setEventEnddateTime(endDateTime);
+    if(!unitDate || endDateTime.getTime() > unitDate.getTime()){
+      setEventUntildateTime(moment(endDateTime).add(5, 'm').toDate());
     }
+
     setEndDateVisible(!endDateVisible);
   };
 
   const handleUntilDatePress = (date) => {
-    setEventUntildateTime(date);
+    setEventUntildateTime(toggle ? date.setHours(23,59,59,0): date);
     setUntilDateVisible(!untilDateVisible);
   };
 
@@ -297,6 +264,10 @@ export default function CreateEventScreen({navigation, route}) {
     eventFee,
     refundPolicy,
     eventPosted,
+    selectWeekMonth,
+    eventStartDateTime,
+    eventEndDateTime,
+    eventUntilDateTime,
     route?.params,
   ]);
 
@@ -374,32 +345,11 @@ export default function CreateEventScreen({navigation, route}) {
       });
   }, [authContext]);
 
-  const ordinal_suffix_of = (i) => {
-    const j = i % 10,
-      k = i % 100;
-    if (j === 1 && k !== 11) {
-      return `${i}st`;
-    }
-    if (j === 2 && k !== 12) {
-      return `${i}nd`;
-    }
-    if (j === 3 && k !== 13) {
-      return `${i}rd`;
-    }
-    return `${i}th`;
-  };
-
-  // eslint-disable-next-line no-unused-vars
-  const convertDateToUTC = (date) => {
-    const dt = new Date(date);
-    return new Date(dt.getTime() + dt.getTimezoneOffset() * 60000);
-  };
-
   const getSports = () => {
     let sportArr = [];
     authContext.sports.map((item) => {
       const filterFormat = item.format.filter(
-        (obj) => obj.entity_type === 'team',
+        (obj) => obj.entity_type === Verbs.entityTypeTeam,
       );
       sportArr = [...sportArr, ...filterFormat];
       return null;
@@ -559,7 +509,7 @@ export default function CreateEventScreen({navigation, route}) {
     }, 0.1);
   };
 
-  const openImagePicker = (width = 400, height = 400) => {
+  const openImagePicker = (width = 680, height = 300) => {
     const cropCircle = false;
     ImagePicker.openPicker({
       width,
@@ -577,7 +527,7 @@ export default function CreateEventScreen({navigation, route}) {
     setBackgroundImageChanged(false);
   };
 
-  const openCamera = (width = 400, height = 400) => {
+  const openCamera = (width = 680, height = 300) => {
     // check(PERMISSIONS.IOS.CAMERA)
     check(
       Platform.select({
@@ -703,34 +653,41 @@ export default function CreateEventScreen({navigation, route}) {
     const entityRole =
       entity.role === Verbs.entityTypeUser ? 'users' : 'groups';
 
-    let rule = '';
+    let rule
     if (
-      selectWeekMonth === 'Daily' ||
-      selectWeekMonth === 'Weekly' ||
-      selectWeekMonth === 'Monthly' ||
-      selectWeekMonth === 'Yearly'
+      selectWeekMonth === Verbs.eventRecurringEnum.Daily
     ) {
-      rule = selectWeekMonth.toUpperCase();
+      rule =  'FREQ=DAILY'
     } else if (
-      selectWeekMonth ===
-      `Monthly on ${countNumberOfWeekFromDay()} ${getTodayDay()}`
+      selectWeekMonth === Verbs.eventRecurringEnum.Weekly
     ) {
-      rule = `MONTHLY;BYDAY=${getTodayDay()
+      rule =  'FREQ=WEEKLY'
+    }  else if (
+      selectWeekMonth === Verbs.eventRecurringEnum.WeekOfMonth
+    ) {
+      rule = `FREQ=MONTHLY;BYDAY=${getDayFromDate(eventStartDateTime)
         .substring(0, 2)
-        .toUpperCase()};BYSETPOS=${countNumberOfWeeks()}`;
+        .toUpperCase()};BYSETPOS=${countNumberOfWeeks(eventStartDateTime)}`;
     } else if (
-      selectWeekMonth ===
-      `Monthly on ${ordinal_suffix_of(new Date().getDate())} day`
+      selectWeekMonth === Verbs.eventRecurringEnum.DayOfMonth
+      ) {
+        rule = `FREQ=MONTHLY;BYMONTHDAY=${eventStartDateTime.getDate()}`;
+    } else if (
+      selectWeekMonth === Verbs.eventRecurringEnum.WeekOfYear
     ) {
-      rule = `MONTHLY;BYMONTHDAY=${new Date().getDate()}`;
+      rule = `FREQ=YEARLY;BYDAY=${getDayFromDate(eventStartDateTime)
+        .substring(0, 2)
+        .toUpperCase()};BYSETPOS=${countNumberOfWeeks(eventStartDateTime)}`;
+    } else if (
+      selectWeekMonth === Verbs.eventRecurringEnum.DayOfYear
+      ) {
+        rule = `FREQ=YEARLY;BYMONTHDAY=${eventStartDateTime.getDate()};BYMONTH=${eventStartDateTime.getMonth()}`;
+    } 
+    
+    if(rule){
+      data[0].rrule = rule
     }
-    if (selectWeekMonth !== 'Never') {
-      data[0].untilDate = Number(
-        parseFloat(new Date(eventUntilDateTime).getTime() / 1000).toFixed(0),
-      );
-      data[0].rrule = `FREQ=${rule}`;
-    }
-
+    
     createEvent(entityRole, uid, data, authContext)
       .then((response) => {
         console.log('Response :-', response);
@@ -751,23 +708,17 @@ export default function CreateEventScreen({navigation, route}) {
       setloading(true);
       const entity = authContext.entity;
       const entityRole =
-        entity.role === Verbs.entityTypeUser ? 'users' : 'groups';
+        entity.role === Verbs.entityTypeUser ? Verbs.entityTypeUsers : Verbs.entityTypeGroups;
       const data = [
         {
           title: eventTitle,
           descriptions: eventDescription,
           allDay: toggle,
-          start_datetime: Number(
-            parseFloat(
-              new Date(convertDateToUTC(eventStartDateTime)).getTime() / 1000,
-            ).toFixed(0),
-          ),
-          end_datetime: Number(
-            parseFloat(
-              new Date(convertDateToUTC(eventEndDateTime)).getTime() / 1000,
-            ).toFixed(0),
-          ),
-          is_recurring: selectWeekMonth !== 'Never',
+          start_datetime: getTCDate(eventStartDateTime),
+          end_datetime: getTCDate(eventEndDateTime),
+          is_recurring: selectWeekMonth !== Verbs.eventRecurringEnum.Never,
+          repeat: selectWeekMonth,
+          untilDate: getTCDate(eventUntilDateTime),
           blocked: is_Blocked,
           selected_sport: sportsSelection,
           who_can_see: {
@@ -845,7 +796,6 @@ export default function CreateEventScreen({navigation, route}) {
             data[0].background_thumbnail = bgInfo.thumbnail;
             data[0].background_full_image = bgInfo.url;
             setBackgroundImageChanged(false);
-            console.log('Data==>', data);
             createEventDone(data);
           })
           .catch((e) => {
@@ -854,7 +804,6 @@ export default function CreateEventScreen({navigation, route}) {
             }, 0.1);
           });
       } else {
-        console.log('Data==>', data);
         createEventDone(data);
       }
     }
@@ -960,29 +909,36 @@ export default function CreateEventScreen({navigation, route}) {
               <EventMonthlySelection
                 title={strings.repeat}
                 dataSource={[
-                  {label: strings.daily, value: strings.daily},
-                  {label: strings.weeklyText, value: strings.weeklyText},
+                  {label: strings.daily, value: Verbs.eventRecurringEnum.Daily},
+                  {label: strings.weeklyText, value: Verbs.eventRecurringEnum.Weekly},
                   {
                     label: format(
                       strings.monthlyOnText,
-                      `${countNumberOfWeekFromDay()} ${getTodayDay()}`,
+                      `${countNumberOfWeekFromDay(eventStartDateTime)} ${getDayFromDate(eventStartDateTime)}`,
                     ),
-                    value: format(
-                      strings.monthlyOnText,
-                      `${countNumberOfWeekFromDay()} ${getTodayDay()}`,
-                    ),
+                    value: Verbs.eventRecurringEnum.WeekOfMonth
                   },
                   {
                     label: format(
                       strings.monthlyOnDayText,
-                      ordinal_suffix_of(new Date().getDate()),
+                      ordinal_suffix_of(eventStartDateTime.getDate()),
                     ),
-                    value: format(
-                      strings.monthlyOnDayText,
-                      ordinal_suffix_of(new Date().getDate()),
-                    ),
+                    value: Verbs.eventRecurringEnum.DayOfMonth,
                   },
-                  {label: strings.yearly, value: strings.yearly},
+                  {
+                    label: format(
+                      strings.yearlyOnText,
+                      `${countNumberOfWeekFromDay(eventStartDateTime)} ${getDayFromDate(eventStartDateTime)}`,
+                    ),
+                    value: Verbs.eventRecurringEnum.WeekOfYear
+                  },
+                  {
+                    label: format(
+                      strings.yearlyOnDayText,
+                      ordinal_suffix_of(eventStartDateTime.getDate()),
+                    ),
+                    value: Verbs.eventRecurringEnum.DayOfYear,
+                  }
                 ]}
                 placeholder={strings.never}
                 value={selectWeekMonth}
@@ -990,7 +946,7 @@ export default function CreateEventScreen({navigation, route}) {
                   setSelectWeekMonth(value);
                 }}
               />
-              {selectWeekMonth !== strings.never && (
+              {selectWeekMonth !== Verbs.eventRecurringEnum.Never && (
                 <EventTimeSelectItem
                   title={strings.until}
                   toggle={!toggle}
@@ -1160,7 +1116,7 @@ export default function CreateEventScreen({navigation, route}) {
             <View style={styles.containerStyle}>
               <Text style={styles.headerTextStyle}>
                 {strings.numberOfAttend}
-                <Text style={styles.opetionalTextStyle}>{' opetional'}</Text>
+                <Text style={styles.opetionalTextStyle}>{strings.optional}</Text>
               </Text>
               <Text style={styles.subTitleText}>
                 {strings.eventMayBeCancelledByOrganizerText}
@@ -1187,7 +1143,7 @@ export default function CreateEventScreen({navigation, route}) {
                   textAlignVertical={'center'}
                   placeholderTextColor={colors.userPostTimeColor}
                 />
-                <Text style={styles.currencyStyle}>{strings.CAD}</Text>
+                <Text style={styles.currencyStyle}>{strings.defaultCurrency}</Text>
               </View>
             </View>
 
@@ -1290,35 +1246,28 @@ export default function CreateEventScreen({navigation, route}) {
                   />
                 </View>
               )}
-
             <DateTimePickerView
-              // date={eventStartDateTime}
+              date={eventStartDateTime}
               visible={startDateVisible}
               onDone={handleStartDatePress}
               onCancel={handleCancelPress}
               onHide={handleCancelPress}
-              minimumDate={
-                toggle
-                  ? new Date().setDate(new Date().getDate() + 1)
-                  : getNearDateTime(new Date())
-              }
+              minimumDate={getRoundedDate(5)}
               minutesGap={5}
               mode={toggle ? 'date' : 'datetime'}
             />
             <DateTimePickerView
-              // date={eventEndDateTime}
+              date={eventEndDateTime}
               visible={endDateVisible}
               onDone={handleEndDatePress}
               onCancel={handleCancelPress}
               onHide={handleCancelPress}
-              minimumDate={moment(getNearDateTime(new Date(eventStartDateTime)))
-                .add(5, 'm')
-                .toDate()}
+              minimumDate={moment(eventStartDateTime).add(5, 'm').toDate()}
               minutesGap={5}
               mode={toggle ? 'date' : 'datetime'}
             />
             <DateTimePickerView
-              // date={eventUntilDateTime}
+              date={eventUntilDateTime}
               visible={untilDateVisible}
               onDone={handleUntilDatePress}
               onCancel={handleCancelPress}

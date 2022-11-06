@@ -10,6 +10,7 @@ import AuthContext from '../../../auth/context';
 import TCEventCard from '../../../components/Schedule/TCEventCard';
 import {strings} from '../../../../Localization/translation';
 import Verbs from '../../../Constants/Verbs';
+import { getJSDate } from '../../../utils';
 
 const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -20,7 +21,7 @@ export default function EventScheduleScreen({
   entity,
   profileID,
   screenUserId,
-  filterOpetions,
+  filterOptions,
   selectedFilter,
 }) {
   const authContext = useContext(AuthContext);
@@ -28,26 +29,24 @@ export default function EventScheduleScreen({
   const [filterData, setFilterData] = useState(null);
 
   useEffect(() => {
+    console.log('eventData aa', eventData)
     let events = eventData.filter(
       (obj) => (obj?.game_id && obj?.game) || obj?.title,
     );
 
-    console.log('events', events);
-    console.log('filter Setting', filterOpetions);
-    console.log('selectedFILTER', selectedFilter);
-    if (filterOpetions.time === 0) {
-      events = events.filter(
-        (x) =>
-          x.start_datetime >
-          Number(parseFloat(new Date().getTime() / 1000).toFixed(0)),
-      );
-    } else {
-      events = events.filter(
-        (x) =>
-          x.start_datetime <
-          Number(parseFloat(new Date().getTime() / 1000).toFixed(0)),
-      );
-    }
+
+    // Future or past event we commented now only supported future event
+    // if (filterOptions.time === 0) {
+    //   events = events.filter(
+    //     (x) =>
+    //       x.end_datetime > getTCDate(new Date()),
+    //   );
+    // } else {
+    //   events = events.filter(
+    //     (x) =>
+    //       x.end_datetime < getTCDate(new Date()),
+    //   );
+    // }
 
     if (
       [
@@ -57,7 +56,7 @@ export default function EventScheduleScreen({
       ].includes(authContext.entity.role)
     ) {
       if (
-        filterOpetions.sort === 2 &&
+        filterOptions.sort === 2 &&
         [Verbs.entityTypePlayer, Verbs.entityTypeUser].includes(
           authContext.entity.role,
         )
@@ -86,27 +85,28 @@ export default function EventScheduleScreen({
             events = events.filter((obj) => !obj.game);
           }
         }
-      } else if (filterOpetions.sort === 1) {
+      } else if (filterOptions.sort === 1) {
         if (selectedFilter.title.sport !== 'All') {
           events = events.filter(
-            (obj) => obj?.game && obj.game.sport === selectedFilter.title.sport,
+            (obj) => ((obj.game && obj.game.sport === selectedFilter.title.sport) || 
+            (obj.selected_sport && obj.selected_sport.sport === selectedFilter.title.sport)),
           );
         }
-      } else if (filterOpetions.sort === 0) {
+      } else if (filterOptions.sort === 0) {
         if (selectedFilter.title.group_name !== 'All') {
           if (selectedFilter.title.group_name === 'Me') {
             events = events.filter(
               (obj) =>
                 obj.created_by.uid === authContext.entity.uid ||
-                obj?.game?.home_team?.user_id === authContext.entity.uid ||
-                obj?.game?.away_team?.user_id === authContext.entity.uid,
+                obj.game?.home_team?.user_id === authContext.entity.uid ||
+                obj.game?.away_team?.user_id === authContext.entity.uid,
             );
           } else if (selectedFilter.title.group_name === 'Others') {
             events = events.filter(
               (obj) =>
                 obj.created_by.uid !== authContext.entity.uid &&
-                obj?.game?.home_team?.user_id !== authContext.entity.uid &&
-                obj?.game?.away_team?.user_id !== authContext.entity.uid,
+                obj.game?.home_team?.user_id !== authContext.entity.uid &&
+                obj.game?.away_team?.user_id !== authContext.entity.uid,
             );
           } else {
             events = events.filter(
@@ -114,10 +114,10 @@ export default function EventScheduleScreen({
                 obj.created_by.uid === selectedFilter.title.group_id ||
                 obj.created_by.group_id === selectedFilter.title.group_id ||
                 [
-                  obj?.game?.home_team?.user_id,
-                  obj?.game?.away_team?.user_id,
-                  obj?.game?.home_team?.group_id,
-                  obj?.game?.away_team?.group_id,
+                  obj.game?.home_team?.user_id,
+                  obj.game?.away_team?.user_id,
+                  obj.game?.home_team?.group_id,
+                  obj.game?.away_team?.group_id,
                 ].includes(selectedFilter.title.group_id),
             );
           }
@@ -126,8 +126,8 @@ export default function EventScheduleScreen({
     }
     if (events.length > 0) {
       const result = _(events)
-        .groupBy((v) =>
-          moment(new Date(v.start_datetime * 1000)).format('MMM DD, YYYY'),
+        .groupBy((event) =>
+          moment(getJSDate(event.start_datetime)).format('MMM DD, YYYY'),
         )
         .value();
       const filData = [];
@@ -144,7 +144,7 @@ export default function EventScheduleScreen({
     } else {
       setFilterData([]);
     }
-  }, [eventData, filterOpetions, selectedFilter]);
+  }, [eventData, filterOptions, selectedFilter]);
 
   return (
     <View style={styles.mainContainer}>

@@ -1971,10 +1971,6 @@ export const getCalendar = async (
 ) => {
   try {
     return getStorage('scheduleSetting').then(async (ids) => {
-      console.log('Calender ids:=>', ids);
-      console.log('parti ids:=>', participantId);
-      // const idss = await getStorage('scheduleSetting');
-      // console.log('Calender ids:=>', idss);
       const IDs = ids ?? [];
       const participants = [];
       participants.push(participantId);
@@ -2018,18 +2014,17 @@ export const getCalendar = async (
       }
       if (fromDate) {
         body.query.bool.must.push({
-          range: {end_datetime: {gt: Number(fromDate.toFixed(0))}},
+          range: {actual_enddatetime: {gt: fromDate}},
         });
       }
       if (toDate) {
         body.query.bool.must.push({
-          range: {start_datetime: {lt: Number(toDate.toFixed(0))}},
+          range: {start_datetime: {lt: toDate}},
         });
       }
       console.log('calender elastic search :=>', JSON.stringify(body));
       return getCalendarIndex(body).then((response) => {
         console.log('elastic search 111:=>', response);
-
         return response;
       });
     });
@@ -2042,13 +2037,6 @@ export const uniqueArray = (array, propertyName) =>
   array.filter(
     (e, i) => array.findIndex((a) => a[propertyName] === e[propertyName]) === i,
   );
-
-export const getNearDateTime = (date) => {
-  const start = moment(date);
-  const nearTime = 5 - (start.minute() % 5);
-  const dateTime = moment(start).add(nearTime, 'm').toDate();
-  return dateTime;
-};
 
 export const getSportName = (object, authContext) => {
   const tempObject = {
@@ -2336,5 +2324,67 @@ export const deleteConfirmation = (title, subTitle, okClick) => {
     {cancelable: false},
   );
 };
+
+// TCDate is unixtimestamp
+// unixTimeStamp - is the timestamp which come from server in seconds from 1st jan 1970 GMT
+export const getTCDate = (date) => Number(parseFloat(date.getTime() / 1000).toFixed(0));
+
+// unixTimeStamp - is the timestamp which come from server in seconds from 1st jan 1970 GMT
+export const getJSDate = (unixTimeStamp) => new Date(unixTimeStamp * 1000);
+
+export const countNumberOfWeekFromDay = (date) => {
+  const startDate = new Date(date.getFullYear(), date.getMonth(), 1);
+  const endDate = date;
+  const givenDay = date.getDay();
+  let numberOfDates = 0;
+  while (startDate < endDate) {
+    if (startDate.getDay() === givenDay) {
+      numberOfDates += 1;
+    }
+    startDate.setDate(startDate.getDate() + 1);
+  }
+  return ordinal_suffix_of(numberOfDates);
+};
+
+export const countNumberOfWeeks = (date) => {
+  const startDate = new Date(date.getFullYear(), date.getMonth(), 1);
+  const endDate = date;
+  const givenDay = date.getDay();
+  let numberOfDates = 0;
+  while (startDate < endDate) {
+    if (startDate.getDay() === givenDay) {
+      numberOfDates += 1;
+    }
+    startDate.setDate(startDate.getDate() + 1);
+  }
+  return numberOfDates;
+};
+
+export const getDayFromDate = (date) => {
+  const dt = moment(date, 'YYYY-MM-DD HH:mm:ss');
+  return dt.format('dddd');
+};
+
+export const ordinal_suffix_of = (i) => {
+  const j = i % 10,
+    k = i % 100;
+  if (j === 1 && k !== 11) {
+    return `${i}st`;
+  }
+  if (j === 2 && k !== 12) {
+    return `${i}nd`;
+  }
+  if (j === 3 && k !== 13) {
+    return `${i}rd`;
+  }
+  return `${i}th`;
+};
+
+export const getRoundedDate = (minutes, d=new Date()) => {
+  const ms = 1000 * 60 * minutes; // convert minutes to ms
+  const roundedDate = new Date(Math.ceil(d.getTime() / ms) * ms);
+  return roundedDate
+}
+
 export const firstLetterCapital = (str) =>
   str.charAt(0).toUpperCase() + str.slice(1);

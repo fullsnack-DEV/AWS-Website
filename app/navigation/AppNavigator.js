@@ -68,7 +68,7 @@ const getTabBarVisibility = (route) => {
 
   const routeName = routeObj?.state?.routes?.[routeObj?.state?.index]?.name;
 
-  console.log('routeNamerouteNamerouteNamerouteName:=>', route);
+  // console.log('routeNamerouteNamerouteNamerouteName:=>', route);
   // if (route.name === 'Account') {
   //   const lastIndex = route?.state?.routes?.[0]?.state?.routes?.length - 1;
   //   routeName = route?.state?.routes?.[0]?.state?.routes?.[lastIndex]?.name;
@@ -304,8 +304,6 @@ const QbMessageEmitter = new NativeEventEmitter(QB.chat);
 
 const AppNavigator = ({navigation}) => {
   const routes = useNavigationState((state) => state);
-  console.log('routesLengthroutesLengthroutesLength', routes);
-
   const authContext = useContext(AuthContext);
   const count = useRef(0);
   const [role, setRole] = useState('user');

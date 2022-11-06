@@ -9,6 +9,7 @@ const Verbs = {
   entityTypePlayer: 'player',
   entityTypePlayers: 'players',
   entityTypeGroups: 'groups',
+  entityTypeUsers: 'users',
   entityTypeReferee: 'referee',
   entityTypeScorekeeper: 'scorekeeper',
 
@@ -74,6 +75,15 @@ const Verbs = {
   friendly: 'Friendly',
   official: 'Official',
   comment: 'comment',
+  eventRecurringEnum: {
+    Never: 0,
+    Daily: 1,
+    Weekly: 2,
+    WeekOfMonth: 3,
+    DayOfMonth: 4,
+    WeekOfYear: 5,
+    DayOfYear: 6
+ }
 };
 
 export default Verbs;

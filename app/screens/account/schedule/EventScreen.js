@@ -44,6 +44,12 @@ import TCProfileButton from '../../../components/TCProfileButton';
 import {getGroupIndex, getUserIndex} from '../../../api/elasticSearch';
 import TCProfileView from '../../../components/TCProfileView';
 import Verbs from '../../../Constants/Verbs';
+import { 
+  getJSDate,
+  ordinal_suffix_of,
+  getDayFromDate,
+  countNumberOfWeekFromDay
+ } from '../../../utils';
 
 export default function EventScreen({navigation, route}) {
   const actionSheet = useRef();
@@ -60,9 +66,11 @@ export default function EventScreen({navigation, route}) {
   let description2 = '';
   let startTime = '';
   let endTime = '';
+  let untilTime = '';
   let gameDataLati = null;
   let gameDataLongi = null;
   let blocked = false;
+  let repeatString = strings.never;
   const isOrganizer = eventData.owner_id === authContext.entity.uid;
   if (eventData) {
     if (eventData.title) {
@@ -73,10 +81,51 @@ export default function EventScreen({navigation, route}) {
     }
 
     if (eventData.start_datetime) {
-      startTime = new Date(eventData.start_datetime * 1000);
+      startTime = getJSDate(eventData.start_datetime);
     }
     if (eventData.end_datetime) {
-      endTime = new Date(eventData.end_datetime * 1000);
+      endTime = getJSDate(eventData.end_datetime);
+    }
+    if (eventData.untilDate) {
+      untilTime = getJSDate(eventData.untilDate);
+    }
+    if(eventData.repeat === Verbs.eventRecurringEnum.Daily){
+      repeatString = strings.daily;
+    }
+    else if(eventData.repeat === Verbs.eventRecurringEnum.Weekly){
+      repeatString = strings.weekly;
+    }
+    else if(eventData.repeat === Verbs.eventRecurringEnum.WeekOfMonth){
+      repeatString = format(
+        strings.monthlyOnText,
+        `${countNumberOfWeekFromDay(startTime)} ${getDayFromDate(startTime)}`,
+      );
+    }
+    else if(eventData.repeat === Verbs.eventRecurringEnum.DayOfMonth){
+      repeatString = format(
+        strings.monthlyOnDayText,
+        ordinal_suffix_of(startTime.getDate()),
+      );
+    }
+    else if(eventData.repeat === Verbs.eventRecurringEnum.WeekOfYear){
+      repeatString = format(
+        strings.yearlyOnText,
+        `${countNumberOfWeekFromDay(startTime)} ${getDayFromDate(startTime)}`,
+      );
+    }
+    else if(eventData.repeat === Verbs.eventRecurringEnum.DayOfYear){
+      repeatString = format(
+        strings.yearlyOnDayText,
+        ordinal_suffix_of(startTime.getDate()),
+      );
+    }
+
+    if(eventData.repeat !== Verbs.eventRecurringEnum.Never){
+      repeatString = format(
+        strings.repeatTime,
+        repeatString,
+        moment(untilTime).format('MMM DD, YYYY hh:mm a')
+      );
     }
 
     if (eventData.isBlocked) {
@@ -134,15 +183,6 @@ export default function EventScreen({navigation, route}) {
   }, [isFocused, route?.params?.comeFrom]);
 
   useEffect(() => {
-    // const getUserDetailQuery = {
-
-    //   query: {
-    //     bool: {
-    //       must: [{match: {user_id: eventData.created_by.uid}}],
-    //     },
-    //   },
-    // };
-
     const goingData = eventData.going ?? [];
     const getUserDetailQuery = {
       size: 1000,
@@ -254,7 +294,7 @@ export default function EventScreen({navigation, route}) {
           to={strings.to}
           toTime={moment(endTime).format('MMM DD, YYYY hh:mm a')}
           repeat={strings.repeat}
-          repeatTime={strings.repeatTime}
+          repeatTime={repeatString}
         />
 
         {!blocked ? (

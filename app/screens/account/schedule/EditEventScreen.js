@@ -36,6 +36,7 @@ import ImagePicker from 'react-native-image-crop-picker';
 
 import {check, PERMISSIONS, RESULTS, request} from 'react-native-permissions';
 
+import {format} from 'react-string-format';
 import AuthContext from '../../../auth/context';
 import EventItemRender from '../../../components/Schedule/EventItemRender';
 import EventMapView from '../../../components/Schedule/EventMapView';
@@ -60,8 +61,14 @@ import TCThinDivider from '../../../components/TCThinDivider';
 import {
   deleteConfirmation,
   getHitSlop,
-  getNearDateTime,
   getSportName,
+  getRoundedDate,
+  getJSDate,
+  getDayFromDate,
+  countNumberOfWeekFromDay,
+  countNumberOfWeeks,
+  getTCDate,
+  ordinal_suffix_of
 } from '../../../utils';
 import NumberOfAttendees from '../../../components/Schedule/NumberOfAttendees';
 import {getGroups} from '../../../api/Groups';
@@ -72,17 +79,6 @@ import Verbs from '../../../Constants/Verbs';
 
 export default function EditEventScreen({navigation, route}) {
   console.log('EVENT DATA==>', route?.params?.data);
-  let rule = 'Never';
-  if (route.params.data.rrule) {
-    const a = route.params.data.rrule;
-    console.log('RULESa:=>', a);
-    const arr = a.split(';');
-    console.log('RULESarr:=>', arr);
-    const str = arr[0].substring(5).toLowerCase();
-    console.log('RULESstr:=>', str);
-    rule = str.charAt(0).toUpperCase() + str.slice(1);
-    console.log('RULES:=>', rule);
-  }
   const eventPostedList = [
     {value: 0, text: 'Schedule only'},
     {value: 1, text: 'Schedule & posts'},
@@ -107,34 +103,22 @@ export default function EditEventScreen({navigation, route}) {
     eventData.refund_policy ?? '',
   );
   const [toggle] = useState(eventData.allDay);
-  const [eventStartDateTime, setEventStartdateTime] = useState(
-    new Date(eventData.start_datetime * 1000) ?? getNearDateTime(new Date()),
-  );
-
-  const [eventEndDateTime, setEventEnddateTime] = useState(
-    new Date(eventData.end_datetime * 1000) ??
-      moment(eventStartDateTime).add(5, 'm').toDate(),
-  );
-  const [eventUntilDateTime, setEventUntildateTime] =
-    useState(eventEndDateTime);
-  const [searchLocation, setSearchLocation] = useState(
-    eventData.location.location_name,
-  );
+  const [eventStartDateTime, setEventStartdateTime] = useState(getJSDate(eventData.start_datetime));
+  const [eventEndDateTime, setEventEnddateTime] = useState(getJSDate(eventData.end_datetime));
+  const [eventUntilDateTime, setEventUntildateTime] = useState(getJSDate(eventData.untilDate));
+  const [searchLocation, setSearchLocation] = useState(eventData.location.location_name);
   const [locationDetail, setLocationDetail] = useState(eventData.location);
   const [is_Blocked, setIsBlocked] = useState(false);
   const [loading, setloading] = useState(false);
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
   const [visibleWhoModal, setVisibleWhoModal] = useState(false);
-  const [sportsSelection, setSportsSelection] = useState(
-    eventData?.selected_sport,
-  );
+  const [sportsSelection, setSportsSelection] = useState(eventData?.selected_sport);
   const [selectedSport, setSelectedSport] = useState(eventData?.selected_sport);
-
   const [whoOpetion, setWhoOpetion] = useState();
-  const [whoCanJoinOpetion, setWhoCanJoinOpetion] = useState({
+  const [whoCanJoinOption, setWhoCanJoinOption] = useState({
     ...eventData?.who_can_join,
   });
-  const [whoCanSeeOpetion, setWhoCanSeeOpetion] = useState({
+  const [whoCanSeeOption, setWhoCanSeeOption] = useState({
     ...eventData?.who_can_see,
   });
 
@@ -147,7 +131,7 @@ export default function EditEventScreen({navigation, route}) {
   const [startDateVisible, setStartDateVisible] = useState(false);
   const [endDateVisible, setEndDateVisible] = useState(false);
   const [untilDateVisible, setUntilDateVisible] = useState(false);
-  const [selectWeekMonth, setSelectWeekMonth] = useState(rule);
+  const [selectWeekMonth, setSelectWeekMonth] = useState(eventData.repeat);
   const [backgroundThumbnail, setBackgroundThumbnail] = useState(
     eventData.background_thumbnail,
   );
@@ -156,66 +140,29 @@ export default function EditEventScreen({navigation, route}) {
   const whoCanDataSource = [
     {text: 'Everyone', value: 0},
     {text: 'Only me', value: 1},
-    {
-      text: 'Members in my groups',
-      value: 2,
-    },
-    {
-      text: 'Followers',
-      value: 3,
-    },
+    {text: 'Members in my groups', value: 2},
+    {text: 'Followers', value: 3},
   ];
-  const countNumberOfWeekFromDay = () => {
-    const date = new Date();
-    const startDate = new Date(date.getFullYear(), date.getMonth(), 1);
-    const endDate = date;
-    const givenDay = new Date().getDay();
-    let numberOfDates = 0;
-    while (startDate < endDate) {
-      if (startDate.getDay() === givenDay) {
-        numberOfDates++;
-      }
-      startDate.setDate(startDate.getDate() + 1);
-    }
-    return ordinal_suffix_of(numberOfDates);
-  };
-  const countNumberOfWeeks = () => {
-    const date = new Date();
-    const startDate = new Date(date.getFullYear(), date.getMonth(), 1);
-    const endDate = date;
-    const givenDay = new Date().getDay();
-    let numberOfDates = 0;
-    while (startDate < endDate) {
-      if (startDate.getDay() === givenDay) {
-        numberOfDates++;
-      }
-      startDate.setDate(startDate.getDate() + 1);
-    }
-    return numberOfDates;
-  };
-  const getTodayDay = () => {
-    const dt = moment(new Date(), 'YYYY-MM-DD HH:mm:ss');
-    return dt.format('dddd');
-  };
+
   const handleStartDatePress = (date) => {
-    console.log('Date::=>', new Date(new Date(date).getTime()));
-    setEventStartdateTime(
-      toggle
-        ? new Date(date).setHours(0, 0, 0, 0)
-        : new Date(new Date(date).getTime()),
-    );
-    setEventEnddateTime(
-      toggle
-        ? new Date(date).setHours(23, 59, 59, 0)
-        : moment(date).add(5, 'm').toDate(),
-    );
-    setEventUntildateTime(
-      toggle
-        ? new Date(date).setHours(23, 59, 59, 0)
-        : moment(date).add(5, 'm').toDate(),
-    );
+    const startDateTime = toggle ? new Date(date).setHours(0, 0, 0, 0) : date
+    setEventStartdateTime(startDateTime);
+    let endDateTime = eventEndDateTime;
+    const unitDate = eventUntilDateTime;
+    
+    if (endDateTime.getTime() <= startDateTime.getTime()){
+      endDateTime = toggle ? date.setHours(23,59,59,0)
+      :  moment(startDateTime).add(5, 'm').toDate();
+    }
+
+    setEventEnddateTime(endDateTime)
+
+    if(!unitDate || endDateTime.getTime() > unitDate.getTime()){
+      setEventUntildateTime(moment(endDateTime).add(5, 'm').toDate())
+    }
     setStartDateVisible(!startDateVisible);
   };
+
   const handleCancelPress = () => {
     setStartDateVisible(false);
     setEndDateVisible(false);
@@ -223,21 +170,18 @@ export default function EditEventScreen({navigation, route}) {
   };
 
   const handleEndDatePress = (date) => {
-    let dateValue = new Date();
-    if (toggle) {
-      dateValue = `${moment(date).format('ddd MMM DD YYYY')} 11:59:59 PM`;
-      console.log('Date Value :-', dateValue);
-      setEventEnddateTime(dateValue);
-      setEventUntildateTime(moment(dateValue).add(5, 'm').toDate());
-    } else {
-      setEventEnddateTime(date);
-      setEventUntildateTime(moment(date).add(5, 'm').toDate());
+    const endDateTime = toggle ? date.setHours(23,59,59,0): date;
+    const unitDate = eventUntilDateTime
+    setEventEnddateTime(endDateTime);
+    if(!unitDate || endDateTime.getTime() > unitDate.getTime()){
+      setEventUntildateTime(moment(endDateTime).add(5, 'm').toDate());
     }
+
     setEndDateVisible(!endDateVisible);
   };
 
   const handleUntilDatePress = (date) => {
-    setEventUntildateTime(date);
+    setEventUntildateTime(toggle ? date.setHours(23,59,59,0): date);
     setUntilDateVisible(!untilDateVisible);
   };
 
@@ -263,6 +207,10 @@ export default function EditEventScreen({navigation, route}) {
     eventFee,
     refundPolicy,
     selectedSport,
+    selectWeekMonth,
+    eventStartDateTime,
+    eventEndDateTime,
+    eventUntilDateTime,
   ]);
 
   useEffect(() => {
@@ -331,26 +279,6 @@ export default function EditEventScreen({navigation, route}) {
       });
   }, [authContext]);
 
-  const ordinal_suffix_of = (i) => {
-    const j = i % 10,
-      k = i % 100;
-    if (j === 1 && k !== 11) {
-      return `${i}st`;
-    }
-    if (j === 2 && k !== 12) {
-      return `${i}nd`;
-    }
-    if (j === 3 && k !== 13) {
-      return `${i}rd`;
-    }
-    return `${i}th`;
-  };
-
-  const convertDateToUTC = (date) => {
-    const dt = new Date(date);
-    return new Date(dt.getTime() + dt.getTimezoneOffset() * 60000);
-  };
-
   const getSports = () => {
     let sportArr = [];
 
@@ -400,9 +328,9 @@ export default function EditEventScreen({navigation, route}) {
       style={styles.listItem}
       onPress={() => {
         if (whoOpetion === 'see') {
-          setWhoCanSeeOpetion(item);
+          setWhoCanSeeOption(item);
         } else {
-          setWhoCanJoinOpetion(item);
+          setWhoCanJoinOption(item);
         }
 
         setTimeout(() => {
@@ -419,8 +347,8 @@ export default function EditEventScreen({navigation, route}) {
         }}>
         <Text style={styles.languageList}>{item.text}</Text>
         <View style={styles.checkbox}>
-          {(whoOpetion === 'see' && whoCanSeeOpetion.value === item?.value) ||
-          (whoOpetion === 'join' && whoCanJoinOpetion.value === item?.value) ? (
+          {(whoOpetion === 'see' && whoCanSeeOption.value === item?.value) ||
+          (whoOpetion === 'join' && whoCanJoinOption.value === item?.value) ? (
             <Image
               source={images.radioCheckYellow}
               style={styles.checkboxImg}
@@ -516,9 +444,8 @@ export default function EditEventScreen({navigation, route}) {
     }, 0.1);
   };
 
-  const openImagePicker = (width = 400, height = 400) => {
+  const openImagePicker = (width = 680, height = 300) => {
     const cropCircle = false;
-
     ImagePicker.openPicker({
       width,
       height,
@@ -535,7 +462,7 @@ export default function EditEventScreen({navigation, route}) {
     setBackgroundImageChanged(false);
   };
 
-  const openCamera = (width = 400, height = 400) => {
+  const openCamera = (width = 680, height = 300) => {
     // check(PERMISSIONS.IOS.CAMERA)
     check(
       Platform.select({
@@ -595,58 +522,53 @@ export default function EditEventScreen({navigation, route}) {
 
   const checkValidation = useCallback(() => {
     if (eventTitle === '') {
-      Alert.alert(strings.appName, 'Please Enter Event Title.');
+      Alert.alert(strings.appName, strings.eventTitleValidation);
       return false;
     }
     if (sportsSelection === undefined) {
-      Alert.alert(strings.appName, 'Please choose sport.');
+      Alert.alert(strings.appName, strings.chooseSportText);
       return false;
     }
     if (eventDescription === '') {
-      Alert.alert(strings.appName, 'Please Enter Event Description.');
+      Alert.alert(strings.appName, strings.eventDescriptionValidation);
       return false;
     }
     if (eventStartDateTime === '') {
-      Alert.alert(strings.appName, 'Please Select Event Start Date and Time.');
+      Alert.alert(strings.appName, strings.eventStartDateValidation);
       return false;
     }
     if (eventEndDateTime === '') {
-      Alert.alert(strings.appName, 'Please Select Event End Date and Time.');
+      Alert.alert(strings.appName, strings.eventEndDateValidation);
       return false;
     }
-    if (eventEndDateTime === '') {
-      Alert.alert(strings.appName, 'Please Select Event End Date and Time.');
-      return false;
-    }
-    if (!locationDetail?.venue_name || locationDetail?.venue_name?.length < 1) {
-      Alert.alert(strings.appName, 'Please enter venue name.');
-      return false;
-    }
-    if (
-      !locationDetail?.venue_detail ||
-      locationDetail?.venue_detail?.length < 1
-    ) {
-      Alert.alert(strings.appName, 'Please enter venue description.');
-      return false;
-    }
+
+    // if (!locationDetail?.venue_name || locationDetail?.venue_name?.length < 1) {
+    //   Alert.alert(strings.appName, strings.enterVenueNameValidation);
+    //   return false;
+    // }
+    // if (
+    //   !locationDetail?.venue_detail ||
+    //   locationDetail?.venue_detail?.length < 1
+    // ) {
+    //   Alert.alert(strings.appName, strings.enterVenueDescriptionValidation);
+    //   return false;
+    // }
 
     if (Number(minAttendees) > 0 && Number(maxAttendees) > 0) {
       if (Number(minAttendees) === 0) {
         Alert.alert(
-          strings.appName,
-          'Please enter valid minimum attendees number(0 not allowed).',
+          strings.appName, strings.enterValidAttendee,
         );
         return false;
       }
       if (Number(maxAttendees) === 0) {
         Alert.alert(
-          strings.appName,
-          'Please enter valid maximum attendees number(0 not allowed).',
+          strings.appName, strings.enterValidMaxAtendeeValidation,
         );
         return false;
       }
       if (Number(minAttendees) > Number(maxAttendees)) {
-        Alert.alert(strings.appName, 'Please enter valid attendees number.');
+        Alert.alert(strings.appName, strings.enterValidAtendeeValidation);
         return false;
       }
     }
@@ -669,35 +591,29 @@ export default function EditEventScreen({navigation, route}) {
     const uid = entity.uid || entity.auth.user_id;
     const entityRole = entity.role === 'user' ? 'users' : 'groups';
 
-    let ruleString = '';
-    if (
-      selectWeekMonth === 'Daily' ||
-      selectWeekMonth === 'Weekly' ||
-      selectWeekMonth === 'Monthly' ||
-      selectWeekMonth === 'Yearly'
-    ) {
-      ruleString = selectWeekMonth.toUpperCase();
-    } else if (
-      selectWeekMonth ===
-      `Monthly on ${countNumberOfWeekFromDay()} ${getTodayDay()}`
-    ) {
-      ruleString = `MONTHLY;BYDAY=${getTodayDay()
+    let rule
+    if (selectWeekMonth === Verbs.eventRecurringEnum.Daily) {
+      rule =  'FREQ=DAILY'
+    } else if (selectWeekMonth === Verbs.eventRecurringEnum.Weekly) {
+      rule =  'FREQ=WEEKLY'
+    }  else if (selectWeekMonth === Verbs.eventRecurringEnum.WeekOfMonth) {
+      rule = `FREQ=MONTHLY;BYDAY=${getDayFromDate(eventStartDateTime)
         .substring(0, 2)
-        .toUpperCase()};BYSETPOS=${countNumberOfWeeks()}`;
-    } else if (
-      selectWeekMonth ===
-      `Monthly on ${ordinal_suffix_of(new Date().getDate())} day`
-    ) {
-      ruleString = `MONTHLY;BYMONTHDAY=${new Date().getDate()}`;
+        .toUpperCase()};BYSETPOS=${countNumberOfWeeks(eventStartDateTime)}`;
+    } else if ( selectWeekMonth === Verbs.eventRecurringEnum.DayOfMonth) {
+        rule = `FREQ=MONTHLY;BYMONTHDAY=${eventStartDateTime.getDate()}`;
+    } else if (selectWeekMonth === Verbs.eventRecurringEnum.WeekOfYear) {
+      rule = `FREQ=YEARLY;BYDAY=${getDayFromDate(eventStartDateTime)
+        .substring(0, 2)
+        .toUpperCase()};BYSETPOS=${countNumberOfWeeks(eventStartDateTime)}`;
+    } else if (selectWeekMonth === Verbs.eventRecurringEnum.DayOfYear) {
+        rule = `FREQ=YEARLY;BYMONTHDAY=${eventStartDateTime.getDate()};BYMONTH=${eventStartDateTime.getMonth()}`;
+    } 
+    
+    if(rule){
+      data.untilDate = getTCDate(eventUntilDateTime);
+      data.rrule = rule
     }
-    if (selectWeekMonth !== 'Never') {
-      data.untilDate = Number(
-        parseFloat(new Date(eventUntilDateTime).getTime() / 1000).toFixed(0),
-      );
-      data.rrule = `FREQ=${ruleString}`;
-    }
-
-    console.log('DADADADAD', data);
 
     editEvent(entityRole, uid, data, authContext)
       .then((response) => {
@@ -724,24 +640,17 @@ export default function EditEventScreen({navigation, route}) {
         background_thumbnail: eventData.background_thumbnail,
         background_full_image: eventData.background_full_image,
         allDay: toggle,
-        start_datetime: Number(
-          parseFloat(
-            new Date(convertDateToUTC(eventStartDateTime)).getTime() / 1000,
-          ).toFixed(0),
-        ),
-        end_datetime: Number(
-          parseFloat(
-            new Date(convertDateToUTC(eventEndDateTime)).getTime() / 1000,
-          ).toFixed(0),
-        ),
-        is_recurring: selectWeekMonth !== 'Never',
+        start_datetime: getTCDate(eventStartDateTime),
+        end_datetime: getTCDate(eventEndDateTime),
+        is_recurring: selectWeekMonth !== Verbs.eventRecurringEnum.Never,
+        repeat: selectWeekMonth,
         blocked: is_Blocked,
         selected_sport: sportsSelection,
         who_can_see: {
-          ...whoCanSeeOpetion,
+          ...whoCanSeeOption,
         },
         who_can_join: {
-          ...whoCanJoinOpetion,
+          ...whoCanJoinOption,
         },
         event_posted_at: eventPosted,
         event_fee: {
@@ -752,8 +661,8 @@ export default function EditEventScreen({navigation, route}) {
         min_attendees: Number(minAttendees),
         max_attendees: Number(maxAttendees),
         entity_type:
-          authContext.entity.role === 'user'
-            ? 'player'
+          authContext.entity.role === Verbs.entityTypeUser
+            ? Verbs.entityTypePlayer
             : authContext.entity.role,
         participants: [
           {
@@ -772,20 +681,20 @@ export default function EditEventScreen({navigation, route}) {
         },
       };
 
-      if (whoCanSeeOpetion.value === 2) {
+      if (whoCanSeeOption.value === 2) {
         const checkedGroup = groupsSeeList.filter((obj) => obj.isSelected);
         const resultOfIds = checkedGroup.map((obj) => obj.group_id);
-        if (authContext.entity.role === 'user') {
+        if (authContext.entity.role === Verbs.entityTypeUser) {
           data.who_can_see.group_ids = resultOfIds;
         } else {
           data.who_can_see.group_ids = [authContext.entity.uid];
         }
       }
 
-      if (whoCanJoinOpetion.value === 2) {
+      if (whoCanJoinOption.value === 2) {
         const checkedGroup = groupsJoinList.filter((obj) => obj.isSelected);
         const resultOfIds = checkedGroup.map((obj) => obj.group_id);
-        if (authContext.entity.role === 'user') {
+        if (authContext.entity.role === Verbs.entityTypeUser) {
           data.who_can_join.group_ids = resultOfIds;
         } else {
           data.who_can_join.group_ids = [authContext.entity.uid];
@@ -827,7 +736,6 @@ export default function EditEventScreen({navigation, route}) {
   return (
     <>
       <ActivityLoader visible={loading} />
-
       <View style={styles.sperateLine} />
       <TCKeyboardView>
         <ScrollView bounces={false} nestedScrollEnabled={true}>
@@ -921,29 +829,42 @@ export default function EditEventScreen({navigation, route}) {
               <EventMonthlySelection
                 title={strings.repeat}
                 dataSource={[
-                  {label: 'Daily', value: 'Daily'},
-                  {label: 'Weekly', value: 'Weekly'},
+                  {label: strings.daily, value: Verbs.eventRecurringEnum.Daily},
+                  {label: strings.weeklyText, value: Verbs.eventRecurringEnum.Weekly},
                   {
-                    label: `Monthly on ${countNumberOfWeekFromDay()} ${getTodayDay()}`,
-                    value: `Monthly on ${countNumberOfWeekFromDay()} ${getTodayDay()}`,
+                    label: format(
+                      strings.monthlyOnText,
+                      `${countNumberOfWeekFromDay(eventStartDateTime)} ${getDayFromDate(eventStartDateTime)}`,
+                    ),
+                    value: Verbs.eventRecurringEnum.WeekOfMonth
                   },
                   {
-                    label: `Monthly on ${ordinal_suffix_of(
-                      new Date().getDate(),
-                    )} day`,
-                    value: `Monthly on ${ordinal_suffix_of(
-                      new Date().getDate(),
-                    )} day`,
+                    label: format(
+                      strings.monthlyOnDayText,
+                      ordinal_suffix_of(eventStartDateTime.getDate()),
+                    ),
+                    value: Verbs.eventRecurringEnum.DayOfMonth,
                   },
-                  {label: 'Yearly', value: 'Yearly'},
+                  {
+                    label: format(
+                      strings.yearlyOnText,
+                      `${countNumberOfWeekFromDay(eventStartDateTime)} ${getDayFromDate(eventStartDateTime)}`,
+                    ),
+                    value: Verbs.eventRecurringEnum.WeekOfYear
+                  },
+                  {
+                    label: format(
+                      strings.yearlyOnDayText,
+                      ordinal_suffix_of(eventStartDateTime.getDate()),
+                    ),
+                    value: Verbs.eventRecurringEnum.DayOfYear,
+                  }
                 ]}
-                placeholder={'Never'}
+                placeholder={strings.never}
                 value={selectWeekMonth}
-                onValueChange={(value) => {
-                  setSelectWeekMonth(value);
-                }}
+                onValueChange={(value) => { setSelectWeekMonth(value);}}
               />
-              {selectWeekMonth !== 'Never' && (
+              {selectWeekMonth !== Verbs.eventRecurringEnum.Never && (
                 <EventTimeSelectItem
                   title={strings.until}
                   toggle={!toggle}
@@ -960,7 +881,7 @@ export default function EditEventScreen({navigation, route}) {
                   containerStyle={{marginBottom: 12}}
                   onDatePress={() => setUntilDateVisible(!untilDateVisible)}
                 />
-              )}
+              )} 
             </EventItemRender>
 
             <EventItemRender title={''}>
@@ -1061,7 +982,7 @@ export default function EditEventScreen({navigation, route}) {
                 }}>
                 <View style={styles.dropContainer}>
                   <Text style={styles.textInputDropStyle}>
-                    {whoCanJoinOpetion.text}
+                    {whoCanJoinOption.text}
                   </Text>
                   <Image
                     source={images.dropDownArrow}
@@ -1070,7 +991,7 @@ export default function EditEventScreen({navigation, route}) {
                 </View>
               </TouchableOpacity>
             </View>
-            {whoCanJoinOpetion.value === 2 &&
+            {whoCanJoinOption.value === 2 &&
               authContext.entity.role === 'user' && (
                 <View>
                   <View style={styles.allStyle}>
@@ -1178,7 +1099,7 @@ export default function EditEventScreen({navigation, route}) {
                 }}>
                 <View style={styles.dropContainer}>
                   <Text style={styles.textInputDropStyle}>
-                    {whoCanSeeOpetion.text}
+                    {whoCanSeeOption.text}
                   </Text>
                   <Image
                     source={images.dropDownArrow}
@@ -1187,7 +1108,7 @@ export default function EditEventScreen({navigation, route}) {
                 </View>
               </TouchableOpacity>
             </View>
-            {whoCanSeeOpetion.value === 2 &&
+            {whoCanSeeOption.value === 2 &&
               authContext.entity.role === 'user' && (
                 <View>
                   <View style={styles.allStyle}>
@@ -1224,33 +1145,27 @@ export default function EditEventScreen({navigation, route}) {
               )}
 
             <DateTimePickerView
-              // date={eventStartDateTime}
+              date={eventStartDateTime}
               visible={startDateVisible}
               onDone={handleStartDatePress}
               onCancel={handleCancelPress}
               onHide={handleCancelPress}
-              minimumDate={
-                toggle
-                  ? new Date().setDate(new Date().getDate() + 1)
-                  : getNearDateTime(new Date())
-              }
+              minimumDate={getRoundedDate(5)}
               minutesGap={5}
               mode={toggle ? 'date' : 'datetime'}
             />
             <DateTimePickerView
-              // date={eventEndDateTime}
+              date={eventEndDateTime}
               visible={endDateVisible}
               onDone={handleEndDatePress}
               onCancel={handleCancelPress}
               onHide={handleCancelPress}
-              minimumDate={moment(getNearDateTime(new Date(eventStartDateTime)))
-                .add(5, 'm')
-                .toDate()}
+              minimumDate={moment(eventStartDateTime).add(5, 'm').toDate()}
               minutesGap={5}
               mode={toggle ? 'date' : 'datetime'}
             />
             <DateTimePickerView
-              // date={eventUntilDateTime}
+              date={eventUntilDateTime}
               visible={untilDateVisible}
               onDone={handleUntilDatePress}
               onCancel={handleCancelPress}
