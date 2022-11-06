@@ -264,22 +264,14 @@ const CommentModal = ({
             placeholder={'Write a comment'}
             placeholderTextColor={colors.userPostTimeColor}
             multiline={true}
-            textAlignVertical={'top'}
+            autoCorrect={false}
+            spellCheck={false}
+            autoComplete="off"
+            autoCapitalize="none"
             value={commentTxt}
+            keyboardType="visible-password"
             onChangeText={(text) => setCommentText(text)}
-            style={{
-              textAlignVertical: 'center',
-              fontSize: 14,
-              lineHeight: 20,
-              width: wp('66%'),
-              marginHorizontal: '2%',
-              color: colors.lightBlackColor,
-              fontFamily: fonts.RRegular,
-              paddingVertical: 0,
-              paddingLeft: 8,
-              alignSelf: 'center',
-              maxHeight: hp(20),
-            }}
+            style={styles.writeCommectStyle}
           />
           {commentTxt.trim().length > 0 &&
             (!editData ? (
@@ -431,6 +423,19 @@ const styles = StyleSheet.create({
         elevation: 15,
       },
     }),
+  },
+  writeCommectStyle: {
+    textAlignVertical: 'center',
+    fontSize: 14,
+    lineHeight: 20,
+    width: wp('66%'),
+    marginHorizontal: '2%',
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RRegular,
+    paddingVertical: 0,
+    paddingLeft: 8,
+    alignSelf: 'center',
+    maxHeight: hp(10),
   },
 });
 

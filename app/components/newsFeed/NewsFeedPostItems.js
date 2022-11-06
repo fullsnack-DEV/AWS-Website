@@ -232,7 +232,7 @@ const NewsFeedPostItems = memo(
       const body = {
         ...temp,
         activity_id: item.id,
-        post_type :'repost'
+        post_type: 'repost',
       };
       createRePost(body, authContext)
         .then((response) => {
@@ -249,6 +249,7 @@ const NewsFeedPostItems = memo(
     const onActionSheetItemPress = useCallback(
       (index) => {
         if (index === 0) {
+          console.log('ITEM::::=>', item);
           navigation.navigate('EditPostScreen', {
             data: item,
             onPressDone: onEditPressDone,

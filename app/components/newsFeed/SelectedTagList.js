@@ -13,7 +13,7 @@ import images from '../../Constants/ImagePath';
 
 export default function SelectedTagList({
   dataSource,
-  titleKey,
+
   onTagCancelPress,
 }) {
   const renderTags = ({item, index}) => (
@@ -21,7 +21,7 @@ export default function SelectedTagList({
       <View
         style={styles.textContainer}
         onPress={() => onTagCancelPress({item, index})}>
-        <Text style={styles.tagTitleText}>{item[titleKey]}</Text>
+        <Text style={styles.tagTitleText}>{item.full_name}</Text>
         <Image source={images.tagDivider} style={styles.dividerImage} />
         <TouchableOpacity
           style={styles.closeButton}

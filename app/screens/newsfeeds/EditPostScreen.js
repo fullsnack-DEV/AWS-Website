@@ -78,10 +78,10 @@ const EditPostScreen = ({navigation, route}) => {
   const [lastTagStartIndex, setLastTagStartIndex] = useState(null);
   const [loading, setloading] = useState(false);
   const [letModalVisible, setLetModalVisible] = useState(false);
-  const [searchFieldHeight, setSearchFieldHeight] = useState();
-  const editObject = JSON.parse(route?.params?.data?.object);
+  const [searchFieldHeight, setSearchFieldHeight] = useState(0);
+
   const [tagsOfEntity, setTagsOfEntity] = useState(
-    editObject?.format_tagged_data || [],
+    JSON.parse(route?.params?.data?.object)?.format_tagged_data || [],
   );
   const [searchTag, setSearchTag] = useState();
   const [searchUsers, setSearchUsers] = useState([]);
@@ -91,7 +91,7 @@ const EditPostScreen = ({navigation, route}) => {
   const [groups, setGroups] = useState([]);
   const [visibleWhoModal, setVisibleWhoModal] = useState(false);
   const [privacySetting, setPrivacySetting] = useState(
-    editObject?.who_can_see ?? {
+    JSON.parse(route?.params?.data?.object)?.who_can_see ?? {
       text: strings.everyoneTitleText,
       value: 0,
     },
@@ -250,65 +250,62 @@ const EditPostScreen = ({navigation, route}) => {
   useEffect(() => {
     let tagName = '';
     const tagsArray = [];
-    if (route.params && route.params.selectedTagList) {
-      if (route.params.selectedTagList?.length > 0) {
-        route.params.selectedTagList.map((tagItem) => {
-          let joinedString = '@';
-          const entity_text = ['player', 'user']?.includes(tagItem.entity_type)
-            ? 'user_id'
-            : 'group_id';
-          let entity_data = {};
-          let entity_name = '';
-          const isExist = tagsOfEntity.some(
-            (item) => item?.entity_id === tagItem[entity_text],
-          );
+    if (route?.params?.selectedTagList?.length > 0) {
+      route.params.selectedTagList.map((tagItem) => {
+        let joinedString = '@';
+        const entity_text = ['player', 'user']?.includes(tagItem.entity_type)
+          ? 'user_id'
+          : 'group_id';
+        let entity_data = {};
+        let entity_name = '';
+        const isExist = tagsOfEntity.some(
+          (item) => item?.entity_id === tagItem[entity_text],
+        );
 
-          const jsonData = {entity_type: '', entity_data, entity_id: ''};
-          jsonData.entity_type = ['player', 'user']?.includes(
-            tagItem.entity_type,
-          )
-            ? 'player'
-            : tagItem?.entity_type;
-          jsonData.entity_id = tagItem?.[entity_text];
-          if (tagItem?.group_name) {
-            entity_name = _.startCase(_.toLower(tagItem?.group_name))?.replace(
-              / /g,
-              '',
-            );
-          } else {
-            const fName = _.startCase(_.toLower(tagItem?.first_name))?.replace(
-              / /g,
-              '',
-            );
-            const lName = _.startCase(_.toLower(tagItem?.last_name))?.replace(
-              / /g,
-              '',
-            );
-            entity_name = `${fName}${lName}`;
-          }
-          joinedString += `${entity_name} `;
-          entity_data.tagged_formatted_name = joinedString?.replace(/ /g, '');
-          entity_data = getTaggedEntityData(entity_data, tagItem);
-          if (!isExist)
-            tagsArray.push({
-              entity_data,
-              entity_id: jsonData?.entity_id,
-              entity_type: jsonData?.entity_type,
-            });
-          tagName = `${tagName} ${joinedString}`;
-          textInputRef.current.focus();
-          return null;
-        });
-        setLetModalVisible(false);
-        setTagsOfEntity([...tagsOfEntity, ...tagsArray]);
-        const modifiedSearch = searchText;
-        const output = [
-          modifiedSearch.slice(0, currentTextInputIndex - 1),
-          tagName,
-          modifiedSearch.slice(currentTextInputIndex - 1),
-        ].join('');
-        setSearchText(output);
-      }
+        const jsonData = {entity_type: '', entity_data, entity_id: ''};
+        jsonData.entity_type = ['player', 'user']?.includes(tagItem.entity_type)
+          ? 'player'
+          : tagItem?.entity_type;
+        jsonData.entity_id = tagItem?.[entity_text];
+        if (tagItem?.group_name) {
+          entity_name = _.startCase(_.toLower(tagItem?.group_name))?.replace(
+            / /g,
+            '',
+          );
+        } else {
+          const fName = _.startCase(_.toLower(tagItem?.first_name))?.replace(
+            / /g,
+            '',
+          );
+          const lName = _.startCase(_.toLower(tagItem?.last_name))?.replace(
+            / /g,
+            '',
+          );
+          entity_name = `${fName}${lName}`;
+        }
+        joinedString += `${entity_name} `;
+        entity_data.tagged_formatted_name = joinedString?.replace(/ /g, '');
+        entity_data = getTaggedEntityData(entity_data, tagItem);
+        if (!isExist)
+          tagsArray.push({
+            entity_data,
+            entity_id: jsonData?.entity_id,
+            entity_type: jsonData?.entity_type,
+          });
+        tagName = `${tagName} ${joinedString}`;
+
+        textInputRef.current.focus();
+        return null;
+      });
+      setLetModalVisible(false);
+      setTagsOfEntity([...tagsOfEntity, ...tagsArray]);
+      const modifiedSearch = searchText;
+      const output = [
+        modifiedSearch.slice(0, currentTextInputIndex - 1),
+        tagName,
+        modifiedSearch.slice(currentTextInputIndex - 1),
+      ].join('');
+      setSearchText(output);
     }
   }, [route?.params]);
 
@@ -738,6 +735,9 @@ const EditPostScreen = ({navigation, route}) => {
               imageStyle={{width: 30, height: 30, marginLeft: 10}}
               onImagePress={() => {
                 navigation.navigate('UserTagSelectionListScreen', {
+                  data,
+                  onPressDone,
+                  route,
                   comeFrom: 'EditPostScreen',
                   onSelectMatch,
                   taggedData: JSON.parse(JSON.stringify(tagsOfEntity)).map(
