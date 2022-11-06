@@ -289,11 +289,9 @@ export default {
 
   // CreateClub Screen 2
   inviteTitle: 'en_Invitation to Membership',
-  userText: 'en_USER',
   userSubtitle: 'en_Does a user need an invitation from the club to join It?',
   noUserText: 'en_No, a user doesn’t.',
   yesUserText: 'en_Yes, a user does.',
-  teamText: 'en_TEAM',
   teamSubTitle: 'en_Does a user need an invitation from the club to join It?',
   noTeamText: 'en_No, a team doesn’t.',
   yesTeamText: 'en_Yes, a team does.',
@@ -376,7 +374,7 @@ export default {
   time: 'en_12:00 am',
   to: 'en_To',
   repeat: 'en_Repeat',
-  repeatTime: 'en_Weekly \n(Until Mar 25, 2019 12:00 am)',
+  repeatTime: '{0} \n(Until {1})',
   place: 'en_VENUE',
   placeName: 'en_800 Griffiths Way, Vancouver, BC V6B 6G1',
   availableTitle: 'en_Challenge Availability',
@@ -1341,7 +1339,8 @@ export default {
   weeklyText: 'en_Weekly',
   monthlyOnText: 'en_Monthly on {0}',
   monthlyOnDayText: 'en_Monthly on {0} day',
-  yearly: 'en_Yearly',
+  yearlyOnText: 'en_Yearly on {0}',
+  yearlyOnDayText: 'en_Yearly on {0} day',
   never: 'en_Never',
   doesNotRepeat: 'en_Does not repeat',
   areYouSureQuitCreateEvent:
@@ -2105,4 +2104,6 @@ export default {
   likesTitle: 'en_Likes',
   noLikesYet: 'en_No Likes Yet',
   taggedTitle: 'en_Tagged',
+  optional: ' en_optional',
+  going:' en_going',
 };

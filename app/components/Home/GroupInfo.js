@@ -23,6 +23,7 @@ import images from '../../Constants/ImagePath';
 import AuthContext from '../../auth/context';
 import EventMapView from '../Schedule/EventMapView';
 import TCThickDivider from '../TCThickDivider';
+import Verbs from '../../Constants/Verbs';
 
 export default function GroupInfo({
   navigation,
@@ -152,11 +153,11 @@ export default function GroupInfo({
   }
 
   if (groupDetails?.registration_fee) {
-    membershipregfee = `${groupDetails?.registration_fee} ${strings.CAD}`;
+    membershipregfee = `${groupDetails?.registration_fee} ${Verbs.CAD}`;
   }
 
   if (groupDetails?.membership_fee) {
-    membershipfee = `${groupDetails?.membership_fee} ${strings.CAD}`;
+    membershipfee = `${groupDetails?.membership_fee} ${Verbs.CAD}`;
     if (groupDetails?.membership_fee_type === 'weekly') {
       membershipfee = `${membershipfee}/${strings.week}`;
     } else if (groupDetails?.membership_fee_type === 'biweekly') {

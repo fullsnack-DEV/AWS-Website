@@ -20,12 +20,9 @@ const makeElasticAPIRequest = async ({method, url, data}) =>
   });
 
 const globalElasticApiCall = async ({method, url, data}) => {
-  console.log('dadadada', data);
   const elasticCredential = await Utility.getStorage('appSetting');
   console.log('elasticCredential', elasticCredential);
-
   const URL = `${elasticCredential?.elastic?.host}${url}`;
-
   console.log('FUll url : =>', URL);
   const options = {
     method,
@@ -43,7 +40,6 @@ const globalElasticApiCall = async ({method, url, data}) => {
   try {
     console.log('Elastic API Opetions:=>', options);
     const response = await axios(options);
-
     console.log(
       'RESPONSE ELASTIC ::',
       response?.data?.hits?.hits.map((item) => item?._source),
@@ -51,10 +47,7 @@ const globalElasticApiCall = async ({method, url, data}) => {
     return response?.data?.hits?.hits?.map((item) => item?._source);
   } catch (error) {
     console.log('SERVER ELASTIC ERROR ::--->', error.response.status);
-    // if (e.response.status !== 404) {
-    //   throw new Error(e);
-    // }
-
+    
     if (error.response) {
       // Request made and server responded
       if (error.response.status === 404) {

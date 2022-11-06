@@ -6,12 +6,13 @@ import LinearGradient from 'react-native-linear-gradient';
 import {strings} from '../../../Localization/translation';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
+import Verbs from '../../Constants/Verbs';
 
 export default function ReservationDetailStatusView({
   status = 'pending',
   doneBy = 'Kishan Makani',
   amount = 30,
-  currencyType = strings.defaultCurrency,
+  currencyType = Verbs.usd,
 }) {
   return (
     <View style={styles.reservationTitleView}>

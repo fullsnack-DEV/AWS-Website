@@ -78,7 +78,7 @@ export default function ScheduleScreen({navigation, route}) {
   const timeFilterData = ['Future', 'Past'];
 
   const [sports, setSports] = useState([]);
-  const [orgenizerOpetions, setOrgenizerOpetions] = useState([]);
+  const [organizerOptions, setOrganizerOptions] = useState([]);
 
   if (route?.params?.isBackVisible) {
     authContext = {
@@ -126,8 +126,8 @@ export default function ScheduleScreen({navigation, route}) {
 
   const [indigator, setIndigator] = useState(false);
 
-  const [selectedOpetions, setSelectedOpetions] = useState({
-    opetion: 0,
+  const [selectedOptions, setSelectedOptions] = useState({
+    option: 0,
     title: 'All',
   });
   const [filterSetting, setFilterSetting] = useState({
@@ -135,7 +135,7 @@ export default function ScheduleScreen({navigation, route}) {
     time: 0,
   });
 
-  const [sortFilterOpetion, setSortFilterOpetion] = useState(0);
+  const [sortFilterOption, setSortFilterOpetion] = useState(0);
   const [timeFilterOpetion, setTimeFilterOpetion] = useState(0);
   const [filterPopup, setFilterPopup] = useState(false);
 
@@ -175,41 +175,19 @@ export default function ScheduleScreen({navigation, route}) {
     }
   };
 
-  // const getSimpleDateFormat = (dateValue) => {
-  //   moment.locale('en');
-  //   return moment(new Date(dateValue)).format('yy/MM/DD');
-  // };
-
   const getEventOccuranceFromRule = (event) => {
     const ruleObj = RRule.parseString(event.rrule);
-
-    ruleObj.dtstart = new Date(
-      new Date((event.start_datetime + 6 * 3600) * 1000).toLocaleString(
-        'en-US',
-        {
-          timeZone: 'Asia/Calcutta',
-        },
-      ),
-    );
-
-    ruleObj.until = new Date(
-      new Date(event.untilDate * 1000).toLocaleString('en-US', {
-        timeZone: 'Asia/Calcutta',
-      }),
-    );
-
-    ruleObj.tzid = 'Asia/Calcutta';
-
+    ruleObj.dtstart = Utility.getJSDate(event.start_datetime);
+    ruleObj.until = Utility.getJSDate(event.untilDate);
     const rule = new RRule(ruleObj);
     const duration = event.end_datetime - event.start_datetime;
     let occr = rule.all();
-    occr = occr.map((item) => {
+    occr = occr.map((RRItem) => {
       const newEvent = {...event};
-      const date = new Date(item);
-      newEvent.start_datetime = Math.round(date.getTime() / 1000);
+      newEvent.start_datetime =  Utility.getTCDate(RRItem);
       newEvent.end_datetime = newEvent.start_datetime + duration;
-      item = newEvent;
-      return item;
+      RRItem = newEvent;
+      return RRItem;
     });
     return occr;
   };
@@ -223,7 +201,7 @@ export default function ScheduleScreen({navigation, route}) {
             setting?.payload?.user?.schedule_group_filter &&
             setting?.payload?.user?.schedule_group_filter?.length > 0
           ) {
-            setOrgenizerOpetions([
+            setOrganizerOptions([
               {group_name: 'All', group_id: 0},
               {group_name: 'Me', group_id: 1},
               ...setting?.payload?.user?.schedule_group_filter,
@@ -233,9 +211,8 @@ export default function ScheduleScreen({navigation, route}) {
             getGroups(authContext)
               .then((response) => {
                 const {teams, clubs} = response.payload ?? [];
-
                 if (response.payload.length > 0) {
-                  setOrgenizerOpetions([
+                  setOrganizerOptions([
                     {group_name: 'All', group_id: 0},
                     {group_name: 'Me', group_id: 1},
                     ...teams,
@@ -243,7 +220,7 @@ export default function ScheduleScreen({navigation, route}) {
                     {group_name: 'Others', group_id: 2},
                   ]);
                 } else {
-                  setOrgenizerOpetions([
+                  setOrganizerOptions([
                     {group_name: 'All', group_id: 0},
                     {group_name: 'Me', group_id: 1},
                     {group_name: 'Others', group_id: 2},
@@ -254,6 +231,7 @@ export default function ScheduleScreen({navigation, route}) {
               })
               .catch((e) => {
                 setloading(false);
+                console.log('Error==>', e.message)
                 Alert.alert(strings.townsCupTitle, e.message);
               });
           }
@@ -291,6 +269,7 @@ export default function ScheduleScreen({navigation, route}) {
       })
       .catch((e) => {
         setloading(false);
+        console.log('Error==>', e.message)
         Alert.alert(e.message);
       });
   }, [authContext, isFocused]);
@@ -311,7 +290,7 @@ export default function ScheduleScreen({navigation, route}) {
     setEventData(
       (eventTimeTableData || []).sort(
         (a, b) =>
-          new Date(a.start_datetime * 1000) - new Date(b.start_datetime * 1000),
+          Utility.getJSDate(a.start_datetime) - Utility.getJSDate(b.start_datetime),
       ),
     );
   }, []);
@@ -357,7 +336,6 @@ export default function ScheduleScreen({navigation, route}) {
       setloading(true);
       Utils.getChallengeDetail(data?.challenge_id, authContext).then((obj) => {
         setloading(false);
-
         navigation.navigate(obj.screenName, {
           challengeObj: obj.challengeObj || obj.challengeObj[0],
         });
@@ -403,7 +381,6 @@ export default function ScheduleScreen({navigation, route}) {
       authContext,
     ).then((obj) => {
       setloading(false);
-
       navigation.navigate(obj.screenName, {
         reservationObj: obj.reservationObj || obj.reservationObj[0],
       });
@@ -419,7 +396,6 @@ export default function ScheduleScreen({navigation, route}) {
     )
       .then((obj) => {
         setloading(false);
-
         navigation.navigate(obj.screenName, {
           reservationObj: obj.reservationObj || obj.reservationObj[0],
         });
@@ -434,10 +410,6 @@ export default function ScheduleScreen({navigation, route}) {
     }
   }, [isFocused]);
 
-  // const onThreeDotPress = useCallback(() => {
-  //   actionSheet.current.show();
-  // }, []);
-
   const onAddPlusPress = useCallback(() => {
     plusActionSheet.current.show();
   }, []);
@@ -446,14 +418,15 @@ export default function ScheduleScreen({navigation, route}) {
     (dateObj) => {
       const start = new Date(dateObj);
       start.setHours(0, 0, 0, 0);
-
       setSelectedDate(start);
+
+      console.log('allSlots', allSlots)
+
 
       const temp = [];
       for (const blockedSlot of allSlots) {
-        const eventDate = new Date(blockedSlot.start_datetime * 1000);
+        const eventDate = Utility.getJSDate(blockedSlot.start_datetime);
         eventDate.setHours(0, 0, 0, 0);
-
         if (
           eventDate.getTime() === start.getTime() &&
           blockedSlot.blocked === true
@@ -467,7 +440,7 @@ export default function ScheduleScreen({navigation, route}) {
         setSlots(temp);
       } else {
         timeSlots = createCalenderTimeSlots(
-          Number(parseFloat(new Date(start).getTime() / 1000).toFixed(0)),
+          Utility.getTCDate(start),
           24,
           temp,
         );
@@ -513,19 +486,17 @@ export default function ScheduleScreen({navigation, route}) {
     const eventTimeTableData = [];
     Utility.getCalendar(
       authContext?.entity?.uid,
-      Number(parseFloat(new Date().getTime() / 1000).toFixed(0)),
+      Utility.getTCDate(new Date()),
     )
-      // blockedSlots(entityRole, uid, authContext)
       .then((response) => {
-        const resCalenders = (response || []).filter((obj) => {
+        response = (response || []).filter((obj) => {
           if (obj.cal_type === 'blocked') {
             return obj;
           }
           if (obj.cal_type === 'event') {
             if (obj?.expiry_datetime) {
               if (
-                obj?.expiry_datetime >=
-                parseFloat(new Date().getTime() / 1000).toFixed(0)
+                obj?.expiry_datetime >= Utility.getTCDate(new Date())
               ) {
                 return obj;
               }
@@ -537,17 +508,16 @@ export default function ScheduleScreen({navigation, route}) {
 
         resCalenders.forEach((item) => {
           if (item?.rrule) {
-            const rEvents = getEventOccuranceFromRule(item);
+            let rEvents = getEventOccuranceFromRule(item);
+            rEvents = rEvents.filter((x) => x.end_datetime > Utility.getTCDate(new Date()));
             eventTimeTableData.push(...rEvents);
           } else {
             eventTimeTableData.push(item);
           }
         });
-
         onDayPress(new Date());
         setAllSlots(eventTimeTableData);
-        let gameIDs = [...new Set(resCalenders.map((item) => item.game_id))];
-
+        let gameIDs = [...new Set(response.map((item) => item.game_id))];
         gameIDs = (gameIDs || []).filter((item) => item !== undefined);
         if (gameIDs.length > 0) {
           const gameList = {
@@ -611,6 +581,7 @@ export default function ScheduleScreen({navigation, route}) {
       .catch((e) => {
         setloading(false);
         setTimeout(() => {
+          console.log('Error==>', e.message)
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
@@ -639,6 +610,7 @@ export default function ScheduleScreen({navigation, route}) {
       .catch((e) => {
         setloading(false);
         setTimeout(() => {
+          console.log('Error==>', e.message)
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
@@ -647,32 +619,32 @@ export default function ScheduleScreen({navigation, route}) {
 
   const makeOpetionsSelected = useCallback(
     (item) => {
-      if (sortFilterOpetion === 0) {
+      if (sortFilterOption === 0) {
         if (
-          selectedOpetions.title.group_name === item.group_name ||
-          selectedOpetions.title === item.group_name
+          selectedOptions.title.group_name === item.group_name ||
+          selectedOptions.title === item.group_name
         ) {
           return styles.sportSelectedName;
         }
         return styles.sportName;
       }
-      if (sortFilterOpetion === 1) {
-        if (selectedOpetions.title.sport === item.sport) {
+      if (sortFilterOption === 1) {
+        if (selectedOptions.title.sport === item.sport) {
           return styles.sportSelectedName;
         }
         return styles.sportName;
       }
-      if (sortFilterOpetion === 2) {
-        if (selectedOpetions.title === item) {
+      if (sortFilterOption === 2) {
+        if (selectedOptions.title === item) {
           return styles.sportSelectedName;
         }
         return styles.sportName;
       }
     },
-    [selectedOpetions.title, sortFilterOpetion],
+    [selectedOptions.title, sortFilterOption],
   );
 
-  const opetionsListView = useCallback(
+  const optionsListView = useCallback(
     ({item, index}) => (
       <Text
         style={makeOpetionsSelected(item)}
@@ -682,8 +654,9 @@ export default function ScheduleScreen({navigation, route}) {
             index,
             viewPosition: 0.8,
           });
-          setSelectedOpetions({
-            opetion: sortFilterOpetion,
+          console.log('selected sport::=>', item);
+          setSelectedOptions({
+            option: sortFilterOption,
             title: item,
           });
         }}>
@@ -694,49 +667,51 @@ export default function ScheduleScreen({navigation, route}) {
           : item}
       </Text>
     ),
-    [authContext, makeOpetionsSelected, sortFilterOpetion],
+    [authContext, makeOpetionsSelected, sortFilterOption],
   );
 
-  const sportOpetionsListView = useCallback(
+  const sportOptionsListView = useCallback(
     ({item, index}) => (
-      <Text
-        style={makeOpetionsSelected(item)}
-        onPress={() => {
-          refContainer.current.scrollToIndex({
-            animated: true,
-            index,
-            viewPosition: 0.5,
-          });
-          setSelectedOpetions({
-            opetion: sortFilterOpetion,
-            title: item,
-          });
-        }}>
-        {item.sport[0].toUpperCase() + item.sport.slice(1)}
-      </Text>
-    ),
-    [makeOpetionsSelected, selectedOpetions.title, sortFilterOpetion],
+        <Text
+          style={makeOpetionsSelected(item)}
+          onPress={() => {
+            refContainer.current.scrollToIndex({
+              animated: true,
+              index,
+              viewPosition: 0.5,
+            });
+            console.log('selected sport::=>', item);
+            setSelectedOptions({
+              option: sortFilterOption,
+              title: item,
+            });
+          }}>
+          {item.sport[0].toUpperCase() + item.sport.slice(1)}
+        </Text>
+      ),
+    [makeOpetionsSelected, selectedOptions.title, sortFilterOption],
   );
 
-  const orgenizerListView = useCallback(
+  const organizerListView = useCallback(
     ({item, index}) => (
-      <Text
-        style={makeOpetionsSelected(item)}
-        onPress={() => {
-          refContainer.current.scrollToIndex({
-            animated: true,
-            index,
-            viewPosition: 0.5,
-          });
-          setSelectedOpetions({
-            opetion: sortFilterOpetion,
-            title: item,
-          });
-        }}>
-        {item.group_name}
-      </Text>
-    ),
-    [makeOpetionsSelected, selectedOpetions.title, sortFilterOpetion],
+        <Text
+          style={makeOpetionsSelected(item)}
+          onPress={() => {
+            refContainer.current.scrollToIndex({
+              animated: true,
+              index,
+              viewPosition: 0.5,
+            });
+            console.log('selected sport::=>', item);
+            setSelectedOptions({
+              option: sortFilterOption,
+              title: item,
+            });
+          }}>
+          {item.group_name}
+        </Text>
+      ),
+    [makeOpetionsSelected, selectedOptions.title, sortFilterOption],
   );
 
   const renderSortFilterOpetions = ({index, item}) => (
@@ -751,7 +726,7 @@ export default function ScheduleScreen({navigation, route}) {
       <View>
         <Text style={styles.filterTitle}>{item}</Text>
         {index === 1 &&
-          sortFilterOpetion === index &&
+          sortFilterOption === index &&
           [Verbs.entityTypeUser, Verbs.entityTypePlayer].includes(
             authContext.entity.role,
           ) && (
@@ -767,7 +742,7 @@ export default function ScheduleScreen({navigation, route}) {
             </Text>
           )}
         {index === 0 &&
-          sortFilterOpetion === index &&
+          sortFilterOption === index &&
           [Verbs.entityTypeUser, Verbs.entityTypePlayer].includes(
             authContext.entity.role,
           ) && (
@@ -786,14 +761,14 @@ export default function ScheduleScreen({navigation, route}) {
       <TouchableOpacity
         onPress={() => {
           setSortFilterOpetion(index);
-          setSelectedOpetions({
-            opetion: 0,
+          setSelectedOptions({
+            option: 0,
             title: index === 1 ? {sport: 'All'} : 'All',
           });
         }}>
         <Image
           source={
-            sortFilterOpetion === index
+            sortFilterOption === index
               ? images.radioRoundOrange
               : images.radioUnselect
           }
@@ -803,7 +778,7 @@ export default function ScheduleScreen({navigation, route}) {
     </View>
   );
 
-  const renderTimeFilterOpetions = ({index, item}) => (
+  const renderTimeFilterOptions = ({index, item}) => (
     <View
       style={{
         flexDirection: 'row',
@@ -847,7 +822,7 @@ export default function ScheduleScreen({navigation, route}) {
   for (const all of allSlots) {
     if (all?.allDay === true && all?.blocked === true) {
       customDatesStyles.push({
-        startDate: moment(new Date(all.start_datetime * 1000)),
+        startDate: moment(Utility.getJSDate(all.start_datetime)),
         dateNumberStyle: {
           color: colors.userPostTimeColor,
           fontSize: 18,
@@ -871,7 +846,7 @@ export default function ScheduleScreen({navigation, route}) {
         pointerEvents={pointEvent}>
         <Header
           leftComponent={
-            <Text style={styles.eventTitleTextStyle}>{strings.Schedule}</Text>
+            <Text style={styles.eventTitleTextStyle}>{strings.schedule}</Text>
           }
           showBackgroundColor={true}
           rightComponent={
@@ -1005,23 +980,23 @@ export default function ScheduleScreen({navigation, route}) {
                   horizontal={true}
                   showsHorizontalScrollIndicator={false}
                   data={
-                    (filterSetting.sort === 0 && orgenizerOpetions) ||
+                    (filterSetting.sort === 0 && organizerOptions) ||
                     (filterSetting.sort === 1 && sports) ||
                     (filterSetting.sort === 2 && reservationOpetions)
                   }
                   keyExtractor={keyExtractor}
                   renderItem={
-                    (filterSetting.sort === 0 && orgenizerListView) ||
-                    (filterSetting.sort === 1 && sportOpetionsListView) ||
-                    (filterSetting.sort === 2 && opetionsListView)
+                    (filterSetting.sort === 0 && organizerListView) ||
+                    (filterSetting.sort === 1 && sportOptionsListView) ||
+                    (filterSetting.sort === 2 && optionsListView)
                   }
                 />
               </View>
             )}
           {!loading && scheduleIndexCounter === 0 && (
             <EventScheduleScreen
-              filterOpetions={filterSetting}
-              selectedFilter={selectedOpetions}
+              filterOptions={filterSetting}
+              selectedFilter={selectedOptions}
               eventData={eventData}
               navigation={navigation}
               profileID={authContext.entity.uid}
@@ -1357,7 +1332,7 @@ export default function ScheduleScreen({navigation, route}) {
                   setFilterPopup(false);
                   setFilterSetting({
                     ...filterSetting,
-                    sort: sortFilterOpetion,
+                    sort: sortFilterOption,
                     time: timeFilterOpetion,
                   });
                 }}>
@@ -1391,7 +1366,7 @@ export default function ScheduleScreen({navigation, route}) {
               <Text style={styles.titleText}>{strings.timeText}</Text>
               <FlatList
                 data={timeFilterData}
-                renderItem={renderTimeFilterOpetions}
+                renderItem={renderTimeFilterOptions}
                 style={{marginTop: 15}}
               />
             </View>

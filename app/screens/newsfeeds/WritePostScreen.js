@@ -104,7 +104,7 @@ export default function WritePostScreen({navigation, route}) {
   if (postData && postData.group_name) {
     userName = postData.group_name;
   }
-
+  
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (

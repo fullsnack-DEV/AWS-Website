@@ -6,6 +6,7 @@ import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
+import Verbs from '../../Constants/Verbs';
 
 export default function EventMonthlySelection({
   dataSource,
@@ -21,7 +22,7 @@ export default function EventMonthlySelection({
       <RNPickerSelect
         placeholder={{
           label: placeholder,
-          value: 'Never',
+          value: Verbs.eventRecurringEnum.Never,
         }}
         items={dataSource}
         onValueChange={onValueChange}

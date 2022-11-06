@@ -7,37 +7,21 @@ import FastImage from 'react-native-fast-image';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
-import {getSportName} from '../../utils';
+import {getJSDate, getSportName} from '../../utils';
 import AuthContext from '../../auth/context';
+import { strings } from '../../../Localization/translation';
 
 export default function TCEventCard({
   onPress,
   data,
   // entity,
 }) {
-  console.log('datdtadtadtatd', data);
-  const convertUTCDateToLocalDate = (date) => {
-    const newDate = new Date(
-      date.getTime() - date.getTimezoneOffset() * 60 * 1000,
-    );
-    return newDate;
-  };
-
   const authContext = useContext(AuthContext);
 
-  console.log('data::=>', data);
   const isGame = !!(data?.game_id && data?.game);
 
-  const stDate = new Date(data.start_datetime * 1000);
-  const startDate = data?.start_datetime
-    ? convertUTCDateToLocalDate(stDate)
-    : '';
-
-  const enDate = new Date(data.end_datetime * 1000);
-  const endDate = data?.end_datetime ? convertUTCDateToLocalDate(enDate) : '';
-
-  console.log('stDate', stDate, startDate);
-  console.log('endDate', enDate, endDate);
+  const startDate = getJSDate(data.start_datetime);
+  const endDate = getJSDate(data.end_datetime);
 
   const location =
     data?.location?.location_name ??
@@ -93,8 +77,9 @@ export default function TCEventCard({
                   </Text>
                 )}
                 <Text numberOfLines={1} style={{...styles.eventTime, flex: 1}}>
+                  {' '}
                   {data?.going?.length ?? 0}
-                  {' going'}
+                  {strings.going}
                 </Text>
               </View>
 
