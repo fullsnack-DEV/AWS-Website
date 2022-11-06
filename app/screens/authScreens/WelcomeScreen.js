@@ -476,9 +476,10 @@ export default function WelcomeScreen({navigation}) {
 
       await GoogleSignin.hasPlayServices();
       const {idToken} = await GoogleSignin.signIn();
-
+      const accessToken = await (await GoogleSignin.getTokens()).accessToken;
       const googleCredential = await auth.GoogleAuthProvider.credential(
         idToken,
+        accessToken,
       );
       await signInSignUpWithSocialCredential(googleCredential, 'GOOGLE | ');
     } catch (error) {
@@ -602,10 +603,8 @@ export default function WelcomeScreen({navigation}) {
 
         const appleAuthRequestResponse = await appleAuthAndroid.signIn();
         const {email} = await jwtDecode(appleAuthRequestResponse.id_token);
-
-        console.log(appleAuthRequestResponse);
-
-        setloading(true);
+        console.log('appleAuthRequestResponse', appleAuthRequestResponse);
+        // setloading(true);
         const {id_token, nonce} = appleAuthRequestResponse;
         commonCheckEmailVerification({
           email,

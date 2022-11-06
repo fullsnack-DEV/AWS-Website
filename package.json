@@ -146,6 +146,7 @@
     "rn-range-slider": "^2.1.1",
     "rrule": "^2.6.9",
     "toggle-switch-react-native": "^3.3.0",
+    "util.promisify": "^1.1.1",
     "uuid": "^8.3.2",
     "v": "^0.3.0",
     "victory-native": "^36.3.2"
