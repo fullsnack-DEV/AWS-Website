@@ -2105,5 +2105,8 @@ export default {
   noLikesYet: 'en_No Likes Yet',
   taggedTitle: 'en_Tagged',
   optional: ' en_optional',
-  going:' en_going',
+  going: ' en_going',
+  confirmDeleteMessage: 'en_Are you sure want to delete message?',
+  unknownTitle: 'en_Unknown',
+  typeMessage: 'en_Type a message',
 };

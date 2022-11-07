@@ -67,8 +67,6 @@ export default function GroupMembersScreen({navigation, route}) {
   const [groupID] = useState(route.params?.groupID);
 
   useEffect(() => {
-    console.log('NAVIGATION:', groupObj);
-
     getMembers();
   }, [isFocused]);
 
@@ -109,7 +107,6 @@ export default function GroupMembersScreen({navigation, route}) {
         x.first_name.toLowerCase().includes(text.toLowerCase()) ||
         x.last_name.toLowerCase().includes(text.toLowerCase()),
     );
-    console.log('result::=>', result);
     if (text.length > 0) {
       setMembers(result);
     } else {
@@ -129,7 +126,6 @@ export default function GroupMembersScreen({navigation, route}) {
         return null;
       });
     }
-    console.log('UIDsUIDs', UIDs);
     if (UIDs.length > 0) {
       QBgetUserDetail(
         QB.users.USERS_FILTER.FIELD.LOGIN,
@@ -142,7 +138,6 @@ export default function GroupMembersScreen({navigation, route}) {
           const groupName = authContext?.entity?.obj?.group_name;
           QBcreateDialog(IDs, QB_DIALOG_TYPE.GROUP, groupName)
             .then((dialog) => {
-              console.log('dialogdialogdialog', dialog);
               setloading(false);
               navigation.navigate('MessageChat', {
                 screen: 'MessageChat',
@@ -179,7 +174,7 @@ export default function GroupMembersScreen({navigation, route}) {
       setMembers(tempMember);
 
       const params = {
-        entity_type: 'player',
+        entity_type: Verbs.entityTypePlayer,
       };
       followUser(params, data.user_id, authContext)
         .then(() => {
@@ -200,24 +195,16 @@ export default function GroupMembersScreen({navigation, route}) {
 
   const callUnfollowUser = useCallback(
     (data, index) => {
-      console.log('unfollow');
       const tempMember = [...members];
       tempMember[index].is_following = false;
       setMembers(tempMember);
 
       const params = {
-        entity_type: 'player',
+        entity_type: Verbs.entityTypePlayer,
       };
       unfollowUser(params, data.user_id, authContext)
-        .then(() => {
-          console.log('unfollow user');
-        })
+        .then(() => {})
         .catch((error) => {
-          console.log(
-            'callUnfollowUser error with userID',
-            error,
-            data.user_id,
-          );
           const tempMem = [...members];
           tempMem[index].is_following = true;
           setMembers(tempMem);
@@ -245,11 +232,10 @@ export default function GroupMembersScreen({navigation, route}) {
   );
   const onPressProfilePhotoAndTitle = useCallback(
     (item) => {
-      console.log('Profile photo & title press', item);
       if (item.connected) {
         navigation.push('HomeScreen', {
           uid: item?.user_id,
-          role: 'user',
+          role: Verbs.entityTypeUser,
           backButtonVisible: true,
           menuBtnVisible: false,
         });
@@ -280,10 +266,9 @@ export default function GroupMembersScreen({navigation, route}) {
 
   const renderFollowUnfollowArrow = useCallback(
     (data, index) => {
-      console.log('Datatatatat', data);
       if (
-        authContext.entity.role === 'club' ||
-        authContext.entity.role === 'team'
+        authContext.entity.role === Verbs.entityTypeClub ||
+        authContext.entity.role === Verbs.entityTypeTeam
       ) {
         if (authContext.entity.uid === groupID) {
           return (
@@ -368,11 +353,6 @@ export default function GroupMembersScreen({navigation, route}) {
 
   const renderMembers = useCallback(
     ({item: data, index}) => (
-      // <UserRoleView
-      //   data={item}
-      //   onPressProfile={() => onPressProfile(item)}
-      //   onPressMessage={() => onPressMessage(item)}
-      // />
       <>
         <View style={styles.roleViewContainer}>
           <View

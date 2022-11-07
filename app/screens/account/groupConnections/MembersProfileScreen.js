@@ -145,9 +145,8 @@ export default function MembersProfileScreen({navigation, route}) {
   const deleteMemberProfile = (groupId, memberId) => {
     setloading(true);
     deleteMember(groupId, memberId, authContext)
-      .then((response) => {
+      .then(() => {
         setloading(false);
-        console.log('PROFILE RESPONSE::', response.payload);
         navigation.goBack();
       })
       .catch((e) => {
@@ -213,12 +212,7 @@ export default function MembersProfileScreen({navigation, route}) {
       {memberDetail && !firstTimeLoad && (
         <ScrollView>
           <View style={styles.roleViewContainer}>
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                marginBottom: 10,
-              }}>
+            <View style={styles.roleView}>
               <TCMemberProfile
                 image={
                   memberDetail?.thumbnail
@@ -284,7 +278,6 @@ export default function MembersProfileScreen({navigation, route}) {
                   getUserIndex(getUserByEmailQuery).then((players) => {
                     setloading(false);
                     if (players?.length > 0) {
-                      // const signUpUser = players.filter((e) => e.signedup_user)
                       navigation.navigate('UserFoundScreen', {
                         signUpObj: players[0],
                         memberObj: memberDetail,
@@ -327,7 +320,7 @@ export default function MembersProfileScreen({navigation, route}) {
               title={strings.emailPlaceHolder}
               value={memberDetail.email ? memberDetail.email : strings.NAText}
             />
-            <TCInfoField title={'Phone'} value={getMemberPhoneNumber()} />
+            <TCInfoField title={strings.phone} value={getMemberPhoneNumber()} />
             <TCInfoField
               title={strings.addressPlaceholder}
               value={
@@ -562,6 +555,11 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     tintColor: colors.blackColor,
     width: 15,
+  },
+  roleView: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 10,
   },
   roleViewContainer: {
     marginTop: 20,

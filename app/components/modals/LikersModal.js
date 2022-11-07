@@ -53,7 +53,6 @@ const LikersModal = ({
         entityType={item?.user?.data?.entity_type}
         profileImage={item?.user?.data?.thumbnail}
         followUnfollowPress={(value) => {
-          console.log('is followed :', value);
           const params = {
             entity_type: Verbs.entityTypePlayer,
           };
@@ -77,9 +76,9 @@ const LikersModal = ({
         }}
         showFollowUnfollowButton={
           userRole === Verbs.entityTypeUser &&
-          item?.user?.data?.user_id !== authContext.entity.uid
+          item?.user_id !== authContext.entity.uid
         }
-        is_following={item?.user?.data?.is_following}
+        is_following={item?.user?.data?.is_follow}
       />
     );
   };
@@ -110,11 +109,11 @@ const LikersModal = ({
             <View style={styles.likersHeaderContainer}>
               <Text style={styles.likedByText}>Liked by</Text>
               <Text style={styles.likesCountText}>
-                {data?.reaction_counts?.clap} likes
+                {data?.latest_reactions?.clap?.length} likes
               </Text>
             </View>
             <FlatList
-              data={data?.own_reactions?.clap ?? []}
+              data={data?.latest_reactions?.clap ?? []}
               keyExtractor={(index) => index.toString()}
               renderItem={renderLikers}
               ListEmptyComponent={listEmptyComponent}

@@ -63,6 +63,7 @@ import {
 import MessageChatShimmer from '../shimmer/message/MessageChatShimmer';
 import {ShimmerView} from '../shimmer/commonComponents/ShimmerCommonComponents';
 import {strings} from '../../../Localization/translation';
+import Verbs from '../../Constants/Verbs';
 
 const QbMessageEmitter = new NativeEventEmitter(QB.chat);
 
@@ -96,7 +97,7 @@ const MessageChat = ({route, navigation}) => {
   const [searchMessageData, setSearchMessageData] = useState([]);
 
   const [pointEvent, setPointEvent] = useState('auto');
-  const [placeholderText, setPlaceholderText] = useState('Type a message');
+  const [placeholderText, setPlaceholderText] = useState(strings.typeMessage);
   const [occupantsData, setOccupantsData] = useState([]);
   const [hideSearchView, setHideSearchView] = useState(true);
   const [progressNumber, setProgressNumber] = useState(0);
@@ -302,14 +303,12 @@ const MessageChat = ({route, navigation}) => {
   };
 
   const deleteMessage = (item) => {
-    console.log('long press', item);
     Alert.alert(
-      'Delete',
-      'Are you sure want to delete message?',
+      strings.deleteTitle,
+      strings.confirmDeleteMessage,
       [
         {
           text: strings.cancel,
-          onPress: () => console.log('Cancel Pressed'),
           style: 'cancel',
         },
         {
@@ -320,7 +319,6 @@ const MessageChat = ({route, navigation}) => {
                 if (respose?.errors?.length > 0) {
                   Alert.alert(respose.errors[0]);
                 } else {
-                  // setSavedMessagesData([...savedMessagesData.filter((obj) => obj.id !== respose.SuccessfullyDeleted.ids[0])]);
                   navigation.goBack();
                 }
               })
@@ -383,7 +381,8 @@ const MessageChat = ({route, navigation}) => {
         if (fullImage) finalImage = {uri: fullImage};
         else
           finalImage =
-            entityType === 'player' || entityType === 'user'
+            entityType === Verbs.entityTypePlayer ||
+            entityType === Verbs.entityTypeUser
               ? images.profilePlaceHolder
               : images.groupUsers;
       }
@@ -442,17 +441,11 @@ const MessageChat = ({route, navigation}) => {
                         style={{height: 27, width: 27, borderRadius: 54}}
                       />
                     </View>
-                    <Text
-                      style={{
-                        alignSelf: 'flex-start',
-                        color: colors.userPostTimeColor,
-                        fontFamily: fonts.RRegular,
-                        fontSize: 12,
-                        marginTop: 2,
-                        marginLeft: 8,
-                      }}>
+                    <Text style={styles.titleStyle}>
                       {/* eslint-disable-next-line no-mixed-operators */}
-                      {customData?.is_terminate === true ? 'Unknown' : fullName}
+                      {customData?.is_terminate === true
+                        ? strings.unknownTitle
+                        : fullName}
                     </Text>
                   </View>
                 )}
@@ -461,7 +454,9 @@ const MessageChat = ({route, navigation}) => {
                   messageData={item}
                   onLongPressMessage={() => deleteMessage(item)}
                   fullName={
-                    customData?.is_terminate === true ? 'Unknown' : fullName
+                    customData?.is_terminate === true
+                      ? strings.unknownTitle
+                      : fullName
                   }
                   attachments={item.attachments}
                   date={new Date(item.dateSent)}
@@ -818,7 +813,7 @@ const MessageChat = ({route, navigation}) => {
   const onParticipantsPress = useCallback(
     (userData) => {
       const uid =
-        userData?.entity_type === 'player'
+        userData?.entity_type === Verbs.entityTypePlayer
           ? userData?.user_id
           : userData?.group_id;
       if (uid && userData?.entity_type) {
@@ -827,7 +822,9 @@ const MessageChat = ({route, navigation}) => {
           uid,
           backButtonVisible: true,
           role:
-            userData.entity_type === 'player' ? 'user' : userData?.entity_type,
+            userData.entity_type === Verbs.entityTypePlayer
+              ? Verbs.entityTypeUser
+              : userData?.entity_type,
           menuBtnVisible: false,
         });
       }
@@ -841,7 +838,9 @@ const MessageChat = ({route, navigation}) => {
       const fullImage = customData?.full_image ?? '';
       const finalImage = fullImage
         ? {uri: fullImage}
-        : ['user', 'player'].includes(customData?.entity_type)
+        : [Verbs.entityTypeUser, Verbs.entityTypePlayer].includes(
+            customData?.entity_type,
+          )
         ? images.profilePlaceHolder
         : images.teamGreenPH;
       return (
@@ -1269,6 +1268,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 2,
     elevation: 2,
+  },
+  titleStyle: {
+    alignSelf: 'flex-start',
+    color: colors.userPostTimeColor,
+    fontFamily: fonts.RRegular,
+    fontSize: 12,
+    marginTop: 2,
+    marginLeft: 8,
   },
 });
 

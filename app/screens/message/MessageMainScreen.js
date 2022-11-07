@@ -21,7 +21,6 @@ import QB from 'quickblox-react-native-sdk';
 import {useIsFocused, StackActions} from '@react-navigation/native';
 import FastImage from 'react-native-fast-image';
 import _ from 'lodash';
-// import ActivityLoader from '../../components/loader/ActivityLoader';
 import TCHorizontalMessageOverview from '../../components/TCHorizontalMessageOverview';
 import Header from '../../components/Home/Header';
 import images from '../../Constants/ImagePath';
@@ -118,7 +117,6 @@ const MessageMainScreen = ({navigation}) => {
       },
     })
       .then((savedDialog) => {
-        console.log('savedDialog', savedDialog);
         _.map(savedDialog?.dialogs, (x) => {
           if (x?.type === QB.chat.DIALOG_TYPE.GROUP_CHAT && !x?.isJoined) {
             QB.chat.joinDialog({dialogId: x?.id});
@@ -141,7 +139,6 @@ const MessageMainScreen = ({navigation}) => {
   };
 
   const connectAndSubscribe = async () => {
-    console.log('authContext?.entity', authContext?.entity);
     await QBconnectAndSubscribe(authContext?.entity);
     await QBsetupSettings();
     await getDialogs();
@@ -164,7 +161,6 @@ const MessageMainScreen = ({navigation}) => {
 
   const renderSingleEntityChat = useCallback(
     ({item}) => {
-      console.log('ITEMMMM', item);
       let fullName = item.name;
       let firstTwoChar = '';
       if (item.type === QB.chat.DIALOG_TYPE.CHAT) {
@@ -223,19 +219,6 @@ const MessageMainScreen = ({navigation}) => {
   const LiseEmptyComponent = useMemo(
     () => (
       <View style={styles.chatMainContainer}>
-        {/* <TouchableOpacity
-          style={styles.plusImage}
-          onPress={() => {
-            navigation.navigate('MessageInviteScreen');
-          }}>
-          <FastImage
-            resizeMode={'contain'}
-            source={images.chatPlus}
-            style={styles.chatplusStyle}
-          />
-
-          <Text style={styles.startText}>Start a Chat</Text>
-        </TouchableOpacity> */}
         <View style={styles.centerMsgContainer}>
           <Text style={styles.noMsgText}>{strings.noChat}</Text>
           <Text style={styles.msgAppearText}>{strings.newChatsAppear}</Text>
@@ -432,10 +415,6 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
   },
-  // backImageStyle: {
-  //   height: 35,
-  //   width: 35,
-  // },
   rightImageStyle: {
     height: 25,
     width: 25,

@@ -293,7 +293,8 @@ const getTabBarVisibility = (route) => {
     routeName === 'UserEventSettingPrivacyScreen' ||
     routeName === 'GroupsScreen' ||
     routeName === 'TrashScreen' ||
-    routeName === 'LanguageSettingScreen'
+    routeName === 'LanguageSettingScreen' ||
+    routeName === 'MessageChat'
   ) {
     return false;
   }
