@@ -1,3 +1,4 @@
+/* eslint-disable array-callback-return */
 /* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable consistent-return */
 import React, {
@@ -64,7 +65,9 @@ export default function UserTagSelectionListScreen({navigation, route}) {
                 route.params.onSelectMatch(selectedMatch);
               }
               navigation.navigate(route?.params?.comeFrom, {
-                selectedTagList: selectedUsers,
+                data: route?.params?.data,
+                onPressDone: route?.params?.onPressDone,
+                selectedTagList: selectedUsers.filter((obj) => !obj?.entity_id),
               });
             }
           }}>
@@ -239,7 +242,7 @@ export default function UserTagSelectionListScreen({navigation, route}) {
 
   const toggleSelection = useCallback(
     (isChecked, user) => {
-      console.log('useessees', user);
+      console.log('useessees', selectedUsers);
       const data = selectedUsers;
       if (isChecked) {
         const uIndex = data.findIndex(({id}) => user.id === id);
@@ -254,6 +257,7 @@ export default function UserTagSelectionListScreen({navigation, route}) {
 
   const renderItem = useCallback(
     ({item}) => {
+      console.log('Users list :=>', item);
       let thumbnail = null;
       let fullName = '';
       let locationName = '-';
@@ -480,7 +484,6 @@ export default function UserTagSelectionListScreen({navigation, route}) {
       selectedUsers.length > 0 && (
         <SelectedTagList
           dataSource={selectedUsers}
-          titleKey={strings.titlesmall}
           onTagCancelPress={({item}) => {
             toggleSelection(true, item);
           }}
