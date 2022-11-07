@@ -506,7 +506,7 @@ export default function ScheduleScreen({navigation, route}) {
           }
         });
 
-        resCalenders.forEach((item) => {
+        response.forEach((item) => {
           if (item?.rrule) {
             let rEvents = getEventOccuranceFromRule(item);
             rEvents = rEvents.filter((x) => x.end_datetime > Utility.getTCDate(new Date()));
@@ -529,7 +529,7 @@ export default function ScheduleScreen({navigation, route}) {
           };
 
           getGameIndex(gameList).then((games) => {
-            const listObj = resCalenders.map((obj) => {
+            const listObj = response.map((obj) => {
               if (obj.game_id === obj.challenge_id) {
                 return obj.game;
               }
@@ -540,7 +540,7 @@ export default function ScheduleScreen({navigation, route}) {
             Utility.getGamesList([
               ...games,
               ...pendingChallenge,
-              ...resCalenders.filter((obj) => obj.owner_id),
+              ...response.filter((obj) => obj.owner_id),
             ]).then((gamedata) => {
               setloading(false);
               configureEvents(eventTimeTableData, gamedata);
