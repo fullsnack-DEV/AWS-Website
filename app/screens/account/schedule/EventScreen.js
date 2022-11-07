@@ -128,8 +128,8 @@ export default function EventScreen({navigation, route}) {
       );
     }
 
-    if (eventData.isBlocked) {
-      blocked = eventData.isBlocked;
+    if (eventData.blocked) {
+      blocked = eventData.blocked;
     }
   }
   if (route && route.params && route.params.gameData) {
@@ -341,16 +341,17 @@ export default function EventScreen({navigation, route}) {
         <TCThinDivider marginTop={10} />
         <View style={styles.containerStyle}>
           <Text style={styles.headerTextStyle}>{strings.organizerTitle}</Text>
+          {organizer && (
           <TCProfileView
             type="medium"
-            name={organizer?.group_name ?? organizer?.full_name}
-            location={`${organizer?.city}, ${organizer?.state_abbr}, ${organizer?.country}`}
+            name={organizer.group_name ?? organizer.full_name}
+            location={`${organizer.city}, ${organizer.state_abbr ? organizer.state_abbr:''}${organizer.state_abbr ? ',':''} ${organizer.country}`}
             image={
-              organizer?.thumbnail ? {uri: organizer?.thumbnail} : images.teamPH
+              organizer.thumbnail ? {uri: organizer.thumbnail} : images.teamPH
             }
             alignSelf={'flex-start'}
             marginTop={10}
-          />
+          />)}
         </View>
         <TCThinDivider marginTop={10} />
 
