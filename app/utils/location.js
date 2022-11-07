@@ -30,7 +30,6 @@ const checkPermAndGetGeoCoordinates = async (platform) => {
   }
   if (availablePermissions[permKeys[0]] === RESULTS.DENIED) {
     // Denied but still requestable
-    console.log('requesting perm 1');
     if ((await request(permKeys[0])) === RESULTS.GRANTED) {
       return getGeocoordinates();
     }
@@ -49,22 +48,14 @@ const getGeocoordinates = () =>
   new Promise((resolve) => {
     Geolocation.getCurrentPosition(
       (position) => {
-        console.log(
-          'file: location.js ~ line 31 ~ newPromise ~ position',
-          position,
-        );
         resolve(position);
       },
       // callback on error
-      (error) => {
-        console.log(
-          'file: ChooseGenderScreen.js  ~ line 276 ~ ~ errorr',
-          error,
-        );
+      () => {
         // FIXME: not sure why reject not working here. resolving for now with null data
         resolve(null);
       },
-      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+      {enableHighAccuracy: false, timeout: 15000, maximumAge: 10000},
     );
   });
 
