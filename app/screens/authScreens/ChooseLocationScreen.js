@@ -91,7 +91,6 @@ export default function ChooseLocationScreen({navigation, route}) {
     if (searchText.length >= 3) {
       searchCityState(searchText)
         .then((response) => {
-          console.log('city data list', response);
           setNoData(false);
           setCityData(
             response.predictions.filter((obj) => obj.terms.length === 3),
@@ -109,7 +108,6 @@ export default function ChooseLocationScreen({navigation, route}) {
   }, [searchText]);
 
   useEffect(() => {
-    console.log('fetching getNearbyCityData', currentLocation);
     // TODO: why not using nearby cities sent from previous screen
     if (
       currentLocation?.position?.coords?.latitude &&
@@ -130,10 +128,6 @@ export default function ChooseLocationScreen({navigation, route}) {
       url: `http://getnearbycities.geobytes.com/GetNearbyCities?radius=${radius}&latitude=${lat}&longitude=${long}&limit=500`,
     })
       .then((response) => {
-        console.log(
-          'file: ChooseLocationScreen.js ~ line 133 ~ .then ~ response',
-          response,
-        );
         const cityList = response.data.map((obj) => ({
           description: obj[1],
           city: obj[1],
@@ -142,10 +136,6 @@ export default function ChooseLocationScreen({navigation, route}) {
         }));
         const list = cityList.filter(
           (obj) => obj?.city !== currentLocation?.city,
-        );
-        console.log(
-          'file: ChooseLocationScreen.js ~ line 144 ~ .then ~ _list',
-          list,
         );
         setNearbyCities(
           cityList.filter((obj) => obj?.city !== currentLocation?.city),
@@ -183,11 +173,6 @@ export default function ChooseLocationScreen({navigation, route}) {
 
   const navigateToChooseSportScreen = (params) => {
     setLoading(false);
-
-    console.log('Location data :=>', {
-      ...route?.params?.signupInfo,
-      ...params,
-    });
     navigation.navigate('ChooseSportsScreen', {
       locationInfo: {
         ...route?.params?.signupInfo,

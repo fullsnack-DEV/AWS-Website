@@ -66,10 +66,6 @@ export default function ChooseGenderScreen({navigation, route}) {
           style={styles.nextButtonStyle}
           onPress={async () => {
             let gender = {};
-            console.log(
-              'file: ChooseGenderScreen.js ~ line 69 ~ onPress={ ~ gender',
-              gender,
-            );
             if (selected === 0) gender = Verbs.male;
             else if (selected === 1) gender = Verbs.female;
             else if (selected === 2) gender = strings.other;
@@ -102,10 +98,6 @@ export default function ChooseGenderScreen({navigation, route}) {
       .then((location) => {
         setCurrentLocation(location);
         setLoading(false);
-        console.log(
-          'file: ChooseGenderScreen.js ~ line 104 ~ getGeocoordinatesWithPlaceName  location',
-          location,
-        );
       })
       .catch(() => {
         setLoading(false);
