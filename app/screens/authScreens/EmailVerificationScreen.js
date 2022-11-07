@@ -194,12 +194,8 @@ export default function EmailVerificationScreen({navigation, route}) {
                 navigation.navigate('AddNameScreen', {
                   signupInfo: {
                     ...route?.params?.signupInfo,
-                    emailAddress:
-                      route?.params?.signupInfo?.emailAddress ??
-                      route?.params?.emailAddress,
-                    password:
-                      route?.params?.signupInfo?.password ??
-                      route?.params?.password,
+                    emailAddress: route?.params?.signupInfo?.emailAddress,
+                    password: route?.params?.signupInfo?.password,
                   },
                 });
               }
@@ -210,12 +206,8 @@ export default function EmailVerificationScreen({navigation, route}) {
               navigation.navigate('AddNameScreen', {
                 signupInfo: {
                   ...route?.params?.signupInfo,
-                  emailAddress:
-                    route?.params?.signupInfo?.emailAddress ??
-                    route?.params?.emailAddress,
-                  password:
-                    route?.params?.signupInfo?.password ??
-                    route?.params?.password,
+                  emailAddress: route?.params?.signupInfo?.emailAddress,
+                  password: route?.params?.signupInfo?.password,
                 },
               });
             });
@@ -232,8 +224,8 @@ export default function EmailVerificationScreen({navigation, route}) {
     firebase
       .auth()
       .signInWithEmailAndPassword(
-        route?.params?.signupInfo?.emailAddress ?? route?.params?.emailAddress,
-        route?.params?.signupInfo?.password ?? route?.params?.password,
+        route?.params?.signupInfo?.emailAddress,
+        route?.params?.signupInfo?.password,
       )
       .then((res) => {
         setLoading(false);
@@ -278,6 +270,31 @@ export default function EmailVerificationScreen({navigation, route}) {
           Alert.alert(strings.alertmessagetitle, message);
         }, 100);
       });
+
+    // This commented code we will be used in production for email varification please dont remove it
+    /*
+    setLoading(true);
+    const user = await firebase.auth().currentUser;
+    console.log('User======>', user);
+    userEmailVerification(route?.params?.signupInfo.emailAddress)
+      .then(() => {
+        setLoading(false);
+        setTimer(60);
+        setTimeout(() => Alert.alert(strings.varificationLinkSend), 100);
+      })
+      .catch((e) => {
+        let message = '';
+        setLoading(false);
+        if (e.code === 'auth/too-many-requests') {
+          message = strings.emailVerificationLintNotSendText;
+        } else {
+          message = e.message;
+        }
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, message);
+        }, 100);
+      });
+      */
   };
 
   const getVerificationEmailText = format(

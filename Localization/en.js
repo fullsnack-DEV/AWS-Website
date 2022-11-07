@@ -58,6 +58,8 @@ export default {
   nextTitle: 'en_NEXT',
   emailNotRegisterd: 'en_This email is not registered.',
   varificationLinkSend: 'en_Verification email was sent successfully.',
+  varificationLinkSendFailed: 'en_Verification link not sent successfully.',
+
   deactivateTitle: 'en_DEACTIVATE ACTIVITY',
   deactivateAccountTitle: 'en_DEACTIVATE MY ACCOUNT',
   terminateAccount: 'en_TERMINATE ACCOUNT',
