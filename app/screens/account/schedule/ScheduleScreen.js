@@ -184,7 +184,7 @@ export default function ScheduleScreen({navigation, route}) {
     let occr = rule.all();
     occr = occr.map((RRItem) => {
       const newEvent = {...event};
-      newEvent.start_datetime =  Utility.getTCDate(RRItem);
+      newEvent.start_datetime = Utility.getTCDate(RRItem);
       newEvent.end_datetime = newEvent.start_datetime + duration;
       RRItem = newEvent;
       return RRItem;
@@ -231,7 +231,7 @@ export default function ScheduleScreen({navigation, route}) {
               })
               .catch((e) => {
                 setloading(false);
-                console.log('Error==>', e.message)
+                console.log('Error==>', e.message);
                 Alert.alert(strings.townsCupTitle, e.message);
               });
           }
@@ -269,7 +269,7 @@ export default function ScheduleScreen({navigation, route}) {
       })
       .catch((e) => {
         setloading(false);
-        console.log('Error==>', e.message)
+        console.log('Error==>', e.message);
         Alert.alert(e.message);
       });
   }, [authContext, isFocused]);
@@ -290,7 +290,8 @@ export default function ScheduleScreen({navigation, route}) {
     setEventData(
       (eventTimeTableData || []).sort(
         (a, b) =>
-          Utility.getJSDate(a.start_datetime) - Utility.getJSDate(b.start_datetime),
+          Utility.getJSDate(a.start_datetime) -
+          Utility.getJSDate(b.start_datetime),
       ),
     );
   }, []);
@@ -420,8 +421,7 @@ export default function ScheduleScreen({navigation, route}) {
       start.setHours(0, 0, 0, 0);
       setSelectedDate(start);
 
-      console.log('allSlots', allSlots)
-
+      console.log('allSlots', allSlots);
 
       const temp = [];
       for (const blockedSlot of allSlots) {
@@ -439,11 +439,7 @@ export default function ScheduleScreen({navigation, route}) {
       if (temp?.[0]?.allDay === true && temp?.[0]?.blocked === true) {
         setSlots(temp);
       } else {
-        timeSlots = createCalenderTimeSlots(
-          Utility.getTCDate(start),
-          24,
-          temp,
-        );
+        timeSlots = createCalenderTimeSlots(Utility.getTCDate(start), 24, temp);
         setSlots(timeSlots);
       }
     },
@@ -484,32 +480,32 @@ export default function ScheduleScreen({navigation, route}) {
   const getEventsAndSlotsList = useCallback(() => {
     setloading(true);
     const eventTimeTableData = [];
-    Utility.getCalendar(
-      authContext?.entity?.uid,
-      Utility.getTCDate(new Date()),
-    )
+    Utility.getCalendar(authContext?.entity?.uid, Utility.getTCDate(new Date()))
       .then((response) => {
-        response = (response || []).filter((obj) => {
-          if (obj.cal_type === 'blocked') {
-            return obj;
-          }
-          if (obj.cal_type === 'event') {
-            if (obj?.expiry_datetime) {
-              if (
-                obj?.expiry_datetime >= Utility.getTCDate(new Date())
-              ) {
-                return obj;
-              }
-            } else {
+        let resCalenders = [];
+        if (response) {
+          resCalenders = response.filter((obj) => {
+            if (obj.cal_type === 'blocked') {
               return obj;
             }
-          }
-        });
+            if (obj.cal_type === 'event') {
+              if (obj?.expiry_datetime) {
+                if (obj?.expiry_datetime >= Utility.getTCDate(new Date())) {
+                  return obj;
+                }
+              } else {
+                return obj;
+              }
+            }
+          });
+        }
 
         response.forEach((item) => {
           if (item?.rrule) {
             let rEvents = getEventOccuranceFromRule(item);
-            rEvents = rEvents.filter((x) => x.end_datetime > Utility.getTCDate(new Date()));
+            rEvents = rEvents.filter(
+              (x) => x.end_datetime > Utility.getTCDate(new Date()),
+            );
             eventTimeTableData.push(...rEvents);
           } else {
             eventTimeTableData.push(item);
@@ -581,7 +577,7 @@ export default function ScheduleScreen({navigation, route}) {
       .catch((e) => {
         setloading(false);
         setTimeout(() => {
-          console.log('Error==>', e.message)
+          console.log('Error==>', e.message);
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
@@ -610,7 +606,7 @@ export default function ScheduleScreen({navigation, route}) {
       .catch((e) => {
         setloading(false);
         setTimeout(() => {
-          console.log('Error==>', e.message)
+          console.log('Error==>', e.message);
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
@@ -672,45 +668,45 @@ export default function ScheduleScreen({navigation, route}) {
 
   const sportOptionsListView = useCallback(
     ({item, index}) => (
-        <Text
-          style={makeOpetionsSelected(item)}
-          onPress={() => {
-            refContainer.current.scrollToIndex({
-              animated: true,
-              index,
-              viewPosition: 0.5,
-            });
-            console.log('selected sport::=>', item);
-            setSelectedOptions({
-              option: sortFilterOption,
-              title: item,
-            });
-          }}>
-          {item.sport[0].toUpperCase() + item.sport.slice(1)}
-        </Text>
-      ),
+      <Text
+        style={makeOpetionsSelected(item)}
+        onPress={() => {
+          refContainer.current.scrollToIndex({
+            animated: true,
+            index,
+            viewPosition: 0.5,
+          });
+          console.log('selected sport::=>', item);
+          setSelectedOptions({
+            option: sortFilterOption,
+            title: item,
+          });
+        }}>
+        {item.sport[0].toUpperCase() + item.sport.slice(1)}
+      </Text>
+    ),
     [makeOpetionsSelected, selectedOptions.title, sortFilterOption],
   );
 
   const organizerListView = useCallback(
     ({item, index}) => (
-        <Text
-          style={makeOpetionsSelected(item)}
-          onPress={() => {
-            refContainer.current.scrollToIndex({
-              animated: true,
-              index,
-              viewPosition: 0.5,
-            });
-            console.log('selected sport::=>', item);
-            setSelectedOptions({
-              option: sortFilterOption,
-              title: item,
-            });
-          }}>
-          {item.group_name}
-        </Text>
-      ),
+      <Text
+        style={makeOpetionsSelected(item)}
+        onPress={() => {
+          refContainer.current.scrollToIndex({
+            animated: true,
+            index,
+            viewPosition: 0.5,
+          });
+          console.log('selected sport::=>', item);
+          setSelectedOptions({
+            option: sortFilterOption,
+            title: item,
+          });
+        }}>
+        {item.group_name}
+      </Text>
+    ),
     [makeOpetionsSelected, selectedOptions.title, sortFilterOption],
   );
 

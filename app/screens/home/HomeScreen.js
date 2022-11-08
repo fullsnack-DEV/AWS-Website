@@ -1123,7 +1123,11 @@ const HomeScreen = ({navigation, route}) => {
         ? user?.user_id
         : user?.group_id;
 
-    navigation.navigate('MessageChat', {userId: uid});
+    // navigation.navigate('MessageChat', {userId: uid});
+    navigation.push('MessageChat', {
+      screen: 'MessageChat',
+      params: {userId: uid},
+    });
   };
   const onDotPress = () => {
     offerActionSheet.current.show();

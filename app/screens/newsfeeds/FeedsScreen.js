@@ -125,7 +125,6 @@ const FeedsScreen = ({navigation}) => {
   }, [authContext]);
 
   const onThreeDotPress = useCallback(() => {
-    console.log('sdfdsfdasfasd', sports);
     navigation.navigate('EntitySearchScreen', {
       sportsList: sports,
       sportsArray: sportArr,

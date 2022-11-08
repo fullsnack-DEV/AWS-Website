@@ -86,9 +86,9 @@ import EntityReviewScreen from '../screens/home/EntityReviewScreen';
 import RespondForInviteScreen from '../screens/notificationsScreen/RespondForInviteScreen';
 import JoinedTeamsScreen from '../screens/account/JoinedTeamsScreen';
 import EntityStatScreen from '../screens/home/EntityStatScreen';
-import MessageChat from '../components/message/MessageChat';
 import GameTennisDuration from '../screens/challenge/manageChallenge/settings/GameTennisDuration';
 import {strings} from '../../Localization/translation';
+import MessageNavigator from './MessageNavigator';
 
 const Stack = createStackNavigator();
 
@@ -192,6 +192,23 @@ const NewsFeedNavigator = () => (
         },
       }}
       // options={{headerShown: false}}
+    />
+    <Stack.Screen
+      name="MessageChat"
+      component={MessageNavigator}
+      options={{
+        title: 'Message Chat',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerShown: false,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
     />
     <Stack.Screen
       name="FullVideoScreen"
@@ -449,23 +466,7 @@ const NewsFeedNavigator = () => (
         },
       }}
     />
-    <Stack.Screen
-      name="MessageChat"
-      component={MessageChat}
-      options={{
-        title: 'Message Chat',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerShown: false,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
-    />
+
     {/*    Challenge */}
 
     <Stack.Screen

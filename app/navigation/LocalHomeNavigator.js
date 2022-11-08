@@ -284,6 +284,23 @@ const LocalHomeNavigator = () => (
       }}
     />
     <Stack.Screen
+      name="MessageChat"
+      component={MessageNavigator}
+      options={{
+        title: 'Message Chat',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerShown: false,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
       name="RecentMatchScreen"
       component={RecentMatchScreen}
       options={{
@@ -2381,23 +2398,7 @@ const LocalHomeNavigator = () => (
         },
       }}
     />
-    <Stack.Screen
-      name="MessageChat"
-      component={MessageNavigator}
-      options={{
-        title: 'Message Chat',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerShown: false,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
-    />
+
     <Stack.Screen
       name="EditChallenge"
       component={EditChallenge}

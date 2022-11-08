@@ -997,8 +997,6 @@ export default function LocalHomeScreen({navigation, route}) {
   const getLocation = () => {
     Geolocation.getCurrentPosition(
       (position) => {
-        console.log('Lat/long to position::=>', position);
-        // const position = { coords: { latitude: 49.11637199697782, longitude: -122.7776695216056 } }
         getLocationNameWithLatLong(
           position.coords.latitude,
           position.coords.longitude,
@@ -1128,17 +1126,12 @@ export default function LocalHomeScreen({navigation, route}) {
           }}>
           <View style={styles.sportsBackgroundView}>
             <View style={{flexDirection: 'row'}}>
-              {/* <Image
-              source={{uri: `${image_base_url}${item.player_image}`}}
-              style={styles.sportsIcon}
-            /> */}
               <FastImage
                 resizeMode={'contain'}
                 source={{uri: `${image_base_url}${item.player_image}`}}
                 style={styles.sportsIcon}
               />
               <Text style={styles.sportNameTitle}>
-                {/* {Utility.getSportName(item, authContext)} */}
                 {Utility.convertFirstCharacterAllWordsToUppercase(item.sport)}
               </Text>
             </View>
@@ -1187,8 +1180,6 @@ export default function LocalHomeScreen({navigation, route}) {
     setloading(true);
     userActivate(authContext)
       .then((response) => {
-        console.log('deactivate account ', response);
-
         const accountType = getQBAccountType(response?.payload?.entity_type);
         QBupdateUser(
           response?.payload?.user_id,
@@ -1249,6 +1240,7 @@ export default function LocalHomeScreen({navigation, route}) {
                 onPress={() => {
                   navigation.navigate('EntitySearchScreen', {
                     sportsList: customSports,
+                    sportsArray: customSports,
                   });
                 }}>
                 <Image
@@ -1256,9 +1248,6 @@ export default function LocalHomeScreen({navigation, route}) {
                   style={styles.townsCupIcon}
                 />
               </TouchableOpacity>
-              {/* <TouchableOpacity onPress={() => setSettingPopup(true)}>
-            <Image source={images.home_setting} style={styles.townsCupIcon} />
-          </TouchableOpacity> */}
             </View>
           }
         />
@@ -1279,7 +1268,6 @@ export default function LocalHomeScreen({navigation, route}) {
             ]}
             keyExtractor={keyExtractor}
             renderItem={sportsListView}
-            // initialScrollIndex={sports.indexOf(selectedSport)}
             initialNumToRender={sports?.length}
             onScrollToIndexFailed={(info) => {
               const wait = new Promise((resolve) => setTimeout(resolve, 500));
