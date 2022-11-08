@@ -283,6 +283,7 @@ export default function SignupScreen({navigation}) {
           setTimeout(() => Alert.alert(strings.appName, message), 50);
       });
   };
+  // This commented code we will be used in production for email varification please dont remove it.
   /*
   const callEmailVerification = () =>
     new Promise((resolve) => {
@@ -297,7 +298,8 @@ export default function SignupScreen({navigation}) {
           resolve(false);
         });
     });
-*/
+   */
+
   const registerWithAnotherProvider = (param) =>
     new Promise((resolve, reject) => {
       if (param[0].includes('facebook')) {
