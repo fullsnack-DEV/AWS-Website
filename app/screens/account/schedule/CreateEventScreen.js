@@ -100,8 +100,7 @@ export default function CreateEventScreen({navigation, route}) {
   const [toggle] = useState(false);
   const [eventStartDateTime, setEventStartdateTime] = useState(getRoundedDate(5));
   const [eventEndDateTime, setEventEnddateTime] = useState(moment(getRoundedDate(5)).add(5, 'm').toDate());
-  const [eventUntilDateTime, setEventUntildateTime] =
-    useState(eventEndDateTime);
+  const [eventUntilDateTime, setEventUntildateTime] = useState(eventEndDateTime);
   const [searchLocation, setSearchLocation] = useState();
   const [locationDetail, setLocationDetail] = useState(null);
   const [is_Blocked, setIsBlocked] = useState(false);
@@ -111,12 +110,12 @@ export default function CreateEventScreen({navigation, route}) {
   const [sportsSelection, setSportsSelection] = useState();
   const [selectedSport, setSelectedSport] = useState();
 
-  const [whoOpetion, setWhoOpetion] = useState();
-  const [whoCanJoinOpetion, setWhoCanJoinOpetion] = useState({
+  const [whoOption, setWhoOption] = useState();
+  const [whoCanJoinOption, setWhoCanJoinOption] = useState({
     text: strings.everyoneRadio,
     value: 0,
   });
-  const [whoCanSeeOpetion, setWhoCanSeeOpetion] = useState({
+  const [whoCanSeeOption, setWhoCanSeeOption] = useState({
     text: strings.everyoneRadio,
     value: 0,
   });
@@ -264,10 +263,14 @@ export default function CreateEventScreen({navigation, route}) {
     eventFee,
     refundPolicy,
     eventPosted,
+    is_Blocked,
     selectWeekMonth,
     eventStartDateTime,
     eventEndDateTime,
     eventUntilDateTime,
+    whoCanSeeOption,
+    whoCanJoinOption,
+    searchLocation,
     route?.params,
   ]);
 
@@ -392,10 +395,10 @@ export default function CreateEventScreen({navigation, route}) {
     <TouchableOpacity
       style={styles.listItem}
       onPress={() => {
-        if (whoOpetion === 'see') {
-          setWhoCanSeeOpetion(item);
+        if (whoOption === 'see') {
+          setWhoCanSeeOption(item);
         } else {
-          setWhoCanJoinOpetion(item);
+          setWhoCanJoinOption(item);
         }
 
         setTimeout(() => {
@@ -412,8 +415,8 @@ export default function CreateEventScreen({navigation, route}) {
         }}>
         <Text style={styles.languageList}>{item.text}</Text>
         <View style={styles.checkbox}>
-          {(whoOpetion === 'see' && whoCanSeeOpetion.value === item?.value) ||
-          (whoOpetion === 'join' && whoCanJoinOpetion.value === item?.value) ? (
+          {(whoOption === 'see' && whoCanSeeOption.value === item?.value) ||
+          (whoOption === 'join' && whoCanJoinOption.value === item?.value) ? (
             <Image
               source={images.radioCheckYellow}
               style={styles.checkboxImg}
@@ -687,7 +690,7 @@ export default function CreateEventScreen({navigation, route}) {
     if(rule){
       data[0].rrule = rule
     }
-    
+
     createEvent(entityRole, uid, data, authContext)
       .then((response) => {
         console.log('Response :-', response);
@@ -722,10 +725,10 @@ export default function CreateEventScreen({navigation, route}) {
           blocked: is_Blocked,
           selected_sport: sportsSelection,
           who_can_see: {
-            ...whoCanSeeOpetion,
+            ...whoCanSeeOption,
           },
           who_can_join: {
-            ...whoCanJoinOpetion,
+            ...whoCanJoinOption,
           },
           event_posted_at: eventPosted,
           event_fee: {
@@ -758,7 +761,7 @@ export default function CreateEventScreen({navigation, route}) {
         },
       ];
 
-      if (whoCanSeeOpetion.value === 2) {
+      if (whoCanSeeOption.value === 2) {
         const checkedGroup = groupsSeeList.filter((obj) => obj.isSelected);
         const resultOfIds = checkedGroup.map((obj) => obj.group_id);
         if (authContext.entity.role === Verbs.entityTypeUser) {
@@ -768,7 +771,7 @@ export default function CreateEventScreen({navigation, route}) {
         }
       }
 
-      if (whoCanJoinOpetion.value === 2) {
+      if (whoCanJoinOption.value === 2) {
         const checkedGroup = groupsJoinList.filter((obj) => obj.isSelected);
         const resultOfIds = checkedGroup.map((obj) => obj.group_id);
         if (authContext.entity.role === Verbs.entityTypeUser) {
@@ -1064,12 +1067,12 @@ export default function CreateEventScreen({navigation, route}) {
 
               <TouchableOpacity
                 onPress={() => {
-                  setWhoOpetion('join');
+                  setWhoOption('join');
                   setVisibleWhoModal(true);
                 }}>
                 <View style={styles.dropContainer}>
                   <Text style={styles.textInputDropStyle}>
-                    {whoCanJoinOpetion.text}
+                    {whoCanJoinOption.text}
                   </Text>
                   <Image
                     source={images.dropDownArrow}
@@ -1078,7 +1081,7 @@ export default function CreateEventScreen({navigation, route}) {
                 </View>
               </TouchableOpacity>
             </View>
-            {whoCanJoinOpetion.value === 2 &&
+            {whoCanJoinOption.value === 2 &&
               authContext.entity.role === Verbs.entityTypeUser && (
                 <View>
                   <View style={styles.allStyle}>
@@ -1197,12 +1200,12 @@ export default function CreateEventScreen({navigation, route}) {
               <Text style={styles.headerTextStyle}>{strings.whoCanSee}</Text>
               <TouchableOpacity
                 onPress={() => {
-                  setWhoOpetion('see');
+                  setWhoOption('see');
                   setVisibleWhoModal(true);
                 }}>
                 <View style={styles.dropContainer}>
                   <Text style={styles.textInputDropStyle}>
-                    {whoCanSeeOpetion.text}
+                    {whoCanSeeOption.text}
                   </Text>
                   <Image
                     source={images.dropDownArrow}
@@ -1211,7 +1214,7 @@ export default function CreateEventScreen({navigation, route}) {
                 </View>
               </TouchableOpacity>
             </View>
-            {whoCanSeeOpetion.value === 2 &&
+            {whoCanSeeOption.value === 2 &&
               authContext.entity.role === Verbs.entityTypeUser && (
                 <View>
                   <View style={styles.allStyle}>
@@ -1427,10 +1430,10 @@ export default function CreateEventScreen({navigation, route}) {
             showsVerticalScrollIndicator={false}
             data={
               ['user', 'player'].includes(authContext.entity.role)
-                ? whoOpetion === 'join'
+                ? whoOption === 'join'
                   ? whoCanJoinUser
                   : whoCanSeeUser
-                : whoOpetion === 'join'
+                : whoOption === 'join'
                 ? whoCanJoinGroup
                 : whoCanSeeGroup
             }

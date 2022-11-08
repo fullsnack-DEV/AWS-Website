@@ -114,7 +114,7 @@ export default function EditEventScreen({navigation, route}) {
   const [visibleWhoModal, setVisibleWhoModal] = useState(false);
   const [sportsSelection, setSportsSelection] = useState(eventData?.selected_sport);
   const [selectedSport, setSelectedSport] = useState(eventData?.selected_sport);
-  const [whoOpetion, setWhoOpetion] = useState();
+  const [whoOption, setWhoOption] = useState();
   const [whoCanJoinOption, setWhoCanJoinOption] = useState({
     ...eventData?.who_can_join,
   });
@@ -206,11 +206,16 @@ export default function EditEventScreen({navigation, route}) {
     locationDetail,
     eventFee,
     refundPolicy,
+    is_Blocked,
     selectedSport,
     selectWeekMonth,
     eventStartDateTime,
     eventEndDateTime,
     eventUntilDateTime,
+    whoCanSeeOption,
+    whoCanJoinOption,
+    searchLocation,
+    eventPosted,
   ]);
 
   useEffect(() => {
@@ -327,7 +332,7 @@ export default function EditEventScreen({navigation, route}) {
     <TouchableOpacity
       style={styles.listItem}
       onPress={() => {
-        if (whoOpetion === 'see') {
+        if (whoOption === 'see') {
           setWhoCanSeeOption(item);
         } else {
           setWhoCanJoinOption(item);
@@ -347,8 +352,8 @@ export default function EditEventScreen({navigation, route}) {
         }}>
         <Text style={styles.languageList}>{item.text}</Text>
         <View style={styles.checkbox}>
-          {(whoOpetion === 'see' && whoCanSeeOption.value === item?.value) ||
-          (whoOpetion === 'join' && whoCanJoinOption.value === item?.value) ? (
+          {(whoOption === 'see' && whoCanSeeOption.value === item?.value) ||
+          (whoOption === 'join' && whoCanJoinOption.value === item?.value) ? (
             <Image
               source={images.radioCheckYellow}
               style={styles.checkboxImg}
@@ -361,7 +366,7 @@ export default function EditEventScreen({navigation, route}) {
     </TouchableOpacity>
   );
 
-  const renderEventPostedOpetions = ({item}) => (
+  const renderEventPostedOptions = ({item}) => (
     <View
       style={{
         flexDirection: 'row',
@@ -977,7 +982,7 @@ export default function EditEventScreen({navigation, route}) {
 
               <TouchableOpacity
                 onPress={() => {
-                  setWhoOpetion('join');
+                  setWhoOption('join');
                   setVisibleWhoModal(true);
                 }}>
                 <View style={styles.dropContainer}>
@@ -1085,7 +1090,7 @@ export default function EditEventScreen({navigation, route}) {
               <FlatList
                 scrollEnabled={false}
                 data={eventPostedList}
-                renderItem={renderEventPostedOpetions}
+                renderItem={renderEventPostedOptions}
                 style={{marginTop: 15}}
               />
             </View>
@@ -1094,7 +1099,7 @@ export default function EditEventScreen({navigation, route}) {
               <Text style={styles.headerTextStyle}>{strings.whoCanSee}</Text>
               <TouchableOpacity
                 onPress={() => {
-                  setWhoOpetion('see');
+                  setWhoOption('see');
                   setVisibleWhoModal(true);
                 }}>
                 <View style={styles.dropContainer}>
