@@ -195,18 +195,19 @@ const ScorekeeperSelectMatch = ({navigation, route}) => {
                   onPress={() => {
                     const game = item;
 
-                    let isDataFound = [];
-
-                    if (game?.referees?.length) {
-                      isDataFound = game.referees.some(
+                    if (
+                      game?.referees?.length > 0 &&
+                      game.referees.some(
                         (referee) => referee.referee_id === userData.user_id,
-                      );
-                    } else if (game?.scorekeepers?.length) {
-                      isDataFound = game.scorekeepers.some(
+                      )
+                    ) {
+                      Alert.alert(strings.canNotChoosegameReferee);
+                    } else if (
+                      game?.scorekeepers?.length > 0 &&
+                      game.scorekeepers.some(
                         (scorer) => scorer.scorekeeper_id === userData.user_id,
-                      );
-                    }
-                    if (isDataFound.length > 0) {
+                      )
+                    ) {
                       Alert.alert(strings.canNotChoosegameScorekeeper);
                     } else {
                       navigation.navigate(route?.params?.comeFrom, {

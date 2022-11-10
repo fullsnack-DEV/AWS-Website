@@ -275,19 +275,23 @@ export default function BookScorekeeper({navigation, route}) {
         sport={route?.params?.sport}
         isSelected={scorekeeper?.user_id === selectedScorekeeper?.user_id}
         onRadioClick={() => {
-          let isDataFound = [];
-
-          if (gameData?.referees?.length) {
-            isDataFound = gameData.referees.filter(
-              (referee) => referee.referee_id === scorekeeper.user_id,
-            );
-          } else if (gameData?.scorekeepers?.length) {
-            isDataFound = gameData.scorekeepers.filter(
+          if (
+            gameData?.referees?.length > 0 &&
+            gameData.referees.some(
+              (refe) => refe.referee_id === scorekeeper.user_id,
+            )
+          ) {
+            Alert.alert(strings.townsCupTitle, strings.canNotChoosegameReferee);
+          } else if (
+            gameData?.scorekeepers?.length > 0 &&
+            gameData.scorekeepers.some(
               (scorer) => scorer.scorekeeper_id === scorekeeper.user_id,
+            )
+          ) {
+            Alert.alert(
+              strings.townsCupTitle,
+              strings.canNotChoosegameScorekeeper,
             );
-          }
-          if (isDataFound.length > 0) {
-            Alert.alert(strings.canNotBookReferee);
           } else {
             setSelectedScorekeeper(scorekeeper);
           }

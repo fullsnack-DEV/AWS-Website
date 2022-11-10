@@ -194,19 +194,20 @@ const RefereeSelectMatch = ({navigation, route}) => {
                   onPress={() => {
                     const game = item;
 
-                    let isDataFound = false;
-
-                    if (game?.referees?.length) {
-                      isDataFound = game.referees.some(
+                    if (
+                      game?.referees?.length > 0 &&
+                      game.referees.some(
                         (referee) => referee.referee_id === userData.user_id,
-                      );
-                    } else if (game?.scorekeepers?.length) {
-                      isDataFound = game.scorekeepers.some(
-                        (scorer) => scorer.scorekeeper_id === userData.user_id,
-                      );
-                    }
-                    if (isDataFound) {
+                      )
+                    ) {
                       Alert.alert(strings.canNotChoosegameReferee);
+                    } else if (
+                      game?.scorekeepers?.length > 0 &&
+                      game.scorekeepers.some(
+                        (scorer) => scorer.scorekeeper_id === userData.user_id,
+                      )
+                    ) {
+                      Alert.alert(strings.canNotChoosegameScorekeeper);
                     } else {
                       navigation.navigate(route?.params?.comeFrom, {
                         gameData: game,

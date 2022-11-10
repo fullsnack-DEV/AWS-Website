@@ -274,19 +274,23 @@ export default function BookReferee({navigation, route}) {
         sport={route?.params?.sport}
         isSelected={referee?.user_id === selectedReferee?.user_id}
         onRadioClick={() => {
-          let isDataFound = [];
-
-          if (gameData?.referees?.length) {
-            isDataFound = gameData.referees.filter(
+          if (
+            gameData?.referees?.length > 0 &&
+            gameData.referees.some(
               (refe) => refe.referee_id === referee.user_id,
-            );
-          } else if (gameData?.scorekeepers?.length) {
-            isDataFound = gameData.scorekeepers.filter(
+            )
+          ) {
+            Alert.alert(strings.townsCupTitle, strings.canNotChoosegameReferee);
+          } else if (
+            gameData?.scorekeepers?.length > 0 &&
+            gameData.scorekeepers.some(
               (scorer) => scorer.scorekeeper_id === referee.user_id,
+            )
+          ) {
+            Alert.alert(
+              strings.townsCupTitle,
+              strings.canNotChoosegameScorekeeper,
             );
-          }
-          if (isDataFound.length > 0) {
-            Alert.alert(strings.canNotBookReferee);
           } else {
             setSelectedReferee(referee);
           }
