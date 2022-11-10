@@ -37,10 +37,7 @@ import AuthContext from '../../../../auth/context';
 import ActivityLoader from '../../../loader/ActivityLoader';
 import GameStatus from '../../../../Constants/GameStatus';
 import * as ScorekeeperUtils from '../../../../screens/scorekeeper/ScorekeeperUtility';
-import {
-  checkReviewExpired,
-  getGameHomeScreen,
-} from '../../../../utils/gameUtils';
+import {checkReviewExpired} from '../../../../utils/gameUtils';
 
 import ScorekeeperReservationStatus from '../../../../Constants/ScorekeeperReservationStatus';
 import {strings} from '../../../../../Localization/translation';
@@ -406,7 +403,6 @@ const Scorekeepers = ({
                 settingObj: scorekeeperSetting,
                 userData: item,
                 isHirer: true,
-                navigationName: getGameHomeScreen(gameData?.sport),
                 sportName: gameData?.sport,
               });
             }, 500);
@@ -450,7 +446,6 @@ const Scorekeepers = ({
                 settingObj: scorekeeperSetting,
                 userData: item,
                 isHirer: true,
-                navigationName: getGameHomeScreen(gameData?.sport),
                 sportName: gameData?.sport,
               });
             }, 500);

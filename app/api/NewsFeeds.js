@@ -52,6 +52,14 @@ export const createReaction = async (data, authContext) =>
     authContext,
   });
 
+export const createCommentReaction = async (data, authContext) =>
+  makeAPIRequest({
+    method: 'post',
+    url: `${Config.BASE_URL}/comment/reactions`,
+    data,
+    authContext,
+  });
+
 export const EditReaction = async (reaction_id, data, authContext) =>
   makeAPIRequest({
     method: 'patch',

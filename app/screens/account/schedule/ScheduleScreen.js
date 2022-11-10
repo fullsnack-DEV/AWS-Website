@@ -501,7 +501,7 @@ export default function ScheduleScreen({navigation, route}) {
           });
         }
 
-        response.forEach((item) => {
+        resCalenders.forEach((item) => {
           if (item?.rrule) {
             let rEvents = getEventOccuranceFromRule(item);
             rEvents = rEvents.filter(

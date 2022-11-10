@@ -2111,4 +2111,11 @@ export default {
   confirmDeleteMessage: 'en_Are you sure want to delete message?',
   unknownTitle: 'en_Unknown',
   typeMessage: 'en_Type a message',
+  canNotBookReferee: 'en_This is already booked.',
+  canNotChoosegameReferee:
+    'en_You can not choose this game because this referee is already book for this game.',
+  canNotChoosegameScorekeeper:
+    'en_You can not choose this game because this scorekeeper is already book for this game.',
+
+  reply: 'en_Reply',
 };

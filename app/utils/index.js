@@ -2141,8 +2141,6 @@ export const getGamesList = async (eventsList) => {
   userIDs = [...new Set(userIDs)];
   groupIDs = [...new Set(groupIDs)];
 
-  console.log('dfdasfadsfdsfas', userIDs, groupIDs);
-
   if (userIDs.length > 0) {
     const userQuery = {
       query: {
@@ -2327,7 +2325,8 @@ export const deleteConfirmation = (title, subTitle, okClick) => {
 
 // TCDate is unixtimestamp
 // unixTimeStamp - is the timestamp which come from server in seconds from 1st jan 1970 GMT
-export const getTCDate = (date) => Number(parseFloat(date.getTime() / 1000).toFixed(0));
+export const getTCDate = (date) =>
+  Number(parseFloat(date.getTime() / 1000).toFixed(0));
 
 // unixTimeStamp - is the timestamp which come from server in seconds from 1st jan 1970 GMT
 export const getJSDate = (unixTimeStamp) => new Date(unixTimeStamp * 1000);
@@ -2380,11 +2379,11 @@ export const ordinal_suffix_of = (i) => {
   return `${i}th`;
 };
 
-export const getRoundedDate = (minutes, d=new Date()) => {
+export const getRoundedDate = (minutes, d = new Date()) => {
   const ms = 1000 * 60 * minutes; // convert minutes to ms
   const roundedDate = new Date(Math.ceil(d.getTime() / ms) * ms);
-  return roundedDate
-}
+  return roundedDate;
+};
 
 export const firstLetterCapital = (str) =>
   str.charAt(0).toUpperCase() + str.slice(1);

@@ -387,8 +387,6 @@ export default function AccountScreen({navigation}) {
   }, [onLogout]);
 
   const handleSectionClick = async (rowObj) => {
-    console.log('clicked: handleSectionClick');
-    console.log('rowObj', rowObj);
     navigation.navigate(rowObj.navigateTo.screenName, rowObj.navigateTo.data);
     if (rowObj.option === 'Log out') {
       handleLogOut();

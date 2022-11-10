@@ -104,6 +104,7 @@ const LoginScreen = ({navigation}) => {
     async (firebaseUser, townscupUser) => {
       const entity = {...dummyAuthContext.entity};
       const userData = {...townscupUser};
+
       entity.auth.user = {...userData};
       entity.obj = {...userData};
       await authContext.setTokenData(dummyAuthContext?.tokenData);
@@ -112,6 +113,7 @@ const LoginScreen = ({navigation}) => {
       await Utility.setStorage('authContextEntity', {...entity});
       await Utility.setStorage('loggedInEntity', entity);
       await authContext.setEntity({...entity});
+
       // eslint-disable-next-line no-underscore-dangle
       if (!firebaseUser?._user?.emailVerified) {
         firebaseUser.sendEmailVerification();

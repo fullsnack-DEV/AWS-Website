@@ -113,7 +113,6 @@ const RefereeSelectMatch = ({navigation, route}) => {
     return Promise.all(promiseArr)
       .then(([gameList, eventList]) => {
         setLoading(false);
-
         for (const game of gameList) {
           game.isAvailable = true;
           eventList.forEach((slot) => {
@@ -191,61 +190,45 @@ const RefereeSelectMatch = ({navigation, route}) => {
               <View style={{marginVertical: 5}}>
                 <TCGameCard
                   data={item}
-                  cardWidth={'88%'}
+                  cardWidth={'92%'}
                   onPress={() => {
                     const game = item;
-                    let isSameReferee = false;
-                    const sameRefereeCount = game?.referees?.filter(
-                      (gameReferee) =>
-                        gameReferee?.user_id === userData?.user_id,
-                    );
-                    if (sameRefereeCount?.length > 0) isSameReferee = true;
-                    // const isCheif = userData?.chief_referee;
-                    // const cheifCnt = game?.referees?.filter((chal_ref) => chal_ref?.chief_referee)?.length;
-                    // const assistantCnt = game?.referees?.filter((chal_ref) => !chal_ref?.chief_referee)?.length;
-                    let message = '';
-                    if (isSameReferee) {
-                      message = strings.refereeAlreadyBookedValidation;
-                    }
-                    // else if (!game.isAvailable) {
-                    //   message = 'There is no available slot of a referee who you can book in this game.';
-                    // } else if ((game?.referees?.count ?? 0) >= 3) {
-                    //   message = 'There is no available slot of a referee who you can book in this game.';
-                    // } else if (isCheif && cheifCnt >= 1) {
-                    //   message = 'There is no available slot of a chief referee who you can book in this game.';
-                    // } else if (!isCheif && assistantCnt >= 2) {
-                    //   message = 'There is no available slot of an assistant referee who you can book in this game.';
-                    // }
-                    if (message === '') {
-                      // navigation.navigate(route?.params?.comeFrom, {
-                      //   comeFrom: 'RefereeSelectMatch',
-                      //   gameData: item,
-                      //   reservationObj: { ...bodyParams, game: item },
 
-                      // });
-
+                    if (
+                      game?.referees?.length > 0 &&
+                      game.referees.some(
+                        (referee) => referee.referee_id === userData.user_id,
+                      )
+                    ) {
+                      Alert.alert(strings.canNotChoosegameReferee);
+                    } else if (
+                      game?.scorekeepers?.length > 0 &&
+                      game.scorekeepers.some(
+                        (scorer) => scorer.scorekeeper_id === userData.user_id,
+                      )
+                    ) {
+                      Alert.alert(strings.canNotChoosegameScorekeeper);
+                    } else {
                       navigation.navigate(route?.params?.comeFrom, {
+                        gameData: game,
                         reservationObj: {
                           ...bodyParams,
-                          game: item,
+                          game,
                         },
                       });
                     }
-
-                    // navigation.navigate(route?.params?.comeFrom, {
-                    //   comeFrom: 'RefereeSelectMatch',
-                    //   gameData: item,
-                    // });
                   }}
                 />
               </View>
             )}
             ListEmptyComponent={
-              <Text style={styles.emptySectionListItem}>
-                {searchText === ''
-                  ? strings.noGameFound
-                  : format(strings.noGameFoundFor, searchText)}
-              </Text>
+              !loading && (
+                <Text style={styles.emptySectionListItem}>
+                  {searchText === ''
+                    ? strings.noGameFound
+                    : format(strings.noGameFoundFor, searchText)}
+                </Text>
+              )
             }
           />
         </View>
