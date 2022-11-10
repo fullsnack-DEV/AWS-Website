@@ -37,12 +37,12 @@ let body = {};
 const ScorekeeperBookingDateAndTime = ({navigation, route}) => {
   const [sportName] = useState(route?.params?.sportName);
   const [userData] = useState(route?.params?.userData);
-  const [gameData] = useState(route?.params?.gameData ?? null);
+  const [gameData, setGameData] = useState(route?.params?.gameData);
   const [loading, setLoading] = useState(false);
   const authContext = useContext(AuthContext);
   const [defaultCard, setDefaultCard] = useState();
 
-  const [challengeObject, setChallengeObject] = useState(null);
+  const [challengeObject, setChallengeObject] = useState();
 
   useEffect(() => {
     Utility.getStorage('paymentSetting').then((setting) => {
@@ -51,11 +51,10 @@ const ScorekeeperBookingDateAndTime = ({navigation, route}) => {
   }, []);
 
   useEffect(() => {
-    if (route?.params?.paymentMethod) {
-      setDefaultCard(route?.params?.paymentMethod);
+    if (route?.params?.gameData) {
+      setGameData(route?.params?.gameData);
     }
-    getFeeDetail(route?.params?.paymentMethod ?? defaultCard);
-  }, [defaultCard, route?.params?.paymentMethod]);
+  }, [route?.params?.gameData]);
 
   const getFeeDetail = useCallback(
     (paymentObj) => {
@@ -101,6 +100,12 @@ const ScorekeeperBookingDateAndTime = ({navigation, route}) => {
     },
     [authContext, gameData, route?.params?.isHirer, userData?.user_id],
   );
+  useEffect(() => {
+    if (route?.params?.paymentMethod) {
+      setDefaultCard(route?.params?.paymentMethod);
+    }
+    getFeeDetail(route?.params?.paymentMethod ?? defaultCard);
+  }, [defaultCard, getFeeDetail, route?.params?.paymentMethod]);
 
   const Title = ({text, required}) => (
     <Text style={styles.titleText}>
@@ -174,11 +179,6 @@ const ScorekeeperBookingDateAndTime = ({navigation, route}) => {
     setLoading(true);
     createUserReservation('scorekeepers', bodyParams, authContext)
       .then(() => {
-        // const navigationName =
-        //   route?.params?.navigationName ?? getGameHomeScreen(gameData?.sport);
-        // navigation.navigate('BookScorekeeperSuccess', {
-        //   navigationScreenName: navigationName,
-        // });
         Alert.alert(
           strings.scorekeeperRequestSent,
           '',
@@ -258,8 +258,8 @@ const ScorekeeperBookingDateAndTime = ({navigation, route}) => {
                 comeFrom: 'ScorekeeperBookingDateAndTime',
               });
             }}
-            disabled={!route?.params?.showMatches}
-            activeOpacity={!route?.params?.showMatches ? 1 : 0.7}
+            disabled={gameData}
+            activeOpacity={!gameData ? 1 : 0.7}
             style={{
               flexDirection: 'row',
               alignItems: 'center',
@@ -267,13 +267,13 @@ const ScorekeeperBookingDateAndTime = ({navigation, route}) => {
             }}>
             <Title
               text={
-                route?.params?.showMatches
+                !gameData
                   ? strings.chooseagame.toUpperCase()
                   : strings.match.toUpperCase()
               }
-              required={!!route?.params?.showMatches}
+              required={!gameData}
             />
-            {route?.params?.showMatches && (
+            {!gameData && (
               <View
                 onPress={() => {
                   navigation.navigate('ScorekeeperSelectMatch', {
@@ -489,9 +489,10 @@ const ScorekeeperBookingDateAndTime = ({navigation, route}) => {
                 type="scorekeeper"
               />
             </View>
+            <Seperator />
           </View>
         )}
-        <Seperator />
+
         {/* Payment Method */}
         {Number(challengeObject?.hourly_game_fee) > 0 &&
           !route?.params?.isHirer && (
@@ -516,9 +517,10 @@ const ScorekeeperBookingDateAndTime = ({navigation, route}) => {
                   }}
                 />
               </View>
+              <Seperator />
             </View>
           )}
-        <Seperator />
+
         <View style={styles.contentContainer}>
           <Text style={styles.note}>{strings.refereebookingnote}</Text>
         </View>

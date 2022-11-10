@@ -49,6 +49,7 @@ function GameCard({
 
   return (
     <TouchableOpacity
+      onPress={onPress}
       activeOpacity={0.7}
       style={[styles.mainContainer, {width: wp(cardWidth)}]}>
       <View style={[styles.backgroundView, {width: wp(cardWidth)}]}>
@@ -77,9 +78,7 @@ function GameCard({
             <Text style={styles.eventTitle}>
               {getSportName(data, authContext)}
             </Text>
-            <TouchableOpacity
-              style={{marginRight: 7, marginBottom: 5}}
-              onPress={onPress}>
+            <TouchableOpacity style={{marginRight: 7, marginBottom: 5}}>
               {/* eslint-disable-next-line no-nested-ternary */}
               {showSelectionCheckBox ? (
                 isSelected ? (

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
 import {
   widthPercentageToDP as wp,
@@ -10,8 +10,12 @@ import {formatTimestampForDisplay} from '../../utils/formatTimestampForDisplay';
 
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
+import {strings} from '../../../Localization/translation';
+import AuthContext from '../../auth/context';
 
-function WriteCommentItems({data, onProfilePress}) {
+function WriteCommentItems({data, onProfilePress, onLikePress}) {
+  const authContext = useContext(AuthContext);
+
   let commentTime = '';
   if (data && data.created_at) {
     commentTime = data.created_at;
@@ -43,10 +47,18 @@ function WriteCommentItems({data, onProfilePress}) {
             {userName}{' '}
             <Text style={styles.commentTextStyle}>{commentText} </Text>
           </Text>
-          <TouchableOpacity style={{flex: 0.1, alignSelf: 'flex-start'}}>
+          <TouchableOpacity
+            style={{flex: 0.1, alignSelf: 'flex-start'}}
+            onPress={onLikePress}>
             <FastImage
               style={styles.commentImage}
-              source={images.unlikeImage}
+              source={
+                data?.latest_children?.like?.some(
+                  (obj) => obj.user_id === authContext.entity.uid,
+                )
+                  ? images.likeImage
+                  : images.unlikeImage
+              }
               resizeMode={'contain'}
             />
           </TouchableOpacity>
@@ -62,7 +74,7 @@ function WriteCommentItems({data, onProfilePress}) {
                 marginLeft: 10,
                 fontFamily: fonts.RBold,
               }}>
-              99 Likes
+              {data?.latest_children?.like?.length ?? 0} {strings.likesTitle}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity>
@@ -72,7 +84,7 @@ function WriteCommentItems({data, onProfilePress}) {
                 marginLeft: 10,
                 fontFamily: fonts.RBold,
               }}>
-              Reply
+              {''}
             </Text>
           </TouchableOpacity>
         </View>

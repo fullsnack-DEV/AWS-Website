@@ -73,7 +73,7 @@ const ScorekeeperSelectMatch = ({navigation, route}) => {
             {term: {'status.keyword': 'accepted'}},
             {
               term: {
-                'challenge_scorekeeper.who_secure.responsible_team_id.keyword':
+                'challenge_scorekeepers.who_secure.responsible_team_id.keyword':
                   teamId,
               },
             },
@@ -102,6 +102,7 @@ const ScorekeeperSelectMatch = ({navigation, route}) => {
       },
     };
 
+    console.log('gameListWithFilter9999', JSON.stringify(gameListWithFilter));
     const promiseArr = [
       getGameIndex(gameListWithFilter),
       getCalendarIndex(scorekeeperList),
@@ -109,6 +110,8 @@ const ScorekeeperSelectMatch = ({navigation, route}) => {
 
     return Promise.all(promiseArr)
       .then(([gameList, eventList]) => {
+        console.log('dsfsdfasdfdasfasdfdsa', eventList);
+
         setLoading(false);
 
         for (const game of gameList) {
@@ -191,23 +194,26 @@ const ScorekeeperSelectMatch = ({navigation, route}) => {
                   data={item}
                   onPress={() => {
                     const game = item;
-                    let isSameScorekeeper = false;
-                    const sameScorekeeperCount = game?.scorekeepers?.filter(
-                      (gameScorekeeper) =>
-                        gameScorekeeper?.user_id === userData?.user_id,
-                    );
-                    if (sameScorekeeperCount?.length > 0)
-                      isSameScorekeeper = true;
 
-                    let message = '';
-                    if (isSameScorekeeper) {
-                      message = strings.scorekeeperAlreadyBookForGame;
+                    let isDataFound = [];
+
+                    if (game?.referees?.length) {
+                      isDataFound = game.referees.some(
+                        (referee) => referee.referee_id === userData.user_id,
+                      );
+                    } else if (game?.scorekeepers?.length) {
+                      isDataFound = game.scorekeepers.some(
+                        (scorer) => scorer.scorekeeper_id === userData.user_id,
+                      );
                     }
-                    if (message === '') {
+                    if (isDataFound.length > 0) {
+                      Alert.alert(strings.canNotChoosegameScorekeeper);
+                    } else {
                       navigation.navigate(route?.params?.comeFrom, {
+                        gameData: game,
                         reservationObj: {
                           ...bodyParams,
-                          game: item,
+                          game,
                         },
                       });
                     }

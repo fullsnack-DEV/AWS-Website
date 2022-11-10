@@ -3712,7 +3712,6 @@ const HomeScreen = ({navigation, route}) => {
               settingObj: refereeSettingObject,
               userData: currentUserData,
               isHirer: true,
-              navigationName: 'HomeScreen',
               sportName,
             });
           } else {
@@ -4403,7 +4402,6 @@ const HomeScreen = ({navigation, route}) => {
                         settingObj: refereeSettingObject,
                         userData: currentUserData,
                         showMatches: true,
-                        navigationName: 'HomeScreen',
                         sportName,
                       });
                     } else {

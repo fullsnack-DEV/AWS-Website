@@ -224,8 +224,9 @@ export default function BookReferee({navigation, route}) {
                 navigation.navigate('RefereeBookingDateAndTime', {
                   settingObj: res,
                   userData: selectedReferee,
-                  navigationName: 'HomeScreen',
+                  isHirer: false,
                   gameData,
+                  sportName: gameData?.sport,
                 });
               } else {
                 setTimeout(() => {
@@ -267,15 +268,30 @@ export default function BookReferee({navigation, route}) {
 
     console.log('setting1:=>', refereeObject);
     return (
-      <TouchableOpacity onPress={() => setSelectedReferee(referee)}>
-        <RenderReferee
-          data={item}
-          showStar={true}
-          sport={route?.params?.sport}
-          isSelected={referee?.user_id === selectedReferee?.user_id}
-          onRadioClick={() => setSelectedReferee(referee)}
-        />
-      </TouchableOpacity>
+      <RenderReferee
+        data={item}
+        showStar={true}
+        sport={route?.params?.sport}
+        isSelected={referee?.user_id === selectedReferee?.user_id}
+        onRadioClick={() => {
+          let isDataFound = [];
+
+          if (gameData?.referees?.length) {
+            isDataFound = gameData.referees.filter(
+              (refe) => refe.referee_id === referee.user_id,
+            );
+          } else if (gameData?.scorekeepers?.length) {
+            isDataFound = gameData.scorekeepers.filter(
+              (scorer) => scorer.scorekeeper_id === referee.user_id,
+            );
+          }
+          if (isDataFound.length > 0) {
+            Alert.alert(strings.canNotBookReferee);
+          } else {
+            setSelectedReferee(referee);
+          }
+        }}
+      />
     );
   };
 

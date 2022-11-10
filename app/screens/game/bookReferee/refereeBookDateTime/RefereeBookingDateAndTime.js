@@ -44,42 +44,22 @@ let body = {};
 const RefereeBookingDateAndTime = ({navigation, route}) => {
   const [sportName] = useState(route?.params?.sportName);
   const [userData] = useState(route?.params?.userData);
-  const [gameData] = useState(route?.params?.gameData ?? null);
+  const [gameData, setGameData] = useState(route?.params?.gameData);
   const [chiefOrAssistant, setChiefOrAssistant] = useState('chief');
-  const [challengeObject, setChallengeObject] = useState(null);
+  const [challengeObject, setChallengeObject] = useState();
   const [refereeReservationList, setRefereeReservationList] = useState();
-  const [defaultCard, setDefaultCard] = useState();
+  const [defaultCard, setDefaultCard] = useState(route?.params?.paymentMethod);
 
   const authContext = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (route?.params?.paymentMethod) {
-      setDefaultCard(route?.params?.paymentMethod);
-    }
-    getFeeDetail(route?.params?.paymentMethod ?? defaultCard);
-  }, [route?.params?.paymentMethod]);
+  console.log('route?.params?.reservationObj?.game', gameData);
 
   useEffect(() => {
-    Utility.getStorage('paymentSetting').then((setting) => {
-      setDefaultCard(setting);
-    });
-  }, []);
-
-  useEffect(() => {
-    if (gameData) {
-      getGameRefereeReservation(gameData?.game_id, false, true, authContext)
-        .then((response) => {
-          setRefereeReservationList(response.payload);
-        })
-        .catch((e) => {
-          setLoading(false);
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
-        });
+    if (route?.params?.gameData) {
+      setGameData(route?.params?.gameData);
     }
-  }, [authContext, gameData, gameData?.game_id]);
+  }, [route?.params?.gameData]);
 
   const getFeeDetail = useCallback(
     (paymentObj) => {
@@ -113,7 +93,6 @@ const RefereeBookingDateAndTime = ({navigation, route}) => {
             body.international_card_fee =
               response?.payload?.international_card_fee ?? 0;
             body.payment_method_type = Verbs.card;
-            // body = { ...body, hourly_game_fee: hFee, currency_type: cType };
             setChallengeObject(body);
             setLoading(false);
           })
@@ -129,6 +108,34 @@ const RefereeBookingDateAndTime = ({navigation, route}) => {
     },
     [authContext, gameData, route?.params?.isHirer, userData?.user_id],
   );
+
+  useEffect(() => {
+    if (route?.params?.paymentMethod) {
+      setDefaultCard(route?.params?.paymentMethod);
+    }
+    getFeeDetail(route?.params?.paymentMethod ?? defaultCard);
+  }, [defaultCard, getFeeDetail, route?.params?.paymentMethod]);
+
+  useEffect(() => {
+    Utility.getStorage('paymentSetting').then((setting) => {
+      setDefaultCard(setting);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (gameData) {
+      getGameRefereeReservation(gameData?.game_id, false, true, authContext)
+        .then((response) => {
+          setRefereeReservationList(response.payload);
+        })
+        .catch((e) => {
+          setLoading(false);
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
+    }
+  }, [authContext, gameData, gameData?.game_id]);
 
   const Title = ({text, required}) => (
     <Text style={styles.titleText}>
@@ -202,11 +209,6 @@ const RefereeBookingDateAndTime = ({navigation, route}) => {
     setLoading(true);
     createUserReservation('referees', bodyParams, authContext)
       .then(() => {
-        // const navigationName =
-        //   route?.params?.navigationName ?? getGameHomeScreen(gameData?.sport);
-        // navigation.navigate('BookRefereeSuccess', {
-        //   navigationScreenName: navigationName,
-        // });
         Alert.alert(
           strings.refereeApprovalRequestSent,
           '',
@@ -280,8 +282,8 @@ const RefereeBookingDateAndTime = ({navigation, route}) => {
                 comeFrom: 'RefereeBookingDateAndTime',
               });
             }}
-            disabled={!route?.params?.showMatches}
-            activeOpacity={!route?.params?.showMatches ? 1 : 0.7}
+            disabled={gameData}
+            activeOpacity={!gameData ? 1 : 0.7}
             style={{
               flexDirection: 'row',
               alignItems: 'center',
@@ -290,15 +292,15 @@ const RefereeBookingDateAndTime = ({navigation, route}) => {
             <View style={{marginBottom: 15}}>
               <Title
                 text={
-                  route?.params?.showMatches
+                  !gameData
                     ? strings.chooseagame.toUpperCase()
                     : strings.match.toUpperCase()
                 }
-                required={!!route?.params?.showMatches}
+                required={!gameData}
               />
             </View>
 
-            {route?.params?.showMatches && (
+            {!gameData && (
               <View
                 onPress={() => {
                   navigation.navigate('RefereeSelectMatch', {
@@ -567,9 +569,10 @@ const RefereeBookingDateAndTime = ({navigation, route}) => {
                 type="referee"
               />
             </View>
+            <Seperator />
           </View>
         )}
-        <Seperator />
+
         {/* Payment Method */}
         {Number(challengeObject?.hourly_game_fee) > 0 &&
           !route?.params?.isHirer && (
@@ -598,9 +601,10 @@ const RefereeBookingDateAndTime = ({navigation, route}) => {
                   }}
                 />
               </View>
+              <Seperator />
             </View>
           )}
-        <Seperator />
+
         <View style={styles.contentContainer}>
           <Text style={styles.note}>{strings.refereebookingnote}</Text>
         </View>

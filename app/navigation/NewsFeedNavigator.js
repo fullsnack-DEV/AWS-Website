@@ -394,9 +394,6 @@ const NewsFeedNavigator = () => (
     <Stack.Screen
       name="RefereeBookingDateAndTime"
       component={RefereeBookingDateAndTime}
-      // options={{
-      //   headerShown: false,
-      // }}
       options={{
         title: 'Book a referee',
         headerTintColor: colors.blackColor,

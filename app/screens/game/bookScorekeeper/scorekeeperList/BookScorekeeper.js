@@ -54,6 +54,7 @@ const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
 export default function BookScorekeeper({navigation, route}) {
   const gameData = route?.params?.gameData;
 
+  console.log('gameDatagameData', gameData);
   const [loading, setLoading] = useState(false);
   const authContext = useContext(AuthContext);
   const [filters, setFilters] = useState(route?.params?.filters);
@@ -224,8 +225,9 @@ export default function BookScorekeeper({navigation, route}) {
                 navigation.navigate('ScorekeeperBookingDateAndTime', {
                   settingObj: res,
                   userData: selectedScorekeeper,
-                  navigationName: 'HomeScreen',
+                  isHirer: false,
                   gameData,
+                  sportName: gameData?.sport,
                 });
               } else {
                 setTimeout(() => {
@@ -267,15 +269,30 @@ export default function BookScorekeeper({navigation, route}) {
 
     console.log('setting1:=>', scorekeeperObject);
     return (
-      <TouchableOpacity onPress={() => setSelectedScorekeeper(scorekeeper)}>
-        <RenderScorekeeper
-          data={item}
-          showStar={true}
-          sport={route?.params?.sport}
-          isSelected={scorekeeper?.user_id === selectedScorekeeper?.user_id}
-          onRadioClick={() => setSelectedScorekeeper(scorekeeper)}
-        />
-      </TouchableOpacity>
+      <RenderScorekeeper
+        data={item}
+        showStar={true}
+        sport={route?.params?.sport}
+        isSelected={scorekeeper?.user_id === selectedScorekeeper?.user_id}
+        onRadioClick={() => {
+          let isDataFound = [];
+
+          if (gameData?.referees?.length) {
+            isDataFound = gameData.referees.filter(
+              (referee) => referee.referee_id === scorekeeper.user_id,
+            );
+          } else if (gameData?.scorekeepers?.length) {
+            isDataFound = gameData.scorekeepers.filter(
+              (scorer) => scorer.scorekeeper_id === scorekeeper.user_id,
+            );
+          }
+          if (isDataFound.length > 0) {
+            Alert.alert(strings.canNotBookReferee);
+          } else {
+            setSelectedScorekeeper(scorekeeper);
+          }
+        }}
+      />
     );
   };
 
@@ -611,14 +628,6 @@ export default function BookScorekeeper({navigation, route}) {
                           flexDirection: 'row',
                           justifyContent: 'space-between',
                         }}>
-                        {/* <TCSearchCityView
-                      getCity={(value) => {
-                        console.log('Value:=>', value);
-                        setSelectedCity(value);
-                      }}
-                      // value={selectedCity}
-                    /> */}
-
                         <View style={styles.searchCityContainer}>
                           <Text style={styles.searchCityText}>
                             {route?.params?.locationText ||

@@ -75,6 +75,9 @@ const Verbs = {
   friendly: 'Friendly',
   official: 'Official',
   comment: 'comment',
+  like: 'like',
+  unlike: 'unlike',
+  reply: 'reply',
   eventRecurringEnum: {
     Never: 0,
     Daily: 1,
@@ -82,8 +85,8 @@ const Verbs = {
     WeekOfMonth: 3,
     DayOfMonth: 4,
     WeekOfYear: 5,
-    DayOfYear: 6
- }
+    DayOfYear: 6,
+  },
 };
 
 export default Verbs;

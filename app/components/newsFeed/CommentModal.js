@@ -34,6 +34,7 @@ import {
   getReactions,
   deleteReactions,
   EditReaction,
+  createCommentReaction,
 } from '../../api/NewsFeeds';
 import images from '../../Constants/ImagePath';
 
@@ -111,6 +112,34 @@ const CommentModal = ({
     [commentModalRef, navigation],
   );
 
+  const onLikePress = useCallback(
+    ({data}) => {
+      const bodyParams = {
+        reaction_type: Verbs.like,
+        activity_id: data?.activity_id,
+        reaction_id: data?.id,
+      };
+      setCommentText('');
+      createCommentReaction(bodyParams, authContext)
+        .then(() => {
+          const params = {
+            activity_id: item?.id,
+          };
+          getReactions(params, authContext)
+            .then((response) => {
+              setCommentData(response?.payload?.reverse());
+            })
+            .catch((e) => {
+              Alert.alert('', e.messages);
+            });
+        })
+        .catch((e) => {
+          Alert.alert('', e.messages);
+        });
+    },
+    [authContext, item?.id],
+  );
+
   const getButtons = useCallback(
     (data) => {
       const isMyComment = data.user_id === authContext.entity.uid;
@@ -148,7 +177,6 @@ const CommentModal = ({
   const onCommentOptionsPress = useCallback(
     (key, data) => {
       if (key === 'report') {
-        console.log(data);
         setSelectedCommentData(data);
         reportCommentModalRef.current.open();
       } else if (key === 'edit') {
@@ -181,10 +209,20 @@ const CommentModal = ({
         showLabel={true}
         buttons={getButtons(data)}
         onPress={(key) => onCommentOptionsPress(key, data)}>
-        <WriteCommentItems data={data} onProfilePress={onProfilePress} />
+        <WriteCommentItems
+          data={data}
+          onProfilePress={onProfilePress}
+          onLikePress={() => onLikePress({data})}
+        />
       </SwipeableRow>
     ),
-    [getButtons, onCommentOptionsPress, onProfilePress],
+    [
+      getButtons,
+      onCommentOptionsPress,
+      onLikePress,
+      onProfilePress,
+      commentData,
+    ],
   );
   const listEmptyComponent = () => (
     <View style={styles.emptyContainer}>
@@ -234,7 +272,6 @@ const CommentModal = ({
     setCommentText('');
     EditReaction(editData?.id, bodyParams, authContext)
       .then((response) => {
-        console.log('Edit comment res:=>', response);
         setEditData();
         const arr = commentData;
         const foundIndex = arr.findIndex((x) => x.id === response?.payload?.id);
@@ -307,7 +344,7 @@ const CommentModal = ({
               {
                 height:
                   Dimensions.get('window').height -
-                  Dimensions.get('window').height / 2.5,
+                  Dimensions.get('window').height / 10,
               },
             ]}>
             {ModalHeader()}

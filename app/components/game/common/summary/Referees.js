@@ -36,10 +36,7 @@ import ActivityLoader from '../../../loader/ActivityLoader';
 import GameStatus from '../../../../Constants/GameStatus';
 import RefereeReservationStatus from '../../../../Constants/RefereeReservationStatus';
 
-import {
-  checkReviewExpired,
-  getGameHomeScreen,
-} from '../../../../utils/gameUtils';
+import {checkReviewExpired} from '../../../../utils/gameUtils';
 import {strings} from '../../../../../Localization/translation';
 import images from '../../../../Constants/ImagePath';
 import {getSetting} from '../../../../screens/challenge/manageChallenge/settingUtility';
@@ -420,7 +417,6 @@ const Referees = ({
                 settingObj: refereeSetting,
                 userData: item,
                 isHirer: true,
-                navigationName: getGameHomeScreen(gameData?.sport),
                 sportName: gameData?.sport,
               });
             }, 500);
@@ -464,7 +460,6 @@ const Referees = ({
                 settingObj: refereeSetting,
                 userData: item,
                 isHirer: true,
-                navigationName: getGameHomeScreen(gameData?.sport),
                 sportName: gameData?.sport,
               });
             }, 500);
