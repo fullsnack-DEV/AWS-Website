@@ -33,6 +33,7 @@ import {
   appleAuth,
   appleAuthAndroid,
 } from '@invertase/react-native-apple-authentication';
+import 'react-native-get-random-values';
 import {v4 as uuid} from 'uuid';
 import Config from 'react-native-config';
 import LinearGradient from 'react-native-linear-gradient';
@@ -281,7 +282,7 @@ export default function WelcomeScreen({navigation}) {
         .then(() => {
           resolve(true);
         })
-        .catch(() => {
+        .catch((e) => {
           resolve(false);
         });
     });
@@ -333,7 +334,6 @@ export default function WelcomeScreen({navigation}) {
                       uid: user.uid,
                       role: 'user',
                     };
-
                     const flName = user?.displayName?.split(' ');
                     const userDetail = {...extraData};
                     if (flName?.length >= 2) {
@@ -352,14 +352,13 @@ export default function WelcomeScreen({navigation}) {
                       userDetail.last_name = 'Cup';
                     }
                     userDetail.email = user.email;
-                    if (user.photoURL.length > 0) {
+                    if (user.photoURL?.length > 0) {
                       const uploadedProfilePic = {
                         full_image: user.photoURL,
                         thumbnail: user.photoURL,
                       };
                       userDetail.uploadedProfilePic = uploadedProfilePic;
                     }
-
                     // signUpToTownsCup(userDetail, dummyAuthContext);
                     navigateToAddBirthdayScreen(userDetail, dummyAuthContext);
                   }
@@ -583,29 +582,37 @@ export default function WelcomeScreen({navigation}) {
       Alert.alert(strings.signUpCouldNotCompleted);
     }
   };
-
-  const handleAndroidAppleLogin = async () => {
+  async function handleAndroidAppleLogin() {
     try {
-      setloading(true);
       if (!appleAuthAndroid?.isSupported) {
         alert(strings.appleLoginNotSupported);
+        setloading(false);
       } else {
+        // Generate secure, random values for state and nonce
         const rawNonce = uuid();
         const state = uuid();
+        // Configure the request
         appleAuthAndroid.configure({
+          // The Service ID you registered with Apple
           clientId: 'com.townscup',
+          // Return URL added to your Apple dev console. We intercept this redirect, but it must still match
+          // the URL you provided to Apple. It can be an empty route on your backend as it's never called.
           redirectUri: 'https://townscup-fee6e.firebaseapp.com/__/auth/handler',
+          // The type of response requested - code, id_token, or both.
           responseType: appleAuthAndroid.ResponseType.ALL,
+          // The amount of user information requested from Apple.
           scope: appleAuthAndroid.Scope.ALL,
+          // Random nonce value that will be SHA256 hashed before sending to Apple.
           nonce: rawNonce,
+          // Unique state value used to prevent CSRF attacks. A UUID will be generated if nothing is provided.
           state,
         });
-
-        const appleAuthRequestResponse = await appleAuthAndroid.signIn();
-        const {email} = await jwtDecode(appleAuthRequestResponse.id_token);
-        console.log('appleAuthRequestResponse', appleAuthRequestResponse);
-        // setloading(true);
-        const {id_token, nonce} = appleAuthRequestResponse;
+        // Open the browser window for user sign in
+        const response = await appleAuthAndroid.signIn();
+        setloading(false);
+        const {email} = await jwtDecode(response.id_token);
+        const {id_token, nonce} = response;
+        setloading(true);
         commonCheckEmailVerification({
           email,
           provider: 'apple',
@@ -628,8 +635,8 @@ export default function WelcomeScreen({navigation}) {
 
       Alert.alert(e.message);
     }
-  };
-
+    // Send the authorization code to your backend for verification
+  }
   const onAppleButtonPress = async () => {
     if (Platform.OS === 'ios') handleIOSAppleLogin();
     else handleAndroidAppleLogin();

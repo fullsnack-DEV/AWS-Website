@@ -113,37 +113,50 @@ const LoginScreen = ({navigation}) => {
       await Utility.setStorage('loggedInEntity', entity);
       await authContext.setEntity({...entity});
       // eslint-disable-next-line no-underscore-dangle
-      getRedirectionScreenName(userData)
-        .then((responseScreen) => {
-          navigation.replace(responseScreen?.screen, {
-            ...responseScreen?.params,
-          });
-        })
-        .catch(async () => {
-          entity.isLoggedIn = true;
-          await Utility.setStorage('authContextEntity', {...entity});
-          await Utility.setStorage('loggedInEntity', {...entity});
-          getAppSettingsWithoutAuth()
-            .then(async (response) => {
-              console.log('without token api res', response.payload);
-              global.sport_icon_baseurl =
-                response.payload.app.base_url_sporticon;
-              await Utility.setStorage('appSetting', response.payload.app);
-              await authContext.setEntity({...entity});
-            })
-            .catch((e) => {
-              setTimeout(() => {
-                Alert.alert(strings.alertmessagetitle, e.message);
-              }, 10);
-            });
+      if (!firebaseUser?._user?.emailVerified) {
+        firebaseUser.sendEmailVerification();
+        setloading(false);
+        navigation.navigate('EmailVerificationScreen', {
+          emailAddress: email,
+          password,
         });
+        // eslint-disable-next-line no-underscore-dangle
+      } else if (firebaseUser?._user?.emailVerified) {
+        getRedirectionScreenName(userData)
+          .then((responseScreen) => {
+            navigation.replace(responseScreen?.screen, {
+              ...responseScreen?.params,
+            });
+          })
+          .catch(async () => {
+            entity.isLoggedIn = true;
+            await Utility.setStorage('authContextEntity', {...entity});
+            await Utility.setStorage('loggedInEntity', {...entity});
+            getAppSettingsWithoutAuth()
+              .then(async (response) => {
+                console.log('without token api res', response.payload);
+                global.sport_icon_baseurl =
+                  response.payload.app.base_url_sporticon;
+
+                await Utility.setStorage('appSetting', response.payload.app);
+                await authContext.setEntity({...entity});
+              })
+              .catch((e) => {
+                setTimeout(() => {
+                  Alert.alert(strings.alertmessagetitle, e.message);
+                }, 10);
+              });
+          });
+      }
     },
     [
       authContext,
       dummyAuthContext.entity,
       dummyAuthContext?.tokenData,
+      email,
       getRedirectionScreenName,
       navigation,
+      password,
     ],
   );
 
