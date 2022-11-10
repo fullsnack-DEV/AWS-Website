@@ -484,6 +484,7 @@ export default function ScheduleScreen({navigation, route}) {
       .then((response) => {
         let resCalenders = [];
         if (response) {
+          // eslint-disable-next-line no-unused-vars
           resCalenders = response.filter((obj) => {
             if (obj.cal_type === 'blocked') {
               return obj;

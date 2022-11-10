@@ -118,7 +118,6 @@ const LoginScreen = ({navigation}) => {
       if (!firebaseUser?._user?.emailVerified) {
         firebaseUser.sendEmailVerification();
         setloading(false);
-
         navigation.navigate('EmailVerificationScreen', {
           emailAddress: email,
           password,
