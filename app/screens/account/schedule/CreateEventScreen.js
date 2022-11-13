@@ -812,6 +812,8 @@ export default function CreateEventScreen({navigation, route}) {
     }
   };
 
+  console.log('Location screen ==> CreateEventScreen Screen')
+
   return (
     <>
       <ActivityLoader visible={loading} />

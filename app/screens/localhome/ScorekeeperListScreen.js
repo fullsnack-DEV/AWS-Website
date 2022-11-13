@@ -44,6 +44,9 @@ let stopFetchMore = true;
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
 
 export default function ScorekeeperListScreen({navigation, route}) {
+
+  console.log('Location screen ==> ScorekeeperListScreen Screen')
+
   // const [loading, setloading] = useState(false);
   const authContext = useContext(AuthContext);
   const [filters, setFilters] = useState(route?.params?.filters);
