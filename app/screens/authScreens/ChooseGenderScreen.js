@@ -99,9 +99,9 @@ export default function ChooseGenderScreen({navigation, route}) {
         setCurrentLocation(location);
         setLoading(false);
       })
-      .catch(() => {
+      .catch((e) => {
         setLoading(false);
-        setTimeout((e) => {
+        setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });

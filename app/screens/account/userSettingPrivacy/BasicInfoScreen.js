@@ -77,7 +77,7 @@ export default function BasicInfoScreen({navigation, route}) {
 
   const [phoneNumbers, setPhoneNumbers] = useState(
     authContext.entity?.obj?.phone_numbers?.length > 0
-      ? authContext.entity?.obj?.phone_numbers
+      ? authContext.entity.obj.phone_numbers
       : [
           {
             id: 0,
@@ -153,9 +153,9 @@ export default function BasicInfoScreen({navigation, route}) {
         setCurrentLocation(location);
         setloading(false);
       })
-      .catch(() => {
+      .catch((e) => {
         setloading(false);
-        setTimeout((e) => {
+        setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
