@@ -1,6 +1,5 @@
 import React, {useState, useEffect, useContext} from 'react';
 import {
-  StyleSheet,
   View,
   Text,
   Image,
@@ -12,10 +11,7 @@ import {
   FlatList,
 } from 'react-native';
 
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import {useIsFocused} from '@react-navigation/native';
 import RNPickerSelect from 'react-native-picker-select';
 import Modal from 'react-native-modal';
@@ -39,6 +35,7 @@ import TCGradientButton from '../../../../components/TCGradientButton';
 import TCSearchBox from '../../../../components/TCSearchBox';
 import TCFollowerList from '../../../../components/TCFollowerList';
 import Verbs from '../../../../Constants/Verbs';
+import styles from './style';
 
 export default function CreateTeamForm2({navigation, route}) {
   const [createTeamForm1] = useState(route?.params?.createTeamForm1);
@@ -757,181 +754,3 @@ export default function CreateTeamForm2({navigation, route}) {
     </>
   );
 }
-const styles = StyleSheet.create({
-  fieldView: {
-    marginTop: 15,
-  },
-
-  // eslint-disable-next-line react-native/no-unused-styles
-  inputAndroid: {
-    alignSelf: 'center',
-    backgroundColor: colors.offwhite,
-    borderRadius: 5,
-    color: 'black',
-    elevation: 3,
-    fontSize: wp('4%'),
-    height: 40,
-
-    marginTop: 12,
-    paddingHorizontal: 15,
-    paddingRight: 30,
-
-    paddingVertical: 12,
-
-    width: wp('92%'),
-  },
-  // eslint-disable-next-line react-native/no-unused-styles
-  inputIOS: {
-    alignSelf: 'center',
-    backgroundColor: colors.offwhite,
-    borderRadius: 5,
-    color: 'black',
-    elevation: 3,
-    fontSize: wp('3.5%'),
-    height: 40,
-
-    marginTop: 12,
-    paddingHorizontal: 15,
-    paddingRight: 30,
-
-    paddingVertical: 12,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
-    width: wp('92%'),
-  },
-  mainContainer: {
-    flex: 1,
-    flexDirection: 'column',
-  },
-
-  miniDownArrow: {
-    height: 12,
-    resizeMode: 'contain',
-    right: 15,
-
-    tintColor: colors.grayColor,
-
-    top: 15,
-    width: 12,
-  },
-
-  searchTextField: {
-    alignSelf: 'center',
-    color: colors.blackColor,
-    flex: 1,
-    width: wp('80%'),
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-  },
-  searchView: {
-    alignSelf: 'center',
-    backgroundColor: colors.offwhite,
-    borderRadius: 5,
-    color: 'black',
-    elevation: 3,
-    flexDirection: 'row',
-
-    height: 40,
-    marginTop: 12,
-    paddingHorizontal: 15,
-
-    paddingRight: 30,
-    paddingVertical: 12,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
-
-    width: wp('92%'),
-  },
-  languageView: {
-    alignSelf: 'center',
-    backgroundColor: colors.whiteColor,
-    borderRadius: 5,
-    color: 'black',
-    elevation: 3,
-    flexDirection: 'row',
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    marginTop: 12,
-    paddingHorizontal: 15,
-    paddingRight: 30,
-    paddingVertical: 12,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
-
-    width: wp('92%'),
-  },
-  languageText: {
-    backgroundColor: colors.whiteColor,
-    color: colors.lightBlackColor,
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-  },
-  languagePlaceholderText: {
-    backgroundColor: colors.whiteColor,
-    color: colors.userPostTimeColor,
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-  },
-  LocationText: {
-    marginTop: hp('3%'),
-    color: colors.lightBlackColor,
-    fontSize: 20,
-    textAlign: 'left',
-    fontFamily: fonts.RRegular,
-    paddingLeft: 15,
-  },
-  closeButton: {
-    alignSelf: 'center',
-    width: 13,
-    height: 13,
-    resizeMode: 'contain',
-  },
-
-  separatorLine: {
-    alignSelf: 'center',
-    backgroundColor: colors.grayColor,
-    height: 0.5,
-    marginTop: 14,
-    width: wp('92%'),
-  },
-
-  languageList: {
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RRegular,
-    fontSize: wp('4%'),
-  },
-
-  checkboxImg: {
-    width: 22,
-    height: 22,
-    resizeMode: 'contain',
-    alignSelf: 'center',
-  },
-
-  descriptionTxt: {
-    height: 120,
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    width: wp('92%'),
-    alignSelf: 'center',
-    marginTop: 12,
-    marginBottom: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 15,
-    color: colors.lightBlackColor,
-    paddingRight: 30,
-    backgroundColor: colors.offwhite,
-    borderRadius: 5,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
-    elevation: 3,
-  },
-});

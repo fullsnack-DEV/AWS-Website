@@ -37,11 +37,17 @@ import {
 import AuthContext from '../../auth/context';
 import UserListShimmer from '../../components/shimmer/commonComponents/UserListShimmer';
 import TCGroupNameBadge from '../../components/TCGroupNameBadge';
-import { strings } from '../../../Localization/translation';
+import {strings} from '../../../Localization/translation';
 
 const MessageEditInviteeScreen = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
-  const TAB_ITEMS = [strings.allType, strings.peopleTitleText, strings.teamsTitleText, strings.clubsTitleText, strings.leaguesTitleText];
+  const TAB_ITEMS = [
+    strings.allType,
+    strings.peopleTitleText,
+    strings.teamsTitleText,
+    strings.clubsTitleText,
+    strings.leaguesTitleText,
+  ];
   const [currentTab, setCurrentTab] = useState(0);
   const [loading, setLoading] = useState(true);
   const [selectedInvitees, setSelectedInvitees] = useState([]);
@@ -550,7 +556,10 @@ const MessageEditInviteeScreen = ({navigation, route}) => {
         style={{
           backgroundColor: colors.grayBackgroundColor,
           width: '100%',
-          padding: 15,
+          height: 55,
+          // padding: 15,
+          alignItems: 'center',
+          justifyContent: 'center',
         }}>
         <TextInput
           autoFocus={true}
@@ -558,6 +567,7 @@ const MessageEditInviteeScreen = ({navigation, route}) => {
           onChangeText={setSearchText}
           style={styles.textInputStyle}
           placeholder={strings.searchText}
+          clearButtonMode={'while-editing'}
         />
       </View>
       <View style={styles.sperateLine} />
@@ -577,7 +587,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RRegular,
     backgroundColor: colors.whiteColor,
-    padding: 10,
     paddingHorizontal: 15,
     borderRadius: 20,
     shadowColor: colors.googleColor,
@@ -585,6 +594,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.16,
     shadowRadius: 1,
     elevation: 1,
+    height: 40,
+    width: '90%',
   },
   backImageStyle: {
     height: 20,

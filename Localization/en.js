@@ -2119,4 +2119,7 @@ export default {
 
   reply: 'en_Reply',
   phoneNumber: 'en_Phone Number',
+  leaveChatRoom: 'en_LEAVE CHATROOM',
+  deleteChatRoom: 'en_DELETE CHATROOM',
+  chatRoomNameText: 'en_CHATROOM NAME',
 };

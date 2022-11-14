@@ -45,10 +45,9 @@ const TaggedModal = ({
     return <View />;
   };
 
-  const handleCloseModal = useCallback(
-    () => taggedModalRef.current.close(),
-    [taggedModalRef],
-  );
+  const handleCloseModal = useCallback(() => {
+    taggedModalRef.current.close();
+  }, [taggedModalRef]);
 
   const renderMatchTaggedItems = useCallback(
     ({item}) => (
@@ -56,13 +55,12 @@ const TaggedModal = ({
         data={item?.entity_data}
         cardWidth={'92%'}
         onPress={() => {
-          handleCloseModal();
           const routeName = getGameHomeScreen(item?.entity_data?.sport);
           if (routeName) navigation.push(routeName, {gameId: item?.entity_id});
         }}
       />
     ),
-    [handleCloseModal, navigation],
+    [navigation],
   );
 
   const renderEntityTaggedItems = useCallback(
@@ -83,7 +81,6 @@ const TaggedModal = ({
           titleStyle={{color: colors.lightBlackColor}}
           cityStyle={{color: colors.lightBlackColor}}
           onProfilePress={() => {
-            handleCloseModal();
             navigation.push('HomeScreen', {
               uid: item?.entity_id,
               role: [Verbs.entityTypePlayer, Verbs.entityTypeUser]?.includes(
