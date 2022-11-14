@@ -200,14 +200,20 @@ const RefereeSelectMatch = ({navigation, route}) => {
                         (referee) => referee.referee_id === userData.user_id,
                       )
                     ) {
-                      Alert.alert(strings.canNotChoosegameReferee);
+                      Alert.alert(
+                        strings.townsCupTitle,
+                        strings.canNotChoosegameReferee,
+                      );
                     } else if (
                       game?.scorekeepers?.length > 0 &&
                       game.scorekeepers.some(
                         (scorer) => scorer.scorekeeper_id === userData.user_id,
                       )
                     ) {
-                      Alert.alert(strings.canNotChoosegameScorekeeper);
+                      Alert.alert(
+                        strings.townsCupTitle,
+                        strings.canNotChoosegameScorekeeper,
+                      );
                     } else {
                       navigation.navigate(route?.params?.comeFrom, {
                         gameData: game,

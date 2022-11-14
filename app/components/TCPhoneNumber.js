@@ -4,6 +4,7 @@ import {StyleSheet, Platform, View, TextInput} from 'react-native';
 import FastImage from 'react-native-fast-image';
 
 import RNPickerSelect from 'react-native-picker-select';
+import {strings} from '../../Localization/translation';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import images from '../Constants/ImagePath';
@@ -55,7 +56,7 @@ const TCPhoneNumber = ({
       />
       <View style={styles.halfMatchFeeView}>
         <TextInput
-          placeholder={'Phone number'}
+          placeholder={strings.phoneNumber}
           style={styles.halffeeText}
           keyboardType={'number-pad'}
           onChangeText={onChangeText}

@@ -294,7 +294,8 @@ const getTabBarVisibility = (route) => {
     routeName === 'GroupsScreen' ||
     routeName === 'TrashScreen' ||
     routeName === 'LanguageSettingScreen' ||
-    routeName === 'MessageChat'
+    routeName === 'MessageChat' ||
+    routeName === 'InviteMembersByEmailScreen'
   ) {
     return false;
   }

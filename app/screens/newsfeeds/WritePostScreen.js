@@ -25,7 +25,6 @@ import {
   Platform,
   FlatList,
   Alert,
-  ScrollView,
   Dimensions,
 } from 'react-native';
 import {
@@ -104,7 +103,7 @@ export default function WritePostScreen({navigation, route}) {
   if (postData && postData.group_name) {
     userName = postData.group_name;
   }
-  
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -778,8 +777,7 @@ export default function WritePostScreen({navigation, route}) {
       <ActivityLoader visible={loading} />
       {renderCurrentUseProfile}
 
-      <ScrollView
-        bounces={false}
+      <View
         style={{flex: 1, overflow: 'visible'}}
         // onTouchEnd={() => !isKeyboardOpen && textInputFocus.current.focus()}
       >
@@ -808,7 +806,7 @@ export default function WritePostScreen({navigation, route}) {
         {renderSelectedImageList}
         {renderGameTags}
         {renderModalTagEntity}
-      </ScrollView>
+      </View>
       <SafeAreaView style={styles.bottomSafeAreaStyle}>
         <View style={styles.bottomImgView}>
           <View style={styles.onlyMeViewStyle}>
@@ -979,6 +977,7 @@ const styles = StyleSheet.create({
 
   bottomSafeAreaStyle: {
     backgroundColor: colors.whiteColor,
+
     shadowOpacity: 0.2,
     shadowOffset: {
       height: -3,

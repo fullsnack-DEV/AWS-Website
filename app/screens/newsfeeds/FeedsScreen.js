@@ -101,7 +101,7 @@ const FeedsScreen = ({navigation}) => {
         setFirstTimeLoading(false);
         setTimeout(() => Alert.alert('', e.message), 100);
       });
-  }, [authContext, authContext.entity]);
+  }, [authContext, authContext.entity, isFocused]);
   useEffect(() => {
     getSportsList(authContext).then((res) => {
       console.log('resresresres', res);

@@ -619,7 +619,7 @@ export default function BasicInfoScreen({navigation, route}) {
             backgroundColor: colors.textFieldBackground,
           }}>
           <TextInput
-            placeholder={'Phone number'}
+            placeholder={strings.phoneNumber}
             maxLength={10}
             style={{
               ...styles.halffeeText,

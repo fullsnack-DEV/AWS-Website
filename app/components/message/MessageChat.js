@@ -23,6 +23,7 @@ import {
   FlatList,
   Alert,
   TextInput,
+  Pressable,
 } from 'react-native';
 
 import FastImage from 'react-native-fast-image';
@@ -126,6 +127,7 @@ const MessageChat = ({route, navigation}) => {
         dialogType: data?.type,
         isJoined: data?.isJoined,
       };
+
       setChatType(
         dialogDatas?.occupantsIds.length > 2
           ? QB_DIALOG_TYPE.GROUP
@@ -193,48 +195,47 @@ const MessageChat = ({route, navigation}) => {
   }, [route?.params?.userId]);
 
   useEffect(() => {
-    if (isFocused) {
-      if (dialogData) {
-        if (!route?.params?.dialog) {
-          setDialogMenu({...dialogData, ...route?.params?.dialog});
-        }
-        const getUser = async () => {
-          setMyUserId(authContext.entity.QB.id);
-          setLoading(true);
-          await getMessages();
-          setTimeout(() => onInputBoxFocus(), 200);
-          setLoading(false);
-        };
-        getUser()
-          .then(() => {
-            QBgetUserDetail(
-              QB.users.USERS_FILTER.FIELD.ID,
-              QB.users.USERS_FILTER.TYPE.STRING,
-              [dialogData?.occupantsIds].join(),
-            )
-              .then((res) => {
-                getPlaceholderText([...res?.users]);
-                setOccupantsData([...res?.users]);
-
-                setLoading(false);
-              })
-              .catch((e) => {
-                setLoading(false);
-                console.log(e);
-              });
-          })
-          .catch(() => setLoading(false));
-
-        if (chatType === QB_DIALOG_TYPE.GROUP && !dialogData?.isJoined) {
-          QB.chat.joinDialog({dialogId: dialogData?.dialogId});
-        }
-        QbMessageEmitter.addListener(
-          QB.chat.EVENT_TYPE.RECEIVED_NEW_MESSAGE,
-          newMessageHandler,
-        );
+    if (dialogData) {
+      if (!route?.params?.dialog) {
+        setDialogMenu({...dialogData, ...route?.params?.dialog});
       }
+      const getUser = async () => {
+        setMyUserId(authContext.entity.QB.id);
+        setLoading(true);
+        await getMessages();
+        setTimeout(() => onInputBoxFocus(), 200);
+        setLoading(false);
+      };
+      getUser()
+        .then(() => {
+          QBgetUserDetail(
+            QB.users.USERS_FILTER.FIELD.ID,
+            QB.users.USERS_FILTER.TYPE.STRING,
+            [dialogData?.occupantsIds].join(),
+          )
+            .then((res) => {
+              getPlaceholderText([...res?.users]);
+              setOccupantsData([...res?.users]);
+
+              setLoading(false);
+            })
+            .catch((e) => {
+              setLoading(false);
+              console.log(e);
+            });
+        })
+        .catch(() => setLoading(false));
+
+      if (chatType === QB_DIALOG_TYPE.GROUP && !dialogData?.isJoined) {
+        QB.chat.joinDialog({dialogId: dialogData?.dialogId});
+      }
+
+      QbMessageEmitter.addListener(
+        QB.chat.EVENT_TYPE.RECEIVED_NEW_MESSAGE,
+        newMessageHandler,
+      );
     }
-  }, [dialogData, isFocused]);
+  }, [dialogData]);
 
   const uploadProgressChangeHandler = (event) => {
     // const {type, payload} = event;
@@ -371,6 +372,19 @@ const MessageChat = ({route, navigation}) => {
 
       let finalImage = images.profilePlaceHolder;
       if (isReceiver) {
+        const markMessageReadParams = {
+          message: {
+            id: item?.id,
+            dialogId: item?.dialogId,
+            senderId: item?.senderId,
+          },
+        };
+        QB.chat
+          .markMessageRead(markMessageReadParams)
+          .then(() => {})
+          .catch((e) => {
+            console.log(e);
+          });
         const entityType = customData?.entity_type ?? '';
         let fullImage = null;
         if (customData?.full_image) {
@@ -423,7 +437,26 @@ const MessageChat = ({route, navigation}) => {
                   alignSelf: type === 'sender' ? 'flex-end' : 'flex-start',
                 }}>
                 {isReceiver && (
-                  <View
+                  <Pressable
+                    onPress={() => {
+                      console.log('customDatacustomData', customData);
+                      navigation.navigate('HomeScreen', {
+                        uid: [
+                          Verbs.entityTypeUser,
+                          Verbs.entityTypePlayer,
+                        ]?.includes(customData?.entity_type)
+                          ? customData?.user_id
+                          : customData?.group_id,
+                        role: [
+                          Verbs.entityTypeUser,
+                          Verbs.entityTypePlayer,
+                        ]?.includes(customData?.entity_type)
+                          ? Verbs.entityTypeUser
+                          : customData.entity_type,
+                        backButtonVisible: true,
+                        menuBtnVisible: false,
+                      });
+                    }}
                     style={{
                       flexDirection: 'row',
                       alignItems: 'center',
@@ -447,7 +480,7 @@ const MessageChat = ({route, navigation}) => {
                         ? strings.unknownTitle
                         : fullName}
                     </Text>
-                  </View>
+                  </Pressable>
                 )}
 
                 <TCMessage

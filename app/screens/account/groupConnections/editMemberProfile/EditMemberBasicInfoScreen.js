@@ -576,13 +576,13 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
         <TCTextField
           value={memberInfo.postal_code}
           onChangeText={(text) => {
-            const regex = /^[0-9a-zA-Z]+$/;
-            if (text.match(regex) || text === '') {
+            if (text === '') {
               setMemberInfo({...memberInfo, postal_code: text});
             }
           }}
           placeholder={strings.postalCodeText}
-          keyboardType={'default'}
+          keyboardType={'name-phone-pad'}
+          maxLength={8}
         />
       </View>
       <View style={{marginBottom: 20}} />
