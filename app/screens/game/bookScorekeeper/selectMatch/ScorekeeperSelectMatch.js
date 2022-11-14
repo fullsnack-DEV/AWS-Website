@@ -8,10 +8,10 @@ import TCSearchBox from '../../../../components/TCSearchBox';
 import AuthContext from '../../../../auth/context';
 import TCInnerLoader from '../../../../components/TCInnerLoader';
 import {getSearchData} from '../../../../utils';
-import GameCard from '../../../../components/TCGameCard';
 import * as Utility from '../../../../utils';
 import {getCalendarIndex, getGameIndex} from '../../../../api/elasticSearch';
 import {strings} from '../../../../../Localization/translation';
+import TCGameCard from '../../../../components/TCGameCard';
 
 const TYPING_SPEED = 200;
 let bodyParams = {};
@@ -42,8 +42,9 @@ const ScorekeeperSelectMatch = ({navigation, route}) => {
     setLoading(true);
     const headers = {};
     headers.caller_id = authContext?.entity?.uid;
-    getGamesForScorekeeper(authContext?.entity?.uid, userData?.user_id).then(
+    getGamesForScorekeeper(userData?.user_id, authContext?.entity?.uid).then(
       (res) => {
+        console.log('ereasraseraseraser', res);
         setLoading(false);
         setMatchData([...res]);
       },
@@ -190,8 +191,9 @@ const ScorekeeperSelectMatch = ({navigation, route}) => {
             data={searchText === '' ? matchData : searchData}
             renderItem={({item}) => (
               <View style={{marginVertical: 5}}>
-                <GameCard
+                <TCGameCard
                   data={item}
+                  cardWidth={'92%'}
                   onPress={() => {
                     const game = item;
 
@@ -201,14 +203,20 @@ const ScorekeeperSelectMatch = ({navigation, route}) => {
                         (referee) => referee.referee_id === userData.user_id,
                       )
                     ) {
-                      Alert.alert(strings.canNotChoosegameReferee);
+                      Alert.alert(
+                        strings.townsCupTitle,
+                        strings.canNotChoosegameReferee,
+                      );
                     } else if (
                       game?.scorekeepers?.length > 0 &&
                       game.scorekeepers.some(
                         (scorer) => scorer.scorekeeper_id === userData.user_id,
                       )
                     ) {
-                      Alert.alert(strings.canNotChoosegameScorekeeper);
+                      Alert.alert(
+                        strings.townsCupTitle,
+                        strings.canNotChoosegameScorekeeper,
+                      );
                     } else {
                       navigation.navigate(route?.params?.comeFrom, {
                         gameData: game,

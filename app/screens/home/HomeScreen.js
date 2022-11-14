@@ -282,7 +282,7 @@ const HomeScreen = ({navigation, route}) => {
   const manageChallengeActionSheet = useRef();
   const offerActionSheet = useRef();
   const options =
-    authContext.entity.role === 'user'
+    authContext.entity.role === Verbs.entityTypeUser
       ? [
           strings.manageChallengeShhetItem,
           strings.sportActivity,
@@ -617,42 +617,42 @@ const HomeScreen = ({navigation, route}) => {
                 justifyContent: 'flex-start',
                 alignItems: 'flex-start',
               }}>
-              {/* <MarqueeText
-                style={styles.userNavigationTextStyle}
-                duration={3000}
-                marqueeOnStart
-                loop={true}>
-                {currentUserData?.full_name || currentUserData?.group_name}
-              </MarqueeText> */}
               <Text numberOfLines={1} style={styles.userNavigationTextStyle}>
                 {currentUserData?.full_name || currentUserData?.group_name}
               </Text>
             </View>
-            {/* <MarqueeText
-              style={styles.userNavigationTextStyle}
-              duration={3000}
-              marqueeOnStart
-              loop={true}>
-              {currentUserData?.full_name || currentUserData?.group_name}
-            </MarqueeText>
-
-            <Image
-              source={
-                (currentUserData.entity_type === Verbs.entityTypeTeam && images.teamPatch) ||
-                (currentUserData.entity_type === Verbs.entityTypeClub && images.clubPatch)
-              }
-              style={{
-                height: 15,
-                width: 15,
-                resizeMode: 'cover',
-                backgroundColor: colors.yellowColor,
-              }}
-            /> */}
           </View>
         }
         centerComponent={<View></View>}
         rightComponent={
           <View>
+            {!isAdmin &&
+              authContext.entity.uid !== currentUserData.group_id &&
+              authContext.entity.uid !== currentUserData?.createdBy?.uid && (
+                <TouchableOpacity
+                  onPress={() => {
+                    if (
+                      currentUserData.entity_type === Verbs.entityTypePlayer ||
+                      currentUserData.entity_type === Verbs.entityTypeUser
+                    ) {
+                      onUserAction('message');
+                    } else if (
+                      currentUserData.entity_type === Verbs.entityTypeClub
+                    ) {
+                      onClubAction('message');
+                    } else if (
+                      currentUserData.entity_type === Verbs.entityTypeTeam
+                    ) {
+                      onTeamAction('message');
+                    }
+                  }}
+                  style={styles.statusInnerViewStyle}>
+                  <Image
+                    style={styles.messageImage}
+                    source={images.tab_message}
+                  />
+                </TouchableOpacity>
+              )}
             {isAdmin && (isUserHome || isTeamHome) && (
               <View
                 style={{opacity: isAccountDeactivated ? 0.5 : 1}}
@@ -2865,8 +2865,6 @@ const HomeScreen = ({navigation, route}) => {
     () => (
       <BackgroundProfile
         currentUserData={currentUserData}
-        onAction={onUserAction}
-        loggedInEntity={authContext.entity}
         onConnectionButtonPress={onConnectionButtonPress}
       />
     ),
@@ -4162,7 +4160,9 @@ const HomeScreen = ({navigation, route}) => {
           //   strings.cancel,
           // ]}
           options={options}
-          cancelButtonIndex={authContext.entity.role === 'user' ? 2 : 1}
+          cancelButtonIndex={
+            authContext.entity.role === Verbs.entityTypeUser ? 2 : 1
+          }
           onPress={(index) => {
             if (index === 0) {
               // Add Playing
@@ -4189,7 +4189,7 @@ const HomeScreen = ({navigation, route}) => {
               }
             } else if (index === 1) {
               // navigation.navigate('SportActivityScreen');
-              if (authContext.entity.role === 'user') {
+              if (authContext.entity.role === Verbs.entityTypeUser) {
                 navigation.navigate('SportActivitiesScreen');
               }
             }
@@ -6389,6 +6389,12 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     marginTop: 15,
     left: -15,
+  },
+  messageImage: {
+    height: 30,
+    width: 30,
+    resizeMode: 'contain',
+    marginRight: 10,
   },
 });
 

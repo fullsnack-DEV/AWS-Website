@@ -28,7 +28,6 @@ const UserHomeHeader = ({
   const actionSheet = useRef();
 
   const authContext = useContext(AuthContext);
-  console.log('Home currentUserData', currentUserData);
   const [entityData, setEntityData] = useState(null);
   useEffect(() => {
     if (currentUserData) {
@@ -101,7 +100,6 @@ const UserHomeHeader = ({
                       showArrow={false}
                     />
                   )}
-
                   {!isAdmin &&
                     authContext?.entity?.role === 'user' &&
                     currentUserData &&
@@ -227,20 +225,6 @@ const UserHomeHeader = ({
                 </TouchableOpacity>
 
                 <View style={styles.followingSepratorView} />
-                {!isAdmin && (
-                  <TouchableOpacity
-                    onPress={() => onAction('message')}
-                    style={styles.statusInnerViewStyle}>
-                    <Image
-                      style={styles.messageImage}
-                      source={images.messageIcon}
-                    />
-
-                    <Text style={styles.followingTextStyle}>
-                      {strings.message}
-                    </Text>
-                  </TouchableOpacity>
-                )}
               </View>
             )}
           </View>
@@ -347,12 +331,6 @@ const styles = StyleSheet.create({
   buttonTextStyle: {
     fontFamily: fonts.RBold,
     fontSize: 14,
-  },
-  messageImage: {
-    height: 13,
-    width: 13,
-    resizeMode: 'contain',
-    marginRight: 10,
   },
 });
 

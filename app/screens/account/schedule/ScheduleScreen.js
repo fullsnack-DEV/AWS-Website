@@ -1568,17 +1568,12 @@ const styles = StyleSheet.create({
     width: 25,
     tintColor: colors.lightBlackColor,
   },
-  // headerRight3DotImg: {
-  //   height: 18,
-  //   resizeMode: 'contain',
-  //   width: 20,
-  //   tintColor: colors.lightBlackColor,
-  // },
+
   eventTitleTextStyle: {
     fontSize: 20,
     fontFamily: fonts.RBold,
     color: colors.lightBlackColor,
-    width: 100,
+    width: 125,
   },
 
   separateLine: {

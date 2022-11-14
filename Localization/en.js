@@ -2113,9 +2113,10 @@ export default {
   typeMessage: 'en_Type a message',
   canNotBookReferee: 'en_This is already booked.',
   canNotChoosegameReferee:
-    'en_You can not choose this game because this referee is already book for this game.',
+    'en_You can not choose this game because this user is already booked as a referee.',
   canNotChoosegameScorekeeper:
-    'en_You can not choose this game because this scorekeeper is already book for this game.',
+    'en_You can not choose this game because this user is already booked as a scorekeeper.',
 
   reply: 'en_Reply',
+  phoneNumber: 'en_Phone Number',
 };

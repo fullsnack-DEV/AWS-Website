@@ -138,10 +138,20 @@ export default function CreateTeamForm1({navigation, route}) {
     let sportArr = [];
 
     authContext.sports.map((item) => {
-      console.log('itttem', item);
-      const filterFormat = item.format.filter(
-        (obj) => obj.entity_type === Verbs.entityTypeTeam,
-      );
+      let filterFormat = [];
+      if (authContext.entity.role === Verbs.entityTypeClub) {
+        filterFormat = item.format.filter(
+          (obj) =>
+            obj.entity_type === Verbs.entityTypeTeam &&
+            obj.sport_type !== Verbs.singleSport &&
+            obj.sport_type !== Verbs.doubleSport,
+        );
+      } else {
+        filterFormat = item.format.filter(
+          (obj) => obj.entity_type === Verbs.entityTypeTeam,
+        );
+      }
+
       sportArr = [...sportArr, ...filterFormat];
       return null;
     });
