@@ -15,6 +15,8 @@ import colors from '../../Constants/Colors';
 import {strings} from '../../../Localization/translation';
 
 export default function NewsFeedVideoPlayer({navigation, route}) {
+  console.log('Location screen ==> NewsFeedVideoPlayer Screen')
+
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
