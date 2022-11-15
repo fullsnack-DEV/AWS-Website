@@ -51,10 +51,7 @@ import TCThinDivider from '../../../components/TCThinDivider';
 import TCImage from '../../../components/TCImage';
 import uploadImages from '../../../utils/imageAction';
 import {getQBAccountType, QBupdateUser} from '../../../utils/QuickBlox';
-import {
-  searchLocationPlaceDetail,
-  searchLocations,
-} from '../../../api/External';
+import {searchLocations} from '../../../api/External';
 
 export default function PersonalInformationScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
@@ -170,11 +167,7 @@ export default function PersonalInformationScreen({navigation, route}) {
     setloading(true)
     getGeocoordinatesWithPlaceName(Platform.OS)
       .then((location) => {
-        const userData = {};
-        userData.state = location.stateAbbr;
-        userData.city = location.city;
-        userData.country = location.country;
-        setCurrentLocation(userData);
+        setCurrentLocation(location);
         setloading(false);
       })
       .catch((error) => {
@@ -202,15 +195,24 @@ export default function PersonalInformationScreen({navigation, route}) {
   );
 
   const onSelectLocation = async (item) => {
-    searchLocationPlaceDetail(item.place_id, authContext).then((response) => {
-      if (response) {
-        setCity(item?.terms?.[0]?.value ?? '');
-        setState(item?.terms?.[1]?.value ?? '');
-        setCountry(item?.terms?.[2]?.value ?? '');
-      }
-    });
+    if (item.terms.length === 1) {
+      setCity(undefined);
+      setState(undefined);
+      setCountry(item.terms[0].value);
+    }
+    else if (item.terms.length === 2) {
+      setCity(item.terms[0].value );
+      setState(undefined);
+      setCountry(item.terms[1].value);
+    }
+    else if (item.terms.length > 2) {
+      setCity(item.terms[item.terms.length-3].value );
+      setState(item.terms[item.terms.length-2].value);
+      setCountry(item.terms[item.terms.length-1].value);
+    }
     setLocationPopup(false);
   };
+
   const onSelectCurrentLocation = async () => {
     setCity(currentLocation.city);
     setState(currentLocation.state);

@@ -67,8 +67,6 @@ const makeAPIRequest = async ({
       const {exp} = await jwtDecode(authToken);
       const expiryDate = new Date(exp * 1000);
       const currentDate = new Date();
-      // const expiryDate = new Date('08 Jan 2021 09:13');
-      console.log('TOKEN EXPIRATION TIME :', expiryDate);
       if (expiryDate.getTime() > currentDate.getTime()) {
         return globalApiCall({
           method,

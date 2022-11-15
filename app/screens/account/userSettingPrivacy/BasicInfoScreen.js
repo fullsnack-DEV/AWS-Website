@@ -40,10 +40,7 @@ import TCKeyboardView from '../../../components/TCKeyboardView';
 import TCTextField from '../../../components/TCTextField';
 import uploadImages from '../../../utils/imageAction';
 import {getQBAccountType, QBupdateUser} from '../../../utils/QuickBlox';
-import {
-  searchLocationPlaceDetail,
-  searchLocations,
-} from '../../../api/External';
+import {searchLocations} from '../../../api/External';
 import TCThinDivider from '../../../components/TCThinDivider';
 import TCCountryCodeModal from '../../../components/TCCountryCodeModal';
 
@@ -56,27 +53,27 @@ export default function BasicInfoScreen({navigation, route}) {
   const [userInfo, setUserInfo] = useState(authContext.entity.obj);
   const [profileImageChanged, setProfileImageChanged] = useState(false);
   const [streetAddress, setStreetAddress] = useState(
-    authContext?.entity?.obj?.street_address,
+    authContext.entity.obj?.street_address,
   );
   const [city, setCity] = useState(
-    route?.params?.city ? route?.params?.city : authContext?.entity?.obj?.city,
+    route?.params?.city ? route?.params?.city : authContext.entity.obj?.city,
   );
   const [state, setState] = useState(
     route?.params?.state
       ? route?.params?.state
-      : authContext?.entity?.obj?.state_abbr,
+      : authContext.entity.obj?.state_abbr,
   );
   const [country, setCountry] = useState(
     route?.params?.country
       ? route?.params?.country
-      : authContext?.entity?.obj?.country,
+      : authContext.entity.obj?.country,
   );
   const [postalCode, setPostalCode] = useState(
-    authContext?.entity?.obj?.postal_code,
+    authContext.entity.obj?.postal_code,
   );
 
   const [phoneNumbers, setPhoneNumbers] = useState(
-    authContext.entity?.obj?.phone_numbers?.length > 0
+    authContext.entity.obj?.phone_numbers?.length > 0
       ? authContext.entity.obj.phone_numbers
       : [
           {
@@ -137,7 +134,6 @@ export default function BasicInfoScreen({navigation, route}) {
   const getLocationData = async (searchLocationText) => {
     if (searchLocationText.length >= 3) {
       searchLocations(searchLocationText).then((response) => {
-        console.log('search response =>', response);
         setNoData(false);
         setCityData(response.predictions);
       });
@@ -146,6 +142,7 @@ export default function BasicInfoScreen({navigation, route}) {
       setCityData([]);
     }
   };
+
   useEffect(() => {
     setloading(true);
     getGeocoordinatesWithPlaceName(Platform.OS)
@@ -161,34 +158,40 @@ export default function BasicInfoScreen({navigation, route}) {
       });
   }, []);
 
-  const renderItem = ({item, index}) => {
-    console.log('Location item:=>', item);
-    return (
-      <TouchableWithoutFeedback
-        style={styles.listItem}
-        onPress={() => getTeamsData(item)}>
-        <View>
-          <Text style={styles.cityList}>{cityData[index].description}</Text>
-          <TCThinDivider
-            width={'100%'}
-            backgroundColor={colors.grayBackgroundColor}
-          />
-        </View>
-      </TouchableWithoutFeedback>
-    );
-  };
+  const renderItem = ({item, index}) => (
+    <TouchableWithoutFeedback
+      style={styles.listItem}
+      onPress={() => onSelectLocation(item)}>
+      <View>
+        <Text style={styles.cityList}>{cityData[index].description}</Text>
+        <TCThinDivider
+          width={'100%'}
+          backgroundColor={colors.grayBackgroundColor}
+        />
+      </View>
+    </TouchableWithoutFeedback>
+  );
 
-  const getTeamsData = async (item) => {
-    searchLocationPlaceDetail(item.place_id, authContext).then((response) => {
-      if (response) {
-        setCity(item?.terms?.[0]?.value ?? '');
-        setState(item?.terms?.[1]?.value ?? '');
-        setCountry(item?.terms?.[2]?.value ?? '');
-      }
-    });
+  const onSelectLocation = async (item) => {
+    if (item.terms.length === 1) {
+      setCity(undefined);
+      setState(undefined);
+      setCountry(item.terms[0].value);
+    }
+    else if (item.terms.length === 2) {
+      setCity(item.terms[0].value );
+      setState(undefined);
+      setCountry(item.terms[1].value);
+    }
+    else if (item.terms.length > 2) {
+      setCity(item.terms[item.terms.length-3].value );
+      setState(item.terms[item.terms.length-2].value);
+      setCountry(item?.terms[item.terms.length-1].value);
+    }
     setLocationPopup(false);
   };
-  const getTeamsDataByCurrentLocation = async () => {
+
+  const onSelectCurrentLocation = async () => {
     setCity(currentLocation.city);
     setState(currentLocation.state);
     setCountry(currentLocation.country);
@@ -236,11 +239,11 @@ export default function BasicInfoScreen({navigation, route}) {
       }
     }
 
-    if (userInfo.phone_numbers[0]?.phone_number.length < 10) {
+    if (userInfo.phone_numbers && userInfo.phone_numbers[0]?.phone_number.length < 10) {
       Alert.alert(strings.appName, strings.phoneNumberValidation);
       return false;
     }
-    if (!userInfo.phone_numbers[0]?.country_code.length) {
+    if (userInfo.phone_numbers && !userInfo.phone_numbers[0]?.country_code.length) {
       Alert.alert(strings.appName, strings.phoneCodeValidation);
       return false;
     }
@@ -273,7 +276,6 @@ export default function BasicInfoScreen({navigation, route}) {
         bodyParams.phone_numbers = userInfo.phone_numbers;
         bodyParams.country_code = userInfo.country_code;
       }
-
       if (profileImageChanged) {
         const imageArray = [];
         imageArray.push({path: userInfo.thumbnail});
@@ -313,7 +315,6 @@ export default function BasicInfoScreen({navigation, route}) {
 
   const updateUser = (params) => {
     setloading(true);
-    console.log('bodyPARAMS:: ', params);
     updateUserProfile(params, authContext)
       .then((response) => {
         const accountType = getQBAccountType(response?.payload?.entity_type);
@@ -331,7 +332,6 @@ export default function BasicInfoScreen({navigation, route}) {
           })
           .catch((error) => {
             console.log('QB error : ', error);
-
             setloading(false);
             navigation.goBack();
           });
@@ -683,7 +683,7 @@ export default function BasicInfoScreen({navigation, route}) {
               {marginBottom: 5},
               {backgroundColor: colors.textFieldBackground},
             ]}
-            value={`${city}, ${state}, ${country}`}
+            value={[city, state, country].filter(v => v).join(', ')}
             editable={false}
             pointerEvents="none"></TextInput>
         </TouchableOpacity>
@@ -749,11 +749,10 @@ export default function BasicInfoScreen({navigation, route}) {
               <View style={{flex: 1}}>
                 <TouchableWithoutFeedback
                   style={styles.listItem}
-                  onPress={() => getTeamsDataByCurrentLocation()}>
+                  onPress={() => onSelectCurrentLocation()}>
                   <View>
                     <Text style={[styles.cityList, {marginBottom: 3}]}>
-                      {currentLocation?.city}, {currentLocation?.state},{' '}
-                      {currentLocation?.country}
+                      {[currentLocation?.city, currentLocation?.state, currentLocation?.country].filter(v => v).join(', ')}
                     </Text>
                     <Text style={styles.curruentLocationText}>
                       {strings.currentLocationText}

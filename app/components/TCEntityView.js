@@ -14,7 +14,6 @@ function TCEntityView({
   data,
   placeholder = false,
 }) {
-  console.log('sport icon:=>', sportIcon);
   return (
     <TouchableOpacity onPress={onPress}>
       <View style={styles.viewContainer}>

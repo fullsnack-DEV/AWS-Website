@@ -40,7 +40,6 @@ export default function SearchLocationScreen({navigation, route}) {
     if (searchLocationText.length >= 3) {
       searchCityState(searchLocationText).then((response) => {
         setNoData(false);
-        console.log('response.predictions', response.predictions);
         setCityData(response.predictions);
       });
     } else {
@@ -49,8 +48,9 @@ export default function SearchLocationScreen({navigation, route}) {
     }
   };
 
-  const getTeamsData = async (item) => {
+  const onSelectLocation = async (item) => {
     searchLocationPlaceDetail(item.place_id, authContext).then((response) => {
+      console.log('route.params.comeFrom', route.params.comeFrom)
       if (response) {
         if (route.params.comeFrom === 'CreateEventScreen') {
           navigation.navigate('CreateEventScreen', {
@@ -124,7 +124,7 @@ export default function SearchLocationScreen({navigation, route}) {
   const renderItem = ({item, index}) => (
     <TouchableWithoutFeedback
       style={styles.listItem}
-      onPress={() => getTeamsData(item)}>
+      onPress={() => onSelectLocation(item)}>
       <Text style={styles.cityList}>{cityData[index].description}</Text>
       <Separator />
     </TouchableWithoutFeedback>

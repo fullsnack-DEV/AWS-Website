@@ -42,10 +42,7 @@ import {
   deleteConfirmation,
 } from '../../utils';
 
-import {
-  searchLocationPlaceDetail,
-  searchLocations
-} from '../../api/External';
+import {searchLocations} from '../../api/External';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import {strings} from '../../../Localization/translation';
 import AuthContext from '../../auth/context';
@@ -151,11 +148,7 @@ export default function EditGroupProfileScreen({navigation, route}) {
     setloading(true)
     getGeocoordinatesWithPlaceName(Platform.OS)
       .then((location) => {
-        const userData = {};
-        userData.state = location.stateAbbr;
-        userData.city = location.city;
-        userData.country = location.country;
-        setCurrentLocation(userData);
+        setCurrentLocation(location);
         setloading(false);
       })
       .catch((error) => {
@@ -252,17 +245,33 @@ export default function EditGroupProfileScreen({navigation, route}) {
   );
 
   const onSelectLocation = async (item) => {
-    searchLocationPlaceDetail(item.place_id, authContext).then((response) => {
-      if (response) {
-        setGroupProfile({
-          ...groupProfile,
-          location: [item?.terms?.[0]?.value, item?.terms?.[1]?.value, item?.terms?.[2]?.value].filter(v => v).join(', '),
-          city: item?.terms?.[0]?.value ?? '',
-          state_abbr: item?.terms?.[1]?.value ?? '',
-          country: item?.terms?.[2]?.value ?? '',
-        });
-      }
-    });
+    if (item.terms.length === 1) {
+      setGroupProfile({
+        ...groupProfile,
+        location: [item.terms[0].value].filter(v => v).join(', '),
+        city: undefined,
+        state_abbr: undefined,
+        country: item.terms[0].value,
+      });
+    }
+    else if (item.terms.length === 2) {
+      setGroupProfile({
+        ...groupProfile,
+        location: [item.terms[0].value, item.terms[1].value].filter(v => v).join(', '),
+        city: item.terms[0].value,
+        state_abbr: undefined,
+        country: item.terms[1].value,
+      });
+    }
+    else if (item.terms.length > 2) {
+      setGroupProfile({
+        ...groupProfile,
+        location: [item.terms[item.terms.length-3].value , item.terms[item.terms.length-2].value, item.terms[item.terms.length-1].value].filter(v => v).join(', '),
+        city: item.terms[item.terms.length-3].value ,
+        state_abbr: item.terms[item.terms.length-2].value ,
+        country: item.terms[item.terms.length-1].value ,
+      });
+    }
     setLocationPopup(false);
   };
 
