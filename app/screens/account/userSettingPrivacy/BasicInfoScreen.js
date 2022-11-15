@@ -13,8 +13,6 @@ import {
   FlatList,
   Dimensions,
   Platform,
-  // eslint-disable-next-line react-native/split-platform-components
-  PermissionsAndroid,
   Pressable,
 } from 'react-native';
 
@@ -26,10 +24,8 @@ import {
 import moment from 'moment';
 import RNPickerSelect from 'react-native-picker-select';
 import Modal from 'react-native-modal';
-import Geolocation from '@react-native-community/geolocation';
-import {PERMISSIONS, RESULTS, request} from 'react-native-permissions';
+import {getGeocoordinatesWithPlaceName} from '../../../utils/location';
 import {getHitSlop, widthPercentageToDP} from '../../../utils';
-
 import {updateUserProfile} from '../../../api/Users';
 import AuthContext from '../../../auth/context';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
@@ -47,7 +43,6 @@ import {getQBAccountType, QBupdateUser} from '../../../utils/QuickBlox';
 import {
   searchLocationPlaceDetail,
   searchLocations,
-  getLocationNameWithLatLong,
 } from '../../../api/External';
 import TCThinDivider from '../../../components/TCThinDivider';
 import TCCountryCodeModal from '../../../components/TCCountryCodeModal';
@@ -81,7 +76,7 @@ export default function BasicInfoScreen({navigation, route}) {
   );
 
   const [phoneNumbers, setPhoneNumbers] = useState(
-    authContext.entity.obj.phone_numbers.length > 0
+    authContext.entity?.obj?.phone_numbers?.length > 0
       ? authContext.entity.obj.phone_numbers
       : [
           {
@@ -138,6 +133,7 @@ export default function BasicInfoScreen({navigation, route}) {
   useEffect(() => {
     getLocationData(searchText);
   }, [searchText]);
+
   const getLocationData = async (searchLocationText) => {
     if (searchLocationText.length >= 3) {
       searchLocations(searchLocationText).then((response) => {
@@ -151,89 +147,20 @@ export default function BasicInfoScreen({navigation, route}) {
     }
   };
   useEffect(() => {
-    if (Platform.OS === 'android') {
-      requestPermission();
-    } else {
-      request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE).then((result) => {
-        switch (result) {
-          case RESULTS.UNAVAILABLE:
-            console.log(strings.featuresNotAvailableText);
-            break;
-          case RESULTS.DENIED:
-            console.log(strings.permissionNotRequested);
-
-            break;
-          case RESULTS.LIMITED:
-            console.log(strings.permissionLimitedText);
-
-            break;
-          case RESULTS.GRANTED:
-            console.log(strings.permissionGrantedText);
-            setloading(true);
-            getCurrentLocation();
-            break;
-          case RESULTS.BLOCKED:
-            console.log(strings.permissionDenitedText);
-            break;
-          default:
-        }
+    setloading(true);
+    getGeocoordinatesWithPlaceName(Platform.OS)
+      .then((location) => {
+        setCurrentLocation(location);
+        setloading(false);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
       });
-    }
   }, []);
 
-  const getCurrentLocation = async () => {
-    // Geolocation.requestAuthorization();
-    Geolocation.getCurrentPosition(
-      (position) => {
-        getLocationNameWithLatLong(
-          position?.coords?.latitude,
-          position?.coords?.longitude,
-          authContext,
-        ).then((res) => {
-          const userData = {};
-          // let stateAbbr, city, country;
-
-          // eslint-disable-next-line array-callback-return
-          res.results[0].address_components.map((e) => {
-            if (e.types.includes('administrative_area_level_1')) {
-              userData.state = e.short_name;
-            } else if (e.types.includes('locality')) {
-              userData.city = e.short_name;
-            } else if (e.types.includes('country')) {
-              userData.country = e.long_name;
-            }
-          });
-
-          setCurrentLocation(userData);
-          setloading(false);
-        });
-        setloading(false);
-      },
-      (error) => {
-        setloading(false);
-        // See error code charts below.
-        console.log(error.code, error.message);
-      },
-      {enableHighAccuracy: false, timeout: 15000, maximumAge: 10000},
-    );
-  };
-  const requestPermission = async () => {
-    await PermissionsAndroid.requestMultiple([
-      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-      PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
-    ])
-      .then((result) => {
-        if (
-          result['android.permission.ACCESS_COARSE_LOCATION'] &&
-          result['android.permission.ACCESS_FINE_LOCATION'] === 'granted'
-        ) {
-          getCurrentLocation();
-        }
-      })
-      .catch((error) => {
-        console.warn(error);
-      });
-  };
   const renderItem = ({item, index}) => {
     console.log('Location item:=>', item);
     return (

@@ -455,7 +455,6 @@ const styles = StyleSheet.create({
   },
   listItem: {
     flexDirection: 'row',
-    marginHorizontal: 20,
     alignItems: 'center',
     justifyContent: 'center',
   },
