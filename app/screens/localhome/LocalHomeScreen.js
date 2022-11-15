@@ -1204,6 +1204,8 @@ export default function LocalHomeScreen({navigation, route}) {
       });
   };
 
+  console.log('Location screen ==> LocalHomeScreen Screen')
+
   return (
     <View style={{flex: 1}}>
       <ActivityLoader visible={loading} />

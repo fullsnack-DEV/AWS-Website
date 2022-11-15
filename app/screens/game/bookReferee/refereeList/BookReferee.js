@@ -430,6 +430,9 @@ export default function BookReferee({navigation, route}) {
     setMinFee(0);
     setMaxFee(0);
   };
+
+  console.log('Location screen ==> BookReferee Screen')
+
   return (
     <View>
       <ActivityLoader visible={loading} />

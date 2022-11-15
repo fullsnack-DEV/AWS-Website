@@ -329,6 +329,9 @@ export default function LookingTeamScreen({navigation, route}) {
       sport_type: strings.allType,
     });
   };
+
+  console.log('Location screen ==> LookingTeamScreen Screen')
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <View style={styles.searchView}>

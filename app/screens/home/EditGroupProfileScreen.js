@@ -15,8 +15,6 @@ import {
   Keyboard,
   TouchableOpacity,
   Image,
-  // eslint-disable-next-line react-native/split-platform-components
-  PermissionsAndroid,
   TouchableWithoutFeedback,
   TextInput,
   FlatList,
@@ -28,16 +26,15 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import Modal from 'react-native-modal';
-import Geolocation from '@react-native-community/geolocation';
-import {PERMISSIONS, RESULTS, request} from 'react-native-permissions';
-import {useIsFocused} from '@react-navigation/native';
-import ImagePicker from 'react-native-image-crop-picker';
 import ActionSheet from 'react-native-actionsheet';
+import ImagePicker from 'react-native-image-crop-picker';
+import {useIsFocused} from '@react-navigation/native';
 import TCTouchableLabel from '../../components/TCTouchableLabel';
 import TCTextField from '../../components/TCTextField';
 import TCLabel from '../../components/TCLabel';
 import TCProfileImageControl from '../../components/TCProfileImageControl';
 import {patchGroup} from '../../api/Groups';
+import {getGeocoordinatesWithPlaceName} from '../../utils/location';
 import {
   getHitSlop,
   widthPercentageToDP,
@@ -47,8 +44,7 @@ import {
 
 import {
   searchLocationPlaceDetail,
-  searchLocations,
-  getLocationNameWithLatLong,
+  searchLocations
 } from '../../api/External';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import {strings} from '../../../Localization/translation';
@@ -126,10 +122,9 @@ export default function EditGroupProfileScreen({navigation, route}) {
 
   useEffect(() => {
     if (route.params && route.params.city) {
-      const newLocation = `${route.params.city}, ${route.params.state}, ${route.params.country}`;
       setGroupProfile({
         ...groupProfile,
-        location: newLocation,
+        location: [route.params.city, route.params.state, route.params.country].filter(v => v).join(', '),
         city: route.params.city,
         state_abbr: route.params.state,
         country: route.params.country,
@@ -140,6 +135,7 @@ export default function EditGroupProfileScreen({navigation, route}) {
   useEffect(() => {
     getLocationData(searchText);
   }, [searchText]);
+
   const getLocationData = async (searchLocationText) => {
     if (searchLocationText.length >= 3) {
       searchLocations(searchLocationText).then((response) => {
@@ -152,36 +148,21 @@ export default function EditGroupProfileScreen({navigation, route}) {
     }
   };
   useEffect(() => {
-    if (Platform.OS === 'android') {
-      requestPermission();
-    } else {
-      request(
-        PERMISSIONS.IOS.LOCATION_WHEN_IN_USE,
-      ).then((result) => {
-        switch (result) {
-          case RESULTS.UNAVAILABLE:
-            console.log(strings.thisFeaturesNotAvailableText);
-            break;
-          case RESULTS.DENIED:
-            console.log(strings.permissionNotRequested);
-
-            break;
-          case RESULTS.LIMITED:
-            console.log(strings.permissionLimitedText);
-
-            break;
-          case RESULTS.GRANTED:
-            console.log(strings.permissionGrantedText);
-            setloading(true);
-            getCurrentLocation();
-            break;
-          case RESULTS.BLOCKED:
-            console.log(strings.permissionDenitedText);
-            break;
-          default:
-        }
+    setloading(true)
+    getGeocoordinatesWithPlaceName(Platform.OS)
+      .then((location) => {
+        const userData = {};
+        userData.state = location.stateAbbr;
+        userData.city = location.city;
+        userData.country = location.country;
+        setCurrentLocation(userData);
+        setloading(false);
+      })
+      .catch((error) => {
+        setloading(false);
+        // See error code charts below.
+        console.log('location error', error.code, error.message);
       });
-    }
   }, []);
 
   useEffect(() => {
@@ -199,9 +180,11 @@ export default function EditGroupProfileScreen({navigation, route}) {
       setSportsName(route?.params?.sportType);
     }
   }, [authContext, route?.params?.sportType, selectedSports]);
+
   const toggleModal = () => {
     setVisibleSportsModal(!visibleSportsModal);
   };
+
   const getSports = () => {
     let sportArr = [];
 
@@ -221,66 +204,12 @@ export default function EditGroupProfileScreen({navigation, route}) {
     }
     setSportList(arr);
   };
-  const getCurrentLocation = async () => {
-    // Geolocation.requestAuthorization();
-    Geolocation.getCurrentPosition(
-      (position) => {
-        getLocationNameWithLatLong(
-          position?.coords?.latitude,
-          position?.coords?.longitude,
-          authContext,
-        ).then((res) => {
-          const userData = {};
-          // let stateAbbr, city, country;
 
-          // eslint-disable-next-line array-callback-return
-          res.results[0].address_components.map((e) => {
-            if (e.types.includes('administrative_area_level_1')) {
-              userData.state = e.short_name;
-            } else if (e.types.includes('locality')) {
-              userData.city = e.short_name;
-            } else if (e.types.includes('country')) {
-              userData.country = e.long_name;
-            }
-          });
-          console.log('www', userData);
-          setCurrentLocation(userData);
-          setloading(false);
-        });
-        console.log('444');
-        setloading(false);
-      },
-      (error) => {
-        console.log('555');
-        setloading(false);
-        // See error code charts below.
-        console.log(error.code, error.message);
-      },
-      {enableHighAccuracy: false, timeout: 15000, maximumAge: 10000},
-    );
-  };
-  const requestPermission = async () => {
-    await PermissionsAndroid.requestMultiple([
-      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-      PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
-    ])
-      .then((result) => {
-        if (
-          result['android.permission.ACCESS_COARSE_LOCATION'] &&
-          result['android.permission.ACCESS_FINE_LOCATION'] === 'granted'
-        ) {
-          getCurrentLocation();
-        }
-      })
-      .catch((error) => {
-        console.warn(error);
-      });
-  };
   const renderItem = ({item, index}) => (
     <TouchableWithoutFeedback
       style={styles.listItem}
       onPress={() => {
-        getTeamsData(item);
+        onSelectLocation(item);
         Keyboard.dismiss();
       }}>
       <View>
@@ -321,15 +250,13 @@ export default function EditGroupProfileScreen({navigation, route}) {
       </View>
     </TouchableWithoutFeedback>
   );
-  const getTeamsData = async (item) => {
+
+  const onSelectLocation = async (item) => {
     searchLocationPlaceDetail(item.place_id, authContext).then((response) => {
       if (response) {
-        const newLocation = `${item?.terms?.[0]?.value ?? ''}, ${
-          item?.terms?.[1]?.value ?? ''
-        }, ${item?.terms?.[2]?.value ?? ''}`;
         setGroupProfile({
           ...groupProfile,
-          location: newLocation,
+          location: [item?.terms?.[0]?.value, item?.terms?.[1]?.value, item?.terms?.[2]?.value].filter(v => v).join(', '),
           city: item?.terms?.[0]?.value ?? '',
           state_abbr: item?.terms?.[1]?.value ?? '',
           country: item?.terms?.[2]?.value ?? '',
@@ -338,10 +265,11 @@ export default function EditGroupProfileScreen({navigation, route}) {
     });
     setLocationPopup(false);
   };
-  const getTeamsDataByCurrentLocation = async () => {
+
+  const onSelectCurrentLocation = async () => {
     setGroupProfile({
       ...groupProfile,
-      location: currentLocation,
+      location: [currentLocation?.city, currentLocation?.state, currentLocation?.country].filter(v => v).join(', '),
       city: currentLocation.city,
       state_abbr: currentLocation.state,
       country: currentLocation.country,
@@ -568,7 +496,6 @@ export default function EditGroupProfileScreen({navigation, route}) {
       <>
         <ActionSheet
           ref={actionSheet}
-          // title={'News Feed Post'}
           options={[strings.camera, strings.album, strings.cancelTitle]}
           cancelButtonIndex={2}
           onPress={(index) => {
@@ -619,7 +546,6 @@ export default function EditGroupProfileScreen({navigation, route}) {
             profileImage={
               groupProfile.thumbnail ? {uri: groupProfile.thumbnail} : undefined
             }
-            // profileImagePlaceholder={images.teamPlaceholder}
             profileImagePlaceholder={
               route?.params?.role === Verbs.entityTypeClub
                 ? images.teamGreenPH
@@ -783,7 +709,7 @@ export default function EditGroupProfileScreen({navigation, route}) {
               <View style={{flex: 1}}>
                 <TouchableWithoutFeedback
                   style={styles.listItem}
-                  onPress={() => getTeamsDataByCurrentLocation()}>
+                  onPress={() => onSelectCurrentLocation()}>
                   <View>
                     <Text style={[styles.cityList, {marginBottom: 3}]}>
                       {currentLocation?.city}, {currentLocation?.state},{' '}

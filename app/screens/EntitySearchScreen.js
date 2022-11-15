@@ -1648,6 +1648,8 @@ export default function EntitySearchScreen({navigation, route}) {
 
   const keyExtractor = useCallback((item, index) => index.toString(), []);
 
+  console.log('Location screen ==> EntitySearchScreen Screen')
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <View style={styles.searchBarView}>

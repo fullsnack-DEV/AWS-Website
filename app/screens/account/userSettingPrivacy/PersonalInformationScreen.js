@@ -19,8 +19,6 @@ import {
   Dimensions,
   Platform,
   SafeAreaView,
-  // eslint-disable-next-line react-native/split-platform-components
-  PermissionsAndroid,
   Keyboard,
 } from 'react-native';
 
@@ -33,9 +31,8 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import Modal from 'react-native-modal';
-import Geolocation from '@react-native-community/geolocation';
-
 import {check, PERMISSIONS, RESULTS, request} from 'react-native-permissions';
+import {getGeocoordinatesWithPlaceName} from '../../../utils/location'
 import {updateUserProfile} from '../../../api/Users';
 import AuthContext from '../../../auth/context';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
@@ -57,7 +54,6 @@ import {getQBAccountType, QBupdateUser} from '../../../utils/QuickBlox';
 import {
   searchLocationPlaceDetail,
   searchLocations,
-  getLocationNameWithLatLong,
 } from '../../../api/External';
 
 export default function PersonalInformationScreen({navigation, route}) {
@@ -70,22 +66,20 @@ export default function PersonalInformationScreen({navigation, route}) {
   const [loading, setloading] = useState(false);
   const [userInfo, setUserInfo] = useState(authContext.entity.obj);
   const [profileImageChanged, setProfileImageChanged] = useState(false);
-  const [streetAddress] = useState(authContext?.entity?.obj?.street_address);
   const [city, setCity] = useState(
-    route?.params?.city ? route?.params?.city : authContext?.entity?.obj?.city,
+    route?.params?.city ? route.params.city : authContext.entity?.obj?.city,
   );
 
   const [state, setState] = useState(
     route?.params?.state_abbr
-      ? route?.params?.state_abbr
-      : authContext?.entity?.obj?.state_abbr,
+      ? route.params.state_abbr
+      : authContext.entity?.obj?.state_abbr,
   );
   const [country, setCountry] = useState(
     route?.params?.country
-      ? route?.params?.country
-      : authContext?.entity?.obj?.country,
+      ? route.params.country
+      : authContext.entity?.obj?.country,
   );
-  const [postalCode] = useState(authContext?.entity?.obj?.postal_code);
 
   const [phoneNumbers] = useState(
     authContext.entity.obj.phone_numbers || [
@@ -107,9 +101,11 @@ export default function PersonalInformationScreen({navigation, route}) {
   const [searchText, setSearchText] = useState('');
   const [cityData, setCityData] = useState([]);
   const [currentLocation, setCurrentLocation] = useState();
+  
   useEffect(() => {
     getLocationData(searchText);
   }, [searchText]);
+
   const getLocationData = async (searchLocationText) => {
     if (searchLocationText.length >= 3) {
       searchLocations(searchLocationText).then((response) => {
@@ -133,9 +129,7 @@ export default function PersonalInformationScreen({navigation, route}) {
     userInfo,
     city,
     state,
-    country,
-    postalCode,
-    streetAddress,
+    country
   ]);
 
   useEffect(() => {
@@ -173,127 +167,54 @@ export default function PersonalInformationScreen({navigation, route}) {
   }, []);
 
   useEffect(() => {
-    if (Platform.OS === 'android') {
-      requestPermission();
-    } else {
-      request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE).then((result) => {
-        switch (result) {
-          case RESULTS.UNAVAILABLE:
-            break;
-          case RESULTS.DENIED:
-            console.log('2', strings.permissionNotRequested);
-            break;
-          case RESULTS.LIMITED:
-            console.log('3', strings.permissionLimitedText);
-            break;
-          case RESULTS.GRANTED:
-            console.log('4', strings.permissionGrantedText);
-            setloading(true);
-            getCurrentLocation();
-            break;
-          case RESULTS.BLOCKED:
-            console.log('5', strings.permissionDenitedText);
-            break;
-          default:
-        }
-      });
-    }
-  }, []);
-
-  const getCurrentLocation = async () => {
-    // Geolocation.requestAuthorization();
-    Geolocation.getCurrentPosition(
-      (position) => {
-        console.log('Position', position);
-        getLocationNameWithLatLong(
-          position?.coords?.latitude,
-          position?.coords?.longitude,
-          authContext,
-        ).then((res) => {
-          const userData = {};
-          // let stateAbbr, city, country;
-          // eslint-disable-next-line array-callback-return
-          res.results[0].address_components.map((e) => {
-            if (e.types.includes('administrative_area_level_1')) {
-              userData.state = e.short_name;
-            } else if (e.types.includes('locality')) {
-              userData.city = e.short_name;
-            } else if (e.types.includes('country')) {
-              userData.country = e.long_name;
-            }
-          });
-          setCurrentLocation(userData);
-          setloading(false);
-        });
+    setloading(true)
+    getGeocoordinatesWithPlaceName(Platform.OS)
+      .then((location) => {
+        const userData = {};
+        userData.state = location.stateAbbr;
+        userData.city = location.city;
+        userData.country = location.country;
+        setCurrentLocation(userData);
         setloading(false);
-      },
-      (error) => {
+      })
+      .catch((error) => {
         setloading(false);
         // See error code charts below.
         console.log('location error', error.code, error.message);
-      },
-      {enableHighAccuracy: false, timeout: 15000, maximumAge: 10000},
-    );
-  };
-  const requestPermission = async () => {
-    await PermissionsAndroid.requestMultiple([
-      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-      PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
-    ])
-      .then((result) => {
-        if (
-          result['android.permission.ACCESS_COARSE_LOCATION'] &&
-          result['android.permission.ACCESS_FINE_LOCATION'] === 'granted'
-        ) {
-          getCurrentLocation();
-        }
-        console.log('Android Location permition result', result);
-      })
-      .catch((error) => {
-        console.warn('android location errro', error);
       });
-  };
-  const renderItem = ({item, index}) => {
-    console.log('Location item:=>', item);
-    return (
-      <TouchableWithoutFeedback
-        style={styles.listItem}
-        onPress={() => {
-          getTeamsData(item);
-          Keyboard.dismiss();
-        }}>
-        <View>
-          <Text style={styles.cityList}>{cityData[index].description}</Text>
-          <TCThinDivider
-            width={'100%'}
-            backgroundColor={colors.grayBackgroundColor}
-          />
-        </View>
-      </TouchableWithoutFeedback>
-    );
-  };
+  }, []);
 
-  const getTeamsData = async (item) => {
+  const renderItem = ({item, index}) => (
+    <TouchableWithoutFeedback
+      style={styles.listItem}
+      onPress={() => {
+        onSelectLocation(item);
+        Keyboard.dismiss();
+      }}>
+      <View>
+        <Text style={styles.cityList}>{cityData[index].description}</Text>
+        <TCThinDivider
+          width={'100%'}
+          backgroundColor={colors.grayBackgroundColor}
+        />
+      </View>
+    </TouchableWithoutFeedback>
+  );
+
+  const onSelectLocation = async (item) => {
     searchLocationPlaceDetail(item.place_id, authContext).then((response) => {
       if (response) {
         setCity(item?.terms?.[0]?.value ?? '');
         setState(item?.terms?.[1]?.value ?? '');
         setCountry(item?.terms?.[2]?.value ?? '');
-        setUserInfo({
-          ...userInfo,
-          city: item?.terms?.[0]?.value ?? '',
-          state: item?.terms?.[1]?.value ?? '',
-          country: item?.terms?.[2]?.value ?? '',
-        });
       }
     });
     setLocationPopup(false);
   };
-  const getTeamsDataByCurrentLocation = async () => {
+  const onSelectCurrentLocation = async () => {
     setCity(currentLocation.city);
     setState(currentLocation.state);
     setCountry(currentLocation.country);
-
     setLocationPopup(false);
   };
 
@@ -349,8 +270,6 @@ export default function PersonalInformationScreen({navigation, route}) {
   };
 
   const onSavePress = () => {
-    // console.log('checkValidation()', checkValidation());
-
     if (checkValidation()) {
       setloading(true);
       const bodyParams = {...userInfo};
@@ -361,8 +280,6 @@ export default function PersonalInformationScreen({navigation, route}) {
       bodyParams.city = city;
       bodyParams.state_abbr = state;
       bodyParams.country = country;
-      bodyParams.street_address = streetAddress;
-      bodyParams.postal_code = postalCode;
 
       bodyParams.description = userInfo.description;
       bodyParams.height = userInfo.height;
@@ -413,7 +330,6 @@ export default function PersonalInformationScreen({navigation, route}) {
 
   const updateUser = (params) => {
     setloading(true);
-    console.log('bodyPARAMS:: ', params);
     updateUserProfile(params, authContext)
       .then((response) => {
         const accountType = getQBAccountType(response?.payload?.entity_type);
@@ -431,7 +347,6 @@ export default function PersonalInformationScreen({navigation, route}) {
           })
           .catch((error) => {
             console.log('QB error : ', error);
-
             setloading(false);
             navigation.goBack();
           });
@@ -638,11 +553,6 @@ export default function PersonalInformationScreen({navigation, route}) {
 
           <TouchableOpacity
             onPress={() => {
-              // eslint-disable-next-line no-unused-expressions
-
-              // navigation.navigate('SearchLocationScreen', {
-              //   comeFrom: 'PersonalInformationScreen',
-              // });
               setLocationPopup(true);
             }}>
             <TextInput
@@ -651,9 +561,9 @@ export default function PersonalInformationScreen({navigation, route}) {
                 ...styles.matchFeeTxt,
                 backgroundColor: colors.textFieldBackground,
               }}
-              value={`${userInfo.city}, ${userInfo.state}, ${userInfo.country}`}
+              value={[city, state, country].filter(v => v).join(', ')}
               editable={false}
-              pointerEvents="none"
+              pointerEvents='none'
             />
           </TouchableOpacity>
         </View>
@@ -712,7 +622,7 @@ export default function PersonalInformationScreen({navigation, route}) {
               spellCheck={false}
               style={styles.textInput}
               placeholder={strings.searchByCity}
-              clearButtonMode="always"
+              clearButtonMode='always'
               placeholderTextColor={colors.userPostTimeColor}
               onChangeText={(text) => setSearchText(text)}
             />
@@ -727,11 +637,10 @@ export default function PersonalInformationScreen({navigation, route}) {
             <View style={{flex: 1}}>
               <TouchableWithoutFeedback
                 style={styles.listItem}
-                onPress={() => getTeamsDataByCurrentLocation()}>
+                onPress={() => onSelectCurrentLocation()}>
                 <View>
                   <Text style={[styles.cityList, {marginBottom: 3}]}>
-                    {currentLocation?.city}, {currentLocation?.state},{' '}
-                    {currentLocation?.country}
+                    {[currentLocation?.city, currentLocation?.state, currentLocation?.country].filter(v => v).join(', ')}
                   </Text>
                   <Text style={styles.curruentLocationText}>
                     {strings.currentLocationText}

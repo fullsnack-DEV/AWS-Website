@@ -738,6 +738,8 @@ export default function EditEventScreen({navigation, route}) {
     }
   };
 
+  console.log('Location screen ==> EditEventScreen Screen')
+
   return (
     <>
       <ActivityLoader visible={loading} />

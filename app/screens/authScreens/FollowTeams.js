@@ -141,7 +141,7 @@ export default function FollowTeams({route, navigation}) {
               {teams[index].country}
             </Text>
           </View>
-          <View style={{flex: 0.3}}>
+          <View>
             <TouchableWithoutFeedback
               onPress={() => {
                 followUnfollowClicked({item, index});
@@ -309,10 +309,11 @@ export default function FollowTeams({route, navigation}) {
           {strings.followSportTeam}
         </Text>
         <FlatList
-          style={{padding: 27, bottom: 35}}
+          style={{padding: 0, bottom: 0, marginLeft: 15, marginRight: 15}}
           data={teams}
           keyExtractor={(item, index) => index.toString()}
           renderItem={renderItem}
+          showsVerticalScrollIndicator={false}
         />
         {/* <TCButton
         title={'CONTINUE'}
