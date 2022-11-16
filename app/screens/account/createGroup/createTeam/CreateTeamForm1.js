@@ -1,6 +1,5 @@
 import React, {useState, useEffect, useContext} from 'react';
 import {
-  StyleSheet,
   View,
   Image,
   TextInput,
@@ -8,7 +7,6 @@ import {
   ScrollView,
   Alert,
   TouchableWithoutFeedback,
-  Platform,
   FlatList,
   Text,
   Dimensions,
@@ -16,7 +14,6 @@ import {
   Keyboard,
 } from 'react-native';
 
-import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import {useIsFocused} from '@react-navigation/native';
 
 import Modal from 'react-native-modal';
@@ -33,16 +30,13 @@ import TCLabel from '../../../../components/TCLabel';
 import TCFormProgress from '../../../../components/TCFormProgress';
 
 import TCThinDivider from '../../../../components/TCThinDivider';
-import {
-  getHitSlop,
-  getSportName,
-  heightPercentageToDP,
-} from '../../../../utils';
+import {getHitSlop, getSportName} from '../../../../utils';
 import {
   searchCityState,
   searchLocationPlaceDetail,
 } from '../../../../api/External';
 import Verbs from '../../../../Constants/Verbs';
+import styles from './style';
 
 export default function CreateTeamForm1({navigation, route}) {
   const isFocused = useIsFocused();
@@ -435,169 +429,3 @@ export default function CreateTeamForm1({navigation, route}) {
     </>
   );
 }
-const styles = StyleSheet.create({
-  fieldView: {
-    marginTop: 15,
-  },
-
-  // eslint-disable-next-line react-native/no-unused-styles
-  inputAndroid: {
-    alignSelf: 'center',
-    backgroundColor: colors.offwhite,
-    borderRadius: 5,
-    color: 'black',
-    elevation: 3,
-    fontSize: wp('4%'),
-    height: 40,
-
-    marginTop: 12,
-    paddingHorizontal: 15,
-    paddingRight: 30,
-
-    paddingVertical: 12,
-
-    width: wp('92%'),
-  },
-  // eslint-disable-next-line react-native/no-unused-styles
-  inputIOS: {
-    alignSelf: 'center',
-    backgroundColor: colors.offwhite,
-    borderRadius: 5,
-    color: 'black',
-    elevation: 3,
-    fontSize: wp('3.5%'),
-    height: 40,
-
-    marginTop: 12,
-    paddingHorizontal: 15,
-    paddingRight: 30,
-
-    paddingVertical: 12,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
-    width: wp('92%'),
-  },
-  mainContainer: {
-    flex: 1,
-  },
-  matchFeeTxt: {
-    alignSelf: 'center',
-    backgroundColor: colors.offwhite,
-    borderRadius: 5,
-    color: 'black',
-    elevation: 3,
-    fontSize: wp('3.8%'),
-    height: 40,
-
-    marginTop: 12,
-    paddingHorizontal: 15,
-    paddingRight: 30,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
-
-    width: wp('92%'),
-  },
-  searchView: {
-    alignSelf: 'center',
-    backgroundColor: colors.offwhite,
-    borderRadius: 5,
-    elevation: 3,
-    flexDirection: 'row',
-    marginTop: 12,
-    paddingVertical: Platform.OS === 'ios' ? 12 : 0,
-    paddingLeft: 15,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
-    width: wp('92%'),
-  },
-  searchTextField: {
-    alignSelf: 'center',
-    color: colors.blackColor,
-    flex: 1,
-    fontSize: wp('3.8%'),
-    width: wp('80%'),
-  },
-
-  closeButton: {
-    alignSelf: 'center',
-    width: 13,
-    height: 13,
-    marginLeft: 5,
-    resizeMode: 'contain',
-  },
-
-  separatorLine: {
-    alignSelf: 'center',
-    backgroundColor: colors.grayColor,
-    height: 0.5,
-    width: wp('100%'),
-  },
-
-  languageList: {
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RRegular,
-    fontSize: wp('4%'),
-  },
-  checkboxImg: {
-    width: 22,
-    height: 22,
-    resizeMode: 'contain',
-    alignSelf: 'center',
-  },
-
-  cityList: {
-    color: colors.lightBlackColor,
-    fontSize: wp('4%'),
-    textAlign: 'left',
-    fontFamily: fonts.RRegular,
-    // paddingLeft: wp('1%'),
-    width: wp('70%'),
-    margin: wp('4%'),
-    textAlignVertical: 'center',
-  },
-  listItem: {
-    flexDirection: 'row',
-    marginLeft: wp('10%'),
-    width: wp('80%'),
-  },
-
-  searchImg: {
-    alignSelf: 'center',
-    height: heightPercentageToDP('4%'),
-
-    resizeMode: 'contain',
-    width: wp('4%'),
-    tintColor: colors.lightBlackColor,
-  },
-  sectionStyle: {
-    alignItems: 'center',
-    backgroundColor: colors.whiteColor,
-    borderRadius: 25,
-
-    flexDirection: 'row',
-    height: 50,
-    justifyContent: 'center',
-    margin: wp('8%'),
-    paddingLeft: 17,
-    paddingRight: 5,
-
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 4},
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  textInput: {
-    color: colors.blackColor,
-    flex: 1,
-    fontFamily: fonts.RRegular,
-    fontSize: wp('4.5%'),
-    paddingLeft: 10,
-  },
-});

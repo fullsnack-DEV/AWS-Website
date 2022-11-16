@@ -8,6 +8,7 @@ import React, {
   useContext,
   useMemo,
   useCallback,
+  Fragment,
 } from 'react';
 
 import {
@@ -772,6 +773,7 @@ const MessageChat = ({route, navigation}) => {
             style={{
               ...styles.sideButton,
               marginHorizontal: wp(3),
+              tintColor: colors.lightBlackColor,
               height: 25,
               width: 23,
             }}
@@ -788,29 +790,10 @@ const MessageChat = ({route, navigation}) => {
             style={{width: '100%'}}
             isClear={false}
             backgroundColor={colors.lightGrayBackground}
+            multiline={true}
           />
         </View>
-        {/* <View
-          style={{
-            position: 'absolute',
-            right: '4%',
-            opacity: pointEvent === 'none' ? 0.5 : 1,
-          }}
-          pointerEvents={pointEvent}>
-          {uploadImageInProgress ? (
-            <FastImage
-              source={images.imageUploadingGIF}
-              style={styles.imageUploadingLoader}
-              resizeMode={'contain'}
-            />
-          ) : (
-            <TouchableOpacity onPress={sendMessage}>
-              <GradiantContainer style={styles.sendButtonContainer}>
-                <Image source={images.sendButton} style={styles.sendButton} />
-              </GradiantContainer>
-            </TouchableOpacity>
-          )}
-        </View> */}
+
         <View
           style={{
             position: 'absolute',
@@ -948,7 +931,7 @@ const MessageChat = ({route, navigation}) => {
   );
 
   return (
-    <SafeAreaView style={styles.mainContainer}>
+    <Fragment style={styles.mainContainer}>
       {/* <ActivityLoader visible={loading} /> */}
       {renderHeader}
       <View style={styles.sperateLine} />
@@ -986,7 +969,7 @@ const MessageChat = ({route, navigation}) => {
             <Text
               style={[styles.titleLabel, {marginBottom: 15, marginTop: 25}]}>
               {dialogMenu?.type === QB.chat.DIALOG_TYPE.GROUP_CHAT &&
-                'CHATROOM NAME'}
+                strings.chatRoomNameText}
             </Text>
             <TouchableOpacity
               onPress={() => {
@@ -1057,14 +1040,15 @@ const MessageChat = ({route, navigation}) => {
               />
               <Text style={styles.grayText}>
                 {occupantsData.length > 2
-                  ? 'LEAVE CHATROOM'
-                  : 'DELETE CHATROOM'}
+                  ? strings.leaveChatRoom
+                  : strings.deleteChatRoom}
               </Text>
             </TouchableOpacity>
           </View>
         </Modalize>
       </Portal>
-    </SafeAreaView>
+      <SafeAreaView style={{backgroundColor: colors.whiteColor}} />
+    </Fragment>
   );
 };
 
@@ -1074,6 +1058,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: colors.whiteColor,
   },
   sperateLine: {
     borderColor: colors.writePostSepratorColor,

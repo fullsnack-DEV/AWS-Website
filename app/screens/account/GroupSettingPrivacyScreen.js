@@ -62,7 +62,7 @@ export default function GroupSettingPrivacyScreen({navigation}) {
   }, [authContext.entity.role]);
 
   const handleOpetions = async (opetions) => {
-    if (opetions === 'Profile') {
+    if (opetions === strings.profileText) {
       navigation.navigate('EditGroupProfileScreen', {
         placeholder:
           authContext.entity.role === Verbs.entityTypeTeam

@@ -75,10 +75,7 @@ const TCMessage = ({
             <Text
               style={{
                 ...styles.messageText,
-                color:
-                  type === 'sender'
-                    ? colors.blackColor
-                    : colors.lightBlackColor,
+                color: colors.messageTextColor,
               }}>
               {body}
             </Text>
@@ -181,12 +178,6 @@ const TCMessage = ({
                     height: wp(50),
                     width: wp(50),
                   }}
-                  onProgress={(e) =>
-                    console.log(
-                      'sasasas---',
-                      e.nativeEvent.loaded / e.nativeEvent.total,
-                    )
-                  }
                 />
               </TouchableOpacity>
             );
@@ -238,7 +229,6 @@ const styles = StyleSheet.create({
     flex: 1,
     maxWidth: wp(60),
     textAlign: 'left',
-    color: colors.lightBlackColor,
   },
 });
 

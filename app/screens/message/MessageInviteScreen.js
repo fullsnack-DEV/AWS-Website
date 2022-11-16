@@ -37,11 +37,17 @@ import {
 import AuthContext from '../../auth/context';
 import UserListShimmer from '../../components/shimmer/commonComponents/UserListShimmer';
 import TCGroupNameBadge from '../../components/TCGroupNameBadge';
-import { strings } from '../../../Localization/translation';
+import {strings} from '../../../Localization/translation';
 
 const MessageInviteScreen = ({navigation}) => {
   const authContext = useContext(AuthContext);
-  const TAB_ITEMS = [strings.allType, strings.peopleTitleText, strings.teamsTitleText, strings.clubsTitleText, strings.leaguesTitleText];
+  const TAB_ITEMS = [
+    strings.allType,
+    strings.peopleTitleText,
+    strings.teamsTitleText,
+    strings.clubsTitleText,
+    strings.leaguesTitleText,
+  ];
   const [currentTab, setCurrentTab] = useState(0);
   const [loading, setLoading] = useState(true);
   const [selectedInvitees, setSelectedInvitees] = useState([]);
@@ -286,7 +292,7 @@ const MessageInviteScreen = ({navigation}) => {
           marginTop: hp(2),
           color: colors.userPostTimeColor,
         }}>
-       {strings.noRecordFoundText}
+        {strings.noRecordFoundText}
       </Text>
     ),
     [],

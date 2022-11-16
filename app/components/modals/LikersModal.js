@@ -1,4 +1,4 @@
-import React, {useCallback, useContext} from 'react';
+import React, {useContext} from 'react';
 import {
   Alert,
   Dimensions,
@@ -18,18 +18,9 @@ import {strings} from '../../../Localization/translation';
 import Verbs from '../../Constants/Verbs';
 import {followUser, unfollowUser} from '../../api/Users';
 
-const LikersModal = ({
-  likersModalRef,
-  data,
-  showLikeModal,
-  onBackdropPress,
-}) => {
+const LikersModal = ({data, showLikeModal, onBackdropPress, navigation}) => {
   const authContext = useContext(AuthContext);
   const userRole = authContext?.entity?.role;
-  const handleCloseModal = useCallback(
-    () => likersModalRef.current.close(),
-    [likersModalRef],
-  );
 
   const ModalHeader = () => (
     <View style={styles.headerStyle}>
@@ -47,7 +38,18 @@ const LikersModal = ({
     console.log('likers item', item);
     return (
       <TCUserList
-        onProfilePress={handleCloseModal}
+        onProfilePress={() => {
+          navigation.push('HomeScreen', {
+            uid: item?.entity_id,
+            role: [Verbs.entityTypePlayer, Verbs.entityTypeUser].includes(
+              item?.entity_type,
+            )
+              ? Verbs.entityTypeUser
+              : item?.entity_type,
+            backButtonVisible: true,
+            menuBtnVisible: false,
+          });
+        }}
         title={item?.user?.data?.full_name}
         subTitle={item?.user?.data?.city ?? ''}
         entityType={item?.user?.data?.entity_type}

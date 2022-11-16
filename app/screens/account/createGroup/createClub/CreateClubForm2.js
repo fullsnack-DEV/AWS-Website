@@ -1,6 +1,5 @@
 import React, {useState, useEffect} from 'react';
 import {
-  StyleSheet,
   View,
   Text,
   Image,
@@ -12,10 +11,6 @@ import {
   FlatList,
 } from 'react-native';
 
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
 import Modal from 'react-native-modal';
 
 import images from '../../../../Constants/ImagePath';
@@ -27,6 +22,7 @@ import TCFormProgress from '../../../../components/TCFormProgress';
 
 import TCThinDivider from '../../../../components/TCThinDivider';
 import TCGradientButton from '../../../../components/TCGradientButton';
+import styles from './style';
 
 export default function CreateClubForm2({navigation, route}) {
   const [createClubForm1] = useState(route?.params?.createClubForm1);
@@ -244,137 +240,3 @@ export default function CreateClubForm2({navigation, route}) {
     </>
   );
 }
-const styles = StyleSheet.create({
-  // eslint-disable-next-line react-native/no-unused-styles
-  inputAndroid: {
-    alignSelf: 'center',
-    backgroundColor: colors.offwhite,
-    borderRadius: 5,
-    color: 'black',
-    elevation: 3,
-    fontSize: wp('4%'),
-    height: 40,
-
-    marginTop: 12,
-    paddingHorizontal: 15,
-    paddingRight: 30,
-
-    paddingVertical: 12,
-
-    width: wp('92%'),
-  },
-  // eslint-disable-next-line react-native/no-unused-styles
-  inputIOS: {
-    alignSelf: 'center',
-    backgroundColor: colors.offwhite,
-    borderRadius: 5,
-    color: 'black',
-    elevation: 3,
-    fontSize: wp('3.5%'),
-    height: 40,
-
-    marginTop: 12,
-    paddingHorizontal: 15,
-    paddingRight: 30,
-
-    paddingVertical: 12,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
-    width: wp('92%'),
-  },
-  mainContainer: {
-    flex: 1,
-    flexDirection: 'column',
-  },
-
-  languageView: {
-    alignSelf: 'center',
-    backgroundColor: colors.whiteColor,
-    borderRadius: 5,
-    color: 'black',
-    elevation: 3,
-    flexDirection: 'row',
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    marginTop: 12,
-    paddingHorizontal: 15,
-    paddingRight: 30,
-    paddingVertical: 12,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
-
-    width: wp('92%'),
-  },
-  languageText: {
-    backgroundColor: colors.whiteColor,
-    color: colors.lightBlackColor,
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-  },
-  languagePlaceholderText: {
-    backgroundColor: colors.whiteColor,
-    color: colors.userPostTimeColor,
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-  },
-  LocationText: {
-    marginTop: hp('3%'),
-    color: colors.lightBlackColor,
-    fontSize: 20,
-    textAlign: 'left',
-    fontFamily: fonts.RRegular,
-    paddingLeft: 15,
-  },
-  closeButton: {
-    alignSelf: 'center',
-    width: 13,
-    height: 13,
-    marginLeft: 5,
-    resizeMode: 'contain',
-  },
-
-  separatorLine: {
-    alignSelf: 'center',
-    backgroundColor: colors.grayColor,
-    height: 0.5,
-    marginTop: 14,
-    width: wp('92%'),
-  },
-
-  languageList: {
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RRegular,
-    fontSize: wp('4%'),
-  },
-
-  checkboxImg: {
-    width: 22,
-    height: 22,
-    resizeMode: 'contain',
-    alignSelf: 'center',
-  },
-
-  descriptionTxt: {
-    height: 120,
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    width: wp('92%'),
-    alignSelf: 'center',
-    marginTop: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 15,
-    color: colors.lightBlackColor,
-    paddingRight: 30,
-    backgroundColor: colors.offwhite,
-    borderRadius: 5,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
-    elevation: 3,
-  },
-});

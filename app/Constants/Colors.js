@@ -132,5 +132,6 @@ const colors = {
   messageSenderColor: '#FFD798',
   modalHandleColor: '#DADBDA',
   textFieldBackground: '#f5f5f5',
+  messageTextColor: '#532E00',
 };
 export default colors;

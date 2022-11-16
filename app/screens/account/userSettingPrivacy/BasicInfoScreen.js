@@ -56,27 +56,27 @@ export default function BasicInfoScreen({navigation, route}) {
   const [userInfo, setUserInfo] = useState(authContext.entity.obj);
   const [profileImageChanged, setProfileImageChanged] = useState(false);
   const [streetAddress, setStreetAddress] = useState(
-    authContext?.entity?.obj?.street_address,
+    authContext.entity.obj?.street_address,
   );
   const [city, setCity] = useState(
-    route?.params?.city ? route?.params?.city : authContext?.entity?.obj?.city,
+    route?.params?.city ? route?.params?.city : authContext.entity.obj?.city,
   );
   const [state, setState] = useState(
     route?.params?.state
       ? route?.params?.state
-      : authContext?.entity?.obj?.state_abbr,
+      : authContext.entity.obj?.state_abbr,
   );
   const [country, setCountry] = useState(
     route?.params?.country
       ? route?.params?.country
-      : authContext?.entity?.obj?.country,
+      : authContext.entity.obj?.country,
   );
   const [postalCode, setPostalCode] = useState(
-    authContext?.entity?.obj?.postal_code,
+    authContext.entity.obj?.postal_code,
   );
 
   const [phoneNumbers, setPhoneNumbers] = useState(
-    authContext.entity?.obj?.phone_numbers?.length > 0
+    authContext.entity.obj?.phone_numbers?.length > 0
       ? authContext.entity.obj.phone_numbers
       : [
           {
@@ -137,7 +137,6 @@ export default function BasicInfoScreen({navigation, route}) {
   const getLocationData = async (searchLocationText) => {
     if (searchLocationText.length >= 3) {
       searchLocations(searchLocationText).then((response) => {
-        console.log('search response =>', response);
         setNoData(false);
         setCityData(response.predictions);
       });
