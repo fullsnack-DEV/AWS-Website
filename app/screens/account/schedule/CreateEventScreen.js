@@ -28,21 +28,18 @@ import {
 } from 'react-native';
 import moment from 'moment';
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
-import Geolocation from '@react-native-community/geolocation';
 import ActionSheet from 'react-native-actionsheet';
 
 import Modal from 'react-native-modal';
 import {useIsFocused} from '@react-navigation/native';
 import ImagePicker from 'react-native-image-crop-picker';
-
-import {check, PERMISSIONS, RESULTS, request} from 'react-native-permissions';
-
 import {format} from 'react-string-format';
+import {check, PERMISSIONS, RESULTS, request} from 'react-native-permissions';
+import {getGeocoordinatesWithPlaceName} from '../../../utils/location'
 import AuthContext from '../../../auth/context';
 import EventItemRender from '../../../components/Schedule/EventItemRender';
 import EventMapView from '../../../components/Schedule/EventMapView';
 import EventMonthlySelection from '../../../components/Schedule/EventMonthlySelection';
-// import EventSearchLocation from '../../../components/Schedule/EventSearchLocation';
 import EventTextInputItem from '../../../components/Schedule/EventTextInputItem';
 import EventTimeSelectItem from '../../../components/Schedule/EventTimeSelectItem';
 import DateTimePickerView from '../../../components/Schedule/DateTimePickerModal';
@@ -54,7 +51,6 @@ import {createEvent} from '../../../api/Schedule';
 import TCProfileView from '../../../components/TCProfileView';
 
 import ActivityLoader from '../../../components/loader/ActivityLoader';
-import {getLocationNameWithLatLong} from '../../../api/External';
 import BlockAvailableTabView from '../../../components/Schedule/BlockAvailableTabView';
 import TCKeyboardView from '../../../components/TCKeyboardView';
 import TCTouchableLabel from '../../../components/TCTouchableLabel';
@@ -102,7 +98,7 @@ export default function CreateEventScreen({navigation, route}) {
   const [eventEndDateTime, setEventEnddateTime] = useState(moment(getRoundedDate(5)).add(5, 'm').toDate());
   const [eventUntilDateTime, setEventUntildateTime] = useState(eventEndDateTime);
   const [searchLocation, setSearchLocation] = useState();
-  const [locationDetail, setLocationDetail] = useState(null);
+  const [locationDetail, setLocationDetail] = useState({latitude: 0.0,longitude: 0.0});
   const [is_Blocked, setIsBlocked] = useState(false);
   const [loading, setloading] = useState(false);
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
@@ -275,51 +271,40 @@ export default function CreateEventScreen({navigation, route}) {
   ]);
 
   useEffect(() => {
-    // Set default value by AV to avaoid crash
-    const obj = {
-      lat: 0.0,
-      lng: 0.0,
-    };
-    setLocationDetail(obj);
-
     if (isFocused) {
       getSports();
       if (route?.params?.locationName) {
-        console.log('route.params.locationName', route.params.locationName);
+        setLocationDetail({
+              ...locationDetail,
+              latitude:route.params.locationDetail.lat,
+              longitude:route.params.locationDetail.lng,
+            });
         setSearchLocation(route.params.locationName);
       }
     }
   }, [isFocused, route.params]);
 
   useEffect(() => {
-    console.log('route.params.comeName', route.params.comeName);
     const unsubscribe = navigation.addListener('focus', async () => {
       if (route.params.comeName) {
-        Geolocation.getCurrentPosition(
-          (position) => {
-            const latValue = position.coords.latitude;
-            const longValue = position.coords.longitude;
+        setloading(true);
+        getGeocoordinatesWithPlaceName(Platform.OS)
+          .then((location) => {
             const obj = {
               ...locationDetail,
-              lat: latValue,
-              lng: longValue,
+              latitude: location.position.coords.latitude,
+              longitude: location.position.coords.longitude,
             };
             setLocationDetail(obj);
-            getLocationNameWithLatLong(latValue, longValue, authContext).then(
-              (res) => {
-                setSearchLocation(res.results[0].formatted_address);
-              },
-            );
-          },
-          (error) => {
-            console.log('Error :-', error);
-          },
-          {
-            enableHighAccuracy: true,
-            timeout: 20000,
-            maximumAge: 10000,
-          },
-        );
+            setSearchLocation(location.formattedAddress);
+            setloading(false);
+          })
+          .catch((e) => {
+            setloading(false);
+            setTimeout(() => {
+              Alert.alert(strings.alertmessagetitle, e.message);
+            }, 10);
+          });
       }
     });
     return () => {
@@ -329,7 +314,6 @@ export default function CreateEventScreen({navigation, route}) {
 
   useEffect(() => {
     setloading(true);
-    // getGroups(authContext)
     getGroups(authContext)
       .then((response) => {
         const {teams, clubs} = response.payload;
@@ -429,7 +413,7 @@ export default function CreateEventScreen({navigation, route}) {
     </TouchableOpacity>
   );
 
-  const renderEventPostedOpetions = ({item}) => (
+  const renderEventPostedOptions = ({item}) => (
     <View
       style={{
         flexDirection: 'row',
@@ -643,8 +627,7 @@ export default function CreateEventScreen({navigation, route}) {
     eventEndDateTime,
     eventStartDateTime,
     eventTitle,
-    locationDetail?.venue_detail,
-    locationDetail?.venue_name,
+    locationDetail,
     maxAttendees,
     minAttendees,
     sportsSelection,
@@ -692,8 +675,7 @@ export default function CreateEventScreen({navigation, route}) {
     }
 
     createEvent(entityRole, uid, data, authContext)
-      .then((response) => {
-        console.log('Response :-', response);
+      .then(() => {
         setTimeout(() => {
           setloading(false);
           navigation.navigate('ScheduleScreen');
@@ -753,8 +735,8 @@ export default function CreateEventScreen({navigation, route}) {
 
           location: {
             location_name: searchLocation,
-            latitude: locationDetail.lat,
-            longitude: locationDetail.lng,
+            latitude: locationDetail.latitude,
+            longitude: locationDetail.longitude,
             venue_name: locationDetail.venue_name,
             venue_detail: locationDetail.venue_detail,
           },
@@ -811,8 +793,6 @@ export default function CreateEventScreen({navigation, route}) {
       }
     }
   };
-
-  console.log('Location screen ==> CreateEventScreen Screen')
 
   return (
     <>
@@ -989,12 +969,9 @@ export default function CreateEventScreen({navigation, route}) {
                 placeholder={strings.venueNamePlaceholder}
                 style={styles.textInputStyle}
                 onChangeText={(value) => {
-                  console.log('details', locationDetail);
-                  console.log('venue_name', value);
-
                   setLocationDetail({...locationDetail, venue_name: value});
                 }}
-                value={locationDetail?.venue_name}
+                value={locationDetail.venue_name}
                 // multiline={multiline}
                 textAlignVertical={'center'}
                 placeholderTextColor={colors.userPostTimeColor}
@@ -1019,25 +996,23 @@ export default function CreateEventScreen({navigation, route}) {
               />
               <EventMapView
                 region={{
-                  latitude: locationDetail ? locationDetail?.lat : 0.0,
-                  longitude: locationDetail ? locationDetail?.lng : 0.0,
+                  latitude: locationDetail.latitude,
+                  longitude: locationDetail.longitude,
                   latitudeDelta: 0.0922,
                   longitudeDelta: 0.0421,
                 }}
                 coordinate={{
-                  latitude: locationDetail ? locationDetail?.lat : 0.0,
-                  longitude: locationDetail ? locationDetail?.lng : 0.0,
+                  latitude: locationDetail.latitude,
+                  longitude: locationDetail.longitude,
                 }}
               />
               <TextInput
                 placeholder={strings.venueDetailsPlaceholder}
                 style={styles.detailsInputStyle}
                 onChangeText={(value) => {
-                  console.log('location details', locationDetail);
-                  console.log('vanue details', value);
                   setLocationDetail({...locationDetail, venue_detail: value});
                 }}
-                value={locationDetail?.venue_detail}
+                value={locationDetail.venue_detail}
                 multiline={true}
                 textAlignVertical={'center'}
                 placeholderTextColor={colors.userPostTimeColor}
@@ -1193,7 +1168,7 @@ export default function CreateEventScreen({navigation, route}) {
               <FlatList
                 scrollEnabled={false}
                 data={eventPostedList}
-                renderItem={renderEventPostedOpetions}
+                renderItem={renderEventPostedOptions}
                 style={{marginTop: 15}}
               />
             </View>

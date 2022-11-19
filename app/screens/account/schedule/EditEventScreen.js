@@ -27,21 +27,17 @@ import {
 } from 'react-native';
 import moment from 'moment';
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
-import Geolocation from '@react-native-community/geolocation';
 import ActionSheet from 'react-native-actionsheet';
 
 import Modal from 'react-native-modal';
 import {useIsFocused} from '@react-navigation/native';
 import ImagePicker from 'react-native-image-crop-picker';
-
 import {check, PERMISSIONS, RESULTS, request} from 'react-native-permissions';
-
 import {format} from 'react-string-format';
 import AuthContext from '../../../auth/context';
 import EventItemRender from '../../../components/Schedule/EventItemRender';
 import EventMapView from '../../../components/Schedule/EventMapView';
 import EventMonthlySelection from '../../../components/Schedule/EventMonthlySelection';
-// import EventSearchLocation from '../../../components/Schedule/EventSearchLocation';
 import EventTextInputItem from '../../../components/Schedule/EventTextInputItem';
 import EventTimeSelectItem from '../../../components/Schedule/EventTimeSelectItem';
 import DateTimePickerView from '../../../components/Schedule/DateTimePickerModal';
@@ -50,9 +46,7 @@ import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 import {strings} from '../../../../Localization/translation';
 import TCProfileView from '../../../components/TCProfileView';
-
 import ActivityLoader from '../../../components/loader/ActivityLoader';
-import {getLocationNameWithLatLong} from '../../../api/External';
 import BlockAvailableTabView from '../../../components/Schedule/BlockAvailableTabView';
 import TCKeyboardView from '../../../components/TCKeyboardView';
 import TCTouchableLabel from '../../../components/TCTouchableLabel';
@@ -78,7 +72,6 @@ import {editEvent} from '../../../api/Schedule';
 import Verbs from '../../../Constants/Verbs';
 
 export default function EditEventScreen({navigation, route}) {
-  console.log('EVENT DATA==>', route?.params?.data);
   const eventPostedList = [
     {value: 0, text: 'Schedule only'},
     {value: 1, text: 'Schedule & posts'},
@@ -222,46 +215,16 @@ export default function EditEventScreen({navigation, route}) {
     if (isFocused) {
       getSports();
       if (route?.params?.locationName) {
-        console.log('route.params.locationName', route.params.locationName);
+        console.log('route.params.locationDetail', route.params.locationDetail)
+        setLocationDetail({
+              ...locationDetail,
+              latitude:route.params.locationDetail.lat,
+              longitude:route.params.locationDetail.lng,
+            });
         setSearchLocation(route.params.locationName);
       }
     }
   }, [isFocused, route.params]);
-
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', async () => {
-      if (route.params.comeName) {
-        Geolocation.getCurrentPosition(
-          (position) => {
-            const latValue = position.coords.latitude;
-            const longValue = position.coords.longitude;
-            const obj = {
-              ...locationDetail,
-              lat: latValue,
-              lng: longValue,
-            };
-            setLocationDetail(obj);
-            getLocationNameWithLatLong(latValue, longValue, authContext).then(
-              (res) => {
-                setSearchLocation(res.results[0].formatted_address);
-              },
-            );
-          },
-          (error) => {
-            console.log('Error :-', error);
-          },
-          {
-            enableHighAccuracy: true,
-            timeout: 20000,
-            maximumAge: 10000,
-          },
-        );
-      }
-    });
-    return () => {
-      unsubscribe();
-    };
-  }, [route.params.comeName]);
 
   useEffect(() => {
     setloading(true);
@@ -584,8 +547,7 @@ export default function EditEventScreen({navigation, route}) {
     eventEndDateTime,
     eventStartDateTime,
     eventTitle,
-    locationDetail?.venue_detail,
-    locationDetail?.venue_name,
+    locationDetail,
     maxAttendees,
     minAttendees,
     sportsSelection,
@@ -679,8 +641,8 @@ export default function EditEventScreen({navigation, route}) {
 
         location: {
           location_name: searchLocation,
-          latitude: locationDetail.lat,
-          longitude: locationDetail.lng,
+          latitude: locationDetail.latitude,
+          longitude: locationDetail.longitude,
           venue_name: locationDetail.venue_name,
           venue_detail: locationDetail.venue_detail,
         },
@@ -737,8 +699,6 @@ export default function EditEventScreen({navigation, route}) {
       }
     }
   };
-
-  console.log('Location screen ==> EditEventScreen Screen')
 
   return (
     <>
@@ -906,7 +866,7 @@ export default function EditEventScreen({navigation, route}) {
 
             <EventItemRender title={strings.place}>
               <TextInput
-                placeholder={'Venue name'}
+                placeholder={strings.venueNamePlaceholder}
                 style={styles.textInputStyle}
                 onChangeText={(value) => {
                   setLocationDetail({...locationDetail, venue_name: value});
@@ -924,7 +884,7 @@ export default function EditEventScreen({navigation, route}) {
                 showNextArrow={true}
                 onPress={() => {
                   navigation.navigate('SearchLocationScreen', {
-                    comeFrom: 'CreateEventScreen',
+                    comeFrom: 'EditEventScreen',
                   });
                   navigation.setParams({comeName: null});
                 }}
@@ -936,18 +896,18 @@ export default function EditEventScreen({navigation, route}) {
               />
               <EventMapView
                 region={{
-                  latitude: locationDetail.latitude ?? 0.0,
-                  longitude: locationDetail.longitude ?? 0.0,
+                  latitude: locationDetail.latitude,
+                  longitude: locationDetail.longitude,
                   latitudeDelta: 0.0922,
                   longitudeDelta: 0.0421,
                 }}
                 coordinate={{
-                  latitude: locationDetail.latitude ?? 0.0,
-                  longitude: locationDetail.longitude ?? 0.0,
+                  latitude: locationDetail.latitude,
+                  longitude: locationDetail.longitude,
                 }}
               />
               <TextInput
-                placeholder={'Details'}
+                placeholder={strings.venueDetailsPlaceholder}
                 style={styles.detailsInputStyle}
                 onChangeText={(value) => {
                   setLocationDetail({...locationDetail, venue_detail: value});

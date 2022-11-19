@@ -28,16 +28,12 @@ import {
 } from 'react-native';
 
 import {TouchableOpacity} from 'react-native-gesture-handler';
-import Geolocation from '@react-native-community/geolocation';
-
 import Modal from 'react-native-modal';
-
 import LinearGradient from 'react-native-linear-gradient';
 import Carousel from 'react-native-snap-carousel';
 import FastImage from 'react-native-fast-image';
 import {useIsFocused} from '@react-navigation/native';
 import {format} from 'react-string-format';
-import {getLocationNameWithLatLong} from '../../api/External';
 import AuthContext from '../../auth/context';
 import images from '../../Constants/ImagePath';
 import fonts from '../../Constants/Fonts';
@@ -46,7 +42,6 @@ import TCTitleWithArrow from '../../components/TCTitleWithArrow';
 import {strings} from '../../../Localization/translation';
 import {getShortsList, getSportsList} from '../../api/Games'; // getRecentGameDetails
 import * as Utility from '../../utils';
-
 import {
   getEntityIndex,
   getGameIndex,
@@ -78,6 +73,7 @@ import {groupUnpaused} from '../../api/Groups';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import {getQBAccountType, QBupdateUser} from '../../utils/QuickBlox';
 import Verbs from '../../Constants/Verbs';
+import {getGeocoordinatesWithPlaceName} from '../../utils/location';
 
 const defaultPageSize = 5;
 export default function LocalHomeScreen({navigation, route}) {
@@ -163,8 +159,8 @@ export default function LocalHomeScreen({navigation, route}) {
       const sport = [];
       res.payload.map((item) =>
         sport.push({
-          label: item?.sport_name,
-          value: item?.sport_name.toLowerCase(),
+          label: item.sport_name,
+          value: item.sport_name.toLowerCase(),
         }),
       );
       setCustomSports([...sport]);
@@ -172,14 +168,14 @@ export default function LocalHomeScreen({navigation, route}) {
   }, []);
 
   useEffect(() => {
-    if (route?.params?.locationText) {
-      setLocation(route?.params?.locationText);
+    if (route.params?.locationText) {
+      setLocation(route.params.locationText);
       setFilters({
         ...filters,
-        location: route?.params?.locationText,
+        location: route.params.locationText,
       });
     }
-  }, [route?.params?.locationText]);
+  }, [route.params?.locationText]);
 
   useEffect(() => {
     if (isFocused) {
@@ -571,10 +567,6 @@ export default function LocalHomeScreen({navigation, route}) {
         });
       }
 
-      console.log('Looking for team/club query:', JSON.stringify(lookingQuery));
-
-      // Looking team query
-
       // Referee query
       const refereeQuery = {
         size: defaultPageSize,
@@ -611,8 +603,6 @@ export default function LocalHomeScreen({navigation, route}) {
           },
         });
       }
-      // Referee query
-      console.log('refereeQuery:=>', JSON.stringify(refereeQuery));
       // Scorekeeper query
       const scorekeeperQuery = {
         size: defaultPageSize,
@@ -650,8 +640,6 @@ export default function LocalHomeScreen({navigation, route}) {
           },
         });
       }
-      // Scorekeeper Query
-      console.log('Recent match query :=>', recentMatchQuery);
 
       getGameIndex(recentMatchQuery).then((games) => {
         Utility.getGamesList(games).then((gamedata) => {
@@ -698,9 +686,7 @@ export default function LocalHomeScreen({navigation, route}) {
   }, [authContext, isFocused, location, selectedSport, sportType]);
 
   const sportsListView = useCallback(
-    ({item, index}) => {
-      console.log('Localhome item:=>', item);
-      return (
+    ({item, index}) =>  (
         <Text
           style={
             selectedSport === item.sport && sportType === item.sport_type
@@ -739,17 +725,11 @@ export default function LocalHomeScreen({navigation, route}) {
             ? strings.moreText
             : Utility.getSportName(item, authContext)}
         </Text>
-      );
-    },
-    [authContext, filters, selectedSport, sportType],
+      ),[authContext, filters, selectedSport, sportType],
   );
 
   const onShortPress = useCallback(
     ({index}) => {
-      // setShortsModalVisible(!shortsModalVisible);
-      // setSelectedShortsIndex(index + 1);
-      // setSelectedShortItem(cardItem);
-
       navigation.navigate('ShortsPlayScreen', {
         currentPage: index + 1,
         shorts: shortsList,
@@ -768,6 +748,7 @@ export default function LocalHomeScreen({navigation, route}) {
     ),
     [onShortPress],
   );
+
   const keyExtractor = useCallback((item, index) => index.toString(), []);
   const renderRecentMatchItems = useCallback(({item}) => {
     console.log('Recent Item:=>', item);
@@ -804,6 +785,7 @@ export default function LocalHomeScreen({navigation, route}) {
     ),
     [],
   );
+
   const renderChallengerItems = useCallback(
     ({item}) => {
       console.log('ttttt', item);
@@ -837,6 +819,7 @@ export default function LocalHomeScreen({navigation, route}) {
     },
     [navigation, selectedSport, sportType],
   );
+
   const renderHiringPlayersItems = useCallback(
     ({item}) => (
       <View style={{marginBottom: 15, backgroundColor: colors.whiteColor}}>
@@ -995,33 +978,23 @@ export default function LocalHomeScreen({navigation, route}) {
   );
 
   const getLocation = () => {
-    Geolocation.getCurrentPosition(
-      (position) => {
-        getLocationNameWithLatLong(
-          position.coords.latitude,
-          position.coords.longitude,
-          authContext,
-        ).then((res) => {
-          let city;
-          res.results[0].address_components.map((e) => {
-            if (e.types.includes('administrative_area_level_2')) {
-              city = e.short_name;
-            }
-          });
-          setLocation(city?.charAt(0).toUpperCase() + city?.slice(1));
-          setFilters({
-            ...filters,
-            location: city?.charAt(0).toUpperCase() + city?.slice(1),
-          });
+    setloading(true);
+    getGeocoordinatesWithPlaceName(Platform.OS)
+      .then((currentLocation) => {
+        setLocation(currentLocation.city?.charAt(0).toUpperCase() + currentLocation.city?.slice(1));
+        setFilters({
+          ...filters,
+          location: currentLocation.city?.charAt(0).toUpperCase() + currentLocation.city?.slice(1),
         });
-        console.log(position.coords.latitude);
-      },
-      (error) => {
-        // See error code charts below.
-        console.log(error.code, error.message);
-      },
-      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
-    );
+        setSelectedLocationOption(0);
+        setloading(false);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
   };
 
   const renderImageProgress = useMemo(() => <ImageProgress />, []);
@@ -1203,8 +1176,6 @@ export default function LocalHomeScreen({navigation, route}) {
         }, 10);
       });
   };
-
-  console.log('Location screen ==> LocalHomeScreen Screen')
 
   return (
     <View style={{flex: 1}}>
@@ -1614,16 +1585,6 @@ export default function LocalHomeScreen({navigation, route}) {
         </View>
       )}
       <Modal
-        // onBackdropPress={() => setLocationPopup(false)}
-        // backdropOpacity={1}
-        // animationType="slide"
-        // hasBackdrop
-        // style={{
-        //   margin: 0,
-        //   backgroundColor: colors.blackOpacityColor,
-        // }}
-        // visible={locationPopup}
-
         onBackdropPress={() => setLocationPopup(false)}
         style={{
           margin: 0,
@@ -1645,13 +1606,8 @@ export default function LocalHomeScreen({navigation, route}) {
           <TCThinDivider width={'100%'} marginBottom={15} />
           <TouchableWithoutFeedback
             onPress={() => {
-              // Geolocation.getCurrentPosition((info) => console.log('Location info:=>', info));
-
-              setSelectedLocationOption(0);
               navigation.setParams({locationText: null});
               getLocation();
-              // setLocation('India');
-
               setTimeout(() => {
                 setLocationPopup(false);
               }, 300);
@@ -1679,20 +1635,15 @@ export default function LocalHomeScreen({navigation, route}) {
           <TouchableWithoutFeedback
             onPress={() => {
               setSelectedLocationOption(1);
-              console.log(
-                'Location:=>',
-                authContext?.entity?.obj?.city.charAt(0).toUpperCase() +
-                  authContext?.entity?.obj?.city?.slice(1),
-              );
               setLocation(
-                authContext?.entity?.obj?.city?.charAt(0).toUpperCase() +
-                  authContext?.entity?.obj?.city?.slice(1),
+                authContext.entity.obj.city?.charAt(0).toUpperCase() +
+                  authContext.entity.obj.city?.slice(1),
               );
               setFilters({
                 ...filters,
                 location:
-                  authContext?.entity?.obj?.city?.charAt(0).toUpperCase() +
-                  authContext?.entity?.obj?.city?.slice(1),
+                  authContext.entity.obj.city?.charAt(0).toUpperCase() +
+                  authContext.entity.obj.city?.slice(1),
               });
               navigation.setParams({locationText: null});
               setTimeout(() => {

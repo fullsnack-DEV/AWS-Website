@@ -71,13 +71,14 @@ const getGeocoordinatesWithPlaceName = async (platform) => {
     // eslint-disable-next-line array-callback-return
     locationDetails.results[0].address_components.map((e) => {
       if (e.types.includes('administrative_area_level_1')) {
-        location.stateAbbr = e.short_name;
+        location.state = e.short_name;
       } else if (e.types.includes('locality')) {
         location.city = e.short_name;
       } else if (e.types.includes('country')) {
         location.country = e.long_name;
       }
     });
+    location.formattedAddress = locationDetails.results[0].formatted_address;
   } catch (error) {
     // do nothing
   }

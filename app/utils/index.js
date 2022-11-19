@@ -2022,11 +2022,8 @@ export const getCalendar = async (
           range: {start_datetime: {lt: toDate}},
         });
       }
-      console.log('calender elastic search :=>', JSON.stringify(body));
-      return getCalendarIndex(body).then((response) => {
-        console.log('elastic search 111:=>', response);
-        return response;
-      });
+      // console.log('calender elastic search :=>', JSON.stringify(body));
+      return getCalendarIndex(body);
     });
   } catch (error) {
     return [];
