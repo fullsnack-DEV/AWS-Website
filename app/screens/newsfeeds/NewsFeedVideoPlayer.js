@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useLayoutEffect} from 'react';
+import React, {useState, useLayoutEffect} from 'react';
 import {
   StyleSheet,
   View,
@@ -6,8 +6,6 @@ import {
   TouchableWithoutFeedback,
   Image,
 } from 'react-native';
-import Geolocation from '@react-native-community/geolocation';
-
 import Video from 'react-native-video';
 import MediaControls, {PLAYER_STATES} from 'react-native-media-controls';
 import images from '../../Constants/ImagePath';
@@ -15,17 +13,12 @@ import colors from '../../Constants/Colors';
 import {strings} from '../../../Localization/translation';
 
 export default function NewsFeedVideoPlayer({navigation, route}) {
-  console.log('Location screen ==> NewsFeedVideoPlayer Screen')
-
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [paused, setPaused] = useState(false);
   const [playerState, setPlayerState] = useState(PLAYER_STATES.PAUSED);
   const [mute] = useState(1.0);
-  useEffect(() => {
-    Geolocation.getCurrentPosition((info) => console.log(info));
-  });
 
   useLayoutEffect(() => {
     navigation.setOptions({

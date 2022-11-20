@@ -1957,8 +1957,6 @@ export const getFiltersOpetions = (opetions) => {
     obj[key] = opetions[key];
     arr.push(obj);
   });
-
-  console.log('filter arr', arr);
   return arr;
 };
 
@@ -2116,7 +2114,6 @@ export const getSportImage = (sportName, type, authContext) => {
 };
 
 export const getGamesList = async (eventsList) => {
-  console.log('eventsListeventsList', eventsList);
   const promiseArr = [];
   let userIDs = [];
   let groupIDs = [];
@@ -2237,7 +2234,6 @@ export const getGamesList = async (eventsList) => {
           }
         }
       }
-      console.log('custom eventsListeventsList', eventsList);
       return eventsList;
     });
   }

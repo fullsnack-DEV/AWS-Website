@@ -419,7 +419,6 @@ export default function LocalHomeScreen({navigation, route}) {
       };
 
       if (location !== strings.worldTitleText) {
-        console.log('locationlocation', location);
         availableForchallengeQuery.query.bool.should[0].bool.must.push({
           multi_match: {
             query: location,
@@ -787,9 +786,7 @@ export default function LocalHomeScreen({navigation, route}) {
   );
 
   const renderChallengerItems = useCallback(
-    ({item}) => {
-      console.log('ttttt', item);
-      return (
+    ({item}) => (
         <View
           style={{
             marginBottom: 15,
@@ -815,8 +812,7 @@ export default function LocalHomeScreen({navigation, route}) {
             }}
           />
         </View>
-      );
-    },
+      ),
     [navigation, selectedSport, sportType],
   );
 
@@ -981,19 +977,23 @@ export default function LocalHomeScreen({navigation, route}) {
     setloading(true);
     getGeocoordinatesWithPlaceName(Platform.OS)
       .then((currentLocation) => {
-        setLocation(currentLocation.city?.charAt(0).toUpperCase() + currentLocation.city?.slice(1));
-        setFilters({
-          ...filters,
-          location: currentLocation.city?.charAt(0).toUpperCase() + currentLocation.city?.slice(1),
-        });
-        setSelectedLocationOption(0);
         setloading(false);
+        if(currentLocation.position){
+          setLocation(currentLocation.city?.charAt(0).toUpperCase() + currentLocation.city?.slice(1));
+          setFilters({
+            ...filters,
+            location: currentLocation.city?.charAt(0).toUpperCase() + currentLocation.city?.slice(1),
+          });
+          setSelectedLocationOption(0);
+        }
       })
       .catch((e) => {
         setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
+        if(e.message !== strings.userdeniedgps){
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        }
       });
   };
 

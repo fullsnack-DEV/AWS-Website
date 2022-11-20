@@ -23,16 +23,12 @@ import {
   ScrollView,
 } from 'react-native';
 
-// import ActivityLoader from '../../components/loader/ActivityLoader';
-
 import Modal from 'react-native-modal';
 import moment from 'moment';
-import Geolocation from '@react-native-community/geolocation';
 import {format} from 'react-string-format';
 import * as Utils from '../../../challenge/manageChallenge/settingUtility';
 import AuthContext from '../../../../auth/context';
 
-import {getLocationNameWithLatLong} from '../../../../api/External';
 import * as Utility from '../../../../utils';
 import colors from '../../../../Constants/Colors';
 import images from '../../../../Constants/ImagePath';
@@ -45,8 +41,9 @@ import {strings} from '../../../../../Localization/translation';
 import {getUserIndex} from '../../../../api/elasticSearch';
 import RenderReferee from './RenderReferee';
 import TCTagsFilter from '../../../../components/TCTagsFilter';
-import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import Verbs from '../../../../Constants/Verbs';
+import {getGeocoordinatesWithPlaceName} from '../../../../utils/location';
+import ActivityLoader from '../../../../components/loader/ActivityLoader';
 
 let stopFetchMore = true;
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
@@ -87,7 +84,7 @@ export default function BookReferee({navigation, route}) {
   }, [navigation, selectedReferee]);
 
   useEffect(() => {
-    if (route?.params?.filters.location !== 'world') {
+    if (route.params?.filters.location !== 'world') {
       setLocationFilterOpetion(3);
     } else {
       setLocationFilterOpetion(0);
@@ -96,14 +93,9 @@ export default function BookReferee({navigation, route}) {
       setSettingPopup(true);
       setTimeout(() => {
         setLocation(route?.params?.locationText);
-        // setFilters({
-        //   ...filters,
-        //   location: route?.params?.locationText,
-        // });
       }, 10);
-      // navigation.setParams({ locationText: null });
     }
-  }, [route?.params?.locationText]);
+  }, [route.params?.locationText]);
 
   const getReferees = useCallback(
     (filerReferee) => {
@@ -262,11 +254,6 @@ export default function BookReferee({navigation, route}) {
 
   const renderRefereeData = ({item}) => {
     const referee = item;
-    const refereeObject = referee?.referee_data?.filter(
-      (refereeItem) => refereeItem?.sport === gameData?.sport,
-    );
-
-    console.log('setting1:=>', refereeObject);
     return (
       <RenderReferee
         data={item}
@@ -321,6 +308,7 @@ export default function BookReferee({navigation, route}) {
     }
     setLoadMore(false);
   };
+
   const handleTagPress = ({item}) => {
     const tempFilter = filters;
     Object.keys(tempFilter).forEach((key) => {
@@ -345,35 +333,23 @@ export default function BookReferee({navigation, route}) {
   };
 
   const getLocation = () => {
-    Geolocation.getCurrentPosition(
-      (position) => {
-        // const position = { coords: { latitude: 49.11637199697782, longitude: -122.7776695216056 } }
-        getLocationNameWithLatLong(
-          position.coords.latitude,
-          position.coords.longitude,
-          authContext,
-        ).then((res) => {
-          let city;
-          res.results[0].address_components.map((e) => {
-            if (e.types.includes('administrative_area_level_2')) {
-              city = e.short_name;
-            }
-          });
-
-          setLocation(city.charAt(0).toUpperCase() + city.slice(1));
-          // setFilters({
-          //   ...filters,
-          //   location: city.charAt(0).toUpperCase() + city.slice(1),
-          // });
-        });
-        console.log(position.coords.latitude);
-      },
-      (error) => {
-        // See error code charts below.
-        console.log(error.code, error.message);
-      },
-      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
-    );
+    setLoading(true);
+    getGeocoordinatesWithPlaceName(Platform.OS)
+      .then((currentLocation) => {
+        setLoading(false);
+        if(currentLocation.position){
+          setLocation(currentLocation.city?.charAt(0).toUpperCase() + currentLocation.city?.slice(1));
+          setLocationFilterOpetion(2);
+        }
+      })
+      .catch((e) => {
+        setLoading(false);
+        if(e.message !== strings.userdeniedgps){
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        }
+      });
   };
 
   const applyFilter = useCallback((fil) => {
@@ -431,12 +407,9 @@ export default function BookReferee({navigation, route}) {
     setMaxFee(0);
   };
 
-  console.log('Location screen ==> BookReferee Screen')
-
   return (
     <View>
       <ActivityLoader visible={loading} />
-
       <View style={styles.searchView}>
         <View style={styles.searchViewContainer}>
           <TextInput
@@ -616,7 +589,6 @@ export default function BookReferee({navigation, route}) {
                       </Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
-                          setLocationFilterOpetion(2);
                           getLocation();
                         }}>
                         <Image
@@ -643,14 +615,6 @@ export default function BookReferee({navigation, route}) {
                           flexDirection: 'row',
                           justifyContent: 'space-between',
                         }}>
-                        {/* <TCSearchCityView
-                     getCity={(value) => {
-                       console.log('Value:=>', value);
-                       setSelectedCity(value);
-                     }}
-                     // value={selectedCity}
-                   /> */}
-
                         <View style={styles.searchCityContainer}>
                           <Text style={styles.searchCityText}>
                             {route?.params?.locationText ||

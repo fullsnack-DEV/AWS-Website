@@ -23,16 +23,11 @@ import {
   ScrollView,
 } from 'react-native';
 
-// import ActivityLoader from '../../components/loader/ActivityLoader';
-
 import Modal from 'react-native-modal';
 import moment from 'moment';
-import Geolocation from '@react-native-community/geolocation';
 import {format} from 'react-string-format';
 import * as Utils from '../../../challenge/manageChallenge/settingUtility';
 import AuthContext from '../../../../auth/context';
-
-import {getLocationNameWithLatLong} from '../../../../api/External';
 import * as Utility from '../../../../utils';
 import colors from '../../../../Constants/Colors';
 import images from '../../../../Constants/ImagePath';
@@ -47,14 +42,13 @@ import RenderScorekeeper from './RenderScorekeeper';
 import TCTagsFilter from '../../../../components/TCTagsFilter';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import Verbs from '../../../../Constants/Verbs';
+import {getGeocoordinatesWithPlaceName} from '../../../../utils/location';
 
 let stopFetchMore = true;
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
 
 export default function BookScorekeeper({navigation, route}) {
   const gameData = route?.params?.gameData;
-
-  console.log('gameDatagameData', gameData);
   const [loading, setLoading] = useState(false);
   const authContext = useContext(AuthContext);
   const [filters, setFilters] = useState(route?.params?.filters);
@@ -263,11 +257,6 @@ export default function BookScorekeeper({navigation, route}) {
 
   const renderScorekeeperData = ({item}) => {
     const scorekeeper = item;
-    const scorekeeperObject = scorekeeper?.scorekeeper_data?.filter(
-      (scorekeeperItem) => scorekeeperItem?.sport === gameData?.sport,
-    );
-
-    console.log('setting1:=>', scorekeeperObject);
     return (
       <RenderScorekeeper
         data={item}
@@ -346,35 +335,23 @@ export default function BookScorekeeper({navigation, route}) {
   };
 
   const getLocation = () => {
-    Geolocation.getCurrentPosition(
-      (position) => {
-        // const position = { coords: { latitude: 49.11637199697782, longitude: -122.7776695216056 } }
-        getLocationNameWithLatLong(
-          position.coords.latitude,
-          position.coords.longitude,
-          authContext,
-        ).then((res) => {
-          let city;
-          res.results[0].address_components.map((e) => {
-            if (e.types.includes('administrative_area_level_2')) {
-              city = e.short_name;
-            }
-          });
-
-          setLocation(city.charAt(0).toUpperCase() + city.slice(1));
-          // setFilters({
-          //   ...filters,
-          //   location: city.charAt(0).toUpperCase() + city.slice(1),
-          // });
-        });
-        console.log(position.coords.latitude);
-      },
-      (error) => {
-        // See error code charts below.
-        console.log(error.code, error.message);
-      },
-      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
-    );
+    setLoading(true);
+    getGeocoordinatesWithPlaceName(Platform.OS)
+      .then((currentLocation) => {
+        setLoading(false);
+        if(currentLocation.position){
+          setLocation(currentLocation.city?.charAt(0).toUpperCase() + currentLocation.city?.slice(1));
+          setLocationFilterOpetion(2);
+        }
+      })
+      .catch((e) => {
+        setLoading(false);
+        if(e.message !== strings.userdeniedgps){
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        }
+      });
   };
 
   const applyFilter = useCallback((fil) => {
@@ -432,12 +409,9 @@ export default function BookScorekeeper({navigation, route}) {
     setMaxFee(0);
   };
 
-  console.log('Location screen ==> BookScorekeeper Screen')
-
   return (
     <View>
       <ActivityLoader visible={loading} />
-
       <View style={styles.searchView}>
         <View style={styles.searchViewContainer}>
           <TextInput
@@ -521,7 +495,6 @@ export default function BookScorekeeper({navigation, route}) {
                         setScorekeepers([]);
                         applyFilter(tempFilter);
                       }, 100);
-                      console.log('DONE::');
                     }
                   }}>
                   {strings.apply}
@@ -578,14 +551,6 @@ export default function BookScorekeeper({navigation, route}) {
                               .toUpperCase() +
                               authContext?.entity?.obj?.city.slice(1),
                           );
-                          // setFilters({
-                          //   ...filters,
-                          //   location:
-                          //     authContext?.entity?.obj?.city
-                          //       .charAt(0)
-                          //       .toUpperCase()
-                          //     + authContext?.entity?.obj?.city.slice(1),
-                          // });
                         }}>
                         <Image
                           source={
@@ -608,7 +573,6 @@ export default function BookScorekeeper({navigation, route}) {
                       </Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
-                          setLocationFilterOpetion(2);
                           getLocation();
                         }}>
                         <Image

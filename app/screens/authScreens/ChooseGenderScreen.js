@@ -34,6 +34,7 @@ import ActivityLoader from '../../components/loader/ActivityLoader';
 import Verbs from '../../Constants/Verbs';
 
 export default function ChooseGenderScreen({navigation, route}) {
+
   const [currentLocation, setCurrentLocation] = useState();
   const authContext = useContext(AuthContext);
   const [selected, setSelected] = useState(
@@ -43,10 +44,11 @@ export default function ChooseGenderScreen({navigation, route}) {
           (authContext?.entity?.obj?.gender === strings.other && 2)
       : 0,
   );
-  const [loading, setLoading] = useState(false);
+  const [loading, setloading] = useState(false);
+
   const navigateToChooseLocationScreen = useCallback(
     (genderParam) => {
-      setLoading(false);
+      setloading(false);
       navigation.navigate('ChooseLocationScreen', {
         signupInfo: {
           ...route?.params?.signupInfo,
@@ -93,17 +95,27 @@ export default function ChooseGenderScreen({navigation, route}) {
     });
   }, [navigation, selected, navigateToChooseLocationScreen]);
   useEffect(() => {
-    setLoading(true);
+    setloading(true);
     getGeocoordinatesWithPlaceName(Platform.OS)
       .then((location) => {
-        setCurrentLocation(location);
-        setLoading(false);
+        setloading(false);
+        if(location.position){
+          setCurrentLocation(location);
+        }
+        else{
+          setCurrentLocation(null);
+        }
       })
       .catch((e) => {
-        setLoading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
+        setloading(false);
+        if(e.message === strings.userdeniedgps){
+          setCurrentLocation(null);
+        }
+        else{
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        }
       });
   }, []);
 

@@ -585,8 +585,6 @@ const NewsFeedPostItems = memo(
       renderURLPreview,
       showThreeDot,
     ]);
-
-    console.log('ittttttm', myItem);
     return (
       <View style={{marginBottom: 15}}>
         {renderRepost}

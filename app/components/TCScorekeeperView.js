@@ -18,8 +18,6 @@ function TCScorekeeperView({onPress, showStar = false, data, sport}) {
   } else {
     sportObj = data?.scorekeeper_data;
   }
-  console.log('scorekeeper sport data:=>', sportObj);
-
   return (
     <TouchableOpacity onPress={onPress}>
       <View style={styles.viewContainer}>
