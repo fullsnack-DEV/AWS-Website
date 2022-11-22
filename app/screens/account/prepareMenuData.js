@@ -256,7 +256,7 @@ export const prepareTeamMenu = (authContext, teams, clubs) => {
   return teamMenu;
 };
 
-export const prepareClubMenu = (authContext, teams, clubs) => {
+export const prepareClubMenu = (authContext, clubs) => {
   const clubMenu = [
     {
       key: strings.membersTitle,
@@ -269,12 +269,13 @@ export const prepareClubMenu = (authContext, teams, clubs) => {
         },
       },
     },
-    ...prepareGroupsSubMenu(teams),
+
     {
       key: strings.teamstitle,
       icon: images.accountMyTeams,
       member: [{option: strings.createTeamText, icon: images.createTeam}],
     },
+
     ...paymentMethodMenu(),
     {
       key: strings.settingsTitleText,
