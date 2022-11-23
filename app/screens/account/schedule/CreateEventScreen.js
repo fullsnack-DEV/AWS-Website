@@ -290,20 +290,24 @@ export default function CreateEventScreen({navigation, route}) {
         setloading(true);
         getGeocoordinatesWithPlaceName(Platform.OS)
           .then((location) => {
-            const obj = {
-              ...locationDetail,
-              latitude: location.position.coords.latitude,
-              longitude: location.position.coords.longitude,
-            };
-            setLocationDetail(obj);
-            setSearchLocation(location.formattedAddress);
             setloading(false);
+            if(location.position){
+              const obj = {
+                ...locationDetail,
+                latitude: location.position.coords.latitude,
+                longitude: location.position.coords.longitude,
+              };
+              setLocationDetail(obj);
+              setSearchLocation(location.formattedAddress);
+            }
           })
           .catch((e) => {
             setloading(false);
-            setTimeout(() => {
-              Alert.alert(strings.alertmessagetitle, e.message);
-            }, 10);
+            if(e.message !== strings.userdeniedgps){
+              setTimeout(() => {
+                Alert.alert(strings.alertmessagetitle, e.message);
+              }, 10);
+            }
           });
       }
     });

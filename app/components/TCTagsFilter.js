@@ -15,35 +15,32 @@ import images from '../Constants/ImagePath';
 import {getSportName} from '../utils';
 
 function TCTagsFilter({dataSource, onTagCancelPress, filter, authContext}) {
-  const renderTags = ({item, index}) => {
-    console.log('Ttt:', Object.values(item));
-
-    return (
-      <>
-        {Object.values(item)[0] !== strings.allType &&
-          Object.values(item)[0] !== strings.worldTitleText &&
-          Object.keys(item)[0] !== 'entityID' &&
-          Object.keys(item)[0] !== 'searchText' &&
-          Object.keys(item)[0] !== 'sport_type' && (
-            <View
-              style={styles.textContainer}
+  const renderTags = ({item, index}) => (
+    <>
+      {Object.values(item)[0] !== strings.allType &&
+        Object.values(item)[0] !== strings.worldTitleText &&
+        Object.keys(item)[0] !== 'entityID' &&
+        Object.keys(item)[0] !== 'searchText' &&
+        Object.keys(item)[0] !== 'sport_type' && (
+          <View
+            style={styles.textContainer}
+            onPress={() => onTagCancelPress({item, index})}>
+            <Text style={styles.tagTitleText}>
+              {Object.keys(item)[0] === 'sport'
+                ? getSportName(filter, authContext)
+                : Object.values(item)}
+            </Text>
+            <Image source={images.tagDivider} style={styles.dividerImage} />
+            <TouchableOpacity
+              style={styles.closeButton}
               onPress={() => onTagCancelPress({item, index})}>
-              <Text style={styles.tagTitleText}>
-                {Object.keys(item)[0] === 'sport'
-                  ? getSportName(filter, authContext)
-                  : Object.values(item)}
-              </Text>
-              <Image source={images.tagDivider} style={styles.dividerImage} />
-              <TouchableOpacity
-                style={styles.closeButton}
-                onPress={() => onTagCancelPress({item, index})}>
-                <Image source={images.cancelImage} style={styles.closeButton} />
-              </TouchableOpacity>
-            </View>
-          )}
-      </>
-    );
-  };
+              <Image source={images.cancelImage} style={styles.closeButton} />
+            </TouchableOpacity>
+          </View>
+        )}
+    </>
+  );
+  
   return (
     <View>
       <FlatList

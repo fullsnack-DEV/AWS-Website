@@ -17,14 +17,9 @@ import {
   ScrollView,
 } from 'react-native';
 
-// import ActivityLoader from '../../components/loader/ActivityLoader';
-
 import Modal from 'react-native-modal';
 import moment from 'moment';
-import Geolocation from '@react-native-community/geolocation';
 import AuthContext from '../../auth/context';
-
-import {getLocationNameWithLatLong} from '../../api/External';
 import * as Utility from '../../utils';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
@@ -43,14 +38,15 @@ import TCTagsFilter from '../../components/TCTagsFilter';
 import TCPicker from '../../components/TCPicker';
 import TCRecentMatchCard from '../../components/TCRecentMatchCard';
 import {getGameHomeScreen} from '../../utils/gameUtils';
+import {getGeocoordinatesWithPlaceName} from '../../utils/location';
+import ActivityLoader from '../../components/loader/ActivityLoader';
 
 let stopFetchMore = true;
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
 
 export default function RecentMatchScreen({navigation, route}) {
 
-  console.log('Location screen ==> RecentMatchScreen Screen')
-  // const [loading, setloading] = useState(false);
+  const [loading, setloading] = useState(false);
   const authContext = useContext(AuthContext);
   const [filters, setFilters] = useState(route?.params?.filters);
 
@@ -90,18 +86,13 @@ export default function RecentMatchScreen({navigation, route}) {
   console.log('Recent Match Filter:=>', filters);
 
   useEffect(() => {
-    if (route?.params?.locationText) {
+    if (route.params?.locationText) {
       setSettingPopup(true);
       setTimeout(() => {
-        setLocation(route?.params?.locationText);
-        // setFilters({
-        //   ...filters,
-        //   location: route?.params?.locationText,
-        // });
+        setLocation(route.params?.locationText);
       }, 10);
-      // navigation.setParams({ locationText: null });
     }
-  }, [route?.params?.locationText]);
+  }, [route.params?.locationText]);
   useEffect(() => {
     const list = [
       {
@@ -193,12 +184,6 @@ export default function RecentMatchScreen({navigation, route}) {
           },
         });
       } else if (!filerGames.fromDate && !filerGames?.toDate) {
-        console.log('from:::', filerGames.fromDate);
-
-        console.log(
-          'from:::',
-          parseFloat(new Date(filerGames.fromDate).getTime() / 1000).toFixed(0),
-        );
         recentMatchQuery.query.bool.must.push({
           range: {
             start_datetime: {
@@ -243,8 +228,6 @@ export default function RecentMatchScreen({navigation, route}) {
 
       getGameIndex(recentMatchQuery)
         .then((games) => {
-          console.log('Recent match response :=>', games);
-
           if (games.length > 0) {
             Utility.getGamesList(games).then((gamedata) => {
               const fetchedData = [...recentMatch, ...gamedata];
@@ -345,7 +328,6 @@ export default function RecentMatchScreen({navigation, route}) {
         // delete tempFilter[key];
       }
     });
-    console.log('Temp filter', tempFilter);
     setFilters({...tempFilter});
     // applyFilter();
     setTimeout(() => {
@@ -356,43 +338,23 @@ export default function RecentMatchScreen({navigation, route}) {
   };
 
   const getLocation = () => {
-    Geolocation.getCurrentPosition(
-      (position) => {
-        console.log('Lat/long to position::=>', position);
-        // const position = { coords: { latitude: 49.11637199697782, longitude: -122.7776695216056 } }
-        getLocationNameWithLatLong(
-          position.coords.latitude,
-          position.coords.longitude,
-          authContext,
-        ).then((res) => {
-          console.log(
-            'Lat/long to address::=>',
-            res.results[0].address_components,
-          );
-          let city;
-          res.results[0].address_components.map((e) => {
-            if (e.types.includes('administrative_area_level_2')) {
-              city = e.short_name;
-            }
-          });
-          console.log(
-            'Location:=>',
-            city.charAt(0).toUpperCase() + city.slice(1),
-          );
-          setLocation(city.charAt(0).toUpperCase() + city.slice(1));
-          // setFilters({
-          //   ...filters,
-          //   location: city.charAt(0).toUpperCase() + city.slice(1),
-          // });
-        });
-        console.log(position.coords.latitude);
-      },
-      (error) => {
-        // See error code charts below.
-        console.log(error.code, error.message);
-      },
-      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
-    );
+    setloading(true);
+    getGeocoordinatesWithPlaceName(Platform.OS)
+      .then((currentLocation) => {
+        setloading(false);
+        if(currentLocation.position){
+          setLocation(currentLocation.city?.charAt(0).toUpperCase() + currentLocation.city?.slice(1));
+          setLocationFilterOpetion(2);
+        }
+      })
+      .catch((e) => {
+        setloading(false);
+        if(e.message !== strings.userdeniedgps){
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        }
+      });
   };
 
   const applyFilter = useCallback((fil) => {
@@ -505,6 +467,7 @@ export default function RecentMatchScreen({navigation, route}) {
   };
   return (
     <View>
+      <ActivityLoader visible={loading} />
       <View style={styles.searchView}>
         <View style={styles.searchViewContainer}>
           <TextInput
@@ -663,14 +626,6 @@ export default function RecentMatchScreen({navigation, route}) {
                               .toUpperCase() +
                               authContext?.entity?.obj?.city.slice(1),
                           );
-                          // setFilters({
-                          //   ...filters,
-                          //   location:
-                          //     authContext?.entity?.obj?.city
-                          //       .charAt(0)
-                          //       .toUpperCase()
-                          //     + authContext?.entity?.obj?.city.slice(1),
-                          // });
                         }}>
                         <Image
                           source={
@@ -691,7 +646,6 @@ export default function RecentMatchScreen({navigation, route}) {
                       <Text style={styles.filterTitle}>{strings.locationTitle}</Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
-                          setLocationFilterOpetion(2);
                           getLocation();
                         }}>
                         <Image

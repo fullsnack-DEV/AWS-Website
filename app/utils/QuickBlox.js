@@ -49,10 +49,6 @@ export const getQBSetting = async () => {
         });
       throw response.data.messages || response.data.payload.app.quickblox;
     } else {
-      console.log(
-        'setting response111223:=>',
-        response.data.payload.app.quickblox,
-      );
       QUICKBLOX_BASE_URL =
         response.data.payload.app.quickblox.QUICKBLOX_BASE_URL;
       QB_Auth_Password = response.data.payload.app.quickblox.QB_Auth_Password;

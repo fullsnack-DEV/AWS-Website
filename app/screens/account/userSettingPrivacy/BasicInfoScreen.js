@@ -147,14 +147,24 @@ export default function BasicInfoScreen({navigation, route}) {
     setloading(true);
     getGeocoordinatesWithPlaceName(Platform.OS)
       .then((location) => {
-        setCurrentLocation(location);
         setloading(false);
+        if(location.position){
+          setCurrentLocation(location);
+        }
+        else{
+          setCurrentLocation(null);
+        }
       })
       .catch((e) => {
         setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
+        if(e.message === strings.userdeniedgps){
+          setCurrentLocation(null);
+        }
+        else{
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        }
       });
   }, []);
 
@@ -745,7 +755,7 @@ export default function BasicInfoScreen({navigation, route}) {
             {noData && searchText?.length > 0 && (
               <Text style={styles.noDataText}>{strings.enter3CharText}</Text>
             )}
-            {noData && searchText?.length === 0 && (
+            {currentLocation && noData && searchText?.length === 0 && (
               <View style={{flex: 1}}>
                 <TouchableWithoutFeedback
                   style={styles.listItem}

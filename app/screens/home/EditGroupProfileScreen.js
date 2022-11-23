@@ -148,13 +148,24 @@ export default function EditGroupProfileScreen({navigation, route}) {
     setloading(true)
     getGeocoordinatesWithPlaceName(Platform.OS)
       .then((location) => {
-        setCurrentLocation(location);
         setloading(false);
+        if(location.position){
+          setCurrentLocation(location);
+        }
+        else{
+          setCurrentLocation(null);
+        }
       })
-      .catch((error) => {
+      .catch((e) => {
         setloading(false);
-        // See error code charts below.
-        console.log('location error', error.code, error.message);
+        if(e.message === strings.userdeniedgps){
+          setCurrentLocation(null);
+        }
+        else{
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        }
       });
   }, []);
 
@@ -714,7 +725,7 @@ export default function EditGroupProfileScreen({navigation, route}) {
             {noData && searchText?.length > 0 && (
               <Text style={styles.noDataText}>{strings.enter3CharText}</Text>
             )}
-            {noData && searchText?.length === 0 && (
+            {currentLocation && noData && searchText?.length === 0 && (
               <View style={{flex: 1}}>
                 <TouchableWithoutFeedback
                   style={styles.listItem}

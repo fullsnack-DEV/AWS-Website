@@ -2122,4 +2122,7 @@ export default {
   leaveChatRoom: 'en_LEAVE CHATROOM',
   deleteChatRoom: 'en_DELETE CHATROOM',
   chatRoomNameText: 'en_CHATROOM NAME',
+
+  unabletofecthgps: 'en_Unable to fetch current location',
+  userdeniedgps: 'en_GPS Location is denied by user',
 };

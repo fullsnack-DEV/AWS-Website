@@ -6,6 +6,7 @@ import {
 } from 'react-native-permissions';
 import Geolocation from '@react-native-community/geolocation';
 import {getLocationNameWithLatLong} from '../api/External';
+import {strings} from '../../Localization/translation';
 
 const checkPermAndGetGeoCoordinates = async (platform) => {
   let permKeys = []; // Define permission array in preference order only
@@ -21,23 +22,35 @@ const checkPermAndGetGeoCoordinates = async (platform) => {
     ];
   }
   const availablePermissions = await checkMultiple(permKeys);
-
   if (
     availablePermissions[permKeys[0]] === RESULTS.GRANTED ||
     availablePermissions[permKeys[1]] === RESULTS.GRANTED
   ) {
     return getGeocoordinates();
   }
+
+  if (availablePermissions[permKeys[0]] === RESULTS.BLOCKED && availablePermissions[permKeys[1]] === RESULTS.BLOCKED) {
+    throw new Error(strings.userdeniedgps)
+  }
+
   if (availablePermissions[permKeys[0]] === RESULTS.DENIED) {
     // Denied but still requestable
     if ((await request(permKeys[0])) === RESULTS.GRANTED) {
       return getGeocoordinates();
+    }
+    /* eslint-disable no-else-return */
+    else{
+      throw new Error(strings.userdeniedgps)
     }
   } else if (availablePermissions[permKeys[1]] === RESULTS.DENIED) {
     // Denied but still requestable
     if ((await request(permKeys[1])) === RESULTS.GRANTED) {
       // get geo location
       return getGeocoordinates();
+    }
+    /* no-else-return */
+    else{
+      throw new Error(strings.userdeniedgps)
     }
   }
   return null;

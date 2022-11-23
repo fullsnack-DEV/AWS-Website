@@ -18,14 +18,9 @@ import {
   SafeAreaView,
 } from 'react-native';
 
-// import ActivityLoader from '../../components/loader/ActivityLoader';
-
 import Modal from 'react-native-modal';
-import Geolocation from '@react-native-community/geolocation';
 import FastImage from 'react-native-fast-image';
 import AuthContext from '../../auth/context';
-
-import {getLocationNameWithLatLong} from '../../api/External';
 import * as Utility from '../../utils';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
@@ -39,18 +34,16 @@ import TCTagsFilter from '../../components/TCTagsFilter';
 import TCPicker from '../../components/TCPicker';
 import TCRecruitingPlayers from '../../components/TCRecruitingPlayers';
 import {groupsType} from '../../utils/constant';
+import ActivityLoader from '../../components/loader/ActivityLoader';
 import Verbs from '../../Constants/Verbs';
+import {getGeocoordinatesWithPlaceName} from '../../utils/location';
 
 let stopFetchMore = true;
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
 
 export default function RecruitingPlayerScreen({navigation, route}) {
-
-  console.log('Location screen ==> RecuruitingPlayerScreen Screen')
-
-  // const [loading, setloading] = useState(false);
   const authContext = useContext(AuthContext);
-  const [filters, setFilters] = useState(route?.params?.filters);
+  const [filters, setFilters] = useState(route.params?.filters);
 
   const [settingPopup, setSettingPopup] = useState(false);
   const [locationFilterOpetion, setLocationFilterOpetion] = useState(0);
@@ -63,12 +56,13 @@ export default function RecruitingPlayerScreen({navigation, route}) {
   // eslint-disable-next-line no-unused-vars
   const [loadMore, setLoadMore] = useState(false);
   const [groups, setGroups] = useState(groupsType);
+  const [loading, setloading] = useState(false);
 
   const [selectedSport, setSelectedSport] = useState({
     sport: route?.params?.filters.sport,
     sport_type: route?.params?.filters.sport_type,
   });
-  const [location, setLocation] = useState(route?.params?.filters.location);
+  const [location, setLocation] = useState(route.params?.filters.location);
 
   useEffect(() => {
     groups.forEach((x, i) => {
@@ -81,18 +75,14 @@ export default function RecruitingPlayerScreen({navigation, route}) {
       }
       setGroups([...groups]);
     });
-    if (route?.params?.locationText) {
+    if (route.params?.locationText) {
       setSettingPopup(true);
       setTimeout(() => {
-        setLocation(route?.params?.locationText);
-        // setFilters({
-        //   ...filters,
-        //   location: route?.params?.locationText,
-        // });
+        setLocation(route.params.locationText);
       }, 10);
-      // navigation.setParams({ locationText: null });
     }
-  }, [route?.params?.locationText]);
+  }, [route.params?.locationText]);
+
   useEffect(() => {
     const list = [
       {
@@ -155,7 +145,6 @@ export default function RecruitingPlayerScreen({navigation, route}) {
         });
       }
 
-      console.log('filters::1::=>', filerdata);
       const types = [];
       if (filerdata.groupTeam) {
         types.push(Verbs.entityTypeTeam);
@@ -184,7 +173,6 @@ export default function RecruitingPlayerScreen({navigation, route}) {
       }
 
       // Looking Challengee query
-
       getEntityIndex(recruitingPlayersQuery)
         .then((entity) => {
           if (entity.length > 0) {
@@ -285,8 +273,6 @@ export default function RecruitingPlayerScreen({navigation, route}) {
     });
     setGroups([...temp]);
 
-    console.log('Groups::=>', temp);
-    // applyFilter();
     setTimeout(() => {
       setFilters({...tempFilter});
 
@@ -297,35 +283,23 @@ export default function RecruitingPlayerScreen({navigation, route}) {
   };
 
   const getLocation = () => {
-    Geolocation.getCurrentPosition(
-      (position) => {
-        // const position = { coords: { latitude: 49.11637199697782, longitude: -122.7776695216056 } }
-        getLocationNameWithLatLong(
-          position.coords.latitude,
-          position.coords.longitude,
-          authContext,
-        ).then((res) => {
-          let city;
-          res.results[0].address_components.map((e) => {
-            if (e.types.includes('administrative_area_level_2')) {
-              city = e.short_name;
-            }
-          });
-
-          setLocation(city.charAt(0).toUpperCase() + city.slice(1));
-          // setFilters({
-          //   ...filters,
-          //   location: city.charAt(0).toUpperCase() + city.slice(1),
-          // });
-        });
-        console.log(position.coords.latitude);
-      },
-      (error) => {
-        // See error code charts below.
-        console.log(error.code, error.message);
-      },
-      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
-    );
+    setloading(true);
+    getGeocoordinatesWithPlaceName(Platform.OS)
+      .then((currentLocation) => {
+        setloading(false);
+        if(currentLocation.position){
+          setLocation(currentLocation.city?.charAt(0).toUpperCase() + currentLocation.city?.slice(1));
+          setLocationFilterOpetion(2);
+        }
+      })
+      .catch((e) => {
+        setloading(false);
+        if(e.message !== strings.userdeniedgps){
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        }
+      });
   };
 
   const applyFilter = useCallback((fil) => {
@@ -401,6 +375,7 @@ export default function RecruitingPlayerScreen({navigation, route}) {
 
   return (
     <SafeAreaView style={{flex: 1}}>
+      <ActivityLoader visible={loading} />
       <View style={styles.searchView}>
         <View style={styles.searchViewContainer}>
           <TextInput
@@ -486,9 +461,7 @@ export default function RecruitingPlayerScreen({navigation, route}) {
                       const tempFilter = {...filters};
                       tempFilter.sport = selectedSport.sport;
                       tempFilter.sport_type = selectedSport.sport_type;
-
                       tempFilter.location = location;
-
                       if (
                         groups.filter(
                           (obj) =>
@@ -602,7 +575,6 @@ export default function RecruitingPlayerScreen({navigation, route}) {
                       </Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
-                          setLocationFilterOpetion(2);
                           getLocation();
                         }}>
                         <Image
