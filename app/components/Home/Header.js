@@ -16,9 +16,14 @@ function Header({
   barStyle,
   safeAreaStyle,
   showBackgroundColor = false,
+  isHeaderBlack = false,
 }) {
   return (
-    <SafeAreaView style={{...safeAreaStyle, backgroundColor: colors.offwhite}}>
+    <SafeAreaView
+      style={{
+        ...safeAreaStyle,
+        backgroundColor: isHeaderBlack ? colors.blackColor : colors.offwhite,
+      }}>
       <StatusBar
         backgroundColor={statusbarColor || colors.offwhite}
         barStyle={barStyle || 'dark-content'}

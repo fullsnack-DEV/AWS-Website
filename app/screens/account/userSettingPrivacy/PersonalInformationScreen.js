@@ -32,7 +32,7 @@ import {
 } from 'react-native-responsive-screen';
 import Modal from 'react-native-modal';
 import {check, PERMISSIONS, RESULTS, request} from 'react-native-permissions';
-import {getGeocoordinatesWithPlaceName} from '../../../utils/location'
+import {getGeocoordinatesWithPlaceName} from '../../../utils/location';
 import {updateUserProfile} from '../../../api/Users';
 import AuthContext from '../../../auth/context';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
@@ -98,7 +98,7 @@ export default function PersonalInformationScreen({navigation, route}) {
   const [searchText, setSearchText] = useState('');
   const [cityData, setCityData] = useState([]);
   const [currentLocation, setCurrentLocation] = useState();
-  
+
   useEffect(() => {
     getLocationData(searchText);
   }, [searchText]);
@@ -119,15 +119,7 @@ export default function PersonalInformationScreen({navigation, route}) {
     navigation.setOptions({
       headerShown: false,
     });
-  }, [
-    navigation,
-    languages,
-    phoneNumbers,
-    userInfo,
-    city,
-    state,
-    country
-  ]);
+  }, [navigation, languages, phoneNumbers, userInfo, city, state, country]);
 
   useEffect(() => {
     if (isFocused) {
@@ -164,7 +156,7 @@ export default function PersonalInformationScreen({navigation, route}) {
   }, []);
 
   useEffect(() => {
-    setloading(true)
+    setloading(true);
     getGeocoordinatesWithPlaceName(Platform.OS)
       .then((location) => {
         setloading(false);
@@ -210,16 +202,14 @@ export default function PersonalInformationScreen({navigation, route}) {
       setCity(undefined);
       setState(undefined);
       setCountry(item.terms[0].value);
-    }
-    else if (item.terms.length === 2) {
-      setCity(item.terms[0].value );
+    } else if (item.terms.length === 2) {
+      setCity(item.terms[0].value);
       setState(undefined);
       setCountry(item.terms[1].value);
-    }
-    else if (item.terms.length > 2) {
-      setCity(item.terms[item.terms.length-3].value );
-      setState(item.terms[item.terms.length-2].value);
-      setCountry(item.terms[item.terms.length-1].value);
+    } else if (item.terms.length > 2) {
+      setCity(item.terms[item.terms.length - 3].value);
+      setState(item.terms[item.terms.length - 2].value);
+      setCountry(item.terms[item.terms.length - 1].value);
     }
     setLocationPopup(false);
   };
@@ -228,6 +218,13 @@ export default function PersonalInformationScreen({navigation, route}) {
     setCity(currentLocation.city);
     setState(currentLocation.state);
     setCountry(currentLocation.country);
+    setUserInfo({
+      ...userInfo,
+      city: currentLocation.city,
+      state: currentLocation.state,
+      country: currentLocation.country,
+    });
+
     setLocationPopup(false);
   };
 
@@ -574,9 +571,9 @@ export default function PersonalInformationScreen({navigation, route}) {
                 ...styles.matchFeeTxt,
                 backgroundColor: colors.textFieldBackground,
               }}
-              value={[city, state, country].filter(v => v).join(', ')}
+              value={[city, state, country].filter((v) => v).join(', ')}
               editable={false}
-              pointerEvents='none'
+              pointerEvents="none"
             />
           </TouchableOpacity>
         </View>
@@ -635,7 +632,7 @@ export default function PersonalInformationScreen({navigation, route}) {
               spellCheck={false}
               style={styles.textInput}
               placeholder={strings.searchByCity}
-              clearButtonMode='always'
+              clearButtonMode="always"
               placeholderTextColor={colors.userPostTimeColor}
               onChangeText={(text) => setSearchText(text)}
             />
@@ -653,7 +650,13 @@ export default function PersonalInformationScreen({navigation, route}) {
                 onPress={() => onSelectCurrentLocation()}>
                 <View>
                   <Text style={[styles.cityList, {marginBottom: 3}]}>
-                    {[currentLocation?.city, currentLocation?.state, currentLocation?.country].filter(v => v).join(', ')}
+                    {[
+                      currentLocation?.city,
+                      currentLocation?.state,
+                      currentLocation?.country,
+                    ]
+                      .filter((v) => v)
+                      .join(', ')}
                   </Text>
                   <Text style={styles.curruentLocationText}>
                     {strings.currentLocationText}

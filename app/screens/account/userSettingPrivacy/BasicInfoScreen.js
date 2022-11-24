@@ -187,16 +187,14 @@ export default function BasicInfoScreen({navigation, route}) {
       setCity(undefined);
       setState(undefined);
       setCountry(item.terms[0].value);
-    }
-    else if (item.terms.length === 2) {
-      setCity(item.terms[0].value );
+    } else if (item.terms.length === 2) {
+      setCity(item.terms[0].value);
       setState(undefined);
       setCountry(item.terms[1].value);
-    }
-    else if (item.terms.length > 2) {
-      setCity(item.terms[item.terms.length-3].value );
-      setState(item.terms[item.terms.length-2].value);
-      setCountry(item?.terms[item.terms.length-1].value);
+    } else if (item.terms.length > 2) {
+      setCity(item.terms[item.terms.length - 3].value);
+      setState(item.terms[item.terms.length - 2].value);
+      setCountry(item?.terms[item.terms.length - 1].value);
     }
     setLocationPopup(false);
   };
@@ -249,11 +247,17 @@ export default function BasicInfoScreen({navigation, route}) {
       }
     }
 
-    if (userInfo.phone_numbers && userInfo.phone_numbers[0]?.phone_number.length < 10) {
+    if (
+      userInfo.phone_numbers &&
+      userInfo.phone_numbers[0]?.phone_number.length < 10
+    ) {
       Alert.alert(strings.appName, strings.phoneNumberValidation);
       return false;
     }
-    if (userInfo.phone_numbers && !userInfo.phone_numbers[0]?.country_code.length) {
+    if (
+      userInfo.phone_numbers &&
+      !userInfo.phone_numbers[0]?.country_code.length
+    ) {
       Alert.alert(strings.appName, strings.phoneCodeValidation);
       return false;
     }
@@ -693,7 +697,7 @@ export default function BasicInfoScreen({navigation, route}) {
               {marginBottom: 5},
               {backgroundColor: colors.textFieldBackground},
             ]}
-            value={[city, state, country].filter(v => v).join(', ')}
+            value={[city, state, country].filter((v) => v).join(', ')}
             editable={false}
             pointerEvents="none"></TextInput>
         </TouchableOpacity>
@@ -762,7 +766,13 @@ export default function BasicInfoScreen({navigation, route}) {
                   onPress={() => onSelectCurrentLocation()}>
                   <View>
                     <Text style={[styles.cityList, {marginBottom: 3}]}>
-                      {[currentLocation?.city, currentLocation?.state, currentLocation?.country].filter(v => v).join(', ')}
+                      {[
+                        currentLocation?.city,
+                        currentLocation?.state,
+                        currentLocation?.country,
+                      ]
+                        .filter((v) => v)
+                        .join(', ')}
                     </Text>
                     <Text style={styles.curruentLocationText}>
                       {strings.currentLocationText}

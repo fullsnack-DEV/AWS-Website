@@ -129,7 +129,11 @@ export default function MessageChatAssetModal({
         )}
         <View style={{position: 'absolute'}}>
           <Header
-            mainContainerStyle={{paddingVertical: 5, width: wp(100)}}
+            isHeaderBlack={true}
+            mainContainerStyle={{
+              paddingVertical: 5,
+              width: wp(100),
+            }}
             leftComponent={
               <TouchableOpacity
                 onPress={() => {
@@ -139,7 +143,7 @@ export default function MessageChatAssetModal({
                 <Image
                   source={images.backArrow}
                   resizeMode={'contain'}
-                  style={{height: 22, width: 16, tintColor: colors.blackColor}}
+                  style={{height: 22, width: 16, tintColor: colors.whiteColor}}
                 />
               </TouchableOpacity>
             }
@@ -148,20 +152,11 @@ export default function MessageChatAssetModal({
                 style={{
                   fontFamily: fonts.RBold,
                   fontSize: 16,
-                  color: colors.blackColor,
+                  color: colors.whiteColor,
                   textAlign: 'center',
                 }}>
                 {title}
               </Text>
-            }
-            rightComponent={
-              <TouchableOpacity onPress={() => {}}>
-                <Image
-                  source={images.vertical3Dot}
-                  resizeMode={'contain'}
-                  style={{height: 18, width: 10, tintColor: colors.blackColor}}
-                />
-              </TouchableOpacity>
             }
           />
         </View>

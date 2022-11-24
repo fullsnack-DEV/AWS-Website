@@ -1,5 +1,12 @@
 import React, {useState, useLayoutEffect, useContext} from 'react';
-import {Text, View, StyleSheet, FlatList, Alert} from 'react-native';
+import {
+  Text,
+  View,
+  StyleSheet,
+  FlatList,
+  Alert,
+  SafeAreaView,
+} from 'react-native';
 import {sendInvitationInGroup} from '../../../api/Users';
 import TCTextField from '../../../components/TCTextField';
 import TCMessageButton from '../../../components/TCMessageButton';
@@ -133,6 +140,7 @@ export default function InviteMembersByEmailScreen({navigation}) {
         marginTop={25}
         onPress={() => addEmail(1)}
       />
+      <SafeAreaView />
     </View>
   );
 }

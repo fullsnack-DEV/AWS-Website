@@ -1,5 +1,19 @@
+/* eslint-disable import/no-unresolved */
+/* eslint-disable react-native/split-platform-components */
 import React, {useEffect, useRef, useState} from 'react';
-import {Text, View, StyleSheet, TouchableHighlight} from 'react-native';
+import {
+  Text,
+  View,
+  StyleSheet,
+  TouchableHighlight,
+  SafeAreaView,
+  Pressable,
+  Platform,
+  PermissionsAndroid,
+  Alert,
+} from 'react-native';
+import QB from 'quickblox-react-native-sdk';
+import {CameraRoll} from '@react-native-camera-roll/camera-roll';
 import Modal from 'react-native-modal';
 import LinearGradient from 'react-native-linear-gradient';
 import FastImage from 'react-native-fast-image';
@@ -8,6 +22,7 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 import ProgressBar from 'react-native-progress/Bar';
 import Image from 'react-native-image-progress';
 
+import RNFetchBlob from 'rn-fetch-blob';
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from '../utils';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
@@ -21,8 +36,12 @@ const TCMessage = ({
   fullName,
   type = 'sender',
   messageStyle,
-  attachments = [],
+  // attachments = [],
+  messageData,
 }) => {
+  const {attachments} = messageData;
+  const [attachment] = attachments;
+  const contentGetFileUrlParams = {uid: attachment.id};
   const [showAssetsModal, setShowAssetsModal] = useState(false);
   const [fileUrls, setFileUrls] = useState([]);
   const [play, setPlay] = useState(false);
@@ -50,6 +69,79 @@ const TCMessage = ({
     );
   }, [attachments]);
 
+  const downloadMediaFiles = async (url) => {
+    // Function to check the platform
+    // If iOS then start downloading
+    // If Android then ask for permission
+
+    if (Platform.OS === 'ios') {
+      downloadImg(url);
+    } else {
+      try {
+        const permission = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+          {
+            title: 'Storage Permission Required',
+            message: 'App needs access to your storage to download Photos',
+          },
+        );
+        if (permission === PermissionsAndroid.RESULTS.GRANTED) {
+          // Once user grant the permission start downloading
+          downloadImg(url);
+        } else {
+          // If permission denied then show alert
+          Alert.alert('Storage Permission Not Granted');
+        }
+      } catch (err) {
+        // To handle permission related exception
+        console.warn(err);
+      }
+    }
+  };
+
+  const downloadImg = (url) => {
+    const date = new Date();
+    const image_URL = url;
+    // Getting the extention of the file
+    let ext = getExtention(image_URL);
+    ext = attachment.type === 'image' ? '.png' : '.mp4';
+    // Get config and fs from RNFetchBlob
+    // config: To pass the downloading related options
+    // fs: Directory path where we want our image to download
+    const {config, fs} = RNFetchBlob;
+    const PictureDir = fs.dirs.PictureDir;
+    const options = {
+      fileCache: true,
+      addAndroidDownloads: {
+        // Related to the Android only
+        useDownloadManager: true,
+        notification: true,
+        path: `${PictureDir}/${
+          attachment.type === 'image' ? 'image' : 'video'
+        }_${Math.floor(date.getTime() + date.getSeconds() / 2)}${ext}`,
+        description: attachment.type === 'image' ? 'Image' : 'Video',
+      },
+    };
+    config(options)
+      .fetch('GET', image_URL)
+      .then((res) => {
+        CameraRoll.save(res.data)
+          .then((response) => {
+            if (response) {
+              Alert.alert(
+                `${
+                  attachment.type === 'image' ? 'Image' : 'Video'
+                }  Downloaded Successfully.`,
+              );
+            }
+          })
+          .catch(() => {});
+      });
+  };
+
+  const getExtention = (filename) =>
+    // To get the file extension
+    /[.]/.exec(filename) ? /[^.]+$/.exec(filename) : undefined;
   return (
     <TouchableOpacity onLongPress={onLongPressMessage} style={{paddingTop: 15}}>
       <GradiantContainer
@@ -197,6 +289,40 @@ const TCMessage = ({
           assetURI={fileUrls?.[0] ?? ''}
           backBtnPress={() => setShowAssetsModal(false)}
         />
+        <View style={styles.bottomButtonContainer}>
+          <Pressable
+            style={{flexDirection: 'row', alignItems: 'center'}}
+            onPress={() => {
+              QB.content
+                .getPrivateURL(contentGetFileUrlParams)
+                .then((url) => {
+                  downloadMediaFiles(url);
+                })
+                .catch((e) => {
+                  Alert.alert(e);
+                });
+            }}>
+            <FastImage
+              source={images.downloadImage}
+              resizeMode={'contain'}
+              style={styles.iconStyle}
+            />
+            <Text style={styles.textStyle}>Download</Text>
+          </Pressable>
+          <Pressable
+            style={{flexDirection: 'row', alignItems: 'center'}}
+            onPress={() => {
+              onLongPressMessage();
+            }}>
+            <FastImage
+              source={images.deleteImage}
+              resizeMode={'contain'}
+              style={styles.iconStyle}
+            />
+            <Text style={styles.textStyle}>Delete</Text>
+          </Pressable>
+        </View>
+        <SafeAreaView style={{backgroundColor: colors.blackColor}} />
       </Modal>
     </TouchableOpacity>
   );
@@ -230,6 +356,21 @@ const styles = StyleSheet.create({
     maxWidth: wp(60),
     textAlign: 'left',
   },
+  textStyle: {
+    color: colors.whiteColor,
+    marginLeft: 10,
+    fontSize: 16,
+    fontFamily: fonts.RMedium,
+  },
+  bottomButtonContainer: {
+    flexDirection: 'row',
+    backgroundColor: colors.blackColor,
+    justifyContent: 'space-between',
+    padding: 15,
+    paddingLeft: 45,
+    paddingRight: 45,
+  },
+  iconStyle: {height: 25, width: 25, tintColor: colors.whiteColor},
 });
 
 export default TCMessage;

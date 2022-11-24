@@ -432,6 +432,9 @@ const images = {
   backgroudPlaceholder: require('../assets/images/backgroudPlaceholder.png'),
   backgroundPlaceholder: require('../assets/images/backgroudPlaceholder.png'),
   moreIcon: require('../assets/images/moreIcon.png'),
+
+  downloadImage: require('../assets/images/download_icon.png'),
+  deleteImage: require('../assets/images/deleteImage_icon.png'),
 };
 
 export default images;
