@@ -146,7 +146,7 @@ export default function AcceptEventInviteScreen({navigation, route}) {
 
   const onAccept = (requestId) => {
     setloading(true);
-    acceptRequest(requestId, authContext)
+    acceptRequest({}, requestId, authContext)
       .then(() => {
         navigation.pop(2);
         setloading(false);

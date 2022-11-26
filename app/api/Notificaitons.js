@@ -41,12 +41,12 @@ export const restoreNotification = (id, type, authContext) =>
     authContext,
   });
 
-export const acceptRequest = (requestId, authContext) =>
+export const acceptRequest = (params, requestId, authContext) =>
   makeAPIRequest({
     method: 'post',
     url: `${Config.BASE_URL}requests/${requestId}/accept`,
     authContext,
-    data: {},
+    data: params,
   });
 
 export const declineRequest = (requestId, authContext) =>

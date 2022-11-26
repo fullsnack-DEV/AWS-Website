@@ -5,8 +5,17 @@ import React, {
   useContext,
   useCallback,
 } from 'react';
-import {Text, View, StyleSheet, FlatList, Alert} from 'react-native';
+import {
+  Text,
+  View,
+  StyleSheet,
+  FlatList,
+  Alert,
+  Image,
+  Pressable,
+} from 'react-native';
 
+import {format} from 'react-string-format';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import {strings} from '../../../../Localization/translation';
 import colors from '../../../Constants/Colors';
@@ -18,6 +27,7 @@ import ProfileCheckView from '../../../components/groupConnections/ProfileCheckV
 import TCTags from '../../../components/TCTags';
 import {getUserIndex} from '../../../api/elasticSearch';
 import TCThinDivider from '../../../components/TCThinDivider';
+import images from '../../../Constants/ImagePath';
 
 let stopFetchMore = true;
 
@@ -29,7 +39,7 @@ export default function InviteMembersBySearchScreen({navigation}) {
   const [pageSize] = useState(10);
   const [pageFrom, setPageFrom] = useState(0);
   const [filters, setFilters] = useState();
-
+  const [searchText, setSearchText] = useState('');
   const selectedPlayers = [];
   useEffect(() => {
     getUsers(filters);
@@ -166,12 +176,15 @@ export default function InviteMembersBySearchScreen({navigation}) {
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-      <Text style={styles.infoTextStyle}>{strings.inviteSearchText}</Text>
+      <Text style={styles.infoTextStyle}>
+        {format(strings.inviteSearchText, authContext.entity.role)}
+      </Text>
       <TCSearchBox
         width={'90%'}
         alignSelf="center"
         onChangeText={(text) => {
           // searchFilterFunction(text)
+
           const tempFilter = {...filters};
 
           if (text?.length > 0) {
@@ -185,13 +198,35 @@ export default function InviteMembersBySearchScreen({navigation}) {
           setPageFrom(0);
           setPlayers([]);
           applyFilter(tempFilter);
+          setSearchText(text);
         }}
       />
+
       <TCTags
         dataSource={players}
         titleKey={'full_name'}
         onTagCancelPress={handleTagPress}
       />
+
+      {players.filter((obj) => obj.isChecked).length <= 0 &&
+        searchText.length <= 0 && (
+          <View>
+            <Pressable
+              style={styles.imageTextContainer}
+              onPress={() => {
+                navigation.navigate('InviteMembersByEmailScreen');
+              }}>
+              <Image source={images.inviteEmail} style={styles.imageIcon} />
+              <Text style={styles.textTitle}>{strings.inviteByEmail}</Text>
+            </Pressable>
+            <TCThinDivider />
+            <View style={styles.imageTextContainer}>
+              <Image source={images.copyUrl} style={styles.imageIcon} />
+              <Text style={styles.textTitle}>{strings.copyInviteUrl}</Text>
+            </View>
+            <TCThinDivider />
+          </View>
+        )}
 
       <FlatList
         extraData={players}
@@ -219,12 +254,30 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     marginBottom: 20,
     fontFamily: fonts.RRegular,
-    fontSize: 16,
+    fontSize: 20,
     color: colors.lightBlackColor,
   },
   sendButtonStyle: {
     fontFamily: fonts.RRegular,
     fontSize: 16,
     marginRight: 10,
+  },
+  imageIcon: {
+    height: 40,
+    width: 40,
+    resizeMode: 'contain',
+  },
+  textTitle: {
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
+    marginLeft: 10,
+  },
+  imageTextContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    margin: 25,
+    marginBottom: 15,
+    marginTop: 15,
   },
 });

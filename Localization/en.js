@@ -433,12 +433,12 @@ export default {
   enterAboutPlaceholder: 'en_Enter Your About',
 
   inviteEmailText:
-    'en_Please enter the e-mail account of the person that you want to invite.',
-  inviteSearchText: 'en_Who do you want to invite to your team?',
+    'en_Please enter the e-mail account of the person that you want to invite to the {0}.',
+  inviteSearchText: 'en_Who do you want to invite to your {0}?',
   inviteEventText: 'en_Who do you want to invite to the event?',
 
   admin: 'en_Admin',
-  addEmailText: 'en_+ Add E-Mail',
+  addEmailText: 'en_+ Add Email',
   addPhone: 'en_+ Add Phone',
   addPosition: 'en_+ Add Position',
   camera: 'en_Camera',
@@ -1125,6 +1125,7 @@ export default {
   homeCityText: 'en_Home city',
   describeText: 'en_Describe',
   player: 'en_Player',
+  parent: 'en_Parent (Guardian)',
   coach: 'en_Coach',
   othersText: 'en_Others',
   thisFeaturesNotAvailableText:
@@ -1142,9 +1143,10 @@ export default {
   requestStatusNotText: 'en_status not defined',
   goToTeamHomeText: 'en_Go to team home',
   teamMemberShipText: 'en_Team Membership & Admin Authority',
-  nameCanNotBlankText: 'en_First name cannot be blank',
-  lastNameCanNotBlankText: 'en_Last name cannot be blank',
-  emailNotBlankText: 'en_Email cannot be blank',
+  nameCanNotBlankText: 'en_Please fill in first name.',
+  lastNameCanNotBlankText: 'en_Please fill in last name.',
+  emailNotBlankText: 'en_Please fill in email address.',
+  homeCityCannotBlack: 'en_Please fill in home city.',
   emailAlreadyInUse: 'en_That email address is already in use!',
   registeredWithDiffMethod:
     'You are already registrated with different login method ',
@@ -1184,7 +1186,7 @@ export default {
 
   selectOneMemberText: 'en_Please select one member for connect with profile.',
 
-  inviteBySearchText: 'en_Invite by Search',
+  inviteBySearchText: 'en_Invite By Search',
   inviteEmailtext: 'en_Invite by E-mail',
 
   groupMessageText: 'en_Group Message',
@@ -1194,11 +1196,13 @@ export default {
   sendrequestForBaicInfoText: 'en_Send Request For Basic Info',
   setting: 'en_Setting',
   noPlayer: 'en_No Players',
+  roles: 'en_Roles',
   youCanNotAddMoreEmailText: 'en_You can not add more than 10 email id.',
   send: 'en_Send',
   event: 'en_Event',
   family: 'en_Family',
   rolesStatusText: 'en_Roles & Status',
+  status: 'en_Status',
   fillAllEmailText: 'en_Please fill all email fields.',
   configureEmailAccounttext: 'en_Please configure email in your device',
   NAText: 'en_N/A',
@@ -2125,4 +2129,19 @@ export default {
 
   unabletofecthgps: 'en_Unable to fetch current location',
   userdeniedgps: 'en_GPS Location is denied by user',
+  inviteByEmail: 'en_Invite By Email',
+  copyInviteUrl: 'en_Copy Invitation URL',
+  doNotEnterSameEmail:
+    'en_Please do not enter the same email address mutiple times.',
+  homeCity: 'en_Home City',
+  sentEmailInvitation:
+    'en_Send this user an invitation email to join TownsCup.',
+  emailExistInTC:
+    'en_This email address has been registered for a user account. You can invite the user instead of creating the profile.',
+  emailNotes:
+    'en_The member profile created with this email address will be merged with the user account with the same email address when the user joins the team.',
+  notesPlaceholder: 'en_Write any additional notes here.',
+  cityStateCountry: 'en_City, State, Country',
+  searchForAddress: 'en_Search for Address',
+  addressValidation: 'en_Please fill address field',
 };

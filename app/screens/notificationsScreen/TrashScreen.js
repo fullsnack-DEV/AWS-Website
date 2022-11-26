@@ -316,7 +316,7 @@ function TrashScreen({navigation, route}) {
 
   const onAccept = (requestId) => {
     setloading(true);
-    acceptRequest(requestId, authContext)
+    acceptRequest({}, requestId, authContext)
       .then(() => {
         navigation.goBack();
       })

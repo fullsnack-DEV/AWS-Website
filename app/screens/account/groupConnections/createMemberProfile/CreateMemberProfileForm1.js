@@ -33,19 +33,14 @@ import images from '../../../../Constants/ImagePath';
 import {strings} from '../../../../../Localization/translation';
 import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
-import TCPicker from '../../../../components/TCPicker';
 import TCLable from '../../../../components/TCLabel';
 import TCTextField from '../../../../components/TCTextField';
-import TCPhoneNumber from '../../../../components/TCPhoneNumber';
 import TCMessageButton from '../../../../components/TCMessageButton';
-import TCTouchableLabel from '../../../../components/TCTouchableLabel';
 import AuthContext from '../../../../auth/context';
-import DataSource from '../../../../Constants/DataSource';
 import {
   deleteConfirmation,
   getHitSlop,
   heightPercentageToDP,
-  monthNames,
   widthPercentageToDP,
 } from '../../../../utils';
 import TCFormProgress from '../../../../components/TCFormProgress';
@@ -54,6 +49,8 @@ import DateTimePickerView from '../../../../components/Schedule/DateTimePickerMo
 import Verbs from '../../../../Constants/Verbs';
 
 import {searchAddress, searchCityState} from '../../../../api/External';
+import {checkTownscupEmail} from '../../../../api/Users';
+import ActivityLoader from '../../../../components/loader/ActivityLoader';
 
 let entity = {};
 
@@ -64,7 +61,7 @@ export default function CreateMemberProfileForm1({navigation, route}) {
   const [searchText, setSearchText] = useState('');
   const [cityData, setCityData] = useState([]);
   const [locationData, setLocationData] = useState([]);
-
+  const [loading, setLoading] = useState(false);
   const isFocused = useIsFocused();
 
   const actionSheet = useRef();
@@ -72,30 +69,18 @@ export default function CreateMemberProfileForm1({navigation, route}) {
   const [role, setRole] = useState('');
   const [location, setLocation] = useState();
 
-  const [phoneNumber, setPhoneNumber] = useState([
-    {
-      id: 0,
-      phone_number: '',
-      country_code: '',
-    },
-  ]);
-
   const [minDateValue, setMinDateValue] = useState(new Date());
   const [maxDateValue, setMaxDateValue] = useState(new Date());
   const [memberInfo, setMemberInfo] = useState({});
   const [firstName, setFirstName] = useState();
   const [lastName, setLastName] = useState();
   const [email, setEmail] = useState();
-  const [gender, setGender] = useState();
-  const [city, setCity] = useState();
-  const [state, setState] = useState();
-  const [country, setCountry] = useState();
-  const [postalCode, setPostalCode] = useState();
+  const [homeCity, setHomeCity] = useState();
+
   const [birthday, setBirthday] = useState();
 
   useEffect(() => {
     searchAddress(searchText).then((response) => {
-      console.log('search address:=>', response);
       setLocationData(response.results);
     });
   }, [searchText]);
@@ -127,36 +112,27 @@ export default function CreateMemberProfileForm1({navigation, route}) {
   useEffect(() => {
     if (isFocused) {
       if (route?.params?.city) {
-        setCity(route?.params?.city);
-        setState(route?.params?.state);
-        setCountry(route?.params?.country);
+        setHomeCity(route?.params?.city);
       } else {
-        setCity('');
-        setState('');
-        setCountry('');
+        setHomeCity('');
       }
     }
   }, [isFocused]);
 
-  const addPhoneNumber = () => {
-    const obj = {
-      id: phoneNumber.length === 0 ? 0 : phoneNumber.length,
-      code: '',
-      number: '',
-    };
-    setPhoneNumber([...phoneNumber, obj]);
-  };
-
   const checkValidation = useCallback(() => {
-    if (firstName === '') {
+    if (!firstName) {
       Alert.alert(strings.appName, strings.nameCanNotBlankText);
       return false;
     }
-    if (lastName === '') {
+    if (!lastName) {
       Alert.alert(strings.appName, strings.lastNameCanNotBlankText);
       return false;
     }
-    if (email === '') {
+    if (!homeCity) {
+      Alert.alert(strings.appName, strings.homeCityCannotBlack);
+      return false;
+    }
+    if (!email) {
       Alert.alert(strings.appName, strings.emailNotBlankText);
       return false;
     }
@@ -166,7 +142,7 @@ export default function CreateMemberProfileForm1({navigation, route}) {
     }
 
     return true;
-  }, [email, firstName, lastName]);
+  }, [email, firstName, lastName, homeCity]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -175,44 +151,45 @@ export default function CreateMemberProfileForm1({navigation, route}) {
           style={styles.nextButtonStyle}
           onPress={() => {
             if (checkValidation()) {
-              if (entity.role === Verbs.entityTypeTeam) {
-                navigation.navigate('CreateMemberProfileTeamForm2', {
-                  form1: {
-                    ...memberInfo,
-                    is_member: true,
-                    first_name: firstName,
-                    last_name: lastName,
-                    email,
-                    street_address: location,
-                    city,
-                    state_abbr: state,
-                    country,
-                    postal_code: postalCode,
-                    birthday,
-                    gender,
-                  },
+              setLoading(true);
+              checkUserIsRegistratedOrNotWithTownscup(email)
+                .then((userExist) => {
+                  if (!userExist) {
+                    setLoading(false);
+
+                    const form1Object = {
+                      ...memberInfo,
+                      is_member: true,
+                      first_name: firstName,
+                      last_name: lastName,
+                      email,
+                      home_city: homeCity,
+                    };
+                    if (entity.role === Verbs.entityTypeTeam) {
+                      navigation.navigate('CreateMemberProfileTeamForm2', {
+                        form1: form1Object,
+                      });
+                    } else if (entity.role === Verbs.entityTypeClub) {
+                      navigation.navigate('CreateMemberProfileClubForm2', {
+                        form1: form1Object,
+                      });
+                    }
+                  } else {
+                    setTimeout(() => {
+                      Alert.alert(strings.emailExistInTC);
+                    });
+                    setLoading(false);
+                  }
+                })
+                .catch((error) => {
+                  setTimeout(() => {
+                    Alert.alert(error);
+                  });
+                  setLoading(false);
                 });
-              } else if (entity.role === Verbs.entityTypeClub) {
-                navigation.navigate('CreateMemberProfileClubForm2', {
-                  form1: {
-                    ...memberInfo,
-                    is_member: true,
-                    first_name: firstName,
-                    last_name: lastName,
-                    email,
-                    gender,
-                    street_address: location,
-                    city,
-                    state_abbr: state,
-                    country,
-                    postal_code: postalCode,
-                    birthday,
-                  },
-                });
-              }
             }
           }}>
-          Next
+          {strings.next}
         </Text>
       ),
     });
@@ -225,14 +202,10 @@ export default function CreateMemberProfileForm1({navigation, route}) {
     lastName,
     email,
 
-    city,
-    state,
-    country,
-    postalCode,
     checkValidation,
     birthday,
-    gender,
     location,
+    homeCity,
   ]);
 
   // Email input format validation
@@ -251,18 +224,8 @@ export default function CreateMemberProfileForm1({navigation, route}) {
       actionSheet.current.show();
     }, 0);
   };
-  // const openCamera = (width = 400, height = 400) => {
-  //   ImagePicker.openCamera({
-  //     width,
-  //     height,
-  //     cropping: true,
-  //   }).then((data) => {
-  //     setMemberInfo({ ...memberInfo, full_image: data.path })
-  //   });
-  // }
 
   const openCamera = (width = 400, height = 400) => {
-    // check(PERMISSIONS.IOS.CAMERA)
     check(
       Platform.select({
         ios: PERMISSIONS.IOS.CAMERA,
@@ -284,13 +247,10 @@ export default function CreateMemberProfileForm1({navigation, route}) {
                 .then((data) => {
                   setMemberInfo({...memberInfo, full_image: data.path});
                 })
-                .catch((e) => {
-                  console.log(e);
-                });
+                .catch(() => {});
             });
             break;
           case RESULTS.LIMITED:
-            console.log('The permission is limited: some actions are possible');
             break;
           case RESULTS.GRANTED:
             ImagePicker.openCamera({
@@ -301,12 +261,9 @@ export default function CreateMemberProfileForm1({navigation, route}) {
               .then((data) => {
                 setMemberInfo({...memberInfo, full_image: data.path});
               })
-              .catch((e) => {
-                console.log(e);
-              });
+              .catch(() => {});
             break;
           case RESULTS.BLOCKED:
-            console.log('The permission is denied and not requestable anymore');
             break;
         }
       })
@@ -331,118 +288,63 @@ export default function CreateMemberProfileForm1({navigation, route}) {
   const handleCancelPress = () => {
     setShowDate(!showDate);
   };
-  const renderPhoneNumber = ({item, index}) => (
-    <TCPhoneNumber
-      marginBottom={2}
-      placeholder={strings.selectCode}
-      value={item.country_code}
-      numberValue={item.phone_number}
-      onValueChange={(value) => {
-        const tempCode = [...phoneNumber];
-        tempCode[index].country_code = value;
-        setPhoneNumber(tempCode);
-        const filteredNumber = phoneNumber.filter(
-          (obj) =>
-            ![null, undefined, ''].includes(
-              obj.phone_number && obj.country_code,
-            ),
+
+  const renderLocationItem = ({item}) => (
+    <TouchableOpacity
+      style={styles.listItem}
+      onPress={() => {
+        // const shortAddress = '';
+
+        const cty = item.address_components.filter((obj) =>
+          obj.types.some((a) => a === 'locality'),
         );
-        setMemberInfo({
-          ...memberInfo,
-          phone_numbers: filteredNumber.map(({country_code, phone_number}) => ({
-            country_code,
-            phone_number,
-          })),
-        });
-      }}
-      onChangeText={(text) => {
-        const tempPhone = [...phoneNumber];
-        tempPhone[index].phone_number = text;
-        setPhoneNumber(tempPhone);
-        const filteredNumber = phoneNumber.filter(
-          (obj) =>
-            ![null, undefined, ''].includes(
-              obj.phone_number && obj.country_code,
-            ),
+
+        const sNumber = item.address_components.filter((obj) =>
+          obj.types.some((c) => c === 'street_number'),
         );
-        setMemberInfo({
-          ...memberInfo,
-          phone_numbers: filteredNumber.map(({country_code, phone_number}) => ({
-            country_code,
-            phone_number,
-          })),
-        });
-      }}
-    />
+
+        const add = item.address_components.filter((obj) =>
+          obj.types.some((c) => c === 'route'),
+        );
+
+        setHomeCity(cty.length && cty[0].long_name);
+
+        setLocation(
+          `${sNumber.length ? `${sNumber[0].long_name}, ` : ''} ${
+            add.length ? `${add[0].long_name}` : ''
+          }`,
+        );
+
+        setVisibleLocationModal(false);
+      }}>
+      <Text style={styles.cityList}>{item.formatted_address}</Text>
+    </TouchableOpacity>
   );
 
-  const renderLocationItem = ({item}) => {
-    console.log('Location item:=>', item);
-    return (
-      <TouchableOpacity
-        style={styles.listItem}
-        onPress={() => {
-          // const shortAddress = '';
+  const renderCityStateCountryItem = ({item}) => (
+    <TouchableOpacity
+      style={styles.listItem}
+      onPress={() => {
+        setHomeCity(item?.terms?.[0]?.value ?? '');
 
-          const cnty = item.address_components.filter((obj) =>
-            obj.types.some((c) => c === 'country'),
-          );
-          const sts = item.address_components.filter((obj) =>
-            obj.types.some((s) => s === 'administrative_area_level_1'),
-          );
-          const cty = item.address_components.filter((obj) =>
-            obj.types.some((a) => a === 'locality'),
-          );
-          const pCode = item.address_components.filter((obj) =>
-            obj.types.some((p) => p === 'postal_code'),
-          );
+        setVisibleCityModal(false);
+        setCityData([]);
+        setLocationData([]);
+      }}>
+      <Text style={styles.cityList}>{item.description}</Text>
+    </TouchableOpacity>
+  );
 
-          const sNumber = item.address_components.filter((obj) =>
-            obj.types.some((c) => c === 'street_number'),
-          );
-
-          const add = item.address_components.filter((obj) =>
-            obj.types.some((c) => c === 'route'),
-          );
-          console.log('dsfsdfsd', cnty, sts, cty, pCode);
-
-          setCountry(cnty.length && cnty[0].long_name);
-          setPostalCode(pCode.length && pCode[0].long_name);
-
-          setState(sts.length && sts[0].long_name);
-          setCity(cty.length && cty[0].long_name);
-
-          setLocation(
-            `${sNumber.length ? `${sNumber[0].long_name}, ` : ''} ${
-              add.length ? `${add[0].long_name}` : ''
-            }`,
-          );
-
-          setVisibleLocationModal(false);
-        }}>
-        <Text style={styles.cityList}>{item.formatted_address}</Text>
-      </TouchableOpacity>
-    );
-  };
-
-  const renderCityStateCountryItem = ({item}) => {
-    console.log('Location item:=>', item);
-    return (
-      <TouchableOpacity
-        style={styles.listItem}
-        onPress={() => {
-          setCity(item?.terms?.[0]?.value ?? '');
-          setState(item?.terms?.[1]?.value ?? '');
-          setCountry(item?.terms?.[2]?.value ?? '');
-          setVisibleCityModal(false);
-          setCityData([]);
-          setLocationData([]);
-          console.log('selected item of city', item);
-        }}>
-        <Text style={styles.cityList}>{item.description}</Text>
-      </TouchableOpacity>
-    );
-  };
+  const checkUserIsRegistratedOrNotWithTownscup = (emailID) =>
+    new Promise((resolve) => {
+      checkTownscupEmail(encodeURIComponent(emailID))
+        .then(() => {
+          resolve(true);
+        })
+        .catch(() => {
+          resolve(false);
+        });
+    });
 
   return (
     <>
@@ -450,7 +352,7 @@ export default function CreateMemberProfileForm1({navigation, route}) {
         totalSteps={role === Verbs.entityTypeClub ? 3 : 2}
         curruentStep={1}
       />
-
+      <ActivityLoader visible={loading} />
       <TCKeyboardView>
         <View style={styles.profileView}>
           <Image
@@ -472,104 +374,58 @@ export default function CreateMemberProfileForm1({navigation, route}) {
         </View>
 
         <View>
-          <TCLable title={strings.nameText} required={true} />
-          <TCTextField
-            value={firstName}
-            autoCapitalize="none"
-            autoCorrect={false}
-            onChangeText={(text) => setFirstName(text)}
-            placeholder={strings.firstName}
-          />
-          <TCTextField
-            value={lastName}
-            autoCapitalize="none"
-            autoCorrect={false}
-            onChangeText={(text) => setLastName(text)}
-            placeholder={strings.lastName}
-            style={{marginTop: 12}}
-          />
+          <TCLable title={strings.nameText.toUpperCase()} required={true} />
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              marginTop: 12,
+            }}>
+            <TCTextField
+              value={firstName}
+              autoCapitalize="none"
+              autoCorrect={false}
+              onChangeText={(text) => setFirstName(text)}
+              placeholder={strings.firstName}
+              width={'48%'}
+            />
+            <TCTextField
+              value={lastName}
+              autoCapitalize="none"
+              autoCorrect={false}
+              onChangeText={(text) => setLastName(text)}
+              placeholder={strings.lastName}
+              width={'48%'}
+            />
+          </View>
         </View>
         <View>
-          <TCLable title={strings.gender} />
-          <TCPicker
-            dataSource={DataSource.Gender}
-            placeholder={strings.selectGenderPlaceholder}
-            value={gender}
-            onValueChange={(value) => {
-              setGender(value);
-            }}
-          />
+          <TCLable title={strings.homeCity.toUpperCase()} required={true} />
+          <TouchableOpacity onPress={() => setVisibleCityModal(true)}>
+            <TCTextField
+              value={homeCity}
+              autoCapitalize="none"
+              autoCorrect={false}
+              placeholder={strings.homeCity}
+              pointerEvents="none"
+              editable={false}
+            />
+          </TouchableOpacity>
         </View>
         <View>
-          <TCLable title={strings.birthDatePlaceholder} />
-
-          <TCTouchableLabel
-            title={
-              birthday &&
-              `${`${monthNames[new Date(birthday).getMonth()]} ${new Date(
-                birthday,
-              ).getDate()}`}, ${new Date(birthday).getFullYear()}`
-            }
-            placeholder={strings.birthDatePlaceholder}
-            onPress={() => setShowDate(!showDate)}
+          <TCLable
+            title={strings.emailPlaceHolder.toUpperCase()}
+            required={true}
           />
-        </View>
-        <View>
-          <TCLable title={'E-Mail'} required={true} />
           <TCTextField
             value={email}
             autoCapitalize="none"
             autoCorrect={false}
             onChangeText={(text) => setEmail(text)}
-            placeholder={strings.addressPlaceholder}
+            placeholder={strings.emailPlaceHolder}
             keyboardType={'email-address'}
           />
-        </View>
-        <View>
-          <TCLable title={strings.phone} />
-          <FlatList
-            data={phoneNumber}
-            renderItem={renderPhoneNumber}
-            keyExtractor={(item, index) => index.toString()}></FlatList>
-        </View>
-        {phoneNumber?.length < 5 && (
-          <TCMessageButton
-            title={strings.addPhone}
-            width={85}
-            alignSelf="center"
-            marginTop={15}
-            onPress={() => addPhoneNumber()}
-          />
-        )}
-
-        <View>
-          <TCLable title={strings.venueAddressPlaceholder} />
-
-          {city ? (
-            <TextInput
-              placeholder={strings.addressPlaceholder}
-              placeholderTextColor={colors.userPostTimeColor}
-              style={[styles.matchFeeTxt, {marginBottom: 5}]}
-              value={location}
-              onChangeText={(text) => setLocation(text)}
-            />
-          ) : (
-            <TouchableOpacity
-              onPress={
-                () => setVisibleLocationModal(true)
-                //   navigation.navigate('SearchLocationScreen', {
-                //     comeFrom: 'CreateMemberProfileForm1',
-                //   })
-              }>
-              <TextInput
-                placeholder={strings.addressPlaceholder}
-                placeholderTextColor={colors.userPostTimeColor}
-                style={[styles.matchFeeTxt, {marginBottom: 5}]}
-                value={location}
-                editable={false}
-                pointerEvents="none"></TextInput>
-            </TouchableOpacity>
-          )}
+          <Text style={styles.notesStyle}>{strings.emailNotes}</Text>
         </View>
 
         {location && (
@@ -583,9 +439,7 @@ export default function CreateMemberProfileForm1({navigation, route}) {
               placeholder={strings.searchByCityStateText}
               placeholderTextColor={colors.userPostTimeColor}
               style={[styles.matchFeeTxt, {marginBottom: 5}]}
-              value={`${city ? `${city} ,` : ''} ${state ? `${state} ,` : ''} ${
-                country || ''
-              }`}
+              value={homeCity || ''}
               editable={false}
               pointerEvents="none"></TextInput>
           </TouchableOpacity>
@@ -648,6 +502,7 @@ export default function CreateMemberProfileForm1({navigation, route}) {
             />
           </View>
         )}
+
         <Modal
           isVisible={visibleLocationModal}
           onBackdropPress={() => {
@@ -750,97 +605,95 @@ export default function CreateMemberProfileForm1({navigation, route}) {
             </View>
           </View>
         </Modal>
-        <Modal
-          isVisible={visibleCityModal}
-          onBackdropPress={() => {
-            setVisibleCityModal(false);
-            setCityData([]);
-            setLocationData([]);
-          }}
-          onRequestClose={() => {
-            setVisibleCityModal(false);
-            setCityData([]);
-            setLocationData([]);
-          }}
-          animationInTiming={300}
-          animationOutTiming={800}
-          backdropTransitionInTiming={300}
-          backdropTransitionOutTiming={800}
+      </TCKeyboardView>
+
+      <Modal
+        isVisible={visibleCityModal}
+        onBackdropPress={() => {
+          setVisibleCityModal(false);
+          setCityData([]);
+          setLocationData([]);
+        }}
+        onRequestClose={() => {
+          setVisibleCityModal(false);
+          setCityData([]);
+          setLocationData([]);
+        }}
+        animationInTiming={300}
+        animationOutTiming={800}
+        backdropTransitionInTiming={300}
+        backdropTransitionOutTiming={800}
+        style={{
+          margin: 0,
+        }}>
+        <View
           style={{
-            margin: 0,
+            width: '100%',
+            height: Dimensions.get('window').height / 1.1,
+            backgroundColor: 'white',
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            borderTopLeftRadius: 30,
+            borderTopRightRadius: 30,
+            shadowColor: '#000',
+            shadowOffset: {width: 0, height: 1},
+            shadowOpacity: 0.5,
+            shadowRadius: 5,
+            elevation: 15,
           }}>
           <View
             style={{
-              width: '100%',
-              height: Dimensions.get('window').height / 1.3,
-              backgroundColor: 'white',
-              position: 'absolute',
-              bottom: 0,
-              left: 0,
-              borderTopLeftRadius: 30,
-              borderTopRightRadius: 30,
-              shadowColor: '#000',
-              shadowOffset: {width: 0, height: 1},
-              shadowOpacity: 0.5,
-              shadowRadius: 5,
-              elevation: 15,
+              flexDirection: 'row',
+              paddingHorizontal: 15,
+              justifyContent: 'space-between',
+              alignItems: 'center',
             }}>
-            <View
-              style={{
-                flexDirection: 'row',
-                paddingHorizontal: 15,
-                justifyContent: 'space-between',
-                alignItems: 'center',
+            <TouchableOpacity
+              hitSlop={getHitSlop(15)}
+              style={styles.closeButton}
+              onPress={() => {
+                setVisibleCityModal(false);
+                setCityData([]);
+                setLocationData([]);
               }}>
-              <TouchableOpacity
-                hitSlop={getHitSlop(15)}
-                style={styles.closeButton}
-                onPress={() => {
-                  setVisibleCityModal(false);
-                  setCityData([]);
-                  setLocationData([]);
-                }}>
-                <Image source={images.cancelImage} style={styles.closeButton} />
-              </TouchableOpacity>
-              <Text
-                style={{
-                  alignSelf: 'center',
-                  marginVertical: 20,
-                  fontSize: 16,
-                  fontFamily: fonts.RBold,
-                  color: colors.lightBlackColor,
-                }}>
-                {strings.locationTitleText}
-              </Text>
-              <TouchableOpacity onPress={() => {}}></TouchableOpacity>
-            </View>
-            <View style={styles.separatorLine} />
-            <View>
-              <View style={styles.sectionStyle}>
-                <Image
-                  source={images.searchLocation}
-                  style={styles.searchImg}
-                />
-                <TextInput
-                  testID="choose-location-input"
-                  style={styles.textInput}
-                  placeholder={strings.locationPlaceholderText}
-                  clearButtonMode="always"
-                  placeholderTextColor={colors.grayColor}
-                  onChangeText={(text) => setSearchText(text)}
-                  autoCorrect={false}
-                />
-              </View>
-              <FlatList
-                data={(cityData || []).filter((obj) => obj.terms.length === 3)}
-                renderItem={renderCityStateCountryItem}
-                keyExtractor={(item, index) => index.toString()}
-                onScroll={Keyboard.dismiss}
+              <Image source={images.cancelImage} style={styles.closeButton} />
+            </TouchableOpacity>
+            <Text
+              style={{
+                alignSelf: 'center',
+                marginVertical: 20,
+                fontSize: 16,
+                fontFamily: fonts.RBold,
+                color: colors.lightBlackColor,
+              }}>
+              {strings.locationTitleText}
+            </Text>
+            <TouchableOpacity onPress={() => {}}></TouchableOpacity>
+          </View>
+          <View style={styles.separatorLine} />
+          <View>
+            <View style={styles.sectionStyle}>
+              <Image source={images.searchLocation} style={styles.searchImg} />
+              <TextInput
+                testID="choose-location-input"
+                style={styles.textInput}
+                placeholder={strings.locationPlaceholderText}
+                clearButtonMode="always"
+                placeholderTextColor={colors.grayColor}
+                onChangeText={(text) => setSearchText(text)}
+                autoCorrect={false}
               />
             </View>
+            <FlatList
+              data={(cityData || []).filter((obj) => obj.terms.length === 3)}
+              renderItem={renderCityStateCountryItem}
+              keyExtractor={(item, index) => index.toString()}
+              onScroll={Keyboard.dismiss}
+            />
           </View>
-        </Modal>
-      </TCKeyboardView>
+        </View>
+      </Modal>
     </>
   );
 }
@@ -963,5 +816,11 @@ const styles = StyleSheet.create({
     width: widthPercentageToDP('70%'),
     margin: widthPercentageToDP('4%'),
     textAlignVertical: 'center',
+  },
+  notesStyle: {
+    fontSize: 14,
+    fontFamily: fonts.RRegular,
+    color: colors.userPostTimeColor,
+    margin: 15,
   },
 });

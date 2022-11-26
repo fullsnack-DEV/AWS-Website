@@ -37,7 +37,7 @@ export default function InviteToMemberScreen({navigation, route}) {
 
   const onAccept = (requestId) => {
     setloading(true);
-    acceptRequest(requestId, authContext)
+    acceptRequest({}, requestId, authContext)
       .then(() => {
         navigation.goBack();
         setloading(false);

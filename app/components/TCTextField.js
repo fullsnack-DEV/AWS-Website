@@ -16,10 +16,11 @@ function TCTextField({
   multiline = false,
   leftView,
   editable = true,
+  width,
   ...otherProps
 }) {
   return (
-    <View style={[styles.textContainer, style, {height}]}>
+    <View style={[styles.textContainer, style, {height, width}]}>
       <TextInput
         testID={testID}
         style={[styles.textInput, textStyle, {height}]}

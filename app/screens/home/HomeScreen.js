@@ -1011,7 +1011,33 @@ const HomeScreen = ({navigation, route}) => {
     const params = {};
     joinTeam(params, userID, authContext)
       .then((response) => {
-        console.log('user join group', response);
+        if (response.payload.error_code === 101) {
+          Alert.alert(
+            '',
+            response.payload.user_message,
+            [
+              {
+                text: 'Join',
+                onPress: () => {
+                  joinTeam({...params, is_confirm: true}, userID, authContext)
+                    .then(() => {})
+                    .catch((error) => {
+                      setTimeout(() => {
+                        Alert.alert(strings.alertmessagetitle, error.message);
+                      }, 10);
+                    });
+                },
+                style: 'destructive',
+              },
+              {
+                text: 'Cancel',
+                onPress: () => {},
+                style: 'cancel',
+              },
+            ],
+            {cancelable: false},
+          );
+        }
       })
       .catch((error) => {
         currentUserData.is_joined = false;

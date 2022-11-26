@@ -1,5 +1,13 @@
 import React, {useState, useLayoutEffect, useEffect, useContext} from 'react';
-import {StyleSheet, View, Text, Image, ScrollView, Alert} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  Image,
+  ScrollView,
+  Alert,
+  TouchableOpacity,
+} from 'react-native';
 
 import {createMemberProfile} from '../../../../api/Groups';
 import uploadImages from '../../../../utils/imageAction';
@@ -10,16 +18,15 @@ import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
 import TCTextField from '../../../../components/TCTextField';
 import AuthContext from '../../../../auth/context';
-import TCGroupNameBadge from '../../../../components/TCGroupNameBadge';
 import TCFormProgress from '../../../../components/TCFormProgress';
-import Verbs from '../../../../Constants/Verbs';
+import TCLabel from '../../../../components/TCLabel';
 
 let entity = {};
 export default function CreateMemberProfileClubForm3({navigation, route}) {
   const [note, setNote] = useState('');
   const authContext = useContext(AuthContext);
-  const [auth, setAuth] = useState({});
   const [loading, setloading] = useState(false);
+  const [joinTCCheck, setJoinTCCheck] = useState(true);
   const [groups, setGroups] = useState({
     createdAt: 0.0,
     homefield_address_latitude: 0.0,
@@ -44,22 +51,20 @@ export default function CreateMemberProfileClubForm3({navigation, route}) {
   useEffect(() => {
     getAuthEntity();
   }, []);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
         <Text style={styles.nextButtonStyle} onPress={() => createMember()}>
-          Done
+          {strings.done}
         </Text>
       ),
     });
-  }, [navigation]);
-  // const donePressed = () => {
-  //   const noteDetails = { ...route.params.form1, group_member_detail: { group_id: entity.uid, is_admin: groupAdmin }, teams: teamList.map(({ group_id, is_admin, is_member }) => ({ group_id, is_admin, is_member })) }
-  //   navigation.navigate('CreateMemberProfileClubForm3', { form2: membersAuthority })
-  // }
+  }, [navigation, joinTCCheck]);
+
   const getAuthEntity = async () => {
     entity = authContext.entity;
-    setAuth(entity);
+
     setGroups({...groups, entity_type: entity.role});
   };
   const createMember = () => {
@@ -101,6 +106,7 @@ export default function CreateMemberProfileClubForm3({navigation, route}) {
         group: groups,
         group_id: entity.uid,
         note,
+        is_invite: joinTCCheck,
       };
       console.log('BODY PARAMS11:', bodyParams);
 
@@ -142,32 +148,37 @@ export default function CreateMemberProfileClubForm3({navigation, route}) {
       <ActivityLoader visible={loading} />
       <TCFormProgress totalSteps={3} curruentStep={3} />
 
-      <View>
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            margin: 15,
-          }}>
-          <View style={styles.profileView}>
-            <Image
-              source={images.clubPlaceholder}
-              style={styles.profileImage}
-            />
-          </View>
-          <TCGroupNameBadge
-            name={((auth || {}).obj || {}).group_name || ''}
-            groupType={Verbs.entityTypeClub}
-          />
-        </View>
+      <View style={{marginTop: 15}}>
+        <TCLabel
+          title={strings.writeNotesPlaceholder.toUpperCase()}
+          style={{marginBottom: 15}}
+        />
         <TCTextField
           value={note}
           height={100}
           multiline={true}
           onChangeText={(text) => setNote(text)}
-          placeholder={strings.writeNotesPlaceholder}
+          placeholder={strings.notesPlaceholder}
           keyboardType={'default'}
         />
+
+        <View style={{flexDirection: 'row', margin: 15}}>
+          <TouchableOpacity
+            onPress={() => {
+              setJoinTCCheck(!joinTCCheck);
+            }}>
+            <Image
+              source={
+                // item.join_membership_acceptedadmin === false
+                joinTCCheck ? images.orangeCheckBox : images.uncheckWhite
+              }
+              style={{height: 22, width: 22, resizeMode: 'contain'}}
+            />
+          </TouchableOpacity>
+          <Text style={styles.checkBoxItemText}>
+            {strings.sentEmailInvitation}
+          </Text>
+        </View>
       </View>
       <View style={{marginBottom: 20}} />
     </ScrollView>
@@ -179,32 +190,15 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
 
-  profileView: {
-    backgroundColor: colors.whiteColor,
-    height: 26,
-    width: 26,
-    borderRadius: 54,
-    marginRight: 5,
-
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: colors.grayColor,
-    shadowOffset: {width: 0, height: 3},
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  profileImage: {
-    alignSelf: 'center',
-    height: 25,
-    resizeMode: 'contain',
-    width: 25,
-    borderRadius: 50,
-  },
-
   nextButtonStyle: {
     fontFamily: fonts.RRegular,
     fontSize: 16,
     marginRight: 10,
+  },
+  checkBoxItemText: {
+    fontFamily: fonts.RRegular,
+    fontSize: 16,
+    color: colors.lightBlackColor,
+    marginLeft: 15,
   },
 });
