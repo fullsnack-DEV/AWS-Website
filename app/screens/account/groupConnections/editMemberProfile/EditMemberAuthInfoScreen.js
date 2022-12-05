@@ -163,7 +163,8 @@ export default function EditMemberAuthInfoScreen({navigation, route}) {
             styles.checkBoxContainer,
             {
               opacity:
-                groupMemberDetail?.teams || entity.role === Verbs.entityTypeClub
+                entity.role === Verbs.entityTypeTeam ||
+                entity.role === Verbs.entityTypeClub
                   ? 0.5
                   : 1,
             },
@@ -172,8 +173,8 @@ export default function EditMemberAuthInfoScreen({navigation, route}) {
           <TouchableOpacity
             disabled={
               !!(
-                !!groupMemberDetail?.teams ||
-                entity.role === Verbs.entityTypeClub
+                entity.role === Verbs.entityTypeClub ||
+                entity.role === Verbs.entityTypeTeam
               )
             }
             onPress={() => {

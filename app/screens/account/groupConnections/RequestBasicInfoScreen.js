@@ -319,7 +319,10 @@ export default function RequestBasicInfoScreen({navigation, route}) {
     console.log('dadadad', date);
     setShow(!show);
     if (date !== '') {
-      setMemberInfo({...memberInfo, birthday: new Date(date).getTime()});
+      setMemberInfo({
+        ...memberInfo,
+        birthday: Number((new Date(date).getTime() / 1000).toFixed(0)),
+      });
     }
   };
   const handleCancelPress = () => {
@@ -547,33 +550,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
         </Text>
         <TCThickDivider />
       </View>
-      {/* <View>
-        <View style={styles.checkBoxContainer}>
-          <TouchableOpacity
-            onPress={() => {
-              setSetting({
-                ...setting,
-                gender: !setting?.gender,
-              });
-            }}>
-            <Image
-              source={
-                setting?.gender === true  ? images.orangeCheckBox : images.uncheckWhite
-              }
-              style={{height: 22, width: 22, resizeMode: 'contain'}}
-            />
-          </TouchableOpacity>
-          <Text style={styles.checkBoxText}>Gender</Text>
-        </View>
-        <TCPicker
-          dataSource={DataSource.Gender}
-          placeholder={strings.selectGenderPlaceholder}
-          value={memberInfo?.gender}
-          onValueChange={(value) =>
-            value !== '' && setMemberInfo({...memberInfo, gender: value})
-          }
-        />
-      </View> */}
+
       <View>
         <View style={styles.checkBoxContainer}>
           <TouchableOpacity
@@ -598,9 +575,9 @@ export default function RequestBasicInfoScreen({navigation, route}) {
           title={
             memberInfo?.birthday &&
             `${`${
-              monthNames[new Date(memberInfo?.birthday).getMonth()]
-            } ${new Date(memberInfo?.birthday).getDate()}`}, ${new Date(
-              memberInfo?.birthday,
+              monthNames[new Date(memberInfo?.birthday * 1000).getMonth()]
+            } ${new Date(memberInfo?.birthday * 1000).getDate()}`}, ${new Date(
+              memberInfo?.birthday * 1000,
             ).getFullYear()}`
           }
           placeholder={strings.birthDatePlaceholder}
@@ -765,7 +742,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
         <View>
           <DateTimePickerView
             visible={show}
-            // date={new Date(memberInfo?.birthday)}
+            date={new Date()}
             onDone={handleDonePress}
             onCancel={handleCancelPress}
             onHide={handleCancelPress}

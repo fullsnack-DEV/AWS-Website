@@ -1466,7 +1466,7 @@ const AccountNavigator = () => (
       name="InviteMembersByEmailScreen"
       component={InviteMembersByEmailScreen}
       options={{
-        title: 'Invite by Email',
+        title: strings.inviteByEmail,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -1482,7 +1482,7 @@ const AccountNavigator = () => (
       name="InviteMembersBySearchScreen"
       component={InviteMembersBySearchScreen}
       options={{
-        title: 'Invite by Search',
+        title: strings.inviteBySearchText,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -1563,7 +1563,7 @@ const AccountNavigator = () => (
       name="CreateMemberProfileForm1"
       component={CreateMemberProfileForm1}
       options={{
-        title: 'Create Member Profile',
+        title: strings.createMemberProfileText,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -1579,7 +1579,7 @@ const AccountNavigator = () => (
       name="CreateMemberProfileTeamForm2"
       component={CreateMemberProfileTeamForm2}
       options={{
-        title: 'Create Member Profile',
+        title: strings.createMemberProfileText,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -1595,7 +1595,7 @@ const AccountNavigator = () => (
       name="CreateMemberProfileClubForm2"
       component={CreateMemberProfileClubForm2}
       options={{
-        title: 'Create Member Profile',
+        title: strings.createMemberProfileText,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -1611,7 +1611,7 @@ const AccountNavigator = () => (
       name="CreateMemberProfileClubForm3"
       component={CreateMemberProfileClubForm3}
       options={{
-        title: 'Create Member Profile',
+        title: strings.createMemberProfileText,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

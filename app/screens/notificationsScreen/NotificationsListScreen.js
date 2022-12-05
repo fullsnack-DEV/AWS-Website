@@ -522,24 +522,58 @@ function NotificationsListScreen({navigation}) {
     }
   };
 
-  const onAccept = (requestId) => {
-    if (activeScreen) {
-      setloading(true);
-      acceptRequest(requestId, authContext)
-        .then(() => {
+  const onAccept = (item) => {
+    const requestId = item.activities[0].id;
+
+    setloading(true);
+    acceptRequest({}, requestId, authContext)
+      .then((response) => {
+        setloading(false);
+        if (item.verb.includes(NotificationType.invitePlayerToJoinTeam)) {
+          if (response?.payload?.error_code === 101) {
+            Alert.alert(
+              '',
+              response.payload.user_message,
+              [
+                {
+                  text: 'Accept',
+                  onPress: () => {
+                    setloading(true);
+                    acceptRequest({is_confirm: true}, requestId, authContext)
+                      .then(() => {
+                        callNotificationList()
+                          .then(() => setloading(false))
+                          .catch(() => setloading(false));
+                      })
+                      .catch((error) => {
+                        setTimeout(() => {
+                          Alert.alert(strings.alertmessagetitle, error.message);
+                        }, 10);
+                      });
+                  },
+                  style: 'destructive',
+                },
+                {
+                  text: 'Cancel',
+                  onPress: () => {},
+                  style: 'cancel',
+                },
+              ],
+              {cancelable: false},
+            );
+          }
+        } else {
           callNotificationList()
             .then(() => setloading(false))
             .catch(() => setloading(false));
-        })
-        .catch((error) => {
-          setloading(false);
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, error.message);
-          }, 10);
-        });
-    } else {
-      showSwitchProfilePopup();
-    }
+        }
+      })
+      .catch((error) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, error.message);
+        }, 10);
+      });
   };
 
   const onDecline = (requestId) => {
@@ -773,7 +807,7 @@ function NotificationsListScreen({navigation}) {
         <PRNotificationInviteCell
           item={item}
           selectedEntity={selectedEntity}
-          onAccept={() => onAccept(item.activities[0].id)}
+          onAccept={() => onAccept(item)}
           onDecline={() => onDecline(item.activities[0].id)}
           onPress={() => onNotificationClick(item)}
           onPressFirstEntity={openHomePage}

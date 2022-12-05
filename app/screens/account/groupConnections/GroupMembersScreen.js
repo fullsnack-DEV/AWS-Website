@@ -22,7 +22,6 @@ import {useIsFocused} from '@react-navigation/native';
 import ActionSheet from 'react-native-actionsheet';
 // import Modal from 'react-native-modal';
 // import LinearGradient from 'react-native-linear-gradient';
-import QB from 'quickblox-react-native-sdk';
 import AuthContext from '../../../auth/context';
 import TCSearchBox from '../../../components/TCSearchBox';
 import TCNoDataView from '../../../components/TCNoDataView';
@@ -35,11 +34,7 @@ import colors from '../../../Constants/Colors';
 // import fonts from '../../../Constants/Fonts'
 // import TCThinDivider from '../../../components/TCThinDivider';
 import {strings} from '../../../../Localization/translation';
-import {
-  QB_DIALOG_TYPE,
-  QBcreateDialog,
-  QBgetUserDetail,
-} from '../../../utils/QuickBlox';
+
 import fonts from '../../../Constants/Fonts';
 import TCUserRoleBadge from '../../../components/TCUserRoleBadge';
 import TCThinDivider from '../../../components/TCThinDivider';
@@ -54,7 +49,6 @@ export default function GroupMembersScreen({navigation, route}) {
   const isFocused = useIsFocused();
   // For activity indigator
   const [loading, setloading] = useState(false);
-  const actionSheetInvite = useRef();
   const [searchMember, setSearchMember] = useState();
   // const [isModalVisible, setModalVisible] = useState(false);
   // const [allSelected, setAllSelected] = useState(false);
@@ -111,48 +105,6 @@ export default function GroupMembersScreen({navigation, route}) {
       setMembers(result);
     } else {
       setMembers(searchMember);
-    }
-  };
-
-  const navigateToGroupMessage = () => {
-    setloading(true);
-    const UIDs = [];
-    if (members?.length) {
-      members?.map((data) => {
-        if (data?.connected) {
-          UIDs.push(data?.user_id);
-          return data;
-        }
-        return null;
-      });
-    }
-    if (UIDs.length > 0) {
-      QBgetUserDetail(
-        QB.users.USERS_FILTER.FIELD.LOGIN,
-        QB.users.USERS_FILTER.TYPE.STRING,
-        [UIDs].join(),
-      )
-        .then((userData) => {
-          const IDs = [];
-          userData.users.map((item) => IDs.push(item?.id));
-          const groupName = authContext?.entity?.obj?.group_name;
-          QBcreateDialog(IDs, QB_DIALOG_TYPE.GROUP, groupName)
-            .then((dialog) => {
-              setloading(false);
-              navigation.navigate('MessageChat', {
-                screen: 'MessageChat',
-                params: {dialog},
-              });
-            })
-            .catch((error) => {
-              setloading(false);
-              console.log(error);
-            });
-        })
-        .catch((error) => {
-          console.log(error);
-          setloading(false);
-        });
     }
   };
 
@@ -453,68 +405,38 @@ export default function GroupMembersScreen({navigation, route}) {
 
       <ActionSheet
         ref={actionSheet}
-        // title={'News Feed Post'}
         options={
           switchUser.role === Verbs.entityTypeClub
             ? [
-                strings.groupMessageText,
                 strings.inviteMemberText,
                 strings.createMemberProfileText,
-                strings.connectMemberAccountText,
                 strings.sendrequestForBaicInfoText,
                 strings.privacySettingText,
                 strings.setting,
                 strings.cancel,
               ]
             : [
-                strings.groupMessageText,
                 strings.inviteMemberText,
                 strings.createMemberProfileText,
-                strings.connectMemberAccountText,
                 strings.sendrequestForBaicInfoText,
                 strings.privacySettingText,
                 strings.cancel,
               ]
         }
-        cancelButtonIndex={switchUser.role === strings.entityTypeClub ? 7 : 6}
-        // destructiveButtonIndex={1}
-        onPress={(index) => {
-          if (index === 0) {
-            navigateToGroupMessage();
-          } else if (index === 1) {
-            actionSheetInvite.current.show();
-          } else if (index === 2) {
-            navigation.navigate('CreateMemberProfileForm1');
-          } else if (index === 3) {
-            navigation.navigate('ConnectMemberAccountScreen', {
-              groupID,
-            });
-          } else if (index === 4) {
-            navigation.navigate('RequestMultipleBasicInfoScreen', {groupID});
-          } else if (index === 5) {
-            navigation.navigate('MembersViewPrivacyScreen');
-          } else if (index === 6) {
-            if (switchUser.role === Verbs.entityTypeClub) {
-              navigation.navigate('ClubSettingScreen');
-            }
-          }
-        }}
-      />
-      <ActionSheet
-        ref={actionSheetInvite}
-        // title={'News Feed Post'}
-        options={[
-          strings.inviteBySearchText,
-          strings.inviteEmailtext,
-          strings.cancel,
-        ]}
-        cancelButtonIndex={2}
-        // destructiveButtonIndex={1}
+        cancelButtonIndex={switchUser.role === strings.entityTypeClub ? 6 : 5}
         onPress={(index) => {
           if (index === 0) {
             navigation.navigate('InviteMembersBySearchScreen');
           } else if (index === 1) {
-            navigation.navigate('InviteMembersByEmailScreen');
+            navigation.navigate('CreateMemberProfileForm1');
+          } else if (index === 2) {
+            navigation.navigate('RequestMultipleBasicInfoScreen', {groupID});
+          } else if (index === 3) {
+            navigation.navigate('MembersViewPrivacyScreen');
+          } else if (index === 4) {
+            if (switchUser.role === Verbs.entityTypeClub) {
+              navigation.navigate('ClubSettingScreen');
+            }
           }
         }}
       />

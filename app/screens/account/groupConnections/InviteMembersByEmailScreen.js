@@ -7,6 +7,7 @@ import {
   Alert,
   SafeAreaView,
 } from 'react-native';
+import {format} from 'react-string-format';
 import {sendInvitationInGroup} from '../../../api/Users';
 import TCTextField from '../../../components/TCTextField';
 import TCMessageButton from '../../../components/TCMessageButton';
@@ -53,15 +54,20 @@ export default function InviteMembersByEmailScreen({navigation}) {
   const sendInvitation = () => {
     const entity = authContext.entity;
 
-    const resultEmails = email.filter((obj) => obj.email === '');
     const invalidEmails = email.filter(
       (obj) => Utility.validateEmail(obj.email) === false,
     );
 
-    if (resultEmails.length > 0) {
-      Alert.alert(strings.fillAllEmailText);
-    } else if (invalidEmails.length > 0) {
+    const duplicateIds = email
+      .map((e) => e.email)
+      .map((e, i, final) => final.indexOf(e) !== i && i)
+      .filter((obj) => email[obj])
+      .map((e) => email[e].email);
+
+    if (invalidEmails.length > 0) {
       Alert.alert(strings.validEmailMessage);
+    } else if (duplicateIds.length > 0) {
+      Alert.alert(strings.doNotEnterSameEmail);
     } else {
       setloading(true);
       const emails = email.map((i) => i.email);
@@ -100,6 +106,7 @@ export default function InviteMembersByEmailScreen({navigation}) {
           placeholder={strings.emailPlaceHolder}
           keyboardType="email-address"
           value={item?.email}
+          clearButtonMode="always"
           onChangeText={(value) => {
             const tempEmail = [...email];
             tempEmail[index].email = value;
@@ -107,17 +114,6 @@ export default function InviteMembersByEmailScreen({navigation}) {
           }}
           style={{alignSelf: 'center', width: '85%', marginBottom: 10}}
         />
-        {index !== 0 && (
-          <Text
-            style={styles.deleteStyle}
-            onPress={() => {
-              const tempEmail = [...email];
-              tempEmail.splice(index, 1);
-              setEmail([...tempEmail]);
-            }}>
-            {strings.deleteTitle}
-          </Text>
-        )}
       </View>
     );
   };
@@ -126,7 +122,9 @@ export default function InviteMembersByEmailScreen({navigation}) {
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
 
-      <Text style={styles.infoTextStyle}>{strings.inviteEmailText}</Text>
+      <Text style={styles.infoTextStyle}>
+        {format(strings.inviteEmailText, authContext.entity.role)}
+      </Text>
       <FlatList
         data={email}
         renderItem={renderItemEmail}
@@ -135,10 +133,12 @@ export default function InviteMembersByEmailScreen({navigation}) {
 
       <TCMessageButton
         title={strings.addEmailText}
-        width={85}
+        width={95}
         alignSelf="center"
         marginTop={25}
         onPress={() => addEmail(1)}
+        color={colors.lightBlackColor}
+        borderColor={colors.whiteColor}
       />
       <SafeAreaView />
     </View>
@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
   infoTextStyle: {
     margin: 15,
     fontFamily: fonts.RRegular,
-    fontSize: 16,
+    fontSize: 20,
     color: colors.lightBlackColor,
   },
 
@@ -165,12 +165,5 @@ const styles = StyleSheet.create({
   flateListStyle: {
     paddingTop: 10,
     flexGrow: 0,
-  },
-  deleteStyle: {
-    textAlign: 'right',
-    marginRight: 30,
-    fontSize: 14,
-    fontFamily: fonts.RRegular,
-    color: colors.redColor,
   },
 });

@@ -10,12 +10,17 @@ export default function TCMessageButton({
   color = colors.greeColor,
   width = 75,
   height = 25,
+  borderColor,
   ...props
 }) {
   return (
     <TouchableWithoutFeedback onPress={onPress}>
       <View
-        style={[styles.buttonView, {borderColor: color, width, height}, props]}>
+        style={[
+          styles.buttonView,
+          {borderColor: borderColor ?? color, width, height},
+          props,
+        ]}>
         <Text style={[styles.buttonTitle, {color}]}>{title}</Text>
       </View>
     </TouchableWithoutFeedback>

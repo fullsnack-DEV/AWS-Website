@@ -96,7 +96,7 @@ export default function RespondForInviteScreen({navigation, route}) {
 
   const onAccept = () => {
     setLoading(true);
-    acceptRequest(groupObj.activities[0].id, authContext)
+    acceptRequest({}, groupObj.activities[0].id, authContext)
       .then(() => {
         setLoading(false);
         navigation.goBack();

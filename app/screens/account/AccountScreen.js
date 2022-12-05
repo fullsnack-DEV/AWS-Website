@@ -407,6 +407,11 @@ export default function AccountScreen({navigation}) {
           setCreateEntity(Verbs.entityTypeTeam);
         } else if (option === strings.createClubText) {
           setCreateEntity(Verbs.entityTypeClub);
+        } else {
+          navigation.navigate(
+            rowObj.navigateTo.screenName,
+            rowObj.navigateTo.data,
+          );
         }
       } else {
         navigation.navigate(

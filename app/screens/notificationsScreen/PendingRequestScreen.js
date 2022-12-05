@@ -348,7 +348,7 @@ function PendingRequestScreen({navigation}) {
 
   const onAccept = (requestId) => {
     setloading(true);
-    acceptRequest(requestId, authContext)
+    acceptRequest({}, requestId, authContext)
       .then(() => {
         setloading(false);
       })

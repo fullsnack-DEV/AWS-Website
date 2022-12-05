@@ -415,7 +415,7 @@ export default {
 
   inviteEmailText:
     'Please enter the e-mail account of the person that you want to invite.',
-  inviteSearchText: 'Who do you want to invite to your team?',
+  inviteSearchText: 'Who do you want to invite to your {0}?',
   inviteEventText: 'Who do you want to invite to the event?',
 
   addEmailText: '+ Add E-Mail',

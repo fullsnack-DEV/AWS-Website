@@ -909,7 +909,8 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\n";
+			shellScript = "
+";
 		};
 		F4092B64997006CA1D56105C /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1087,6 +1088,7 @@
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1.0;
 				DEVELOPMENT_TEAM = A734MJ7CPS;
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = A734MJ7CPS;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = townscup_reactnative/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
@@ -1099,6 +1101,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.towncup.app;
 				PRODUCT_NAME = townscup_reactnative;
 				PROVISIONING_PROFILE_SPECIFIER = "Development-Profile";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Development-Profile";
 				SWIFT_OBJC_BRIDGING_HEADER = "townscup_reactnative-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -1115,9 +1118,8 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
 				CODE_SIGN_ENTITLEMENTS = townscup_reactnative/townscup_reactnative.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development: Junghyun Gu (L2QJ5W54YN)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution: Junghyun Gu (A734MJ7CPS)";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1.0;
 				DEVELOPMENT_TEAM = A734MJ7CPS;
 				INFOPLIST_FILE = townscup_reactnative/Info.plist;
@@ -1130,7 +1132,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.towncup.app;
 				PRODUCT_NAME = townscup_reactnative;
-				PROVISIONING_PROFILE_SPECIFIER = "Distribution-Profile";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "townscup_reactnative-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1314,9 +1316,8 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
 				CODE_SIGN_ENTITLEMENTS = townscup_reactnative/townscup_reactnative.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development: Junghyun Gu (L2QJ5W54YN)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution: Junghyun Gu (A734MJ7CPS)";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1.0;
 				DEVELOPMENT_TEAM = A734MJ7CPS;
 				INFOPLIST_FILE = townscup_reactnative/Info.plist;
@@ -1329,7 +1330,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.towncup.app;
 				PRODUCT_NAME = townscup_reactnative;
-				PROVISIONING_PROFILE_SPECIFIER = "Distribution-Profile";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "townscup_reactnative-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1596,6 +1597,7 @@
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1.0;
 				DEVELOPMENT_TEAM = A734MJ7CPS;
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = A734MJ7CPS;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = townscup_reactnative/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
@@ -1608,6 +1610,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.towncup.app;
 				PRODUCT_NAME = townscup_reactnative;
 				PROVISIONING_PROFILE_SPECIFIER = "Development-Profile";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Development-Profile";
 				SWIFT_OBJC_BRIDGING_HEADER = "townscup_reactnative-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -1759,9 +1762,8 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
 				CODE_SIGN_ENTITLEMENTS = townscup_reactnative/townscup_reactnative.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development: Junghyun Gu (L2QJ5W54YN)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution: Junghyun Gu (A734MJ7CPS)";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1.0;
 				DEVELOPMENT_TEAM = A734MJ7CPS;
 				INFOPLIST_FILE = townscup_reactnative/Info.plist;
@@ -1774,7 +1776,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.towncup.app;
 				PRODUCT_NAME = townscup_reactnative;
-				PROVISIONING_PROFILE_SPECIFIER = "Distribution-Profile";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "townscup_reactnative-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1934,6 +1936,7 @@
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1.0;
 				DEVELOPMENT_TEAM = A734MJ7CPS;
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = A734MJ7CPS;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = townscup_reactnative/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
@@ -1946,6 +1949,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.towncup.app;
 				PRODUCT_NAME = townscup_reactnative;
 				PROVISIONING_PROFILE_SPECIFIER = "Development-Profile";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Development-Profile";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "townscup_reactnative-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -2098,9 +2102,8 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
 				CODE_SIGN_ENTITLEMENTS = townscup_reactnative/townscup_reactnative.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development: Junghyun Gu (L2QJ5W54YN)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution: Junghyun Gu (A734MJ7CPS)";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1.0;
 				DEVELOPMENT_TEAM = A734MJ7CPS;
 				INFOPLIST_FILE = townscup_reactnative/Info.plist;
@@ -2113,7 +2116,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.towncup.app;
 				PRODUCT_NAME = townscup_reactnative;
-				PROVISIONING_PROFILE_SPECIFIER = "Distribution-Profile";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "townscup_reactnative-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -2273,6 +2276,7 @@
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1.0;
 				DEVELOPMENT_TEAM = A734MJ7CPS;
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = A734MJ7CPS;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = townscup_reactnative/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
@@ -2285,6 +2289,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.towncup.app;
 				PRODUCT_NAME = townscup_reactnative;
 				PROVISIONING_PROFILE_SPECIFIER = "Development-Profile";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Development-Profile";
 				SWIFT_OBJC_BRIDGING_HEADER = "townscup_reactnative-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -2448,6 +2453,7 @@
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1.0;
 				DEVELOPMENT_TEAM = A734MJ7CPS;
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = A734MJ7CPS;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = townscup_reactnative/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
@@ -2460,6 +2466,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.towncup.app;
 				PRODUCT_NAME = townscup_reactnative;
 				PROVISIONING_PROFILE_SPECIFIER = "Development-Profile";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Development-Profile";
 				SWIFT_OBJC_BRIDGING_HEADER = "townscup_reactnative-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -2611,9 +2618,8 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
 				CODE_SIGN_ENTITLEMENTS = townscup_reactnative/townscup_reactnative.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development: Junghyun Gu (L2QJ5W54YN)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution: Junghyun Gu (A734MJ7CPS)";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1.0;
 				DEVELOPMENT_TEAM = A734MJ7CPS;
 				INFOPLIST_FILE = townscup_reactnative/Info.plist;
@@ -2626,7 +2632,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.towncup.app;
 				PRODUCT_NAME = townscup_reactnative;
-				PROVISIONING_PROFILE_SPECIFIER = "Distribution-Profile";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "townscup_reactnative-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -2774,9 +2780,8 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
 				CODE_SIGN_ENTITLEMENTS = townscup_reactnative/townscup_reactnative.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development: Junghyun Gu (L2QJ5W54YN)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution: Junghyun Gu (A734MJ7CPS)";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1.0;
 				DEVELOPMENT_TEAM = A734MJ7CPS;
 				INFOPLIST_FILE = townscup_reactnative/Info.plist;
@@ -2789,7 +2794,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.towncup.app;
 				PRODUCT_NAME = townscup_reactnative;
-				PROVISIONING_PROFILE_SPECIFIER = "Distribution-Profile";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "townscup_reactnative-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

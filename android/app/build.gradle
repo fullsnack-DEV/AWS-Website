@@ -295,9 +295,7 @@ dependencies {
         debugImplementation files(hermesPath + "hermes-debug.aar")
         releaseImplementation files(hermesPath + "hermes-release.aar")
 
-        QaImplementation files(hermesPath + "hermes-release.aar")
-        StagingImplementation files(hermesPath + "hermes-release.aar")
-        ProductionImplementation files(hermesPath + "hermes-release.aar")
+       
     } else {
         implementation jscFlavor
     }
