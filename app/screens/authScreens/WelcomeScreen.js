@@ -344,12 +344,12 @@ export default function WelcomeScreen({navigation}) {
                         '',
                       ];
                     } else if (flName?.length === 0) {
-                      userDetail.first_name = 'Towns';
-                      userDetail.last_name = 'Cup';
+                      userDetail.first_name = '';
+                      userDetail.last_name = '';
                     }
                     if (!userDetail?.first_name) {
-                      userDetail.first_name = 'Towns';
-                      userDetail.last_name = 'Cup';
+                      userDetail.first_name = '';
+                      userDetail.last_name = '';
                     }
                     userDetail.email = user.email;
                     if (user.photoURL?.length > 0) {
@@ -623,8 +623,8 @@ export default function WelcomeScreen({navigation}) {
               appleAndroidCredential,
               'APPLE Android| ',
               {
-                first_name: '',
-                last_name: '',
+                first_name: response.user.name?.firstName,
+                last_name: response.user.name?.lastName,
               },
             );
           },

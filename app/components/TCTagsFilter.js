@@ -21,7 +21,9 @@ function TCTagsFilter({dataSource, onTagCancelPress, filter, authContext}) {
         Object.values(item)[0] !== strings.worldTitleText &&
         Object.keys(item)[0] !== 'entityID' &&
         Object.keys(item)[0] !== 'searchText' &&
-        Object.keys(item)[0] !== 'sport_type' && (
+        Object.keys(item)[0] !== 'sport_type' &&
+        Object.keys(item)[0] !== 'locationType' &&
+        Object.keys(item)[0] !== 'sportType' && (
           <View
             style={styles.textContainer}
             onPress={() => onTagCancelPress({item, index})}>
@@ -40,7 +42,7 @@ function TCTagsFilter({dataSource, onTagCancelPress, filter, authContext}) {
         )}
     </>
   );
-  
+
   return (
     <View>
       <FlatList
