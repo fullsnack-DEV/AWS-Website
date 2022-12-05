@@ -42,7 +42,7 @@ import {
   searchNearByCity,
   searchCityState,
   searchLocationPlaceDetail,
-} from '../../api/External'; // getLatLongFromPlaceID
+} from '../../api/External';
 import images from '../../Constants/ImagePath';
 import {strings} from '../../../Localization/translation';
 import Separator from '../../components/Separator';
@@ -61,7 +61,7 @@ export default function ChooseLocationScreen({navigation, route}) {
   const [nearbyCities, setNearbyCities] = useState([]);
 
   const [currentLocation, setCurrentLocation] = useState(
-    route?.params?.signupInfo?.location,
+    route.params?.signupInfo?.location,
   );
   const [noData, setNoData] = useState(false);
   const [searchText, setSearchText] = useState('');

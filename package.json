@@ -12,13 +12,15 @@
     "test": "jest --forceExit",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
-    "android:dev": "ENVFILE=.env.development react-native run-android",
-    "android:qa": "ENVFILE=.env.qa react-native run-android",
+    "android:dev": "ENVFILE=.env.development react-native run-android --variant=DevelopmentDebug",
+    "android:qa": "ENVFILE=.env.qa react-native run-android --variant=QaDebug",
     "android:staging": "ENVFILE=.env.staging react-native run-android",
     "android:prod": "ENVFILE=.env.production react-native run-android",
     "postinstall": "patch-package",
     "bundle:ios": "react-native bundle --entry-file index.js --platform ios --dev false --bundle-output ios/main.jsbundle --assets-dest ios",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "android:release:qa": "cd android && ENVFILE=.env.qa ./gradlew app:assembleRelease",
+    "android:clean":"cd android && ./gradlew clean"
   },
   "dependencies": {
     "@fawazahmed/react-native-read-more": "^2.3.6",
