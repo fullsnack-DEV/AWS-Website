@@ -385,7 +385,10 @@ pointerEvents="none"
         if (e?.types?.includes('administrative_area_level_1')) {
           state = e.long_name;
         }
-        if (e?.types?.includes('administrative_area_level_2')) {
+        if (
+          e?.types?.includes('locality') ||
+          e?.types?.includes('administrative_area_level_3')
+        ) {
           city = e.long_name;
         }
       });
