@@ -5,7 +5,7 @@ import {
   checkMultiple,
 } from 'react-native-permissions';
 import Geolocation from '@react-native-community/geolocation';
-import {getLocationNameWithLatLong} from '../api/External';
+import {getLocationNameWithLatLong, searchLocationPlaceDetail} from '../api/External';
 import {strings} from '../../Localization/translation';
 
 const checkPermAndGetGeoCoordinates = async (platform) => {
@@ -30,6 +30,10 @@ const checkPermAndGetGeoCoordinates = async (platform) => {
   }
 
   if (availablePermissions[permKeys[0]] === RESULTS.BLOCKED && availablePermissions[permKeys[1]] === RESULTS.BLOCKED) {
+    throw new Error(strings.userdeniedgps)
+  }
+
+  if (availablePermissions[permKeys[0]] === RESULTS.UNAVAILABLE && availablePermissions[permKeys[1]] === RESULTS.UNAVAILABLE) {
     throw new Error(strings.userdeniedgps)
   }
 
@@ -64,9 +68,9 @@ const getGeocoordinates = () =>
         resolve(position);
       },
       // callback on error
-      () => {
-        // FIXME: not sure why reject not working here. resolving for now with null data
-        resolve(null);
+      (error) => {
+        // FIXME: not sure why reject not working here. resolving for now with error data
+        resolve(error);
       },
       {enableHighAccuracy: false, timeout: 15000, maximumAge: 10000},
     );
@@ -74,7 +78,17 @@ const getGeocoordinates = () =>
 
 const getGeocoordinatesWithPlaceName = async (platform) => {
   const location = {};
-  location.position = await checkPermAndGetGeoCoordinates(platform);
+  const result = await checkPermAndGetGeoCoordinates(platform);
+  if(result.message){
+    // this is error case
+    if(result.code === 2 && result.PERMISSION_DENIED === 1){
+      throw new Error(strings.userdeniedgps)
+    }
+  }
+  else{
+    location.position = result
+  }
+
   // fail safe
   try {
     const locationDetails = await getLocationNameWithLatLong(
@@ -100,8 +114,44 @@ const getGeocoordinatesWithPlaceName = async (platform) => {
 
 const getGeocoordinatesWithoutPlaceName = async (platform) => {
   const location = {};
-  location.position = await checkPermAndGetGeoCoordinates(platform);
+  const result = await checkPermAndGetGeoCoordinates(platform);
+  if(result.message){
+    // this is error case
+    if(result.code === 2 && result.PERMISSION_DENIED === 1){
+      throw new Error(strings.userdeniedgps)
+    }
+  }
+  else{
+    location.position = result
+  }
+  
   return location;
 };
 
-export {getGeocoordinatesWithPlaceName, getGeocoordinatesWithoutPlaceName};
+const getPlaceNameFromPlaceID = async (placeID) => {
+  const location = {};
+  // fail safe
+  try {
+    const locationDetails = await searchLocationPlaceDetail(placeID);
+    // eslint-disable-next-line array-callback-return
+    locationDetails.result.address_components.map((e) => {
+      if (e.types.includes('administrative_area_level_1')) {
+        location.state = e.short_name;        
+      } else if (e.types.includes('locality')) {
+        location.city = e.short_name;
+      } else if (e.types.includes('country')) {
+        location.country = e.long_name;
+      }
+    });
+    if(location.state === location.city){
+      delete location.state
+    }
+
+    location.formattedAddress = locationDetails.result.formatted_address;
+  } catch (error) {
+    // do nothing
+  }
+  return location;
+};
+
+export {getGeocoordinatesWithPlaceName, getGeocoordinatesWithoutPlaceName, getPlaceNameFromPlaceID};

@@ -32,12 +32,7 @@ export default function TCSearchCityView({getCity}) {
       setCityData([]);
     }
   };
-  // const getTeamsData = async (item) => {
-  //   searchLocationPlaceDetail(
-  //     item.place_id,
-  //     authContext,
-  //   ).then((response) => {});
-  // };
+
   const keyExtractor = useCallback((item, index) => index.toString(), []);
   const renderItem = ({item}) => (
     <TouchableOpacity

@@ -1439,6 +1439,10 @@ export default {
   mailingAddressText: 'en_Mailing Address',
   enter3CharText: 'en_Please, enter at least 3 characters to see cities.',
 
+  noLocationText: 'en_Please set your location. It helps TownsCup to give you better recommendations.',
+  locationSettingTitleText:'en_Location Services Off',
+  locationSettingText:'en_Turn on Location Services in Settings > Privacy to allow Townscup to determine your current location',
+  noGpsErrorMsg:'en_Unable to get the Current location, Please try again later',
   currentLocationText: 'en_Current Location',
   chooseOneSportText: 'en_Please choose at least one sport.',
   noregisterdSportValication: 'en_There is no registerd sports.',
@@ -1488,15 +1492,14 @@ export default {
 
   thisFeatureisUnderDevelopment: 'en_This feature is in development.',
   challengeSetting: 'en_{0} Settings',
-  reservation: 'Reservation',
-  fNameCanNotBlank:
-    'The first name cannot contain numbers or special characters.',
+  reservation: 'en_Reservation',
+  fNameCanNotBlank:'en_The first name cannot contain numbers or special characters.',
 
-  lNameCanNotBlank:
-    'The last name cannot contain numbers or special characters.',
+  lNameCanNotBlank:'en_The last name cannot contain numbers or special characters.',
 
-  emailVerificationDescription:
-    'We have sent an email to {0}. You need to verify your email to continue. If you have not received the verification email, please check your spam folder or click the resend button below.',
+  homeCityNotOptional: 'en_User Home City is not optional',
+
+  emailVerificationDescription:'en_We have sent an email to {0}. You need to verify your email to continue. If you have not received the verification email, please check your spam folder or click the resend button below.',
 
   verifyEmailText: 'en_Please verify your email.',
   sentVerificationEmailAfterSecond:

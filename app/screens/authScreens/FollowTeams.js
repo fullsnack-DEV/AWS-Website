@@ -204,6 +204,33 @@ export default function FollowTeams({route, navigation}) {
   const setDummyAuthContext = (key, value) => {
     dummyAuthContext[key] = value;
   };
+
+  const validate = (data) => {
+    let returnValue = true;
+    if (data.first_name === '') {
+      Alert.alert(strings.appName, strings.firstnamevalidation);
+      returnValue = false;
+    }
+    else if (Utility.validatedName(data.first_name) === false) {
+      Alert.alert(strings.appName, strings.fNameCanNotBlank);
+      returnValue = false;
+    }
+    else if (data.last_name === '') {
+      Alert.alert(strings.appName, strings.lastnamevalidation);
+      returnValue = false;
+    }
+    else if (Utility.validatedName(data.last_name) === false) {
+      Alert.alert(strings.appName, strings.lNameCanNotBlank);
+      returnValue = false;
+    }
+    else if(!data.city || !data.country){
+      Alert.alert(strings.appName, strings.homeCityNotOptional);
+      returnValue = false;
+    }
+
+    return returnValue;
+  };
+
   // Signup to Towncup
   const signUpToTownsCup = async (param) => {
     setloading(true);
@@ -218,32 +245,35 @@ export default function FollowTeams({route, navigation}) {
       state: signUpData.state_abbr,
       sports: signUpData.sports,
     };
-    if (signUpData?.profilePicData?.thumbnail) {
-      data.thumbnail = signUpData.profilePicData?.thumbnail;
-      data.full_image = signUpData.profilePicData?.full_image;
-    } else if (param?.uploadedProfilePic) {
-      data.thumbnail = param.uploadedProfilePic?.thumbnail;
-      data.full_image = param.uploadedProfilePic?.full_image;
+
+    if(validate(data)){
+      if (signUpData?.profilePicData?.thumbnail) {
+        data.thumbnail = signUpData.profilePicData?.thumbnail;
+        data.full_image = signUpData.profilePicData?.full_image;
+      } else if (param?.uploadedProfilePic) {
+        data.thumbnail = param.uploadedProfilePic?.thumbnail;
+        data.full_image = param.uploadedProfilePic?.full_image;
+      }
+      if (followed && followed.length > 0) {
+        data.group_ids = followed;
+      }
+      await createUser(data, authContext)
+        .then((createdUser) => {
+          const authEntity = {...dummyAuthContext.entity};
+          authEntity.obj = createdUser?.payload;
+          authEntity.auth.user = createdUser?.payload;
+          authEntity.role = 'user';
+          setDummyAuthContext('entity', authEntity);
+          setDummyAuthContext('user', createdUser?.payload);
+          signUpWithQB(createdUser?.payload);
+        })
+        .catch((e) => {
+          setloading(false);
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
     }
-    if (followed && followed.length > 0) {
-      data.group_ids = followed;
-    }
-    await createUser(data, authContext)
-      .then((createdUser) => {
-        const authEntity = {...dummyAuthContext.entity};
-        authEntity.obj = createdUser?.payload;
-        authEntity.auth.user = createdUser?.payload;
-        authEntity.role = 'user';
-        setDummyAuthContext('entity', authEntity);
-        setDummyAuthContext('user', createdUser?.payload);
-        signUpWithQB(createdUser?.payload);
-      })
-      .catch((e) => {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
   };
   const signUpWithQB = async (response) => {
     let qbEntity = {...dummyAuthContext.entity};

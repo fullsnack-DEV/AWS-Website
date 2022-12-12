@@ -41,21 +41,20 @@ const googleApiCall = async ({method, url, headers}) => {
     url,
     headers: prepareHeader(headers),
   };
-  console.log('BEFORE API Opetions::--->', JSON.stringify(options));
   try {
     const response = await axios(options);
     if (!response.data.status) {
-      console.log('ERROR RESPONSE ::', response.data);
+      // console.log('ERROR RESPONSE ::', response.data);
       throw response.data.messages || response;
     }
-    console.log('RESPONSE ::', options, '\n', response.data);
+    // console.log('RESPONSE ::', options, '\n', response.data);
     return response.data;
   } catch (e) {
-    const error = {
-      options,
-      error: e,
-    };
-    console.log('SERVER ERROR ::--->', error);
+    // const error = {
+    //   options,
+    //   error: e,
+    // };
+    // console.log('SERVER ERROR ::--->', error);
     throw new Error(e);
   }
 };

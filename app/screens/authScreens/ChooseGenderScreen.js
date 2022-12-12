@@ -2,7 +2,6 @@ import React, {
   useContext,
   useState,
   useLayoutEffect,
-  useEffect,
   useCallback,
 } from 'react';
 import {
@@ -11,9 +10,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
-  Alert,
-  // eslint-disable-next-line react-native/split-platform-components,
-  Platform,
   SafeAreaView,
 } from 'react-native';
 import {
@@ -25,17 +21,13 @@ import {Tooltip} from 'react-native-elements';
 import LinearGradient from 'react-native-linear-gradient';
 import FastImage from 'react-native-fast-image';
 import images from '../../Constants/ImagePath';
-import {getGeocoordinatesWithPlaceName} from '../../utils/location';
 import {strings} from '../../../Localization/translation';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import AuthContext from '../../auth/context';
-import ActivityLoader from '../../components/loader/ActivityLoader';
 import Verbs from '../../Constants/Verbs';
 
 export default function ChooseGenderScreen({navigation, route}) {
-
-  const [currentLocation, setCurrentLocation] = useState();
   const authContext = useContext(AuthContext);
   const [selected, setSelected] = useState(
     authContext?.entity?.obj?.gender
@@ -44,20 +36,17 @@ export default function ChooseGenderScreen({navigation, route}) {
           (authContext?.entity?.obj?.gender === strings.other && 2)
       : 0,
   );
-  const [loading, setloading] = useState(false);
 
   const navigateToChooseLocationScreen = useCallback(
     (genderParam) => {
-      setloading(false);
       navigation.navigate('ChooseLocationScreen', {
         signupInfo: {
-          ...route?.params?.signupInfo,
+          ...route.params.signupInfo,
           gender: genderParam,
-          location: currentLocation,
         },
       });
     },
-    [currentLocation, navigation, route?.params?.signupInfo],
+    [navigation, route.params.signupInfo],
   );
 
   useLayoutEffect(() => {
@@ -94,30 +83,6 @@ export default function ChooseGenderScreen({navigation, route}) {
       ),
     });
   }, [navigation, selected, navigateToChooseLocationScreen]);
-  useEffect(() => {
-    setloading(true);
-    getGeocoordinatesWithPlaceName(Platform.OS)
-      .then((location) => {
-        setloading(false);
-        if(location.position){
-          setCurrentLocation(location);
-        }
-        else{
-          setCurrentLocation(null);
-        }
-      })
-      .catch((e) => {
-        setloading(false);
-        if(e.message === strings.userdeniedgps){
-          setCurrentLocation(null);
-        }
-        else{
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
-        }
-      });
-  }, []);
 
   const RenderRadio = ({isSelected, onRadioPress}) => (
     <View
@@ -155,7 +120,6 @@ export default function ChooseGenderScreen({navigation, route}) {
     <LinearGradient
       colors={[colors.themeColor1, colors.themeColor3]}
       style={styles.mainContainer}>
-      <ActivityLoader visible={loading} />
       <View style={{flex: 1}}>
         <FastImage
           resizeMode={'stretch'}
@@ -221,6 +185,7 @@ export default function ChooseGenderScreen({navigation, route}) {
     </LinearGradient>
   );
 }
+
 const styles = StyleSheet.create({
   background: {
     height: hp('100%'),
