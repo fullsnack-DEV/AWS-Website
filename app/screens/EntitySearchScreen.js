@@ -258,7 +258,6 @@ export default function EntitySearchScreen({navigation, route}) {
         },
       });
     }
-
     getUserIndex(playersQuery)
       .then((res) => {
         if (res.length > 0) {
@@ -381,6 +380,7 @@ export default function EntitySearchScreen({navigation, route}) {
         },
       });
     }
+
     getUserIndex(scoreKeeperQuery)
       .then((res) => {
         if (res.length > 0) {
@@ -420,7 +420,7 @@ export default function EntitySearchScreen({navigation, route}) {
     if (teamFilters.sport !== strings.all) {
       teamsQuery.query.bool.must.push({
         term: {
-          'registered_sports.sport_name.keyword': {
+          'sport.keyword': {
             value: `${teamFilters?.sport?.toLowerCase()}`,
             case_insensitive: true,
           },
@@ -479,7 +479,7 @@ export default function EntitySearchScreen({navigation, route}) {
     if (clubFilters.sport !== strings.all) {
       clubsQuery.query.bool.must.push({
         term: {
-          'registered_sports.sport_name.keyword': {
+          'sports.sport.keyword': {
             value: `${clubFilters?.sport?.toLowerCase()}`,
             case_insensitive: true,
           },
