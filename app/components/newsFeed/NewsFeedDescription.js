@@ -122,13 +122,11 @@ const NewsFeedDescription = ({
         matchData?.input?.substr(matchData?.index, descriptions?.length),
       );
       let color = colors.black;
-      let isTagName = false;
-      if (tagData.length > 0) {
-        isTagName =
-          tagData?.filter(
-            (item) => item?.entity_data?.tagged_formatted_name === match,
-          )?.length > 0;
-      }
+      const isTagName =
+        tagData?.filter(
+          (item) => item?.entity_data?.tagged_formatted_name === match,
+        )?.length > 0;
+
       if (isTagName) color = colors.greeColor;
       return (
         <Text
