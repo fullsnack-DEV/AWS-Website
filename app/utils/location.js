@@ -7,6 +7,7 @@ import {
 import Geolocation from '@react-native-community/geolocation';
 import {getLocationNameWithLatLong, searchLocationPlaceDetail} from '../api/External';
 import {strings} from '../../Localization/translation';
+import Verbs from '../Constants/Verbs';
 
 const checkPermAndGetGeoCoordinates = async (platform) => {
   let permKeys = []; // Define permission array in preference order only
@@ -30,11 +31,15 @@ const checkPermAndGetGeoCoordinates = async (platform) => {
   }
 
   if (availablePermissions[permKeys[0]] === RESULTS.BLOCKED && availablePermissions[permKeys[1]] === RESULTS.BLOCKED) {
-    throw new Error(strings.userdeniedgps)
+    const err = new Error(strings.userdeniedgps)
+    err.name = Verbs.gpsErrorDeined
+    throw err
   }
 
   if (availablePermissions[permKeys[0]] === RESULTS.UNAVAILABLE && availablePermissions[permKeys[1]] === RESULTS.UNAVAILABLE) {
-    throw new Error(strings.userdeniedgps)
+    const err = new Error(strings.userdeniedgps)
+    err.name = Verbs.gpsErrorDeined
+    throw err
   }
 
   if (availablePermissions[permKeys[0]] === RESULTS.DENIED) {
@@ -44,7 +49,9 @@ const checkPermAndGetGeoCoordinates = async (platform) => {
     }
     /* eslint-disable no-else-return */
     else{
-      throw new Error(strings.userdeniedgps)
+      const err = new Error(strings.userdeniedgps)
+      err.name = Verbs.gpsErrorDeined
+      throw err
     }
   } else if (availablePermissions[permKeys[1]] === RESULTS.DENIED) {
     // Denied but still requestable
@@ -54,7 +61,9 @@ const checkPermAndGetGeoCoordinates = async (platform) => {
     }
     /* no-else-return */
     else{
-      throw new Error(strings.userdeniedgps)
+      const err = new Error(strings.userdeniedgps)
+      err.name = Verbs.gpsErrorDeined
+      throw err
     }
   }
   return null;
@@ -82,7 +91,9 @@ const getGeocoordinatesWithPlaceName = async (platform) => {
   if(result.message){
     // this is error case
     if(result.code === 2 && result.PERMISSION_DENIED === 1){
-      throw new Error(strings.userdeniedgps)
+      const err = new Error(strings.userdeniedgps)
+      err.name = Verbs.gpsErrorDeined
+      throw err
     }
   }
   else{
@@ -118,7 +129,9 @@ const getGeocoordinatesWithoutPlaceName = async (platform) => {
   if(result.message){
     // this is error case
     if(result.code === 2 && result.PERMISSION_DENIED === 1){
-      throw new Error(strings.userdeniedgps)
+      const err = new Error(strings.userdeniedgps)
+      err.name = Verbs.gpsErrorDeined
+      throw err
     }
   }
   else{

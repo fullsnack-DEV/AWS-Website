@@ -46,6 +46,7 @@ import fonts from '../../Constants/Fonts';
 import {getAppSettingsWithoutAuth} from '../../api/Users';
 import * as Utility from '../../utils';
 import ActivityLoader from '../../components/loader/ActivityLoader';
+import Verbs from '../../Constants/Verbs';
 
 
 export default function ChooseLocationScreen({navigation, route}) {
@@ -155,7 +156,7 @@ export default function ChooseLocationScreen({navigation, route}) {
       .catch((e) => {
         setLoading(false);
         setLocationFetch(true);
-        if(e.message === strings.userdeniedgps){
+        if(e.name === Verbs.gpsErrorDeined){
           setCurrentLocation(null);
           setUserDeniedLocPerm(true);
           console.log('userD denied the to fetch GPS Location')
