@@ -5,10 +5,7 @@
 import React, {
   useState,
   useEffect,
-  useContext,
   useLayoutEffect,
-  useCallback,
-  useMemo,
 } from 'react';
 import {
   StyleSheet,
@@ -18,14 +15,12 @@ import {
   TextInput,
   FlatList,
   Alert,
-  PermissionsAndroid,
-  Platform,
   TouchableOpacity,
   SafeAreaView,
+  Platform,
+  Linking
 } from 'react-native';
-import axios from 'axios';
 
-import {useNavigationState} from '@react-navigation/native';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -34,38 +29,39 @@ import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 
 import LinearGradient from 'react-native-linear-gradient';
 import FastImage from 'react-native-fast-image';
-import bodybuilder from 'bodybuilder';
+
 import {
-  searchLocations,
-  getLocationNameWithLatLong,
-  getLatLongFromPlaceID,
-  searchNearByCity,
   searchCityState,
-  searchLocationPlaceDetail,
+  searchNearByCityState
 } from '../../api/External';
+
+import { getPlaceNameFromPlaceID, getGeocoordinatesWithPlaceName} from '../../utils/location';
+
 import images from '../../Constants/ImagePath';
 import {strings} from '../../../Localization/translation';
 import Separator from '../../components/Separator';
-import AuthContext from '../../auth/context';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
-import {updateUserProfile, getAppSettingsWithoutAuth} from '../../api/Users';
+import {getAppSettingsWithoutAuth} from '../../api/Users';
 import * as Utility from '../../utils';
 import ActivityLoader from '../../components/loader/ActivityLoader';
-import {getGroupIndex} from '../../api/elasticSearch';
+import Verbs from '../../Constants/Verbs';
+
 
 export default function ChooseLocationScreen({navigation, route}) {
-  const authContext = useContext(AuthContext);
   const [cityData, setCityData] = useState([]);
   const [nearbyCities, setNearbyCities] = useState([]);
 
-  const [currentLocation, setCurrentLocation] = useState(
-    route.params?.signupInfo?.location,
-  );
+  const [currentLocation, setCurrentLocation] = useState();
+  const [userDeniedLocPerm, setUserDeniedLocPerm] = useState(false);
+
   const [noData, setNoData] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const [locationFetch, setLocationFetch] = useState(false);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
@@ -93,7 +89,7 @@ export default function ChooseLocationScreen({navigation, route}) {
         .then((response) => {
           setNoData(false);
           setCityData(
-            response.predictions.filter((obj) => obj.terms.length === 3),
+            response.predictions
           );
         })
         .catch((e) => {
@@ -107,41 +103,19 @@ export default function ChooseLocationScreen({navigation, route}) {
     }
   }, [searchText]);
 
-  useEffect(() => {
-    // TODO: why not using nearby cities sent from previous screen
-    if (
-      currentLocation?.position?.coords?.latitude &&
-      currentLocation?.position?.coords?.longitude
-    ) {
-      getNearbyCityData(
-        currentLocation.position.coords.latitude,
-        currentLocation.position.coords.longitude,
-        100,
-      );
-    }
-  }, []);
-
   const getNearbyCityData = (lat, long, radius) => {
-    // TODO: move this to api common file
-    axios({
-      method: 'get',
-      url: `http://getnearbycities.geobytes.com/GetNearbyCities?radius=${radius}&latitude=${lat}&longitude=${long}&limit=500`,
-    })
+    searchNearByCityState(radius, lat, long)
       .then((response) => {
-        const cityList = response.data.map((obj) => ({
-          description: obj[1],
-          city: obj[1],
-          state_abbr: obj[2],
-          country: obj[3],
-        }));
-        const list = cityList.filter(
-          (obj) => obj?.city !== currentLocation?.city,
+        console.log('searchNearByCityState', response)
+        const list = response.filter(
+          (obj) => !(obj.city === currentLocation?.city && obj.country === currentLocation?.country)
         );
-        setNearbyCities(
-          cityList.filter((obj) => obj?.city !== currentLocation?.city),
-        );
+        setNearbyCities(list);
+        console.log('list', list)
+        setLoading(false);
       })
       .catch((e) => {
+        setLoading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
@@ -160,7 +134,42 @@ export default function ChooseLocationScreen({navigation, route}) {
       });
   }, []);
 
-  const getTeamsDataByCurrentLocation = async () => {
+  useEffect(() => {
+    setLoading(true);
+    setUserDeniedLocPerm(false);
+    getGeocoordinatesWithPlaceName(Platform.OS)
+      .then((location) => {
+        setLocationFetch(true);
+        if(location.position){
+          setCurrentLocation(location);
+          getNearbyCityData(
+            location.position.coords.latitude,
+            location.position.coords.longitude,
+            100,
+          );
+        }
+        else{
+          setLoading(false);
+          setCurrentLocation(null);
+        }
+      })
+      .catch((e) => {
+        setLoading(false);
+        setLocationFetch(true);
+        if(e.name === Verbs.gpsErrorDeined){
+          setCurrentLocation(null);
+          setUserDeniedLocPerm(true);
+          console.log('userD denied the to fetch GPS Location')
+        }
+        else{
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        }
+      });
+  }, []);
+
+  const onSelectCurrentLocation = async () => {
     setLoading(true);
     const userData = {
       city: currentLocation?.city,
@@ -169,6 +178,44 @@ export default function ChooseLocationScreen({navigation, route}) {
     };
 
     navigateToChooseSportScreen(userData);
+  };
+
+  const onSelectNoCurrentLocation = async () => {
+    if(userDeniedLocPerm){
+        Alert.alert(
+          strings.locationSettingTitleText,
+          strings.locationSettingText,
+          [
+            {
+              text: strings.cancel,
+              style: 'cancel',
+            },
+            {
+              text: strings.settingsTitleText,
+              onPress: () => { 
+                if(Platform.OS === 'ios'){
+                  Linking.openURL('app-settings:')
+                }
+                else{
+                  Linking.openSettings();
+                }
+              }
+            },
+          ],
+        );
+    }
+    else{
+      Alert.alert(
+        strings.noGpsErrorMsg,
+        '',
+        [
+          {
+            text: strings.OkText,
+            style: 'cancel',
+          },
+        ],
+      );
+    }
   };
 
   const navigateToChooseSportScreen = (params) => {
@@ -181,34 +228,74 @@ export default function ChooseLocationScreen({navigation, route}) {
     });
   };
 
-  const getTeamsData = async (item) => {
+  const onSelectLocation = async (item) => {
     setLoading(true);
+    getPlaceNameFromPlaceID(item.place_id).then((location) => {
+      setLoading(false);
+      if (location) {
+        let userData = {};
+        userData = {
+          city: location.city,
+          state_abbr: location.state,
+          country: location.country,
+        };
+        navigateToChooseSportScreen(userData);
+      }
+    });
 
-    let userData = {};
-
-    userData = {
-      ...userData,
-      city: item?.city ?? item?.terms?.[0]?.value,
-      state_abbr: item?.state_abbr ?? item?.terms?.[1]?.value,
-      country: item?.country ?? item?.terms?.[2]?.value,
-    };
-    navigateToChooseSportScreen(userData);
+   
   };
 
-  const renderItem = ({item, index}) => {
-    console.log('Render city item:=>', item);
-    return (
+  const onSelectNearByLocation = async (item) => {
+        let userData = {};
+        userData = {
+          city: item.city,
+          state_abbr: item.state,
+          country: item.country,
+        };
+        navigateToChooseSportScreen(userData);
+  };
+
+  const renderItem = ({item, index}) => (
       <TouchableWithoutFeedback
         style={styles.listItem}
-        onPress={() => getTeamsData(item)}>
+        onPress={() => onSelectLocation(item)}>
         <Text style={styles.cityList}>{cityData[index].description}</Text>
         <Separator />
       </TouchableWithoutFeedback>
     );
-  };
+
+  const renderCurrentLocation = () => {
+    let renderData
+    if(currentLocation && currentLocation.city){
+      renderData =  (<TouchableWithoutFeedback
+        style={styles.listItem}
+        onPress={() => onSelectCurrentLocation()}>
+        <View>
+          <Text style={[styles.cityList, {marginBottom: 3}]}>
+          {[
+            currentLocation?.city,
+            currentLocation?.state,
+            currentLocation?.country,
+            ].filter((v) => v)
+            .join(', ')}
+          </Text>
+          <Text style={styles.curruentLocationText}>
+            {strings.currentLocationText}
+          </Text>
+        </View>
+        <Separator />
+      </TouchableWithoutFeedback>)
+    }
+    else{
+      renderData =  <View/>
+    }
+    return renderData
+  }
 
   const removeExtendedSpecialCharacters = (str) =>
     str.replace(/[^\x20-\x7E]/g, '');
+
   return (
     <LinearGradient
       colors={[colors.themeColor1, colors.themeColor3]}
@@ -241,42 +328,44 @@ export default function ChooseLocationScreen({navigation, route}) {
           }
         />
       </View>
-      {noData && searchText?.length > 0 && (
+      {noData && searchText.length > 0 && (
         <Text style={styles.noDataText}>{strings.enter3CharText}</Text>
       )}
-      {noData && searchText?.length === 0 && nearbyCities?.length > 0 && (
+      {noData && searchText.length === 0 && nearbyCities.length > 0 && (
         <SafeAreaView style={{flex: 1}}>
           <FlatList
             data={nearbyCities}
             renderItem={({item}) => (
               <TouchableWithoutFeedback
                 style={styles.listItem}
-                onPress={() => getTeamsData(item)}>
+                onPress={() => onSelectNearByLocation(item)}>
                 <Text style={styles.cityList}>
-                  {item?.city}, {item?.state_abbr}, {item?.country}
+                  {[item.city, item.state, item.country]
+                    .filter((v) => v)
+                    .join(', ')}
                 </Text>
                 <Separator />
               </TouchableWithoutFeedback>
             )}
-            ListHeaderComponent={() => (
-              <TouchableWithoutFeedback
-                style={styles.listItem}
-                onPress={() => getTeamsDataByCurrentLocation()}>
-                <View>
-                  <Text style={[styles.cityList, {marginBottom: 3}]}>
-                    {currentLocation?.city}, {currentLocation?.stateAbbr},{' '}
-                    {currentLocation?.country}
-                  </Text>
-                  <Text style={styles.curruentLocationText}>
-                    {strings.currentLocationText}
-                  </Text>
-                </View>
-                <Separator />
-              </TouchableWithoutFeedback>
-            )}
+            ListHeaderComponent={renderCurrentLocation}
             keyExtractor={(index) => index.toString()}
           />
         </SafeAreaView>
+      )}
+      {noData && searchText.length === 0 && locationFetch && !currentLocation && (
+        <TouchableWithoutFeedback
+          style={styles.noLocationViewStyle}
+          onPress={() => onSelectNoCurrentLocation()}>
+          <View>
+            <Text style={styles.currentLocationTextStyle}>
+              {strings.currentLocationText}
+            </Text>
+            <Separator />
+          </View>
+          <Text style={[styles.currentLocationTextStyle,{marginTop:15}]}>
+            {strings.noLocationText}
+          </Text>
+        </TouchableWithoutFeedback>
       )}
       {cityData.length > 0 && (
         <FlatList
@@ -317,8 +406,6 @@ const styles = StyleSheet.create({
     fontSize: wp('4%'),
     textAlign: 'left',
     fontFamily: fonts.RMedium,
-
-    // paddingLeft: wp('1%'),
     width: wp('70%'),
     margin: wp('4%'),
     textAlignVertical: 'center',
@@ -383,8 +470,22 @@ const styles = StyleSheet.create({
   textInput: {
     color: colors.darkYellowColor,
     flex: 1,
-    fontFamily: fonts.RBold,
+    fontFamily: fonts.RRegular,
     fontSize: 16,
     paddingLeft: 10,
+  },
+  noLocationViewStyle: {
+    flexDirection: 'column',
+    marginLeft: wp('10%'),
+    width: wp('80%'),
+  },
+  currentLocationTextStyle: {
+    color: colors.whiteColor,
+    fontSize: 14,
+    textAlign: 'left',
+    fontFamily: fonts.RRegular,
+    textAlignVertical: 'center',
+    marginBottom:16,
+    marginTop :21,
   },
 });

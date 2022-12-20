@@ -51,6 +51,7 @@ const LoginScreen = ({navigation}) => {
   const [hidePassword, setHidePassword] = useState(true);
   const authContext = useContext(AuthContext);
   const dummyAuthContext = {...authContext};
+
   // For activity indigator
   const [loading, setloading] = useState(false);
 
@@ -190,6 +191,7 @@ const LoginScreen = ({navigation}) => {
   const onAuthStateChanged = useCallback(
     (user) => {
       if (user) {
+        console.log('user', user)
         user.getIdTokenResult().then((idTokenResult) => {
           const token = {
             token: idTokenResult.token,
@@ -198,42 +200,34 @@ const LoginScreen = ({navigation}) => {
           dummyAuthContext.tokenData = token;
           Utility.setStorage('eventColor', eventDefaultColorsData);
           Utility.setStorage('groupEventValue', true);
-          const userConfig = {
-            method: 'get',
-            url: `${Config.BASE_URL}/users/${user?.uid}`,
-            headers: {Authorization: `Bearer ${token?.token}`},
-          };
-          console.log('Login Request:=>', userConfig);
-          apiCall(userConfig)
-            .then((response) => {
-              dummyAuthContext.entity = {
-                uid: user.uid,
-                role: 'user',
-                obj: response.payload,
-                auth: {
-                  user_id: user.uid,
-                  user: response.payload,
-                },
-              };
-              QBInitialLogin(user, response.payload);
-            })
-            .catch((error) => {
-              // setloading(false)
-              // setTimeout(() => Alert.alert('TownsCup', error.message), 100);
-              // eslint-disable-next-line no-underscore-dangle
-              if (!user?._user?.emailVerified) {
-                navigateToEmailVarificationScreen(user);
-                // eslint-disable-next-line no-underscore-dangle
-              } else if (user?._user?.emailVerified) {
-                navigateToAddBirthdayScreen(user);
-              } else {
-                setloading(false);
-                setTimeout(
-                  () => Alert.alert(strings.appName, error.message),
-                  100,
-                );
-              }
-            });
+          // eslint-disable-next-line no-underscore-dangle
+          if (!user._user.emailVerified) {
+            navigateToEmailVarificationScreen(user);
+          } 
+          else{
+            const userConfig = {
+              method: 'get',
+              url: `${Config.BASE_URL}/users/${user.uid}`,
+              headers: {Authorization: `Bearer ${token.token}`},
+            };
+            console.log('Login Request:=>', userConfig);
+            apiCall(userConfig)
+              .then((response) => {
+                dummyAuthContext.entity = {
+                  uid: user.uid,
+                  role: 'user',
+                  obj: response.payload,
+                  auth: {
+                    user_id: user.uid,
+                    user: response.payload,
+                  },
+                };
+                QBInitialLogin(user, response.payload);
+              })
+              .catch(() => {
+                navigateToAddNameScreen(user);
+              });
+          }
         });
       }
     },
@@ -287,7 +281,8 @@ const LoginScreen = ({navigation}) => {
       });
       */
   };
-  const navigateToAddBirthdayScreen = async (user) => {
+
+  const navigateToAddNameScreen = async (user) => {
     const entity = {
       auth: {user_id: user.uid},
       uid: user.uid,
@@ -304,12 +299,14 @@ const LoginScreen = ({navigation}) => {
       },
     });
   };
+
   const login = useCallback(async () => {
     await Utility.clearStorage();
     firebase
       .auth()
       .signInWithEmailAndPassword(email, password)
       .then(() => {
+        console.log('signInWithEmailAndPassword')
         const loginOnAuthStateChanged = firebase
           .auth()
           .onAuthStateChanged(onAuthStateChanged);
@@ -320,9 +317,6 @@ const LoginScreen = ({navigation}) => {
         let message = error.message;
         if (error.code === 'auth/user-not-found') {
           message = strings.userNotFound;
-        }
-        if (error.code === 'auth/email-already-in-use') {
-          message = strings.emailAlreadyInUse;
         }
         if (error.code === 'auth/invalid-email') {
           message = strings.validEmailMessage;

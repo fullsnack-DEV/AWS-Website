@@ -74,7 +74,7 @@ export default function LocationSearchModal({
     <TouchableOpacity
       style={styles.listItem}
       onPress={() => {
-        searchLocationPlaceDetail(item?.place_id, authContext)
+        searchLocationPlaceDetail(item?.place_id)
           .then((response) => {
             const data = {
               ...item,
