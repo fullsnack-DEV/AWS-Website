@@ -637,9 +637,9 @@ export default function EditScorekeeperReservation({navigation, route}) {
           {(!isPendingRequestPayment ||
             (bodyParams.status === ScorekeeperReservationStatus.declined &&
               isDeclined)) && (
-            <Text style={styles.buttonText}>
-              {strings.editReservationDetails}
-            </Text>
+              <Text style={styles.buttonText}>
+                {strings.editReservationDetails}
+              </Text>
           )}
           {/* <View
              style={{
@@ -952,7 +952,7 @@ export default function EditScorekeeperReservation({navigation, route}) {
             {(!isPendingRequestPayment ||
               (bodyParams.status === ScorekeeperReservationStatus.declined &&
                 isDeclined)) && (
-              <TouchableOpacity
+                <TouchableOpacity
                 style={styles.editTouchArea}
                 hitSlop={Utility.getHitSlop(15)}
                 onPress={() =>
@@ -961,16 +961,16 @@ export default function EditScorekeeperReservation({navigation, route}) {
                     body: bodyParams,
                   })
                 }>
-                <Text
+                  <Text
                   style={{
                     color: colors.themeColor,
                     fontFamily: fonts.RMedium,
                     fontSize: 16,
                     marginTop: 10,
                   }}>
-                  {strings.editTitleText}
-                </Text>
-              </TouchableOpacity>
+                    {strings.editTitleText}
+                  </Text>
+                </TouchableOpacity>
             )}
           </View>
           <View
@@ -1101,8 +1101,8 @@ export default function EditScorekeeperReservation({navigation, route}) {
             !isPendingRequestPayment) ||
             (bodyParams.status === ScorekeeperReservationStatus.declined &&
               isDeclined)) && (
-            <View>
-              <TCGradientButton
+              <View>
+                <TCGradientButton
                 title={strings.sendAlterRequest}
                 textColor={colors.grayColor}
                 startGradientColor={colors.yellowColor}
@@ -1118,7 +1118,7 @@ export default function EditScorekeeperReservation({navigation, route}) {
                   }
                 }}
               />
-              {/* <TCBorderButton
+                {/* <TCBorderButton
                  title={strings.cancel}
                  textColor={colors.themeColor}
                  borderColor={colors.themeColor}
@@ -1130,13 +1130,13 @@ export default function EditScorekeeperReservation({navigation, route}) {
                    navigation.goBack();
                  }}
                /> */}
-            </View>
+              </View>
           )}
           {(bodyParams.status === ScorekeeperReservationStatus.changeRequest ||
             bodyParams.status ===
               ScorekeeperReservationStatus.pendingrequestpayment) && (
-            <View>
-              <TCBorderButton
+              <View>
+                <TCBorderButton
                 title={strings.cancelreservation}
                 textColor={colors.whiteColor}
                 borderColor={colors.grayColor}
@@ -1167,7 +1167,7 @@ export default function EditScorekeeperReservation({navigation, route}) {
                   }
                 }}
               />
-            </View>
+              </View>
           )}
           {bodyParams.status === ScorekeeperReservationStatus.declined &&
             !isDeclined && (

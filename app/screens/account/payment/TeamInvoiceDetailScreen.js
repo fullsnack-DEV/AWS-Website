@@ -156,17 +156,17 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
       logsList?.length - 1 === index &&
       authContext?.entity?.role === 'team' &&
       item?.payment_mode !== 'card' ? (
-      <AppleStyleSwipeableRow
+        <AppleStyleSwipeableRow
         onPress={() => onDeleteLog(item)}
         color={colors.redDelColor}
         image={images.deleteIcon}>
-        <PaymentLogs
+          <PaymentLogs
           data={item}
           onPressCard={() => {
             navigation.navigate('LogDetailScreen', {data: item});
           }}
         />
-      </AppleStyleSwipeableRow>
+        </AppleStyleSwipeableRow>
     ) : (
       <PaymentLogs
         data={item}

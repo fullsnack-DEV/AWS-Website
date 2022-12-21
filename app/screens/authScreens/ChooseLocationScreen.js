@@ -48,7 +48,6 @@ import * as Utility from '../../utils';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import Verbs from '../../Constants/Verbs';
 
-
 export default function ChooseLocationScreen({navigation, route}) {
   const [cityData, setCityData] = useState([]);
   const [nearbyCities, setNearbyCities] = useState([]);
