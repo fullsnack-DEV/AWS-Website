@@ -409,7 +409,7 @@ export default function SignupScreen({navigation}) {
         />
         <Text style={styles.checkEmailText}>{strings.signupwithemail}</Text>
         <TCKeyboardView>
-          <View style={{marginVertical: 30}}>
+          <View style={{marginVertical: hp(8.12)}}>
             {/* <TouchableOpacity
               style={styles.profile}
               onPress={() => {
@@ -444,12 +444,15 @@ export default function SignupScreen({navigation}) {
               testID={'email-signup-input'}
               placeholderTextColor={colors.darkYellowColor}
               style={styles.textFieldStyle}
+              width={wp(86.6)}
+              height={40}
               placeholder={strings.emailPlaceHolder}
               autoCapitalize="none"
               keyboardType="email-address"
               onChangeText={(text) => setEmail(text)}
               value={email}
             />
+
             <View style={styles.passwordView}>
               <TextInput
                 testID="password-signup-input"
@@ -559,7 +562,7 @@ export default function SignupScreen({navigation}) {
           /> */}
         </TCKeyboardView>
         <SafeAreaView>
-          <View style={{bottom: 16}}>
+          <View style={{bottom: 12}}>
             <TouchableOpacity
               hitSlop={getHitSlop(15)}
               onPress={() => navigation.navigate('LoginScreen')}
@@ -612,7 +615,7 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.5,
     shadowRadius: 4,
-    width: wp('81.3%'),
+    width: wp('86.6%'),
   },
   textInput: {
     paddingVertical: 0,
@@ -620,7 +623,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     fontFamily: fonts.RRegular,
     fontSize: 16,
-    width: wp('65%'),
+    width: wp('69%'),
   },
   textFieldStyle: {
     marginVertical: 5,
@@ -653,7 +656,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
     fontSize: 25,
     marginLeft: wp('6.6%'),
-    marginTop: wp('24.6%'),
+    marginTop: hp('12.4%'),
     textAlign: 'left',
   },
 });

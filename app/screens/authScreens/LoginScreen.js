@@ -360,6 +360,8 @@ const LoginScreen = ({navigation}) => {
         keyboardType="email-address"
         onChangeText={(text) => setEmail(text)}
         value={email}
+        height={40}
+        width={wp(86.6)}
       />
     ),
     [email],
@@ -377,6 +379,8 @@ const LoginScreen = ({navigation}) => {
           placeholderTextColor={colors.themeColor}
           secureTextEntry={hidePassword}
           keyboardType={'default'}
+          height={40}
+          width={wp(72)}
         />
         <TouchableOpacity
           onPress={() => hideShowPassword()}
@@ -542,7 +546,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     fontFamily: fonts.RRegular,
     fontSize: 16,
-    width: wp('81.3%'),
+    width: wp('86.6%'),
     backgroundColor: 'rgba(255,255,255,0.9)',
     height: 40,
     color: 'black',

@@ -57,6 +57,7 @@ export default function EmailVerificationScreen({navigation, route}) {
           <Image
             source={images.backArrow}
             style={{
+              marginTop: hp('1.5%'),
               height: 20,
               width: 15,
               marginLeft: 20,
@@ -312,13 +313,18 @@ export default function EmailVerificationScreen({navigation, route}) {
         style={styles.background}
         source={images.loginBg}
       />
-      <View style={{marginTop: '30%', alignSelf: 'center', width: '80%'}}>
+      <View
+        style={{
+          marginTop: hp('11.20%'),
+          alignSelf: 'center',
+          width: '80%',
+        }}>
         <Text
           style={{
             fontSize: 25,
             fontFamily: fonts.RBold,
             color: colors.whiteColor,
-            marginBottom: 25,
+            marginBottom: 5,
           }}>
           {strings.verifyEmailText}
         </Text>
@@ -328,34 +334,15 @@ export default function EmailVerificationScreen({navigation, route}) {
       </View>
       <FastImage
         style={{
-          height: 112,
-          width: 180,
+          height: 65.33,
+          width: 101,
           alignSelf: 'center',
-          marginVertical: 15,
+          // marginVertical: hp(8.12),
+          marginTop: hp(8.12),
         }}
         resizeMode={'contain'}
         source={images.emailSendIconBG}
       />
-
-      <TouchableOpacity
-        onPress={resend}
-        disabled={timer !== 0}
-        style={{alignItems: 'center'}}>
-        <Text
-          style={{
-            width: '85%',
-            textAlign: 'center',
-            color: colors.lightGreen,
-            textDecorationLine: 'underline',
-            fontSize: 13,
-            fontWeight: '700',
-          }}>
-          {timer !== 0
-            ? format(strings.sentVerificationEmailAfterSecond, timer)
-            : strings.sentEmailAgainTExt}
-        </Text>
-      </TouchableOpacity>
-
       <TouchableOpacity testID="verify-email-button" onPress={verifyUserEmail}>
         <View
           style={{
@@ -367,7 +354,7 @@ export default function EmailVerificationScreen({navigation, route}) {
             justifyContent: 'center',
             alignItems: 'center',
             alignSelf: 'center',
-            marginTop: '10%',
+            marginTop: hp('5.35%'),
             height: 50,
           }}>
           <Text
@@ -380,6 +367,25 @@ export default function EmailVerificationScreen({navigation, route}) {
             {strings.iHaveVerifiedEmail}
           </Text>
         </View>
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={resend}
+        disabled={timer !== 0}
+        style={{alignItems: 'center'}}>
+        <Text
+          style={{
+            width: '85%',
+            textAlign: 'center',
+            color: colors.lightGreen,
+            textDecorationLine: 'underline',
+            fontSize: 13,
+            fontWeight: '700',
+            marginTop: hp('2.4%'),
+          }}>
+          {timer !== 0
+            ? format(strings.sentVerificationEmailAfterSecond, timer)
+            : strings.sentEmailAgainTExt}
+        </Text>
       </TouchableOpacity>
     </LinearGradient>
   );

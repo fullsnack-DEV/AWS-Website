@@ -55,6 +55,7 @@ export default function SignupScreen({navigation, route}) {
           <Image
             source={images.backArrow}
             style={{
+              marginTop: hp('1.5%'),
               height: 20,
               width: 15,
               marginLeft: 20,
@@ -266,7 +267,7 @@ export default function SignupScreen({navigation, route}) {
         <Text style={styles.checkEmailText}>{strings.addYourName}</Text>
 
         <TCKeyboardView>
-          <View style={{marginVertical: 20}}>
+          <View style={{marginTop: hp('7.7%')}}>
             <TouchableOpacity
               style={styles.profile}
               onPress={() => {
@@ -330,22 +331,28 @@ export default function SignupScreen({navigation, route}) {
               />
             </TouchableOpacity>
           </View>
-          <TCTextField
-            testID="fname-signup-input"
-            placeholderTextColor={colors.darkYellowColor}
-            style={styles.textFieldStyle}
-            placeholder={strings.fnameText}
-            value={fName}
-            onChangeText={(text) => setFName(text)}
-          />
-          <TCTextField
-            testID="lname-signup-input"
-            placeholderTextColor={colors.darkYellowColor}
-            style={{...styles.textFieldStyle, marginBottom: 40}}
-            placeholder={strings.lnameText}
-            onChangeText={(text) => setLName(text)}
-            value={lName}
-          />
+          <View style={{marginTop: hp(4.5)}}>
+            <TCTextField
+              testID="fname-signup-input"
+              placeholderTextColor={colors.darkYellowColor}
+              style={styles.textFieldStyle}
+              width={wp(86.6)}
+              height={40}
+              placeholder={strings.fnameText}
+              value={fName}
+              onChangeText={(text) => setFName(text)}
+            />
+            <TCTextField
+              testID="lname-signup-input"
+              placeholderTextColor={colors.darkYellowColor}
+              style={{...styles.textFieldStyle}}
+              placeholder={strings.lnameText}
+              onChangeText={(text) => setLName(text)}
+              value={lName}
+              width={wp(86.6)}
+              height={40}
+            />
+          </View>
 
           {/* <TCButton
             title={strings.continueCapTitle}
@@ -379,18 +386,13 @@ const styles = StyleSheet.create({
     alignContent: 'center',
     alignSelf: 'center',
     height: 100,
-    marginTop: 30,
-    marginBottom: 20,
     width: 100,
     borderRadius: 50,
-
-    // borderWidth: 1,
-    // borderColor: '#FED378',
   },
 
   textFieldStyle: {
-    top: 30,
-    marginVertical: 5,
+    // top: 30,
+    // marginVertical: 5,
     alignSelf: 'center',
     width: wp('85%'),
     backgroundColor: 'rgba(255,255,255,0.9)',
@@ -398,6 +400,7 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.5,
     shadowRadius: 4,
+    marginBottom: 10,
   },
   profileCameraButtonStyle: {
     height: 22,
@@ -415,13 +418,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginRight: 15,
     color: colors.whiteColor,
+    marginTop: hp('1.5%'),
   },
   checkEmailText: {
     color: colors.whiteColor,
     fontFamily: fonts.RBold,
     fontSize: 25,
     marginLeft: 20,
-    marginTop: wp('25%'),
+    marginTop: hp('12.4%'),
     textAlign: 'left',
   },
 });
