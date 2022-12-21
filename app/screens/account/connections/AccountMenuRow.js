@@ -18,18 +18,17 @@ const AccountMenuRow = ({
         <View style={{marginVertical: 5}}>
           <Image
             source={
-              item?.icon &&
-              typeof item?.icon === 'string' &&
-              item?.icon.startsWith('https')
-                ? {uri: item?.icon}
-                : item?.icon
+              item.icon &&
+              typeof item.icon === 'string' ?
+              {uri: item.icon}
+                : item.icon
             }
             style={{...styles.subMenuItem}}
           />
         </View>
         <Text style={styles.listItems}>
-          {item?.option?.group_name ??
-            item.option[0].toUpperCase() + item.option.slice(1).toLowerCase()}
+          {item.option.group_name ??
+            item.option}
         </Text>
         <Image source={item?.iconRight} style={styles.nextArrow} />
       </TouchableWithoutFeedback>
