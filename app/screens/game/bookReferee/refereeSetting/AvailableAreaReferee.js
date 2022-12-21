@@ -366,14 +366,6 @@ export default function AvailableAreaReferee({navigation, route}) {
       );
       onCloseLocationModal();
     }
-    // setLoading(true);
-    // const userData = {
-    //   city: currentLocation?.city,
-    //   state_abbr: currentLocation?.stateAbbr,
-    //   country: currentLocation?.country,
-    // };
-
-    // navigateToChooseSportScreen(userData);
   };
 
   const onSelectNoCurrentLocation = async () => {
