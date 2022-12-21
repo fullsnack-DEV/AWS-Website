@@ -433,7 +433,7 @@ export default function CurruentRefereeReservationScreen({navigation, route}) {
                     {strings.reservationConfirmed}
                   </Text>
                   <Text style={styles.challengeText}>
-                      {checkRefereeOrTeam(bodyParams) === 'referee'
+                    {checkRefereeOrTeam(bodyParams) === 'referee'
                         ? format(strings.confirmRefereeReservation,getEntityName(
                         bodyParams,
                         ))
@@ -497,7 +497,7 @@ export default function CurruentRefereeReservationScreen({navigation, route}) {
                   {strings.reservationDeclined}
                 </Text>
                 <Text style={styles.challengeText}>
-                    {checkRefereeOrTeam(bodyParams) === 'referee'
+                  {checkRefereeOrTeam(bodyParams) === 'referee'
                       ? format(strings.declineRefereeRequestTeam,getEntityName(
                           bodyParams,
                         ))

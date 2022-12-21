@@ -11,7 +11,7 @@ const prepareSportsSubMenuOfUser = (sports) =>
     let updatedList = [];
     if (sports) {
       updatedList = sports.map((item) => ({
-        option: item.sport,
+        option: item.sport_name ?? '',
         icon: getSportIcon(item.sport),
         iconRight: images.settingSport,
         navigateTo: {

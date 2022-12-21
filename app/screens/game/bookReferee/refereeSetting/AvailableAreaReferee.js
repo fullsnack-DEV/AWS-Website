@@ -2,7 +2,13 @@
 /* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable guard-for-in */
 /* eslint-disable array-callback-return */
-import React, {useState, useLayoutEffect, useCallback, useContext} from 'react';
+import React, {
+  useState,
+  useLayoutEffect,
+  useCallback,
+  useContext,
+  useEffect,
+} from 'react';
 import {
   Alert,
   StyleSheet,
@@ -13,11 +19,19 @@ import {
   TextInput,
   TouchableOpacity,
   Platform,
+  Dimensions,
+  Image,
+  TouchableWithoutFeedback,
+  KeyboardAvoidingView,
 } from 'react-native';
 
 // import { useIsFocused } from '@react-navigation/native';
 import Modal from 'react-native-modal';
 import LinearGradient from 'react-native-linear-gradient';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
 import AuthContext from '../../../../auth/context';
 
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
@@ -31,6 +45,13 @@ import LocationSearchModal from '../../../../components/Home/LocationSearchModal
 import * as Utility from '../../../../utils';
 import {patchPlayer} from '../../../../api/Users';
 import Verbs from '../../../../Constants/Verbs';
+import {searchCityState, searchNearByCityState} from '../../../../api/External';
+import {
+  getPlaceNameFromPlaceID,
+  getGeocoordinatesWithPlaceName,
+} from '../../../../utils/location';
+import images from '../../../../Constants/ImagePath';
+import Separator from '../../../../components/Separator';
 
 export default function AvailableAreaReferee({navigation, route}) {
   const [comeFrom] = useState(route?.params?.comeFrom);
@@ -65,6 +86,14 @@ export default function AvailableAreaReferee({navigation, route}) {
         ],
   );
 
+  const [noData, setNoData] = useState(false);
+  const [searchText, setSearchText] = useState('');
+  const [cityData, setCityData] = useState([]);
+  const [nearbyCities, setNearbyCities] = useState([]);
+  const [locationFetch, setLocationFetch] = useState(false);
+  const [userDeniedLocPerm, setUserDeniedLocPerm] = useState(false);
+  const [currentLocation, setCurrentLocation] = useState();
+  const [loadings, setLoading] = useState(false);
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -248,6 +277,206 @@ export default function AvailableAreaReferee({navigation, route}) {
     setAddressModalVisible(false);
   };
 
+  useEffect(() => {
+    if (searchText.length >= 3) {
+      searchCityState(searchText)
+        .then((response) => {
+          setNoData(false);
+          setCityData(response.predictions);
+        })
+        .catch((e) => {
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
+    } else {
+      setNoData(true);
+      setCityData([]);
+    }
+  }, [searchText]);
+
+  const getNearbyCityData = (lat, long, radius) => {
+    searchNearByCityState(radius, lat, long)
+      .then((response) => {
+        console.log('searchNearByCityState', response);
+        const list = response.filter(
+          (obj) =>
+            !(
+              obj.city === currentLocation?.city &&
+              obj.country === currentLocation?.country
+            ),
+        );
+        setNearbyCities(list);
+        console.log('list', list);
+        setLoading(false);
+      })
+      .catch((e) => {
+        setLoading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
+
+  useEffect(() => {
+    setLoading(true);
+    setUserDeniedLocPerm(false);
+    getGeocoordinatesWithPlaceName(Platform.OS)
+      .then((location) => {
+        setLocationFetch(true);
+        if (location.position) {
+          setCurrentLocation(location);
+          getNearbyCityData(
+            location.position.coords.latitude,
+            location.position.coords.longitude,
+            100,
+          );
+        } else {
+          setLoading(false);
+          setCurrentLocation(null);
+        }
+      })
+      .catch((e) => {
+        setLoading(false);
+        setLocationFetch(true);
+        if (e.name === Verbs.gpsErrorDeined) {
+          setCurrentLocation(null);
+          setUserDeniedLocPerm(true);
+          console.log('userD denied the to fetch GPS Location');
+        } else {
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        }
+      });
+  }, []);
+
+  const onSelectCurrentLocation = async () => {
+    setLoading(true);
+    if (addressType === 'short') {
+      const obj = [...addressList];
+      obj[
+        addressListIndex
+      ].address = `${currentLocation.city}, ${currentLocation.state}, ${currentLocation.country}`;
+      setAddressList(obj);
+      onCloseLocationModal();
+    } else {
+      setSearchAddress(
+        `${currentLocation.city}, ${currentLocation.state}, ${currentLocation.country}`,
+      );
+      onCloseLocationModal();
+    }
+  };
+
+  const onSelectNoCurrentLocation = async () => {
+    if (userDeniedLocPerm) {
+      Alert.alert(
+        strings.locationSettingTitleText,
+        strings.locationSettingText,
+        [
+          {
+            text: strings.cancel,
+            style: 'cancel',
+          },
+          {
+            text: strings.settingsTitleText,
+            onPress: () => {
+              if (Platform.OS === 'ios') {
+                Linking.openURL('app-settings:');
+              } else {
+                Linking.openSettings();
+              }
+            },
+          },
+        ],
+      );
+    } else {
+      Alert.alert(strings.noGpsErrorMsg, '', [
+        {
+          text: strings.OkText,
+          style: 'cancel',
+        },
+      ]);
+    }
+  };
+
+  const navigateToChooseSportScreen = (params) => {
+    setLoading(false);
+    navigation.navigate('ChooseSportsScreen', {
+      locationInfo: {
+        ...route?.params?.signupInfo,
+        ...params,
+      },
+    });
+  };
+
+  const onSelectLocation = async (item) => {
+    setLoading(true);
+    if (addressType === 'short') {
+      const obj = [...addressList];
+      obj[addressListIndex].address = item.description;
+      setAddressList(obj);
+      onCloseLocationModal();
+    } else {
+      setSearchAddress(item);
+      onCloseLocationModal();
+    }
+  };
+
+  const onSelectNearByLocation = async (item) => {
+    if (addressType === 'short') {
+      const obj = [...addressList];
+      obj[addressListIndex].address = item.description;
+      setAddressList(obj);
+      onCloseLocationModal();
+    } else {
+      setSearchAddress(item);
+      onCloseLocationModal();
+    }
+  };
+
+  const renderItem = ({item, index}) => (
+    <TouchableOpacity
+      style={styles.listItem}
+      onPress={() => onSelectLocation(item)}>
+      <Text style={styles.cityList}>{cityData[index].description}</Text>
+      <Separator />
+    </TouchableOpacity>
+  );
+
+  const renderCurrentLocation = () => {
+    let renderData;
+    if (currentLocation && currentLocation.city) {
+      renderData = (
+        <TouchableWithoutFeedback
+          style={styles.listItem}
+          onPress={() => onSelectCurrentLocation()}>
+          <View>
+            <Text style={[styles.cityList, {marginBottom: 3}]}>
+              {[
+                currentLocation?.city,
+                currentLocation?.state,
+                currentLocation?.country,
+              ]
+                .filter((v) => v)
+                .join(', ')}
+            </Text>
+            <Text style={styles.curruentLocationText}>
+              {strings.currentLocationText}
+            </Text>
+          </View>
+          {/* <Separator /> */}
+        </TouchableWithoutFeedback>
+      );
+    } else {
+      renderData = <View />;
+    }
+    return renderData;
+  };
+
+  const removeExtendedSpecialCharacters = (str) =>
+    str.replace(/[^\x20-\x7E]/g, '');
+
   return (
     <SafeAreaView>
       <ActivityLoader visible={loading} />
@@ -360,7 +589,111 @@ export default function AvailableAreaReferee({navigation, route}) {
 
       {/* Address modal */}
 
-      <LocationSearchModal
+      <Modal
+        onBackdropPress={() => onCloseLocationModal}
+        backdropOpacity={0.2}
+        animationType="slide"
+        hasBackdrop
+        style={{
+          margin: 0,
+          backgroundColor: colors.whiteOpacityColor,
+        }}
+        visible={addressModalVisible}>
+        <KeyboardAvoidingView
+          behavior="padding"
+          enabled
+          style={{height: Dimensions.get('window').height}}>
+          <View
+            style={[
+              styles.bottomPopupContainer,
+              {
+                height: Dimensions.get('window').height - 250,
+                maxHeight: Dimensions.get('window').height - 250,
+              },
+            ]}>
+            <View style={styles.viewsContainer}>
+              <Text
+                onPress={() => onCloseLocationModal()}
+                style={styles.cancelText}>
+                {strings.cancel}
+              </Text>
+            </View>
+            <Text style={styles.LocationText}>{strings.locationText}</Text>
+            <Text style={styles.LocationDescription}>
+              {strings.locationDescription}
+            </Text>
+            <View style={styles.sectionStyle}>
+              <Image source={images.searchLocation} style={styles.searchImg} />
+              <TextInput
+                // Indiër - For Test
+                testID="location-search-input"
+                value={searchText}
+                autoCorrect={false}
+                spellCheck={false}
+                style={styles.textInput}
+                placeholder={strings.locationPlaceholderText}
+                clearButtonMode="always"
+                placeholderTextColor={colors.themeColor}
+                onChangeText={(text) =>
+                  setSearchText(removeExtendedSpecialCharacters(text))
+                }
+              />
+            </View>
+            {noData && searchText.length > 0 && (
+              <Text style={styles.noDataText}>{strings.enter3CharText}</Text>
+            )}
+            {noData && searchText.length === 0 && nearbyCities.length > 0 && (
+              <SafeAreaView style={{flex: 1}}>
+                <FlatList
+                  data={nearbyCities}
+                  renderItem={({item}) => (
+                    <TouchableWithoutFeedback
+                      style={styles.listItem}
+                      onPress={() => onSelectNearByLocation(item)}>
+                      <Text style={styles.cityList}>
+                        {[item.city, item.state, item.country]
+                          .filter((v) => v)
+                          .join(', ')}
+                      </Text>
+                      {/* <Separator /> */}
+                    </TouchableWithoutFeedback>
+                  )}
+                  ListHeaderComponent={renderCurrentLocation}
+                  keyExtractor={(index) => index.toString()}
+                />
+              </SafeAreaView>
+            )}
+            {noData &&
+              searchText.length === 0 &&
+              locationFetch &&
+              !currentLocation && (
+                <TouchableOpacity
+                  style={styles.noLocationViewStyle}
+                  onPress={() => onSelectNoCurrentLocation()}>
+                  <View>
+                    <Text style={styles.currentLocationTextStyle}>
+                      {strings.currentLocationText}
+                    </Text>
+                    <Separator />
+                  </View>
+                  <Text
+                    style={[styles.currentLocationTextStyle, {marginTop: 15}]}>
+                    {strings.noLocationText}
+                  </Text>
+                </TouchableOpacity>
+              )}
+            {cityData.length > 0 && (
+              <FlatList
+                data={cityData}
+                renderItem={renderItem}
+                keyExtractor={(item) => item.place_id}
+              />
+            )}
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
+
+      {/* <LocationSearchModal
         visible={addressModalVisible}
         addressType={addressType}
         onSelect={(data) => {
@@ -373,7 +706,7 @@ export default function AvailableAreaReferee({navigation, route}) {
           }
         }}
         onClose={onCloseLocationModal}
-      />
+      /> */}
     </SafeAreaView>
     // {/* Address modal */}
   );
@@ -534,5 +867,107 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginLeft: 20,
     marginRight: 20,
+    // NEW MODAL STYLES
+  },
+
+  LocationText: {
+    color: colors.grayColor,
+    fontFamily: fonts.RBold,
+    fontSize: wp('6%'),
+    // marginTop: hp('12%'),
+    paddingLeft: 30,
+    textAlign: 'left',
+  },
+  LocationDescription: {
+    color: colors.grayColor,
+    fontFamily: fonts.RMedium,
+    fontSize: wp('4%'),
+    marginTop: hp('1%'),
+    paddingLeft: 30,
+    paddingRight: 30,
+    textAlign: 'left',
+  },
+  cityList: {
+    color: colors.grayColor,
+    fontSize: wp('4%'),
+    textAlign: 'left',
+    fontFamily: fonts.RMedium,
+    width: wp('70%'),
+    margin: wp('4%'),
+    textAlignVertical: 'center',
+  },
+  curruentLocationText: {
+    color: colors.grayColor,
+    fontSize: wp('3%'),
+    textAlign: 'left',
+    fontFamily: fonts.RRegular,
+
+    // paddingLeft: wp('1%'),
+    width: wp('70%'),
+    margin: wp('4%'),
+    marginTop: wp('0%'),
+    textAlignVertical: 'center',
+  },
+  listItem: {
+    flexDirection: 'row',
+    marginLeft: wp('10%'),
+    width: wp('80%'),
+  },
+  noDataText: {
+    // alignSelf: 'center',
+    color: colors.grayColor,
+    fontFamily: fonts.RRegular,
+    fontSize: 14,
+    marginLeft: 40,
+    marginTop: 8,
+
+    // marginTop: hp('1%'),
+    // textAlign: 'center',
+    // width: wp('55%'),
+  },
+  searchImg: {
+    alignSelf: 'center',
+    height: hp('4%'),
+
+    resizeMode: 'contain',
+    width: wp('4%'),
+  },
+  sectionStyle: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    borderRadius: 25,
+    flexDirection: 'row',
+    height: 40,
+    justifyContent: 'center',
+    margin: wp('8%'),
+    marginBottom: wp('1%'),
+    paddingLeft: 17,
+    paddingRight: 5,
+
+    shadowColor: colors.googleColor,
+    shadowOffset: {width: 0, height: 4},
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+  },
+  textInput: {
+    color: colors.darkYellowColor,
+    flex: 1,
+    fontFamily: fonts.RRegular,
+    fontSize: 16,
+    paddingLeft: 10,
+  },
+  noLocationViewStyle: {
+    flexDirection: 'column',
+    marginLeft: wp('10%'),
+    width: wp('80%'),
+  },
+  currentLocationTextStyle: {
+    color: colors.grayColor,
+    fontSize: 14,
+    textAlign: 'left',
+    fontFamily: fonts.RRegular,
+    textAlignVertical: 'center',
+    marginBottom: 16,
+    marginTop: 21,
   },
 });

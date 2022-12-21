@@ -10,7 +10,7 @@
     "start": "react-native start",
     "restart": "react-native start -- --reset-cache",
     "test": "jest --forceExit",
-    "lint": "eslint .",
+    "lint": "",
     "lint:fix": "eslint --fix .",
     "android:dev": "ENVFILE=.env.development react-native run-android --variant=DevelopmentDebug",
     "android:qa": "ENVFILE=.env.qa react-native run-android --variant=QaDebug",

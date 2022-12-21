@@ -419,15 +419,15 @@ export default function CurruentRefereeReservationView({
               bodyParams.status === RefereeReservationStatus.restored ||
               bodyParams.status ===
                 RefereeReservationStatus.requestcancelled) && (
-              <View>
-                <Text
+                <View>
+                  <Text
                   style={[
                     styles.challengeMessage,
                     {color: colors.requestConfirmColor},
                   ]}>
-                  {strings.reservationConfirmed}
-                </Text>
-                <Text style={styles.challengeText}>
+                    {strings.reservationConfirmed}
+                  </Text>
+                  <Text style={styles.challengeText}>
                     {checkRefereeOrTeam(bodyParams) === 'referee'
                       ? format(strings.confirmRefereeReservation,getEntityName(
                       bodyParams,
@@ -435,28 +435,28 @@ export default function CurruentRefereeReservationView({
                       : format(strings.teamConfirmRefereeReservation,getEntityName(
                       bodyParams,
                     ))}
-                </Text>
-              </View>
+                  </Text>
+                </View>
             )}
           {checkSenderOrReceiver(bodyParams) === 'receiver' &&
             (bodyParams.status === RefereeReservationStatus.accepted ||
               bodyParams.status === RefereeReservationStatus.restored ||
               bodyParams.status ===
                 RefereeReservationStatus.requestcancelled) && (
-              <View>
-                <Text
+                <View>
+                  <Text
                   style={[
                     styles.challengeMessage,
                     {color: colors.requestConfirmColor},
                   ]}>
-                  {strings.reservationConfirmed}
-                </Text>
-                <Text style={styles.challengeText}>
+                    {strings.reservationConfirmed}
+                  </Text>
+                  <Text style={styles.challengeText}>
                     {format(strings.confirmRefereeReservationSent,getEntityName(
                       bodyParams,
                     ))}
-                </Text>
-              </View>
+                  </Text>
+                </View>
             )}
           {/* Status accepted */}
           {/* Status declined */}

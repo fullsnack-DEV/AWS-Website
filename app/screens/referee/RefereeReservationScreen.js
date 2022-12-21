@@ -350,8 +350,8 @@ export default function RefereeReservationScreen({navigation, route}) {
         bodyParams.status === RefereeReservationStatus.requestcancelled ||
         (bodyParams.status === RefereeReservationStatus.declined &&
           bodyParams.version > 3)) && (
-        <View>
-          <TCBorderButton
+          <View>
+            <TCBorderButton
             title={strings.alterReservation}
             textColor={colors.grayColor}
             borderColor={colors.grayColor}
@@ -378,7 +378,7 @@ export default function RefereeReservationScreen({navigation, route}) {
               }
             }}
           />
-          <TCBorderButton
+            <TCBorderButton
             title={strings.cancelreservation}
             textColor={colors.whiteColor}
             borderColor={colors.grayColor}
@@ -416,7 +416,7 @@ export default function RefereeReservationScreen({navigation, route}) {
               }
             }}
           />
-        </View>
+          </View>
       )}
       {(bodyParams.status === RefereeReservationStatus.pendingpayment ||
         bodyParams.status === RefereeReservationStatus.approved) && (
