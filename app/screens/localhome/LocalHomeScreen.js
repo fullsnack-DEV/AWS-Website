@@ -75,7 +75,7 @@ import {getQBAccountType, QBupdateUser} from '../../utils/QuickBlox';
 import Verbs from '../../Constants/Verbs';
 import {getGeocoordinatesWithPlaceName} from '../../utils/location';
 
-const defaultPageSize = 5;
+const defaultPageSize = 10;
 export default function LocalHomeScreen({navigation, route}) {
   const refContainer = useRef();
 
@@ -623,9 +623,9 @@ export default function LocalHomeScreen({navigation, route}) {
         },
       };
       if (location !== strings.worldTitleText) {
-        scorekeeperQuery.query.bool.must[0].nested.query.bool.must.push({
+        scorekeeperQuery.query.bool.must.push({
           multi_match: {
-            query: `${location}`,
+            query: `${location.toLowerCase()}`,
             fields: ['city', 'country', 'state'],
           },
         });
@@ -639,7 +639,7 @@ export default function LocalHomeScreen({navigation, route}) {
           },
         });
       }
-
+      console.log('recentMatchQuery==>', JSON.stringify(recentMatchQuery));
       getGameIndex(recentMatchQuery).then((games) => {
         Utility.getGamesList(games).then((gamedata) => {
           if (games?.length > 0) {
@@ -649,12 +649,16 @@ export default function LocalHomeScreen({navigation, route}) {
           }
         });
       });
-
+      console.log('upcomingMatchQuery==>', JSON.stringify(upcomingMatchQuery));
       getGameIndex(upcomingMatchQuery).then((games) => {
         Utility.getGamesList(games).then((gamedata) => {
           if (games?.length > 0) {
+            console.log('uuuuu1', games);
+
             setUpcomingMatch(gamedata);
           } else {
+            console.log('uuuuu2', games);
+
             setUpcomingMatch([]);
           }
         });
@@ -671,11 +675,9 @@ export default function LocalHomeScreen({navigation, route}) {
       getUserIndex(lookingQuery).then((players) => {
         setLookingTeam(players);
       });
-
       getUserIndex(refereeQuery).then((res) => {
         setReferees([...res]);
       });
-
       getUserIndex(scorekeeperQuery).then((res) => {
         setScorekeepers([...res]);
       });
@@ -685,46 +687,47 @@ export default function LocalHomeScreen({navigation, route}) {
   }, [authContext, isFocused, location, selectedSport, sportType]);
 
   const sportsListView = useCallback(
-    ({item, index}) =>  (
-        <Text
-          style={
-            selectedSport === item.sport && sportType === item.sport_type
-              ? [
-                  styles.sportName,
-                  {color: colors.themeColor, fontFamily: fonts.RBlack},
-                ]
-              : styles.sportName
-          }
-          onPress={() => {
-            refContainer.current.scrollToIndex({
-              animated: true,
-              index,
-              viewPosition: 0.8,
+    ({item, index}) => (
+      <Text
+        style={
+          selectedSport === item.sport && sportType === item.sport_type
+            ? [
+                styles.sportName,
+                {color: colors.themeColor, fontFamily: fonts.RBlack},
+              ]
+            : styles.sportName
+        }
+        onPress={() => {
+          refContainer.current.scrollToIndex({
+            animated: true,
+            index,
+            viewPosition: 0.8,
+          });
+          if (item.sport === strings.moreText) {
+            setTimeout(() => {
+              setSettingPopup(true);
+            }, 100);
+            // navigation.navigate('SportSettingScreen', {
+            //   sports,
+            // });
+          } else {
+            setSelectedSport(item.sport);
+            setSportType(item.sport_type);
+            setFilters({
+              ...filters,
+              sport: item.sport,
+              sport_type: item.sport_type,
             });
-            if (item.sport === strings.moreText) {
-              setTimeout(() => {
-                setSettingPopup(true);
-              }, 100);
-              // navigation.navigate('SportSettingScreen', {
-              //   sports,
-              // });
-            } else {
-              setSelectedSport(item.sport);
-              setSportType(item.sport_type);
-              setFilters({
-                ...filters,
-                sport: item.sport,
-                sport_type: item.sport_type,
-              });
-            }
-          }}>
-          {item.sport === strings.allType
-            ? strings.allType
-            : item.sport === strings.moreText
-            ? strings.moreText
-            : Utility.getSportName(item, authContext)}
-        </Text>
-      ),[authContext, filters, selectedSport, sportType],
+          }
+        }}>
+        {item.sport === strings.allType
+          ? strings.allType
+          : item.sport === strings.moreText
+          ? strings.moreText
+          : Utility.getSportName(item, authContext)}
+      </Text>
+    ),
+    [authContext, filters, selectedSport, sportType],
   );
 
   const onShortPress = useCallback(
@@ -787,32 +790,32 @@ export default function LocalHomeScreen({navigation, route}) {
 
   const renderChallengerItems = useCallback(
     ({item}) => (
-        <View
-          style={{
-            marginBottom: 15,
-            flex: 1,
-            backgroundColor: colors.whiteColor,
-          }}>
-          <TCChallengerCard
-            data={item}
-            entityType={item.entity_type}
-            selectedSport={selectedSport}
-            sportType={sportType}
-            onPress={() => {
-              navigation.navigate('HomeScreen', {
-                uid: ['user', 'player']?.includes(item?.entity_type)
-                  ? item?.user_id
-                  : item?.group_id,
-                role: ['user', 'player']?.includes(item?.entity_type)
-                  ? 'user'
-                  : item.entity_type,
-                backButtonVisible: true,
-                menuBtnVisible: false,
-              });
-            }}
-          />
-        </View>
-      ),
+      <View
+        style={{
+          marginBottom: 15,
+          flex: 1,
+          backgroundColor: colors.whiteColor,
+        }}>
+        <TCChallengerCard
+          data={item}
+          entityType={item.entity_type}
+          selectedSport={selectedSport}
+          sportType={sportType}
+          onPress={() => {
+            navigation.navigate('HomeScreen', {
+              uid: ['user', 'player']?.includes(item?.entity_type)
+                ? item?.user_id
+                : item?.group_id,
+              role: ['user', 'player']?.includes(item?.entity_type)
+                ? 'user'
+                : item.entity_type,
+              backButtonVisible: true,
+              menuBtnVisible: false,
+            });
+          }}
+        />
+      </View>
+    ),
     [navigation, selectedSport, sportType],
   );
 
@@ -978,18 +981,23 @@ export default function LocalHomeScreen({navigation, route}) {
     getGeocoordinatesWithPlaceName(Platform.OS)
       .then((currentLocation) => {
         setloading(false);
-        if(currentLocation.position){
-          setLocation(currentLocation.city?.charAt(0).toUpperCase() + currentLocation.city?.slice(1));
+        if (currentLocation.position) {
+          setLocation(
+            currentLocation.city?.charAt(0).toUpperCase() +
+              currentLocation.city?.slice(1),
+          );
           setFilters({
             ...filters,
-            location: currentLocation.city?.charAt(0).toUpperCase() + currentLocation.city?.slice(1),
+            location:
+              currentLocation.city?.charAt(0).toUpperCase() +
+              currentLocation.city?.slice(1),
           });
           setSelectedLocationOption(0);
         }
       })
       .catch((e) => {
         setloading(false);
-        if(e.message !== strings.userdeniedgps){
+        if (e.message !== strings.userdeniedgps) {
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);

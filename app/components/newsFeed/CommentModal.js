@@ -335,6 +335,7 @@ const CommentModal = ({
           animationOutTiming={800}
           backdropTransitionInTiming={300}
           backdropTransitionOutTiming={800}
+          avoidKeyboard={true}
           style={{
             margin: 0,
           }}>
@@ -441,11 +442,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#DADBDA',
   },
   bottomPopupContainer: {
-    paddingBottom: Platform.OS === 'ios' ? 30 : 0,
+    marginTop: Platform.OS === 'ios' ? hp(12) : 80,
+    flex: 1,
+    // paddingBottom: Platform.OS === 'ios' ? 30 : 0,
     backgroundColor: colors.whiteColor,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    position: 'absolute',
+    // position: 'absolute',
     bottom: 0,
     width: '100%',
 

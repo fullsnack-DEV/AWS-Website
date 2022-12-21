@@ -123,9 +123,9 @@ const NewsFeedDescription = ({
       );
       let color = colors.black;
       const isTagName =
-        tagData?.filter(
-          (item) => item?.entity_data?.tagged_formatted_name === match,
-        )?.length > 0;
+        tagData.filter(
+          (item) => item.entity_data.tagged_formatted_name === match,
+        ).length > 0;
       if (isTagName) color = colors.greeColor;
       return (
         <Text

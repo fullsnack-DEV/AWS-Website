@@ -19,13 +19,10 @@ import {strings} from '../../../../Localization/translation';
 
 export default function UserInvoiceScreen({navigation}) {
   const [loading, setloading] = useState(false);
-
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
-
   const [invoiceList, setInvoiceList] = useState([]);
   const [tabNumber, setTabNumber] = useState(0);
-
   const [totalAmount, setTotalAmount] = useState(0);
   const [paidAmount, setPaidAmount] = useState(0);
   const [openAmount, setOpenAmount] = useState(0);
@@ -36,17 +33,17 @@ export default function UserInvoiceScreen({navigation}) {
       getMemberInvoice(authContext)
         .then((response) => {
           setloading(false);
-
-          setInvoiceList(response.payload);
           let totalInvoiced = 0;
           let paidInvoice = 0;
           let openInvoice = 0;
-          response.payload.map((e) => {
-            paidInvoice += e.amount_paid;
-            openInvoice += e.amount_remaining;
-            totalInvoiced += e.amount_due;
-          });
-
+          if (response.payload.length > 0) {
+            response.payload.map((e) => {
+              paidInvoice += e.amount_paid;
+              openInvoice += e.amount_remaining;
+              totalInvoiced += e.amount_due;
+            });
+            setInvoiceList(response.payload);
+          }
           setTotalAmount(totalInvoiced);
           setOpenAmount(openInvoice);
           setPaidAmount(paidInvoice);

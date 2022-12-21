@@ -259,14 +259,17 @@ export default function ScorekeeperListScreen({navigation, route}) {
     getGeocoordinatesWithPlaceName(Platform.OS)
       .then((currentLocation) => {
         setloading(false);
-        if(currentLocation.position){
-          setLocation(currentLocation.city?.charAt(0).toUpperCase() + currentLocation.city?.slice(1));
+        if (currentLocation.position) {
+          setLocation(
+            currentLocation.city?.charAt(0).toUpperCase() +
+              currentLocation.city?.slice(1),
+          );
           setLocationFilterOpetion(2);
         }
       })
       .catch((e) => {
         setloading(false);
-        if(e.message !== strings.userdeniedgps){
+        if (e.message !== strings.userdeniedgps) {
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
@@ -360,7 +363,7 @@ export default function ScorekeeperListScreen({navigation, route}) {
       />
       <FlatList
         extraData={scorekeepers}
-        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
         data={scorekeepers}
         ItemSeparatorComponent={renderSeparator}
         keyExtractor={keyExtractor}
@@ -823,7 +826,7 @@ export default function ScorekeeperListScreen({navigation, route}) {
 const styles = StyleSheet.create({
   listStyle: {
     flex: 1,
-    padding: 15,
+    margin: 15,
   },
 
   separator: {

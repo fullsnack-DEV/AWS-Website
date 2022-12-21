@@ -109,11 +109,9 @@ function ShortsVideoView({
   console.log('Video Item:', videoItem);
   const profileItem = multiAttachItem?.actor?.data;
   const descriptionItem = JSON.parse(multiAttachItem?.object)?.text;
-  const taggedItems = useMemo(
-    () => JSON.parse(multiAttachItem?.object)?.format_tagged_data || [],
-    [multiAttachItem?.object],
-  );
-
+  const [taggedItems] = useState([
+    JSON.parse(multiAttachItem?.object)?.format_tagged_data,
+  ]);
   const entityTagList = taggedItems.filter(
     (e) =>
       e?.entity_type === 'player' ||
