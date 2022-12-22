@@ -23,6 +23,7 @@ import {
   Image,
   TouchableWithoutFeedback,
   KeyboardAvoidingView,
+  Linking,
 } from 'react-native';
 
 // import { useIsFocused } from '@react-navigation/native';
@@ -41,13 +42,11 @@ import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
 
 import TCThinDivider from '../../../../components/TCThinDivider';
-import LocationSearchModal from '../../../../components/Home/LocationSearchModal';
 import * as Utility from '../../../../utils';
 import {patchPlayer} from '../../../../api/Users';
 import Verbs from '../../../../Constants/Verbs';
 import {searchCityState, searchNearByCityState} from '../../../../api/External';
 import {
-  getPlaceNameFromPlaceID,
   getGeocoordinatesWithPlaceName,
 } from '../../../../utils/location';
 import images from '../../../../Constants/ImagePath';
@@ -57,8 +56,6 @@ export default function AvailableAreaReferee({navigation, route}) {
   const [comeFrom] = useState(route?.params?.comeFrom);
   const [sportName] = useState(route?.params?.sportName);
   const authContext = useContext(AuthContext);
-
-  const [loading, setloading] = useState(false);
   const [areaRadio, setAreaRadio] = useState(0);
   const [addressType, setAddressType] = useState();
   const [searchAddress, setSearchAddress] = useState(
@@ -93,7 +90,7 @@ export default function AvailableAreaReferee({navigation, route}) {
   const [locationFetch, setLocationFetch] = useState(false);
   const [userDeniedLocPerm, setUserDeniedLocPerm] = useState(false);
   const [currentLocation, setCurrentLocation] = useState();
-  const [loadings, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -160,7 +157,7 @@ export default function AvailableAreaReferee({navigation, route}) {
       entity_type: 'referee',
     };
 
-    setloading(true);
+    setLoading(true);
 
     const registerdRefereeData = authContext?.entity?.obj?.referee_data?.filter(
       (obj) => obj?.sport !== sportName,
@@ -184,7 +181,7 @@ export default function AvailableAreaReferee({navigation, route}) {
     patchPlayer(body, authContext)
       .then(async (response) => {
         if (response.status === true) {
-          setloading(false);
+          setLoading(false);
           const entity = authContext.entity;
           entity.auth.user = response.payload;
           entity.obj = response.payload;
@@ -200,10 +197,10 @@ export default function AvailableAreaReferee({navigation, route}) {
         } else {
           Alert.alert(strings.appName, response.messages);
         }
-        setloading(false);
+        setLoading(false);
       })
       .catch((e) => {
-        setloading(false);
+        setLoading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
@@ -400,16 +397,6 @@ export default function AvailableAreaReferee({navigation, route}) {
     }
   };
 
-  const navigateToChooseSportScreen = (params) => {
-    setLoading(false);
-    navigation.navigate('ChooseSportsScreen', {
-      locationInfo: {
-        ...route?.params?.signupInfo,
-        ...params,
-      },
-    });
-  };
-
   const onSelectLocation = async (item) => {
     setLoading(true);
     if (addressType === 'short') {
@@ -558,7 +545,7 @@ export default function AvailableAreaReferee({navigation, route}) {
               </LinearGradient>
             ) : (
               <View style={styles.backgroundView}>
-                <Text style={styles.curruentLocationText}>{strings.mi}</Text>
+                <Text style={styles.curruentLocationTextS}>{strings.mi}</Text>
               </View>
             )}
           </TouchableOpacity>
@@ -692,21 +679,6 @@ export default function AvailableAreaReferee({navigation, route}) {
           </View>
         </KeyboardAvoidingView>
       </Modal>
-
-      {/* <LocationSearchModal
-        visible={addressModalVisible}
-        addressType={addressType}
-        onSelect={(data) => {
-          if (addressType === 'short') {
-            const obj = [...addressList];
-            obj[addressListIndex].address = data.description;
-            setAddressList(obj);
-          } else {
-            setSearchAddress(data);
-          }
-        }}
-        onClose={onCloseLocationModal}
-      /> */}
     </SafeAreaView>
     // {/* Address modal */}
   );
@@ -844,7 +816,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
   },
-  curruentLocationText: {
+  curruentLocationTextS: {
     fontSize: 16,
     fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
