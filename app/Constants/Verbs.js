@@ -87,6 +87,7 @@ const Verbs = {
     WeekOfYear: 5,
     DayOfYear: 6,
   },
+  gpsErrorDeined:'gpsErrorForDenied',
 };
 
 export default Verbs;

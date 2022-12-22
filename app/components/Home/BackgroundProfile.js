@@ -13,7 +13,7 @@ import AuthContext from '../../auth/context';
 export default function BackgroundProfile({
   currentUserData,
   onConnectionButtonPress,
-  imageSize = 60,
+  imageSize = 50,
 }) {
   const authContext = useContext(AuthContext);
   const [entityData, setEntityData] = useState(null);
@@ -40,6 +40,7 @@ export default function BackgroundProfile({
     <View style={{width: wp('100%'), margin: 0}}>
       <View style={{backgroundColor: colors.whiteColor}}>
         <View style={{width: '100%'}}>
+        <View style={styles.profileImageContainer}>
           <Animated.Image
             style={{
               ...styles.profileImageStyle,
@@ -57,6 +58,7 @@ export default function BackgroundProfile({
                     images.profilePlaceHolder)
             }
           />
+          </View>
           <View style={styles.statusViewStyle}>
             {currentUserData.following_count !== undefined && (
               <TouchableOpacity
@@ -154,12 +156,9 @@ export default function BackgroundProfile({
 
 const styles = StyleSheet.create({
   profileImageStyle: {
-    height: 82,
-    width: 82,
-    marginTop: -35,
+    height: 50,
+    width: 50,
     borderRadius: 41,
-    marginLeft: 10,
-    alignSelf: 'flex-start',
   },
 
   statusViewStyle: {
@@ -218,5 +217,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 2,
     marginBottom: 10,
+  },
+  profileImageContainer: {
+    height: 54,
+    width: 54,
+    borderRadius: 108,
+    backgroundColor: colors.whiteColor,
+    marginTop: -35,
+    marginLeft: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: colors.googleColor,
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.5,
+    shadowRadius: 3,
+    elevation: 10,
   },
 });

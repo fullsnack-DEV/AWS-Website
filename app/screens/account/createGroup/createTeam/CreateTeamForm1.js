@@ -198,7 +198,7 @@ export default function CreateTeamForm1({navigation, route}) {
   };
 
   const getTeamsData = async (item) => {
-    searchLocationPlaceDetail(item.place_id, authContext).then((response) => {
+    searchLocationPlaceDetail(item.place_id).then((response) => {
       if (response) {
         setCity(item?.terms?.[0]?.value ?? '');
         setState(item?.terms?.[1]?.value ?? '');

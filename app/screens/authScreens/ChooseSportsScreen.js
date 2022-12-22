@@ -185,7 +185,7 @@ export default function ChooseSportsScreen({navigation, route}) {
     if (route.params.locationInfo.city !== '') {
       queryParams.query.bool.must[1].bool.should.push({
         match: {
-          city: {query: route?.params?.locationInfo?.city, boost: 4},
+          city: {query: route.params.locationInfo.city, boost: 4},
         },
       });
     }
@@ -193,7 +193,7 @@ export default function ChooseSportsScreen({navigation, route}) {
       queryParams.query.bool.must[1].bool.should.push({
         match: {
           state_abbr: {
-            query: route?.params?.locationInfo?.state_abbr,
+            query: route.params.locationInfo.state_abbr,
             boost: 3,
           },
         },
@@ -203,7 +203,7 @@ export default function ChooseSportsScreen({navigation, route}) {
       queryParams.query.bool.must[1].bool.should.push({
         match: {
           country: {
-            query: route?.params?.locationInfo?.country,
+            query: route.params.locationInfo.country,
             boost: 2,
           },
         },
@@ -281,22 +281,22 @@ export default function ChooseSportsScreen({navigation, route}) {
       headers: {Authorization: `Bearer ${authToken}`},
     };
 
-    if (route?.params?.locationInfo?.profilePic) {
+    if (route.params.locationInfo.profilePic) {
       const apiResponse = await apiCall(uploadImageConfig);
       const preSignedUrls = apiResponse?.payload?.preSignedUrls ?? [];
       Promise.all([
         uploadImageOnPreSignedUrls({
           url: preSignedUrls?.[0],
-          uri: route?.params?.locationInfo?.profilePic.path,
+          uri: route.params.locationInfo.profilePic.path,
           type:
-            route?.params?.locationInfo?.profilePic.path.split('.')[1] ||
+            route.params.locationInfo.profilePic.path.split('.')[1] ||
             'jpeg',
         }),
         uploadImageOnPreSignedUrls({
           url: preSignedUrls?.[1],
-          uri: route?.params?.locationInfo?.profilePic?.path,
+          uri: route.params.locationInfo.profilePic?.path,
           type:
-            route?.params?.locationInfo?.profilePic?.path.split('.')[1] ||
+            route.params.locationInfo.profilePic?.path.split('.')[1] ||
             'jpeg',
         }),
       ])
@@ -314,42 +314,72 @@ export default function ChooseSportsScreen({navigation, route}) {
       signUpToTownsCup(userData);
     }
   };
+
+  const validate = (data) => {
+    let returnValue = true;
+    if (data.first_name === '') {
+      Alert.alert(strings.appName, strings.firstnamevalidation);
+      returnValue = false;
+    }
+    else if (Utility.validatedName(data.first_name) === false) {
+      Alert.alert(strings.appName, strings.fNameCanNotBlank);
+      returnValue = false;
+    }
+    else if (data.last_name === '') {
+      Alert.alert(strings.appName, strings.lastnamevalidation);
+      returnValue = false;
+    }
+    else if (Utility.validatedName(data.last_name) === false) {
+      Alert.alert(strings.appName, strings.lNameCanNotBlank);
+      returnValue = false;
+    }
+    else if(!data.city || !data.country){
+      Alert.alert(strings.appName, strings.homeCityNotOptional);
+      returnValue = false;
+    }
+
+    return returnValue;
+  };
+
   // Signup to Towncup
   const signUpToTownsCup = async (param) => {
     const data = {
-      first_name: route?.params?.locationInfo?.first_name,
-      last_name: route?.params?.locationInfo?.last_name,
-      email: route?.params?.locationInfo?.emailAddress,
-      birthday: route?.params?.locationInfo?.birthday,
-      gender: route?.params?.locationInfo?.gender,
-      city: route?.params?.locationInfo?.city,
-      country: route?.params?.locationInfo?.country,
-      state_abbr: route?.params?.locationInfo?.state_abbr,
+      first_name: route.params.locationInfo.first_name,
+      last_name: route.params.locationInfo.last_name,
+      email: route.params.locationInfo.emailAddress,
+      birthday: route.params.locationInfo.birthday,
+      gender: route.params.locationInfo.gender,
+      city: route.params.locationInfo.city,
+      country: route.params.locationInfo.country,
+      state_abbr: route.params.locationInfo.state_abbr,
       sports: selected,
     };
-    if (route?.params?.locationInfo?.profilePicData?.thumbnail) {
-      data.thumbnail = route?.params?.sportInfo?.profilePicData.thumbnail;
-      data.full_image = route?.params?.sportInfo?.profilePicData.full_image;
-    } else if (param?.uploadedProfilePic) {
-      data.thumbnail = param.uploadedProfilePic.thumbnail;
-      data.full_image = param.uploadedProfilePic.full_image;
+
+    if(validate(data)){
+      if (route.params.locationInfo.profilePicData?.thumbnail) {
+        data.thumbnail = route?.params?.sportInfo?.profilePicData.thumbnail;
+        data.full_image = route?.params?.sportInfo?.profilePicData.full_image;
+      } else if (param?.uploadedProfilePic) {
+        data.thumbnail = param.uploadedProfilePic.thumbnail;
+        data.full_image = param.uploadedProfilePic.full_image;
+      }
+      await createUser(data, authContext)
+        .then((createdUser) => {
+          const authEntity = {...dummyAuthContext.entity};
+          authEntity.obj = createdUser?.payload;
+          authEntity.auth.user = createdUser?.payload;
+          authEntity.role = 'user';
+          setDummyAuthContext('entity', authEntity);
+          setDummyAuthContext('user', createdUser?.payload);
+          signUpWithQB(createdUser?.payload);
+        })
+        .catch((e) => {
+          setloading(false);
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
     }
-    await createUser(data, authContext)
-      .then((createdUser) => {
-        const authEntity = {...dummyAuthContext.entity};
-        authEntity.obj = createdUser?.payload;
-        authEntity.auth.user = createdUser?.payload;
-        authEntity.role = 'user';
-        setDummyAuthContext('entity', authEntity);
-        setDummyAuthContext('user', createdUser?.payload);
-        signUpWithQB(createdUser?.payload);
-      })
-      .catch((e) => {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
   };
   const signUpWithQB = async (response) => {
     let qbEntity = {...dummyAuthContext.entity};

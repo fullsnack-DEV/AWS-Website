@@ -8,6 +8,7 @@ import {
   Alert,
   TouchableOpacity,
   SafeAreaView,
+  Platform
 } from 'react-native';
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 
@@ -237,6 +238,7 @@ export default function ChangePasswordScreen({navigation}) {
               }}>
               <Text
                 style={{
+                  textDecorationLine: 'underline',
                   color: colors.userPostTimeColor,
                   fontSize: 10,
                   fontFamily: fonts.RLight,
@@ -310,8 +312,9 @@ const styles = StyleSheet.create({
     fontSize: wp('3.8%'),
     height: 40,
     paddingLeft: 17,
-
-    width: wp('80%'),
+    overflow:Platform.OS === 'android' && Platform.Version >=21 ? 'hidden'
+    : 'visible',
+    width: wp('75%'),
   },
   backImageStyle: {
     height: 20,

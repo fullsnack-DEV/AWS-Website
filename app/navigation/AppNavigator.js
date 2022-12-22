@@ -503,10 +503,7 @@ const AppNavigator = ({navigation}) => {
         }
         if (focused) {
           return (
-            <Image
-              source={images.tab_account_group_selected}
-              style={styles.tabImg}
-            />
+            <Image source={images.clubPlaceholder} style={styles.tabImg} />
           );
         }
         return (

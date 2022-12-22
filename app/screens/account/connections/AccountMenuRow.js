@@ -16,10 +16,19 @@ const AccountMenuRow = ({
     {!isAccountDeactivated && (
       <TouchableWithoutFeedback style={styles.listContainer} onPress={onPress}>
         <View style={{marginVertical: 5}}>
-          <Image source={item?.icon} style={{...styles.subMenuItem}} />
+          <Image
+            source={
+              item.icon &&
+              typeof item.icon === 'string' ?
+              {uri: item.icon}
+                : item.icon
+            }
+            style={{...styles.subMenuItem}}
+          />
         </View>
         <Text style={styles.listItems}>
-          {item?.option?.group_name ?? item.option}
+          {item.option.group_name ??
+            item.option}
         </Text>
         <Image source={item?.iconRight} style={styles.nextArrow} />
       </TouchableWithoutFeedback>
@@ -43,6 +52,7 @@ const styles = StyleSheet.create({
     marginLeft: 45,
     resizeMode: 'contain',
     width: 40,
+    borderRadius: 20,
   },
   buttonView: {
     marginTop: 2,

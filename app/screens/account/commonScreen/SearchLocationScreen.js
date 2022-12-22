@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useContext} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   StyleSheet,
   View,
@@ -18,7 +18,6 @@ import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import images from '../../../Constants/ImagePath';
 import {strings} from '../../../../Localization/translation';
 import Separator from '../../../components/Separator';
-import AuthContext from '../../../auth/context';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import {
@@ -27,7 +26,6 @@ import {
 } from '../../../api/External';
 
 export default function SearchLocationScreen({navigation, route}) {
-  const authContext = useContext(AuthContext);
   const [cityData, setCityData] = useState([]);
   const [noData, setNoData] = useState(false);
   const [searchText, setSearchText] = useState('');
@@ -49,7 +47,7 @@ export default function SearchLocationScreen({navigation, route}) {
   };
 
   const onSelectLocation = async (item) => {
-    searchLocationPlaceDetail(item.place_id, authContext).then((response) => {
+    searchLocationPlaceDetail(item.place_id).then((response) => {
       console.log('route.params.comeFrom', route.params.comeFrom)
       if (response) {
         if (route.params.comeFrom === 'CreateEventScreen') {

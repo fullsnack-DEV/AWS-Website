@@ -1,3 +1,4 @@
+import axios from 'axios';
 import makeAPIRequest from '../utils/googleApiCall';
 
 export const searchLocations = async (query, types = 'regions') =>
@@ -16,6 +17,22 @@ export const searchCityState = async (query) =>
   makeAPIRequest({
     method: 'get',
     url: `https://maps.googleapis.com/maps/api/place/autocomplete/json?types=(cities)&input=${query}`,
+  });
+
+export const searchNearByCityState = async (radius, lat, long) => axios({
+    method: 'get',
+    url: `http://getnearbycities.geobytes.com/GetNearbyCities?radius=${radius}&latitude=${lat}&longitude=${long}&limit=500`,
+  }).then((response) => {
+    const cityList = response.data.map((obj) => ({
+      description: obj[1],
+      city: obj[1],
+      state: obj[2],
+      country: obj[3],
+    }));
+    return cityList;
+  })
+  .catch((e) => {
+    throw new Error(e)
   });
 
 export const searchVenue = async (query) =>
@@ -49,6 +66,7 @@ export const getLatLongFromPlaceID = async (placeID) =>
     method: 'get',
     url: `https://maps.googleapis.com/maps/api/place/details/json?placeid=${placeID}`,
   });
+
 export const searchNearByCity = async (latValue, longValue, radiusValue) =>
   makeAPIRequest({
     method: 'get',
