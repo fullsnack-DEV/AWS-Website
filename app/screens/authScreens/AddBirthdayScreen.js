@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   SafeAreaView,
   Image,
+  Platform,
 } from 'react-native';
 
 import {
@@ -106,13 +107,12 @@ export default function AddBirthdayScreen({navigation, route}) {
       colors={[colors.themeColor1, colors.themeColor3]}
       style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
+      <FastImage
+        resizeMode={'stretch'}
+        style={styles.background}
+        source={images.loginBg}
+      />
       <View style={{flex: 1}}>
-        <FastImage
-          resizeMode={'stretch'}
-          style={styles.background}
-          source={images.loginBg}
-        />
-
         <Text style={styles.checkEmailText}>{strings.addBirthdayText}</Text>
         <Text style={styles.resetText}>{strings.notDisplayText}</Text>
 
@@ -174,8 +174,10 @@ const styles = StyleSheet.create({
     color: colors.whiteColor,
     fontFamily: fonts.RBold,
     fontSize: 25,
-    marginLeft: 20,
-    marginTop: wp('25%'),
+    marginLeft: 25,
+    // marginTop: wp('25%'),
+    marginTop: Platform.OS === 'ios' ? 40 + 25 : 25,
+
     textAlign: 'left',
   },
   dateText: {
@@ -189,10 +191,10 @@ const styles = StyleSheet.create({
   },
   matchFeeTxt: {
     height: 40,
-    width: wp('90%'),
+    width: wp('81.33%'),
     alignSelf: 'center',
     justifyContent: 'center',
-    marginTop: 30,
+    marginTop: 65,
     fontSize: wp('3.8%'),
     color: 'black',
     backgroundColor: 'rgba(255,255,255,0.9)',
@@ -209,18 +211,18 @@ const styles = StyleSheet.create({
     color: colors.whiteColor,
     fontFamily: fonts.RMedium,
     fontSize: 16,
-    marginLeft: 20,
-    marginRight: 20,
-    marginTop: 10,
+    marginLeft: 25,
+    marginRight: 25,
+    marginTop: 5,
     textAlign: 'left',
   },
   whyAskingText: {
     color: colors.parrotColor,
     fontFamily: fonts.RRegular,
     fontSize: 14,
-    marginLeft: 20,
-    marginRight: 20,
-    marginTop: 10,
+    marginLeft: 25,
+    marginRight: 25,
+    marginTop: 25,
     textAlign: 'left',
   },
   birthDateChangeNote: {

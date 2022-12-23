@@ -8,6 +8,9 @@ import {
   View,
   SafeAreaView,
   Image,
+  StatusBar,
+  Platform,
+  Dimensions,
 } from 'react-native';
 import {
   heightPercentageToDP as hp,
@@ -47,6 +50,9 @@ export default function SignupScreen({navigation}) {
   const [hidePassword, setHidePassword] = useState(false);
   const [hideConfirmPassword, setHideConfirmPassword] = useState(false);
   const [profilePic] = useState(null);
+  const SCREEN_HEIGHT = Dimensions.get('screen').height; // device height
+  const STATUS_BAR_HEIGHT = StatusBar.currentHeight;
+  const WINDOW_HEIGHT = Dimensions.get('window').height;
 
   // For activity indigator
   const [loading, setloading] = useState(false);
@@ -106,7 +112,13 @@ export default function SignupScreen({navigation}) {
     return false;
   };
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    console.log('status bar h', StatusBar.currentHeight);
+    console.log('SCREEN_HEIGHT', SCREEN_HEIGHT);
+    console.log('STATUS_BAR_HEIGHT', STATUS_BAR_HEIGHT);
+    console.log('WINDOW_HEIGHT', WINDOW_HEIGHT);
+    console.log('H', SCREEN_HEIGHT - WINDOW_HEIGHT + StatusBar.currentHeight);
+  }, []);
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
@@ -409,7 +421,7 @@ export default function SignupScreen({navigation}) {
         />
         <Text style={styles.checkEmailText}>{strings.signupwithemail}</Text>
         <TCKeyboardView>
-          <View style={{marginVertical: hp(8.12)}}>
+          <View style={{marginVertical: 66}}>
             {/* <TouchableOpacity
               style={styles.profile}
               onPress={() => {
@@ -562,7 +574,7 @@ export default function SignupScreen({navigation}) {
           /> */}
         </TCKeyboardView>
         <SafeAreaView>
-          <View style={{bottom: 12}}>
+          <View style={{bottom: 15}}>
             <TouchableOpacity
               hitSlop={getHitSlop(15)}
               onPress={() => navigation.navigate('LoginScreen')}
@@ -656,7 +668,8 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
     fontSize: 25,
     marginLeft: wp('6.6%'),
-    marginTop: hp('12.4%'),
+    // marginTop: hp('12.4%'),
+    marginTop: Platform.OS === 'ios' ? 40 + 25 : 25,
     textAlign: 'left',
   },
 });

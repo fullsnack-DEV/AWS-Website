@@ -55,7 +55,7 @@ export default function SignupScreen({navigation, route}) {
           <Image
             source={images.backArrow}
             style={{
-              marginTop: hp('1.5%'),
+              // marginTop: hp('1.5%'),
               height: 20,
               width: 15,
               marginLeft: 20,
@@ -267,7 +267,7 @@ export default function SignupScreen({navigation, route}) {
         <Text style={styles.checkEmailText}>{strings.addYourName}</Text>
 
         <TCKeyboardView>
-          <View style={{marginTop: hp('7.7%')}}>
+          <View style={{marginTop: 61}}>
             <TouchableOpacity
               style={styles.profile}
               onPress={() => {
@@ -331,7 +331,7 @@ export default function SignupScreen({navigation, route}) {
               />
             </TouchableOpacity>
           </View>
-          <View style={{marginTop: hp(4.5)}}>
+          <View style={{marginTop: 37}}>
             <TCTextField
               testID="fname-signup-input"
               placeholderTextColor={colors.darkYellowColor}
@@ -425,7 +425,8 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
     fontSize: 25,
     marginLeft: 20,
-    marginTop: hp('12.4%'),
+    // marginTop: hp('12.4%'),
+    marginTop: Platform.OS === 'ios' ? 40 + 25 : 25,
     textAlign: 'left',
   },
 });

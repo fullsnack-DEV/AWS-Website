@@ -1,9 +1,4 @@
-import React, {
-  useContext,
-  useState,
-  useLayoutEffect,
-  useCallback,
-} from 'react';
+import React, {useContext, useState, useLayoutEffect, useCallback} from 'react';
 import {
   View,
   Text,
@@ -11,6 +6,7 @@ import {
   TouchableOpacity,
   Image,
   SafeAreaView,
+  Platform,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
@@ -120,12 +116,12 @@ export default function ChooseGenderScreen({navigation, route}) {
     <LinearGradient
       colors={[colors.themeColor1, colors.themeColor3]}
       style={styles.mainContainer}>
+      <FastImage
+        resizeMode={'stretch'}
+        style={styles.background}
+        source={images.loginBg}
+      />
       <View style={{flex: 1}}>
-        <FastImage
-          resizeMode={'stretch'}
-          style={styles.background}
-          source={images.loginBg}
-        />
         <Text style={styles.checkEmailText}>{strings.addGenderText}</Text>
         <Text style={styles.resetText}>{strings.notDisplayGenderText}</Text>
 
@@ -145,7 +141,7 @@ export default function ChooseGenderScreen({navigation, route}) {
           </Text>
         </Tooltip>
 
-        <View style={{marginTop: 40, marginLeft: 20}}>
+        <View style={{marginTop: 65, marginLeft: 20}}>
           <View style={styles.radioButtonView}>
             <RenderRadio
               isSelected={selected === 0}
@@ -196,8 +192,8 @@ const styles = StyleSheet.create({
     color: colors.whiteColor,
     fontFamily: fonts.RBold,
     fontSize: 25,
-    marginLeft: 20,
-    marginTop: wp('25%'),
+    marginLeft: 25,
+    marginTop: Platform.OS === 'ios' ? 40 + 25 : 25,
     textAlign: 'left',
   },
   mainContainer: {
@@ -206,8 +202,8 @@ const styles = StyleSheet.create({
   },
   radioButtonView: {
     flexDirection: 'row',
-    marginLeft: 20,
-    marginRight: 15,
+    marginLeft: 35,
+    marginRight: 35,
     marginTop: 20,
   },
   radioText: {
@@ -215,25 +211,25 @@ const styles = StyleSheet.create({
     color: colors.whiteColor,
     fontFamily: fonts.RMedium,
     fontSize: 15,
-    marginLeft: 15,
-    marginRight: 15,
+    marginLeft: 10,
+    marginRight: 10,
   },
   resetText: {
     color: colors.whiteColor,
     fontFamily: fonts.RMedium,
     fontSize: 16,
-    marginLeft: 20,
-    marginRight: 20,
-    marginTop: 10,
+    marginLeft: 25,
+    marginRight: 25,
+    marginTop: 5,
     textAlign: 'left',
   },
   whyAskingText: {
     color: colors.parrotColor,
     fontFamily: fonts.RRegular,
     fontSize: 14,
-    marginLeft: 20,
-    marginRight: 20,
-    marginTop: 10,
+    marginLeft: 25,
+    marginRight: 25,
+    marginTop: 25,
     textAlign: 'left',
   },
   canNotChangeGender: {
