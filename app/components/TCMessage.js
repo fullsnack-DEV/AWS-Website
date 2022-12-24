@@ -35,13 +35,10 @@ const TCMessage = ({
   body,
   fullName,
   type = 'sender',
+  attachments,
   messageStyle,
-  // attachments = [],
-  messageData,
 }) => {
-  const {attachments} = messageData;
-  const [attachment] = attachments;
-  const contentGetFileUrlParams = {uid: attachment.id};
+  const contentGetFileUrlParams = {uid: attachments?.[0]?.id};
   const [showAssetsModal, setShowAssetsModal] = useState(false);
   const [fileUrls, setFileUrls] = useState([]);
   const [play, setPlay] = useState(false);
@@ -104,7 +101,7 @@ const TCMessage = ({
     const image_URL = url;
     // Getting the extention of the file
     let ext = getExtention(image_URL);
-    ext = attachment.type === 'image' ? '.png' : '.mp4';
+    ext = attachments?.[0]?.type === 'image' ? '.png' : '.mp4';
     // Get config and fs from RNFetchBlob
     // config: To pass the downloading related options
     // fs: Directory path where we want our image to download
@@ -117,9 +114,9 @@ const TCMessage = ({
         useDownloadManager: true,
         notification: true,
         path: `${PictureDir}/${
-          attachment.type === 'image' ? 'image' : 'video'
+          attachments?.[0]?.type === 'image' ? 'image' : 'video'
         }_${Math.floor(date.getTime() + date.getSeconds() / 2)}${ext}`,
-        description: attachment.type === 'image' ? 'Image' : 'Video',
+        description: attachments?.[0]?.type === 'image' ? 'Image' : 'Video',
       },
     };
     config(options)
@@ -130,7 +127,7 @@ const TCMessage = ({
             if (response) {
               Alert.alert(
                 `${
-                  attachment.type === 'image' ? 'Image' : 'Video'
+                  attachments?.[0]?.type === 'image' ? 'Image' : 'Video'
                 }  Downloaded Successfully.`,
               );
             }
@@ -143,56 +140,125 @@ const TCMessage = ({
     // To get the file extension
     /[.]/.exec(filename) ? /[^.]+$/.exec(filename) : undefined;
   return (
-    <TouchableOpacity onLongPress={onLongPressMessage} style={{paddingTop: 15}}>
-      <GradiantContainer
-        startGradiantColor={
-          type === 'receiver' ? colors.whiteColor : colors.messageSenderColor
-        }
-        endGradiantColor={
-          type === 'receiver' ? colors.whiteColor : colors.messageSenderColor
-        }
-        style={{
-          ...styles.messageContaienr,
-          shadowColor: type === 'sender' ? colors.googleColor : '',
-          shadowOffset: type === 'sender' ? {width: 0, height: -2} : {},
-          shadowOpacity: type === 'sender' ? 0.5 : 0,
-          shadowRadius: type === 'sender' ? 4 : 0,
-          elevation: type === 'sender' ? 10 : 0,
-          borderTopLeftRadius: type === 'receiver' ? 0 : wp(2),
-          borderBottomRightRadius: type === 'sender' ? 0 : wp(2),
-          ...messageStyle,
-        }}>
-        {body === '[attachment]' || (
-          <View style={{alignSelf: 'flex-start', padding: wp(2)}}>
-            <Text
-              style={{
-                ...styles.messageText,
-                color: colors.messageTextColor,
-              }}>
-              {body}
-            </Text>
-          </View>
-        )}
-      </GradiantContainer>
-      {/*  Attachments */}
-      {fileUrls.length > 0 && (
-        <View
+    <>
+      <TouchableOpacity
+        onLongPress={onLongPressMessage}
+        style={{paddingTop: 15}}>
+        <GradiantContainer
+          startGradiantColor={
+            type === 'receiver' ? colors.whiteColor : colors.messageSenderColor
+          }
+          endGradiantColor={
+            type === 'receiver' ? colors.whiteColor : colors.messageSenderColor
+          }
           style={{
+            ...styles.messageContaienr,
             ...messageStyle,
-            marginTop: 0,
+            shadowColor: type === 'sender' ? colors.googleColor : '',
+            shadowOffset: type === 'sender' ? {width: 0, height: -2} : {},
+            shadowOpacity: type === 'sender' ? 0.5 : 0,
+            shadowRadius: type === 'sender' ? 4 : 0,
+            elevation: type === 'sender' ? 10 : 0,
+            borderTopLeftRadius: type === 'receiver' ? 0 : wp(2),
+            borderBottomRightRadius: type === 'sender' ? 0 : wp(2),
           }}>
-          {fileUrls.map((item, index) => {
-            if (attachments[index]?.type === 'file') {
+          {body === '[attachment]' || (
+            <View style={{alignSelf: 'flex-start', padding: wp(2)}}>
+              <Text
+                style={{
+                  ...styles.messageText,
+                  color: colors.messageTextColor,
+                }}>
+                {body}
+              </Text>
+            </View>
+          )}
+        </GradiantContainer>
+        {/*  Attachments */}
+        {fileUrls.length > 0 && (
+          <View
+            style={{
+              ...messageStyle,
+              marginTop: 0,
+            }}>
+            {fileUrls.map((item, index) => {
+              if (attachments[index]?.type === 'file') {
+                return (
+                  <TouchableOpacity
+                    key={index}
+                    onPress={() => setShowAssetsModal(true)}>
+                    <Video
+                      repeat={true}
+                      ref={videoPlayerRef}
+                      paused={true}
+                      muted={true}
+                      source={{uri: item}}
+                      style={{
+                        backgroundColor: 'rgba(0,0,0,0.7)',
+                        marginTop: hp(1),
+                        overflow: 'hidden',
+                        borderBottomRightRadius:
+                          type === 'receiver' ? wp(3) : wp(0),
+                        borderBottomLeftRadius: wp(3),
+                        borderTopRightRadius: wp(3),
+                        borderTopLeftRadius:
+                          type === 'receiver' ? wp(0) : wp(3),
+                        height: wp(50),
+                        width: wp(50),
+                      }}
+                      resizeMode={'cover'}
+                      onLoad={() => {
+                        videoPlayerRef.current.seek(0);
+                      }}
+                    />
+                    <View
+                      style={{
+                        position: 'absolute',
+                        height: '100%',
+                        width: '100%',
+                        top: 0,
+                        bottom: 0,
+                        right: 0,
+                        left: 0,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}>
+                      <TouchableHighlight
+                        style={styles.pauseMuteStyle}
+                        activeOpacity={0.5}
+                        onPress={() => {
+                          setPlay(!play);
+                        }}>
+                        <FastImage
+                          tintColor={'white'}
+                          resizeMode={'contain'}
+                          style={styles.playPauseImageStyle}
+                          source={
+                            play
+                              ? images.videoPauseButton
+                              : images.videoPlayButton
+                          }
+                        />
+                      </TouchableHighlight>
+                    </View>
+                  </TouchableOpacity>
+                );
+              }
               return (
                 <TouchableOpacity
                   key={index}
                   onPress={() => setShowAssetsModal(true)}>
-                  <Video
-                    repeat={true}
-                    ref={videoPlayerRef}
-                    paused={true}
-                    muted={true}
+                  <Image
                     source={{uri: item}}
+                    key={item}
+                    indicator={ProgressBar}
+                    resizeMode={'cover'}
+                    indicatorProps={{
+                      size: 80,
+                      borderWidth: 0,
+                      color: 'rgba(150, 150, 150, 1)',
+                      unfilledColor: 'rgba(200, 200, 200, 0.2)',
+                    }}
                     style={{
                       backgroundColor: 'rgba(0,0,0,0.7)',
                       marginTop: hp(1),
@@ -205,126 +271,62 @@ const TCMessage = ({
                       height: wp(50),
                       width: wp(50),
                     }}
-                    resizeMode={'cover'}
-                    onLoad={() => {
-                      videoPlayerRef.current.seek(0);
-                    }}
                   />
-                  <View
-                    style={{
-                      position: 'absolute',
-                      height: '100%',
-                      width: '100%',
-                      top: 0,
-                      bottom: 0,
-                      right: 0,
-                      left: 0,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}>
-                    <TouchableHighlight
-                      style={styles.pauseMuteStyle}
-                      activeOpacity={0.5}
-                      onPress={() => {
-                        setPlay(!play);
-                      }}>
-                      <FastImage
-                        tintColor={'white'}
-                        resizeMode={'contain'}
-                        style={styles.playPauseImageStyle}
-                        source={
-                          play
-                            ? images.videoPauseButton
-                            : images.videoPlayButton
-                        }
-                      />
-                    </TouchableHighlight>
-                  </View>
                 </TouchableOpacity>
               );
-            }
-            return (
-              <TouchableOpacity
-                key={index}
-                onPress={() => setShowAssetsModal(true)}>
-                <Image
-                  source={{uri: item}}
-                  key={item}
-                  indicator={ProgressBar}
-                  resizeMode={'cover'}
-                  indicatorProps={{
-                    size: 80,
-                    borderWidth: 0,
-                    color: 'rgba(150, 150, 150, 1)',
-                    unfilledColor: 'rgba(200, 200, 200, 0.2)',
-                  }}
-                  style={{
-                    backgroundColor: 'rgba(0,0,0,0.7)',
-                    marginTop: hp(1),
-                    overflow: 'hidden',
-                    borderBottomRightRadius:
-                      type === 'receiver' ? wp(3) : wp(0),
-                    borderBottomLeftRadius: wp(3),
-                    borderTopRightRadius: wp(3),
-                    borderTopLeftRadius: type === 'receiver' ? wp(0) : wp(3),
-                    height: wp(50),
-                    width: wp(50),
-                  }}
-                />
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-      )}
-      <Modal
-        isVisible={showAssetsModal}
-        backdropColor="black"
-        style={{margin: 0}}
-        onBackdropPress={() => setShowAssetsModal(false)}
-        onRequestClose={() => setShowAssetsModal(false)}
-        backdropOpacity={0}>
-        <MessageChatAssetModal
-          title={fullName}
-          assetType={attachments[0]?.type === 'file' ? 'video' : 'image'}
-          assetURI={fileUrls?.[0] ?? ''}
-          backBtnPress={() => setShowAssetsModal(false)}
-        />
-        <View style={styles.bottomButtonContainer}>
-          <Pressable
-            style={{flexDirection: 'row', alignItems: 'center'}}
-            onPress={() => {
-              QB.content
-                .getPrivateURL(contentGetFileUrlParams)
-                .then((url) => {
-                  downloadMediaFiles(url);
-                })
-                .catch((e) => {
-                  Alert.alert(e);
-                });
-            }}>
-            <FastImage
-              source={images.downloadImage}
-              resizeMode={'contain'}
-              style={styles.iconStyle}
-            />
-            <Text style={styles.textStyle}>Download</Text>
-          </Pressable>
-          <Pressable
-            style={{flexDirection: 'row', alignItems: 'center'}}
-            onPress={() => {
-              onLongPressMessage();
-            }}>
-            <FastImage
-              source={images.deleteImage}
-              resizeMode={'contain'}
-              style={styles.iconStyle}
-            />
-            <Text style={styles.textStyle}>Delete</Text>
-          </Pressable>
-        </View>
-        <SafeAreaView style={{backgroundColor: colors.blackColor}} />
-      </Modal>
-    </TouchableOpacity>
+            })}
+          </View>
+        )}
+        <Modal
+          isVisible={showAssetsModal}
+          backdropColor="black"
+          style={{margin: 0}}
+          onBackdropPress={() => setShowAssetsModal(false)}
+          onRequestClose={() => setShowAssetsModal(false)}
+          backdropOpacity={0}>
+          <MessageChatAssetModal
+            title={fullName}
+            assetType={attachments[0]?.type === 'file' ? 'video' : 'image'}
+            assetURI={fileUrls?.[0] ?? ''}
+            backBtnPress={() => setShowAssetsModal(false)}
+          />
+          <View style={styles.bottomButtonContainer}>
+            <Pressable
+              style={{flexDirection: 'row', alignItems: 'center'}}
+              onPress={() => {
+                QB.content
+                  .getPrivateURL(contentGetFileUrlParams)
+                  .then((url) => {
+                    downloadMediaFiles(url);
+                  })
+                  .catch((e) => {
+                    Alert.alert(e);
+                  });
+              }}>
+              <FastImage
+                source={images.downloadImage}
+                resizeMode={'contain'}
+                style={styles.iconStyle}
+              />
+              <Text style={styles.textStyle}>Download</Text>
+            </Pressable>
+            <Pressable
+              style={{flexDirection: 'row', alignItems: 'center'}}
+              onPress={() => {
+                onLongPressMessage();
+              }}>
+              <FastImage
+                source={images.deleteImage}
+                resizeMode={'contain'}
+                style={styles.iconStyle}
+              />
+              <Text style={styles.textStyle}>Delete</Text>
+            </Pressable>
+          </View>
+          <SafeAreaView style={{backgroundColor: colors.blackColor}} />
+        </Modal>
+      </TouchableOpacity>
+    </>
   );
 };
 

@@ -35,7 +35,6 @@ import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
 import TCLable from '../../../../components/TCLabel';
 import TCTextField from '../../../../components/TCTextField';
-import TCMessageButton from '../../../../components/TCMessageButton';
 import AuthContext from '../../../../auth/context';
 import {
   deleteConfirmation,
@@ -48,7 +47,7 @@ import TCKeyboardView from '../../../../components/TCKeyboardView';
 import DateTimePickerView from '../../../../components/Schedule/DateTimePickerModal';
 import Verbs from '../../../../Constants/Verbs';
 
-import {searchAddress, searchCityState} from '../../../../api/External';
+import {searchAddress} from '../../../../api/External';
 import {checkTownscupEmail} from '../../../../api/Users';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 
@@ -56,10 +55,8 @@ let entity = {};
 
 export default function CreateMemberProfileForm1({navigation, route}) {
   const authContext = useContext(AuthContext);
-  const [visibleLocationModal, setVisibleLocationModal] = useState(false);
   const [visibleCityModal, setVisibleCityModal] = useState(false);
   const [searchText, setSearchText] = useState('');
-  const [cityData, setCityData] = useState([]);
   const [locationData, setLocationData] = useState([]);
   const [loading, setLoading] = useState(false);
   const isFocused = useIsFocused();
@@ -82,12 +79,6 @@ export default function CreateMemberProfileForm1({navigation, route}) {
   useEffect(() => {
     searchAddress(searchText).then((response) => {
       setLocationData(response.results);
-    });
-  }, [searchText]);
-
-  useEffect(() => {
-    searchCityState(searchText).then((response) => {
-      setCityData(response.predictions);
     });
   }, [searchText]);
 
@@ -296,7 +287,9 @@ export default function CreateMemberProfileForm1({navigation, route}) {
         // const shortAddress = '';
 
         const cty = item.address_components.filter((obj) =>
-          obj.types.some((a) => a === 'locality'),
+          obj.types.some(
+            (a) => a === 'administrative_area_level_3' || 'locality',
+          ),
         );
 
         const sNumber = item.address_components.filter((obj) =>
@@ -315,23 +308,11 @@ export default function CreateMemberProfileForm1({navigation, route}) {
           }`,
         );
 
-        setVisibleLocationModal(false);
-      }}>
-      <Text style={styles.cityList}>{item.formatted_address}</Text>
-    </TouchableOpacity>
-  );
-
-  const renderCityStateCountryItem = ({item}) => (
-    <TouchableOpacity
-      style={styles.listItem}
-      onPress={() => {
-        setHomeCity(item?.terms?.[0]?.value ?? '');
+        setLocationData([]);
 
         setVisibleCityModal(false);
-        setCityData([]);
-        setLocationData([]);
       }}>
-      <Text style={styles.cityList}>{item.description}</Text>
+      <Text style={styles.cityList}>{item.formatted_address}</Text>
     </TouchableOpacity>
   );
 
@@ -400,7 +381,11 @@ export default function CreateMemberProfileForm1({navigation, route}) {
           </View>
         </View>
         <View>
-          <TCLable title={strings.homeCity.toUpperCase()} required={true} />
+          <TCLable
+            title={strings.homeCity.toUpperCase()}
+            required={true}
+            style={{marginBottom: 12}}
+          />
           <TouchableOpacity onPress={() => setVisibleCityModal(true)}>
             <TCTextField
               value={homeCity}
@@ -416,6 +401,7 @@ export default function CreateMemberProfileForm1({navigation, route}) {
           <TCLable
             title={strings.emailPlaceHolder.toUpperCase()}
             required={true}
+            style={{marginBottom: 12}}
           />
           <TCTextField
             value={email}
@@ -427,37 +413,6 @@ export default function CreateMemberProfileForm1({navigation, route}) {
           />
           <Text style={styles.notesStyle}>{strings.emailNotes}</Text>
         </View>
-
-        {location && (
-          <TouchableOpacity
-            onPress={() => {
-              setVisibleCityModal(true);
-              setCityData([]);
-              setLocationData([]);
-            }}>
-            <TextInput
-              placeholder={strings.searchByCityStateText}
-              placeholderTextColor={colors.userPostTimeColor}
-              style={[styles.matchFeeTxt, {marginBottom: 5}]}
-              value={homeCity || ''}
-              editable={false}
-              pointerEvents="none"></TextInput>
-          </TouchableOpacity>
-        )}
-
-        {location && (
-          <TCMessageButton
-            title={strings.searchAddress}
-            width={120}
-            alignSelf="center"
-            marginTop={15}
-            onPress={() => {
-              setVisibleLocationModal(true);
-              setCityData([]);
-              setLocationData([]);
-            }}
-          />
-        )}
 
         <ActionSheet
           ref={actionSheet}
@@ -502,121 +457,18 @@ export default function CreateMemberProfileForm1({navigation, route}) {
             />
           </View>
         )}
-
-        <Modal
-          isVisible={visibleLocationModal}
-          onBackdropPress={() => {
-            setVisibleLocationModal(false);
-            setCityData([]);
-            setLocationData([]);
-          }}
-          onRequestClose={() => {
-            setVisibleLocationModal(false);
-            setCityData([]);
-            setLocationData([]);
-          }}
-          animationInTiming={300}
-          animationOutTiming={800}
-          backdropTransitionInTiming={300}
-          backdropTransitionOutTiming={800}
-          style={{
-            margin: 0,
-          }}>
-          <View
-            style={{
-              width: '100%',
-              height: Dimensions.get('window').height / 1.3,
-              backgroundColor: 'white',
-              position: 'absolute',
-              bottom: 0,
-              left: 0,
-              borderTopLeftRadius: 30,
-              borderTopRightRadius: 30,
-              shadowColor: '#000',
-              shadowOffset: {width: 0, height: 1},
-              shadowOpacity: 0.5,
-              shadowRadius: 5,
-              elevation: 15,
-            }}>
-            <View
-              style={{
-                flexDirection: 'row',
-                paddingHorizontal: 15,
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              }}>
-              <TouchableOpacity
-                hitSlop={getHitSlop(15)}
-                style={styles.closeButton}
-                onPress={() => {
-                  setVisibleLocationModal(false);
-                  setCityData([]);
-                  setLocationData([]);
-                }}>
-                <Image source={images.cancelImage} style={styles.closeButton} />
-              </TouchableOpacity>
-              <Text
-                style={{
-                  alignSelf: 'center',
-                  marginVertical: 20,
-                  fontSize: 16,
-                  fontFamily: fonts.RBold,
-                  color: colors.lightBlackColor,
-                }}>
-                {strings.locationTitleText}
-              </Text>
-              <TouchableOpacity onPress={() => {}}></TouchableOpacity>
-            </View>
-            <View style={styles.separatorLine} />
-            <View>
-              <View style={styles.sectionStyle}>
-                <Image
-                  source={images.searchLocation}
-                  style={styles.searchImg}
-                />
-                <TextInput
-                  testID="choose-location-input"
-                  style={styles.textInput}
-                  placeholder={strings.addressSearchPlaceHolder}
-                  clearButtonMode="always"
-                  placeholderTextColor={colors.grayColor}
-                  onChangeText={(text) => setSearchText(text)}
-                />
-              </View>
-              {locationData.length > 0 && (
-                <FlatList
-                  data={locationData}
-                  renderItem={renderLocationItem}
-                  keyExtractor={(item, index) => index.toString()}
-                  onScroll={Keyboard.dismiss}
-                  // ListFooterComponent={() => (
-                  //   <TouchableOpacity
-                  //     style={styles.listItem}
-                  //     onPress={() => {
-                  //       setVisibleLocationModal(false);
-                  //     }}>
-                  //     <Text style={styles.cityList}>
-                  //       {strings.chooseCityAndDetail}
-                  //     </Text>
-                  //   </TouchableOpacity>
-                  // )}
-                />
-              )}
-            </View>
-          </View>
-        </Modal>
       </TCKeyboardView>
 
       <Modal
         isVisible={visibleCityModal}
         onBackdropPress={() => {
           setVisibleCityModal(false);
-          setCityData([]);
+
           setLocationData([]);
         }}
         onRequestClose={() => {
           setVisibleCityModal(false);
-          setCityData([]);
+
           setLocationData([]);
         }}
         animationInTiming={300}
@@ -629,7 +481,7 @@ export default function CreateMemberProfileForm1({navigation, route}) {
         <View
           style={{
             width: '100%',
-            height: Dimensions.get('window').height / 1.1,
+            height: Dimensions.get('window').height / 1.3,
             backgroundColor: 'white',
             position: 'absolute',
             bottom: 0,
@@ -654,7 +506,7 @@ export default function CreateMemberProfileForm1({navigation, route}) {
               style={styles.closeButton}
               onPress={() => {
                 setVisibleCityModal(false);
-                setCityData([]);
+
                 setLocationData([]);
               }}>
               <Image source={images.cancelImage} style={styles.closeButton} />
@@ -667,7 +519,7 @@ export default function CreateMemberProfileForm1({navigation, route}) {
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
               }}>
-              {strings.locationTitleText}
+              {strings.homeCityTitle}
             </Text>
             <TouchableOpacity onPress={() => {}}></TouchableOpacity>
           </View>
@@ -682,15 +534,27 @@ export default function CreateMemberProfileForm1({navigation, route}) {
                 clearButtonMode="always"
                 placeholderTextColor={colors.grayColor}
                 onChangeText={(text) => setSearchText(text)}
-                autoCorrect={false}
               />
             </View>
-            <FlatList
-              data={(cityData || []).filter((obj) => obj.terms.length === 3)}
-              renderItem={renderCityStateCountryItem}
-              keyExtractor={(item, index) => index.toString()}
-              onScroll={Keyboard.dismiss}
-            />
+            {locationData.length > 0 && (
+              <FlatList
+                data={locationData}
+                renderItem={renderLocationItem}
+                keyExtractor={(item, index) => index.toString()}
+                onScroll={Keyboard.dismiss}
+                // ListFooterComponent={() => (
+                //   <TouchableOpacity
+                //     style={styles.listItem}
+                //     onPress={() => {
+                //       setVisibleLocationModal(false);
+                //     }}>
+                //     <Text style={styles.cityList}>
+                //       {strings.chooseCityAndDetail}
+                //     </Text>
+                //   </TouchableOpacity>
+                // )}
+              />
+            )}
           </View>
         </View>
       </Modal>
@@ -732,26 +596,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     fontSize: 16,
     marginRight: 10,
-  },
-
-  matchFeeTxt: {
-    alignSelf: 'center',
-    backgroundColor: colors.offwhite,
-    borderRadius: 5,
-    color: 'black',
-    elevation: 3,
-    fontSize: widthPercentageToDP('3.8%'),
-    height: 40,
-
-    marginTop: 12,
-    paddingHorizontal: 15,
-    paddingRight: 30,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.3,
-    shadowRadius: 1,
-
-    width: widthPercentageToDP('92%'),
   },
 
   closeButton: {

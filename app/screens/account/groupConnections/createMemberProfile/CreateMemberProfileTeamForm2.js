@@ -18,6 +18,7 @@ import {
   Keyboard,
 } from 'react-native';
 import Modal from 'react-native-modal';
+import {format} from 'react-string-format';
 import {createMemberProfile} from '../../../../api/Groups';
 import uploadImages from '../../../../utils/imageAction';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
@@ -132,23 +133,26 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
     createMemberProfile(entity.uid, params, authContext)
       .then((response) => {
         setloading(false);
-        console.log('Response create member :', response.payload);
+        if (response?.payload?.user_id && response?.payload?.group_id) {
+          navigation.navigate('MembersProfileScreen', {
+            memberID: response.payload.user_id,
+            whoSeeID: response.payload.group_id,
+            groupID: authContext.entity.uid,
+          });
 
-        if (
-          response.payload?.canConnect === true &&
-          response.payload?.connected === false
-        ) {
-          const title = strings.connectMemberProfile;
-          navigation.navigate('MemberProfileCreatedScreen', {
-            memberObj: response.payload,
-            buttonTitle: title,
-          });
-        } else {
-          const title = strings.sendInvite;
-          navigation.navigate('MemberProfileCreatedScreen', {
-            memberObj: response.payload,
-            buttonTitle: title,
-          });
+          setTimeout(() => {
+            Alert.alert(
+              format(strings.profileCreated, authContext.entity.role),
+              '',
+              [
+                {
+                  text: strings.okTitleText,
+                  onPress: () => {},
+                },
+              ],
+              {cancelable: false},
+            );
+          }, 10);
         }
       })
       .catch((e) => {

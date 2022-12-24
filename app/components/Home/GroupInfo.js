@@ -37,7 +37,7 @@ export default function GroupInfo({
 
   console.log('groupDetails?????', authContext);
   const members =
-    groupDetails?.joined_members && groupDetails?.joined_members?.length > 0;
+    groupDetails.joined_members && groupDetails.joined_members?.length > 0;
 
   const renderTeam = ({item}) => (
     <UserInfoGroupItem
@@ -91,17 +91,17 @@ export default function GroupInfo({
     />
   );
 
-  let office = groupDetails?.office_address;
-  let homefield = groupDetails?.homefield_address;
+  let office = groupDetails.office_address;
+  let homefield = groupDetails.homefield_address;
 
   let memberage = strings.NA;
   let membershipregfee = strings.NA;
   let membershipfee = strings.NA;
 
-  if (!groupDetails?.office_address) {
+  if (!groupDetails.office_address) {
     office = isAdmin ? strings.addoffice : strings.NA;
   }
-  if (!groupDetails?.homefield_address) {
+  if (!groupDetails.homefield_address) {
     homefield = isAdmin ? strings.addhomefield : strings.NA;
   }
 
@@ -109,17 +109,17 @@ export default function GroupInfo({
   const markers = [];
 
   if (
-    groupDetails?.homefield_address_latitude &&
-    groupDetails?.homefield_address_longitude
+    groupDetails.homefield_address_latitude &&
+    groupDetails.homefield_address_longitude
   ) {
     coordinates.push({
-      latitude: Number(groupDetails?.homefield_address_latitude),
-      longitude: Number(groupDetails?.homefield_address_longitude),
+      latitude: Number(groupDetails.homefield_address_latitude),
+      longitude: Number(groupDetails.homefield_address_longitude),
     });
     markers.push({
       id: '1',
-      latitude: groupDetails?.homefield_address_latitude,
-      longitude: groupDetails?.homefield_address_longitude,
+      latitude: groupDetails.homefield_address_latitude,
+      longitude: groupDetails.homefield_address_longitude,
       name: strings.homeaddress,
       adddress: homefield,
       pinColor: 'red',
@@ -127,51 +127,51 @@ export default function GroupInfo({
   }
 
   if (
-    groupDetails?.office_address_latitude &&
-    groupDetails?.office_address_longitude
+    groupDetails.office_address_latitude &&
+    groupDetails.office_address_longitude
   ) {
     coordinates.push({
-      latitude: Number(groupDetails?.office_address_latitude),
-      longitude: Number(groupDetails?.office_address_longitude),
+      latitude: Number(groupDetails.office_address_latitude),
+      longitude: Number(groupDetails.office_address_longitude),
     });
     markers.push({
       id: '2',
-      latitude: Number(groupDetails?.office_address_latitude),
-      longitude: Number(groupDetails?.office_address_longitude),
+      latitude: Number(groupDetails.office_address_latitude),
+      longitude: Number(groupDetails.office_address_longitude),
       name: strings.officeaddress,
       adddress: office,
       pinColor: 'green',
     });
   }
 
-  if (groupDetails?.min_age && groupDetails?.max_age) {
-    memberage = `${strings.minPlaceholder} ${groupDetails?.min_age} ${strings.maxPlaceholder} ${groupDetails?.max_age}`;
-  } else if (groupDetails?.max_age) {
-    memberage = `${strings.maxPlaceholder} ${groupDetails?.max_age}`;
-  } else if (groupDetails?.min_age) {
-    memberage = `${strings.minPlaceholder} ${groupDetails?.min_age}`;
+  if (groupDetails.min_age && groupDetails.max_age) {
+    memberage = `${strings.minPlaceholder} ${groupDetails.min_age} ${strings.maxPlaceholder} ${groupDetails.max_age}`;
+  } else if (groupDetails.max_age) {
+    memberage = `${strings.maxPlaceholder} ${groupDetails.max_age}`;
+  } else if (groupDetails.min_age) {
+    memberage = `${strings.minPlaceholder} ${groupDetails.min_age}`;
   }
 
-  if (groupDetails?.registration_fee) {
-    membershipregfee = `${groupDetails?.registration_fee} ${Verbs.CAD}`;
+  if (groupDetails.registration_fee) {
+    membershipregfee = `${groupDetails.registration_fee} ${Verbs.CAD}`;
   }
 
-  if (groupDetails?.membership_fee) {
-    membershipfee = `${groupDetails?.membership_fee} ${Verbs.CAD}`;
-    if (groupDetails?.membership_fee_type === 'weekly') {
+  if (groupDetails.membership_fee) {
+    membershipfee = `${groupDetails.membership_fee} ${Verbs.CAD}`;
+    if (groupDetails.membership_fee_type === 'weekly') {
       membershipfee = `${membershipfee}/${strings.week}`;
-    } else if (groupDetails?.membership_fee_type === 'biweekly') {
+    } else if (groupDetails.membership_fee_type === 'biweekly') {
       membershipfee = `${membershipfee}/${strings.biweek}`;
-    } else if (groupDetails?.membership_fee_type === 'monthly') {
+    } else if (groupDetails.membership_fee_type === 'monthly') {
       membershipfee = `${membershipfee}/${strings.month}`;
-    } else if (groupDetails?.membership_fee_type === 'yealy') {
+    } else if (groupDetails.membership_fee_type === 'yealy') {
       membershipfee = `${membershipfee}/${strings.year}`;
     }
   }
 
   const onTeamListPress = () => {
     if (onGroupListPress) {
-      onGroupListPress(groupDetails?.joined_teams, 'team');
+      onGroupListPress(groupDetails.joined_teams, 'team');
     }
   };
 
@@ -210,9 +210,9 @@ export default function GroupInfo({
           }}
         />
         <View style={{marginTop: 15}}>
-          {groupDetails?.bio && (
+          {groupDetails.bio && (
             <NewsFeedDescription
-              descriptions={groupDetails?.bio}
+              descriptions={groupDetails.bio}
               character={200}
               descriptionTxt={styles.longTextStyle}
               descText={styles.moreTextStyle}
@@ -228,10 +228,10 @@ export default function GroupInfo({
               marginLeft: 10,
             }}>
             {strings.signedupin}
-            {signUpString(groupDetails?.createdAt)}
+            {signUpString(groupDetails.createdAt)}
           </Text>
         </View>
-        {groupDetails?.club && (
+        {groupDetails.club && (
           <View
             style={{
               flex: 1,
@@ -242,8 +242,8 @@ export default function GroupInfo({
               maxWidth: '80%',
             }}>
             <TCClubClipView
-              name={groupDetails?.club.group_name}
-              image={groupDetails?.club.thumbnail}
+              name={groupDetails.club.group_name}
+              image={groupDetails.club.thumbnail}
             />
           </View>
         )}
@@ -267,8 +267,8 @@ export default function GroupInfo({
         <TCInfoField
           title={strings.sport}
           value={
-            groupDetails?.sports_string
-              ? groupDetails?.sports_string
+            groupDetails.sports_string
+              ? groupDetails.sports_string
               : Utility.getSportName(groupDetails, authContext)
           }
           marginLeft={10}
@@ -277,9 +277,9 @@ export default function GroupInfo({
         <TCInfoField
           title={strings.membersgender}
           value={
-            groupDetails?.gender
-              ? Utility.capitalize(groupDetails?.gender)
-              : groupDetails?.gender
+            groupDetails.gender
+              ? Utility.capitalize(groupDetails.gender)
+              : groupDetails.gender
           }
           marginLeft={10}
         />
@@ -290,12 +290,12 @@ export default function GroupInfo({
         />
         <TCInfoField
           title={strings.language}
-          value={groupDetails?.languages?.toString() ?? strings.NAText}
+          value={groupDetails.language?.toString() ?? strings.NAText}
           marginLeft={10}
         />
         <TCInfoField
           title={strings.officeAddress}
-          value={groupDetails?.office_address}
+          value={groupDetails.office_address}
           marginLeft={10}
         />
       </View>
@@ -304,14 +304,14 @@ export default function GroupInfo({
         style={{height: 7, backgroundColor: colors.grayBackgroundColor}}></View>
 
       {/* Members list section */}
-      {groupDetails?.entity_type === 'team' && (
+      {groupDetails.entity_type === 'team' && (
         <View>
           <View style={styles.sectionStyle}>
             <TCEditHeader
               showNextArrow={true}
               title={strings.membersTitle}
               showEditButton={isAdmin}
-              // subTitle={groupDetails?.setting?.game_fee?.fee ? `$${groupDetails?.setting?.game_fee?.fee} ${groupDetails?.setting?.game_fee?.currency_type} / match` : strings.NAText}
+              // subTitle={groupDetails.setting?.game_fee?.fee ? `$${groupDetails.setting?.game_fee?.fee} ${groupDetails.setting?.game_fee?.currency_type} / match` : strings.NAText}
               subTitleTextStyle={{
                 marginLeft: 28,
                 fontFamily: fonts.RRegular,
@@ -321,7 +321,7 @@ export default function GroupInfo({
               onEditPress={() => {
                 navigation.navigate('GroupMembersScreen', {
                   groupObj: groupDetails,
-                  groupID: groupDetails?.group_id,
+                  groupID: groupDetails.group_id,
                   fromProfile: true,
                 });
               }}
@@ -344,7 +344,7 @@ export default function GroupInfo({
       )}
 
       {/* match fee section */}
-      {groupDetails?.entity_type === 'team' && (
+      {groupDetails.entity_type === 'team' && (
         <View>
           <View style={styles.sectionStyle}>
             <TCEditHeader
@@ -352,8 +352,8 @@ export default function GroupInfo({
               title={strings.matchAmountTitle}
               showEditButton={isAdmin}
               subTitle={
-                groupDetails?.setting?.game_fee?.fee
-                  ? `$${groupDetails?.setting?.game_fee?.fee} ${groupDetails?.setting?.game_fee?.currency_type} / match`
+                groupDetails.setting?.game_fee?.fee
+                  ? `$${groupDetails.setting?.game_fee?.fee} ${groupDetails.setting?.game_fee?.currency_type} / match`
                   : strings.NAText
               }
               subTitleTextStyle={{
@@ -364,9 +364,9 @@ export default function GroupInfo({
               }}
               onEditPress={() => {
                 navigation.navigate('GameFee', {
-                  settingObj: groupDetails?.setting,
+                  settingObj: groupDetails.setting,
                   comeFrom: 'EntityInfoScreen',
-                  sportName: groupDetails?.sport,
+                  sportName: groupDetails.sport,
                 });
               }}
             />
@@ -379,12 +379,12 @@ export default function GroupInfo({
         </View>
       )}
 
-      {groupDetails?.entity_type === 'team' && (
+      {groupDetails.entity_type === 'team' && (
         <View>
           <View style={styles.sectionStyle}>
             <TCEditHeader
               title={
-                groupDetails?.setting?.venue &&
+                groupDetails.setting?.venue &&
                 groupDetails.setting.venue.length > 1
                   ? strings.availableVenuesForMatch
                   : strings.availableVenues
@@ -401,12 +401,12 @@ export default function GroupInfo({
             />
           </View>
 
-          {groupDetails?.setting?.venue &&
+          {groupDetails.setting?.venue &&
           groupDetails.setting.venue.length > 0 ? (
             <Carousel
-              data={groupDetails?.setting?.venue ?? []} // recentMatch
+              data={groupDetails.setting?.venue ?? []} // recentMatch
               scrollEnabled={
-                groupDetails?.setting?.venue &&
+                groupDetails.setting?.venue &&
                 groupDetails.setting.venue.length > 1
               }
               renderItem={renderVenues}
@@ -425,14 +425,14 @@ export default function GroupInfo({
       )}
 
       {/* TC Point section */}
-      {groupDetails?.entity_type === 'team' && (
+      {groupDetails.entity_type === 'team' && (
         <View>
           <View style={styles.sectionStyle}>
             <TCEditHeader
               // iconImage={images.myClubs}
               title={strings.tcpoint}
               showEditButton={false}
-              subTitle={`${groupDetails?.point} P`}
+              subTitle={`${groupDetails.point} P`}
               subTitleTextStyle={{
                 marginLeft: 28,
                 fontFamily: fonts.RRegular,
@@ -461,7 +461,7 @@ export default function GroupInfo({
             />
             <FlatList
               style={{marginTop: 15, backgroundColor: colors.whiteColor}}
-              data={groupDetails?.joined_members}
+              data={groupDetails.joined_members}
               horizontal
               renderItem={renderMember}
               keyExtractor={(item) => item.group_id}
@@ -486,7 +486,7 @@ export default function GroupInfo({
           />
           <FlatList
             style={{marginTop: 15, backgroundColor: colors.whiteColor}}
-            data={groupDetails?.joined_leagues}
+            data={groupDetails.joined_leagues}
             horizontal
             renderItem={renderLeague}
             keyExtractor={(item) => item.group_id}
@@ -501,7 +501,7 @@ export default function GroupInfo({
       </View>
 
       {/* Team section */}
-      {groupDetails?.joined_teams && groupDetails?.joined_teams.length > 0 && (
+      {groupDetails.joined_teams && groupDetails.joined_teams.length > 0 && (
         <View>
           <View style={[styles.sectionStyle, {marginHorizontal: 0}]}>
             <TCEditHeader
@@ -512,7 +512,7 @@ export default function GroupInfo({
             />
             <FlatList
               style={{marginTop: 15, backgroundColor: colors.whiteColor}}
-              data={groupDetails?.joined_teams}
+              data={groupDetails.joined_teams}
               horizontal
               renderItem={renderTeam}
               keyExtractor={(item) => item.group_id}
@@ -568,9 +568,9 @@ export default function GroupInfo({
           }}
         />
         <View style={{marginTop: 20}}>
-          {groupDetails?.bylaw && (
+          {groupDetails.bylaw && (
             <NewsFeedDescription
-              descriptions={groupDetails?.bylaw}
+              descriptions={groupDetails.bylaw}
               character={200}
               descriptionTxt={styles.longTextStyle}
               descText={styles.moreTextStyle}

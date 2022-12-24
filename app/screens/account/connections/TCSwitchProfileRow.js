@@ -7,6 +7,7 @@ import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
 import {strings} from '../../../../Localization/translation';
 import Verbs from '../../../Constants/Verbs';
+import {getCityStateCountryText} from '../../../utils';
 
 const TCSwitchProfileRow = ({item, onPress}) => (
   <TouchableWithoutFeedback
@@ -67,7 +68,11 @@ const TCSwitchProfileRow = ({item, onPress}) => (
         </Text>
       }
       <Text style={styles.entityLocationText}>
-        {item.city},{item.state_abbr}
+        {getCityStateCountryText([
+          item.city,
+          item?.state_abbr || item?.state,
+          item?.country,
+        ])}
       </Text>
     </View>
   </TouchableWithoutFeedback>

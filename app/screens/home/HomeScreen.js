@@ -626,9 +626,8 @@ const HomeScreen = ({navigation, route}) => {
         centerComponent={<View></View>}
         rightComponent={
           <View>
-            {!isAdmin &&
-              authContext.entity.uid !== currentUserData.group_id &&
-              authContext.entity.uid !== currentUserData?.createdBy?.uid && (
+            {authContext.entity.uid !== currentUserData.group_id &&
+              authContext.entity.uid !== currentUserData?.user_id && (
                 <TouchableOpacity
                   onPress={() => {
                     if (

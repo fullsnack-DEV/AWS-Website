@@ -400,7 +400,7 @@ export default function CreateTeamForm1({navigation, route}) {
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
               }}>
-              {strings.locationTitleText}
+              {strings.currentCityTitle}
             </Text>
             <TouchableOpacity onPress={() => {}}></TouchableOpacity>
           </View>
@@ -411,7 +411,7 @@ export default function CreateTeamForm1({navigation, route}) {
               <TextInput
                 testID="choose-location-input"
                 style={styles.textInput}
-                placeholder={strings.locationPlaceholderText}
+                placeholder={strings.cityPlaceholderText}
                 clearButtonMode="always"
                 placeholderTextColor={colors.grayColor}
                 onChangeText={(text) => setSearchText(text)}
