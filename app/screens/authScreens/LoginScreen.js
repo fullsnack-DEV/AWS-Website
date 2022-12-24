@@ -536,7 +536,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     fontFamily: fonts.RRegular,
     fontSize: 16,
-    width: wp('81.3%'),
+    width: wp('92%'),
     backgroundColor: 'rgba(255,255,255,0.9)',
     height: 40,
     color: 'black',

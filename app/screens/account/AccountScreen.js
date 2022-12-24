@@ -687,8 +687,7 @@ export default function AccountScreen({navigation}) {
                             },
                           ]
                     }>
-                    {authContext?.entity?.obj?.city || ''},{' '}
-                    {authContext?.entity?.obj?.country || ''}
+                    {Utility.getCityStateCountry(authContext)}
                   </Text>
                 </View>
               </TouchableOpacity>
@@ -834,8 +833,7 @@ export default function AccountScreen({navigation}) {
                               },
                             ]
                       }>
-                      {authContext?.entity?.obj?.city},{' '}
-                      {authContext?.entity?.obj?.state_abbr}
+                      {Utility.getCityStateCountry(authContext)}
                     </Text>
                   </View>
                 </TouchableOpacity>
@@ -966,8 +964,7 @@ export default function AccountScreen({navigation}) {
                               },
                             ]
                       }>
-                      {authContext?.entity?.obj?.city},{' '}
-                      {authContext?.entity?.obj?.state_abbr}
+                      {Utility.getCityStateCountry(authContext)}
                     </Text>
                   </View>
                 </TouchableOpacity>
