@@ -376,40 +376,6 @@ export default function SignupScreen({navigation}) {
 
   return (
     <>
-      {/* <ActionSheet
-        ref={actionSheet}
-        // title={'News Feed Post'}
-        options={[strings.camera, strings.album, strings.cancelTitle]}
-        cancelButtonIndex={2}
-        onPress={(index) => {
-          if (index === 0) {
-            openCamera();
-          } else if (index === 1) {
-            openImagePicker();
-          }
-        }}
-      />
-      <ActionSheet
-        ref={actionSheetWithDelete}
-        // title={'News Feed Post'}
-        options={[
-          strings.camera,
-          strings.album,
-          strings.deleteTitle,
-          strings.cancelTitle,
-        ]}
-        cancelButtonIndex={3}
-        destructiveButtonIndex={2}
-        onPress={(index) => {
-          if (index === 0) {
-            openCamera();
-          } else if (index === 1) {
-            openImagePicker();
-          } else if (index === 2) {
-            deleteImage();
-          }
-        }}
-      /> */}
       <LinearGradient
         colors={[colors.themeColor1, colors.themeColor3]}
         style={styles.mainContainer}>
@@ -422,41 +388,11 @@ export default function SignupScreen({navigation}) {
         <Text style={styles.checkEmailText}>{strings.signupwithemail}</Text>
         <TCKeyboardView>
           <View style={{marginVertical: 66}}>
-            {/* <TouchableOpacity
-              style={styles.profile}
-              onPress={() => {
-                onProfileImageClicked();
-              }}>
-              <FastImage
-                source={
-                  profilePic?.path
-                    ? {uri: profilePic?.path}
-                    : images.profilePlaceHolder
-                }
-                style={{
-                  width: 100,
-                  height: 100,
-                  borderRadius: 50,
-                  backgroundColor: '#FED378',
-                }}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.profileCameraButtonStyle}
-              onPress={() => {
-                onProfileImageClicked();
-              }}>
-              <FastImage
-                source={images.certificateUpload}
-                style={styles.cameraIcon}
-              />
-            </TouchableOpacity> */}
-
             <TCTextField
               testID={'email-signup-input'}
               placeholderTextColor={colors.darkYellowColor}
               style={styles.textFieldStyle}
-              width={wp(86.6)}
+              width={wp(81.3)}
               height={40}
               placeholder={strings.emailPlaceHolder}
               autoCapitalize="none"
@@ -468,7 +404,10 @@ export default function SignupScreen({navigation}) {
             <View style={styles.passwordView}>
               <TextInput
                 testID="password-signup-input"
-                style={{...styles.textInput, zIndex: 100}}
+                style={{
+                  ...styles.textInput,
+                  zIndex: 100,
+                }}
                 placeholder={strings.passwordText}
                 onChangeText={(text) => {
                   if (text.includes(' ')) {
@@ -488,7 +427,7 @@ export default function SignupScreen({navigation}) {
                   style={{
                     alignItems: 'center',
                     justifyContent: 'center',
-                    marginLeft: wp('3%'),
+                    right: 5,
                     top: 10,
                   }}>
                   {hidePassword ? (
@@ -523,7 +462,7 @@ export default function SignupScreen({navigation}) {
                 style={{
                   alignItems: 'center',
                   justifyContent: 'center',
-                  marginLeft: wp('3%'),
+                  right: 5,
                 }}>
                 {hideConfirmPassword ? (
                   <Text style={styles.passwordEyes}>{strings.SHOW}</Text>
@@ -532,46 +471,7 @@ export default function SignupScreen({navigation}) {
                 )}
               </TouchableOpacity>
             </View>
-            {/* <TCButton
-              title={strings.signUpCapitalText}
-              extraStyle={{
-                marginTop: hp('2%'),
-              }}
-              onPress={() => {
-                if (validate()) {
-                  if (authContext.networkConnected) {
-                    signupUser();
-                  } else {
-                    authContext.showNetworkAlert();
-                  }
-                }
-              }}
-            /> */}
           </View>
-          {/* <TCTextField
-            placeholderTextColor={colors.darkYellowColor}
-            style={styles.textFieldStyle}
-            placeholder={strings.fnameText}
-            value={fName}
-            // onChangeText={(name) => {
-            //   if (Utility.validatedName(name)) {
-            //     setFName(name);
-            //   }
-            // }}
-            onChangeText={(text) => setFName(text)}
-          />
-          <TCTextField
-            placeholderTextColor={colors.darkYellowColor}
-            style={styles.textFieldStyle}
-            placeholder={strings.lnameText}
-            onChangeText={(text) => setLName(text)}
-            // onChangeText={(lastName) => {
-            //   if (Utility.validatedName(lastName) === true) {
-            //     setLName(lastName);
-            //   }
-            // }}
-            value={lName}
-          /> */}
         </TCKeyboardView>
         <SafeAreaView>
           <View style={{bottom: 15}}>
@@ -612,6 +512,8 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: colors.darkYellowColor,
     textDecorationLine: 'underline',
+    textAlign: 'right',
+    width: 50,
   },
   passwordView: {
     backgroundColor: 'rgba(255,255,255,0.9)',
@@ -627,15 +529,15 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.5,
     shadowRadius: 4,
-    width: wp('86.6%'),
+    width: wp('81.3%'),
   },
   textInput: {
     paddingVertical: 0,
-    paddingHorizontal: 10,
+    paddingHorizontal: 15,
     borderRadius: 5,
     fontFamily: fonts.RRegular,
     fontSize: 16,
-    width: wp('69%'),
+    width: wp('67%'),
   },
   textFieldStyle: {
     marginVertical: 5,
@@ -646,6 +548,7 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.5,
     shadowRadius: 4,
+    paddingHorizontal: 5,
   },
 
   alreadyMemberText: {
@@ -668,7 +571,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
     fontSize: 25,
     marginLeft: wp('6.6%'),
-    // marginTop: hp('12.4%'),
     marginTop: Platform.OS === 'ios' ? 40 + 25 : 25,
     textAlign: 'left',
   },

@@ -372,7 +372,6 @@ const styles = StyleSheet.create({
     color: colors.whiteColor,
     fontFamily: fonts.RBold,
     fontSize: wp('6%'),
-    // marginTop: hp('12%'),
     marginTop: Platform.OS === 'ios' ? 40 + 25 : 25,
 
     marginLeft: 25,
@@ -381,7 +380,7 @@ const styles = StyleSheet.create({
   LocationDescription: {
     color: colors.whiteColor,
     fontFamily: fonts.RMedium,
-    fontSize: wp('4%'),
+    fontSize: 16,
     marginTop: hp('1%'),
     marginLeft: 25,
     marginRight: 25,

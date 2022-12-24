@@ -55,7 +55,6 @@ export default function SignupScreen({navigation, route}) {
           <Image
             source={images.backArrow}
             style={{
-              // marginTop: hp('1.5%'),
               height: 20,
               width: 15,
               marginLeft: 20,
@@ -282,9 +281,9 @@ export default function SignupScreen({navigation, route}) {
                       : images.profilePlaceHolder
                   }
                   style={{
-                    width: 100,
-                    height: 100,
-                    borderRadius: 50,
+                    width: 60,
+                    height: 60,
+                    borderRadius: 30,
                     backgroundColor: '#FED378',
                   }}
                 />
@@ -299,9 +298,9 @@ export default function SignupScreen({navigation, route}) {
                           : images.profilePlaceHolder
                       }
                       style={{
-                        width: 100,
-                        height: 100,
-                        borderRadius: 50,
+                        width: 60,
+                        height: 60,
+                        borderRadius: 30,
                         backgroundColor: '#FED378',
                       }}
                     />
@@ -310,9 +309,9 @@ export default function SignupScreen({navigation, route}) {
                       resizeMode={'contain'}
                       source={images.profilePlaceHolder}
                       style={{
-                        width: 100,
-                        height: 100,
-                        borderRadius: 50,
+                        width: 60,
+                        height: 60,
+                        borderRadius: 30,
                         backgroundColor: '#FED378',
                       }}
                     />
@@ -331,12 +330,12 @@ export default function SignupScreen({navigation, route}) {
               />
             </TouchableOpacity>
           </View>
-          <View style={{marginTop: 37}}>
+          <View style={{marginTop: 35}}>
             <TCTextField
               testID="fname-signup-input"
               placeholderTextColor={colors.darkYellowColor}
               style={styles.textFieldStyle}
-              width={wp(86.6)}
+              width={wp(81.3)}
               height={40}
               placeholder={strings.fnameText}
               value={fName}
@@ -349,22 +348,10 @@ export default function SignupScreen({navigation, route}) {
               placeholder={strings.lnameText}
               onChangeText={(text) => setLName(text)}
               value={lName}
-              width={wp(86.6)}
+              width={wp(81.3)}
               height={40}
             />
           </View>
-
-          {/* <TCButton
-            title={strings.continueCapTitle}
-            extraStyle={{
-              marginTop: hp('2%'),
-            }}
-            onPress={() => {
-              if (validate()) {
-                navigation.navigate('AddBirthdayScreen');
-              }
-            }}
-          /> */}
         </TCKeyboardView>
       </LinearGradient>
     </>
@@ -391,22 +378,21 @@ const styles = StyleSheet.create({
   },
 
   textFieldStyle: {
-    // top: 30,
-    // marginVertical: 5,
     alignSelf: 'center',
-    width: wp('85%'),
+    width: wp('81.3%'),
     backgroundColor: 'rgba(255,255,255,0.9)',
     shadowColor: colors.googleColor,
     shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.5,
     shadowRadius: 4,
     marginBottom: 10,
+    paddingHorizontal: 5,
   },
   profileCameraButtonStyle: {
     height: 22,
     width: 22,
-    marginTop: -40,
-    marginLeft: 60,
+    marginTop: -60,
+    marginLeft: 0,
     alignSelf: 'center',
   },
   cameraIcon: {
@@ -418,14 +404,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginRight: 15,
     color: colors.whiteColor,
-    marginTop: hp('1.5%'),
   },
   checkEmailText: {
     color: colors.whiteColor,
     fontFamily: fonts.RBold,
     fontSize: 25,
-    marginLeft: 20,
-    // marginTop: hp('12.4%'),
+    marginLeft: 25,
     marginTop: Platform.OS === 'ios' ? 40 + 25 : 25,
     textAlign: 'left',
   },

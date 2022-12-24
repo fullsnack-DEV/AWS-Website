@@ -127,7 +127,14 @@ export default function ChooseGenderScreen({navigation, route}) {
 
         <Tooltip
           popover={
-            <Text style={{color: colors.themeColor, fontSize: 14}}>
+            <Text
+              style={{
+                color: colors.themeColor,
+                fontSize: 14,
+                fontFamily: fonts.RRegular,
+                flex: 1,
+                padding: 15,
+              }}>
               {strings.genderText}
             </Text>
           }
@@ -135,7 +142,11 @@ export default function ChooseGenderScreen({navigation, route}) {
           height={hp('22%')}
           width={wp('75%')}
           overlayColor={'transparent'}
-          skipAndroidStatusBar={true}>
+          skipAndroidStatusBar={true}
+          containerStyle={{
+            left: 25,
+            padding: 0,
+          }}>
           <Text style={styles.whyAskingText}>
             {strings.whyAskingGenderText}
           </Text>
@@ -168,9 +179,6 @@ export default function ChooseGenderScreen({navigation, route}) {
       <SafeAreaView>
         <View
           style={{
-            // flex: 1,
-            // justifyContent: 'flex-end',
-            // marginBottom: 100,
             bottom: 16,
           }}>
           <Text style={styles.canNotChangeGender}>
@@ -225,7 +233,7 @@ const styles = StyleSheet.create({
   },
   whyAskingText: {
     color: colors.parrotColor,
-    fontFamily: fonts.RRegular,
+    fontFamily: fonts.RMedium,
     fontSize: 14,
     marginLeft: 25,
     marginRight: 25,
@@ -234,7 +242,7 @@ const styles = StyleSheet.create({
   },
   canNotChangeGender: {
     color: colors.parrotColor,
-    fontFamily: fonts.RRegular,
+    fontFamily: fonts.RMedium,
     fontSize: 14,
     marginLeft: 25,
     marginRight: 25,

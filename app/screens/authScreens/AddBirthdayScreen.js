@@ -118,7 +118,14 @@ export default function AddBirthdayScreen({navigation, route}) {
 
         <Tooltip
           popover={
-            <Text style={{color: colors.themeColor, fontSize: 14}}>
+            <Text
+              style={{
+                color: colors.themeColor,
+                fontSize: 14,
+                fontFamily: fonts.RRegular,
+                padding: 15,
+                flex: 1,
+              }}>
               {strings.birthdatText}
             </Text>
           }
@@ -126,7 +133,8 @@ export default function AddBirthdayScreen({navigation, route}) {
           height={hp('40%')}
           width={wp('75%')}
           overlayColor={'transparent'}
-          skipAndroidStatusBar={true}>
+          skipAndroidStatusBar={true}
+          containerStyle={{left: 25, padding: 0}}>
           <Text style={styles.whyAskingText}>{strings.whyAskingText}</Text>
         </Tooltip>
 
@@ -175,9 +183,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
     fontSize: 25,
     marginLeft: 25,
-    // marginTop: wp('25%'),
     marginTop: Platform.OS === 'ios' ? 40 + 25 : 25,
-
     textAlign: 'left',
   },
   dateText: {
@@ -218,7 +224,7 @@ const styles = StyleSheet.create({
   },
   whyAskingText: {
     color: colors.parrotColor,
-    fontFamily: fonts.RRegular,
+    fontFamily: fonts.RMedium,
     fontSize: 14,
     marginLeft: 25,
     marginRight: 25,
@@ -227,7 +233,7 @@ const styles = StyleSheet.create({
   },
   birthDateChangeNote: {
     color: colors.parrotColor,
-    fontFamily: fonts.RRegular,
+    fontFamily: fonts.RMedium,
     fontSize: 14,
     marginLeft: 35,
     marginRight: 35,

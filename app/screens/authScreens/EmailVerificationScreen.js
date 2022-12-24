@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
   Alert,
   Image,
+  Platform,
 } from 'react-native';
 import firebase from '@react-native-firebase/app';
 import {
@@ -54,7 +55,6 @@ export default function EmailVerificationScreen({navigation, route}) {
           <Image
             source={images.backArrow}
             style={{
-              marginTop: hp('1.5%'),
               height: 20,
               width: 15,
               marginLeft: 20,
@@ -186,9 +186,10 @@ export default function EmailVerificationScreen({navigation, route}) {
       />
       <View
         style={{
-          marginTop: hp('11.20%'),
+          marginTop: Platform.OS === 'ios' ? 40 + 25 : 25,
           alignSelf: 'center',
-          width: '80%',
+          marginLeft: 25,
+          marginRight: 25,
         }}>
         <Text
           style={{
@@ -208,8 +209,7 @@ export default function EmailVerificationScreen({navigation, route}) {
           height: 65.33,
           width: 101,
           alignSelf: 'center',
-          // marginVertical: hp(8.12),
-          marginTop: hp(8.12),
+          marginTop: 68,
         }}
         resizeMode={'contain'}
         source={images.emailSendIconBG}
@@ -221,7 +221,8 @@ export default function EmailVerificationScreen({navigation, route}) {
             backgroundColor: 'white',
             borderWidth: 1,
             borderColor: 'orange',
-            width: '80%',
+            width: '86.66%',
+
             justifyContent: 'center',
             alignItems: 'center',
             alignSelf: 'center',
@@ -249,9 +250,10 @@ export default function EmailVerificationScreen({navigation, route}) {
             textAlign: 'center',
             color: colors.lightGreen,
             textDecorationLine: 'underline',
-            fontSize: 13,
+            fontSize: 14,
             fontWeight: '700',
             marginTop: hp('2.4%'),
+            fontFamily: fonts.RBold,
           }}>
           {timer !== 0
             ? format(strings.sentVerificationEmailAfterSecond, timer)

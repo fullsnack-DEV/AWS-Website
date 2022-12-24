@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet, SafeAreaView} from 'react-native';
 
 import {
   heightPercentageToDP as hp,
@@ -28,13 +28,15 @@ export default function ForgotPasswordLinkSentScreen({navigation}) {
         <Text style={styles.checkEmailText}>{strings.checkEmailText}</Text>
         <Text style={styles.resetText}>{strings.checkEmailDescText}</Text>
       </View>
-      <TCButton
-        title={strings.LOGIN}
-        onPress={() => {
-          navigation.navigate('LoginScreen');
-        }}
-        extraStyle={{bottom: hp('4%'), position: 'absolute'}}
-      />
+      <SafeAreaView>
+        <TCButton
+          title={strings.LOGIN}
+          onPress={() => {
+            navigation.navigate('LoginScreen');
+          }}
+          extraStyle={{bottom: 12, position: 'absolute'}}
+        />
+      </SafeAreaView>
     </LinearGradient>
   );
 }
@@ -58,9 +60,9 @@ const styles = StyleSheet.create({
     color: colors.whiteColor,
     fontFamily: fonts.RRegular,
     fontSize: 14,
-    marginLeft: 20,
-    marginRight: 20,
-    marginTop: 10,
+    marginLeft: 25,
+    marginRight: 25,
+    marginTop: 22,
     textAlign: 'center',
   },
   textContainer: {
