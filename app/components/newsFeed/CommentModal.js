@@ -45,6 +45,7 @@ import WriteCommentItems from './WriteCommentItems';
 import SwipeableRow from '../gameRecordList/SwipeableRow';
 import ReportCommentModal from './ReportCommentModal';
 import Verbs from '../../Constants/Verbs';
+import ActivityLoader from '../loader/ActivityLoader';
 
 const CommentModal = ({
   item,
@@ -69,6 +70,7 @@ const CommentModal = ({
 
   const [currentUserDetail, setCurrentUserDetail] = useState(null);
   const [selectedCommentData, setSelectedCommentData] = useState(null);
+  const [loading, setloading] = useState(false);
 
   useEffect(() => {
     const entity = authContext.entity;
@@ -119,6 +121,7 @@ const CommentModal = ({
         activity_id: data?.activity_id,
         reaction_id: data?.id,
       };
+      setloading(true);
       setCommentText('');
       createCommentReaction(bodyParams, authContext)
         .then(() => {
@@ -128,13 +131,16 @@ const CommentModal = ({
           getReactions(params, authContext)
             .then((response) => {
               setCommentData(response?.payload?.reverse());
+              setloading(false);
             })
             .catch((e) => {
               Alert.alert('', e.messages);
+              setloading(false);
             });
         })
         .catch((e) => {
           Alert.alert('', e.messages);
+          setloading(false);
         });
     },
     [authContext, item?.id],
@@ -288,6 +294,8 @@ const CommentModal = ({
       // pointerEvents={showBottomWriteCommentSection ? 'none' : 'auto'}
       style={styles.bottomSafeAreaStyle}>
       <View style={styles.bottomImgView}>
+        <ActivityLoader visible={loading} />
+
         <View style={styles.commentReportView}>
           <Image
             source={userImage ? {uri: userImage} : images.profilePlaceHolder}
