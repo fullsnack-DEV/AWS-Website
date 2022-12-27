@@ -15,7 +15,8 @@ const AccountMenuRow = ({
   <View>
     {!isAccountDeactivated && (
       <TouchableWithoutFeedback style={styles.listContainer} onPress={onPress}>
-        <View style={{marginVertical: 5}}>
+        <View style={item.icon &&
+              typeof item.icon === 'string' ?{...styles.subMenuContainer} : {...styles.subMenuPlaceHolderContainer}}>
           <Image
             source={
               item.icon &&
@@ -23,7 +24,8 @@ const AccountMenuRow = ({
               {uri: item.icon}
                 : item.icon
             }
-            style={{...styles.subMenuItem}}
+            style={item.icon &&
+              typeof item.icon === 'string' ? {...styles.subMenuItem} : {...styles.subMenuItemPlaceHolder}}
           />
         </View>
         <Text style={styles.listItems}>
@@ -46,10 +48,41 @@ const AccountMenuRow = ({
 );
 
 const styles = StyleSheet.create({
-  subMenuItem: {
-    alignSelf: 'center',
+  subMenuContainer:{
+    marginVertical: 5, 
+    alignItems: 'center',
+    justifyContent:'center',
     height: 40,
     marginLeft: 45,
+    width: 40,
+    borderRadius: 20,
+    shadowColor: colors.googleColor,
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.5,
+    shadowRadius: 2,
+    elevation: 4,
+    backgroundColor:'transparent'
+  },
+  subMenuPlaceHolderContainer:{
+    marginVertical: 5, 
+    alignItems: 'center',
+    justifyContent:'center',
+    height: 40,
+    marginLeft: 45,
+    width: 40,
+    borderRadius: 20,
+  },
+  subMenuItem: {
+    alignSelf: 'center',
+    height: 35,
+    resizeMode: 'contain',
+    width: 35,
+    borderRadius: 20,
+    top:1,
+  },
+  subMenuItemPlaceHolder:{
+    alignSelf: 'center',
+    height: 40,
     resizeMode: 'contain',
     width: 40,
     borderRadius: 20,
