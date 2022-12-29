@@ -458,7 +458,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     marginLeft: wp('10%'),
     width: wp('80%'),
-    backgroundColor: colors.blueColor,
   },
   currentLocationTextStyle: {
     color: colors.whiteColor,
