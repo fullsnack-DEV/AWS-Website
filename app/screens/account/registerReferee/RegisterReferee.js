@@ -172,6 +172,7 @@ export default function RegisterReferee({navigation}) {
         sport: sportsSelection.sport,
         sport_type: sportTypeSelection,
         sport_image: sportsSelection.referee_image,
+        sport_name : sportsSelection.sport_name,
         descriptions: description,
         is_active: true,
       };

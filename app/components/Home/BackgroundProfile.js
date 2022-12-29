@@ -14,6 +14,7 @@ export default function BackgroundProfile({
   currentUserData,
   onConnectionButtonPress,
   imageSize = 50,
+  placeHolderSize = 60
 }) {
   const authContext = useContext(AuthContext);
   const [entityData, setEntityData] = useState(null);
@@ -40,13 +41,18 @@ export default function BackgroundProfile({
     <View style={{width: wp('100%'), margin: 0}}>
       <View style={{backgroundColor: colors.whiteColor}}>
         <View style={{width: '100%'}}>
-        <View style={styles.profileImageContainer}>
+        <View style={entityData?.profileImage ?  styles.profileImageContainer : styles.profilePlaceHolderContainer} >
           <Animated.Image
-            style={{
+            style={entityData?.profileImage ? {
               ...styles.profileImageStyle,
               height: imageSize,
               width: imageSize,
-            }}
+            }:
+          {
+            width: placeHolderSize,
+            height: placeHolderSize
+          }
+          }
             source={
               entityData?.profileImage
                 ? {uri: entityData?.profileImage}
@@ -232,5 +238,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 3,
     elevation: 10,
+  },
+  profilePlaceHolderContainer: {
+    height: 54,
+    width: 54,
+    marginTop: -35,
+    marginLeft: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
