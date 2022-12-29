@@ -214,20 +214,28 @@ export default function EmailVerificationScreen({navigation, route}) {
         resizeMode={'contain'}
         source={images.emailSendIconBG}
       />
-      <TouchableOpacity testID="verify-email-button" onPress={verifyUserEmail}>
+
+      <TouchableOpacity
+        testID="verify-email-button"
+        onPress={verifyUserEmail}
+        style={{
+          borderRadius: 50,
+          marginTop: 43.5,
+          height: 45,
+          marginLeft: 25,
+          marginRight: 25,
+          opacity: 1,
+        }}>
         <View
           style={{
-            borderRadius: 40,
+            borderRadius: 50,
             backgroundColor: 'white',
             borderWidth: 1,
             borderColor: 'orange',
-            width: '86.66%',
-
             justifyContent: 'center',
             alignItems: 'center',
-            alignSelf: 'center',
-            marginTop: hp('5.35%'),
-            height: 50,
+            height: 45,
+            opacity: 1,
           }}>
           <Text
             style={{
@@ -246,13 +254,12 @@ export default function EmailVerificationScreen({navigation, route}) {
         style={{alignItems: 'center'}}>
         <Text
           style={{
-            width: '85%',
             textAlign: 'center',
             color: colors.lightGreen,
             textDecorationLine: 'underline',
             fontSize: 14,
             fontWeight: '700',
-            marginTop: hp('2.4%'),
+            marginTop: 20,
             fontFamily: fonts.RBold,
           }}>
           {timer !== 0

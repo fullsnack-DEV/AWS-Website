@@ -355,7 +355,7 @@ const LoginScreen = ({navigation}) => {
         onChangeText={(text) => setEmail(text)}
         value={email}
         height={40}
-        width={wp(81.33)}
+        // width={wp(81.33)}
       />
     ),
     [email],
@@ -411,7 +411,7 @@ const LoginScreen = ({navigation}) => {
         <TCButton
           testID={'login-button'}
           title={strings.LOGIN}
-          extraStyle={{marginTop: hp('0%')}}
+          extraStyle={{marginTop: 0}}
           onPress={onLogin}
         />
         <TouchableOpacity
@@ -525,7 +525,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
     fontSize: 25,
     marginTop: Platform.OS === 'ios' ? 40 + 25 : 25,
-    marginLeft: wp('6.6%'),
+    marginLeft: 25,
     textAlign: 'left',
   },
   mainContainer: {
@@ -542,11 +542,11 @@ const styles = StyleSheet.create({
 
   passwordContainer: {
     alignSelf: 'center',
-    paddingLeft: 10,
+    // paddingLeft: 10,
     borderRadius: 5,
     fontFamily: fonts.RRegular,
     fontSize: 16,
-    width: wp('81.3%'),
+    // width: wp('81.3%'),
     backgroundColor: 'rgba(255,255,255,0.9)',
     height: 40,
     color: 'black',
@@ -558,6 +558,9 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     justifyContent: 'space-between',
     marginTop: 10,
+    marginLeft: 35,
+    marginRight: 35,
+    // backgroundColor: colors.redColor,
   },
 
   passwordInput: {
@@ -566,20 +569,25 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     fontFamily: fonts.RRegular,
     fontSize: 16,
-    width: wp('66%'),
+    // width: wp('66%'),
     height: 40,
     color: 'black',
+    // backgroundColor: colors.greeColor,
+    marginRight: 10,
+    marginLeft: 10,
   },
 
   textFieldStyle: {
     alignSelf: 'center',
-    width: wp('81.3%'),
+    // width: wp('81.3%'),
     backgroundColor: 'rgba(255,255,255,0.9)',
     shadowColor: colors.googleColor,
     shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.5,
     shadowRadius: 4,
     paddingHorizontal: 5,
+    marginLeft: 35,
+    marginRight: 35,
   },
   alreadyMemberText: {
     color: colors.whiteColor,

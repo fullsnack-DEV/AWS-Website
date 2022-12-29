@@ -124,17 +124,19 @@ export default function AddBirthdayScreen({navigation, route}) {
                 fontSize: 14,
                 fontFamily: fonts.RRegular,
                 padding: 15,
-                flex: 1,
               }}>
               {strings.birthdatText}
             </Text>
           }
           backgroundColor={colors.parrotColor}
-          height={hp('40%')}
-          width={wp('75%')}
+          height={hp('33%')}
+          width={wp('84.3%')}
           overlayColor={'transparent'}
           skipAndroidStatusBar={true}
-          containerStyle={{left: 25, padding: 0}}>
+          containerStyle={{
+            left: 25,
+            padding: 0,
+          }}>
           <Text style={styles.whyAskingText}>{strings.whyAskingText}</Text>
         </Tooltip>
 
@@ -197,11 +199,8 @@ const styles = StyleSheet.create({
   },
   matchFeeTxt: {
     height: 40,
-    width: wp('81.33%'),
-    alignSelf: 'center',
     justifyContent: 'center',
     marginTop: 65,
-    fontSize: wp('3.8%'),
     color: 'black',
     backgroundColor: 'rgba(255,255,255,0.9)',
     paddingLeft: 20,
@@ -210,8 +209,9 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
-
     elevation: 3,
+    marginLeft: 35,
+    marginRight: 35,
   },
   resetText: {
     color: colors.whiteColor,

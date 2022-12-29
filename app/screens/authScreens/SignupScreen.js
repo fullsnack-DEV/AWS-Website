@@ -387,12 +387,16 @@ export default function SignupScreen({navigation}) {
         />
         <Text style={styles.checkEmailText}>{strings.signupwithemail}</Text>
         <TCKeyboardView>
-          <View style={{marginVertical: 66}}>
+          <View
+            style={{
+              marginVertical: 66,
+              marginLeft: 35,
+              marginRight: 35,
+            }}>
             <TCTextField
               testID={'email-signup-input'}
               placeholderTextColor={colors.darkYellowColor}
               style={styles.textFieldStyle}
-              width={wp(81.3)}
               height={40}
               placeholder={strings.emailPlaceHolder}
               autoCapitalize="none"
@@ -406,7 +410,6 @@ export default function SignupScreen({navigation}) {
                 testID="password-signup-input"
                 style={{
                   ...styles.textInput,
-                  zIndex: 100,
                 }}
                 placeholder={strings.passwordText}
                 onChangeText={(text) => {
@@ -427,7 +430,7 @@ export default function SignupScreen({navigation}) {
                   style={{
                     alignItems: 'center',
                     justifyContent: 'center',
-                    right: 5,
+                    marginRight: 10,
                     top: 10,
                   }}>
                   {hidePassword ? (
@@ -443,7 +446,7 @@ export default function SignupScreen({navigation}) {
               <TextInput
                 testID="cpassword-signup-input"
                 autoCapitalize="none"
-                style={{...styles.textInput, zIndex: 100}}
+                style={{...styles.textInput}}
                 placeholder={strings.confirmPasswordText}
                 onChangeText={(text) => {
                   if (text.includes(' ')) {
@@ -462,7 +465,7 @@ export default function SignupScreen({navigation}) {
                 style={{
                   alignItems: 'center',
                   justifyContent: 'center',
-                  right: 5,
+                  marginRight: 10,
                 }}>
                 {hideConfirmPassword ? (
                   <Text style={styles.passwordEyes}>{strings.SHOW}</Text>
@@ -529,26 +532,24 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.5,
     shadowRadius: 4,
-    width: wp('81.3%'),
   },
   textInput: {
-    paddingVertical: 0,
     paddingHorizontal: 15,
     borderRadius: 5,
     fontFamily: fonts.RRegular,
     fontSize: 16,
-    width: wp('67%'),
+    flex: 1,
   },
   textFieldStyle: {
     marginVertical: 5,
     alignSelf: 'center',
-    width: wp('81.3%'),
     backgroundColor: 'rgba(255,255,255,0.9)',
     shadowColor: colors.googleColor,
     shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.5,
     shadowRadius: 4,
     paddingHorizontal: 5,
+    marginHorizontal: 0,
   },
 
   alreadyMemberText: {
@@ -570,7 +571,7 @@ const styles = StyleSheet.create({
     color: colors.whiteColor,
     fontFamily: fonts.RBold,
     fontSize: 25,
-    marginLeft: wp('6.6%'),
+    marginLeft: 25,
     marginTop: Platform.OS === 'ios' ? 40 + 25 : 25,
     textAlign: 'left',
   },

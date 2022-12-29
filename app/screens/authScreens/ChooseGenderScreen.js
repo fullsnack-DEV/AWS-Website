@@ -139,8 +139,8 @@ export default function ChooseGenderScreen({navigation, route}) {
             </Text>
           }
           backgroundColor={colors.parrotColor}
-          height={hp('22%')}
-          width={wp('75%')}
+          height={hp('19%')}
+          width={wp('84.3%')}
           overlayColor={'transparent'}
           skipAndroidStatusBar={true}
           containerStyle={{
@@ -152,7 +152,12 @@ export default function ChooseGenderScreen({navigation, route}) {
           </Text>
         </Tooltip>
 
-        <View style={{marginTop: 65, marginLeft: 20}}>
+        <View
+          style={{
+            marginTop: 50,
+            marginLeft: 25,
+            marginRight: 25,
+          }}>
           <View style={styles.radioButtonView}>
             <RenderRadio
               isSelected={selected === 0}
@@ -210,9 +215,9 @@ const styles = StyleSheet.create({
   },
   radioButtonView: {
     flexDirection: 'row',
-    marginLeft: 35,
-    marginRight: 35,
-    marginTop: 20,
+    marginLeft: 5,
+    marginRight: 5,
+    marginTop: 15,
   },
   radioText: {
     alignSelf: 'center',

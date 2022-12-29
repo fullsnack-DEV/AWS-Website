@@ -130,7 +130,6 @@ export default function ForgotPasswordScreen({navigation}) {
           keyboardType="email-address"
           onChangeText={(text) => setEmail(text)}
           value={email}
-          width={wp(81.33)}
         />
 
         {/* <View style={{flex: 1}} /> */}
@@ -187,6 +186,8 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     marginTop: 42,
     alignSelf: 'center',
+    marginLeft: 35,
+    marginRight: 35,
   },
   nextButtonStyle: {
     fontFamily: fonts.RBold,

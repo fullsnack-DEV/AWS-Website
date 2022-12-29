@@ -330,12 +330,16 @@ export default function SignupScreen({navigation, route}) {
               />
             </TouchableOpacity>
           </View>
-          <View style={{marginTop: 35}}>
+          <View
+            style={{
+              marginTop: 35,
+              marginLeft: 35,
+              marginRight: 35,
+            }}>
             <TCTextField
               testID="fname-signup-input"
               placeholderTextColor={colors.darkYellowColor}
               style={styles.textFieldStyle}
-              width={wp(81.3)}
               height={40}
               placeholder={strings.fnameText}
               value={fName}
@@ -348,7 +352,6 @@ export default function SignupScreen({navigation, route}) {
               placeholder={strings.lnameText}
               onChangeText={(text) => setLName(text)}
               value={lName}
-              width={wp(81.3)}
               height={40}
             />
           </View>
@@ -379,7 +382,6 @@ const styles = StyleSheet.create({
 
   textFieldStyle: {
     alignSelf: 'center',
-    width: wp('81.3%'),
     backgroundColor: 'rgba(255,255,255,0.9)',
     shadowColor: colors.googleColor,
     shadowOffset: {width: 0, height: 4},
@@ -387,6 +389,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     marginBottom: 10,
     paddingHorizontal: 5,
+    marginHorizontal: 0,
   },
   profileCameraButtonStyle: {
     height: 22,
