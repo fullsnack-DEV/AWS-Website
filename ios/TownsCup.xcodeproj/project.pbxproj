@@ -909,7 +909,8 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\n";
+			shellScript = "
+";
 		};
 		E43FD0F66835C81A3F1884CE /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1084,7 +1085,7 @@
 				CODE_SIGN_ENTITLEMENTS = townscup_reactnative/townscup_reactnative.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.0.01;
+				CURRENT_PROJECT_VERSION = 1.0.02;
 				DEVELOPMENT_TEAM = A734MJ7CPS;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = townscup_reactnative/Info.plist;
@@ -1120,7 +1121,7 @@
 				CODE_SIGN_IDENTITY = "Apple Distribution: Junghyun Gu (A734MJ7CPS)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution: Junghyun Gu (A734MJ7CPS)";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 1.0.01;
+				CURRENT_PROJECT_VERSION = 1.0.02;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = A734MJ7CPS;
 				INFOPLIST_FILE = townscup_reactnative/Info.plist;
@@ -1324,7 +1325,7 @@
 				CODE_SIGN_IDENTITY = "Apple Distribution: Junghyun Gu (A734MJ7CPS)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution: Junghyun Gu (A734MJ7CPS)";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 1.0.01;
+				CURRENT_PROJECT_VERSION = 1.0.02;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = A734MJ7CPS;
 				INFOPLIST_FILE = townscup_reactnative/Info.plist;
@@ -1605,7 +1606,7 @@
 				CODE_SIGN_ENTITLEMENTS = townscup_reactnative/townscup_reactnative.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.0.01;
+				CURRENT_PROJECT_VERSION = 1.0.02;
 				DEVELOPMENT_TEAM = A734MJ7CPS;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = townscup_reactnative/Info.plist;
@@ -1776,7 +1777,7 @@
 				CODE_SIGN_IDENTITY = "Apple Distribution: Junghyun Gu (A734MJ7CPS)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution: Junghyun Gu (A734MJ7CPS)";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 1.0.01;
+				CURRENT_PROJECT_VERSION = 1.0.02;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = A734MJ7CPS;
 				INFOPLIST_FILE = townscup_reactnative/Info.plist;
@@ -1950,7 +1951,7 @@
 				CODE_SIGN_ENTITLEMENTS = townscup_reactnative/townscup_reactnative.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.0.01;
+				CURRENT_PROJECT_VERSION = 1.0.02;
 				DEVELOPMENT_TEAM = A734MJ7CPS;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = townscup_reactnative/Info.plist;
@@ -2122,7 +2123,7 @@
 				CODE_SIGN_IDENTITY = "Apple Distribution: Junghyun Gu (A734MJ7CPS)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution: Junghyun Gu (A734MJ7CPS)";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 1.0.01;
+				CURRENT_PROJECT_VERSION = 1.0.02;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = A734MJ7CPS;
 				INFOPLIST_FILE = townscup_reactnative/Info.plist;
@@ -2296,7 +2297,7 @@
 				CODE_SIGN_ENTITLEMENTS = townscup_reactnative/townscup_reactnative.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.0.01;
+				CURRENT_PROJECT_VERSION = 1.0.02;
 				DEVELOPMENT_TEAM = A734MJ7CPS;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = townscup_reactnative/Info.plist;
@@ -2473,7 +2474,7 @@
 				CODE_SIGN_ENTITLEMENTS = townscup_reactnative/townscup_reactnative.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.0.01;
+				CURRENT_PROJECT_VERSION = 1.0.02;
 				DEVELOPMENT_TEAM = A734MJ7CPS;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = townscup_reactnative/Info.plist;
@@ -2644,7 +2645,7 @@
 				CODE_SIGN_IDENTITY = "Apple Distribution: Junghyun Gu (A734MJ7CPS)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution: Junghyun Gu (A734MJ7CPS)";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 1.0.01;
+				CURRENT_PROJECT_VERSION = 1.0.02;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = A734MJ7CPS;
 				INFOPLIST_FILE = townscup_reactnative/Info.plist;
@@ -2812,7 +2813,7 @@
 				CODE_SIGN_IDENTITY = "Apple Distribution: Junghyun Gu (A734MJ7CPS)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution: Junghyun Gu (A734MJ7CPS)";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 1.0.01;
+				CURRENT_PROJECT_VERSION = 1.0.02;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = A734MJ7CPS;
 				INFOPLIST_FILE = townscup_reactnative/Info.plist;
