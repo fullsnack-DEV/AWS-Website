@@ -156,28 +156,13 @@ const TopBackgroundHeader = ({
   const onThreeDorPress = () => {
     threeDotActionSheet.current.show();
   };
-  // const resetGameDetail = useCallback((gameId) => {
-  //   setloading(true);
-  //   resetGame(gameId, authContext)
-  //     .then((response) => {
-  //       setloading(false);
-  //       console.log('RESET GAME RESPONSE::', response.payload);
-  //     })
-  //     .catch((e) => {
-  //       setloading(false);
-  //       setTimeout(() => {
-  //         Alert.alert(strings.alertmessagetitle, e.message);
-  //       }, 10);
-  //     });
-  // }, [authContext])
+
   const goToChallengeDetail = useCallback(
     (data) => {
       if (data?.responsible_to_secure_venue) {
         setloading(true);
         getChallengeDetail(data?.challenge_id, authContext)
           .then((obj) => {
-            console.log('Challenge Object:', JSON.stringify(obj.challengeObj));
-            console.log('Screen name of challenge:', obj.screenName);
             setloading(false);
             navigation.navigate(obj.screenName, {
               challengeObj: obj.challengeObj || obj.challengeObj[0],

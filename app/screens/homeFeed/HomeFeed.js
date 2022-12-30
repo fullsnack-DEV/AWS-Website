@@ -40,7 +40,6 @@ const HomeFeed = ({
   homeFeedHeaderComponent,
   currentTab,
 }) => {
-  console.log('userIDuserIDuserID', currentUserData);
   const authContext = useContext(AuthContext);
   const imageUploadContext = useContext(ImageUploadContext);
   const [fullScreenLoading, setFullScreenLoading] = useState(false);

@@ -38,7 +38,6 @@ export default function TCSearchCityView({getCity}) {
     <TouchableOpacity
       style={styles.listItem}
       onPress={() => {
-        console.log('selected ITEM:=>', item);
         // navigation.navigate(route?.params?.comeFrom, { locationText: item?.structured_formatting?.main_text })
         getCity(item?.structured_formatting?.main_text);
         // setSelected(item?.structured_formatting?.main_text)

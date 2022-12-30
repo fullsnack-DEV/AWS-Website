@@ -47,7 +47,6 @@ export default function NavigationMainContainer() {
             .getIdTokenResult(true)
             .then((refreshedToken) => {
               setLoading(false);
-              console.log('refreshedToken', refreshedToken);
               resolve(refreshedToken);
             })
             .catch(() => {

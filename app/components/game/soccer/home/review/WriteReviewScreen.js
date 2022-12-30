@@ -73,7 +73,6 @@ export default function WriteReviewScreen({navigation, route}) {
       setLastTagStartIndex(null);
   }, [searchText]);
 
-  console.log(route?.params?.taggedData);
   useEffect(() => {
     let tagName = '';
     const tagsArray = [];
@@ -221,7 +220,6 @@ export default function WriteReviewScreen({navigation, route}) {
 
   const onTagPress = useCallback(
     (item) => {
-      console.log(item);
       const tagsArray = [];
       let joinedString = '@';
       let entity_data = {};
@@ -353,8 +351,6 @@ export default function WriteReviewScreen({navigation, route}) {
                   JSON.stringify(tagsOfEntity),
                 );
 
-                console.log('format_tagged_data', format_tagged_data);
-
                 if (format_tagged_data?.length > 0) {
                   format_tagged_data?.map(async (item, index) => {
                     const isThere =
@@ -366,20 +362,17 @@ export default function WriteReviewScreen({navigation, route}) {
                             ),
                           )
                         : true;
-                    console.log('isThere', isThere);
 
                     if (!isThere) format_tagged_data?.splice(index, 1);
                     return null;
                   });
                 }
-                console.log('tagData', tagData);
 
                 if (tagData?.length > 0) {
                   // eslint-disable-next-line no-param-reassign
                   tagData?.forEach((tData) => delete tData.entity_data);
                 }
 
-                console.log('route?.params?.comeFrom', comeFrom);
                 navigation.navigate(comeFrom, {
                   selectedImageList: selectImage,
                   searchText,
@@ -543,43 +536,6 @@ export default function WriteReviewScreen({navigation, route}) {
         console.log(error);
       });
   }, [selectImage]);
-
-  // const onSelectMatch = useCallback(
-  //   (selectedMatch) => {
-  //     const tagsArray = [];
-  //     if (selectedMatch?.length > 0) {
-  //       selectedMatch?.map((gameTagItem) => {
-  //         const entity_data = {};
-  //         const jsonData = {
-  //           entity_type: 'game',
-  //           entity_id: gameTagItem?.game_id,
-  //         };
-  //         jsonData.entity_data = getTaggedEntityData(
-  //           entity_data,
-  //           gameTagItem,
-  //           'game',
-  //         );
-  //         console.log('PARSE', jsonData.entity_data);
-  //         const isExist = tagsOfEntity.some(
-  //           (item) => item?.entity_id === gameTagItem?.game_id,
-  //         );
-  //         if (!isExist) tagsArray.push(jsonData);
-  //         textInputRef.current.focus();
-  //         return null;
-  //       });
-  //       setLetModalVisible(false);
-  //       setTagsOfEntity([...tagsOfEntity, ...tagsArray]);
-  //     }
-  //   },
-  //   [tagsOfEntity],
-  // );
-
-  // const onSelectTagButtonPress = useCallback(() => {
-  //   navigation.navigate('UserTagSelectionListScreen', {
-  //     comeFrom: 'WriteReviewScreen',
-  //     onSelectMatch,
-  //   });
-  // }, [navigation, onSelectMatch]);
 
   const removeTaggedGame = useCallback(
     (taggedGame) => {

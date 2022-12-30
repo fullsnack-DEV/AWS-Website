@@ -105,12 +105,10 @@ export default function ChooseLocationScreen({navigation, route}) {
   const getNearbyCityData = (lat, long, radius) => {
     searchNearByCityState(radius, lat, long)
       .then((response) => {
-        console.log('searchNearByCityState', response)
         const list = response.filter(
           (obj) => !(obj.city === currentLocation?.city && obj.country === currentLocation?.country)
         );
         setNearbyCities(list);
-        console.log('list', list)
         setLoading(false);
       })
       .catch((e) => {
@@ -158,7 +156,6 @@ export default function ChooseLocationScreen({navigation, route}) {
         if(e.name === Verbs.gpsErrorDeined){
           setCurrentLocation(null);
           setUserDeniedLocPerm(true);
-          console.log('userD denied the to fetch GPS Location')
         }
         else{
           setTimeout(() => {

@@ -35,7 +35,6 @@ const Gallery = ({navigation, gameData, isAdmin, galleryRef}) => {
 
   const callthis = useCallback(
     (data, postDesc, tagsOfEntity, format_tagged_data = []) => {
-      console.log('dataParamsdataParamsdataParams', gameData);
       if (postDesc.trim().length > 0 && data?.length === 0) {
         const dataParams = {
           text: postDesc,
@@ -72,7 +71,6 @@ const Gallery = ({navigation, gameData, isAdmin, galleryRef}) => {
         entity_type={'game'}
         entity_id={gameData?.game_id}
         onAddPhotoPress={(pickImages) => {
-          console.log('onAddPhotoPress:::', pickImages);
           navigation.navigate('WritePostScreen', {
             postData: authContext?.entity?.obj ?? {},
             onPressDone: callthis,

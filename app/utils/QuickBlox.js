@@ -30,7 +30,6 @@ export const getQBSetting = async () => {
     console.log('setting response:=>', response);
 
     if (!response.data.status) {
-      console.log('ERROR RESPONSE ::', response.data);
       QB.settings
         .init({
           appId: response.data.payload.app.quickblox.appId,

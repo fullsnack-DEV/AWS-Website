@@ -25,10 +25,8 @@ const apiCall = async ({method, url, data, headers, params, responseType}) =>
       const response = await axios(options);
       console.log('Opetions ::', options);
       if (!response.data.status) {
-        console.log('ERROR RESPONSE ::', response.data);
         throw response.data.messages || response;
       }
-      console.log('RESPONSE ::', response.data);
       return response.data;
     } catch (e) {
       throw new Error(e);

@@ -16,7 +16,6 @@ function TCLookingForEntityView({onPress, showStar = false, data, sport}) {
   } else {
     sportObj = data?.registered_sports;
   }
-  console.log('registered sports data:=>', sportObj);
 
   return (
     <TouchableOpacity onPress={onPress}>

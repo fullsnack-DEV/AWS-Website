@@ -224,9 +224,7 @@ const Review = ({navigation, gameData, isAdmin, getSoccerGameReview}) => {
         }
         cancelButtonIndex={2}
         onPress={(index, sections) => {
-          console.log('Sections:=>', sections);
           if (index === 0) {
-            console.log('gameData?.review_id:=>', gameData?.review_id);
             if (gameData?.review_id) {
               getGameReviewsData();
             } else {

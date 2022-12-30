@@ -104,12 +104,10 @@ const FeedsScreen = ({navigation}) => {
   }, [authContext, authContext.entity, isFocused]);
   useEffect(() => {
     getSportsList(authContext).then((res) => {
-      console.log('resresresres', res);
       let sport = [];
 
       res.payload.map((item) => {
         sport = [...sport, ...item.format];
-        console.log('sportArrsportArr', sport);
         return null;
       });
       setSportArr([...sport]);

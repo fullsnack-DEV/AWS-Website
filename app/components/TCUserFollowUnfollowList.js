@@ -50,7 +50,6 @@ const TCUserFollowUnfollowList = ({
         })
         .catch((error) => {
           setLoading(false);
-          console.log('Follow ERROR:=>', error);
           Alert.alert(strings.appName, error.messages);
         });
     } else {
@@ -61,8 +60,6 @@ const TCUserFollowUnfollowList = ({
         })
         .catch((error) => {
           setLoading(false);
-          console.log('UnFollow ERROR:=>', error);
-
           Alert.alert(strings.appName, error.messages);
         });
     }
