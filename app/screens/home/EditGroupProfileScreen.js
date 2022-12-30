@@ -567,8 +567,8 @@ export default function EditGroupProfileScreen({navigation, route}) {
               groupProfile.thumbnail ? {uri: groupProfile.thumbnail} : undefined
             }
             profileImagePlaceholder={
-              route?.params?.role === Verbs.entityTypeClub
-                ? images.teamGreenPH
+              authContext.entity.role === Verbs.entityTypeClub
+                ? images.clubPlaceholder
                 : images.teamGreenPH
             }
             bgImage={

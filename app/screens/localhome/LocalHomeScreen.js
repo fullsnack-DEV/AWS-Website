@@ -29,7 +29,6 @@ import {
 
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import Modal from 'react-native-modal';
-import LinearGradient from 'react-native-linear-gradient';
 import Carousel from 'react-native-snap-carousel';
 import FastImage from 'react-native-fast-image';
 import {useIsFocused} from '@react-navigation/native';
@@ -1621,17 +1620,16 @@ export default function LocalHomeScreen({navigation, route}) {
               }, 300);
             }}>
             {selectedLocationOption === 0 ? (
-              <LinearGradient
-                colors={[colors.yellowColor, colors.orangeGradientColor]}
-                style={styles.backgroundView}>
+              <View
+                style={styles.backgroundViewSelected}>
                 <Text
                   style={[
                     styles.curruentLocationText,
-                    {color: colors.whiteColor},
+                    {color: colors.orangeGradientColor},
                   ]}>
                   {strings.locationTitle}
                 </Text>
-              </LinearGradient>
+              </View>
             ) : (
               <View style={styles.backgroundView}>
                 <Text style={styles.curruentLocationText}>
@@ -1659,13 +1657,12 @@ export default function LocalHomeScreen({navigation, route}) {
               }, 300);
             }}>
             {selectedLocationOption === 1 ? (
-              <LinearGradient
-                colors={[colors.yellowColor, colors.orangeGradientColor]}
-                style={styles.backgroundView}>
-                <Text style={[styles.myCityText, {color: colors.whiteColor}]}>
+              <View
+                style={styles.backgroundViewSelected}>
+                <Text style={[styles.myCityText, {color: colors.orangeGradientColor}]}>
                   {strings.homeCityText}
                 </Text>
-              </LinearGradient>
+              </View>
             ) : (
               <View style={styles.backgroundView}>
                 <Text style={styles.myCityText}>{strings.homeCityText}</Text>
@@ -1687,13 +1684,12 @@ export default function LocalHomeScreen({navigation, route}) {
               }, 300);
             }}>
             {selectedLocationOption === 2 ? (
-              <LinearGradient
-                colors={[colors.yellowColor, colors.orangeGradientColor]}
-                style={styles.backgroundView}>
-                <Text style={[styles.worldText, {color: colors.whiteColor}]}>
+              <View
+                style={styles.backgroundViewSelected}>
+                <Text style={[styles.worldText, {color: colors.orangeGradientColor}]}>
                   {strings.world}
                 </Text>
-              </LinearGradient>
+              </View>
             ) : (
               <View style={styles.backgroundView}>
                 <Text style={styles.worldText}>{strings.world}</Text>
@@ -1838,6 +1834,24 @@ const styles = StyleSheet.create({
       },
     }),
   },
+  backgroundViewSelected: {
+    alignSelf: 'center',
+    backgroundColor: colors.whiteColor,
+    borderRadius: 8,
+    borderWidth:3,
+    borderColor:colors.orangeGradientColor,
+    elevation: 5,
+    flexDirection: 'row',
+    height: 50,
+    shadowColor: colors.googleColor,
+    shadowOffset: {width: 0, height: 5},
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    width: widthPercentageToDP('86%'),
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 15,
+  },
   backgroundView: {
     alignSelf: 'center',
     backgroundColor: colors.whiteColor,
@@ -1854,7 +1868,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 15,
   },
-
   orText: {
     fontSize: 16,
     fontFamily: fonts.RMedium,

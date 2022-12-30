@@ -37,6 +37,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import ImagePicker from 'react-native-image-crop-picker';
 import moment from 'moment';
 import Video from 'react-native-video';
+import TCMessage from '../TCMessage';
 import Header from '../Home/Header';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
@@ -48,7 +49,6 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from '../../utils';
-import TCMessage from '../TCMessage';
 import AuthContext from '../../auth/context';
 
 import {
@@ -130,7 +130,8 @@ const MessageChat = ({route, navigation}) => {
       };
 
       setChatType(
-        dialogDatas?.occupantsIds.length > 2
+        dialogDatas?.occupantsIds?.length &&
+          dialogDatas?.occupantsIds?.length > 2
           ? QB_DIALOG_TYPE.GROUP
           : QB_DIALOG_TYPE.SINGLE,
       );
@@ -157,6 +158,7 @@ const MessageChat = ({route, navigation}) => {
         dialogType: data?.type,
         isJoined: data?.isJoined,
       };
+
       setChatType(
         dialogDatas?.occupantsIds.length > 2
           ? QB_DIALOG_TYPE.GROUP
@@ -318,8 +320,8 @@ const MessageChat = ({route, navigation}) => {
           onPress: () => {
             QBDeleteMessage(item.id, authContext)
               .then((respose) => {
-                if (respose?.errors?.length > 0) {
-                  Alert.alert(respose.errors[0]);
+                if (respose?.errors) {
+                  Alert.alert(respose.errors.base?.[0]);
                 } else {
                   navigation.goBack();
                 }
@@ -492,8 +494,8 @@ const MessageChat = ({route, navigation}) => {
                       ? strings.unknownTitle
                       : fullName
                   }
-                  attachments={item.attachments}
-                  date={new Date(item.dateSent)}
+                  attachments={item?.attachments ?? []}
+                  date={new Date(item?.dateSent)}
                   body={item.body}
                   type={type}
                   messageStyle={{
@@ -1039,7 +1041,7 @@ const MessageChat = ({route, navigation}) => {
                 source={images.leave_chat_room}
               />
               <Text style={styles.grayText}>
-                {occupantsData.length > 2
+                {occupantsData?.length > 2
                   ? strings.leaveChatRoom
                   : strings.deleteChatRoom}
               </Text>

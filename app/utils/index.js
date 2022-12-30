@@ -8,7 +8,6 @@
 /* eslint-disable array-callback-return */
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable no-unused-expressions */
-import {} from 'react';
 import {
   Platform,
   Alert,
@@ -2380,3 +2379,23 @@ export const getRoundedDate = (minutes, d = new Date()) => {
 
 export const firstLetterCapital = (str) =>
   str.charAt(0).toUpperCase() + str.slice(1);
+
+export const getCityStateCountry = (authContext) => {
+  let str = '';
+  if (authContext?.entity?.obj?.city) {
+    str = `${str + authContext.entity.obj.city}, `;
+  }
+  if (authContext?.entity?.obj?.state || authContext?.entity?.obj?.state_abbr) {
+    str = `${
+      str + (authContext.entity.obj.state || authContext.entity.obj.state_abbr)
+    }, `;
+  }
+
+  if (authContext?.entity?.obj?.state || authContext?.entity?.obj?.state_abbr) {
+    str = `${str + authContext.entity.obj.country}, `;
+  }
+
+  return str;
+};
+export const getCityStateCountryText = (data) =>
+  data.filter((v) => v).join(', ');

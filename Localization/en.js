@@ -144,6 +144,8 @@ export default {
   locationDescription:
     'en_Home city is the city where you currently reside or you mostly play sports.',
   locationPlaceholderText: 'en_Search by city or postal code',
+  cityPlaceholderText: 'en_Search by city',
+
   addressSearchPlaceHolder: 'en_Search address',
   sportText: 'en_Select your favourite sports.',
 
@@ -1120,6 +1122,8 @@ export default {
   entityCreatedText_dy: 'en_{0}\nhas been created.',
   sportsTitleText: 'en_Sports',
   locationTitleText: 'en_Location',
+  currentCityTitle: 'en_Current City',
+  homeCityTitle: 'en_Home City',
   addLanguageText: 'en_Add language',
   clubNameText: 'en_Club name',
   homeCityText: 'en_Home city',
@@ -2152,4 +2156,5 @@ export default {
   cityStateCountry: 'en_City, State, Country',
   searchForAddress: 'en_Search for Address',
   addressValidation: 'en_Please fill address field',
+  profileCreated: 'en_The member profile has been created in your {0}.',
 };
