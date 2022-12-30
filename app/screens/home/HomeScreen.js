@@ -821,11 +821,12 @@ const HomeScreen = ({navigation, route}) => {
   };
 
   const callthis = useCallback(
-    (data, postDesc, tagsOfEntity, format_tagged_data = []) => {
+    (data, postDesc, tagsOfEntity, who_can_see, format_tagged_data = []) => {
       if (postDesc?.trim()?.length > 0 && data?.length === 0) {
         const dataParams = {
           text: postDesc,
           tagged: tagsOfEntity ?? [],
+          who_can_see,
           format_tagged_data,
         };
         createPostAfterUpload(dataParams);
@@ -835,6 +836,7 @@ const HomeScreen = ({navigation, route}) => {
           text: postDesc && postDesc,
           attachments: [],
           tagged: tagsOfEntity ?? [],
+          who_can_see,
           format_tagged_data,
         };
         imageUploadContext.uploadData(

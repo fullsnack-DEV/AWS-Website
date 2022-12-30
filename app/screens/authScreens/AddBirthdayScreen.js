@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   SafeAreaView,
   Image,
+  Platform,
 } from 'react-native';
 
 import {
@@ -106,27 +107,36 @@ export default function AddBirthdayScreen({navigation, route}) {
       colors={[colors.themeColor1, colors.themeColor3]}
       style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
+      <FastImage
+        resizeMode={'stretch'}
+        style={styles.background}
+        source={images.loginBg}
+      />
       <View style={{flex: 1}}>
-        <FastImage
-          resizeMode={'stretch'}
-          style={styles.background}
-          source={images.loginBg}
-        />
-
         <Text style={styles.checkEmailText}>{strings.addBirthdayText}</Text>
         <Text style={styles.resetText}>{strings.notDisplayText}</Text>
 
         <Tooltip
           popover={
-            <Text style={{color: colors.themeColor, fontSize: 14}}>
+            <Text
+              style={{
+                color: colors.themeColor,
+                fontSize: 14,
+                fontFamily: fonts.RRegular,
+                padding: 15,
+              }}>
               {strings.birthdatText}
             </Text>
           }
           backgroundColor={colors.parrotColor}
-          height={hp('40%')}
-          width={wp('75%')}
+          height={hp('33%')}
+          width={wp('84.3%')}
           overlayColor={'transparent'}
-          skipAndroidStatusBar={true}>
+          skipAndroidStatusBar={true}
+          containerStyle={{
+            left: 25,
+            padding: 0,
+          }}>
           <Text style={styles.whyAskingText}>{strings.whyAskingText}</Text>
         </Tooltip>
 
@@ -174,8 +184,8 @@ const styles = StyleSheet.create({
     color: colors.whiteColor,
     fontFamily: fonts.RBold,
     fontSize: 25,
-    marginLeft: 20,
-    marginTop: wp('25%'),
+    marginLeft: 25,
+    marginTop: Platform.OS === 'ios' ? 40 + 25 : 25,
     textAlign: 'left',
   },
   dateText: {
@@ -189,11 +199,8 @@ const styles = StyleSheet.create({
   },
   matchFeeTxt: {
     height: 40,
-    width: wp('90%'),
-    alignSelf: 'center',
     justifyContent: 'center',
-    marginTop: 30,
-    fontSize: wp('3.8%'),
+    marginTop: 65,
     color: 'black',
     backgroundColor: 'rgba(255,255,255,0.9)',
     paddingLeft: 20,
@@ -202,30 +209,31 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
-
     elevation: 3,
+    marginLeft: 35,
+    marginRight: 35,
   },
   resetText: {
     color: colors.whiteColor,
     fontFamily: fonts.RMedium,
     fontSize: 16,
-    marginLeft: 20,
-    marginRight: 20,
-    marginTop: 10,
+    marginLeft: 25,
+    marginRight: 25,
+    marginTop: 5,
     textAlign: 'left',
   },
   whyAskingText: {
     color: colors.parrotColor,
-    fontFamily: fonts.RRegular,
+    fontFamily: fonts.RMedium,
     fontSize: 14,
-    marginLeft: 20,
-    marginRight: 20,
-    marginTop: 10,
+    marginLeft: 25,
+    marginRight: 25,
+    marginTop: 25,
     textAlign: 'left',
   },
   birthDateChangeNote: {
     color: colors.parrotColor,
-    fontFamily: fonts.RRegular,
+    fontFamily: fonts.RMedium,
     fontSize: 14,
     marginLeft: 35,
     marginRight: 35,

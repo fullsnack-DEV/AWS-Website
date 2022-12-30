@@ -2,11 +2,7 @@
 /* eslint-disable array-callback-return */
 /* eslint-disable react-native/split-platform-components */
 /* eslint-disable no-nested-ternary */
-import React, {
-  useState,
-  useEffect,
-  useLayoutEffect,
-} from 'react';
+import React, {useState, useEffect, useLayoutEffect} from 'react';
 import {
   StyleSheet,
   View,
@@ -18,7 +14,7 @@ import {
   TouchableOpacity,
   SafeAreaView,
   Platform,
-  Linking
+  Linking,
 } from 'react-native';
 
 import {
@@ -30,12 +26,12 @@ import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import FastImage from 'react-native-fast-image';
 
-import {
-  searchCityState,
-  searchNearByCityState
-} from '../../api/External';
+import {searchCityState, searchNearByCityState} from '../../api/External';
 
-import { getPlaceNameFromPlaceID, getGeocoordinatesWithPlaceName} from '../../utils/location';
+import {
+  getPlaceNameFromPlaceID,
+  getGeocoordinatesWithPlaceName,
+} from '../../utils/location';
 
 import images from '../../Constants/ImagePath';
 import {strings} from '../../../Localization/translation';
@@ -87,9 +83,7 @@ export default function ChooseLocationScreen({navigation, route}) {
       searchCityState(searchText)
         .then((response) => {
           setNoData(false);
-          setCityData(
-            response.predictions
-          );
+          setCityData(response.predictions);
         })
         .catch((e) => {
           setTimeout(() => {
@@ -106,7 +100,11 @@ export default function ChooseLocationScreen({navigation, route}) {
     searchNearByCityState(radius, lat, long)
       .then((response) => {
         const list = response.filter(
-          (obj) => !(obj.city === currentLocation?.city && obj.country === currentLocation?.country)
+          (obj) =>
+            !(
+              obj.city === currentLocation?.city &&
+              obj.country === currentLocation?.country
+            ),
         );
         setNearbyCities(list);
         setLoading(false);
@@ -137,15 +135,14 @@ export default function ChooseLocationScreen({navigation, route}) {
     getGeocoordinatesWithPlaceName(Platform.OS)
       .then((location) => {
         setLocationFetch(true);
-        if(location.position){
+        if (location.position) {
           setCurrentLocation(location);
           getNearbyCityData(
             location.position.coords.latitude,
             location.position.coords.longitude,
             100,
           );
-        }
-        else{
+        } else {
           setLoading(false);
           setCurrentLocation(null);
         }
@@ -153,7 +150,7 @@ export default function ChooseLocationScreen({navigation, route}) {
       .catch((e) => {
         setLoading(false);
         setLocationFetch(true);
-        if(e.name === Verbs.gpsErrorDeined){
+        if (e.name === Verbs.gpsErrorDeined) {
           setCurrentLocation(null);
           setUserDeniedLocPerm(true);
         }
@@ -177,40 +174,34 @@ export default function ChooseLocationScreen({navigation, route}) {
   };
 
   const onSelectNoCurrentLocation = async () => {
-    if(userDeniedLocPerm){
-        Alert.alert(
-          strings.locationSettingTitleText,
-          strings.locationSettingText,
-          [
-            {
-              text: strings.cancel,
-              style: 'cancel',
-            },
-            {
-              text: strings.settingsTitleText,
-              onPress: () => { 
-                if(Platform.OS === 'ios'){
-                  Linking.openURL('app-settings:')
-                }
-                else{
-                  Linking.openSettings();
-                }
-              }
-            },
-          ],
-        );
-    }
-    else{
+    if (userDeniedLocPerm) {
       Alert.alert(
-        strings.noGpsErrorMsg,
-        '',
+        strings.locationSettingTitleText,
+        strings.locationSettingText,
         [
           {
-            text: strings.OkText,
+            text: strings.cancel,
             style: 'cancel',
+          },
+          {
+            text: strings.settingsTitleText,
+            onPress: () => {
+              if (Platform.OS === 'ios') {
+                Linking.openURL('app-settings:');
+              } else {
+                Linking.openSettings();
+              }
+            },
           },
         ],
       );
+    } else {
+      Alert.alert(strings.noGpsErrorMsg, '', [
+        {
+          text: strings.OkText,
+          style: 'cancel',
+        },
+      ]);
     }
   };
 
@@ -238,56 +229,56 @@ export default function ChooseLocationScreen({navigation, route}) {
         navigateToChooseSportScreen(userData);
       }
     });
-
-   
   };
 
   const onSelectNearByLocation = async (item) => {
-        let userData = {};
-        userData = {
-          city: item.city,
-          state_abbr: item.state,
-          country: item.country,
-        };
-        navigateToChooseSportScreen(userData);
+    let userData = {};
+    userData = {
+      city: item.city,
+      state_abbr: item.state,
+      country: item.country,
+    };
+    navigateToChooseSportScreen(userData);
   };
 
   const renderItem = ({item, index}) => (
-      <TouchableWithoutFeedback
-        style={styles.listItem}
-        onPress={() => onSelectLocation(item)}>
-        <Text style={styles.cityList}>{cityData[index].description}</Text>
-        <Separator />
-      </TouchableWithoutFeedback>
-    );
+    <TouchableWithoutFeedback
+      style={styles.listItem}
+      onPress={() => onSelectLocation(item)}>
+      <Text style={styles.cityList}>{cityData[index].description}</Text>
+      <Separator />
+    </TouchableWithoutFeedback>
+  );
 
   const renderCurrentLocation = () => {
-    let renderData
-    if(currentLocation && currentLocation.city){
-      renderData =  (<TouchableWithoutFeedback
-        style={styles.listItem}
-        onPress={() => onSelectCurrentLocation()}>
-        <View>
-          <Text style={[styles.cityList, {marginBottom: 3}]}>
-          {[
-            currentLocation?.city,
-            currentLocation?.state,
-            currentLocation?.country,
-            ].filter((v) => v)
-            .join(', ')}
-          </Text>
-          <Text style={styles.curruentLocationText}>
-            {strings.currentLocationText}
-          </Text>
-        </View>
-        <Separator />
-      </TouchableWithoutFeedback>)
+    let renderData;
+    if (currentLocation && currentLocation.city) {
+      renderData = (
+        <TouchableWithoutFeedback
+          style={styles.listItem}
+          onPress={() => onSelectCurrentLocation()}>
+          <View>
+            <Text style={[styles.cityList, {marginBottom: 3}]}>
+              {[
+                currentLocation?.city,
+                currentLocation?.state,
+                currentLocation?.country,
+              ]
+                .filter((v) => v)
+                .join(', ')}
+            </Text>
+            <Text style={styles.curruentLocationText}>
+              {strings.currentLocationText}
+            </Text>
+          </View>
+          <Separator />
+        </TouchableWithoutFeedback>
+      );
+    } else {
+      renderData = <View />;
     }
-    else{
-      renderData =  <View/>
-    }
-    return renderData
-  }
+    return renderData;
+  };
 
   const removeExtendedSpecialCharacters = (str) =>
     str.replace(/[^\x20-\x7E]/g, '');
@@ -358,7 +349,7 @@ export default function ChooseLocationScreen({navigation, route}) {
             </Text>
             <Separator />
           </View>
-          <Text style={[styles.currentLocationTextStyle,{marginTop:15}]}>
+          <Text style={[styles.currentLocationTextStyle, {marginTop: 15}]}>
             {strings.noLocationText}
           </Text>
         </TouchableWithoutFeedback>
@@ -378,18 +369,18 @@ const styles = StyleSheet.create({
   LocationText: {
     color: colors.whiteColor,
     fontFamily: fonts.RBold,
-    fontSize: wp('6%'),
-    marginTop: hp('12%'),
-    paddingLeft: 30,
+    fontSize: 25,
+    marginTop: Platform.OS === 'ios' ? 40 + 25 : 25,
+    marginLeft: 25,
     textAlign: 'left',
   },
   LocationDescription: {
     color: colors.whiteColor,
     fontFamily: fonts.RMedium,
-    fontSize: wp('4%'),
-    marginTop: hp('1%'),
-    paddingLeft: 30,
-    paddingRight: 30,
+    fontSize: 16,
+    marginTop: 5,
+    marginLeft: 25,
+    marginRight: 25,
     textAlign: 'left',
   },
   background: {
@@ -399,52 +390,44 @@ const styles = StyleSheet.create({
   },
   cityList: {
     color: colors.whiteColor,
-    fontSize: wp('4%'),
+    fontSize: 16,
     textAlign: 'left',
-    fontFamily: fonts.RMedium,
-    width: wp('70%'),
-    margin: wp('4%'),
+    fontFamily: fonts.RRegular,
+    marginTop: 15,
+    marginBottom: 15,
+    marginLeft: 10,
     textAlignVertical: 'center',
   },
   curruentLocationText: {
     color: colors.whiteColor,
-    fontSize: wp('3%'),
+    fontSize: 12,
     textAlign: 'left',
     fontFamily: fonts.RRegular,
-
-    // paddingLeft: wp('1%'),
-    width: wp('70%'),
-    margin: wp('4%'),
-    marginTop: wp('0%'),
+    margin: 15,
+    marginTop: 2,
     textAlignVertical: 'center',
   },
   listItem: {
     flexDirection: 'row',
-    marginLeft: wp('10%'),
-    width: wp('80%'),
+    marginLeft: 35,
+    marginRight: 35,
   },
   mainContainer: {
     flex: 1,
     paddingTop: 25,
   },
   noDataText: {
-    // alignSelf: 'center',
     color: colors.whiteColor,
     fontFamily: fonts.RRegular,
     fontSize: 14,
     marginLeft: 40,
     marginTop: 8,
-
-    // marginTop: hp('1%'),
-    // textAlign: 'center',
-    // width: wp('55%'),
   },
   searchImg: {
     alignSelf: 'center',
-    height: hp('4%'),
-
+    height: 13,
     resizeMode: 'contain',
-    width: wp('4%'),
+    width: 13,
   },
   sectionStyle: {
     alignItems: 'center',
@@ -453,11 +436,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     height: 40,
     justifyContent: 'center',
-    margin: wp('8%'),
-    marginBottom: wp('1%'),
+    margin: 25,
+    marginBottom: 10,
     paddingLeft: 17,
     paddingRight: 5,
-
     shadowColor: colors.googleColor,
     shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.5,
@@ -468,7 +450,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontFamily: fonts.RRegular,
     fontSize: 16,
-    paddingLeft: 10,
+    paddingLeft: 19,
   },
   noLocationViewStyle: {
     flexDirection: 'column',
@@ -481,7 +463,7 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     fontFamily: fonts.RRegular,
     textAlignVertical: 'center',
-    marginBottom:16,
-    marginTop :21,
+    marginBottom: 16,
+    marginTop: 21,
   },
 });

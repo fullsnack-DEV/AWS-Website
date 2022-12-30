@@ -266,7 +266,7 @@ export default function SignupScreen({navigation, route}) {
         <Text style={styles.checkEmailText}>{strings.addYourName}</Text>
 
         <TCKeyboardView>
-          <View style={{marginVertical: 20}}>
+          <View style={{marginTop: 61}}>
             <TouchableOpacity
               style={styles.profile}
               onPress={() => {
@@ -281,9 +281,9 @@ export default function SignupScreen({navigation, route}) {
                       : images.profilePlaceHolder
                   }
                   style={{
-                    width: 100,
-                    height: 100,
-                    borderRadius: 50,
+                    width: 60,
+                    height: 60,
+                    borderRadius: 30,
                     backgroundColor: '#FED378',
                   }}
                 />
@@ -298,9 +298,9 @@ export default function SignupScreen({navigation, route}) {
                           : images.profilePlaceHolder
                       }
                       style={{
-                        width: 100,
-                        height: 100,
-                        borderRadius: 50,
+                        width: 60,
+                        height: 60,
+                        borderRadius: 30,
                         backgroundColor: '#FED378',
                       }}
                     />
@@ -309,9 +309,9 @@ export default function SignupScreen({navigation, route}) {
                       resizeMode={'contain'}
                       source={images.profilePlaceHolder}
                       style={{
-                        width: 100,
-                        height: 100,
-                        borderRadius: 50,
+                        width: 60,
+                        height: 60,
+                        borderRadius: 30,
                         backgroundColor: '#FED378',
                       }}
                     />
@@ -330,34 +330,31 @@ export default function SignupScreen({navigation, route}) {
               />
             </TouchableOpacity>
           </View>
-          <TCTextField
-            testID="fname-signup-input"
-            placeholderTextColor={colors.darkYellowColor}
-            style={styles.textFieldStyle}
-            placeholder={strings.fnameText}
-            value={fName}
-            onChangeText={(text) => setFName(text)}
-          />
-          <TCTextField
-            testID="lname-signup-input"
-            placeholderTextColor={colors.darkYellowColor}
-            style={{...styles.textFieldStyle, marginBottom: 40}}
-            placeholder={strings.lnameText}
-            onChangeText={(text) => setLName(text)}
-            value={lName}
-          />
-
-          {/* <TCButton
-            title={strings.continueCapTitle}
-            extraStyle={{
-              marginTop: hp('2%'),
-            }}
-            onPress={() => {
-              if (validate()) {
-                navigation.navigate('AddBirthdayScreen');
-              }
-            }}
-          /> */}
+          <View
+            style={{
+              marginTop: 35,
+              marginLeft: 35,
+              marginRight: 35,
+            }}>
+            <TCTextField
+              testID="fname-signup-input"
+              placeholderTextColor={colors.darkYellowColor}
+              style={styles.textFieldStyle}
+              height={40}
+              placeholder={strings.fnameText}
+              value={fName}
+              onChangeText={(text) => setFName(text)}
+            />
+            <TCTextField
+              testID="lname-signup-input"
+              placeholderTextColor={colors.darkYellowColor}
+              style={{...styles.textFieldStyle}}
+              placeholder={strings.lnameText}
+              onChangeText={(text) => setLName(text)}
+              value={lName}
+              height={40}
+            />
+          </View>
         </TCKeyboardView>
       </LinearGradient>
     </>
@@ -379,31 +376,26 @@ const styles = StyleSheet.create({
     alignContent: 'center',
     alignSelf: 'center',
     height: 100,
-    marginTop: 30,
-    marginBottom: 20,
     width: 100,
     borderRadius: 50,
-
-    // borderWidth: 1,
-    // borderColor: '#FED378',
   },
 
   textFieldStyle: {
-    top: 30,
-    marginVertical: 5,
     alignSelf: 'center',
-    width: wp('85%'),
     backgroundColor: 'rgba(255,255,255,0.9)',
     shadowColor: colors.googleColor,
     shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.5,
     shadowRadius: 4,
+    marginBottom: 10,
+    paddingHorizontal: 5,
+    marginHorizontal: 0,
   },
   profileCameraButtonStyle: {
     height: 22,
     width: 22,
-    marginTop: -40,
-    marginLeft: 60,
+    marginTop: -60,
+    marginLeft: 0,
     alignSelf: 'center',
   },
   cameraIcon: {
@@ -420,8 +412,8 @@ const styles = StyleSheet.create({
     color: colors.whiteColor,
     fontFamily: fonts.RBold,
     fontSize: 25,
-    marginLeft: 20,
-    marginTop: wp('25%'),
+    marginLeft: 25,
+    marginTop: Platform.OS === 'ios' ? 40 + 25 : 25,
     textAlign: 'left',
   },
 });

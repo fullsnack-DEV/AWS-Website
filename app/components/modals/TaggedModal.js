@@ -78,8 +78,16 @@ const TaggedModal = ({
       }
       return (
         <TaggedEntityView
-          titleStyle={{color: colors.lightBlackColor}}
-          cityStyle={{color: colors.lightBlackColor}}
+          titleStyle={{
+            color: colors.lightBlackColor,
+            fontSize: 16,
+            fontFamily: fonts.RMedium,
+          }}
+          cityStyle={{
+            color: colors.lightBlackColor,
+            fontSize: 14,
+            fontFamily: fonts.RRegular,
+          }}
           onProfilePress={() => {
             navigation.push('HomeScreen', {
               uid: item?.entity_id,
@@ -204,8 +212,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.whiteColor,
   },
   tagTitle: {
-    fontSize: 20,
-    fontFamily: fonts.RRegular,
+    fontSize: 16,
+    fontFamily: fonts.RBold,
     color: colors.lightBlackColor,
     marginLeft: 15,
   },

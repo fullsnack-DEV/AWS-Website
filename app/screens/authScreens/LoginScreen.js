@@ -17,6 +17,7 @@ import {
   TouchableWithoutFeedback,
   ScrollView,
   Keyboard,
+  Platform,
 } from 'react-native';
 
 import {
@@ -191,7 +192,7 @@ const LoginScreen = ({navigation}) => {
   const onAuthStateChanged = useCallback(
     (user) => {
       if (user) {
-        console.log('user', user)
+        console.log('user', user);
         user.getIdTokenResult().then((idTokenResult) => {
           const token = {
             token: idTokenResult.token,
@@ -203,8 +204,7 @@ const LoginScreen = ({navigation}) => {
           // eslint-disable-next-line no-underscore-dangle
           if (!user._user.emailVerified) {
             navigateToEmailVarificationScreen(user);
-          } 
-          else{
+          } else {
             const userConfig = {
               method: 'get',
               url: `${Config.BASE_URL}/users/${user.uid}`,
@@ -306,7 +306,7 @@ const LoginScreen = ({navigation}) => {
       .auth()
       .signInWithEmailAndPassword(email, password)
       .then(() => {
-        console.log('signInWithEmailAndPassword')
+        console.log('signInWithEmailAndPassword');
         const loginOnAuthStateChanged = firebase
           .auth()
           .onAuthStateChanged(onAuthStateChanged);
@@ -354,6 +354,8 @@ const LoginScreen = ({navigation}) => {
         keyboardType="email-address"
         onChangeText={(text) => setEmail(text)}
         value={email}
+        height={40}
+        // width={wp(81.33)}
       />
     ),
     [email],
@@ -371,14 +373,20 @@ const LoginScreen = ({navigation}) => {
           placeholderTextColor={colors.themeColor}
           secureTextEntry={hidePassword}
           keyboardType={'default'}
+          height={40}
+          width={wp(64)}
         />
         <TouchableOpacity
           onPress={() => hideShowPassword()}
-          style={{alignItems: 'center', justifyContent: 'center'}}>
+          style={{
+            alignItems: 'center',
+            justifyContent: 'center',
+            right: 5,
+          }}>
           {hidePassword ? (
-            <Text style={styles.passwordEyes}>SHOW</Text>
+            <Text style={styles.passwordEyes}>{strings.SHOW}</Text>
           ) : (
-            <Text style={styles.passwordEyes}>HIDE</Text>
+            <Text style={styles.passwordEyes}>{strings.HIDE}</Text>
           )}
         </TouchableOpacity>
       </View>
@@ -399,11 +407,11 @@ const LoginScreen = ({navigation}) => {
 
   const renderLoginAndForgotPasswordButtons = useMemo(
     () => (
-      <View style={{marginTop: hp('4.31%')}}>
+      <View style={{marginTop: 35}}>
         <TCButton
           testID={'login-button'}
           title={strings.LOGIN}
-          extraStyle={{marginTop: hp('0%')}}
+          extraStyle={{marginTop: 0}}
           onPress={onLogin}
         />
         <TouchableOpacity
@@ -509,34 +517,36 @@ const styles = StyleSheet.create({
     color: colors.whiteColor,
     fontFamily: fonts.RMedium,
     fontSize: 14,
-    marginTop: hp('3.07%'),
+    marginTop: 25,
     textAlign: 'center',
   },
   loginText: {
     color: colors.whiteColor,
     fontFamily: fonts.RBold,
     fontSize: 25,
-    marginTop: hp('11.39%'),
-    marginLeft: wp('6.6%'),
+    marginTop: Platform.OS === 'ios' ? 40 + 25 : 25,
+    marginLeft: 25,
     textAlign: 'left',
   },
   mainContainer: {
     flex: 1,
-    paddingVertical: 25,
+    paddingTop: 25,
   },
   passwordEyes: {
     fontSize: 10,
     color: colors.darkYellowColor,
     textDecorationLine: 'underline',
+    textAlign: 'right',
+    width: 50,
   },
 
   passwordContainer: {
     alignSelf: 'center',
-    paddingHorizontal: 10,
+    // paddingLeft: 10,
     borderRadius: 5,
     fontFamily: fonts.RRegular,
     fontSize: 16,
-    width: wp('92%'),
+    // width: wp('81.3%'),
     backgroundColor: 'rgba(255,255,255,0.9)',
     height: 40,
     color: 'black',
@@ -547,28 +557,37 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 4,
     justifyContent: 'space-between',
-    marginTop: 15,
+    marginTop: 10,
+    marginLeft: 35,
+    marginRight: 35,
+    // backgroundColor: colors.redColor,
   },
 
   passwordInput: {
     alignSelf: 'center',
-    paddingHorizontal: 0,
+    paddingHorizontal: 5,
     borderRadius: 5,
     fontFamily: fonts.RRegular,
     fontSize: 16,
-    width: wp('65%'),
+    // width: wp('66%'),
     height: 40,
     color: 'black',
+    // backgroundColor: colors.greeColor,
+    marginRight: 10,
+    marginLeft: 10,
   },
 
   textFieldStyle: {
     alignSelf: 'center',
-    width: wp('81.3%'),
+    // width: wp('81.3%'),
     backgroundColor: 'rgba(255,255,255,0.9)',
     shadowColor: colors.googleColor,
     shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.5,
     shadowRadius: 4,
+    paddingHorizontal: 5,
+    marginLeft: 35,
+    marginRight: 35,
   },
   alreadyMemberText: {
     color: colors.whiteColor,

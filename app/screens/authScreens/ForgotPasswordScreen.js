@@ -7,6 +7,7 @@ import {
   TouchableWithoutFeedback,
   TouchableOpacity,
   Image,
+  Platform,
 } from 'react-native';
 
 import {
@@ -159,7 +160,7 @@ const styles = StyleSheet.create({
     color: colors.whiteColor,
     fontFamily: fonts.RBold,
     fontSize: 25,
-    marginTop: hp('12%'),
+    marginTop: Platform.OS === 'ios' ? 40 + 25 : 25,
     paddingLeft: 25,
     textAlign: 'left',
   },
@@ -171,24 +172,22 @@ const styles = StyleSheet.create({
     color: colors.whiteColor,
     fontFamily: fonts.RRegular,
     fontSize: 14,
-    marginBottom: hp('4%'),
-    marginTop: hp('0.5%'),
+    marginTop: 5,
     paddingLeft: 25,
     textAlign: 'left',
   },
   textFieldStyle: {
-    // backgroundColor: colors.whiteColor,
     fontFamily: fonts.RRegular,
     flex: 0,
-    marginBottom: 35,
-    marginLeft: 35,
-    marginRight: 35,
-
-    paddingLeft: 2,
+    paddingHorizontal: 5,
     shadowColor: colors.googleColor,
     shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.4,
     shadowRadius: 4,
+    marginTop: 42,
+    alignSelf: 'center',
+    marginLeft: 35,
+    marginRight: 35,
   },
   nextButtonStyle: {
     fontFamily: fonts.RBold,
