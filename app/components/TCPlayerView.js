@@ -6,7 +6,6 @@ import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 
 function TCPlayerView({onPress, showStar = false, data}) {
-  console.log('Player data:=>', data);
   return (
     <TouchableOpacity onPress={onPress}>
       <View style={styles.viewContainer}>

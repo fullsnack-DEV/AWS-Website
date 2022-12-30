@@ -74,7 +74,6 @@ const Scorekeepers = ({
   }, [authContext.entity.uid]);
   useEffect(() => {
     getScorekeeperReservation(gameData?.game_id).then((res) => {
-      console.log('Scorekeeper reservation::=>', res);
       const refData = res?.payload?.filter(
         (item) =>
           ![
@@ -243,8 +242,6 @@ const Scorekeepers = ({
     )
       .then((response) => {
         setloading(false);
-        console.log('Scorekeeper setting:=>', response);
-
         setScorekeeperSetting(response);
 
         if (
@@ -311,8 +308,6 @@ const Scorekeepers = ({
   ]);
 
   const renderBookScorekeepersButton = useMemo(() => {
-    console.log('Book scorekeeper');
-
     if (
       // isAdmin
       gameData?.challenge_scorekeepers?.who_secure?.[0]?.responsible_team_id ===

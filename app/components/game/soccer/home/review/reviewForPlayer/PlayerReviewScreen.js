@@ -51,7 +51,7 @@ export default function PlayerReviewScreen({navigation, route}) {
       'Review Attribute::=>',
       route?.params?.sliderAttributesForPlayer,
     );
-    console.log('Review Attribute::=>', route?.params?.starAttributesForPlayer);
+
     loadSliderAttributes(route?.params?.sliderAttributesForPlayer);
     loadStarAttributes(route?.params?.starAttributesForPlayer);
   }, []);
@@ -98,7 +98,7 @@ export default function PlayerReviewScreen({navigation, route}) {
   const isValidReview = () => {
     const exceptKey = ['comment', 'attachments', 'tagged'];
     let isValid = true;
-    console.log('reviewsData ::=>', reviewsData);
+
     const reviews = _.cloneDeep(reviewsData);
 
     Object.keys(reviews).map((key) => {
@@ -110,11 +110,9 @@ export default function PlayerReviewScreen({navigation, route}) {
     return isValid;
   };
   const createReview = () => {
-    console.log('Review Data::=>', reviewsData);
     if (!isValidReview()) {
       Alert.alert('Please, complete all ratings before moving to the next.');
     } else {
-      console.log('route?.params?.gameData?.game_id::=>', gameData);
       setLoading(true);
       addPlayerReview(
         route?.params?.userData?.profile?.user_id,

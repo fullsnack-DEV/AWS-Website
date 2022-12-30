@@ -61,15 +61,6 @@ export default function RefereeReviewScreen({navigation, route}) {
       : () => {},
   );
 
-  console.log(
-    'route?.params?.starAttributesForReferee::',
-    route?.params?.sliderAttributesForReferee,
-  );
-  console.log(
-    'route?.params?.gameReviewDataroute?.params?.gameReviewData',
-    route?.params?.gameReviewData,
-  );
-
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
       const entity = authContext.entity;
@@ -93,7 +84,6 @@ export default function RefereeReviewScreen({navigation, route}) {
       setReviewsData(obj);
     }
     if (route?.params?.entityTags) {
-      console.log(route?.params?.entityTags);
 
       obj.tagged = route?.params?.entityTags;
       setReviewsData(obj);
@@ -102,7 +92,6 @@ export default function RefereeReviewScreen({navigation, route}) {
       obj.format_tagged_data = route?.params?.format_tagged_data;
       setReviewsData(obj);
     }
-    console.log('Review data::=>', obj);
   }, [
     route?.params?.selectedImageList,
     route?.params?.searchText,
@@ -181,11 +170,9 @@ export default function RefereeReviewScreen({navigation, route}) {
     return isValid;
   };
   const createReview = () => {
-    console.log('Review Data::=>', reviewsData);
     if (!isValidReview()) {
       Alert.alert('Please, complete all ratings before moving to the next.');
     } else {
-      console.log('route?.params?.gameData?.game_id::=>', gameData);
       uploadMedia();
     }
   };
@@ -196,7 +183,6 @@ export default function RefereeReviewScreen({navigation, route}) {
 
       reviews[key] = value;
       setReviewsData({...reviews});
-      console.log(`reviews::${JSON.stringify(reviews)}`);
     }
   };
   const onCancelImageUpload = () => {
@@ -217,12 +203,8 @@ export default function RefereeReviewScreen({navigation, route}) {
   };
 
   const patchOrAddRefereeReview = (data) => {
-    console.log('reviewData ==== ::=>', reviewsData);
-    console.log('data ==== ::=>', data);
-
     if (userData?.review_id) {
       setLoading(true);
-      console.log('Edited Review Object reviewData::=>', data);
       const teamReview = {...data};
       delete teamReview.created_at;
       delete teamReview.entity_type;

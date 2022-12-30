@@ -117,16 +117,19 @@ const NewsFeedDescription = ({
 
   const renderTagText = useCallback(
     (match, matchData) => {
-      // console.log(matchData);
       const startTagIndex = descriptions?.indexOf(
         matchData?.input?.substr(matchData?.index, descriptions?.length),
       );
       let color = colors.black;
-      const isTagName =
-        tagData.filter(
+      let isTagName = false
+      if(tagData && tagData.length > 0){
+        
+        isTagName = tagData.filter(
           (item) => item.entity_data.tagged_formatted_name === match,
         ).length > 0;
-      if (isTagName) color = colors.greeColor;
+        if (isTagName) color = colors.greeColor;
+      }
+
       return (
         <Text
           onPress={() => isTagName && handleNamePress(match, startTagIndex)}

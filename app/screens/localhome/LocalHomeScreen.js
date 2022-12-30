@@ -638,7 +638,7 @@ export default function LocalHomeScreen({navigation, route}) {
           },
         });
       }
-      console.log('recentMatchQuery==>', JSON.stringify(recentMatchQuery));
+
       getGameIndex(recentMatchQuery).then((games) => {
         Utility.getGamesList(games).then((gamedata) => {
           if (games?.length > 0) {
@@ -648,7 +648,7 @@ export default function LocalHomeScreen({navigation, route}) {
           }
         });
       });
-      console.log('upcomingMatchQuery==>', JSON.stringify(upcomingMatchQuery));
+
       getGameIndex(upcomingMatchQuery).then((games) => {
         Utility.getGamesList(games).then((gamedata) => {
           if (games?.length > 0) {
@@ -656,8 +656,6 @@ export default function LocalHomeScreen({navigation, route}) {
 
             setUpcomingMatch(gamedata);
           } else {
-            console.log('uuuuu2', games);
-
             setUpcomingMatch([]);
           }
         });
@@ -751,9 +749,7 @@ export default function LocalHomeScreen({navigation, route}) {
   );
 
   const keyExtractor = useCallback((item, index) => index.toString(), []);
-  const renderRecentMatchItems = useCallback(({item}) => {
-    console.log('Recent Item:=>', item);
-    return (
+  const renderRecentMatchItems = useCallback(({item}) =>  (
       <View style={{marginBottom: 15}}>
         <TCRecentMatchCard
           data={item}
@@ -766,8 +762,7 @@ export default function LocalHomeScreen({navigation, route}) {
           }}
         />
       </View>
-    );
-  }, []);
+    ), []);
 
   const renderGameItems = useCallback(
     ({item}) => (
@@ -921,7 +916,6 @@ export default function LocalHomeScreen({navigation, route}) {
 
   const getSportIcon = useCallback(
     (type, data) => {
-      console.log('typeeeeee', type);
       if (type === Verbs.entityTypePlayer) {
         if (selectedSport !== strings.all) {
           const pSport = data.registered_sports.filter(

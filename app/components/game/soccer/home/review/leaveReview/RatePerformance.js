@@ -17,10 +17,7 @@ const RatePerformance = ({
   reviewAttributes,
   starAttributes,
   starColor,
-}) => {
-  console.log('reviewAttributes for team:=> : ', reviewAttributes);
-  console.log('starAttributes for team:=> : ', starAttributes);
-  return (
+}) => (
     <View style={styles.mainContainer}>
       {/*    Title */}
       <Text style={styles.titleText}>
@@ -74,7 +71,7 @@ const RatePerformance = ({
       ))}
     </View>
   );
-};
+  
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,

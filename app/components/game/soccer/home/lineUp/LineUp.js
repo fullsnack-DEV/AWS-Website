@@ -30,6 +30,7 @@ export default function LineUp({navigation, gameData}) {
   const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
+  // eslint-disable-next-line no-unused-vars
   const [roster, setRoster] = useState([]);
   const [starting, setStarting] = useState([]);
   const [subs, setSubs] = useState([]);
@@ -39,14 +40,12 @@ export default function LineUp({navigation, gameData}) {
 
   useEffect(() => {
     entity = authContext.entity;
-    console.log('Game Object:::', gameData);
     if (selected === 1) {
       getLineUpOfTeams(gameData.home_team.group_id, gameData.game_id);
     }
     if (selected === 2) {
       getLineUpOfTeams(gameData.away_team.group_id, gameData.game_id);
     }
-    console.log('Roster Array:::', roster);
   }, [isFocused]);
   const addDaysinDate = (unixTime, days) => {
     const date = new Date(unixTime * 1000);
@@ -90,7 +89,6 @@ export default function LineUp({navigation, gameData}) {
       );
       setCoaches(rosterData.filter((el) => el.role === 'coach'));
       setSegmentUpdated(true);
-      console.log(JSON.stringify(response.payload));
     });
   };
   const renderRoster = ({item}) => (
@@ -175,20 +173,15 @@ export default function LineUp({navigation, gameData}) {
               Alert.alert(err);
             });
         }
-        if (bType === 'message') {
-          console.log('item?.profile?.user_id', item?.profile);
+        if (bType === 'message') {          
           navigation.navigate('MessageChat', {
             screen: 'MessageChat',
             params: {userId: item?.profile?.user_id},
           });
         }
-        console.log('ITEM BTYPE::', bType);
-        console.log('ITEM PRESSED::', item);
       }}
       OnRowPress={(userInfo) => {
         if (userInfo.profile.connected) {
-          console.log('User ID::', userInfo.profile.user_id);
-          console.log('User ROLE::', userInfo.profile.role);
           navigation.push('HomeScreen', {
             uid: userInfo.profile.user_id,
             backButtonVisible: true,
@@ -196,7 +189,6 @@ export default function LineUp({navigation, gameData}) {
             menuBtnVisible: false,
           });
         }
-        console.log('ITEM Info::', userInfo);
       }}
     />
   );

@@ -223,7 +223,7 @@ export default function RecentMatchScreen({navigation, route}) {
           },
         });
       }
-      console.log('Recent match Query:=>', JSON.stringify(recentMatchQuery));
+    
       // Recent match query
 
       getGameIndex(recentMatchQuery)

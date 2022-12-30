@@ -27,7 +27,6 @@ export default function TCEventView({
 }) {
   const authContext = useContext(AuthContext);
 
-  console.log('data::=>', data);
   const isGame = !!(data?.game_id && data?.game);
 
   let showDot = false;
@@ -42,7 +41,6 @@ export default function TCEventView({
     '';
   const description = data?.descriptions ? data.descriptions : null;
 
-  console.log('dadadadad', data);
   const title = isGame ? getSportName(data.game, authContext) : data.title;
 
   let homeTeamName = '';

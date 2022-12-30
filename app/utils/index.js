@@ -1375,12 +1375,9 @@ export const showAlertWithCallBack = (msg, onOkClick) => {
 export const removeAuthKey = async () => {};
 // New Utility Method for set any kind of value
 export const setStorage = async (key, value) => {
-  console.log('storing in storage');
   try {
     const valueString =
       typeof value === 'object' ? JSON.stringify(value) : value.toString();
-    console.log('Storage key/Value', `${key} ${valueString}`);
-
     await AsyncStorage.setItem(key, valueString);
   } catch (e) {
     // Do nothing. Its null or or plain string
