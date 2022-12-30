@@ -14,8 +14,6 @@ export default function MatchFeesCard({
   challengeObj,
   type = 'challenge',
 }) {
-  console.log('Challenge Obj of Fee card :', challengeObj);
-  console.log('senderOrReceiver card', senderOrReceiver);
   // eslint-disable-next-line no-return-assign
   return (
     <View style={styles.backgroundView}>

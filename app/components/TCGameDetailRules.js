@@ -8,9 +8,7 @@ const TCGameDetailRules = ({
   isMore = true,
   onPressMoreLess,
   isShowTitle = true,
-}) => {
-  console.log('gameRulesgameRules;;', gameRules);
-  return (
+}) =>  (
     <View style={{marginTop: 10}}>
       {isShowTitle && (
         <View
@@ -151,7 +149,6 @@ const TCGameDetailRules = ({
       </Text>
     </View>
   );
-};
 
 const styles = StyleSheet.create({
   mainRulesTitle: {

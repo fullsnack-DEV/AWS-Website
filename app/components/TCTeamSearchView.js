@@ -6,7 +6,6 @@ import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 
 function TCTeamSearchView({onPress, showStar = false, data}) {
-  console.log('team search  item:=>', data);
   let teamIcon = '';
   let teamImagePH = '';
   if (data.entity_type === 'team') {

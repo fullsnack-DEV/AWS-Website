@@ -81,7 +81,6 @@ export default function App() {
   };
   useEffect(() => {
     NetInfo.addEventListener((state) => {
-      console.log('Connection : ', state.isConnected);
       setNetworkConntected(state.isConnected);
     });
 

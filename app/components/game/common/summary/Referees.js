@@ -96,7 +96,6 @@ const Referees = ({
           }
           return false;
         });
-        console.log('referee reservation:=>', cloneRefData);
         setReferee([...cloneRefData]);
       });
     }
@@ -134,7 +133,6 @@ const Referees = ({
   );
 
   const getRefereeStatusMessage = useCallback((item, type) => {
-    console.log('Referee status::=>', item);
     const status = item?.status;
     let statusData = '';
     const isExpired =
@@ -171,7 +169,6 @@ const Referees = ({
 
   const isCheckReviewButton = useCallback(
     (reservationDetail) => {
-      console.log('gameData?.status', isScorekeeperAdmin);
       if (
         gameData?.status === GameStatus.ended &&
         ![
@@ -199,7 +196,6 @@ const Referees = ({
   const renderReferees = useCallback(
     ({item}) => {
       const reservationDetail = item; // item?.reservation
-      console.log('reservation detail::=>>>', reservationDetail);
       return (
         <TCUserFollowUnfollowList
           statusColor={getRefereeStatusMessage(reservationDetail, 'color')}
@@ -243,9 +239,6 @@ const Referees = ({
 
   const handleBookReferee = useCallback(() => {
     // navigation.navigate('BookReferee', { gameData });
-    console.log('gameData', gameData);
-
-    console.log('gameData.city', gameData.city);
     navigation.navigate('BookReferee', {
       filters: {
         location: gameData.city,
@@ -326,7 +319,6 @@ const Referees = ({
   ]);
 
   const renderBookRefereeButton = useMemo(() => {
-    console.log('Book referee,', gameData);
     if (
       gameData?.challenge_referee?.who_secure?.[0]?.responsible_team_id ===
         authContext.entity.uid &&

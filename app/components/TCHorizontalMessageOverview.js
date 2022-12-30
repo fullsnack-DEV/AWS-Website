@@ -20,8 +20,6 @@ const TCHorizontalMessageOverview = memo(
     onPress,
     occupantsIds,
   }) => {
-    console.log('dialogType', dialogType);
-    console.log();
     // eslint-disable-next-line no-restricted-globals
     const getDateAndMonth = useMemo(
       () =>

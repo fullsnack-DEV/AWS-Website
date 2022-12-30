@@ -98,7 +98,6 @@ export default function ReviewRefereeList({navigation, route}) {
           <View style={styles.buttonStyle}>
             <TouchableOpacity
               onPress={() => {
-                console.log('gameData::=>', gameData);
                 if (userData?.review_id) {
                   getGameReviewsData(userData);
                 } else {

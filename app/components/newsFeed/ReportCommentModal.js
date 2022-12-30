@@ -9,7 +9,6 @@ import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 import {widthPercentageToDP as wp} from '../../utils';
-import useRenderCount from '../../hooks/useRenderCount';
 import AuthContext from '../../auth/context';
 
 import {reportActivity} from '../../api/NewsFeeds';
@@ -17,9 +16,7 @@ import {strings} from '../../../Localization/translation';
 
 const optionSelectionColor = colors.optionSelectionColor;
 const ReportCommentModal = ({commentData, reportCommentModalRef}) => {
-  const authContext = useContext(AuthContext);
-
-  useRenderCount('Report Comment Modal');
+  const authContext = useContext(AuthContext)
   const menuList = [
     {key: 'report', title: 'Report this comment'},
     // { key: 'block', title: 'Block' },

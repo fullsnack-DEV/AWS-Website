@@ -71,7 +71,6 @@ const Summary = ({
   gameFeedFlatListRef,
   getGameNextFeedData,
 }) => {
-  console.log('GameData Soccer:=>', gameData);
   const recipientModalRef = useRef();
   const imageUploadContext = useContext(ImageUploadContext);
   const authContext = useContext(AuthContext);
@@ -107,7 +106,6 @@ const Summary = ({
           (item) => item.sport === gameData?.sport,
         )[0];
 
-      console.log('soccerSportData', soccerSportData);
       const teamReviewProp = soccerSportData?.team_review_properties ?? [];
       const playerReviewProp = soccerSportData?.player_review_properties ?? [];
       const refereeReviewProp =
@@ -199,8 +197,6 @@ const Summary = ({
 
         const awayTeamMembers = response.payload.away_team_members;
 
-        console.log('member list:=>', response.payload);
-
         const homeTeamRoasters = [];
         const awayTeamRoasters = [];
         if (homeTeamMembers.length > 0) {
@@ -217,7 +213,6 @@ const Summary = ({
           setIsMemberOfHomeAway(true);
         }
 
-        console.log('homeTeamRoasters', homeTeamRoasters);
         if (
           homeTeamMembers?.filter(
             (home) => home.member_id === authContext.entity.uid,
@@ -239,7 +234,6 @@ const Summary = ({
             if (homeTeamMembers?.[i]?.member_id === authContext.entity.uid) {
               found = true;
               teamName = gameData?.away_team?.group_name;
-              console.log('Team name Data:=>', teamName);
               if (gameData?.home_review_id || gameData?.away_review_id) {
                 // setLeaveReviewText(`EDIT A REVIEW FOR ${teamName}`);
                 setLeaveReviewText(strings.editReviewText);

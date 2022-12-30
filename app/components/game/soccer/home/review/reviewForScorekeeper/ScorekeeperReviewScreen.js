@@ -161,11 +161,9 @@ export default function ScorekeeperReviewScreen({navigation, route}) {
     return isValid;
   };
   const createReview = () => {
-    console.log('Review Data::=>', reviewsData);
     if (!isValidReview()) {
       Alert.alert('Please, complete all ratings before moving to the next.');
     } else {
-      console.log('route?.params?.gameData?.game_id::=>', gameData);
       uploadMedia();
     }
   };

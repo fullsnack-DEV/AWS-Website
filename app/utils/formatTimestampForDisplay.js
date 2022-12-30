@@ -8,8 +8,6 @@ export const formatTimestampForDisplay = (
   const time = new Date(commentPostTime);
   // const offset = new Date().getTimezoneOffset();
   time.setMinutes(time.getMinutes() - offset);
-  console.log('POST GET TIME::=>', new Date(time));
-  console.log('POST TIME::=>', time);
   const minute = moment(new Date()).diff(time, 'minute');
   const hour = moment(new Date()).diff(time, 'hour');
   const day = moment(new Date()).diff(time, 'day');

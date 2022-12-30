@@ -14,7 +14,6 @@ const CustomVideoPlayer = ({
   onPlayerStatusChanged = () => {},
   onClick = () => {},
 }) => {
-  console.log('sourceURLsourceURL', sourceURL);
   const videoPlayerRef = useRef();
   // const [videoMetaData, setVideoMetaData] = useState(null);
   const [duration, setDuration] = useState(0);

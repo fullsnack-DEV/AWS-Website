@@ -383,7 +383,6 @@ const AppNavigator = ({navigation}) => {
   }, [getUnReadMessageHandler]);
 
   const onTabPress = useCallback(() => {
-    console.log('On tab press');
     count.current += 1;
     if (count.current === MAX_COUNT_FOR_BOTTOM_TAB) {
       count.current = 0;

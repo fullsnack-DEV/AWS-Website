@@ -247,7 +247,7 @@ export default function CreateTeamForm1({navigation, route}) {
           }
           else{
             setTimeout(() => {
-              Alert.alert(strings.alertmessagetitle, e.message);
+              Alert.alert(strings.alertmessagetitle, `${e.message}(Location fetch`);
             }, 10);
           }
           setVisibleLocationModal(!visibleLocationModal);
@@ -321,7 +321,7 @@ export default function CreateTeamForm1({navigation, route}) {
         setLoading(false);
         setNearbyCities([]);
         setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
+          Alert.alert(strings.alertmessagetitle, `${e.message}(getNearbyCityData),${lat},${long},${radius}`);
         }, 10);
         setVisibleLocationModal(!visibleLocationModal);
       });
@@ -595,7 +595,7 @@ export default function CreateTeamForm1({navigation, route}) {
             {noData && searchText.length > 0 && (
               <Text style={locationModelStyles.noDataText}>{strings.enter3CharText}</Text>
             )}
-            {noData && searchText.length === 0 && nearbyCities.length > 0 && (
+            {noData && searchText.length === 0 && nearbyCities.length >= 0 && cityData.length === 0 (
               <FlatList
                 style={{marginTop:25}}
                 data={nearbyCities}

@@ -32,8 +32,6 @@ const UserHomeTopSection = ({
   onMoreRolePress,
 }) => {
   const authContext = useContext(AuthContext);
-  console.log('authContext:=>>', authContext);
-
   // const [activityList] = useState(
   //   authContext?.entity?.obj?.sport_setting?.activity_order || [
   //     ...(authContext?.entity?.obj?.registered_sports || []),
@@ -62,7 +60,6 @@ const UserHomeTopSection = ({
   }, [isSectionEnable]);
 
   const oneLineSection = () => {
-    console.log('userDetails::=>>', userDetails);
     if (
       userDetails?.sport_setting?.activity_order &&
       userDetails?.sport_setting?.activity_order?.length > 0
@@ -151,7 +148,6 @@ const UserHomeTopSection = ({
 
   const renderPlayIn = useCallback(
     ({item}) => {
-      console.log('OKOK player:=>', image_url);
       if (item.item_type) {
         return renderAddPlayInRole({item});
       }

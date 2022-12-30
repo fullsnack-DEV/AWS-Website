@@ -60,8 +60,6 @@ export default function ReviewRefereeList({navigation, route}) {
       setLoading(false);
 
       setPlayers(rosterData.filter((el) => el.role === 'player'));
-
-      console.log(JSON.stringify(response.payload));
     });
   };
   const renderRoster = ({item: userData}) => (
