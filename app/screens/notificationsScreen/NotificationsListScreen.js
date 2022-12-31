@@ -67,6 +67,7 @@ import RefereeReservationStatus from '../../Constants/RefereeReservationStatus';
 import ScorekeeperReservationStatus from '../../Constants/ScorekeeperReservationStatus';
 import {getEventById} from '../../api/Schedule';
 import TCInnerLoader from '../../components/TCInnerLoader';
+import errorCode from '../../Constants/errorCode';
 
 function NotificationsListScreen({navigation}) {
   const actionSheet = useRef();
@@ -530,7 +531,7 @@ function NotificationsListScreen({navigation}) {
       .then((response) => {
         setloading(false);
         if (item.verb.includes(NotificationType.invitePlayerToJoinTeam)) {
-          if (response?.payload?.error_code === 101) {
+          if (response?.payload?.error_code === errorCode.invitePlayerToJoin) {
             Alert.alert(
               '',
               response.payload.user_message,
@@ -636,6 +637,7 @@ function NotificationsListScreen({navigation}) {
           groupID: groupId,
           memberID: authContext.entity.uid,
           requestID: groupObj.activities[0].id,
+          groupObj: JSON.parse(groupObj.activities[0].object).groupData,
         });
       } else {
         setloading(true);

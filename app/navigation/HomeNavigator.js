@@ -1640,7 +1640,7 @@ const HomeNavigator = () => (
       name="EditMemberBasicInfoScreen"
       component={EditMemberBasicInfoScreen}
       options={{
-        title: 'Edit Basic Info',
+        title: strings.editbasicinfotitle,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -1656,7 +1656,7 @@ const HomeNavigator = () => (
       name="RequestBasicInfoScreen"
       component={RequestBasicInfoScreen}
       options={{
-        title: 'Request Basic Info',
+        title: strings.requestBasicInfoTitle,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

@@ -14,15 +14,20 @@ function LocationView({
   onPressCityPopup,
   postalCodeText,
   onChangePostalCodeText,
+  showTitle = true,
 }) {
   return (
     <View>
       <View style={styles.titleContainer}>
-        <TCLabel
-          title={strings.address.toUpperCase()}
-          required={true}
-          style={{marginTop: 0}}
-        />
+        {showTitle ? (
+          <TCLabel
+            title={strings.address.toUpperCase()}
+            required={true}
+            style={{marginTop: 0, marginBottom: 12}}
+          />
+        ) : (
+          <View style={{marginTop: 0, marginBottom: 12}} />
+        )}
         <Text style={styles.title} onPress={onPressVisibleLocationPopup}>
           {strings.searchForAddress}
         </Text>

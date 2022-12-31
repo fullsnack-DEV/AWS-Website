@@ -377,6 +377,7 @@ function TrashScreen({navigation, route}) {
         groupID: groupId,
         memberID: authContext.entity.uid,
         requestID: groupObj.activities[0].id,
+        groupObj: JSON.parse(groupObj.activities[0].object).groupData,
       });
     } else {
       setloading(true);
