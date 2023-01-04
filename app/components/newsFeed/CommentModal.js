@@ -189,6 +189,7 @@ const CommentModal = ({
         setCommentText(data.data.text);
         setEditData(data);
       } else {
+        setloading(true);
         deleteReactions(data.id, authContext)
           .then(() => {
             const filtered = commentData.filter((e) => e.id !== data.id);
@@ -198,8 +199,10 @@ const CommentModal = ({
               count: filtered?.length,
               data: filtered,
             });
+            setloading(false);
           })
           .catch((e) => {
+            setloading(false);
             Alert.alert('', e.messages);
           });
         // alert(key);

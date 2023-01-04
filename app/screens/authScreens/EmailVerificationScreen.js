@@ -261,6 +261,8 @@ export default function EmailVerificationScreen({navigation, route}) {
             fontWeight: '700',
             marginTop: 20,
             fontFamily: fonts.RBold,
+            marginLeft: 10,
+            marginRight: 10,
           }}>
           {timer !== 0
             ? format(strings.sentVerificationEmailAfterSecond, timer)
