@@ -278,7 +278,6 @@ export default function LookingTeamScreen({navigation, route}) {
   };
 
   const applyFilter = useCallback((fil) => {
-    console.log('Current Looking Entity : ', fil)
     getLookingEntity(fil);
   }, []);
 
