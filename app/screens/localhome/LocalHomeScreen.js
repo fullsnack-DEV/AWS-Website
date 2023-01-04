@@ -34,6 +34,7 @@ import FastImage from 'react-native-fast-image';
 import {useIsFocused} from '@react-navigation/native';
 import {format} from 'react-string-format';
 import AuthContext from '../../auth/context';
+import LocationContext from '../../context/LocationContext';
 import images from '../../Constants/ImagePath';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
@@ -81,6 +82,7 @@ export default function LocalHomeScreen({navigation, route}) {
   const isFocused = useIsFocused();
 
   const authContext = useContext(AuthContext);
+  const locationContext = useContext(LocationContext);
   const imageUploadContext = useContext(ImageUploadContext);
 
   const [loading, setloading] = useState(false);
@@ -263,6 +265,7 @@ export default function LocalHomeScreen({navigation, route}) {
   }, [authContext, isFocused]);
 
   useEffect(() => {
+    locationContext.setSelectedLoaction(location)
     getShortsList(
       location === strings.worldTitleText ? '_world_' : location,
       authContext,
@@ -750,8 +753,8 @@ export default function LocalHomeScreen({navigation, route}) {
 
   const keyExtractor = useCallback((item, index) => index.toString(), []);
   const renderRecentMatchItems = useCallback(({item}) =>  (
-      <View style={{marginBottom: 15}}>
-        <TCRecentMatchCard
+    <View style={{marginBottom: 15}}>
+      <TCRecentMatchCard
           data={item}
           cardWidth={'92%'}
           onPress={() => {
@@ -761,7 +764,7 @@ export default function LocalHomeScreen({navigation, route}) {
             if (routeName) navigation.push(routeName, {gameId: item?.game_id});
           }}
         />
-      </View>
+    </View>
     ), []);
 
   const renderGameItems = useCallback(

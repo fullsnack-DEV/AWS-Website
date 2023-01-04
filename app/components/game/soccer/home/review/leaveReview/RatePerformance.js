@@ -18,26 +18,26 @@ const RatePerformance = ({
   starAttributes,
   starColor,
 }) => (
-    <View style={styles.mainContainer}>
-      {/*    Title */}
-      <Text style={styles.titleText}>
-        Rate performance <Text style={{color: colors.redDelColor}}>*</Text>
-      </Text>
+  <View style={styles.mainContainer}>
+    {/*    Title */}
+    <Text style={styles.titleText}>
+      Rate performance <Text style={{color: colors.redDelColor}}>*</Text>
+    </Text>
 
-      {/* Ratings */}
-      <View style={styles.rateSection}>
-        {/* Poor Excellent Section */}
-        <View style={{...styles.poorExcellentSection}}>
-          <View style={{flex: 0.3}} />
-          <View style={styles.poorExcellentChildSection}>
-            <Text style={styles.poorExcellenceText}>Poor</Text>
-            <Text>Excellent</Text>
-          </View>
-          <View style={{flex: 0.1}} />
+    {/* Ratings */}
+    <View style={styles.rateSection}>
+      {/* Poor Excellent Section */}
+      <View style={{...styles.poorExcellentSection}}>
+        <View style={{flex: 0.3}} />
+        <View style={styles.poorExcellentChildSection}>
+          <Text style={styles.poorExcellenceText}>Poor</Text>
+          <Text>Excellent</Text>
         </View>
+        <View style={{flex: 0.1}} />
+      </View>
 
-        {/*    Rating Slider */}
-        {reviewAttributes.length
+      {/*    Rating Slider */}
+      {reviewAttributes.length
           ? reviewAttributes.map((item, index) => (
             <View key={index}>
               <TCAttributeRatingWithSlider
@@ -53,13 +53,13 @@ const RatePerformance = ({
             </View>
             ))
           : null}
-      </View>
+    </View>
 
-      {/* Questions */}
-      {starAttributes.map((item, index) => (
-        <View style={{marginVertical: 5}} key={index}>
-          <Text style={styles.questionText}>{item.description}</Text>
-          <TCRatingStarSlider
+    {/* Questions */}
+    {starAttributes.map((item, index) => (
+      <View style={{marginVertical: 5}} key={index}>
+        <Text style={styles.questionText}>{item.description}</Text>
+        <TCRatingStarSlider
             currentRating={reviewsData[item.name]}
             onPress={(star) => {
               setTeamReview(item.name, star);
@@ -67,9 +67,9 @@ const RatePerformance = ({
             style={{alignSelf: 'flex-end'}}
             starColor={starColor}
           />
-        </View>
+      </View>
       ))}
-    </View>
+  </View>
   );
   
 const styles = StyleSheet.create({
