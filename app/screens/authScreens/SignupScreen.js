@@ -424,22 +424,19 @@ export default function SignupScreen({navigation}) {
                 secureTextEntry={hidePassword}
                 keyboardType={'default'}
               />
-              <View>
-                <TouchableOpacity
-                  onPress={() => hideShowPassword()}
-                  style={{
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    marginRight: 10,
-                    top: 10,
-                  }}>
-                  {hidePassword ? (
-                    <Text style={styles.passwordEyes}>{strings.SHOW}</Text>
-                  ) : (
-                    <Text style={styles.passwordEyes}>{strings.HIDE}</Text>
-                  )}
-                </TouchableOpacity>
-              </View>
+              <TouchableOpacity
+                onPress={() => hideShowPassword()}
+                style={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginRight: 10,
+                }}>
+                {hidePassword ? (
+                  <Text style={styles.passwordEyes}>{strings.SHOW}</Text>
+                ) : (
+                  <Text style={styles.passwordEyes}>{strings.HIDE}</Text>
+                )}
+              </TouchableOpacity>
             </View>
 
             <View style={styles.passwordView}>
@@ -522,7 +519,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.9)',
     height: 40,
     alignSelf: 'center',
-    paddingVertical: 5,
     borderRadius: 5,
     color: 'black',
     elevation: 3,

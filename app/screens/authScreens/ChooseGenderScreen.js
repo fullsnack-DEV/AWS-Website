@@ -249,8 +249,8 @@ const styles = StyleSheet.create({
     color: colors.parrotColor,
     fontFamily: fonts.RMedium,
     fontSize: 14,
-    marginLeft: 25,
-    marginRight: 25,
+    marginLeft: 35,
+    marginRight: 35,
     textAlign: 'left',
   },
   nextButtonStyle: {

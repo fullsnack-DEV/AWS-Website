@@ -374,7 +374,6 @@ const LoginScreen = ({navigation}) => {
           secureTextEntry={hidePassword}
           keyboardType={'default'}
           height={40}
-          width={wp(64)}
         />
         <TouchableOpacity
           onPress={() => hideShowPassword()}
@@ -542,11 +541,9 @@ const styles = StyleSheet.create({
 
   passwordContainer: {
     alignSelf: 'center',
-    // paddingLeft: 10,
     borderRadius: 5,
     fontFamily: fonts.RRegular,
     fontSize: 16,
-    // width: wp('81.3%'),
     backgroundColor: 'rgba(255,255,255,0.9)',
     height: 40,
     color: 'black',
@@ -560,26 +557,21 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginLeft: 35,
     marginRight: 35,
-    // backgroundColor: colors.redColor,
   },
 
   passwordInput: {
     alignSelf: 'center',
-    paddingHorizontal: 5,
+    paddingHorizontal: 15,
     borderRadius: 5,
     fontFamily: fonts.RRegular,
     fontSize: 16,
-    // width: wp('66%'),
     height: 40,
     color: 'black',
-    // backgroundColor: colors.greeColor,
-    marginRight: 10,
-    marginLeft: 10,
+    flex: 1,
   },
 
   textFieldStyle: {
     alignSelf: 'center',
-    // width: wp('81.3%'),
     backgroundColor: 'rgba(255,255,255,0.9)',
     shadowColor: colors.googleColor,
     shadowOffset: {width: 0, height: 4},
