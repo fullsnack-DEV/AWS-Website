@@ -262,22 +262,22 @@ export default function CreateTeamForm1({navigation, route}) {
   const renderLocationItem = ({item}) => (
     <Pressable      
       onPress={() => onSelectLocation(item)}>
-        <View style={locationModelStyles.listItem}>
-          <Text style={locationModelStyles.cityText}>{item.description}</Text>
-        </View>
-        <View style={locationModelStyles.itemSeprater} />
+      <View style={locationModelStyles.listItem}>
+        <Text style={locationModelStyles.cityText}>{item.description}</Text>
+      </View>
+      <View style={locationModelStyles.itemSeprater} />
     </Pressable>
   );
 
   const renderCurrentLocationItem = ({item}) => (
     <Pressable    
       onPress={() => {onSelectNearByLocation(item)}}>
-        <View style={locationModelStyles.listItem}>
-          <Text style={locationModelStyles.cityText }>{[item.city, item.state, item.country]
+      <View style={locationModelStyles.listItem}>
+        <Text style={locationModelStyles.cityText }>{[item.city, item.state, item.country]
         .filter((v) => v)
         .join(', ')}</Text>
-        </View>
-        <View style={locationModelStyles.itemSeprater} />
+      </View>
+      <View style={locationModelStyles.itemSeprater} />
     </Pressable>
   );
 
@@ -286,9 +286,9 @@ export default function CreateTeamForm1({navigation, route}) {
     if(currentLocation && currentLocation.city){
       renderData =  (<Pressable
         onPress={() => onSelectCurrentLocation()}>
-         <View style={locationModelStyles.listItemCurrentLocation}>
-         <Text style={locationModelStyles.cityText}>
-          {[
+        <View style={locationModelStyles.listItemCurrentLocation}>
+          <Text style={locationModelStyles.cityText}>
+            {[
             currentLocation?.city,
             currentLocation?.state,
             currentLocation?.country,
@@ -560,7 +560,7 @@ export default function CreateTeamForm1({navigation, route}) {
           style={[locationModelStyles.mainView, {flex:1}]}
           >
         
-         <View
+          <View
             style={locationModelStyles.headerView}>
             <TouchableOpacity onPress={() => {}}></TouchableOpacity>
             <Text
@@ -568,15 +568,15 @@ export default function CreateTeamForm1({navigation, route}) {
               {strings.homeCityTitleText}
             </Text>
             <View style={{paddingTop:20,height:'100%',}}>
-            <TouchableOpacity
+              <TouchableOpacity
               hitSlop={getHitSlop(15)}
               style={locationModelStyles.closeButton}
               onPress={() => setVisibleLocationModal(false)}>
-              <Image
+                <Image
                 source={images.cancelImage}
                 style={[locationModelStyles.closeButton,{marginLeft:0, marginRight:0}]}
               />
-            </TouchableOpacity>
+              </TouchableOpacity>
             </View>
             
           </View>
