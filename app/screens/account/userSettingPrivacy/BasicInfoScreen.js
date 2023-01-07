@@ -43,6 +43,7 @@ import {getQBAccountType, QBupdateUser} from '../../../utils/QuickBlox';
 import {searchLocations} from '../../../api/External';
 import TCThinDivider from '../../../components/TCThinDivider';
 import TCCountryCodeModal from '../../../components/TCCountryCodeModal';
+import {heightMesurement, weightMesurement} from '../../../utils/constant';
 
 export default function BasicInfoScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
@@ -148,19 +149,17 @@ export default function BasicInfoScreen({navigation, route}) {
     getGeocoordinatesWithPlaceName(Platform.OS)
       .then((location) => {
         setloading(false);
-        if(location.position){
+        if (location.position) {
           setCurrentLocation(location);
-        }
-        else{
+        } else {
           setCurrentLocation(null);
         }
       })
       .catch((e) => {
         setloading(false);
-        if(e.message === strings.userdeniedgps){
+        if (e.message === strings.userdeniedgps) {
           setCurrentLocation(null);
-        }
-        else{
+        } else {
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
@@ -395,10 +394,7 @@ export default function BasicInfoScreen({navigation, route}) {
             label: strings.heightTypeText,
             value: null,
           }}
-          items={[
-            {label: strings.cm, value: strings.cm},
-            {label: strings.ft, value: strings.ft},
-          ]}
+          items={heightMesurement}
           onValueChange={(value) => {
             setUserInfo({
               ...userInfo,
@@ -477,10 +473,7 @@ export default function BasicInfoScreen({navigation, route}) {
             label: strings.weightTypeText,
             value: null,
           }}
-          items={[
-            {label: strings.kg, value: strings.kg},
-            {label: strings.pound, value: strings.pound},
-          ]}
+          items={weightMesurement}
           onValueChange={(value) => {
             setUserInfo({
               ...userInfo,

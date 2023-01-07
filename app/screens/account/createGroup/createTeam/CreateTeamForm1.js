@@ -15,19 +15,19 @@ import {
   Platform,
   Linking,
   Pressable,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
 } from 'react-native';
 
 import {useIsFocused} from '@react-navigation/native';
 
 import Modal from 'react-native-modal';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
-import {
-  searchCityState,
-  searchNearByCityState
-} from '../../../../api/External';
+import {searchCityState, searchNearByCityState} from '../../../../api/External';
 
-import { getPlaceNameFromPlaceID, getGeocoordinatesWithPlaceName} from '../../../../utils/location';
+import {
+  getPlaceNameFromPlaceID,
+  getGeocoordinatesWithPlaceName,
+} from '../../../../utils/location';
 
 import TCGradientButton from '../../../../components/TCGradientButton';
 import {getUserDoubleTeamFollower} from '../../../../api/Users';
@@ -45,7 +45,6 @@ import Verbs from '../../../../Constants/Verbs';
 import styles from './style';
 
 export default function CreateTeamForm1({navigation, route}) {
-
   const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
   const [sportsSelection, setSportsSelection] = useState();
@@ -84,9 +83,7 @@ export default function CreateTeamForm1({navigation, route}) {
       searchCityState(searchText)
         .then((response) => {
           setNoData(false);
-          setCityData(
-            response.predictions
-          );
+          setCityData(response.predictions);
         })
         .catch((e) => {
           setTimeout(() => {
@@ -216,23 +213,22 @@ export default function CreateTeamForm1({navigation, route}) {
   };
 
   const toggleLocationModal = () => {
-    if(!visibleLocationModal){
+    if (!visibleLocationModal) {
       setLoading(true);
-      setUserDeniedLocPerm(false);      
+      setUserDeniedLocPerm(false);
       setSearchText('');
       setCityData([]);
       getGeocoordinatesWithPlaceName(Platform.OS)
         .then((location) => {
           setLocationFetch(true);
-          if(location.position){
+          if (location.position) {
             setCurrentLocation(location);
             getNearbyCityData(
               location.position.coords.latitude,
               location.position.coords.longitude,
               100,
             );
-          }
-          else{
+          } else {
             setLoading(false);
             setCurrentLocation(null);
             setVisibleLocationModal(!visibleLocationModal);
@@ -241,27 +237,26 @@ export default function CreateTeamForm1({navigation, route}) {
         .catch((e) => {
           setLoading(false);
           setLocationFetch(true);
-          if(e.name === Verbs.gpsErrorDeined){
+          if (e.name === Verbs.gpsErrorDeined) {
             setCurrentLocation(null);
             setUserDeniedLocPerm(true);
-          }
-          else{
+          } else {
             setTimeout(() => {
-              Alert.alert(strings.alertmessagetitle, `${e.message}(Location fetch`);
+              Alert.alert(
+                strings.alertmessagetitle,
+                `${e.message}(Location fetch`,
+              );
             }, 10);
           }
           setVisibleLocationModal(!visibleLocationModal);
         });
-    }
-    else{
+    } else {
       setVisibleLocationModal(!visibleLocationModal);
     }
-
   };
 
   const renderLocationItem = ({item}) => (
-    <Pressable      
-      onPress={() => onSelectLocation(item)}>
+    <Pressable onPress={() => onSelectLocation(item)}>
       <View style={locationModelStyles.listItem}>
         <Text style={locationModelStyles.cityText}>{item.description}</Text>
       </View>
@@ -270,48 +265,56 @@ export default function CreateTeamForm1({navigation, route}) {
   );
 
   const renderCurrentLocationItem = ({item}) => (
-    <Pressable    
-      onPress={() => {onSelectNearByLocation(item)}}>
+    <Pressable
+      onPress={() => {
+        onSelectNearByLocation(item);
+      }}>
       <View style={locationModelStyles.listItem}>
-        <Text style={locationModelStyles.cityText }>{[item.city, item.state, item.country]
-        .filter((v) => v)
-        .join(', ')}</Text>
+        <Text style={locationModelStyles.cityText}>
+          {[item.city, item.state, item.country].filter((v) => v).join(', ')}
+        </Text>
       </View>
       <View style={locationModelStyles.itemSeprater} />
     </Pressable>
   );
 
   const renderCurrentLocation = () => {
-    let renderData
-    if(currentLocation && currentLocation.city){
-      renderData =  (<Pressable
-        onPress={() => onSelectCurrentLocation()}>
-        <View style={locationModelStyles.listItemCurrentLocation}>
-          <Text style={locationModelStyles.cityText}>
-            {[
-            currentLocation?.city,
-            currentLocation?.state,
-            currentLocation?.country,
-            ].filter((v) => v)
-            .join(', ')}</Text>
-          <Text style={locationModelStyles.curruentLocationText}>
-            {strings.currentLocationText}
-          </Text>
-        </View>
-        <View style={locationModelStyles.itemSeprater} />
-      </Pressable>)
+    let renderData;
+    if (currentLocation && currentLocation.city) {
+      renderData = (
+        <Pressable onPress={() => onSelectCurrentLocation()}>
+          <View style={locationModelStyles.listItemCurrentLocation}>
+            <Text style={locationModelStyles.cityText}>
+              {[
+                currentLocation?.city,
+                currentLocation?.state,
+                currentLocation?.country,
+              ]
+                .filter((v) => v)
+                .join(', ')}
+            </Text>
+            <Text style={locationModelStyles.curruentLocationText}>
+              {strings.currentLocationText}
+            </Text>
+          </View>
+          <View style={locationModelStyles.itemSeprater} />
+        </Pressable>
+      );
+    } else {
+      renderData = <View />;
     }
-    else{
-      renderData =  <View/>
-    }
-    return renderData
-  }
+    return renderData;
+  };
 
   const getNearbyCityData = (lat, long, radius) => {
     searchNearByCityState(radius, lat, long)
       .then((response) => {
         const list = response.filter(
-          (obj) => !(obj.city === currentLocation?.city && obj.country === currentLocation?.country)
+          (obj) =>
+            !(
+              obj.city === currentLocation?.city &&
+              obj.country === currentLocation?.country
+            ),
         );
         setNearbyCities(list);
         setLoading(false);
@@ -321,7 +324,10 @@ export default function CreateTeamForm1({navigation, route}) {
         setLoading(false);
         setNearbyCities([]);
         setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, `${e.message}(getNearbyCityData),${lat},${long},${radius}`);
+          Alert.alert(
+            strings.alertmessagetitle,
+            `${e.message}(getNearbyCityData),${lat},${long},${radius}`,
+          );
         }, 10);
         setVisibleLocationModal(!visibleLocationModal);
       });
@@ -336,28 +342,21 @@ export default function CreateTeamForm1({navigation, route}) {
         setState(location.state);
         setCountry(location.country);
         setHomeCity(
-          [
-            location.city,
-            location.state,
-            location.country,
-            ].filter((v) => v)
-            .join(', ')
+          [location.city, location.state, location.country]
+            .filter((v) => v)
+            .join(', '),
         );
       }
       toggleLocationModal();
     });
-};
+  };
 
   const onSelectCurrentLocation = async () => {
     setCity(currentLocation?.city);
     setState(currentLocation?.state);
     setCountry(currentLocation?.country);
     setHomeCity(
-      [
-        currentLocation?.city,
-        currentLocation?.state,
-        currentLocation?.country,
-      ]
+      [currentLocation?.city, currentLocation?.state, currentLocation?.country]
         .filter((v) => v)
         .join(', '),
     );
@@ -365,57 +364,46 @@ export default function CreateTeamForm1({navigation, route}) {
   };
 
   const onSelectNoCurrentLocation = async () => {
-    if(userDeniedLocPerm){
-        Alert.alert(
-          strings.locationSettingTitleText,
-          strings.locationSettingText,
-          [
-            {
-              text: strings.cancel,
-              style: 'cancel',
-            },
-            {
-              text: strings.settingsTitleText,
-              onPress: () => { 
-                if(Platform.OS === 'ios'){
-                  Linking.openURL('app-settings:')
-                }
-                else{
-                  Linking.openSettings();
-                }
-              }
-            },
-          ],
-        );
-    }
-    else{
+    if (userDeniedLocPerm) {
       Alert.alert(
-        strings.noGpsErrorMsg,
-        '',
+        strings.locationSettingTitleText,
+        strings.locationSettingText,
         [
           {
-            text: strings.OkText,
+            text: strings.cancel,
             style: 'cancel',
+          },
+          {
+            text: strings.settingsTitleText,
+            onPress: () => {
+              if (Platform.OS === 'ios') {
+                Linking.openURL('app-settings:');
+              } else {
+                Linking.openSettings();
+              }
+            },
           },
         ],
       );
+    } else {
+      Alert.alert(strings.noGpsErrorMsg, '', [
+        {
+          text: strings.OkText,
+          style: 'cancel',
+        },
+      ]);
     }
   };
 
   const onSelectNearByLocation = async (item) => {
     setCity(item.city);
-    setState( item.state);
+    setState(item.state);
     setCountry(item.country);
     setHomeCity(
-      [
-        item.city,
-        item.state,
-        item.country,
-        ].filter((v) => v)
-        .join(', ')
+      [item.city, item.state, item.country].filter((v) => v).join(', '),
     );
     toggleLocationModal();
-};
+  };
 
   return (
     <>
@@ -484,11 +472,11 @@ export default function CreateTeamForm1({navigation, route}) {
           margin: 0,
         }}>
         <KeyboardAvoidingView
-        behavior='position'
+          behavior="position"
           style={{
             width: '100%',
             height: Dimensions.get('window').height / 3,
-            maxHeight:Dimensions.get('window').height / 3,
+            maxHeight: Dimensions.get('window').height / 3,
             backgroundColor: 'white',
             position: 'absolute',
             bottom: 0,
@@ -555,30 +543,28 @@ export default function CreateTeamForm1({navigation, route}) {
           margin: 0,
         }}>
         <KeyboardAvoidingView
-        behavior='height'
-        enabled={false}
-          style={[locationModelStyles.mainView, {flex:1}]}
-          >
-        
-          <View
-            style={locationModelStyles.headerView}>
+          behavior="height"
+          enabled={false}
+          style={[locationModelStyles.mainView, {flex: 1}]}>
+          <View style={locationModelStyles.headerView}>
             <TouchableOpacity onPress={() => {}}></TouchableOpacity>
-            <Text
-              style={locationModelStyles.headerText}>
+            <Text style={locationModelStyles.headerText}>
               {strings.homeCityTitleText}
             </Text>
-            <View style={{paddingTop:20,height:'100%',}}>
+            <View style={{paddingTop: 20, height: '100%'}}>
               <TouchableOpacity
-              hitSlop={getHitSlop(15)}
-              style={locationModelStyles.closeButton}
-              onPress={() => setVisibleLocationModal(false)}>
+                hitSlop={getHitSlop(15)}
+                style={locationModelStyles.closeButton}
+                onPress={() => setVisibleLocationModal(false)}>
                 <Image
-                source={images.cancelImage}
-                style={[locationModelStyles.closeButton,{marginLeft:0, marginRight:0}]}
-              />
+                  source={images.cancelImage}
+                  style={[
+                    locationModelStyles.closeButton,
+                    {marginLeft: 0, marginRight: 0},
+                  ]}
+                />
               </TouchableOpacity>
             </View>
-            
           </View>
           <View style={locationModelStyles.separatorLine} />
           <View>
@@ -593,17 +579,34 @@ export default function CreateTeamForm1({navigation, route}) {
               />
             </View>
             {noData && searchText.length > 0 && (
-              <Text style={locationModelStyles.noDataText}>{strings.enter3CharText}</Text>
+              <Text style={locationModelStyles.noDataText}>
+                {strings.enter3CharText}
+              </Text>
             )}
-            {noData && searchText.length === 0 && nearbyCities.length >= 0 && cityData.length === 0 && (
-              <FlatList
-                style={{marginTop:25}}
-                data={nearbyCities}
-                renderItem={renderCurrentLocationItem}
-                ListHeaderComponent={renderCurrentLocation}
-                keyExtractor={(index) => index.toString()}
-              />
-            )}
+            {noData &&
+              searchText.length === 0 &&
+              nearbyCities.length >= 0 &&
+              cityData.length === 0 && (
+                <FlatList
+                  style={{marginTop: 25}}
+                  data={nearbyCities}
+                  renderItem={renderCurrentLocationItem}
+                  ListHeaderComponent={renderCurrentLocation}
+                  keyExtractor={(index) => index.toString()}
+                />
+              )}
+            {noData &&
+              searchText.length === 0 &&
+              nearbyCities.length >= 0 &&
+              cityData.length === 0 && (
+                <FlatList
+                  style={{marginTop: 25}}
+                  data={nearbyCities}
+                  renderItem={renderCurrentLocationItem}
+                  ListHeaderComponent={renderCurrentLocation}
+                  keyExtractor={(index) => index.toString()}
+                />
+              )}
             {noData &&
               searchText.length === 0 &&
               locationFetch &&
@@ -618,14 +621,17 @@ export default function CreateTeamForm1({navigation, route}) {
                   </View>
                   <View style={locationModelStyles.itemSeprater} />
                   <Text
-                    style={[locationModelStyles.currentLocationTextStyle, {marginTop: 15}]}>
+                    style={[
+                      locationModelStyles.currentLocationTextStyle,
+                      {marginTop: 15},
+                    ]}>
                     {strings.noLocationText}
                   </Text>
                 </TouchableWithoutFeedback>
               )}
             {cityData.length > 0 && (
               <FlatList
-                style={{marginTop:10}}
+                style={{marginTop: 10}}
                 data={cityData.filter((obj) => obj.terms.length === 3)}
                 renderItem={renderLocationItem}
                 keyExtractor={(item, index) => index.toString()}
@@ -655,16 +661,16 @@ const locationModelStyles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 15,
   },
-  headerView:{
+  headerView: {
     flexDirection: 'row',
     paddingHorizontal: 20,
     justifyContent: 'space-between',
     alignItems: 'baseline',
-    height:50,
+    height: 50,
   },
-  headerText:{
+  headerText: {
     alignSelf: 'center',
-    paddingTop:18,
+    paddingTop: 18,
     fontSize: 16,
     fontFamily: fonts.RBold,
     color: colors.lightBlackColor,
@@ -684,8 +690,8 @@ const locationModelStyles = StyleSheet.create({
   },
   searchSectionStyle: {
     backgroundColor: colors.textFieldBackground,
-    marginTop:25,
-    marginHorizontal:15,
+    marginTop: 25,
+    marginHorizontal: 15,
     borderRadius: 20,
     flexDirection: 'row',
     height: 40,
@@ -709,22 +715,22 @@ const locationModelStyles = StyleSheet.create({
   listItem: {
     flexDirection: 'row',
     marginLeft: 25,
-    marginRight:25,
+    marginRight: 25,
     // backgroundColor:'#ADF234',
     // justifyContent:'center',
-    paddingHorizontal:6,
-    alignItems:'center',
-    height:52
+    paddingHorizontal: 6,
+    alignItems: 'center',
+    height: 52,
   },
   listItemCurrentLocation: {
     flexDirection: 'column',
     marginLeft: 25,
-    marginRight:25,
+    marginRight: 25,
     // backgroundColor:'#ADF234',
     // justifyContent:'center',
-    paddingHorizontal:6,
-    alignItems:'baseline',
-    height:52
+    paddingHorizontal: 6,
+    alignItems: 'baseline',
+    height: 52,
   },
   cityText: {
     color: colors.lightBlackColor,
@@ -733,11 +739,11 @@ const locationModelStyles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     textAlignVertical: 'center',
   },
-  itemSeprater:{ 
-    backgroundColor: colors.grayBackgroundColor, 
+  itemSeprater: {
+    backgroundColor: colors.grayBackgroundColor,
     height: 1,
-    marginLeft:25,
-    marginRight:25
+    marginLeft: 25,
+    marginRight: 25,
   },
   currentLocationTextStyle: {
     color: colors.lightBlackColor,
@@ -745,8 +751,8 @@ const locationModelStyles = StyleSheet.create({
     textAlign: 'left',
     fontFamily: fonts.RRegular,
     textAlignVertical: 'center',
-    marginBottom:14,
-    marginTop : 40,
+    marginBottom: 14,
+    marginTop: 40,
     marginLeft: 35,
     marginRight: 35,
   },

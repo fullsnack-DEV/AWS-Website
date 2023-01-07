@@ -9,14 +9,16 @@ import {
   Image,
   Platform,
   TouchableOpacity,
+  Dimensions,
+  Keyboard,
 } from 'react-native';
 
+import Modal from 'react-native-modal';
+
 import RNPickerSelect from 'react-native-picker-select';
-import {
-  widthPercentageToDP,
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import {useIsFocused} from '@react-navigation/native';
+import {format} from 'react-string-format';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import {
   approveBasicInfoRequest,
@@ -26,7 +28,6 @@ import {strings} from '../../../../Localization/translation';
 import images from '../../../Constants/ImagePath';
 
 import fonts from '../../../Constants/Fonts';
-import TCTextField from '../../../components/TCTextField';
 import TCPhoneNumber from '../../../components/TCPhoneNumber';
 import TCMessageButton from '../../../components/TCMessageButton';
 import TCThickDivider from '../../../components/TCThickDivider';
@@ -36,33 +37,34 @@ import TCKeyboardView from '../../../components/TCKeyboardView';
 import AuthContext from '../../../auth/context';
 import colors from '../../../Constants/Colors';
 import DateTimePickerView from '../../../components/Schedule/DateTimePickerModal';
+import LocationView from '../../../components/LocationView';
+import {
+  getHitSlop,
+  heightPercentageToDP,
+  widthPercentageToDP,
+  getJSDate,
+} from '../../../utils';
+import {searchAddress, searchCityState} from '../../../api/External';
+import {monthNames} from '../../../utils/constant';
 
 let entity = {};
 
 export default function RequestBasicInfoScreen({navigation, route}) {
-  const monthNames = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-  ];
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
 
   const [minDateValue, setMinDateValue] = useState(new Date());
   const [maxDateValue, setMaxDateValue] = useState(new Date());
   const [loading, setloading] = useState(false);
-  const [memberInfo, setMemberInfo] = useState();
+  const [memberInfo, setMemberInfo] = useState(route.params.groupObj);
   const [show, setShow] = useState(false);
   const [role, setRole] = useState('');
+  const [visibleCityModal, setVisibleCityModal] = useState(false);
+  const [visibleLocationModal, setVisibleLocationModal] = useState(false);
+
+  const [searchText, setSearchText] = useState('');
+  const [cityData, setCityData] = useState([]);
+  const [locationData, setLocationData] = useState([]);
   const [phoneNumber, setPhoneNumber] = useState([
     {
       id: 0,
@@ -70,7 +72,6 @@ export default function RequestBasicInfoScreen({navigation, route}) {
       country_code: '',
     },
   ]);
-  console.log('memberInfo11', memberInfo);
 
   const [location, setLocation] = useState(
     memberInfo?.city
@@ -87,9 +88,6 @@ export default function RequestBasicInfoScreen({navigation, route}) {
     // setDateValue(mindate);
     setMinDateValue(mindate);
     setMaxDateValue(maxdate);
-
-    console.log('Min date', mindate);
-    console.log('Max date', maxdate);
   }, []);
 
   useEffect(() => {
@@ -100,11 +98,6 @@ export default function RequestBasicInfoScreen({navigation, route}) {
         route?.params?.state &&
         route?.params?.country
       ) {
-        console.log('route?.params?.city', route?.params?.city);
-        console.log('route?.params?.state', route?.params?.state);
-
-        console.log('route?.params?.country', route?.params?.country);
-
         setMemberInfo({
           ...memberInfo,
           city: route?.params?.city,
@@ -138,6 +131,18 @@ export default function RequestBasicInfoScreen({navigation, route}) {
     getAuthEntity();
   }, []);
 
+  useEffect(() => {
+    searchAddress(searchText).then((response) => {
+      setLocationData(response.results);
+    });
+  }, [searchText]);
+
+  useEffect(() => {
+    searchCityState(searchText).then((response) => {
+      setCityData(response.predictions);
+    });
+  }, [searchText]);
+
   const getMemberInfo = () => {
     setloading(true);
     getGroupMembersInfo(
@@ -146,7 +151,6 @@ export default function RequestBasicInfoScreen({navigation, route}) {
       authContext,
     )
       .then((response) => {
-        console.log('PROFILE RESPONSE11::', response.payload);
         setMemberInfo(response?.payload);
         setSetting({
           gender: !!response?.payload?.gender,
@@ -202,14 +206,9 @@ export default function RequestBasicInfoScreen({navigation, route}) {
           onPress={() => {
             if (checkValidation()) {
               editMemberBasicInfo();
-              // if (entity.role === 'team') {
-              //   navigation.navigate('CreateMemberProfileTeamForm2', { form1: memberInfo })
-              // } else if (entity.role === 'club') {
-              //   navigation.navigate('CreateMemberProfileClubForm2', { form1: memberInfo })
-              // }
             }
           }}>
-          Done
+          {strings.done}
         </Text>
       ),
     });
@@ -252,7 +251,6 @@ export default function RequestBasicInfoScreen({navigation, route}) {
         (obj) =>
           ![null, undefined, ''].includes(obj.phone_number && obj.country_code),
       );
-      console.log('filteredNumber', filteredNumber);
       if (filteredNumber?.length <= 0) {
         Alert.alert('Towns Cup', 'Please fill all phone number parameter.');
         return false;
@@ -273,7 +271,6 @@ export default function RequestBasicInfoScreen({navigation, route}) {
   const editMemberBasicInfo = () => {
     setloading(true);
     const bodyParams = {};
-    console.log('SETTING PARAMS::', setting);
     bodyParams.gender = memberInfo?.gender;
     if (setting?.birthday === true) {
       bodyParams.birthday = memberInfo?.birthday;
@@ -295,16 +292,13 @@ export default function RequestBasicInfoScreen({navigation, route}) {
       bodyParams.postal_code = memberInfo?.postal_code;
     }
 
-    console.log('BODY PARAMS::', bodyParams);
-
     approveBasicInfoRequest(
       route?.params?.groupID,
       route?.params?.requestID,
       bodyParams,
       authContext,
     )
-      .then((response) => {
-        console.log('BASIC INFO RESPONSE::', response);
+      .then(() => {
         setloading(false);
         navigation.goBack();
       })
@@ -316,7 +310,6 @@ export default function RequestBasicInfoScreen({navigation, route}) {
       });
   };
   const handleDonePress = (date) => {
-    console.log('dadadad', date);
     setShow(!show);
     if (date !== '') {
       setMemberInfo({
@@ -384,16 +377,15 @@ export default function RequestBasicInfoScreen({navigation, route}) {
       <View
         style={{
           flexDirection: 'row',
-          marginTop: 12,
           align: 'center',
           marginLeft: 15,
           marginRight: 15,
           justifyContent: 'space-between',
         }}>
-        <View style={{...styles.halfMatchFeeView, shadowStyle}}>
+        <View style={{...styles.halfMatchFeeView, ...shadowStyle}}>
           <TextInput
-            placeholder={'Height'}
-            style={{...styles.halffeeText, ...shadowStyle}}
+            placeholder={strings.height}
+            style={{...styles.halffeeText}}
             keyboardType={'phone-pad'}
             onChangeText={(text) => {
               setMemberInfo({
@@ -409,7 +401,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
         </View>
         <RNPickerSelect
           placeholder={{
-            label: 'Height type',
+            label: strings.heightTypeText,
             value: null,
           }}
           items={[
@@ -464,7 +456,6 @@ export default function RequestBasicInfoScreen({navigation, route}) {
       <View
         style={{
           flexDirection: 'row',
-          marginTop: 12,
           align: 'center',
           marginLeft: 15,
           marginRight: 15,
@@ -472,8 +463,8 @@ export default function RequestBasicInfoScreen({navigation, route}) {
         }}>
         <View style={{...styles.halfMatchFeeView, ...shadowStyle}}>
           <TextInput
-            placeholder={'Weight'}
-            style={{...styles.halffeeText, ...shadowStyle}}
+            placeholder={strings.weight}
+            style={{...styles.halffeeText}}
             keyboardType={'phone-pad'}
             onChangeText={(text) => {
               setMemberInfo({
@@ -489,7 +480,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
         </View>
         <RNPickerSelect
           placeholder={{
-            label: 'Weight type',
+            label: strings.weightTypeText,
             value: null,
           }}
           items={[
@@ -539,167 +530,200 @@ export default function RequestBasicInfoScreen({navigation, route}) {
     </View>
   );
 
-  return (
-    <TCKeyboardView>
-      <ActivityLoader visible={loading} />
-      <View>
-        <Text style={styles.basicInfoText}>
-          {entity?.obj?.group_name} wants to collect your basic info. You may
-          choose the sections you want to send or edit each section befor you
-          send the information.
-        </Text>
-        <TCThickDivider />
-      </View>
+  const locationString = () => {
+    let str = '';
+    if (memberInfo.city) {
+      str += `${memberInfo.city}, `;
+    }
+    if (memberInfo.state_abbr) {
+      str += `${memberInfo.state_abbr}, `;
+    }
+    if (memberInfo.country) {
+      str += `${memberInfo.country}, `;
+    }
+    return str;
+  };
 
-      <View>
+  const renderLocationItem = ({item}) => (
+    <TouchableOpacity
+      style={styles.listItem}
+      onPress={() => {
+        const pCode = item.address_components.filter((obj) =>
+          obj.types.some((p) => p === 'postal_code'),
+        );
+
+        setMemberInfo({
+          ...memberInfo,
+          postal_code: pCode.length && pCode[0].long_name,
+        });
+        setLocation(item.formatted_address);
+        setVisibleLocationModal(false);
+      }}>
+      <Text style={styles.cityList}>{item.formatted_address}</Text>
+    </TouchableOpacity>
+  );
+
+  const renderCityStateCountryItem = ({item}) => (
+    <TouchableOpacity
+      style={styles.listItem}
+      onPress={() => {
+        setMemberInfo({
+          ...memberInfo,
+          city: item?.terms?.[0]?.value ?? '',
+          state_abbr: item?.terms?.[1]?.value ?? '',
+          country: item?.terms?.[2]?.value ?? '',
+        });
+        setVisibleCityModal(false);
+        setCityData([]);
+        setLocationData([]);
+      }}>
+      <Text style={styles.cityList}>{item.description}</Text>
+    </TouchableOpacity>
+  );
+
+  return (
+    <>
+      <TCKeyboardView>
+        <ActivityLoader visible={loading} />
+        <View>
+          <Text style={styles.basicInfoText}>
+            {format(
+              strings.basicInfoRequestText,
+              route.params.groupObj?.group_name,
+            )}
+          </Text>
+          <TCThickDivider />
+        </View>
+
+        <View>
+          <View style={styles.checkBoxContainer}>
+            <TouchableOpacity
+              onPress={() => {
+                setSetting({
+                  ...setting,
+                  birthday: !setting?.birthday,
+                });
+              }}>
+              <Image
+                source={
+                  setting?.birthday === true
+                    ? images.orangeCheckBox
+                    : images.uncheckWhite
+                }
+                style={{height: 22, width: 22, resizeMode: 'contain'}}
+              />
+            </TouchableOpacity>
+            <Text style={styles.checkBoxText}>
+              {strings.birthDatePlaceholder}
+            </Text>
+          </View>
+          <TCTouchableLabel
+            title={
+              memberInfo?.birthday &&
+              `${`${
+                monthNames[getJSDate(memberInfo?.birthday).getMonth()]
+              } ${new Date(
+                memberInfo?.birthday * 1000,
+              ).getDate()}`}, ${new Date(
+                memberInfo?.birthday * 1000,
+              ).getFullYear()}`
+            }
+            placeholder={strings.birthDatePlaceholder}
+            onPress={() => setShow(!show)}
+          />
+        </View>
+
         <View style={styles.checkBoxContainer}>
           <TouchableOpacity
             onPress={() => {
               setSetting({
                 ...setting,
-                birthday: !setting?.birthday,
+                height: !setting?.height,
               });
             }}>
             <Image
               source={
-                setting?.birthday === true
+                setting?.height === true
                   ? images.orangeCheckBox
                   : images.uncheckWhite
               }
               style={{height: 22, width: 22, resizeMode: 'contain'}}
             />
           </TouchableOpacity>
-          <Text style={styles.checkBoxText}>Birthday</Text>
+          <Text style={styles.checkBoxText}>{strings.height}</Text>
         </View>
-        <TCTouchableLabel
-          title={
-            memberInfo?.birthday &&
-            `${`${
-              monthNames[new Date(memberInfo?.birthday * 1000).getMonth()]
-            } ${new Date(memberInfo?.birthday * 1000).getDate()}`}, ${new Date(
-              memberInfo?.birthday * 1000,
-            ).getFullYear()}`
-          }
-          placeholder={strings.birthDatePlaceholder}
-          onPress={() => setShow(!show)}
-        />
-      </View>
+        {heightView()}
 
-      <View style={styles.checkBoxContainer}>
-        <TouchableOpacity
-          onPress={() => {
-            setSetting({
-              ...setting,
-              height: !setting?.height,
-            });
-          }}>
-          <Image
-            source={
-              setting?.height === true
-                ? images.orangeCheckBox
-                : images.uncheckWhite
-            }
-            style={{height: 22, width: 22, resizeMode: 'contain'}}
-          />
-        </TouchableOpacity>
-        <Text style={styles.checkBoxText}>{strings.height}</Text>
-      </View>
-      {heightView()}
-
-      <View style={styles.checkBoxContainer}>
-        <TouchableOpacity
-          onPress={() => {
-            setSetting({
-              ...setting,
-              weight: !setting?.weight,
-            });
-          }}>
-          <Image
-            source={
-              setting?.weight ? images.orangeCheckBox : images.uncheckWhite
-            }
-            style={{height: 22, width: 22, resizeMode: 'contain'}}
-          />
-        </TouchableOpacity>
-        <Text style={styles.checkBoxText}>{strings.weight}</Text>
-      </View>
-      {weightView()}
-
-      {/* <View>
         <View style={styles.checkBoxContainer}>
           <TouchableOpacity
             onPress={() => {
               setSetting({
                 ...setting,
-                email: !setting?.email,
+                weight: !setting?.weight,
               });
             }}>
             <Image
               source={
-                setting?.email ? images.orangeCheckBox : images.uncheckWhite
+                setting?.weight ? images.orangeCheckBox : images.uncheckWhite
               }
               style={{height: 22, width: 22, resizeMode: 'contain'}}
             />
           </TouchableOpacity>
-          <Text style={styles.checkBoxText}>Email</Text>
+          <Text style={styles.checkBoxText}>{strings.weight}</Text>
         </View>
-        <TCTextField
-          value={memberInfo?.email}
-          onChangeText={(text) => setMemberInfo({...memberInfo, email: text})}
-          placeholder={strings.addressPlaceholder}
-          keyboardType={'email-address'}
+        {weightView()}
+
+        <View>
+          <View style={styles.checkBoxContainer}>
+            <TouchableOpacity
+              onPress={() => {
+                setSetting({
+                  ...setting,
+                  phone: !setting?.phone,
+                });
+              }}>
+              <Image
+                source={
+                  setting?.phone ? images.orangeCheckBox : images.uncheckWhite
+                }
+                style={{height: 22, width: 22, resizeMode: 'contain'}}
+              />
+            </TouchableOpacity>
+            <Text style={styles.checkBoxText}>{strings.Phone}</Text>
+          </View>
+          <FlatList
+            data={phoneNumber}
+            renderItem={renderPhoneNumber}
+            keyExtractor={(item, index) => index.toString()}
+            // style={styles.flateListStyle}
+          />
+        </View>
+        <TCMessageButton
+          color={colors.grayColor}
+          title={strings.addPhone}
+          width={120}
+          alignSelf="center"
+          marginTop={15}
+          onPress={() => addPhoneNumber()}
         />
-      </View> */}
-      <View>
         <View style={styles.checkBoxContainer}>
           <TouchableOpacity
             onPress={() => {
               setSetting({
                 ...setting,
-                phone: !setting?.phone,
+                address: !setting?.address,
               });
             }}>
             <Image
               source={
-                setting?.phone ? images.orangeCheckBox : images.uncheckWhite
+                setting?.address ? images.orangeCheckBox : images.uncheckWhite
               }
               style={{height: 22, width: 22, resizeMode: 'contain'}}
             />
           </TouchableOpacity>
-          <Text style={styles.checkBoxText}>{strings.Phone}</Text>
+          <Text style={styles.checkBoxText}>{strings.address}</Text>
         </View>
-        <FlatList
-          data={phoneNumber}
-          renderItem={renderPhoneNumber}
-          keyExtractor={(item, index) => index.toString()}
-          // style={styles.flateListStyle}
-        />
-      </View>
-      <TCMessageButton
-        title={strings.addPhone}
-        width={85}
-        alignSelf="center"
-        marginTop={15}
-        onPress={() => addPhoneNumber()}
-      />
-      <View style={styles.checkBoxContainer}>
-        <TouchableOpacity
-          onPress={() => {
-            setSetting({
-              ...setting,
-              address: !setting?.address,
-            });
-          }}>
-          <Image
-            source={
-              setting?.address ? images.orangeCheckBox : images.uncheckWhite
-            }
-            style={{height: 22, width: 22, resizeMode: 'contain'}}
-          />
-        </TouchableOpacity>
-        <Text style={styles.checkBoxText}>{strings.address}</Text>
-      </View>
-      <View>
+        {/* <View>
         <TCTextField
           value={memberInfo?.street_address}
           onChangeText={(text) =>
@@ -708,9 +732,9 @@ export default function RequestBasicInfoScreen({navigation, route}) {
           placeholder={strings.addressPlaceholder}
           keyboardType={'default'}
         />
-      </View>
+      </View> */}
 
-      <TouchableOpacity
+        {/* <TouchableOpacity
         onPress={() =>
           navigation.navigate('SearchLocationScreen', {
             comeFrom: 'RequestBasicInfoScreen',
@@ -725,34 +749,221 @@ export default function RequestBasicInfoScreen({navigation, route}) {
           pointerEvents="none"></TextInput>
       </TouchableOpacity>
 
-      <View>
-        <TCTextField
-          value={memberInfo?.postal_code}
-          onChangeText={(text) =>
-            setMemberInfo({...memberInfo, postal_code: text})
-          }
-          placeholder={strings.postalCodeText}
-          keyboardType={'default'}
+      <TCTextField
+        value={memberInfo?.postal_code}
+        onChangeText={(text) =>
+          setMemberInfo({...memberInfo, postal_code: text})
+        }
+        placeholder={strings.postalCodeText}
+        keyboardType={'default'}
+      /> */}
+
+        <LocationView
+          showTitle={false}
+          onPressVisibleLocationPopup={() => setVisibleLocationModal(true)}
+          onChangeLocationText={(text) => setLocation(text)}
+          locationText={location}
+          onChangePostalCodeText={(text) => {
+            setMemberInfo({...memberInfo, postal_code: text});
+          }}
+          postalCodeText={memberInfo.postal_code}
+          locationString={locationString()}
+          onPressCityPopup={() => setVisibleCityModal(true)}
         />
-      </View>
 
-      <View style={{marginBottom: 20}} />
+        <View style={{marginBottom: 20}} />
 
-      {show && (
-        <View>
-          <DateTimePickerView
-            visible={show}
-            date={new Date()}
-            onDone={handleDonePress}
-            onCancel={handleCancelPress}
-            onHide={handleCancelPress}
-            minimumDate={maxDateValue}
-            maximumDate={minDateValue}
-            mode={'date'}
-          />
+        {show && (
+          <View>
+            <DateTimePickerView
+              visible={show}
+              date={new Date()}
+              onDone={handleDonePress}
+              onCancel={handleCancelPress}
+              onHide={handleCancelPress}
+              minimumDate={maxDateValue}
+              maximumDate={minDateValue}
+              mode={'date'}
+            />
+          </View>
+        )}
+      </TCKeyboardView>
+      <Modal
+        isVisible={visibleLocationModal}
+        onBackdropPress={() => {
+          setVisibleLocationModal(false);
+          setCityData([]);
+          setLocationData([]);
+        }}
+        onRequestClose={() => {
+          setVisibleLocationModal(false);
+          setCityData([]);
+          setLocationData([]);
+        }}
+        animationInTiming={300}
+        animationOutTiming={800}
+        backdropTransitionInTiming={300}
+        backdropTransitionOutTiming={800}
+        style={{
+          margin: 0,
+        }}>
+        <View
+          style={{
+            width: '100%',
+            height: Dimensions.get('window').height / 1.15,
+            backgroundColor: 'white',
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            borderTopLeftRadius: 30,
+            borderTopRightRadius: 30,
+            shadowColor: '#000',
+            shadowOffset: {width: 0, height: 1},
+            shadowOpacity: 0.5,
+            shadowRadius: 5,
+            elevation: 15,
+          }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              paddingHorizontal: 15,
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}>
+            <TouchableOpacity
+              hitSlop={getHitSlop(15)}
+              style={styles.closeButton}
+              onPress={() => {
+                setVisibleLocationModal(false);
+                setCityData([]);
+                setLocationData([]);
+              }}>
+              <Image source={images.cancelImage} style={styles.closeButton} />
+            </TouchableOpacity>
+            <Text
+              style={{
+                alignSelf: 'center',
+                marginVertical: 20,
+                fontSize: 16,
+                fontFamily: fonts.RBold,
+                color: colors.lightBlackColor,
+              }}>
+              {strings.locationTitleText}
+            </Text>
+            <TouchableOpacity onPress={() => {}}></TouchableOpacity>
+          </View>
+          <View style={styles.separatorLine} />
+          <View>
+            <View style={styles.sectionStyle}>
+              <Image source={images.searchLocation} style={styles.searchImg} />
+              <TextInput
+                testID="choose-location-input"
+                style={styles.textInput}
+                placeholder={strings.addressSearchPlaceHolder}
+                clearButtonMode="always"
+                placeholderTextColor={colors.grayColor}
+                onChangeText={(text) => setSearchText(text)}
+              />
+            </View>
+            {locationData.length > 0 && (
+              <FlatList
+                data={locationData}
+                renderItem={renderLocationItem}
+                keyExtractor={(item, index) => index.toString()}
+                onScroll={Keyboard.dismiss}
+              />
+            )}
+          </View>
         </View>
-      )}
-    </TCKeyboardView>
+      </Modal>
+      <Modal
+        isVisible={visibleCityModal}
+        onBackdropPress={() => {
+          setVisibleCityModal(false);
+          setCityData([]);
+          setLocationData([]);
+        }}
+        onRequestClose={() => {
+          setVisibleCityModal(false);
+          setCityData([]);
+          setLocationData([]);
+        }}
+        animationInTiming={300}
+        animationOutTiming={800}
+        backdropTransitionInTiming={300}
+        backdropTransitionOutTiming={800}
+        style={{
+          margin: 0,
+        }}>
+        <View
+          style={{
+            width: '100%',
+            height: Dimensions.get('window').height / 1.15,
+            backgroundColor: 'white',
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            borderTopLeftRadius: 30,
+            borderTopRightRadius: 30,
+            shadowColor: '#000',
+            shadowOffset: {width: 0, height: 1},
+            shadowOpacity: 0.5,
+            shadowRadius: 5,
+            elevation: 15,
+          }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              paddingHorizontal: 15,
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}>
+            <TouchableOpacity
+              hitSlop={getHitSlop(15)}
+              style={styles.closeButton}
+              onPress={() => {
+                setVisibleCityModal(false);
+                setCityData([]);
+                setLocationData([]);
+              }}>
+              <Image source={images.cancelImage} style={styles.closeButton} />
+            </TouchableOpacity>
+            <Text
+              style={{
+                alignSelf: 'center',
+                marginVertical: 20,
+                fontSize: 16,
+                fontFamily: fonts.RBold,
+                color: colors.lightBlackColor,
+              }}>
+              {strings.locationTitleText}
+            </Text>
+            <TouchableOpacity onPress={() => {}}></TouchableOpacity>
+          </View>
+          <View style={styles.separatorLine} />
+          <View>
+            <View style={styles.sectionStyle}>
+              <Image source={images.searchLocation} style={styles.searchImg} />
+              <TextInput
+                testID="choose-location-input"
+                style={styles.textInput}
+                placeholder={strings.cityPlaceholderText}
+                clearButtonMode="always"
+                placeholderTextColor={colors.grayColor}
+                onChangeText={(text) => setSearchText(text)}
+                autoCorrect={false}
+              />
+            </View>
+            <FlatList
+              data={(cityData || []).filter((obj) => obj.terms.length === 3)}
+              renderItem={renderCityStateCountryItem}
+              keyExtractor={(item, index) => index.toString()}
+              onScroll={Keyboard.dismiss}
+            />
+          </View>
+        </View>
+      </Modal>
+    </>
   );
 }
 const styles = StyleSheet.create({
@@ -810,23 +1021,68 @@ const styles = StyleSheet.create({
   fieldView: {
     marginTop: 15,
   },
-  matchFeeTxt: {
+
+  closeButton: {
     alignSelf: 'center',
-    backgroundColor: colors.offwhite,
-    borderRadius: 5,
-    color: 'black',
-    elevation: 3,
-    fontSize: widthPercentageToDP('3.8%'),
-    height: 40,
+    width: 13,
+    height: 13,
+    marginLeft: 5,
+    resizeMode: 'contain',
+  },
 
-    marginTop: 12,
-    paddingHorizontal: 15,
-    paddingRight: 30,
+  separatorLine: {
+    alignSelf: 'center',
+    backgroundColor: colors.grayColor,
+    height: 0.5,
+    width: widthPercentageToDP('100%'),
+  },
+
+  searchImg: {
+    alignSelf: 'center',
+    height: heightPercentageToDP('4%'),
+
+    resizeMode: 'contain',
+    width: widthPercentageToDP('4%'),
+    tintColor: colors.lightBlackColor,
+  },
+  sectionStyle: {
+    alignItems: 'center',
+    backgroundColor: colors.whiteColor,
+    borderRadius: 25,
+
+    flexDirection: 'row',
+    height: 50,
+    justifyContent: 'center',
+    margin: widthPercentageToDP('8%'),
+    paddingLeft: 17,
+    paddingRight: 5,
+
     shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
+    shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.5,
-    shadowRadius: 1,
-
-    width: widthPercentageToDP('92%'),
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  textInput: {
+    color: colors.blackColor,
+    flex: 1,
+    fontFamily: fonts.RRegular,
+    fontSize: widthPercentageToDP('4.5%'),
+    paddingLeft: 10,
+  },
+  listItem: {
+    flexDirection: 'row',
+    marginLeft: widthPercentageToDP('10%'),
+    width: widthPercentageToDP('80%'),
+  },
+  cityList: {
+    color: colors.lightBlackColor,
+    fontSize: widthPercentageToDP('4%'),
+    textAlign: 'left',
+    fontFamily: fonts.RRegular,
+    // paddingLeft: wp('1%'),
+    width: widthPercentageToDP('70%'),
+    margin: widthPercentageToDP('4%'),
+    textAlignVertical: 'center',
   },
 });

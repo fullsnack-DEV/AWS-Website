@@ -17,7 +17,6 @@ import {
   Keyboard,
   Dimensions,
   Platform,
-  Alert,
 } from 'react-native';
 import Modal from 'react-native-modal';
 import {useIsFocused} from '@react-navigation/native';
@@ -39,12 +38,14 @@ import {
   getHitSlop,
   heightPercentageToDP,
   monthNames,
+  showAlert,
   widthPercentageToDP,
 } from '../../../../utils';
 import TCPhoneNumber from '../../../../components/TCPhoneNumber';
 import TCMessageButton from '../../../../components/TCMessageButton';
 import {searchAddress, searchCityState} from '../../../../api/External';
 import LocationView from '../../../../components/LocationView';
+import {heightMesurement, weightMesurement} from '../../../../utils/constant';
 
 let entity = {};
 export default function CreateMemberProfileClubForm2({navigation, route}) {
@@ -136,7 +137,7 @@ export default function CreateMemberProfileClubForm2({navigation, route}) {
       !postalCode?.length ||
       !location?.length
     ) {
-      Alert.alert(strings.addressValidation);
+      showAlert(strings.addressValidation);
       return false;
     }
     return true;
@@ -266,175 +267,156 @@ export default function CreateMemberProfileClubForm2({navigation, route}) {
   );
 
   const heightView = () => (
-    <View style={styles.fieldView}>
-      <View
-        style={{
-          flexDirection: 'row',
-          marginTop: 12,
-          align: 'center',
-          marginLeft: 15,
-          marginRight: 15,
-          justifyContent: 'space-between',
-        }}>
-        <View style={{...styles.halfMatchFeeView, shadowStyle}}>
-          <TextInput
-            placeholder={'-'}
-            style={{...styles.halffeeText, ...shadowStyle}}
-            keyboardType={'decimal-pad'}
-            onChangeText={(text) => {
-              setMemberInfo({
-                ...memberInfo,
-                height: {
-                  height: text,
-                  height_type: memberInfo?.height?.height_type,
-                },
-              });
-            }}
-            value={memberInfo?.height?.height}
-            maxLength={3}
-          />
-        </View>
-        <RNPickerSelect
-          placeholder={{
-            label: strings.heightTypeText,
-            value: null,
-          }}
-          items={[
-            {label: strings.cm, value: strings.cm},
-            {label: strings.ft, value: strings.ft},
-          ]}
-          onValueChange={(value) => {
+    <View
+      style={{
+        flexDirection: 'row',
+        align: 'center',
+        marginLeft: 15,
+        marginRight: 15,
+        justifyContent: 'space-between',
+      }}>
+      <View style={{...styles.halfMatchFeeView, ...styles.shadowStyle}}>
+        <TextInput
+          placeholder={'-'}
+          style={styles.halffeeText}
+          keyboardType={'decimal-pad'}
+          onChangeText={(text) => {
             setMemberInfo({
               ...memberInfo,
               height: {
-                height: memberInfo?.height?.height,
-                height_type: value,
+                height: text,
+                height_type: memberInfo?.height?.height_type,
               },
             });
           }}
-          value={memberInfo?.height?.height_type}
-          useNativeAndroidPickerStyle={false}
-          style={{
-            inputIOS: {
-              fontSize: widthPercentageToDP('3.5%'),
-              paddingVertical: 12,
-              paddingHorizontal: 15,
-              width: widthPercentageToDP('45%'),
-              color: 'black',
-              paddingRight: 30,
-              backgroundColor: colors.offwhite,
-              borderRadius: 5,
-              textAlign: 'center',
-              ...shadowStyle,
-            },
-            inputAndroid: {
-              fontSize: widthPercentageToDP('4%'),
-              paddingVertical: 12,
-              paddingHorizontal: 15,
-              width: widthPercentageToDP('45%'),
-              color: 'black',
-              paddingRight: 30,
-              backgroundColor: colors.offwhite,
-              borderRadius: 5,
-              textAlign: 'center',
-              ...shadowStyle,
-            },
-          }}
-          Icon={() => (
-            <Image source={images.dropDownArrow} style={styles.miniDownArrow} />
-          )}
+          value={memberInfo?.height?.height}
+          maxLength={3}
         />
       </View>
+      <RNPickerSelect
+        placeholder={{
+          label: strings.heightTypeText,
+          value: null,
+        }}
+        items={heightMesurement}
+        onValueChange={(value) => {
+          setMemberInfo({
+            ...memberInfo,
+            height: {
+              height: memberInfo?.height?.height,
+              height_type: value,
+            },
+          });
+        }}
+        value={memberInfo?.height?.height_type}
+        useNativeAndroidPickerStyle={false}
+        style={{
+          inputIOS: {
+            fontSize: widthPercentageToDP('3.5%'),
+            paddingVertical: 12,
+            paddingHorizontal: 15,
+            width: widthPercentageToDP('45%'),
+            color: 'black',
+            paddingRight: 30,
+            backgroundColor: colors.offwhite,
+            borderRadius: 5,
+            textAlign: 'center',
+            ...styles.shadowStyle,
+          },
+          inputAndroid: {
+            fontSize: widthPercentageToDP('4%'),
+            paddingVertical: 12,
+            paddingHorizontal: 15,
+            width: widthPercentageToDP('45%'),
+            color: 'black',
+            paddingRight: 30,
+            backgroundColor: colors.offwhite,
+            borderRadius: 5,
+            textAlign: 'center',
+            ...styles.shadowStyle,
+          },
+        }}
+        Icon={() => (
+          <Image source={images.dropDownArrow} style={styles.miniDownArrow} />
+        )}
+      />
     </View>
   );
-  const shadowStyle = {
-    elevation: 3,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 0.5},
-    shadowOpacity: 0.16,
-    shadowRadius: 1,
-  };
 
   const weightView = () => (
-    <View style={styles.fieldView}>
-      <View
-        style={{
-          flexDirection: 'row',
-          marginTop: 12,
-          align: 'center',
-          marginLeft: 15,
-          marginRight: 15,
-          justifyContent: 'space-between',
-        }}>
-        <View style={{...styles.halfMatchFeeView, ...shadowStyle}}>
-          <TextInput
-            placeholder={'-'}
-            style={{...styles.halffeeText, ...shadowStyle}}
-            keyboardType={'decimal-pad'}
-            onChangeText={(text) => {
-              setMemberInfo({
-                ...memberInfo,
-                weight: {
-                  weight: text,
-                  weight_type: memberInfo?.weight?.weight_type,
-                },
-              });
-            }}
-            maxLength={3}
-            value={memberInfo?.weight?.weight}
-          />
-        </View>
-        <RNPickerSelect
-          placeholder={{
-            label: strings.weightTypeText,
-            value: null,
-          }}
-          items={[
-            {label: strings.kg, value: strings.kg},
-            {label: strings.pound, value: strings.pound},
-          ]}
-          onValueChange={(value) => {
+    <View
+      style={{
+        flexDirection: 'row',
+        align: 'center',
+        marginLeft: 15,
+        marginRight: 15,
+        justifyContent: 'space-between',
+      }}>
+      <View style={{...styles.halfMatchFeeView, ...styles.shadowStyle}}>
+        <TextInput
+          placeholder={'-'}
+          style={styles.halffeeText}
+          keyboardType={'decimal-pad'}
+          onChangeText={(text) => {
             setMemberInfo({
               ...memberInfo,
               weight: {
-                weight: memberInfo?.weight?.weight,
-                weight_type: value,
+                weight: text,
+                weight_type: memberInfo?.weight?.weight_type,
               },
             });
           }}
-          value={memberInfo?.weight?.weight_type}
-          useNativeAndroidPickerStyle={false}
-          style={{
-            inputIOS: {
-              fontSize: widthPercentageToDP('3.5%'),
-              paddingVertical: 12,
-              paddingHorizontal: 15,
-              width: widthPercentageToDP('45%'),
-              color: 'black',
-              paddingRight: 30,
-              backgroundColor: colors.offwhite,
-              borderRadius: 5,
-              textAlign: 'center',
-              ...shadowStyle,
-            },
-            inputAndroid: {
-              fontSize: widthPercentageToDP('4%'),
-              paddingVertical: 12,
-              paddingHorizontal: 15,
-              width: widthPercentageToDP('45%'),
-              color: 'black',
-              paddingRight: 30,
-              backgroundColor: colors.offwhite,
-              borderRadius: 5,
-              textAlign: 'center',
-              ...shadowStyle,
-            },
-          }}
-          Icon={() => (
-            <Image source={images.dropDownArrow} style={styles.miniDownArrow} />
-          )}
+          maxLength={3}
+          value={memberInfo?.weight?.weight}
         />
       </View>
+      <RNPickerSelect
+        placeholder={{
+          label: strings.weightTypeText,
+          value: null,
+        }}
+        items={weightMesurement}
+        onValueChange={(value) => {
+          setMemberInfo({
+            ...memberInfo,
+            weight: {
+              weight: memberInfo?.weight?.weight,
+              weight_type: value,
+            },
+          });
+        }}
+        value={memberInfo?.weight?.weight_type}
+        useNativeAndroidPickerStyle={false}
+        style={{
+          inputIOS: {
+            fontSize: widthPercentageToDP('3.5%'),
+            paddingVertical: 12,
+            paddingHorizontal: 15,
+            width: widthPercentageToDP('45%'),
+            color: 'black',
+            paddingRight: 30,
+            backgroundColor: colors.offwhite,
+            borderRadius: 5,
+            textAlign: 'center',
+            ...styles.shadowStyle,
+          },
+          inputAndroid: {
+            fontSize: widthPercentageToDP('4%'),
+            paddingVertical: 12,
+            paddingHorizontal: 15,
+            width: widthPercentageToDP('45%'),
+            color: 'black',
+            paddingRight: 30,
+            backgroundColor: colors.offwhite,
+            borderRadius: 5,
+            textAlign: 'center',
+            ...styles.shadowStyle,
+          },
+        }}
+        Icon={() => (
+          <Image source={images.dropDownArrow} style={styles.miniDownArrow} />
+        )}
+      />
     </View>
   );
 
@@ -457,7 +439,10 @@ export default function CreateMemberProfileClubForm2({navigation, route}) {
       <TCFormProgress totalSteps={3} curruentStep={2} />
 
       <View>
-        <TCLabel title={strings.gender.toUpperCase()} />
+        <TCLabel
+          title={strings.gender.toUpperCase()}
+          style={{marginBottom: 12}}
+        />
         <TCPicker
           dataSource={DataSource.Gender}
           placeholder={strings.selectGenderPlaceholder}
@@ -468,7 +453,10 @@ export default function CreateMemberProfileClubForm2({navigation, route}) {
         />
       </View>
       <View>
-        <TCLabel title={strings.birthDatePlaceholder.toUpperCase()} />
+        <TCLabel
+          title={strings.birthDatePlaceholder.toUpperCase()}
+          style={{marginBottom: 12}}
+        />
 
         <TCTouchableLabel
           title={
@@ -482,14 +470,23 @@ export default function CreateMemberProfileClubForm2({navigation, route}) {
         />
       </View>
 
-      <TCLabel title={strings.height.toUpperCase()} />
+      <TCLabel
+        title={strings.height.toUpperCase()}
+        style={{marginBottom: 12}}
+      />
       {heightView()}
 
-      <TCLabel title={strings.weight.toUpperCase()} />
+      <TCLabel
+        title={strings.weight.toUpperCase()}
+        style={{marginBottom: 12}}
+      />
       {weightView()}
 
       <View>
-        <TCLabel title={strings.phone.toUpperCase()} />
+        <TCLabel
+          title={strings.phone.toUpperCase()}
+          style={{marginBottom: 12}}
+        />
         <FlatList
           data={phoneNumber}
           renderItem={renderPhoneNumber}
@@ -815,7 +812,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
-  fieldView: {
-    marginTop: 15,
+  shadowStyle: {
+    elevation: 3,
+    shadowColor: colors.googleColor,
+    shadowOffset: {width: 0, height: 0.5},
+    shadowOpacity: 0.16,
+    shadowRadius: 1,
   },
 });

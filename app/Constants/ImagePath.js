@@ -437,6 +437,8 @@ const images = {
   deleteImage: require('../assets/images/deleteImage_icon.png'),
   inviteEmail: require('../assets/images/inviteEmail.png'),
   copyUrl: require('../assets/images/copyUrl.png'),
+  createMember: require('../assets/images/createMember.png'),
+  unlinked: require('../assets/images/unlinked.png'),
 };
 
 export default images;

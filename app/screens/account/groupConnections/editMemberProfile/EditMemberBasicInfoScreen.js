@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 
 import RNPickerSelect from 'react-native-picker-select';
+
 import {
   widthPercentageToDP,
   widthPercentageToDP as wp,
@@ -38,7 +39,11 @@ import DataSource from '../../../../Constants/DataSource';
 import colors from '../../../../Constants/Colors';
 import TCKeyboardView from '../../../../components/TCKeyboardView';
 import DateTimePickerView from '../../../../components/Schedule/DateTimePickerModal';
-import {monthNames} from '../../../../utils/constant';
+import {
+  heightMesurement,
+  monthNames,
+  weightMesurement,
+} from '../../../../utils/constant';
 
 let entity = {};
 
@@ -145,7 +150,7 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
               // }
             }
           }}>
-          Done
+          {strings.done}
         </Text>
       ),
     });
@@ -201,11 +206,9 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
     const bodyParams = {...memberInfo};
     delete bodyParams.group;
 
-    console.log('BODY PARAMS::', bodyParams);
     patchMember(entity?.uid, memberInfo?.user_id, bodyParams, authContext)
       .then((response) => {
         if (response.status) {
-          console.log('EDIT INFO RESPONSE::', response);
           setloading(false);
           navigation.goBack();
         }
@@ -288,10 +291,10 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
           marginRight: 15,
           justifyContent: 'space-between',
         }}>
-        <View style={{...styles.halfMatchFeeView, shadowStyle}}>
+        <View style={{...styles.halfMatchFeeView, ...shadowStyle}}>
           <TextInput
             placeholder={strings.height}
-            style={{...styles.halffeeText, ...shadowStyle}}
+            style={{...styles.halffeeText}}
             keyboardType={'decimal-pad'}
             onChangeText={(text) => {
               setMemberInfo({
@@ -310,10 +313,7 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
             label: strings.heightTypeText,
             value: null,
           }}
-          items={[
-            {label: strings.cm, value: strings.cm},
-            {label: strings.ft, value: strings.ft},
-          ]}
+          items={heightMesurement}
           onValueChange={(value) => {
             setMemberInfo({
               ...memberInfo,
@@ -371,7 +371,7 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
         <View style={{...styles.halfMatchFeeView, ...shadowStyle}}>
           <TextInput
             placeholder={strings.weight}
-            style={{...styles.halffeeText, ...shadowStyle}}
+            style={{...styles.halffeeText}}
             keyboardType={'decimal-pad'}
             onChangeText={(text) => {
               setMemberInfo({
@@ -390,10 +390,7 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
             label: strings.weightTypeText,
             value: null,
           }}
-          items={[
-            {label: strings.kg, value: strings.kg},
-            {label: strings.pound, value: strings.pound},
-          ]}
+          items={weightMesurement}
           onValueChange={(value) => {
             setMemberInfo({
               ...memberInfo,
@@ -442,12 +439,11 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
     const membersIds = [];
     membersIds.push(memberInfo.user_id);
     sendBasicInfoRequest(entity.uid, membersIds, authContext)
-      .then((response) => {
+      .then(() => {
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, strings.requestSentText);
         }, 10);
-        console.log('sendBasicInfoRequest', response);
       })
       .catch((e) => {
         setloading(false);

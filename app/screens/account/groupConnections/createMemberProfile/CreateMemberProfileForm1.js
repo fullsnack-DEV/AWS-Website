@@ -15,7 +15,6 @@ import {
   Text,
   Image,
   TouchableOpacity,
-  Alert,
   FlatList,
   TextInput,
   Dimensions,
@@ -26,7 +25,6 @@ import {
 import ActionSheet from 'react-native-actionsheet';
 import ImagePicker from 'react-native-image-crop-picker';
 import {check, PERMISSIONS, RESULTS, request} from 'react-native-permissions';
-import {useIsFocused} from '@react-navigation/native';
 import Modal from 'react-native-modal';
 
 import images from '../../../../Constants/ImagePath';
@@ -40,6 +38,7 @@ import {
   deleteConfirmation,
   getHitSlop,
   heightPercentageToDP,
+  showAlert,
   widthPercentageToDP,
 } from '../../../../utils';
 import TCFormProgress from '../../../../components/TCFormProgress';
@@ -59,7 +58,6 @@ export default function CreateMemberProfileForm1({navigation, route}) {
   const [searchText, setSearchText] = useState('');
   const [locationData, setLocationData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const isFocused = useIsFocused();
 
   const actionSheet = useRef();
   const [showDate, setShowDate] = useState(false);
@@ -101,34 +99,32 @@ export default function CreateMemberProfileForm1({navigation, route}) {
   }, []);
 
   useEffect(() => {
-    if (isFocused) {
-      if (route?.params?.city) {
-        setHomeCity(route?.params?.city);
-      } else {
-        setHomeCity('');
-      }
+    if (route?.params?.city) {
+      setHomeCity(route?.params?.city);
+    } else {
+      setHomeCity('');
     }
-  }, [isFocused]);
+  }, []);
 
   const checkValidation = useCallback(() => {
     if (!firstName) {
-      Alert.alert(strings.appName, strings.nameCanNotBlankText);
+      showAlert(strings.nameCanNotBlankText);
       return false;
     }
     if (!lastName) {
-      Alert.alert(strings.appName, strings.lastNameCanNotBlankText);
+      showAlert(strings.lastNameCanNotBlankText);
       return false;
     }
     if (!homeCity) {
-      Alert.alert(strings.appName, strings.homeCityCannotBlack);
+      showAlert(strings.homeCityCannotBlack);
       return false;
     }
     if (!email) {
-      Alert.alert(strings.appName, strings.emailNotBlankText);
+      showAlert(strings.emailNotBlankText);
       return false;
     }
     if (ValidateEmail(email) === false) {
-      Alert.alert('', strings.validEmailMessage);
+      showAlert(strings.validEmailMessage);
       return false;
     }
 
@@ -167,14 +163,14 @@ export default function CreateMemberProfileForm1({navigation, route}) {
                     }
                   } else {
                     setTimeout(() => {
-                      Alert.alert(strings.emailExistInTC);
+                      showAlert(strings.emailExistInTC);
                     });
                     setLoading(false);
                   }
                 })
                 .catch((error) => {
                   setTimeout(() => {
-                    Alert.alert(error);
+                    showAlert(error);
                   });
                   setLoading(false);
                 });
@@ -226,7 +222,7 @@ export default function CreateMemberProfileForm1({navigation, route}) {
       .then((result) => {
         switch (result) {
           case RESULTS.UNAVAILABLE:
-            Alert.alert(strings.thisFeaturesNotAvailableText);
+            showAlert(strings.thisFeaturesNotAvailableText);
             break;
           case RESULTS.DENIED:
             request(PERMISSIONS.IOS.CAMERA).then(() => {
@@ -259,7 +255,7 @@ export default function CreateMemberProfileForm1({navigation, route}) {
         }
       })
       .catch((error) => {
-        Alert.alert(error);
+        showAlert(error);
       });
   };
   const openImagePicker = (width = 400, height = 400) => {
@@ -280,41 +276,55 @@ export default function CreateMemberProfileForm1({navigation, route}) {
     setShowDate(!showDate);
   };
 
-  const renderLocationItem = ({item}) => (
-    <TouchableOpacity
-      style={styles.listItem}
-      onPress={() => {
-        // const shortAddress = '';
+  const renderLocationItem = ({item}) => {
+    const cty = item.address_components.filter((obj) =>
+      obj.types.some(
+        (a) => a === 'administrative_area_level_3' || a === 'locality',
+      ),
+    );
 
-        const cty = item.address_components.filter((obj) =>
-          obj.types.some(
-            (a) => a === 'administrative_area_level_3' || 'locality',
-          ),
-        );
+    // const state = item.address_components.filter((obj) =>
+    //   obj.types.some((a) => a === 'administrative_area_level_1'),
+    // );
 
-        const sNumber = item.address_components.filter((obj) =>
-          obj.types.some((c) => c === 'street_number'),
-        );
+    // const cntry = item.address_components.filter((obj) =>
+    //   obj.types.some((a) => a === 'country'),
+    // );
+    return (
+      <TouchableOpacity
+        style={styles.listItem}
+        onPress={() => {
+          // const shortAddress = '';
 
-        const add = item.address_components.filter((obj) =>
-          obj.types.some((c) => c === 'route'),
-        );
+          const sNumber = item.address_components.filter((obj) =>
+            obj.types.some((c) => c === 'street_number'),
+          );
 
-        setHomeCity(cty.length && cty[0].long_name);
+          const add = item.address_components.filter((obj) =>
+            obj.types.some((c) => c === 'route'),
+          );
 
-        setLocation(
-          `${sNumber.length ? `${sNumber[0].long_name}, ` : ''} ${
-            add.length ? `${add[0].long_name}` : ''
-          }`,
-        );
+          setHomeCity(cty.length && cty[0].long_name);
 
-        setLocationData([]);
+          setLocation(
+            `${sNumber.length ? `${sNumber[0].long_name}, ` : ''} ${
+              add.length ? `${add[0].long_name}` : ''
+            }`,
+          );
 
-        setVisibleCityModal(false);
-      }}>
-      <Text style={styles.cityList}>{item.formatted_address}</Text>
-    </TouchableOpacity>
-  );
+          setLocationData([]);
+
+          setVisibleCityModal(false);
+        }}>
+        <Text style={styles.cityList}>
+          {/* {cty?.[0]?.long_name && `${cty[0].long_name}, `}
+			{state?.[0]?.long_name && `${state[0].long_name}, `}
+			{cntry?.[0]?.long_name && `${cntry[0].long_name}, `} */}
+          {item.formatted_address}
+        </Text>
+      </TouchableOpacity>
+    );
+  };
 
   const checkUserIsRegistratedOrNotWithTownscup = (emailID) =>
     new Promise((resolve) => {
@@ -368,7 +378,6 @@ export default function CreateMemberProfileForm1({navigation, route}) {
               autoCorrect={false}
               onChangeText={(text) => setFirstName(text)}
               placeholder={strings.firstName}
-              width={'48%'}
             />
             <TCTextField
               value={lastName}
@@ -376,7 +385,6 @@ export default function CreateMemberProfileForm1({navigation, route}) {
               autoCorrect={false}
               onChangeText={(text) => setLastName(text)}
               placeholder={strings.lastName}
-              width={'48%'}
             />
           </View>
         </View>

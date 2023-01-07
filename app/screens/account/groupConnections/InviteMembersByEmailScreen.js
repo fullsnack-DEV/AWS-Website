@@ -4,10 +4,9 @@ import {
   View,
   StyleSheet,
   FlatList,
-  Alert,
   SafeAreaView,
+  ScrollView,
 } from 'react-native';
-import {format} from 'react-string-format';
 import {sendInvitationInGroup} from '../../../api/Users';
 import TCTextField from '../../../components/TCTextField';
 import TCMessageButton from '../../../components/TCMessageButton';
@@ -37,7 +36,7 @@ export default function InviteMembersByEmailScreen({navigation}) {
       };
       setEmail([...email, obj]);
     } else {
-      Alert.alert(strings.alertmessagetitle, strings.youCanNotAddMoreEmailText);
+      Utility.showAlert(strings.youCanNotAddMoreEmailText);
     }
   };
 
@@ -65,9 +64,9 @@ export default function InviteMembersByEmailScreen({navigation}) {
       .map((e) => email[e].email);
 
     if (invalidEmails.length > 0) {
-      Alert.alert(strings.validEmailMessage);
+      Utility.showAlert(strings.validEmailMessage);
     } else if (duplicateIds.length > 0) {
-      Alert.alert(strings.doNotEnterSameEmail);
+      Utility.showAlert(strings.doNotEnterSameEmail);
     } else {
       setloading(true);
       const emails = email.map((i) => i.email);
@@ -92,54 +91,51 @@ export default function InviteMembersByEmailScreen({navigation}) {
           setloading(false);
 
           setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
+            Utility.showAlert(e.message);
           }, 10);
         });
     }
   };
 
-  const renderItemEmail = ({item, index}) => {
-    console.log('item');
-    return (
-      <View style={{marginBottom: 15}}>
-        <TCTextField
-          placeholder={strings.emailPlaceHolder}
-          keyboardType="email-address"
-          value={item?.email}
-          clearButtonMode="always"
-          onChangeText={(value) => {
-            const tempEmail = [...email];
-            tempEmail[index].email = value;
-            setEmail(tempEmail);
-          }}
-          style={{alignSelf: 'center', width: '85%', marginBottom: 10}}
-        />
-      </View>
-    );
-  };
+  const renderItemEmail = ({item, index}) => (
+    <View>
+      <TCTextField
+        placeholder={strings.emailPlaceHolder}
+        keyboardType="email-address"
+        value={item?.email}
+        clearButtonMode="always"
+        onChangeText={(value) => {
+          const tempEmail = [...email];
+          tempEmail[index].email = value;
+          setEmail(tempEmail);
+        }}
+        style={{alignSelf: 'center', width: '85%', marginBottom: 10}}
+      />
+    </View>
+  );
 
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
 
-      <Text style={styles.infoTextStyle}>
-        {format(strings.inviteEmailText, authContext.entity.role)}
-      </Text>
-      <FlatList
-        data={email}
-        renderItem={renderItemEmail}
-        keyExtractor={(item, index) => index.toString()}
-        style={styles.flateListStyle}></FlatList>
+      <ScrollView>
+        <Text style={styles.infoTextStyle}>{strings.inviteEmailText}</Text>
+        <FlatList
+          data={email}
+          renderItem={renderItemEmail}
+          keyExtractor={(item, index) => index.toString()}
+          style={styles.flateListStyle}></FlatList>
 
-      <TCMessageButton
-        title={strings.addEmailText}
-        width={95}
-        alignSelf="center"
-        marginTop={25}
-        onPress={() => addEmail(1)}
-        color={colors.lightBlackColor}
-        borderColor={colors.whiteColor}
-      />
+        <TCMessageButton
+          title={strings.addEmailText}
+          width={95}
+          alignSelf="center"
+          marginBottom={10}
+          onPress={() => addEmail(1)}
+          color={colors.lightBlackColor}
+          borderColor={colors.whiteColor}
+        />
+      </ScrollView>
       <SafeAreaView />
     </View>
   );

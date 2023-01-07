@@ -85,12 +85,22 @@ export default function GroupMembersScreen({navigation, route}) {
     navigation.setOptions({
       headerRight: () =>
         switchUser.uid === route?.params?.groupID && (
-          <TouchableWithoutFeedback onPress={() => actionSheet.current.show()}>
-            <Image
-              source={images.vertical3Dot}
-              style={styles.navigationRightItem}
-            />
-          </TouchableWithoutFeedback>
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <TouchableWithoutFeedback
+              onPress={() => navigation.navigate('CreateMemberProfileForm1')}>
+              <Image
+                source={images.createMember}
+                style={styles.createMemberStyle}
+              />
+            </TouchableWithoutFeedback>
+            <TouchableWithoutFeedback
+              onPress={() => actionSheet.current.show()}>
+              <Image
+                source={images.vertical3Dot}
+                style={styles.navigationRightItem}
+              />
+            </TouchableWithoutFeedback>
+          </View>
         ),
     });
   }, [navigation, switchUser]);
@@ -129,11 +139,8 @@ export default function GroupMembersScreen({navigation, route}) {
         entity_type: Verbs.entityTypePlayer,
       };
       followUser(params, data.user_id, authContext)
-        .then(() => {
-          console.log('follow user');
-        })
+        .then(() => {})
         .catch((error) => {
-          console.log('callFollowUser error with userID', error, data.user_id);
           const tempMem = [...members];
           tempMem[index].is_following = false;
           setMembers(tempMem);
@@ -195,26 +202,6 @@ export default function GroupMembersScreen({navigation, route}) {
     },
     [navigation],
   );
-
-  const renderFirstNameAndLastName = useCallback((item) => {
-    if (item.connected) {
-      return (
-        <Text style={styles.nameText} numberOfLines={1}>
-          {item.first_name} {item.last_name}
-        </Text>
-      );
-    }
-    return (
-      <Text
-        style={{
-          ...styles.nameText,
-          color: colors.userPostTimeColor,
-        }}
-        numberOfLines={1}>
-        {item.first_name} {item.last_name}
-      </Text>
-    );
-  }, []);
 
   const renderFollowUnfollowArrow = useCallback(
     (data, index) => {
@@ -315,6 +302,7 @@ export default function GroupMembersScreen({navigation, route}) {
             }}>
             <View style={styles.topViewContainer}>
               <TouchableOpacity
+                disabled={!data.connected}
                 onPress={() => onPressProfilePhotoAndTitle(data)}
                 style={styles.imageTouchStyle}>
                 <View style={styles.profileView}>
@@ -331,10 +319,18 @@ export default function GroupMembersScreen({navigation, route}) {
 
               <View style={styles.topTextContainer}>
                 <TouchableOpacity
+                  disabled={!data.connected}
+                  style={{flexDirection: 'row', alignItems: 'center'}}
                   onPress={() => onPressProfilePhotoAndTitle(data)}>
                   <Text style={styles.nameText} numberOfLines={1}>
-                    {renderFirstNameAndLastName(data)}
+                    {data.first_name} {data.last_name}
                   </Text>
+                  {!data.connected && (
+                    <Image
+                      source={images.unlinked}
+                      style={styles.unlinedImage}
+                    />
+                  )}
                 </TouchableOpacity>
                 <View style={{flexDirection: 'row'}}>
                   {data?.is_admin && (
@@ -374,11 +370,7 @@ export default function GroupMembersScreen({navigation, route}) {
         <TCThinDivider marginTop={20} />
       </>
     ),
-    [
-      onPressProfilePhotoAndTitle,
-      renderFirstNameAndLastName,
-      renderFollowUnfollowArrow,
-    ],
+    [onPressProfilePhotoAndTitle, renderFollowUnfollowArrow],
   );
 
   return (
@@ -405,25 +397,14 @@ export default function GroupMembersScreen({navigation, route}) {
 
       <ActionSheet
         ref={actionSheet}
-        options={
-          switchUser.role === Verbs.entityTypeClub
-            ? [
-                strings.inviteMemberText,
-                strings.createMemberProfileText,
-                strings.sendrequestForBaicInfoText,
-                strings.privacySettingText,
-                strings.setting,
-                strings.cancel,
-              ]
-            : [
-                strings.inviteMemberText,
-                strings.createMemberProfileText,
-                strings.sendrequestForBaicInfoText,
-                strings.privacySettingText,
-                strings.cancel,
-              ]
-        }
-        cancelButtonIndex={switchUser.role === strings.entityTypeClub ? 6 : 5}
+        options={[
+          strings.inviteMemberText,
+          strings.createMemberProfileText,
+          strings.sendrequestForBaicInfoText,
+
+          strings.cancel,
+        ]}
+        cancelButtonIndex={3}
         onPress={(index) => {
           if (index === 0) {
             navigation.navigate('InviteMembersBySearchScreen');
@@ -431,12 +412,6 @@ export default function GroupMembersScreen({navigation, route}) {
             navigation.navigate('CreateMemberProfileForm1');
           } else if (index === 2) {
             navigation.navigate('RequestMultipleBasicInfoScreen', {groupID});
-          } else if (index === 3) {
-            navigation.navigate('MembersViewPrivacyScreen');
-          } else if (index === 4) {
-            if (switchUser.role === Verbs.entityTypeClub) {
-              navigation.navigate('ClubSettingScreen');
-            }
           }
         }}
       />
@@ -467,6 +442,12 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     tintColor: colors.blackColor,
     width: 15,
+  },
+  createMemberStyle: {
+    height: 25,
+    marginRight: 20,
+    resizeMode: 'contain',
+    width: 25,
   },
   profileImage: {
     alignSelf: 'center',
@@ -532,7 +513,12 @@ const styles = StyleSheet.create({
     height: 15,
     width: 15,
     resizeMode: 'contain',
-    tintColor: colors.lightBlackColor,
+    tintColor: colors.darkGrayTrashColor,
+  },
+  unlinedImage: {
+    height: 15,
+    width: 15,
+    resizeMode: 'contain',
   },
   imageTouchStyle: {
     alignItems: 'center',

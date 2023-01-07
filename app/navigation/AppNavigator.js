@@ -383,6 +383,7 @@ const AppNavigator = ({navigation}) => {
   }, [getUnReadMessageHandler]);
 
   const onTabPress = useCallback(() => {
+    console.log('On tab press');
     count.current += 1;
     if (count.current === MAX_COUNT_FOR_BOTTOM_TAB) {
       count.current = 0;
@@ -502,7 +503,10 @@ const AppNavigator = ({navigation}) => {
         }
         if (focused) {
           return (
-            <Image source={images.clubPlaceholder} style={styles.tabImg} />
+            <Image
+              source={images.tab_account_group_selected}
+              style={styles.tabImg}
+            />
           );
         }
         return (

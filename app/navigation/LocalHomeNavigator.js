@@ -2029,7 +2029,7 @@ const LocalHomeNavigator = () => (
       name="EditMemberBasicInfoScreen"
       component={EditMemberBasicInfoScreen}
       options={{
-        title: 'Edit Basic Info',
+        title: strings.editbasicinfotitle,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -2045,7 +2045,7 @@ const LocalHomeNavigator = () => (
       name="RequestBasicInfoScreen"
       component={RequestBasicInfoScreen}
       options={{
-        title: 'Request Basic Info',
+        title: strings.requestBasicInfoTitle,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

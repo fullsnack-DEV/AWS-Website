@@ -7,6 +7,7 @@ import React, {
 } from 'react';
 import {Text, View, StyleSheet, FlatList, Alert} from 'react-native';
 
+import {format} from 'react-string-format';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import {strings} from '../../../../Localization/translation';
 import colors from '../../../Constants/Colors';
@@ -18,6 +19,7 @@ import TCThinDivider from '../../../components/TCThinDivider';
 import TCThickDivider from '../../../components/TCThickDivider';
 import {getGroupMembers, sendBasicInfoRequest} from '../../../api/Groups';
 import MemberProfile from '../../../components/groupConnections/MemberProfile';
+import {showAlert} from '../../../utils';
 
 export default function RequestMultipleBasicInfoScreen({navigation, route}) {
   const [loading, setloading] = useState(false);
@@ -39,7 +41,6 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
           obj.isChecked = false;
           return obj;
         });
-        console.log('result:=>', response.payload);
         setPlayers(result);
         setSearchPlayers(result);
       })
@@ -124,19 +125,17 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
       setloading(true);
 
       sendBasicInfoRequest(route?.params?.groupID, selectedList, authContext)
-        .then((response) => {
+        .then(() => {
           setloading(false);
 
           setTimeout(() => {
-            Alert.alert(
-              strings.alertmessagetitle,
-              `Requests for basic info were sent to ${selectedList?.length} members.`,
-              [{text: 'OK', onPress: () => navigation.goBack()}],
-              {cancelable: false},
+            showAlert(
+              format(strings.multipleRequestSent, selectedList?.length),
+              () => {
+                navigation.goBack();
+              },
             );
           }, 10);
-
-          console.log('sendBasicInfoRequest', response);
         })
         .catch((e) => {
           setloading(false);

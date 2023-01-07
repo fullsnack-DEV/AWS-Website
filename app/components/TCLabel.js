@@ -15,7 +15,7 @@ function TCLabel({
   return (
     <Text style={[styles.labelText, style]} {...otherProps}>
       {title}
-      {required && <Text style={styles.mendatory}> {'*'} </Text>}
+      {required && <Text style={styles.mendatory}> {strings.star} </Text>}
       {isNew && <Text style={styles.newText}> {strings.newText} </Text>}
     </Text>
   );
