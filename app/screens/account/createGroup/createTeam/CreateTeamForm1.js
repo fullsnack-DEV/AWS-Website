@@ -543,26 +543,26 @@ export default function CreateTeamForm1({navigation, route}) {
           margin: 0,
         }}>
         <KeyboardAvoidingView
-          behavior="height"
-          enabled={false}
-          style={[locationModelStyles.mainView, {flex: 1}]}>
-          <View style={locationModelStyles.headerView}>
+        behavior='height'
+        enabled={false}
+          style={[locationModelStyles.mainView, {flex:1}]}
+          >
+        
+          <View
+            style={locationModelStyles.headerView}>
             <TouchableOpacity onPress={() => {}}></TouchableOpacity>
             <Text style={locationModelStyles.headerText}>
               {strings.homeCityTitleText}
             </Text>
-            <View style={{paddingTop: 20, height: '100%'}}>
+            <View style={{paddingTop:20,height:'100%',}}>
               <TouchableOpacity
-                hitSlop={getHitSlop(15)}
-                style={locationModelStyles.closeButton}
-                onPress={() => setVisibleLocationModal(false)}>
+              hitSlop={getHitSlop(15)}
+              style={locationModelStyles.closeButton}
+              onPress={() => setVisibleLocationModal(false)}>
                 <Image
-                  source={images.cancelImage}
-                  style={[
-                    locationModelStyles.closeButton,
-                    {marginLeft: 0, marginRight: 0},
-                  ]}
-                />
+                source={images.cancelImage}
+                style={[locationModelStyles.closeButton,{marginLeft:0, marginRight:0}]}
+              />
               </TouchableOpacity>
             </View>
           </View>
@@ -579,9 +579,16 @@ export default function CreateTeamForm1({navigation, route}) {
               />
             </View>
             {noData && searchText.length > 0 && (
-              <Text style={locationModelStyles.noDataText}>
-                {strings.enter3CharText}
-              </Text>
+              <Text style={locationModelStyles.noDataText}>{strings.enter3CharText}</Text>
+            )}
+            {noData && searchText.length === 0 && nearbyCities.length >= 0 && cityData.length === 0 && (
+              <FlatList
+                style={{marginTop:25}}
+                data={nearbyCities}
+                renderItem={renderCurrentLocationItem}
+                ListHeaderComponent={renderCurrentLocation}
+                keyExtractor={(index) => index.toString()}
+              />
             )}
             {noData &&
               searchText.length === 0 &&

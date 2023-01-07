@@ -21,6 +21,7 @@ import {
 import Modal from 'react-native-modal';
 import FastImage from 'react-native-fast-image';
 import AuthContext from '../../auth/context';
+import LocationContext from '../../context/LocationContext';
 import * as Utility from '../../utils';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
@@ -43,10 +44,18 @@ const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
 
 export default function RecruitingPlayerScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
+  const locationContext = useContext(LocationContext);
   const [filters, setFilters] = useState(route.params?.filters);
 
   const [settingPopup, setSettingPopup] = useState(false);
-  const [locationFilterOpetion, setLocationFilterOpetion] = useState(0);
+      /* eslint-disable */ 
+  const [locationFilterOpetion, setLocationFilterOpetion] = useState(locationContext?.selectedLocation ===
+        /* eslint-disable */ 
+    authContext?.entity?.obj?.city
+    .charAt(0)
+    .toUpperCase() +
+        /* eslint-disable */ 
+    authContext?.entity?.obj?.city.slice(1) ? 1 : locationContext?.selectedLocation === strings.worldTitleText ? 0 : 2);
 
   const [sports, setSports] = useState([]);
 

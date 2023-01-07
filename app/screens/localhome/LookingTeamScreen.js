@@ -22,6 +22,7 @@ import {
 
 import Modal from 'react-native-modal';
 import AuthContext from '../../auth/context';
+import LocationContext from '../../context/LocationContext';
 import * as Utility from '../../utils';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
@@ -43,10 +44,19 @@ const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
 export default function LookingTeamScreen({navigation, route}) {
   const [loading, setloading] = useState(false);
   const authContext = useContext(AuthContext);
+  const locationContext = useContext(LocationContext);
   const [filters, setFilters] = useState(route?.params?.filters);
 
   const [settingPopup, setSettingPopup] = useState(false);
-  const [locationFilterOpetion, setLocationFilterOpetion] = useState(0);
+      /* eslint-disable */ 
+  const [locationFilterOpetion, setLocationFilterOpetion] = useState(locationContext?.selectedLocation ===
+        /* eslint-disable */ 
+    authContext?.entity?.obj?.city
+    .charAt(0)
+    .toUpperCase() +
+    /* eslint-disable */ 
+    authContext?.entity?.obj?.city.slice(1) ? 1 : locationContext?.selectedLocation === strings.worldTitleText ? 0 : 2
+    );
 
   const [sports, setSports] = useState([]);
 
@@ -60,6 +70,14 @@ export default function LookingTeamScreen({navigation, route}) {
     sport_type: route?.params?.filters?.sport_type,
   });
   const [location, setLocation] = useState(route?.params?.filters.location);
+
+  const [lastSelection, setLastSelection] = useState(0);
+
+  useEffect(() => {
+    if(settingPopup){
+      setLastSelection(locationFilterOpetion)
+    }
+  },[settingPopup])
 
   useEffect(() => {
     if (route.params?.locationText) {
@@ -127,16 +145,16 @@ export default function LookingTeamScreen({navigation, route}) {
           },
         });
       }
-      if (filerLookingEntity.sport !== strings.allType) {
-        lookingQuery.query.bool.must[0].nested.query.bool.must.push({
-          term: {
-            'registered_sports.sport_name.keyword': {
-              value: filerLookingEntity.sport.toLowerCase(),
-              case_insensitive: true,
-            },
-          },
-        });
-      }
+      // if (filerLookingEntity.sport !== strings.allType) {
+      //   lookingQuery.query.bool.must[0].nested.query.bool.must.push({
+      //     term: {
+      //       'registered_sports.sport_name.keyword': {
+      //         value: filerLookingEntity.sport.toLowerCase(),
+      //         case_insensitive: true,
+      //       },
+      //     },
+      //   });
+      // }
       if (filerLookingEntity?.searchText?.length > 0) {
         lookingQuery.query.bool.must.push({
           query_string: {
@@ -286,7 +304,31 @@ export default function LookingTeamScreen({navigation, route}) {
       sort: strings.allType,
       sport_type: strings.allType,
     });
+    setLocationFilterOpetion(locationContext?.selectedLocation ===
+      authContext?.entity?.obj?.city
+      .charAt(0)
+      .toUpperCase() +
+      /* eslint-disable */ 
+      authContext?.entity?.obj?.city.slice(1) ? 1 : locationContext?.selectedLocation === 'en_world' ? 0 : 2
+      );
   };
+
+  useEffect(() =>{
+    const tempFilter = {...filters};
+    tempFilter.sport = selectedSport;
+    tempFilter.location = location;
+    setFilters({
+      ...tempFilter,
+    });
+    setPageFrom(0);
+    setLookingEntity([]);
+    applyFilter(tempFilter);
+
+  },[location])
+
+  useEffect(() => {
+    getLookingEntity(filters);
+  },[filters])
 
 
   return (
@@ -327,7 +369,7 @@ export default function LookingTeamScreen({navigation, route}) {
         onTagCancelPress={handleTagPress}
       />
       <FlatList
-        extraData={lookingEntity}
+        extraData={location}
         showsHorizontalScrollIndicator={false}
         data={lookingEntity}
         ItemSeparatorComponent={renderSeparator}
@@ -364,28 +406,44 @@ export default function LookingTeamScreen({navigation, route}) {
             <ScrollView style={{flex: 1}}>
               <View style={styles.viewsContainer}>
                 <Text
-                  onPress={() => setSettingPopup(false)}
+                  onPress={() =>{setLocationFilterOpetion(lastSelection) ; setSettingPopup(false)}}
                   style={styles.cancelText}>
                   {strings.cancel}
                 </Text>
                 <Text style={styles.locationText}>{strings.filter}</Text>
                 <Text
                   style={styles.doneText}
-                  onPress={() => {
-                    setSettingPopup(false);
-                    setTimeout(() => {
-                      const tempFilter = {...filters};
-                      tempFilter.sport = selectedSport;
-                      tempFilter.location = location;
+                  onPress={async() => {
+                    const tempFilter = {...filters};
+                    tempFilter.sport = selectedSport;
+                    
+                    // setTimeout(() => {
+                      if(locationFilterOpetion === 0){
+                       setLocation(strings.worldTitleText);
+                       tempFilter.location = location;
+  
+                      } else if (locationFilterOpetion === 1) {
+                        setLocation(
+                          authContext?.entity?.obj?.city
+                            .charAt(0)
+                            .toUpperCase() +
+                            authContext?.entity?.obj?.city.slice(1),
+                        );
+                        tempFilter.location = location;
+  
+                      } else if (locationFilterOpetion === 2) {
+                          getLocation();
+                        tempFilter.location = location;
+                      }
 
-                      setFilters({
+
+                      await setFilters({
                         ...tempFilter,
                       });
                       setPageFrom(0);
                       setLookingEntity([]);
                       applyFilter(tempFilter);
-                    }, 100);
-                    console.log('DONE::');
+                      setSettingPopup(false);
                   }}>
                   {strings.apply}
                 </Text>
@@ -407,7 +465,7 @@ export default function LookingTeamScreen({navigation, route}) {
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(0);
-                          setLocation(strings.worldTitleText);
+                          // setLocation(strings.worldTitleText);
                         }}>
                         <Image
                           source={
@@ -431,12 +489,12 @@ export default function LookingTeamScreen({navigation, route}) {
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(1);
-                          setLocation(
-                            authContext?.entity?.obj?.city
-                              .charAt(0)
-                              .toUpperCase() +
-                              authContext?.entity?.obj?.city.slice(1),
-                          );
+                          // setLocation(
+                          //   authContext?.entity?.obj?.city
+                          //     .charAt(0)
+                          //     .toUpperCase() +
+                          //     authContext?.entity?.obj?.city.slice(1),
+                          // );
                           // setFilters({
                           //   ...filters,
                           //   location:
@@ -467,7 +525,8 @@ export default function LookingTeamScreen({navigation, route}) {
                       </Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
-                          getLocation();
+                          setLocationFilterOpetion(2)
+                          // getLocation();
                         }}>
                         <Image
                           source={

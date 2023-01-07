@@ -7,6 +7,7 @@ import {decode, encode} from 'base-64';
 import Orientation from 'react-native-orientation';
 import QB from 'quickblox-react-native-sdk';
 import AuthContext from './app/auth/context';
+import LocationContext from './app/context/LocationContext';
 
 // import { getQBSetting } from './app/utils/QuickBlox';
 import NavigationMainContainer from './NavigationMainContainer';
@@ -37,6 +38,7 @@ export default function App() {
     await Utility.setStorage('tokenData', token);
   }, []);
 
+  const [selectedLocation, setSelectedLoaction] = useState('');
   // useEffect(() => {
   //   axios({
   //     method: 'get',
@@ -188,9 +190,11 @@ export default function App() {
   return (
     <AuthContext.Provider value={authValue}>
       {alertData?.visible && <CommonAlert alertData={alertData} />}
-      <ImageUploadProvider>
-        <NavigationMainContainer />
-      </ImageUploadProvider>
+      <LocationContext.Provider value={{selectedLocation, setSelectedLoaction}}>
+        <ImageUploadProvider>
+          <NavigationMainContainer />
+        </ImageUploadProvider>
+      </LocationContext.Provider>
     </AuthContext.Provider>
   );
 }
