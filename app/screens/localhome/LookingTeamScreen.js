@@ -49,13 +49,9 @@ export default function LookingTeamScreen({navigation, route}) {
 
   const [settingPopup, setSettingPopup] = useState(false);
       /* eslint-disable */ 
-  const [locationFilterOpetion, setLocationFilterOpetion] = useState(locationContext?.selectedLocation ===
+  const [locationFilterOpetion, setLocationFilterOpetion] = useState(locationContext?.selectedLocation.toUpperCase() ===
         /* eslint-disable */ 
-    authContext?.entity?.obj?.city
-    .charAt(0)
-    .toUpperCase() +
-    /* eslint-disable */ 
-    authContext?.entity?.obj?.city.slice(1) ? 1 : locationContext?.selectedLocation === strings.worldTitleText ? 0 : 2
+    authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocation === strings.worldTitleText ? 0 : 2
     );
 
   const [sports, setSports] = useState([]);
@@ -66,13 +62,13 @@ export default function LookingTeamScreen({navigation, route}) {
   // eslint-disable-next-line no-unused-vars
   const [loadMore, setLoadMore] = useState(false);
   const [selectedSport, setSelectedSport] = useState({
-    sport: route?.params?.filters?.sport,
+    sport: route.params?.filters?.sport,
     sport_type: route?.params?.filters?.sport_type,
   });
-  const [location, setLocation] = useState(route?.params?.filters.location);
+  const [location, setLocation] = useState(route?.params?.filters?.location ?? route.params?.locationText);
 
   const [lastSelection, setLastSelection] = useState(0);
-
+  
   useEffect(() => {
     if(settingPopup){
       setLastSelection(locationFilterOpetion)
@@ -82,9 +78,9 @@ export default function LookingTeamScreen({navigation, route}) {
   useEffect(() => {
     if (route.params?.locationText) {
       setSettingPopup(true);
+      setLocation(route.params?.locationText);
       setTimeout(() => {
         setLocation(route.params?.locationText);
-
       }, 10);
     }
   }, [route.params?.locationText]);
@@ -145,16 +141,16 @@ export default function LookingTeamScreen({navigation, route}) {
           },
         });
       }
-      // if (filerLookingEntity.sport !== strings.allType) {
-      //   lookingQuery.query.bool.must[0].nested.query.bool.must.push({
-      //     term: {
-      //       'registered_sports.sport_name.keyword': {
-      //         value: filerLookingEntity.sport.toLowerCase(),
-      //         case_insensitive: true,
-      //       },
-      //     },
-      //   });
-      // }
+      if (filerLookingEntity?.sport !== strings.allType) {
+        lookingQuery.query.bool.must[0].nested.query.bool.must.push({
+          term: {
+            'registered_sports.sport_name.keyword': {
+              value: filerLookingEntity?.sport?.toLowerCase(),
+              case_insensitive: true,
+            },
+          },
+        });
+      }
       if (filerLookingEntity?.searchText?.length > 0) {
         lookingQuery.query.bool.must.push({
           query_string: {
@@ -236,7 +232,7 @@ export default function LookingTeamScreen({navigation, route}) {
           tempFilter.sport = strings.allType;
           delete tempFilter.lookingEntityFee;
           setSelectedSport({
-            sort: strings.allType,
+            sport: strings.allType,
             sport_type: strings.allType,
           });
         }
@@ -301,21 +297,18 @@ export default function LookingTeamScreen({navigation, route}) {
       sport_type: strings.allType,
     });
     setSelectedSport({
-      sort: strings.allType,
+      sport: strings.allType,
       sport_type: strings.allType,
     });
-    setLocationFilterOpetion(locationContext?.selectedLocation ===
-      authContext?.entity?.obj?.city
-      .charAt(0)
-      .toUpperCase() +
-      /* eslint-disable */ 
-      authContext?.entity?.obj?.city.slice(1) ? 1 : locationContext?.selectedLocation === 'en_world' ? 0 : 2
+    setLocationFilterOpetion(locationContext?.selectedLocation.toUpperCase() ===
+    /* eslint-disable */ 
+authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocation === strings.worldTitleText ? 0 : 2
       );
   };
 
   useEffect(() =>{
     const tempFilter = {...filters};
-    tempFilter.sport = selectedSport;
+    tempFilter.sport = selectedSport.sport;
     tempFilter.location = location;
     setFilters({
       ...tempFilter,
@@ -415,7 +408,7 @@ export default function LookingTeamScreen({navigation, route}) {
                   style={styles.doneText}
                   onPress={async() => {
                     const tempFilter = {...filters};
-                    tempFilter.sport = selectedSport;
+                    tempFilter.sport = selectedSport.sport;
                     
                     // setTimeout(() => {
                       if(locationFilterOpetion === 0){
@@ -600,25 +593,21 @@ export default function LookingTeamScreen({navigation, route}) {
                           });
                         }}
                         onValueChange={(value) => {
-                          console.log('dsffsdafsadf', value);
-                          //   setSelectedSport(value);
-
-                          //   setFilters({
-                          //     ...filters,
-                          //     sport: value,
-                          //   });
                           if (value === strings.allType) {
                             setSelectedSport({
                               sport: strings.allType,
                               sport_type: strings.allType,
                             });
                           } else {
-                            setSelectedSport(
+                           if(value)
+                            { 
+                              setSelectedSport(
                               Utility.getSportObjectByName(value, authContext),
                             );
+                           }
                           }
                         }}
-                        value={selectedSport}
+                        value={Utility.getSportName(selectedSport, authContext)}
                       />
                     </View>
                   </View>

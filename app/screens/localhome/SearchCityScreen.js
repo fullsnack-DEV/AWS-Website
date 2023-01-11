@@ -43,7 +43,6 @@ export default function SearchCityScreen({navigation, route}) {
     <TouchableOpacity
       style={styles.listItem}
       onPress={() => {
-        console.log('selected ITEM2323:=>', route?.params?.comeFrom);
         navigation.navigate(route?.params?.comeFrom, {
           locationText: item?.structured_formatting?.main_text,
         });

@@ -34,16 +34,19 @@ import TCTagsFilter from '../../components/TCTagsFilter';
 import TCPicker from '../../components/TCPicker';
 import {getGeocoordinatesWithPlaceName} from '../../utils/location';
 import ActivityLoader from '../../components/loader/ActivityLoader';
-
+import LocationContext from '../../context/LocationContext';
 let stopFetchMore = true;
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
 
 export default function RefereesListScreen({navigation, route}) {
   const [loading, setloading] = useState(false);
   const authContext = useContext(AuthContext);
+  const locationContext = useContext(LocationContext);
   const [filters, setFilters] = useState(route?.params?.filters);
   const [settingPopup, setSettingPopup] = useState(false);
-  const [locationFilterOpetion, setLocationFilterOpetion] = useState(0);
+  const [locationFilterOpetion, setLocationFilterOpetion] = useState(locationContext?.selectedLocation.toUpperCase() ===
+  /* eslint-disable */ 
+authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocation === strings.worldTitleText ? 0 : 2);
   const [sports, setSports] = useState([]);
   const [minFee, setMinFee] = useState(0);
   const [maxFee, setMaxFee] = useState(0);
@@ -57,6 +60,12 @@ export default function RefereesListScreen({navigation, route}) {
     sport_type: route.params?.filters?.sport_type,
   });
   const [location, setLocation] = useState(route.params?.filters?.location);
+  const [lastSelection, setLastSelection] = useState(0);
+  useEffect(() => {
+    if(settingPopup){
+      setLastSelection(locationFilterOpetion)
+    }
+  },[settingPopup])
 
   useEffect(() => {
     if (route.params?.locationText) {
@@ -230,7 +239,7 @@ export default function RefereesListScreen({navigation, route}) {
           tempFilter.sport = strings.allType;
           delete tempFilter.refereeFee;
           setSelectedSport({
-            sort: strings.allType,
+            sport: strings.allType,
             sport_type: strings.allType,
           });
           setMinFee(0);
@@ -322,12 +331,29 @@ export default function RefereesListScreen({navigation, route}) {
       sport_type: strings.allType,
     });
     setSelectedSport({
-      sort: strings.allType,
+      sport: strings.allType,
       sport_type: strings.allType,
     });
+    setLocationFilterOpetion(locationContext?.selectedLocation.toUpperCase() ===
+    /* eslint-disable */ 
+    authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocation === strings.worldTitleText ? 0 : 2
+      );
     setMinFee(0);
     setMaxFee(0);
   };
+
+  useEffect(() =>{
+    const tempFilter = {...filters};
+    tempFilter.sport = selectedSport?.sport;
+    tempFilter.location = location;
+    setFilters({
+      ...tempFilter,
+    });
+    setPageFrom(0);
+    setReferees([]);
+    applyFilter(tempFilter);
+
+  },[location])
 
   return (
     <SafeAreaView style={{flex: 1}}>
@@ -368,7 +394,7 @@ export default function RefereesListScreen({navigation, route}) {
         onTagCancelPress={handleTagPress}
       />
       <FlatList
-        extraData={referees}
+        extraData={location}
         showsVerticalScrollIndicator={false}
         data={referees}
         ItemSeparatorComponent={renderSeparator}
@@ -384,7 +410,7 @@ export default function RefereesListScreen({navigation, route}) {
         ListEmptyComponent={listEmptyComponent}
       />
       <Modal
-        onBackdropPress={() => setSettingPopup(false)}
+        onBackdropPress={() => {{setLocationFilterOpetion(lastSelection) ; setSettingPopup(false)}}}
         style={{
           margin: 0,
         }}
@@ -405,7 +431,7 @@ export default function RefereesListScreen({navigation, route}) {
             <ScrollView style={{flex: 1}}>
               <View style={styles.viewsContainer}>
                 <Text
-                  onPress={() => setSettingPopup(false)}
+                  onPress={() => {{setLocationFilterOpetion(lastSelection) ; setSettingPopup(false)}}}
                   style={styles.cancelText}>
                   {strings.cancel}
                 </Text>
@@ -415,12 +441,27 @@ export default function RefereesListScreen({navigation, route}) {
                   onPress={() => {
                     if (applyValidation()) {
                       setSettingPopup(false);
-                      setTimeout(() => {
                         const tempFilter = {...filters};
                         tempFilter.sport = selectedSport.sport;
                         tempFilter.sport_type = selectedSport.sport_type;
 
-                        tempFilter.location = location;
+                        if(locationFilterOpetion === 0){
+                          setLocation(strings.worldTitleText);
+                          tempFilter.location = location;
+     
+                         } else if (locationFilterOpetion === 1) {
+                           setLocation(
+                             authContext?.entity?.obj?.city
+                               .charAt(0)
+                               .toUpperCase() +
+                               authContext?.entity?.obj?.city.slice(1),
+                           );
+                           tempFilter.location = location;
+     
+                         } else if (locationFilterOpetion === 2) {
+                             getLocation();
+                           tempFilter.location = location;
+                         }
                         if (minFee && maxFee) {
                           tempFilter.refereeFee = `${minFee}-${maxFee}`;
                         }
@@ -430,7 +471,6 @@ export default function RefereesListScreen({navigation, route}) {
                         setPageFrom(0);
                         setReferees([]);
                         applyFilter(tempFilter);
-                      }, 100);
                     }
                   }}>
                   {strings.apply}
@@ -455,7 +495,6 @@ export default function RefereesListScreen({navigation, route}) {
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(0);
-                          setLocation(strings.worldTitleText);
                         }}>
                         <Image
                           source={
@@ -479,12 +518,6 @@ export default function RefereesListScreen({navigation, route}) {
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(1);
-                          setLocation(
-                            authContext?.entity?.obj?.city
-                              .charAt(0)
-                              .toUpperCase() +
-                              authContext?.entity?.obj?.city.slice(1),
-                          );
                         }}>
                         <Image
                           source={
@@ -507,7 +540,7 @@ export default function RefereesListScreen({navigation, route}) {
                       </Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
-                          getLocation();
+                          setLocationFilterOpetion(2)
                         }}>
                         <Image
                           source={
