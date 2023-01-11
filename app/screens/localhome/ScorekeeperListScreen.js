@@ -35,6 +35,7 @@ import TCPicker from '../../components/TCPicker';
 import {getGeocoordinatesWithPlaceName} from '../../utils/location';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import LocationContext from '../../context/LocationContext';
+
 let stopFetchMore = true;
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
 
@@ -44,6 +45,7 @@ export default function ScorekeeperListScreen({navigation, route}) {
   const [filters, setFilters] = useState(route?.params?.filters);
   const locationContext = useContext(LocationContext);
   const [settingPopup, setSettingPopup] = useState(false);
+  /* eslint-disable */ 
   const [locationFilterOpetion, setLocationFilterOpetion] = useState(locationContext?.selectedLocation.toUpperCase() ===
   /* eslint-disable */ 
 authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocation === strings.worldTitleText ? 0 : 2);

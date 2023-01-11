@@ -35,6 +35,7 @@ import Verbs from '../../Constants/Verbs';
 import {getGeocoordinatesWithPlaceName} from '../../utils/location';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import LocationContext from '../../context/LocationContext';
+
 let stopFetchMore = true;
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
 
@@ -46,6 +47,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
   const [filters, setFilters] = useState(route?.params?.filters);
   const [settingPopup, setSettingPopup] = useState(false);
   const [locationFilterOpetion, setLocationFilterOpetion] = useState(
+    /* eslint-disable */ 
     locationContext?.selectedLocation.toUpperCase() ===
     /* eslint-disable */ 
   authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocation === strings.worldTitleText ? 0 : 2
