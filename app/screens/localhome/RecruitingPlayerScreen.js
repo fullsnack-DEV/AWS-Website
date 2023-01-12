@@ -66,10 +66,10 @@ export default function RecruitingPlayerScreen({navigation, route}) {
   const [loading, setloading] = useState(false);
 
   const [selectedSport, setSelectedSport] = useState({
-    sport: route?.params?.filters.sport,
-    sport_type: route?.params?.filters.sport_type,
+    sport: route.params?.filters?.sport,
+    sport_type: route.params?.filters?.sport_type,
   });
-  const [location, setLocation] = useState(route.params?.filters.location ?? route.params?.locationText);
+  const [location, setLocation] = useState(route.params?.filters?.location ?? route.params?.locationText);
   const [lastSelection, setLastSelection] = useState(0);
   useEffect(() => {
     if(settingPopup){
@@ -627,7 +627,7 @@ export default function RecruitingPlayerScreen({navigation, route}) {
                         setLocationFilterOpetion(3);
                         setSettingPopup(false);
                         navigation.navigate('SearchCityScreen', {
-                          comeFrom: 'LookingForChallengeScreen',
+                          comeFrom: 'RecruitingPlayerScreen',
                         });
                       }}>
                       <View

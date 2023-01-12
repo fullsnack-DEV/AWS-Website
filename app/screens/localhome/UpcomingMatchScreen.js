@@ -20,6 +20,7 @@ import {
 import Modal from 'react-native-modal';
 import moment from 'moment';
 import AuthContext from '../../auth/context';
+import LocationContext from '../../context/LocationContext';
 import * as Utility from '../../utils';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
@@ -46,10 +47,15 @@ const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
 export default function UpcomingMatchScreen({navigation, route}) {
   const [loading, setloading] = useState(false);
   const authContext = useContext(AuthContext);
+  const locationContext = useContext(LocationContext);
   const [filters, setFilters] = useState(route?.params?.filters);
 
   const [settingPopup, setSettingPopup] = useState(false);
-  const [locationFilterOpetion, setLocationFilterOpetion] = useState(0);
+
+  /* eslint-disable */ 
+  const [locationFilterOpetion, setLocationFilterOpetion] = useState(locationContext?.selectedLocation.toUpperCase() ===
+  /* eslint-disable */ 
+    authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocation === strings.worldTitleText ? 0 : 2);
 
   const [sports, setSports] = useState([]);
 
@@ -76,11 +82,11 @@ export default function UpcomingMatchScreen({navigation, route}) {
   const [loadMore, setLoadMore] = useState(false);
   const [searchData, setSearchData] = useState();
   const [selectedSport, setSelectedSport] = useState({
-    sport: route.params?.filters.sport,
-    sport_type: route.params?.filters.sport_type,
+    sport: route.params?.filters?.sport,
+    sport_type: route.params?.filters?.sport_type,
   });
-  const [location, setLocation] = useState(route.params?.filters.location);
-
+  const [location, setLocation] = useState(route.params?.filters?.location);
+  const [lastSelection, setLastSelection] = useState(0);
   console.log('Upcoming Match Filter:=>', filters);
 
   useEffect(() => {
@@ -91,6 +97,12 @@ export default function UpcomingMatchScreen({navigation, route}) {
       }, 10);
     }
   }, [route.params?.locationText]);
+  useEffect(() => {
+    if(settingPopup){
+      setLastSelection(locationFilterOpetion)
+    }
+  },[settingPopup])
+
   useEffect(() => {
     const list = [
       {
@@ -465,18 +477,34 @@ export default function UpcomingMatchScreen({navigation, route}) {
 
   const onPressReset = () => {
     setFilters({
-      location: 'world',
-      sport: 'All',
-      sport_type: 'All',
+      location: strings.worldTitleText,
+      sport: strings.allType,
+      sport_type: strings.allType,
     });
-    setLocation('world');
     setSelectedSport({
-      sort: 'All',
-      sport_type: 'All',
+      sport: strings.allType,
+      sport_type: strings.allType,
     });
+    setLocationFilterOpetion(locationContext?.selectedLocation.toUpperCase() ===
+    /* eslint-disable */ 
+    authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocation === strings.worldTitleText ? 0 : 2
+      );
     setFromDate();
     setToDate();
   };
+
+  useEffect(() =>{
+    const tempFilter = {...filters};
+    tempFilter.sport = selectedSport?.sport ?? strings.allType;
+    tempFilter.location = location;
+    setFilters({
+      ...tempFilter,
+    });
+    setPageFrom(0);
+    setUpcomingMatch([]);
+    applyFilter(tempFilter);
+  },[location])
+
   return (
     <View>
       <ActivityLoader visible={loading} />
@@ -502,7 +530,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
         onTagCancelPress={handleTagPress}
       />
       <FlatList
-        extraData={upcomingMatch}
+        extraData={location}
         showsHorizontalScrollIndicator={false}
         data={upcomingMatch}
         keyExtractor={keyExtractor}
@@ -518,7 +546,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
       />
       <Modal
         isVisible={settingPopup}
-        onBackdropPress={() => setSettingPopup(false)}
+        onBackdropPress={() => {setLocationFilterOpetion(lastSelection) ; setSettingPopup(false)}}
         animationInTiming={300}
         animationOutTiming={800}
         backdropTransitionInTiming={300}
@@ -538,7 +566,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
             <ScrollView style={{flex: 1}}>
               <View style={styles.viewsContainer}>
                 <Text
-                  onPress={() => setSettingPopup(false)}
+                  onPress={() => {setLocationFilterOpetion(lastSelection) ; setSettingPopup(false)}}
                   style={styles.cancelText}>
                   {strings.cancel}
                 </Text>
@@ -546,13 +574,27 @@ export default function UpcomingMatchScreen({navigation, route}) {
                 <Text
                   style={styles.doneText}
                   onPress={() => {
-                    setSettingPopup(false);
-                    setTimeout(() => {
                       const tempFilter = {...filters};
-                      tempFilter.sport = selectedSport.sport;
-                      tempFilter.sport_type = selectedSport.sport_type;
-                      tempFilter.location = location;
+                      tempFilter.sport = selectedSport?.sport ?? strings.allType;
+                      tempFilter.sport_type = selectedSport?.sport_type  ?? strings.allType;
 
+                      if(locationFilterOpetion === 0){
+                        setLocation(strings.worldTitleText);
+                        tempFilter.location = location;
+   
+                       } else if (locationFilterOpetion === 1) {
+                         setLocation(
+                           authContext?.entity?.obj?.city
+                             .charAt(0)
+                             .toUpperCase() +
+                             authContext?.entity?.obj?.city.slice(1),
+                         );
+                         tempFilter.location = location;
+   
+                       } else if (locationFilterOpetion === 2) {
+                           getLocation();
+                         tempFilter.location = location;
+                       }
                       if (fromDate) {
                         tempFilter.fromDate =
                           moment(fromDate).format('MM/DD/YYYY hh:mm a');
@@ -583,8 +625,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
                       setPageFrom(0);
                       setUpcomingMatch([]);
                       applyFilter(tempFilter);
-                    }, 100);
-                    console.log('DONE::');
+                      setSettingPopup(false);
                   }}>
                   {strings.apply}
                 </Text>
@@ -627,20 +668,6 @@ export default function UpcomingMatchScreen({navigation, route}) {
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(1);
-                          setLocation(
-                            authContext?.entity?.obj?.city
-                              .charAt(0)
-                              .toUpperCase() +
-                              authContext?.entity?.obj?.city.slice(1),
-                          );
-                          // setFilters({
-                          //   ...filters,
-                          //   location:
-                          //     authContext?.entity?.obj?.city
-                          //       .charAt(0)
-                          //       .toUpperCase()
-                          //     + authContext?.entity?.obj?.city.slice(1),
-                          // });
                         }}>
                         <Image
                           source={
@@ -661,7 +688,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
                       <Text style={styles.filterTitle}>{strings.currrentCityTitle}</Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
-                          getLocation();
+                          setLocationFilterOpetion(2)
                         }}>
                         <Image
                           source={
@@ -732,11 +759,11 @@ export default function UpcomingMatchScreen({navigation, route}) {
                         dataSource={sports}
                         placeholder={strings.selectSportTitleText}
                         onValueChange={(value) => {
-                          if (value === 'All') {
+                          if (value === strings.allType) {
                             setSelectedSport({
-                              sport: 'All',
-                              sport_type: 'All',
-                            });
+                               sport: strings.allType,
+                               sport_type: strings.allType,
+                             });
                             setSelectedEntity();
                             setEntityData([]);
                           } else {
@@ -916,7 +943,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
             </View> */}
               {/* Rate View */}
 
-              {selectedSport.sport !== 'All' && (
+              {selectedSport && selectedSport.sport !== strings.allType && (
                 <View
                   style={{
                     flexDirection: 'column',

@@ -517,7 +517,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
                   style={styles.doneText}
                   onPress={() => {
                     if (applyValidation()) {
-                      setSettingPopup(false);
+                    
                         const tempFilter = {...filters};
                         tempFilter.sport = selectedSport.sport;
                         tempFilter.sport_type = selectedSport.sport_type;
@@ -548,6 +548,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
                         setPageFrom(0);
                         setAvailableChallenge([]);
                         applyFilter(tempFilter);
+                        setSettingPopup(false);
                     }
                   }}>
                   {strings.apply}
