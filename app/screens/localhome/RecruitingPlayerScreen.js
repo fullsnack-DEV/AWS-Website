@@ -49,13 +49,11 @@ export default function RecruitingPlayerScreen({navigation, route}) {
 
   const [settingPopup, setSettingPopup] = useState(false);
       /* eslint-disable */ 
-  const [locationFilterOpetion, setLocationFilterOpetion] = useState(locationContext?.selectedLocation ===
-        /* eslint-disable */ 
-    authContext?.entity?.obj?.city
-    .charAt(0)
-    .toUpperCase() +
-        /* eslint-disable */ 
-    authContext?.entity?.obj?.city.slice(1) ? 1 : locationContext?.selectedLocation === strings.worldTitleText ? 0 : 2);
+  const [locationFilterOpetion, setLocationFilterOpetion] = useState(
+    locationContext?.selectedLocation.toUpperCase() ===
+    /* eslint-disable */ 
+  authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocation === strings.worldTitleText ? 0 : 2
+  );
 
   const [sports, setSports] = useState([]);
 
@@ -68,11 +66,16 @@ export default function RecruitingPlayerScreen({navigation, route}) {
   const [loading, setloading] = useState(false);
 
   const [selectedSport, setSelectedSport] = useState({
-    sport: route?.params?.filters.sport,
-    sport_type: route?.params?.filters.sport_type,
+    sport: route.params?.filters?.sport,
+    sport_type: route.params?.filters?.sport_type,
   });
-  const [location, setLocation] = useState(route.params?.filters.location);
-
+  const [location, setLocation] = useState(route.params?.filters?.location ?? route.params?.locationText);
+  const [lastSelection, setLastSelection] = useState(0);
+  useEffect(() => {
+    if(settingPopup){
+      setLastSelection(locationFilterOpetion)
+    }
+  },[settingPopup]);
   useEffect(() => {
     groups.forEach((x, i) => {
       if (x.type === strings.teamstitle) {
@@ -118,7 +121,6 @@ export default function RecruitingPlayerScreen({navigation, route}) {
 
   const getRecruitingPlayer = useCallback(
     (filerdata) => {
-      // Looking Challengee query
       const recruitingPlayersQuery = {
         size: pageSize,
         from: pageFrom,
@@ -246,7 +248,7 @@ export default function RecruitingPlayerScreen({navigation, route}) {
           tempFilter.sport = strings.allType;
           delete tempFilter.gameFee;
           setSelectedSport({
-            sort: strings.allType,
+            sport: strings.allType,
             sport_type: strings.allType,
           });
         }
@@ -335,9 +337,13 @@ export default function RecruitingPlayerScreen({navigation, route}) {
       sport_type: strings.allType,
     });
     setSelectedSport({
-      sort: strings.allType,
+      sport: strings.allType,
       sport_type: strings.allType,
     });
+    setLocationFilterOpetion(locationContext?.selectedLocation.toUpperCase() ===
+    /* eslint-disable */ 
+    authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocation === strings.worldTitleText ? 0 : 2
+      );
   };
   const isIconCheckedOrNot = useCallback(
     ({item, index}) => {
@@ -351,6 +357,18 @@ export default function RecruitingPlayerScreen({navigation, route}) {
     },
     [groups],
   );
+  useEffect(() =>{
+    const tempFilter = {...filters};
+    tempFilter.sport = selectedSport?.sport;
+    tempFilter.location = location;
+    setFilters({
+      ...tempFilter,
+    });
+    setPageFrom(0);
+    setRecruitingPlayer([]);
+    applyFilter(tempFilter);
+
+  },[location])
   const renderGroupsTypeItem = ({item, index}) => (
     <TouchableOpacity
       style={styles.listItem}
@@ -420,7 +438,7 @@ export default function RecruitingPlayerScreen({navigation, route}) {
         onTagCancelPress={handleTagPress}
       />
       <FlatList
-        extraData={recruitingPlayer}
+        extraData={location}
         showsHorizontalScrollIndicator={false}
         data={recruitingPlayer}
         ItemSeparatorComponent={renderSeparator}
@@ -436,7 +454,7 @@ export default function RecruitingPlayerScreen({navigation, route}) {
         ListEmptyComponent={listEmptyComponent}
       />
       <Modal
-        onBackdropPress={() => setSettingPopup(false)}
+        onBackdropPress={() => {setLocationFilterOpetion(lastSelection) ; setSettingPopup(false)}}
         style={{
           margin: 0,
         }}
@@ -457,7 +475,7 @@ export default function RecruitingPlayerScreen({navigation, route}) {
             <ScrollView style={{flex: 1}}>
               <View style={styles.viewsContainer}>
                 <Text
-                  onPress={() => setSettingPopup(false)}
+                  onPress={() => {{setLocationFilterOpetion(lastSelection) ; setSettingPopup(false)}}}
                   style={styles.cancelText}>
                   {strings.cancel}
                 </Text>
@@ -465,12 +483,26 @@ export default function RecruitingPlayerScreen({navigation, route}) {
                 <Text
                   style={styles.doneText}
                   onPress={() => {
-                    setSettingPopup(false);
-                    setTimeout(() => {
                       const tempFilter = {...filters};
                       tempFilter.sport = selectedSport.sport;
                       tempFilter.sport_type = selectedSport.sport_type;
-                      tempFilter.location = location;
+                      if(locationFilterOpetion === 0){
+                        setLocation(strings.worldTitleText);
+                        tempFilter.location = location;
+   
+                       } else if (locationFilterOpetion === 1) {
+                         setLocation(
+                           authContext?.entity?.obj?.city
+                             .charAt(0)
+                             .toUpperCase() +
+                             authContext?.entity?.obj?.city.slice(1),
+                         );
+                         tempFilter.location = location;
+   
+                       } else if (locationFilterOpetion === 2) {
+                           getLocation();
+                         tempFilter.location = location;
+                       }
                       if (
                         groups.filter(
                           (obj) =>
@@ -508,7 +540,7 @@ export default function RecruitingPlayerScreen({navigation, route}) {
                       setPageFrom(0);
                       setRecruitingPlayer([]);
                       applyFilter(tempFilter);
-                    }, 100);
+                      setSettingPopup(false);
                   }}>
                   {strings.apply}
                 </Text>
@@ -532,7 +564,6 @@ export default function RecruitingPlayerScreen({navigation, route}) {
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(0);
-                          setLocation(strings.worldTitleText);
                         }}>
                         <Image
                           source={
@@ -556,12 +587,6 @@ export default function RecruitingPlayerScreen({navigation, route}) {
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(1);
-                          setLocation(
-                            authContext?.entity?.obj?.city
-                              .charAt(0)
-                              .toUpperCase() +
-                              authContext?.entity?.obj?.city.slice(1),
-                          );
                         }}>
                         <Image
                           source={
@@ -584,7 +609,7 @@ export default function RecruitingPlayerScreen({navigation, route}) {
                       </Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
-                          getLocation();
+                          setLocationFilterOpetion(2)
                         }}>
                         <Image
                           source={
@@ -602,7 +627,7 @@ export default function RecruitingPlayerScreen({navigation, route}) {
                         setLocationFilterOpetion(3);
                         setSettingPopup(false);
                         navigation.navigate('SearchCityScreen', {
-                          comeFrom: 'LookingForChallengeScreen',
+                          comeFrom: 'RecruitingPlayerScreen',
                         });
                       }}>
                       <View

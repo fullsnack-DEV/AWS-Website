@@ -27,7 +27,7 @@ import {widthPercentageToDP} from '../../utils';
 import DateTimePickerView from '../../components/Schedule/DateTimePickerModal';
 import fonts from '../../Constants/Fonts';
 import TCThinDivider from '../../components/TCThinDivider';
-
+import LocationContext from '../../context/LocationContext';
 import {strings} from '../../../Localization/translation';
 import {
   getGameIndex,
@@ -48,10 +48,14 @@ export default function RecentMatchScreen({navigation, route}) {
 
   const [loading, setloading] = useState(false);
   const authContext = useContext(AuthContext);
+  const locationContext = useContext(LocationContext);
   const [filters, setFilters] = useState(route?.params?.filters);
 
   const [settingPopup, setSettingPopup] = useState(false);
-  const [locationFilterOpetion, setLocationFilterOpetion] = useState(0);
+  /* eslint-disable */ 
+  const [locationFilterOpetion, setLocationFilterOpetion] = useState(locationContext?.selectedLocation.toUpperCase() ===
+  /* eslint-disable */ 
+    authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocation === strings.worldTitleText ? 0 : 2);
 
   const [sports, setSports] = useState([]);
 
@@ -78,12 +82,20 @@ export default function RecentMatchScreen({navigation, route}) {
   const [loadMore, setLoadMore] = useState(false);
   const [searchData, setSearchData] = useState();
   const [selectedSport, setSelectedSport] = useState({
-    sport: route?.params?.filters.sport,
-    sport_type: route?.params?.filters.sport_type,
+    sport: route.params?.filters?.sport,
+    sport_type: route.params?.filters?.sport_type,
   });
-  const [location, setLocation] = useState(route?.params?.filters.location);
+  const [location, setLocation] = useState(route?.params?.filters?.location);
+  
 
   console.log('Recent Match Filter:=>', filters);
+
+  const [lastSelection, setLastSelection] = useState(0);
+  useEffect(() => {
+    if(settingPopup){
+      setLastSelection(locationFilterOpetion)
+    }
+  },[settingPopup])
 
   useEffect(() => {
     if (route.params?.locationText) {
@@ -453,18 +465,34 @@ export default function RecentMatchScreen({navigation, route}) {
   };
   const onPressReset = () => {
     setFilters({
-      location: 'world',
-      sport: 'All',
-      sport_type: 'All',
+      location: strings.worldTitleText,
+      sport: strings.allType,
+      sport_type: strings.allType,
     });
-    setLocation('world');
     setSelectedSport({
-      sort: 'All',
-      sport_type: 'All',
+      sport: strings.allType,
+      sport_type: strings.allType,
     });
+    setLocationFilterOpetion(locationContext?.selectedLocation.toUpperCase() ===
+    /* eslint-disable */ 
+    authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocation === strings.worldTitleText ? 0 : 2
+      );
     setFromDate();
     setToDate();
   };
+
+  useEffect(() =>{
+    const tempFilter = {...filters};
+    tempFilter.sport = selectedSport?.sport ?? strings.allType;
+    tempFilter.location = location;
+    setFilters({
+      ...tempFilter,
+    });
+    setPageFrom(0);
+    setRecentMatch([]);
+    applyFilter(tempFilter);
+
+  },[location])
   return (
     <View>
       <ActivityLoader visible={loading} />
@@ -490,7 +518,7 @@ export default function RecentMatchScreen({navigation, route}) {
         onTagCancelPress={handleTagPress}
       />
       <FlatList
-        extraData={recentMatch}
+        extraData={location}
         showsHorizontalScrollIndicator={false}
         data={recentMatch}
         keyExtractor={keyExtractor}
@@ -505,7 +533,7 @@ export default function RecentMatchScreen({navigation, route}) {
         ListEmptyComponent={listEmptyComponent}
       />
       <Modal
-        onBackdropPress={() => setSettingPopup(false)}
+        onBackdropPress={() => {setLocationFilterOpetion(lastSelection) ; setSettingPopup(false)}}
         style={{
           margin: 0,
         }}
@@ -526,7 +554,7 @@ export default function RecentMatchScreen({navigation, route}) {
             <ScrollView style={{flex: 1}}>
               <View style={styles.viewsContainer}>
                 <Text
-                  onPress={() => setSettingPopup(false)}
+                  onPress={() => {setLocationFilterOpetion(lastSelection) ; setSettingPopup(false)}}
                   style={styles.cancelText}>
                   {strings.cancel}
                 </Text>
@@ -534,13 +562,27 @@ export default function RecentMatchScreen({navigation, route}) {
                 <Text
                   style={styles.doneText}
                   onPress={() => {
-                    setSettingPopup(false);
-                    setTimeout(() => {
                       const tempFilter = {...filters};
-                      tempFilter.sport = selectedSport.sport;
-                      tempFilter.sport_type = selectedSport.sport_type;
+                      tempFilter.sport = selectedSport?.sport ?? strings.allType;
+                      tempFilter.sport_type = selectedSport?.sport_type  ?? strings.allType;
 
-                      tempFilter.location = location;
+                      if(locationFilterOpetion === 0){
+                        setLocation(strings.worldTitleText);
+                        tempFilter.location = location;
+   
+                       } else if (locationFilterOpetion === 1) {
+                         setLocation(
+                           authContext?.entity?.obj?.city
+                             .charAt(0)
+                             .toUpperCase() +
+                             authContext?.entity?.obj?.city.slice(1),
+                         );
+                         tempFilter.location = location;
+   
+                       } else if (locationFilterOpetion === 2) {
+                           getLocation();
+                         tempFilter.location = location;
+                       }
 
                       if (fromDate) {
                         tempFilter.fromDate =
@@ -571,8 +613,7 @@ export default function RecentMatchScreen({navigation, route}) {
                       setPageFrom(0);
                       setRecentMatch([]);
                       applyFilter(tempFilter);
-                    }, 100);
-                    console.log('DONE::');
+                      setSettingPopup(false);
                   }}>
                   {strings.apply}
                 </Text>
@@ -594,11 +635,6 @@ export default function RecentMatchScreen({navigation, route}) {
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(0);
-                          setLocation('world');
-                          // setFilters({
-                          //   ...filters,
-                          //   location: 'world',
-                          // });
                         }}>
                         <Image
                           source={
@@ -620,12 +656,6 @@ export default function RecentMatchScreen({navigation, route}) {
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(1);
-                          setLocation(
-                            authContext?.entity?.obj?.city
-                              .charAt(0)
-                              .toUpperCase() +
-                              authContext?.entity?.obj?.city.slice(1),
-                          );
                         }}>
                         <Image
                           source={
@@ -646,7 +676,7 @@ export default function RecentMatchScreen({navigation, route}) {
                       <Text style={styles.filterTitle}>{strings.locationTitle}</Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
-                          getLocation();
+                          setLocationFilterOpetion(2)
                         }}>
                         <Image
                           source={
@@ -717,10 +747,10 @@ export default function RecentMatchScreen({navigation, route}) {
                         dataSource={sports}
                         placeholder={strings.sportsEventsTitle}
                         onValueChange={(value) => {
-                          if (value === 'All') {
-                            setSelectedSport({
-                              sport: 'All',
-                              sport_type: 'All',
+                          if (value === strings.allType) {
+                           setSelectedSport({
+                              sport: strings.allType,
+                              sport_type: strings.allType,
                             });
                             setSelectedEntity();
                             setEntityData([]);
@@ -901,7 +931,7 @@ export default function RecentMatchScreen({navigation, route}) {
            </View> */}
               {/* Rate View */}
 
-              {selectedSport.sport !== 'All' && (
+              {selectedSport && selectedSport.sport !== strings.allType && (
                 <View
                   style={{
                     flexDirection: 'column',

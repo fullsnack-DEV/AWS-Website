@@ -34,6 +34,7 @@ import TCAvailableForChallenge from '../../components/TCAvailableForChallenge';
 import Verbs from '../../Constants/Verbs';
 import {getGeocoordinatesWithPlaceName} from '../../utils/location';
 import ActivityLoader from '../../components/loader/ActivityLoader';
+import LocationContext from '../../context/LocationContext';
 
 let stopFetchMore = true;
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
@@ -42,10 +43,14 @@ export default function LookingForChallengeScreen({navigation, route}) {
   
   const [loading, setloading] = useState(false);
   const authContext = useContext(AuthContext);
+  const locationContext = useContext(LocationContext);
   const [filters, setFilters] = useState(route?.params?.filters);
   const [settingPopup, setSettingPopup] = useState(false);
   const [locationFilterOpetion, setLocationFilterOpetion] = useState(
-    filters.location !== strings.worldTitleText ? 3 : 0,
+    /* eslint-disable */ 
+    locationContext?.selectedLocation.toUpperCase() ===
+    /* eslint-disable */ 
+  authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocation === strings.worldTitleText ? 0 : 2
   );
   const [sports, setSports] = useState([]);
   const [minFee, setMinFee] = useState(0);
@@ -60,10 +65,16 @@ export default function LookingForChallengeScreen({navigation, route}) {
     sport_type: route.params?.filters?.sport_type,
   });
   const [location, setLocation] = useState(route.params?.filters?.location);
-
+  const [lastSelection, setLastSelection] = useState(0);
+  useEffect(() => {
+    if(settingPopup){
+      setLastSelection(locationFilterOpetion)
+    }
+  },[settingPopup])
   useEffect(() => {
     if (route.params?.locationText) {
       setSettingPopup(true);
+      setLocation(route.params?.locationText);
       setTimeout(() => {
         setLocation(route.params?.locationText);
       }, 10);
@@ -312,7 +323,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
           tempFilter.sport_type = strings.allType;
           delete tempFilter.gameFee;
           setSelectedSport({
-            sort: strings.allType,
+            sport: strings.allType,
             sport_type: strings.allType,
           });
           setMinFee(0);
@@ -398,12 +409,29 @@ export default function LookingForChallengeScreen({navigation, route}) {
       sport_type: strings.allType,
     });
     setSelectedSport({
-      sort: strings.allType,
+      sport: strings.allType,
       sport_type: strings.allType,
     });
+    setLocationFilterOpetion(locationContext?.selectedLocation.toUpperCase() ===
+    /* eslint-disable */ 
+    authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocation === strings.worldTitleText ? 0 : 2
+      );
     setMinFee(0);
     setMaxFee(0);
   };
+
+  useEffect(() =>{
+    const tempFilter = {...filters};
+    tempFilter.sport = selectedSport?.sport;
+    tempFilter.location = location;
+    setFilters({
+      ...tempFilter,
+    });
+    setPageFrom(0);
+    setAvailableChallenge([]);
+    applyFilter(tempFilter);
+
+  },[location])
 
   return (
     <SafeAreaView style={{flex: 1}}>
@@ -443,7 +471,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
         onTagCancelPress={handleTagPress}
       />
       <FlatList
-        extraData={availableChallenge}
+        extraData={location}
         showsHorizontalScrollIndicator={false}
         data={availableChallenge}
         ItemSeparatorComponent={renderSeparator}
@@ -459,7 +487,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
         ListEmptyComponent={listEmptyComponent}
       />
       <Modal
-        onBackdropPress={() => setSettingPopup(false)}
+        onBackdropPress={() => {setLocationFilterOpetion(lastSelection) ; setSettingPopup(false)}}
         style={{
           margin: 0,
         }}
@@ -480,7 +508,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
             <ScrollView style={{flex: 1}}>
               <View style={styles.viewsContainer}>
                 <Text
-                  onPress={() => setSettingPopup(false)}
+                  onPress={() =>{setLocationFilterOpetion(lastSelection) ; setSettingPopup(false)}}
                   style={styles.cancelText}>
                   {strings.cancel}
                 </Text>
@@ -489,13 +517,28 @@ export default function LookingForChallengeScreen({navigation, route}) {
                   style={styles.doneText}
                   onPress={() => {
                     if (applyValidation()) {
-                      setSettingPopup(false);
-                      setTimeout(() => {
+                    
                         const tempFilter = {...filters};
                         tempFilter.sport = selectedSport.sport;
                         tempFilter.sport_type = selectedSport.sport_type;
-                        tempFilter.location = location;
-
+                        // tempFilter.location = location;
+                        if(locationFilterOpetion === 0){
+                          setLocation(strings.worldTitleText);
+                          tempFilter.location = location;
+     
+                         } else if (locationFilterOpetion === 1) {
+                           setLocation(
+                             authContext?.entity?.obj?.city
+                               .charAt(0)
+                               .toUpperCase() +
+                               authContext?.entity?.obj?.city.slice(1),
+                           );
+                           tempFilter.location = location;
+     
+                         } else if (locationFilterOpetion === 2) {
+                             getLocation();
+                           tempFilter.location = location;
+                         }
                         if (minFee && maxFee) {
                           tempFilter.gameFee = `${minFee}-${maxFee}`;
                         }
@@ -505,8 +548,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
                         setPageFrom(0);
                         setAvailableChallenge([]);
                         applyFilter(tempFilter);
-                      }, 100);
-                      console.log('DONE::');
+                        setSettingPopup(false);
                     }
                   }}>
                   {strings.apply}
@@ -531,11 +573,6 @@ export default function LookingForChallengeScreen({navigation, route}) {
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(0);
-                          setLocation(strings.worldTitleText);
-                          // setFilters({
-                          //   ...filters,
-                          //   location: strings.worldTitleText,
-                          // });
                         }}>
                         <Image
                           source={
@@ -559,20 +596,6 @@ export default function LookingForChallengeScreen({navigation, route}) {
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(1);
-                          setLocation(
-                            authContext?.entity?.obj?.city
-                              .charAt(0)
-                              .toUpperCase() +
-                              authContext?.entity?.obj?.city.slice(1),
-                          );
-                          // setFilters({
-                          //   ...filters,
-                          //   location:
-                          //     authContext?.entity?.obj?.city
-                          //       .charAt(0)
-                          //       .toUpperCase()
-                          //     + authContext?.entity?.obj?.city.slice(1),
-                          // });
                         }}>
                         <Image
                           source={
@@ -595,7 +618,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
                       </Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
-                          getLocation();
+                          setLocationFilterOpetion(2)
                         }}>
                         <Image
                           source={

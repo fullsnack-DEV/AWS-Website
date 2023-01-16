@@ -152,13 +152,13 @@ packagingOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-
+    
     defaultConfig {
         applicationId "com.townscup"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "1.0.02"
+        versionName "1.0.04"
         multiDexEnabled true
         flavorDimensions "default"
         vectorDrawables.useSupportLibrary = true
