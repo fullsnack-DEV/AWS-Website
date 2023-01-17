@@ -16,9 +16,11 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   SafeAreaView,
+  Pressable
 } from 'react-native';
 
 import Modal from 'react-native-modal';
+import Icon  from 'react-native-vector-icons/MaterialCommunityIcons';
 import AuthContext from '../../auth/context';
 import * as Utility from '../../utils';
 import colors from '../../Constants/Colors';
@@ -29,12 +31,12 @@ import TCThinDivider from '../../components/TCThinDivider';
 import {strings} from '../../../Localization/translation';
 import {getEntityIndex} from '../../api/elasticSearch';
 import TCTagsFilter from '../../components/TCTagsFilter';
-import TCPicker from '../../components/TCPicker';
 import TCAvailableForChallenge from '../../components/TCAvailableForChallenge';
 import Verbs from '../../Constants/Verbs';
 import {getGeocoordinatesWithPlaceName} from '../../utils/location';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import LocationContext from '../../context/LocationContext';
+
 
 let stopFetchMore = true;
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
@@ -45,6 +47,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const locationContext = useContext(LocationContext);
   const [filters, setFilters] = useState(route?.params?.filters);
+  const [visibleSportsModal, setVisibleSportsModal] = useState(false);
   const [settingPopup, setSettingPopup] = useState(false);
   const [locationFilterOpetion, setLocationFilterOpetion] = useState(
     /* eslint-disable */ 
@@ -433,6 +436,48 @@ export default function LookingForChallengeScreen({navigation, route}) {
 
   },[location])
 
+  const renderSports = ({item}) => (
+    <Pressable
+      style={styles.listItem}
+      onPress={() => {
+        if (item.value === strings.allType) {
+          setSelectedSport({
+            sport: strings.allType,
+            sport_type: strings.allType,
+          });
+        } else {
+            setSelectedSport(
+            Utility.getSportObjectByName(item.value, authContext),
+          );
+        }
+           setVisibleSportsModal(false);
+      }
+      }>
+      <View
+        style={{
+          width:'100%',
+          padding: 20,
+          alignItems: 'center',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        }}>
+        <Text style={styles.languageList}>
+          {item.value}
+        </Text>
+        <View style={styles.checkbox}>
+          {selectedSport?.sport.toLowerCase() === item.value.toLowerCase() ? (
+            <Image
+              source={images.radioCheckYellow}
+              style={styles.checkboxImg}
+            />
+          ) : (
+            <Image source={images.radioUnselect} style={styles.checkboxImg} />
+          )}
+        </View>
+      </View>
+    </Pressable>
+  );
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <ActivityLoader visible={loading} />
@@ -558,25 +603,28 @@ export default function LookingForChallengeScreen({navigation, route}) {
               <View>
                 <View style={{flexDirection: 'column', margin: 15}}>
                   <View>
-                    <Text style={styles.filterTitle}>
+                    <Text style={styles.filterTitleBold}>
                       {strings.locationTitleText}
                     </Text>
                   </View>
-                  <View style={{marginTop: 10, marginLeft: 10}}>
-                    <View
+                  <View style={{marginTop: 10}}>
+
+                  <View
                       style={{
                         flexDirection: 'row',
                         marginBottom: 10,
                         justifyContent: 'space-between',
                       }}>
-                      <Text style={styles.filterTitle}>{strings.world}</Text>
+                      <Text style={styles.filterTitle}>
+                        {strings.locationTitle}
+                      </Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
-                          setLocationFilterOpetion(0);
+                          setLocationFilterOpetion(2)
                         }}>
                         <Image
                           source={
-                            locationFilterOpetion === 0
+                            locationFilterOpetion === 2
                               ? images.checkRoundOrange
                               : images.radioUnselect
                           }
@@ -584,6 +632,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
                         />
                       </TouchableWithoutFeedback>
                     </View>
+
                     <View
                       style={{
                         flexDirection: 'row',
@@ -607,22 +656,21 @@ export default function LookingForChallengeScreen({navigation, route}) {
                         />
                       </TouchableWithoutFeedback>
                     </View>
+
                     <View
                       style={{
                         flexDirection: 'row',
                         marginBottom: 10,
                         justifyContent: 'space-between',
                       }}>
-                      <Text style={styles.filterTitle}>
-                        {strings.locationTitle}
-                      </Text>
+                      <Text style={styles.filterTitle}>{strings.world}</Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
-                          setLocationFilterOpetion(2)
+                          setLocationFilterOpetion(0);
                         }}>
                         <Image
                           source={
-                            locationFilterOpetion === 2
+                            locationFilterOpetion === 0
                               ? images.checkRoundOrange
                               : images.radioUnselect
                           }
@@ -677,36 +725,41 @@ export default function LookingForChallengeScreen({navigation, route}) {
                       justifyContent: 'space-between',
                     }}>
                     <View style={{}}>
-                      <Text style={styles.filterTitle}>
+                      <Text style={styles.filterTitleBold}>
                         {strings.sportsEventsTitle}
                       </Text>
                     </View>
                     <View style={{marginTop: 10}}>
-                      <TCPicker
-                        dataSource={sports}
-                        placeholder={strings.selectSportTitleText}
-                        onValueChange={(value) => {
-                          console.log('VALUE:=>', value);
 
-                          if (value === strings.allType) {
-                            setSelectedSport({
-                              sport: strings.allType,
-                              sport_type: strings.allType,
-                            });
-                            setMinFee(0);
-                            setMaxFee(0);
-                          } else {
-                            setSelectedSport(
-                              Utility.getSportObjectByName(value, authContext),
-                            );
-                          }
-                        }}
-                        value={
-                          selectedSport?.sport !== strings.allType
-                            ? Utility.getSportName(selectedSport, authContext)
-                            : strings.all
-                        }
-                      />
+                    <View
+                      style={[{
+                        // flexDirection: 'row',
+                        marginBottom: 10,
+                        justifyContent: 'flex-start',
+                      }, styles.sportsContainer]}>
+                      <TouchableWithoutFeedback
+                        onPress={() => {
+                          // setLocationFilterOpetion(2)
+                          setVisibleSportsModal(true)
+                          // getLocation();
+                        }}>
+                        <View
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'flex-start',
+                        }}>
+                        <View >
+                          <Text style={styles.searchCityText}>
+                            {selectedSport?.sport.charAt(0).toUpperCase() + selectedSport?.sport.slice(1) ?? "en_All"}
+                          </Text>
+                        </View>
+                        <View style={{position:'absolute', right:10,top:-7, alignItems:'center', justifyContent:'center'}}>
+                        <Icon size={24} color="black" name="movie" />
+                        </View>
+                      </View>
+                      </TouchableWithoutFeedback>
+                    </View>
+
                     </View>
                   </View>
                 </View>
@@ -918,6 +971,77 @@ export default function LookingForChallengeScreen({navigation, route}) {
             }}>
             <Text style={styles.resetTitle}>{strings.resetTitleText}</Text>
           </TouchableOpacity>
+          <Modal
+        isVisible={visibleSportsModal}
+        onBackdropPress={() => setVisibleSportsModal(false)}
+        onRequestClose={() => setVisibleSportsModal(false)}
+        animationInTiming={300}
+        animationOutTiming={800}
+        backdropTransitionInTiming={300}
+        backdropTransitionOutTiming={800}
+        style={{
+          margin: 0,
+        }}>
+        <View
+        behavior='position'
+          style={{
+            width: '100%',
+            height: Dimensions.get('window').height / 1.2,
+            maxHeight:Dimensions.get('window').height / 1.2,
+            backgroundColor: 'white',
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            borderTopLeftRadius: 30,
+            borderTopRightRadius: 30,
+            shadowColor: '#000',
+            shadowOffset: {width: 0, height: 1},
+            shadowOpacity: 0.5,
+            shadowRadius: 5,
+            elevation: 15,
+          }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              paddingHorizontal: 15,
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}>
+            {/* <TouchableOpacity
+              hitSlop={getHitSlop(15)}
+              style={styles.closeButton}
+              onPress={() => setVisibleSportsModal(false)}>
+              <Image source={images.cancelImage} style={styles.closeButton} />
+            </TouchableOpacity> */}
+            {/* <Text
+              style={{
+                alignSelf: 'center',
+                marginVertical: 20,
+                fontSize: 16,
+                fontFamily: fonts.RBold,
+                color: colors.lightBlackColor,
+              }}>
+              {strings.sportsTitleText}
+            </Text> */}
+
+            <Text
+              style={{
+                alignSelf: 'center',
+                marginVertical: 20,
+                fontSize: 16,
+                fontFamily: fonts.RRegular,
+                color: colors.themeColor,
+              }}></Text>
+          </View>
+          <View style={styles.separatorLine} />
+          <FlatList
+            ItemSeparatorComponent={() => <TCThinDivider />}
+            data={sports}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={renderSports}
+          />
+        </View>
+      </Modal>
         </View>
         {/* <DateTimePickerView
           date={new Date()}
@@ -980,6 +1104,11 @@ const styles = StyleSheet.create({
   filterTitle: {
     fontSize: 16,
     fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
+  },
+  filterTitleBold: {
+    fontSize: 16,
+    fontFamily: fonts.RBold,
     color: colors.lightBlackColor,
   },
   // minMaxTitle: {
@@ -1091,17 +1220,21 @@ const styles = StyleSheet.create({
   },
 
   searchCityContainer: {
-    backgroundColor: colors.offwhite,
+    backgroundColor: colors.lightGrey,
     borderRadius: 5,
     height: 40,
     paddingLeft: 15,
     paddingRight: 15,
     width: widthPercentageToDP('75%'),
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.2,
-    shadowRadius: 1,
-    elevation: 2,
+    justifyContent: 'center',
+  },
+  sportsContainer:{
+    backgroundColor: colors.lightGrey,
+    borderRadius: 5,
+    height: 40,
+    paddingLeft: 15,
+    paddingRight: 15,
+    width: widthPercentageToDP('93%'),
     justifyContent: 'center',
   },
   minFee: {
@@ -1132,4 +1265,26 @@ const styles = StyleSheet.create({
     fontSize: widthPercentageToDP('3.8%'),
     width: widthPercentageToDP('75%'),
   },
+  listItem: {
+  },
+
+  languageList: {
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RRegular,
+    fontSize: widthPercentageToDP('4%'),
+  },
+  checkboxImg: {
+    width: 22,
+    height: 22,
+    resizeMode: 'contain',
+    alignSelf: 'center',
+  },
+  closeButton: {
+    alignSelf: 'center',
+    width: 15,
+    height: 15,
+    marginLeft: 5,
+    resizeMode: 'contain',
+  },
+
 });
