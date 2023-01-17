@@ -62,7 +62,7 @@ import {
   prepareClubMenu,
 } from './prepareMenuData';
 import TCAccountDeactivate from '../../components/TCAccountDeactivate';
-import {userActivate} from '../../api/Users';
+import {removeFBToken, userActivate} from '../../api/Users';
 import {strings} from '../../../Localization/translation';
 import Verbs from '../../Constants/Verbs';
 import TCSwitchProfileRow from './connections/TCSwitchProfileRow';
@@ -362,6 +362,7 @@ export default function AccountScreen({navigation}) {
 
   const onLogout = useCallback(async () => {
     QBLogout();
+    await removeFBToken(authContext);
     await firebase.auth().signOut();
     await Utility.clearStorage();
     await authContext.setUser(null);

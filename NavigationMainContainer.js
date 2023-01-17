@@ -22,6 +22,7 @@ import {
   QBLogout,
 } from './app/utils/QuickBlox';
 import ActivityLoader from './app/components/loader/ActivityLoader';
+import { removeFBToken } from './app/api/Users';
 
 export default function NavigationMainContainer() {
   const authContext = useContext(AuthContext);
@@ -30,6 +31,10 @@ export default function NavigationMainContainer() {
 
   const resetApp = useCallback(async () => {
     QBLogout();
+    if(authContext.entity){
+      await removeFBToken(authContext);
+    }
+
     firebase.auth().signOut();
     await Utility.clearStorage();
     await authContext.setTokenData(null);

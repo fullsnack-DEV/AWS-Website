@@ -80,7 +80,9 @@ export default function EditRefereeReservation({navigation, route}) {
 
   useEffect(() => {
     if (isFocused) {
-      setReservationObj(route?.params?.reservationObj);
+      if(route.params.reservationObj){
+        setReservationObj(route?.params?.reservationObj);
+      }
     }
   }, [isFocused, route?.params?.reservationObj]);
 
@@ -136,8 +138,8 @@ export default function EditRefereeReservation({navigation, route}) {
       getPaymentMethods(reservationObject?.source);
     }
 
-    if (route?.params?.paymentMethod) {
-      setDefaultCard(route?.params?.paymentMethod);
+    if (route.params.paymentMethod) {
+      setDefaultCard(route.params.paymentMethod);
     }
   }, [
     authContext.entity,
@@ -145,8 +147,8 @@ export default function EditRefereeReservation({navigation, route}) {
     isFocused,
     paymentCard,
     reservationObj,
-    route?.params?.lastConfirmVersion,
-    route?.params?.paymentMethod,
+    route.params.lastConfirmVersion,
+    route.params.paymentMethod,
   ]);
 
   useLayoutEffect(() => {
@@ -169,8 +171,6 @@ export default function EditRefereeReservation({navigation, route}) {
       } else {
         setEditRules(false);
       }
-      // console.log('OLD:', oldVersion.responsible_to_secure_venue);
-      // console.log('NEW:', bodyParams.responsible_to_secure_venue);
       if (
         bodyParams.responsible_to_secure_venue !==
         oldVersion.responsible_to_secure_venue
@@ -221,21 +221,23 @@ export default function EditRefereeReservation({navigation, route}) {
 
   const getFeesEstimationDetail = () => {
     const body = {};
-    body.reservation_id = bodyParams?.reservation_id;
-    body.start_datetime = bodyParams?.start_datetime;
-    body.end_datetime = bodyParams?.end_datetime;
-    body.currency_type = bodyParams?.currency_type ?? Verbs.usd;
+    body.reservation_id = bodyParams.reservation_id;
+    body.start_datetime = bodyParams.start_datetime;
+    body.end_datetime = bodyParams.end_datetime;
+    body.currency_type = bodyParams.currency_type ?? Verbs.usd;
     body.payment_method_type = Verbs.card;
-    body.sport = bodyParams?.sport;
-    body.manual_fee = bodyParams?.manual_fee;
-    if (bodyParams?.manual_fee) {
+    body.sport = bodyParams.sport;
+    body.manual_fee = bodyParams.manual_fee;
+    if (bodyParams.manual_fee) {
       body.total_game_fee = bodyParams.total_game_fee;
     }
+
+    body.source = route.params.paymentMethod?.id
 
     setloading(true);
     getEntityFeesEstimation(
       'referees',
-      bodyParams?.referee?.user_id,
+      bodyParams.referee?.user_id,
       body,
       authContext,
     )
@@ -699,7 +701,6 @@ export default function EditRefereeReservation({navigation, route}) {
                           flexDirection: 'row',
                           justifyContent: 'flex-end',
                         }}>
-                        {/* <Text style={styles.dateTimeText}> </Text> */}
                         <Text style={styles.timeZoneText}>
                           {strings.timezone}{' '}
                           <Text style={{fontFamily: fonts.RRegular}}>
@@ -790,18 +791,8 @@ export default function EditRefereeReservation({navigation, route}) {
               </Text>
             </View>
           )}
-          {/* <CurruentVersionView
-            onPress={() => {
-              navigation.navigate('CurruentRefereeReservationScreen', {
-                reservationObj: oldVersion,
-              });
-            }}
-          /> */}
+
           <TCThickDivider marginTop={15} />
-
-          {/* Chief or assistant */}
-
-          {/* <TCLabel title={'Chief or assistant'} style={{ marginLeft: 0 }}/> */}
 
           <View style={styles.editableView}>
             <TCLabel

@@ -20,6 +20,7 @@ import QB from 'quickblox-react-native-sdk';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import Config from 'react-native-config';
+import messaging from '@react-native-firebase/messaging';
 import {createUser} from '../../api/Users';
 import {getSportsList} from '../../api/Games';
 import images from '../../Constants/ImagePath';
@@ -363,6 +364,14 @@ export default function ChooseSportsScreen({navigation, route}) {
         data.thumbnail = param.uploadedProfilePic.thumbnail;
         data.full_image = param.uploadedProfilePic.full_image;
       }
+      // Update firebase token here
+      await messaging().registerDeviceForRemoteMessages();
+      // Get the token
+      const token = await messaging().getToken();
+      if(token){
+        data.fcm_id = token
+      }
+      
       await createUser(data, authContext)
         .then((createdUser) => {
           const authEntity = {...dummyAuthContext.entity};

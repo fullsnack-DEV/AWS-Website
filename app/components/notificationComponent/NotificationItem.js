@@ -23,11 +23,9 @@ function NotificationItem({
 }) {
   const [dataDictionary, setDataDictionary] = useState();
 
-  console.log('Noti data;;;', data);
   useEffect(() => {
     parseNotification(data).then((response) => {
       setDataDictionary(response);
-      console.log('RESPONSE=-=-=-=:=>', response);
     });
   }, []);
 
