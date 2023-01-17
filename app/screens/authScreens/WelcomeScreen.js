@@ -52,7 +52,7 @@ import apiCall from '../../utils/apiCall';
 
 import {QBconnectAndSubscribe, QBlogin} from '../../utils/QuickBlox';
 import AppleButton from '../../components/AppleButton';
-import {checkTownscupEmail, createUser} from '../../api/Users';
+import {checkTownscupEmail, createUser, updateFBToken} from '../../api/Users';
 import {getHitSlop} from '../../utils/index';
 
 const BACKGROUND_CHANGE_INTERVAL = 4000; // 4 seconds
@@ -139,6 +139,7 @@ export default function WelcomeScreen({navigation}) {
           await Utility.setStorage('loggedInEntity', {...entity});
           setloading(false);
           await authContext.setEntity({...entity});
+          updateFBToken(dummyAuthContext);
         });
     },
     [authContext, getRedirectionScreenName, navigation],

@@ -7,6 +7,7 @@
     "ios": "react-native run-ios",
     "ios:rebuild": "cd ios && pod deintegrate && pod cache clean --all && pod update && cd .. && npm run bundle:ios",
     "ios:dev": "react-native run-ios --scheme 'TownsCup (Development)' --simulator='iPhone 14'",
+    "ios:qa": "react-native run-ios --scheme 'TownsCup (QA)' --simulator='iPhone 14'",
     "start": "react-native start",
     "restart": "react-native start -- --reset-cache",
     "test": "jest --forceExit",

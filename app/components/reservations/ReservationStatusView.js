@@ -126,8 +126,6 @@ function ReservationStatusView({data, onClick}) {
       teampObj.requested_by = teampObj.created_by.uid;
     }
 
-    console.log('Temp Object::', teampObj);
-    console.log(`${teampObj?.requested_by}:::${entity.uid}`);
     if (teampObj?.requested_by === entity.uid) {
       return 'sender';
     }
@@ -177,8 +175,6 @@ function ReservationStatusView({data, onClick}) {
       teampObj.requested_by = teampObj.created_by.uid;
     }
 
-    console.log('Temp Object::', teampObj);
-    console.log(`${teampObj?.requested_by}:::${entity.uid}`);
     if (teampObj?.requested_by === entity.uid) {
       return 'sender';
     }

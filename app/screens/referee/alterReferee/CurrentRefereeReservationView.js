@@ -101,8 +101,6 @@ export default function CurruentRefereeReservationView({
       teampObj.requested_by = teampObj.created_by.uid;
     }
 
-    console.log('Temp Object::', teampObj);
-    console.log(`${teampObj?.requested_by}:::${entity.uid}`);
     if (teampObj?.requested_by === entity.uid) {
       return 'sender';
     }
@@ -152,8 +150,6 @@ export default function CurruentRefereeReservationView({
       teampObj.requested_by = teampObj.created_by.uid;
     }
 
-    console.log('Temp Object::', teampObj);
-    console.log(`${teampObj?.requested_by}:::${entity.uid}`);
     if (entity.uid === teampObj?.referee?.user_id) {
       if (teampObj?.requested_by === entity.uid) {
         return 'referee';

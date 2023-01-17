@@ -506,7 +506,6 @@ function NotificationsListScreen({navigation}) {
     if (activeScreen) {
       setloading(true);
       const ids = item.activities.map((activity) => activity.id);
-      // setMainNotificationsList(mainNotificationsList.filter((obj) => obj.id !== ids))
       deleteNotification(ids, item.type, authContext)
         .then(() => {
           callNotificationList()
@@ -979,7 +978,6 @@ function NotificationsListScreen({navigation}) {
               Moment(currentDate).format('yyyy-MM-DD'),
           );
 
-          console.log('todayNotifications:=>', todayNotifications);
           const array = [
             {
               data: [...pendingReqNotification],
@@ -1062,7 +1060,6 @@ function NotificationsListScreen({navigation}) {
             Moment(currentDate).format('yyyy-MM-DD'),
         );
 
-        console.log('mainNotificationList:=>', mainNotificationsList);
         const array = [];
 
         mainNotificationsList.map((obj, index) => {
@@ -1096,7 +1093,6 @@ function NotificationsListScreen({navigation}) {
           }
         });
 
-        console.log('Array----->', array);
         setMainNotificationsList([
           ...array.filter((item) => item.data.length !== 0),
         ]);

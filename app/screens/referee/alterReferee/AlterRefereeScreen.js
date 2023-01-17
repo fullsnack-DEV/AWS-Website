@@ -545,8 +545,6 @@ export default function AlterRefereeScreen({navigation, route}) {
       teampObj.requested_by = teampObj.created_by.uid;
     }
 
-    console.log('Temp Object::', teampObj);
-    console.log(`${teampObj?.requested_by}:::${entity.uid}`);
     if (teampObj?.requested_by === entity.uid) {
       return 'sender';
     }
@@ -558,7 +556,6 @@ export default function AlterRefereeScreen({navigation, route}) {
     const body = {};
     body.referee_id = bodyParams?.referee?.user_id;
     body.game_id = bodyParams?.game?.game_id;
-    console.log('Payment card data::', paymentCard);
     body.chief_referee = chiefOrAssistant === 'chief';
     body.total_service_fee1 = paymentCard?.total_service_fee1;
     body.total_game_fee = paymentCard?.total_game_fee;

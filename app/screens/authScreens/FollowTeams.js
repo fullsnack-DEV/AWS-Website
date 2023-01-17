@@ -19,6 +19,7 @@ import {
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
 import Config from 'react-native-config';
+import messaging from '@react-native-firebase/messaging';
 import {createUser} from '../../api/Users';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import images from '../../Constants/ImagePath';
@@ -257,6 +258,16 @@ export default function FollowTeams({route, navigation}) {
       if (followed && followed.length > 0) {
         data.group_ids = followed;
       }
+
+      // Update firebase token here
+      await messaging().registerDeviceForRemoteMessages();
+      // Get the token
+      const token = await messaging().getToken();
+      if(token){
+        data.fcm_id = token
+      }
+      
+
       await createUser(data, authContext)
         .then((createdUser) => {
           const authEntity = {...dummyAuthContext.entity};
