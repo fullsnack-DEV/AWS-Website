@@ -40,7 +40,7 @@ import TCUpcomingMatchCard from '../../components/TCUpcomingMatchCard';
 import {getGameHomeScreen} from '../../utils/gameUtils';
 import {getGeocoordinatesWithPlaceName} from '../../utils/location';
 import ActivityLoader from '../../components/loader/ActivityLoader';
-
+import { locationType } from '../../utils/constant';
 
 let stopFetchMore = true;
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
@@ -600,7 +600,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
         <View
           style={[
             styles.bottomPopupContainer,
-            {height: Dimensions.get('window').height - 100},
+            {height: Dimensions.get('window').height - 50},
           ]}>
           <KeyboardAvoidingView
             style={{flex: 1}}
@@ -690,7 +690,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
                       <Text style={styles.filterTitle}>{strings.currrentCityTitle}</Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
-                          setLocationFilterOpetion(2)
+                          setLocationFilterOpetion(locationType.CURRENT_LOCATION)
                         }}>
                         <Image
                           source={
@@ -712,7 +712,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
                       <Text style={styles.filterTitle}>{strings.currentCity}</Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
-                          setLocationFilterOpetion(1);
+                          setLocationFilterOpetion(locationType.HOME_CITY);
                         }}>
                         <Image
                           source={
@@ -734,7 +734,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
                       <Text style={styles.filterTitle}>{strings.world}</Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
-                          setLocationFilterOpetion(0);
+                          setLocationFilterOpetion(locationType.WORLD);
                         }}>
                         <Image
                           source={
@@ -760,13 +760,6 @@ export default function UpcomingMatchScreen({navigation, route}) {
                           flexDirection: 'row',
                           justifyContent: 'space-between',
                         }}>
-                        {/* <TCSearchCityView
-                      getCity={(value) => {
-                        console.log('Value:=>', value);
-                        setSelectedCity(value);
-                      }}
-                      // value={selectedCity}
-                    /> */}
 
                         <View style={styles.searchCityContainer}>
                           <Text style={styles.searchCityText}>
@@ -804,15 +797,12 @@ export default function UpcomingMatchScreen({navigation, route}) {
                       
                     <View
                       style={[{
-                        // flexDirection: 'row',
                         marginBottom: 10,
                         justifyContent: 'flex-start',
                       }, styles.sportsContainer]}>
                       <TouchableWithoutFeedback
                         onPress={() => {
-                          // setLocationFilterOpetion(2)
                           setVisibleSportsModal(true)
-                          // getLocation();
                         }}>
                         <View
                         style={{
@@ -821,7 +811,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
                         }}>
                         <View >
                           <Text style={styles.searchCityText}>
-                            {selectedSport?.sport.charAt(0).toUpperCase() + selectedSport?.sport.slice(1) ?? "en_All"}
+                          {selectedSport?.sport_name ?? strings.allType}
                           </Text>
                         </View>
                         <View style={{position:'absolute', right:10,top:-7, alignItems:'center', justifyContent:'center'}}>
@@ -1100,8 +1090,8 @@ export default function UpcomingMatchScreen({navigation, route}) {
         behavior='position'
           style={{
             width: '100%',
-            height: Dimensions.get('window').height / 1.2,
-            maxHeight:Dimensions.get('window').height / 1.2,
+            height: Dimensions.get('window').height - 75,
+            maxHeight:Dimensions.get('window').height - 75,
             backgroundColor: 'white',
             position: 'absolute',
             bottom: 0,
@@ -1296,20 +1286,15 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 40,
     alignItems: 'center',
-    backgroundColor: colors.offwhite,
-    borderRadius: 5,
-    shadowColor: colors.grayColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.3,
-    shadowRadius: 1,
-    elevation: 1,
+    backgroundColor: colors.lightGrey,
+    borderRadius: 5,  
   },
   fieldTitle: {
     fontSize: 16,
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RLight,
+    color: colors.grayColor,
+    fontFamily: fonts.RRegular,
     marginLeft: 10,
-    width: 100,
+    width: 70,
   },
   fieldValue: {
     fontSize: 16,

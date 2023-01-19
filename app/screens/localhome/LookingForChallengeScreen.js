@@ -18,7 +18,6 @@ import {
   SafeAreaView,
   Pressable
 } from 'react-native';
-
 import Modal from 'react-native-modal';
 import Icon  from 'react-native-vector-icons/MaterialCommunityIcons';
 import AuthContext from '../../auth/context';
@@ -36,7 +35,7 @@ import Verbs from '../../Constants/Verbs';
 import {getGeocoordinatesWithPlaceName} from '../../utils/location';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import LocationContext from '../../context/LocationContext';
-
+import { locationType } from '../../utils/constant';
 
 let stopFetchMore = true;
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
@@ -437,6 +436,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
   },[location])
 
   const renderSports = ({item}) => (
+  
     <Pressable
       style={styles.listItem}
       onPress={() => {
@@ -523,7 +523,6 @@ export default function LookingForChallengeScreen({navigation, route}) {
         keyExtractor={keyExtractor}
         renderItem={renderAvailableChallengeListView}
         style={styles.listStyle}
-        // contentContainerStyle={{ paddingBottom: 1 }}
         onScroll={onScrollHandler}
         onEndReachedThreshold={0.01}
         onScrollBeginDrag={() => {
@@ -544,7 +543,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
         <View
           style={[
             styles.bottomPopupContainer,
-            {height: Dimensions.get('window').height - 100},
+            {height: Dimensions.get('window').height - 50},
           ]}>
           <KeyboardAvoidingView
             style={{flex: 1}}
@@ -620,7 +619,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
                       </Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
-                          setLocationFilterOpetion(2)
+                          setLocationFilterOpetion(locationType.CURRENT_LOCATION)
                         }}>
                         <Image
                           source={
@@ -644,7 +643,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
                       </Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
-                          setLocationFilterOpetion(1);
+                          setLocationFilterOpetion(locationType.HOME_CITY);
                         }}>
                         <Image
                           source={
@@ -666,7 +665,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
                       <Text style={styles.filterTitle}>{strings.world}</Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
-                          setLocationFilterOpetion(0);
+                          setLocationFilterOpetion(locationType.WORLD);
                         }}>
                         <Image
                           source={
@@ -681,7 +680,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
 
                     <TouchableWithoutFeedback
                       onPress={() => {
-                        setLocationFilterOpetion(3);
+                        setLocationFilterOpetion(locationType.SEARCH_CITY);
                         setSettingPopup(false);
                         navigation.navigate('SearchCityScreen', {
                           comeFrom: 'LookingForChallengeScreen',
@@ -733,15 +732,12 @@ export default function LookingForChallengeScreen({navigation, route}) {
 
                     <View
                       style={[{
-                        // flexDirection: 'row',
                         marginBottom: 10,
                         justifyContent: 'flex-start',
                       }, styles.sportsContainer]}>
                       <TouchableWithoutFeedback
                         onPress={() => {
-                          // setLocationFilterOpetion(2)
                           setVisibleSportsModal(true)
-                          // getLocation();
                         }}>
                         <View
                         style={{
@@ -750,7 +746,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
                         }}>
                         <View >
                           <Text style={styles.searchCityText}>
-                            {selectedSport?.sport.charAt(0).toUpperCase() + selectedSport?.sport.slice(1) ?? "en_All"}
+                            {selectedSport?.sport_name ?? strings.allType}
                           </Text>
                         </View>
                         <View style={{position:'absolute', right:10,top:-7, alignItems:'center', justifyContent:'center'}}>
@@ -986,8 +982,8 @@ export default function LookingForChallengeScreen({navigation, route}) {
         behavior='position'
           style={{
             width: '100%',
-            height: Dimensions.get('window').height / 1.2,
-            maxHeight:Dimensions.get('window').height / 1.2,
+            height: Dimensions.get('window').height - 75,
+            maxHeight:Dimensions.get('window').height - 75,
             backgroundColor: 'white',
             position: 'absolute',
             bottom: 0,
@@ -1238,17 +1234,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   minFee: {
-    backgroundColor: colors.offwhite,
+    backgroundColor: colors.lightGrey,
     borderRadius: 5,
     height: 40,
     paddingLeft: 15,
     paddingRight: 15,
     width: widthPercentageToDP('45%'),
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.2,
-    shadowRadius: 1,
-    elevation: 2,
     justifyContent: 'center',
     textAlign: 'center',
     fontSize: 16,

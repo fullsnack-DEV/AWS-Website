@@ -34,11 +34,10 @@ import {strings} from '../../../Localization/translation';
 import {getEntityIndex} from '../../api/elasticSearch';
 import TCTagsFilter from '../../components/TCTagsFilter';
 import TCRecruitingPlayers from '../../components/TCRecruitingPlayers';
-import {groupsType} from '../../utils/constant';
+import {groupsType, locationType} from '../../utils/constant';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import Verbs from '../../Constants/Verbs';
 import {getGeocoordinatesWithPlaceName} from '../../utils/location';
-
 
 let stopFetchMore = true;
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
@@ -511,7 +510,7 @@ export default function RecruitingPlayerScreen({navigation, route}) {
         <View
           style={[
             styles.bottomPopupContainer,
-            {height: Dimensions.get('window').height - 100},
+            {height: Dimensions.get('window').height - 50},
           ]}>
           <KeyboardAvoidingView
             style={{flex: 1}}
@@ -610,7 +609,7 @@ export default function RecruitingPlayerScreen({navigation, route}) {
                       </Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
-                          setLocationFilterOpetion(2)
+                          setLocationFilterOpetion(locationType.CURRENT_LOCATION)
                         }}>
                         <Image
                           source={
@@ -633,7 +632,7 @@ export default function RecruitingPlayerScreen({navigation, route}) {
                       </Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
-                          setLocationFilterOpetion(1);
+                          setLocationFilterOpetion(locationType.HOME_CITY);
                         }}>
                         <Image
                           source={
@@ -655,7 +654,7 @@ export default function RecruitingPlayerScreen({navigation, route}) {
                       <Text style={styles.filterTitle}>{strings.world}</Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
-                          setLocationFilterOpetion(0);
+                          setLocationFilterOpetion(locationType.WORLD);
                         }}>
                         <Image
                           source={
@@ -669,7 +668,7 @@ export default function RecruitingPlayerScreen({navigation, route}) {
                     </View>
                     <TouchableWithoutFeedback
                       onPress={() => {
-                        setLocationFilterOpetion(3);
+                        setLocationFilterOpetion(locationType.SEARCH_CITY);
                         setSettingPopup(false);
                         navigation.navigate('SearchCityScreen', {
                           comeFrom: 'RecruitingPlayerScreen',
@@ -718,15 +717,12 @@ export default function RecruitingPlayerScreen({navigation, route}) {
                     <View style={{marginTop: 10}}>
                     <View
                       style={[{
-                        // flexDirection: 'row',
                         marginBottom: 10,
                         justifyContent: 'flex-start',
                       }, styles.sportsContainer]}>
                       <TouchableWithoutFeedback
                         onPress={() => {
-                          // setLocationFilterOpetion(2)
                           setVisibleSportsModal(true)
-                          // getLocation();
                         }}>
                         <View
                         style={{
@@ -735,7 +731,7 @@ export default function RecruitingPlayerScreen({navigation, route}) {
                         }}>
                         <View >
                           <Text style={styles.searchCityText}>
-                            {selectedSport?.sport.charAt(0).toUpperCase() + selectedSport?.sport.slice(1) ?? "en_All"}
+                            {selectedSport?.sport_name ?? strings.allType}
                           </Text>
                         </View>
                         <View style={{position:'absolute', right:10,top:-7, alignItems:'center', justifyContent:'center'}}>
@@ -824,8 +820,8 @@ export default function RecruitingPlayerScreen({navigation, route}) {
         behavior='position'
           style={{
             width: '100%',
-            height: Dimensions.get('window').height / 1.2,
-            maxHeight:Dimensions.get('window').height / 1.2,
+            height: Dimensions.get('window').height - 75,
+            maxHeight:Dimensions.get('window').height - 75,
             backgroundColor: 'white',
             position: 'absolute',
             bottom: 0,

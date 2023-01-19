@@ -27,7 +27,6 @@ import images from '../../Constants/ImagePath';
 import {widthPercentageToDP} from '../../utils';
 import fonts from '../../Constants/Fonts';
 import TCThinDivider from '../../components/TCThinDivider';
-
 import {strings} from '../../../Localization/translation';
 import {getUserIndex} from '../../api/elasticSearch';
 import TCRefereeView from '../../components/TCRefereeView';
@@ -35,7 +34,7 @@ import TCTagsFilter from '../../components/TCTagsFilter';
 import {getGeocoordinatesWithPlaceName} from '../../utils/location';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import LocationContext from '../../context/LocationContext';
-
+import { locationType } from '../../utils/constant';
 
 let stopFetchMore = true;
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
@@ -469,7 +468,7 @@ authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocat
         <View
           style={[
             styles.bottomPopupContainer,
-            {height: Dimensions.get('window').height - 100},
+            {height: Dimensions.get('window').height - 50},
           ]}>
           <KeyboardAvoidingView
             style={{flex: 1}}
@@ -544,7 +543,7 @@ authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocat
                       </Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
-                          setLocationFilterOpetion(2)
+                          setLocationFilterOpetion(locationType.CURRENT_LOCATION)
                         }}>
                         <Image
                           source={
@@ -568,7 +567,7 @@ authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocat
                       </Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
-                          setLocationFilterOpetion(1);
+                          setLocationFilterOpetion(locationType.HOME_CITY);
                         }}>
                         <Image
                           source={
@@ -590,7 +589,7 @@ authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocat
                       <Text style={styles.filterTitle}>{strings.world}</Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
-                          setLocationFilterOpetion(0);
+                          setLocationFilterOpetion(locationType.WORLD);
                         }}>
                         <Image
                           source={
@@ -605,7 +604,7 @@ authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocat
 
                     <TouchableWithoutFeedback
                       onPress={() => {
-                        setLocationFilterOpetion(3);
+                        setLocationFilterOpetion(locationType.SEARCH_CITY);
                         setSettingPopup(false);
                         navigation.navigate('SearchCityScreen', {
                           comeFrom: 'RefereesListScreen',
@@ -616,14 +615,6 @@ authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocat
                           flexDirection: 'row',
                           justifyContent: 'space-between',
                         }}>
-                        {/* <TCSearchCityView
-                    getCity={(value) => {
-                      console.log('Value:=>', value);
-                      setSelectedCity(value);
-                    }}
-                    // value={selectedCity}
-                  /> */}
-
                         <View style={styles.searchCityContainer}>
                           <Text style={styles.searchCityText}>
                             {route?.params?.locationText ||
@@ -662,15 +653,12 @@ authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocat
 
                     <View
                       style={[{
-                        // flexDirection: 'row',
                         marginBottom: 10,
                         justifyContent: 'flex-start',
                       }, styles.sportsContainer]}>
                       <TouchableWithoutFeedback
                         onPress={() => {
-                          // setLocationFilterOpetion(2)
                           setVisibleSportsModal(true)
-                          // getLocation();
                         }}>
                         <View
                         style={{
@@ -679,7 +667,7 @@ authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocat
                         }}>
                         <View >
                           <Text style={styles.searchCityText}>
-                            {selectedSport?.sport.charAt(0).toUpperCase() + selectedSport?.sport.slice(1) ?? "en_All"}
+                          {selectedSport?.sport_name ?? strings.allType}
                           </Text>
                         </View>
                         <View style={{position:'absolute', right:10,top:-7, alignItems:'center', justifyContent:'center'}}>
@@ -913,8 +901,8 @@ authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocat
         behavior='position'
           style={{
             width: '100%',
-            height: Dimensions.get('window').height / 1.2,
-            maxHeight:Dimensions.get('window').height / 1.2,
+            height: Dimensions.get('window').height - 75,
+            maxHeight:Dimensions.get('window').height - 75,
             backgroundColor: 'white',
             position: 'absolute',
             bottom: 0,
@@ -1166,17 +1154,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   minFee: {
-    backgroundColor: colors.offwhite,
+    backgroundColor: colors.lightGrey,
     borderRadius: 5,
     height: 40,
     paddingLeft: 15,
     paddingRight: 15,
     width: widthPercentageToDP('45%'),
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.2,
-    shadowRadius: 1,
-    elevation: 2,
     justifyContent: 'center',
     textAlign: 'center',
     fontSize: 16,

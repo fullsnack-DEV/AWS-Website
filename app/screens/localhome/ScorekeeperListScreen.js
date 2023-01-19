@@ -27,7 +27,6 @@ import images from '../../Constants/ImagePath';
 import {widthPercentageToDP} from '../../utils';
 import fonts from '../../Constants/Fonts';
 import TCThinDivider from '../../components/TCThinDivider';
-
 import {strings} from '../../../Localization/translation';
 import {getUserIndex} from '../../api/elasticSearch';
 import TCScorekeeperView from '../../components/TCScorekeeperView';
@@ -35,7 +34,7 @@ import TCTagsFilter from '../../components/TCTagsFilter';
 import {getGeocoordinatesWithPlaceName} from '../../utils/location';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import LocationContext from '../../context/LocationContext';
-
+import { locationType } from '../../utils/constant';
 
 let stopFetchMore = true;
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
@@ -440,7 +439,6 @@ authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocat
         keyExtractor={keyExtractor}
         renderItem={renderRefereesScorekeeperListView}
         style={styles.listStyle}
-        // contentContainerStyle={{ paddingBottom: 1 }}
         onScroll={onScrollHandler}
         onEndReachedThreshold={0.01}
         onScrollBeginDrag={() => {
@@ -461,7 +459,7 @@ authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocat
         <View
           style={[
             styles.bottomPopupContainer,
-            {height: Dimensions.get('window').height - 100},
+            {height: Dimensions.get('window').height - 50},
           ]}>
           <KeyboardAvoidingView
             style={{flex: 1}}
@@ -537,7 +535,7 @@ authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocat
                       </Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
-                          setLocationFilterOpetion(2)
+                          setLocationFilterOpetion(locationType.CURRENT_LOCATION)
                         }}>
                         <Image
                           source={
@@ -561,7 +559,7 @@ authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocat
                       </Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
-                          setLocationFilterOpetion(1);
+                          setLocationFilterOpetion(locationType.HOME_CITY);
                         }}>
                         <Image
                           source={
@@ -583,7 +581,7 @@ authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocat
                       <Text style={styles.filterTitle}>{strings.world}</Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
-                          setLocationFilterOpetion(0);
+                          setLocationFilterOpetion(locationType.WORLD);
                         }}>
                         <Image
                           source={
@@ -598,7 +596,7 @@ authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocat
 
                     <TouchableWithoutFeedback
                       onPress={() => {
-                        setLocationFilterOpetion(3);
+                        setLocationFilterOpetion(locationType.SEARCH_CITY);
                         setSettingPopup(false);
                         navigation.navigate('SearchCityScreen', {
                           comeFrom: 'ScorekeeperListScreen',
@@ -645,15 +643,12 @@ authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocat
                     <View style={{marginTop: 10}}>
                     <View
                       style={[{
-                        // flexDirection: 'row',
                         marginBottom: 10,
                         justifyContent: 'flex-start',
                       }, styles.sportsContainer]}>
                       <TouchableWithoutFeedback
                         onPress={() => {
-                          // setLocationFilterOpetion(2)
                           setVisibleSportsModal(true)
-                          // getLocation();
                         }}>
                         <View
                         style={{
@@ -662,7 +657,7 @@ authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocat
                         }}>
                         <View >
                           <Text style={styles.searchCityText}>
-                            {selectedSport?.sport.charAt(0).toUpperCase() + selectedSport?.sport.slice(1) ?? "en_All"}
+                          {selectedSport?.sport_name ?? strings.allType}
                           </Text>
                         </View>
                         <View style={{position:'absolute', right:10,top:-7, alignItems:'center', justifyContent:'center'}}>
@@ -671,173 +666,10 @@ authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocat
                       </View>
                       </TouchableWithoutFeedback>
                     </View>
-                      {/* <TCPicker
-                        dataSource={sports}
-                        placeholder={'Select Sport'}
-                        // placeholderValue={strings.allType}
-                        onValueChange={(value) => {
-                          if (value === strings.allType) {
-                            setSelectedSport({
-                              sport: strings.allType,
-                              sport_type: strings.allType,
-                            });
-                            setMinFee(0);
-                            setMaxFee(0);
-                          } else {
-                            setSelectedSport(
-                              Utility.getSportObjectByName(value, authContext),
-                            );
-                          }
-                        }}
-                        value={
-                          selectedSport?.sport !== strings.allType
-                            ? Utility.getSportName(selectedSport, authContext)
-                            : strings.all
-                        }
-                      /> */}
                     </View>
                   </View>
                 </View>
-                {/* <View style={{ flexDirection: 'column', margin: 15 }}>
-                  <View>
-                    <Text style={styles.filterTitle}>Available Time</Text>
-                  </View>
-                  <View style={{ marginTop: 10 }}>
-                    <View style={{ flexDirection: 'row', marginBottom: 10 }}>
-                      <TouchableOpacity
-                        style={styles.fieldView}
-                        onPress={() => {
-                          setDatePickerFor('from');
-                          setShow(!show);
-                        }}>
-                        <View
-                          style={{
-                            height: 35,
-                            justifyContent: 'center',
-                          }}>
-                          <Text style={styles.fieldTitle} numberOfLines={1}>
-                            From
-                          </Text>
-                        </View>
-                        <View style={{ marginRight: 15, flexDirection: 'row' }}>
-                          <Text style={styles.fieldValue} numberOfLines={1}>
-                            {moment(fromDate).format('MMM DD, YYYY')} {'   '}
-                          </Text>
-                          <Text style={styles.fieldValue} numberOfLines={1}>
-                            {moment(fromDate).format('h:mm a')}
-                          </Text>
-                        </View>
-                      </TouchableOpacity>
-                    </View>
-                    <View style={{ flexDirection: 'row' }}>
-                      <TouchableOpacity
-                        style={styles.fieldView}
-                        onPress={() => {
-                          setDatePickerFor('to');
-                          setShow(!show);
-                        }}>
-                        <View
-                          style={{
-                            height: 35,
-                            justifyContent: 'center',
-                          }}>
-                          <Text style={styles.fieldTitle} numberOfLines={1}>
-                            To
-                          </Text>
-                        </View>
-                        <View style={{ marginRight: 15, flexDirection: 'row' }}>
-                          <Text style={styles.fieldValue} numberOfLines={1}>
-                            {moment(toDate).format('MMM DD, YYYY')} {'   '}
-                          </Text>
-                          <Text style={styles.fieldValue} numberOfLines={1}>
-                            {moment(toDate).format('h:mm a')}
-                          </Text>
-                        </View>
-                      </TouchableOpacity>
-                    </View>
-                    <Text
-                      style={{
-                        fontSize: 12,
-                        fontFamily: fonts.RLight,
-                        color: colors.lightBlackColor,
-                        textAlign: 'right',
-                        marginTop: 10,
-                      }}>
-                      Time zone{' '}
-                      <Text
-                        style={{
-                          fontSize: 12,
-                          fontFamily: fonts.RRegular,
-                          color: colors.lightBlackColor,
-                          textDecorationLine: 'underline',
-                        }}>
-                        Vancouver
-                      </Text>
-                    </Text>
-                  </View>
-                </View> */}
               </View>
-              {/* Rate View */}
-              {/* <View>
-             <View
-               style={{
-                 flexDirection: 'row',
-                 margin: 15,
-                 marginTop: 0,
-                 justifyContent: 'space-between',
-               }}>
-               <View style={{ flex: 0.2 }}>
-                 <Text style={styles.filterTitle}>Rating</Text>
-               </View>
-               <View
-                 style={{
-                   marginLeft: 15,
-                   flex: 0.6,
-                   alignSelf: 'flex-end',
-                 }}>
-                 <View
-                   style={{
-                     flexDirection: 'row',
-                     marginBottom: 10,
-                     alignItems: 'center',
-                     justifyContent: 'space-between',
-                   }}>
-                   <Text style={styles.minMaxTitle}>Min</Text>
-                   <AirbnbRating
-                     count={5}
-                     fractions={1}
-                     showRating={false}
-                     defaultRating={0}
-                     size={20}
-                     isDisabled={false}
-                     selectedColor={'#f49c20'}
-                   />
-                   <Text style={styles.starCount}>2.0</Text>
-                 </View>
-                 <View
-                   style={{
-                     flexDirection: 'row',
-                     alignItems: 'center',
-                     justifyContent: 'space-between',
-                   }}>
-                   <Text style={styles.minMaxTitle}>Max</Text>
-                   <AirbnbRating
-                     count={5}
-                     fractions={1}
-                     showRating={false}
-                     defaultRating={0}
-                     size={20}
-                     isDisabled={false}
-                     selectedColor={'#f49c20'}
-                   />
-                   <Text style={styles.starCount}>2.0</Text>
-                 </View>
-               </View>
-             </View>
-
-           </View> */}
-              {/* Rate View */}
-
               {selectedSport?.sport !== strings.allType && (
                 <View
                   style={{
@@ -921,8 +753,8 @@ authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocat
         behavior='position'
           style={{
             width: '100%',
-            height: Dimensions.get('window').height / 1.2,
-            maxHeight:Dimensions.get('window').height / 1.2,
+            height: Dimensions.get('window').height - 75,
+            maxHeight:Dimensions.get('window').height - 75,
             backgroundColor: 'white',
             position: 'absolute',
             bottom: 0,
@@ -942,22 +774,6 @@ authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocat
               justifyContent: 'space-between',
               alignItems: 'center',
             }}>
-            {/* <TouchableOpacity
-              hitSlop={getHitSlop(15)}
-              style={styles.closeButton}
-              onPress={() => setVisibleSportsModal(false)}>
-              <Image source={images.cancelImage} style={styles.closeButton} />
-            </TouchableOpacity> */}
-            {/* <Text
-              style={{
-                alignSelf: 'center',
-                marginVertical: 20,
-                fontSize: 16,
-                fontFamily: fonts.RBold,
-                color: colors.lightBlackColor,
-              }}>
-              {strings.sportsTitleText}
-            </Text> */}
 
             <Text
               style={{
@@ -1173,17 +989,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   minFee: {
-    backgroundColor: colors.offwhite,
+    backgroundColor: colors.lightGrey,
     borderRadius: 5,
     height: 40,
     paddingLeft: 15,
     paddingRight: 15,
     width: widthPercentageToDP('45%'),
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.2,
-    shadowRadius: 1,
-    elevation: 2,
     justifyContent: 'center',
     textAlign: 'center',
     fontSize: 16,

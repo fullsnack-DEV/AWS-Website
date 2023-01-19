@@ -153,6 +153,13 @@ export const mobileCountryCode = [
 
 export const groupsType = [{type:strings.teamstitle}, {type:strings.clubstitle}, {type: strings.leaguesTitle}];
 
+export const locationType = {
+  CURRENT_LOCATION : 2,
+  HOME_CITY: 1,
+  WORLD: 0,
+  SEARCH_CITY:3
+}
+
 export const game_data = [
   {
     id: 0,
