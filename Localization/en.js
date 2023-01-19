@@ -773,7 +773,7 @@ export default {
   lookingTeamsPlaceholderText: 'en_NO PLAYERS',
   refereesPlaceholderText: 'en_NO REFEREES',
   scorekeepersPlaceholderText: 'en_NO SCOREKEEPERS',
-  taggedPeopleText: 'en_Tagged People',
+  taggedPeopleText: 'en_TAGGED PEOPLE',
   taggedMatchesText: 'en_Tagged matches',
 
   manageChallengeText: 'en_MANAGE CHALLENGE',
@@ -1072,7 +1072,6 @@ export default {
   generalText: 'en_General',
   peopleTitleText: 'en_People',
   groupsTitleText: 'en_Groups',
-  gamesTitleText: 'en_Games',
   postsTitleText: 'en_Posts',
   teamsTitleText: 'en_Teams',
   clubsTitleText: 'en_Clubs',
