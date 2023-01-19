@@ -22,6 +22,7 @@ import {
   Platform,
   Dimensions,
   ScrollView,
+  Pressable,
 } from 'react-native';
 import Modal from 'react-native-modal';
 import _ from 'lodash';
@@ -42,7 +43,6 @@ import TCRecentMatchCard from '../components/TCRecentMatchCard';
 import TCTagsFilter from '../components/TCTagsFilter';
 import TCSearchBox from '../components/TCSearchBox';
 import ActivityLoader from '../components/loader/ActivityLoader';
-import TCPicker from '../components/TCPicker';
 import {getGeocoordinatesWithPlaceName} from '../utils/location';
 
 let stopFetchMore = true;
@@ -147,10 +147,12 @@ export default function EntitySearchScreen({navigation, route}) {
 
   const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
   const [locationFilterOpetion, setLocationFilterOpetion] = useState(0);
+  const [visibleSportsModal, setVisibleSportsModal] = useState(false);
+
   const [sports, setSports] = useState([]);
   const [sportsList] = useState(route.params.sportsList);
   const [searchLocation, setSearchLocation] = useState(
-    route.params.locationText ?? 'Search City',
+    route.params.locationText ?? strings.searchCityText,
   );
   const searchBoxRef = useRef();
   useEffect(() => {
@@ -967,6 +969,45 @@ export default function EntitySearchScreen({navigation, route}) {
     });
   }, [pageSize, upcomingGamePageFrom, upcomingGame, upcomingGameFilters]);
 
+  const renderSports = ({item}) => (
+    <Pressable
+      style={styles.listItem}
+      onPress={() => {
+        if (item.value === strings.allType) {
+          setSelectedSport({
+            sport: strings.allType,
+            sport_type: strings.allType,
+          });
+        } else {
+          setSelectedSport(
+            Utility.getSportObjectByName(item.value, authContext),
+          );
+        }
+        setVisibleSportsModal(false);
+      }}>
+      <View
+        style={{
+          width: '100%',
+          padding: 20,
+          alignItems: 'center',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        }}>
+        <Text style={styles.languageList}>{item.value}</Text>
+        <View style={styles.checkbox}>
+          {selectedSport?.sport.toLowerCase() === item.value.toLowerCase() ? (
+            <Image
+              source={images.radioCheckYellow}
+              style={styles.checkboxImg}
+            />
+          ) : (
+            <Image source={images.radioUnselect} style={styles.checkboxImg} />
+          )}
+        </View>
+      </View>
+    </Pressable>
+  );
+
   const renderSeparator = () =>
     currentTab !== 2 && (
       <TCThinDivider marginTop={0} marginBottom={0} width={'100%'} />
@@ -1319,8 +1360,8 @@ export default function EntitySearchScreen({navigation, route}) {
     switch (currentSubTab) {
       case strings.generalText:
         setLocationFilterOpetion(0);
-        setSearchLocation('Search City');
-        // setLocation(strings.worldTitleText);
+        setSearchLocation(strings.searchCityText);
+        setLocation(strings.worldTitleText);
         setGeneralFilter({
           location: strings.worldTitleText,
           sport: strings.all,
@@ -1332,8 +1373,8 @@ export default function EntitySearchScreen({navigation, route}) {
         break;
       case strings.playerTitle:
         setLocationFilterOpetion(0);
-        setSearchLocation('Search City');
-        // setLocation(strings.worldTitleText);
+        setSearchLocation(strings.searchCityText);
+        setLocation(strings.worldTitleText);
         setPlayerFilter({
           location: strings.worldTitleText,
           sport: strings.all,
@@ -1346,7 +1387,7 @@ export default function EntitySearchScreen({navigation, route}) {
       case strings.refereesTitle:
         setLocationFilterOpetion(0);
         setLocation(strings.worldTitleText);
-        setSearchLocation('Search City');
+        setSearchLocation(strings.searchCityText);
         setrRefereeFilters({
           location: strings.worldTitleText,
           sport: strings.all,
@@ -1358,7 +1399,8 @@ export default function EntitySearchScreen({navigation, route}) {
         break;
       case strings.scorekeeperTitle:
         setLocationFilterOpetion(0);
-        setSearchLocation('Search City');
+        setSearchLocation(strings.searchCityText);
+        setLocation(strings.worldTitleText);
         setScoreKeeperFilters({
           location: strings.worldTitleText,
           sport: strings.all,
@@ -1370,7 +1412,8 @@ export default function EntitySearchScreen({navigation, route}) {
         break;
       case strings.teamsTitleText:
         setLocationFilterOpetion(0);
-        setSearchLocation('Search City');
+        setLocation(strings.worldTitleText);
+        setSearchLocation(strings.searchCityText);
         setTeamFilters({
           location: strings.worldTitleText,
           sport: strings.all,
@@ -1382,7 +1425,8 @@ export default function EntitySearchScreen({navigation, route}) {
         break;
       case strings.clubsTitleText:
         setLocationFilterOpetion(0);
-        setSearchLocation('Search City');
+        setLocation(strings.worldTitleText);
+        setSearchLocation(strings.searchCityText);
         setClubFilters({
           location: strings.worldTitleText,
           sport: strings.all,
@@ -1394,7 +1438,8 @@ export default function EntitySearchScreen({navigation, route}) {
         break;
       case strings.completedTitleText:
         setLocationFilterOpetion(0);
-        setSearchLocation('Search City');
+        setLocation(strings.worldTitleText);
+        setSearchLocation(strings.searchCityText);
         setCompletedGameFilters({
           location: strings.worldTitleText,
           sport: strings.all,
@@ -1406,7 +1451,8 @@ export default function EntitySearchScreen({navigation, route}) {
         break;
       case strings.upcomingTitleText:
         setLocationFilterOpetion(0);
-        setSearchLocation('Search City');
+        setLocation(strings.worldTitleText);
+        setSearchLocation(strings.searchCityText);
         setUpcomingGameFilters({
           location: strings.worldTitleText,
           sport: strings.all,
@@ -1779,6 +1825,16 @@ export default function EntitySearchScreen({navigation, route}) {
   );
 
   const keyExtractor = useCallback((item, index) => index.toString(), []);
+  const ModalHeader = () => (
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
+      <View style={styles.handleStyle} />
+    </View>
+  );
 
   return (
     <SafeAreaView style={{flex: 1}}>
@@ -2019,11 +2075,11 @@ export default function EntitySearchScreen({navigation, route}) {
                   <View>
                     <Text style={styles.filterTitle}>Location</Text>
                   </View>
-                  <View style={{marginTop: 10, marginLeft: 10}}>
+                  <View style={{marginTop: 16.5, marginLeft: 10}}>
                     <View
                       style={{
                         flexDirection: 'row',
-                        marginBottom: 10,
+                        marginBottom: 19,
                         justifyContent: 'space-between',
                       }}>
                       <Text style={styles.filterTitle}>
@@ -2047,7 +2103,7 @@ export default function EntitySearchScreen({navigation, route}) {
                     <View
                       style={{
                         flexDirection: 'row',
-                        marginBottom: 10,
+                        marginBottom: 19,
                         justifyContent: 'space-between',
                       }}>
                       <Text style={styles.filterTitle}>
@@ -2076,7 +2132,7 @@ export default function EntitySearchScreen({navigation, route}) {
                     <View
                       style={{
                         flexDirection: 'row',
-                        marginBottom: 10,
+                        marginBottom: 19,
                         justifyContent: 'space-between',
                       }}>
                       <Text style={styles.filterTitle}>
@@ -2143,7 +2199,7 @@ export default function EntitySearchScreen({navigation, route}) {
                       <Text style={styles.filterTitle}>Sport</Text>
                     </View>
                     <View style={{marginTop: 10}}>
-                      <TCPicker
+                      {/* <TCPicker
                         dataSource={sports}
                         placeholder={strings.selectSportTitleText}
                         onValueChange={(value) => {
@@ -2163,7 +2219,46 @@ export default function EntitySearchScreen({navigation, route}) {
                             ? Utility.getSportName(selectedSport, authContext)
                             : strings.all
                         }
-                      />
+                      /> */}
+                      <View
+                        style={[
+                          {
+                            // flexDirection: 'row',
+                            marginBottom: 10,
+                            justifyContent: 'flex-start',
+                          },
+                          styles.sportsContainer,
+                        ]}>
+                        <TouchableWithoutFeedback
+                          onPress={() => {
+                            // setLocationFilterOpetion(2)
+                            setVisibleSportsModal(true);
+                            // getLocation();
+                          }}>
+                          <View
+                            style={{
+                              flexDirection: 'row',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                            }}>
+                            <View>
+                              <Text style={styles.searchCityText}>
+                                {selectedSport?.sport_name ?? strings.allType}
+                              </Text>
+                            </View>
+                            <View
+                              style={{
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                              }}>
+                              <Image
+                                source={images.dropDownArrow}
+                                style={styles.downArrowImage}
+                              />
+                            </View>
+                          </View>
+                        </TouchableWithoutFeedback>
+                      </View>
                     </View>
                   </View>
                 </View>
@@ -2191,6 +2286,52 @@ export default function EntitySearchScreen({navigation, route}) {
                     {strings.resetTitleText}
                   </Text>
                 </TouchableOpacity>
+                <Modal
+                  isVisible={visibleSportsModal}
+                  onBackdropPress={() => setVisibleSportsModal(false)}
+                  onRequestClose={() => setVisibleSportsModal(false)}
+                  animationInTiming={300}
+                  animationOutTiming={800}
+                  backdropTransitionInTiming={300}
+                  backdropTransitionOutTiming={800}
+                  style={{
+                    margin: 0,
+                  }}>
+                  <View
+                    behavior="position"
+                    style={{
+                      width: '100%',
+                      height: Dimensions.get('window').height / 1.2,
+                      maxHeight: Dimensions.get('window').height / 1.2,
+                      backgroundColor: 'white',
+                      position: 'absolute',
+                      bottom: 0,
+                      left: 0,
+                      borderTopLeftRadius: 30,
+                      borderTopRightRadius: 30,
+                      shadowColor: '#000',
+                      shadowOffset: {width: 0, height: 1},
+                      shadowOpacity: 0.5,
+                      shadowRadius: 5,
+                      elevation: 15,
+                    }}>
+                    {ModalHeader()}
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        paddingHorizontal: 15,
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                      }}></View>
+                    <View style={styles.separatorLine} />
+                    <FlatList
+                      ItemSeparatorComponent={() => <TCThinDivider />}
+                      data={sports}
+                      keyExtractor={(item, index) => index.toString()}
+                      renderItem={renderSports}
+                    />
+                  </View>
+                </Modal>
               </View>
               <View style={{flex: 1}} />
             </ScrollView>
@@ -2311,22 +2452,57 @@ const styles = StyleSheet.create({
   },
 
   searchCityContainer: {
-    backgroundColor: colors.offwhite,
+    backgroundColor: '#F5F5F5',
     borderRadius: 5,
     height: 40,
     paddingLeft: 15,
     paddingRight: 15,
-    width: widthPercentageToDP('75%'),
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.2,
-    shadowRadius: 1,
-    elevation: 2,
+    width: 300,
     justifyContent: 'center',
   },
   searchCityText: {
     fontFamily: fonts.RRegular,
     fontSize: 16,
     color: colors.lightBlackColor,
+  },
+  listItem: {},
+
+  languageList: {
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RRegular,
+    fontSize: widthPercentageToDP('4%'),
+  },
+  checkboxImg: {
+    width: 22,
+    height: 22,
+    resizeMode: 'contain',
+    alignSelf: 'center',
+  },
+  sportsContainer: {
+    backgroundColor: '#F5F5F5',
+    borderRadius: 5,
+    height: 40,
+    paddingLeft: 15,
+    // paddingRight: 15,
+    width: 360,
+    justifyContent: 'center',
+  },
+  downArrowImage: {
+    width: 12,
+    height: 12,
+    resizeMode: 'contain',
+    tintColor: colors.lightBlackColor,
+    alignSelf: 'center',
+    marginRight: 10,
+  },
+  handleStyle: {
+    marginVertical: 15,
+    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 5,
+    width: 40,
+    borderRadius: 15,
+    backgroundColor: '#DADBDA',
   },
 });
