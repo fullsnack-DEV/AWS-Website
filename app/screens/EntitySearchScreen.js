@@ -906,7 +906,6 @@ export default function EntitySearchScreen({navigation, route}) {
         });
       }
     }
-
     getGameIndex(completedGameQuery).then((games) => {
       Utility.getGamesList(games).then((gamedata) => {
         if (games.length > 0) {
@@ -2457,8 +2456,9 @@ const styles = StyleSheet.create({
     height: 40,
     paddingLeft: 15,
     paddingRight: 15,
-    width: 300,
+    marginRight: 22,
     justifyContent: 'center',
+    flex: 1,
   },
   searchCityText: {
     fontFamily: fonts.RRegular,
@@ -2484,7 +2484,6 @@ const styles = StyleSheet.create({
     height: 40,
     paddingLeft: 15,
     // paddingRight: 15,
-    width: 360,
     justifyContent: 'center',
   },
   downArrowImage: {
