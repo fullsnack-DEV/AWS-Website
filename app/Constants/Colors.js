@@ -50,7 +50,7 @@ const colors = {
   localHomeGreenGradientEnd: '#00c168',
   localHomeBlueGradientStart: '#00ceff',
   localHomeBlueGradientEnd: '#003bff',
-
+  lightGrey:'#F5F5F5',
   themeColor2: '#FF4E00',
   darkGrayColor: '#565656',
   gameDetailColor: '#45C188',
