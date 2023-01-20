@@ -444,6 +444,17 @@ export default function RecruitingPlayerScreen({navigation, route}) {
     </Pressable>
   );
 
+  const ModalHeader = () => (
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
+      <View style={styles.handleStyle} />
+    </View>
+  );
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <ActivityLoader visible={loading} />
@@ -734,7 +745,7 @@ export default function RecruitingPlayerScreen({navigation, route}) {
                             {selectedSport?.sport_name ?? strings.allType}
                           </Text>
                         </View>
-                        <View style={{position:'absolute', right:10,top:-7, alignItems:'center', justifyContent:'center'}}>
+                        <View style={{position:'absolute', right:0, alignItems:'center', justifyContent:'center'}}>
                         <Icon size={24} color="black" name="chevron-down" />
                         </View>
                       </View>
@@ -834,6 +845,7 @@ export default function RecruitingPlayerScreen({navigation, route}) {
             shadowRadius: 5,
             elevation: 15,
           }}>
+             {ModalHeader()}
           <View
             style={{
               flexDirection: 'row',
@@ -841,31 +853,7 @@ export default function RecruitingPlayerScreen({navigation, route}) {
               justifyContent: 'space-between',
               alignItems: 'center',
             }}>
-            {/* <TouchableOpacity
-              hitSlop={getHitSlop(15)}
-              style={styles.closeButton}
-              onPress={() => setVisibleSportsModal(false)}>
-              <Image source={images.cancelImage} style={styles.closeButton} />
-            </TouchableOpacity> */}
-            {/* <Text
-              style={{
-                alignSelf: 'center',
-                marginVertical: 20,
-                fontSize: 16,
-                fontFamily: fonts.RBold,
-                color: colors.lightBlackColor,
-              }}>
-              {strings.sportsTitleText}
-            </Text> */}
-
-            <Text
-              style={{
-                alignSelf: 'center',
-                marginVertical: 20,
-                fontSize: 16,
-                fontFamily: fonts.RRegular,
-                color: colors.themeColor,
-              }}></Text>
+             
           </View>
           <View style={styles.separatorLine} />
           <FlatList
@@ -1103,5 +1091,14 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     resizeMode: 'contain',
   },
-
+  handleStyle: {
+    marginVertical: 15,
+    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 5,
+    width: 40,
+    borderRadius: 15,
+    backgroundColor: '#DADBDA',
+  },
 });
