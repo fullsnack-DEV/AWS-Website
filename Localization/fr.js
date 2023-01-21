@@ -435,9 +435,9 @@ export default {
   abouttitle: 'About',
   basicinfotitle: 'Basic Info',
   membershipFeesTitle: 'Membership Fees',
-  teamstitle: 'Teams',
-  clubstitle: 'Clubs',
-  leaguesTitle: 'League',
+  teamstitle: 'en_Teams',
+  clubstitle: 'en_Clubs',
+  leaguesTitle: 'en_League',
   signedupin: 'Signed up in ',
   editabouttitle: 'Edit About',
   editbasicinfotitle: 'Edit Basic Info',
@@ -811,7 +811,7 @@ export default {
 
   officialOnly: 'Official only',
   friendlyOnly: 'Friendly only',
-  allType: 'All',
+  allType: 'en_All',
 
   refereeSettingTitle:
     'How many referees will your team hire for a game at its own cost?',

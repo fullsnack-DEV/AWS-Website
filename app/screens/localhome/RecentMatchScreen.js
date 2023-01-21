@@ -15,8 +15,9 @@ import {
   TextInput,
   KeyboardAvoidingView,
   ScrollView,
+  Pressable
 } from 'react-native';
-
+import Icon  from 'react-native-vector-icons/MaterialCommunityIcons';
 import Modal from 'react-native-modal';
 import moment from 'moment';
 import AuthContext from '../../auth/context';
@@ -27,7 +28,7 @@ import {widthPercentageToDP} from '../../utils';
 import DateTimePickerView from '../../components/Schedule/DateTimePickerModal';
 import fonts from '../../Constants/Fonts';
 import TCThinDivider from '../../components/TCThinDivider';
-
+import LocationContext from '../../context/LocationContext';
 import {strings} from '../../../Localization/translation';
 import {
   getGameIndex,
@@ -35,11 +36,11 @@ import {
   getUserIndex,
 } from '../../api/elasticSearch';
 import TCTagsFilter from '../../components/TCTagsFilter';
-import TCPicker from '../../components/TCPicker';
 import TCRecentMatchCard from '../../components/TCRecentMatchCard';
 import {getGameHomeScreen} from '../../utils/gameUtils';
 import {getGeocoordinatesWithPlaceName} from '../../utils/location';
 import ActivityLoader from '../../components/loader/ActivityLoader';
+import { locationType } from '../../utils/constant';
 
 let stopFetchMore = true;
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
@@ -48,10 +49,14 @@ export default function RecentMatchScreen({navigation, route}) {
 
   const [loading, setloading] = useState(false);
   const authContext = useContext(AuthContext);
+  const locationContext = useContext(LocationContext);
   const [filters, setFilters] = useState(route?.params?.filters);
-
+  const [visibleSportsModal, setVisibleSportsModal] = useState(false);
   const [settingPopup, setSettingPopup] = useState(false);
-  const [locationFilterOpetion, setLocationFilterOpetion] = useState(0);
+  /* eslint-disable */ 
+  const [locationFilterOpetion, setLocationFilterOpetion] = useState(locationContext?.selectedLocation.toUpperCase() ===
+  /* eslint-disable */ 
+    authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocation === strings.worldTitleText ? 0 : 2);
 
   const [sports, setSports] = useState([]);
 
@@ -78,12 +83,20 @@ export default function RecentMatchScreen({navigation, route}) {
   const [loadMore, setLoadMore] = useState(false);
   const [searchData, setSearchData] = useState();
   const [selectedSport, setSelectedSport] = useState({
-    sport: route?.params?.filters.sport,
-    sport_type: route?.params?.filters.sport_type,
+    sport: route.params?.filters?.sport,
+    sport_type: route.params?.filters?.sport_type,
   });
-  const [location, setLocation] = useState(route?.params?.filters.location);
+  const [location, setLocation] = useState(route?.params?.filters?.location);
+  
 
   console.log('Recent Match Filter:=>', filters);
+
+  const [lastSelection, setLastSelection] = useState(0);
+  useEffect(() => {
+    if(settingPopup){
+      setLastSelection(locationFilterOpetion)
+    }
+  },[settingPopup])
 
   useEffect(() => {
     if (route.params?.locationText) {
@@ -453,18 +466,88 @@ export default function RecentMatchScreen({navigation, route}) {
   };
   const onPressReset = () => {
     setFilters({
-      location: 'world',
-      sport: 'All',
-      sport_type: 'All',
+      location: strings.worldTitleText,
+      sport: strings.allType,
+      sport_type: strings.allType,
     });
-    setLocation('world');
     setSelectedSport({
-      sort: 'All',
-      sport_type: 'All',
+      sport: strings.allType,
+      sport_type: strings.allType,
     });
+    setLocationFilterOpetion(locationContext?.selectedLocation.toUpperCase() ===
+    /* eslint-disable */ 
+    authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocation === strings.worldTitleText ? 0 : 2
+      );
     setFromDate();
     setToDate();
   };
+
+  useEffect(() =>{
+    const tempFilter = {...filters};
+    tempFilter.sport = selectedSport?.sport ?? strings.allType;
+    tempFilter.location = location;
+    setFilters({
+      ...tempFilter,
+    });
+    setPageFrom(0);
+    setRecentMatch([]);
+    applyFilter(tempFilter);
+
+  },[location])
+
+  const renderSports = ({item}) => (
+    <Pressable
+      style={styles.listItem}
+      onPress={() => {
+        if (item.value === strings.allType) {
+          setSelectedSport({
+            sport: strings.allType,
+            sport_type: strings.allType,
+          });
+        } else {
+            setSelectedSport(
+            Utility.getSportObjectByName(item.value, authContext),
+          );
+        }
+           setVisibleSportsModal(false);
+      }
+      }>
+      <View
+        style={{
+          width:'100%',
+          padding: 20,
+          alignItems: 'center',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        }}>
+        <Text style={styles.languageList}>
+          {item.value}
+        </Text>
+        <View style={styles.checkbox}>
+          {selectedSport?.sport.toLowerCase() === item.value.toLowerCase() ? (
+            <Image
+              source={images.radioCheckYellow}
+              style={styles.checkboxImg}
+            />
+          ) : (
+            <Image source={images.radioUnselect} style={styles.checkboxImg} />
+          )}
+        </View>
+      </View>
+    </Pressable>
+  );
+
+  const ModalHeader = () => (
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
+      <View style={styles.handleStyle} />
+    </View>
+  );
+
   return (
     <View>
       <ActivityLoader visible={loading} />
@@ -490,7 +573,7 @@ export default function RecentMatchScreen({navigation, route}) {
         onTagCancelPress={handleTagPress}
       />
       <FlatList
-        extraData={recentMatch}
+        extraData={location}
         showsHorizontalScrollIndicator={false}
         data={recentMatch}
         keyExtractor={keyExtractor}
@@ -505,7 +588,7 @@ export default function RecentMatchScreen({navigation, route}) {
         ListEmptyComponent={listEmptyComponent}
       />
       <Modal
-        onBackdropPress={() => setSettingPopup(false)}
+        onBackdropPress={() => {setLocationFilterOpetion(lastSelection) ; setSettingPopup(false)}}
         style={{
           margin: 0,
         }}
@@ -517,7 +600,7 @@ export default function RecentMatchScreen({navigation, route}) {
         <View
           style={[
             styles.bottomPopupContainer,
-            {height: Dimensions.get('window').height - 100},
+            {height: Dimensions.get('window').height - 50},
           ]}>
           <KeyboardAvoidingView
             style={{flex: 1}}
@@ -526,7 +609,7 @@ export default function RecentMatchScreen({navigation, route}) {
             <ScrollView style={{flex: 1}}>
               <View style={styles.viewsContainer}>
                 <Text
-                  onPress={() => setSettingPopup(false)}
+                  onPress={() => {setLocationFilterOpetion(lastSelection) ; setSettingPopup(false)}}
                   style={styles.cancelText}>
                   {strings.cancel}
                 </Text>
@@ -534,13 +617,27 @@ export default function RecentMatchScreen({navigation, route}) {
                 <Text
                   style={styles.doneText}
                   onPress={() => {
-                    setSettingPopup(false);
-                    setTimeout(() => {
                       const tempFilter = {...filters};
-                      tempFilter.sport = selectedSport.sport;
-                      tempFilter.sport_type = selectedSport.sport_type;
+                      tempFilter.sport = selectedSport?.sport ?? strings.allType;
+                      tempFilter.sport_type = selectedSport?.sport_type  ?? strings.allType;
 
-                      tempFilter.location = location;
+                      if(locationFilterOpetion === 0){
+                        setLocation(strings.worldTitleText);
+                        tempFilter.location = location;
+   
+                       } else if (locationFilterOpetion === 1) {
+                         setLocation(
+                           authContext?.entity?.obj?.city
+                             .charAt(0)
+                             .toUpperCase() +
+                             authContext?.entity?.obj?.city.slice(1),
+                         );
+                         tempFilter.location = location;
+   
+                       } else if (locationFilterOpetion === 2) {
+                           getLocation();
+                         tempFilter.location = location;
+                       }
 
                       if (fromDate) {
                         tempFilter.fromDate =
@@ -571,8 +668,7 @@ export default function RecentMatchScreen({navigation, route}) {
                       setPageFrom(0);
                       setRecentMatch([]);
                       applyFilter(tempFilter);
-                    }, 100);
-                    console.log('DONE::');
+                      setSettingPopup(false);
                   }}>
                   {strings.apply}
                 </Text>
@@ -581,63 +677,10 @@ export default function RecentMatchScreen({navigation, route}) {
               <View>
                 <View style={{flexDirection: 'column', margin: 15}}>
                   <View>
-                    <Text style={styles.filterTitle}>{strings.locationTitleText}</Text>
+                    <Text style={styles.filterTitleBold}>{strings.locationTitleText}</Text>
                   </View>
-                  <View style={{marginTop: 10, marginLeft: 10}}>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        marginBottom: 10,
-                        justifyContent: 'space-between',
-                      }}>
-                      <Text style={styles.filterTitle}>{strings.world}</Text>
-                      <TouchableWithoutFeedback
-                        onPress={() => {
-                          setLocationFilterOpetion(0);
-                          setLocation('world');
-                          // setFilters({
-                          //   ...filters,
-                          //   location: 'world',
-                          // });
-                        }}>
-                        <Image
-                          source={
-                            locationFilterOpetion === 0
-                              ? images.checkRoundOrange
-                              : images.radioUnselect
-                          }
-                          style={styles.radioButtonStyle}
-                        />
-                      </TouchableWithoutFeedback>
-                    </View>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        marginBottom: 10,
-                        justifyContent: 'space-between',
-                      }}>
-                      <Text style={styles.filterTitle}>{strings.homeCityText}</Text>
-                      <TouchableWithoutFeedback
-                        onPress={() => {
-                          setLocationFilterOpetion(1);
-                          setLocation(
-                            authContext?.entity?.obj?.city
-                              .charAt(0)
-                              .toUpperCase() +
-                              authContext?.entity?.obj?.city.slice(1),
-                          );
-                        }}>
-                        <Image
-                          source={
-                            locationFilterOpetion === 1
-                              ? images.checkRoundOrange
-                              : images.radioUnselect
-                          }
-                          style={styles.radioButtonStyle}
-                        />
-                      </TouchableWithoutFeedback>
-                    </View>
-                    <View
+                  <View style={{marginTop: 10}}>
+                  <View
                       style={{
                         flexDirection: 'row',
                         marginBottom: 10,
@@ -646,7 +689,7 @@ export default function RecentMatchScreen({navigation, route}) {
                       <Text style={styles.filterTitle}>{strings.locationTitle}</Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
-                          getLocation();
+                          setLocationFilterOpetion(locationType.CURRENT_LOCATION)
                         }}>
                         <Image
                           source={
@@ -659,9 +702,53 @@ export default function RecentMatchScreen({navigation, route}) {
                       </TouchableWithoutFeedback>
                     </View>
 
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        marginBottom: 10,
+                        justifyContent: 'space-between',
+                      }}>
+                      <Text style={styles.filterTitle}>{strings.homeCityText}</Text>
+                      <TouchableWithoutFeedback
+                        onPress={() => {
+                          setLocationFilterOpetion(locationType.HOME_CITY);
+                        }}>
+                        <Image
+                          source={
+                            locationFilterOpetion === 1
+                              ? images.checkRoundOrange
+                              : images.radioUnselect
+                          }
+                          style={styles.radioButtonStyle}
+                        />
+                      </TouchableWithoutFeedback>
+                    </View>
+
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        marginBottom: 10,
+                        justifyContent: 'space-between',
+                      }}>
+                      <Text style={styles.filterTitle}>{strings.world}</Text>
+                      <TouchableWithoutFeedback
+                        onPress={() => {
+                          setLocationFilterOpetion(locationType.WORLD);
+                        }}>
+                        <Image
+                          source={
+                            locationFilterOpetion === 0
+                              ? images.checkRoundOrange
+                              : images.radioUnselect
+                          }
+                          style={styles.radioButtonStyle}
+                        />
+                      </TouchableWithoutFeedback>
+                    </View>
+
                     <TouchableWithoutFeedback
                       onPress={() => {
-                        setLocationFilterOpetion(3);
+                        setLocationFilterOpetion(locationType.SEARCH_CITY);
                         setSettingPopup(false);
                         navigation.navigate('SearchCityScreen', {
                           comeFrom: 'RecentMatchScreen',
@@ -672,14 +759,6 @@ export default function RecentMatchScreen({navigation, route}) {
                           flexDirection: 'row',
                           justifyContent: 'space-between',
                         }}>
-                        {/* <TCSearchCityView
-                     getCity={(value) => {
-                       console.log('Value:=>', value);
-                       setSelectedCity(value);
-                     }}
-                     // value={selectedCity}
-                   /> */}
-
                         <View style={styles.searchCityContainer}>
                           <Text style={styles.searchCityText}>
                             {route?.params?.locationText || strings.searchCityText}
@@ -710,30 +789,36 @@ export default function RecentMatchScreen({navigation, route}) {
                       justifyContent: 'space-between',
                     }}>
                     <View style={{}}>
-                      <Text style={styles.filterTitle}>{strings.sportsEventsTitle}</Text>
+                      <Text style={styles.filterTitleBold}>{strings.sportsEventsTitle}</Text>
                     </View>
                     <View style={{marginTop: 10}}>
-                      <TCPicker
-                        dataSource={sports}
-                        placeholder={strings.sportsEventsTitle}
-                        onValueChange={(value) => {
-                          if (value === 'All') {
-                            setSelectedSport({
-                              sport: 'All',
-                              sport_type: 'All',
-                            });
-                            setSelectedEntity();
-                            setEntityData([]);
-                          } else {
-                            setSelectedSport(
-                              Utility.getSportObjectByName(value, authContext),
-                            );
-                            setSelectedEntity();
-                            setEntityData([]);
-                          }
-                        }}
-                        value={Utility.getSportName(selectedSport, authContext)}
-                      />
+                     
+                    <View
+                      style={[{
+                        marginBottom: 10,
+                        justifyContent: 'flex-start',
+                      }, styles.sportsContainer]}>
+                      <TouchableWithoutFeedback
+                        onPress={() => {
+                          setVisibleSportsModal(true)
+                        }}>
+                        <View
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'flex-start',
+                        }}>
+                        <View >
+                          <Text style={styles.searchCityText}>
+                          {selectedSport?.sport_name ?? strings.allType}
+                          </Text>
+                        </View>
+                        <View style={{position:'absolute', right:0, alignItems:'center', justifyContent:'center'}}>
+                        <Icon size={24} color="black" name="chevron-down" />
+                        </View>
+                      </View>
+                      </TouchableWithoutFeedback>
+                    </View>
+                     
                     </View>
                   </View>
                 </View>
@@ -901,7 +986,7 @@ export default function RecentMatchScreen({navigation, route}) {
            </View> */}
               {/* Rate View */}
 
-              {selectedSport.sport !== 'All' && (
+              {selectedSport && selectedSport.sport !== strings.allType && (
                 <View
                   style={{
                     flexDirection: 'column',
@@ -987,6 +1072,57 @@ export default function RecentMatchScreen({navigation, route}) {
             }}>
             <Text style={styles.resetTitle}>{strings.resetTitleText}</Text>
           </TouchableOpacity>
+
+               
+          <Modal
+        isVisible={visibleSportsModal}
+        onBackdropPress={() => setVisibleSportsModal(false)}
+        onRequestClose={() => setVisibleSportsModal(false)}
+        animationInTiming={300}
+        animationOutTiming={800}
+        backdropTransitionInTiming={300}
+        backdropTransitionOutTiming={800}
+        style={{
+          margin: 0,
+        }}>
+        <View
+        behavior='position'
+          style={{
+            width: '100%',
+            height: Dimensions.get('window').height - 75,
+            maxHeight:Dimensions.get('window').height - 75,
+            backgroundColor: 'white',
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            borderTopLeftRadius: 30,
+            borderTopRightRadius: 30,
+            shadowColor: '#000',
+            shadowOffset: {width: 0, height: 1},
+            shadowOpacity: 0.5,
+            shadowRadius: 5,
+            elevation: 15,
+          }}>
+            {ModalHeader()}
+          <View
+            style={{
+              flexDirection: 'row',
+              paddingHorizontal: 15,
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}>
+          
+          </View>
+          <View style={styles.separatorLine} />
+          <FlatList
+            ItemSeparatorComponent={() => <TCThinDivider />}
+            data={sports}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={renderSports}
+          />
+        </View>
+      </Modal>
+
         </View>
         <DateTimePickerView
           date={fromDate}
@@ -1057,6 +1193,11 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
   },
+  filterTitleBold: {
+    fontSize: 16,
+    fontFamily: fonts.RBold,
+    color: colors.lightBlackColor,
+  },
   // minMaxTitle: {
   //   fontSize: 16,
   //   fontFamily: fonts.RRegular,
@@ -1121,20 +1262,15 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 40,
     alignItems: 'center',
-    backgroundColor: colors.offwhite,
-    borderRadius: 5,
-    shadowColor: colors.grayColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.3,
-    shadowRadius: 1,
-    elevation: 1,
+    backgroundColor: colors.lightGrey,
+    borderRadius: 5,  
   },
   fieldTitle: {
     fontSize: 16,
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RLight,
+    color: colors.grayColor,
+    fontFamily: fonts.RRegular,
     marginLeft: 10,
-    width: 100,
+    width: 70,
   },
   fieldValue: {
     fontSize: 16,
@@ -1167,17 +1303,21 @@ const styles = StyleSheet.create({
   },
 
   searchCityContainer: {
-    backgroundColor: colors.offwhite,
+    backgroundColor: colors.lightGrey,
     borderRadius: 5,
     height: 40,
     paddingLeft: 15,
     paddingRight: 15,
     width: widthPercentageToDP('75%'),
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.2,
-    shadowRadius: 1,
-    elevation: 2,
+    justifyContent: 'center',
+  },
+  sportsContainer:{
+    backgroundColor: colors.lightGrey,
+    borderRadius: 5,
+    height: 40,
+    paddingLeft: 15,
+    paddingRight: 15,
+    width: widthPercentageToDP('93%'),
     justifyContent: 'center',
   },
 
@@ -1220,4 +1360,36 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     marginLeft: 10,
   },
+  listItem: {
+  },
+
+  languageList: {
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RRegular,
+    fontSize: widthPercentageToDP('4%'),
+  },
+  checkboxImg: {
+    width: 22,
+    height: 22,
+    resizeMode: 'contain',
+    alignSelf: 'center',
+  },
+  closeButton: {
+    alignSelf: 'center',
+    width: 15,
+    height: 15,
+    marginLeft: 5,
+    resizeMode: 'contain',
+  },
+  handleStyle: {
+    marginVertical: 15,
+    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 5,
+    width: 40,
+    borderRadius: 15,
+    backgroundColor: '#DADBDA',
+  },
 });
+

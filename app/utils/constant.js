@@ -161,7 +161,14 @@ export const mobileCountryCode = [
   {label: 'United States(+1)', value: 'United States(+1)'},
 ];
 
-export const groupsType = [{type: 'Teams'}, {type: 'Clubs'}, {type: 'Leagues'}];
+export const groupsType = [{type:strings.teamstitle}, {type:strings.clubstitle}, {type: strings.leaguesTitle}];
+
+export const locationType = {
+  CURRENT_LOCATION : 2,
+  HOME_CITY: 1,
+  WORLD: 0,
+  SEARCH_CITY:3
+}
 
 export const game_data = [
   {

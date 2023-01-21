@@ -43,6 +43,7 @@ const images = {
 
   groupIcon: require('../assets/images/ic_group.png'),
   club_ph: require('../assets/images/club_profile_placeholder.png'),
+  newClubIcon: require('../assets/images/newClubIcon.png'),
   team_ph: require('../assets/images/team_profile_placeholder.png'),
   tab_home: require('../assets/images/tab_home.png'),
   tab_notification: require('../assets/images/tab_notification.png'),
@@ -144,6 +145,7 @@ const images = {
   myRefereeing: require('../assets/images/My_Refereeing.png'),
   myScoreKeeping: require('../assets/images/scorekeeper_in.png'),
   myTeams: require('../assets/images/My_Teams.png'),
+  newTeamIcon: require('../assets/images/newTeamIcon.png'),
   myClubs: require('../assets/images/My_Clubs.png'),
   myLeagues: require('../assets/images/My_Leagues.png'),
   paymentPayout: require('../assets/images/PaymentPayout.png'),
@@ -172,6 +174,7 @@ const images = {
 
   switchAccount: require('../assets/images/switch_account.png'),
   teamPlaceholder: require('../assets/images/team_placeholder.png'),
+  newTeamPlaceHolder: require('../assets/images/newTeamPlaceHolder.png'),
   tennisArrowRight: require('../assets/images/tennis_arrow_right.png'),
   tennisArrowLeft: require('../assets/images/tennis_arrow_left.png'),
   noSpecicPlayer: require('../assets/images/ic_no_specific.png'),

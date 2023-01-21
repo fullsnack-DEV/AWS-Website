@@ -378,7 +378,6 @@ function PendingRequestScreen({navigation}) {
   const onDelete = ({item}) => {
     setloading(true);
     const ids = item.activities.map((activity) => activity.id);
-    // setMainNotificationsList(mainNotificationsList.filter((obj) => obj.id !== ids))
     deleteNotification(ids, item.type, authContext)
       .then(() => {
         setloading(false);

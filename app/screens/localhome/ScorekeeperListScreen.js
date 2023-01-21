@@ -16,8 +16,9 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   SafeAreaView,
+  Pressable
 } from 'react-native';
-
+import Icon  from 'react-native-vector-icons/MaterialCommunityIcons';
 import Modal from 'react-native-modal';
 import AuthContext from '../../auth/context';
 import * as Utility from '../../utils';
@@ -26,14 +27,14 @@ import images from '../../Constants/ImagePath';
 import {widthPercentageToDP} from '../../utils';
 import fonts from '../../Constants/Fonts';
 import TCThinDivider from '../../components/TCThinDivider';
-
 import {strings} from '../../../Localization/translation';
 import {getUserIndex} from '../../api/elasticSearch';
 import TCScorekeeperView from '../../components/TCScorekeeperView';
 import TCTagsFilter from '../../components/TCTagsFilter';
-import TCPicker from '../../components/TCPicker';
 import {getGeocoordinatesWithPlaceName} from '../../utils/location';
 import ActivityLoader from '../../components/loader/ActivityLoader';
+import LocationContext from '../../context/LocationContext';
+import { locationType } from '../../utils/constant';
 
 let stopFetchMore = true;
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
@@ -42,9 +43,13 @@ export default function ScorekeeperListScreen({navigation, route}) {
   const [loading, setloading] = useState(false);
   const authContext = useContext(AuthContext);
   const [filters, setFilters] = useState(route?.params?.filters);
-
+  const locationContext = useContext(LocationContext);
   const [settingPopup, setSettingPopup] = useState(false);
-  const [locationFilterOpetion, setLocationFilterOpetion] = useState(0);
+  const [visibleSportsModal, setVisibleSportsModal] = useState(false);
+  /* eslint-disable */ 
+  const [locationFilterOpetion, setLocationFilterOpetion] = useState(locationContext?.selectedLocation.toUpperCase() ===
+  /* eslint-disable */ 
+authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocation === strings.worldTitleText ? 0 : 2);
 
   const [sports, setSports] = useState([]);
 
@@ -60,6 +65,12 @@ export default function ScorekeeperListScreen({navigation, route}) {
     sport_type: route.params?.filters?.sport_type,
   });
   const [location, setLocation] = useState(route.params?.filters?.location);
+  const [lastSelection, setLastSelection] = useState(0);
+  useEffect(() => {
+    if(settingPopup){
+      setLastSelection(locationFilterOpetion)
+    }
+  },[settingPopup])
 
   useEffect(() => {
     if (route.params?.locationText) {
@@ -230,7 +241,7 @@ export default function ScorekeeperListScreen({navigation, route}) {
           tempFilter.sport = strings.allType;
           delete tempFilter.refereeFee;
           setSelectedSport({
-            sort: strings.allType,
+            sport: strings.allType,
             sport_type: strings.allType,
           });
           setMinFee(0);
@@ -317,12 +328,82 @@ export default function ScorekeeperListScreen({navigation, route}) {
       sport_type: strings.allType,
     });
     setSelectedSport({
-      sort: strings.allType,
+      sport: strings.allType,
       sport_type: strings.allType,
     });
     setMinFee(0);
     setMaxFee(0);
+    setLocationFilterOpetion(locationContext?.selectedLocation.toUpperCase() ===
+    /* eslint-disable */ 
+authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocation === strings.worldTitleText ? 0 : 2
+      );
   };
+
+  useEffect(() =>{
+    const tempFilter = {...filters};
+    tempFilter.sport = selectedSport?.sport;
+    tempFilter.location = location;
+    setFilters({
+      ...tempFilter,
+    });
+    setPageFrom(0);
+    setScorekeepers([]);
+    applyFilter(tempFilter);
+
+  },[location])
+
+  const renderSports = ({item}) => (
+    <Pressable
+      style={styles.listItem}
+      onPress={() => {
+        if (item.value === strings.allType) {
+          setSelectedSport({
+            sport: strings.allType,
+            sport_type: strings.allType,
+          });
+        } else {
+            setSelectedSport(
+            Utility.getSportObjectByName(item.value, authContext),
+          );
+        }
+           setVisibleSportsModal(false);
+      }
+      }>
+      <View
+        style={{
+          width:'100%',
+          padding: 20,
+          alignItems: 'center',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        }}>
+        <Text style={styles.languageList}>
+          {item.value}
+        </Text>
+        <View style={styles.checkbox}>
+          {selectedSport?.sport.toLowerCase() === item.value.toLowerCase() ? (
+            <Image
+              source={images.radioCheckYellow}
+              style={styles.checkboxImg}
+            />
+          ) : (
+            <Image source={images.radioUnselect} style={styles.checkboxImg} />
+          )}
+        </View>
+      </View>
+    </Pressable>
+  );
+
+  const ModalHeader = () => (
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
+      <View style={styles.handleStyle} />
+    </View>
+  );
 
   return (
     <SafeAreaView style={{flex: 1}}>
@@ -362,14 +443,13 @@ export default function ScorekeeperListScreen({navigation, route}) {
         onTagCancelPress={handleTagPress}
       />
       <FlatList
-        extraData={scorekeepers}
+        extraData={location}
         showsVerticalScrollIndicator={false}
         data={scorekeepers}
         ItemSeparatorComponent={renderSeparator}
         keyExtractor={keyExtractor}
         renderItem={renderRefereesScorekeeperListView}
         style={styles.listStyle}
-        // contentContainerStyle={{ paddingBottom: 1 }}
         onScroll={onScrollHandler}
         onEndReachedThreshold={0.01}
         onScrollBeginDrag={() => {
@@ -378,7 +458,7 @@ export default function ScorekeeperListScreen({navigation, route}) {
         ListEmptyComponent={listEmptyComponent}
       />
       <Modal
-        onBackdropPress={() => setSettingPopup(false)}
+        onBackdropPress={() => {{setLocationFilterOpetion(lastSelection) ; setSettingPopup(false)}}}
         style={{
           margin: 0,
         }}
@@ -390,7 +470,7 @@ export default function ScorekeeperListScreen({navigation, route}) {
         <View
           style={[
             styles.bottomPopupContainer,
-            {height: Dimensions.get('window').height - 100},
+            {height: Dimensions.get('window').height - 50},
           ]}>
           <KeyboardAvoidingView
             style={{flex: 1}}
@@ -399,7 +479,7 @@ export default function ScorekeeperListScreen({navigation, route}) {
             <ScrollView style={{flex: 1}}>
               <View style={styles.viewsContainer}>
                 <Text
-                  onPress={() => setSettingPopup(false)}
+                  onPress={() =>{setLocationFilterOpetion(lastSelection) ; setSettingPopup(false)}}
                   style={styles.cancelText}>
                   {strings.cancel}
                 </Text>
@@ -408,13 +488,27 @@ export default function ScorekeeperListScreen({navigation, route}) {
                   style={styles.doneText}
                   onPress={() => {
                     if (applyValidation()) {
-                      setSettingPopup(false);
-                      setTimeout(() => {
                         const tempFilter = {...filters};
                         tempFilter.sport = selectedSport?.sport;
                         tempFilter.sport_type = selectedSport?.sport_type;
 
+                      if(locationFilterOpetion === 0){
+                        setLocation(strings.worldTitleText);
                         tempFilter.location = location;
+   
+                       } else if (locationFilterOpetion === 1) {
+                         setLocation(
+                           authContext?.entity?.obj?.city
+                             .charAt(0)
+                             .toUpperCase() +
+                             authContext?.entity?.obj?.city.slice(1),
+                         );
+                         tempFilter.location = location;
+   
+                       } else if (locationFilterOpetion === 2) {
+                           getLocation();
+                         tempFilter.location = location;
+                       }
 
                         if (minFee && maxFee) {
                           tempFilter.scorekeeperFee = `${minFee}-${maxFee}`;
@@ -425,7 +519,7 @@ export default function ScorekeeperListScreen({navigation, route}) {
                         setPageFrom(0);
                         setScorekeepers([]);
                         applyFilter(tempFilter);
-                      }, 100);
+                        setSettingPopup(false);
                     }
                   }}>
                   {strings.apply}
@@ -435,75 +529,13 @@ export default function ScorekeeperListScreen({navigation, route}) {
               <View>
                 <View style={{flexDirection: 'column', margin: 15}}>
                   <View>
-                    <Text style={styles.filterTitle}>
+                    <Text style={styles.filterTitleBold}>
                       {strings.locationTitleText}
                     </Text>
                   </View>
-                  <View style={{marginTop: 10, marginLeft: 10}}>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        marginBottom: 10,
-                        justifyContent: 'space-between',
-                      }}>
-                      <Text style={styles.filterTitle}>{strings.world}</Text>
-                      <TouchableWithoutFeedback
-                        onPress={() => {
-                          setLocationFilterOpetion(0);
-                          setLocation(strings.worldTitleText);
-                          // setFilters({
-                          //   ...filters,
-                          //   location: 'world',
-                          // });
-                        }}>
-                        <Image
-                          source={
-                            locationFilterOpetion === 0
-                              ? images.checkRoundOrange
-                              : images.radioUnselect
-                          }
-                          style={styles.radioButtonStyle}
-                        />
-                      </TouchableWithoutFeedback>
-                    </View>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        marginBottom: 10,
-                        justifyContent: 'space-between',
-                      }}>
-                      <Text style={styles.filterTitle}>
-                        {strings.currentCity}
-                      </Text>
-                      <TouchableWithoutFeedback
-                        onPress={() => {
-                          setLocationFilterOpetion(1);
-                          setLocation(
-                            authContext?.entity?.obj?.city
-                              .charAt(0)
-                              .toUpperCase() +
-                              authContext?.entity?.obj?.city.slice(1),
-                          );
-                          // setFilters({
-                          //   ...filters,
-                          //   location:
-                          //     authContext?.entity?.obj?.city
-                          //       .charAt(0)
-                          //       .toUpperCase()
-                          //     + authContext?.entity?.obj?.city.slice(1),
-                          // });
-                        }}>
-                        <Image
-                          source={
-                            locationFilterOpetion === 1
-                              ? images.checkRoundOrange
-                              : images.radioUnselect
-                          }
-                          style={styles.radioButtonStyle}
-                        />
-                      </TouchableWithoutFeedback>
-                    </View>
-                    <View
+                  <View style={{marginTop: 10}}>
+
+                  <View
                       style={{
                         flexDirection: 'row',
                         marginBottom: 10,
@@ -514,7 +546,7 @@ export default function ScorekeeperListScreen({navigation, route}) {
                       </Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
-                          getLocation();
+                          setLocationFilterOpetion(locationType.CURRENT_LOCATION)
                         }}>
                         <Image
                           source={
@@ -526,10 +558,56 @@ export default function ScorekeeperListScreen({navigation, route}) {
                         />
                       </TouchableWithoutFeedback>
                     </View>
+ 
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        marginBottom: 10,
+                        justifyContent: 'space-between',
+                      }}>
+                      <Text style={styles.filterTitle}>
+                        {strings.currentCity}
+                      </Text>
+                      <TouchableWithoutFeedback
+                        onPress={() => {
+                          setLocationFilterOpetion(locationType.HOME_CITY);
+                        }}>
+                        <Image
+                          source={
+                            locationFilterOpetion === 1
+                              ? images.checkRoundOrange
+                              : images.radioUnselect
+                          }
+                          style={styles.radioButtonStyle}
+                        />
+                      </TouchableWithoutFeedback>
+                    </View>
+
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        marginBottom: 10,
+                        justifyContent: 'space-between',
+                      }}>
+                      <Text style={styles.filterTitle}>{strings.world}</Text>
+                      <TouchableWithoutFeedback
+                        onPress={() => {
+                          setLocationFilterOpetion(locationType.WORLD);
+                        }}>
+                        <Image
+                          source={
+                            locationFilterOpetion === 0
+                              ? images.checkRoundOrange
+                              : images.radioUnselect
+                          }
+                          style={styles.radioButtonStyle}
+                        />
+                      </TouchableWithoutFeedback>
+                    </View>
 
                     <TouchableWithoutFeedback
                       onPress={() => {
-                        setLocationFilterOpetion(3);
+                        setLocationFilterOpetion(locationType.SEARCH_CITY);
                         setSettingPopup(false);
                         navigation.navigate('SearchCityScreen', {
                           comeFrom: 'ScorekeeperListScreen',
@@ -571,176 +649,38 @@ export default function ScorekeeperListScreen({navigation, route}) {
                       justifyContent: 'space-between',
                     }}>
                     <View>
-                      <Text style={styles.filterTitle}>{strings.sport}</Text>
+                      <Text style={styles.filterTitleBold}>{strings.sport}</Text>
                     </View>
                     <View style={{marginTop: 10}}>
-                      <TCPicker
-                        dataSource={sports}
-                        placeholder={'Select Sport'}
-                        // placeholderValue={strings.allType}
-                        onValueChange={(value) => {
-                          if (value === strings.allType) {
-                            setSelectedSport({
-                              sport: strings.allType,
-                              sport_type: strings.allType,
-                            });
-                            setMinFee(0);
-                            setMaxFee(0);
-                          } else {
-                            setSelectedSport(
-                              Utility.getSportObjectByName(value, authContext),
-                            );
-                          }
-                        }}
-                        value={
-                          selectedSport?.sport !== strings.allType
-                            ? Utility.getSportName(selectedSport, authContext)
-                            : strings.all
-                        }
-                      />
+                    <View
+                      style={[{
+                        marginBottom: 10,
+                        justifyContent: 'flex-start',
+                      }, styles.sportsContainer]}>
+                      <TouchableWithoutFeedback
+                        onPress={() => {
+                          setVisibleSportsModal(true)
+                        }}>
+                        <View
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'flex-start',
+                        }}>
+                        <View >
+                          <Text style={styles.searchCityText}>
+                          {selectedSport?.sport_name ?? strings.allType}
+                          </Text>
+                        </View>
+                        <View style={{position:'absolute', right:0, alignItems:'center', justifyContent:'center'}}>
+                        <Icon size={24} color="black" name="chevron-down" />
+                        </View>
+                      </View>
+                      </TouchableWithoutFeedback>
+                    </View>
                     </View>
                   </View>
                 </View>
-                {/* <View style={{ flexDirection: 'column', margin: 15 }}>
-                  <View>
-                    <Text style={styles.filterTitle}>Available Time</Text>
-                  </View>
-                  <View style={{ marginTop: 10 }}>
-                    <View style={{ flexDirection: 'row', marginBottom: 10 }}>
-                      <TouchableOpacity
-                        style={styles.fieldView}
-                        onPress={() => {
-                          setDatePickerFor('from');
-                          setShow(!show);
-                        }}>
-                        <View
-                          style={{
-                            height: 35,
-                            justifyContent: 'center',
-                          }}>
-                          <Text style={styles.fieldTitle} numberOfLines={1}>
-                            From
-                          </Text>
-                        </View>
-                        <View style={{ marginRight: 15, flexDirection: 'row' }}>
-                          <Text style={styles.fieldValue} numberOfLines={1}>
-                            {moment(fromDate).format('MMM DD, YYYY')} {'   '}
-                          </Text>
-                          <Text style={styles.fieldValue} numberOfLines={1}>
-                            {moment(fromDate).format('h:mm a')}
-                          </Text>
-                        </View>
-                      </TouchableOpacity>
-                    </View>
-                    <View style={{ flexDirection: 'row' }}>
-                      <TouchableOpacity
-                        style={styles.fieldView}
-                        onPress={() => {
-                          setDatePickerFor('to');
-                          setShow(!show);
-                        }}>
-                        <View
-                          style={{
-                            height: 35,
-                            justifyContent: 'center',
-                          }}>
-                          <Text style={styles.fieldTitle} numberOfLines={1}>
-                            To
-                          </Text>
-                        </View>
-                        <View style={{ marginRight: 15, flexDirection: 'row' }}>
-                          <Text style={styles.fieldValue} numberOfLines={1}>
-                            {moment(toDate).format('MMM DD, YYYY')} {'   '}
-                          </Text>
-                          <Text style={styles.fieldValue} numberOfLines={1}>
-                            {moment(toDate).format('h:mm a')}
-                          </Text>
-                        </View>
-                      </TouchableOpacity>
-                    </View>
-                    <Text
-                      style={{
-                        fontSize: 12,
-                        fontFamily: fonts.RLight,
-                        color: colors.lightBlackColor,
-                        textAlign: 'right',
-                        marginTop: 10,
-                      }}>
-                      Time zone{' '}
-                      <Text
-                        style={{
-                          fontSize: 12,
-                          fontFamily: fonts.RRegular,
-                          color: colors.lightBlackColor,
-                          textDecorationLine: 'underline',
-                        }}>
-                        Vancouver
-                      </Text>
-                    </Text>
-                  </View>
-                </View> */}
               </View>
-              {/* Rate View */}
-              {/* <View>
-             <View
-               style={{
-                 flexDirection: 'row',
-                 margin: 15,
-                 marginTop: 0,
-                 justifyContent: 'space-between',
-               }}>
-               <View style={{ flex: 0.2 }}>
-                 <Text style={styles.filterTitle}>Rating</Text>
-               </View>
-               <View
-                 style={{
-                   marginLeft: 15,
-                   flex: 0.6,
-                   alignSelf: 'flex-end',
-                 }}>
-                 <View
-                   style={{
-                     flexDirection: 'row',
-                     marginBottom: 10,
-                     alignItems: 'center',
-                     justifyContent: 'space-between',
-                   }}>
-                   <Text style={styles.minMaxTitle}>Min</Text>
-                   <AirbnbRating
-                     count={5}
-                     fractions={1}
-                     showRating={false}
-                     defaultRating={0}
-                     size={20}
-                     isDisabled={false}
-                     selectedColor={'#f49c20'}
-                   />
-                   <Text style={styles.starCount}>2.0</Text>
-                 </View>
-                 <View
-                   style={{
-                     flexDirection: 'row',
-                     alignItems: 'center',
-                     justifyContent: 'space-between',
-                   }}>
-                   <Text style={styles.minMaxTitle}>Max</Text>
-                   <AirbnbRating
-                     count={5}
-                     fractions={1}
-                     showRating={false}
-                     defaultRating={0}
-                     size={20}
-                     isDisabled={false}
-                     selectedColor={'#f49c20'}
-                   />
-                   <Text style={styles.starCount}>2.0</Text>
-                 </View>
-               </View>
-             </View>
-
-           </View> */}
-              {/* Rate View */}
-
               {selectedSport?.sport !== strings.allType && (
                 <View
                   style={{
@@ -809,6 +749,54 @@ export default function ScorekeeperListScreen({navigation, route}) {
             }}>
             <Text style={styles.resetTitle}>{strings.resetTitleText}</Text>
           </TouchableOpacity>
+          <Modal
+        isVisible={visibleSportsModal}
+        onBackdropPress={() => setVisibleSportsModal(false)}
+        onRequestClose={() => setVisibleSportsModal(false)}
+        animationInTiming={300}
+        animationOutTiming={800}
+        backdropTransitionInTiming={300}
+        backdropTransitionOutTiming={800}
+        style={{
+          margin: 0,
+        }}>
+        <View
+        behavior='position'
+          style={{
+            width: '100%',
+            height: Dimensions.get('window').height - 75,
+            maxHeight:Dimensions.get('window').height - 75,
+            backgroundColor: 'white',
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            borderTopLeftRadius: 30,
+            borderTopRightRadius: 30,
+            shadowColor: '#000',
+            shadowOffset: {width: 0, height: 1},
+            shadowOpacity: 0.5,
+            shadowRadius: 5,
+            elevation: 15,
+          }}>
+            {ModalHeader()}
+          <View
+            style={{
+              flexDirection: 'row',
+              paddingHorizontal: 15,
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}>
+          
+          </View>
+          <View style={styles.separatorLine} />
+          <FlatList
+            ItemSeparatorComponent={() => <TCThinDivider />}
+            data={sports}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={renderSports}
+          />
+        </View>
+      </Modal>
         </View>
         {/* <DateTimePickerView
           date={new Date()}
@@ -871,6 +859,11 @@ const styles = StyleSheet.create({
   filterTitle: {
     fontSize: 16,
     fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
+  },
+  filterTitleBold: {
+    fontSize: 16,
+    fontFamily: fonts.RBold,
     color: colors.lightBlackColor,
   },
   // minMaxTitle: {
@@ -982,31 +975,30 @@ const styles = StyleSheet.create({
   },
 
   searchCityContainer: {
-    backgroundColor: colors.offwhite,
+    backgroundColor: colors.lightGrey,
     borderRadius: 5,
     height: 40,
     paddingLeft: 15,
     paddingRight: 15,
     width: widthPercentageToDP('75%'),
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.2,
-    shadowRadius: 1,
-    elevation: 2,
+    justifyContent: 'center',
+  },
+  sportsContainer:{
+    backgroundColor: colors.lightGrey,
+    borderRadius: 5,
+    height: 40,
+    paddingLeft: 15,
+    paddingRight: 15,
+    width: widthPercentageToDP('93%'),
     justifyContent: 'center',
   },
   minFee: {
-    backgroundColor: colors.offwhite,
+    backgroundColor: colors.lightGrey,
     borderRadius: 5,
     height: 40,
     paddingLeft: 15,
     paddingRight: 15,
     width: widthPercentageToDP('45%'),
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.2,
-    shadowRadius: 1,
-    elevation: 2,
     justifyContent: 'center',
     textAlign: 'center',
     fontSize: 16,
@@ -1022,5 +1014,39 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     fontSize: widthPercentageToDP('3.8%'),
     width: widthPercentageToDP('75%'),
+  },
+  listItem: {
+    // flexDirection: 'row',
+    // marginLeft: widthPercentageToDP('10%'),
+    // width: widthPercentageToDP('80%'),
+  },
+
+  languageList: {
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RRegular,
+    fontSize: widthPercentageToDP('4%'),
+  },
+  checkboxImg: {
+    width: 22,
+    height: 22,
+    resizeMode: 'contain',
+    alignSelf: 'center',
+  },
+  closeButton: {
+    alignSelf: 'center',
+    width: 15,
+    height: 15,
+    marginLeft: 5,
+    resizeMode: 'contain',
+  },
+  handleStyle: {
+    marginVertical: 15,
+    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 5,
+    width: 40,
+    borderRadius: 15,
+    backgroundColor: '#DADBDA',
   },
 });

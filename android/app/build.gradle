@@ -87,6 +87,9 @@ project.ext.react = [
 	bundleInRelease: true,
 	root: "../../",
 ]
+project.ext.vectoricons = [
+    iconFontNames: [ 'MaterialIcons.ttf', 'FontAwesome.ttf', 'MaterialCommunityIcons.ttf', 'Ionicons.ttf'] // Name of the font files you want to copy
+]
 
 apply from: "../../node_modules/react-native/react.gradle"
 
@@ -152,13 +155,13 @@ packagingOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-
+    
     defaultConfig {
         applicationId "com.townscup"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "1.0.02"
+        versionName "1.0.05"
         multiDexEnabled true
         flavorDimensions "default"
         vectorDrawables.useSupportLibrary = true
@@ -308,3 +311,4 @@ task copyDownloadableDepsToLibs(type: Copy) {
 }
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
+apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"

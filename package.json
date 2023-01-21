@@ -7,6 +7,7 @@
     "ios": "react-native run-ios",
     "ios:rebuild": "cd ios && pod deintegrate && pod cache clean --all && pod update && cd .. && npm run bundle:ios",
     "ios:dev": "react-native run-ios --scheme 'TownsCup (Development)' --simulator='iPhone 14'",
+    "ios:qa": "react-native run-ios --scheme 'TownsCup (QA)' --simulator='iPhone 14'",
     "start": "react-native start",
     "restart": "react-native start -- --reset-cache",
     "test": "jest --forceExit",
@@ -20,7 +21,8 @@
     "bundle:ios": "react-native bundle --entry-file index.js --platform ios --dev false --bundle-output ios/main.jsbundle --assets-dest ios",
     "prepare": "husky install",
     "android:release:qa": "cd android && ENVFILE=.env.qa ./gradlew app:assembleRelease",
-    "android:clean":"react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res/ && rm -rf ./android/app/src/main/res/drawable-* && rm -rf ./android/app/src/main/res/raw && cd android && ./gradlew clean"
+    "android:clean": "react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res/ && rm -rf ./android/app/src/main/res/drawable-* && rm -rf ./android/app/src/main/res/raw && cd android && ./gradlew clean",
+    "nodemodule:remove":"rm -rf node_modules package-lock.json"
   },
   "dependencies": {
     "@fawazahmed/react-native-read-more": "^2.3.6",
@@ -41,6 +43,7 @@
     "@react-native-firebase/app": "^14.12.0",
     "@react-native-firebase/auth": "^14.12.0",
     "@react-native-firebase/crashlytics": "^14.12.0",
+    "@react-native-firebase/messaging": "^14.12.0",
     "@react-navigation/bottom-tabs": "^6.3.1",
     "@react-navigation/drawer": "^6.4.1",
     "@react-navigation/native": "^6.0.10",

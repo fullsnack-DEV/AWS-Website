@@ -93,6 +93,9 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
       ],
     );
     setMemberInfo(route.params.memberInfo);
+    console.log('====================================');
+    console.log(route.params.memberInfo);
+    console.log('====================================');
     getAuthEntity();
   }, []);
 

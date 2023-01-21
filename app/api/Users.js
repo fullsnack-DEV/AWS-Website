@@ -1,5 +1,7 @@
+/* eslint-disable import/no-unresolved */
 /* eslint-disable import/no-cycle */
 import Config from 'react-native-config';
+import messaging from '@react-native-firebase/messaging';
 
 import makeAPIRequest from '../utils/Global';
 import makeAPIWithoutAuthRequest from '../utils/GlobleWithoutAuth';
@@ -68,11 +70,22 @@ export const updateUserProfile = (params, authContext) =>
     authContext,
   });
 
-// export const getUserList = (authContext) => makeAPIRequest({
-//   method: 'get',
-//   url: `${Config.BASE_URL}/users`,
-//   authContext,
-// })
+export const updateFBToken = async (authContext) => {
+  // Register the device with FCM
+  await messaging().registerDeviceForRemoteMessages();
+  // Get the token
+  const token = await messaging().getToken();
+  if (token) {
+    updateUserProfile({fcm_id: token}, authContext);
+  }
+};
+
+export const removeFBToken = (authContext) =>
+  makeAPIRequest({
+    method: 'delete',
+    url: `${Config.BASE_URL}/users/fbtoken`,
+    authContext,
+  });
 
 export const sendInvitationInGroup = (params, authContext) =>
   makeAPIRequest({

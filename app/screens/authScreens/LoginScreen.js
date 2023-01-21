@@ -43,7 +43,7 @@ import TCTextField from '../../components/TCTextField';
 import {QBconnectAndSubscribe, QBlogin} from '../../utils/QuickBlox';
 import {eventDefaultColorsData} from '../../Constants/LoaderImages';
 import apiCall from '../../utils/apiCall';
-import {getAppSettingsWithoutAuth} from '../../api/Users';
+import {getAppSettingsWithoutAuth, updateFBToken} from '../../api/Users';
 import {getHitSlop} from '../../utils/index';
 
 const LoginScreen = ({navigation}) => {
@@ -144,6 +144,7 @@ const LoginScreen = ({navigation}) => {
 
                 await Utility.setStorage('appSetting', response.payload.app);
                 await authContext.setEntity({...entity});
+                updateFBToken(dummyAuthContext);
               })
               .catch((e) => {
                 setTimeout(() => {

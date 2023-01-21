@@ -1,9 +1,11 @@
+/* eslint-disable import/no-unresolved */
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
 import NetInfo from '@react-native-community/netinfo';
 import {Alert, StatusBar} from 'react-native';
 import {decode, encode} from 'base-64';
 
 // import firebase from '@react-native-firebase/app';
+import messaging from '@react-native-firebase/messaging';
 import Orientation from 'react-native-orientation';
 import QB from 'quickblox-react-native-sdk';
 import AuthContext from './app/auth/context';
@@ -39,27 +41,16 @@ export default function App() {
   }, []);
 
   const [selectedLocation, setSelectedLoaction] = useState('');
-  // useEffect(() => {
-  //   axios({
-  //     method: 'get',
-  //     url: `${Config.BASE_URL}/app/settings`,
-  //     withCredentials: true,
-  //     headers: {
-  //       Accept: 'application/json',
-  //       setting_token: '3c5a5976-4831-41b3-a0cb-1aeb9d2e2c1c',
-  //     },
-  //   }).then((setting) => {
-  //     console.log('response:=>', setting);
-  //     setQBCredential(setting.data.payload.app)
-  //         QB.settings
-  //           .init({
-  //             appId: setting.data.payload.app.quickblox.appId,
-  //             authKey: setting.data.payload.app.quickblox.authKey,
-  //             authSecret: setting.data.payload.app.quickblox.authSecret,
-  //             accountKey: setting.data.payload.app.quickblox.accountKey,
-  //           })
-  //   });
-  // }, []);
+
+  async function requestUserPermission() {
+    const authStatus = await messaging().requestPermission();
+    const enabled =
+      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+    if (enabled) {
+      console.log('Authorization status:', authStatus);
+    }
+  }
 
   if (!global.btoa) {
     global.btoa = encode;
@@ -85,6 +76,8 @@ export default function App() {
     NetInfo.addEventListener((state) => {
       setNetworkConntected(state.isConnected);
     });
+
+    requestUserPermission();
 
     StatusBar.setBarStyle('dark-content');
     StatusBar.setBackgroundColor('white');

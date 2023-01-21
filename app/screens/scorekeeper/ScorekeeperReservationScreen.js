@@ -206,49 +206,7 @@ export default function ScorekeeperReservationScreen({navigation, route}) {
   }, []);
   const checkSenderOrReceiver = (reservationObj) => {
     const teampObj = {...reservationObj};
-    // if (
-    //   teampObj?.status === ScorekeeperReservationStatus.pendingpayment
-    //   || teampObj?.status === ScorekeeperReservationStatus.pendingrequestpayment
-    // ) {
-    //   if (teampObj?.updated_by) {
-    //     if (teampObj?.updated_by?.group_id) {
-    //       teampObj.requested_by = teampObj.updated_by.group_id;
-    //     } else {
-    //       teampObj.requested_by = teampObj.updated_by.uid;
-    //     }
-    //   } else if (teampObj?.created_by?.group_id) {
-    //     teampObj.requested_by = teampObj.created_by.group_id;
-    //   } else {
-    //     teampObj.requested_by = teampObj.created_by.uid;
-    //   }
-    // } else if (teampObj?.updated_by) {
-    //   if (teampObj?.updated_by?.group_id) {
-    //     if (
-    //       teampObj?.automatic_request
-    //       && teampObj?.status === ScorekeeperReservationStatus.changeRequest
-    //       && entity.obj.entity_type === 'team'
-    //     ) {
-    //       teampObj.requested_by = teampObj.initiated_by;
-    //     } else {
-    //       teampObj.requested_by = teampObj.updated_by.group_id;
-    //     }
-    //   } else if (
-    //     teampObj?.automatic_request
-    //     && teampObj?.status === ScorekeeperReservationStatus.changeRequest
-    //     && teampObj?.scorekeeper?.user_id !== entity.uid
-    //   ) {
-    //     teampObj.requested_by = teampObj.initiated_by;
-    //   } else {
-    //     teampObj.requested_by = teampObj.updated_by.uid;
-    //   }
-    // } else if (teampObj?.created_by?.group_id) {
-    //   teampObj.requested_by = teampObj.created_by.group_id;
-    // } else {
-    //   teampObj.requested_by = teampObj.created_by.uid;
-    // }
 
-    console.log('Temp Object::', teampObj);
-    console.log(`${teampObj?.requested_by}:::${entity.uid}`);
     if (teampObj?.requested_by === entity.uid) {
       return 'sender';
     }

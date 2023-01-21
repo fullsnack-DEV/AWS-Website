@@ -505,7 +505,6 @@ export default function MembersProfileScreen({navigation, route}) {
               {memberDetail?.note}
             </Text>
             <TCThickDivider marginTop={20} />
-
             <Text
               style={styles.removeTextStyle}
               onPress={() => {
@@ -549,6 +548,7 @@ export default function MembersProfileScreen({navigation, route}) {
                 : [strings.membershipAdminAuthText, strings.cancel]
             }
             cancelButtonIndex={1}
+            destructiveButtonIndex={1}
             onPress={(index) => {
               if (index === 0) {
                 navigation.navigate('EditMemberAuthInfoScreen', {

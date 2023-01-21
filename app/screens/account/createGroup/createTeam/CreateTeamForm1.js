@@ -97,7 +97,7 @@ export default function CreateTeamForm1({navigation, route}) {
   }, [searchText]);
 
   const renderSports = ({item}) => (
-    <TouchableWithoutFeedback
+    <Pressable
       style={styles.listItem}
       onPress={() => {
         setSportsSelection(item);
@@ -125,6 +125,7 @@ export default function CreateTeamForm1({navigation, route}) {
       }}>
       <View
         style={{
+          width: '100%',
           padding: 20,
           alignItems: 'center',
           flexDirection: 'row',
@@ -144,7 +145,7 @@ export default function CreateTeamForm1({navigation, route}) {
           )}
         </View>
       </View>
-    </TouchableWithoutFeedback>
+    </Pressable>
   );
 
   const getSports = () => {
@@ -471,7 +472,7 @@ export default function CreateTeamForm1({navigation, route}) {
         style={{
           margin: 0,
         }}>
-        <KeyboardAvoidingView
+        <View
           behavior="position"
           style={{
             width: '100%',
@@ -529,7 +530,7 @@ export default function CreateTeamForm1({navigation, route}) {
             keyExtractor={(item, index) => index.toString()}
             renderItem={renderSports}
           />
-        </KeyboardAvoidingView>
+        </View>
       </Modal>
       <Modal
         isVisible={visibleLocationModal}

@@ -27,7 +27,6 @@ export default function ScorekeeperReservationTitle({
     {...reservationObject?.game?.away_team},
     {...reservationObject?.scorekeeper},
   ];
-  console.log('entityList:=>', entityList);
 
   const authContext = useContext(AuthContext);
   entity = authContext.entity;
@@ -453,7 +452,6 @@ export default function ScorekeeperReservationTitle({
       }
     }
 
-    console.log('Status obj::=>', statusObject);
     return statusObject;
   };
 
@@ -463,7 +461,6 @@ export default function ScorekeeperReservationTitle({
         o?.user_id === reservationObject?.initiated_by ||
         o?.group_id === reservationObject?.initiated_by,
     );
-    console.log('obj obj::=>', obj);
 
     if (obj[0]?.user_id) {
       return `${obj[0]?.full_name}`;
