@@ -347,13 +347,13 @@ PODS:
     - glog
   - react-native-blur (0.8.0):
     - React
-  - react-native-cameraroll (5.2.0):
+  - react-native-cameraroll (5.1.0):
     - React-Core
-  - react-native-config (1.4.11):
-    - react-native-config/App (= 1.4.11)
-  - react-native-config/App (1.4.11):
+  - react-native-config (1.4.6):
+    - react-native-config/App (= 1.4.6)
+  - react-native-config/App (1.4.6):
     - React-Core
-  - react-native-date-picker (4.2.6):
+  - react-native-date-picker (4.2.5):
     - React-Core
   - react-native-fbsdk (3.0.0):
     - React
@@ -387,18 +387,18 @@ PODS:
     - React-Core
   - react-native-photo-view-ex (1.1.0):
     - React
-  - react-native-safe-area-context (4.4.1):
+  - react-native-safe-area-context (4.3.3):
     - RCT-Folly
     - RCTRequired
     - RCTTypeSafety
     - React-Core
     - ReactCommon/turbomodule/core
-  - react-native-video (5.2.1):
+  - react-native-video (5.2.0):
     - React-Core
-    - react-native-video/Video (= 5.2.1)
-  - react-native-video/Video (5.2.1):
+    - react-native-video/Video (= 5.2.0)
+  - react-native-video/Video (5.2.0):
     - React-Core
-  - react-native-webview (11.26.0):
+  - react-native-webview (11.23.0):
     - React-Core
   - React-perflogger (0.68.1)
   - React-RCTActionSheet (0.68.1):
@@ -473,7 +473,7 @@ PODS:
     - React-Core
   - RNAppleAuthentication (2.2.2):
     - React-Core
-  - RNCAsyncStorage (1.17.11):
+  - RNCAsyncStorage (1.17.10):
     - React-Core
   - RNCClipboard (1.5.1):
     - React-Core
@@ -481,11 +481,11 @@ PODS:
     - React
   - RNCPicker (1.8.1):
     - React-Core
-  - RNDateTimePicker (6.7.1):
+  - RNDateTimePicker (6.3.2):
     - React-Core
   - RNDeviceInfo (8.7.1):
     - React-Core
-  - RNFastImage (8.6.3):
+  - RNFastImage (8.5.11):
     - React-Core
     - SDWebImage (~> 5.11.1)
     - SDWebImageWebPCoder (~> 0.8.4)
@@ -506,7 +506,7 @@ PODS:
     - RNFBApp
   - RNFS (2.20.0):
     - React-Core
-  - RNGestureHandler (2.8.0):
+  - RNGestureHandler (2.5.0):
     - React-Core
   - RNGoogleSignin (5.0.0):
     - GoogleSignIn (~> 5.0.0)
@@ -520,11 +520,11 @@ PODS:
     - React-Core
     - React-RCTImage
     - TOCropViewController
-  - RNLocalize (2.2.4):
+  - RNLocalize (2.2.3):
     - React-Core
   - RNPermissions (3.6.1):
     - React-Core
-  - RNReanimated (2.13.0):
+  - RNReanimated (2.12.0):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -551,12 +551,12 @@ PODS:
     - React-RCTText
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNScreens (3.18.2):
+  - RNScreens (3.16.0):
     - React-Core
     - React-RCTImage
-  - RNShare (7.9.1):
+  - RNShare (7.9.0):
     - React-Core
-  - RNSVG (12.5.0):
+  - RNSVG (12.4.4):
     - React-Core
   - RNTextGradientView (0.1.7):
     - React
@@ -681,7 +681,7 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - AppAuth
-    - FBSDKCoreKits
+    - FBSDKCoreKit
     - FBSDKLoginKit
     - FBSDKShareKit
     - Firebase
@@ -969,7 +969,7 @@ SPEC CHECKSUMS:
   RNFBCrashlytics: 94e1f78e2a9aa9e02edbfb0d3f1f0921ce00094b
   RNFBMessaging: 40dac204b4197a2661dec5be964780c6ec39bf65
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
-  RNGestureHandler: 62232ba8f562f7dea5ba1b3383494eb5bf97a4d3
+  RNGestureHandler: bad495418bcbd3ab47017a38d93d290ebd406f50
   RNGoogleSignin: ad866d4c4af2651e36801dd3b7771d7715353499
   RNImageCropPicker: 44e2807bc410741f35d4c45b6586aedfe3da39d2
   RNLocalize: a64514b46a01375fdfae9349036b4dc7130333b5
