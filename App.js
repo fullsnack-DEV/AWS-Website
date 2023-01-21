@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
 import NetInfo from '@react-native-community/netinfo';
 import {Alert, StatusBar} from 'react-native';
@@ -40,7 +41,7 @@ export default function App() {
   }, []);
 
   const [selectedLocation, setSelectedLoaction] = useState('');
-  
+
   async function requestUserPermission() {
     const authStatus = await messaging().requestPermission();
     const enabled =
@@ -50,7 +51,6 @@ export default function App() {
       console.log('Authorization status:', authStatus);
     }
   }
-
 
   if (!global.btoa) {
     global.btoa = encode;

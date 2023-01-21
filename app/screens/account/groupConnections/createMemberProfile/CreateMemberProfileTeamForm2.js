@@ -11,7 +11,6 @@ import {
   Text,
   Image,
   TouchableOpacity,
-  Alert,
   FlatList,
   TextInput,
   Dimensions,
@@ -37,6 +36,7 @@ import LocationView from '../../../../components/LocationView';
 import {
   getHitSlop,
   heightPercentageToDP,
+  showAlert,
   widthPercentageToDP,
 } from '../../../../utils';
 import {searchAddress, searchCityState} from '../../../../api/External';
@@ -123,7 +123,7 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
       !postalCode?.length ||
       !location?.length
     ) {
-      Alert.alert(strings.addressValidation);
+      showAlert(strings.addressValidation);
       return false;
     }
     return true;
@@ -133,32 +133,23 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
     createMemberProfile(entity.uid, params, authContext)
       .then((response) => {
         setloading(false);
-        if (response?.payload?.user_id && response?.payload?.group_id) {
+        if (response.payload.user_id && response.payload.group_id) {
           navigation.navigate('MembersProfileScreen', {
+            from: 'CreateMemberProfileTeamForm2',
             memberID: response.payload.user_id,
             whoSeeID: response.payload.group_id,
             groupID: authContext.entity.uid,
           });
 
           setTimeout(() => {
-            Alert.alert(
-              format(strings.profileCreated, authContext.entity.role),
-              '',
-              [
-                {
-                  text: strings.okTitleText,
-                  onPress: () => {},
-                },
-              ],
-              {cancelable: false},
-            );
+            showAlert(format(strings.profileCreated, authContext.entity.role));
           }, 10);
         }
       })
       .catch((e) => {
         setloading(false);
         setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
+          showAlert(e.message);
         }, 10);
       });
   };
@@ -196,7 +187,7 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
           .catch((e) => {
             setloading(false);
             setTimeout(() => {
-              Alert.alert(strings.alertmessagetitle, e.message);
+              showAlert(e.message);
             }, 10);
           });
       } else {
@@ -384,7 +375,10 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
           />
         )}
         <View>
-          <TCLable title={strings.jerseyNumberPlaceholder.toUpperCase()} />
+          <TCLable
+            title={strings.jerseyNumberPlaceholder.toUpperCase()}
+            style={{marginBottom: 12}}
+          />
           <TCTextField
             value={groupMemberDetail.jersey_number}
             onChangeText={(text) =>
@@ -489,7 +483,10 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
           </View>
         </View>
         <View>
-          <TCLable title={strings.writeNotesPlaceholder.toUpperCase()} />
+          <TCLable
+            title={strings.writeNotesPlaceholder.toUpperCase()}
+            style={{marginBottom: 12}}
+          />
           <TCTextField
             value={groupMemberDetail.note}
             height={100}
@@ -690,7 +687,7 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
               <TextInput
                 testID="choose-location-input"
                 style={styles.textInput}
-                placeholder={strings.locationPlaceholderText}
+                placeholder={strings.cityPlaceholderText}
                 clearButtonMode="always"
                 placeholderTextColor={colors.grayColor}
                 onChangeText={(text) => setSearchText(text)}

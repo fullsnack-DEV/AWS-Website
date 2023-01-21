@@ -17,7 +17,6 @@ import {
   Keyboard,
   Dimensions,
   Platform,
-  Alert,
 } from 'react-native';
 import Modal from 'react-native-modal';
 import {useIsFocused} from '@react-navigation/native';
@@ -39,6 +38,7 @@ import {
   getHitSlop,
   heightPercentageToDP,
   monthNames,
+  showAlert,
   widthPercentageToDP,
 } from '../../../../utils';
 import TCPhoneNumber from '../../../../components/TCPhoneNumber';
@@ -136,7 +136,7 @@ export default function CreateMemberProfileClubForm2({navigation, route}) {
       !postalCode?.length ||
       !location?.length
     ) {
-      Alert.alert(strings.addressValidation);
+      showAlert(strings.addressValidation);
       return false;
     }
     return true;
@@ -270,7 +270,6 @@ export default function CreateMemberProfileClubForm2({navigation, route}) {
       <View
         style={{
           flexDirection: 'row',
-          marginTop: 12,
           align: 'center',
           marginLeft: 15,
           marginRight: 15,
@@ -360,7 +359,7 @@ export default function CreateMemberProfileClubForm2({navigation, route}) {
       <View
         style={{
           flexDirection: 'row',
-          marginTop: 12,
+
           align: 'center',
           marginLeft: 15,
           marginRight: 15,
@@ -457,7 +456,10 @@ export default function CreateMemberProfileClubForm2({navigation, route}) {
       <TCFormProgress totalSteps={3} curruentStep={2} />
 
       <View>
-        <TCLabel title={strings.gender.toUpperCase()} />
+        <TCLabel
+          title={strings.gender.toUpperCase()}
+          style={{marginBottom: 12}}
+        />
         <TCPicker
           dataSource={DataSource.Gender}
           placeholder={strings.selectGenderPlaceholder}
@@ -468,7 +470,10 @@ export default function CreateMemberProfileClubForm2({navigation, route}) {
         />
       </View>
       <View>
-        <TCLabel title={strings.birthDatePlaceholder.toUpperCase()} />
+        <TCLabel
+          title={strings.birthDatePlaceholder.toUpperCase()}
+          style={{marginBottom: 12}}
+        />
 
         <TCTouchableLabel
           title={
@@ -489,7 +494,10 @@ export default function CreateMemberProfileClubForm2({navigation, route}) {
       {weightView()}
 
       <View>
-        <TCLabel title={strings.phone.toUpperCase()} />
+        <TCLabel
+          title={strings.phone.toUpperCase()}
+          style={{marginBottom: 12}}
+        />
         <FlatList
           data={phoneNumber}
           renderItem={renderPhoneNumber}

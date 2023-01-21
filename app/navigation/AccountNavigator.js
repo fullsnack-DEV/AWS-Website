@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {createStackNavigator} from '@react-navigation/stack';
+import { createStackNavigator } from '@react-navigation/stack';
 
 import HomeScreen from '../screens/home/HomeScreen';
 import GroupListScreen from '../screens/home/GroupListScreen';
@@ -12,7 +12,7 @@ import NotificationsListScreen from '../screens/notificationsScreen/Notification
 import colors from '../Constants/Colors';
 import WritePostScreen from '../screens/newsfeeds/WritePostScreen';
 import WriteCommentScreen from '../screens/newsfeeds/WriteCommentScreen';
-import {strings} from '../../Localization/translation';
+import { strings } from '../../Localization/translation';
 import UserAboutScreen from '../screens/home/user/UserAboutScreen';
 import UserBasicInfoScreen from '../screens/home/user/UserBasicInfoScreen';
 import GroupLongTextScreen from '../screens/home/GroupLongTextScreen';
@@ -285,7 +285,7 @@ const AccountNavigator = () => (
     <Stack.Screen
       name="AccountScreen"
       component={AccountScreen}
-      options={{headerShown: false}}
+      options={{ headerShown: false }}
     />
 
     <Stack.Screen
@@ -1514,7 +1514,7 @@ const AccountNavigator = () => (
     <Stack.Screen
       name="InvitationSentScreen"
       component={InvitationSentScreen}
-      options={{headerShown: false}}
+      options={{ headerShown: false }}
     />
     <Stack.Screen
       name="UserNotFoundScreen"
@@ -1684,7 +1684,7 @@ const AccountNavigator = () => (
       name="EditMemberBasicInfoScreen"
       component={EditMemberBasicInfoScreen}
       options={{
-        title: 'Edit Basic Info',
+        title: strings.editbasicinfotitle,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -1700,7 +1700,7 @@ const AccountNavigator = () => (
       name="RequestBasicInfoScreen"
       component={RequestBasicInfoScreen}
       options={{
-        title: 'Request Basic Info',
+        title: strings.requestBasicInfoTitle,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -2482,7 +2482,7 @@ const AccountNavigator = () => (
     <Stack.Screen
       name="ReservationNavigator"
       component={ReservationNavigator}
-      options={{headerShown: false}}
+      options={{ headerShown: false }}
     />
 
     <Stack.Screen
@@ -2864,7 +2864,7 @@ const AccountNavigator = () => (
     <Stack.Screen
       name={'FeedViewScreen'}
       component={FeedViewScreen}
-      options={{headerShown: false}}
+      options={{ headerShown: false }}
     />
     <Stack.Screen
       name="UserGalleryScreen"

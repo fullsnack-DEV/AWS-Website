@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 import React, {useState, useEffect, useContext, useLayoutEffect} from 'react';
 import {
   View,
@@ -211,20 +212,16 @@ export default function FollowTeams({route, navigation}) {
     if (data.first_name === '') {
       Alert.alert(strings.appName, strings.firstnamevalidation);
       returnValue = false;
-    }
-    else if (Utility.validatedName(data.first_name) === false) {
+    } else if (Utility.validatedName(data.first_name) === false) {
       Alert.alert(strings.appName, strings.fNameCanNotBlank);
       returnValue = false;
-    }
-    else if (data.last_name === '') {
+    } else if (data.last_name === '') {
       Alert.alert(strings.appName, strings.lastnamevalidation);
       returnValue = false;
-    }
-    else if (Utility.validatedName(data.last_name) === false) {
+    } else if (Utility.validatedName(data.last_name) === false) {
       Alert.alert(strings.appName, strings.lNameCanNotBlank);
       returnValue = false;
-    }
-    else if(!data.city || !data.country){
+    } else if (!data.city || !data.country) {
       Alert.alert(strings.appName, strings.homeCityNotOptional);
       returnValue = false;
     }
@@ -247,7 +244,7 @@ export default function FollowTeams({route, navigation}) {
       sports: signUpData.sports,
     };
 
-    if(validate(data)){
+    if (validate(data)) {
       if (signUpData?.profilePicData?.thumbnail) {
         data.thumbnail = signUpData.profilePicData?.thumbnail;
         data.full_image = signUpData.profilePicData?.full_image;
@@ -263,10 +260,9 @@ export default function FollowTeams({route, navigation}) {
       await messaging().registerDeviceForRemoteMessages();
       // Get the token
       const token = await messaging().getToken();
-      if(token){
-        data.fcm_id = token
+      if (token) {
+        data.fcm_id = token;
       }
-      
 
       await createUser(data, authContext)
         .then((createdUser) => {

@@ -26,18 +26,18 @@ const GroupMembership = ({
   let typeImage = '';
   const authContext = useContext(AuthContext);
 
-  if (groupData?.group?.entity_type === 'team') {
+  if (groupData.group?.entity_type === 'team') {
     const a = {
       ...groupData.group,
-      positions: groupData?.positions,
-      jersey_number: groupData?.jersey_number,
-      appearance: groupData?.appearance,
-      status: groupData?.status,
-      is_admin: groupData?.is_admin,
-      is_member: groupData?.is_member,
-      is_coach: groupData?.is_coach,
-      note: groupData?.note,
-      user_id: groupData?.user_id,
+      positions: groupData.positions,
+      jersey_number: groupData.jersey_number,
+      appearance: groupData.appearance,
+      status: groupData.status,
+      is_admin: groupData.is_admin,
+      is_member: groupData.is_member,
+      is_coach: groupData.is_coach,
+      note: groupData.note,
+      user_id: groupData.user_id,
     };
     groupData = a;
   }
@@ -85,7 +85,7 @@ const GroupMembership = ({
           </View>
         </View>
         {(edit || groupData.group_id === switchID) &&
-        authContext.entity.role === groupData?.entity_type ? (
+        authContext.entity.role === groupData.entity_type ? (
           <TouchableWithoutFeedback onPress={onEditPressed}>
             <Image source={images.editSection} style={styles.editImage} />
           </TouchableWithoutFeedback>
@@ -96,8 +96,8 @@ const GroupMembership = ({
           <TCInfoField
             title={'Position'}
             value={
-              groupData?.positions?.length && groupData?.positions[0] !== ''
-                ? groupData.positions.join(', ')
+              groupData.positions?.length && groupData.positions[0] !== {}
+                ? groupData.positions.toString()
                 : strings.NAText
             }
             marginLeft={25}

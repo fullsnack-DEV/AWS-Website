@@ -57,6 +57,7 @@ export default function MembersProfileScreen({navigation, route}) {
   const [editMembership, setEditMembership] = useState(false);
   const [memberDetail, setMemberDetail] = useState();
   const [switchUser, setSwitchUser] = useState({});
+  const [from] = useState(route?.params?.from);
   const [groupID] = useState(route?.params?.groupID);
   const [memberID] = useState(route?.params?.memberID);
   const [whoSeeID] = useState(route?.params?.whoSeeID);
@@ -69,11 +70,25 @@ export default function MembersProfileScreen({navigation, route}) {
           <TouchableWithoutFeedback
             onPress={() => actionSheet?.current?.show()}>
             <Image
-              source={images.horizontal3Dot}
+              source={images.vertical3Dot}
               style={styles.navigationRightItem}
             />
           </TouchableWithoutFeedback>
         ),
+      headerLeft: () => (
+        <TouchableWithoutFeedback
+          onPress={() => {
+            if (from === 'CreateMemberProfileTeamForm2') {
+              navigation.pop(3);
+            } else if (from === 'CreateMemberProfileClubForm3') {
+              navigation.pop(4);
+            } else {
+              navigation.goBack();
+            }
+          }}>
+          <Image source={images.backArrow} style={styles.backArrowStyle} />
+        </TouchableWithoutFeedback>
+      ),
     });
   }, [
     navigation,
@@ -85,6 +100,7 @@ export default function MembersProfileScreen({navigation, route}) {
     editProfile,
     loading,
     whoSeeID,
+    from,
   ]);
 
   useEffect(() => {
@@ -393,8 +409,8 @@ export default function MembersProfileScreen({navigation, route}) {
           )}
           <View>
             {/* <View style={styles.sectionEditView}>
-            <Text style={styles.basicInfoTitle}>Membership</Text>
-          </View> */}
+			  <Text style={styles.basicInfoTitle}>Membership</Text>
+			</View> */}
 
             <View style={styles.sectionEditView}>
               <Text style={styles.basicInfoTitle}>
@@ -489,31 +505,10 @@ export default function MembersProfileScreen({navigation, route}) {
             <Text style={styles.describeText} numberOfLines={50}>
               {memberDetail?.note}
             </Text>
-          </View>
-          <ActionSheet
-            ref={actionSheet}
-            // title={'News Feed Post'}
-            options={
-              switchUser.role === Verbs.entityTypeTeam
-                ? [
-                    strings.membershipAdminAuthText,
-                    strings.deleteMemberFromTeamText,
-                    strings.cancel,
-                  ]
-                : [
-                    strings.membershipAdminAuthText,
-                    strings.deleteMemberFromClubText,
-                    strings.cancel,
-                  ]
-            }
-            cancelButtonIndex={2}
-            destructiveButtonIndex={1}
-            onPress={(index) => {
-              if (index === 0) {
-                navigation.navigate('EditMemberAuthInfoScreen', {
-                  groupMemberDetail: memberDetail,
-                });
-              } else if (index === 1) {
+            <TCThickDivider marginTop={20} />
+            <Text
+              style={styles.removeTextStyle}
+              onPress={() => {
                 Alert.alert(
                   strings.alertmessagetitle,
                   format(
@@ -540,6 +535,25 @@ export default function MembersProfileScreen({navigation, route}) {
                   ],
                   {cancelable: false},
                 );
+              }}>
+              {strings.removeMemberFromGroup.toUpperCase()}
+            </Text>
+          </View>
+          <ActionSheet
+            ref={actionSheet}
+            // title={'News Feed Post'}
+            options={
+              switchUser.role === Verbs.entityTypeTeam
+                ? [strings.membershipAdminAuthText, strings.cancel]
+                : [strings.membershipAdminAuthText, strings.cancel]
+            }
+            cancelButtonIndex={1}
+            destructiveButtonIndex={1}
+            onPress={(index) => {
+              if (index === 0) {
+                navigation.navigate('EditMemberAuthInfoScreen', {
+                  groupMemberDetail: memberDetail,
+                });
               }
             }}
           />
@@ -555,6 +569,12 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     tintColor: colors.blackColor,
     width: 15,
+  },
+  backArrowStyle: {
+    height: 20,
+    marginLeft: 15,
+    resizeMode: 'contain',
+    tintColor: colors.blackColor,
   },
   roleView: {
     flexDirection: 'row',
@@ -627,5 +647,13 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
     fontSize: 14,
     color: colors.lightBlackColor,
+  },
+  removeTextStyle: {
+    fontSize: 14,
+    fontFamily: fonts.RMedium,
+    color: colors.darkThemeColor,
+    textDecorationLine: 'underline',
+    textAlign: 'center',
+    margin: 15,
   },
 });

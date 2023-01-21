@@ -681,7 +681,7 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - AppAuth
-    - FBSDKCoreKit
+    - FBSDKCoreKits
     - FBSDKLoginKit
     - FBSDKShareKit
     - Firebase
@@ -925,9 +925,9 @@ SPEC CHECKSUMS:
   React-jsinspector: 218a2503198ff28a085f8e16622a8d8f507c8019
   React-logger: f79dd3cc0f9b44f5611c6c7862badd891a862cf8
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
-  react-native-cameraroll: 0ff04cc4e0ff5f19a94ff4313e5c8bc4503cd86d
-  react-native-config: bcafda5b4c51491ee1b0e1d0c4e3905bc7b56c1b
-  react-native-date-picker: 93e43b3084cea595b4d68b1405d6d99849663bd6
+  react-native-cameraroll: a40b082318eb1ecd0336a2f29d9f74b7f2c8cae8
+  react-native-config: 7cd105e71d903104e8919261480858940a6b9c0e
+  react-native-date-picker: 55193347d8d0f40948f441ffd4e5db6f0a8fbe13
   react-native-fbsdk: 8e92c7a334fd8d9c2b5d8b8fcd7ae2c314161099
   react-native-geolocation: 69f4fd37650b8e7fee91816d395e62dd16f5ab8d
   react-native-get-random-values: a6ea6a8a65dc93e96e24a11105b1a9c8cfe1d72a
@@ -938,9 +938,9 @@ SPEC CHECKSUMS:
   react-native-orientation: f1caf84d65f1a4fd4511a18f2b924e634ad7a628
   react-native-pager-view: da490aa1f902c9a5aeecf0909cc975ad0e92e53e
   react-native-photo-view-ex: 201dddcbe44fe531b824eae5e1b99b1f494c0588
-  react-native-safe-area-context: 99b24a0c5acd0d5dcac2b1a7f18c49ea317be99a
-  react-native-video: c26780b224543c62d5e1b2a7244a5cd1b50e8253
-  react-native-webview: 994b9f8fbb504d6314dc40d83f94f27c6831b3bf
+  react-native-safe-area-context: b456e1c40ec86f5593d58b275bd0e9603169daca
+  react-native-video: a4c2635d0802f983594b7057e1bce8f442f0ad28
+  react-native-webview: e771bc375f789ebfa02a26939a57dbc6fa897336
   React-perflogger: 30ab8d6db10e175626069e742eead3ebe8f24fd5
   React-RCTActionSheet: 4b45da334a175b24dabe75f856b98fed3dfd6201
   React-RCTAnimation: d6237386cb04500889877845b3e9e9291146bc2e
@@ -957,13 +957,13 @@ SPEC CHECKSUMS:
   ReactNativeLocalization: 076497d7ca70341c751cd3b3e7c86187332a182d
   rn-fetch-blob: f065bb7ab7fb48dd002629f8bdcb0336602d3cba
   RNAppleAuthentication: 0571c08da8c327ae2afc0261b48b4a515b0286a6
-  RNCAsyncStorage: 8616bd5a58af409453ea4e1b246521bb76578d60
+  RNCAsyncStorage: 0c357f3156fcb16c8589ede67cc036330b6698ca
   RNCClipboard: 41d8d918092ae8e676f18adada19104fa3e68495
   RNCMaskedView: 0e1bc4bfa8365eba5fbbb71e07fbdc0555249489
   RNCPicker: 914b557e20b3b8317b084aca9ff4b4edb95f61e4
-  RNDateTimePicker: 0530a73a6f3a1a85814cbde0802736993b9e675e
+  RNDateTimePicker: 4f1fc917f5af9d9ae4c5fc0c63a4474d61338693
   RNDeviceInfo: aad3c663b25752a52bf8fce93f2354001dd185aa
-  RNFastImage: 5c9c9fed9c076e521b3f509fe79e790418a544e8
+  RNFastImage: 1f2cab428712a4baaf78d6169eaec7f622556dd7
   RNFBApp: e4439717c23252458da2b41b81b4b475c86f90c4
   RNFBAuth: 50ac123123b27241927e639c0ac9c8af17f05aa1
   RNFBCrashlytics: 94e1f78e2a9aa9e02edbfb0d3f1f0921ce00094b
@@ -972,12 +972,12 @@ SPEC CHECKSUMS:
   RNGestureHandler: 62232ba8f562f7dea5ba1b3383494eb5bf97a4d3
   RNGoogleSignin: ad866d4c4af2651e36801dd3b7771d7715353499
   RNImageCropPicker: 44e2807bc410741f35d4c45b6586aedfe3da39d2
-  RNLocalize: 0df7970cfc60389f00eb62fd7c097dc75af3fb4f
+  RNLocalize: a64514b46a01375fdfae9349036b4dc7130333b5
   RNPermissions: dcdb7b99796bbeda6975a6e79ad519c41b251b1c
-  RNReanimated: b21b362b4b8ca921932e8b1718e88cf3a36f157e
-  RNScreens: 34cc502acf1b916c582c60003dc3089fa01dc66d
-  RNShare: a5dc3b9c53ddc73e155b8cd9a94c70c91913c43c
-  RNSVG: 6adc5c52d2488a476248413064b7f2832e639057
+  RNReanimated: 0ff5e7f619a7524d237848ecb4c47650c4946f71
+  RNScreens: ee31ecdf23fe81e93c74feaa086cf173d758ab58
+  RNShare: be91a5c149585affb02c25b351bd07ba927c7006
+  RNSVG: ecd661f380a07ba690c9c5929c475a44f432d674
   RNTextGradientView: 3eb4744303f801546fad35ac47a53cc82257cb25
   RNVectorIcons: fcc2f6cb32f5735b586e66d14103a74ce6ad61f8
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
