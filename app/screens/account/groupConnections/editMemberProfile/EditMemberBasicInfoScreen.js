@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 
 import RNPickerSelect from 'react-native-picker-select';
+
 import {
   widthPercentageToDP,
   widthPercentageToDP as wp,
@@ -88,6 +89,9 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
       ],
     );
     setMemberInfo(route.params.memberInfo);
+    console.log('====================================');
+    console.log(route.params.memberInfo);
+    console.log('====================================');
     getAuthEntity();
   }, []);
 
@@ -145,7 +149,7 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
               // }
             }
           }}>
-          Done
+          {strings.done}
         </Text>
       ),
     });
@@ -288,10 +292,10 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
           marginRight: 15,
           justifyContent: 'space-between',
         }}>
-        <View style={{...styles.halfMatchFeeView, shadowStyle}}>
+        <View style={{...styles.halfMatchFeeView, ...shadowStyle}}>
           <TextInput
             placeholder={strings.height}
-            style={{...styles.halffeeText, ...shadowStyle}}
+            style={{...styles.halffeeText}}
             keyboardType={'decimal-pad'}
             onChangeText={(text) => {
               setMemberInfo({
@@ -371,7 +375,7 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
         <View style={{...styles.halfMatchFeeView, ...shadowStyle}}>
           <TextInput
             placeholder={strings.weight}
-            style={{...styles.halffeeText, ...shadowStyle}}
+            style={{...styles.halffeeText}}
             keyboardType={'decimal-pad'}
             onChangeText={(text) => {
               setMemberInfo({
@@ -442,12 +446,11 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
     const membersIds = [];
     membersIds.push(memberInfo.user_id);
     sendBasicInfoRequest(entity.uid, membersIds, authContext)
-      .then((response) => {
+      .then(() => {
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, strings.requestSentText);
         }, 10);
-        console.log('sendBasicInfoRequest', response);
       })
       .catch((e) => {
         setloading(false);

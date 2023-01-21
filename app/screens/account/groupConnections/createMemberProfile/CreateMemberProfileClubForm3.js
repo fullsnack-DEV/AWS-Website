@@ -5,10 +5,10 @@ import {
   Text,
   Image,
   ScrollView,
-  Alert,
   TouchableOpacity,
 } from 'react-native';
 
+import {format} from 'react-string-format';
 import {createMemberProfile} from '../../../../api/Groups';
 import uploadImages from '../../../../utils/imageAction';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
@@ -20,6 +20,7 @@ import TCTextField from '../../../../components/TCTextField';
 import AuthContext from '../../../../auth/context';
 import TCFormProgress from '../../../../components/TCFormProgress';
 import TCLabel from '../../../../components/TCLabel';
+import {showAlert} from '../../../../utils';
 
 let entity = {};
 export default function CreateMemberProfileClubForm3({navigation, route}) {
@@ -91,13 +92,12 @@ export default function CreateMemberProfileClubForm3({navigation, route}) {
             note,
           };
 
-          console.log('BODY PARAMS:', bodyParams);
           createProfile(bodyParams);
         })
         .catch((e) => {
           setloading(false);
           setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
+            showAlert(e.message);
           }, 10);
         });
     } else {
@@ -108,7 +108,6 @@ export default function CreateMemberProfileClubForm3({navigation, route}) {
         note,
         is_invite: joinTCCheck,
       };
-      console.log('BODY PARAMS11:', bodyParams);
 
       createProfile(bodyParams);
     }
@@ -119,27 +118,23 @@ export default function CreateMemberProfileClubForm3({navigation, route}) {
         setloading(false);
         console.log('Response :', response.payload);
 
-        if (
-          response.payload.canConnect === true &&
-          response.payload.connected === false
-        ) {
-          const title = strings.connectMemberProfile;
-          navigation.navigate('MemberProfileCreatedScreen', {
-            memberObj: response.payload,
-            buttonTitle: title,
+        if (response?.payload?.user_id && response?.payload?.group_id) {
+          navigation.navigate('MembersProfileScreen', {
+            from: 'CreateMemberProfileClubForm3',
+            memberID: response.payload.user_id,
+            whoSeeID: response.payload.group_id,
+            groupID: authContext.entity.uid,
           });
-        } else {
-          const title = strings.sendInvite;
-          navigation.navigate('MemberProfileCreatedScreen', {
-            memberObj: response.payload,
-            buttonTitle: title,
-          });
+
+          setTimeout(() => {
+            showAlert(format(strings.profileCreated, authContext.entity.role));
+          }, 10);
         }
       })
       .catch((e) => {
         setloading(false);
         setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
+          showAlert(e.message);
         }, 10);
       });
   };
