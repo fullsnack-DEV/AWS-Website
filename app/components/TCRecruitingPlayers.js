@@ -33,8 +33,8 @@ const TCRecruitingPlayers = ({data, entityType, selectedSport, onPress}) => {
       );
       if (filterdData.length > 0) {
         sportText = `${getSportName(filterdData[0], authContext)}`;
-        gameFee = filterdData?.[0]?.setting?.game_fee?.fee;
-        currency = filterdData?.[0].setting?.game_fee?.currency_type;
+        gameFee = filterdData[0].setting?.game_fee?.fee;
+        currency = filterdData[0].setting?.game_fee?.currency_type;
       }
     } else {
       const filterdData = (data?.registered_sports || []).filter(

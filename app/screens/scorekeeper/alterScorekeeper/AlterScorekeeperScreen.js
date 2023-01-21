@@ -1020,6 +1020,7 @@ export default function AlterScorekeeperScreen({navigation, route}) {
                 hitSlop={getHitSlop(15)}
                 onPress={() =>
                   navigation.navigate('EditScorekeeperFeeScreen', {
+                    comeFrom: 'AlterScorekeeperScreen',
                     editableAlter: true,
                     body: bodyParams,
                   })

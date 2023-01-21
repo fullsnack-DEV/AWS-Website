@@ -1359,3 +1359,17 @@ export const whoCanDataSourceGroup = [
     value: 3,
   },
 ];
+
+export const userSettingOption = {
+  AccountInfo: 1,
+  Profile:2,
+  BasicInfo: 3,
+  SportActivities:4,
+  Team: 5,
+  Club:6,
+  Event: 7,
+  TimeZone: 8,
+  AppLanguage: 9,
+  DeactivateAccount:10,
+  TerminateAccount:11
+}

@@ -14,6 +14,7 @@ export default function RefereesProfileSection({
   isAdmin,
   sport_name,
   feesCount,
+  currencyType,
   profileImage,
   userName,
   location,
@@ -78,7 +79,7 @@ export default function RefereesProfileSection({
               }}>
               <Text style={styles.challengeButtonTitle}>
                 {isReferee ? 'Book Referee' : 'Book Scorekeeper'}
-                <Text>{` $${feesCount} CAD / hour`}</Text>
+                <Text>{` $${feesCount} ${currencyType} / hour`}</Text>
               </Text>
             </View>
           </LinearGradient>

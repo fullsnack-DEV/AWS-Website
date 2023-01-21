@@ -14,14 +14,12 @@ import {
   Keyboard,
   Platform,
   Linking,
-  Pressable,
-  KeyboardAvoidingView,
+  Pressable
 } from 'react-native';
 
 import {useIsFocused} from '@react-navigation/native';
 
 import Modal from 'react-native-modal';
-import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import {searchCityState, searchNearByCityState} from '../../../../api/External';
 
 import {
@@ -542,11 +540,11 @@ export default function CreateTeamForm1({navigation, route}) {
         backdropTransitionOutTiming={800}
         style={{
           margin: 0,
-        }}>
-        <KeyboardAvoidingView
+        }}>          
+        <View
           behavior="height"
           enabled={false}
-          style={[locationModelStyles.mainView, {flex: 1}]}>
+          style={locationModelStyles.mainView}>
           <View style={locationModelStyles.headerView}>
             <TouchableOpacity onPress={() => {}}></TouchableOpacity>
             <Text style={locationModelStyles.headerText}>
@@ -589,30 +587,19 @@ export default function CreateTeamForm1({navigation, route}) {
               nearbyCities.length >= 0 &&
               cityData.length === 0 && (
                 <FlatList
-                  style={{marginTop: 25}}
+                  style={[locationModelStyles.nearbycitiesflatlist,{marginTop:25}]}
                   data={nearbyCities}
                   renderItem={renderCurrentLocationItem}
                   ListHeaderComponent={renderCurrentLocation}
                   keyExtractor={(index) => index.toString()}
-                />
-              )}
-            {noData &&
-              searchText.length === 0 &&
-              nearbyCities.length >= 0 &&
-              cityData.length === 0 && (
-                <FlatList
-                  style={{marginTop: 25}}
-                  data={nearbyCities}
-                  renderItem={renderCurrentLocationItem}
-                  ListHeaderComponent={renderCurrentLocation}
-                  keyExtractor={(index) => index.toString()}
+                  onScroll={Keyboard.dismiss}
                 />
               )}
             {noData &&
               searchText.length === 0 &&
               locationFetch &&
               !currentLocation && (
-                <TouchableWithoutFeedback
+                <Pressable
                   style={styles.noLocationViewStyle}
                   onPress={() => onSelectNoCurrentLocation()}>
                   <View>
@@ -628,19 +615,19 @@ export default function CreateTeamForm1({navigation, route}) {
                     ]}>
                     {strings.noLocationText}
                   </Text>
-                </TouchableWithoutFeedback>
+                </Pressable>
               )}
             {cityData.length > 0 && (
               <FlatList
                 style={{marginTop: 10}}
-                data={cityData.filter((obj) => obj.terms.length === 3)}
+                data={cityData}
                 renderItem={renderLocationItem}
                 keyExtractor={(item, index) => index.toString()}
                 onScroll={Keyboard.dismiss}
               />
             )}
           </View>
-        </KeyboardAvoidingView>
+        </View>
       </Modal>
     </>
   );
@@ -649,9 +636,10 @@ export default function CreateTeamForm1({navigation, route}) {
 const locationModelStyles = StyleSheet.create({
   mainView: {
     width: '100%',
+    flex:1,
     height: Dimensions.get('window').height - 50,
     backgroundColor: 'white',
-    position: 'absolute',
+    marginTop:50,
     bottom: 0,
     left: 0,
     borderTopLeftRadius: 30,
@@ -763,4 +751,11 @@ const locationModelStyles = StyleSheet.create({
     textAlign: 'left',
     fontFamily: fonts.RRegular,
   },
+  nearbycitiesflatlist:{
+    ...Platform.select({
+      ios: {
+        height: Dimensions.get('window').height - 225
+      },
+    }),
+  }
 });

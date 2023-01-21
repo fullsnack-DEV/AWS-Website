@@ -274,8 +274,7 @@ function ReservationStatusView({data, onClick}) {
         </View>
       </TouchableOpacity>
       <View style={styles.amountView}>
-        <Text style={styles.amountText}>${data.total_game_fee ?? 0} CAD</Text>
-        {/* <Text style={styles.cancelAmountText}>$35 CAD</Text> */}
+        <Text style={styles.amountText}>${data.total_game_fee ?? 0} {data.currency_type ?? ''}</Text>
       </View>
     </View>
   );

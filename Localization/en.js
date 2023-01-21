@@ -2164,4 +2164,5 @@ export default {
   basicInfoRequestText:
     'en_{0} wants to collect your basic info. You may choose the sections you want to send or edit each section befor you send the information.',
   requestBasicInfoTitle: 'en_Request Basic Info',
+  reservations:'en_Reservations',
 };

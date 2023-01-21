@@ -3,7 +3,6 @@ import React, {
   useLayoutEffect,
   useState,
   useEffect,
-  useCallback,
 } from 'react';
 import {
   StyleSheet,
@@ -17,7 +16,6 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
-import firebase from '@react-native-firebase/app';
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import {useIsFocused} from '@react-navigation/native';
 
@@ -28,6 +26,7 @@ import images from '../../../Constants/ImagePath';
 import Header from '../../../components/Home/Header';
 import {strings} from '../../../../Localization/translation';
 import Verbs from '../../../Constants/Verbs';
+import { userSettingOption } from '../../../utils/constant';
 
 export default function UserSettingPrivacyScreen({navigation}) {
   const authContext = useContext(AuthContext);
@@ -35,7 +34,20 @@ export default function UserSettingPrivacyScreen({navigation}) {
 
   const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
   const [pointEvent, setPointEvent] = useState('auto');
-  const [userSetting, setUserSetting] = useState();
+  const userSetting = [
+    {key: strings.accountInfo, id: userSettingOption.AccountInfo},
+    {key: strings.profileText, id: userSettingOption.Profile},
+    {key: strings.basicInfoText, id: userSettingOption.BasicInfo},
+    {key: strings.sportActivityText, id: userSettingOption.SportActivities},
+    {key: strings.team, id: userSettingOption.Team},
+    {key: strings.club, id: userSettingOption.Club},
+    {key: strings.event, id: userSettingOption.Event},
+    {key: strings.timezoneText, id: userSettingOption.TimeZone},
+    {key: strings.appLanguage, id: userSettingOption.AppLanguage},
+    {key: strings.deactivateAccountText, id: userSettingOption.DeactivateAccount},
+    {key: strings.terminateAccountText, id: userSettingOption.TerminateAccount},
+  ];
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: false,
@@ -64,98 +76,31 @@ export default function UserSettingPrivacyScreen({navigation}) {
     pointEvent,
   ]);
 
-  const getUserSettingMenu = useCallback(() => {
-    checkUserIsRegistratedOrNotWithFirebase(authContext.entity.obj.email)
-      .then(async (providerData) => {
-        if ((providerData || []).includes('password')) {
-          setUserSetting([
-            {key: strings.accountInfo, id: 1},
-            {key: strings.profileText, id: 2},
-            {key: strings.basicInfoText, id: 3},
-            {key: strings.sportActivityText, id: 4},
-            {key: strings.team, id: 5},
-            {key: strings.club, id: 6},
-            {key: strings.event, id: 7},
-            {key: strings.timezoneText, id: 8},
-            {key: strings.appLanguage, id: 12},
-            {key: strings.currencyText, id: 9},
-            // {key: 'Change Password', id: 7},
-            {key: strings.deactivateAccountText, id: 10},
-            {key: strings.terminateAccountText, id: 11},
-            // {key: strings.privacySettingText,id:3}
-          ]);
-        } else {
-          setUserSetting([
-            {key: strings.accountInfo, id: 1},
-            {key: strings.profileText, id: 2},
-            {key: strings.basicInfoText, id: 3},
-            {key: strings.sportActivityText, id: 4},
-            {key: strings.team, id: 5},
-            {key: strings.club, id: 6},
-            {key: strings.event, id: 7},
-            {key: strings.timezoneText, id: 8},
-            {key: strings.appLanguage, id: 10},
-            {key: strings.currencyText, id: 9},
 
-            // {key: strings.privacySettingText,id:3}
-          ]);
-        }
-      })
-      .catch(async (error) => {
-        console.log(error);
-      });
-  }, [authContext.entity.obj.email]);
-
-  useEffect(() => {
-    getUserSettingMenu();
-  }, [getUserSettingMenu]);
-
-  const checkUserIsRegistratedOrNotWithFirebase = (email) =>
-    new Promise((resolve, reject) => {
-      firebase
-        .auth()
-        .fetchSignInMethodsForEmail(email)
-        .then((isAccountThereInFirebase) => {
-          if (isAccountThereInFirebase?.length > 0) {
-            resolve(isAccountThereInFirebase);
-          } else {
-            resolve(false);
-          }
-        })
-        .catch((error) => {
-          reject(error);
-          console.log(error);
-        });
-    });
-
-  const handleOpetions = async (opetions) => {
-    if (opetions === strings.accountInfo) {
+  const handleOptions = async (options) => {
+    if (options === strings.accountInfo) {
       navigation.navigate('AccountInfoScreen');
-    } else if (opetions === strings.profileText) {
+    } else if (options === strings.profileText) {
       navigation.navigate('PersonalInformationScreen');
-    } else if (opetions === strings.basicInfoText) {
+    } else if (options === strings.basicInfoText) {
       navigation.navigate('BasicInfoScreen');
-    } else if (opetions === strings.sportActivityText) {
+    } else if (options === strings.sportActivityText) {
       navigation.navigate('SportActivityScreen');
-    } else if (opetions === strings.currencyText) {
-      navigation.navigate('CurrencySettingScreen');
-    } else if (opetions === strings.appLanguage) {
+    } else if (options === strings.appLanguage) {
       navigation.navigate('LanguageSettingScreen');
-    } else if (opetions === strings.privacySettingText) {
-      // groupOpetionActionSheet.show();
-    } else if (opetions === strings.deactivateAccountText) {
+    } else if (options === strings.deactivateAccountText) {
       navigation.navigate('DeactivateAccountScreen');
-    } else if (opetions === strings.terminateAccountText) {
+    } else if (options === strings.terminateAccountText) {
       navigation.navigate('TerminateAccountScreen');
-    } else if (opetions === strings.team) {
+    } else if (options === strings.team) {
       navigation.navigate('GroupInviteSettingPrivacyScreen', {
         type: Verbs.entityTypeTeam,
       });
-    } else if (opetions === strings.club) {
+    } else if (options === strings.club) {
       navigation.navigate('GroupInviteSettingPrivacyScreen', {
         type: Verbs.entityTypeClub,
       });
-    } else if (opetions === strings.event) {
+    } else if (options === strings.event) {
       navigation.navigate('UserEventSettingPrivacyScreen');
     }
   };
@@ -164,7 +109,7 @@ export default function UserSettingPrivacyScreen({navigation}) {
     <TouchableWithoutFeedback
       style={styles.listContainer}
       onPress={() => {
-        handleOpetions(item.key);
+        handleOptions(item.key);
       }}>
       <View
         style={{

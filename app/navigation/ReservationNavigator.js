@@ -44,6 +44,7 @@ import ScorekeeperApprovalScreen from '../screens/scorekeeper/ScorekeeperApprova
 import ScorekeeperSelectMatch from '../screens/game/bookScorekeeper/selectMatch/ScorekeeperSelectMatch';
 import PendingRequestScreen from '../screens/notificationsScreen/PendingRequestScreen';
 import TrashScreen from '../screens/notificationsScreen/TrashScreen';
+import { strings } from '../../Localization/translation';
 
 const Stack = createStackNavigator();
 
@@ -60,7 +61,7 @@ const ReservationNavigator = () => (
       name="ReservationScreen"
       component={ReservationScreen}
       options={{
-        title: 'Reservations',
+        title: strings.reservations,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -277,7 +278,7 @@ const ReservationNavigator = () => (
       name="EditRefereeFeeScreen"
       component={EditRefereeFeeScreen}
       options={{
-        title: 'Referee Fee',
+        title: strings.refereeFee,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

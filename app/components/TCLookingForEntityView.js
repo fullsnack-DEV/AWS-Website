@@ -4,6 +4,7 @@ import {View, Text, TouchableOpacity, StyleSheet, Image} from 'react-native';
 import images from '../Constants/ImagePath';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
+import { strings } from '../../Localization/translation';
 
 function TCLookingForEntityView({onPress, showStar = false, data, sport}) {
   let sportObj = data?.registered_sports?.filter(
@@ -41,8 +42,9 @@ function TCLookingForEntityView({onPress, showStar = false, data, sport}) {
           {showStar && (
             <Text style={styles.starPoints} numberOfLines={1}>
               ★ 5.0{' '}
-              {sportObj?.length === 1 && sportObj?.[0]?.setting
-                ? ` · ${sportObj?.[0]?.setting?.game_fee?.fee} CAD`
+              {sportObj?.length === 1 && sportObj[0].setting
+                ? ` · ${sportObj[0].setting.game_fee?.fee} ${sportObj[0].setting.game_fee?.currency_type ??
+                  strings.defaultCurrency}`
                 : ''}
             </Text>
           )}

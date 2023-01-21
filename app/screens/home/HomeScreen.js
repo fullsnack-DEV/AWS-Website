@@ -3231,8 +3231,8 @@ const HomeScreen = ({navigation, route}) => {
                       <Text style={styles.challengeButtonTitle}>
                         {strings.challenge}
                         {settingObject?.game_fee?.fee && (
-                          <Text>{` $${settingObject?.game_fee?.fee} ${
-                            currentUserData?.currency_type ??
+                          <Text>{` $${settingObject.game_fee.fee} ${
+                            settingObject.game_fee.currency_type ??
                             strings.defaultCurrency
                           } ${strings.perMatch}`}</Text>
                         )}
@@ -4417,6 +4417,9 @@ const HomeScreen = ({navigation, route}) => {
                       ? refereeSettingObject?.game_fee?.fee
                       : 0
                   }
+                  currencyType={
+                    refereeSettingObject?.game_fee?.currency_type ?? strings.defaultCurrency
+                  }
                   onBookRefereePress={() => {
                     if (
                       refereeSettingObject?.referee_availibility &&
@@ -4950,6 +4953,9 @@ const HomeScreen = ({navigation, route}) => {
                     scorekeeperSettingObject?.game_fee
                       ? scorekeeperSettingObject?.game_fee?.fee
                       : 0
+                  }
+                  currencyType={
+                    scorekeeperSettingObject?.game_fee?.currency_type ?? strings.defaultCurrency
                   }
                   onBookRefereePress={() => {
                     if (
