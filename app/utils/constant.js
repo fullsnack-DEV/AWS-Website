@@ -21,6 +21,16 @@ export const invoiceMonthsSelectionData = [
   {label: 'For past 12 Months', value: 'For past 12 Months'},
 ];
 
+export const heightMesurement = [
+  {label: 'cm', value: 'cm'},
+  {label: 'ft', value: 'ft'},
+];
+
+export const weightMesurement = [
+  {label: 'kg', value: 'kg'},
+  {label: 'pound', value: 'pound'},
+];
+
 export const localize_language = [
   {name: 'English', code: 'en'},
   {name: 'Korean', code: 'ko'},

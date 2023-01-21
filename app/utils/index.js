@@ -1344,11 +1344,14 @@ export const getOS = () => {
   return 'android';
 };
 
-export const showAlert = (message) => {
+export const showAlert = (
+  message,
+  onOkPress = () => console.log('OK Pressed'),
+) => {
   Alert.alert(
     strings.titleBasic,
     message,
-    [{text: strings.okTitleText, onPress: () => console.log('OK Pressed')}],
+    [{text: strings.okTitleText, onPress: onOkPress}],
     {cancelable: false},
   );
 };

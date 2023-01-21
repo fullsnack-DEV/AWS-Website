@@ -474,7 +474,6 @@ export default function MembersProfileScreen({navigation, route}) {
                   switchID={entity.uid}
                   edit={editTeam}
                   onEditPressed={() => {
-                    console.log(item);
                     navigation.navigate('EditMemberTeamInfoScreen', {
                       groupMemberDetail: item,
                     });
@@ -525,7 +524,8 @@ export default function MembersProfileScreen({navigation, route}) {
                       style: 'cancel',
                     },
                     {
-                      text: strings.okTitleText,
+                      text: strings.removeTextTitle,
+                      style: 'destructive',
                       onPress: () =>
                         deleteMemberProfile(
                           switchUser.uid,

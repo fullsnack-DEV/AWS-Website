@@ -4,7 +4,6 @@ import {
   View,
   StyleSheet,
   FlatList,
-  Alert,
   SafeAreaView,
   ScrollView,
 } from 'react-native';
@@ -37,7 +36,7 @@ export default function InviteMembersByEmailScreen({navigation}) {
       };
       setEmail([...email, obj]);
     } else {
-      Alert.alert(strings.alertmessagetitle, strings.youCanNotAddMoreEmailText);
+      Utility.showAlert(strings.youCanNotAddMoreEmailText);
     }
   };
 
@@ -65,9 +64,9 @@ export default function InviteMembersByEmailScreen({navigation}) {
       .map((e) => email[e].email);
 
     if (invalidEmails.length > 0) {
-      Alert.alert(strings.validEmailMessage);
+      Utility.showAlert(strings.validEmailMessage);
     } else if (duplicateIds.length > 0) {
-      Alert.alert(strings.doNotEnterSameEmail);
+      Utility.showAlert(strings.doNotEnterSameEmail);
     } else {
       setloading(true);
       const emails = email.map((i) => i.email);
@@ -92,7 +91,7 @@ export default function InviteMembersByEmailScreen({navigation}) {
           setloading(false);
 
           setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
+            Utility.showAlert(e.message);
           }, 10);
         });
     }

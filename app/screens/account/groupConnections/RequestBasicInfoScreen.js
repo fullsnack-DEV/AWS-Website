@@ -42,26 +42,14 @@ import {
   getHitSlop,
   heightPercentageToDP,
   widthPercentageToDP,
+  getJSDate,
 } from '../../../utils';
 import {searchAddress, searchCityState} from '../../../api/External';
+import {monthNames} from '../../../utils/constant';
 
 let entity = {};
 
 export default function RequestBasicInfoScreen({navigation, route}) {
-  const monthNames = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-  ];
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
 
@@ -84,7 +72,6 @@ export default function RequestBasicInfoScreen({navigation, route}) {
       country_code: '',
     },
   ]);
-  console.log('memberInfo11', memberInfo);
 
   const [location, setLocation] = useState(
     memberInfo?.city
@@ -101,9 +88,6 @@ export default function RequestBasicInfoScreen({navigation, route}) {
     // setDateValue(mindate);
     setMinDateValue(mindate);
     setMaxDateValue(maxdate);
-
-    console.log('Min date', mindate);
-    console.log('Max date', maxdate);
   }, []);
 
   useEffect(() => {
@@ -149,7 +133,6 @@ export default function RequestBasicInfoScreen({navigation, route}) {
 
   useEffect(() => {
     searchAddress(searchText).then((response) => {
-      console.log('search address:=>', response);
       setLocationData(response.results);
     });
   }, [searchText]);
@@ -168,7 +151,6 @@ export default function RequestBasicInfoScreen({navigation, route}) {
       authContext,
     )
       .then((response) => {
-        console.log('PROFILE RESPONSE11::', response.payload);
         setMemberInfo(response?.payload);
         setSetting({
           gender: !!response?.payload?.gender,
@@ -269,7 +251,6 @@ export default function RequestBasicInfoScreen({navigation, route}) {
         (obj) =>
           ![null, undefined, ''].includes(obj.phone_number && obj.country_code),
       );
-      console.log('filteredNumber', filteredNumber);
       if (filteredNumber?.length <= 0) {
         Alert.alert('Towns Cup', 'Please fill all phone number parameter.');
         return false;
@@ -640,7 +621,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
             title={
               memberInfo?.birthday &&
               `${`${
-                monthNames[new Date(memberInfo?.birthday * 1000).getMonth()]
+                monthNames[getJSDate(memberInfo?.birthday).getMonth()]
               } ${new Date(
                 memberInfo?.birthday * 1000,
               ).getDate()}`}, ${new Date(

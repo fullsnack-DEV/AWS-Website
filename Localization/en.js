@@ -20,7 +20,7 @@ export default {
   teamsIn: 'en_teams in',
   quitText: 'en_Quit',
   orText: 'en_OR',
-  emailPlaceHolder: 'en_Email',
+  emailPlaceHolder: 'en_Email Address',
   allDay: 'en_All day',
   all: 'en_All',
   starts: 'en_Start',
@@ -435,7 +435,7 @@ export default {
   enterAboutPlaceholder: 'en_Enter Your About',
 
   inviteEmailText:
-    'en_Please enter the e-mail account of the person that you want to invite to the {0}.',
+    'en_Please enter the email address of the person that you want to invite to join TownsCup.',
   inviteSearchText: 'en_Who do you want to invite to your {0}?',
   inviteEventText: 'en_Who do you want to invite to the event?',
 
@@ -1090,6 +1090,7 @@ export default {
   timezoneTitleText: 'en_Time zone',
   areYouSureRemoveFilterText: 'en_Are you sure want to reset filters?',
   okTitleText: 'en_OK',
+  removeTextTitle: 'en_Remove',
   OkText: 'en_Ok',
   filter: 'en_Filter',
   resetTitleText: 'en_Reset',
@@ -1136,7 +1137,8 @@ export default {
   minMaxText_dy: 'en_Min {0} Max {1}',
   playerTitleText_dy: 'en_Player {0}',
   adminText_dy: 'en_{0} Admin',
-  doYouWantToRemoText_dy: 'en_Do you want to remove {0} {1} from {2}?',
+  doYouWantToRemoText_dy:
+    'en_Are you sure you want to remove {0} {1} from {2}?',
   profileHasBeenCreatedText: 'en_{0}’s profile has been created in your {1}.',
 
   requestDeclinedText: 'en_This request is already declined.',
@@ -1214,7 +1216,7 @@ export default {
   inviteOrConnectAccountText: 'en_Invite or Connect to an Account',
   requestForBasicInfoWereSentText:
     'en_Requests for basic info were sent to {0} members.',
-  membershipAdminAuthText: 'en_Membership & Admin Authority',
+  membershipAdminAuthText: 'en_Edit Admin Privilige ',
   deleteMemberFromTeamText: 'en_Delete Member from Team',
   deleteMemberFromClubText: 'en_Delete Member from Club',
   whoCanSeeMembersText: 'en_Who can see members in {0} connections?',
@@ -2141,14 +2143,14 @@ export default {
   unabletofecthgps: 'en_Unable to fetch current location',
   userdeniedgps: 'en_GPS Location is denied by user',
   inviteByEmail: 'en_Invite By Email',
-  copyInviteUrl: 'en_Copy Invitation URL',
+  copyInviteUrl: 'en_Copy Invitation URL to TownsCup',
   doNotEnterSameEmail:
     'en_Please do not enter the same email address mutiple times.',
   homeCity: 'en_Home City',
   sentEmailInvitation:
     'en_Send this user an invitation email to join TownsCup.',
   emailExistInTC:
-    'en_This email address has been registered for a user account. You can invite the user instead of creating the profile.',
+    'en_This email address has been registered with a user account. You can invite the user instead of creating a new profile.',
   emailNotes:
     'en_The member profile created with this email address will be merged with the user account with the same email address when the user joins the team.',
   notesPlaceholder: 'en_Write any additional notes here.',
@@ -2156,4 +2158,10 @@ export default {
   searchForAddress: 'en_Search for Address',
   addressValidation: 'en_Please fill address field',
   profileCreated: 'en_The member profile has been created in your {0}.',
+
+  multipleRequestSent: 'en_Requests for basic info were sent to {0} members.',
+  removeMemberFromGroup: 'en_Remove this member from team',
+  basicInfoRequestText:
+    'en_{0} wants to collect your basic info. You may choose the sections you want to send or edit each section befor you send the information.',
+  requestBasicInfoTitle: 'en_Request Basic Info',
 };
