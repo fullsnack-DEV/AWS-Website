@@ -51,16 +51,15 @@ const GroupMembership = ({
     <>
       <View style={styles.topViewContainer}>
         <View style={{flexDirection: 'row'}}>
-          <View style={styles.profileView}>
-            <Image
-              source={
-                groupData.thumbnail
-                  ? {uri: groupData.thumbnail}
-                  : images.profilePlaceHolder
-              }
-              style={styles.profileImage}
-            />
-          </View>
+          <Image
+            source={
+              groupData.thumbnail
+                ? {uri: groupData.thumbnail}
+                : images.profilePlaceHolder
+            }
+            style={styles.profileImage}
+          />
+
           <View style={styles.topTextContainer}>
             <View style={{flexDirection: 'row', alignItems: 'center'}}>
               <Text style={styles.nameText} numberOfLines={5}>
@@ -132,14 +131,6 @@ const GroupMembership = ({
   );
 };
 const styles = StyleSheet.create({
-  // familyView: {
-  //   flexDirection: 'row',
-  //   justifyContent: 'space-between',
-  //   marginTop: 10,
-  //   marginLeft: 20,
-  //   marginRight: 20,
-  //   alignItems: 'center',
-  // },
   profileImage: {
     alignSelf: 'center',
     height: 40,
@@ -155,31 +146,12 @@ const styles = StyleSheet.create({
     marginRight: 20,
     justifyContent: 'space-between',
   },
-  profileView: {
-    backgroundColor: colors.whiteColor,
-    height: 44,
-    width: 44,
-    borderRadius: 22,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: colors.grayColor,
-    shadowOffset: {width: 0, height: 3},
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
-    elevation: 3,
-  },
+
   topTextContainer: {
     marginLeft: 10,
     alignSelf: 'center',
   },
-  // groupDescriptionText: {
-  //   marginTop: 10,
-  //   marginLeft: 20,
-  //   marginRight: 20,
-  //   fontSize: 16,
-  //   color: colors.lightBlackColor,
-  //   fontFamily: fonts.RRegular,
-  // },
+
   editImage: {
     alignSelf: 'center',
     height: 18,

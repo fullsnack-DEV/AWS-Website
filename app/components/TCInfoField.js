@@ -38,6 +38,7 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     fontFamily: fonts.RLight,
     flex: 0.3,
+    marginRight: 15,
     // paddingTop: 4,
   },
   fieldValue: {
@@ -45,5 +46,6 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     fontFamily: fonts.RRegular,
     flex: 0.65,
+    marginLeft: 15,
   },
 });

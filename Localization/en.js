@@ -195,7 +195,7 @@ export default {
   playerTitle: 'en_Players',
   player1Title: 'en_Player 1',
   player2Title: 'en_Player 2',
-  searchHereText: 'en_Search here',
+  searchHereText: 'en_Search',
   searchText: 'en_Search',
   genderTitle: "en_Choose player's gender.",
   curruencyType: 'en_Currency Type',
@@ -1084,6 +1084,7 @@ export default {
   photosTitleText: 'en_Photos',
   gameIDNotExitsTitle: 'en_Game ID does not exist.',
   homeCityTitleText: 'en_Home City',
+  cityStateCountryTitle: 'en_City, State & Country',
   selectSportTitleText: 'en_Select Sport',
   toText: 'en_To',
   fromText: 'en_From',
@@ -1191,7 +1192,7 @@ export default {
 
   selectOneMemberText: 'en_Please select one member for connect with profile.',
 
-  inviteBySearchText: 'en_Invite By Search',
+  inviteBySearchText: 'en_Invite Member',
   inviteEmailtext: 'en_Invite by E-mail',
 
   groupMessageText: 'en_Group Message',

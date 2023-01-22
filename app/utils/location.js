@@ -5,7 +5,10 @@ import {
   checkMultiple,
 } from 'react-native-permissions';
 import Geolocation from '@react-native-community/geolocation';
-import {getLocationNameWithLatLong, searchLocationPlaceDetail} from '../api/External';
+import {
+  getLocationNameWithLatLong,
+  searchLocationPlaceDetail,
+} from '../api/External';
 import {strings} from '../../Localization/translation';
 import Verbs from '../Constants/Verbs';
 
@@ -30,16 +33,22 @@ const checkPermAndGetGeoCoordinates = async (platform) => {
     return getGeocoordinates();
   }
 
-  if (availablePermissions[permKeys[0]] === RESULTS.BLOCKED && availablePermissions[permKeys[1]] === RESULTS.BLOCKED) {
-    const err = new Error(strings.userdeniedgps)
-    err.name = Verbs.gpsErrorDeined
-    throw err
+  if (
+    availablePermissions[permKeys[0]] === RESULTS.BLOCKED &&
+    availablePermissions[permKeys[1]] === RESULTS.BLOCKED
+  ) {
+    const err = new Error(strings.userdeniedgps);
+    err.name = Verbs.gpsErrorDeined;
+    throw err;
   }
 
-  if (availablePermissions[permKeys[0]] === RESULTS.UNAVAILABLE && availablePermissions[permKeys[1]] === RESULTS.UNAVAILABLE) {
-    const err = new Error(strings.userdeniedgps)
-    err.name = Verbs.gpsErrorDeined
-    throw err
+  if (
+    availablePermissions[permKeys[0]] === RESULTS.UNAVAILABLE &&
+    availablePermissions[permKeys[1]] === RESULTS.UNAVAILABLE
+  ) {
+    const err = new Error(strings.userdeniedgps);
+    err.name = Verbs.gpsErrorDeined;
+    throw err;
   }
 
   if (availablePermissions[permKeys[0]] === RESULTS.DENIED) {
@@ -48,22 +57,19 @@ const checkPermAndGetGeoCoordinates = async (platform) => {
       return getGeocoordinates();
     }
     /* eslint-disable no-else-return */
-    else{
-      const err = new Error(strings.userdeniedgps)
-      err.name = Verbs.gpsErrorDeined
-      throw err
-    }
+    const err = new Error(strings.userdeniedgps);
+    err.name = Verbs.gpsErrorDeined;
+    throw err;
   } else if (availablePermissions[permKeys[1]] === RESULTS.DENIED) {
     // Denied but still requestable
     if ((await request(permKeys[1])) === RESULTS.GRANTED) {
       // get geo location
       return getGeocoordinates();
-    }
-    /* no-else-return */
-    else{
-      const err = new Error(strings.userdeniedgps)
-      err.name = Verbs.gpsErrorDeined
-      throw err
+    } else {
+      /* no-else-return */
+      const err = new Error(strings.userdeniedgps);
+      err.name = Verbs.gpsErrorDeined;
+      throw err;
     }
   }
   return null;
@@ -88,16 +94,15 @@ const getGeocoordinates = () =>
 const getGeocoordinatesWithPlaceName = async (platform) => {
   const location = {};
   const result = await checkPermAndGetGeoCoordinates(platform);
-  if(result.message){
+  if (result.message) {
     // this is error case
-    if(result.code === 2 && result.PERMISSION_DENIED === 1){
-      const err = new Error(strings.userdeniedgps)
-      err.name = Verbs.gpsErrorDeined
-      throw err
+    if (result.code === 2 && result.PERMISSION_DENIED === 1) {
+      const err = new Error(strings.userdeniedgps);
+      err.name = Verbs.gpsErrorDeined;
+      throw err;
     }
-  }
-  else{
-    location.position = result
+  } else {
+    location.position = result;
   }
 
   // fail safe
@@ -126,18 +131,17 @@ const getGeocoordinatesWithPlaceName = async (platform) => {
 const getGeocoordinatesWithoutPlaceName = async (platform) => {
   const location = {};
   const result = await checkPermAndGetGeoCoordinates(platform);
-  if(result.message){
+  if (result.message) {
     // this is error case
-    if(result.code === 2 && result.PERMISSION_DENIED === 1){
-      const err = new Error(strings.userdeniedgps)
-      err.name = Verbs.gpsErrorDeined
-      throw err
+    if (result.code === 2 && result.PERMISSION_DENIED === 1) {
+      const err = new Error(strings.userdeniedgps);
+      err.name = Verbs.gpsErrorDeined;
+      throw err;
     }
+  } else {
+    location.position = result;
   }
-  else{
-    location.position = result
-  }
-  
+
   return location;
 };
 
@@ -146,25 +150,34 @@ const getPlaceNameFromPlaceID = async (placeID) => {
   // fail safe
   try {
     const locationDetails = await searchLocationPlaceDetail(placeID);
+    console.log('====================================');
+    console.log(locationDetails);
+    console.log('====================================');
     // eslint-disable-next-line array-callback-return
     locationDetails.result.address_components.map((e) => {
       if (e.types.includes('administrative_area_level_1')) {
-        location.state = e.short_name;        
+        location.state = e.short_name;
       } else if (e.types.includes('locality')) {
-        location.city = e.short_name;
+        location.city = e.long_name;
       } else if (e.types.includes('country')) {
         location.country = e.long_name;
+      } else if (e.types.includes('postal_code')) {
+        location.postalCode = e.long_name;
       }
     });
-    if(location.state === location.city){
-      delete location.state
+    if (location.state === location.city) {
+      delete location.state;
     }
-
     location.formattedAddress = locationDetails.result.formatted_address;
+    location.address = locationDetails.result.name;
   } catch (error) {
     // do nothing
   }
   return location;
 };
 
-export {getGeocoordinatesWithPlaceName, getGeocoordinatesWithoutPlaceName, getPlaceNameFromPlaceID};
+export {
+  getGeocoordinatesWithPlaceName,
+  getGeocoordinatesWithoutPlaceName,
+  getPlaceNameFromPlaceID,
+};
