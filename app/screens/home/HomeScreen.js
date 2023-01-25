@@ -504,7 +504,6 @@ const HomeScreen = ({navigation, route}) => {
 
     getUserDetails(uid, authContext)
       .then((res1) => {
-        console.log('dsffasdfasdfadfsa', res1);
         const userDetails = res1.payload;
         if (!userDetails.games) {
           userDetails.games = [];
@@ -531,7 +530,6 @@ const HomeScreen = ({navigation, route}) => {
           // userDetails.referee_data.push({ sport_name: strings.addRefereeing, item_type: 'add_new' })
         }
 
-        console.log('sdfsadfsafsadfsdfsfsadfres1.payload', res1.payload);
         const groupQuery = {
           query: {
             terms: {
@@ -568,7 +566,6 @@ const HomeScreen = ({navigation, route}) => {
         });
       })
       .catch((errResponse) => {
-        console.log('error==>', errResponse);
         setFirstTimeLoading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, errResponse);
@@ -581,9 +578,17 @@ const HomeScreen = ({navigation, route}) => {
     () => (
       <Header
         showBackgroundColor={true}
-        mainContainerStyle={{paddingBottom: 0}}
+        mainContainerStyle={{
+          paddingBottom: 0,
+        }}
         leftComponent={
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              // width: 270,
+              width: width - 100,
+            }}>
             {route?.params?.backButtonVisible === true && (
               <TouchableOpacity
                 onPress={() => {
@@ -611,18 +616,13 @@ const HomeScreen = ({navigation, route}) => {
                 />
               </TouchableOpacity>
             )}
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'flex-start',
-                alignItems: 'flex-start',
-              }}>
-              <Text numberOfLines={1} style={styles.userNavigationTextStyle}>
-                {currentUserData?.full_name || currentUserData?.group_name}
-              </Text>
-            </View>
+            <Text numberOfLines={1} style={styles.userNavigationTextStyle}>
+              {currentUserData?.full_name || currentUserData?.group_name}
+            </Text>
+            <Image source={images.path} style={styles.downArrowImage} />
           </View>
         }
+        leftContainerStyle={{flex: 1}}
         centerComponent={<View></View>}
         rightComponent={
           <View>
@@ -750,7 +750,6 @@ const HomeScreen = ({navigation, route}) => {
       }
       Promise.all(promises)
         .then(([res1, res2, res3]) => {
-          console.log('Group details api res:=>', res1);
           const groupDetails = {...res1.payload};
           setCurrentUserData(res1.payload);
 
@@ -2839,50 +2838,51 @@ const HomeScreen = ({navigation, route}) => {
     return (
       <View style={{marginLeft: 10, marginRight: 10}}>
         <View style={styles.bgImageStyle}>
-          {currentUserData.entity_type !== Verbs.entityTypeClub && !hideScore && (
-            <ImageBackground
-              source={images.profileLevel}
-              style={{
-                height: 58,
-                width: 93,
-                resizeMode: 'contain',
-                alignItems: 'center',
-                justifyContent: 'center',
-                alignSelf: 'flex-start',
-              }}>
-              <View
+          {currentUserData.entity_type !== Verbs.entityTypeClub &&
+            !hideScore && (
+              <ImageBackground
+                source={images.profileLevel}
                 style={{
-                  flexDirection: 'row',
+                  height: 58,
+                  width: 93,
+                  resizeMode: 'contain',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  marginBottom: 8,
+                  alignSelf: 'flex-start',
                 }}>
-                <FastImage
-                  source={images.tc_message_top_icon}
-                  resizeMode={'contain'}
-                  style={{height: 35, width: 35}}
-                />
-                <View style={{flexDirection: 'column', alignItems: 'center'}}>
-                  <Text
-                    style={{
-                      fontFamily: fonts.RBold,
-                      fontSize: 16,
-                      color: colors.lightBlackColor,
-                    }}>
-                    {currentUserData?.point ?? 0}
-                  </Text>
-                  <Text
-                    style={{
-                      fontFamily: fonts.RMedium,
-                      fontSize: 10,
-                      color: colors.lightBlackColor,
-                    }}>
-                    {strings.points}
-                  </Text>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: 8,
+                  }}>
+                  <FastImage
+                    source={images.tc_message_top_icon}
+                    resizeMode={'contain'}
+                    style={{height: 35, width: 35}}
+                  />
+                  <View style={{flexDirection: 'column', alignItems: 'center'}}>
+                    <Text
+                      style={{
+                        fontFamily: fonts.RBold,
+                        fontSize: 16,
+                        color: colors.lightBlackColor,
+                      }}>
+                      {currentUserData?.point ?? 0}
+                    </Text>
+                    <Text
+                      style={{
+                        fontFamily: fonts.RMedium,
+                        fontSize: 10,
+                        color: colors.lightBlackColor,
+                      }}>
+                      {strings.points}
+                    </Text>
+                  </View>
                 </View>
-              </View>
-            </ImageBackground>
-          )}
+              </ImageBackground>
+            )}
         </View>
       </View>
     );
@@ -3258,7 +3258,7 @@ const HomeScreen = ({navigation, route}) => {
       <View
         style={{
           margin: 15,
-          marginTop: 0,
+          marginTop: 25,
           marginBottom: 0,
         }}>
         {challengeButton()}
@@ -3269,6 +3269,7 @@ const HomeScreen = ({navigation, route}) => {
                 fontSize: 20,
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
+                alignItems: 'center',
               }}>
               {strings.postsTitleText}
             </Text>
@@ -3280,7 +3281,11 @@ const HomeScreen = ({navigation, route}) => {
               }}>
               <TCProfileButton
                 title={strings.galleryTitle}
-                style={{marginRight: 15, alignItems: 'center'}}
+                style={{
+                  marginRight: 15,
+                  alignItems: 'center',
+                  backgroundColor: colors.grayBackgroundColor,
+                }}
                 showArrow={false}
                 textStyle={styles.buttonTextStyle}
                 onPressProfile={() => {
@@ -3294,17 +3299,13 @@ const HomeScreen = ({navigation, route}) => {
                   });
                 }}
               />
-              {/* <TCProfileButton
-                title={strings.scoreboard}
-                style={styles.firstButtonStyle}
+              <TCProfileButton
+                title={strings.event}
                 showArrow={false}
                 textStyle={styles.buttonTextStyle}
-                onPressProfile={() => {
-                  navigation.navigate('UserScoreboardScreen', {
-                    uid: route?.params?.uid ?? authContext.entity?.uid,
-                  });
-                }}
-              /> */}
+                style={{backgroundColor: colors.grayBackgroundColor}}
+                onPressProfile={() => {}}
+              />
             </View>
             <TCThinDivider width={'100%'} />
           </View>
@@ -3522,6 +3523,7 @@ const HomeScreen = ({navigation, route}) => {
     <>
       {!isUserHome && renderBackground()}
       {renderMainHeaderComponent}
+      <TCThinDivider width={'100%'} />
       {renderMainFlatList}
       {renderHomeMainTabContain}
     </>
@@ -6354,13 +6356,10 @@ const styles = StyleSheet.create({
     marginRight: 20,
   },
   userNavigationTextStyle: {
-    width: width - 100,
-    fontSize: 22,
+    // width: width - 100,
+    fontSize: 18,
     fontFamily: fonts.RBold,
     textAlign: 'left',
-    marginRight: 10,
-    // paddingLeft:15
-    // backgroundColor: colors.redColor,
   },
 
   closeButton: {
@@ -6422,6 +6421,20 @@ const styles = StyleSheet.create({
     width: 30,
     resizeMode: 'contain',
     marginRight: 10,
+  },
+  downArrowImage: {
+    width: 10,
+    height: 20,
+    resizeMode: 'contain',
+    tintColor: colors.lightBlackColor,
+    alignSelf: 'center',
+    alignItems: 'center',
+    marginLeft: 11,
+    marginTop: 2,
+  },
+  buttonTextStyle: {
+    fontFamily: fonts.RBold,
+    fontSize: 14,
   },
 });
 

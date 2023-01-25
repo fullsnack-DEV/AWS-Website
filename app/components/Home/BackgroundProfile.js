@@ -14,7 +14,7 @@ export default function BackgroundProfile({
   currentUserData,
   onConnectionButtonPress,
   imageSize = 50,
-  placeHolderSize = 60
+  placeHolderSize = 60,
 }) {
   const authContext = useContext(AuthContext);
   const [entityData, setEntityData] = useState(null);
@@ -41,29 +41,36 @@ export default function BackgroundProfile({
     <View style={{width: wp('100%'), margin: 0}}>
       <View style={{backgroundColor: colors.whiteColor}}>
         <View style={{width: '100%'}}>
-        <View style={entityData?.profileImage ?  styles.profileImageContainer : styles.profilePlaceHolderContainer} >
-          <Animated.Image
-            style={entityData?.profileImage ? {
-              ...styles.profileImageStyle,
-              height: imageSize,
-              width: imageSize,
-            }:
-          {
-            width: placeHolderSize,
-            height: placeHolderSize
-          }
-          }
-            source={
+          <View
+            style={
               entityData?.profileImage
-                ? {uri: entityData?.profileImage}
-                : (entityData?.entity_type === 'team' &&
-                    images.teamPlaceholder) ||
-                  (entityData?.entity_type === 'club' &&
-                    images.clubPlaceholder) ||
-                  (entityData?.entity_type === 'user' &&
-                    images.profilePlaceHolder)
-            }
-          />
+                ? styles.profileImageContainer
+                : styles.profilePlaceHolderContainer
+            }>
+            <Animated.Image
+              style={
+                entityData?.profileImage
+                  ? {
+                      ...styles.profileImageStyle,
+                      height: imageSize,
+                      width: imageSize,
+                    }
+                  : {
+                      width: placeHolderSize,
+                      height: placeHolderSize,
+                    }
+              }
+              source={
+                entityData?.profileImage
+                  ? {uri: entityData?.profileImage}
+                  : (entityData?.entity_type === 'team' &&
+                      images.teamPlaceholder) ||
+                    (entityData?.entity_type === 'club' &&
+                      images.clubPlaceholder) ||
+                    (entityData?.entity_type === 'user' &&
+                      images.profilePlaceHolder)
+              }
+            />
           </View>
           <View style={styles.statusViewStyle}>
             {currentUserData.following_count !== undefined && (
