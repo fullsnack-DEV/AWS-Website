@@ -2,7 +2,6 @@ import React, {useState, useEffect} from 'react';
 import {StyleSheet, View, Text, TextInput, Alert} from 'react-native';
 
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
-import {useIsFocused} from '@react-navigation/native';
 import colors from '../../../Constants/Colors';
 import {strings} from '../../../../Localization/translation';
 import TCGradientButton from '../../../components/TCGradientButton';
@@ -10,24 +9,21 @@ import TCLabel from '../../../components/TCLabel';
 
 let bodyParams = {};
 export default function EditRefereeFeeScreen({navigation, route}) {
-  // eslint-disable-next-line no-unused-vars
-  const isFocused = useIsFocused();
-  const [basicFee, setBasicFee] = useState(0);
-  const [comeFrom] = useState(route?.params?.comeFrom);
+  const [basicFee, setBasicFee] = useState(route.params.body.total_game_fee);
+  const [comeFrom] = useState(route.params.comeFrom);
 
   useEffect(() => {
     if (
-      route &&
-      route.params &&
       route.params.editableAlter &&
       route.params.body
     ) {
       bodyParams = {
         ...route.params.body,
       };
-      setBasicFee(route.params.body.total_game_charges);
+      setBasicFee(route.params.body.total_game_fee)
     }
   }, [route]);
+
   return (
     <View style={styles.mainContainer}>
       <TCLabel title={strings.refereeFee} />
@@ -44,7 +40,7 @@ export default function EditRefereeFeeScreen({navigation, route}) {
           }}
           value={basicFee}
           keyboardType={'decimal-pad'}></TextInput>
-        <Text style={styles.curruency}>{strings.CAD}</Text>
+        <Text style={styles.curruency}>{route.params.body.currency_type}</Text>
       </View>
       <TCGradientButton
         title={strings.doneTitle}

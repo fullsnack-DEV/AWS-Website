@@ -73,8 +73,8 @@ export default function ManageChallengeScreen({navigation, route}) {
     {key: strings.refereesTitle, id: 9},
     {key: strings.scorekeeperTitle, id: 10},
   ];
-  const handleOpetions = async (opetions) => {
-    if (opetions === strings.availability) {
+  const handleOptions = async (options) => {
+    if (options === strings.availability) {
       if (settingObject) {
         navigation.navigate('Availibility', {
           settingObj: settingObject,
@@ -90,7 +90,7 @@ export default function ManageChallengeScreen({navigation, route}) {
           sportType,
         });
       }
-    } else if (opetions === strings.gameType) {
+    } else if (options === strings.gameType) {
       if (settingObject) {
         navigation.navigate('GameType', {
           settingObj: settingObject,
@@ -105,7 +105,7 @@ export default function ManageChallengeScreen({navigation, route}) {
           sportType,
         });
       }
-    } else if (opetions === strings.gameFee) {
+    } else if (options === strings.gameFee) {
       if (settingObject) {
         navigation.navigate('GameFee', {
           settingObj: settingObject,
@@ -120,7 +120,7 @@ export default function ManageChallengeScreen({navigation, route}) {
           sportType,
         });
       }
-    } else if (opetions === strings.refundPolicy) {
+    } else if (options === strings.refundPolicy) {
       if (settingObject) {
         navigation.navigate('RefundPolicy', {
           settingObj: settingObject,
@@ -135,7 +135,7 @@ export default function ManageChallengeScreen({navigation, route}) {
           sportType,
         });
       }
-    } else if (opetions === strings.homeAndAway) {
+    } else if (options === strings.homeAndAway) {
       if (settingObject) {
         navigation.navigate('HomeAway', {
           settingObj: settingObject,
@@ -150,7 +150,7 @@ export default function ManageChallengeScreen({navigation, route}) {
           sportType,
         });
       }
-    } else if (opetions === strings.gameDuration) {
+    } else if (options === strings.gameDuration) {
       console.log(settingObject);
       if (settingObject) {
         navigation.navigate('GameDuration', {
@@ -166,7 +166,7 @@ export default function ManageChallengeScreen({navigation, route}) {
           sportType,
         });
       }
-    } else if (opetions === strings.setsPointsDuration) {
+    } else if (options === strings.setsPointsDuration) {
       if (settingObject) {
         navigation.navigate('GameTennisDuration', {
           settingObj: settingObject,
@@ -181,7 +181,7 @@ export default function ManageChallengeScreen({navigation, route}) {
           sportType,
         });
       }
-    } else if (opetions === strings.venue) {
+    } else if (options === strings.venue) {
       if (settingObject) {
         navigation.navigate('Venue', {
           settingObj: settingObject,
@@ -196,7 +196,7 @@ export default function ManageChallengeScreen({navigation, route}) {
           sportType,
         });
       }
-    } else if (opetions === strings.gameRules) {
+    } else if (options === strings.gameRules) {
       if (settingObject) {
         navigation.navigate('GameRules', {
           settingObj: settingObject,
@@ -211,7 +211,7 @@ export default function ManageChallengeScreen({navigation, route}) {
           sportType,
         });
       }
-    } else if (opetions === strings.refereesTitle) {
+    } else if (options === strings.refereesTitle) {
       if (settingObject) {
         navigation.navigate('RefereesSetting', {
           settingObj: settingObject,
@@ -226,7 +226,7 @@ export default function ManageChallengeScreen({navigation, route}) {
           sportType,
         });
       }
-    } else if (opetions === strings.scorekeeperTitle) {
+    } else if (options === strings.scorekeeperTitle) {
       if (settingObject) {
         navigation.navigate('ScorekeepersSetting', {
           settingObj: settingObject,
@@ -257,7 +257,7 @@ export default function ManageChallengeScreen({navigation, route}) {
     }
     if (item.key === strings.gameFee) {
       if (settingObject?.game_fee) {
-        return `${settingObject?.game_fee?.fee} ${settingObject?.game_fee?.currency_type}`;
+        return `${settingObject.game_fee.fee} ${settingObject.game_fee.currency_type}`;
       }
     }
     if (item.key === strings.refundPolicy) {
@@ -321,7 +321,7 @@ export default function ManageChallengeScreen({navigation, route}) {
     <TouchableWithoutFeedback
       style={styles.listContainer}
       onPress={() => {
-        handleOpetions(item.key);
+        handleOptions(item.key);
       }}>
       <View style={{flexDirection: 'row'}}>
         <Text style={styles.listItems}>{item.key}</Text>

@@ -94,18 +94,18 @@ export default function SportAccountSettingScreen({navigation, route}) {
     getUserSettingMenu();
   }, [getUserSettingMenu]);
 
-  const handleOpetions = (opetions) => {
-    if (opetions.toLowerCase() === strings.challengeSettingText.toLowerCase()) {
+  const handleOpetions = (options) => {
+    if (options.toLowerCase() === strings.challengeSettingText.toLowerCase()) {
       navigation.navigate('ManageChallengeScreen', {
         groupObj: authContext.entity.obj,
         sportName: sport.sport,
         sportType: sport.sport_type,
       });
     } else if (
-      opetions.toLowerCase() === strings.reservationSettingText.toLowerCase()
+      options.toLowerCase() === strings.reservationSettingText.toLowerCase()
     ) {
       if (type === Verbs.entityTypeReferee) {
-        console.log('opetions:=>', opetions);
+        console.log('options:=>', options);
         navigation.navigate('RefereeReservationSetting', {
           sportName: sport.sport,
         });
@@ -115,14 +115,14 @@ export default function SportAccountSettingScreen({navigation, route}) {
         });
       }
     } else if (
-      opetions === strings.lookingForClubText ||
-      opetions === strings.lookingForTeamText
+      options === strings.lookingForClubText ||
+      options === strings.lookingForTeamText
     ) {
       navigation.navigate('LookingForSettingScreen', {
         type,
         sport,
       });
-    } else if (opetions === strings.deactivateActivityText) {
+    } else if (options === strings.deactivateActivityText) {
       navigation.navigate('DeactivateSportScreen', {
         sportObj: sport,
       });

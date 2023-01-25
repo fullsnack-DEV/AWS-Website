@@ -70,6 +70,7 @@ import EventScreen from '../screens/account/schedule/EventScreen';
 import AcceptEventInviteScreen from '../screens/account/schedule/AcceptEventInviteScreen';
 import GoingListScreen from '../screens/account/schedule/GoingListScreen';
 import PendingRequestScreen from '../screens/notificationsScreen/PendingRequestScreen';
+import { strings } from '../../Localization/translation';
 
 const Stack = createStackNavigator();
 
@@ -308,7 +309,7 @@ function NotificationNavigator() {
         name="EditRefereeFeeScreen"
         component={EditRefereeFeeScreen}
         options={{
-          title: 'Referee Fee',
+          title: strings.refereeFee,
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
             fontWeight: '500',
@@ -748,7 +749,7 @@ function NotificationNavigator() {
         name="EditScorekeeperFeeScreen"
         component={EditScorekeeperFeeScreen}
         options={{
-          title: 'Scorekeeper Fee',
+          title: strings.scorekeeperFee,
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
             fontWeight: '500',

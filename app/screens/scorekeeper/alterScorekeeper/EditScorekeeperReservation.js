@@ -957,6 +957,7 @@ export default function EditScorekeeperReservation({navigation, route}) {
                 hitSlop={Utility.getHitSlop(15)}
                 onPress={() =>
                   navigation.navigate('EditScorekeeperFeeScreen', {
+                    comeFrom: 'EditScorekeeperReservation',
                     editableAlter: true,
                     body: bodyParams,
                   })

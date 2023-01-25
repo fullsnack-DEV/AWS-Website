@@ -33,7 +33,7 @@ import TCKeyboardView from '../../../components/TCKeyboardView';
 import {clearStorage, widthPercentageToDP} from '../../../utils';
 import {updateUserProfile} from '../../../api/Users';
 import TCProfileButton from '../../../components/TCProfileButton';
-
+// eslint-disable-next-line no-unused-vars
 export default function AccountInfoScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
@@ -44,44 +44,34 @@ export default function AccountInfoScreen({navigation, route}) {
 
   const [userInfo, setUserInfo] = useState(authContext.entity.obj);
   const [oldPassword, setOldPassword] = useState('');
-  const [city, setCity] = useState(
-    route?.params?.city ? route?.params?.city : authContext?.entity?.obj?.city,
-  );
-  const [state, setState] = useState(
-    route?.params?.state
-      ? route?.params?.state
-      : authContext?.entity?.obj?.state_abbr,
-  );
-  const [country, setCountry] = useState(
-    route?.params?.country
-      ? route?.params?.country
-      : authContext?.entity?.obj?.country,
-  );
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: false,
     });
-  }, [navigation, userInfo, city, state, country]);
+  }, [navigation, userInfo]);
 
   useEffect(() => {
-    if (isFocused) {
-      if (
-        route?.params?.city &&
-        route?.params?.state &&
-        route?.params?.country
-      ) {
-        setCity(route?.params?.city);
-        setState(route?.params?.state);
-        setCountry(route?.params?.country);
-      }
-    }
-  }, [
-    isFocused,
-    route?.params?.city,
-    route?.params?.country,
-    route?.params?.state,
-  ]);
+    // call the checkUserIsRegistratedOrNotWithFirebase for checking if this signup from email or social media, check this functionality is comment after this function
+  }, [isFocused]);
+
+  // const checkUserIsRegistratedOrNotWithFirebase = (email) =>
+  //   new Promise((resolve, reject) => {
+  //     firebase
+  //       .auth()
+  //       .fetchSignInMethodsForEmail(email)
+  //       .then((isAccountThereInFirebase) => {
+  //         if (isAccountThereInFirebase?.length > 0) {
+  //           resolve(isAccountThereInFirebase);
+  //         } else {
+  //           resolve(false);
+  //         }
+  //       })
+  //       .catch((error) => {
+  //         reject(error);
+  //         console.log(error);
+  //       });
+  //   });
 
   const checkValidation = () => {
     if (userInfo.email === '') {

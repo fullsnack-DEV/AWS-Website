@@ -17,53 +17,9 @@ import TeamEntityView from './TeamEntityView';
 export default function ReservationCard({
   data,
   onPressButon = () => {},
-  // onPressGameCard = () => {},
-}) {
-  console.log('reservation data:=>', data);
-  //  const authContext = useContext(AuthContext);
 
-  //   const isPendingButtonOrDetailButton = () => {
-  //     if (data.game) {
-  //       if (data.status === RefereeReservationStatus.offered) {
-  //         if (data.expiry_datetime < new Date().getTime() / 1000) {
-  //           return false;
-  //         }
-  //         if (data.initiated_by === authContext.entity.uid) {
-  //           return false;
-  //         }
-  //         return true;
-  //       }
-  //       if (data.status === RefereeReservationStatus.changeRequest) {
-  //         if (data.expiry_datetime < new Date().getTime() / 1000) {
-  //           return false;
-  //         }
-  //         if (data.requested_by === authContext.entity.uid) {
-  //           return false;
-  //         }
-  //         return true;
-  //       }
-  //       return false;
-  //     }
-  //     if (data.status === ReservationStatus.offered) {
-  //       if (data.offer_expiry < new Date().getTime() / 1000) {
-  //         return false;
-  //       }
-  //       if (data.invited_by === authContext.entity.uid) {
-  //         return false;
-  //       }
-  //       return true;
-  //     }
-  //     if (data.status === ReservationStatus.changeRequest) {
-  //       if (data.offer_expiry < new Date().getTime() / 1000) {
-  //         return false;
-  //       }
-  //       if (data.change_requested_by === authContext.entity.uid) {
-  //         return false;
-  //       }
-  //       return true;
-  //     }
-  //     return false;
-  //   };
+}) {
+
   const isOfferExpired = () => {
     if (data.game) {
       if (data.status === RefereeReservationStatus.offered) {

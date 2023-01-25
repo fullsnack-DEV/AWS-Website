@@ -25,7 +25,6 @@ import {patchPlayer} from '../../../../api/Users';
 import DataSource from '../../../../Constants/DataSource';
 import TCThinDivider from '../../../../components/TCThinDivider';
 import images from '../../../../Constants/ImagePath';
-import Verbs from '../../../../Constants/Verbs';
 
 export default function RefereeFee({navigation, route}) {
   const [comeFrom] = useState(route?.params?.comeFrom);
@@ -35,14 +34,14 @@ export default function RefereeFee({navigation, route}) {
 
   const [loading, setloading] = useState(false);
   const [basicFee, setBasicFee] = useState(
-    route?.params?.settingObj?.game_fee
-      ? route?.params?.settingObj?.game_fee?.fee
+    route.params?.settingObj?.game_fee
+      ? route.params.settingObj.game_fee.fee
       : 0,
   );
   const [currencyType, setCurruencyType] = useState(
-    route?.params?.settingObj?.game_fee
-      ? route?.params?.settingObj?.game_fee?.currency_type
-      : authContext?.entity?.obj?.currency_type ?? Verbs.usd,
+    route.params?.settingObj?.game_fee
+      ? route.params.settingObj.game_fee.currency_type
+      : strings.defaultCurrency,
   );
 
   const [visibleCurrencyModal, setVisibleCurrencyModal] = useState(false);
@@ -297,8 +296,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     fontSize: wp('3.8%'),
     height: 40,
-    width: '90%',
-    textAlign: 'center',
+    width: '90%'
   },
   curruency: {
     alignSelf: 'center',

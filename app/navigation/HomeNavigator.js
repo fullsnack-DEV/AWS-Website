@@ -2079,7 +2079,7 @@ const HomeNavigator = () => (
       name="EditRefereeFeeScreen"
       component={EditRefereeFeeScreen}
       options={{
-        title: 'Referee Fee',
+        title: strings.refereeFee,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -2389,7 +2389,7 @@ const HomeNavigator = () => (
       name="EditScorekeeperFeeScreen"
       component={EditScorekeeperFeeScreen}
       options={{
-        title: 'Scorekeeper Fee',
+        title: strings.scorekeeperFee,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

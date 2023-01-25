@@ -44,7 +44,7 @@ const NotificationType = {
   refereeReservationRestoredDuringAwaitingPayment:
     'refereeReservationRestoredDuringAwaitingPayment',
 
-  scorekeeperReservationApproved: 'refereeReservationApproved',
+  scorekeeperReservationApproved: 'scorekeeperReservationApproved',
   scorekeeperReservationCancelled: 'scorekeeperReservationCancelled',
   scorekeeperReservationAccepted: 'scorekeeperReservationAccepted',
   scorekeeperReservationInitialPaymentFail:

@@ -61,8 +61,8 @@ export default function RefereeReservationSetting({navigation, route}) {
     {key: strings.refundpolicy, id: 3},
     {key: strings.availableAreaText, id: 4},
   ];
-  const handleOpetions = async (opetions) => {
-    if (opetions === strings.availability) {
+  const handleOptions = async (options) => {
+    if (options === strings.availability) {
       if (settingObject) {
         navigation.navigate('AvailibilityReferee', {
           settingObj: settingObject,
@@ -75,7 +75,7 @@ export default function RefereeReservationSetting({navigation, route}) {
           sportName,
         });
       }
-    } else if (opetions === strings.refereeFee) {
+    } else if (options === strings.refereeFee) {
       if (settingObject) {
         navigation.navigate('RefereeFee', {
           settingObj: settingObject,
@@ -88,7 +88,7 @@ export default function RefereeReservationSetting({navigation, route}) {
           sportName,
         });
       }
-    } else if (opetions === strings.refundpolicy) {
+    } else if (options === strings.refundpolicy) {
       if (settingObject) {
         navigation.navigate('RefundPolicyReferee', {
           settingObj: settingObject,
@@ -101,7 +101,7 @@ export default function RefereeReservationSetting({navigation, route}) {
           sportName,
         });
       }
-    } else if (opetions === strings.availableAreaText) {
+    } else if (options === strings.availableAreaText) {
       console.log(settingObject);
       if (settingObject) {
         navigation.navigate('AvailableAreaReferee', {
@@ -147,7 +147,7 @@ export default function RefereeReservationSetting({navigation, route}) {
     <TouchableWithoutFeedback
       style={styles.listContainer}
       onPress={() => {
-        handleOpetions(item.key);
+        handleOptions(item.key);
       }}>
       <View style={{flexDirection: 'row'}}>
         <Text style={styles.listItems}>{item.key}</Text>

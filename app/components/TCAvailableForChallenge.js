@@ -38,8 +38,8 @@ const TCAvailableForChallenge = ({
       );
       if (filterdData.length > 0) {
         sportText = `${getSportName(filterdData[0], authContext)}`;
-        gameFee = filterdData?.[0]?.setting?.game_fee?.fee;
-        currency = filterdData?.[0].setting?.game_fee?.currency_type;
+        gameFee = filterdData[0].setting?.game_fee?.fee;
+        currency = filterdData[0].setting?.game_fee?.currency_type;
       }
     } else {
       const filterdData = (data?.registered_sports || []).filter(
@@ -48,8 +48,8 @@ const TCAvailableForChallenge = ({
 
       if (filterdData.length === 1) {
         sportText = getSportName(filterdData[0], authContext);
-        gameFee = filterdData?.[0]?.setting?.game_fee?.fee;
-        currency = filterdData?.[0].setting?.game_fee?.currency_type;
+        gameFee = filterdData[0].setting?.game_fee?.fee;
+        currency = filterdData[0].setting?.game_fee?.currency_type;
       }
       if (filterdData.length === 2) {
         sportText = format(

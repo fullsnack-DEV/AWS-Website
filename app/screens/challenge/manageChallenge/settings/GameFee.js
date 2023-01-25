@@ -256,13 +256,13 @@ export default function GameFee({navigation, route}) {
           keyboardType={'decimal-pad'}></TextInput>
         <Text style={styles.curruency}>{currencyType}</Text>
       </View>
-      <Text
+      {route.params.comeFrom === 'ManageChallengeScreen' && (<Text
         style={[styles.changeCurruency, {textDecorationLine: 'underline'}]}
         onPress={() => {
           setVisibleCurrencyModal(true);
         }}>
         {strings.changeCurrency}
-      </Text>
+      </Text>)}
       <Modal
         isVisible={visibleCurrencyModal}
         backdropColor="black"

@@ -4,6 +4,7 @@ import {View, Text, TouchableOpacity, StyleSheet, Image} from 'react-native';
 import images from '../Constants/ImagePath';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
+import { strings } from '../../Localization/translation';
 
 function TCTeamSearchView({onPress, showStar = false, data, isClub = false}) {
   let teamIcon = '';
@@ -59,8 +60,9 @@ function TCTeamSearchView({onPress, showStar = false, data, isClub = false}) {
           {showStar && (
             <Text style={styles.starPoints} numberOfLines={1}>
               LV 13{' '}
-              {data.length === 1 && data?.[0]?.setting
-                ? ` · ${data?.[0]?.setting?.game_fee?.fee} CAD`
+              {data.length === 1 && data[0].setting
+                ? ` · ${data[0].setting.game_fee?.fee} ${data[0].setting.game_fee?.currency_type ??
+                  strings.defaultCurrency}`
                 : ''}
             </Text>
           )}

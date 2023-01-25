@@ -19,7 +19,6 @@ export default function EditFeeScreen({navigation, route}) {
       route.params.editableAlter &&
       route.params.body
     ) {
-      console.log('EDIT FEES::', route.params.body);
       bodyParams = {
         ...route.params.body,
       };
@@ -42,7 +41,7 @@ export default function EditFeeScreen({navigation, route}) {
           }}
           value={basicFee}
           keyboardType={'decimal-pad'}></TextInput>
-        <Text style={styles.curruency}>{strings.CAD}</Text>
+        <Text style={styles.curruency}>{route.params.body.currency_type}</Text>
       </View>
       <TCGradientButton
         title={strings.doneTitle}

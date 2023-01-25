@@ -6,6 +6,7 @@ import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import {getSportName} from '../utils';
 import AuthContext from '../auth/context';
+import { strings } from '../../Localization/translation';
 
 function TCScorekeeperView({onPress, showStar = false, data, sport}) {
   const authContext = useContext(AuthContext);
@@ -44,8 +45,9 @@ function TCScorekeeperView({onPress, showStar = false, data, sport}) {
           {showStar && (
             <Text style={styles.starPoints} numberOfLines={1}>
               ★ 5{' '}
-              {sportObj.length === 1 && sportObj?.[0]?.setting
-                ? ` · ${sportObj?.[0]?.setting?.game_fee?.fee} CAD`
+              {sportObj.length === 1 && sportObj[0].setting
+                ? ` · ${sportObj[0].setting.game_fee?.fee} ${sportObj[0].setting.game_fee?.currency_type ??
+                  strings.defaultCurrency}`
                 : ''}
             </Text>
           )}

@@ -11,11 +11,11 @@ import TCLabel from '../../../components/TCLabel';
 let bodyParams = {};
 export default function EditScorekeeperFeeScreen({navigation, route}) {
   const isFocused = useIsFocused();
-  const [basicFee, setBasicFee] = useState(0);
+  const [basicFee, setBasicFee] = useState(route.params.body.total_game_fee);
+  const [comeFrom] = useState(route.params.comeFrom);
+
   useEffect(() => {
     if (
-      route &&
-      route.params &&
       route.params.editableAlter &&
       route.params.body
     ) {
@@ -25,6 +25,7 @@ export default function EditScorekeeperFeeScreen({navigation, route}) {
       setBasicFee(route.params.body.total_game_fee);
     }
   }, [isFocused]);
+
   return (
     <View style={styles.mainContainer}>
       <TCLabel title={strings.scorekeeperFee} />
@@ -41,7 +42,7 @@ export default function EditScorekeeperFeeScreen({navigation, route}) {
           }}
           value={basicFee}
           keyboardType={'decimal-pad'}></TextInput>
-        <Text style={styles.curruency}>{strings.CAD}</Text>
+        <Text style={styles.curruency}>{route.params.body.currency_type}</Text>
       </View>
       <TCGradientButton
         title={strings.doneTitle}
@@ -53,7 +54,7 @@ export default function EditScorekeeperFeeScreen({navigation, route}) {
         marginTop={15}
         onPress={() => {
           if (basicFee <= 0.0 || basicFee >= 1.0) {
-            navigation.navigate('EditScorekeeperReservation', {
+            navigation.navigate(comeFrom, {
               reservationObj: {
                 ...bodyParams,
                 manual_fee: true,
