@@ -105,19 +105,59 @@ export default function SignupScreen({navigation, route}) {
   };
   const validate = () => {
     if (fName === '') {
-      Alert.alert(strings.appName, strings.firstnamevalidation);
+      Alert.alert(
+        strings.appName,
+        strings.firstnamevalidation,
+        [
+          {
+            text: strings.okTitleText,
+            onPress: () => {},
+          },
+        ],
+        {cancelable: false},
+      );
       return false;
     }
     if (Utility.validatedName(fName) === false) {
-      Alert.alert(strings.appName, strings.fNameCanNotBlank);
+      Alert.alert(
+        strings.appName,
+        strings.fNameCanNotBlank,
+        [
+          {
+            text: strings.okTitleText,
+            onPress: () => {},
+          },
+        ],
+        {cancelable: false},
+      );
       return false;
     }
     if (lName === '') {
-      Alert.alert(strings.appName, strings.lastnamevalidation);
+      Alert.alert(
+        strings.appName,
+        strings.lastnamevalidation,
+        [
+          {
+            text: strings.okTitleText,
+            onPress: () => {},
+          },
+        ],
+        {cancelable: false},
+      );
       return false;
     }
     if (Utility.validatedName(lName) === false) {
-      Alert.alert(strings.appName, strings.lNameCanNotBlank);
+      Alert.alert(
+        strings.appName,
+        strings.lNameCanNotBlank,
+        [
+          {
+            text: strings.okTitleText,
+            onPress: () => {},
+          },
+        ],
+        {cancelable: false},
+      );
       return false;
     }
 
@@ -219,7 +259,7 @@ export default function SignupScreen({navigation, route}) {
       <ActionSheet
         ref={actionSheet}
         // title={'News Feed Post'}
-        options={[strings.camera, strings.album, strings.cancelTitle]}
+        options={[strings.camera, strings.album, strings.cancel]}
         cancelButtonIndex={2}
         onPress={(index) => {
           if (index === 0) {
@@ -258,15 +298,14 @@ export default function SignupScreen({navigation, route}) {
         colors={[colors.themeColor1, colors.themeColor3]}
         style={styles.mainContainer}>
         <ActivityLoader visible={loading} />
-        <FastImage
-          resizeMode={'stretch'}
-          style={styles.background}
-          source={images.loginBg}
-        />
+        <FastImage style={styles.background} source={images.loginBg} />
         <Text style={styles.checkEmailText}>{strings.addYourName}</Text>
 
         <TCKeyboardView>
-          <View style={{marginTop: 61}}>
+          <View
+            style={{
+              marginTop: 61,
+            }}>
             <TouchableOpacity
               style={styles.profile}
               onPress={() => {
@@ -344,6 +383,7 @@ export default function SignupScreen({navigation, route}) {
               placeholder={strings.fnameText}
               value={fName}
               onChangeText={(text) => setFName(text)}
+              autoCapitalize={'words'}
             />
             <TCTextField
               testID="lname-signup-input"
@@ -353,6 +393,7 @@ export default function SignupScreen({navigation, route}) {
               onChangeText={(text) => setLName(text)}
               value={lName}
               height={40}
+              autoCapitalize={'words'}
             />
           </View>
         </TCKeyboardView>
@@ -378,6 +419,7 @@ const styles = StyleSheet.create({
     height: 100,
     width: 100,
     borderRadius: 50,
+    alignItems: 'center',
   },
 
   textFieldStyle: {
@@ -394,8 +436,8 @@ const styles = StyleSheet.create({
   profileCameraButtonStyle: {
     height: 22,
     width: 22,
-    marginTop: -60,
-    marginLeft: 0,
+    marginTop: -61,
+    marginLeft: 35,
     alignSelf: 'center',
   },
   cameraIcon: {

@@ -290,15 +290,13 @@ export default function ChooseSportsScreen({navigation, route}) {
           url: preSignedUrls?.[0],
           uri: route.params.locationInfo.profilePic.path,
           type:
-            route.params.locationInfo.profilePic.path.split('.')[1] ||
-            'jpeg',
+            route.params.locationInfo.profilePic.path.split('.')[1] || 'jpeg',
         }),
         uploadImageOnPreSignedUrls({
           url: preSignedUrls?.[1],
           uri: route.params.locationInfo.profilePic?.path,
           type:
-            route.params.locationInfo.profilePic?.path.split('.')[1] ||
-            'jpeg',
+            route.params.locationInfo.profilePic?.path.split('.')[1] || 'jpeg',
         }),
       ])
         .then(async ([fullImage, thumbnail]) => {
@@ -321,20 +319,16 @@ export default function ChooseSportsScreen({navigation, route}) {
     if (data.first_name === '') {
       Alert.alert(strings.appName, strings.firstnamevalidation);
       returnValue = false;
-    }
-    else if (Utility.validatedName(data.first_name) === false) {
+    } else if (Utility.validatedName(data.first_name) === false) {
       Alert.alert(strings.appName, strings.fNameCanNotBlank);
       returnValue = false;
-    }
-    else if (data.last_name === '') {
+    } else if (data.last_name === '') {
       Alert.alert(strings.appName, strings.lastnamevalidation);
       returnValue = false;
-    }
-    else if (Utility.validatedName(data.last_name) === false) {
+    } else if (Utility.validatedName(data.last_name) === false) {
       Alert.alert(strings.appName, strings.lNameCanNotBlank);
       returnValue = false;
-    }
-    else if(!data.city || !data.country){
+    } else if (!data.city || !data.country) {
       Alert.alert(strings.appName, strings.homeCityNotOptional);
       returnValue = false;
     }
@@ -356,7 +350,7 @@ export default function ChooseSportsScreen({navigation, route}) {
       sports: selected,
     };
 
-    if(validate(data)){
+    if (validate(data)) {
       if (route.params.locationInfo.profilePicData?.thumbnail) {
         data.thumbnail = route?.params?.sportInfo?.profilePicData.thumbnail;
         data.full_image = route?.params?.sportInfo?.profilePicData.full_image;
@@ -368,10 +362,10 @@ export default function ChooseSportsScreen({navigation, route}) {
       await messaging().registerDeviceForRemoteMessages();
       // Get the token
       const token = await messaging().getToken();
-      if(token){
-        data.fcm_id = token
+      if (token) {
+        data.fcm_id = token;
       }
-      
+
       await createUser(data, authContext)
         .then((createdUser) => {
           const authEntity = {...dummyAuthContext.entity};
@@ -444,11 +438,7 @@ export default function ChooseSportsScreen({navigation, route}) {
       colors={[colors.themeColor1, colors.themeColor3]}
       style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-      <FastImage
-        resizeMode={'stretch'}
-        style={styles.background}
-        source={images.loginBg}
-      />
+      <FastImage style={styles.background} source={images.loginBg} />
       <SafeAreaView style={styles.container}>
         <Text style={styles.sportText}>{strings.sportText}</Text>
         {/* <ActivityIndicator animating={loading} size="large" /> */}

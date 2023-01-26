@@ -62,11 +62,32 @@ export default function ForgotPasswordScreen({navigation}) {
   // Basic input validation
   const checkValidation = () => {
     if (email === '') {
-      Alert.alert(strings.appName, strings.emailNotBlankText);
+      Alert.alert(
+        strings.appName,
+        strings.emailNotBlankText,
+
+        [
+          {
+            text: strings.okTitleText,
+            onPress: () => {},
+          },
+        ],
+        {cancelable: false},
+      );
       return false;
     }
     if (ValidateEmail(email) === false) {
-      Alert.alert('', strings.validEmailMessage);
+      Alert.alert(
+        strings.validEmailMessage,
+        '',
+        [
+          {
+            text: strings.okTitleText,
+            onPress: () => {},
+          },
+        ],
+        {cancelable: false},
+      );
       return false;
     }
     return true;
@@ -114,11 +135,7 @@ export default function ForgotPasswordScreen({navigation}) {
         colors={[colors.themeColor1, colors.themeColor3]}
         style={styles.mainContainer}>
         <ActivityLoader visible={loading} />
-        <FastImage
-          resizeMode={'stretch'}
-          style={styles.background}
-          source={images.loginBg}
-        />
+        <FastImage style={styles.background} source={images.loginBg} />
         <Text style={styles.forgotText}>{strings.forgotPassword}</Text>
         <Text style={styles.resetText}>{strings.resetText}</Text>
         <TCTextField
@@ -180,10 +197,10 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     flex: 0,
     paddingHorizontal: 5,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 4},
-    shadowOpacity: 0.4,
-    shadowRadius: 4,
+    shadowColor: 'rgba(0,0,0,0.16)',
+    shadowOffset: {width: 0, height: 1},
+    shadowOpacity: 1,
+    shadowRadius: 2,
     marginTop: 42,
     alignSelf: 'center',
     marginLeft: 35,

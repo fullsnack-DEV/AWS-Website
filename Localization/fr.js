@@ -575,7 +575,7 @@ export default {
   matchfee: 'Match fee',
   refereeFeecardText: 'Referee fee',
   scorekeeperFee: 'Scorekeeper fee',
-  firstnamevalidation: 'First name cannot be blank',
+  firstnamevalidation: 'First name cannot be blank.',
   lastnamevalidation: 'Last name cannot be blank',
   locationvalidation: 'Location cannot be blank',
   addOptionMessage: '+ Add a payment method',
