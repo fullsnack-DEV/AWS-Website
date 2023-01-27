@@ -8,7 +8,7 @@ import {
   View,
   SafeAreaView,
   Image,
-  Platform
+  Platform,
 } from 'react-native';
 import {
   heightPercentageToDP as hp,
@@ -54,46 +54,60 @@ export default function SignupScreen({navigation}) {
 
   const validate = () => {
     if (fName === '') {
-      Alert.alert(strings.appName, strings.firstnamevalidation);
+      displayAlert(strings.firstnamevalidation);
       return false;
     }
     if (Utility.validatedName(fName) === false) {
-      Alert.alert(strings.appName, strings.fNameCanNotBlank);
+      displayAlert(strings.fNameCanNotBlank);
       return false;
     }
     if (lName === '') {
-      Alert.alert(strings.appName, strings.lastnamevalidation);
+      displayAlert(strings.lastnamevalidation);
       return false;
     }
     if (Utility.validatedName(lName) === false) {
-      Alert.alert(strings.appName, strings.lNameCanNotBlank);
+      displayAlert(strings.lNameCanNotBlank);
       return false;
     }
     if (email === '') {
-      Alert.alert(strings.appName, strings.emailNotBlankText);
+      displayAlert(strings.emailNotBlankText);
       return false;
     }
     if (validateEmail(email) === false) {
-      Alert.alert('', strings.validEmailMessage);
+      displayAlert(strings.validEmailMessage);
       return false;
     }
     if (password === '') {
-      Alert.alert(strings.appName, strings.passwordCanNotBlank);
+      displayAlert(strings.passwordCanNotBlank);
       return false;
     }
     if (cPassword === '') {
-      Alert.alert(strings.appName, strings.cofirmpPswCanNotBlank);
+      displayAlert(strings.cofirmpPswCanNotBlank);
       return false;
     }
     if (password !== cPassword) {
-      Alert.alert(strings.appName, strings.confirmAndPasswordNotMatch);
+      displayAlert(strings.confirmAndPasswordNotMatch);
       return false;
     }
     if (password.length < 6) {
+      displayAlert(strings.firstnamevalidation);
       Alert.alert(strings.appName, strings.passwordWarningMessage);
       return false;
     }
     return true;
+  };
+  const displayAlert = (message) => {
+    Alert.alert(
+      strings.appName,
+      message,
+      [
+        {
+          text: strings.okTitleText,
+          onPress: () => {},
+        },
+      ],
+      {cancelable: false},
+    );
   };
   const validateEmail = (emailText) => {
     if (
@@ -368,11 +382,7 @@ export default function SignupScreen({navigation}) {
         colors={[colors.themeColor1, colors.themeColor3]}
         style={styles.mainContainer}>
         <ActivityLoader visible={loading} />
-        <FastImage
-          resizeMode={'stretch'}
-          style={styles.background}
-          source={images.loginBg}
-        />
+        <FastImage style={styles.background} source={images.loginBg} />
         <Text style={styles.checkEmailText}>{strings.signupwithemail}</Text>
         <TCKeyboardView>
           <View

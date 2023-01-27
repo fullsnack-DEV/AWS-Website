@@ -19,11 +19,7 @@ export default function ForgotPasswordLinkSentScreen({navigation}) {
     <LinearGradient
       colors={[colors.themeColor1, colors.themeColor3]}
       style={styles.mainContainer}>
-      <FastImage
-        resizeMode={'stretch'}
-        style={styles.background}
-        source={images.loginBg}
-      />
+      <FastImage style={styles.background} source={images.loginBg} />
       <View style={styles.textContainer}>
         <Text style={styles.checkEmailText}>{strings.checkEmailText}</Text>
         <Text style={styles.resetText}>{strings.checkEmailDescText}</Text>
@@ -34,7 +30,14 @@ export default function ForgotPasswordLinkSentScreen({navigation}) {
           onPress={() => {
             navigation.navigate('LoginScreen');
           }}
-          extraStyle={{bottom: 12, position: 'absolute'}}
+          extraStyle={{
+            bottom: 12,
+            position: 'absolute',
+            shadowColor: 'rgba(0,0,0,0.16)',
+            shadowOffset: {width: 0, height: 3},
+            shadowOpacity: 1,
+            shadowRadius: 6,
+          }}
         />
       </SafeAreaView>
     </LinearGradient>

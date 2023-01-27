@@ -439,11 +439,7 @@ export default function ChooseSportsScreen({navigation, route}) {
       colors={[colors.themeColor1, colors.themeColor3]}
       style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-      <FastImage
-        resizeMode={'stretch'}
-        style={styles.background}
-        source={images.loginBg}
-      />
+      <FastImage style={styles.background} source={images.loginBg} />
       <SafeAreaView style={styles.container}>
         <Text style={styles.sportText}>{strings.sportText}</Text>
         {/* <ActivityIndicator animating={loading} size="large" /> */}

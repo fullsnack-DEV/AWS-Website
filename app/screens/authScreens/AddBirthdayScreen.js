@@ -108,7 +108,7 @@ export default function AddBirthdayScreen({navigation, route}) {
       style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
       <FastImage
-        resizeMode={'stretch'}
+        // resizeMode={'stretch'}
         style={styles.background}
         source={images.loginBg}
       />
@@ -129,13 +129,17 @@ export default function AddBirthdayScreen({navigation, route}) {
             </Text>
           }
           backgroundColor={colors.parrotColor}
-          height={hp('33%')}
+          height={hp('36%')}
           width={wp('84.3%')}
           overlayColor={'transparent'}
           skipAndroidStatusBar={true}
           containerStyle={{
             left: 25,
             padding: 0,
+            shadowColor: 'rgba(0, 0, 0, 0.16)',
+            shadowOffset: {width: 0, height: 3},
+            shadowOpacity: 1,
+            shadowRadius: 6,
           }}>
           <Text style={styles.whyAskingText}>{strings.whyAskingText}</Text>
         </Tooltip>

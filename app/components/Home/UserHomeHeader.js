@@ -71,7 +71,7 @@ const UserHomeHeader = ({
     <SafeAreaView>
       <View style={{width: wp('100%'), margin: 0}}>
         <View style={{backgroundColor: colors.whiteColor}}>
-          <View style={{width: '100%', marginBottom: 20}}>
+          <View style={{width: '100%', marginBottom: 16.5}}>
             <View style={styles.userViewStyle}>
               {/* <Text style={styles.userTextStyle}>{entityData?.fullName}</Text> */}
               <View
@@ -246,17 +246,13 @@ const UserHomeHeader = ({
 };
 
 const styles = StyleSheet.create({
-  // bgImageStyle: {
-  //   backgroundColor: colors.grayBackgroundColor,
-  //   opacity: 0,
-  // },
   profileImageContainer: {
     height: 54,
     width: 54,
     borderRadius: 108,
     backgroundColor: colors.whiteColor,
-    marginTop: 15,
-    marginBottom: 10,
+    marginTop: 0,
+    marginBottom: 17,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: colors.googleColor,
@@ -273,7 +269,7 @@ const styles = StyleSheet.create({
   statusViewStyle: {
     flexDirection: 'row',
     marginLeft: 15,
-    marginTop: 5,
+    marginTop: 19,
   },
   statusInnerViewStyle: {
     flexDirection: 'row',
@@ -307,9 +303,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RMedium,
     fontSize: 14,
     color: colors.lightBlackColor,
-    // fontStyle: 'italic',
-    marginTop: 2,
-    marginBottom: 5,
+    marginTop: 7.5,
   },
 
   cityTextStyle: {
@@ -321,6 +315,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
+    marginBottom: 5,
   },
   firstButtonStyle: {
     margin: 0,

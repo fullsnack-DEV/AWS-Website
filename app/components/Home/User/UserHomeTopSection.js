@@ -294,7 +294,7 @@ const UserHomeTopSection = ({
   const keyExtractor = useCallback((item, index) => index.toString(), []);
 
   return (
-    <View style={{paddingTop: 20, paddingBottom: 20}}>
+    <View style={{paddingTop: 20, paddingBottom: 10}}>
       <View style={[styles.sectionStyle, {marginHorizontal: 0}]}>
         {/* <FlatList
             style={{ marginTop: 10, marginBottom: 0 }}

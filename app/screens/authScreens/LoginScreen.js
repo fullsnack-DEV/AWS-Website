@@ -453,11 +453,7 @@ const LoginScreen = ({navigation}) => {
       colors={[colors.themeColor1, colors.themeColor3]}
       style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-      <FastImage
-        resizeMode={'stretch'}
-        style={styles.background}
-        source={images.loginBg}
-      />
+      <FastImage style={styles.background} source={images.loginBg} />
       <TouchableWithoutFeedback
         style={styles.container}
         disabled

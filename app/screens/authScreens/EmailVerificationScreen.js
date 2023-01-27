@@ -107,9 +107,17 @@ export default function EmailVerificationScreen({navigation, route}) {
             .onAuthStateChanged(onAuthStateChanged);
           loginOnAuthStateChanged();
         } else {
-          setTimeout(() => {
-            Alert.alert(strings.emailNotVerifiedText);
-          }, 100);
+          Alert.alert(
+            strings.emailNotVerifiedText,
+            '',
+            [
+              {
+                text: strings.okTitleText,
+                onPress: () => {},
+              },
+            ],
+            {cancelable: false},
+          );
         }
       })
       .catch((e) => {
@@ -128,7 +136,17 @@ export default function EmailVerificationScreen({navigation, route}) {
       .then(() => {
         setLoading(false);
         setTimer(60);
-        setTimeout(() => Alert.alert(strings.varificationLinkSend), 100);
+        Alert.alert(
+          strings.varificationLinkSend,
+          '',
+          [
+            {
+              text: strings.okTitleText,
+              onPress: () => {},
+            },
+          ],
+          {cancelable: false},
+        );
       })
       .catch((e) => {
         let message = '';
@@ -179,11 +197,7 @@ export default function EmailVerificationScreen({navigation, route}) {
       colors={[colors.themeColor1, colors.themeColor3]}
       style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-      <FastImage
-        resizeMode={'stretch'}
-        style={styles.background}
-        source={images.loginBg}
-      />
+      <FastImage style={styles.background} source={images.loginBg} />
       <View
         style={{
           marginTop: Platform.OS === 'ios' ? 40 + 25 : 25,

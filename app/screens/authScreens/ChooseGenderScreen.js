@@ -116,11 +116,7 @@ export default function ChooseGenderScreen({navigation, route}) {
     <LinearGradient
       colors={[colors.themeColor1, colors.themeColor3]}
       style={styles.mainContainer}>
-      <FastImage
-        resizeMode={'stretch'}
-        style={styles.background}
-        source={images.loginBg}
-      />
+      <FastImage style={styles.background} source={images.loginBg} />
       <View style={{flex: 1}}>
         <Text style={styles.checkEmailText}>{strings.addGenderText}</Text>
         <Text style={styles.resetText}>{strings.notDisplayGenderText}</Text>
