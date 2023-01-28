@@ -1,5 +1,12 @@
-import React from 'react';
-import {View, Text, StyleSheet, SafeAreaView} from 'react-native';
+import React, {useLayoutEffect} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  SafeAreaView,
+  TouchableOpacity,
+  Image,
+} from 'react-native';
 
 import {
   heightPercentageToDP as hp,
@@ -15,6 +22,26 @@ import {strings} from '../../../Localization/translation';
 import images from '../../Constants/ImagePath';
 
 export default function ForgotPasswordLinkSentScreen({navigation}) {
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <TouchableOpacity
+          onPress={() => {
+            navigation.pop();
+          }}>
+          <Image
+            source={images.backArrow}
+            style={{
+              height: 20,
+              width: 15,
+              marginLeft: 20,
+              tintColor: colors.whiteColor,
+            }}
+          />
+        </TouchableOpacity>
+      ),
+    });
+  });
   return (
     <LinearGradient
       colors={[colors.themeColor1, colors.themeColor3]}
