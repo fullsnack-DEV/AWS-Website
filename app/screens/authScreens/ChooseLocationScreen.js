@@ -153,8 +153,7 @@ export default function ChooseLocationScreen({navigation, route}) {
         if (e.name === Verbs.gpsErrorDeined) {
           setCurrentLocation(null);
           setUserDeniedLocPerm(true);
-        }
-        else{
+        } else {
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
@@ -288,11 +287,7 @@ export default function ChooseLocationScreen({navigation, route}) {
       colors={[colors.themeColor1, colors.themeColor3]}
       style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-      <FastImage
-        resizeMode={'stretch'}
-        style={styles.background}
-        source={images.loginBg}
-      />
+      <FastImage style={styles.background} source={images.loginBg} />
       <Text style={styles.LocationText}>{strings.locationText}</Text>
       <Text style={styles.LocationDescription}>
         {strings.locationDescription}
@@ -339,21 +334,24 @@ export default function ChooseLocationScreen({navigation, route}) {
           />
         </SafeAreaView>
       )}
-      {noData && searchText.length === 0 && locationFetch && !currentLocation && (
-        <TouchableWithoutFeedback
-          style={styles.noLocationViewStyle}
-          onPress={() => onSelectNoCurrentLocation()}>
-          <View>
-            <Text style={styles.currentLocationTextStyle}>
-              {strings.currentLocationText}
+      {noData &&
+        searchText.length === 0 &&
+        locationFetch &&
+        !currentLocation && (
+          <TouchableWithoutFeedback
+            style={styles.noLocationViewStyle}
+            onPress={() => onSelectNoCurrentLocation()}>
+            <View>
+              <Text style={styles.currentLocationTextStyle}>
+                {strings.currentLocationText}
+              </Text>
+              <Separator />
+            </View>
+            <Text style={[styles.currentLocationTextStyle, {marginTop: 15}]}>
+              {strings.noLocationText}
             </Text>
-            <Separator />
-          </View>
-          <Text style={[styles.currentLocationTextStyle, {marginTop: 15}]}>
-            {strings.noLocationText}
-          </Text>
-        </TouchableWithoutFeedback>
-      )}
+          </TouchableWithoutFeedback>
+        )}
       {cityData.length > 0 && (
         <FlatList
           data={cityData}

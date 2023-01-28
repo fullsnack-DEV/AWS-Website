@@ -129,7 +129,7 @@ export default function AddBirthdayScreen({navigation, route}) {
             </Text>
           }
           backgroundColor={colors.parrotColor}
-          height={hp('36%')}
+          height={hp('43%')}
           width={wp('84.3%')}
           overlayColor={'transparent'}
           skipAndroidStatusBar={true}
