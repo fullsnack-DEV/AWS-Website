@@ -1356,6 +1356,15 @@ export const showAlert = (
   );
 };
 
+export const showAlertWithoutTitle = (
+  message,
+  onOkPress = () => console.log('OK Pressed'),
+) => {
+  Alert.alert(message, [{text: strings.okTitleText, onPress: onOkPress}], {
+    cancelable: false,
+  });
+};
+
 export const showAlertWithCallBack = (msg, onOkClick) => {
   Alert.alert(
     '',

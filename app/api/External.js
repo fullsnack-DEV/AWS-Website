@@ -13,27 +13,35 @@ export const searchAddress = async (query) =>
     url: `https://maps.googleapis.com/maps/api/geocode/json?address=${query}`,
   });
 
+export const searchAddressPredictions = async (query) =>
+  makeAPIRequest({
+    method: 'get',
+    url: `https://maps.googleapis.com/maps/api/place/autocomplete/json?types=address&input=${query}`,
+  });
+
 export const searchCityState = async (query) =>
   makeAPIRequest({
     method: 'get',
     url: `https://maps.googleapis.com/maps/api/place/autocomplete/json?types=(cities)&input=${query}`,
   });
 
-export const searchNearByCityState = async (radius, lat, long) => axios({
+export const searchNearByCityState = async (radius, lat, long) =>
+  axios({
     method: 'get',
     url: `http://getnearbycities.geobytes.com/GetNearbyCities?radius=${radius}&latitude=${lat}&longitude=${long}&limit=500`,
-  }).then((response) => {
-    const cityList = response.data.map((obj) => ({
-      description: obj[1],
-      city: obj[1],
-      state: obj[2],
-      country: obj[3],
-    }));
-    return cityList;
   })
-  .catch((e) => {
-    throw new Error(e)
-  });
+    .then((response) => {
+      const cityList = response.data.map((obj) => ({
+        description: obj[1],
+        city: obj[1],
+        state: obj[2],
+        country: obj[3],
+      }));
+      return cityList;
+    })
+    .catch((e) => {
+      throw new Error(e);
+    });
 
 export const searchVenue = async (query) =>
   makeAPIRequest({

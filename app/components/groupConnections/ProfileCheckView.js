@@ -23,16 +23,15 @@ export default function ProfileCheckView({isChecked, onPress, playerDetail}) {
             colors={[colors.whiteColor, colors.whiteColor]}
             style={styles.topViewContainer}>
             <View style={{flexDirection: 'row'}}>
-              <View style={styles.profileView}>
-                <Image
-                  source={
-                    playerDetail.thumbnail
-                      ? {uri: playerDetail.thumbnail}
-                      : images.profilePlaceHolder
-                  }
-                  style={styles.profileImage}
-                />
-              </View>
+              <Image
+                source={
+                  playerDetail.thumbnail
+                    ? {uri: playerDetail.thumbnail}
+                    : images.profilePlaceHolder
+                }
+                style={styles.profileImage}
+              />
+
               <View style={styles.topTextContainer}>
                 <Text style={styles.whiteNameText} numberOfLines={1}>
                   {playerDetail.full_name}
@@ -52,16 +51,15 @@ export default function ProfileCheckView({isChecked, onPress, playerDetail}) {
         <TouchableWithoutFeedback onPress={onPress}>
           <View style={styles.topViewContainer}>
             <View style={{flexDirection: 'row'}}>
-              <View style={styles.profileView}>
-                <Image
-                  source={
-                    playerDetail.thumbnail
-                      ? {uri: playerDetail.thumbnail}
-                      : images.profilePlaceHolder
-                  }
-                  style={styles.profileImage}
-                />
-              </View>
+              <Image
+                source={
+                  playerDetail.thumbnail
+                    ? {uri: playerDetail.thumbnail}
+                    : images.profilePlaceHolder
+                }
+                style={styles.profileImage}
+              />
+
               <View style={styles.topTextContainer}>
                 <Text style={styles.mediumNameText} numberOfLines={1}>
                   {playerDetail.full_name}
@@ -81,9 +79,9 @@ export default function ProfileCheckView({isChecked, onPress, playerDetail}) {
 const styles = StyleSheet.create({
   profileImage: {
     alignSelf: 'center',
-    height: 36,
+    height: 40,
     resizeMode: 'cover',
-    width: 36,
+    width: 40,
     borderRadius: 18,
   },
 
@@ -99,20 +97,7 @@ const styles = StyleSheet.create({
 
     borderRadius: 10,
   },
-  profileView: {
-    backgroundColor: colors.whiteColor,
-    height: 38,
-    width: 38,
-    borderRadius: 19,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: colors.grayColor,
-    shadowOffset: {width: 0, height: 3},
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
-    elevation: 3,
-    alignSelf: 'center',
-  },
+
   topTextContainer: {
     marginLeft: 10,
     alignSelf: 'center',

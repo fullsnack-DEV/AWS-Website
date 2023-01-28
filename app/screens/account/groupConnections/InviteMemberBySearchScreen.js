@@ -24,7 +24,7 @@ import TCSearchBox from '../../../components/TCSearchBox';
 import {sendInvitationInGroup} from '../../../api/Users';
 import AuthContext from '../../../auth/context';
 import ProfileCheckView from '../../../components/groupConnections/ProfileCheckView';
-import TCTags from '../../../components/TCTags';
+import TCProfileTag from '../../../components/TCProfileTag';
 import {getUserIndex} from '../../../api/elasticSearch';
 import TCThinDivider from '../../../components/TCThinDivider';
 import images from '../../../Constants/ImagePath';
@@ -202,7 +202,7 @@ export default function InviteMembersBySearchScreen({navigation}) {
         }}
       />
 
-      <TCTags
+      <TCProfileTag
         dataSource={players}
         titleKey={'full_name'}
         onTagCancelPress={handleTagPress}

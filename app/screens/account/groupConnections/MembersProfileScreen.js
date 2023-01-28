@@ -333,7 +333,7 @@ export default function MembersProfileScreen({navigation, route}) {
               )}
             </View>
             <TCInfoField
-              title={strings.emailPlaceHolder}
+              title={strings.emailtitle}
               value={memberDetail.email ? memberDetail.email : strings.NAText}
             />
             <TCInfoField title={strings.phone} value={getMemberPhoneNumber()} />

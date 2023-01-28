@@ -41,6 +41,7 @@ const googleApiCall = async ({method, url, headers}) => {
     url,
     headers: prepareHeader(headers),
   };
+  console.log(url);
   try {
     const response = await axios(options);
     if (!response.data.status) {

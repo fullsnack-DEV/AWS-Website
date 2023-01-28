@@ -13,8 +13,11 @@ import {
   TouchableOpacity,
   FlatList,
   TextInput,
-  Dimensions,
   Keyboard,
+  Alert,
+  Platform,
+  Pressable,
+  Linking,
 } from 'react-native';
 import Modal from 'react-native-modal';
 import {format} from 'react-string-format';
@@ -33,19 +36,24 @@ import TCMessageButton from '../../../../components/TCMessageButton';
 import TCKeyboardView from '../../../../components/TCKeyboardView';
 import TCFormProgress from '../../../../components/TCFormProgress';
 import LocationView from '../../../../components/LocationView';
+import {getHitSlop, showAlert} from '../../../../utils';
 import {
-  getHitSlop,
-  heightPercentageToDP,
-  showAlert,
-  widthPercentageToDP,
-} from '../../../../utils';
-import {searchAddress, searchCityState} from '../../../../api/External';
+  searchAddressPredictions,
+  searchCityState,
+  searchNearByCityState,
+} from '../../../../api/External';
+import locationModalStyles from '../../../../Constants/LocationModalStyle';
+import {
+  getPlaceNameFromPlaceID,
+  getGeocoordinatesWithPlaceName,
+} from '../../../../utils/location';
+import Verbs from '../../../../Constants/Verbs';
 
 let entity = {};
 export default function CreateMemberProfileTeamForm2({navigation, route}) {
   const authContext = useContext(AuthContext);
   entity = authContext.entity;
-  const [loading, setloading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [playerStatus, setPlayerStatus] = useState([]);
   const [joinTCCheck, setJoinTCCheck] = useState(true);
   const [postalCode, setPostalCode] = useState();
@@ -59,6 +67,11 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
   const [searchText, setSearchText] = useState('');
   const [cityData, setCityData] = useState([]);
   const [locationData, setLocationData] = useState([]);
+  const [noData, setNoData] = useState(false);
+  const [nearbyCities, setNearbyCities] = useState([]);
+  const [locationFetch, setLocationFetch] = useState(false);
+  const [userDeniedLocPerm, setUserDeniedLocPerm] = useState(false);
+  const [currentLocation, setCurrentLocation] = useState();
 
   const [groupMemberDetail, setGroupMemberDetail] = useState({
     is_player: true,
@@ -94,16 +107,35 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
   ]);
 
   useEffect(() => {
-    searchAddress(searchText).then((response) => {
-      console.log('search address:=>', response);
-      setLocationData(response.results);
-    });
-  }, [searchText]);
-
-  useEffect(() => {
-    searchCityState(searchText).then((response) => {
-      setCityData(response.predictions);
-    });
+    if (searchText.length >= 3) {
+      if (visibleLocationModal) {
+        searchAddressPredictions(searchText)
+          .then((response) => {
+            console.log('search address:=>', response);
+            setLocationData(response.predictions);
+          })
+          .catch((e) => {
+            setTimeout(() => {
+              Alert.alert(strings.alertmessagetitle, e.message);
+            }, 10);
+          });
+      } else {
+        searchCityState(searchText)
+          .then((response) => {
+            setNoData(false);
+            setCityData(response.predictions);
+          })
+          .catch((e) => {
+            setTimeout(() => {
+              Alert.alert(strings.alertmessagetitle, e.message);
+            }, 10);
+          });
+      }
+    } else {
+      setNoData(true);
+      setCityData([]);
+      setLocationData([]);
+    }
   }, [searchText]);
 
   const addPosition = () => {
@@ -132,7 +164,7 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
   const createProfile = (params) => {
     createMemberProfile(entity.uid, params, authContext)
       .then((response) => {
-        setloading(false);
+        setLoading(false);
         if (response.payload.user_id && response.payload.group_id) {
           navigation.navigate('MembersProfileScreen', {
             from: 'CreateMemberProfileTeamForm2',
@@ -147,7 +179,7 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
         }
       })
       .catch((e) => {
-        setloading(false);
+        setLoading(false);
         setTimeout(() => {
           showAlert(e.message);
         }, 10);
@@ -155,7 +187,7 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
   };
   const createMember = () => {
     if (validation()) {
-      setloading(true);
+      setLoading(true);
       let bodyParams = {is_invite: joinTCCheck};
       if (route.params.form1.full_image) {
         const imageArray = [];
@@ -185,7 +217,7 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
             createProfile(bodyParams);
           })
           .catch((e) => {
-            setloading(false);
+            setLoading(false);
             setTimeout(() => {
               showAlert(e.message);
             }, 10);
@@ -227,49 +259,214 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
       style={{marginBottom: 10}}
     />
   );
-  const locationString = () => {
-    let str = '';
-    if (city) {
-      str += `${city}, `;
+  const locationString = () =>
+    [city, state, country].filter((v) => v).join(', ');
+
+  const toggleCityModal = () => {
+    if (!visibleCityModal) {
+      setLoading(true);
+      setUserDeniedLocPerm(false);
+      setSearchText('');
+      setCityData([]);
+      getGeocoordinatesWithPlaceName(Platform.OS)
+        .then((_location) => {
+          setLocationFetch(true);
+          if (_location.position) {
+            setCurrentLocation(_location);
+            getNearbyCityData(
+              _location.position.coords.latitude,
+              _location.position.coords.longitude,
+              100,
+            );
+          } else {
+            setLoading(false);
+            setCurrentLocation(null);
+            setVisibleCityModal(!visibleCityModal);
+          }
+        })
+        .catch((e) => {
+          setLoading(false);
+          setLocationFetch(true);
+          if (e.name === Verbs.gpsErrorDeined) {
+            setCurrentLocation(null);
+            setUserDeniedLocPerm(true);
+          } else {
+            setTimeout(() => {
+              Alert.alert(
+                strings.alertmessagetitle,
+                `${e.message}(Location fetch`,
+              );
+            }, 10);
+          }
+          setVisibleCityModal(!visibleCityModal);
+        });
+    } else {
+      setVisibleCityModal(!visibleCityModal);
     }
-    if (state) {
-      str += `${state}, `;
-    }
-    if (country) {
-      str += `${country}, `;
-    }
-    return str;
   };
 
-  const renderCityStateCountryItem = ({item}) => (
-    <TouchableOpacity
-      style={styles.listItem}
-      onPress={() => {
-        setCity(item?.terms?.[0]?.value ?? '');
-        setState(item?.terms?.[1]?.value ?? '');
-        setCountry(item?.terms?.[2]?.value ?? '');
-        setVisibleCityModal(false);
-        setCityData([]);
-        setLocationData([]);
-      }}>
-      <Text style={styles.cityList}>{item.description}</Text>
-    </TouchableOpacity>
+  const renderAdressItem = ({item}) => (
+    <Pressable onPress={() => onSelectAddress(item)}>
+      <View style={locationModalStyles.listItem}>
+        <Text style={locationModalStyles.cityText}>{item.description}</Text>
+      </View>
+      <View style={locationModalStyles.itemSeprater} />
+    </Pressable>
   );
 
   const renderLocationItem = ({item}) => (
-    <TouchableOpacity
-      style={styles.listItem}
-      onPress={() => {
-        const pCode = item.address_components.filter((obj) =>
-          obj.types.some((p) => p === 'postal_code'),
-        );
-        setPostalCode(pCode.length && pCode[0].long_name);
-        setLocation(item.formatted_address);
-        setVisibleLocationModal(false);
-      }}>
-      <Text style={styles.cityList}>{item.formatted_address}</Text>
-    </TouchableOpacity>
+    <Pressable onPress={() => onSelectLocation(item)}>
+      <View style={locationModalStyles.listItem}>
+        <Text style={locationModalStyles.cityText}>{item.description}</Text>
+      </View>
+      <View style={locationModalStyles.itemSeprater} />
+    </Pressable>
   );
+
+  const renderCurrentLocationItem = ({item}) => (
+    <Pressable
+      onPress={() => {
+        onSelectNearByLocation(item);
+      }}>
+      <View style={locationModalStyles.listItem}>
+        <Text style={locationModalStyles.cityText}>
+          {[item.city, item.state, item.country].filter((v) => v).join(', ')}
+        </Text>
+      </View>
+      <View style={locationModalStyles.itemSeprater} />
+    </Pressable>
+  );
+
+  const renderCurrentLocation = () => {
+    let renderData;
+    if (currentLocation && currentLocation.city) {
+      renderData = (
+        <Pressable onPress={() => onSelectCurrentLocation()}>
+          <View style={locationModalStyles.listItemCurrentLocation}>
+            <Text style={locationModalStyles.cityText}>
+              {[
+                currentLocation?.city,
+                currentLocation?.state,
+                currentLocation?.country,
+              ]
+                .filter((v) => v)
+                .join(', ')}
+            </Text>
+            <Text style={locationModalStyles.curruentLocationText}>
+              {strings.currentLocationText}
+            </Text>
+          </View>
+          <View style={locationModalStyles.itemSeprater} />
+        </Pressable>
+      );
+    } else {
+      renderData = <View />;
+    }
+    return renderData;
+  };
+
+  const getNearbyCityData = (lat, long, radius) => {
+    searchNearByCityState(radius, lat, long)
+      .then((response) => {
+        const list = response.filter(
+          (obj) =>
+            !(
+              obj.city === currentLocation?.city &&
+              obj.country === currentLocation?.country
+            ),
+        );
+        setNearbyCities(list);
+        setLoading(false);
+        setVisibleCityModal(!visibleCityModal);
+      })
+      .catch((e) => {
+        setLoading(false);
+        setNearbyCities([]);
+        setTimeout(() => {
+          Alert.alert(
+            strings.alertmessagetitle,
+            `${e.message}(getNearbyCityData),${lat},${long},${radius}`,
+          );
+        }, 10);
+        setVisibleCityModal(!visibleCityModal);
+      });
+  };
+
+  const onSelectAddress = async (item) => {
+    setLoading(true);
+    getPlaceNameFromPlaceID(item.place_id).then((_location) => {
+      setLoading(false);
+      if (_location) {
+        setCity(_location.city);
+        setState(_location.state);
+        setCountry(_location.country);
+        setPostalCode(_location.postalCode);
+        setLocation(_location.address);
+      }
+      setVisibleLocationModal(false);
+    });
+  };
+
+  const onSelectLocation = async (item) => {
+    setLoading(true);
+    getPlaceNameFromPlaceID(item.place_id).then((_location) => {
+      setLoading(false);
+      if (_location) {
+        setCity(_location.city);
+        setState(_location.state);
+        setCountry(_location.country);
+      }
+      toggleCityModal();
+    });
+  };
+
+  const onSelectCurrentLocation = async () => {
+    setCity(currentLocation?.city);
+    setState(currentLocation?.state);
+    setCountry(currentLocation?.country);
+
+    toggleCityModal();
+  };
+
+  const onSelectNoCurrentLocation = async () => {
+    if (userDeniedLocPerm) {
+      Alert.alert(
+        strings.locationSettingTitleText,
+        strings.locationSettingText,
+        [
+          {
+            text: strings.cancel,
+            style: 'cancel',
+          },
+          {
+            text: strings.settingsTitleText,
+            onPress: () => {
+              if (Platform.OS === 'ios') {
+                Linking.openURL('app-settings:');
+              } else {
+                Linking.openSettings();
+              }
+            },
+          },
+        ],
+      );
+    } else {
+      Alert.alert(strings.noGpsErrorMsg, '', [
+        {
+          text: strings.OkText,
+          style: 'cancel',
+        },
+      ]);
+    }
+  };
+
+  const onSelectNearByLocation = async (item) => {
+    setCity(item.city);
+    setState(item.state);
+    setCountry(item.country);
+
+    toggleCityModal();
+  };
 
   return (
     <>
@@ -506,7 +703,7 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
           onChangePostalCodeText={(text) => setPostalCode(text)}
           postalCodeText={postalCode}
           locationString={locationString()}
-          onPressCityPopup={() => setVisibleCityModal(true)}
+          onPressCityPopup={() => toggleCityModal()}
         />
 
         <View style={{flexDirection: 'row', margin: 15}}>
@@ -528,18 +725,11 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
         </View>
         <View style={{marginBottom: 30}} />
       </TCKeyboardView>
+
       <Modal
         isVisible={visibleLocationModal}
-        onBackdropPress={() => {
-          setVisibleLocationModal(false);
-          setCityData([]);
-          setLocationData([]);
-        }}
-        onRequestClose={() => {
-          setVisibleLocationModal(false);
-          setCityData([]);
-          setLocationData([]);
-        }}
+        onBackdropPress={() => setVisibleLocationModal(false)}
+        onRequestClose={() => setVisibleLocationModal(false)}
         animationInTiming={300}
         animationOutTiming={800}
         backdropTransitionInTiming={300}
@@ -548,67 +738,52 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
           margin: 0,
         }}>
         <View
-          style={{
-            width: '100%',
-            height: Dimensions.get('window').height / 1.15,
-            backgroundColor: 'white',
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            borderTopLeftRadius: 30,
-            borderTopRightRadius: 30,
-            shadowColor: '#000',
-            shadowOffset: {width: 0, height: 1},
-            shadowOpacity: 0.5,
-            shadowRadius: 5,
-            elevation: 15,
-          }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              paddingHorizontal: 15,
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}>
-            <TouchableOpacity
-              hitSlop={getHitSlop(15)}
-              style={styles.closeButton}
-              onPress={() => {
-                setVisibleLocationModal(false);
-                setCityData([]);
-                setLocationData([]);
-              }}>
-              <Image source={images.cancelImage} style={styles.closeButton} />
-            </TouchableOpacity>
-            <Text
-              style={{
-                alignSelf: 'center',
-                marginVertical: 20,
-                fontSize: 16,
-                fontFamily: fonts.RBold,
-                color: colors.lightBlackColor,
-              }}>
-              {strings.locationTitleText}
-            </Text>
+          behavior="height"
+          enabled={false}
+          style={locationModalStyles.mainView}>
+          <View style={locationModalStyles.headerView}>
             <TouchableOpacity onPress={() => {}}></TouchableOpacity>
+            <Text style={locationModalStyles.headerText}>
+              {strings.address}
+            </Text>
+            <View style={{paddingTop: 20, height: '100%'}}>
+              <TouchableOpacity
+                hitSlop={getHitSlop(15)}
+                style={locationModalStyles.closeButton}
+                onPress={() => setVisibleLocationModal(false)}>
+                <Image
+                  source={images.cancelImage}
+                  style={[
+                    locationModalStyles.closeButton,
+                    {marginLeft: 0, marginRight: 0},
+                  ]}
+                />
+              </TouchableOpacity>
+            </View>
           </View>
-          <View style={styles.separatorLine} />
+          <View style={locationModalStyles.separatorLine} />
           <View>
-            <View style={styles.sectionStyle}>
-              <Image source={images.searchLocation} style={styles.searchImg} />
+            <View style={locationModalStyles.searchSectionStyle}>
               <TextInput
                 testID="choose-location-input"
-                style={styles.textInput}
-                placeholder={strings.addressSearchPlaceHolder}
+                style={locationModalStyles.searchTextInput}
+                placeholder={strings.searchForAddress}
                 clearButtonMode="always"
-                placeholderTextColor={colors.grayColor}
+                placeholderTextColor={colors.userPostTimeColor}
                 onChangeText={(text) => setSearchText(text)}
               />
             </View>
+            {noData && searchText.length > 0 && (
+              <Text style={locationModalStyles.noDataText}>
+                {strings.enter3CharText}
+              </Text>
+            )}
+
             {locationData.length > 0 && (
               <FlatList
+                style={{marginTop: 10}}
                 data={locationData}
-                renderItem={renderLocationItem}
+                renderItem={renderAdressItem}
                 keyExtractor={(item, index) => index.toString()}
                 onScroll={Keyboard.dismiss}
               />
@@ -616,18 +791,11 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
           </View>
         </View>
       </Modal>
+
       <Modal
         isVisible={visibleCityModal}
-        onBackdropPress={() => {
-          setVisibleCityModal(false);
-          setCityData([]);
-          setLocationData([]);
-        }}
-        onRequestClose={() => {
-          setVisibleCityModal(false);
-          setCityData([]);
-          setLocationData([]);
-        }}
+        onBackdropPress={() => setVisibleCityModal(false)}
+        onRequestClose={() => setVisibleCityModal(false)}
         animationInTiming={300}
         animationOutTiming={800}
         backdropTransitionInTiming={300}
@@ -636,70 +804,93 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
           margin: 0,
         }}>
         <View
-          style={{
-            width: '100%',
-            height: Dimensions.get('window').height / 1.15,
-            backgroundColor: 'white',
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            borderTopLeftRadius: 30,
-            borderTopRightRadius: 30,
-            shadowColor: '#000',
-            shadowOffset: {width: 0, height: 1},
-            shadowOpacity: 0.5,
-            shadowRadius: 5,
-            elevation: 15,
-          }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              paddingHorizontal: 15,
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}>
-            <TouchableOpacity
-              hitSlop={getHitSlop(15)}
-              style={styles.closeButton}
-              onPress={() => {
-                setVisibleCityModal(false);
-                setCityData([]);
-                setLocationData([]);
-              }}>
-              <Image source={images.cancelImage} style={styles.closeButton} />
-            </TouchableOpacity>
-            <Text
-              style={{
-                alignSelf: 'center',
-                marginVertical: 20,
-                fontSize: 16,
-                fontFamily: fonts.RBold,
-                color: colors.lightBlackColor,
-              }}>
-              {strings.locationTitleText}
-            </Text>
+          behavior="height"
+          enabled={false}
+          style={locationModalStyles.mainView}>
+          <View style={locationModalStyles.headerView}>
             <TouchableOpacity onPress={() => {}}></TouchableOpacity>
+            <Text style={locationModalStyles.headerText}>
+              {strings.cityStateCountryTitle}
+            </Text>
+            <View style={{paddingTop: 20, height: '100%'}}>
+              <TouchableOpacity
+                hitSlop={getHitSlop(15)}
+                style={locationModalStyles.closeButton}
+                onPress={() => setVisibleCityModal(false)}>
+                <Image
+                  source={images.cancelImage}
+                  style={[
+                    locationModalStyles.closeButton,
+                    {marginLeft: 0, marginRight: 0},
+                  ]}
+                />
+              </TouchableOpacity>
+            </View>
           </View>
-          <View style={styles.separatorLine} />
+          <View style={locationModalStyles.separatorLine} />
           <View>
-            <View style={styles.sectionStyle}>
-              <Image source={images.searchLocation} style={styles.searchImg} />
+            <View style={locationModalStyles.searchSectionStyle}>
               <TextInput
                 testID="choose-location-input"
-                style={styles.textInput}
-                placeholder={strings.cityPlaceholderText}
+                style={locationModalStyles.searchTextInput}
+                placeholder={strings.locationPlaceholderText}
                 clearButtonMode="always"
-                placeholderTextColor={colors.grayColor}
+                placeholderTextColor={colors.userPostTimeColor}
                 onChangeText={(text) => setSearchText(text)}
-                autoCorrect={false}
               />
             </View>
-            <FlatList
-              data={(cityData || []).filter((obj) => obj.terms.length === 3)}
-              renderItem={renderCityStateCountryItem}
-              keyExtractor={(item, index) => index.toString()}
-              onScroll={Keyboard.dismiss}
-            />
+            {noData && searchText.length > 0 && (
+              <Text style={locationModalStyles.noDataText}>
+                {strings.enter3CharText}
+              </Text>
+            )}
+            {noData &&
+              searchText.length === 0 &&
+              nearbyCities.length >= 0 &&
+              cityData.length === 0 && (
+                <FlatList
+                  style={[
+                    locationModalStyles.nearbycitiesflatlist,
+                    {marginTop: 25},
+                  ]}
+                  data={nearbyCities}
+                  renderItem={renderCurrentLocationItem}
+                  ListHeaderComponent={renderCurrentLocation}
+                  keyExtractor={(index) => index.toString()}
+                  onScroll={Keyboard.dismiss}
+                />
+              )}
+            {noData &&
+              searchText.length === 0 &&
+              locationFetch &&
+              !currentLocation && (
+                <Pressable
+                  style={styles.noLocationViewStyle}
+                  onPress={() => onSelectNoCurrentLocation()}>
+                  <View>
+                    <Text style={locationModalStyles.currentLocationTextStyle}>
+                      {strings.currentLocationText}
+                    </Text>
+                  </View>
+                  <View style={locationModalStyles.itemSeprater} />
+                  <Text
+                    style={[
+                      locationModalStyles.currentLocationTextStyle,
+                      {marginTop: 15},
+                    ]}>
+                    {strings.noLocationText}
+                  </Text>
+                </Pressable>
+              )}
+            {cityData.length > 0 && (
+              <FlatList
+                style={{marginTop: 10}}
+                data={cityData}
+                renderItem={renderLocationItem}
+                keyExtractor={(item, index) => index.toString()}
+                onScroll={Keyboard.dismiss}
+              />
+            )}
           </View>
         </View>
       </Modal>
@@ -730,69 +921,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.lightBlackColor,
     marginLeft: 10,
-  },
-
-  closeButton: {
-    alignSelf: 'center',
-    width: 13,
-    height: 13,
-    marginLeft: 5,
-    resizeMode: 'contain',
-  },
-
-  separatorLine: {
-    alignSelf: 'center',
-    backgroundColor: colors.grayColor,
-    height: 0.5,
-    width: widthPercentageToDP('100%'),
-  },
-
-  searchImg: {
-    alignSelf: 'center',
-    height: heightPercentageToDP('4%'),
-
-    resizeMode: 'contain',
-    width: widthPercentageToDP('4%'),
-    tintColor: colors.lightBlackColor,
-  },
-  sectionStyle: {
-    alignItems: 'center',
-    backgroundColor: colors.whiteColor,
-    borderRadius: 25,
-
-    flexDirection: 'row',
-    height: 50,
-    justifyContent: 'center',
-    margin: widthPercentageToDP('8%'),
-    paddingLeft: 17,
-    paddingRight: 5,
-
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 4},
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  textInput: {
-    color: colors.blackColor,
-    flex: 1,
-    fontFamily: fonts.RRegular,
-    fontSize: widthPercentageToDP('4.5%'),
-    paddingLeft: 10,
-  },
-  listItem: {
-    flexDirection: 'row',
-    marginLeft: widthPercentageToDP('10%'),
-    width: widthPercentageToDP('80%'),
-  },
-  cityList: {
-    color: colors.lightBlackColor,
-    fontSize: widthPercentageToDP('4%'),
-    textAlign: 'left',
-    fontFamily: fonts.RRegular,
-    // paddingLeft: wp('1%'),
-    width: widthPercentageToDP('70%'),
-    margin: widthPercentageToDP('4%'),
-    textAlignVertical: 'center',
   },
 });

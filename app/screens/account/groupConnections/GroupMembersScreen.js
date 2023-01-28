@@ -305,16 +305,14 @@ export default function GroupMembersScreen({navigation, route}) {
                 disabled={!data.connected}
                 onPress={() => onPressProfilePhotoAndTitle(data)}
                 style={styles.imageTouchStyle}>
-                <View style={styles.profileView}>
-                  <Image
-                    source={
-                      data.thumbnail
-                        ? {uri: data.thumbnail}
-                        : images.profilePlaceHolder
-                    }
-                    style={styles.profileImage}
-                  />
-                </View>
+                <Image
+                  source={
+                    data.thumbnail
+                      ? {uri: data.thumbnail}
+                      : images.profilePlaceHolder
+                  }
+                  style={styles.profileImage}
+                />
               </TouchableOpacity>
 
               <View style={styles.topTextContainer}>
@@ -466,19 +464,7 @@ const styles = StyleSheet.create({
   topViewContainer: {
     flexDirection: 'row',
   },
-  profileView: {
-    backgroundColor: colors.whiteColor,
-    height: 44,
-    width: 44,
-    borderRadius: 22,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: colors.grayColor,
-    shadowOffset: {width: 0, height: 3},
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
-    elevation: 3,
-  },
+
   topTextContainer: {
     marginLeft: 10,
     alignSelf: 'center',
@@ -494,12 +480,7 @@ const styles = StyleSheet.create({
     marginLeft: 55,
     marginTop: 5,
   },
-  // skillText: {
-  //   fontSize: 14,
-  //   color: colors.lightBlackColor,
-  //   fontFamily: fonts.RRegular,
-  //   flexShrink: 1,
-  // },
+
   awayStatusText: {
     fontSize: 12,
     color: colors.themeColor,
