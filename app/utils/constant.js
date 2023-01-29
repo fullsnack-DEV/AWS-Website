@@ -28,7 +28,7 @@ export const heightMesurement = [
 
 export const weightMesurement = [
   {label: 'kg', value: 'kg'},
-  {label: 'pound', value: 'pound'},
+  {label: 'lb', value: 'lb'},
 ];
 
 export const localize_language = [
@@ -161,14 +161,18 @@ export const mobileCountryCode = [
   {label: 'United States(+1)', value: 'United States(+1)'},
 ];
 
-export const groupsType = [{type:strings.teamstitle}, {type:strings.clubstitle}, {type: strings.leaguesTitle}];
+export const groupsType = [
+  {type: strings.teamstitle},
+  {type: strings.clubstitle},
+  {type: strings.leaguesTitle},
+];
 
 export const locationType = {
-  CURRENT_LOCATION : 2,
+  CURRENT_LOCATION: 2,
   HOME_CITY: 1,
   WORLD: 0,
-  SEARCH_CITY:3
-}
+  SEARCH_CITY: 3,
+};
 
 export const game_data = [
   {
@@ -1362,14 +1366,14 @@ export const whoCanDataSourceGroup = [
 
 export const userSettingOption = {
   AccountInfo: 1,
-  Profile:2,
+  Profile: 2,
   BasicInfo: 3,
-  SportActivities:4,
+  SportActivities: 4,
   Team: 5,
-  Club:6,
+  Club: 6,
   Event: 7,
   TimeZone: 8,
   AppLanguage: 9,
-  DeactivateAccount:10,
-  TerminateAccount:11
-}
+  DeactivateAccount: 10,
+  TerminateAccount: 11,
+};

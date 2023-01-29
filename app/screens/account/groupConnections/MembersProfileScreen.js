@@ -78,7 +78,7 @@ export default function MembersProfileScreen({navigation, route}) {
       headerLeft: () => (
         <TouchableWithoutFeedback
           onPress={() => {
-            if (from === 'CreateMemberProfileTeamForm2') {
+            if (from === 'CreateMemberProfileTeamForm3') {
               navigation.pop(3);
             } else if (from === 'CreateMemberProfileClubForm3') {
               navigation.pop(4);

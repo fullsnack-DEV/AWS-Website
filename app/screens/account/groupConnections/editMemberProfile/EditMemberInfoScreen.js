@@ -49,9 +49,9 @@ export default function EditMemberInfoScreen({navigation, route}) {
             if (checkValidation()) {
               editInfo();
               // if (entity.role === 'team') {
-              //   navigation.navigate('CreateMemberProfileTeamForm2', { form1: memberInfo })
+              //   navigation.navigate('CreateMemberProfileTeamForm3', { form1: memberInfo })
               // } else if (entity.role === 'club') {
-              //   navigation.navigate('CreateMemberProfileClubForm2', { form1: memberInfo })
+              //   navigation.navigate('CreateMemberProfileForm2', { form1: memberInfo })
               // }
             }
           }}>

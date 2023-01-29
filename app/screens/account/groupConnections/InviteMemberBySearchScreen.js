@@ -15,6 +15,8 @@ import {
   Pressable,
 } from 'react-native';
 
+import ClipboardToast from 'react-native-clipboard-toast';
+
 import {format} from 'react-string-format';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import {strings} from '../../../../Localization/translation';
@@ -40,6 +42,7 @@ export default function InviteMembersBySearchScreen({navigation}) {
   const [pageFrom, setPageFrom] = useState(0);
   const [filters, setFilters] = useState();
   const [searchText, setSearchText] = useState('');
+
   const selectedPlayers = [];
   useEffect(() => {
     getUsers(filters);
@@ -48,7 +51,7 @@ export default function InviteMembersBySearchScreen({navigation}) {
     navigation.setOptions({
       headerRight: () => (
         <Text style={styles.sendButtonStyle} onPress={() => sendInvitation()}>
-          Send
+          {strings.send}
         </Text>
       ),
     });
@@ -64,9 +67,8 @@ export default function InviteMembersBySearchScreen({navigation}) {
     };
     console.log('Obj::', obj);
     sendInvitationInGroup(obj, authContext)
-      .then((response) => {
+      .then(() => {
         setloading(false);
-        console.log('Response of Invitation sent:', response);
         navigation.navigate('InvitationSentScreen');
       })
       .catch((e) => {
@@ -202,17 +204,15 @@ export default function InviteMembersBySearchScreen({navigation}) {
         }}
       />
 
-      <TCProfileTag
-        dataSource={players}
-        titleKey={'full_name'}
-        onTagCancelPress={handleTagPress}
-      />
+      <View style={{marginLeft: 15, marginRight: 15}}>
+        <TCProfileTag dataSource={players} onTagCancelPress={handleTagPress} />
+      </View>
 
       {players.filter((obj) => obj.isChecked).length <= 0 &&
         searchText.length <= 0 && (
           <View>
             <Pressable
-              style={styles.imageTextContainer}
+              style={styles.inviteEmailStyle}
               onPress={() => {
                 navigation.navigate('InviteMembersByEmailScreen');
               }}>
@@ -222,7 +222,24 @@ export default function InviteMembersBySearchScreen({navigation}) {
             <TCThinDivider />
             <View style={styles.imageTextContainer}>
               <Image source={images.copyUrl} style={styles.imageIcon} />
-              <Text style={styles.textTitle}>{strings.copyInviteUrl}</Text>
+
+              <ClipboardToast
+                textToShow={strings.copyInviteUrl}
+                textToCopy={'Hello is underdevelopment'}
+                toastText={'Text copied to clipboard!'}
+                containerStyle={styles.textTitle}
+                textStyle={{
+                  fontSize: 16,
+                  fontFamily: fonts.RRegular,
+                  color: colors.lightBlackColor,
+                }}
+                toastDuration={2000}
+                toastPosition={'bottom'}
+                toastDelay={1000}
+                toastOnShow={() => {
+                  console.log('Is Copied');
+                }}
+              />
             </View>
             <TCThinDivider />
           </View>
@@ -279,5 +296,12 @@ const styles = StyleSheet.create({
     margin: 25,
     marginBottom: 15,
     marginTop: 15,
+  },
+  inviteEmailStyle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    margin: 25,
+    marginBottom: 15,
+    marginTop: 0,
   },
 });

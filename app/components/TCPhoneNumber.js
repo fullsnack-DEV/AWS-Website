@@ -76,21 +76,18 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   halfMatchFeeView: {
-    backgroundColor: colors.offwhite,
+    backgroundColor: colors.textFieldBackground,
     borderRadius: 5,
     color: colors.lightBlackColor,
     flexDirection: 'row',
     fontSize: 16,
     fontFamily: fonts.RRegular,
-
+    flex: 1,
     height: 40,
     paddingHorizontal: 15,
     paddingRight: 10,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.4,
-    shadowRadius: 1,
-    elevation: 3,
+    marginLeft: 5,
+
     width: '48%',
   },
   halffeeText: {
@@ -117,13 +114,9 @@ const styles = StyleSheet.create({
     width: 175,
     color: colors.lightBlackColor,
     paddingRight: 30,
-    backgroundColor: colors.offwhite,
+    backgroundColor: colors.textFieldBackground,
 
     borderRadius: 5,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
   },
   inputAndroid: {
     height: 40,
@@ -134,7 +127,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     color: colors.lightBlackColor,
     paddingRight: 30,
-    backgroundColor: colors.offwhite,
+    backgroundColor: colors.textFieldBackground,
     width: 170,
     borderRadius: 5,
 

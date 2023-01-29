@@ -150,9 +150,7 @@ const getPlaceNameFromPlaceID = async (placeID) => {
   // fail safe
   try {
     const locationDetails = await searchLocationPlaceDetail(placeID);
-    console.log('====================================');
-    console.log(locationDetails);
-    console.log('====================================');
+
     // eslint-disable-next-line array-callback-return
     locationDetails.result.address_components.map((e) => {
       if (e.types.includes('administrative_area_level_1')) {

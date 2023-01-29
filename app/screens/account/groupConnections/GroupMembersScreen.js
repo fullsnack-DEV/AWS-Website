@@ -56,9 +56,9 @@ export default function GroupMembersScreen({navigation, route}) {
   const [members, setMembers] = useState([]);
 
   const [switchUser] = useState(authContext.entity);
-  const [groupObj] = useState(route.params?.groupObj);
+  const [groupObj] = useState(route.params?.groupObj ?? authContext.entity.obj);
 
-  const [groupID] = useState(route.params?.groupID);
+  const [groupID] = useState(route.params?.groupID ?? authContext.entity.uid);
 
   useEffect(() => {
     getMembers();
@@ -84,7 +84,7 @@ export default function GroupMembersScreen({navigation, route}) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () =>
-        switchUser.uid === route?.params?.groupID && (
+        switchUser.uid === groupID && (
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <TouchableWithoutFeedback
               onPress={() => navigation.navigate('CreateMemberProfileForm1')}>
@@ -103,7 +103,7 @@ export default function GroupMembersScreen({navigation, route}) {
           </View>
         ),
     });
-  }, [navigation, switchUser]);
+  }, [navigation, switchUser, groupID]);
 
   const searchFilterFunction = (text) => {
     const result = members.filter(

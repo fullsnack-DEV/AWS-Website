@@ -1,9 +1,9 @@
 import React from 'react';
-import {StyleSheet, View, Image, TextInput} from 'react-native';
+import {StyleSheet, View, TextInput} from 'react-native';
 
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 
-import images from '../Constants/ImagePath';
+// import images from '../Constants/ImagePath';
 import {strings} from '../../Localization/translation';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
@@ -20,7 +20,7 @@ export default function TCSearchBox({
 }) {
   return (
     <View style={{...styles.sectionStyle, ...style}} {...props}>
-      <Image source={images.searchLocation} style={styles.searchImg} />
+      {/* <Image source={images.searchLocation} style={styles.searchImg} /> */}
       <TextInput
         testID={testID}
         ref={textInputRef}
@@ -43,27 +43,21 @@ export default function TCSearchBox({
 const styles = StyleSheet.create({
   sectionStyle: {
     alignItems: 'center',
-    backgroundColor: colors.offwhite,
+    backgroundColor: colors.textFieldBackground,
     borderRadius: 25,
     flexDirection: 'row',
     height: 45,
     paddingLeft: 17,
     paddingRight: 5,
     width: wp('90%'),
-    shadowColor: colors.grayColor,
-    shadowOffset: {width: 0, height: 3},
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
-
-    elevation: 2,
   },
-  searchImg: {
-    alignSelf: 'center',
-    height: 15,
-    tintColor: colors.magnifyIconColor,
-    resizeMode: 'contain',
-    width: 15,
-  },
+  //   searchImg: {
+  //     alignSelf: 'center',
+  //     height: 15,
+  //     tintColor: colors.magnifyIconColor,
+  //     resizeMode: 'contain',
+  //     width: 15,
+  //   },
   textInput: {
     color: colors.blackColor,
     flex: 1,

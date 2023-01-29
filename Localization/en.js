@@ -2165,5 +2165,14 @@ export default {
   basicInfoRequestText:
     'en_{0} wants to collect your basic info. You may choose the sections you want to send or edit each section befor you send the information.',
   requestBasicInfoTitle: 'en_Request Basic Info',
-  reservations:'en_Reservations',
+  reservations: 'en_Reservations',
+  dateFormatPlaceholder: 'en_MM DD YYYY',
+  dominantFoot: 'en_Dominant foot',
+  dominantPlaceholder: 'en_Choose',
+  sentBasicInfoText:
+    'en_You can send a request to collect the member’s basic info.',
+  birthdayAgeText: 'en_Birthday, age',
+  requestInfoAcceptedText:
+    'en_When the request is accepted, the basic info in this profile will be updated with the info provided by the member. A user may choose to only provide some of the basic info items.',
+  showAgainText: 'en_Don’t show this again.',
 };

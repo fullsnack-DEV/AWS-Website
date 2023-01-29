@@ -13,25 +13,33 @@ import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import images from '../Constants/ImagePath';
 
-export default function TCProfileTag({dataSource, titleKey, onTagCancelPress}) {
+export default function TCProfileTag({dataSource, onTagCancelPress}) {
   const renderTags = ({item, index}) => (
     <>
       {item.isChecked && (
-        <View onPress={() => onTagCancelPress({item, index})}>
-          <ImageBackground
-            source={
-              item.thumbnail ? {uri: item.thumbnail} : images.profilePlaceHolder
-            }
-            style={styles.profileImage}>
-            <Pressable
-              style={styles.closeButton}
-              onPress={() => onTagCancelPress({item, index})}>
-              <Image source={images.closeRound} style={styles.closeButton} />
-            </Pressable>
-          </ImageBackground>
-
+        <View style={{alignItems: 'center'}}>
+          <View
+            style={{
+              borderRadius: 90,
+              overflow: 'hidden',
+              height: 45,
+              width: 45,
+            }}>
+            <ImageBackground
+              source={
+                item.thumbnail
+                  ? {uri: item.thumbnail}
+                  : images.profilePlaceHolder
+              }
+              style={styles.profileImage}></ImageBackground>
+          </View>
+          <Pressable
+            style={styles.closeButton}
+            onPress={() => onTagCancelPress({item, index})}>
+            <Image source={images.closeRound} style={styles.closeButton} />
+          </Pressable>
           <Text style={styles.tagTitleText} numberOfLines={2}>
-            {item[titleKey]}
+            {item.first_name + item.last_name}
           </Text>
         </View>
       )}
@@ -58,10 +66,12 @@ const styles = StyleSheet.create({
     width: 15,
     height: 15,
     resizeMode: 'contain',
+
+    position: 'absolute',
+    right: 2,
   },
 
   tagListStyle: {
-    marginLeft: 20,
     marginTop: 20,
     marginBottom: 10,
   },
@@ -78,7 +88,7 @@ const styles = StyleSheet.create({
     height: 45,
     resizeMode: 'cover',
     width: 45,
-    borderRadius: 18,
+
     alignSelf: 'center',
   },
 });
