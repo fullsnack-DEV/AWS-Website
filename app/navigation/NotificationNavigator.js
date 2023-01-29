@@ -277,7 +277,7 @@ function NotificationNavigator() {
         name="EditChallenge"
         component={EditChallenge}
         options={{
-          title: 'Change Match Reservation',
+          title: strings.changeMatchReservation,
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
             fontWeight: '500',
@@ -332,7 +332,7 @@ function NotificationNavigator() {
         name="ChangeReservationInfoScreen"
         component={ChangeReservationInfoScreen}
         options={{
-          title: 'Change Match Reservation',
+          title: strings.changeMatchReservation,
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
             fontWeight: '500',

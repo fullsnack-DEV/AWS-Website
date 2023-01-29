@@ -190,6 +190,7 @@ import BasicInfoScreen from '../screens/account/userSettingPrivacy/BasicInfoScre
 import PendingRequestScreen from '../screens/notificationsScreen/PendingRequestScreen';
 import TrashScreen from '../screens/notificationsScreen/TrashScreen';
 import LanguageSettingScreen from '../screens/account/userSettingPrivacy/LanguageSettingScreen';
+import ChooseTimeSlotScreen from '../screens/challenge/createChallenge/ChooseTimeSlotScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -1585,7 +1586,7 @@ const ScheduleNavigator = () => (
       name="ChangeReservationInfoScreen"
       component={ChangeReservationInfoScreen}
       options={{
-        title: 'Change Match Reservation',
+        title: strings.changeMatchReservation,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -1805,7 +1806,7 @@ const ScheduleNavigator = () => (
       name="EditChallenge"
       component={EditChallenge}
       options={{
-        title: 'Change Match Reservation',
+        title: strings.changeMatchReservation,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -2225,6 +2226,7 @@ const ScheduleNavigator = () => (
         },
       }}
     />
+
     <Stack.Screen
       name="NotificationNavigator"
       component={NotificationNavigator}
@@ -2232,6 +2234,7 @@ const ScheduleNavigator = () => (
         headerShown: false,
       }}
     />
+
     <Stack.Screen
       name="AccountScreen"
       component={AccountScreen}
@@ -2255,6 +2258,7 @@ const ScheduleNavigator = () => (
         },
       }}
     />
+
     <Stack.Screen
       name="GroupListScreen"
       component={GroupListScreen}
@@ -2507,6 +2511,23 @@ const ScheduleNavigator = () => (
       component={ChangeOtherListScreen}
       options={{
         title: 'Change List Of Organizers',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+
+    <Stack.Screen
+      name="ChooseTimeSlotScreen"
+      component={ChooseTimeSlotScreen}
+      options={{
+        title: strings.chooseDateTimeText,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
