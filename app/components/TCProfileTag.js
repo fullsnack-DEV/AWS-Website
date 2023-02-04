@@ -39,7 +39,7 @@ export default function TCProfileTag({dataSource, onTagCancelPress}) {
             <Image source={images.closeRound} style={styles.closeButton} />
           </Pressable>
           <Text style={styles.tagTitleText} numberOfLines={2}>
-            {item.first_name + item.last_name}
+            {`${item.first_name} ${item.last_name}`}
           </Text>
         </View>
       )}

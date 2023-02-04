@@ -53,7 +53,7 @@ export default function CreateMemberProfileTeamForm3({navigation, route}) {
         </Text>
       ),
     });
-  }, [navigation, groupMemberDetail, positions, navigation]);
+  }, [navigation, groupMemberDetail, positions]);
 
   const addPosition = () => {
     const obj = {
@@ -278,8 +278,10 @@ export default function CreateMemberProfileTeamForm3({navigation, route}) {
             <TouchableOpacity
               onPress={() => {
                 if (playerStatus.indexOf(strings.injuredPlaceholder) !== -1) {
-                  const i = playerStatus.indexOf(strings.injuredPlaceholder);
-                  playerStatus.splice(i, 1);
+                  playerStatus.splice(
+                    playerStatus.indexOf(strings.injuredPlaceholder),
+                    1,
+                  );
                 } else {
                   playerStatus.push(strings.injuredPlaceholder);
                 }
@@ -308,10 +310,10 @@ export default function CreateMemberProfileTeamForm3({navigation, route}) {
                 if (
                   playerStatus.indexOf(strings.longTermAwayPlaceholder) !== -1
                 ) {
-                  const i = playerStatus.indexOf(
-                    strings.longTermAwayPlaceholder,
+                  playerStatus.splice(
+                    playerStatus.indexOf(strings.longTermAwayPlaceholder),
+                    1,
                   );
-                  playerStatus.splice(i, 1);
                 } else {
                   playerStatus.push(strings.longTermAwayPlaceholder);
                 }
@@ -340,8 +342,10 @@ export default function CreateMemberProfileTeamForm3({navigation, route}) {
             <TouchableOpacity
               onPress={() => {
                 if (playerStatus.indexOf(strings.suspendedPlaceholder) !== -1) {
-                  const i = playerStatus.indexOf(strings.suspendedPlaceholder);
-                  playerStatus.splice(i, 1);
+                  playerStatus.splice(
+                    playerStatus.indexOf(strings.suspendedPlaceholder),
+                    1,
+                  );
                 } else {
                   playerStatus.push(strings.suspendedPlaceholder);
                 }

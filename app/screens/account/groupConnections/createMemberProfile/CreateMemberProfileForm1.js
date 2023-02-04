@@ -494,10 +494,7 @@ export default function CreateMemberProfileForm1({navigation, route}) {
 
   return (
     <>
-      <TCFormProgress
-        totalSteps={role === Verbs.entityTypeClub ? 3 : 2}
-        curruentStep={1}
-      />
+      <TCFormProgress totalSteps={3} curruentStep={1} />
       <ActivityLoader visible={loading} />
       <TCKeyboardView>
         <View style={styles.profileView}>
