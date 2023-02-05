@@ -2,12 +2,13 @@ import React from 'react';
 import {StyleSheet, Text} from 'react-native';
 
 import LinearGradient from 'react-native-linear-gradient';
+import {strings} from '../../Localization/translation';
 
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 
 export default function TCUserRoleBadge({
-  title = 'Admin',
+  title = strings.admin,
   titleColor = colors.themeColor,
 }) {
   return (
@@ -28,7 +29,8 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     height: 16,
     justifyContent: 'center',
-    width: 38,
+    paddingLeft: 5,
+    paddingRight: 5,
   },
   roleTitle: {
     alignSelf: 'center',

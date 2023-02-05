@@ -43,6 +43,7 @@ import {getAppSettingsWithoutAuth} from '../../api/Users';
 import * as Utility from '../../utils';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import Verbs from '../../Constants/Verbs';
+import locationModalStyles from '../../Constants/LocationModalStyle';
 
 export default function ChooseLocationScreen({navigation, route}) {
   const [cityData, setCityData] = useState([]);
@@ -153,8 +154,7 @@ export default function ChooseLocationScreen({navigation, route}) {
         if (e.name === Verbs.gpsErrorDeined) {
           setCurrentLocation(null);
           setUserDeniedLocPerm(true);
-        }
-        else{
+        } else {
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
@@ -315,8 +315,10 @@ export default function ChooseLocationScreen({navigation, route}) {
           }
         />
       </View>
-      {noData && searchText.length > 0 && (
-        <Text style={styles.noDataText}>{strings.enter3CharText}</Text>
+      {searchText.length < 3 && (
+        <Text style={locationModalStyles.noDataText}>
+          {strings.threeCharToSeeAddress}
+        </Text>
       )}
       {noData && searchText.length === 0 && nearbyCities.length > 0 && (
         <SafeAreaView style={{flex: 1}}>
@@ -416,13 +418,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 25,
   },
-  noDataText: {
-    color: colors.whiteColor,
-    fontFamily: fonts.RRegular,
-    fontSize: 14,
-    marginLeft: 40,
-    marginTop: 8,
-  },
+
   searchImg: {
     alignSelf: 'center',
     height: 13,

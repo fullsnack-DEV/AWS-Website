@@ -7,6 +7,7 @@ const DataSource = {
   dominantFoot: [
     {label: 'Left', value: 'Left'},
     {label: 'Right', value: 'Right'},
+    {label: 'Both', value: 'Both'},
   ],
   FeeCycle: [
     {label: 'Weekly', value: 'weekly'},

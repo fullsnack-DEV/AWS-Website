@@ -666,9 +666,9 @@ export default function CreateMemberProfileForm1({navigation, route}) {
                 onChangeText={(text) => setSearchText(text)}
               />
             </View>
-            {noData && searchText.length > 0 && (
+            {searchText.length < 3 && (
               <Text style={locationModalStyles.noDataText}>
-                {strings.enter3CharText}
+                {strings.threeCharToSeeAddress}
               </Text>
             )}
             {noData &&

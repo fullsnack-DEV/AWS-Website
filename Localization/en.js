@@ -1213,7 +1213,7 @@ export default {
   configureEmailAccounttext: 'en_Please configure email in your device',
   NAText: 'en_N/A',
   joinedClubOnText:
-    'en_Joined club on {0} {1} ,{2}\nLast updated by {3} {4} on {5} {6} ,{7}',
+    'en_Joined club on {0} {1}, {2}\nLast updated by {3} {4} on {5} {6} ,{7}',
   inviteOrConnectAccountText: 'en_Invite or Connect to an Account',
   requestForBasicInfoWereSentText:
     'en_Requests for basic info were sent to {0} members.',
@@ -1427,7 +1427,7 @@ export default {
     'en_Please check your inbox to verify email, once it will verify your email will changed automatically.',
   accountInfo: 'en_Account Info',
   update: 'en_Save',
-  email: 'en_E-mail',
+  email: 'en_Email',
   changePassword: 'en_Change password',
 
   featuresNotAvailableText:
@@ -2164,7 +2164,7 @@ export default {
   removeMemberFromGroup: 'en_Remove this member from team',
   basicInfoRequestText:
     'en_{0} wants to collect your basic info. You may choose the sections you want to send or edit each section befor you send the information.',
-  requestBasicInfoTitle: 'en_Request Basic Info',
+  requestBasicInfoTitle: 'en_Request for Basic Info',
   reservations: 'en_Reservations',
   dateFormatPlaceholder: 'en_MM DD YYYY',
   dominantFoot: 'en_Dominant foot',
@@ -2175,4 +2175,13 @@ export default {
   requestInfoAcceptedText:
     'en_When the request is accepted, the basic info in this profile will be updated with the info provided by the member. A user may choose to only provide some of the basic info items.',
   showAgainText: 'en_Don’t show this again.',
+  invoice: 'en_Invoice',
+  underDevelopment: 'eb_Under Development',
+  inviteMemberToGroup: 'en_Invite member to {0}',
+  emailInviteSent: 'en_An email invitation was sent.',
+  updateMyProfile: 'en_Update this information on my profile.',
+  specifications: 'en_Specifications',
+  statusPlaceholder: 'en_Status',
+  threeCharToSeeAddress:
+    'en_Please enter at least 3 characters to see addresses.',
 };
