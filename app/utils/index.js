@@ -2037,6 +2037,69 @@ export const getCalendar = async (
   }
 };
 
+
+export const getEventsSlots = async (
+  participantId,
+  fromDate,
+  type,
+  rangeTime
+) => {
+  try {
+    return getStorage('scheduleSetting').then(async (ids) => {
+      const IDs = ids ?? [];
+      const participants = [];
+      participants.push(participantId);
+      const body = {
+        size: 100,
+        query: {
+          bool: {
+            must: [
+              {
+                bool: {
+                  should: [
+                    {
+                      terms: {
+                        'participants.entity_id.keyword': [
+                          ...participants,
+                          ...IDs,
+                        ],
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+        },
+      };
+
+      if(type === 'future') {
+        body.query.bool.must.push({
+          range: {actual_enddatetime: {gt: fromDate}},
+        });
+        if(rangeTime > 0) {
+          body.query.bool.must.push({
+            range: {actual_enddatetime: {lt: rangeTime}},
+          });
+        }
+      }else{
+        body.query.bool.must.push({
+          range: {start_datetime: {lt: fromDate}},
+        });
+        if(rangeTime > 0) {
+          body.query.bool.must.push({
+            range: {start_datetime: {gt: rangeTime}},
+          });
+        }
+      }
+      console.log('calender elastic search :=>', JSON.stringify(body));
+      return getCalendarIndex(body);
+    });
+  } catch (error) {
+    return [];
+  }
+};
+
 export const uniqueArray = (array, propertyName) =>
   array.filter(
     (e, i) => array.findIndex((a) => a[propertyName] === e[propertyName]) === i,
@@ -2111,23 +2174,24 @@ export const getSportIconUrl = async (sport, entityType, authContext) => {
 };
 
 export const getSportImage = (sportName, type, authContext) => {
+  console.log('TYPET', type)
   if (type === 'player') {
     const tempObj = authContext.sports.filter(
       (obj) => obj.sport === sportName,
     )[0];
-    return tempObj?.player_image;
+    return tempObj;
   } else {
     if (type === 'referee') {
       const tempObj = authContext.sports.filter(
         (obj) => obj.sport === sportName,
       )[0];
-      return tempObj?.referee_image;
+      return tempObj;
     }
     if (type === 'scorekeeper') {
       const tempObj = authContext.sports.filter(
         (obj) => obj.sport === sportName,
       )[0];
-      return tempObj?.scorekeeper_image;
+      return tempObj;
     } // let sportArr = [];
     // authContext.sports.map((item) => {
     //   sportArr = [...sportArr, ...item.format];
@@ -2360,7 +2424,7 @@ export const countNumberOfWeekFromDay = (date) => {
   const endDate = date;
   const givenDay = date.getDay();
   let numberOfDates = 0;
-  while (startDate < endDate) {
+  while (startDate <= endDate) {
     if (startDate.getDay() === givenDay) {
       numberOfDates += 1;
     }
@@ -2374,7 +2438,7 @@ export const countNumberOfWeeks = (date) => {
   const endDate = date;
   const givenDay = date.getDay();
   let numberOfDates = 0;
-  while (startDate < endDate) {
+  while (startDate <= endDate) {
     if (startDate.getDay() === givenDay) {
       numberOfDates += 1;
     }

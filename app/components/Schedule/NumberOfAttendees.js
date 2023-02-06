@@ -40,7 +40,7 @@ function NumberOfAttendees({onChangeMinText, onChangeMaxText, min, max}) {
           style={styles.minMaxStyle}
           keyboardType={'number-pad'}
           onChangeText={onChangeMinText}
-          // value={`${min}`}
+          value={`${min}`}
           textAlignVertical={'center'}
           placeholderTextColor={colors.userPostTimeColor}
         />
@@ -73,7 +73,7 @@ function NumberOfAttendees({onChangeMinText, onChangeMaxText, min, max}) {
           style={styles.minMaxStyle}
           keyboardType={'number-pad'}
           onChangeText={onChangeMaxText}
-          // value={`${max}`}
+          value={`${max}`}
 
           textAlignVertical={'center'}
           placeholderTextColor={colors.userPostTimeColor}

@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     height: 25,
     justifyContent: 'center',
-    backgroundColor: colors.whiteColor,
+    // backgroundColor: colors.whiteColor,
     paddingHorizontal: 5,
     // shadowColor: colors.blackColor,
     // shadowOffset: {width: 0, height: 2},

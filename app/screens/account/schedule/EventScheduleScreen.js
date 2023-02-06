@@ -29,7 +29,7 @@ export default function EventScheduleScreen({
   const [filterData, setFilterData] = useState(null);
 
   useEffect(() => {
-    console.log('eventData aa', eventData)
+
     let events = eventData.filter(
       (obj) => (obj.game_id && obj.game) || obj.title,
     );
@@ -127,7 +127,7 @@ export default function EventScheduleScreen({
     if (events.length > 0) {
       const result = _(events)
         .groupBy((event) =>
-          moment(getJSDate(event.start_datetime)).format('MMM DD, YYYY'),
+          event.start_datetime
         )
         .value();
       const filData = [];
@@ -146,6 +146,8 @@ export default function EventScheduleScreen({
     }
   }, [eventData, filterOptions, selectedFilter]);
 
+
+
   return (
     <View style={styles.mainContainer}>
       {filterData && (
@@ -162,6 +164,7 @@ export default function EventScheduleScreen({
           }
           renderItem={({item}) => {
             if (item.cal_type === 'event') {
+              
               if (item?.game_id && item?.game) {
                 return (
                   <TCEventView
@@ -203,7 +206,7 @@ export default function EventScheduleScreen({
             (section?.data || [])?.filter((obj) => obj.cal_type === 'event')
               .length > 0 && (
               <Text style={styles.sectionHeader}>
-                {days[new Date(section.title).getDay()]}, {section.title}
+                {days[new Date(section.title * 1000).getDay()]},  {moment(getJSDate(section.title)).format('MMM DD, YYYY')}
               </Text>
             )
           }
@@ -226,7 +229,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingLeft: 12,
     backgroundColor: colors.whiteColor,
-    paddingTop: 10,
+    paddingTop: 20,
     paddingBottom: 10,
   },
   dataNotFoundText: {

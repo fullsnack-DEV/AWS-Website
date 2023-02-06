@@ -3,37 +3,34 @@ import {
   StyleSheet,
   View,
   Text,
-  Image,
   TouchableWithoutFeedback,
-  TouchableOpacity,
+  ImageBackground
 } from 'react-native';
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import moment from 'moment';
-import LinearGradient from 'react-native-linear-gradient';
 import images from '../Constants/ImagePath';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
-import EventOfItem from './Schedule/EventOfItem';
 import EventBetweenUserItem from './Schedule/EventBetweenUserItem';
-import {getHitSlop, getSportName} from '../utils';
+import {getSportName} from '../utils';
 import AuthContext from '../auth/context';
 
 export default function TCEventView({
   onPress,
   data,
-  onThreeDotPress,
   eventBetweenSection,
   // entity,
 }) {
+
   const authContext = useContext(AuthContext);
 
   const isGame = !!(data?.game_id && data?.game);
 
-  let showDot = false;
+  // let showDot = false;
   const startDate = data?.start_datetime
     ? new Date(data.start_datetime * 1000)
     : '';
-  const endDate = data?.end_datetime ? new Date(data.end_datetime * 1000) : '';
+  // const endDate = data?.end_datetime ? new Date(data.end_datetime * 1000) : '';
   const location =
     data?.location?.location_name ??
     data?.game?.venue?.address ??
@@ -86,37 +83,23 @@ export default function TCEventView({
     refereeFound(data) ||
     scorekeeperFound(data)
   ) {
-    showDot = true;
+    // showDot = true;
   } else {
-    showDot = false;
+    // showDot = false;
   }
 
   return (
-    <TouchableWithoutFeedback style={styles.backgroundView} onPress={onPress}>
+    <TouchableWithoutFeedback onPress={onPress}>
       <View style={styles.backgroundView} onPress={onPress}>
-        <LinearGradient
-          colors={
-            isGame
-              ? [colors.yellowColor, colors.darkThemeColor]
-              : [colors.greenGradientEnd, colors.greenGradientStart]
-          }
-          style={styles.colorView}>
-          {data?.allDay && data?.allDay === true ? (
-            <Text style={styles.allTypeText}>{'All'}</Text>
-          ) : (
-            <Text style={styles.dateMonthText}>
-              {moment(startDate).format('h')}
-              <Text style={styles.dateMonthSmallText}>
-                :{moment(startDate).format('mm')}
-              </Text>
-            </Text>
-          )}
-          {data?.allDay && data?.allDay === true ? (
-            <Text style={styles.dateText}>Day</Text>
-          ) : (
-            <Text style={styles.dateText}>{moment(startDate).format('a')}</Text>
-          )}
-        </LinearGradient>
+        <View>
+          <ImageBackground 
+          source={images.challengeDefault} 
+          resizeMode="cover" 
+          imageStyle={styles.imageBorder}
+          style={styles.eventImage}>
+             <View style={{height: 100}}/>
+          </ImageBackground>
+        </View>
         <View style={styles.eventText}>
           <View style={styles.eventTitlewithDot}>
             <Text
@@ -127,33 +110,38 @@ export default function TCEventView({
               numberOfLines={1}>
               {title}
             </Text>
-            {showDot && (
+            {/* {showDot && (
               <TouchableOpacity
                 onPress={onThreeDotPress}
                 hitSlop={getHitSlop(15)}>
                 <Image source={images.vertical3Dot} style={styles.threedot} />
               </TouchableOpacity>
-            )}
+            )} */}
           </View>
           {description && (
-            <Text style={styles.eventDescription} numberOfLines={2}>
-              {description}
-            </Text>
+          <Text style={styles.eventDescription} numberOfLines={2}>
+            {description}
+          </Text>
           )}
           <View style={styles.bottomView}>
             <Text style={styles.eventTime}>{`${moment(startDate).format(
-              'h:mma',
+              'ddd, MMM DD',
             )} - `}</Text>
-            <Text style={styles.eventTime}>
+            <Text style={styles.eventTime}>{`${moment(startDate).format(
+              'h:mma'
+            )}`}</Text>
+            {/* <Text style={styles.eventTime}>
               {moment(endDate).format('h:mma')}
-            </Text>
+            </Text> */}
             {location !== '' && (
-              <Text style={[styles.eventTime, {marginHorizontal: 5}]}> | </Text>
+              <Text style={styles.eventTime}> | </Text>
             )}
             <Text numberOfLines={1} style={{...styles.eventTime, flex: 1}}>
               {location !== '' && location}
             </Text>
           </View>
+        </View>
+        <View style={styles.challengeContainer}>
           {eventBetweenSection && (
             <EventBetweenUserItem
               firstUserImage={
@@ -168,24 +156,6 @@ export default function TCEventView({
               }
             />
           )}
-          {data?.game?.referees?.length > 0 && (
-            <EventOfItem
-              eventOfText={'Referee'}
-              refereeList={data?.game?.referees}
-              // countryIcon={
-              //   refereeImage ? { uri: refereeImage } : images.profilePlaceHolder
-              // }
-            />
-          )}
-          {data?.game?.scorekeepers?.length > 0 && (
-            <EventOfItem
-              eventOfText={'Scorekeeper'}
-              refereeList={data?.game?.scorekeepers}
-              // countryIcon={
-              //   refereeImage ? { uri: refereeImage } : images.profilePlaceHolder
-              // }
-            />
-          )}
         </View>
       </View>
     </TouchableWithoutFeedback>
@@ -193,12 +163,20 @@ export default function TCEventView({
 }
 
 const styles = StyleSheet.create({
+  eventImage:{
+    flex: 1,
+    borderRadius: 10
+  },
+  imageBorder: { 
+    borderTopLeftRadius: 10, 
+    borderTopRightRadius: 10
+  },
   backgroundView: {
     alignSelf: 'center',
     backgroundColor: colors.whiteColor,
     borderRadius: 10,
     elevation: 5,
-    flexDirection: 'row',
+    flexDirection: 'column',
     marginBottom: 15,
     shadowColor: colors.googleColor,
     shadowOffset: {width: 0, height: 2},
@@ -208,37 +186,8 @@ const styles = StyleSheet.create({
   },
   bottomView: {
     flexDirection: 'row',
-    marginTop: 10,
+    marginTop: 5,
     alignItems: 'center',
-  },
-  colorView: {
-    alignItems: 'center',
-    backgroundColor: colors.orangeColor,
-    borderBottomLeftRadius: 5,
-    borderTopLeftRadius: 5,
-    paddingTop: 10,
-    paddingLeft: 5,
-    width: wp('12%'),
-  },
-  dateMonthText: {
-    color: colors.whiteColor,
-    fontSize: 20,
-    fontFamily: fonts.RBold,
-  },
-  dateMonthSmallText: {
-    color: colors.whiteColor,
-    fontSize: 10,
-    fontFamily: fonts.RBold,
-  },
-  allTypeText: {
-    color: colors.whiteColor,
-    fontSize: 20,
-    fontFamily: fonts.RBold,
-  },
-  dateText: {
-    color: colors.whiteColor,
-    fontSize: 16,
-    fontFamily: fonts.RLight,
   },
   eventDescription: {
     fontSize: 14,
@@ -247,12 +196,14 @@ const styles = StyleSheet.create({
     lineHeight: 15,
   },
   eventText: {
-    padding: 10,
-    width: wp('83%'),
+    paddingTop: 15,
+    paddingLeft: 15,
+    paddingRight: 15,
+    width: wp('90%'),
   },
   eventTime: {
     fontSize: 12,
-    color: colors.lightBlackColor,
+    color: colors.darkBlackColor,
     fontFamily: fonts.RLight,
   },
   eventTitle: {
@@ -265,12 +216,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  threedot: {
-    height: 12,
-    right: 6,
-    marginTop: 5,
-    resizeMode: 'contain',
-    tintColor: colors.grayColor,
-    width: 12,
-  },
+  challengeContainer:{
+    padding: 10,
+  }
 });

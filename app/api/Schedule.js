@@ -21,6 +21,7 @@ export const blockedSlots = async (entityType, entityID, authContext) =>
 //   authContext,
 // });
 
+
 export const editSlots = async (entity_type, entity_id, data, authContext) =>
   makeAPIRequest({
     method: 'post',
