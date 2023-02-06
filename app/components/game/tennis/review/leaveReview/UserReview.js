@@ -1,6 +1,7 @@
 import React from 'react';
 import {Text, View, StyleSheet, Pressable, FlatList} from 'react-native';
 import FastImage from 'react-native-fast-image';
+import { format } from 'react-string-format';
 import fonts from '../../../../../Constants/Fonts';
 import images from '../../../../../Constants/ImagePath';
 import colors from '../../../../../Constants/Colors';
@@ -8,6 +9,7 @@ import TCKeyboardView from '../../../../TCKeyboardView';
 import SelectedImageList from '../../../../WritePost/SelectedImageList';
 import NewsFeedDescription from '../../../../newsFeed/NewsFeedDescription';
 import UserRatePerformance from './UserRatePerformance';
+import { strings } from '../../../../../../Localization/translation';
 
 // const makeTagedUser=()=>{
 //   if(reviewsData?.team_reviews[teamNo]?.comment)
@@ -29,8 +31,7 @@ const UserReview = ({
     <View style={styles.mainContainer}>
       {/* Title */}
       <Text style={styles.titleText}>
-        Please, rate the performance of {teamData?.full_name} and leave a review
-        for the team.
+        {format(strings.doubleteamtitle, teamData?.full_name)}
       </Text>
 
       {/*  Logo Container */}
@@ -44,7 +45,7 @@ const UserReview = ({
                 : images.teamPlaceholder
             }
             resizeMode={'contain'}
-            style={{height: 50, width: 50, borderRadius: 100}}
+            style={{height: 40, width:40, borderRadius: 20}}
           />
         </View>
 
@@ -54,7 +55,7 @@ const UserReview = ({
         </Text>
 
         {/*    Country Name */}
-        <Text style={styles.countryName}>{teamData?.country}</Text>
+        <Text style={styles.countryName}>{teamData.city}, {teamData.state_abbr}</Text>
       </View>
 
       {/* Seperator */}
@@ -160,41 +161,45 @@ const UserReview = ({
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    padding: 15,
+    marginTop:20,
+    paddingHorizontal:15,
     backgroundColor: colors.whiteColor,
   },
   titleText: {
     fontSize: 20,
     color: colors.lightBlackColor,
-    fontFamily: fonts.RRegular,
+    fontWeight:'500',
+    fontFamily: fonts.Roboto,
+    lineHeight:30,
   },
   logoContainer: {
     alignItems: 'center',
     justifyContent: 'center',
   },
   imageContainer: {
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 6,
-    elevation: 13,
+    marginTop:25,
     alignItems: 'center',
     justifyContent: 'center',
   },
   teamName: {
+    marginTop:7.5,
     color: colors.lightBlackColor,
-    fontFamily: fonts.RBold,
+    fontWeight:'700',
+    fontFamily:fonts.Roboto,
     fontSize: 16,
+    lineHeight:24
   },
   countryName: {
     color: colors.lightBlackColor,
-    fontFamily: fonts.RLight,
+    fontFamily: fonts.Roboto,
+    fontWeight:'300',
+    lineHeight:21,
     fontSize: 14,
   },
   seperator: {
     backgroundColor: colors.grayBackgroundColor,
-    marginVertical: 20,
-    height: 2,
+    marginVertical: 25,
+    height: 1,
     width: '100%',
   },
   footerText: {

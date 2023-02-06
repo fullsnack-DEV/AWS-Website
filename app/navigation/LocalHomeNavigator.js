@@ -2184,7 +2184,7 @@ const LocalHomeNavigator = () => (
       name="ChangeReservationInfoScreen"
       component={ChangeReservationInfoScreen}
       options={{
-        title: 'Change Match Reservation',
+        title: strings.changeMatchReservation,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -2403,7 +2403,7 @@ const LocalHomeNavigator = () => (
       name="EditChallenge"
       component={EditChallenge}
       options={{
-        title: 'Change Match Reservation',
+        title: strings.changeMatchReservation,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -3243,7 +3243,7 @@ const LocalHomeNavigator = () => (
       name="ChooseTimeSlotScreen"
       component={ChooseTimeSlotScreen}
       options={{
-        title: 'Choose a date & time',
+        title: strings.chooseDateTimeText,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

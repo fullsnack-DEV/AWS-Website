@@ -1839,7 +1839,7 @@ const AccountNavigator = () => (
       name="ChangeReservationInfoScreen"
       component={ChangeReservationInfoScreen}
       options={{
-        title: 'Change Match Reservation',
+        title: strings.changeMatchReservation,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -2074,7 +2074,7 @@ const AccountNavigator = () => (
       name="EditChallenge"
       component={EditChallenge}
       options={{
-        title: 'Change Match Reservation',
+        title: strings.changeMatchReservation,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -3055,7 +3055,7 @@ const AccountNavigator = () => (
       name="ChooseTimeSlotScreen"
       component={ChooseTimeSlotScreen}
       options={{
-        title: 'Choose a date & time',
+        title: strings.chooseDateTimeText,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

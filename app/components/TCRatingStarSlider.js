@@ -1,12 +1,14 @@
 import React, {useEffect, useState} from 'react';
-import {View, StyleSheet, TouchableOpacity} from 'react-native';
+import {View, StyleSheet, TouchableOpacity, Text} from 'react-native';
 import TCStar from './TCStar';
 import {STAR_COLOR} from '../utils';
+import colors from '../Constants/Colors';
+import fonts from '../Constants/Fonts';
 
 const TCRatingStarSlider = ({
   totalRating = 5,
   currentRating = 0,
-  starSize = 22,
+  starSize = 32,
   starColor = STAR_COLOR.YELLOW,
   style = {},
   onPress,
@@ -38,6 +40,7 @@ const TCRatingStarSlider = ({
             />
           </TouchableOpacity>
         ))}
+        <Text style={[styles.valueStyle,{color: currentRating === 0 ? colors.lightBlackColor : colors.kHexColorFF8A01}]}>{(currentRating === 0) ? '-' : `${currentRating}`}</Text>
     </View>
   );
 };
@@ -46,5 +49,15 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
   },
+  valueStyle:{
+    marginStart:10,
+    marginEnd:40,
+    color: colors.lightBlackColor,
+    fontFamily: fonts.Roboto,
+    fontSize: 16,
+    fontWeight:'700',
+    lineHeight:24,
+    alignSelf:'center'
+  }
 });
 export default TCRatingStarSlider;

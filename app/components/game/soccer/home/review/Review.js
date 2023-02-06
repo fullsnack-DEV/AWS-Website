@@ -8,7 +8,7 @@ import ActionSheet from 'react-native-actionsheet';
 import fonts from '../../../../../Constants/Fonts';
 import RatingForTeams from './RatingForTeams';
 import colors from '../../../../../Constants/Colors';
-import {getGameReview, getSportsList} from '../../../../../api/Games';
+import {getGameReview} from '../../../../../api/Games';
 import RatingForReferees from './RatingForReferees';
 import ReviewsList from './ReviewsList';
 import TCGradientButton from '../../../../TCGradientButton';

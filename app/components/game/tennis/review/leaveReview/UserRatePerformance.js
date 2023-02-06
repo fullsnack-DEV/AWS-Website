@@ -27,16 +27,11 @@ const UserRatePerformance = ({
 
   return (
     <View style={styles.mainContainer}>
-      {/*    Title */}
-      <Text style={styles.titleText}>
-        Rate<Text style={{color: colors.redDelColor}}>*</Text>
-      </Text>
-
       {/* Questions */}
 
       {isRefereeAvailable
         ? reviewAttributes.map((item, index) => (
-          <View style={{marginVertical: 5}} key={index}>
+          <View key={index}>
             <Text style={styles.questionText}>{item.description}</Text>
             <TCRatingStarSlider
                 currentRating={reviewsData[item.name]}
@@ -69,11 +64,6 @@ const UserRatePerformance = ({
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-  },
-  titleText: {
-    fontFamily: fonts.RRegular,
-    fontSize: 20,
-    color: colors.lightBlackColor,
   },
   questionText: {
     color: colors.lightBlackColor,

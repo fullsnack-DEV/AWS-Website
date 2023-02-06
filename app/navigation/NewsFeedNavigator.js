@@ -939,7 +939,7 @@ const NewsFeedNavigator = () => (
       name="ChooseTimeSlotScreen"
       component={ChooseTimeSlotScreen}
       options={{
-        title: 'Choose a date & time',
+        title: strings.chooseDateTimeText,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

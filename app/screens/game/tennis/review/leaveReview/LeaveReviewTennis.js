@@ -36,45 +36,45 @@ import {ImageUploadContext} from '../../../../../context/ImageUploadContext';
 const LeaveReviewTennis = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
   const [currentForm, setCurrentForm] = useState(
-    route?.params?.selectedTeam === 'home' ? 1 : 2,
+    route.params.selectedTeam === 'home' ? 1 : 2,
   );
   const [loading, setLoading] = useState(false);
   const [starAttributes, setStarAttributes] = useState(
-    route?.params?.starAttributes,
+    route.params?.starAttributes,
   );
 
-  const [isRefereeAvailable] = useState(route?.params?.isRefereeAvailable);
-  const [gameData] = useState(route?.params?.gameData);
+  const [isRefereeAvailable] = useState(route.params.isRefereeAvailable);
+  const [gameData] = useState(route.params.gameData);
   const [onPressReview] = useState(
-    route?.params?.onPressReviewDone
-      ? () => route?.params?.onPressReviewDone
+    route.params.onPressReviewDone
+      ? () => route.params.onPressReviewDone
       : () => {},
   );
 
   const [reviewsData, setReviewsData] = useState(
     currentForm === 1
-      ? gameData?.home_team?.user_id
+      ? gameData.home_team.user_id
         ? {
-            player_id: gameData?.home_team?.user_id,
+            player_id: gameData.home_team.user_id,
             comment: '',
             attachments: [],
             tagged: [],
           }
         : {
-            team_id: gameData?.home_team?.group_id,
+            team_id: gameData.home_team.group_id,
             comment: '',
             attachments: [],
             tagged: [],
           }
-      : gameData?.away_team?.user_id
+      : gameData.away_team.user_id
       ? {
-          player_id: gameData?.away_team?.user_id,
+          player_id: gameData.away_team.user_id,
           comment: '',
           attachments: [],
           tagged: [],
         }
       : {
-          team_id: gameData?.away_team?.group_id,
+          team_id: gameData.away_team.group_id,
           comment: '',
           attachments: [],
           tagged: [],
@@ -82,48 +82,48 @@ const LeaveReviewTennis = ({navigation, route}) => {
   );
 
   useEffect(() => {
-    if (route?.params?.gameReviewData) {
+    if (route.params.gameReviewData) {
       const reviewObj =
-        route?.params?.gameReviewData ??
-        JSON.parse(route?.params?.gameReviewData?.results?.[0]?.object)
+        route.params.gameReviewData ??
+        JSON.parse(route.params.gameReviewData?.results?.[0]?.object)
           ?.playerReview ??
-        JSON.parse(route?.params?.gameReviewData?.results?.[0]?.object)
+        JSON.parse(route.params.gameReviewData?.results?.[0]?.object)
           ?.gameReview;
       setReviewsData({...reviewObj});
     }
-  }, [route?.params?.gameReviewData, route?.params?.gameReviewData?.results]);
+  }, [route.params.gameReviewData, route.params.gameReviewData?.results]);
 
   useEffect(() => {
     const obj = {...reviewsData};
-    if (route?.params?.selectedImageList) {
-      obj.attachments = route?.params?.selectedImageList;
+    if (route.params.selectedImageList) {
+      obj.attachments = route.params.selectedImageList;
       setReviewsData(obj);
     }
-    if (route?.params?.searchText?.length >= 0) {
-      obj.comment = route?.params?.searchText ?? '';
+    if (route.params.searchText?.length >= 0) {
+      obj.comment = route.params.searchText ?? '';
       setReviewsData(obj);
     }
-    if (route?.params?.entityTags) {
-      obj.tagged = route?.params?.entityTags;
+    if (route.params.entityTags) {
+      obj.tagged = route.params.entityTags;
       setReviewsData(obj);
     }
-    if (route?.params?.format_tagged_data) {
-      obj.format_tagged_data = route?.params?.format_tagged_data;
+    if (route.params.format_tagged_data) {
+      obj.format_tagged_data = route.params.format_tagged_data;
       setReviewsData(obj);
     }
   }, [
-    route?.params?.selectedImageList,
-    route?.params?.searchText,
-    route?.params?.entityTags,
-    route?.params?.format_tagged_data,
+    route.params.selectedImageList,
+    route.params.searchText,
+    route.params.entityTags,
+    route.params.format_tagged_data,
   ]);
 
   useEffect(() => {
-    setStarAttributes([...route?.params?.starAttributes]);
+    setStarAttributes([...route.params.starAttributes]);
 
-    // console.log('Edit review Data::=>', JSON.stringify(route?.params?.gameReviewData?.results));
-    if (!route?.params?.gameReviewData) {
-      loadStarAttributes(route?.params?.starAttributes || []);
+    // console.log('Edit review Data::=>', JSON.stringify(route.params.gameReviewData?.results));
+    if (!route.params.gameReviewData) {
+      loadStarAttributes(route.params.starAttributes || []);
     }
   }, []);
 
@@ -146,7 +146,7 @@ const LeaveReviewTennis = ({navigation, route}) => {
         </TouchableOpacity>
       ),
       headerRight: () => (
-        <Text onPress={createReview} style={styles.nextButtonStyle}>
+        <Text onPress={createReview} style={styles.doneButtonStyle}>
           {strings.done}
         </Text>
       ),
@@ -357,10 +357,10 @@ const LeaveReviewTennis = ({navigation, route}) => {
           </TouchableOpacity>
         }
         centerComponent={
-          <Text style={styles.eventTextStyle}>Leave a match review</Text>
+          <Text style={styles.titleTextStyle}>{strings.leavereviewinsmall}</Text>
         }
         rightComponent={
-          <Text onPress={createReview} style={styles.nextButtonStyle}>
+          <Text onPress={createReview} style={styles.doneButtonStyle}>
             {strings.done}
           </Text>
         }
@@ -381,7 +381,7 @@ const LeaveReviewTennis = ({navigation, route}) => {
               navigation={navigation}
               route={route}
               isRefereeAvailable={isRefereeAvailable}
-              tags={reviewsData?.tagged || route?.params?.entityTags}
+              tags={reviewsData?.tagged || route.params.entityTags}
             />
           ) : (
             <UserReview
@@ -395,7 +395,7 @@ const LeaveReviewTennis = ({navigation, route}) => {
               route={route}
               isRefereeAvailable={isRefereeAvailable}
               tags={
-                route?.params?.format_tagged_data ||
+                route.params.format_tagged_data ||
                 reviewsData?.format_tagged_data
               }
             />
@@ -407,9 +407,10 @@ const LeaveReviewTennis = ({navigation, route}) => {
 };
 
 const styles = StyleSheet.create({
-  nextButtonStyle: {
-    fontFamily: fonts.RRegular,
+  doneButtonStyle: {
+    fontFamily: fonts.Roboto,
     fontSize: 16,
+    fontWeight:'500'
   },
   backImageStyle: {
     height: 20,
@@ -417,9 +418,10 @@ const styles = StyleSheet.create({
     tintColor: colors.blackColor,
     resizeMode: 'contain',
   },
-  eventTextStyle: {
+  titleTextStyle: {
     fontSize: 16,
-    fontFamily: fonts.RBold,
+    fontFamily: fonts.Roboto,
+    fontWeight:'700',
     alignSelf: 'center',
   },
   headerSeperator: {
