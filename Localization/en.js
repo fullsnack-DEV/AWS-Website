@@ -2168,6 +2168,7 @@ export default {
   reservations:'en_Reservations',
   leavereviewinsmall:'en_Leave Review',
   doubleteamtitle:'en_Please, rate the performance of {0} and leave a review for the team below.',
+  teamreviewtitle:'en_Please rate the sportsmanship of {0} and leave a review.',
   refereereviewtitle:'en_Please rate the performance of referee {0} and leave a review.',
   rateperformance:'en_Rate performance',
   leaveareview:'en_Leave a review',
@@ -2177,4 +2178,6 @@ export default {
   deleteallrating:'en_Delete All Ratings',
   scorekeeperreviewtitle:'en_Please rate the performance of scorekeeper {0} and leave a review.',
   writescorekeeperreviewplacholder:'en_Describe what you thought about the scorekeeper\'s and conduct pertaining the match.',
+  writeteamreviewplacholder:'en_Describe what you thought about the team\'s performance and sportsmanship pertaining to the match.',
+  writeplayerreviewplacholder:'en_Describe what you thought about the player\'s performance and sportsmanship pertaining to the match.',
 };

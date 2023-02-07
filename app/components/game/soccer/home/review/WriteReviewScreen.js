@@ -41,9 +41,6 @@ export default function WriteReviewScreen({navigation, route}) {
     route.params.selectedImageList,
   );
   const [loading, setloading] = useState(false);
-  const [onPressDoneButton] = useState(
-    route.params.onPressDone ? () => route.params.onPressDone : () => {},
-  );
   const [comeFrom] = useState(route.params.comeFrom);
 
   const renderHeader = useMemo(
@@ -56,28 +53,29 @@ export default function WriteReviewScreen({navigation, route}) {
             </TouchableOpacity>
           </View>
           <View style={styles.writePostViewStyle}>
-            <Text style={styles.writePostTextStyle}>{strings.leaveareview}</Text>
+            <Text style={styles.writePostTextStyle}>
+              {strings.leaveareview}
+            </Text>
           </View>
           <TouchableOpacity
             style={styles.doneViewStyle}
             onPress={async () => {
               const uploadTimeout = selectImage?.length * 300;
-                setloading(true);
-                navigation.navigate(comeFrom, {
-                  selectedImageList: selectImage,
-                  comment,
-                  onPressDone: onPressDoneButton,
-                });
-                setTimeout(() => {
-                  setloading(false);
-                }, uploadTimeout);
+              setloading(true);
+              navigation.navigate(comeFrom, {
+                selectedImageList: selectImage,
+                comment,
+              });
+              setTimeout(() => {
+                setloading(false);
+              }, uploadTimeout);
             }}>
             <Text style={styles.doneTextStyle}>{strings.done}</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
     ),
-    [navigation, onPressDoneButton, comment, selectImage],
+    [navigation, comment, selectImage],
   );
 
   const addStr = (str, index, stringToAdd) =>
@@ -179,9 +177,12 @@ export default function WriteReviewScreen({navigation, route}) {
         bounces={false}
         style={{flex: 1, overflow: 'visible'}}
       >
+        {/* eslint-disable no-nested-ternary */}
         <TextInput
           ref={textInputRef}
-          placeholder={route.params.comeFrom === 'RefereeReviewScreen' ? strings.writerefereereviewplacholder : strings.writescorekeeperreviewplacholder}
+          placeholder={route.params.comeFrom === 'RefereeReviewScreen' ? strings.writerefereereviewplacholder :
+          route.params.comeFrom === 'ScorekeeperReviewScreen' ? strings.writescorekeeperreviewplacholder :
+          route.params.isPlayer ? strings.writeplayerreviewplacholder : strings.writeteamreviewplacholder}
           placeholderTextColor={colors.userPostTimeColor}
           onChangeText={setComment}
           style={styles.textInputField}

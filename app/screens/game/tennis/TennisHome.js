@@ -93,6 +93,7 @@ const TennisHome = ({navigation, route}) => {
     useState([]);
   const [starAttributesForScorekeeper, setStarAttributesForScorekeeper] =
     useState([]);
+
   const [starAttributesForTeam, setStarAttributesForTeam] = useState([]);
 
   const [starAttributesForPlayer, setStarAttributesForPlayer] = useState([]);
@@ -120,9 +121,7 @@ const TennisHome = ({navigation, route}) => {
     const scorekeeperReviewProp =
       tennisSportData?.scorekeeper_review_properties ?? [];
 
-    const sliderReviewPropForTeam = [];
     const starReviewPropForTeam = [];
-    const sliderReviewPropForPlayer = [];
     const starReviewPropForPlayer = [];
     const sliderReviewPropForReferee = [];
     const starReviewPropForReferee = [];
@@ -131,9 +130,7 @@ const TennisHome = ({navigation, route}) => {
 
     if (teamReviewProp?.length) {
       teamReviewProp.filter((item) => {
-        if (item.type === 'slider') {
-          sliderReviewPropForTeam.push(item?.name?.toLowerCase());
-        } else if (item.type === 'star') {
+        if (item.type === 'star' || item.type === 'topstar' || item.type === 'bottomstar') {
           starReviewPropForTeam.push(item);
         }
         return true;
@@ -142,14 +139,11 @@ const TennisHome = ({navigation, route}) => {
     }
     if (playerReviewProp?.length) {
       playerReviewProp.filter((item) => {
-        if (item.type === 'slider') {
-          sliderReviewPropForPlayer.push(item);
-        } else if (item.type === 'star') {
+        if (item.type === 'star' || item.type === 'topstar' || item.type === 'bottomstar') {
           starReviewPropForPlayer.push(item);
         }
         return true;
       });
-
       setStarAttributesForPlayer([...starReviewPropForPlayer]);
     }
     if (refereeReviewProp?.length) {
@@ -994,7 +988,7 @@ const TennisHome = ({navigation, route}) => {
             }
           },
         );
-      } else if (gameData?.user_challenge) {
+      } else if (gameData.user_challenge) {
         patchOrAddReviewPlayer({
           currentForm,
           isAlreadyReviewed,
@@ -1166,7 +1160,7 @@ const TennisHome = ({navigation, route}) => {
   const getGameReviewsData = useCallback(
     (reviewID, isHome) => {
       setLoading(true);
-      getGameReview(gameData?.game_id, reviewID, authContext)
+      getGameReview(gameData.game_id, reviewID, authContext)
         .then((response) => {
           setLoading(false);
           modalizeRef.current.close();
@@ -1174,10 +1168,10 @@ const TennisHome = ({navigation, route}) => {
             gameData,
             gameReviewData: response.payload,
             selectedTeam: isHome ? 'home' : 'away',
-            starAttributes: gameData?.user_challenge
+            starAttributes: gameData.user_challenge
               ? starAttributesForPlayer
               : starAttributesForTeam,
-            isRefereeAvailable: gameData?.referees?.length > 0,
+            isRefereeAvailable: gameData.referees?.length > 0,
             onPressReviewDone,
           });
         })
@@ -1200,46 +1194,28 @@ const TennisHome = ({navigation, route}) => {
     ({item}) => {
       const reservationDetail = item; // item?.reservation
       let isReviewed = false;
-      if (reservationDetail?.isHome) {
-        if (gameData?.home_review_id) {
+      let reviewID = '';
+      if (reservationDetail.isHome) {
+        if (gameData.home_review_id) {
           isReviewed = true;
+          reviewID = gameData.home_review_id
         }
-      } else if (gameData?.away_review_id) {
+      } else if (gameData.away_review_id) {
         isReviewed = true;
+        reviewID = gameData.away_review_id
       }
 
       return (
         <EntityReviewView
           myUserId={authContext.entity.uid}
           isShowReviewButton={isCheckReviewButton(reservationDetail)}
-          isReviewed={isReviewed} // we have to change this condition if both player can give review to referee
-          userID={reservationDetail?.group_id ?? reservationDetail?.user_id}
-          title={reservationDetail?.group_name ?? reservationDetail?.full_name}
-          profileImage={reservationDetail?.thumbnail}
+          isReviewed={isReviewed}
+          userID={reservationDetail.group_id ?? reservationDetail.user_id}
+          title={reservationDetail.group_name ?? reservationDetail.full_name}
+          profileImage={reservationDetail.thumbnail}
           onReviewPress={() => {
-            if (reservationDetail?.isHome) {
-              if (gameData?.home_review_id) {
-                getGameReviewsData(
-                  gameData?.home_review_id,
-                  reservationDetail?.isHome,
-                );
-              } else {
-                modalizeRef.current.close();
-                navigation.navigate('LeaveReviewTennis', {
-                  gameData,
-                  selectedTeam: reservationDetail?.isHome ? 'home' : 'away',
-                  starAttributes: gameData?.user_challenge
-                    ? starAttributesForPlayer
-                    : starAttributesForTeam,
-                  isRefereeAvailable: gameData?.referees?.length > 0,
-                  onPressReviewDone,
-                });
-              }
-            } else if (gameData?.away_review_id) {
-              getGameReviewsData(
-                gameData?.away_review_id,
-                reservationDetail?.isHome,
-              );
+            if (isReviewed) {
+              getGameReviewsData(reviewID,reservationDetail.isHome);
             } else {
               modalizeRef.current.close();
               navigation.navigate('LeaveReviewTennis', {
