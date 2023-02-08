@@ -109,13 +109,13 @@ const Review = ({navigation, gameData, isAdmin, getSoccerGameReview}) => {
   const Seperator = () => <View style={styles.separator} />;
   const getGameReviewsData = () => {
     setLoading(true);
-    getGameReview(gameData?.game_id, gameData?.review_id, authContext)
+    getGameReview(gameData.game_id, gameData.review_id, authContext)
       .then((response) => {
         navigation.navigate('LeaveReview', {
           gameData,
           gameReviewData: response.payload,
-          sliderAttributes,
           starAttributes,
+          isRefereeAvailable: gameData.referees?.length > 0,
         });
         setLoading(false);
       })
@@ -230,8 +230,8 @@ const Review = ({navigation, gameData, isAdmin, getSoccerGameReview}) => {
             } else {
               navigation.navigate('LeaveReview', {
                 gameData,
-                sliderAttributes,
                 starAttributes,
+                isRefereeAvailable: gameData.referees?.length > 0,
               });
             }
           }

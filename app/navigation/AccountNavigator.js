@@ -101,7 +101,7 @@ import SoccerApproveDisapproveConfirmation from '../screens/game/soccer/summary/
 import EditLineUpScreen from '../screens/game/soccer/lineUp/EditLineUpScreen';
 import EditLineUpCoachScreen from '../screens/game/soccer/lineUp/EditRosterCoacheScreen';
 import EditChallengeAvailability from '../screens/account/schedule/EditChallengeAvailability';
-import LeaveReview from '../screens/game/soccer/review/leaveReview/LeaveReview';
+import LeaveReview from '../screens/game/leaveReview/LeaveReview';
 import TennisRecordList from '../screens/game/tennis/TennisRecordList';
 import EditRosterScreen from '../screens/game/soccer/EditRosterScreen';
 import EditFeeScreen from '../screens/challenge/alterChallenge/EditFeeScreen';
@@ -161,7 +161,6 @@ import RegisterPlayerSuccess from '../screens/account/registerPlayer/RegisterPla
 import AccountScreen from '../screens/account/AccountScreen';
 import NotificationNavigator from './NotificationNavigator';
 import ReservationNavigator from './ReservationNavigator';
-import LeaveReviewTennis from '../screens/game/tennis/review/leaveReview/LeaveReviewTennis';
 import SingleNotificationScreen from '../screens/notificationsScreen/SingleNotificationScreen';
 import ManageChallengeScreen from '../screens/challenge/manageChallenge/ManageChallengeScreen';
 import GameType from '../screens/challenge/manageChallenge/settings/GameType';
@@ -2308,15 +2307,7 @@ const AccountNavigator = () => (
         headerShown: false,
       }}
     />
-
-    <Stack.Screen
-      name="LeaveReviewTennis"
-      component={LeaveReviewTennis}
-      options={{
-        headerShown: false,
-      }}
-    />
-
+    
     {/* Scorekeeper screens */}
     <Stack.Screen
       name="ScorekeeperReservationScreen"
