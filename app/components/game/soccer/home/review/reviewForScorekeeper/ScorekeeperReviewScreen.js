@@ -4,7 +4,6 @@ import React, {useState, useEffect} from 'react';
 import {
   Alert,
   ScrollView,
-  StyleSheet,
   View,
   Text,
   TouchableOpacity,
@@ -20,7 +19,6 @@ import fonts from '../../../../../../Constants/Fonts';
 import {displayLocation, STAR_COLOR} from '../../../../../../utils';
 import images from '../../../../../../Constants/ImagePath';
 import colors from '../../../../../../Constants/Colors';
-import TCKeyboardView from '../../../../../TCKeyboardView';
 import TCRatingStarSlider from '../../../../../TCRatingStarSlider';
 import Header from '../../../../../Home/Header';
 import SelectedImageList from '../../../../../WritePost/SelectedImageList';
@@ -207,7 +205,6 @@ return (
     <ActivityLoader visible={loading} />
     {!loading && (
       <ScrollView>
-        <TCKeyboardView>
           <View style={styles.mainContainer}>
             {/* Title */}
             <Text style={styles.titleText}>
@@ -229,10 +226,10 @@ return (
                 />
               </View>
 
-              {/*    Reviewed name */}
+              {/* Reviewed name */}
               <Text style={styles.teamName}>{userData.full_name}</Text>
 
-              {/* Location Name */}
+              {/* Reviewed Location */}
               <Text style={styles.countryName}>{displayLocation(userData)}</Text>
             </View>
 
@@ -397,7 +394,6 @@ return (
               keyExtractor={(item, index) => index.toString()}
             />
           </View>
-        </TCKeyboardView>
       </ScrollView>
     )}
   </View>

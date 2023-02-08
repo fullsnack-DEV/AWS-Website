@@ -4,7 +4,6 @@ import React, {useState, useEffect,} from 'react';
 import {
   Alert,
   ScrollView,
-  StyleSheet,
   View,
   Text,
   TouchableOpacity,
@@ -21,7 +20,6 @@ import {displayLocation, STAR_COLOR} from '../../../../../../utils';
 import images from '../../../../../../Constants/ImagePath';
 import colors from '../../../../../../Constants/Colors';
 
-import TCKeyboardView from '../../../../../TCKeyboardView';
 import TCRatingStarSlider from '../../../../../TCRatingStarSlider';
 import Header from '../../../../../Home/Header';
 import SelectedImageList from '../../../../../WritePost/SelectedImageList';
@@ -207,7 +205,6 @@ export default function RefereeReviewScreen({navigation, route}) {
       <ActivityLoader visible={loading} />
       {!loading && (
         <ScrollView>
-          <TCKeyboardView>
             <View style={styles.mainContainer}>
               {/* Title */}
               <Text style={styles.titleText}>
@@ -229,10 +226,10 @@ export default function RefereeReviewScreen({navigation, route}) {
                   />
                 </View>
 
-                {/*    Reviewed name */}
+                {/* Reviewed name */}
                 <Text style={styles.teamName}>{userData.full_name}</Text>
 
-                {/* Country Name */}
+                {/* Reviewed Location */}
                 <Text style={styles.countryName}>{displayLocation(userData)}</Text>
               </View>
 
@@ -399,7 +396,6 @@ export default function RefereeReviewScreen({navigation, route}) {
                 keyExtractor={(item, index) => index.toString()}
               />
             </View>
-          </TCKeyboardView>
         </ScrollView>
       )}
     </View>

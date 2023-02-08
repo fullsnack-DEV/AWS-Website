@@ -52,9 +52,9 @@ const styles = StyleSheet.create({
   },
   mainContainer: {
     flex: 1,
-    padding: 15,
+    margin:15,
     backgroundColor: colors.whiteColor,
-    marginBottom: 15,
+    marginBottom: 25,
   },
   mainContainerRate: {
     flex: 1,
