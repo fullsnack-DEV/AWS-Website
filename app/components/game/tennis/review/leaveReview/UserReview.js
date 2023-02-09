@@ -115,7 +115,7 @@ const UserReview = ({
         }}
         onPress={() => {
           navigation.navigate('WriteReviewScreen', {
-            comeFrom: 'LeaveReviewTennis',   
+            comeFrom: 'LeaveReview',   
             postData: null,
             comment: reviewsData.comment ?? '',
             selectedImageList: reviewsData.attachments || [],

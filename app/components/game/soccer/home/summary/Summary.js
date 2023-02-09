@@ -367,8 +367,8 @@ const Summary = ({
             gameData,
             gameReviewData: response.payload,
             selectedTeam: selectedTeamForReview, // ?? playerFrom === 'home' ? 'away' : 'home',
-            sliderAttributes,
             starAttributes,
+            isRefereeAvailable: gameData.referees?.length > 0,
             onPressReviewDone,
           });
           setLoading(false);
@@ -411,8 +411,8 @@ const Summary = ({
         } else {
           navigation.navigate('LeaveReview', {
             gameData,
-            sliderAttributes,
             starAttributes,
+            isRefereeAvailable: gameData.referees?.length > 0,
             onPressReviewDone,
           });
         }
@@ -492,6 +492,7 @@ const Summary = ({
                       selectedTeam: playerFrom === 'home' ? 'away' : 'home',
                       sliderAttributes,
                       starAttributes,
+                      isRefereeAvailable: gameData.referees?.length > 0,
                       onPressReviewDone,
                     });
                   }
@@ -1074,6 +1075,7 @@ const Summary = ({
                             selectedTeam: selectedTeamForReview,
                             sliderAttributes,
                             starAttributes,
+                            isRefereeAvailable: gameData.referees?.length > 0,
                             onPressReviewDone,
                           });
                         }
@@ -1088,6 +1090,7 @@ const Summary = ({
                             selectedTeam: selectedTeamForReview,
                             sliderAttributes,
                             starAttributes,
+                            isRefereeAvailable: gameData.referees?.length > 0,
                             onPressReviewDone,
                           });
                         }
