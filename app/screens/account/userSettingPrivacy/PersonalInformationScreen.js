@@ -13,26 +13,16 @@ import {
   Image,
   TextInput,
   TouchableOpacity,
-  TouchableWithoutFeedback,
   Alert,
-  FlatList,
-  Dimensions,
   Platform,
   SafeAreaView,
-  Keyboard,
 } from 'react-native';
 
 import ImagePicker from 'react-native-image-crop-picker';
 import ActionSheet from 'react-native-actionsheet';
 import {useIsFocused} from '@react-navigation/native';
-
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
-import Modal from 'react-native-modal';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import {check, PERMISSIONS, RESULTS, request} from 'react-native-permissions';
-import {getGeocoordinatesWithPlaceName} from '../../../utils/location';
 import {updateUserProfile} from '../../../api/Users';
 import AuthContext from '../../../auth/context';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
@@ -44,22 +34,21 @@ import fonts from '../../../Constants/Fonts';
 import TCLabel from '../../../components/TCLabel';
 import Header from '../../../components/Home/Header';
 import TCKeyboardView from '../../../components/TCKeyboardView';
-import {languageList, getHitSlop, widthPercentageToDP} from '../../../utils';
+import {languageList} from '../../../utils';
 import TCTextField from '../../../components/TCTextField';
-import TCThinDivider from '../../../components/TCThinDivider';
-
 import TCImage from '../../../components/TCImage';
 import uploadImages from '../../../utils/imageAction';
 import {getQBAccountType, QBupdateUser} from '../../../utils/QuickBlox';
-import {searchLocations} from '../../../api/External';
+import LocationModal from '../../../components/LocationModal/LocationModal';
 
 export default function PersonalInformationScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const actionSheet = useRef();
   const isFocused = useIsFocused();
+  const callchildfunc = useRef(null);
 
   const actionSheetWithDelete = useRef();
-  // For activity indigator
+  /* For activity indigator */
   const [loading, setloading] = useState(false);
   const [userInfo, setUserInfo] = useState(authContext.entity.obj);
   const [profileImageChanged, setProfileImageChanged] = useState(false);
@@ -92,28 +81,7 @@ export default function PersonalInformationScreen({navigation, route}) {
   const [languages, setLanguages] = useState(
     authContext?.entity?.obj?.language,
   );
-
   const [locationPopup, setLocationPopup] = useState(false);
-  const [noData, setNoData] = useState(false);
-  const [searchText, setSearchText] = useState('');
-  const [cityData, setCityData] = useState([]);
-  const [currentLocation, setCurrentLocation] = useState();
-
-  useEffect(() => {
-    getLocationData(searchText);
-  }, [searchText]);
-
-  const getLocationData = async (searchLocationText) => {
-    if (searchLocationText.length >= 3) {
-      searchLocations(searchLocationText).then((response) => {
-        setNoData(false);
-        setCityData(response.predictions);
-      });
-    } else {
-      setNoData(true);
-      setCityData([]);
-    }
-  };
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -153,79 +121,13 @@ export default function PersonalInformationScreen({navigation, route}) {
       }
     }
     setLanguages(arr);
-  }, []);
+  }, [userInfo.language]);
 
-  useEffect(() => {
-    setloading(true);
-    getGeocoordinatesWithPlaceName(Platform.OS)
-      .then((location) => {
-        setloading(false);
-        if(location.position){
-          setCurrentLocation(location);
-        }
-        else{
-          setCurrentLocation(null);
-        }
-      })
-      .catch((e) => {
-        setloading(false);
-        if(e.message === strings.userdeniedgps){
-          setCurrentLocation(null);
-        }
-        else{
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
-        }
-      });
-  }, []);
-
-  const renderItem = ({item, index}) => (
-    <TouchableWithoutFeedback
-      style={styles.listItem}
-      onPress={() => {
-        onSelectLocation(item);
-        Keyboard.dismiss();
-      }}>
-      <View>
-        <Text style={styles.cityList}>{cityData[index].description}</Text>
-        <TCThinDivider
-          width={'100%'}
-          backgroundColor={colors.grayBackgroundColor}
-        />
-      </View>
-    </TouchableWithoutFeedback>
-  );
-
-  const onSelectLocation = async (item) => {
-    if (item.terms.length === 1) {
-      setCity(undefined);
-      setState(undefined);
-      setCountry(item.terms[0].value);
-    } else if (item.terms.length === 2) {
-      setCity(item.terms[0].value);
-      setState(undefined);
-      setCountry(item.terms[1].value);
-    } else if (item.terms.length > 2) {
-      setCity(item.terms[item.terms.length - 3].value);
-      setState(item.terms[item.terms.length - 2].value);
-      setCountry(item.terms[item.terms.length - 1].value);
-    }
-    setLocationPopup(false);
-  };
-
-  const onSelectCurrentLocation = async () => {
-    setCity(currentLocation.city);
-    setState(currentLocation.state);
-    setCountry(currentLocation.country);
-    setUserInfo({
-      ...userInfo,
-      city: currentLocation.city,
-      state: currentLocation.state,
-      country: currentLocation.country,
-    });
-
-    setLocationPopup(false);
+  const handleSetLocationOptions = (location) => {
+    setCity(location.city);
+    setState(location.state);
+    setCountry(location.country);
+    setLocationPopup(!locationPopup);
   };
 
   // Form Validation
@@ -561,10 +463,7 @@ export default function PersonalInformationScreen({navigation, route}) {
         <View style={styles.fieldView}>
           <TCLabel title={strings.currentCity} required={true} />
 
-          <TouchableOpacity
-            onPress={() => {
-              setLocationPopup(true);
-            }}>
+          <TouchableOpacity onPress={() => callchildfunc.current()}>
             <TextInput
               placeholder={strings.searchCityPlaceholder}
               style={{
@@ -593,94 +492,17 @@ export default function PersonalInformationScreen({navigation, route}) {
           />
         </View>
       </TCKeyboardView>
-      <Modal
-        onBackdropPress={() => setLocationPopup(false)}
-        isVisible={locationPopup}
-        animationInTiming={300}
-        animationOutTiming={800}
-        backdropTransitionInTiming={300}
-        backdropTransitionOutTiming={800}
-        style={{
-          margin: 0,
-        }}>
-        <View
-          style={[
-            styles.bottomPopupContainer,
-            {height: Dimensions.get('window').height - 50},
-          ]}>
-          <View style={styles.topHeaderContainer}>
-            <TouchableOpacity
-              hitSlop={getHitSlop(15)}
-              style={styles.closeButton}
-              onPress={() => {
-                setLocationPopup(false);
-              }}>
-              <Image source={images.crossImage} style={styles.closeButton} />
-            </TouchableOpacity>
-            <Text style={styles.moreText}>{strings.homeCityTitleText}</Text>
-          </View>
-          <TCThinDivider
-            width={'100%'}
-            marginBottom={15}
-            backgroundColor={colors.thinDividerColor}
-          />
-          <View style={styles.sectionStyle}>
-            <TextInput
-              // Indiër - For Test
-              value={searchText}
-              autoCorrect={false}
-              spellCheck={false}
-              style={styles.textInput}
-              placeholder={strings.searchByCity}
-              clearButtonMode="always"
-              placeholderTextColor={colors.userPostTimeColor}
-              onChangeText={(text) => setSearchText(text)}
-            />
-          </View>
-          {noData && searchText?.length > 0 && (
-            <Text style={styles.noDataText}>
-              Please, enter at least 3 characters to see cities.
-            </Text>
-          )}
-          {/* <ScrollView> */}
-          {currentLocation && noData && searchText?.length === 0 && (
-            <View style={{flex: 1}}>
-              <TouchableWithoutFeedback
-                style={styles.listItem}
-                onPress={() => onSelectCurrentLocation()}>
-                <View>
-                  <Text style={[styles.cityList, {marginBottom: 3}]}>
-                    {[
-                      currentLocation?.city,
-                      currentLocation?.state,
-                      currentLocation?.country,
-                    ]
-                      .filter((v) => v)
-                      .join(', ')}
-                  </Text>
-                  <Text style={styles.curruentLocationText}>
-                    {strings.currentLocationText}
-                  </Text>
 
-                  <TCThinDivider
-                    width={'100%'}
-                    backgroundColor={colors.grayBackgroundColor}
-                  />
-                </View>
-              </TouchableWithoutFeedback>
-            </View>
-          )}
-          {cityData.length > 0 && (
-            <FlatList
-              data={cityData}
-              renderItem={renderItem}
-              keyExtractor={(index) => index.toString()}
-              keyboardShouldPersistTaps="always"
-            />
-          )}
-          {/* </ScrollView> */}
-        </View>
-      </Modal>
+      {/* import location modal here and give them props */}
+
+      <LocationModal
+        visibleLocationModal={locationPopup}
+        title={strings.homeCityTitleText}
+        onLocationSelect={(location) => handleSetLocationOptions(location)}
+        setVisibleLocationModalhandler={() => setLocationPopup(!locationPopup)}
+        callchild={callchildfunc}
+      />
+
       <ActionSheet
         ref={actionSheet}
         // title={'News Feed Post'}
@@ -773,123 +595,5 @@ const styles = StyleSheet.create({
   profileImageButtonStyle: {
     height: 22,
     width: 22,
-  },
-  bottomPopupContainer: {
-    flex: 1,
-    // paddingBottom: Platform.OS === 'ios' ? 30 : 0,
-    // marginTop: Platform.OS === 'ios' ? 50 : 50,
-    paddingBottom: Platform.OS === 'ios' ? hp(8) : 0,
-    marginTop: Platform.OS === 'ios' ? hp(7) : 0,
-
-    backgroundColor: colors.whiteColor,
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    // position: 'absolute',
-
-    bottom: 0,
-    width: '100%',
-
-    ...Platform.select({
-      ios: {
-        shadowColor: colors.googleColor,
-        shadowOffset: {width: 0, height: 3},
-        shadowOpacity: 0.5,
-        shadowRadius: 8,
-      },
-      android: {
-        elevation: 15,
-      },
-    }),
-  },
-
-  topHeaderContainer: {
-    height: 60,
-    // justifyContent: 'space-between',
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginLeft: 0,
-    marginRight: 0,
-  },
-  closeButton: {
-    alignSelf: 'center',
-    width: 25,
-    height: 25,
-    resizeMode: 'contain',
-    left: 5,
-  },
-  moreText: {
-    fontSize: 16,
-    fontFamily: fonts.RBold,
-    color: colors.lightBlackColor,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: widthPercentageToDP('36%'),
-  },
-  sectionStyle: {
-    alignItems: 'center',
-    backgroundColor: colors.textFieldBackground,
-    borderRadius: 25,
-
-    flexDirection: 'row',
-    height: 50,
-    justifyContent: 'center',
-    margin: wp('4%'),
-    paddingLeft: 17,
-    paddingRight: 5,
-
-    // shadowColor: colors.googleColor,
-    // shadowOffset: {width: 0, height: 4},
-    // shadowOpacity: 0.5,
-    // shadowRadius: 4,
-    elevation: 5,
-  },
-  textInput: {
-    color: colors.userPostTimeColor,
-    flex: 1,
-    fontFamily: fonts.RRegular,
-    fontSize: wp('4.5%'),
-    paddingLeft: 10,
-  },
-  noDataText: {
-    alignSelf: 'center',
-    color: colors.userPostTimeColor,
-    fontFamily: fonts.RRegular,
-    fontSize: wp('4%'),
-    marginTop: hp('1%'),
-
-    textAlign: 'center',
-    width: wp('90%'),
-  },
-  listItem: {
-    flexDirection: 'row',
-    marginLeft: wp('10%'),
-    width: wp('80%'),
-  },
-  cityList: {
-    color: colors.lightBlackColor,
-    fontSize: wp('4%'),
-    textAlign: 'left',
-    fontFamily: fonts.RRegular,
-    // paddingLeft: wp('1%'),
-    width: wp('70%'),
-    // margin: wp('4%'),
-    marginBottom: wp('4%'),
-    marginRight: wp('4%'),
-    marginTop: wp('4%'),
-    marginLeft: 30,
-    textAlignVertical: 'center',
-  },
-  curruentLocationText: {
-    color: colors.userPostTimeColor,
-    fontSize: wp('3%'),
-    textAlign: 'left',
-    fontFamily: fonts.RRegular,
-
-    // paddingLeft: wp('1%'),
-    width: wp('70%'),
-    margin: wp('4%'),
-    marginTop: wp('0%'),
-    marginLeft: 30,
-    textAlignVertical: 'center',
   },
 });
