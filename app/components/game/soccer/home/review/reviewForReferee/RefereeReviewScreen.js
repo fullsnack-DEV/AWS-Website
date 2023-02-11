@@ -1,10 +1,9 @@
 /* eslint-disable array-callback-return */
 /* eslint-disable no-unused-vars */
-import React, {useState, useEffect, useLayoutEffect, useContext} from 'react';
+import React, {useState, useEffect,} from 'react';
 import {
   Alert,
   ScrollView,
-  StyleSheet,
   View,
   Text,
   TouchableOpacity,
@@ -14,253 +13,173 @@ import {
 } from 'react-native';
 import _ from 'lodash';
 import FastImage from 'react-native-fast-image';
+import { format } from 'react-string-format';
 import fonts from '../../../../../../Constants/Fonts';
 
-import {STAR_COLOR} from '../../../../../../utils';
-import {
-  addRefereeReview,
-  patchRefereeReview,
-} from '../../../../../../api/Games';
+import {displayLocation, STAR_COLOR} from '../../../../../../utils';
 import images from '../../../../../../Constants/ImagePath';
 import colors from '../../../../../../Constants/Colors';
 
-import AuthContext from '../../../../../../auth/context';
-import TCKeyboardView from '../../../../../TCKeyboardView';
 import TCRatingStarSlider from '../../../../../TCRatingStarSlider';
 import Header from '../../../../../Home/Header';
 import SelectedImageList from '../../../../../WritePost/SelectedImageList';
 import {strings} from '../../../../../../../Localization/translation';
 import ActivityLoader from '../../../../../loader/ActivityLoader';
 import NewsFeedDescription from '../../../../../newsFeed/NewsFeedDescription';
+import styles from '../ReviewStyles';
 
-// const QUSTIONS = [
-//   // { attrName: 'ontime', desc: 'Did the players arrive at the match place on time?' },
-//   // { attrName: 'manner', desc: 'Did the players keep good manners for the other players, officials and spectators during the match?' },
-//   { attrName: 'punctuality', desc: strings.punchualityDesc },
-// ];
 export default function RefereeReviewScreen({navigation, route}) {
-  const authContext = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
-  const [gameData] = useState(route?.params?.gameData);
-  const [progressBar, setProgressBar] = useState(false);
-  const [totalUploadCount, setTotalUploadCount] = useState(0);
-  const [doneUploadCount, setDoneUploadCount] = useState(0);
-  const [cancelApiRequest, setCancelApiRequest] = useState(null);
-  const [currentUserDetail, setCurrentUserDetail] = useState(null);
   const [reviewsData, setReviewsData] = useState({});
   const [starAttributesForReferee] = useState(
-    route?.params?.starAttributesForReferee,
+    route.params.starAttributesForReferee,
   );
+
+  const [topStarAttributesForReferee] = useState(
+    route.params.starAttributesForReferee?.filter(reviewProp => reviewProp.type === 'topstar')
+  );
+
+  const [middleStarAttributesForReferee] = useState(
+    route.params.starAttributesForReferee?.filter(reviewProp => reviewProp.type === 'star'),
+  );
+
+  const [bottomStarAttributesForReferee] = useState(
+    route.params.starAttributesForReferee?.filter(reviewProp => reviewProp.type === 'bottomstar'),
+  );
+
   const [sliderAttributesForReferee] = useState(
-    route?.params?.sliderAttributesForReferee,
+    route.params.sliderAttributesForReferee,
   );
-  const [userData] = useState(route?.params?.userData);
+  const [userData] = useState(route.params.userData);
   const [onPressReview] = useState(
-    route?.params?.onPressRefereeReviewDone
-      ? () => route?.params?.onPressRefereeReviewDone
+    route.params.onPressRefereeReviewDone
+      ? () => route.params.onPressRefereeReviewDone
       : () => {},
   );
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', async () => {
-      const entity = authContext.entity;
-      setCurrentUserDetail(entity.obj || entity.auth.user);
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  }, [authContext.entity]);
-
-  useEffect(() => {
     const obj = {...reviewsData};
-    if (route?.params?.searchText) {
-      obj.comment = route?.params?.searchText ?? '';
+    if (route.params.comment) {
+      obj.comment = route.params.comment ?? '';
       setReviewsData(obj);
     }
-    if (route?.params?.selectedImageList) {
-      // setSelectImage(route?.params?.selectedImageList);
-      obj.attachments = route?.params?.selectedImageList;
+    else{
+      obj.comment = null;
       setReviewsData(obj);
     }
-    if (route?.params?.entityTags) {
 
-      obj.tagged = route?.params?.entityTags;
+    if (route.params.selectedImageList) {
+      obj.attachments = route.params.selectedImageList;
       setReviewsData(obj);
     }
-    if (route?.params?.format_tagged_data) {
-      obj.format_tagged_data = route?.params?.format_tagged_data;
+    else{
+      obj.attachments = null;
       setReviewsData(obj);
     }
   }, [
-    route?.params?.selectedImageList,
-    route?.params?.searchText,
-    route?.params?.entityTags,
-    progressBar,
-    totalUploadCount,
-    doneUploadCount,
-    route?.params?.format_tagged_data,
+    route.params.selectedImageList,
+    route.params.comment,
   ]);
 
   useEffect(() => {
-    if (route?.params?.gameReviewData) {
-      // const reviewObj = JSON.parse(
-      //   route?.params?.gameReviewData?.results?.[0]?.object,
-      // )?.refereeReview;
-      const reviewObj = route?.params?.gameReviewData;
-      console.log('Edit review Data::=>', reviewObj);
+    if (route.params.gameReviewData) {
+      const reviewObj = route.params.gameReviewData;
       setReviewsData({...reviewObj});
     }
-  }, [route?.params?.gameReviewData]);
-
-  useEffect(() => {
-    if (!route?.params?.gameReviewData) {
-      loadSliderAttributes(sliderAttributesForReferee);
-      loadStarAttributes(starAttributesForReferee);
+    else{
+      setLoading(true);
+      if(reviewsData.length === 0){
+        const attr = {};
+        sliderAttributesForReferee.map((item) => {
+          attr[item] = 0;
+        });
+        starAttributesForReferee.map((item) => {
+          attr[item.name] = 0;
+        });
+        setReviewsData({...reviewsData,...attr});
+      }
+      setLoading(false);
     }
-  }, []);
-
-  const loadSliderAttributes = (attributes) => {
-    setLoading(true);
-
-    // setSliderAttributesForReferee([...attributes]);
-    const attr = {};
-    attributes.map((item) => {
-      attr[item] = 0;
-      return true;
-    });
-    let reviews = _.cloneDeep(reviewsData);
-    reviews = {...reviews, ...attr};
-
-    setReviewsData({...reviews});
-    setLoading(false);
-  };
-
-  const loadStarAttributes = (attributes) => {
-    setLoading(true);
-
-    const attr = {};
-    attributes.map((item) => {
-      attr[item.name] = 0;
-      return true;
-    });
-    let reviews = _.cloneDeep(reviewsData);
-    reviews = {...reviews, ...attr};
-
-    setReviewsData({...reviews});
-    setLoading(false);
-  };
+  }, [route.params.gameReviewData]);
 
   const isValidReview = () => {
-    const starKeys = [];
-    starAttributesForReferee?.map((star) => {
-      starKeys.push(star?.name);
+    let returnValue = true;
+    let isBlankRating = false;
+    let isRating = false;
+    const keys = {};
+    sliderAttributesForReferee.map((item) => {
+      keys[item] = 0;
     });
-    const includeKey = [...starKeys, ...sliderAttributesForReferee];
-    let isValid = true;
-    const reviews = _.cloneDeep(reviewsData);
-    Object.keys(reviews).map((key) => {
-      if (includeKey.includes(key) && isValid) {
-        if (Number(reviews?.[key]) <= 0) {
-          isValid = false;
-        }
+    starAttributesForReferee.map((item) => {
+      keys[item.name] = 0;
+    });
+    Object.keys(keys).map((key) => {
+      if (reviewsData[key] > 0) {
+        isRating = true;
       }
-      return key;
+      else{
+        isBlankRating = true;
+      }
     });
-    return isValid;
+
+    if(isRating && isBlankRating){
+      Alert.alert(strings.completeallrating);
+      returnValue = false;
+    }
+    else if(!isRating && (!reviewsData.comment || reviewsData.comment?.length <= 0)){      
+      Alert.alert(strings.reviewvalidation);
+      returnValue = false;
+    }
+
+    return returnValue;
   };
+
   const createReview = () => {
-    if (!isValidReview()) {
-      Alert.alert('Please, complete all ratings before moving to the next.');
-    } else {
-      uploadMedia();
+    if (isValidReview()) {
+      onPressReview(1, !!userData?.review_id, reviewsData, userData?.user_id);
+      navigation.goBack();
     }
   };
 
-  const setTeamReview = (key = '', value = '') => {
+  const setReviewRating = (key = '', value = '') => {
     if (reviewsData[key] !== value) {
-      const reviews = _.cloneDeep(reviewsData);
-
-      reviews[key] = value;
-      setReviewsData({...reviews});
-    }
-  };
-  const onCancelImageUpload = () => {
-    if (cancelApiRequest) {
-      cancelApiRequest.cancel('Cancel Image Uploading');
-    }
-    setProgressBar(false);
-    setDoneUploadCount(0);
-    setTotalUploadCount(0);
-  };
-
-  const progressStatus = (completed, total) => {
-    setDoneUploadCount(completed < total ? completed + 1 : total);
-  };
-
-  const cancelRequest = (axiosTokenSource) => {
-    setCancelApiRequest({...axiosTokenSource});
-  };
-
-  const patchOrAddRefereeReview = (data) => {
-    if (userData?.review_id) {
-      setLoading(true);
-      const teamReview = {...data};
-      delete teamReview.created_at;
-      delete teamReview.entity_type;
-      delete teamReview.entity_id;
-      delete teamReview.game_id;
-      const reviewID = teamReview.review_id;
-      delete teamReview.review_id;
-      delete teamReview.reviewer_id;
-      delete teamReview.sport;
-
-      const reviewObj = {
-        ...teamReview,
-      };
-      console.log('Edited Review Object::=>', teamReview);
-      patchRefereeReview(
-        userData?.user_id,
-        gameData?.game_id,
-        reviewID,
-        reviewObj,
-        authContext,
-      )
-        .then(() => {
-          setLoading(false);
-          navigation.goBack();
-        })
-        .catch((error) => {
-          setLoading(false);
-          setTimeout(
-            () => Alert.alert(strings.alertmessagetitle, error?.message),
-            100,
-          );
-          navigation.goBack();
-        });
-    } else {
-      console.log('New Review Object::=>', data);
-      setLoading(true);
-      addRefereeReview(userData?.user_id, gameData?.game_id, data, authContext)
-        .then(() => {
-          setLoading(false);
-          navigation.goBack();
-        })
-        .catch((error) => {
-          setLoading(false);
-          setTimeout(
-            () => Alert.alert(strings.alertmessagetitle, error?.message),
-            100,
-          );
-          navigation.goBack();
-        });
+        reviewsData[key] = value;
+      setReviewsData({...reviewsData});
     }
   };
 
-  const uploadMedia = () => {
-    onPressReview(1, !!userData?.review_id, reviewsData, userData?.user_id);
-    navigation.goBack();
-  };
+  const removeRatings = () => {
+    const keys = {};
+    sliderAttributesForReferee.map((item) => {
+      keys[item] = 0;
+    });
+    starAttributesForReferee.map((item) => {
+      keys[item.name] = 0;
+    });
+    Object.keys(keys).map((key) => {
+      reviewsData[key] = 0
+    });
+    setReviewsData({...reviewsData});
+  }
+
+  const renderReviewStar = (index,item) => ( <View key={index}>
+    <Text style={styles.questionTitle}>
+      {item.title.toUpperCase()}
+    </Text>
+    <Text style={styles.questionText}>{item.description}</Text>
+    <TCRatingStarSlider
+      currentRating={reviewsData[item.name]}
+      onPress={(star) => {
+        setReviewRating(item.name, star);
+      }}
+      style={{
+        alignSelf: 'center',
+        marginTop: 5,
+        marginBottom: 25,
+      }}
+      starColor={STAR_COLOR.YELLOW}
+    />
+  </View>);
 
   return (
     <View style={{flex: 1}}>
@@ -271,11 +190,13 @@ export default function RefereeReviewScreen({navigation, route}) {
           </TouchableOpacity>
         }
         centerComponent={
-          <Text style={styles.eventTextStyle}>Leave a Referee review</Text>
+          <Text style={styles.eventTextStyle}>
+            {strings.leavereviewinsmall}
+          </Text>
         }
         rightComponent={
           <Text onPress={createReview} style={styles.nextButtonStyle}>
-            {'Done'}
+            {strings.done}
           </Text>
         }
       />
@@ -284,12 +205,10 @@ export default function RefereeReviewScreen({navigation, route}) {
       <ActivityLoader visible={loading} />
       {!loading && (
         <ScrollView>
-          <TCKeyboardView>
             <View style={styles.mainContainer}>
               {/* Title */}
               <Text style={styles.titleText}>
-                Please, rate the performance of {userData?.first_name}{' '}
-                {userData?.last_name} and leave a review for the referee.
+                {format(strings.refereereviewtitle, userData.full_name)}
               </Text>
 
               {/*  Logo Container */}
@@ -298,112 +217,135 @@ export default function RefereeReviewScreen({navigation, route}) {
                 <View style={styles.imageContainer}>
                   <FastImage
                     source={
-                      userData?.thumbnail
-                        ? {uri: userData?.thumbnail}
-                        : images.teamPlaceholder
+                      userData.thumbnail
+                        ? {uri: userData.thumbnail}
+                        : images.profilePlaceHolder
                     }
-                    resizeMode={'contain'}
-                    style={{height: 50, width: 50}}
+                    resizeMode={'cover'}
+                    style={{height: 45, width: 45, borderRadius:22.5}}
                   />
                 </View>
 
-                {/*    Team name */}
-                <Text style={styles.teamName}>
-                  {userData?.first_name} {userData?.last_name}
-                </Text>
+                {/* Reviewed name */}
+                <Text style={styles.teamName}>{userData.full_name}</Text>
 
-                {/*    Country Name */}
-                <Text style={styles.countryName}>{userData?.country}</Text>
+                {/* Reviewed Location */}
+                <Text style={styles.countryName}>{displayLocation(userData)}</Text>
               </View>
 
               {/* Seperator */}
-              <View style={styles.seperator} />
+              <View style={[styles.seperator,{marginVertical: 15,}]} />
 
               {/*  Rate Performance */}
 
               <View style={styles.mainContainerRate}>
                 {/*    Title */}
-                <Text style={styles.titleText}>
-                  Rate performance{' '}
-                  <Text style={{color: colors.redDelColor}}>*</Text>
+                <Text style={[styles.titleText,{marginBottom:14}]}>
+                  {strings.rateperformance.toUpperCase()}
                 </Text>
 
                 {/* Ratings */}
-                <View style={styles.rateSection}>
-                  {sliderAttributesForReferee?.map((item, index) => (
-                    <View
-                      style={{
-                        marginVertical: 10,
-                        flexDirection: 'row',
-                      }}
-                      key={index}>
-                      <Text style={styles.starText}>
-                        {item.charAt(0).toUpperCase() + item.slice(1)}
-                      </Text>
-                      <View style={{flex: 1}}>
-                        <TCRatingStarSlider
-                          currentRating={reviewsData[item]}
-                          onPress={(star) => {
-                            setTeamReview(item, star);
-                          }}
-                          style={{alignSelf: 'flex-end'}}
-                          starColor={STAR_COLOR.GREEN}
-                        />
-                      </View>
+                {sliderAttributesForReferee?.map((item, index) => (
+                  <View
+                    style={{
+                      marginVertical: 10,
+                      flexDirection: 'row',
+                    }}
+                    key={index}>
+                    <Text style={styles.starText}>
+                      {item.charAt(0).toUpperCase() + item.slice(1)}
+                    </Text>
+                    <View style={{flex: 1}}>
+                      <TCRatingStarSlider
+                        currentRating={reviewsData[item]}
+                        onPress={(star) => {
+                          setReviewRating(item, star);
+                        }}
+                        style={{alignSelf: 'flex-end'}}
+                        starColor={STAR_COLOR.GREEN}
+                      />
                     </View>
-                  ))}
-                </View>
-
-                {/* Questions */}
-                {starAttributesForReferee?.map((item, index) => (
-                  <View style={{marginVertical: 5}} key={index}>
-                    <Text style={styles.questionText}>{item.title}</Text>
-                    <TCRatingStarSlider
-                      currentRating={reviewsData[item.name]}
-                      onPress={(star) => {
-                        setTeamReview(item.name, star);
-                      }}
-                      style={{alignSelf: 'flex-end'}}
-                      starColor={STAR_COLOR.GREEN}
-                    />
                   </View>
                 ))}
+
+                {/* Top Star Rating */}
+                {topStarAttributesForReferee?.map((item, index) => (
+                  renderReviewStar(index,item)
+                ))}
+
+                {topStarAttributesForReferee?.length > 0 && (
+                  <View style={[styles.seperator,{marginBottom:25}]} />
+                )}
+
+                {/* Middle Star Rating */}
+                {middleStarAttributesForReferee?.map((item, index) => (
+                  renderReviewStar(index,item)
+                ))}
+
+                {middleStarAttributesForReferee?.length > 0 && (
+                  <View style={[styles.seperator,{marginBottom:25}]} />
+                )}
+
+                {/* Bottom Star Rating */}
+                {bottomStarAttributesForReferee?.map((item, index) => (
+                  renderReviewStar(index,item)
+                ))}
+
+                {bottomStarAttributesForReferee?.length > 0 && (
+                  <View style={[styles.seperator,{marginBottom:25}]} />
+                )}
+
+              </View>
+
+              {/*  Delete All Rating */}
+              <View style={{marginBottom:25, flexDirection:'row', justifyContent:'center'}}>
+                <Pressable
+                  style={{
+                    paddingHorizontal:10,
+                    paddingVertical: 3,
+                    backgroundColor: colors.lightGrey,
+                    borderRadius: 5,
+                  }}
+                  onPress={() => {
+                    removeRatings()
+                  }}>
+                  <View>
+                      <Text
+                        style={{
+                          fontFamily: fonts.Roboto,
+                          fontSize: 14,
+                          color: colors.redColorCard,
+                          lineHeight:21,
+                          fontWeight:'500'
+                        }}>
+                        {strings.deleteallrating}
+                      </Text>
+                  </View>
+                </Pressable>
               </View>
 
               {/*  Leave a Review */}
-              <View style={styles.leaveReviewContainer}>
-                <Text style={styles.titleText}>Leave a review</Text>
+              <View>
+                <Text style={[styles.questionTitle,{marginBottom:15}]}>{strings.leaveareview.toUpperCase()}</Text>
                 <Pressable
                   style={{
-                    flex: 1,
-                    // height: 120,
-                    marginVertical: 10,
+                    flex: 1,                    
                     alignItems: 'flex-start',
-                    padding: 10,
-                    paddingVertical: 20,
-                    backgroundColor: colors.offwhite,
-                    shadowColor: colors.googleColor,
-                    shadowOffset: {width: 0, height: 2},
-                    shadowOpacity: 0.3,
-                    shadowRadius: 5,
-                    elevation: 5,
+                    paddingVertical: 10,
+                    paddingHorizontal: 15,
+                    backgroundColor: colors.lightGrey,
                     borderRadius: 5,
                   }}
                   onPress={() => {
                     navigation.navigate('WriteReviewScreen', {
                       comeFrom: 'RefereeReviewScreen',
                       postData: null,
-                      searchText: reviewsData?.comment ?? '',
-                      // onPressDone: callthis,
-                      selectedImageList: reviewsData?.attachments || [],
-                      taggedData:
-                        route?.params?.format_tagged_data ||
-                        reviewsData?.format_tagged_data ||
-                        [],
+                      comment: reviewsData.comment ?? '',
+                      selectedImageList: reviewsData.attachments || []
                     });
                   }}>
                   <View>
-                    {reviewsData?.comment?.length > 0 ? (
+                    {reviewsData.comment?.length > 0 ? (
                       <NewsFeedDescription
                         disableTouch={true}
                         descriptions={reviewsData.comment}
@@ -411,28 +353,24 @@ export default function RefereeReviewScreen({navigation, route}) {
                           marginHorizontal: 5,
                           marginVertical: 2,
                         }}
-                        tagData={
-                          route?.params?.format_tagged_data ||
-                          reviewsData?.format_tagged_data ||
-                          []
-                        }
-                        // tags={tags}
                       />
                     ) : (
                       <Text
                         style={{
-                          fontFamily: fonts.RRegular,
+                          fontFamily: fonts.Roboto,
                           fontSize: 16,
-                          color: colors.grayColor,
+                          color: colors.userPostTimeColor,
+                          lineHeight:24,
+                          fontWeight:'400'
                         }}>
-                        {`Describe what you thought and felt about ${userData?.first_name} ${userData?.last_name} while watching or playing the game.`}
+                        {strings.writerefereereviewplacholder}
                       </Text>
                     )}
                   </View>
                 </Pressable>
               </View>
               <FlatList
-                data={reviewsData?.attachments || []}
+                data={reviewsData.attachments || []}
                 horizontal={true}
                 // scrollEnabled={true}
                 showsHorizontalScrollIndicator={false}
@@ -442,9 +380,9 @@ export default function RefereeReviewScreen({navigation, route}) {
                     isClose={false}
                     isCounter={false}
                     itemNumber={index + 1}
-                    totalItemNumber={reviewsData?.attachments?.length}
+                    totalItemNumber={reviewsData.attachments?.length}
                     onItemPress={() => {
-                      const imgs = reviewsData?.attachments;
+                      const imgs = reviewsData.attachments;
                       const idx = imgs.indexOf(item);
                       if (idx > -1) {
                         imgs.splice(idx, 1);
@@ -457,101 +395,9 @@ export default function RefereeReviewScreen({navigation, route}) {
                 style={{paddingTop: 10, marginHorizontal: 10}}
                 keyExtractor={(item, index) => index.toString()}
               />
-              {/*  Footer */}
-              <Text style={styles.footerText}>
-                (<Text style={{color: colors.redDelColor}}>*</Text> required)
-              </Text>
             </View>
-          </TCKeyboardView>
         </ScrollView>
       )}
     </View>
   );
 }
-const styles = StyleSheet.create({
-  nextButtonStyle: {
-    fontFamily: fonts.RRegular,
-    fontSize: 16,
-  },
-  titleText: {
-    fontSize: 20,
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RRegular,
-  },
-  logoContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  imageContainer: {
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 6,
-    elevation: 13,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  teamName: {
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RBold,
-    fontSize: 16,
-  },
-  countryName: {
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RLight,
-    fontSize: 14,
-  },
-  seperator: {
-    backgroundColor: colors.grayBackgroundColor,
-    marginVertical: 20,
-    height: 2,
-    width: '100%',
-  },
-  headerSeperator: {
-    backgroundColor: colors.grayBackgroundColor,
-    marginVertical: 0,
-    height: 2,
-    width: '100%',
-  },
-  footerText: {
-    color: colors.lightBlackColor,
-    fontSize: 12,
-    fontFamily: fonts.RLight,
-  },
-  leaveReviewContainer: {},
-  mainContainer: {
-    flex: 1,
-    padding: 15,
-    backgroundColor: colors.whiteColor,
-    marginBottom: 15,
-  },
-  mainContainerRate: {
-    flex: 1,
-  },
-
-  rateSection: {
-    marginVertical: 10,
-  },
-  questionText: {
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RRegular,
-    fontSize: 16,
-  },
-  starText: {
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RRegular,
-    fontSize: 16,
-    // flex: 0.4,
-  },
-  backImageStyle: {
-    height: 20,
-    width: 16,
-    tintColor: colors.blackColor,
-    resizeMode: 'contain',
-  },
-  eventTextStyle: {
-    fontSize: 16,
-    fontFamily: fonts.RBold,
-    alignSelf: 'center',
-  },
-});

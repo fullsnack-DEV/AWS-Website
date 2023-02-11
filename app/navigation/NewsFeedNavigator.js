@@ -27,7 +27,7 @@ import MembersProfileScreen from '../screens/account/groupConnections/MembersPro
 import PaymentMethodsScreen from '../screens/account/payment/PaymentMethodsScreen';
 import AddCardScreen from '../screens/account/payment/AddCardScreen';
 import SoccerHome from '../screens/game/soccer/SoccerHome';
-import LeaveReview from '../screens/game/soccer/review/leaveReview/LeaveReview';
+import LeaveReview from '../screens/game/leaveReview/LeaveReview';
 import SoccerRecording from '../screens/game/soccer/SoccerRecording';
 import TennisRecording from '../screens/game/tennis/TennisRecording';
 import SoccerRecordList from '../screens/game/soccer/SoccerRecordList';
@@ -939,7 +939,7 @@ const NewsFeedNavigator = () => (
       name="ChooseTimeSlotScreen"
       component={ChooseTimeSlotScreen}
       options={{
-        title: 'Choose a date & time',
+        title: strings.chooseDateTimeText,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

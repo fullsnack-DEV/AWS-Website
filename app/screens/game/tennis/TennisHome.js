@@ -93,6 +93,7 @@ const TennisHome = ({navigation, route}) => {
     useState([]);
   const [starAttributesForScorekeeper, setStarAttributesForScorekeeper] =
     useState([]);
+
   const [starAttributesForTeam, setStarAttributesForTeam] = useState([]);
 
   const [starAttributesForPlayer, setStarAttributesForPlayer] = useState([]);
@@ -110,8 +111,8 @@ const TennisHome = ({navigation, route}) => {
   }, [gameData, isFocused]);
 
   const recordGameConfiguration = () => {
-    const tennisSportData = authContext?.sports?.filter(
-      (item) => item.sport === gameData?.sport,
+    const tennisSportData = authContext.sports?.filter(
+      (item) => item.sport === gameData.sport,
     )[0];
 
     const teamReviewProp = tennisSportData?.team_review_properties ?? [];
@@ -120,9 +121,7 @@ const TennisHome = ({navigation, route}) => {
     const scorekeeperReviewProp =
       tennisSportData?.scorekeeper_review_properties ?? [];
 
-    const sliderReviewPropForTeam = [];
     const starReviewPropForTeam = [];
-    const sliderReviewPropForPlayer = [];
     const starReviewPropForPlayer = [];
     const sliderReviewPropForReferee = [];
     const starReviewPropForReferee = [];
@@ -131,9 +130,7 @@ const TennisHome = ({navigation, route}) => {
 
     if (teamReviewProp?.length) {
       teamReviewProp.filter((item) => {
-        if (item.type === 'slider') {
-          sliderReviewPropForTeam.push(item?.name?.toLowerCase());
-        } else if (item.type === 'star') {
+        if (item.type === 'star' || item.type === 'topstar' || item.type === 'bottomstar') {
           starReviewPropForTeam.push(item);
         }
         return true;
@@ -142,21 +139,18 @@ const TennisHome = ({navigation, route}) => {
     }
     if (playerReviewProp?.length) {
       playerReviewProp.filter((item) => {
-        if (item.type === 'slider') {
-          sliderReviewPropForPlayer.push(item);
-        } else if (item.type === 'star') {
+        if (item.type === 'star' || item.type === 'topstar' || item.type === 'bottomstar') {
           starReviewPropForPlayer.push(item);
         }
         return true;
       });
-
       setStarAttributesForPlayer([...starReviewPropForPlayer]);
     }
     if (refereeReviewProp?.length) {
       refereeReviewProp.filter((item) => {
-        if (item.type === 'topstar') {
-          sliderReviewPropForReferee.push(item?.name?.toLowerCase());
-        } else if (item.type === 'star') {
+        if (item.type === 'slider') {
+          sliderReviewPropForReferee.push(item.name.toLowerCase());
+        } else if (item.type === 'star' || item.type === 'topstar' || item.type === 'bottomstar') {
           starReviewPropForReferee.push(item);
         }
         return true;
@@ -166,9 +160,9 @@ const TennisHome = ({navigation, route}) => {
     }
     if (scorekeeperReviewProp?.length) {
       scorekeeperReviewProp.filter((item) => {
-        if (item.type === 'topstar') {
-          sliderReviewPropForScorekeeper.push(item?.name?.toLowerCase());
-        } else if (item.type === 'star') {
+        if (item.type === 'slider') {
+          sliderReviewPropForScorekeeper.push(item.name.toLowerCase());
+        } else if (item.type === 'star' || item.type === 'topstar' || item.type === 'bottomstar') {
           starReviewPropForScorekeeper.push(item);
         }
         return true;
@@ -342,24 +336,24 @@ const TennisHome = ({navigation, route}) => {
               const entity = authContext.entity;
               setUserRole(entity?.role);
               setUserId(entity?.uid);
-              const homeTeamId = res?.payload?.user_challenge
-                ? res?.payload?.home_team?.user_id
-                : res?.payload?.home_team?.group_id;
-              const awayTeamId = res?.payload?.user_challenge
-                ? res?.payload?.away_team?.user_id
-                : res?.payload?.away_team?.group_id;
+              const homeTeamId = res.payload.user_challenge
+                ? res.payload.home_team.user_id
+                : res.payload.home_team.group_id;
+              const awayTeamId = res.payload.user_challenge
+                ? res?.payload.away_team.user_id
+                : res?.payload.away_team.group_id;
               let refereeIds = [];
-              refereeIds = res?.payload?.referees?.map((e) => e.referee_id);
+              refereeIds = res.payload.referees.map((e) => e.referee_id);
               const teamIds = [homeTeamId, awayTeamId];
-              const checkIsAdmin = teamIds?.includes(entity?.uid);
-              const checkIsRefereeAdmin = refereeIds?.includes(entity?.uid);
+              const checkIsAdmin = teamIds.includes(entity.uid);
+              const checkIsRefereeAdmin = refereeIds.includes(entity.uid);
 
               let scorekeeperIds = [];
-              scorekeeperIds = res?.payload?.scorekeepers?.map(
+              scorekeeperIds = res.payload.scorekeepers.map(
                 (e) => e.scorekeeper_id,
               );
-              const checkIsScorekeeperAdmin = scorekeeperIds?.includes(
-                entity?.uid,
+              const checkIsScorekeeperAdmin = scorekeeperIds.includes(
+                entity.uid,
               );
 
               setIsAdmin(checkIsAdmin);
@@ -867,7 +861,7 @@ const TennisHome = ({navigation, route}) => {
   const getRefereeReviewsData = useCallback(
     (item) => {
       setLoading(true);
-      getGameReview(tennisGameId, item?.review_id, authContext)
+      getGameReview(tennisGameId, item.review_id, authContext)
         .then((response) => {
           modalizeRef.current.close();
           navigation.navigate('RefereeReviewScreen', {
@@ -960,7 +954,7 @@ const TennisHome = ({navigation, route}) => {
       const alreadyUrlDone = [];
       const createUrlData = [];
 
-      if (reviewsData.attachments.length > 0) {
+      if (reviewsData.attachments?.length > 0) {
         reviewsData.attachments.map((dataItem) => {
           if (dataItem.thumbnail) {
             alreadyUrlDone.push(dataItem);
@@ -994,7 +988,7 @@ const TennisHome = ({navigation, route}) => {
             }
           },
         );
-      } else if (gameData?.user_challenge) {
+      } else if (gameData.user_challenge) {
         patchOrAddReviewPlayer({
           currentForm,
           isAlreadyReviewed,
@@ -1166,7 +1160,7 @@ const TennisHome = ({navigation, route}) => {
   const getGameReviewsData = useCallback(
     (reviewID, isHome) => {
       setLoading(true);
-      getGameReview(gameData?.game_id, reviewID, authContext)
+      getGameReview(gameData.game_id, reviewID, authContext)
         .then((response) => {
           setLoading(false);
           modalizeRef.current.close();
@@ -1174,10 +1168,10 @@ const TennisHome = ({navigation, route}) => {
             gameData,
             gameReviewData: response.payload,
             selectedTeam: isHome ? 'home' : 'away',
-            starAttributes: gameData?.user_challenge
+            starAttributes: gameData.user_challenge
               ? starAttributesForPlayer
               : starAttributesForTeam,
-            isRefereeAvailable: gameData?.referees?.length > 0,
+            isRefereeAvailable: gameData.referees?.length > 0,
             onPressReviewDone,
           });
         })
@@ -1200,46 +1194,28 @@ const TennisHome = ({navigation, route}) => {
     ({item}) => {
       const reservationDetail = item; // item?.reservation
       let isReviewed = false;
-      if (reservationDetail?.isHome) {
-        if (gameData?.home_review_id) {
+      let reviewID = '';
+      if (reservationDetail.isHome) {
+        if (gameData.home_review_id) {
           isReviewed = true;
+          reviewID = gameData.home_review_id
         }
-      } else if (gameData?.away_review_id) {
+      } else if (gameData.away_review_id) {
         isReviewed = true;
+        reviewID = gameData.away_review_id
       }
 
       return (
         <EntityReviewView
           myUserId={authContext.entity.uid}
           isShowReviewButton={isCheckReviewButton(reservationDetail)}
-          isReviewed={isReviewed} // we have to change this condition if both player can give review to referee
-          userID={reservationDetail?.group_id ?? reservationDetail?.user_id}
-          title={reservationDetail?.group_name ?? reservationDetail?.full_name}
-          profileImage={reservationDetail?.thumbnail}
+          isReviewed={isReviewed}
+          userID={reservationDetail.group_id ?? reservationDetail.user_id}
+          title={reservationDetail.group_name ?? reservationDetail.full_name}
+          profileImage={reservationDetail.thumbnail}
           onReviewPress={() => {
-            if (reservationDetail?.isHome) {
-              if (gameData?.home_review_id) {
-                getGameReviewsData(
-                  gameData?.home_review_id,
-                  reservationDetail?.isHome,
-                );
-              } else {
-                modalizeRef.current.close();
-                navigation.navigate('LeaveReviewTennis', {
-                  gameData,
-                  selectedTeam: reservationDetail?.isHome ? 'home' : 'away',
-                  starAttributes: gameData?.user_challenge
-                    ? starAttributesForPlayer
-                    : starAttributesForTeam,
-                  isRefereeAvailable: gameData?.referees?.length > 0,
-                  onPressReviewDone,
-                });
-              }
-            } else if (gameData?.away_review_id) {
-              getGameReviewsData(
-                gameData?.away_review_id,
-                reservationDetail?.isHome,
-              );
+            if (isReviewed) {
+              getGameReviewsData(reviewID,reservationDetail.isHome);
             } else {
               modalizeRef.current.close();
               navigation.navigate('LeaveReviewTennis', {
@@ -1280,7 +1256,7 @@ const TennisHome = ({navigation, route}) => {
           userID={reservationDetail?.referee?.user_id}
           title={reservationDetail?.referee?.full_name}
           subTitle={item?.chief_referee ? 'Chief' : 'Assistant'}
-          profileImage={reservationDetail?.referee?.thumbnail}
+          profileImage={reservationDetail.referee?.thumbnail}
           onReviewPress={() => {
             if (item?.referee?.review_id) {
               getRefereeReviewsData(item?.referee);
@@ -1288,7 +1264,7 @@ const TennisHome = ({navigation, route}) => {
               modalizeRef.current.close();
               navigation.navigate('RefereeReviewScreen', {
                 gameData,
-                userData: item?.referee,
+                userData: item.referee,
                 sliderAttributesForReferee,
                 starAttributesForReferee,
                 onPressRefereeReviewDone,

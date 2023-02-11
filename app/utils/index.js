@@ -2408,3 +2408,16 @@ export const getCityStateCountry = (authContext) => {
 };
 export const getCityStateCountryText = (data) =>
   data.filter((v) => v).join(', ');
+
+export const displayLocation = (data) => {
+  const loc = []
+  loc.push(data.city)
+
+  if(data.country?.toLowerCase() === 'canada' ||  data.country?.toLowerCase() === 'usa'){
+    loc.push(data.state_abbr ??  data.state)
+  }
+  else{
+    loc.push(data.country)
+  }
+  return loc.filter((v) => v).join(', ')
+}

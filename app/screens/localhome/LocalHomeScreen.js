@@ -655,8 +655,6 @@ export default function LocalHomeScreen({navigation, route}) {
       getGameIndex(upcomingMatchQuery).then((games) => {
         Utility.getGamesList(games).then((gamedata) => {
           if (games?.length > 0) {
-            console.log('uuuuu1', games);
-
             setUpcomingMatch(gamedata);
           } else {
             setUpcomingMatch([]);

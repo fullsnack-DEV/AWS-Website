@@ -1,84 +1,86 @@
 import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
-import colors from '../../../../../Constants/Colors';
-import fonts from '../../../../../Constants/Fonts';
+import {View, Text} from 'react-native';
 import TCRatingStarSlider from '../../../../TCRatingStarSlider';
+import styles from '../../../soccer/home/review/ReviewStyles';
+import {strings} from '../../../../../../Localization/translation';
 
-// const QUSTIONS = [
-//    { attrName: 'punctuality', desc: 'Did the players arrive at the match place on time?' },
-//   // { attrName: 'manner', desc: 'Did the players arrive at the match place on time?' },
-//   { attrName: 'manner', desc: 'Did the players keep good manners for the other players, officials and spectators during the match?' },
-//   { attrName: 'respectforreferre', desc: 'Did the players respect the referees and their decisions?' },
-// ]
-// const QUSTIONS_WITHOUT_REFREE = [
-//   { attrName: 'punctuality', desc: 'Did the players arrive at the match place on time?' },
-//  // { attrName: 'manner', desc: 'Did the players arrive at the match place on time?' },
-//  { attrName: 'manner', desc: 'Did the players keep good manners for the other players, officials and spectators during the match?' },
-
-// ]
 const UserRatePerformance = ({
   reviewsData,
-  setTeamReview,
+  setReviewRating,
   starColor,
   reviewAttributes,
   isRefereeAvailable,
 }) => {
-  console.log('reviewAttributes:=>', reviewAttributes);
+  const ommitedName = isRefereeAvailable ? '' : 'respectforreferre';
+
+  const topStarAttributesForReferee = reviewAttributes.filter(
+    (reviewProp) =>
+      reviewProp.type === 'topstar' && reviewProp.name !== ommitedName,
+  );
+
+  const middleStarAttributesForReferee = reviewAttributes.filter(
+    (reviewProp) =>
+      reviewProp.type === 'star' && reviewProp.name !== ommitedName,
+  );
+
+  const bottomStarAttributesForReferee = reviewAttributes.filter(
+    (reviewProp) =>
+      reviewProp.type === 'bottomstar' && reviewProp.name !== ommitedName,
+  );
+
+  const renderReviewStar = (index, item) => (
+    <View key={index}>
+      <Text style={styles.questionTitle}>{item.title.toUpperCase()}</Text>
+      <Text style={styles.questionText}>{item.description}</Text>
+      <TCRatingStarSlider
+        currentRating={reviewsData[item.name]}
+        onPress={(star) => {
+          setReviewRating(item.name, star);
+        }}
+        style={{
+          alignSelf: 'center',
+          marginTop: 5,
+          marginBottom: 25,
+        }}
+        starColor={starColor}
+      />
+    </View>
+  );
 
   return (
-    <View style={styles.mainContainer}>
+    <View style={styles.mainContainerRate}>
       {/*    Title */}
-      <Text style={styles.titleText}>
-        Rate<Text style={{color: colors.redDelColor}}>*</Text>
+      <Text style={[styles.titleText, {marginBottom: 14}]}>
+        {strings.rateperformance.toUpperCase()}
       </Text>
 
-      {/* Questions */}
+      {/* Top Star Rating */}
+      {topStarAttributesForReferee?.map((item, index) =>
+        renderReviewStar(index, item),
+      )}
 
-      {isRefereeAvailable
-        ? reviewAttributes.map((item, index) => (
-          <View style={{marginVertical: 5}} key={index}>
-            <Text style={styles.questionText}>{item.description}</Text>
-            <TCRatingStarSlider
-                currentRating={reviewsData[item.name]}
-                onPress={(star) => {
-                  setTeamReview(item.name, star);
-                }}
-                style={{alignSelf: 'flex-end'}}
-                starColor={starColor}
-              />
-          </View>
-          ))
-        : reviewAttributes
-            .filter((e) => e.name !== 'respectforreferre')
-            .map((item, index) => (
-              <View style={{marginVertical: 5}} key={index}>
-                <Text style={styles.questionText}>{item.description}</Text>
-                <TCRatingStarSlider
-                  currentRating={reviewsData[item.name]}
-                  onPress={(star) => {
-                    setTeamReview(item.name, star);
-                  }}
-                  style={{alignSelf: 'flex-end'}}
-                  starColor={starColor}
-                />
-              </View>
-            ))}
+      {topStarAttributesForReferee?.length > 0 && (
+        <View style={[styles.seperator, {marginBottom: 25}]} />
+      )}
+
+      {/* Middle Star Rating */}
+      {middleStarAttributesForReferee?.map((item, index) =>
+        renderReviewStar(index, item),
+      )}
+
+      {middleStarAttributesForReferee?.length > 0 && (
+        <View style={[styles.seperator, {marginBottom: 25}]} />
+      )}
+
+      {/* Bottom Star Rating */}
+      {bottomStarAttributesForReferee?.map((item, index) =>
+        renderReviewStar(index, item),
+      )}
+
+      {bottomStarAttributesForReferee?.length > 0 && (
+        <View style={[styles.seperator, {marginBottom: 25}]} />
+      )}
     </View>
   );
 };
-const styles = StyleSheet.create({
-  mainContainer: {
-    flex: 1,
-  },
-  titleText: {
-    fontFamily: fonts.RRegular,
-    fontSize: 20,
-    color: colors.lightBlackColor,
-  },
-  questionText: {
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RRegular,
-    fontSize: 16,
-  },
-});
 export default UserRatePerformance;

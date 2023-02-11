@@ -2164,24 +2164,20 @@ export default {
   removeMemberFromGroup: 'en_Remove this member from team',
   basicInfoRequestText:
     'en_{0} wants to collect your basic info. You may choose the sections you want to send or edit each section befor you send the information.',
-  requestBasicInfoTitle: 'en_Request for Basic Info',
-  reservations: 'en_Reservations',
-  dateFormatPlaceholder: 'en_MM DD YYYY',
-  dominantFoot: 'en_Dominant foot',
-  dominantPlaceholder: 'en_Choose',
-  sentBasicInfoText:
-    'en_You can send a request to collect the member’s basic info.',
-  birthdayAgeText: 'en_Birthday, age',
-  requestInfoAcceptedText:
-    'en_When the request is accepted, the basic info in this profile will be updated with the info provided by the member. A user may choose to only provide some of the basic info items.',
-  showAgainText: 'en_Don’t show this again.',
-  invoice: 'en_Invoice',
-  underDevelopment: 'eb_Under Development',
-  inviteMemberToGroup: 'en_Invite member to {0}',
-  emailInviteSent: 'en_An email invitation was sent.',
-  updateMyProfile: 'en_Update this information on my profile.',
-  specifications: 'en_Specifications',
-  statusPlaceholder: 'en_Status',
-  threeCharToSeeAddress:
-    'en_Please enter at least 3 characters to see addresses.',
+
+  leavereviewinsmall:'en_Leave Review',
+  doubleteamtitle:'en_Please, rate the performance of {0} and leave a review for the team below.',
+  teamreviewtitle:'en_Please rate the sportsmanship of {0} and leave a review.',
+  refereereviewtitle:'en_Please rate the performance of referee {0} and leave a review.',
+  rateperformance:'en_Rate performance',
+  leaveareview:'en_Leave a review',
+  writerefereereviewplacholder:'en_Describe what you thought about the referee\'s and conduct pertaining the match.',
+  completeallrating:'en_Please complete all ratings to complete the review. Otherwise, you can remove all the ratings and leave a review only.',
+  reviewvalidation:'en_Please at least leave a review.',
+  deleteallrating:'en_Delete All Ratings',
+  scorekeeperreviewtitle:'en_Please rate the performance of scorekeeper {0} and leave a review.',
+  writescorekeeperreviewplacholder:'en_Describe what you thought about the scorekeeper\'s and conduct pertaining the match.',
+  writeteamreviewplacholder:'en_Describe what you thought about the team\'s performance and sportsmanship pertaining to the match.',
+  writeplayerreviewplacholder:'en_Describe what you thought about the player\'s performance and sportsmanship pertaining to the match.',
+
 };

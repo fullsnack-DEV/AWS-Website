@@ -136,7 +136,6 @@ import EditScorekeeperFeeScreen from '../screens/scorekeeper/alterScorekeeper/Ed
 import EditScorekeeperReservation from '../screens/scorekeeper/alterScorekeeper/EditScorekeeperReservation';
 import ScorekeeperRequestSent from '../screens/scorekeeper/ScorekeeperRequestSent';
 import ScorekeeperReservationScreen from '../screens/scorekeeper/ScorekeeperReservationScreen';
-import LeaveReviewTennis from '../screens/game/tennis/review/leaveReview/LeaveReviewTennis';
 import WriteReviewScreen from '../components/game/soccer/home/review/WriteReviewScreen';
 import RefereeReviewScreen from '../components/game/soccer/home/review/reviewForReferee/RefereeReviewScreen';
 import ReviewRefereeList from '../components/game/soccer/home/review/reviewForReferee/ReviewRefereeList';
@@ -225,7 +224,7 @@ import SoccerApproveDisapproveConfirmation from '../screens/game/soccer/summary/
 import SoccerRecordList from '../screens/game/soccer/SoccerRecordList';
 import TennisRecording from '../screens/game/tennis/TennisRecording';
 import SoccerRecording from '../screens/game/soccer/SoccerRecording';
-import LeaveReview from '../screens/game/soccer/review/leaveReview/LeaveReview';
+import LeaveReview from '../screens/game/leaveReview/LeaveReview';
 import ViewPrivacyScreen from '../screens/account/schedule/ViewPrivacyScreen';
 import GroupEventScreen from '../screens/account/schedule/GroupEventScreen';
 import DefaultColorScreen from '../screens/account/schedule/DefaultColorScreen';
@@ -2184,7 +2183,7 @@ const LocalHomeNavigator = () => (
       name="ChangeReservationInfoScreen"
       component={ChangeReservationInfoScreen}
       options={{
-        title: 'Change Match Reservation',
+        title: strings.changeMatchReservation,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -2403,7 +2402,7 @@ const LocalHomeNavigator = () => (
       name="EditChallenge"
       component={EditChallenge}
       options={{
-        title: 'Change Match Reservation',
+        title: strings.changeMatchReservation,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -2594,14 +2593,6 @@ const LocalHomeNavigator = () => (
     <Stack.Screen
       name="WriteReviewScreen"
       component={WriteReviewScreen}
-      options={{
-        headerShown: false,
-      }}
-    />
-
-    <Stack.Screen
-      name="LeaveReviewTennis"
-      component={LeaveReviewTennis}
       options={{
         headerShown: false,
       }}
@@ -3243,7 +3234,7 @@ const LocalHomeNavigator = () => (
       name="ChooseTimeSlotScreen"
       component={ChooseTimeSlotScreen}
       options={{
-        title: 'Choose a date & time',
+        title: strings.chooseDateTimeText,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
