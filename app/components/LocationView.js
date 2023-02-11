@@ -72,7 +72,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginRight: 15,
 
-    marginTop: 25,
     alignItems: 'center',
   },
   title: {

@@ -46,11 +46,10 @@ import * as Utility from '../../../../utils';
 import {patchPlayer} from '../../../../api/Users';
 import Verbs from '../../../../Constants/Verbs';
 import {searchCityState, searchNearByCityState} from '../../../../api/External';
-import {
-  getGeocoordinatesWithPlaceName,
-} from '../../../../utils/location';
+import {getGeocoordinatesWithPlaceName} from '../../../../utils/location';
 import images from '../../../../Constants/ImagePath';
 import Separator from '../../../../components/Separator';
+import locationModalStyles from '../../../../Constants/LocationModalStyle';
 
 export default function AvailableAreaReferee({navigation, route}) {
   const [comeFrom] = useState(route?.params?.comeFrom);
@@ -626,8 +625,10 @@ export default function AvailableAreaReferee({navigation, route}) {
                 }
               />
             </View>
-            {noData && searchText.length > 0 && (
-              <Text style={styles.noDataText}>{strings.enter3CharText}</Text>
+            {searchText.length < 3 && (
+              <Text style={locationModalStyles.noDataText}>
+                {strings.threeCharToSeeAddress}
+              </Text>
             )}
             {noData && searchText.length === 0 && nearbyCities.length > 0 && (
               <SafeAreaView style={{flex: 1}}>
@@ -885,18 +886,7 @@ const styles = StyleSheet.create({
     marginLeft: wp('10%'),
     width: wp('80%'),
   },
-  noDataText: {
-    // alignSelf: 'center',
-    color: colors.grayColor,
-    fontFamily: fonts.RRegular,
-    fontSize: 14,
-    marginLeft: 40,
-    marginTop: 8,
 
-    // marginTop: hp('1%'),
-    // textAlign: 'center',
-    // width: wp('55%'),
-  },
   searchImg: {
     alignSelf: 'center',
     height: hp('4%'),

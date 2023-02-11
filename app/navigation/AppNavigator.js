@@ -38,6 +38,7 @@ import AccountNavigator from './AccountNavigator';
 import LocalHomeNavigator from './LocalHomeNavigator';
 import {strings} from '../../Localization/translation';
 import ScheduleNavigator from './ScheduleNavigator';
+import MembersNavigator from './MembersNavigator';
 
 // import HomeNavigator from './HomeNavigator';
 // import HomeNavigator from './HomeNavigator';
@@ -239,7 +240,6 @@ const getTabBarVisibility = (route) => {
     routeName === 'MembersViewPrivacyScreen' ||
     routeName === 'NotificationsListScreen' ||
     routeName === 'PendingRequestScreen' ||
-    routeName === 'GroupMembersScreen' ||
     routeName === 'UserConnections' ||
     routeName === 'EditGroupProfileScreen' ||
     routeName === 'EntityInfoScreen' ||
@@ -258,9 +258,9 @@ const getTabBarVisibility = (route) => {
     routeName === 'CreateMemberProfileForm2' ||
     routeName === 'CreateMemberProfileForm3' ||
     routeName === 'EditMemberInfoScreen' ||
-    routeName === 'CreateMemberProfileClubForm2' ||
+    routeName === 'CreateMemberProfileForm2' ||
     routeName === 'CreateMemberProfileClubForm3' ||
-    routeName === 'CreateMemberProfileTeamForm2' ||
+    routeName === 'CreateMemberProfileTeamForm3' ||
     routeName === 'InviteMembersBySearchScreen' ||
     routeName === 'RequestBasicInfoScreen' ||
     routeName === 'RequestMultipleBasicInfoScreen' ||
@@ -571,7 +571,12 @@ const AppNavigator = ({navigation}) => {
       />
       <Tab.Screen
         name="News Feed"
-        component={NewsFeedNavigator}
+        component={
+          authContext.entity.role === 'team' ||
+          authContext.entity.role === 'club'
+            ? MembersNavigator
+            : NewsFeedNavigator
+        }
         options={({route}) => ({
           tabBarTestID: 'newsfeed-tab',
           headerShown: false,
@@ -581,7 +586,17 @@ const AppNavigator = ({navigation}) => {
             if (focused);
             return (
               <Image
-                source={focused ? images.tabSelectedFeed : images.tabFeed}
+                source={
+                  focused
+                    ? authContext.entity.role === 'team' ||
+                      authContext.entity.role === 'club'
+                      ? images.tab_members_selected
+                      : images.tabSelectedFeed
+                    : authContext.entity.role === 'team' ||
+                      authContext.entity.role === 'club'
+                    ? images.tab_members
+                    : images.tabFeed
+                }
                 style={focused ? styles.selectedTabImg : styles.tabImg}
               />
             );

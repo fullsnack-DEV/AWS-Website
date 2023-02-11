@@ -38,11 +38,6 @@ function TCTouchableLabel({
                 style,
                 {
                   borderRadius: 5,
-                  shadowColor: colors.blackColor,
-                  shadowOffset: {width: 0, height: 1},
-                  shadowOpacity: 0.16,
-                  shadowRadius: 1,
-                  elevation: 3,
                 },
               ]
         }>
@@ -86,7 +81,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     height: 40,
     marginHorizontal: 15,
-    backgroundColor: colors.offwhite,
+    backgroundColor: colors.textFieldBackground,
     borderRadius: 5,
   },
 

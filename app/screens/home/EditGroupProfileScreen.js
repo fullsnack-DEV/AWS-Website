@@ -54,6 +54,7 @@ import TCKeyboardView from '../../components/TCKeyboardView';
 import {getQBAccountType, QBupdateUser} from '../../utils/QuickBlox';
 import TCThinDivider from '../../components/TCThinDivider';
 import Verbs from '../../Constants/Verbs';
+import locationModalStyles from '../../Constants/LocationModalStyle';
 
 export default function EditGroupProfileScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
@@ -121,7 +122,9 @@ export default function EditGroupProfileScreen({navigation, route}) {
     if (route.params && route.params.city) {
       setGroupProfile({
         ...groupProfile,
-        location: [route.params.city, route.params.state, route.params.country].filter(v => v).join(', '),
+        location: [route.params.city, route.params.state, route.params.country]
+          .filter((v) => v)
+          .join(', '),
         city: route.params.city,
         state_abbr: route.params.state,
         country: route.params.country,
@@ -145,23 +148,21 @@ export default function EditGroupProfileScreen({navigation, route}) {
     }
   };
   useEffect(() => {
-    setloading(true)
+    setloading(true);
     getGeocoordinatesWithPlaceName(Platform.OS)
       .then((location) => {
         setloading(false);
-        if(location.position){
+        if (location.position) {
           setCurrentLocation(location);
-        }
-        else{
+        } else {
           setCurrentLocation(null);
         }
       })
       .catch((e) => {
         setloading(false);
-        if(e.message === strings.userdeniedgps){
+        if (e.message === strings.userdeniedgps) {
           setCurrentLocation(null);
-        }
-        else{
+        } else {
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
@@ -259,28 +260,34 @@ export default function EditGroupProfileScreen({navigation, route}) {
     if (item.terms.length === 1) {
       setGroupProfile({
         ...groupProfile,
-        location: [item.terms[0].value].filter(v => v).join(', '),
+        location: [item.terms[0].value].filter((v) => v).join(', '),
         city: undefined,
         state_abbr: undefined,
         country: item.terms[0].value,
       });
-    }
-    else if (item.terms.length === 2) {
+    } else if (item.terms.length === 2) {
       setGroupProfile({
         ...groupProfile,
-        location: [item.terms[0].value, item.terms[1].value].filter(v => v).join(', '),
+        location: [item.terms[0].value, item.terms[1].value]
+          .filter((v) => v)
+          .join(', '),
         city: item.terms[0].value,
         state_abbr: undefined,
         country: item.terms[1].value,
       });
-    }
-    else if (item.terms.length > 2) {
+    } else if (item.terms.length > 2) {
       setGroupProfile({
         ...groupProfile,
-        location: [item.terms[item.terms.length-3].value , item.terms[item.terms.length-2].value, item.terms[item.terms.length-1].value].filter(v => v).join(', '),
-        city: item.terms[item.terms.length-3].value ,
-        state_abbr: item.terms[item.terms.length-2].value ,
-        country: item.terms[item.terms.length-1].value ,
+        location: [
+          item.terms[item.terms.length - 3].value,
+          item.terms[item.terms.length - 2].value,
+          item.terms[item.terms.length - 1].value,
+        ]
+          .filter((v) => v)
+          .join(', '),
+        city: item.terms[item.terms.length - 3].value,
+        state_abbr: item.terms[item.terms.length - 2].value,
+        country: item.terms[item.terms.length - 1].value,
       });
     }
     setLocationPopup(false);
@@ -289,7 +296,13 @@ export default function EditGroupProfileScreen({navigation, route}) {
   const onSelectCurrentLocation = async () => {
     setGroupProfile({
       ...groupProfile,
-      location: [currentLocation?.city, currentLocation?.state, currentLocation?.country].filter(v => v).join(', '),
+      location: [
+        currentLocation?.city,
+        currentLocation?.state,
+        currentLocation?.country,
+      ]
+        .filter((v) => v)
+        .join(', '),
       city: currentLocation.city,
       state_abbr: currentLocation.state,
       country: currentLocation.country,
@@ -722,8 +735,10 @@ export default function EditGroupProfileScreen({navigation, route}) {
                 onChangeText={(text) => setSearchText(text)}
               />
             </View>
-            {noData && searchText?.length > 0 && (
-              <Text style={styles.noDataText}>{strings.enter3CharText}</Text>
+            {searchText.length < 3 && (
+              <Text style={locationModalStyles.noDataText}>
+                {strings.threeCharToSeeAddress}
+              </Text>
             )}
             {currentLocation && noData && searchText?.length === 0 && (
               <View style={{flex: 1}}>
@@ -968,16 +983,7 @@ const styles = StyleSheet.create({
     fontSize: wp('4.5%'),
     paddingLeft: 10,
   },
-  noDataText: {
-    alignSelf: 'center',
-    color: colors.userPostTimeColor,
-    fontFamily: fonts.RRegular,
-    fontSize: wp('4%'),
-    marginTop: hp('1%'),
 
-    textAlign: 'center',
-    width: wp('90%'),
-  },
   languageView: {
     alignSelf: 'center',
     backgroundColor: colors.textFieldBackground,

@@ -14,7 +14,7 @@ import {
   Keyboard,
   Platform,
   Linking,
-  Pressable
+  Pressable,
 } from 'react-native';
 
 import {useIsFocused} from '@react-navigation/native';
@@ -41,6 +41,7 @@ import {getHitSlop, getSportName} from '../../../../utils';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import Verbs from '../../../../Constants/Verbs';
 import styles from './style';
+import locationModalStyles from '../../../../Constants/LocationModalStyle';
 
 export default function CreateTeamForm1({navigation, route}) {
   const isFocused = useIsFocused();
@@ -540,7 +541,7 @@ export default function CreateTeamForm1({navigation, route}) {
         backdropTransitionOutTiming={800}
         style={{
           margin: 0,
-        }}>          
+        }}>
         <View
           behavior="height"
           enabled={false}
@@ -577,9 +578,9 @@ export default function CreateTeamForm1({navigation, route}) {
                 onChangeText={(text) => setSearchText(text)}
               />
             </View>
-            {noData && searchText.length > 0 && (
-              <Text style={locationModelStyles.noDataText}>
-                {strings.enter3CharText}
+            {searchText.length < 3 && (
+              <Text style={locationModalStyles.noDataText}>
+                {strings.threeCharToSeeAddress}
               </Text>
             )}
             {noData &&
@@ -587,7 +588,10 @@ export default function CreateTeamForm1({navigation, route}) {
               nearbyCities.length >= 0 &&
               cityData.length === 0 && (
                 <FlatList
-                  style={[locationModelStyles.nearbycitiesflatlist,{marginTop:25}]}
+                  style={[
+                    locationModelStyles.nearbycitiesflatlist,
+                    {marginTop: 25},
+                  ]}
                   data={nearbyCities}
                   renderItem={renderCurrentLocationItem}
                   ListHeaderComponent={renderCurrentLocation}
@@ -636,10 +640,10 @@ export default function CreateTeamForm1({navigation, route}) {
 const locationModelStyles = StyleSheet.create({
   mainView: {
     width: '100%',
-    flex:1,
+    flex: 1,
     height: Dimensions.get('window').height - 50,
     backgroundColor: 'white',
-    marginTop:50,
+    marginTop: 50,
     bottom: 0,
     left: 0,
     borderTopLeftRadius: 30,
@@ -694,13 +698,7 @@ const locationModelStyles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     fontSize: 15,
   },
-  noDataText: {
-    color: colors.userPostTimeColor,
-    fontFamily: fonts.RRegular,
-    fontSize: 12,
-    marginLeft: 30,
-    marginTop: 5,
-  },
+
   listItem: {
     flexDirection: 'row',
     marginLeft: 25,
@@ -751,11 +749,11 @@ const locationModelStyles = StyleSheet.create({
     textAlign: 'left',
     fontFamily: fonts.RRegular,
   },
-  nearbycitiesflatlist:{
+  nearbycitiesflatlist: {
     ...Platform.select({
       ios: {
-        height: Dimensions.get('window').height - 225
+        height: Dimensions.get('window').height - 225,
       },
     }),
-  }
+  },
 });

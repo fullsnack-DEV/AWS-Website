@@ -4,6 +4,11 @@ const DataSource = {
     {label: 'Female', value: 'female'},
     {label: 'Other', value: 'other'},
   ],
+  dominantFoot: [
+    {label: 'Left', value: 'Left'},
+    {label: 'Right', value: 'Right'},
+    {label: 'Both', value: 'Both'},
+  ],
   FeeCycle: [
     {label: 'Weekly', value: 'weekly'},
     {label: 'Biweekly', value: 'biweekly'},

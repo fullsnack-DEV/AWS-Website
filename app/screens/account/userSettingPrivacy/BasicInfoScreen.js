@@ -17,10 +17,7 @@ import {
 } from 'react-native';
 
 import {useIsFocused} from '@react-navigation/native';
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import moment from 'moment';
 import RNPickerSelect from 'react-native-picker-select';
 import Modal from 'react-native-modal';
@@ -44,6 +41,7 @@ import {searchLocations} from '../../../api/External';
 import TCThinDivider from '../../../components/TCThinDivider';
 import TCCountryCodeModal from '../../../components/TCCountryCodeModal';
 import {heightMesurement, weightMesurement} from '../../../utils/constant';
+import locationModalStyles from '../../../Constants/LocationModalStyle';
 
 export default function BasicInfoScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
@@ -749,8 +747,10 @@ export default function BasicInfoScreen({navigation, route}) {
                 onChangeText={(text) => setSearchText(text)}
               />
             </View>
-            {noData && searchText?.length > 0 && (
-              <Text style={styles.noDataText}>{strings.enter3CharText}</Text>
+            {searchText.length < 3 && (
+              <Text style={locationModalStyles.noDataText}>
+                {strings.threeCharToSeeAddress}
+              </Text>
             )}
             {currentLocation && noData && searchText?.length === 0 && (
               <View style={{flex: 1}}>
@@ -993,16 +993,7 @@ const styles = StyleSheet.create({
     fontSize: wp('4.5%'),
     paddingLeft: 10,
   },
-  noDataText: {
-    alignSelf: 'center',
-    color: colors.userPostTimeColor,
-    fontFamily: fonts.RRegular,
-    fontSize: wp('4%'),
-    marginTop: hp('1%'),
 
-    textAlign: 'center',
-    width: wp('90%'),
-  },
   codeContainer: {
     paddingVertical: 12,
     paddingHorizontal: 15,

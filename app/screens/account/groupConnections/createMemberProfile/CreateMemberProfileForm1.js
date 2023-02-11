@@ -176,15 +176,18 @@ export default function CreateMemberProfileForm1({navigation, route}) {
                       email,
                       home_city: homeCity,
                     };
-                    if (entity.role === Verbs.entityTypeTeam) {
-                      navigation.navigate('CreateMemberProfileTeamForm2', {
-                        form1: form1Object,
-                      });
-                    } else if (entity.role === Verbs.entityTypeClub) {
-                      navigation.navigate('CreateMemberProfileClubForm2', {
-                        form1: form1Object,
-                      });
-                    }
+                    // if (entity.role === Verbs.entityTypeTeam) {
+                    //   navigation.navigate('CreateMemberProfileTeamForm3', {
+                    //     form1: form1Object,
+                    //   });
+                    // } else if (entity.role === Verbs.entityTypeClub) {
+                    //   navigation.navigate('CreateMemberProfileForm2', {
+                    //     form1: form1Object,
+                    //   });
+                    // }
+                    navigation.navigate('CreateMemberProfileForm2', {
+                      form1: form1Object,
+                    });
                   } else {
                     setTimeout(() => {
                       showAlert(strings.emailExistInTC);
@@ -491,10 +494,7 @@ export default function CreateMemberProfileForm1({navigation, route}) {
 
   return (
     <>
-      <TCFormProgress
-        totalSteps={role === Verbs.entityTypeClub ? 3 : 2}
-        curruentStep={1}
-      />
+      <TCFormProgress totalSteps={3} curruentStep={1} />
       <ActivityLoader visible={loading} />
       <TCKeyboardView>
         <View style={styles.profileView}>
@@ -559,7 +559,7 @@ export default function CreateMemberProfileForm1({navigation, route}) {
         </View>
         <View>
           <TCLable
-            title={strings.emailPlaceHolder.toUpperCase()}
+            title={strings.emailtitle.toUpperCase()}
             required={true}
             style={{marginBottom: 12}}
           />
@@ -666,9 +666,9 @@ export default function CreateMemberProfileForm1({navigation, route}) {
                 onChangeText={(text) => setSearchText(text)}
               />
             </View>
-            {noData && searchText.length > 0 && (
+            {searchText.length < 3 && (
               <Text style={locationModalStyles.noDataText}>
-                {strings.enter3CharText}
+                {strings.threeCharToSeeAddress}
               </Text>
             )}
             {noData &&
@@ -737,22 +737,16 @@ const styles = StyleSheet.create({
     height: 72,
     width: 72,
     borderRadius: 36,
-    marginTop: 10,
-    marginBottom: 10,
+    marginTop: 20,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: colors.grayColor,
-    shadowOffset: {width: 0, height: 3},
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
-    elevation: 3,
     alignSelf: 'center',
   },
   choosePhoto: {
     position: 'absolute',
     width: 22,
     height: 22,
-    bottom: 0,
+    bottom: 2,
     right: 0,
   },
   nextButtonStyle: {

@@ -47,7 +47,7 @@ export default function TCPicker({
 const styles = StyleSheet.create({
   inputAndroid: {
     alignSelf: 'center',
-    backgroundColor: colors.offwhite,
+    backgroundColor: colors.textFieldBackground,
     borderRadius: 5,
     color: colors.lightBlackColor,
     elevation: 3,
@@ -61,18 +61,16 @@ const styles = StyleSheet.create({
   },
   inputIOS: {
     alignSelf: 'center',
-    backgroundColor: colors.offwhite,
+    backgroundColor: colors.textFieldBackground,
     borderRadius: 5,
     color: colors.lightBlackColor,
     fontSize: 16,
     fontFamily: fonts.RRegular,
     height: 40,
     paddingHorizontal: 15,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.2,
-    shadowRadius: 1,
+
     width: '92%',
+    textAlign: 'center',
   },
   downArrow: {
     alignSelf: 'center',

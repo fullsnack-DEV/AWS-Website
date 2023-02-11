@@ -66,8 +66,8 @@ import MemberProfileCreatedScreen from '../screens/account/groupConnections/Memb
 import UserFoundScreen from '../screens/account/groupConnections/UserFoundScreen';
 import MembersViewPrivacyScreen from '../screens/account/groupConnections/MembersViewPrivacyScreen';
 import CreateMemberProfileForm1 from '../screens/account/groupConnections/createMemberProfile/CreateMemberProfileForm1';
-import CreateMemberProfileTeamForm2 from '../screens/account/groupConnections/createMemberProfile/CreateMemberProfileTeamForm2';
-import CreateMemberProfileClubForm2 from '../screens/account/groupConnections/createMemberProfile/CreateMemberProfileClubForm2';
+import CreateMemberProfileTeamForm3 from '../screens/account/groupConnections/createMemberProfile/CreateMemberProfileTeamForm3';
+import CreateMemberProfileForm2 from '../screens/account/groupConnections/createMemberProfile/CreateMemberProfileForm2';
 import CreateMemberProfileClubForm3 from '../screens/account/groupConnections/createMemberProfile/CreateMemberProfileClubForm3';
 import ConnectionReqSentScreen from '../screens/account/groupConnections/ConnectionReqSentScreen';
 import ClubSettingScreen from '../screens/account/groupConnections/ClubSettingScreen';
@@ -1298,8 +1298,8 @@ const ScheduleNavigator = () => (
       }}
     />
     <Stack.Screen
-      name="CreateMemberProfileTeamForm2"
-      component={CreateMemberProfileTeamForm2}
+      name="CreateMemberProfileTeamForm3"
+      component={CreateMemberProfileTeamForm3}
       options={{
         title: strings.createMemberProfileText,
         headerTintColor: colors.blackColor,
@@ -1314,8 +1314,8 @@ const ScheduleNavigator = () => (
       }}
     />
     <Stack.Screen
-      name="CreateMemberProfileClubForm2"
-      component={CreateMemberProfileClubForm2}
+      name="CreateMemberProfileForm2"
+      component={CreateMemberProfileForm2}
       options={{
         title: strings.createMemberProfileText,
         headerTintColor: colors.blackColor,

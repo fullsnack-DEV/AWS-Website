@@ -93,9 +93,6 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
       ],
     );
     setMemberInfo(route.params.memberInfo);
-    console.log('====================================');
-    console.log(route.params.memberInfo);
-    console.log('====================================');
     getAuthEntity();
   }, []);
 
@@ -146,11 +143,6 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
           onPress={() => {
             if (checkValidation()) {
               editMemberBasicInfo();
-              // if (entity.role === 'team') {
-              //   navigation.navigate('CreateMemberProfileTeamForm2', { form1: memberInfo })
-              // } else if (entity.role === 'club') {
-              //   navigation.navigate('CreateMemberProfileClubForm2', { form1: memberInfo })
-              // }
             }
           }}>
           {strings.done}

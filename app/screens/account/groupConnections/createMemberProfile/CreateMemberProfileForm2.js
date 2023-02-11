@@ -60,19 +60,27 @@ import locationModalStyles from '../../../../Constants/LocationModalStyle';
 import Verbs from '../../../../Constants/Verbs';
 
 let entity = {};
-export default function CreateMemberProfileClubForm2({navigation, route}) {
+export default function CreateMemberProfileForm2({navigation, route}) {
   const authContext = useContext(AuthContext);
   entity = authContext.entity;
   const isFocused = useIsFocused();
   const [loading, setLoading] = useState(false);
 
   const [gender, setGender] = useState();
+  const [dominant, setDominant] = useState();
+
   const [birthday, setBirthday] = useState();
   const [showDate, setShowDate] = useState(false);
   const [postalCode, setPostalCode] = useState();
   const [minDateValue, setMinDateValue] = useState(new Date());
-  const [maxDateValue, setMaxDateValue] = useState(new Date());
-  const [memberInfo, setMemberInfo] = useState({});
+  const [memberInfo, setMemberInfo] = useState({
+    height: {
+      height_type: 'ft',
+    },
+    weight: {
+      weight_type: 'lb',
+    },
+  });
   const [location, setLocation] = useState();
   const [city, setCity] = useState();
   const [state, setState] = useState();
@@ -145,7 +153,6 @@ export default function CreateMemberProfileClubForm2({navigation, route}) {
     maxdate.setFullYear(maxdate.getFullYear() - 123);
     // setDateValue(mindate);
     setMinDateValue(mindate);
-    setMaxDateValue(maxdate);
   }, []);
 
   useEffect(() => {
@@ -199,6 +206,7 @@ export default function CreateMemberProfileClubForm2({navigation, route}) {
     country,
     postalCode,
     birthday,
+    dominant,
   ]);
 
   const pressedNext = () => {
@@ -217,14 +225,23 @@ export default function CreateMemberProfileClubForm2({navigation, route}) {
         birthday,
       };
 
-      navigation.navigate('CreateMemberProfileClubForm3', {
-        form2: membersAuthority,
-      });
+      if (entity.role === Verbs.entityTypeTeam) {
+        navigation.navigate('CreateMemberProfileTeamForm3', {
+          form2:
+            entity.obj.sport === 'soccer'
+              ? {...membersAuthority, dominant_foot: dominant}
+              : membersAuthority,
+        });
+      } else if (entity.role === Verbs.entityTypeClub) {
+        navigation.navigate('CreateMemberProfileClubForm3', {
+          form2: membersAuthority,
+        });
+      }
     }
   };
 
   const handleDonePress = (date) => {
-    setBirthday(new Date(date).getTime());
+    setBirthday(new Date(date));
     setShowDate(!showDate);
   };
   const handleCancelPress = () => {
@@ -285,7 +302,7 @@ export default function CreateMemberProfileClubForm2({navigation, route}) {
         marginRight: 15,
         justifyContent: 'space-between',
       }}>
-      <View style={{...styles.halfMatchFeeView, ...styles.shadowStyle}}>
+      <View style={{...styles.halfMatchFeeView}}>
         <TextInput
           placeholder={'-'}
           style={styles.halffeeText}
@@ -328,7 +345,7 @@ export default function CreateMemberProfileClubForm2({navigation, route}) {
             width: widthPercentageToDP('45%'),
             color: 'black',
             paddingRight: 30,
-            backgroundColor: colors.offwhite,
+            backgroundColor: colors.textFieldBackground,
             borderRadius: 5,
             textAlign: 'center',
             ...styles.shadowStyle,
@@ -340,7 +357,7 @@ export default function CreateMemberProfileClubForm2({navigation, route}) {
             width: widthPercentageToDP('45%'),
             color: 'black',
             paddingRight: 30,
-            backgroundColor: colors.offwhite,
+            backgroundColor: colors.textFieldBackground,
             borderRadius: 5,
             textAlign: 'center',
             ...styles.shadowStyle,
@@ -405,7 +422,7 @@ export default function CreateMemberProfileClubForm2({navigation, route}) {
             width: widthPercentageToDP('45%'),
             color: 'black',
             paddingRight: 30,
-            backgroundColor: colors.offwhite,
+            backgroundColor: colors.textFieldBackground,
             borderRadius: 5,
             textAlign: 'center',
             ...styles.shadowStyle,
@@ -417,7 +434,7 @@ export default function CreateMemberProfileClubForm2({navigation, route}) {
             width: widthPercentageToDP('45%'),
             color: 'black',
             paddingRight: 30,
-            backgroundColor: colors.offwhite,
+            backgroundColor: colors.textFieldBackground,
             borderRadius: 5,
             textAlign: 'center',
             ...styles.shadowStyle,
@@ -488,8 +505,7 @@ export default function CreateMemberProfileClubForm2({navigation, route}) {
   const renderLocationItem = ({item}) => (
     <Pressable onPress={() => onSelectLocation(item)}>
       <View style={locationModalStyles.listItem}>
-        <Text
-          style={{...locationModalStyles.cityText, color: colors.themeColor}}>
+        <Text style={{...locationModalStyles.cityText}}>
           {item.description}
         </Text>
       </View>
@@ -673,8 +689,9 @@ export default function CreateMemberProfileClubForm2({navigation, route}) {
               birthday,
             ).getDate()}`}, ${new Date(birthday).getFullYear()}`
           }
-          placeholder={strings.birthDatePlaceholder}
+          placeholder={strings.dateFormatPlaceholder}
           onPress={() => setShowDate(!showDate)}
+          textStyle={{textAlign: 'center'}}
         />
       </View>
 
@@ -689,6 +706,23 @@ export default function CreateMemberProfileClubForm2({navigation, route}) {
         style={{marginBottom: 12}}
       />
       {weightView()}
+      {authContext.entity.obj.sport === 'soccer' &&
+        authContext.entity.role === 'team' && (
+          <View>
+            <TCLabel
+              title={strings.dominantFoot.toUpperCase()}
+              style={{marginBottom: 12}}
+            />
+            <TCPicker
+              dataSource={DataSource.dominantFoot}
+              placeholder={strings.dominantPlaceholder}
+              value={dominant}
+              onValueChange={(value) => {
+                setDominant(value);
+              }}
+            />
+          </View>
+        )}
 
       <View>
         <TCLabel
@@ -729,8 +763,7 @@ export default function CreateMemberProfileClubForm2({navigation, route}) {
             onDone={handleDonePress}
             onCancel={handleCancelPress}
             onHide={handleCancelPress}
-            minimumDate={maxDateValue}
-            maximumDate={minDateValue}
+            minimumDate={minDateValue}
             mode={'date'}
           />
         </View>
@@ -782,9 +815,9 @@ export default function CreateMemberProfileClubForm2({navigation, route}) {
                 onChangeText={(text) => setSearchText(text)}
               />
             </View>
-            {noData && searchText.length > 0 && (
+            {searchText.length < 3 && (
               <Text style={locationModalStyles.noDataText}>
-                {strings.enter3CharText}
+                {strings.threeCharToSeeAddress}
               </Text>
             )}
 
@@ -848,9 +881,9 @@ export default function CreateMemberProfileClubForm2({navigation, route}) {
                 onChangeText={(text) => setSearchText(text)}
               />
             </View>
-            {noData && searchText.length > 0 && (
+            {searchText.length < 3 && (
               <Text style={locationModalStyles.noDataText}>
-                {strings.enter3CharText}
+                {strings.threeCharToSeeAddress}
               </Text>
             )}
             {noData &&
@@ -932,7 +965,7 @@ const styles = StyleSheet.create({
   },
   halfMatchFeeView: {
     alignSelf: 'center',
-    backgroundColor: colors.offwhite,
+    backgroundColor: colors.textFieldBackground,
     borderRadius: 5,
     color: 'black',
     flexDirection: 'row',
@@ -947,13 +980,5 @@ const styles = StyleSheet.create({
     fontSize: widthPercentageToDP('3.8%'),
     width: '90%',
     textAlign: 'center',
-  },
-
-  shadowStyle: {
-    elevation: 3,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 0.5},
-    shadowOpacity: 0.16,
-    shadowRadius: 1,
   },
 });

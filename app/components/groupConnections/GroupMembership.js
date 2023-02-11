@@ -69,14 +69,20 @@ const GroupMembership = ({
             </View>
             <View style={{flexDirection: 'row'}}>
               {groupData.is_admin && (
-                <TCUserRoleBadge title="Admin" titleColor={colors.themeColor} />
+                <TCUserRoleBadge
+                  title={strings.admin}
+                  titleColor={colors.themeColor}
+                />
               )}
               {groupData.is_coach && (
-                <TCUserRoleBadge title="Coach" titleColor={colors.greeColor} />
+                <TCUserRoleBadge
+                  title={strings.coach}
+                  titleColor={colors.greeColor}
+                />
               )}
               {groupData.is_member && (
                 <TCUserRoleBadge
-                  title="Player"
+                  title={strings.player}
                   titleColor={colors.playerBadgeColor}
                 />
               )}
@@ -93,7 +99,7 @@ const GroupMembership = ({
       {authContext.entity.role === 'team' && (
         <>
           <TCInfoField
-            title={'Position'}
+            title={strings.positionPlaceholder}
             value={
               groupData.positions?.length && groupData.positions[0] !== {}
                 ? groupData.positions.toString()
@@ -103,24 +109,20 @@ const GroupMembership = ({
             marginTop={30}
           />
           <TCInfoField
-            title={'Jersey Number'}
+            title={strings.jerseyNumberPlaceholder}
             value={
               groupData.jersey_number ? groupData.jersey_number : strings.NAText
             }
             marginLeft={25}
           />
+
           <TCInfoField
-            title={'Appearance'}
-            value={groupData.appearance ? groupData.appearance : strings.NAText}
-            marginLeft={25}
-          />
-          <TCInfoField
-            title={'Status'}
+            title={strings.statusPlaceholder}
             value={
               groupData.status ? groupData.status.join(', ') : strings.NAText
             }
             marginLeft={25}
-            color={colors.themeColor}
+            color={colors.darkThemeColor}
           />
         </>
       )}

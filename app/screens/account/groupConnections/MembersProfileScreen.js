@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 /* eslint-disable no-nested-ternary */
 import React, {
   useLayoutEffect,
@@ -17,6 +18,7 @@ import {
   Alert,
   FlatList,
   TouchableOpacity,
+  Linking,
 } from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
 import {format} from 'react-string-format';
@@ -38,9 +40,11 @@ import TCThinDivider from '../../../components/TCThinDivider';
 import GroupMembership from '../../../components/groupConnections/GroupMembership';
 import TCInnerLoader from '../../../components/TCInnerLoader';
 import TCMemberProfile from '../../../components/TCMemberProfile';
-import {getUserIndex} from '../../../api/elasticSearch';
 import {shortMonthNames} from '../../../utils/constant';
 import Verbs from '../../../Constants/Verbs';
+import {sendInvitationInGroup} from '../../../api/Users';
+import {getJSDate, showAlert} from '../../../utils';
+import TCProfileButton from '../../../components/TCProfileButton';
 
 let entity = {};
 export default function MembersProfileScreen({navigation, route}) {
@@ -78,7 +82,7 @@ export default function MembersProfileScreen({navigation, route}) {
       headerLeft: () => (
         <TouchableWithoutFeedback
           onPress={() => {
-            if (from === 'CreateMemberProfileTeamForm2') {
+            if (from === 'CreateMemberProfileTeamForm3') {
               navigation.pop(3);
             } else if (from === 'CreateMemberProfileClubForm3') {
               navigation.pop(4);
@@ -251,65 +255,92 @@ export default function MembersProfileScreen({navigation, route}) {
                 </TouchableWithoutFeedback>
               )}
             </View>
-            {memberDetail?.group?.updatedBy && (
+
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}>
               <Text style={styles.undatedTimeText} numberOfLines={2}>
                 {format(
                   strings.joinedClubOnText,
                   shortMonthNames[
-                    new Date(memberDetail.group.joined_date).getMonth()
+                    getJSDate(memberDetail.joined_date).getMonth()
                   ],
-                  new Date(memberDetail.group.joined_date).getDate(),
-                  new Date(memberDetail.group.joined_date).getFullYear(),
-                  memberDetail.group.updatedBy.first_name,
-                  memberDetail.group.updatedBy.last_name,
+                  getJSDate(memberDetail.joined_date).getDate(),
+                  getJSDate(memberDetail.joined_date).getFullYear(),
+                  memberDetail.first_name,
+                  memberDetail.last_name,
                   shortMonthNames[
-                    new Date(memberDetail.group.updated_date).getMonth()
+                    getJSDate(memberDetail.updated_date).getMonth()
                   ],
-                  new Date(memberDetail.group.updated_date).getDate(),
-                  new Date(memberDetail.group.updated_date).getFullYear(),
+                  getJSDate(memberDetail.updated_date).getDate(),
+                  getJSDate(memberDetail.updated_date).getFullYear(),
                 )}
               </Text>
-            )}
+              <TCProfileButton
+                title={memberDetail.connected ? strings.message : strings.email}
+                style={[styles.messageButtonStyle, {width: 80}]}
+                textStyle={styles.buttonTextStyle}
+                showArrow={false}
+                onPressProfile={() => {
+                  if (memberDetail.connected) {
+                    navigation.push('MessageChat', {
+                      screen: 'MessageChat',
+                      params: {userId: memberDetail.user_id},
+                    });
+                  } else {
+                    Linking.canOpenURL('mailto:')
+                      .then((supported) => {
+                        if (!supported) {
+                          Alert.alert(
+                            strings.townsCupTitle,
+                            strings.configureEmailAccounttext,
+                          );
+                        } else {
+                          return Linking.openURL(
+                            `mailto:${memberDetail.email}`,
+                          );
+                        }
+                      })
+                      .catch((err) => {
+                        console.error(err);
+                      });
+                  }
+                }}
+              />
+            </View>
+
             {!memberDetail.connected && (
               <TouchableOpacity
                 onPress={() => {
                   setloading(true);
 
-                  const getUserByEmailQuery = {
-                    query: {
-                      bool: {
-                        must: [
-                          {
-                            term: {
-                              'email.keyword': {
-                                value: memberDetail.email,
-                              },
-                            },
-                          },
-                        ],
-                      },
-                    },
+                  const obj = {
+                    entity_type: entity.role,
+                    emailIds: [memberDetail.email],
+                    uid: entity.uid,
                   };
+                  sendInvitationInGroup(obj, authContext)
+                    .then(() => {
+                      setloading(false);
+                      showAlert(strings.emailInviteSent);
+                    })
+                    .catch((e) => {
+                      setloading(false);
 
-                  getUserIndex(getUserByEmailQuery).then((players) => {
-                    setloading(false);
-                    if (players?.length > 0) {
-                      navigation.navigate('UserFoundScreen', {
-                        signUpObj: players[0],
-                        memberObj: memberDetail,
-                        groupID,
-                      });
-                    } else {
-                      navigation.navigate('UserNotFoundScreen', {
-                        memberObj: memberDetail,
-                        groupID,
-                      });
-                    }
-                  });
+                      setTimeout(() => {
+                        showAlert(e.message);
+                      }, 10);
+                    });
                 }}>
                 <View style={styles.inviteButtonContainer}>
                   <Text style={styles.inviteTextStyle}>
-                    {strings.inviteOrConnectAccountText}
+                    {format(
+                      strings.inviteMemberToGroup,
+                      authContext.entity.role,
+                    ).toUpperCase()}
                   </Text>
                 </View>
               </TouchableOpacity>
@@ -333,28 +364,9 @@ export default function MembersProfileScreen({navigation, route}) {
               )}
             </View>
             <TCInfoField
-              title={strings.emailtitle}
-              value={memberDetail.email ? memberDetail.email : strings.NAText}
-            />
-            <TCInfoField title={strings.phone} value={getMemberPhoneNumber()} />
-            <TCInfoField
-              title={strings.addressPlaceholder}
+              title={strings.gender}
               value={
-                memberDetail.street_address
-                  ? `${memberDetail?.street_address}, ${memberDetail?.city}, ${memberDetail?.state_abbr}, ${memberDetail?.country}`
-                  : memberDetail?.city &&
-                    memberDetail?.state_abbr &&
-                    memberDetail?.country
-                  ? `${memberDetail?.city}, ${memberDetail?.state_abbr}, ${memberDetail?.country}`
-                  : strings.NAText
-              }
-            />
-            <TCInfoField
-              title={strings.age}
-              value={
-                memberDetail?.birthday
-                  ? getAge(new Date(memberDetail?.birthday))
-                  : strings.NAText
+                memberDetail?.gender ? memberDetail?.gender : strings.NAText
               }
             />
             <TCInfoField
@@ -372,9 +384,47 @@ export default function MembersProfileScreen({navigation, route}) {
               }
             />
             <TCInfoField
-              title={strings.gender}
+              title={strings.height}
               value={
-                memberDetail?.gender ? memberDetail?.gender : strings.NAText
+                memberDetail?.height
+                  ? `${memberDetail.height.height} ${memberDetail.height.height_type}`
+                  : strings.NAText
+              }
+            />
+
+            <TCInfoField
+              title={strings.weight}
+              value={
+                memberDetail?.weight
+                  ? `${memberDetail.weight.weight} ${memberDetail.weight.weight_type}`
+                  : strings.NAText
+              }
+            />
+
+            <TCInfoField
+              title={strings.age}
+              value={
+                memberDetail?.birthday
+                  ? getAge(new Date(memberDetail?.birthday))
+                  : strings.NAText
+              }
+            />
+
+            <TCInfoField title={strings.phone} value={getMemberPhoneNumber()} />
+            <TCInfoField
+              title={strings.emailtitle}
+              value={memberDetail.email ? memberDetail.email : strings.NAText}
+            />
+            <TCInfoField
+              title={strings.addressPlaceholder}
+              value={
+                memberDetail.street_address
+                  ? `${memberDetail?.street_address}, ${memberDetail?.city}, ${memberDetail?.state_abbr}, ${memberDetail?.country}`
+                  : memberDetail?.city &&
+                    memberDetail?.state_abbr &&
+                    memberDetail?.country
+                  ? `${memberDetail?.city}, ${memberDetail?.state_abbr}, ${memberDetail?.country}`
+                  : strings.NAText
               }
             />
           </View>
@@ -415,7 +465,7 @@ export default function MembersProfileScreen({navigation, route}) {
             <View style={styles.sectionEditView}>
               <Text style={styles.basicInfoTitle}>
                 {entity.role === Verbs.entityTypeTeam
-                  ? strings.rolesStatusText
+                  ? strings.specifications
                   : strings.membershipTitle}
               </Text>
             </View>
@@ -548,7 +598,6 @@ export default function MembersProfileScreen({navigation, route}) {
                 : [strings.membershipAdminAuthText, strings.cancel]
             }
             cancelButtonIndex={1}
-            destructiveButtonIndex={1}
             onPress={(index) => {
               if (index === 0) {
                 navigation.navigate('EditMemberAuthInfoScreen', {

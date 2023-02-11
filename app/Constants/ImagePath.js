@@ -110,6 +110,9 @@ const images = {
   tab_message: require('../assets/images/tab_messages.png'),
   tab_message_selected: require('../assets/images/tab_selected_messages.png'),
 
+  tab_members: require('../assets/images/tab_members.png'),
+  tab_members_selected: require('../assets/images/tab_selected_members.png'),
+
   tab_account_selected: require('../assets/images/tab_account_selected.png'),
 
   tab_account_group: require('../assets/images/tab_account_group.png'),
