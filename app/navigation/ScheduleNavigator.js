@@ -66,8 +66,8 @@ import MemberProfileCreatedScreen from '../screens/account/groupConnections/Memb
 import UserFoundScreen from '../screens/account/groupConnections/UserFoundScreen';
 import MembersViewPrivacyScreen from '../screens/account/groupConnections/MembersViewPrivacyScreen';
 import CreateMemberProfileForm1 from '../screens/account/groupConnections/createMemberProfile/CreateMemberProfileForm1';
-import CreateMemberProfileTeamForm2 from '../screens/account/groupConnections/createMemberProfile/CreateMemberProfileTeamForm2';
-import CreateMemberProfileClubForm2 from '../screens/account/groupConnections/createMemberProfile/CreateMemberProfileClubForm2';
+import CreateMemberProfileTeamForm3 from '../screens/account/groupConnections/createMemberProfile/CreateMemberProfileTeamForm3';
+import CreateMemberProfileForm2 from '../screens/account/groupConnections/createMemberProfile/CreateMemberProfileForm2';
 import CreateMemberProfileClubForm3 from '../screens/account/groupConnections/createMemberProfile/CreateMemberProfileClubForm3';
 import ConnectionReqSentScreen from '../screens/account/groupConnections/ConnectionReqSentScreen';
 import ClubSettingScreen from '../screens/account/groupConnections/ClubSettingScreen';
@@ -101,8 +101,7 @@ import SoccerApproveDisapproveConfirmation from '../screens/game/soccer/summary/
 import EditLineUpScreen from '../screens/game/soccer/lineUp/EditLineUpScreen';
 import EditLineUpCoachScreen from '../screens/game/soccer/lineUp/EditRosterCoacheScreen';
 import EditChallengeAvailability from '../screens/account/schedule/EditChallengeAvailability';
-import LeaveReview from '../screens/game/soccer/review/leaveReview/LeaveReview';
-import LeaveReviewTennis from '../screens/game/tennis/review/leaveReview/LeaveReviewTennis';
+import LeaveReview from '../screens/game/leaveReview/LeaveReview';
 
 import TennisRecordList from '../screens/game/tennis/TennisRecordList';
 import EditRosterScreen from '../screens/game/soccer/EditRosterScreen';
@@ -464,13 +463,6 @@ const ScheduleNavigator = () => (
     <Stack.Screen
       name="LeaveReview"
       component={LeaveReview}
-      options={{
-        headerShown: false,
-      }}
-    />
-    <Stack.Screen
-      name="LeaveReviewTennis"
-      component={LeaveReviewTennis}
       options={{
         headerShown: false,
       }}
@@ -1306,8 +1298,8 @@ const ScheduleNavigator = () => (
       }}
     />
     <Stack.Screen
-      name="CreateMemberProfileTeamForm2"
-      component={CreateMemberProfileTeamForm2}
+      name="CreateMemberProfileTeamForm3"
+      component={CreateMemberProfileTeamForm3}
       options={{
         title: strings.createMemberProfileText,
         headerTintColor: colors.blackColor,
@@ -1322,8 +1314,8 @@ const ScheduleNavigator = () => (
       }}
     />
     <Stack.Screen
-      name="CreateMemberProfileClubForm2"
-      component={CreateMemberProfileClubForm2}
+      name="CreateMemberProfileForm2"
+      component={CreateMemberProfileForm2}
       options={{
         title: strings.createMemberProfileText,
         headerTintColor: colors.blackColor,

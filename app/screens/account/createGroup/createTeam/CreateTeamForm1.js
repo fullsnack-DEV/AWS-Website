@@ -310,8 +310,8 @@ export default function CreateTeamForm1({navigation, route}) {
           />
         </View>
       </Modal>
-
-      {/* location modal */}
+    
+    {/* location modal */}
 
       <LocationModal
         visibleLocationModal={visibleLocationModal}
@@ -325,3 +325,4 @@ export default function CreateTeamForm1({navigation, route}) {
     </>
   );
 }
+

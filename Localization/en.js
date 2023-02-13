@@ -1213,7 +1213,7 @@ export default {
   configureEmailAccounttext: 'en_Please configure email in your device',
   NAText: 'en_N/A',
   joinedClubOnText:
-    'en_Joined club on {0} {1} ,{2}\nLast updated by {3} {4} on {5} {6} ,{7}',
+    'en_Joined club on {0} {1}, {2}\nLast updated by {3} {4} on {5} {6} ,{7}',
   inviteOrConnectAccountText: 'en_Invite or Connect to an Account',
   requestForBasicInfoWereSentText:
     'en_Requests for basic info were sent to {0} members.',
@@ -1427,7 +1427,7 @@ export default {
     'en_Please check your inbox to verify email, once it will verify your email will changed automatically.',
   accountInfo: 'en_Account Info',
   update: 'en_Save',
-  email: 'en_E-mail',
+  email: 'en_Email',
   changePassword: 'en_Change password',
 
   featuresNotAvailableText:
@@ -2164,8 +2164,7 @@ export default {
   removeMemberFromGroup: 'en_Remove this member from team',
   basicInfoRequestText:
     'en_{0} wants to collect your basic info. You may choose the sections you want to send or edit each section befor you send the information.',
-  requestBasicInfoTitle: 'en_Request Basic Info',
-  reservations:'en_Reservations',
+
   leavereviewinsmall:'en_Leave Review',
   doubleteamtitle:'en_Please, rate the performance of {0} and leave a review for the team below.',
   teamreviewtitle:'en_Please rate the sportsmanship of {0} and leave a review.',
@@ -2180,4 +2179,5 @@ export default {
   writescorekeeperreviewplacholder:'en_Describe what you thought about the scorekeeper\'s and conduct pertaining the match.',
   writeteamreviewplacholder:'en_Describe what you thought about the team\'s performance and sportsmanship pertaining to the match.',
   writeplayerreviewplacholder:'en_Describe what you thought about the player\'s performance and sportsmanship pertaining to the match.',
+
 };

@@ -2,7 +2,7 @@
 /* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable no-unused-vars */
 /* eslint-disable array-callback-return */
-import React, {useState, useEffect, useLayoutEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   Alert,
   Image,
@@ -13,16 +13,15 @@ import {
 } from 'react-native';
 import _ from 'lodash';
 
-import UserReview from '../../../../../components/game/tennis/review/leaveReview/UserReview';
-import {STAR_COLOR} from '../../../../../utils';
-import images from '../../../../../Constants/ImagePath';
-import colors from '../../../../../Constants/Colors';
-import Header from '../../../../../components/Home/Header';
-import {strings} from '../../../../../../Localization/translation';
-import ActivityLoader from '../../../../../components/loader/ActivityLoader';
-import styles from '../../../../../components/game/soccer/home/review/ReviewStyles';
+import UserReview from '../../../components/game/tennis/review/leaveReview/UserReview';
+import {STAR_COLOR} from '../../../utils';
+import images from '../../../Constants/ImagePath';
+import Header from '../../../components/Home/Header';
+import {strings} from '../../../../Localization/translation';
+import ActivityLoader from '../../../components/loader/ActivityLoader';
+import styles from '../../../components/game/soccer/home/review/ReviewStyles';
 
-const LeaveReviewTennis = ({navigation, route}) => {
+const LeaveReview = ({navigation, route}) => {
   const [currentForm] = useState(
     route.params.selectedTeam === 'home' ? 1 : 2,
   );
@@ -186,4 +185,4 @@ const LeaveReviewTennis = ({navigation, route}) => {
   );
 };
 
-export default LeaveReviewTennis;
+export default LeaveReview;

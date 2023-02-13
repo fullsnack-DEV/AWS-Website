@@ -5,7 +5,17 @@ import React, {
   useContext,
   useCallback,
 } from 'react';
-import {Text, View, StyleSheet, FlatList, Alert} from 'react-native';
+import {
+  Text,
+  View,
+  StyleSheet,
+  FlatList,
+  Alert,
+  Pressable,
+  Image,
+  SafeAreaView,
+} from 'react-native';
+import Modal from 'react-native-modal';
 
 import {format} from 'react-string-format';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
@@ -14,12 +24,12 @@ import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import TCSearchBox from '../../../components/TCSearchBox';
 import AuthContext from '../../../auth/context';
-import TCTags from '../../../components/TCTags';
 import TCThinDivider from '../../../components/TCThinDivider';
-import TCThickDivider from '../../../components/TCThickDivider';
 import {getGroupMembers, sendBasicInfoRequest} from '../../../api/Groups';
 import MemberProfile from '../../../components/groupConnections/MemberProfile';
-import {showAlert} from '../../../utils';
+import {getHitSlop, getStorage, setStorage, showAlert} from '../../../utils';
+import TCProfileTag from '../../../components/TCProfileTag';
+import images from '../../../Constants/ImagePath';
 
 export default function RequestMultipleBasicInfoScreen({navigation, route}) {
   const [loading, setloading] = useState(false);
@@ -28,6 +38,8 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
   const [searchPlayers, setSearchPlayers] = useState([]);
 
   const [selectedList, setSelectedList] = useState([]);
+  const [isInfoModalVisible, setIsInfoModalVisible] = useState(false);
+  const [showCheck, setShowCheck] = useState(false);
 
   const selectedPlayers = [];
   useEffect(() => {
@@ -43,6 +55,15 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
         });
         setPlayers(result);
         setSearchPlayers(result);
+        setTimeout(() => {
+          getStorage('showPopup').then((isShow) => {
+            if (isShow || isShow === null) {
+              setIsInfoModalVisible(true);
+            } else {
+              setIsInfoModalVisible(false);
+            }
+          });
+        }, 1000);
       })
       .catch((e) => {
         setloading(false);
@@ -62,7 +83,7 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
         </Text>
       ),
     });
-  }, [navigation, selectedList, searchPlayers]);
+  }, [navigation, selectedList, searchPlayers, isInfoModalVisible, showCheck]);
 
   const selectPlayer = ({item, index}) => {
     players[index].isChecked = !item.isChecked;
@@ -151,22 +172,16 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-      <Text style={styles.infoTextStyle}>{strings.collectMemberInfoText}</Text>
-
-      <TCThickDivider marginBottom={15} />
-      <TCSearchBox
-        width={'90%'}
-        alignSelf="center"
-        onChangeText={(text) => {
-          searchFilterFunction(text);
-        }}
-      />
-      <TCTags
-        dataSource={players}
-        titleKey={'first_name'}
-        onTagCancelPress={handleTagPress}
-      />
-
+      <View style={{marginTop: 10}}>
+        <TCSearchBox
+          width={'90%'}
+          alignSelf="center"
+          onChangeText={(text) => {
+            searchFilterFunction(text);
+          }}
+        />
+      </View>
+      <TCProfileTag dataSource={players} onTagCancelPress={handleTagPress} />
       <FlatList
         extraData={players}
         showsVerticalScrollIndicator={false}
@@ -176,6 +191,82 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
         renderItem={renderPlayer}
         ListEmptyComponent={listEmptyComponent}
       />
+      <Modal
+        isVisible={isInfoModalVisible}
+        onBackdropPress={() => setIsInfoModalVisible(false)}
+        animationInTiming={300}
+        animationOutTiming={800}
+        backdropTransitionInTiming={50}
+        backdropTransitionOutTiming={50}
+        style={{
+          margin: 0,
+          top: 0,
+        }}>
+        <View
+          style={{
+            backgroundColor: 'white',
+            position: 'absolute',
+            bottom: 0,
+            right: 0,
+            left: 0,
+
+            borderTopLeftRadius: 30,
+            borderTopRightRadius: 30,
+          }}>
+          <View style={styles.titlePopup}>
+            <Text style={styles.doneText}></Text>
+
+            <Text style={styles.startTime}></Text>
+            <Pressable
+              hitSlop={getHitSlop(15)}
+              onPress={() => {
+                setIsInfoModalVisible(false);
+              }}>
+              <Image source={images.cancelImage} style={styles.closeButton} />
+            </Pressable>
+          </View>
+          <Text
+            style={{
+              fontFamily: fonts.RRegular,
+              fontSize: 20,
+              margin: 15,
+              color: colors.lightBlackColor,
+            }}>
+            {strings.sentBasicInfoText}
+          </Text>
+          <Text style={styles.basicInfoList}>• {strings.gender}</Text>
+          <Text style={styles.basicInfoList}>• {strings.birthdayAgeText}</Text>
+          <Text style={styles.basicInfoList}>• {strings.height}</Text>
+          <Text style={styles.basicInfoList}>• {strings.weight}</Text>
+          <Text style={styles.basicInfoList}>• {strings.phoneNumber}</Text>
+          <Text style={styles.basicInfoList}>• {strings.emailPlaceHolder}</Text>
+          <Text style={styles.basicInfoList}>• {strings.address}</Text>
+
+          <Text style={styles.basicInfoRequestText}>
+            {strings.requestInfoAcceptedText}
+          </Text>
+
+          <SafeAreaView>
+            <View style={{flexDirection: 'row', margin: 15}}>
+              <Pressable
+                onPress={async () => {
+                  await setStorage('showPopup', showCheck);
+                  setShowCheck(!showCheck);
+                }}>
+                <Image
+                  source={
+                    showCheck ? images.orangeCheckBox : images.uncheckWhite
+                  }
+                  style={{height: 22, width: 22, resizeMode: 'contain'}}
+                />
+              </Pressable>
+              <Text style={styles.checkBoxItemText}>
+                {strings.showAgainText}
+              </Text>
+            </View>
+          </SafeAreaView>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -183,15 +274,61 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
   },
-  infoTextStyle: {
-    margin: 15,
-    fontFamily: fonts.RRegular,
-    fontSize: 16,
-    color: colors.lightBlackColor,
-  },
+
   sendButtonStyle: {
     fontFamily: fonts.RRegular,
     fontSize: 16,
     marginRight: 10,
+  },
+
+  titlePopup: {
+    flexDirection: 'row',
+    height: 50,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+
+  closeButton: {
+    marginLeft: 20,
+    height: 15,
+    width: 15,
+    resizeMode: 'cover',
+    marginRight: 25,
+    marginTop: 15,
+  },
+
+  startTime: {
+    alignSelf: 'center',
+    textAlignVertical: 'center',
+    fontFamily: fonts.RRegular,
+    fontSize: 16,
+  },
+  doneText: {
+    alignSelf: 'center',
+    textAlignVertical: 'center',
+    fontFamily: fonts.RRegular,
+    fontSize: 14,
+    color: colors.lightBlackColor,
+    marginRight: 15,
+  },
+  basicInfoList: {
+    fontFamily: fonts.RRegular,
+    fontSize: 16,
+    color: colors.lightBlackColor,
+    marginLeft: 15,
+    marginBottom: 5,
+  },
+  basicInfoRequestText: {
+    fontFamily: fonts.RRegular,
+    fontSize: 16,
+    color: colors.lightBlackColor,
+    margin: 15,
+  },
+
+  checkBoxItemText: {
+    fontFamily: fonts.RRegular,
+    fontSize: 14,
+    color: colors.veryLightBlack,
+    marginLeft: 15,
   },
 });

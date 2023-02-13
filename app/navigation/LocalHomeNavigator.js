@@ -136,7 +136,6 @@ import EditScorekeeperFeeScreen from '../screens/scorekeeper/alterScorekeeper/Ed
 import EditScorekeeperReservation from '../screens/scorekeeper/alterScorekeeper/EditScorekeeperReservation';
 import ScorekeeperRequestSent from '../screens/scorekeeper/ScorekeeperRequestSent';
 import ScorekeeperReservationScreen from '../screens/scorekeeper/ScorekeeperReservationScreen';
-import LeaveReviewTennis from '../screens/game/tennis/review/leaveReview/LeaveReviewTennis';
 import WriteReviewScreen from '../components/game/soccer/home/review/WriteReviewScreen';
 import RefereeReviewScreen from '../components/game/soccer/home/review/reviewForReferee/RefereeReviewScreen';
 import ReviewRefereeList from '../components/game/soccer/home/review/reviewForReferee/ReviewRefereeList';
@@ -182,8 +181,8 @@ import ConnectMemberAccountScreen from '../screens/account/groupConnections/Conn
 import ClubSettingScreen from '../screens/account/groupConnections/ClubSettingScreen';
 import ConnectionReqSentScreen from '../screens/account/groupConnections/ConnectionReqSentScreen';
 import CreateMemberProfileClubForm3 from '../screens/account/groupConnections/createMemberProfile/CreateMemberProfileClubForm3';
-import CreateMemberProfileClubForm2 from '../screens/account/groupConnections/createMemberProfile/CreateMemberProfileClubForm2';
-import CreateMemberProfileTeamForm2 from '../screens/account/groupConnections/createMemberProfile/CreateMemberProfileTeamForm2';
+import CreateMemberProfileForm2 from '../screens/account/groupConnections/createMemberProfile/CreateMemberProfileForm2';
+import CreateMemberProfileTeamForm3 from '../screens/account/groupConnections/createMemberProfile/CreateMemberProfileTeamForm3';
 import CreateMemberProfileForm1 from '../screens/account/groupConnections/createMemberProfile/CreateMemberProfileForm1';
 import MembersViewPrivacyScreen from '../screens/account/groupConnections/MembersViewPrivacyScreen';
 import UserFoundScreen from '../screens/account/groupConnections/UserFoundScreen';
@@ -225,7 +224,7 @@ import SoccerApproveDisapproveConfirmation from '../screens/game/soccer/summary/
 import SoccerRecordList from '../screens/game/soccer/SoccerRecordList';
 import TennisRecording from '../screens/game/tennis/TennisRecording';
 import SoccerRecording from '../screens/game/soccer/SoccerRecording';
-import LeaveReview from '../screens/game/soccer/review/leaveReview/LeaveReview';
+import LeaveReview from '../screens/game/leaveReview/LeaveReview';
 import ViewPrivacyScreen from '../screens/account/schedule/ViewPrivacyScreen';
 import GroupEventScreen from '../screens/account/schedule/GroupEventScreen';
 import DefaultColorScreen from '../screens/account/schedule/DefaultColorScreen';
@@ -1921,8 +1920,8 @@ const LocalHomeNavigator = () => (
       }}
     />
     <Stack.Screen
-      name="CreateMemberProfileTeamForm2"
-      component={CreateMemberProfileTeamForm2}
+      name="CreateMemberProfileTeamForm3"
+      component={CreateMemberProfileTeamForm3}
       options={{
         title: strings.createMemberProfileText,
         headerTintColor: colors.blackColor,
@@ -1937,8 +1936,8 @@ const LocalHomeNavigator = () => (
       }}
     />
     <Stack.Screen
-      name="CreateMemberProfileClubForm2"
-      component={CreateMemberProfileClubForm2}
+      name="CreateMemberProfileForm2"
+      component={CreateMemberProfileForm2}
       options={{
         title: strings.createMemberProfileText,
         headerTintColor: colors.blackColor,
@@ -2594,14 +2593,6 @@ const LocalHomeNavigator = () => (
     <Stack.Screen
       name="WriteReviewScreen"
       component={WriteReviewScreen}
-      options={{
-        headerShown: false,
-      }}
-    />
-
-    <Stack.Screen
-      name="LeaveReviewTennis"
-      component={LeaveReviewTennis}
       options={{
         headerShown: false,
       }}

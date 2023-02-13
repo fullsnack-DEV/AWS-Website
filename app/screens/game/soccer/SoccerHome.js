@@ -86,7 +86,6 @@ const SoccerHome = ({navigation, route}) => {
   const [isScorekeeperAdmin, setIsScorekeeperAdmin] = useState(false);
   const [userRole, setUserRole] = useState(false);
   const [userId, setUserId] = useState(null);
-  const [sliderAttributes, setSliderAttributes] = useState([]);
   const [starAttributes, setStarAttributes] = useState([]);
   const [sliderAttributesForReferee, setSliderAttributesForReferee] = useState(
     [],
@@ -107,55 +106,33 @@ const SoccerHome = ({navigation, route}) => {
 
   useEffect(() => {
     if (isFocused && gameData) {
-      const soccerSportData =
-        authContext?.sports?.length &&
-        authContext?.sports?.filter(
+      const soccerSportData = authContext.sports?.filter(
           (item) => item.sport === gameData?.sport,
         )[0];
 
       const teamReviewProp = soccerSportData?.team_review_properties ?? [];
-      const playerReviewProp = soccerSportData?.player_review_properties ?? [];
-      const refereeReviewProp =
-        soccerSportData?.referee_review_properties ?? [];
-      const scorekeeperReviewProp =
-        soccerSportData?.scorekeeper_review_properties ?? [];
-      const sliderReviewProp = [];
+      const refereeReviewProp = soccerSportData?.referee_review_properties ?? [];
+      const scorekeeperReviewProp = soccerSportData?.scorekeeper_review_properties ?? [];
       const starReviewProp = [];
-      const sliderReviewPropForPlayer = [];
-      const starReviewPropForPlayer = [];
       const sliderReviewPropForReferee = [];
       const starReviewPropForReferee = [];
-
       const sliderReviewPropForScorekeeper = [];
       const starReviewPropForScorekeeper = [];
 
       if (teamReviewProp?.length) {
-        teamReviewProp.filter((item) => {
-          if (item.type === 'slider') {
-            sliderReviewProp.push(item?.title.toLowerCase());
-          } else if (item.type === 'star') {
+          teamReviewProp.filter((item) => {
+            if (item.type === 'star' || item.type === 'topstar' || item.type === 'bottomstar') {
             starReviewProp.push(item);
           }
           return true;
         });
-        setSliderAttributes([...sliderReviewProp]);
         setStarAttributes([...starReviewProp]);
-      }
-      if (playerReviewProp?.length) {
-        playerReviewProp.filter((item) => {
-          if (item.type === 'slider') {
-            sliderReviewPropForPlayer.push(item?.name.toLowerCase());
-          } else if (item.type === 'star') {
-            starReviewPropForPlayer.push(item);
-          }
-          return true;
-        });
       }
       if (refereeReviewProp?.length) {
         refereeReviewProp.filter((item) => {
-          if (item.type === 'topstar') {
-            sliderReviewPropForReferee.push(item?.name.toLowerCase());
-          } else if (item.type === 'star') {
+          if (item.type === 'slider') {
+            sliderReviewPropForReferee.push(item.name.toLowerCase());
+          } else if (item.type === 'star' || item.type === 'topstar' || item.type === 'bottomstar') {
             starReviewPropForReferee.push(item);
           }
           return true;
@@ -165,14 +142,13 @@ const SoccerHome = ({navigation, route}) => {
       }
       if (scorekeeperReviewProp?.length) {
         scorekeeperReviewProp.filter((item) => {
-          if (item.type === 'topstar') {
-            sliderReviewPropForScorekeeper.push(item?.name.toLowerCase());
-          } else if (item.type === 'star') {
+          if (item.type === 'slider') {
+            sliderReviewPropForScorekeeper.push(item.name.toLowerCase());
+          } else if (item.type === 'star' || item.type === 'topstar' || item.type === 'bottomstar') {
             starReviewPropForScorekeeper.push(item);
           }
           return true;
         });
-
         setSliderAttributesForScorekeeper([...sliderReviewPropForScorekeeper]);
         setStarAttributesForScorekeeper([...starReviewPropForScorekeeper]);
       }
@@ -828,7 +804,7 @@ const SoccerHome = ({navigation, route}) => {
   const getRefereeReviewsData = useCallback(
     (item) => {
       setLoading(true);
-      getGameReview(soccerGameId, item?.review_id, authContext)
+      getGameReview(soccerGameId, item.review_id, authContext)
         .then((response) => {
           modalizeRef.current.close();
           navigation.navigate('RefereeReviewScreen', {
@@ -860,7 +836,7 @@ const SoccerHome = ({navigation, route}) => {
   const getScorekeeperReviewsData = useCallback(
     (item) => {
       setLoading(true);
-      getGameReview(soccerGameId, item?.review_id, authContext)
+      getGameReview(soccerGameId, item.review_id, authContext)
         .then((response) => {
           modalizeRef.current.close();
           navigation.navigate('ScorekeeperReviewScreen', {
@@ -995,8 +971,8 @@ const SoccerHome = ({navigation, route}) => {
             gameData,
             gameReviewData: response.payload,
             selectedTeam: isHome ? 'home' : 'away',
-            sliderAttributes,
             starAttributes,
+            isRefereeAvailable: gameData.referees?.length > 0,
             onPressReviewDone,
           });
           setLoading(false);
@@ -1006,7 +982,7 @@ const SoccerHome = ({navigation, route}) => {
           setTimeout(() => Alert.alert('', error?.message), 100);
         });
     },
-    [authContext, gameData, navigation, sliderAttributes, starAttributes],
+    [authContext, gameData, navigation, starAttributes],
   );
 
   const patchOrAddReview = useCallback(
@@ -1113,12 +1089,15 @@ const SoccerHome = ({navigation, route}) => {
     ({item}) => {
       const reservationDetail = item; // item?.reservation
       let isReviewed = false;
+      let reviewID = '';
       if (reservationDetail?.isHome) {
         if (gameData?.home_review_id) {
           isReviewed = true;
+          reviewID = gameData.home_review_id
         }
       } else if (gameData?.away_review_id) {
         isReviewed = true;
+        reviewID = gameData.away_review_id
       }
 
       return (
@@ -1130,34 +1109,15 @@ const SoccerHome = ({navigation, route}) => {
           title={reservationDetail?.group_name}
           profileImage={reservationDetail?.thumbnail}
           onReviewPress={() => {
-            if (reservationDetail?.isHome) {
-              if (gameData?.home_review_id) {
-                getGameReviewsData(
-                  gameData?.home_review_id,
-                  reservationDetail?.isHome,
-                );
-              } else {
-                modalizeRef.current.close();
-                navigation.navigate('LeaveReview', {
-                  gameData,
-                  selectedTeam: reservationDetail?.isHome ? 'home' : 'away',
-                  sliderAttributes,
-                  starAttributes,
-                  onPressReviewDone,
-                });
-              }
-            } else if (gameData?.away_review_id) {
-              getGameReviewsData(
-                gameData?.away_review_id,
-                reservationDetail?.isHome,
-              );
+            if (isReviewed) {
+              getGameReviewsData(reviewID,reservationDetail.isHome);
             } else {
               modalizeRef.current.close();
               navigation.navigate('LeaveReview', {
                 gameData,
                 selectedTeam: reservationDetail?.isHome ? 'home' : 'away',
-                sliderAttributes,
                 starAttributes,
+                isRefereeAvailable: gameData?.referees?.length > 0,
                 onPressReviewDone,
               });
             }
@@ -1171,7 +1131,6 @@ const SoccerHome = ({navigation, route}) => {
       gameData,
       getGameReviewsData,
       navigation,
-      sliderAttributes,
       starAttributes,
       onPressReviewDone,
     ],
@@ -1185,19 +1144,19 @@ const SoccerHome = ({navigation, route}) => {
         <EntityReviewView
           myUserId={authContext.entity.uid}
           isShowReviewButton={isCheckReviewButton(reservationDetail)}
-          isReviewed={!!item?.referee?.review_id} // we have to change this condition if both player can give review to referee
-          userID={reservationDetail?.referee?.user_id}
-          title={reservationDetail?.referee?.full_name}
-          subTitle={item?.chief_referee ? 'Chief' : 'Assistant'}
+          isReviewed={!!item.referee.review_id} // we have to change this condition if both player can give review to referee
+          userID={reservationDetail.referee.user_id}
+          title={reservationDetail.referee.full_name}
+          subTitle={item.chief_referee ? 'Chief' : 'Assistant'}
           profileImage={reservationDetail?.referee?.thumbnail}
           onReviewPress={() => {
-            if (item?.referee?.review_id) {
-              getRefereeReviewsData(item?.referee);
+            if (item.referee.review_id) {
+              getRefereeReviewsData(item.referee);
             } else {
               modalizeRef.current.close();
               navigation.navigate('RefereeReviewScreen', {
                 gameData,
-                userData: item?.referee,
+                userData: item.referee,
                 sliderAttributesForReferee,
                 starAttributesForReferee,
                 onPressRefereeReviewDone,
@@ -1228,18 +1187,18 @@ const SoccerHome = ({navigation, route}) => {
         <EntityReviewView
           myUserId={authContext.entity.uid}
           isShowReviewButton={isCheckReviewButton(reservationDetail)}
-          isReviewed={!!item?.scorekeeper?.review_id} // we have to change this condition if both player can give review to referee
-          userID={reservationDetail?.scorekeeper?.user_id}
-          title={reservationDetail?.scorekeeper?.full_name}
-          profileImage={reservationDetail?.scorekeeper?.thumbnail}
+          isReviewed={!!item.scorekeeper.review_id} // we have to change this condition if both player can give review to referee
+          userID={reservationDetail.scorekeeper.user_id}
+          title={reservationDetail.scorekeeper.full_name}
+          profileImage={reservationDetail.scorekeeper.thumbnail}
           onReviewPress={() => {
-            if (item?.scorekeeper?.review_id) {
-              getScorekeeperReviewsData(item?.scorekeeper);
+            if (item.scorekeeper.review_id) {
+              getScorekeeperReviewsData(item.scorekeeper);
             } else {
               modalizeRef.current.close();
               navigation.navigate('ScorekeeperReviewScreen', {
                 gameData,
-                userData: item?.scorekeeper,
+                userData: item.scorekeeper,
                 sliderAttributesForScorekeeper,
                 starAttributesForScorekeeper,
                 onPressScorekeeperReviewDone,

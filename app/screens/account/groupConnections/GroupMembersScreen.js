@@ -45,6 +45,7 @@ import Verbs from '../../../Constants/Verbs';
 
 export default function GroupMembersScreen({navigation, route}) {
   const actionSheet = useRef();
+  const actionSheetPlus = useRef();
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
   // For activity indigator
@@ -56,9 +57,9 @@ export default function GroupMembersScreen({navigation, route}) {
   const [members, setMembers] = useState([]);
 
   const [switchUser] = useState(authContext.entity);
-  const [groupObj] = useState(route.params?.groupObj);
+  const [groupObj] = useState(route.params?.groupObj ?? authContext.entity.obj);
 
-  const [groupID] = useState(route.params?.groupID);
+  const [groupID] = useState(route.params?.groupID ?? authContext.entity.uid);
 
   useEffect(() => {
     getMembers();
@@ -84,17 +85,17 @@ export default function GroupMembersScreen({navigation, route}) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () =>
-        switchUser.uid === route?.params?.groupID && (
+        switchUser.uid === groupID && (
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <TouchableWithoutFeedback
-              onPress={() => navigation.navigate('CreateMemberProfileForm1')}>
+              onPress={() => actionSheet.current.show()}>
               <Image
                 source={images.createMember}
                 style={styles.createMemberStyle}
               />
             </TouchableWithoutFeedback>
             <TouchableWithoutFeedback
-              onPress={() => actionSheet.current.show()}>
+              onPress={() => actionSheetPlus.current.show()}>
               <Image
                 source={images.vertical3Dot}
                 style={styles.navigationRightItem}
@@ -103,7 +104,7 @@ export default function GroupMembersScreen({navigation, route}) {
           </View>
         ),
     });
-  }, [navigation, switchUser]);
+  }, [navigation, switchUser, groupID]);
 
   const searchFilterFunction = (text) => {
     const result = members.filter(
@@ -398,6 +399,24 @@ export default function GroupMembersScreen({navigation, route}) {
         options={[
           strings.inviteMemberText,
           strings.createMemberProfileText,
+
+          strings.cancel,
+        ]}
+        cancelButtonIndex={2}
+        onPress={(index) => {
+          if (index === 0) {
+            navigation.navigate('InviteMembersBySearchScreen');
+          } else if (index === 1) {
+            navigation.navigate('CreateMemberProfileForm1');
+          }
+        }}
+      />
+
+      <ActionSheet
+        ref={actionSheetPlus}
+        options={[
+          strings.invoice,
+          strings.viewPrivacy,
           strings.sendrequestForBaicInfoText,
 
           strings.cancel,
@@ -405,9 +424,9 @@ export default function GroupMembersScreen({navigation, route}) {
         cancelButtonIndex={3}
         onPress={(index) => {
           if (index === 0) {
-            navigation.navigate('InviteMembersBySearchScreen');
+            Alert.alert(strings.underDevelopment);
           } else if (index === 1) {
-            navigation.navigate('CreateMemberProfileForm1');
+            Alert.alert(strings.underDevelopment);
           } else if (index === 2) {
             navigation.navigate('RequestMultipleBasicInfoScreen', {groupID});
           }

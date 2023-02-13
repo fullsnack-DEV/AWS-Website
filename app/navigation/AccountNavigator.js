@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { createStackNavigator } from '@react-navigation/stack';
+import {createStackNavigator} from '@react-navigation/stack';
 
 import HomeScreen from '../screens/home/HomeScreen';
 import GroupListScreen from '../screens/home/GroupListScreen';
@@ -12,7 +12,7 @@ import NotificationsListScreen from '../screens/notificationsScreen/Notification
 import colors from '../Constants/Colors';
 import WritePostScreen from '../screens/newsfeeds/WritePostScreen';
 import WriteCommentScreen from '../screens/newsfeeds/WriteCommentScreen';
-import { strings } from '../../Localization/translation';
+import {strings} from '../../Localization/translation';
 import UserAboutScreen from '../screens/home/user/UserAboutScreen';
 import UserBasicInfoScreen from '../screens/home/user/UserBasicInfoScreen';
 import GroupLongTextScreen from '../screens/home/GroupLongTextScreen';
@@ -66,8 +66,8 @@ import MemberProfileCreatedScreen from '../screens/account/groupConnections/Memb
 import UserFoundScreen from '../screens/account/groupConnections/UserFoundScreen';
 import MembersViewPrivacyScreen from '../screens/account/groupConnections/MembersViewPrivacyScreen';
 import CreateMemberProfileForm1 from '../screens/account/groupConnections/createMemberProfile/CreateMemberProfileForm1';
-import CreateMemberProfileTeamForm2 from '../screens/account/groupConnections/createMemberProfile/CreateMemberProfileTeamForm2';
-import CreateMemberProfileClubForm2 from '../screens/account/groupConnections/createMemberProfile/CreateMemberProfileClubForm2';
+import CreateMemberProfileTeamForm3 from '../screens/account/groupConnections/createMemberProfile/CreateMemberProfileTeamForm3';
+import CreateMemberProfileForm2 from '../screens/account/groupConnections/createMemberProfile/CreateMemberProfileForm2';
 import CreateMemberProfileClubForm3 from '../screens/account/groupConnections/createMemberProfile/CreateMemberProfileClubForm3';
 import ConnectionReqSentScreen from '../screens/account/groupConnections/ConnectionReqSentScreen';
 import ClubSettingScreen from '../screens/account/groupConnections/ClubSettingScreen';
@@ -101,7 +101,7 @@ import SoccerApproveDisapproveConfirmation from '../screens/game/soccer/summary/
 import EditLineUpScreen from '../screens/game/soccer/lineUp/EditLineUpScreen';
 import EditLineUpCoachScreen from '../screens/game/soccer/lineUp/EditRosterCoacheScreen';
 import EditChallengeAvailability from '../screens/account/schedule/EditChallengeAvailability';
-import LeaveReview from '../screens/game/soccer/review/leaveReview/LeaveReview';
+import LeaveReview from '../screens/game/leaveReview/LeaveReview';
 import TennisRecordList from '../screens/game/tennis/TennisRecordList';
 import EditRosterScreen from '../screens/game/soccer/EditRosterScreen';
 import EditFeeScreen from '../screens/challenge/alterChallenge/EditFeeScreen';
@@ -161,7 +161,6 @@ import RegisterPlayerSuccess from '../screens/account/registerPlayer/RegisterPla
 import AccountScreen from '../screens/account/AccountScreen';
 import NotificationNavigator from './NotificationNavigator';
 import ReservationNavigator from './ReservationNavigator';
-import LeaveReviewTennis from '../screens/game/tennis/review/leaveReview/LeaveReviewTennis';
 import SingleNotificationScreen from '../screens/notificationsScreen/SingleNotificationScreen';
 import ManageChallengeScreen from '../screens/challenge/manageChallenge/ManageChallengeScreen';
 import GameType from '../screens/challenge/manageChallenge/settings/GameType';
@@ -285,7 +284,7 @@ const AccountNavigator = () => (
     <Stack.Screen
       name="AccountScreen"
       component={AccountScreen}
-      options={{ headerShown: false }}
+      options={{headerShown: false}}
     />
 
     <Stack.Screen
@@ -1514,7 +1513,7 @@ const AccountNavigator = () => (
     <Stack.Screen
       name="InvitationSentScreen"
       component={InvitationSentScreen}
-      options={{ headerShown: false }}
+      options={{headerShown: false}}
     />
     <Stack.Screen
       name="UserNotFoundScreen"
@@ -1576,8 +1575,8 @@ const AccountNavigator = () => (
       }}
     />
     <Stack.Screen
-      name="CreateMemberProfileTeamForm2"
-      component={CreateMemberProfileTeamForm2}
+      name="CreateMemberProfileTeamForm3"
+      component={CreateMemberProfileTeamForm3}
       options={{
         title: strings.createMemberProfileText,
         headerTintColor: colors.blackColor,
@@ -1592,8 +1591,8 @@ const AccountNavigator = () => (
       }}
     />
     <Stack.Screen
-      name="CreateMemberProfileClubForm2"
-      component={CreateMemberProfileClubForm2}
+      name="CreateMemberProfileForm2"
+      component={CreateMemberProfileForm2}
       options={{
         title: strings.createMemberProfileText,
         headerTintColor: colors.blackColor,
@@ -2308,15 +2307,7 @@ const AccountNavigator = () => (
         headerShown: false,
       }}
     />
-
-    <Stack.Screen
-      name="LeaveReviewTennis"
-      component={LeaveReviewTennis}
-      options={{
-        headerShown: false,
-      }}
-    />
-
+    
     {/* Scorekeeper screens */}
     <Stack.Screen
       name="ScorekeeperReservationScreen"
@@ -2482,7 +2473,7 @@ const AccountNavigator = () => (
     <Stack.Screen
       name="ReservationNavigator"
       component={ReservationNavigator}
-      options={{ headerShown: false }}
+      options={{headerShown: false}}
     />
 
     <Stack.Screen
@@ -2864,7 +2855,7 @@ const AccountNavigator = () => (
     <Stack.Screen
       name={'FeedViewScreen'}
       component={FeedViewScreen}
-      options={{ headerShown: false }}
+      options={{headerShown: false}}
     />
     <Stack.Screen
       name="UserGalleryScreen"
