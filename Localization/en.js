@@ -212,7 +212,7 @@ export default {
   locationClubTitle: 'en_Where is the home city of the club?',
   currentCity: 'en_Home City',
   birthdateText: 'en_Choose Date of birth',
-  searchCityPlaceholder: 'en_Search by city or postal code',
+  searchCityPlaceholder: 'en_Search by city',
   searchCityStatePlaceholder: 'en_City, state or country',
   searchByCityStateText: 'en_Search by city',
   searchCountryCode: 'en_e.g India or IN or 91',
