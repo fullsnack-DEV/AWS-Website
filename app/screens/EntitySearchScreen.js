@@ -162,6 +162,31 @@ export default function EntitySearchScreen({navigation, route}) {
       setSearchLocation(route.params.locationText);
     }
   }, [route.params.locationText]);
+
+  useEffect(() => {
+    if (route.params?.activeTab) {
+      setCurrentTab(route.params.activeTab);
+      let subTab = '';
+      switch (route.params?.activeTab) {
+        case 0:
+          subTab = PEOPLE_SUB_TAB_ITEMS[0];
+          break;
+
+        case 1:
+          subTab = GROUP_SUB_TAB_ITEMS[0];
+          break;
+
+        case 2:
+          subTab = GAMES_SUB_TAB_ITEMS[0];
+          break;
+
+        default:
+          break;
+      }
+      setCurrentSubTab(subTab);
+    }
+  }, [route.params?.activeTab]);
+
   useEffect(() => {
     getGeneralList();
   }, [generalFilter]);

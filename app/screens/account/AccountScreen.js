@@ -1,3 +1,4 @@
+/* eslint-disable */
 /* eslint-disable no-nested-ternary */
 import React, {
   useEffect,
@@ -67,6 +68,7 @@ import {strings} from '../../../Localization/translation';
 import Verbs from '../../Constants/Verbs';
 import TCSwitchProfileRow from './connections/TCSwitchProfileRow';
 import AccountMenuRow from './connections/AccountMenuRow';
+import SportsListModal from './registerPlayer/modals/SportsListModal';
 // FIXME: fix all warning in useCallBack()
 export default function AccountScreen({navigation}) {
   const scrollRef = useRef();
@@ -79,6 +81,7 @@ export default function AccountScreen({navigation}) {
   const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
   const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
   const [pointEvent, setPointEvent] = useState('auto');
+  const [visibleSportsModal, setVisibleSportsModal] = useState(false);
 
   const [teamList, setTeamList] = useState([]);
   const [clubList, setClubList] = useState([]);
@@ -87,6 +90,39 @@ export default function AccountScreen({navigation}) {
 
   const [isRulesModalVisible, setIsRulesModalVisible] = useState(false);
   const [createEntity, setCreateEntity] = useState('');
+  const [sports, setSports] = useState([]);
+  const [sportsData, setSportsData] = useState([]);
+  const [imageBaseUrl, setImageBaseUrl] = useState('');
+
+  useEffect(() => {
+    if (isFocused) {
+      Utility.getStorage('appSetting').then((setting) => {
+        setImageBaseUrl(setting.base_url_sporticon);
+      });
+    }
+  }, [isFocused]);
+
+  useEffect(() => {
+    let sportArr = [];
+    authContext.sports.map((item) =>
+      item.format.map((innerObj) => {
+        sportArr = [...sportArr, ...[{...item, ...innerObj}]];
+        return null;
+      }),
+    );
+    const newData = [];
+    sportArr.forEach((item) => {
+      const obj = (authContext.entity.obj.registered_sports ?? []).find(
+        (ele) => ele.sport === item.sport && ele.sport_type === item.sport_type,
+      );
+      if (!obj) {
+        newData.push(item);
+      }
+    });
+    setSportsData([...newData]);
+  }, [authContext.sports]);
+
+  const [navigationOptions, setNavigationOptions] = useState({});
 
   useEffect(() => {
     setIsAccountDeactivated(false);
@@ -164,7 +200,7 @@ export default function AccountScreen({navigation}) {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
-  }, [authContext, isFocused]);
+  }, [authContext, isFocused, imageBaseUrl]);
 
   const getAccountMenu = useCallback(() => {
     let menu = [];
@@ -173,10 +209,10 @@ export default function AccountScreen({navigation}) {
     } else if (authContext.entity.role === Verbs.entityTypeTeam) {
       menu = prepareTeamMenu(authContext, teamList, clubList);
     } else {
-      menu = prepareUserMenu(authContext, teamList, clubList);
+      menu = prepareUserMenu(authContext, teamList, clubList, imageBaseUrl);
     }
     setAccountMenu(menu);
-  }, [teamList, clubList]);
+  }, [teamList, clubList, imageBaseUrl]);
 
   const getUnreadNotificationCount = useCallback(() => {
     getUnreadCount(authContext)
@@ -237,7 +273,6 @@ export default function AccountScreen({navigation}) {
         setClubList(response.payload);
       })
       .catch((e) => {
-        console.log('4');
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
@@ -303,8 +338,6 @@ export default function AccountScreen({navigation}) {
 
   const switchQBAccount = useCallback(
     (accountData, entity) => {
-      console.log('switch QB Called..');
-
       let currentEntity = entity;
       const entityType = accountData?.entity_type;
       const uid =
@@ -415,10 +448,22 @@ export default function AccountScreen({navigation}) {
           );
         }
       } else {
-        navigation.navigate(
-          rowObj.navigateTo.screenName,
-          rowObj.navigateTo.data,
-        );
+        if (option == strings.addSportsTitle) {
+          // if (sportsData.length === 0) {
+          //   Alert.alert('No more sport is available.');
+          // } else {
+          // }
+          setVisibleSportsModal(true);
+          setNavigationOptions({
+            screenName: rowObj.navigateTo.screenName,
+            data: rowObj.navigateTo.data,
+          });
+        } else {
+          navigation.navigate(
+            rowObj.navigateTo.screenName,
+            rowObj.navigateTo.data,
+          );
+        }
       }
     },
     [authContext.entity, navigation],
@@ -440,16 +485,17 @@ export default function AccountScreen({navigation}) {
   );
 
   const renderAccountMenuRows = useCallback(
-    (rowItem) => (
-      <AccountMenuRow
-        item={rowItem}
-        isAccountDeactivated={isAccountDeactivated}
-        onPress={() => handleSectionMemberClick(rowItem)}
-        onPressCancelRequest={() =>
-          onCancelTeamRequest('cancel', rowItem?.option?.request_id)
-        }
-      />
-    ),
+    (rowItem) =>
+      rowItem.option ? (
+        <AccountMenuRow
+          item={rowItem}
+          isAccountDeactivated={isAccountDeactivated}
+          onPress={() => handleSectionMemberClick(rowItem)}
+          onPressCancelRequest={() =>
+            onCancelTeamRequest('cancel', rowItem?.option?.request_id)
+          }
+        />
+      ) : null,
     [handleSectionMemberClick, isAccountDeactivated],
   );
 
@@ -477,7 +523,6 @@ export default function AccountScreen({navigation}) {
     groupUnpaused(authContext)
       .then((response) => {
         setIsAccountDeactivated(false);
-        console.log('deactivate account ', response);
 
         const accountType = getQBAccountType(response?.payload?.entity_type);
         QBupdateUser(
@@ -530,6 +575,24 @@ export default function AccountScreen({navigation}) {
         }, 10);
       });
   };
+  useEffect(() => {
+    const list = [
+      {
+        label: strings.allType,
+        value: strings.allType,
+      },
+    ];
+    authContext.sports.map((obj) => {
+      const sportName = Utility.getSportName(obj, authContext);
+      const dataSource = {
+        label: sportName,
+        value: sportName,
+      };
+      list.push(dataSource);
+    });
+
+    setSports(list);
+  }, [authContext]);
 
   return (
     <SafeAreaView style={styles.mainContainer} testID="account-screen">
@@ -1115,6 +1178,16 @@ export default function AccountScreen({navigation}) {
           />
         </SafeAreaView>
       </Modal>
+
+      <SportsListModal
+        isVisible={visibleSportsModal}
+        closeList={() => setVisibleSportsModal(false)}
+        sportsList={sportsData}
+        onNext={(sport) => {
+          setVisibleSportsModal(false);
+          navigation.navigate(navigationOptions.screenName, sport);
+        }}
+      />
     </SafeAreaView>
   );
 }
@@ -1208,11 +1281,8 @@ const styles = StyleSheet.create({
     elevation: 1.5,
   },
   separatorLine: {
-    alignSelf: 'center',
-    backgroundColor: colors.lightgrayColor,
-    height: 0.5,
-    marginVertical: 5,
-    width: wp('90%'),
+    backgroundColor: colors.thinDividerColor,
+    height: 2,
   },
   separatorView: {
     alignSelf: 'center',
@@ -1275,13 +1345,11 @@ const styles = StyleSheet.create({
     borderColor: colors.veryLightGray,
     borderWidth: 0.5,
   },
-
   rulesText: {
     fontFamily: fonts.RRegular,
     fontSize: 16,
     color: colors.lightBlackColor,
   },
-
   modalViewContainer: {
     height: Dimensions.get('window').height / 1.7,
     backgroundColor: 'white',
@@ -1309,5 +1377,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RBold,
     color: colors.lightBlackColor,
+  },
+  locationText: {
+    fontSize: 16,
+    fontFamily: fonts.RMedium,
+    color: colors.lightBlackColor,
+    marginLeft: 10,
   },
 });

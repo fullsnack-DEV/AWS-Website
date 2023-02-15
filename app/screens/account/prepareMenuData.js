@@ -1,30 +1,33 @@
 import images from '../../Constants/ImagePath';
 import {strings} from '../../../Localization/translation';
-import {getSportIcon} from '../../utils/index';
+// import {getSportIcon} from '../../utils/index';
 import Verbs from '../../Constants/Verbs';
 // TODO: Move this file to right place. Improve this methods
 
-const prepareSportsSubMenuOfUser = (sports) =>
-  // TODO: call utility.getSportName() to fetch correct sports title
-  // TODO: apply isAccountDeactivated logic to not display add sports button
-  {
-    let updatedList = [];
-    if (sports) {
-      updatedList = sports.map((item) => ({
-        option: item.sport_name ?? '',
-        icon: getSportIcon(item.sport),
-        iconRight: images.settingSport,
-        navigateTo: {
-          screenName: 'SportAccountSettingScreen',
-          data: {
-            type: item.type,
-            sport: item,
-          },
+// TODO: call utility.getSportName() to fetch correct sports title
+// TODO: apply isAccountDeactivated logic to not display add sports button
+const prepareSportsSubMenuOfUser = (sports, baseUrl) => {
+  let updatedList = [];
+  if (sports) {
+    updatedList = sports.map((item) => ({
+      option: item.sport_name ?? '',
+      // icon: getSportIcon(item.sport),
+      icon:
+        baseUrl && item.player_image
+          ? `${baseUrl}${item.player_image}`
+          : images.accountMySports,
+      iconRight: images.settingSport,
+      navigateTo: {
+        screenName: 'SportAccountSettingScreen',
+        data: {
+          type: item.type,
+          sport: item,
         },
-      }));
-    }
-    return updatedList;
-  };
+      },
+    }));
+  }
+  return updatedList;
+};
 
 const prepareGroupsSubMenu = (groupList) =>
   // TODO: call utility.getSportName() to fetch correct sports title
@@ -93,11 +96,11 @@ const paymentMethodMenu = () => [
   },
 ];
 
-export const prepareUserMenu = (authContext, teams, clubs) => {
+export const prepareUserMenu = (authContext, teams, clubs, baseUrl) => {
   const userMenu = [
     {
       key: strings.reservationsTitleText,
-      icon: images.accountMySchedule,
+      icon: images.accountMyReservations,
       navigateTo: {
         screenName: 'ReservationNavigator',
         data: {
@@ -111,6 +114,7 @@ export const prepareUserMenu = (authContext, teams, clubs) => {
       member: [
         ...prepareSportsSubMenuOfUser(
           authContext?.entity?.obj?.registered_sports,
+          baseUrl,
         ),
         {
           option: strings.addSportsTitle,

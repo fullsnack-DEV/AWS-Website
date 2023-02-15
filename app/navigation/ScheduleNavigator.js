@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React from 'react';
 
 import {createStackNavigator} from '@react-navigation/stack';
@@ -29,6 +30,7 @@ import GameDetailRecord from '../screens/game/soccer/GameDetailRecord';
 
 import RegisterPlayer from '../screens/account/registerPlayer/RegisterPlayer';
 import RegisterPlayerForm2 from '../screens/account/registerPlayer/RegisterPlayerForm2';
+import IncomingChallengeSettings from '../screens/account/registerPlayer/IncomingChallengeSettings';
 import RegisterReferee from '../screens/account/registerReferee/RegisterReferee';
 import RegisterRefereeForm2 from '../screens/account/registerReferee/RegisterRefereeForm2';
 import CreateTeamForm1 from '../screens/account/createGroup/createTeam/CreateTeamForm1';
@@ -743,6 +745,11 @@ const ScheduleNavigator = () => (
     <Stack.Screen
       name="RegisterPlayer"
       component={RegisterPlayer}
+      options={{headerShown: false}}
+    />
+    <Stack.Screen
+      name="RegisterPlayerForm2"
+      component={RegisterPlayerForm2}
       options={{
         title: 'Register as a personal player',
         headerTintColor: colors.blackColor,
@@ -757,8 +764,8 @@ const ScheduleNavigator = () => (
       }}
     />
     <Stack.Screen
-      name="RegisterPlayerForm2"
-      component={RegisterPlayerForm2}
+      name="IncomingChallengeSettings"
+      component={IncomingChallengeSettings}
       options={{
         title: 'Register as a personal player',
         headerTintColor: colors.blackColor,

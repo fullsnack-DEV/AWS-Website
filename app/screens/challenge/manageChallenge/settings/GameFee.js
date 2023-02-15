@@ -28,22 +28,23 @@ import DataSource from '../../../../Constants/DataSource';
 import Verbs from '../../../../Constants/Verbs';
 
 export default function GameFee({navigation, route}) {
-  const [comeFrom] = useState(route?.params?.comeFrom);
-  const [sportName] = useState(route?.params?.sportName);
-  const [sportType] = useState(route?.params?.sportType);
+  // const [comeFrom] = useState(route?.params?.comeFrom);
+  // const [sportName] = useState(route?.params?.sportName);
+  // const [sportType] = useState(route?.params?.sportType);
+  const {comeFrom, sportName, sportType} = route.params;
 
   const authContext = useContext(AuthContext);
   const [loading, setloading] = useState(false);
   const [basicFee, setBasicFee] = useState(
-    route?.params?.settingObj?.game_fee
-      ? route?.params?.settingObj?.game_fee?.fee
+    route.params.settingObj?.game_fee
+      ? route.params.settingObj.game_fee.fee
       : 0,
   );
   const [visibleCurrencyModal, setVisibleCurrencyModal] = useState(false);
 
   const [currencyType, setCurruencyType] = useState(
-    route?.params?.settingObj?.game_fee
-      ? route?.params?.settingObj?.game_fee?.currency_type
+    route.params.settingObj?.game_fee
+      ? route.params.settingObj.game_fee.currency_type
       : authContext?.entity?.obj?.currency_type ?? Verbs.usd,
   );
 
@@ -68,74 +69,88 @@ export default function GameFee({navigation, route}) {
   ]);
 
   const saveUser = () => {
-    const bodyParams = {
-      sport: sportName,
-      sport_type: sportType,
-      entity_type: 'player',
-      game_fee: {
-        fee: Number(parseFloat(basicFee).toFixed(2)),
-        currency_type: currencyType,
-      },
-    };
-
-    setloading(true);
-
-    const registerdPlayerData =
-      authContext?.entity?.obj?.registered_sports?.filter((obj) => {
-        if (obj.sport === sportName && obj.sport_type === sportType) {
-          return null;
-        }
-        return obj;
+    if (sportType === 'single' && comeFrom === 'IncomingChallengeSettings') {
+      navigation.navigate(comeFrom, {
+        settingObj: {
+          game_fee: {
+            fee: Number(parseFloat(basicFee).toFixed(2)),
+            currency_type: currencyType,
+          },
+        },
+        sportName,
+        sportType,
       });
+    } else {
+      const bodyParams = {
+        sport: sportName,
+        sport_type: sportType,
+        entity_type: 'player',
+        game_fee: {
+          fee: Number(parseFloat(basicFee).toFixed(2)),
+          currency_type: currencyType,
+        },
+      };
 
-    let selectedSport = authContext?.entity?.obj?.registered_sports?.filter(
-      (obj) => obj.sport === sportName && obj.sport_type === sportType,
-    )[0];
+      setloading(true);
 
-    selectedSport = {
-      ...selectedSport,
-      setting: {...selectedSport?.setting, ...bodyParams},
-    };
-    registerdPlayerData.push(selectedSport);
-    console.log('registerdPlayerData::::--->', registerdPlayerData);
-    console.log('selectedSport::::--->', selectedSport);
+      const registerdPlayerData =
+        authContext?.entity?.obj?.registered_sports?.filter((obj) => {
+          if (obj.sport === sportName && obj.sport_type === sportType) {
+            return null;
+          }
+          return obj;
+        });
 
-    const body = {
-      ...authContext?.entity?.obj,
-      registered_sports: registerdPlayerData,
-    };
+      let selectedSport = authContext?.entity?.obj?.registered_sports?.filter(
+        (obj) => obj.sport === sportName && obj.sport_type === sportType,
+      )[0];
 
-    console.log('Body::::--->', body);
+      selectedSport = {
+        ...selectedSport,
+        setting: {...selectedSport?.setting, ...bodyParams},
+      };
+      registerdPlayerData.push(selectedSport);
+      console.log('registerdPlayerData::::--->', registerdPlayerData);
+      console.log('selectedSport::::--->', selectedSport);
 
-    patchPlayer(body, authContext)
-      .then(async (response) => {
-        if (response.status === true) {
+      const body = {
+        ...authContext?.entity?.obj,
+        registered_sports: registerdPlayerData,
+      };
+
+      console.log('Body::::--->', body);
+
+      patchPlayer(body, authContext)
+        .then(async (response) => {
+          if (response.status === true) {
+            setloading(false);
+            const entity = authContext.entity;
+            console.log('Register player response IS:: ', response.payload);
+            entity.auth.user = response.payload;
+            entity.obj = response.payload;
+            authContext.setEntity({...entity});
+            authContext.setUser(response.payload);
+            await Utility.setStorage('authContextUser', response.payload);
+            await Utility.setStorage('authContextEntity', {...entity});
+            navigation.navigate(comeFrom, {
+              settingObj: response.payload.registered_sports.filter(
+                (obj) =>
+                  obj.sport === sportName && obj.sport_type === sportType,
+              )[0].setting,
+            });
+          } else {
+            Alert.alert(strings.appName, response.messages);
+          }
+          console.log('RESPONSE IS:: ', response);
           setloading(false);
-          const entity = authContext.entity;
-          console.log('Register player response IS:: ', response.payload);
-          entity.auth.user = response.payload;
-          entity.obj = response.payload;
-          authContext.setEntity({...entity});
-          authContext.setUser(response.payload);
-          await Utility.setStorage('authContextUser', response.payload);
-          await Utility.setStorage('authContextEntity', {...entity});
-          navigation.navigate(comeFrom, {
-            settingObj: response.payload.registered_sports.filter(
-              (obj) => obj.sport === sportName && obj.sport_type === sportType,
-            )[0].setting,
-          });
-        } else {
-          Alert.alert(strings.appName, response.messages);
-        }
-        console.log('RESPONSE IS:: ', response);
-        setloading(false);
-      })
-      .catch((e) => {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
+        })
+        .catch((e) => {
+          setloading(false);
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
+    }
   };
 
   const saveTeam = () => {

@@ -30,10 +30,6 @@ import images from '../../../../Constants/ImagePath';
 import TCKeyboardView from '../../../../components/TCKeyboardView';
 
 export default function RefereesSetting({navigation, route}) {
-  console.log(
-    'route?.params?.settingObj?.responsible_for_referee',
-    route?.params?.settingObj?.responsible_for_referee,
-  );
   const [comeFrom] = useState(route?.params?.comeFrom);
   const [sportName] = useState(route?.params?.sportName);
   const [sportType] = useState(route?.params?.sportType);
@@ -48,7 +44,7 @@ export default function RefereesSetting({navigation, route}) {
       route?.params?.settingObj?.responsible_for_referee &&
       route?.params?.settingObj?.responsible_for_referee?.who_secure
       ? route?.params?.settingObj?.responsible_for_referee?.who_secure?.length
-      : 'None',
+      : 0,
   );
 
   const [referee, setReferee] = useState(
@@ -56,11 +52,6 @@ export default function RefereesSetting({navigation, route}) {
       route?.params?.settingObj?.responsible_for_referee?.who_secure
       ? route?.params?.settingObj?.responsible_for_referee?.who_secure
       : [],
-  );
-
-  console.log(
-    'route?.params?.settingObj?.responsible_for_referee',
-    route?.params?.settingObj?.responsible_for_referee,
   );
 
   useLayoutEffect(() => {
@@ -81,7 +72,7 @@ export default function RefereesSetting({navigation, route}) {
     <TouchableWithoutFeedback
       style={styles.listItem}
       onPress={() => {
-        if (item !== 'None') {
+        if (item !== 0) {
           setSelection(item);
           const arr = [];
 
@@ -138,98 +129,111 @@ export default function RefereesSetting({navigation, route}) {
   );
 
   const saveUser = () => {
-    let bodyParams;
-    if (selection === 'None') {
-      bodyParams = {
-        sport: sportName,
-        sport_type: sportType,
-        entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
-        responsible_for_referee: {},
-      };
-    } else {
-      let ref;
-      for (let i = 0; i < selection; i++) {
-        ref = [...referee];
-        ref[i].responsible_to_secure_referee = 'challengee';
-        ref[i].is_chief = i === 0;
-      }
-      setReferee(ref);
-
-      bodyParams = {
-        sport: sportName,
-        sport_type: sportType,
-        entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
-        responsible_for_referee: {
-          who_secure: referee.map((e) => {
-            delete e.id;
-            return e;
-          }),
-          // details: detail,
+    if (sportType === 'single' && comeFrom === 'IncomingChallengeSettings') {
+      navigation.navigate(comeFrom, {
+        settingObj: {
+          responsible_for_referee: {
+            who_secure: referee.map((e) => {
+              delete e.id;
+              return e;
+            }),
+          },
         },
+        sportName,
+        sportType,
+      });
+    } else {
+      let bodyParams;
+      if (selection === 0) {
+        bodyParams = {
+          sport: sportName,
+          sport_type: sportType,
+          entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
+          responsible_for_referee: {},
+        };
+      } else {
+        let ref;
+        for (let i = 0; i < selection; i++) {
+          ref = [...referee];
+          ref[i].responsible_to_secure_referee = 'challengee';
+          ref[i].is_chief = i === 0;
+        }
+        setReferee(ref);
+
+        bodyParams = {
+          sport: sportName,
+          sport_type: sportType,
+          entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
+          responsible_for_referee: {
+            who_secure: referee.map((e) => {
+              delete e.id;
+              return e;
+            }),
+            // details: detail,
+          },
+        };
+      }
+
+      setloading(true);
+      const registerdPlayerData =
+        authContext?.entity?.obj?.registered_sports?.filter((obj) => {
+          if (obj.sport === sportName && obj.sport_type === sportType) {
+            return null;
+          }
+          return obj;
+        });
+
+      let selectedSport = authContext?.entity?.obj?.registered_sports?.filter(
+        (obj) => obj?.sport === sportName && obj?.sport_type === sportType,
+      )[0];
+
+      selectedSport = {
+        ...selectedSport,
+        setting: {...selectedSport?.setting, ...bodyParams},
       };
-    }
+      registerdPlayerData.push(selectedSport);
 
-    console.log('Referee secure:=>', bodyParams);
+      const body = {
+        ...authContext?.entity?.obj,
+        registered_sports: registerdPlayerData,
+      };
 
-    setloading(true);
-    const registerdPlayerData =
-      authContext?.entity?.obj?.registered_sports?.filter((obj) => {
-        if (obj.sport === sportName && obj.sport_type === sportType) {
-          return null;
-        }
-        return obj;
-      });
+      patchPlayer(body, authContext)
+        .then(async (response) => {
+          if (response.status === true) {
+            setloading(false);
+            const entity = authContext.entity;
 
-    let selectedSport = authContext?.entity?.obj?.registered_sports?.filter(
-      (obj) => obj?.sport === sportName && obj?.sport_type === sportType,
-    )[0];
+            entity.auth.user = response.payload;
+            entity.obj = response.payload;
+            authContext.setEntity({...entity});
+            authContext.setUser(response.payload);
+            await Utility.setStorage('authContextUser', response.payload);
+            await Utility.setStorage('authContextEntity', {...entity});
+            navigation.navigate(comeFrom, {
+              settingObj: response.payload.registered_sports.filter(
+                (obj) =>
+                  obj.sport === sportName && obj.sport_type === sportType,
+              )[0].setting,
+            });
+          } else {
+            Alert.alert(strings.appName, response.messages);
+          }
 
-    selectedSport = {
-      ...selectedSport,
-      setting: {...selectedSport?.setting, ...bodyParams},
-    };
-    registerdPlayerData.push(selectedSport);
-
-    const body = {
-      ...authContext?.entity?.obj,
-      registered_sports: registerdPlayerData,
-    };
-    console.log('Body::::--->', body);
-
-    patchPlayer(body, authContext)
-      .then(async (response) => {
-        if (response.status === true) {
           setloading(false);
-          const entity = authContext.entity;
-          console.log('Register player response IS:: ', response.payload);
-          entity.auth.user = response.payload;
-          entity.obj = response.payload;
-          authContext.setEntity({...entity});
-          authContext.setUser(response.payload);
-          await Utility.setStorage('authContextUser', response.payload);
-          await Utility.setStorage('authContextEntity', {...entity});
-          navigation.navigate(comeFrom, {
-            settingObj: response.payload.registered_sports.filter(
-              (obj) => obj.sport === sportName && obj.sport_type === sportType,
-            )[0].setting,
-          });
-        } else {
-          Alert.alert(strings.appName, response.messages);
-        }
-        console.log('RESPONSE IS:: ', response);
-        setloading(false);
-      })
-      .catch((e) => {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
+        })
+        .catch((e) => {
+          setloading(false);
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
+    }
   };
 
   const saveTeam = () => {
     let bodyParams;
-    if (selection === 'None') {
+    if (selection === 0) {
       bodyParams = {
         sport: sportName,
         sport_type: sportType,
@@ -257,20 +261,15 @@ export default function RefereesSetting({navigation, route}) {
         },
       };
     }
-
-    console.log('Referee secure:=>', bodyParams);
 
     setloading(true);
     const selectedTeam = authContext?.entity?.obj;
     selectedTeam.setting = {...selectedTeam.setting, ...bodyParams};
     const body = {...selectedTeam};
-    console.log('Body Team::::--->', body);
 
     patchGroup(authContext.entity.uid, body, authContext)
       .then(async (response) => {
         if (response.status === true) {
-          console.log('Team patch::::--->', response.payload);
-
           setloading(false);
           const entity = authContext.entity;
           entity.obj = response.payload;
@@ -297,7 +296,7 @@ export default function RefereesSetting({navigation, route}) {
     if (comeFrom === 'InviteChallengeScreen' || comeFrom === 'EditChallenge') {
       navigation.navigate(comeFrom, {
         refereeSetting:
-          selection !== 'None'
+          selection !== 0
             ? {
                 who_secure: referee.map((e) => {
                   delete e.id;
@@ -407,7 +406,7 @@ export default function RefereesSetting({navigation, route}) {
             <View style={styles.separatorLine} />
             <FlatList
               ItemSeparatorComponent={() => <TCThinDivider />}
-              data={['None', 1, 2, 3, 4, 5]}
+              data={[0, 1, 2, 3, 4, 5]}
               keyExtractor={(item, index) => index.toString()}
               renderItem={renderNumbersOf}
             />

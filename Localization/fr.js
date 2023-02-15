@@ -1,3 +1,4 @@
+/* eslint-disable */
 export default {
   townsCupTitle: 'TownsCup',
   alertmessagetitle: 'TownsCup',
@@ -26,6 +27,8 @@ export default {
   until: 'Until',
   weekly: 'Weekly',
   addTime: 'Add time',
+  addSportsTitle: 'en_Add a sport',
+  congratsModalTitle: 'Congratulations! You are now registered as a player in ',
   setAvailable: 'Set available',
   block: 'Block',
   thisEvent: 'This event',
@@ -752,6 +755,10 @@ export default {
   challengeSettingTitle:
     'These challenge settings will be applied when a team challenges your team. When your team challenges another team, the team’s challenge setting will be applied for the challenge.',
 
+  playerchallengeSettingInfo:
+    'Please review your incoming challenge settings. These settings are only applicable to the match reservation when you are the match host. When you are the Challenger, the opponent’s incoming challenge settings Will be applied.',
+  challengeGeneralRules:
+    "1. Don't Argue with the Referee.\n2. Respect Your Opponent.\n3. All international sports rule will be applicable",
   challengeSettingNotes:
     'In order to activate the “challenge” button and receive a challenge (game Reservation request), please fill in and save all the lists below.',
 
@@ -772,7 +779,7 @@ export default {
 
   officialGameType: 'Official',
   friendlyGameType: 'Friendly',
-
+  gameType: 'Match Type',
   refuncPolicyTitle: 'Choose one of refund policies',
 
   gameFeeTitle:
@@ -918,7 +925,7 @@ export default {
   typeOfGame: 'Match Type',
   matchFee: 'Match Fee',
   homeAndAway: 'Home & Away',
-  gameDuration: 'Game Duration',
+  gameDuration: 'Match Duration',
   refundPolicy: 'Cancellation Policy',
   matchDuration: 'Match Duration',
   venueName: 'Venue name',
@@ -927,4 +934,54 @@ export default {
   eventCreatedByGroup: 'Event create by group',
   none: 'None',
   switchAccount: 'Switch Account',
+  registerAsPlayerTitle: 'Register as Player',
+  sportQuestion: 'What sports do you play?',
+  sportQuestionDescription:
+    'Do you play multiple sports? Register as a player in one sport first, and then register in another sport. ',
+  bioDescription: 'Describe yourself as a player in this sport.',
+  sportTextTitle: 'Sport',
+  sportNameValidationText: 'Please fill in sport.',
+  incomingChallengeSettingsTitle: 'Incoming Challenge Settings',
+  incomingChallengeSettingsInfo:
+    'Please review your incoming challenge settings. These settings will be applied to (the match reservation process) and  the match (a match) ONLY when you are the match host.\nWhen you are the  Challenger, the opponent’s incoming challenge settings Will be applied.',
+  congratulationModalInfo:
+    'You can now not only send challenges to others and invite them to challenge you, but you can also receive a challenge from them.',
+  searchForPlayer: 'Search for more players',
+  congratsModalTeamInfo:
+    'Now join or create a team to play a match. You can join or create it now or later.',
+  congratsModalDoubleInfo:
+    'Please create a team with another player to play a match. You can create it now or later.',
+  playersNearYouText: 'PLAYERS NEAR YOU',
+  teamsNearYouText: 'TEAMS NEAR YOU',
+  partnersNearYouText: 'CHOOSE A PARTNER TO CREATE A TEAM',
+  choose: 'Choose',
+  goToSportActivityHomeText: 'GO TO SPORTS ACTIVITY HOME',
+  // matchFeeModalTitle: 'Do you want to reconsider a',
+  matchFeeModalTitle1: 'match fee?',
+  matchFeeModalInfo:
+    'The match host may need to receive a match fee from the challenger to cover expenses to host a match.',
+  matchHostChallengeText: 'Who the match host and challenger are:',
+  matchFeeModalInfo1:
+    'If you receive a challenge or invite someone to send you a challenge, you will be the match host and the opponent will be the challenger in the resulting match.',
+  whatMatchHostDo: 'What the match host must do:',
+  matchFeeModalInfo2:
+    'The match host must secure the following at their own cost as specified in their incoming challenge settings. Changes may be made if the match host and challenger are in agreement.',
+  addMatchFeeText: 'ADD MATCH FEE',
+  continueWithNoMatchFeeText: 'CONTINUE WITH NO MATCH FEE',
+  noVenues: 'No Venues',
+  noOfSets: 'NUMBER OF SETS',
+  availabilityModalTitle: 'Do you want to receive new challenges from others?',
+  availabilityInfoForYes: 'Other players can challenge you to play a match in ',
+  availabilityInfoForNo:
+    'Other players can’t challenge you to play a match in ',
+  changeAvailabilityText:
+    'You can change availability of a specific period on your schedule.',
+  chooseMatchType: 'Choose a Match type that you want.',
+  gameTypeOfficalInfo:
+    'The match result has an effect on TC points and TC rankings of the challenger and you.',
+  gameTypeFriendlyInfo:
+    'The match result has no effect on TC points and TC rankings of the challenger and you.',
+  matchFeeModalTitle:
+    'Set the match fee that you want to Charge to a challenger.',
+  chooseCancellationPolicyTitle: 'Choose Cancellation Policy.',
 };

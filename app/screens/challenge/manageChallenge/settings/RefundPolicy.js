@@ -32,9 +32,10 @@ export default function RefundPolicy({navigation, route}) {
     {key: Verbs.moderateText, id: 2},
     {key: Verbs.flexibleText, id: 3},
   ];
-  const [comeFrom] = useState(route?.params?.comeFrom);
-  const [sportName] = useState(route?.params?.sportName);
-  const [sportType] = useState(route?.params?.sportType);
+  // const [comeFrom] = useState(route?.params?.comeFrom);
+  // const [sportName] = useState(route?.params?.sportName);
+  // const [sportType] = useState(route?.params?.sportType);
+  const {comeFrom, sportName, sportType} = route.params;
 
   const authContext = useContext(AuthContext);
 
@@ -87,66 +88,90 @@ export default function RefundPolicy({navigation, route}) {
   );
 
   const saveUser = () => {
-    const bodyParams = {
-      sport: sportName,
-      sport_type: sportType,
-      entity_type: 'player',
-      refund_policy: typeSelection.key,
-    };
-    setloading(true);
-    const registerdPlayerData =
-      authContext?.entity?.obj?.registered_sports?.filter((obj) => {
-        if (obj.sport === sportName && obj.sport_type === sportType) {
-          return null;
+    if (sportType === 'single' && comeFrom === 'IncomingChallengeSettings') {
+      navigation.navigate(comeFrom, {
+        settingObj: {
+          refund_policy: typeSelection.key,
+        },
+        sportName,
+        sportType,
+      });
+    } else {
+      const bodyParams = {
+        sport: sportName,
+        sport_type: sportType,
+        entity_type: 'player',
+        refund_policy: typeSelection.key,
+      };
+      setloading(true);
+      // const registerdPlayerData = (
+      //   authContext.entity.obj?.registered_sports ?? []
+      // ).filter((obj) => {
+      //   if (obj.sport === sportName && obj.sport_type === sportType) {
+      //     return null;
+      //   }
+      //   return obj;
+      // });
+
+      // let selectedSport = (
+      //   authContext.entity.obj?.registered_sports ?? []
+      // ).find(
+      //   (obj) => obj?.sport === sportName && obj?.sport_type === sportType,
+      // );
+
+      // selectedSport = {
+      //   ...selectedSport,
+      //   setting: {...selectedSport?.setting, ...bodyParams},
+      // };
+      // registerdPlayerData.push(selectedSport);
+
+      const registerdPlayerData = (
+        authContext.entity.obj.registered_sports ?? []
+      ).map((item) => {
+        if (item.sport === sportName && item.sport_type === sportType) {
+          return {
+            ...item,
+            setting: {...item?.setting, ...bodyParams},
+          };
         }
-        return obj;
+        return item;
       });
 
-    let selectedSport = authContext?.entity?.obj?.registered_sports?.filter(
-      (obj) => obj?.sport === sportName && obj?.sport_type === sportType,
-    )[0];
+      const body = {
+        ...authContext?.entity?.obj,
+        registered_sports: registerdPlayerData,
+      };
 
-    selectedSport = {
-      ...selectedSport,
-      setting: {...selectedSport?.setting, ...bodyParams},
-    };
-    registerdPlayerData.push(selectedSport);
+      patchPlayer(body, authContext)
+        .then(async (response) => {
+          if (response.status === true) {
+            setloading(false);
+            const entity = authContext.entity;
+            entity.auth.user = response.payload;
+            entity.obj = response.payload;
+            authContext.setEntity({...entity});
+            authContext.setUser(response.payload);
+            await Utility.setStorage('authContextUser', response.payload);
+            await Utility.setStorage('authContextEntity', {...entity});
+            navigation.navigate(comeFrom, {
+              settingObj: response.payload.registered_sports.filter(
+                (obj) =>
+                  obj.sport === sportName && obj.sport_type === sportType,
+              )[0].setting,
+            });
+          } else {
+            Alert.alert(strings.appName, response.messages);
+          }
 
-    const body = {
-      ...authContext?.entity?.obj,
-      registered_sports: registerdPlayerData,
-    };
-    console.log('Body::::--->', body);
-
-    patchPlayer(body, authContext)
-      .then(async (response) => {
-        if (response.status === true) {
           setloading(false);
-          const entity = authContext.entity;
-          console.log('Register player response IS:: ', response.payload);
-          entity.auth.user = response.payload;
-          entity.obj = response.payload;
-          authContext.setEntity({...entity});
-          authContext.setUser(response.payload);
-          await Utility.setStorage('authContextUser', response.payload);
-          await Utility.setStorage('authContextEntity', {...entity});
-          navigation.navigate(comeFrom, {
-            settingObj: response.payload.registered_sports.filter(
-              (obj) => obj.sport === sportName && obj.sport_type === sportType,
-            )[0].setting,
-          });
-        } else {
-          Alert.alert(strings.appName, response.messages);
-        }
-        console.log('RESPONSE IS:: ', response);
-        setloading(false);
-      })
-      .catch((e) => {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
+        })
+        .catch((e) => {
+          setloading(false);
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
+    }
   };
 
   const saveTeam = () => {
@@ -160,13 +185,10 @@ export default function RefundPolicy({navigation, route}) {
     const selectedTeam = authContext?.entity?.obj;
     selectedTeam.setting = {...selectedTeam.setting, ...bodyParams};
     const body = {...selectedTeam};
-    console.log('Body Team::::--->', body);
 
     patchGroup(authContext.entity.uid, body, authContext)
       .then(async (response) => {
         if (response.status === true) {
-          console.log('Team patch::::--->', response.payload);
-
           setloading(false);
           const entity = authContext.entity;
           entity.obj = response.payload;

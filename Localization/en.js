@@ -1,3 +1,4 @@
+/* eslint-disable */
 export default {
   townsCupTitle: 'en_TownsCup',
   alertmessagetitle: 'en_TownsCup',
@@ -195,7 +196,7 @@ export default {
   playerTitle: 'en_Players',
   player1Title: 'en_Player 1',
   player2Title: 'en_Player 2',
-  searchHereText: 'en_Search',
+  searchHereText: 'en_Search here',
   searchText: 'en_Search',
   genderTitle: "en_Choose player's gender.",
   curruencyType: 'en_Currency Type',
@@ -260,7 +261,7 @@ export default {
   moderateText: 'en_Moderate',
   flexibleText: 'en_Flexible',
   requesterWarningText:
-    'en_*Requester: The team or person who sends the game reservation request initialy *Requestee: The team or person who receives the game reservation request initialy',
+    'en_*Requester: en_The team or person who sends the game reservation request initialy *Requestee: The team or person who receives the game reservation request initialy',
   strictPoint1Title: 'en_Cancellation 14 days in advance',
   strictPoint2Title: 'en_Cancellation less than 14 days in advance',
   strictPoint3Title: 'en_Cancellation less than 24 hours in advance',
@@ -378,7 +379,7 @@ export default {
   time: 'en_12:00 am',
   to: 'en_To',
   repeat: 'en_Repeat',
-  repeatTime: '{0} \n(Until {1})',
+  repeatTime: 'en_{0} \n(Until {1})',
   place: 'en_VENUE',
   placeName: 'en_800 Griffiths Way, Vancouver, BC V6B 6G1',
   availableTitle: 'en_Challenge Availability',
@@ -435,7 +436,7 @@ export default {
   enterAboutPlaceholder: 'en_Enter Your About',
 
   inviteEmailText:
-    'en_Please enter the email address of the person that you want to invite to join TownsCup.',
+    'en_Please enter the e-mail account of the person that you want to invite to the {0}.',
   inviteSearchText: 'en_Who do you want to invite to your {0}?',
   inviteEventText: 'en_Who do you want to invite to the event?',
 
@@ -1009,7 +1010,7 @@ export default {
   typeOfGame: 'en_Match Type',
   matchFee: 'en_Match Fee',
   homeAndAway: 'en_Home & Away',
-  gameDuration: 'en_Game Duration',
+  gameDuration: 'en_Match Duration',
   refundPolicy: 'en_Cancellation Policy',
   matchDuration: 'en_Match Duration',
   venueName: 'en_Venue name',
@@ -1099,7 +1100,9 @@ export default {
   playingTitleText: 'en_Playing',
   refereeingTitleText: 'en_Refereeing',
   scorekeepingTitleText: 'en_Scorekeeping',
-  addSportsTitle: 'en_Add a sport',
+  addSportsTitle: 'en_Add Sport',
+  congratsModalTitle:
+    'en_Congratulations!\nYou are now registered as a player in ',
   registerRefereeTitle: 'en_Register as Referee',
   registerScorekeeperTitle: 'en_Register as Scorekeeper',
   inviteYouToJoinEventText: 'en_invited you to join the event.',
@@ -1138,8 +1141,7 @@ export default {
   minMaxText_dy: 'en_Min {0} Max {1}',
   playerTitleText_dy: 'en_Player {0}',
   adminText_dy: 'en_{0} Admin',
-  doYouWantToRemoText_dy:
-    'en_Are you sure you want to remove {0} {1} from {2}?',
+  doYouWantToRemoText_dy: 'en_Do you want to remove {0} {1} from {2}?',
   profileHasBeenCreatedText: 'en_{0}’s profile has been created in your {1}.',
 
   requestDeclinedText: 'en_This request is already declined.',
@@ -1155,12 +1157,12 @@ export default {
   homeCityCannotBlack: 'en_Please fill in home city.',
   emailAlreadyInUse: 'en_That email address is already in use!',
   registeredWithDiffMethod:
-    'You are already registrated with different login method ',
+    'en_You are already registrated with different login method ',
   emailNotRegisterdValidation: 'en_This email address is not registerd',
   emailAlreadyRegisteredValidation:
-    'That email address is already registrated! please login',
+    'en_That email address is already registrated! please login',
   manyRequestForSignUpValidation:
-    'Too many request for signup ,try after sometime',
+    'en_Too many request for signup ,try after sometime',
   emailAlreadyRegisteredWith: 'en_This email is already registrated with {0}',
   connectAccountRequestText:
     'en_sent you a request to connect your account  to one of their exsiting member profiles. When you accept it, you will be a member in the team and the profile will be connected to your account.',
@@ -1192,9 +1194,12 @@ export default {
 
   selectOneMemberText: 'en_Please select one member for connect with profile.',
 
-  inviteBySearchText: 'en_Invite Member',
+  inviteBySearchText: 'en_Invite By Search',
   inviteEmailtext: 'en_Invite by E-mail',
-
+  playerchallengeSettingInfo:
+    'en_Please review your incoming challenge settings. These settings are only applicable to the match reservation when you are the match host. When you are the Challenger, the opponent’s incoming challenge settings Will be applied.',
+  challengeGeneralRules:
+    "en_1. Don't Argue with the Referee.\n2. Respect Your Opponent.\n3. All international sports rule will be applicable",
   groupMessageText: 'en_Group Message',
   inviteMemberText: 'en_Invite Member',
   createMemberProfileText: 'en_Create Member Profile',
@@ -1217,7 +1222,7 @@ export default {
   inviteOrConnectAccountText: 'en_Invite or Connect to an Account',
   requestForBasicInfoWereSentText:
     'en_Requests for basic info were sent to {0} members.',
-  membershipAdminAuthText: 'en_Edit Admin Privilige ',
+  membershipAdminAuthText: 'en_Membership & Admin Authority',
   deleteMemberFromTeamText: 'en_Delete Member from Team',
   deleteMemberFromClubText: 'en_Delete Member from Club',
   whoCanSeeMembersText: 'en_Who can see members in {0} connections?',
@@ -1232,7 +1237,7 @@ export default {
   whoCanSeeMemberProfileText: 'en_Who can see a member profile?',
   weFoundUserWhoseEmailText: 'en_We found a user whose e-mail account is',
   whouldYouLikeToConnectText:
-    "Would you like to connect this user’s account to {0}'s profile in your team?",
+    "en_Would you like to connect this user’s account to {0}'s profile in your team?",
 
   canClubInviteTeamText: 'en_Can Club Invite Team',
   canClubInviteYourTeamText: 'en_Can a club invite your team to join the club?',
@@ -1273,9 +1278,9 @@ export default {
   duedate: 'en_Due Date',
   lessThan1AmountValidation: 'en_User should not allow less than $1 amount.',
   moreThanInvoiceAmountValidation:
-    'User should not allow more than invoice amount.',
+    'en_User should not allow more than invoice amount.',
   notRefundMorethanInvoiceValication:
-    'User should not refund more than invoice paid amount.',
+    'en_User should not refund more than invoice paid amount.',
 
   invoiceNoteValidation: 'en_Please select invoice note.',
   cancelInvoiceAlertText:
@@ -1311,7 +1316,7 @@ export default {
   membersNText: 'en_MEMBERS ({0})',
   batchesNText: 'en_BATCHES ({0})',
   total00: 'en_00.00',
-  transactionNumberText: 'en_Transaction no.:',
+  transactionNumberText: 'en_Transaction noen_.:',
   loggedByText: 'en_Logged by {0} {1} at {2}',
   removeCardText:
     'en_Do you want remove card ending with {0} from your account to ?',
@@ -1462,7 +1467,7 @@ export default {
     'en_New Password and Confirm Password should be same.',
 
   emailVerificationLintNotSendText:
-    'Email Verification Link is already Sent, Try after some moment',
+    'en_Email Verification Link is already Sent, Try after some moment',
 
   passwordMustSameValidation: 'en_New Password and Old Password must be same.',
 
@@ -1481,7 +1486,7 @@ export default {
   reservationSettingText: 'en_Reservation Settings',
   teamRequestCancelledText: 'en_Your team request cancelled.',
   somethingWrongWithRequestText:
-    'Something wrong with your request, please try again.',
+    'en_Something wrong with your request, please try again.',
   ninePlus: 'en_9+',
 
   cancelRequestText: 'en_Cancel request',
@@ -1490,7 +1495,7 @@ export default {
   yourTeamWillBelogText: 'en_\n• your team will belong to the club initially.',
   teamCanLeaveClubText: 'en_\n• your team can leave the club anytime later.',
   adminOfTeamWillClubAdminText:
-    '\n• the admins of your team will be the admins of the club initially.',
+    'en_\n• the admins of your team will be the admins of the club initially.',
 
   account: 'en_Account',
   privacyText: 'en_Privacy',
@@ -1514,7 +1519,7 @@ export default {
 
   verifyEmailText: 'en_Please verify your email.',
   sentVerificationEmailAfterSecond:
-    'YOU CAN SEND VERIFICATION EMAIL AGAIN AFTER {0} SECONDS.',
+    'en_YOU CAN SEND VERIFICATION EMAIL AGAIN AFTER {0} SECONDS.',
   sentEmailAgainTExt: 'en_SEND VERIFICATION EMAIL AGAIN',
   iHaveVerifiedEmail: 'en_I’VE VERIFIED MY EMAIL ADDRESS',
   LOGIN: 'en_LOG IN',
@@ -1531,7 +1536,7 @@ export default {
   byCountinueSignUp: 'en_By continuing or signing up you agree to our',
   termsOfService: 'en_ Terms of Service.',
   weWillManageInformation:
-    'We will manage information about you \n as described in our',
+    'en_We will manage information about you \n as described in our',
   privacyPolicy: 'en_Privacy Policy',
   andText: 'en_and',
   cookiePolicy: 'en_Cookie Policy',
@@ -1561,9 +1566,9 @@ export default {
     'en_Please note the following instructions before you cancel the Game reservation.',
 
   changeGameReservationDesc:
-    '• When the opponent team accepts your match reservation alteration request and, as a result, the time or venue of the match listed in the reservation is changed, a referee reservation alteration request will be automatically sent to each referee booked for the match.\n\n• When a referee doesn’t accept the alteration request above after the match reservation has been changed, the referee reservation will be canceled. The referee fee will be refunded according to the cancellation policy.\n\n• Other users may be able to see who has canceled the reservations and how many days prior to the match starting time they have been canceled in your scoreboard or schedule.Furthermore, your stats may shows the number or percentage of the cancellation that you have made.\n\n',
+    'en_• When the opponent team accepts your match reservation alteration request and, as a result, the time or venue of the match listed in the reservation is changed, a referee reservation alteration request will be automatically sent to each referee booked for the match.\n\n• When a referee doesn’t accept the alteration request above after the match reservation has been changed, the referee reservation will be canceled. The referee fee will be refunded according to the cancellation policy.\n\n• Other users may be able to see who has canceled the reservations and how many days prior to the match starting time they have been canceled in your scoreboard or schedule.Furthermore, your stats may shows the number or percentage of the cancellation that you have made.\n\n',
   cancelGameReservationDesc:
-    '• When the game reservation is canceled, all the referees of the game will still remain as booked referees of the game and the team which has booked a referee still has to pay the referee fee to the referee.\n\n• You can cancel the referee reservation. The referee fee will be refunded according to the cancellation policy.\n\n• The match fee will be refunded according to the cancellation policy.\n\n• The cancellation stats will be displayed on your home or stats, which shows the number or percentage of the cancellation that your team have made.',
+    'en_• When the game reservation is canceled, all the referees of the game will still remain as booked referees of the game and the team which has booked a referee still has to pay the referee fee to the referee.\n\n• You can cancel the referee reservation. The referee fee will be refunded according to the cancellation policy.\n\n• The match fee will be refunded according to the cancellation policy.\n\n• The cancellation stats will be displayed on your home or stats, which shows the number or percentage of the cancellation that your team have made.',
 
   areYouSureCancelReservation:
     'en_Are you sure that you want to cancel the match reservation?',
@@ -1575,7 +1580,7 @@ export default {
     'en_Please edit the reservation details below before you send the alteration request.',
 
   setGamesDuration: 'en_Sets, Games & Duration',
-  gameType: 'en_Game Type',
+  gameType: 'en_Match Type',
   gamePointsAffectText:
     'en_The game result has an effect on TC points of the challengee and you.',
 
@@ -1591,20 +1596,20 @@ export default {
     'en_The match place, referees and scorekeepers should be secured by the team who has charge of them at its own expense.',
 
   cancellationPolicyText:
-    'When you cancel this game reservation before 3:55pm on August 11, you will get a 50% refund, minus the service fee. ',
+    'en_When you cancel this game reservation before 3:55pm on August 11, you will get a 50% refund, minus the service fee. ',
   agreeCancellationPolicy:
-    'By selecting the button below, I agree to the cancellation policy, and also agree to pay the total amount shown above.',
+    'en_By selecting the button below, I agree to the cancellation policy, and also agree to pay the total amount shown above.',
   paymentDetailsText: 'en_Payment details',
 
   cancelGameReservationBefore:
-    'When you cancel this game reservation before {} on {}, you will get a {2}% refund, minus the service fee.',
+    'en_When you cancel this game reservation before {} on {}, you will get a {2}% refund, minus the service fee.',
 
   cancelGameReservationMinusFee:
-    'When you cancel this game reservation before {0} on {1}, you will get a {2}% refund, minus the service fee.',
+    'en_When you cancel this game reservation before {0} on {1}, you will get a {2}% refund, minus the service fee.',
 
   challengeSentText: 'en_Challenge sent',
   whenGroupNotifyText:
-    'When {0} accepts your match reservation request, you will be notified.',
+    'en_When {0} accepts your match reservation request, you will be notified.',
   challengeAccepted: 'en_Challenge accepted',
   challengeDeclined: 'en_Challenge declined',
   challengeCancelled: 'en_Challenge cancelled',
@@ -1623,7 +1628,7 @@ export default {
   TCLevelPoints: 'en_TC Level 15 TC points 3,000',
   checkAvailibility: 'en_CHECK AVAILIBILITY',
   whenAcceptReservationText:
-    'When {0} accepts your match reservation request, you will be notified.',
+    'en_When {0} accepts your match reservation request, you will be notified.',
 
   Game: 'en_Game',
   Date: 'en_Date',
@@ -1652,7 +1657,7 @@ export default {
   confirmScorekeeperReservation:
     'en_You have a confirmed scorekeeper reservation booked by {0}.',
   teamConfirmScorekeeperReservation:
-    'Your team has the confirmed scorekeeper reservation for {0}.',
+    'en_Your team has the confirmed scorekeeper reservation for {0}.',
   confirmScorekeeperReservationSent:
     'en_{0} has confirmed scorekeeper reservation request sent by you.',
   declineScorekeeperRequest:
@@ -1706,7 +1711,7 @@ export default {
   chooseVenue: 'en_CHOOSE A VENUE',
   inviteToChallengeSent: 'en_Invite to Challenge sent',
   inviteChallengeNotifiedDesc:
-    'When {0} accepts your Invite To Challenge, you will be notified.',
+    'en_When {0} accepts your Invite To Challenge, you will be notified.',
   fillAllVenueDetailValidation: 'en_Please fill all details of venue.',
   chooseAnyOneVenue: 'en_Please choose any one venue.',
   change: 'en_Change',
@@ -1722,7 +1727,7 @@ export default {
   scorekeepers: 'en_Scorekeeper(s)',
   referees: 'en_Referees(s)',
   saveForComplete:
-    'In order to complete this part, please click the Save button on the right top after choosing your preference.',
+    'en_In order to complete this part, please click the Save button on the right top after choosing your preference.',
 
   bestOfSets: 'en_Best of {0} {1}',
   set: 'en_set',
@@ -1742,16 +1747,16 @@ export default {
   reservationRequestPendingText: 'en_RESERVATION REQUEST PENDING',
   hasBeenExpired: 'en_Your match reservation request has been expired.',
   requestExpiredFrom:
-    'The match reservation request from {0} has been expired.',
+    'en_The match reservation request from {0} has been expired.',
   sentRequestToDate:
-    '{0} sent a match reservation request to {1}. This request will be expired in',
+    'en_{0} sent a match reservation request to {1}. This request will be expired in',
   receivedRequestToDate:
-    '{0} received a match reservation request from {1}. This request will be expired in',
+    'en_{0} received a match reservation request from {1}. This request will be expired in',
   paymentGoesWith:
     'en_This reservation will be canceled unless the payment goes through within',
 
   youCanCancelReservationText:
-    '.\nYou can cancel the game reservation without a penalty before the payment will go through.',
+    'en_.\nYou can cancel the game reservation without a penalty before the payment will go through.',
   reservationConfirmedText: 'en_RESERVATION CONFIRMED',
 
   confirmedReservationAgainst:
@@ -1768,18 +1773,18 @@ export default {
   notSelectedMatch: "en_You don't have any selected match",
 
   refereesScorekeepersText:
-    'The match place, referees and scorekeepers should be secured by the team who has charge of them at its own expense.',
+    'en_The match place, referees and scorekeepers should be secured by the team who has charge of them at its own expense.',
   refereeApprovalRequestSent: 'en_Referee approval request sent.',
   refereeText: 'en_Referee',
 
   chiefRefereeValidation: 'en_You can’t book the chief referee for this game.',
   cannotBookMoreThanReferee:
-    'You can’t book more than {0} assistant referees for this game. You can change the number of referees in the reservation details.',
+    'en_You can’t book more than {0} assistant referees for this game. You can change the number of referees in the reservation details.',
 
   refereeSettingNotConfigureValidation:
     'en_Referee setting not configured yet.',
   canNotBookMoreThanreferee:
-    "You can't book more than {0} referee for this match. You can change the number of referees in the reservation details.",
+    "en_You can't book more than {0} referee for this match. You can change the number of referees in the reservation details.",
   refereeFeeMax: 'en_Please enter correct referee max fee.',
   refereeFeeMin: 'en_Please enter correct referee min fee.',
   refereeFeeCorrect: 'en_Please enter correct referee fee.',
@@ -1876,7 +1881,7 @@ export default {
   endsText: 'en_Ends',
   dummyTime: 'en_(3h 55m)',
   yourReviewWillDisplayDesc:
-    'Your reviews will be displayed after the review period expires or all {0}, referees, scorekeepers complete their reviews.',
+    'en_Your reviews will be displayed after the review period expires or all {0}, referees, scorekeepers complete their reviews.',
   addGame: 'en_+ Add game',
   addSet: 'en_+ Add Set',
   notEnded: 'en_Not Ended',
@@ -1889,13 +1894,13 @@ export default {
 
   chooseStartEndTime: 'en_Choose the starting and ending time of the new set.',
   chooseStartEndTimeGame:
-    'Choose the starting and ending time of the new Game.',
+    'en_Choose the starting and ending time of the new Game.',
   whenAddingNewSet:
-    'When adding a new set causes an excess set, the set and its records will be invalid.',
+    'en_When adding a new set causes an excess set, the set and its records will be invalid.',
   addAGame: 'en_Add a game',
 
   addNewGameOrSet:
-    'When adding a new game causes an excess game or set, the game or set and their records will be invalid.',
+    'en_When adding a new game causes an excess game or set, the game or set and their records will be invalid.',
 
   deactivatedSportsActivities: 'en_Deactivated Sports Acitivies',
   whoCanSeeCategory: 'en_Who can see each category in Basic Info?',
@@ -1921,9 +1926,9 @@ export default {
   TCPerGame: 'en_STATS Per game ( 3 sets )',
   wins: 'en_Wins',
   lookingNewTeam:
-    "Are you Looking for a new team? Your profile may be displayed on Local Home if you choose 'Yes'.",
+    "en_Are you Looking for a new team? Your profile may be displayed on Local Home if you choose 'Yes'.",
   lookingNewClub:
-    "Are you Looking for a new club? Your profile may be displayed on Local Home if you choose 'Yes'.",
+    "en_Are you Looking for a new club? Your profile may be displayed on Local Home if you choose 'Yes'.",
   scoreboard: 'en_Scoreboard',
   stats: 'en_Stats',
   reviews: 'en_Reviews',
@@ -2052,7 +2057,7 @@ export default {
 
   SEND: 'en_SEND',
   writeComment: 'en_Write a comment',
-  sPost: "'s Post",
+  sPost: "en_'s Post",
   membershipFee: 'en_Membership fee',
   bylow: 'en_Bylow',
   noBylows: 'en_No Bylows',
@@ -2124,8 +2129,8 @@ export default {
   likesTitle: 'en_Likes',
   noLikesYet: 'en_No Likes Yet',
   taggedTitle: 'en_Tagged',
-  optional: ' en_optional',
-  going: ' en_going',
+  optional: 'en_optional',
+  going: 'en_going',
   confirmDeleteMessage: 'en_Are you sure want to delete message?',
   unknownTitle: 'en_Unknown',
   typeMessage: 'en_Type a message',
@@ -2144,14 +2149,14 @@ export default {
   unabletofecthgps: 'en_Unable to fetch current location',
   userdeniedgps: 'en_GPS Location is denied by user',
   inviteByEmail: 'en_Invite By Email',
-  copyInviteUrl: 'en_Copy Invitation URL to TownsCup',
+  copyInviteUrl: 'en_Copy Invitation URL',
   doNotEnterSameEmail:
     'en_Please do not enter the same email address mutiple times.',
   homeCity: 'en_Home City',
   sentEmailInvitation:
     'en_Send this user an invitation email to join TownsCup.',
   emailExistInTC:
-    'en_This email address has been registered with a user account. You can invite the user instead of creating a new profile.',
+    'en_This email address has been registered for a user account. You can invite the user instead of creating the profile.',
   emailNotes:
     'en_The member profile created with this email address will be merged with the user account with the same email address when the user joins the team.',
   notesPlaceholder: 'en_Write any additional notes here.',
@@ -2159,25 +2164,116 @@ export default {
   searchForAddress: 'en_Search for Address',
   addressValidation: 'en_Please fill address field',
   profileCreated: 'en_The member profile has been created in your {0}.',
-
+  registerAsPlayerTitle: 'en_Register as Player',
   multipleRequestSent: 'en_Requests for basic info were sent to {0} members.',
   removeMemberFromGroup: 'en_Remove this member from team',
   basicInfoRequestText:
     'en_{0} wants to collect your basic info. You may choose the sections you want to send or edit each section befor you send the information.',
-
-  leavereviewinsmall:'en_Leave Review',
-  doubleteamtitle:'en_Please, rate the performance of {0} and leave a review for the team below.',
-  teamreviewtitle:'en_Please rate the sportsmanship of {0} and leave a review.',
-  refereereviewtitle:'en_Please rate the performance of referee {0} and leave a review.',
-  rateperformance:'en_Rate performance',
-  leaveareview:'en_Leave a review',
-  writerefereereviewplacholder:'en_Describe what you thought about the referee\'s and conduct pertaining the match.',
-  completeallrating:'en_Please complete all ratings to complete the review. Otherwise, you can remove all the ratings and leave a review only.',
-  reviewvalidation:'en_Please at least leave a review.',
-  deleteallrating:'en_Delete All Ratings',
-  scorekeeperreviewtitle:'en_Please rate the performance of scorekeeper {0} and leave a review.',
-  writescorekeeperreviewplacholder:'en_Describe what you thought about the scorekeeper\'s and conduct pertaining the match.',
-  writeteamreviewplacholder:'en_Describe what you thought about the team\'s performance and sportsmanship pertaining to the match.',
-  writeplayerreviewplacholder:'en_Describe what you thought about the player\'s performance and sportsmanship pertaining to the match.',
-
+  requestBasicInfoTitle: 'en_Request Basic Info',
+  reservations: 'en_Reservations',
+  leavereviewinsmall: 'en_Leave Review',
+  doubleteamtitle:
+    'en_Please, rate the performance of {0} and leave a review for the team below.',
+  teamreviewtitle:
+    'en_Please rate the sportsmanship of {0} and leave a review.',
+  refereereviewtitle:
+    'en_Please rate the performance of referee {0} and leave a review.',
+  rateperformance: 'en_Rate performance',
+  leaveareview: 'en_Leave a review',
+  writerefereereviewplacholder:
+    "en_Describe what you thought about the referee's and conduct pertaining the match.",
+  completeallrating:
+    'en_Please complete all ratings to complete the review. Otherwise, you can remove all the ratings and leave a review only.',
+  reviewvalidation: 'en_Please at least leave a review.',
+  deleteallrating: 'en_Delete All Ratings',
+  scorekeeperreviewtitle:
+    'en_Please rate the performance of scorekeeper {0} and leave a review.',
+  writescorekeeperreviewplacholder:
+    "en_Describe what you thought about the scorekeeper's and conduct pertaining the match.",
+  writeteamreviewplacholder:
+    "en_Describe what you thought about the team's performance and sportsmanship pertaining to the match.",
+  writeplayerreviewplacholder:
+    "en_Describe what you thought about the player's performance and sportsmanship pertaining to the match.",
+  sportQuestion: 'en_What sports do you play?',
+  sportQuestionDescription:
+    'en_Do you play multiple sports? Register as a player in one sport first, and then register in another sport. ',
+  bioDescription: 'en_Describe yourself as a player in this sport.',
+  sportTextTitle: 'en_Sport',
+  sportNameValidationText: 'en_Please fill in sport.',
+  incomingChallengeSettingsTitle: 'en_Incoming Challenge Settings',
+  incomingChallengeSettingsInfo:
+    'en_Please review your incoming challenge settings. These settings will be applied to (the match reservation process) and  the match (a match) ONLY when you are the match host.\nWhen you are the  Challenger, the opponent’s incoming challenge settings Will be applied.',
+  congratulationModalInfo:
+    'en_You can now not only send challenges to others and invite them to challenge you, but you can also receive a challenge from them.',
+  searchForPlayer: 'en_Search for more players',
+  congratsModalTeamInfo:
+    'en_Now join or create a team to play a match. You can join or create it now or later.',
+  congratsModalDoubleInfo:
+    'en_Please create a team with another player to play a match. You can create it now or later.',
+  playersNearYouText: 'en_PLAYERS NEAR YOU',
+  teamsNearYouText: 'en_TEAMS NEAR YOU',
+  partnersNearYouText: 'en_CHOOSE A PARTNER TO CREATE A TEAM',
+  choose: 'en_Choose',
+  goToSportActivityHomeText: 'en_GO TO SPORTS ACTIVITY HOME',
+  // matchFeeModalTitle: 'en_Do you want to reconsider a',
+  matchFeeModalTitle1: 'en_match fee?',
+  matchFeeModalInfo:
+    'en_The match host may need to receive a match fee from the challenger to cover expenses to host a match.',
+  matchHostChallengeText: 'en_Who the match host and challenger areen_:',
+  matchFeeModalInfo1:
+    'en_If you receive a challenge or invite someone to send you a challenge, you will be the match host and the opponent will be the challenger in the resulting match.',
+  whatMatchHostDo: 'en_What the match host must doen_:',
+  matchFeeModalInfo2:
+    'en_The match host must secure the following at their own cost as specified in their incoming challenge settings. Changes may be made if the match host and challenger are in agreement.',
+  addMatchFeeText: 'en_ADD MATCH FEE',
+  continueWithNoMatchFeeText: 'en_CONTINUE WITH NO MATCH FEE',
+  noVenues: 'en_No Venues',
+  noOfSets: 'en_NUMBER OF SETS',
+  availabilityModalTitle:
+    'en_Do you want to receive new challenges from others?',
+  availabilityInfoForYes:
+    'en_Other players can challenge you to play a match in ',
+  availabilityInfoForNo:
+    'en_Other players can’t challenge you to play a match in ',
+  changeAvailabilityText:
+    'en_You can change availability of a specific period on your schedule.',
+  chooseMatchType: 'en_Choose a Match type that you want.',
+  gameTypeOfficalInfo:
+    'en_The match result has an effect on TC points and TC rankings of the challenger and you.',
+  gameTypeFriendlyInfo:
+    'en_The match result has no effect on TC points and TC rankings of the challenger and you.',
+  matchFeeModalTitle:
+    'en_Set the match fee that you want to Charge to a challenger.',
+  chooseCancellationPolicyTitle: 'en_Choose Cancellation Policy.',
+  refeereModalTitle:
+    'en_How many referees will you hire for a match at your own cost?',
+  refereeSelectionRule1:
+    'en_You must secure at least the following number of referees for a match at your own cost within 5 days after the challenge is accepted.',
+  refereeSelectionRule2:
+    'en_If you aren’t reserving at least the following number of referees 5 days after the challenge is accepted, the confirmed match may be canceled.',
+  scorekeeperModalTitle:
+    'en_How many scorekeepers will you hire for a match at your own cost?',
+  scorekeeperSelectionRule1:
+    'en_You must secure at least the following number of scorekeepers for a match at your own cost within 5 days after the challenge is accepted.',
+  scorekeeperSelectionRule2:
+    'en_If you aren’t reserving at least the following number of scorekeepers 5 days after the challenge is accepted, the confirmed match may be canceled.',
+  noOfGamesInSet: 'en_NUMBER OF GAMES IN SET',
+  maxMatchDuration: 'en_MAX. MATCH DURATION',
+  winsSetByOneGame: 'en_A player wins a set by one game.',
+  winsSetByTwoGames: 'en_A player must win a set by two games.',
+  applyTimebreaker: 'en_Apply tiebreaker.',
+  durationDetails:
+    'en_Details about sets, games, points, tiebreakers and the maximum match duration',
+  tieBreakerAppliedAt: 'en_Tiebreaker starts after the game scores areen_:',
+  winTieBreakerSetAt: 'en_A player wins a tiebreak and set upon scoringen_:',
+  winSetByOneInTieBreaker:
+    'en_A player wins a game by one point in a tiebreaker.',
+  winSetByTwoInTieBreaker:
+    'en_A player must win a game by two points in a tiebreaker.',
+  pointText: 'en_Point',
+  addVenueBtnText: 'en_+ Add Venue',
+  venueInfo:
+    'en_Add at lease one venue that you will be able to secure for a match against a challenger at your expense. Please make sure to set up the check-in point for each venue.',
+  warningTextForFee: 'en_Do you want to reconsider a',
+  warningTextForFee1: 'en_match fee?',
 };

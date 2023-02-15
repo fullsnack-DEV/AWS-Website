@@ -40,6 +40,10 @@ export default function ChooseAddressScreen({navigation, route}) {
     if (route.params.comeFrom === 'Venue') {
       navigation.navigate('Venue', {
         venueObj: selectedAddress,
+        sportName: route.params.sportName,
+        sportType: route.params.sportType,
+        settingObj: route.params.settingObj,
+        comeFrom: route.params.backwardScreen,
       });
     }
     if (route.params.comeFrom === 'ChooseVenueScreen') {

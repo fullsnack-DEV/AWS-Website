@@ -1,46 +1,56 @@
-import React, {useState, useEffect, useContext} from 'react';
+// @flow
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import {
-  StyleSheet,
   View,
+  StyleSheet,
   Text,
+  SafeAreaView,
+  Pressable,
   Image,
   TextInput,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
+  Keyboard,
   Alert,
-  FlatList,
-  Dimensions,
-  Platform,
+  ActivityIndicator,
 } from 'react-native';
-
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
-
-import Modal from 'react-native-modal';
-
-import images from '../../../Constants/ImagePath';
 import {strings} from '../../../../Localization/translation';
+import {patchPlayer} from '../../../api/Users';
+import AuthContext from '../../../auth/context';
+import TCFormProgress from '../../../components/TCFormProgress';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
-import AuthContext from '../../../auth/context';
-import TCThinDivider from '../../../components/TCThinDivider';
-import TCFormProgress from '../../../components/TCFormProgress';
-import TCGradientButton from '../../../components/TCGradientButton';
-import {getHitSlop, getSportName} from '../../../utils';
+import images from '../../../Constants/ImagePath';
+import Verbs from '../../../Constants/Verbs';
+import {languageList, setStorage} from '../../../utils';
+import CongratulationsModal from './modals/CongratulationsModal';
+import LanguagesListModal from './modals/LanguagesListModal';
+import SportsListModal from './modals/SportsListModal';
 
-export default function RegisterPlayer({navigation}) {
-  const authContext = useContext(AuthContext);
-  const [sportsSelection, setSportsSelection] = useState();
-
+const RegisterPlayer = ({navigation, route}) => {
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
+  const [showLanguageModal, setShowLanguageModal] = useState(false);
+  const [showCongratulationsModal, setShowCongratulationsModal] =
+    useState(false);
+  const [languages, setLanguages] = useState([]);
+  const [selectedLanguages, setSelectedLanguages] = useState([]);
   const [sportsData, setSportsData] = useState([]);
+  const [selectedSport, setSelectedSport] = useState(null);
+  const [languageName, setLanguageName] = useState('');
+  const [bio, setBio] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const authContext = useContext(AuthContext);
+  const bioInputRef = useRef(null);
+
+  useEffect(() => {
+    const arr = languageList.map((item) => ({
+      ...item,
+      isChecked: false,
+    }));
+    setLanguages(arr);
+  }, []);
 
   useEffect(() => {
     let sportArr = [];
-
-    console.log('authContext.sports', authContext.sports);
     authContext.sports.map((item) =>
       item.format.map((innerObj) => {
         sportArr = [...sportArr, ...[{...item, ...innerObj}]];
@@ -51,219 +61,327 @@ export default function RegisterPlayer({navigation}) {
     setSportsData([...sportArr]);
   }, [authContext.sports]);
 
-  const renderSports = ({item}) => (
-    <TouchableWithoutFeedback
-      style={styles.listItem}
-      onPress={() => {
-        setSportsSelection(item);
-        console.log('selected sport:=>', item);
-        setTimeout(() => {
-          setVisibleSportsModal(false);
-        }, 300);
-      }}>
-      <View
-        style={{
-          padding: 20,
-          alignItems: 'center',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-        }}>
-        <Text style={styles.languageList}>
-          {getSportName(item, authContext)}
-        </Text>
-        <View style={styles.checkbox}>
-          {sportsSelection?.sport === item?.sport &&
-          sportsSelection?.sport_type === item?.sport_type ? (
-            <Image
-              source={images.radioCheckYellow}
-              style={styles.checkboxImg}
-            />
-          ) : (
-            <Image source={images.radioUnselect} style={styles.checkboxImg} />
-          )}
-        </View>
-      </View>
-    </TouchableWithoutFeedback>
-  );
+  useEffect(() => {
+    if (route.params.sport_name) {
+      setSelectedSport({...route.params});
+    }
+  }, [route.params]);
 
-  const nextOnPress = () => {
-    console.log('authContext?.entity?.obj', authContext?.entity?.obj);
-    if (sportsSelection.sport !== '') {
-      if (
-        authContext?.entity?.obj?.registered_sports?.some(
-          (e) =>
-            e.sport === sportsSelection.sport &&
-            e.sport_type === sportsSelection.sport_type &&
-            e.is_published,
-        )
-      ) {
-        Alert.alert(strings.alertmessagetitle, strings.sportAlreadyRegisterd);
-      } else {
-        const bodyParams = {};
-        bodyParams.sport_type = sportsSelection.sport_type;
-        bodyParams.sport = sportsSelection.sport;
-        bodyParams.sport_name = sportsSelection.sport_name;
-        bodyParams.sport_image = sportsSelection.player_image;
-        bodyParams.is_active = true;
-        navigation.navigate('RegisterPlayerForm2', {
-          bodyParams,
+  useEffect(() => {
+    if (selectedLanguages.length > 0) {
+      let name = '';
+      selectedLanguages.forEach((item) => {
+        name += name ? `, ${item.language}` : item.language;
+      });
+      setLanguageName(name);
+    }
+  }, [selectedLanguages]);
+
+  const handleLanguageSelection = (language) => {
+    const newList = languages.map((item) => ({
+      ...item,
+      isChecked: item.id === language.id ? !item.isChecked : item.isChecked,
+    }));
+    setLanguages([...newList]);
+
+    const list = newList.filter((item) => item.isChecked);
+    setSelectedLanguages([...list]);
+  };
+
+  const handleNextOrApply = () => {
+    if (!selectedSport?.sport_type && !selectedSport?.sport_name) {
+      Alert.alert(strings.sportNameValidationText);
+    } else if (bio.length > 50) {
+      Alert.alert('Please fill in Bio with at least 50 characters.');
+    } else {
+      const bodyParams = {
+        sport_type: selectedSport.sport_type,
+        sport: selectedSport.sport,
+        sport_name: selectedSport.sport_name,
+        is_active: true,
+        descriptions: bio,
+        is_published: true,
+        type: Verbs.entityTypePlayer,
+        language: selectedLanguages,
+        lookingForTeamClub: true,
+        default_setting: {},
+      };
+
+      const registerdPlayerData = [
+        ...(authContext.entity.obj.registered_sports || []),
+        bodyParams,
+      ];
+
+      const body = {
+        ...authContext.entity.obj,
+        registered_sports: registerdPlayerData,
+      };
+
+      if (selectedSport?.sport_type === Verbs.sportTypeSingle) {
+        // navigate to incoming challenge settings
+        navigation.navigate('IncomingChallengeSettings', {
+          playerData: body,
+          sportName: selectedSport.sport_name,
+          sportType: selectedSport.sport_type,
+          sport: selectedSport.sport,
+          settingObj: selectedSport.default_setting ?? {},
+          settingType: selectedSport.default_setting?.default_setting_key,
         });
+      } else {
+        setLoading(true);
+        patchPlayer(body, authContext)
+          .then(async (response) => {
+            if (response.status === true) {
+              setLoading(false);
+              const entity = authContext.entity;
+              entity.auth.user = response.payload;
+              entity.obj = response.payload;
+              authContext.setEntity({...entity});
+              authContext.setUser(response.payload);
+              await setStorage('authContextUser', response.payload);
+              await setStorage('authContextEntity', {...entity});
+              setShowCongratulationsModal(true);
+            } else {
+              setLoading(false);
+              Alert.alert(strings.appName, response.messages);
+            }
+            setLoading(false);
+          })
+          .catch(() => setLoading(false));
       }
     }
   };
+
   return (
-    <View style={{flex: 1}}>
-      <TCFormProgress totalSteps={2} curruentStep={1} />
-      <Text style={styles.LocationText}>{strings.sportsText}</Text>
-      <TouchableOpacity
-        testID="choose-sport"
-        onPress={() => setVisibleSportsModal(true)}>
-        <View style={styles.searchView}>
-          <TextInput
-            style={styles.searchTextField}
-            placeholder={strings.selectSportPlaceholderPlayer}
-            value={getSportName(sportsSelection, authContext)}
-            editable={false}
-            pointerEvents="none"
-          />
-        </View>
-      </TouchableOpacity>
-      <View style={{flex: 1}} />
-      <Modal
-        isVisible={visibleSportsModal}
-        onBackdropPress={() => setVisibleSportsModal(false)}
-        onRequestClose={() => setVisibleSportsModal(false)}
-        animationInTiming={300}
-        animationOutTiming={800}
-        backdropTransitionInTiming={300}
-        backdropTransitionOutTiming={800}
-        style={{
-          margin: 0,
-        }}>
-        <View
-          style={{
-            width: '100%',
-            height: Dimensions.get('window').height / 1.3,
-            backgroundColor: 'white',
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            borderTopLeftRadius: 30,
-            borderTopRightRadius: 30,
-            shadowColor: '#000',
-            shadowOffset: {width: 0, height: 1},
-            shadowOpacity: 0.5,
-            shadowRadius: 5,
-            elevation: 15,
+    <SafeAreaView style={styles.parent}>
+      <View style={styles.headerRow}>
+        <Pressable
+          style={styles.backIconContainer}
+          onPress={() => {
+            navigation.goBack();
           }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              paddingHorizontal: 15,
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}>
-            <TouchableOpacity
-              hitSlop={getHitSlop(15)}
-              style={styles.closeButton}
-              onPress={() => setVisibleSportsModal(false)}>
-              <Image source={images.cancelImage} style={styles.closeButton} />
-            </TouchableOpacity>
+          <Image source={images.backArrow} style={styles.image} />
+        </Pressable>
+        <Text style={styles.headerTitle}>{strings.registerAsPlayerTitle}</Text>
+        {loading ? (
+          <ActivityIndicator size={'small'} />
+        ) : (
+          <Pressable style={styles.buttonContainer} onPress={handleNextOrApply}>
             <Text
-              style={{
-                alignSelf: 'center',
-                marginVertical: 20,
-                fontSize: 16,
-                fontFamily: fonts.RBold,
-                color: colors.lightBlackColor,
-              }}>
-              {strings.sportsTitleText}
+              style={[
+                styles.buttonText,
+                selectedSport?.sport_type && selectedSport?.sport_name
+                  ? {}
+                  : {opacity: 0.5},
+              ]}>
+              {selectedSport?.sport_type === 'single'
+                ? strings.next
+                : strings.done}
             </Text>
+          </Pressable>
+        )}
+      </View>
+      <TCFormProgress totalSteps={2} curruentStep={1} />
+      <View style={styles.container}>
+        <View style={{marginBottom: 25}}>
+          <Text style={styles.inputLabel}>
+            {strings.whichSport}{' '}
+            <Text style={[styles.inputLabel, {color: colors.redColor}]}>*</Text>
+          </Text>
 
-            <Text
-              style={{
-                alignSelf: 'center',
-                marginVertical: 20,
-                fontSize: 16,
-                fontFamily: fonts.RRegular,
-                color: colors.themeColor,
-              }}></Text>
-          </View>
-          <View style={styles.separatorLine} />
-          <FlatList
-            ItemSeparatorComponent={() => <TCThinDivider />}
-            data={sportsData}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={renderSports}
+          <TextInput
+            testID="choose-sport"
+            style={[styles.inputContainer, styles.input]}
+            value={selectedSport?.sport_name}
+            onFocus={() => {
+              Keyboard.dismiss();
+              setVisibleSportsModal(true);
+            }}
           />
         </View>
-      </Modal>
-      <TCGradientButton
-        isDisabled={!sportsSelection}
-        title={strings.nextTitle}
-        style={{marginBottom: 30}}
-        onPress={nextOnPress}
+
+        <View style={{marginBottom: 25}}>
+          <Text style={styles.inputLabel}>{strings.whichLanguage}</Text>
+
+          <TextInput
+            testID="choose-language"
+            style={[styles.inputContainer, styles.input]}
+            value={languageName}
+            onFocus={() => {
+              Keyboard.dismiss();
+              setShowLanguageModal(true);
+            }}
+          />
+        </View>
+
+        <View style={{marginBottom: 25}}>
+          <Text style={styles.inputLabel}>{strings.bio.toUpperCase()}</Text>
+          <Pressable
+            style={[styles.inputContainer, {minHeight: 100}]}
+            onPress={() => {
+              bioInputRef.current?.focus();
+            }}>
+            <TextInput
+              ref={bioInputRef}
+              testID="register-player-description"
+              style={styles.input}
+              placeholder={strings.bioDescription}
+              multiline
+              onChangeText={(text) => {
+                setBio(text);
+              }}
+              value={bio}
+              maxLength={50}
+            />
+          </Pressable>
+        </View>
+      </View>
+      <SportsListModal
+        isVisible={visibleSportsModal}
+        closeList={() => setVisibleSportsModal(false)}
+        sportsList={sportsData}
+        onNext={(sport) => {
+          setVisibleSportsModal(false);
+          setSelectedSport({...sport});
+        }}
+        sport={selectedSport}
       />
-    </View>
+
+      <LanguagesListModal
+        isVisible={showLanguageModal}
+        closeList={() => setShowLanguageModal(false)}
+        languageList={languages}
+        onSelect={handleLanguageSelection}
+        onApply={() => {
+          setShowLanguageModal(false);
+        }}
+      />
+      <CongratulationsModal
+        isVisible={showCongratulationsModal}
+        closeModal={() => {
+          setShowCongratulationsModal(true);
+          navigation.navigate('AccountScreen', {
+            createdSportName: selectedSport?.sport_name,
+            // eslint-disable-next-line
+            sportType: selectedSport?.sport_type,
+          });
+        }}
+        sportName={selectedSport?.sport_name}
+        sport={selectedSport?.sport}
+        sportType={selectedSport?.sport_type}
+        onChanllenge={(filters) => {
+          navigation.navigate('LookingForChallengeScreen', {
+            filters,
+          });
+        }}
+        searchPlayer={() => {
+          const sports = sportsData.map((item) => ({
+            label: item?.sport_name,
+            value: item?.sport_name.toLowerCase(),
+          }));
+
+          navigation.navigate('EntitySearchScreen', {
+            sportsList: sports,
+            sportsArray: sportsData,
+          });
+        }}
+        onUserClick={(userData) => {
+          if (!userData) return;
+          navigation.navigate('HomeScreen', {
+            uid:
+              userData.entity_type === Verbs.entityTypePlayer ||
+              userData.entity_type === Verbs.entityTypeUser
+                ? userData.user_id
+                : userData.group_id,
+            role: ['user', 'player']?.includes(userData.entity_type)
+              ? 'user'
+              : userData.entity_type,
+            backButtonVisible: true,
+            menuBtnVisible: false,
+          });
+        }}
+        searchTeam={() => {
+          const sports = sportsData.map((item) => ({
+            label: item?.sport_name,
+            value: item?.sport_name.toLowerCase(),
+          }));
+
+          navigation.navigate('EntitySearchScreen', {
+            sportsList: sports,
+            sportsArray: sportsData,
+            activeTab: 1,
+          });
+        }}
+        joinTeam={(filters) => {
+          navigation.navigate('LookingTeamScreen', {
+            filters,
+          });
+        }}
+        createTeam={() => {
+          navigation.navigate('CreateTeamForm1');
+        }}
+      />
+    </SafeAreaView>
   );
-}
+};
+
 const styles = StyleSheet.create({
-  LocationText: {
-    marginTop: hp('3%'),
-    color: colors.lightBlackColor,
-    fontSize: 20,
-    textAlign: 'left',
-    fontFamily: fonts.RRegular,
-    paddingLeft: 15,
-  },
-  closeButton: {
-    alignSelf: 'center',
-    width: 13,
-    height: 13,
-    marginLeft: 5,
-    resizeMode: 'contain',
-  },
-
-  separatorLine: {
-    alignSelf: 'center',
-    backgroundColor: colors.grayColor,
-    height: 0.5,
-    marginTop: 14,
-    width: wp('92%'),
-  },
-
-  searchView: {
-    alignSelf: 'center',
-    backgroundColor: colors.offwhite,
-    borderRadius: 5,
-    elevation: 3,
-    flexDirection: 'row',
-    marginTop: 12,
-    paddingVertical: Platform.OS === 'ios' ? 12 : 0,
-    paddingLeft: 15,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
-    width: wp('92%'),
-  },
-  searchTextField: {
-    alignSelf: 'center',
-    color: colors.blackColor,
+  parent: {
     flex: 1,
-    fontSize: wp('3.8%'),
-    width: wp('80%'),
+    backgroundColor: colors.whiteColor,
   },
-  languageList: {
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RRegular,
-    fontSize: wp('4%'),
+  container: {
+    paddingHorizontal: 15,
+    paddingVertical: 20,
   },
-  checkboxImg: {
-    width: 22,
-    height: 22,
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 13,
+    paddingBottom: 13,
+  },
+  headerTitle: {
+    fontSize: 16,
+    fontFamily: fonts.RBold,
+    textAlign: 'center',
+  },
+  buttonContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonText: {
+    fontSize: 16,
+    fontFamily: fonts.RMedium,
+    textAlign: 'center',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
     resizeMode: 'contain',
-    alignSelf: 'center',
   },
-  checkbox: {},
+  backIconContainer: {
+    width: 25,
+    height: 25,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  inputLabel: {
+    fontSize: 16,
+    lineHeight: 24,
+    fontFamily: fonts.RBold,
+  },
+  inputContainer: {
+    backgroundColor: colors.textFieldBackground,
+    borderRadius: 5,
+    marginTop: 5,
+    padding: 2,
+  },
+  input: {
+    fontSize: 16,
+    color: colors.lightBlackColor,
+    padding: 10,
+  },
 });
+
+export default RegisterPlayer;

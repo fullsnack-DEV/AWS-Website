@@ -160,6 +160,7 @@ const images = {
 
   // Account Screen Icons
   accountMySchedule: require('../assets/images/accountMySchedule.png'),
+  accountMyReservations: require('../assets/images/accountReservations.png'),
   accountMySports: require('../assets/images/accountMySports.png'),
   accountMyRefereeing: require('../assets/images/accountMyRefereeing.png'),
   accountMyScoreKeeping: require('../assets/images/accountMyScoreKeeping.png'),
@@ -447,6 +448,7 @@ const images = {
   copyUrl: require('../assets/images/copyUrl.png'),
   createMember: require('../assets/images/createMember.png'),
   unlinked: require('../assets/images/unlinked.png'),
+  createTeamRoundIcon: require('../assets/images/createTeam.png'),
 };
 
 export default images;

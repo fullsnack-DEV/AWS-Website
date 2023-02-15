@@ -26,7 +26,7 @@ import GameDetail from '../screens/account/schedule/GameDetail';
 import SoccerRecording from '../screens/game/soccer/SoccerRecording';
 import TennisRecording from '../screens/game/tennis/TennisRecording';
 import GameDetailRecord from '../screens/game/soccer/GameDetailRecord';
-
+import IncomingChallengeSettings from '../screens/account/registerPlayer/IncomingChallengeSettings';
 import RegisterPlayer from '../screens/account/registerPlayer/RegisterPlayer';
 import RegisterPlayerForm2 from '../screens/account/registerPlayer/RegisterPlayerForm2';
 import RegisterReferee from '../screens/account/registerReferee/RegisterReferee';
@@ -1028,8 +1028,13 @@ const AccountNavigator = () => (
     <Stack.Screen
       name="RegisterPlayer"
       component={RegisterPlayer}
+      options={{headerShown: false}}
+    />
+    <Stack.Screen
+      name="RegisterPlayerForm2"
+      component={RegisterPlayerForm2}
       options={{
-        title: 'Add Sport',
+        title: strings.registerAsPlayerTitle,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -1042,20 +1047,9 @@ const AccountNavigator = () => (
       }}
     />
     <Stack.Screen
-      name="RegisterPlayerForm2"
-      component={RegisterPlayerForm2}
-      options={{
-        title: 'Add Sport',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
+      name="IncomingChallengeSettings"
+      component={IncomingChallengeSettings}
+      options={{headerShown: false}}
     />
     <Stack.Screen
       name="RegisterReferee"

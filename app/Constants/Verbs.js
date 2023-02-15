@@ -87,7 +87,15 @@ const Verbs = {
     WeekOfYear: 5,
     DayOfYear: 6,
   },
-  gpsErrorDeined:'gpsErrorForDenied',
+  gpsErrorDeined: 'gpsErrorForDenied',
+
+  sportTypeSingle: 'single',
+  sportTypeDouble: 'double',
+  sportTypeTeam: 'team',
+
+  countTypeRatio: 'Ratio',
+  countTypeSets: 'Sets',
+  countTypeTime: 'Time',
 };
 
 export default Verbs;

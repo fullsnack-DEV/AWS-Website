@@ -1,3 +1,4 @@
+/* eslint-disable */ 
 /* eslint-disable no-unused-vars */
 /* eslint-disable array-callback-return */
 /* eslint-disable consistent-return */
@@ -84,6 +85,7 @@ const getTabBarVisibility = (route) => {
     routeName === 'NewsFeedVideoPlayer' ||
     routeName === 'RegisterPlayer' ||
     routeName === 'RegisterPlayerForm2' ||
+    routeName === 'IncomingChallengeSettings' ||
     routeName === 'RegisterReferee' ||
     routeName === 'RegisterRefereeForm2' ||
     routeName === 'CreateTeamForm1' ||

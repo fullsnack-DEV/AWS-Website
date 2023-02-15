@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React from 'react';
 
 import {createStackNavigator} from '@react-navigation/stack';
@@ -38,6 +39,7 @@ import RegisterRefereeSuccess from '../screens/account/registerReferee/RegisterR
 import RegisterRefereeForm2 from '../screens/account/registerReferee/RegisterRefereeForm2';
 import RegisterReferee from '../screens/account/registerReferee/RegisterReferee';
 import RegisterPlayerForm2 from '../screens/account/registerPlayer/RegisterPlayerForm2';
+import IncomingChallengeSettings from '../screens/account/registerPlayer/IncomingChallengeSettings';
 import RegisterPlayer from '../screens/account/registerPlayer/RegisterPlayer';
 import RegisterScorekeeper from '../screens/account/registerScorekeeper/RegisterScorekeeper';
 import RegisterScorekeeperForm2 from '../screens/account/registerScorekeeper/RegisterScorekeeperForm2';
@@ -629,7 +631,7 @@ const LocalHomeNavigator = () => (
       name="RegisterPlayer"
       component={RegisterPlayer}
       options={{
-        title: 'Add Sport',
+        title: strings.registerAsPlayerTitle,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -645,7 +647,23 @@ const LocalHomeNavigator = () => (
       name="RegisterPlayerForm2"
       component={RegisterPlayerForm2}
       options={{
-        title: 'Add Sport',
+        title: strings.registerAsPlayerTitle,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="IncomingChallengeSettings"
+      component={IncomingChallengeSettings}
+      options={{
+        title: strings.registerAsPlayerTitle,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

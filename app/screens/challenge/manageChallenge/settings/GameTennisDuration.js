@@ -144,75 +144,90 @@ export default function GameTennisDuration({navigation, route}) {
   }, [comeFrom, navigation, matchSetting]);
 
   const saveUser = () => {
-    const bodyParams = {
-      sport: sportName,
-      sport_type: sportType,
-      entity_type: 'player',
-      score_rules: {
-        ...matchSetting,
-        winning_point_in_game: 4,
-        win_game_by_two_points: true,
-        // apply_duece_in_set: true,
-        // apply_duece_in_tiebreaker: true,
-      },
-    };
-
-    console.log('body params:=>', bodyParams);
-
-    setloading(true);
-    const registerdPlayerData =
-      authContext?.entity?.obj?.registered_sports?.filter((obj) => {
-        if (obj.sport === sportName && obj.sport_type === sportType) {
-          return null;
-        }
-        return obj;
+    if (sportType === 'single' && comeFrom === 'IncomingChallengeSettings') {
+      navigation.navigate(comeFrom, {
+        settingObj: {
+          score_rules: {
+            ...matchSetting,
+            winning_point_in_game: 4,
+            win_game_by_two_points: true,
+            // apply_duece_in_set: true,
+            // apply_duece_in_tiebreaker: true,
+          },
+        },
+        sportType,
+        sportName,
       });
+    } else {
+      const bodyParams = {
+        sport: sportName,
+        sport_type: sportType,
+        entity_type: 'player',
+        score_rules: {
+          ...matchSetting,
+          winning_point_in_game: 4,
+          win_game_by_two_points: true,
+          // apply_duece_in_set: true,
+          // apply_duece_in_tiebreaker: true,
+        },
+      };
 
-    let selectedSport = authContext?.entity?.obj?.registered_sports?.filter(
-      (obj) => obj?.sport === sportName && obj?.sport_type === sportType,
-    )[0];
+      setloading(true);
+      const registerdPlayerData =
+        authContext?.entity?.obj?.registered_sports?.filter((obj) => {
+          if (obj.sport === sportName && obj.sport_type === sportType) {
+            return null;
+          }
+          return obj;
+        });
 
-    selectedSport = {
-      ...selectedSport,
-      setting: {...selectedSport?.setting, ...bodyParams},
-    };
-    registerdPlayerData.push(selectedSport);
+      let selectedSport = authContext?.entity?.obj?.registered_sports?.filter(
+        (obj) => obj?.sport === sportName && obj?.sport_type === sportType,
+      )[0];
 
-    const body = {
-      ...authContext?.entity?.obj,
-      registered_sports: registerdPlayerData,
-    };
-    console.log('Body::::--->', body);
+      selectedSport = {
+        ...selectedSport,
+        setting: {...selectedSport?.setting, ...bodyParams},
+      };
+      registerdPlayerData.push(selectedSport);
 
-    patchPlayer(body, authContext)
-      .then(async (response) => {
-        if (response.status === true) {
+      const body = {
+        ...authContext?.entity?.obj,
+        registered_sports: registerdPlayerData,
+      };
+      console.log('Body::::--->', body);
+
+      patchPlayer(body, authContext)
+        .then(async (response) => {
+          if (response.status === true) {
+            setloading(false);
+            const entity = authContext.entity;
+            console.log('Register player response IS:: ', response.payload);
+            entity.auth.user = response.payload;
+            entity.obj = response.payload;
+            authContext.setEntity({...entity});
+            authContext.setUser(response.payload);
+            await Utility.setStorage('authContextUser', response.payload);
+            await Utility.setStorage('authContextEntity', {...entity});
+            navigation.navigate(comeFrom, {
+              settingObj: response.payload.registered_sports.filter(
+                (obj) =>
+                  obj.sport === sportName && obj.sport_type === sportType,
+              )[0].setting,
+            });
+          } else {
+            Alert.alert(strings.appName, response.messages);
+          }
+          console.log('RESPONSE IS:: ', response);
           setloading(false);
-          const entity = authContext.entity;
-          console.log('Register player response IS:: ', response.payload);
-          entity.auth.user = response.payload;
-          entity.obj = response.payload;
-          authContext.setEntity({...entity});
-          authContext.setUser(response.payload);
-          await Utility.setStorage('authContextUser', response.payload);
-          await Utility.setStorage('authContextEntity', {...entity});
-          navigation.navigate(comeFrom, {
-            settingObj: response.payload.registered_sports.filter(
-              (obj) => obj.sport === sportName && obj.sport_type === sportType,
-            )[0].setting,
-          });
-        } else {
-          Alert.alert(strings.appName, response.messages);
-        }
-        console.log('RESPONSE IS:: ', response);
-        setloading(false);
-      })
-      .catch((e) => {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
+        })
+        .catch((e) => {
+          setloading(false);
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
+    }
   };
 
   const saveTeam = () => {

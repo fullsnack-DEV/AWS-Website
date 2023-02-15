@@ -15,10 +15,12 @@ import {patchGroup} from '../../../../api/Groups';
 import Verbs from '../../../../Constants/Verbs';
 
 export default function Availibility({navigation, route}) {
-  const [comeFrom] = useState(route?.params?.comeFrom);
-  const [sportName] = useState(route?.params?.sportName);
-  const [sportType] = useState(route?.params?.sportType);
-  const [groupObj] = useState(route?.params?.groupObj);
+  // const [comeFrom] = useState(route?.params?.comeFrom);
+  // const [sportName] = useState(route?.params?.sportName);
+  // const [sportType] = useState(route?.params?.sportType);
+  // const [groupObj] = useState(route?.params?.groupObj);
+
+  const {comeFrom, sportName, sportType, groupObj} = route.params;
 
   console.log('groupObjgroupObjgroupObj', groupObj);
   const authContext = useContext(AuthContext);
@@ -60,64 +62,75 @@ export default function Availibility({navigation, route}) {
   ]);
 
   const saveUser = () => {
-    const bodyParams = {
-      sport: sportName,
-      sport_type: sportType,
-      entity_type: Verbs.entityTypePlayer,
-      availibility: acceptChallenge ? Verbs.on : Verbs.off,
-    };
-    setloading(true);
-
-    const registerdPlayerData =
-      authContext?.entity?.obj?.registered_sports?.filter((obj) => {
-        if (obj.sport === sportName && obj.sport_type === sportType) {
-          return null;
-        }
-        return obj;
+    if (sportType === 'single' && comeFrom === 'IncomingChallengeSettings') {
+      navigation.navigate(comeFrom, {
+        settingObj: {
+          availibility: acceptChallenge ? Verbs.on : Verbs.off,
+        },
+        sportType,
+        sportName,
       });
+    } else {
+      const bodyParams = {
+        sport: sportName,
+        sport_type: sportType,
+        entity_type: Verbs.entityTypePlayer,
+        availibility: acceptChallenge ? Verbs.on : Verbs.off,
+      };
+      setloading(true);
 
-    let selectedSport = authContext?.entity?.obj?.registered_sports?.filter(
-      (obj) => obj?.sport === sportName && obj?.sport_type === sportType,
-    )[0];
+      const registerdPlayerData =
+        authContext?.entity?.obj?.registered_sports?.filter((obj) => {
+          if (obj.sport === sportName && obj.sport_type === sportType) {
+            return null;
+          }
+          return obj;
+        });
 
-    selectedSport = {
-      ...selectedSport,
-      setting: {...selectedSport?.setting, ...bodyParams},
-    };
-    registerdPlayerData.push(selectedSport);
+      let selectedSport = authContext?.entity?.obj?.registered_sports?.filter(
+        (obj) => obj?.sport === sportName && obj?.sport_type === sportType,
+      )[0];
 
-    const body = {
-      ...authContext?.entity?.obj,
-      registered_sports: registerdPlayerData,
-    };
+      selectedSport = {
+        ...selectedSport,
+        setting: {...selectedSport?.setting, ...bodyParams},
+      };
+      registerdPlayerData.push(selectedSport);
 
-    patchPlayer(body, authContext)
-      .then(async (response) => {
-        if (response.status === true) {
+      const body = {
+        ...authContext?.entity?.obj,
+        registered_sports: registerdPlayerData,
+      };
+
+      patchPlayer(body, authContext)
+        .then(async (response) => {
+          if (response.status === true) {
+            setloading(false);
+            const entity = authContext.entity;
+            entity.auth.user = response.payload;
+            entity.obj = response.payload;
+            authContext.setEntity({...entity});
+            authContext.setUser(response.payload);
+            await Utility.setStorage('authContextUser', response.payload);
+            await Utility.setStorage('authContextEntity', {...entity});
+            navigation.navigate(comeFrom, {
+              settingObj: response?.payload?.registered_sports?.filter(
+                (obj) =>
+                  obj.sport === sportName && obj.sport_type === sportType,
+              )[0]?.setting,
+            });
+          } else {
+            Alert.alert(strings.appName, response.messages);
+          }
           setloading(false);
-          const entity = authContext.entity;
-          entity.auth.user = response.payload;
-          entity.obj = response.payload;
-          authContext.setEntity({...entity});
-          authContext.setUser(response.payload);
-          await Utility.setStorage('authContextUser', response.payload);
-          await Utility.setStorage('authContextEntity', {...entity});
-          navigation.navigate(comeFrom, {
-            settingObj: response?.payload?.registered_sports?.filter(
-              (obj) => obj.sport === sportName && obj.sport_type === sportType,
-            )[0]?.setting,
-          });
-        } else {
-          Alert.alert(strings.appName, response.messages);
-        }
-        setloading(false);
-      })
-      .catch((e) => {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
+        })
+        .catch((e) => {
+          setloading(false);
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
+    }
   };
 
   const saveTeam = () => {

@@ -278,89 +278,115 @@ export default function GameDuration({navigation, route}) {
   };
 
   const saveUser = () => {
-    const bodyParams = {
-      sport: sportName,
-      sport_type: sportType,
-      entity_type: 'player',
-      game_duration: {
-        period: period.map((e) => {
+    if (sportType === 'single' && comeFrom === 'IncomingChallengeSettings') {
+      const settingObj = {
+        game_duration: {
+          period: period.map((e) => {
+            delete e.id;
+            return e;
+          }),
+          first_period: firstPeriod,
+          details,
+        },
+      };
+      if (withOverTime) {
+        settingObj.game_duration.overtime = overTime.map((e) => {
           delete e.id;
           return e;
-        }),
-        first_period: firstPeriod,
-        details,
-      },
-    };
-    if (withOverTime) {
-      bodyParams.game_duration.overtime = overTime.map((e) => {
-        delete e.id;
-        return e;
-      });
-    } else {
-      delete bodyParams.game_duration.overtime;
-    }
-
-    bodyParams.game_duration.totalHours = calculateDuration().hours;
-    bodyParams.game_duration.totalMinutes = calculateDuration().minutes;
-    console.log('body params:=>', bodyParams);
-
-    setloading(true);
-    const registerdPlayerData =
-      authContext?.entity?.obj?.registered_sports?.filter((obj) => {
-        if (obj.sport === sportName && obj.sport_type === sportType) {
-          return null;
-        }
-        return obj;
-      });
-
-    let selectedSport = authContext?.entity?.obj?.registered_sports?.filter(
-      (obj) => obj?.sport === sportName && obj?.sport_type === sportType,
-    )[0];
-
-    selectedSport = {
-      ...selectedSport,
-      setting: {...selectedSport?.setting, ...bodyParams},
-    };
-    registerdPlayerData.push(selectedSport);
-
-    const body = {
-      ...authContext?.entity?.obj,
-      registered_sports: registerdPlayerData,
-    };
-    console.log('Body::::--->', body);
-    if (calculateDuration().hours > MAX_HOUR_LIMIT) {
-      Alert.alert(`Please enter less than ${MAX_HOUR_LIMIT} hours`);
-    } else {
-      patchPlayer(body, authContext)
-        .then(async (response) => {
-          if (response.status === true) {
-            setloading(false);
-            const entity = authContext.entity;
-            console.log('Register player response IS:: ', response.payload);
-            entity.auth.user = response.payload;
-            entity.obj = response.payload;
-            authContext.setEntity({...entity});
-            authContext.setUser(response.payload);
-            await Utility.setStorage('authContextUser', response.payload);
-            await Utility.setStorage('authContextEntity', {...entity});
-            navigation.navigate(comeFrom, {
-              settingObj: response.payload.registered_sports.filter(
-                (obj) =>
-                  obj.sport === sportName && obj.sport_type === sportType,
-              )[0].setting,
-            });
-          } else {
-            Alert.alert(strings.appName, response.messages);
-          }
-          console.log('RESPONSE IS:: ', response);
-          setloading(false);
-        })
-        .catch((e) => {
-          setloading(false);
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
         });
+      } else {
+        delete settingObj.game_duration.overtime;
+      }
+      navigation.navigate(comeFrom, {
+        settingObj,
+        sportType,
+        sportName,
+      });
+    } else {
+      const bodyParams = {
+        sport: sportName,
+        sport_type: sportType,
+        entity_type: 'player',
+        game_duration: {
+          period: period.map((e) => {
+            delete e.id;
+            return e;
+          }),
+          first_period: firstPeriod,
+          details,
+        },
+      };
+      if (withOverTime) {
+        bodyParams.game_duration.overtime = overTime.map((e) => {
+          delete e.id;
+          return e;
+        });
+      } else {
+        delete bodyParams.game_duration.overtime;
+      }
+
+      bodyParams.game_duration.totalHours = calculateDuration().hours;
+      bodyParams.game_duration.totalMinutes = calculateDuration().minutes;
+      console.log('body params:=>', bodyParams);
+
+      setloading(true);
+      const registerdPlayerData =
+        authContext?.entity?.obj?.registered_sports?.filter((obj) => {
+          if (obj.sport === sportName && obj.sport_type === sportType) {
+            return null;
+          }
+          return obj;
+        });
+
+      let selectedSport = authContext?.entity?.obj?.registered_sports?.filter(
+        (obj) => obj?.sport === sportName && obj?.sport_type === sportType,
+      )[0];
+
+      selectedSport = {
+        ...selectedSport,
+        setting: {...selectedSport?.setting, ...bodyParams},
+      };
+      registerdPlayerData.push(selectedSport);
+
+      const body = {
+        ...authContext?.entity?.obj,
+        registered_sports: registerdPlayerData,
+      };
+      console.log('Body::::--->', body);
+      if (calculateDuration().hours > MAX_HOUR_LIMIT) {
+        Alert.alert(`Please enter less than ${MAX_HOUR_LIMIT} hours`);
+      } else {
+        patchPlayer(body, authContext)
+          .then(async (response) => {
+            if (response.status === true) {
+              setloading(false);
+              const entity = authContext.entity;
+              console.log('Register player response IS:: ', response.payload);
+              entity.auth.user = response.payload;
+              entity.obj = response.payload;
+              authContext.setEntity({...entity});
+              authContext.setUser(response.payload);
+              await Utility.setStorage('authContextUser', response.payload);
+              await Utility.setStorage('authContextEntity', {...entity});
+              navigation.navigate(comeFrom, {
+                settingObj: response.payload.registered_sports.filter(
+                  (obj) =>
+                    obj.sport === sportName && obj.sport_type === sportType,
+                )[0].setting,
+              });
+            } else {
+              Alert.alert(strings.appName, response.messages);
+            }
+            console.log('RESPONSE IS:: ', response);
+            setloading(false);
+          })
+          .catch((e) => {
+            setloading(false);
+            setTimeout(() => {
+              Alert.alert(strings.alertmessagetitle, e.message);
+            }, 10);
+          });
+      }
     }
   };
 
