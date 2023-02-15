@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useContext, useRef} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import {
   View,
   Image,
@@ -44,7 +44,6 @@ export default function CreateTeamForm1({navigation, route}) {
   const [state, setState] = useState('');
   const [country, setCountry] = useState('');
   const [visibleLocationModal, setVisibleLocationModal] = useState(false);
-  const callchildfunc = useRef(null);
 
   useEffect(() => {
     if (isFocused) {
@@ -173,16 +172,15 @@ export default function CreateTeamForm1({navigation, route}) {
     }
   };
 
-  const handleSetLocationOptions = (location) => {
-    setCity(location.city);
-    setState(location.state);
-    setCountry(location.country);
+  const handleSetLocationOptions = (locations) => {
+    setCity(locations.city);
+    setState(locations.state);
+    setCountry(locations.country);
     setHomeCity(
-      [location.city, location.state, location.country]
+      [locations.city, locations.state, locations.country]
         .filter((v) => v)
         .join(', '),
     );
-    setVisibleLocationModal(!visibleLocationModal);
   };
 
   return (
@@ -220,7 +218,7 @@ export default function CreateTeamForm1({navigation, route}) {
           <TCLabel title={strings.homeCityTitleText} required={false} />
           <TouchableOpacity
             testID="choose-location-button"
-            onPress={() => callchildfunc.current()}>
+            onPress={() => setVisibleLocationModal(true)}>
             <TextInput
               placeholder={strings.searchCityPlaceholder}
               style={[styles.matchFeeTxt, {marginBottom: 5}]}
@@ -310,19 +308,15 @@ export default function CreateTeamForm1({navigation, route}) {
           />
         </View>
       </Modal>
-    
-    {/* location modal */}
+
+      {/* location modal */}
 
       <LocationModal
         visibleLocationModal={visibleLocationModal}
         title={strings.homeCityTitleText}
-        setVisibleLocationModalhandler={() =>
-          setVisibleLocationModal(!visibleLocationModal)
-        }
-        onLocationSelect={(location) => handleSetLocationOptions(location)}
-        callchild={callchildfunc}
+        setVisibleLocationModalhandler={() => setVisibleLocationModal(false)}
+        onLocationSelect={handleSetLocationOptions}
       />
     </>
   );
 }
-

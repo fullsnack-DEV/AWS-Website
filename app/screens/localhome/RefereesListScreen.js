@@ -16,9 +16,9 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   SafeAreaView,
-  Pressable
+  Pressable,
 } from 'react-native';
-import Icon  from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Modal from 'react-native-modal';
 import AuthContext from '../../auth/context';
 import * as Utility from '../../utils';
@@ -34,7 +34,8 @@ import TCTagsFilter from '../../components/TCTagsFilter';
 import {getGeocoordinatesWithPlaceName} from '../../utils/location';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import LocationContext from '../../context/LocationContext';
-import { locationType } from '../../utils/constant';
+import {locationType} from '../../utils/constant';
+import LocationModal from '../../components/LocationModal/LocationModal';
 
 let stopFetchMore = true;
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
@@ -46,10 +47,16 @@ export default function RefereesListScreen({navigation, route}) {
   const [filters, setFilters] = useState(route?.params?.filters);
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
   const [settingPopup, setSettingPopup] = useState(false);
-  /* eslint-disable */ 
-  const [locationFilterOpetion, setLocationFilterOpetion] = useState(locationContext?.selectedLocation.toUpperCase() ===
-  /* eslint-disable */ 
-authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocation === strings.worldTitleText ? 0 : 2);
+  /* eslint-disable */
+  const [locationFilterOpetion, setLocationFilterOpetion] = useState(
+    locationContext?.selectedLocation.toUpperCase() ===
+      /* eslint-disable */
+      authContext.entity.obj?.city?.toUpperCase()
+      ? 1
+      : locationContext?.selectedLocation === strings.worldTitleText
+      ? 0
+      : 2,
+  );
   const [sports, setSports] = useState([]);
   const [minFee, setMinFee] = useState(0);
   const [maxFee, setMaxFee] = useState(0);
@@ -64,11 +71,13 @@ authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocat
   });
   const [location, setLocation] = useState(route.params?.filters?.location);
   const [lastSelection, setLastSelection] = useState(0);
+  const [visibleLocationModal, setVisibleLocationModal] = useState(false);
+
   useEffect(() => {
-    if(settingPopup){
-      setLastSelection(locationFilterOpetion)
+    if (settingPopup) {
+      setLastSelection(locationFilterOpetion);
     }
-  },[settingPopup])
+  }, [settingPopup]);
 
   useEffect(() => {
     if (route.params?.locationText) {
@@ -269,23 +278,25 @@ authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocat
   };
 
   const getLocation = () => {
-
-    console.log('we are here')
+    console.log('we are here');
 
     setloading(true);
-    console.log('start location task')
+    console.log('start location task');
     getGeocoordinatesWithPlaceName(Platform.OS)
       .then((currentLocation) => {
-        console.log('result location task', currentLocation)
+        console.log('result location task', currentLocation);
         setloading(false);
-        if(currentLocation.position){
-          setLocation(currentLocation.city?.charAt(0).toUpperCase() + currentLocation.city?.slice(1));
+        if (currentLocation.position) {
+          setLocation(
+            currentLocation.city?.charAt(0).toUpperCase() +
+              currentLocation.city?.slice(1),
+          );
           setLocationFilterOpetion(2);
         }
       })
       .catch((e) => {
         setloading(false);
-        if(e.message !== strings.userdeniedgps){
+        if (e.message !== strings.userdeniedgps) {
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
@@ -337,15 +348,20 @@ authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocat
       sport: strings.allType,
       sport_type: strings.allType,
     });
-    setLocationFilterOpetion(locationContext?.selectedLocation.toUpperCase() ===
-    /* eslint-disable */ 
-    authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocation === strings.worldTitleText ? 0 : 2
-      );
+    setLocationFilterOpetion(
+      locationContext?.selectedLocation.toUpperCase() ===
+        /* eslint-disable */
+        authContext.entity.obj?.city?.toUpperCase()
+        ? 1
+        : locationContext?.selectedLocation === strings.worldTitleText
+        ? 0
+        : 2,
+    );
     setMinFee(0);
     setMaxFee(0);
   };
 
-  useEffect(() =>{
+  useEffect(() => {
     const tempFilter = {...filters};
     tempFilter.sport = selectedSport?.sport;
     tempFilter.location = location;
@@ -355,8 +371,7 @@ authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocat
     setPageFrom(0);
     setReferees([]);
     applyFilter(tempFilter);
-
-  },[location])
+  }, [location]);
 
   const renderSports = ({item}) => (
     <Pressable
@@ -368,24 +383,21 @@ authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocat
             sport_type: strings.allType,
           });
         } else {
-            setSelectedSport(
+          setSelectedSport(
             Utility.getSportObjectByName(item.value, authContext),
           );
         }
-           setVisibleSportsModal(false);
-      }
-      }>
+        setVisibleSportsModal(false);
+      }}>
       <View
         style={{
-          width:'100%',
+          width: '100%',
           padding: 20,
           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'space-between',
         }}>
-        <Text style={styles.languageList}>
-          {item.value}
-        </Text>
+        <Text style={styles.languageList}>{item.value}</Text>
         <View style={styles.checkbox}>
           {selectedSport?.sport.toLowerCase() === item.value.toLowerCase() ? (
             <Image
@@ -410,6 +422,11 @@ authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocat
       <View style={styles.handleStyle} />
     </View>
   );
+
+  const handleSetLocationOptions = (location) => {
+    setLocation(location.city);
+  };
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <ActivityLoader visible={loading} />
@@ -464,8 +481,15 @@ authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocat
         }}
         ListEmptyComponent={listEmptyComponent}
       />
+      {/* note */}
+
       <Modal
-        onBackdropPress={() => {{setLocationFilterOpetion(lastSelection) ; setSettingPopup(false)}}}
+        onBackdropPress={() => {
+          {
+            setLocationFilterOpetion(lastSelection);
+            setSettingPopup(false);
+          }
+        }}
         style={{
           margin: 0,
         }}
@@ -486,7 +510,12 @@ authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocat
             <ScrollView style={{flex: 1}}>
               <View style={styles.viewsContainer}>
                 <Text
-                  onPress={() => {{setLocationFilterOpetion(lastSelection) ; setSettingPopup(false)}}}
+                  onPress={() => {
+                    {
+                      setLocationFilterOpetion(lastSelection);
+                      setSettingPopup(false);
+                    }
+                  }}
                   style={styles.cancelText}>
                   {strings.cancel}
                 </Text>
@@ -496,36 +525,34 @@ authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocat
                   onPress={() => {
                     if (applyValidation()) {
                       setSettingPopup(false);
-                        const tempFilter = {...filters};
-                        tempFilter.sport = selectedSport.sport;
-                        tempFilter.sport_type = selectedSport.sport_type;
+                      const tempFilter = {...filters};
+                      tempFilter.sport = selectedSport.sport;
+                      tempFilter.sport_type = selectedSport.sport_type;
 
-                        if(locationFilterOpetion === 0){
-                          setLocation(strings.worldTitleText);
-                          tempFilter.location = location;
-     
-                         } else if (locationFilterOpetion === 1) {
-                           setLocation(
-                             authContext?.entity?.obj?.city
-                               .charAt(0)
-                               .toUpperCase() +
-                               authContext?.entity?.obj?.city.slice(1),
-                           );
-                           tempFilter.location = location;
-     
-                         } else if (locationFilterOpetion === 2) {
-                             getLocation();
-                           tempFilter.location = location;
-                         }
-                        if (minFee && maxFee) {
-                          tempFilter.refereeFee = `${minFee}-${maxFee}`;
-                        }
-                        setFilters({
-                          ...tempFilter,
-                        });
-                        setPageFrom(0);
-                        setReferees([]);
-                        applyFilter(tempFilter);
+                      if (locationFilterOpetion === 0) {
+                        setLocation(strings.worldTitleText);
+                        tempFilter.location = location;
+                      } else if (locationFilterOpetion === 1) {
+                        setLocation(
+                          authContext?.entity?.obj?.city
+                            .charAt(0)
+                            .toUpperCase() +
+                            authContext?.entity?.obj?.city.slice(1),
+                        );
+                        tempFilter.location = location;
+                      } else if (locationFilterOpetion === 2) {
+                        getLocation();
+                        tempFilter.location = location;
+                      }
+                      if (minFee && maxFee) {
+                        tempFilter.refereeFee = `${minFee}-${maxFee}`;
+                      }
+                      setFilters({
+                        ...tempFilter,
+                      });
+                      setPageFrom(0);
+                      setReferees([]);
+                      applyFilter(tempFilter);
                     }
                   }}>
                   {strings.apply}
@@ -540,8 +567,7 @@ authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocat
                     </Text>
                   </View>
                   <View style={{marginTop: 10}}>
-
-                  <View
+                    <View
                       style={{
                         flexDirection: 'row',
                         marginBottom: 10,
@@ -552,7 +578,9 @@ authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocat
                       </Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
-                          setLocationFilterOpetion(locationType.CURRENT_LOCATION)
+                          setLocationFilterOpetion(
+                            locationType.CURRENT_LOCATION,
+                          );
                         }}>
                         <Image
                           source={
@@ -614,10 +642,8 @@ authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocat
                     <TouchableWithoutFeedback
                       onPress={() => {
                         setLocationFilterOpetion(locationType.SEARCH_CITY);
-                        setSettingPopup(false);
-                        navigation.navigate('SearchCityScreen', {
-                          comeFrom: 'RefereesListScreen',
-                        });
+
+                        setVisibleLocationModal(true);
                       }}>
                       <View
                         style={{
@@ -627,6 +653,7 @@ authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocat
                         <View style={styles.searchCityContainer}>
                           <Text style={styles.searchCityText}>
                             {route?.params?.locationText ||
+                              location ||
                               strings.searchCityText}
                           </Text>
                         </View>
@@ -655,37 +682,49 @@ authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocat
                       justifyContent: 'space-between',
                     }}>
                     <View>
-                      <Text style={styles.filterTitleBold}>{strings.sport}</Text>
+                      <Text style={styles.filterTitleBold}>
+                        {strings.sport}
+                      </Text>
                     </View>
                     <View style={{marginTop: 10}}>
-
-
-                    <View
-                      style={[{
-                        marginBottom: 10,
-                        justifyContent: 'flex-start',
-                      }, styles.sportsContainer]}>
-                      <TouchableWithoutFeedback
-                        onPress={() => {
-                          setVisibleSportsModal(true)
-                        }}>
-                        <View
-                        style={{
-                          flexDirection: 'row',
-                          justifyContent: 'flex-start',
-                        }}>
-                        <View >
-                          <Text style={styles.searchCityText}>
-                          {selectedSport?.sport_name ?? strings.allType}
-                          </Text>
-                        </View>
-                        <View style={{position:'absolute', right:0, alignItems:'center', justifyContent:'center'}}>
-                        <Icon size={24} color="black" name="chevron-down" />
-                        </View>
+                      <View
+                        style={[
+                          {
+                            marginBottom: 10,
+                            justifyContent: 'flex-start',
+                          },
+                          styles.sportsContainer,
+                        ]}>
+                        <TouchableWithoutFeedback
+                          onPress={() => {
+                            setVisibleSportsModal(true);
+                          }}>
+                          <View
+                            style={{
+                              flexDirection: 'row',
+                              justifyContent: 'flex-start',
+                            }}>
+                            <View>
+                              <Text style={styles.searchCityText}>
+                                {selectedSport?.sport_name ?? strings.allType}
+                              </Text>
+                            </View>
+                            <View
+                              style={{
+                                position: 'absolute',
+                                right: 0,
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                              }}>
+                              <Icon
+                                size={24}
+                                color="black"
+                                name="chevron-down"
+                              />
+                            </View>
+                          </View>
+                        </TouchableWithoutFeedback>
                       </View>
-                      </TouchableWithoutFeedback>
-                    </View>
-
                     </View>
                   </View>
                 </View>
@@ -895,54 +934,62 @@ authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocat
             }}>
             <Text style={styles.resetTitle}>{strings.resetTitleText}</Text>
           </TouchableOpacity>
-          <Modal
-        isVisible={visibleSportsModal}
-        onBackdropPress={() => setVisibleSportsModal(false)}
-        onRequestClose={() => setVisibleSportsModal(false)}
-        animationInTiming={300}
-        animationOutTiming={800}
-        backdropTransitionInTiming={300}
-        backdropTransitionOutTiming={800}
-        style={{
-          margin: 0,
-        }}>
-        <View
-        behavior='position'
-          style={{
-            width: '100%',
-            height: Dimensions.get('window').height - 75,
-            maxHeight:Dimensions.get('window').height - 75,
-            backgroundColor: 'white',
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            borderTopLeftRadius: 30,
-            borderTopRightRadius: 30,
-            shadowColor: '#000',
-            shadowOffset: {width: 0, height: 1},
-            shadowOpacity: 0.5,
-            shadowRadius: 5,
-            elevation: 15,
-          }}>
-            {ModalHeader()}
-          <View
-            style={{
-              flexDirection: 'row',
-              paddingHorizontal: 15,
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}>
-            
-          </View>
-          <View style={styles.separatorLine} />
-          <FlatList
-            ItemSeparatorComponent={() => <TCThinDivider />}
-            data={sports}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={renderSports}
+
+          <LocationModal
+            visibleLocationModal={visibleLocationModal}
+            title={strings.homeCityTitleText}
+            setVisibleLocationModalhandler={() =>
+              setVisibleLocationModal(false)
+            }
+            onLocationSelect={handleSetLocationOptions}
           />
-        </View>
-      </Modal>
+
+          <Modal
+            isVisible={visibleSportsModal}
+            onBackdropPress={() => setVisibleSportsModal(false)}
+            onRequestClose={() => setVisibleSportsModal(false)}
+            animationInTiming={300}
+            animationOutTiming={800}
+            backdropTransitionInTiming={300}
+            backdropTransitionOutTiming={800}
+            style={{
+              margin: 0,
+            }}>
+            <View
+              behavior="position"
+              style={{
+                width: '100%',
+                height: Dimensions.get('window').height - 75,
+                maxHeight: Dimensions.get('window').height - 75,
+                backgroundColor: 'white',
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                borderTopLeftRadius: 30,
+                borderTopRightRadius: 30,
+                shadowColor: '#000',
+                shadowOffset: {width: 0, height: 1},
+                shadowOpacity: 0.5,
+                shadowRadius: 5,
+                elevation: 15,
+              }}>
+              {ModalHeader()}
+              <View
+                style={{
+                  flexDirection: 'row',
+                  paddingHorizontal: 15,
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}></View>
+              <View style={styles.separatorLine} />
+              <FlatList
+                ItemSeparatorComponent={() => <TCThinDivider />}
+                data={sports}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={renderSports}
+              />
+            </View>
+          </Modal>
         </View>
         {/* <DateTimePickerView
           date={new Date()}
@@ -1130,7 +1177,7 @@ const styles = StyleSheet.create({
     width: widthPercentageToDP('75%'),
     justifyContent: 'center',
   },
-  sportsContainer:{
+  sportsContainer: {
     backgroundColor: colors.lightGrey,
     borderRadius: 5,
     height: 40,
@@ -1162,8 +1209,7 @@ const styles = StyleSheet.create({
     fontSize: widthPercentageToDP('3.8%'),
     width: widthPercentageToDP('75%'),
   },
-  listItem: {
-  },
+  listItem: {},
 
   languageList: {
     color: colors.lightBlackColor,

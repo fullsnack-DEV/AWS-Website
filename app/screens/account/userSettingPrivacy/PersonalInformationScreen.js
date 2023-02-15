@@ -45,7 +45,6 @@ export default function PersonalInformationScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const actionSheet = useRef();
   const isFocused = useIsFocused();
-  const callchildfunc = useRef(null);
 
   const actionSheetWithDelete = useRef();
   /* For activity indigator */
@@ -127,7 +126,6 @@ export default function PersonalInformationScreen({navigation, route}) {
     setCity(location.city);
     setState(location.state);
     setCountry(location.country);
-    setLocationPopup(!locationPopup);
   };
 
   // Form Validation
@@ -463,7 +461,7 @@ export default function PersonalInformationScreen({navigation, route}) {
         <View style={styles.fieldView}>
           <TCLabel title={strings.currentCity} required={true} />
 
-          <TouchableOpacity onPress={() => callchildfunc.current()}>
+          <TouchableOpacity onPress={() => setLocationPopup(true)}>
             <TextInput
               placeholder={strings.searchCityPlaceholder}
               style={{
@@ -498,9 +496,8 @@ export default function PersonalInformationScreen({navigation, route}) {
       <LocationModal
         visibleLocationModal={locationPopup}
         title={strings.homeCityTitleText}
-        onLocationSelect={(location) => handleSetLocationOptions(location)}
-        setVisibleLocationModalhandler={() => setLocationPopup(!locationPopup)}
-        callchild={callchildfunc}
+        onLocationSelect={handleSetLocationOptions}
+        setVisibleLocationModalhandler={() => setLocationPopup(false)}
       />
 
       <ActionSheet

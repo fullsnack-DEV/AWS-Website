@@ -74,6 +74,7 @@ import ActivityLoader from '../../components/loader/ActivityLoader';
 import {getQBAccountType, QBupdateUser} from '../../utils/QuickBlox';
 import Verbs from '../../Constants/Verbs';
 import {getGeocoordinatesWithPlaceName} from '../../utils/location';
+import LocationModal from '../../components/LocationModal/LocationModal';
 
 const defaultPageSize = 10;
 export default function LocalHomeScreen({navigation, route}) {
@@ -110,8 +111,10 @@ export default function LocalHomeScreen({navigation, route}) {
   const [referees, setReferees] = useState([]);
   const [scorekeepers, setScorekeepers] = useState([]);
   const [image_base_url, setImageBaseUrl] = useState();
-
+  const [visibleLocationModal, setVisibleLocationModal] = useState(false);
   const [pointEvent, setPointEvent] = useState('auto');
+  const [locationSelectedViaModal, setLocationSelectedViaModal] =
+    useState(false);
 
   const [filters, setFilters] = useState({
     sport: selectedSport,
@@ -265,7 +268,7 @@ export default function LocalHomeScreen({navigation, route}) {
   }, [authContext, isFocused]);
 
   useEffect(() => {
-    locationContext.setSelectedLoaction(location)
+    locationContext.setSelectedLoaction(location);
     getShortsList(
       location === strings.worldTitleText ? '_world_' : location,
       authContext,
@@ -750,9 +753,10 @@ export default function LocalHomeScreen({navigation, route}) {
   );
 
   const keyExtractor = useCallback((item, index) => index.toString(), []);
-  const renderRecentMatchItems = useCallback(({item}) =>  (
-    <View style={{marginBottom: 15}}>
-      <TCRecentMatchCard
+  const renderRecentMatchItems = useCallback(
+    ({item}) => (
+      <View style={{marginBottom: 15}}>
+        <TCRecentMatchCard
           data={item}
           cardWidth={'92%'}
           onPress={() => {
@@ -762,8 +766,10 @@ export default function LocalHomeScreen({navigation, route}) {
             if (routeName) navigation.push(routeName, {gameId: item?.game_id});
           }}
         />
-    </View>
-    ), []);
+      </View>
+    ),
+    [],
+  );
 
   const renderGameItems = useCallback(
     ({item}) => (
@@ -1177,6 +1183,12 @@ export default function LocalHomeScreen({navigation, route}) {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
+  };
+
+  const handleSetLocationOptions = (locations) => {
+    setLocation(locations.city);
+    setLocationSelectedViaModal(true);
+    setLocationPopup(false);
   };
 
   return (
@@ -1615,8 +1627,7 @@ export default function LocalHomeScreen({navigation, route}) {
               }, 300);
             }}>
             {selectedLocationOption === 0 ? (
-              <View
-                style={styles.backgroundViewSelected}>
+              <View style={styles.backgroundViewSelected}>
                 <Text
                   style={[
                     styles.curruentLocationText,
@@ -1633,6 +1644,16 @@ export default function LocalHomeScreen({navigation, route}) {
               </View>
             )}
           </TouchableWithoutFeedback>
+
+          <LocationModal
+            visibleLocationModal={visibleLocationModal}
+            title={strings.homeCityTitleText}
+            setVisibleLocationModalhandler={() =>
+              setVisibleLocationModal(false)
+            }
+            onLocationSelect={handleSetLocationOptions}
+          />
+
           <TouchableWithoutFeedback
             onPress={() => {
               setSelectedLocationOption(1);
@@ -1652,9 +1673,12 @@ export default function LocalHomeScreen({navigation, route}) {
               }, 300);
             }}>
             {selectedLocationOption === 1 ? (
-              <View
-                style={styles.backgroundViewSelected}>
-                <Text style={[styles.myCityText, {color: colors.orangeGradientColor}]}>
+              <View style={styles.backgroundViewSelected}>
+                <Text
+                  style={[
+                    styles.myCityText,
+                    {color: colors.orangeGradientColor},
+                  ]}>
                   {strings.homeCityText}
                 </Text>
               </View>
@@ -1679,9 +1703,12 @@ export default function LocalHomeScreen({navigation, route}) {
               }, 300);
             }}>
             {selectedLocationOption === 2 ? (
-              <View
-                style={styles.backgroundViewSelected}>
-                <Text style={[styles.worldText, {color: colors.orangeGradientColor}]}>
+              <View style={styles.backgroundViewSelected}>
+                <Text
+                  style={[
+                    styles.worldText,
+                    {color: colors.orangeGradientColor},
+                  ]}>
                   {strings.world}
                 </Text>
               </View>
@@ -1693,16 +1720,64 @@ export default function LocalHomeScreen({navigation, route}) {
           </TouchableWithoutFeedback>
           <Text style={styles.orText}>{strings.OrCaps}</Text>
 
-          <TouchableOpacity
+          {locationSelectedViaModal ? (
+            <>
+              {selectedLocationOption === 3 ? (
+                <Pressable
+                  onPress={() => {
+                    setSelectedLocationOption(3);
+                    setVisibleLocationModal(true);
+                  }}
+                  style={[
+                    styles.backgroundViewSelected,
+                    {alignItems: 'center'},
+                  ]}>
+                  <Text
+                    style={[
+                      styles.worldText,
+                      {color: colors.orangeGradientColor},
+                    ]}>
+                    {location}
+                  </Text>
+
+                  <Text style={styles.chnageWordText}>
+                    {strings.changecapital}
+                  </Text>
+                </Pressable>
+              ) : (
+                <Pressable
+                  style={styles.backgroundView}
+                  onPress={() => {
+                    setSelectedLocationOption(3);
+                    setVisibleLocationModal(true);
+                  }}>
+                  <Text style={styles.worldText}>{location}</Text>
+                  <Text style={styles.chnageWordText}>
+                    {strings.changecapital}
+                  </Text>
+                </Pressable>
+              )}
+            </>
+          ) : (
+            <>
+              <Pressable
+                style={styles.sectionStyle}
+                onPress={() => {
+                  setSelectedLocationOption(3);
+                  setVisibleLocationModal(true);
+                }}>
+                <Text style={styles.searchText}>{strings.searchTitle}</Text>
+              </Pressable>
+            </>
+          )}
+
+          {/* <Pressable
             style={styles.sectionStyle}
             onPress={() => {
-              setLocationPopup(false);
-              navigation.navigate('SearchCityScreen', {
-                comeFrom: 'LocalHomeScreen',
-              });
+              setVisibleLocationModal(true);
             }}>
             <Text style={styles.searchText}>{strings.searchTitle}</Text>
-          </TouchableOpacity>
+          </Pressable> */}
         </View>
       </Modal>
       <Modal
@@ -1833,8 +1908,8 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     backgroundColor: colors.whiteColor,
     borderRadius: 8,
-    borderWidth:3,
-    borderColor:colors.orangeGradientColor,
+    borderWidth: 3,
+    borderColor: colors.orangeGradientColor,
     elevation: 5,
     flexDirection: 'row',
     height: 50,
@@ -1884,6 +1959,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
+  },
+
+  chnageWordText: {
+    fontSize: 12,
+    position: 'absolute',
+    right: 18,
+
+    color: colors.userPostTimeColor,
   },
 
   moreText: {

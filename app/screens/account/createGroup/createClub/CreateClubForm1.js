@@ -11,7 +11,6 @@ import {
   FlatList,
   TouchableWithoutFeedback,
   Dimensions,
-  Keyboard,
 } from 'react-native';
 
 import Modal from 'react-native-modal';
@@ -27,11 +26,9 @@ import TCGradientButton from '../../../../components/TCGradientButton';
 import TCLabel from '../../../../components/TCLabel';
 import TCThinDivider from '../../../../components/TCThinDivider';
 import {getHitSlop, getSportName} from '../../../../utils';
-import {
-  searchCityState,
-  searchLocationPlaceDetail,
-} from '../../../../api/External';
+
 import styles from './style';
+import LocationModal from '../../../../components/LocationModal/LocationModal';
 
 export default function CreateClubForm1({navigation}) {
   const isFocused = useIsFocused();
@@ -45,22 +42,12 @@ export default function CreateClubForm1({navigation}) {
   const [sportList, setSportList] = useState([]);
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
   const [visibleLocationModal, setVisibleLocationModal] = useState(false);
-
   const [selectedSports, setSelectedSports] = useState([]);
   const [sportsName, setSportsName] = useState('');
-
-  const [cityData, setCityData] = useState([]);
-  const [searchText, setSearchText] = useState('');
 
   useEffect(() => {
     getSports();
   }, [isFocused]);
-
-  useEffect(() => {
-    searchCityState(searchText).then((response) => {
-      setCityData(response.predictions);
-    });
-  }, [searchText]);
 
   const getSports = () => {
     let sportArr = [];
@@ -132,10 +119,6 @@ export default function CreateClubForm1({navigation}) {
     setVisibleSportsModal(!visibleSportsModal);
   };
 
-  const toggleLocationModal = () => {
-    setVisibleLocationModal(!visibleLocationModal);
-  };
-
   const onNextPressed = () => {
     const newArray = selectedSports.map((obj) => {
       delete obj.isChecked;
@@ -158,30 +141,14 @@ export default function CreateClubForm1({navigation}) {
     });
   };
 
-  const getTeamsData = async (item) => {
-    searchLocationPlaceDetail(item.place_id).then((response) => {
-      if (response) {
-        setCity(item?.terms?.[0]?.value ?? '');
-        setState(item?.terms?.[1]?.value ?? '');
-        setCountry(item?.terms?.[2]?.value ?? '');
-        setLocation(
-          `${item?.terms?.[0]?.value ?? ''}, ${
-            item?.terms?.[1]?.value ?? ''
-          }, ${item?.terms?.[2]?.value ?? ''}`,
-        );
-      }
-      setVisibleLocationModal(false);
-    });
-  };
-
-  const renderLocationItem = ({item, index}) => {
-    console.log('Location item:=>', item);
-    return (
-      <TouchableOpacity
-        style={styles.listItem}
-        onPress={() => getTeamsData(item)}>
-        <Text style={styles.cityList}>{cityData[index].description}</Text>
-      </TouchableOpacity>
+  const handleSetLocationOptions = (locations) => {
+    setCity(locations.city);
+    setState(locations.state);
+    setCountry(locations.country);
+    setLocation(
+      [locations.city, locations.state, locations.country]
+        .filter((v) => v)
+        .join(', '),
     );
   };
 
@@ -202,13 +169,7 @@ export default function CreateClubForm1({navigation}) {
 
           <View style={styles.fieldView}>
             <TCLabel title={strings.locationClubTitle} />
-            <TouchableOpacity
-              onPress={
-                // navigation.navigate('SearchLocationScreen', {
-                //   comeFrom: 'CreateClubForm1',
-                // })
-                toggleLocationModal
-              }>
+            <TouchableOpacity onPress={() => setVisibleLocationModal(true)}>
               <TextInput
                 placeholder={strings.searchCityPlaceholder}
                 style={styles.matchFeeTxt}
@@ -323,85 +284,14 @@ export default function CreateClubForm1({navigation}) {
           />
         </View>
       </Modal>
-      <Modal
-        isVisible={visibleLocationModal}
-        onBackdropPress={() => setVisibleLocationModal(false)}
-        onRequestClose={() => setVisibleLocationModal(false)}
-        animationInTiming={300}
-        animationOutTiming={800}
-        backdropTransitionInTiming={300}
-        backdropTransitionOutTiming={800}
-        style={{
-          margin: 0,
-        }}>
-        <View
-          style={{
-            width: '100%',
-            height: Dimensions.get('window').height / 1.3,
-            backgroundColor: 'white',
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            borderTopLeftRadius: 30,
-            borderTopRightRadius: 30,
-            shadowColor: '#000',
-            shadowOffset: {width: 0, height: 1},
-            shadowOpacity: 0.5,
-            shadowRadius: 5,
-            elevation: 15,
-          }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              paddingHorizontal: 15,
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}>
-            <TouchableOpacity
-              hitSlop={getHitSlop(15)}
-              style={styles.closeButton}
-              onPress={() => setVisibleLocationModal(false)}>
-              <Image source={images.cancelImage} style={styles.closeButton} />
-            </TouchableOpacity>
-            <Text
-              style={{
-                alignSelf: 'center',
-                marginVertical: 20,
-                fontSize: 16,
-                fontFamily: fonts.RBold,
-                color: colors.lightBlackColor,
-              }}>
-              {strings.locationTitleText}
-            </Text>
-            <TouchableOpacity
-              onPress={() => {
-                const filterChecked = sportList.filter((obj) => obj.isChecked);
-                setSelectedSports(filterChecked);
-                toggleModal();
-              }}></TouchableOpacity>
-          </View>
-          <View style={styles.separatorLine} />
-          <View>
-            <View style={styles.sectionStyle}>
-              <Image source={images.searchLocation} style={styles.searchImg} />
-              <TextInput
-                testID="choose-location-input"
-                style={styles.textInput}
-                placeholder={strings.locationPlaceholderText}
-                clearButtonMode="always"
-                placeholderTextColor={colors.grayColor}
-                onChangeText={(text) => setSearchText(text)}
-              />
-            </View>
-            <FlatList
-              data={cityData}
-              renderItem={renderLocationItem}
-              keyExtractor={(item, index) => index.toString()}
-              onScroll={Keyboard.dismiss}
-            />
-          </View>
-        </View>
-      </Modal>
+      {/* locationModal */}
+
+      <LocationModal
+        visibleLocationModal={visibleLocationModal}
+        title={strings.homeCityTitleText}
+        setVisibleLocationModalhandler={() => setVisibleLocationModal(false)}
+        onLocationSelect={handleSetLocationOptions}
+      />
     </>
   );
 }
