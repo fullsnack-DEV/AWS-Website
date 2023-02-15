@@ -23,7 +23,14 @@ export const searchCityState = async (query) =>
   makeAPIRequest({
     method: 'get',
     url: `https://maps.googleapis.com/maps/api/place/autocomplete/json?types=(cities)&input=${query}`,
-  });
+  });  
+
+  export const searchRegion = async (query) =>
+  makeAPIRequest({
+    method: 'get',
+    url: `https://maps.googleapis.com/maps/api/place/autocomplete/json?types=(regions)&input=${query}`,
+  }); 
+
 
 export const searchNearByCityState = async (radius, lat, long) =>
   axios({

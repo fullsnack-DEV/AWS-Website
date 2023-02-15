@@ -23,16 +23,19 @@ import {
 } from '../../utils/location';
 import ActivityLoader from '../loader/ActivityLoader';
 import Verbs from '../../Constants/Verbs';
-import {searchNearByCityState, searchCityState} from '../../api/External';
+import {
+  searchNearByCityState,
+  searchCityState,
+  searchRegion,
+} from '../../api/External';
 import locationModelStyles from './locationModelStyles';
 
 function LocationModal({
   visibleLocationModal,
-  SetNearbyCities,
   setVisibleLocationModalhandler,
-  callchild,
   title,
   onLocationSelect,
+  type,
 }) {
   const [searchText, setSearchText] = useState('');
   const [loading, setLoading] = useState(false);
@@ -47,9 +50,11 @@ function LocationModal({
   /*  used for search functions */
   useEffect(() => {
     setSelectedItem('');
+    let apiSearchtocall = '';
+    apiSearchtocall = type === 'country' ? searchRegion : searchCityState;
 
     if (searchText.length >= 3) {
-      searchCityState(searchText)
+      apiSearchtocall(searchText)
         .then((response) => {
           setNoData(false);
           setCityData(response.predictions);
@@ -68,12 +73,14 @@ function LocationModal({
   /* for call from parent to call child function  */
 
   useEffect(() => {
-    const calledFromParent = callchild;
-    calledFromParent.current = getGeoCoordinates;
-  }, [callchild]);
+    getGeoCoordinates();
+
+    return () => {};
+  }, []);
 
   const handleNearByCityData = (data) => {
-    SetNearbyCities(data);
+    setNearbyCities(data);
+    // SetNearbyCities(data);
   };
 
   const handleVisibleModal = () => {
@@ -81,6 +88,8 @@ function LocationModal({
   };
 
   const handleOnLocationSelect = (location) => {
+    setSearchText('');
+
     onLocationSelect(location);
 
     setVisibleLocationModalhandler();
@@ -159,47 +168,43 @@ function LocationModal({
   };
 
   const getGeoCoordinates = () => {
-    if (!visibleLocationModal) {
-      setLoading(true);
-      setUserDeniedLocPerm(false);
-      setSearchText('');
-      setCityData([]);
-      getGeocoordinatesWithPlaceName(Platform.OS)
-        .then((location) => {
-          setLocationFetch(true);
-          if (location.position) {
-            setCurrentLocation(location);
-            getNearbyCityData(
-              location.position.coords.latitude,
-              location.position.coords.longitude,
-              100,
-            );
-          } else {
-            setLoading(false);
-            setCurrentLocation(null);
-
-            handleVisibleModal();
-          }
-        })
-        .catch((e) => {
+    setLoading(true);
+    setUserDeniedLocPerm(false);
+    setSearchText('');
+    setCityData([]);
+    getGeocoordinatesWithPlaceName(Platform.OS)
+      .then((location) => {
+        setLocationFetch(true);
+        if (location.position) {
+          setCurrentLocation(location);
+          getNearbyCityData(
+            location.position.coords.latitude,
+            location.position.coords.longitude,
+            100,
+          );
+        } else {
           setLoading(false);
-          setLocationFetch(true);
-          if (e.name === Verbs.gpsErrorDeined) {
-            setCurrentLocation(null);
-            setUserDeniedLocPerm(true);
-          } else {
-            setTimeout(() => {
-              Alert.alert(
-                strings.alertmessagetitle,
-                `${e.message}(Location fetch`,
-              );
-            }, 10);
-          }
+          setCurrentLocation(null);
+
           handleVisibleModal();
-        });
-    } else {
-      handleVisibleModal();
-    }
+        }
+      })
+      .catch((e) => {
+        setLoading(false);
+        setLocationFetch(true);
+        if (e.name === Verbs.gpsErrorDeined) {
+          setCurrentLocation(null);
+          setUserDeniedLocPerm(true);
+        } else {
+          setTimeout(() => {
+            Alert.alert(
+              strings.alertmessagetitle,
+              `${e.message}(Location fetch`,
+            );
+          }, 10);
+        }
+        handleVisibleModal();
+      });
   };
 
   /* Rendering the Location Item */

@@ -2276,4 +2276,5 @@ export default {
     'en_Add at lease one venue that you will be able to secure for a match against a challenger at your expense. Please make sure to set up the check-in point for each venue.',
   warningTextForFee: 'en_Do you want to reconsider a',
   warningTextForFee1: 'en_match fee?',
+  changecapital: 'en_CHANGE',
 };

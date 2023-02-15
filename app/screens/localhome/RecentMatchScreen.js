@@ -1,6 +1,12 @@
 /* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable array-callback-return */
-import React, {useCallback, useState, useEffect, useContext} from 'react';
+import React, {
+  useCallback,
+  useState,
+  useEffect,
+  useContext,
+  useRef,
+} from 'react';
 import {
   View,
   StyleSheet,
@@ -15,9 +21,9 @@ import {
   TextInput,
   KeyboardAvoidingView,
   ScrollView,
-  Pressable
+  Pressable,
 } from 'react-native';
-import Icon  from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Modal from 'react-native-modal';
 import moment from 'moment';
 import AuthContext from '../../auth/context';
@@ -40,29 +46,36 @@ import TCRecentMatchCard from '../../components/TCRecentMatchCard';
 import {getGameHomeScreen} from '../../utils/gameUtils';
 import {getGeocoordinatesWithPlaceName} from '../../utils/location';
 import ActivityLoader from '../../components/loader/ActivityLoader';
-import { locationType } from '../../utils/constant';
+import {locationType} from '../../utils/constant';
+import LocationModal from '../../components/LocationModal/LocationModal';
 
 let stopFetchMore = true;
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
 
 export default function RecentMatchScreen({navigation, route}) {
-
   const [loading, setloading] = useState(false);
   const authContext = useContext(AuthContext);
   const locationContext = useContext(LocationContext);
   const [filters, setFilters] = useState(route?.params?.filters);
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
   const [settingPopup, setSettingPopup] = useState(false);
-  /* eslint-disable */ 
-  const [locationFilterOpetion, setLocationFilterOpetion] = useState(locationContext?.selectedLocation.toUpperCase() ===
-  /* eslint-disable */ 
-    authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocation === strings.worldTitleText ? 0 : 2);
+  /* eslint-disable */
+  const [locationFilterOpetion, setLocationFilterOpetion] = useState(
+    locationContext?.selectedLocation.toUpperCase() ===
+      /* eslint-disable */
+      authContext.entity.obj?.city?.toUpperCase()
+      ? 1
+      : locationContext?.selectedLocation === strings.worldTitleText
+      ? 0
+      : 2,
+  );
 
   const [sports, setSports] = useState([]);
 
   const [datePickerFor, setDatePickerFor] = useState();
   const [showFrom, setShowFrom] = useState(false);
   const [showTo, setShowTo] = useState(false);
+  const [visibleLocationModal, setVisibleLocationModal] = useState(false);
 
   const [fromDate, setFromDate] = useState(
     filters?.fromDate && new Date(filters?.fromDate),
@@ -87,16 +100,16 @@ export default function RecentMatchScreen({navigation, route}) {
     sport_type: route.params?.filters?.sport_type,
   });
   const [location, setLocation] = useState(route?.params?.filters?.location);
-  
+  const callchildfunc = useRef(null);
 
   console.log('Recent Match Filter:=>', filters);
 
   const [lastSelection, setLastSelection] = useState(0);
   useEffect(() => {
-    if(settingPopup){
-      setLastSelection(locationFilterOpetion)
+    if (settingPopup) {
+      setLastSelection(locationFilterOpetion);
     }
-  },[settingPopup])
+  }, [settingPopup]);
 
   useEffect(() => {
     if (route.params?.locationText) {
@@ -236,7 +249,7 @@ export default function RecentMatchScreen({navigation, route}) {
           },
         });
       }
-    
+
       // Recent match query
 
       getGameIndex(recentMatchQuery)
@@ -355,14 +368,17 @@ export default function RecentMatchScreen({navigation, route}) {
     getGeocoordinatesWithPlaceName(Platform.OS)
       .then((currentLocation) => {
         setloading(false);
-        if(currentLocation.position){
-          setLocation(currentLocation.city?.charAt(0).toUpperCase() + currentLocation.city?.slice(1));
+        if (currentLocation.position) {
+          setLocation(
+            currentLocation.city?.charAt(0).toUpperCase() +
+              currentLocation.city?.slice(1),
+          );
           setLocationFilterOpetion(2);
         }
       })
       .catch((e) => {
         setloading(false);
-        if(e.message !== strings.userdeniedgps){
+        if (e.message !== strings.userdeniedgps) {
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
@@ -474,15 +490,20 @@ export default function RecentMatchScreen({navigation, route}) {
       sport: strings.allType,
       sport_type: strings.allType,
     });
-    setLocationFilterOpetion(locationContext?.selectedLocation.toUpperCase() ===
-    /* eslint-disable */ 
-    authContext.entity.obj?.city?.toUpperCase() ? 1 : locationContext?.selectedLocation === strings.worldTitleText ? 0 : 2
-      );
+    setLocationFilterOpetion(
+      locationContext?.selectedLocation.toUpperCase() ===
+        /* eslint-disable */
+        authContext.entity.obj?.city?.toUpperCase()
+        ? 1
+        : locationContext?.selectedLocation === strings.worldTitleText
+        ? 0
+        : 2,
+    );
     setFromDate();
     setToDate();
   };
 
-  useEffect(() =>{
+  useEffect(() => {
     const tempFilter = {...filters};
     tempFilter.sport = selectedSport?.sport ?? strings.allType;
     tempFilter.location = location;
@@ -492,8 +513,7 @@ export default function RecentMatchScreen({navigation, route}) {
     setPageFrom(0);
     setRecentMatch([]);
     applyFilter(tempFilter);
-
-  },[location])
+  }, [location]);
 
   const renderSports = ({item}) => (
     <Pressable
@@ -505,24 +525,21 @@ export default function RecentMatchScreen({navigation, route}) {
             sport_type: strings.allType,
           });
         } else {
-            setSelectedSport(
+          setSelectedSport(
             Utility.getSportObjectByName(item.value, authContext),
           );
         }
-           setVisibleSportsModal(false);
-      }
-      }>
+        setVisibleSportsModal(false);
+      }}>
       <View
         style={{
-          width:'100%',
+          width: '100%',
           padding: 20,
           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'space-between',
         }}>
-        <Text style={styles.languageList}>
-          {item.value}
-        </Text>
+        <Text style={styles.languageList}>{item.value}</Text>
         <View style={styles.checkbox}>
           {selectedSport?.sport.toLowerCase() === item.value.toLowerCase() ? (
             <Image
@@ -547,6 +564,10 @@ export default function RecentMatchScreen({navigation, route}) {
       <View style={styles.handleStyle} />
     </View>
   );
+
+  const handleSetLocationOptions = (location) => {
+    setLocation(location.city);
+  };
 
   return (
     <View>
@@ -587,8 +608,13 @@ export default function RecentMatchScreen({navigation, route}) {
         }}
         ListEmptyComponent={listEmptyComponent}
       />
+      {/* note */}
+
       <Modal
-        onBackdropPress={() => {setLocationFilterOpetion(lastSelection) ; setSettingPopup(false)}}
+        onBackdropPress={() => {
+          setLocationFilterOpetion(lastSelection);
+          setSettingPopup(false);
+        }}
         style={{
           margin: 0,
         }}
@@ -609,7 +635,10 @@ export default function RecentMatchScreen({navigation, route}) {
             <ScrollView style={{flex: 1}}>
               <View style={styles.viewsContainer}>
                 <Text
-                  onPress={() => {setLocationFilterOpetion(lastSelection) ; setSettingPopup(false)}}
+                  onPress={() => {
+                    setLocationFilterOpetion(lastSelection);
+                    setSettingPopup(false);
+                  }}
                   style={styles.cancelText}>
                   {strings.cancel}
                 </Text>
@@ -617,58 +646,54 @@ export default function RecentMatchScreen({navigation, route}) {
                 <Text
                   style={styles.doneText}
                   onPress={() => {
-                      const tempFilter = {...filters};
-                      tempFilter.sport = selectedSport?.sport ?? strings.allType;
-                      tempFilter.sport_type = selectedSport?.sport_type  ?? strings.allType;
+                    const tempFilter = {...filters};
+                    tempFilter.sport = selectedSport?.sport ?? strings.allType;
+                    tempFilter.sport_type =
+                      selectedSport?.sport_type ?? strings.allType;
 
-                      if(locationFilterOpetion === 0){
-                        setLocation(strings.worldTitleText);
-                        tempFilter.location = location;
-   
-                       } else if (locationFilterOpetion === 1) {
-                         setLocation(
-                           authContext?.entity?.obj?.city
-                             .charAt(0)
-                             .toUpperCase() +
-                             authContext?.entity?.obj?.city.slice(1),
-                         );
-                         tempFilter.location = location;
-   
-                       } else if (locationFilterOpetion === 2) {
-                           getLocation();
-                         tempFilter.location = location;
-                       }
+                    if (locationFilterOpetion === 0) {
+                      setLocation(strings.worldTitleText);
+                      tempFilter.location = location;
+                    } else if (locationFilterOpetion === 1) {
+                      setLocation(
+                        authContext?.entity?.obj?.city.charAt(0).toUpperCase() +
+                          authContext?.entity?.obj?.city.slice(1),
+                      );
+                      tempFilter.location = location;
+                    } else if (locationFilterOpetion === 2) {
+                      getLocation();
+                      tempFilter.location = location;
+                    }
 
-                      if (fromDate) {
-                        tempFilter.fromDate =
-                          moment(fromDate).format('MM/DD/YYYY hh:mm a');
-                      } else {
-                        delete tempFilter.fromDate;
-                      }
-                      if (toDate) {
-                        tempFilter.toDate =
-                          moment(toDate).format('MM/DD/YYYY hh:mm a');
-                      } else {
-                        delete tempFilter.toDate;
-                      }
-                      if (selectedEntity && isSelected) {
-                        tempFilter.entityName =
-                          selectedEntity?.group_name ??
-                          selectedEntity?.full_name;
-                        tempFilter.entityID =
-                          selectedEntity?.group_id ?? selectedEntity?.full_id;
-                      } else {
-                        delete tempFilter.entityName;
-                        delete tempFilter.entityID;
-                      }
-                      setFilters({
-                        ...tempFilter,
-                      });
+                    if (fromDate) {
+                      tempFilter.fromDate =
+                        moment(fromDate).format('MM/DD/YYYY hh:mm a');
+                    } else {
+                      delete tempFilter.fromDate;
+                    }
+                    if (toDate) {
+                      tempFilter.toDate =
+                        moment(toDate).format('MM/DD/YYYY hh:mm a');
+                    } else {
+                      delete tempFilter.toDate;
+                    }
+                    if (selectedEntity && isSelected) {
+                      tempFilter.entityName =
+                        selectedEntity?.group_name ?? selectedEntity?.full_name;
+                      tempFilter.entityID =
+                        selectedEntity?.group_id ?? selectedEntity?.full_id;
+                    } else {
+                      delete tempFilter.entityName;
+                      delete tempFilter.entityID;
+                    }
+                    setFilters({
+                      ...tempFilter,
+                    });
 
-                      setPageFrom(0);
-                      setRecentMatch([]);
-                      applyFilter(tempFilter);
-                      setSettingPopup(false);
+                    setPageFrom(0);
+                    setRecentMatch([]);
+                    applyFilter(tempFilter);
+                    setSettingPopup(false);
                   }}>
                   {strings.apply}
                 </Text>
@@ -677,19 +702,25 @@ export default function RecentMatchScreen({navigation, route}) {
               <View>
                 <View style={{flexDirection: 'column', margin: 15}}>
                   <View>
-                    <Text style={styles.filterTitleBold}>{strings.locationTitleText}</Text>
+                    <Text style={styles.filterTitleBold}>
+                      {strings.locationTitleText}
+                    </Text>
                   </View>
                   <View style={{marginTop: 10}}>
-                  <View
+                    <View
                       style={{
                         flexDirection: 'row',
                         marginBottom: 10,
                         justifyContent: 'space-between',
                       }}>
-                      <Text style={styles.filterTitle}>{strings.locationTitle}</Text>
+                      <Text style={styles.filterTitle}>
+                        {strings.locationTitle}
+                      </Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
-                          setLocationFilterOpetion(locationType.CURRENT_LOCATION)
+                          setLocationFilterOpetion(
+                            locationType.CURRENT_LOCATION,
+                          );
                         }}>
                         <Image
                           source={
@@ -708,7 +739,9 @@ export default function RecentMatchScreen({navigation, route}) {
                         marginBottom: 10,
                         justifyContent: 'space-between',
                       }}>
-                      <Text style={styles.filterTitle}>{strings.homeCityText}</Text>
+                      <Text style={styles.filterTitle}>
+                        {strings.homeCityText}
+                      </Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(locationType.HOME_CITY);
@@ -749,10 +782,12 @@ export default function RecentMatchScreen({navigation, route}) {
                     <TouchableWithoutFeedback
                       onPress={() => {
                         setLocationFilterOpetion(locationType.SEARCH_CITY);
-                        setSettingPopup(false);
-                        navigation.navigate('SearchCityScreen', {
-                          comeFrom: 'RecentMatchScreen',
-                        });
+                        // setSettingPopup(false);
+                        // navigation.navigate('SearchCityScreen', {
+                        //   comeFrom: 'RecentMatchScreen',
+                        // });
+                        //callchildfunc.current();
+                        setVisibleLocationModal(true);
                       }}>
                       <View
                         style={{
@@ -761,7 +796,9 @@ export default function RecentMatchScreen({navigation, route}) {
                         }}>
                         <View style={styles.searchCityContainer}>
                           <Text style={styles.searchCityText}>
-                            {route?.params?.locationText || strings.searchCityText}
+                            {route?.params?.locationText ||
+                              location ||
+                              strings.searchCityText}
                           </Text>
                         </View>
                         <View
@@ -789,36 +826,49 @@ export default function RecentMatchScreen({navigation, route}) {
                       justifyContent: 'space-between',
                     }}>
                     <View style={{}}>
-                      <Text style={styles.filterTitleBold}>{strings.sportsEventsTitle}</Text>
+                      <Text style={styles.filterTitleBold}>
+                        {strings.sportsEventsTitle}
+                      </Text>
                     </View>
                     <View style={{marginTop: 10}}>
-                     
-                    <View
-                      style={[{
-                        marginBottom: 10,
-                        justifyContent: 'flex-start',
-                      }, styles.sportsContainer]}>
-                      <TouchableWithoutFeedback
-                        onPress={() => {
-                          setVisibleSportsModal(true)
-                        }}>
-                        <View
-                        style={{
-                          flexDirection: 'row',
-                          justifyContent: 'flex-start',
-                        }}>
-                        <View >
-                          <Text style={styles.searchCityText}>
-                          {selectedSport?.sport_name ?? strings.allType}
-                          </Text>
-                        </View>
-                        <View style={{position:'absolute', right:0, alignItems:'center', justifyContent:'center'}}>
-                        <Icon size={24} color="black" name="chevron-down" />
-                        </View>
+                      <View
+                        style={[
+                          {
+                            marginBottom: 10,
+                            justifyContent: 'flex-start',
+                          },
+                          styles.sportsContainer,
+                        ]}>
+                        <TouchableWithoutFeedback
+                          onPress={() => {
+                            setVisibleSportsModal(true);
+                          }}>
+                          <View
+                            style={{
+                              flexDirection: 'row',
+                              justifyContent: 'flex-start',
+                            }}>
+                            <View>
+                              <Text style={styles.searchCityText}>
+                                {selectedSport?.sport_name ?? strings.allType}
+                              </Text>
+                            </View>
+                            <View
+                              style={{
+                                position: 'absolute',
+                                right: 0,
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                              }}>
+                              <Icon
+                                size={24}
+                                color="black"
+                                name="chevron-down"
+                              />
+                            </View>
+                          </View>
+                        </TouchableWithoutFeedback>
                       </View>
-                      </TouchableWithoutFeedback>
-                    </View>
-                     
                     </View>
                   </View>
                 </View>
@@ -994,7 +1044,9 @@ export default function RecentMatchScreen({navigation, route}) {
                     justifyContent: 'space-between',
                   }}>
                   <View style={{}}>
-                    <Text style={styles.filterTitle}>{strings.teamOrPlayer}</Text>
+                    <Text style={styles.filterTitle}>
+                      {strings.teamOrPlayer}
+                    </Text>
                   </View>
                   <View style={{marginTop: 10}}>
                     <View
@@ -1073,56 +1125,61 @@ export default function RecentMatchScreen({navigation, route}) {
             <Text style={styles.resetTitle}>{strings.resetTitleText}</Text>
           </TouchableOpacity>
 
-               
-          <Modal
-        isVisible={visibleSportsModal}
-        onBackdropPress={() => setVisibleSportsModal(false)}
-        onRequestClose={() => setVisibleSportsModal(false)}
-        animationInTiming={300}
-        animationOutTiming={800}
-        backdropTransitionInTiming={300}
-        backdropTransitionOutTiming={800}
-        style={{
-          margin: 0,
-        }}>
-        <View
-        behavior='position'
-          style={{
-            width: '100%',
-            height: Dimensions.get('window').height - 75,
-            maxHeight:Dimensions.get('window').height - 75,
-            backgroundColor: 'white',
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            borderTopLeftRadius: 30,
-            borderTopRightRadius: 30,
-            shadowColor: '#000',
-            shadowOffset: {width: 0, height: 1},
-            shadowOpacity: 0.5,
-            shadowRadius: 5,
-            elevation: 15,
-          }}>
-            {ModalHeader()}
-          <View
-            style={{
-              flexDirection: 'row',
-              paddingHorizontal: 15,
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}>
-          
-          </View>
-          <View style={styles.separatorLine} />
-          <FlatList
-            ItemSeparatorComponent={() => <TCThinDivider />}
-            data={sports}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={renderSports}
+          <LocationModal
+            visibleLocationModal={visibleLocationModal}
+            title={strings.homeCityTitleText}
+            setVisibleLocationModalhandler={() =>
+              setVisibleLocationModal(false)
+            }
+            onLocationSelect={handleSetLocationOptions}
           />
-        </View>
-      </Modal>
 
+          <Modal
+            isVisible={visibleSportsModal}
+            onBackdropPress={() => setVisibleSportsModal(false)}
+            onRequestClose={() => setVisibleSportsModal(false)}
+            animationInTiming={300}
+            animationOutTiming={800}
+            backdropTransitionInTiming={300}
+            backdropTransitionOutTiming={800}
+            style={{
+              margin: 0,
+            }}>
+            <View
+              behavior="position"
+              style={{
+                width: '100%',
+                height: Dimensions.get('window').height - 75,
+                maxHeight: Dimensions.get('window').height - 75,
+                backgroundColor: 'white',
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                borderTopLeftRadius: 30,
+                borderTopRightRadius: 30,
+                shadowColor: '#000',
+                shadowOffset: {width: 0, height: 1},
+                shadowOpacity: 0.5,
+                shadowRadius: 5,
+                elevation: 15,
+              }}>
+              {ModalHeader()}
+              <View
+                style={{
+                  flexDirection: 'row',
+                  paddingHorizontal: 15,
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}></View>
+              <View style={styles.separatorLine} />
+              <FlatList
+                ItemSeparatorComponent={() => <TCThinDivider />}
+                data={sports}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={renderSports}
+              />
+            </View>
+          </Modal>
         </View>
         <DateTimePickerView
           date={fromDate}
@@ -1263,7 +1320,7 @@ const styles = StyleSheet.create({
     height: 40,
     alignItems: 'center',
     backgroundColor: colors.lightGrey,
-    borderRadius: 5,  
+    borderRadius: 5,
   },
   fieldTitle: {
     fontSize: 16,
@@ -1311,7 +1368,7 @@ const styles = StyleSheet.create({
     width: widthPercentageToDP('75%'),
     justifyContent: 'center',
   },
-  sportsContainer:{
+  sportsContainer: {
     backgroundColor: colors.lightGrey,
     borderRadius: 5,
     height: 40,
@@ -1360,8 +1417,7 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     marginLeft: 10,
   },
-  listItem: {
-  },
+  listItem: {},
 
   languageList: {
     color: colors.lightBlackColor,
@@ -1392,4 +1448,3 @@ const styles = StyleSheet.create({
     backgroundColor: '#DADBDA',
   },
 });
-

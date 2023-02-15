@@ -44,6 +44,7 @@ import TCTagsFilter from '../components/TCTagsFilter';
 import TCSearchBox from '../components/TCSearchBox';
 import ActivityLoader from '../components/loader/ActivityLoader';
 import {getGeocoordinatesWithPlaceName} from '../utils/location';
+import LocationModal from '../components/LocationModal/LocationModal';
 
 let stopFetchMore = true;
 
@@ -107,7 +108,9 @@ export default function EntitySearchScreen({navigation, route}) {
   const [clubsPageFrom, setClubsPageFrom] = useState(0);
   const [completedGamePageFrom, setCompletedGamePageFrom] = useState(0);
   const [upcomingGamePageFrom, setUpcomingGamePageFrom] = useState(0);
+  const [visibleLocationModal, setVisibleLocationModal] = useState(false);
   const [location, setLocation] = useState(strings.worldTitleText);
+
   const [selectedSport, setSelectedSport] = useState({
     sport: strings.all,
     sportType: strings.all,
@@ -1860,6 +1863,11 @@ export default function EntitySearchScreen({navigation, route}) {
     </View>
   );
 
+  const handleSetLocationOptions = (locations) => {
+    setLocation(locations.city);
+    setSearchLocation(locations.city);
+  };
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <ActivityLoader visible={loading} />
@@ -1947,6 +1955,7 @@ export default function EntitySearchScreen({navigation, route}) {
         }}
         ListEmptyComponent={listEmptyComponent}
       />
+
       <Modal
         onBackdropPress={() => setSettingPopup(false)}
         isVisible={settingPopup}
@@ -2093,6 +2102,7 @@ export default function EntitySearchScreen({navigation, route}) {
                   {strings.apply}
                 </Text>
               </View>
+
               <TCThinDivider width={'100%'} marginBottom={15} />
               <View>
                 <View style={{flexDirection: 'column', margin: 15}}>
@@ -2176,14 +2186,11 @@ export default function EntitySearchScreen({navigation, route}) {
                         />
                       </TouchableWithoutFeedback>
                     </View>
-
+                    {/* note */}
                     <TouchableWithoutFeedback
                       onPress={() => {
                         setLocationFilterOpetion(3);
-                        setSettingPopup(false);
-                        navigation.navigate('SearchCityScreen', {
-                          comeFrom: 'EntitySearchScreen',
-                        });
+                        setVisibleLocationModal(true);
                       }}>
                       <View
                         style={{
@@ -2361,6 +2368,15 @@ export default function EntitySearchScreen({navigation, route}) {
             </ScrollView>
           </KeyboardAvoidingView>
         </View>
+
+        <LocationModal
+          visibleLocationModal={visibleLocationModal}
+          setVisibleLocationModalhandler={() => {
+            setVisibleLocationModal(false);
+          }}
+          title={strings.homeCityTitleText}
+          onLocationSelect={handleSetLocationOptions}
+        />
       </Modal>
     </SafeAreaView>
   );
