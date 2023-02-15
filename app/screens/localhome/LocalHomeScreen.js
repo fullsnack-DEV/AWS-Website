@@ -1188,6 +1188,7 @@ export default function LocalHomeScreen({navigation, route}) {
   const handleSetLocationOptions = (locations) => {
     setLocation(locations.city);
     setLocationSelectedViaModal(true);
+    setLocationPopup(false);
   };
 
   return (
@@ -1722,7 +1723,7 @@ export default function LocalHomeScreen({navigation, route}) {
           {locationSelectedViaModal ? (
             <>
               {selectedLocationOption === 3 ? (
-                <TouchableOpacity
+                <Pressable
                   onPress={() => {
                     setSelectedLocationOption(3);
                     setVisibleLocationModal(true);
@@ -1742,9 +1743,9 @@ export default function LocalHomeScreen({navigation, route}) {
                   <Text style={styles.chnageWordText}>
                     {strings.changecapital}
                   </Text>
-                </TouchableOpacity>
+                </Pressable>
               ) : (
-                <TouchableOpacity
+                <Pressable
                   style={styles.backgroundView}
                   onPress={() => {
                     setSelectedLocationOption(3);
@@ -1754,21 +1755,29 @@ export default function LocalHomeScreen({navigation, route}) {
                   <Text style={styles.chnageWordText}>
                     {strings.changecapital}
                   </Text>
-                </TouchableOpacity>
+                </Pressable>
               )}
             </>
           ) : (
             <>
-              <TouchableOpacity
+              <Pressable
                 style={styles.sectionStyle}
                 onPress={() => {
                   setSelectedLocationOption(3);
                   setVisibleLocationModal(true);
                 }}>
                 <Text style={styles.searchText}>{strings.searchTitle}</Text>
-              </TouchableOpacity>
+              </Pressable>
             </>
           )}
+
+          {/* <Pressable
+            style={styles.sectionStyle}
+            onPress={() => {
+              setVisibleLocationModal(true);
+            }}>
+            <Text style={styles.searchText}>{strings.searchTitle}</Text>
+          </Pressable> */}
         </View>
       </Modal>
       <Modal
