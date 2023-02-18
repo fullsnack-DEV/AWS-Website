@@ -1,8 +1,6 @@
-const {StyleSheet, Platform , Dimensions} = require('react-native');
+const {StyleSheet, Platform, Dimensions} = require('react-native');
 const {default: colors} = require('../../Constants/Colors');
 const {default: fonts} = require('../../Constants/Fonts');
-
-
 
 const locationModelStyles = StyleSheet.create({
   mainView: {
@@ -80,7 +78,7 @@ const locationModelStyles = StyleSheet.create({
     // justifyContent:'center',
     paddingHorizontal: 6,
     alignItems: 'center',
-    height: 52,
+    height: 54,
   },
   listItemCurrentLocation: {
     flexDirection: 'column',

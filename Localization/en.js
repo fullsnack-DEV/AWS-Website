@@ -2277,4 +2277,6 @@ export default {
   warningTextForFee: 'en_Do you want to reconsider a',
   warningTextForFee1: 'en_match fee?',
   changecapital: 'en_CHANGE',
+  filladdressmanually: 'en_ Fill in the address manually',
+  cityStateOrCountryTitle: 'en_City, State or Country',
 };
