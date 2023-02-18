@@ -180,7 +180,7 @@ export default function LookingTeamScreen({navigation, route}) {
         })
         .catch((e) => {
           setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e);
+            Alert.alert(strings.alertmessagetitle, e.message);;
           }, 10);
         });
     },

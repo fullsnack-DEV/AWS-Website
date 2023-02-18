@@ -109,7 +109,7 @@ export default function AcceptEventInviteScreen({navigation, route}) {
         })
         .catch((e) => {
           setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e);
+            Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
         });
     } else {
@@ -123,7 +123,7 @@ export default function AcceptEventInviteScreen({navigation, route}) {
         })
         .catch((e) => {
           setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e);
+            Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
         });
     }

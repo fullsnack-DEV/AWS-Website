@@ -267,7 +267,7 @@ export default function EntitySearchScreen({navigation, route}) {
       })
       .catch((e) => {
         setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e);
+          Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
   }, [generalFilter, pageSize, generalPageFrom, generalList]);
@@ -367,7 +367,7 @@ export default function EntitySearchScreen({navigation, route}) {
       })
       .catch((e) => {
         setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e);
+          Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
   }, [playerFilter, pageSize, pageFrom, playerList]);
@@ -508,7 +508,7 @@ export default function EntitySearchScreen({navigation, route}) {
       })
       .catch((e) => {
         setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e);
+          Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
   }, [pageSize, refereesPageFrom, referees, refereeFilters]);
@@ -643,7 +643,7 @@ export default function EntitySearchScreen({navigation, route}) {
       })
       .catch((e) => {
         setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e);
+          Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
   }, [pageSize, scorekeeperPageFrom, scorekeepers, scoreKeeperFilters]);
@@ -736,7 +736,7 @@ export default function EntitySearchScreen({navigation, route}) {
       })
       .catch((e) => {
         setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e);
+          Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
   }, [pageSize, teamsPageFrom, teams, teamFilters]);
@@ -833,7 +833,7 @@ export default function EntitySearchScreen({navigation, route}) {
       })
       .catch((e) => {
         setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e);
+          Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
   }, [pageSize, clubsPageFrom, clubs, clubFilters]);
