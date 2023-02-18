@@ -109,7 +109,7 @@ const CongratulationsModal = ({
         })
         .catch((e) => {
           setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e);
+            Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
         });
     }
