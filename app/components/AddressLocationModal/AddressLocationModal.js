@@ -99,6 +99,16 @@ const AddressLocationModal = ({
     }
   }, [searchText]);
 
+  const validator = () => {
+    if (postalCode === '' || location === '') {
+      Alert.alert(strings.fillAllFields);
+    } else {
+      onDonePress(location, postalCode);
+      setVisibleAddressModalhandler(false);
+      setAddressManual(false);
+    }
+  };
+
   return (
     <View>
       <ActivityLoader visible={loading} />
@@ -171,9 +181,7 @@ const AddressLocationModal = ({
                 <TouchableOpacity
                   hitSlop={getHitSlop(15)}
                   onPress={() => {
-                    onDonePress(location, postalCode);
-                    setVisibleAddressModalhandler(false);
-                    setAddressManual(false);
+                    validator();
                   }}>
                   <Text
                     style={{
