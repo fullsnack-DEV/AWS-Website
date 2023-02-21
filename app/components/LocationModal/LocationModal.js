@@ -351,7 +351,8 @@ function LocationModal({
                 onChangeText={(text) => setSearchText(text)}
               />
             </View>
-            {noData && searchText.length > 0 && (
+
+            {searchText.length < 3 && (
               <Text style={locationModelStyles.noDataText}>
                 {strings.enter3CharText}
               </Text>
