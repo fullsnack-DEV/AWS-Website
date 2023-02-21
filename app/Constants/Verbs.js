@@ -16,6 +16,7 @@ const Verbs = {
   tennisSport: 'tennis',
   doubleSport: 'double',
   singleSport: 'single',
+  tennisSingleSport: 'Tennis Singles',
   tennisDoubleSport: 'Tennis Double',
   privacyTypeEveryone: 'everyone',
   privacyTypeFollowers: 'followers',

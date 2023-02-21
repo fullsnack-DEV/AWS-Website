@@ -2,29 +2,29 @@ import images from '../../Constants/ImagePath';
 import {strings} from '../../../Localization/translation';
 // import {getSportIcon} from '../../utils/index';
 import Verbs from '../../Constants/Verbs';
+import {getSportImage, getSportName} from '../../utils';
 // TODO: Move this file to right place. Improve this methods
 
 // TODO: call utility.getSportName() to fetch correct sports title
 // TODO: apply isAccountDeactivated logic to not display add sports button
-const prepareSportsSubMenuOfUser = (sports, baseUrl) => {
+const prepareSportsSubMenuOfUser = (sports, baseUrl, authContext) => {
   let updatedList = [];
   if (sports) {
-    updatedList = sports.map((item) => ({
-      option: item.sport_name ?? '',
-      // icon: getSportIcon(item.sport),
-      icon:
-        baseUrl && item.player_image
-          ? `${baseUrl}${item.player_image}`
-          : images.accountMySports,
-      iconRight: images.settingSport,
-      navigateTo: {
-        screenName: 'SportAccountSettingScreen',
-        data: {
-          type: item.type,
-          sport: item,
+    updatedList = sports.map((item) => {
+      const iconName = getSportImage(item.sport, item.type, authContext);
+      return {
+        option: getSportName(item, authContext),
+        icon: iconName ? `${baseUrl}${iconName}` : images.accountMyScoreKeeping,
+        iconRight: images.settingSport,
+        navigateTo: {
+          screenName: 'SportAccountSettingScreen',
+          data: {
+            type: item.type,
+            sport: item,
+          },
         },
-      },
-    }));
+      };
+    });
   }
   return updatedList;
 };
@@ -113,8 +113,9 @@ export const prepareUserMenu = (authContext, teams, clubs, baseUrl) => {
       icon: images.accountMySports,
       member: [
         ...prepareSportsSubMenuOfUser(
-          authContext?.entity?.obj?.registered_sports,
+          authContext.entity.obj.registered_sports ?? [],
           baseUrl,
+          authContext,
         ),
         {
           option: strings.addSportsTitle,
@@ -129,7 +130,11 @@ export const prepareUserMenu = (authContext, teams, clubs, baseUrl) => {
       key: strings.refereeingTitleText,
       icon: images.accountMyRefereeing,
       member: [
-        ...prepareSportsSubMenuOfUser(authContext?.entity?.obj?.referee_data),
+        ...prepareSportsSubMenuOfUser(
+          authContext.entity.obj.referee_data ?? [],
+          baseUrl,
+          authContext,
+        ),
         {
           option: strings.registerRefereeTitle,
           icon: images.registerReferee,
@@ -145,7 +150,9 @@ export const prepareUserMenu = (authContext, teams, clubs, baseUrl) => {
       icon: images.accountMyScoreKeeping,
       member: [
         ...prepareSportsSubMenuOfUser(
-          authContext?.entity?.obj?.scorekeeper_data,
+          authContext.entity.obj.scorekeeper_data ?? [],
+          baseUrl,
+          authContext,
         ),
         {
           option: strings.registerScorekeeperTitle,

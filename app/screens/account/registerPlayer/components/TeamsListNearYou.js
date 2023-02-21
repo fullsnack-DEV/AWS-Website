@@ -12,6 +12,7 @@ import {strings} from '../../../../../Localization/translation';
 import colors from '../../../../Constants/Colors';
 import fonts from '../../../../Constants/Fonts';
 import images from '../../../../Constants/ImagePath';
+import ListShimmer from './ListShimmer';
 
 const TeamsListNearYou = ({
   list = [],
@@ -19,6 +20,7 @@ const TeamsListNearYou = ({
   searchTeam = () => {},
   createTeam = () => {},
   onUserClick = () => {},
+  loading = false,
 }) => {
   const renderTeam = ({item}) =>
     item.hiringPlayers ? (
@@ -40,6 +42,9 @@ const TeamsListNearYou = ({
                 style={[styles.image, {borderRadius: 20}]}
               />
             )}
+            <View style={styles.teamsIcon}>
+              <Image source={images.teamPatch} style={styles.image} />
+            </View>
           </TouchableOpacity>
           <TouchableOpacity
             style={{flex: 1, alignItems: 'flex-start', marginHorizontal: 10}}
@@ -64,66 +69,69 @@ const TeamsListNearYou = ({
       </>
     ) : null;
 
-  return (
+  return list.length > 0 ? (
     <>
       <Text style={styles.listTitle}>{strings.teamsNearYouText}</Text>
+      {loading ? (
+        <ListShimmer />
+      ) : (
+        <FlatList
+          data={list}
+          keyExtractor={(item) => item.customer_id}
+          renderItem={renderTeam}
+          ListFooterComponent={() =>
+            list.length > 0 ? (
+              <>
+                <TouchableOpacity
+                  style={[styles.row, {justifyContent: 'flex-start'}]}
+                  onPress={searchTeam}>
+                  <View
+                    style={[
+                      styles.imageContainer,
+                      {
+                        padding: 8,
+                        backgroundColor: 'transperant',
+                        borderWidth: 1,
+                        borderColor: colors.thinDividerColor,
+                      },
+                    ]}>
+                    <Image
+                      source={images.home_search}
+                      style={[styles.image, {borderRadius: 20}]}
+                    />
+                  </View>
+                  <Text style={[styles.name, {marginLeft: 10}]}>
+                    Search for more teams
+                  </Text>
+                </TouchableOpacity>
+                <View style={styles.dividor} />
 
-      <FlatList
-        data={list}
-        keyExtractor={(item) => item.customer_id}
-        renderItem={renderTeam}
-        ListFooterComponent={() =>
-          list.length > 0 ? (
-            <>
-              <TouchableOpacity
-                style={[styles.row, {justifyContent: 'flex-start'}]}
-                onPress={searchTeam}>
-                <View
-                  style={[
-                    styles.imageContainer,
-                    {
-                      padding: 8,
-                      backgroundColor: 'transperant',
-                      borderWidth: 1,
-                      borderColor: colors.thinDividerColor,
-                    },
-                  ]}>
-                  <Image
-                    source={images.home_search}
-                    style={[styles.image, {borderRadius: 20}]}
-                  />
-                </View>
-                <Text style={[styles.name, {marginLeft: 10}]}>
-                  Search for more teams
-                </Text>
-              </TouchableOpacity>
-              <View style={styles.dividor} />
-
-              <TouchableOpacity
-                style={[styles.row, {justifyContent: 'flex-start'}]}
-                onPress={createTeam}>
-                <View
-                  style={[
-                    styles.imageContainer,
-                    {backgroundColor: 'transperant'},
-                  ]}>
-                  <Image
-                    source={images.createTeamRoundIcon}
-                    style={[styles.image, {borderRadius: 20}]}
-                  />
-                </View>
-                <Text style={[styles.name, {marginLeft: 10}]}>
-                  {strings.createTeamText}
-                </Text>
-              </TouchableOpacity>
-              <View style={styles.dividor} />
-            </>
-          ) : null
-        }
-        showsVerticalScrollIndicator={false}
-      />
+                <TouchableOpacity
+                  style={[styles.row, {justifyContent: 'flex-start'}]}
+                  onPress={createTeam}>
+                  <View
+                    style={[
+                      styles.imageContainer,
+                      {backgroundColor: 'transperant'},
+                    ]}>
+                    <Image
+                      source={images.createTeamRoundIcon}
+                      style={[styles.image, {borderRadius: 20}]}
+                    />
+                  </View>
+                  <Text style={[styles.name, {marginLeft: 10}]}>
+                    {strings.createTeamText}
+                  </Text>
+                </TouchableOpacity>
+                <View style={styles.dividor} />
+              </>
+            ) : null
+          }
+          showsVerticalScrollIndicator={false}
+        />
+      )}
     </>
-  );
+  ) : null;
 };
 
 const styles = StyleSheet.create({
@@ -150,7 +158,9 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.grayBackgroundColor,
+    backgroundColor: colors.whiteColor,
+    borderWidth: 1,
+    borderColor: colors.thinDividerColor,
   },
   name: {
     fontSize: 16,
@@ -182,6 +192,13 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: colors.grayBackgroundColor,
     marginVertical: 15,
+  },
+  teamsIcon: {
+    width: 15,
+    height: 15,
+    position: 'absolute',
+    right: 0,
+    bottom: 0,
   },
 });
 export default TeamsListNearYou;

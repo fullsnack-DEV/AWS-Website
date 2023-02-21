@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
     paddingBottom: 13,
   },
   headerTitle: {
-    fontSize: 18,
+    fontSize: 20,
     lineHeight: 30,
     fontFamily: fonts.RBold,
     textAlign: 'center',

@@ -33,7 +33,7 @@ const SettingsMenuItem = ({
         case strings.gameFee:
           return (
             <Text style={styles.normalStyle}>
-              {`$${settingObject.game_fee?.fee} ${settingObject.game_fee?.currency_type}/${strings.match}`}
+              {`${settingObject.game_fee?.fee} ${settingObject.game_fee?.currency_type}/${strings.match}`}
             </Text>
           );
 
@@ -43,17 +43,6 @@ const SettingsMenuItem = ({
               {settingObject.refund_policy}
             </Text>
           );
-
-        // case strings.gameDuration:
-        //   return <Text style={styles.normalStyle}>2h 00m</Text>;
-
-        // case strings.setsPointsDuration:
-        //   return (
-        //     <Text
-        //       style={
-        //         styles.normalStyle
-        //       }>{`${settingObject.score_rules?.match_duration}`}</Text>
-        //   );
 
         case strings.setGamesDuration:
           return (
@@ -75,7 +64,7 @@ const SettingsMenuItem = ({
             </Text>
           );
 
-        case strings.refereesTitle:
+        case strings.Referee:
           return (
             <Text style={styles.normalStyle}>
               {format(
@@ -87,7 +76,7 @@ const SettingsMenuItem = ({
             </Text>
           );
 
-        case strings.scorekeeperTitle:
+        case strings.scorekeeperText:
           return (
             <Text style={styles.normalStyle}>
               {format(
@@ -109,9 +98,11 @@ const SettingsMenuItem = ({
   return (
     <>
       <View style={[styles.headerRow, {paddingBottom: 0}]}>
-        <Text style={[styles.headerTitle, {textAlign: 'left'}]}>
-          {item.key.toUpperCase()}
-        </Text>
+        <View style={{flex: 1}}>
+          <Text style={[styles.headerTitle, {textAlign: 'left'}]}>
+            {item.key.toUpperCase()}
+          </Text>
+        </View>
         {item.key === strings.sport ? (
           <Text style={styles.normalStyle}>{sportName}</Text>
         ) : (
@@ -130,7 +121,12 @@ const SettingsMenuItem = ({
               onPress={() => {
                 handleOpetions(item.key);
               }}>
-              <Text style={styles.completeStyle}>{strings.edit}</Text>
+              <Text style={styles.completeStyle}>
+                {item.key === strings.venue &&
+                (settingObject.venue ?? []).length === 0
+                  ? strings.addText
+                  : strings.edit}
+              </Text>
             </TouchableOpacity>
           </View>
         )}

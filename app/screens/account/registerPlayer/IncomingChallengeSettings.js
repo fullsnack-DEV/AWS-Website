@@ -27,6 +27,7 @@ import MatchFeeReminder from './modals/MatchFeeReminder';
 import SettingsMenuItem from './components/SettingsMenuItem';
 import WrapperModal from '../../../components/IncomingChallengeSettingsModals/WrapperModal';
 import DataSource from '../../../Constants/DataSource';
+import HostChallengerInfoModal from './modals/HostChallengerInfoModal';
 
 const challengeSettingMenu = [
   {key: strings.sport},
@@ -37,8 +38,8 @@ const challengeSettingMenu = [
   // {key: strings.setGamesDuration},
   {key: strings.venue},
   {key: strings.gameRules},
-  {key: strings.refereesTitle},
-  {key: strings.scorekeeperTitle},
+  {key: strings.Referee},
+  {key: strings.scorekeeperText},
 ];
 
 export default function IncomingChallengeSettings({navigation, route}) {
@@ -53,6 +54,7 @@ export default function IncomingChallengeSettings({navigation, route}) {
   const [playerObject] = useState(playerData);
   const [showModal, setShowModal] = useState(false);
   const [modalObj, setModalObj] = useState({});
+  const [showHostChallengerModal, setShowHosChallengerModal] = useState(false);
 
   useEffect(() => {
     if (settingType === 'Set') {
@@ -103,7 +105,7 @@ export default function IncomingChallengeSettings({navigation, route}) {
           setShowModal(true);
           break;
 
-        case strings.refereesTitle:
+        case strings.Referee:
           setModalObj({
             title: option,
             settingsObj: settingObject,
@@ -111,7 +113,7 @@ export default function IncomingChallengeSettings({navigation, route}) {
           setShowModal(true);
           break;
 
-        case strings.scorekeeperTitle:
+        case strings.scorekeeperText:
           setModalObj({
             title: option,
             settingsObj: settingObject,
@@ -128,6 +130,14 @@ export default function IncomingChallengeSettings({navigation, route}) {
           break;
 
         case strings.venue:
+          setModalObj({
+            title: option,
+            settingsObj: settingObject,
+          });
+          setShowModal(true);
+          break;
+
+        case strings.gameRules:
           setModalObj({
             title: option,
             settingsObj: settingObject,
@@ -166,13 +176,7 @@ export default function IncomingChallengeSettings({navigation, route}) {
       patchPlayer(body, authContext)
         .then(async (response) => {
           if (response.status === true) {
-            const entity = authContext.entity;
-            entity.auth.user = response.payload;
-            entity.obj = response.payload;
-            authContext.setEntity({...entity});
-            authContext.setUser(response.payload);
-            await Utility.setStorage('authContextUser', response.payload);
-            await Utility.setStorage('authContextEntity', {...entity});
+            await Utility.setAuthContextData(response.payload, authContext);
             setCongratulationsModal(true);
           } else {
             Alert.alert(strings.appName, response.messages);
@@ -237,9 +241,11 @@ export default function IncomingChallengeSettings({navigation, route}) {
                   {strings.incomingChallengeSettingsInfo}
                 </Text>
 
-                <TouchableOpacity style={{alignSelf: 'flex-end'}}>
+                <TouchableOpacity
+                  style={{alignSelf: 'flex-end'}}
+                  onPress={() => setShowHosChallengerModal(true)}>
                   <Text style={styles.linkButtonText}>
-                    Who are the match host and challenger?
+                    {strings.hostAndChallengerText}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -257,6 +263,11 @@ export default function IncomingChallengeSettings({navigation, route}) {
         />
       </View>
 
+      <HostChallengerInfoModal
+        isVisible={showHostChallengerModal}
+        closeModal={() => setShowHosChallengerModal(false)}
+      />
+
       <CongratulationsModal
         isVisible={congratulationsModal}
         closeModal={() => {
@@ -270,20 +281,14 @@ export default function IncomingChallengeSettings({navigation, route}) {
         sportName={sportName}
         sport={sport}
         sportType={sportType}
-        onChanllenge={(filters) => {
+        onChanllenge={() => {
+          // navigation.navigate('LookingForChallengeScreen', {
+          //   filters,
+          // });
+        }}
+        searchPlayer={(filters) => {
           navigation.navigate('LookingForChallengeScreen', {
             filters,
-          });
-        }}
-        searchPlayer={() => {
-          const sports = sportsData.map((item) => ({
-            label: item?.sport_name,
-            value: item?.sport_name.toLowerCase(),
-          }));
-
-          navigation.navigate('EntitySearchScreen', {
-            sportsList: sports,
-            sportsArray: sportsData,
           });
         }}
         onUserClick={(userData) => {
@@ -328,6 +333,15 @@ export default function IncomingChallengeSettings({navigation, route}) {
         }}
         createTeam={() => {
           navigation.navigate('CreateTeamForm1');
+        }}
+        goToSportActivityHome={() => {
+          setCongratulationsModal(false);
+          navigation.navigate('HomeScreen', {
+            uid: authContext.entity.uid,
+            role: authContext.entity.role,
+            backButtonVisible: true,
+            menuBtnVisible: false,
+          });
         }}
       />
       <MatchFeeReminder

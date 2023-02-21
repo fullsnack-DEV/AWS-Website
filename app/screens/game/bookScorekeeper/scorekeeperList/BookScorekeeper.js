@@ -175,7 +175,7 @@ export default function BookScorekeeper({navigation, route}) {
         })
         .catch((e) => {
           setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e);
+            Alert.alert(strings.alertmessagetitle, e.message);;
           }, 10);
         });
     },

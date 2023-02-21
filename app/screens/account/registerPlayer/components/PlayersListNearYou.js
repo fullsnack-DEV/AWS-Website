@@ -13,6 +13,7 @@ import colors from '../../../../Constants/Colors';
 import fonts from '../../../../Constants/Fonts';
 import images from '../../../../Constants/ImagePath';
 import Verbs from '../../../../Constants/Verbs';
+import ListShimmer from './ListShimmer';
 
 const PlayersListNearYou = ({
   sportType,
@@ -21,6 +22,7 @@ const PlayersListNearYou = ({
   searchPlayer = () => {},
   onUserClick = () => {},
   onChoose = () => {},
+  loading = false,
 }) => {
   const renderPlayerCard = ({item}) => (
     <>
@@ -75,50 +77,57 @@ const PlayersListNearYou = ({
     </>
   );
 
-  return (
-    <FlatList
-      data={list}
-      keyExtractor={(item) => item.customer_id}
-      renderItem={renderPlayerCard}
-      ListHeaderComponent={() => (
+  if (list.length > 0) {
+    return (
+      <>
         <Text style={styles.listTitle}>
           {sportType === Verbs.sportTypeSingle
             ? strings.playersNearYouText
             : strings.partnersNearYouText}
         </Text>
-      )}
-      ListFooterComponent={() =>
-        list.length > 0 ? (
-          <>
-            <TouchableOpacity
-              style={[styles.row, {justifyContent: 'flex-start'}]}
-              onPress={searchPlayer}>
-              <View
-                style={[
-                  styles.imageContainer,
-                  {
-                    padding: 8,
-                    backgroundColor: 'transperant',
-                    borderWidth: 1,
-                    borderColor: colors.thinDividerColor,
-                  },
-                ]}>
-                <Image
-                  source={images.home_search}
-                  style={[styles.image, {borderRadius: 20}]}
-                />
-              </View>
-              <Text style={[styles.name, {marginLeft: 10}]}>
-                {strings.searchForPlayer}
-              </Text>
-            </TouchableOpacity>
-            <View style={styles.dividor} />
-          </>
-        ) : null
-      }
-      showsVerticalScrollIndicator={false}
-    />
-  );
+        {loading ? (
+          <ListShimmer />
+        ) : (
+          <FlatList
+            data={list}
+            keyExtractor={(item) => item.customer_id}
+            renderItem={renderPlayerCard}
+            ListFooterComponent={() =>
+              list.length > 0 ? (
+                <>
+                  <TouchableOpacity
+                    style={[styles.row, {justifyContent: 'flex-start'}]}
+                    onPress={searchPlayer}>
+                    <View
+                      style={[
+                        styles.imageContainer,
+                        {
+                          padding: 8,
+                          backgroundColor: 'transperant',
+                          borderWidth: 1,
+                          borderColor: colors.thinDividerColor,
+                        },
+                      ]}>
+                      <Image
+                        source={images.home_search}
+                        style={[styles.image, {borderRadius: 20}]}
+                      />
+                    </View>
+                    <Text style={[styles.name, {marginLeft: 10}]}>
+                      {strings.searchForPlayer}
+                    </Text>
+                  </TouchableOpacity>
+                  <View style={styles.dividor} />
+                </>
+              ) : null
+            }
+            showsVerticalScrollIndicator={false}
+          />
+        )}
+      </>
+    );
+  }
+  return null;
 };
 
 const styles = StyleSheet.create({

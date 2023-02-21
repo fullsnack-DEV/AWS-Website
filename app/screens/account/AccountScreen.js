@@ -103,24 +103,9 @@ export default function AccountScreen({navigation}) {
   }, [isFocused]);
 
   useEffect(() => {
-    let sportArr = [];
-    authContext.sports.map((item) =>
-      item.format.map((innerObj) => {
-        sportArr = [...sportArr, ...[{...item, ...innerObj}]];
-        return null;
-      }),
-    );
-    const newData = [];
-    sportArr.forEach((item) => {
-      const obj = (authContext.entity.obj.registered_sports ?? []).find(
-        (ele) => ele.sport === item.sport && ele.sport_type === item.sport_type,
-      );
-      if (!obj) {
-        newData.push(item);
-      }
-    });
-    setSportsData([...newData]);
-  }, [authContext.sports]);
+    const sportArr = Utility.getSportList(authContext);
+    setSportsData([...sportArr]);
+  }, [authContext]);
 
   const [navigationOptions, setNavigationOptions] = useState({});
 

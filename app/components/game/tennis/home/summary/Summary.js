@@ -306,7 +306,7 @@ const Summary = ({
       })
       .catch((error) => {
         console.log('error L ', error);
-        Alert.alert(strings.alertmessagetitle, error);
+        Alert.alert(strings.alertmessagetitle, error.message);
       });
 
     let found = false;
@@ -383,7 +383,7 @@ const Summary = ({
       })
       .catch((error) => {
         console.log('error L ', error);
-        Alert.alert(strings.alertmessagetitle, error);
+        Alert.alert(strings.alertmessagetitle, error.message);
       });
   };
 
