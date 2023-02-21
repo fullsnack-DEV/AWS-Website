@@ -36,6 +36,7 @@ function LocationModal({
   title,
   onLocationSelect,
   type,
+  placeholder,
 }) {
   const [searchText, setSearchText] = useState('');
   const [loading, setLoading] = useState(false);
@@ -340,7 +341,11 @@ function LocationModal({
               <TextInput
                 testID="choose-location-input"
                 style={locationModelStyles.searchTextInput}
-                placeholder={strings.locationPlaceholderText}
+                placeholder={
+                  placeholder !== ''
+                    ? placeholder
+                    : strings.locationPlaceholderText
+                }
                 clearButtonMode="always"
                 placeholderTextColor={colors.userPostTimeColor}
                 onChangeText={(text) => setSearchText(text)}

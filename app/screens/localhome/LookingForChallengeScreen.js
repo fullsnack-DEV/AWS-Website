@@ -507,7 +507,11 @@ export default function LookingForChallengeScreen({navigation, route}) {
   );
 
   const handleSetLocationOptions = (location) => {
-    setLocation(location.city);
+    if (location.hasOwnProperty('address')) {
+      setLocation(location?.formattedAddress);
+    } else {
+      setLocation(location?.city);
+    }
   };
 
   return (
@@ -1022,11 +1026,13 @@ export default function LookingForChallengeScreen({navigation, route}) {
 
           <LocationModal
             visibleLocationModal={visibleLocationModal}
-            title={strings.homeCityTitleText}
+            title={strings.cityStateOrCountryTitle}
             setVisibleLocationModalhandler={() =>
               setVisibleLocationModal(false)
             }
             onLocationSelect={handleSetLocationOptions}
+            placeholder={strings.searchTitle}
+            type={'country'}
           />
 
           <Modal

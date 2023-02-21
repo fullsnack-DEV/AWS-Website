@@ -153,10 +153,12 @@ const getPlaceNameFromPlaceID = async (placeID) => {
 
     location.latitude = locationDetails.result.geometry.location.lat;
     location.longitude = locationDetails.result.geometry.location.lng;
+
     // eslint-disable-next-line array-callback-return
     locationDetails.result.address_components.map((e) => {
       if (e.types.includes('administrative_area_level_1')) {
         location.state = e.short_name;
+        location.state_full = e.long_name;
       } else if (e.types.includes('locality')) {
         location.city = e.long_name;
       } else if (e.types.includes('country')) {

@@ -267,10 +267,11 @@ const AddressLocationModal = ({
         <LocationModal
           visibleLocationModal={visibleCityModal}
           setVisibleLocationModalhandler={() => setVisibleCityModal(false)}
-          title={strings.homeCityTitleText}
+          title={strings.cityStateCountryTitle}
           onLocationSelect={(locations) =>
             setHandleSetLocationOptions(locations)
           }
+          placeholder={strings.cityStateCountry}
         />
       </Modal>
     </View>

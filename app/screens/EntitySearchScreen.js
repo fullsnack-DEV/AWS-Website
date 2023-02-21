@@ -1864,8 +1864,15 @@ export default function EntitySearchScreen({navigation, route}) {
   );
 
   const handleSetLocationOptions = (locations) => {
-    setLocation(locations.city);
-    setSearchLocation(locations.city);
+    console.log(locations, 'From');
+
+    if ('address' in locations) {
+      setLocation(locations?.formattedAddress);
+      setSearchLocation(locations?.formattedAddress);
+    } else {
+      setLocation(locations?.city);
+      setSearchLocation(locations?.city);
+    }
   };
 
   return (
@@ -2371,11 +2378,13 @@ export default function EntitySearchScreen({navigation, route}) {
 
         <LocationModal
           visibleLocationModal={visibleLocationModal}
+          title={strings.cityStateOrCountryTitle}
           setVisibleLocationModalhandler={() => {
             setVisibleLocationModal(false);
           }}
-          title={strings.homeCityTitleText}
           onLocationSelect={handleSetLocationOptions}
+          placeholder={strings.searchTitle}
+          type={'country'}
         />
       </Modal>
     </SafeAreaView>
