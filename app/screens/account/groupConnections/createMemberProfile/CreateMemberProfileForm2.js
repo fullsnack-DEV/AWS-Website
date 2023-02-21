@@ -118,6 +118,17 @@ export default function CreateMemberProfileForm2({navigation, route}) {
   }, [isFocused]);
 
   const validation = useCallback(() => {
+    console.log(
+      {
+        city,
+        state,
+        country,
+        postalCode,
+        location,
+      },
+      'From Validation',
+    );
+
     if (
       !city?.length ||
       !state?.length ||
@@ -150,6 +161,8 @@ export default function CreateMemberProfileForm2({navigation, route}) {
   ]);
 
   const pressedNext = () => {
+    console.log(location, city, postalCode, state);
+
     if (validation()) {
       const membersAuthority = {
         ...memberInfo,
@@ -394,11 +407,13 @@ export default function CreateMemberProfileForm2({navigation, route}) {
     [city, state, country, location, postalCode].filter((w) => w).join(', ');
 
   const onSelectAddress = (_location) => {
+    console.log(_location, ' _location on manual press');
+
     setCity(_location.city);
     setState(_location.state);
     setCountry(_location.country);
     setPostalCode(_location.postalCode);
-    setLocation(_location.address);
+    setLocation(_location.formattedAddress);
   };
 
   const setCityandPostal = (street, code) => {
@@ -495,23 +510,27 @@ export default function CreateMemberProfileForm2({navigation, route}) {
       )}
 
       <TouchableOpacity
-        style={{
-          marginTop: 15,
-        }}
         onPress={() => {
           setVisibleLocationModal(true);
           // setAddressManual(false);
           // setSearchText('');
         }}>
-        <TCTextField
-          value={locationString() || addressManualString()}
-          // onChangeText={onChangeLocationText}
-          autoCapitalize="none"
-          autoCorrect={false}
-          placeholder={strings.streetAddress}
-          pointerEvents="none"
-          editable={false}
-        />
+        <View>
+          <TCLabel
+            title={strings.address.toUpperCase()}
+            style={{marginBottom: 12}}
+          />
+
+          <TCTextField
+            value={locationString() || addressManualString()}
+            // onChangeText={onChangeLocationText}
+            autoCapitalize="none"
+            autoCorrect={false}
+            placeholder={strings.streetAddress}
+            pointerEvents="none"
+            editable={false}
+          />
+        </View>
       </TouchableOpacity>
 
       {showDate && (

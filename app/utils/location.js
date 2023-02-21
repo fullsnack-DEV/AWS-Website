@@ -151,6 +151,8 @@ const getPlaceNameFromPlaceID = async (placeID) => {
   try {
     const locationDetails = await searchLocationPlaceDetail(placeID);
 
+    location.latitude = locationDetails.result.geometry.location.lat;
+    location.longitude = locationDetails.result.geometry.location.lng;
     // eslint-disable-next-line array-callback-return
     locationDetails.result.address_components.map((e) => {
       if (e.types.includes('administrative_area_level_1')) {

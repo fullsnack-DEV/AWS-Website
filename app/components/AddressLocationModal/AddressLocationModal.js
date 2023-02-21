@@ -91,6 +91,8 @@ const AddressLocationModal = ({
               Alert.alert(strings.alertmessagetitle, e.message);
             }, 10);
           });
+      } else {
+        console.log('error');
       }
     } else {
       setLocationData([]);
@@ -141,7 +143,7 @@ const AddressLocationModal = ({
             </View>
           ) : (
             <View style={locationModalStyles.headerView}>
-              {/* for Manual Address */}
+              {/* for Manual Addresses */}
               <TouchableOpacity
                 hitSlop={getHitSlop(15)}
                 onPress={() => {

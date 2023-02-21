@@ -42,15 +42,19 @@ import TCThinDivider from '../../../components/TCThinDivider';
 import TCCountryCodeModal from '../../../components/TCCountryCodeModal';
 import {heightMesurement, weightMesurement} from '../../../utils/constant';
 import locationModalStyles from '../../../Constants/LocationModalStyle';
+import AddressLocationModal from '../../../components/AddressLocationModal/AddressLocationModal';
 
 export default function BasicInfoScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
 
+  const [visibleAddressModal, setVisibleAddressModal] = useState(false);
+  const [Location, setLocation] = useState('');
   // For activity indigator
   const [loading, setloading] = useState(false);
   const [userInfo, setUserInfo] = useState(authContext.entity.obj);
   const [profileImageChanged, setProfileImageChanged] = useState(false);
+
   const [streetAddress, setStreetAddress] = useState(
     authContext.entity.obj?.street_address,
   );
@@ -513,6 +517,26 @@ export default function BasicInfoScreen({navigation, route}) {
     </View>
   );
 
+  const locationString = () =>
+    [Location, city, state, country, postalCode].filter((v) => v).join(', ');
+
+  const addressManualString = () =>
+    [city, state, country, Location, postalCode].filter((w) => w).join(', ');
+
+  const onSelectAddress = (_location) => {
+    setCity(_location.city);
+    setState(_location.state);
+    setCountry(_location.country);
+    setPostalCode(_location.postalCode);
+    setLocation(_location.formattedAddress);
+    setStreetAddress(_location.formattedAddress);
+  };
+
+  const setCityandPostal = (street, code) => {
+    setCity(street);
+    setPostalCode(code);
+  };
+
   const renderPhoneNumber = ({item, index}) => (
     <View style={styles.fieldView}>
       <View
@@ -659,49 +683,35 @@ export default function BasicInfoScreen({navigation, route}) {
           renderItem={renderPhoneNumber}
         />
 
-        <View>
-          <TCLabel title={strings.mailingAddressText} />
-          <TCTextField
-            value={streetAddress}
-            onChangeText={(text) => setStreetAddress(text)}
-            placeholder={strings.streetAddress}
-            keyboardType={'default'}
-            autoCapitalize="none"
-            autoCorrect={false}
-            // onFocus={() => setLocationFieldVisible(true)}
-            style={{backgroundColor: colors.textFieldBackground}}
-          />
-        </View>
-
         <TouchableOpacity
-          onPress={() =>
-            // navigation.navigate('SearchLocationScreen', {
-            //   comeFrom: 'PersonalInformationScreen',
-            // })
-            setLocationPopup(true)
-          }>
-          <TextInput
-            placeholder={strings.searchCityPlaceholder}
-            placeholderTextColor={colors.userPostTimeColor}
-            style={[
-              styles.matchFeeTxt,
-              {marginBottom: 5},
-              {backgroundColor: colors.textFieldBackground},
-            ]}
-            value={[city, state, country].filter((v) => v).join(', ')}
-            editable={false}
-            pointerEvents="none"></TextInput>
+          onPress={() => {
+            setVisibleAddressModal(true);
+          }}>
+          <View>
+            <TCLabel
+              title={strings.address.toUpperCase()}
+              style={{marginBottom: 12}}
+            />
+            <TCTextField
+              value={locationString() || addressManualString()}
+              // onChangeText={onChangeLocationText}
+              autoCapitalize="none"
+              autoCorrect={false}
+              placeholder={strings.streetAddress}
+              pointerEvents="none"
+              editable={false}
+            />
+          </View>
         </TouchableOpacity>
 
-        <View>
-          <TCTextField
-            value={postalCode}
-            onChangeText={(text) => setPostalCode(text)}
-            placeholder={strings.postalCode}
-            keyboardType={'default'}
-            style={{backgroundColor: colors.textFieldBackground}}
-          />
-        </View>
+        <AddressLocationModal
+          visibleLocationModal={visibleAddressModal}
+          setVisibleAddressModalhandler={() => setVisibleAddressModal(false)}
+          onAddressSelect={onSelectAddress}
+          handleSetLocationOptions={onSelectAddress}
+          onDonePress={(street, code) => setCityandPostal(street, code)}
+        />
+
         <View style={{paddingBottom: 20}} />
         <Modal
           onBackdropPress={() => setLocationPopup(false)}
@@ -856,18 +866,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     width: 100,
     textAlign: 'right',
-  },
-  matchFeeTxt: {
-    alignSelf: 'center',
-    backgroundColor: colors.offwhite,
-    borderRadius: 5,
-    color: colors.lightBlackColor,
-    fontSize: 16,
-    marginTop: 12,
-    paddingHorizontal: 10,
-    paddingRight: 30,
-    paddingVertical: 12,
-    width: wp('92%'),
   },
 
   miniDownArrow: {
