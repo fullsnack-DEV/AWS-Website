@@ -2410,14 +2410,47 @@ export const getCityStateCountryText = (data) =>
   data.filter((v) => v).join(', ');
 
 export const displayLocation = (data) => {
-  const loc = []
-  loc.push(data.city)
+  const loc = [];
+  loc.push(data.city);
 
-  if(data.country?.toLowerCase() === 'canada' ||  data.country?.toLowerCase() === 'usa'){
-    loc.push(data.state_abbr ??  data.state)
+  if (
+    data.country?.toLowerCase() === 'canada' ||
+    data.country?.toLowerCase() === 'usa'
+  ) {
+    loc.push(data.state_abbr ?? data.state);
+  } else {
+    loc.push(data.country);
   }
-  else{
-    loc.push(data.country)
-  }
-  return loc.filter((v) => v).join(', ')
-}
+  return loc.filter((v) => v).join(', ');
+};
+
+export const setAuthContextData = async (data, authContext) => {
+  const entity = authContext.entity;
+  entity.auth.user = data;
+  entity.obj = data;
+  authContext.setEntity({...entity});
+  authContext.setUser(data);
+  await setStorage('authContextUser', data);
+  await setStorage('authContextEntity', {...entity});
+};
+
+export const getSportList = (authContext) => {
+  let sportArr = [];
+  authContext.sports.map((item) =>
+    item.format.map((innerObj) => {
+      sportArr = [...sportArr, ...[{...item, ...innerObj}]];
+      return null;
+    }),
+  );
+  const newData = [];
+  sportArr.forEach((item) => {
+    const obj = (authContext.entity.obj.registered_sports ?? []).find(
+      (ele) => ele.sport === item.sport && ele.sport_type === item.sport_type,
+    );
+    if (!obj) {
+      newData.push(item);
+    }
+  });
+
+  return [...newData];
+};

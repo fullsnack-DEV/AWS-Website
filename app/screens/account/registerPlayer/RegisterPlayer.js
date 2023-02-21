@@ -20,46 +20,39 @@ import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 import Verbs from '../../../Constants/Verbs';
-import {languageList, setStorage} from '../../../utils';
+import {getSportList, setAuthContextData} from '../../../utils';
 import CongratulationsModal from './modals/CongratulationsModal';
-import LanguagesListModal from './modals/LanguagesListModal';
+// import LanguagesListModal from './modals/LanguagesListModal';
 import SportsListModal from './modals/SportsListModal';
 
 const RegisterPlayer = ({navigation, route}) => {
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
-  const [showLanguageModal, setShowLanguageModal] = useState(false);
+  // const [showLanguageModal, setShowLanguageModal] = useState(false);
   const [showCongratulationsModal, setShowCongratulationsModal] =
     useState(false);
-  const [languages, setLanguages] = useState([]);
-  const [selectedLanguages, setSelectedLanguages] = useState([]);
+  // const [languages, setLanguages] = useState([]);
+  // const [selectedLanguages, setSelectedLanguages] = useState([]);
   const [sportsData, setSportsData] = useState([]);
   const [selectedSport, setSelectedSport] = useState(null);
-  const [languageName, setLanguageName] = useState('');
+  // const [languageName, setLanguageName] = useState('');
   const [bio, setBio] = useState('');
   const [loading, setLoading] = useState(false);
 
   const authContext = useContext(AuthContext);
   const bioInputRef = useRef(null);
 
-  useEffect(() => {
-    const arr = languageList.map((item) => ({
-      ...item,
-      isChecked: false,
-    }));
-    setLanguages(arr);
-  }, []);
+  // useEffect(() => {
+  //   const arr = languageList.map((item) => ({
+  //     ...item,
+  //     isChecked: false,
+  //   }));
+  //   setLanguages(arr);
+  // }, []);
 
   useEffect(() => {
-    let sportArr = [];
-    authContext.sports.map((item) =>
-      item.format.map((innerObj) => {
-        sportArr = [...sportArr, ...[{...item, ...innerObj}]];
-        return null;
-      }),
-    );
-
+    const sportArr = getSportList(authContext);
     setSportsData([...sportArr]);
-  }, [authContext.sports]);
+  }, [authContext]);
 
   useEffect(() => {
     if (route.params.sport_name) {
@@ -67,26 +60,26 @@ const RegisterPlayer = ({navigation, route}) => {
     }
   }, [route.params]);
 
-  useEffect(() => {
-    if (selectedLanguages.length > 0) {
-      let name = '';
-      selectedLanguages.forEach((item) => {
-        name += name ? `, ${item.language}` : item.language;
-      });
-      setLanguageName(name);
-    }
-  }, [selectedLanguages]);
+  // useEffect(() => {
+  //   if (selectedLanguages.length > 0) {
+  //     let name = '';
+  //     selectedLanguages.forEach((item) => {
+  //       name += name ? `, ${item.language}` : item.language;
+  //     });
+  //     setLanguageName(name);
+  //   }
+  // }, [selectedLanguages]);
 
-  const handleLanguageSelection = (language) => {
-    const newList = languages.map((item) => ({
-      ...item,
-      isChecked: item.id === language.id ? !item.isChecked : item.isChecked,
-    }));
-    setLanguages([...newList]);
+  // const handleLanguageSelection = (language) => {
+  //   const newList = languages.map((item) => ({
+  //     ...item,
+  //     isChecked: item.id === language.id ? !item.isChecked : item.isChecked,
+  //   }));
+  //   setLanguages([...newList]);
 
-    const list = newList.filter((item) => item.isChecked);
-    setSelectedLanguages([...list]);
-  };
+  //   const list = newList.filter((item) => item.isChecked);
+  //   setSelectedLanguages([...list]);
+  // };
 
   const handleNextOrApply = () => {
     if (!selectedSport?.sport_type && !selectedSport?.sport_name) {
@@ -102,7 +95,7 @@ const RegisterPlayer = ({navigation, route}) => {
         descriptions: bio,
         is_published: true,
         type: Verbs.entityTypePlayer,
-        language: selectedLanguages,
+        // language: selectedLanguages,
         lookingForTeamClub: true,
         default_setting: {},
       };
@@ -133,13 +126,7 @@ const RegisterPlayer = ({navigation, route}) => {
           .then(async (response) => {
             if (response.status === true) {
               setLoading(false);
-              const entity = authContext.entity;
-              entity.auth.user = response.payload;
-              entity.obj = response.payload;
-              authContext.setEntity({...entity});
-              authContext.setUser(response.payload);
-              await setStorage('authContextUser', response.payload);
-              await setStorage('authContextEntity', {...entity});
+              await setAuthContextData(response.payload, authContext);
               setShowCongratulationsModal(true);
             } else {
               setLoading(false);
@@ -174,7 +161,7 @@ const RegisterPlayer = ({navigation, route}) => {
                   ? {}
                   : {opacity: 0.5},
               ]}>
-              {selectedSport?.sport_type === 'single'
+              {selectedSport?.sport_type === Verbs.singleSport
                 ? strings.next
                 : strings.done}
             </Text>
@@ -200,7 +187,7 @@ const RegisterPlayer = ({navigation, route}) => {
           />
         </View>
 
-        <View style={{marginBottom: 25}}>
+        {/* <View style={{marginBottom: 25}}>
           <Text style={styles.inputLabel}>{strings.whichLanguage}</Text>
 
           <TextInput
@@ -212,7 +199,7 @@ const RegisterPlayer = ({navigation, route}) => {
               setShowLanguageModal(true);
             }}
           />
-        </View>
+        </View> */}
 
         <View style={{marginBottom: 25}}>
           <Text style={styles.inputLabel}>{strings.bio.toUpperCase()}</Text>
@@ -247,7 +234,7 @@ const RegisterPlayer = ({navigation, route}) => {
         sport={selectedSport}
       />
 
-      <LanguagesListModal
+      {/* <LanguagesListModal
         isVisible={showLanguageModal}
         closeList={() => setShowLanguageModal(false)}
         languageList={languages}
@@ -255,7 +242,7 @@ const RegisterPlayer = ({navigation, route}) => {
         onApply={() => {
           setShowLanguageModal(false);
         }}
-      />
+      /> */}
       <CongratulationsModal
         isVisible={showCongratulationsModal}
         closeModal={() => {
@@ -269,20 +256,14 @@ const RegisterPlayer = ({navigation, route}) => {
         sportName={selectedSport?.sport_name}
         sport={selectedSport?.sport}
         sportType={selectedSport?.sport_type}
-        onChanllenge={(filters) => {
+        onChanllenge={() => {
+          // navigation.navigate('LookingForChallengeScreen', {
+          //   filters,
+          // });
+        }}
+        searchPlayer={(filters) => {
           navigation.navigate('LookingForChallengeScreen', {
             filters,
-          });
-        }}
-        searchPlayer={() => {
-          const sports = sportsData.map((item) => ({
-            label: item?.sport_name,
-            value: item?.sport_name.toLowerCase(),
-          }));
-
-          navigation.navigate('EntitySearchScreen', {
-            sportsList: sports,
-            sportsArray: sportsData,
           });
         }}
         onUserClick={(userData) => {
@@ -319,6 +300,15 @@ const RegisterPlayer = ({navigation, route}) => {
         }}
         createTeam={() => {
           navigation.navigate('CreateTeamForm1');
+        }}
+        goToSportActivityHome={() => {
+          setShowCongratulationsModal(false);
+          navigation.navigate('HomeScreen', {
+            uid: authContext.entity.uid,
+            role: authContext.entity.role,
+            backButtonVisible: true,
+            menuBtnVisible: false,
+          });
         }}
       />
     </SafeAreaView>

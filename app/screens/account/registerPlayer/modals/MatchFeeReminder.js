@@ -39,7 +39,7 @@ const MatchFeeReminder = ({
               styles.description,
               {fontFamily: fonts.RBold, marginBottom: 8},
             ]}>
-            {strings.matchHostChallengeText}
+            {strings.matchHostChallengeText}:
           </Text>
 
           <Text style={[styles.description, {marginBottom: 18}]}>

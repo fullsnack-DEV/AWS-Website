@@ -14,11 +14,19 @@ const MatchFeeModal = ({
   <View>
     <Text style={styles.title}>{strings.chooseMatchType}</Text>
 
-    <View style={[styles.greyContainer, styles.row]}>
+    <View
+      style={[
+        styles.greyContainer,
+        styles.row,
+        {paddingVertical: 6, marginTop: 0},
+      ]}>
       <View />
       <TextInput
         value={`${gameFee.fee}`}
-        style={[styles.label, {marginRight: 5, flex: 1, textAlign: 'center'}]}
+        style={[
+          styles.label,
+          {marginRight: 5, flex: 1, textAlign: 'center', padding: 0},
+        ]}
         onChangeText={(text) => {
           onChange({currency_type: currency, fee: text});
         }}

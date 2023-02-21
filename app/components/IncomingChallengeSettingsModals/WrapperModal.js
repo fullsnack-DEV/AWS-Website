@@ -5,6 +5,7 @@ import {strings} from '../../../Localization/translation';
 import images from '../../Constants/ImagePath';
 import AvailabilityModal from './AvailabilityModal';
 import CancellationPolicyModal from './CancellationPolicyModal';
+import GameRulesModal from './GameRulesModal';
 import MatchFeeModal from './MatchFeeModal';
 import MatchTypeModal from './MatchTypeModal';
 import RefreeModal from './RefreeModal';
@@ -76,7 +77,7 @@ const WrapperModal = ({
           />
         );
 
-      case strings.refereesTitle:
+      case strings.Referee:
         return (
           <RefreeModal
             refreeCount={settings.responsible_for_referee?.who_secure?.length}
@@ -86,7 +87,7 @@ const WrapperModal = ({
           />
         );
 
-      case strings.scorekeeperTitle:
+      case strings.scorekeeperText:
         return (
           <ScorekeeperModal
             scorekeeperCount={
@@ -101,9 +102,17 @@ const WrapperModal = ({
       case strings.setGamesDuration:
         return (
           <SetsGamesDurationModal
-            gameDuration={settings.game_duration}
+            gameDuration={
+              settings.default_setting_key === 'Set'
+                ? settings.score_rules
+                : settings.game_duration
+            }
             onChange={(gameDuration) => {
-              setSettings({...settings, game_duration: {...gameDuration}});
+              if (settings.default_setting_key === 'Set') {
+                setSettings({...settings, score_rules: {...gameDuration}});
+              } else {
+                setSettings({...settings, game_duration: {...gameDuration}});
+              }
             }}
           />
         );
@@ -126,6 +135,21 @@ const WrapperModal = ({
             }
             onChange={(venuesList) => {
               setSettings({...settings, venue: [...venuesList]});
+            }}
+          />
+        );
+
+      case strings.gameRules:
+        return (
+          <GameRulesModal
+            generalRules={settings.general_rules}
+            specialRules={settings.special_rules}
+            onChange={({generalRules, specialRules}) => {
+              setSettings({
+                ...settings,
+                general_rules: generalRules,
+                special_rules: specialRules,
+              });
             }}
           />
         );

@@ -1005,7 +1005,7 @@ export default {
   refereebookingnote:
     'en_By selecting the button below, I agree to the Game Rules cancellation policy and refund policy. I also agree to pay the total amount shown above.',
   scorekeeper: 'en_Scorekeeper',
-  gameRules: 'en_Game Rules',
+  gameRules: 'en_Match Rules',
   // Challenge screen
   typeOfGame: 'en_Match Type',
   matchFee: 'en_Match Fee',
@@ -2219,7 +2219,7 @@ export default {
   matchFeeModalTitle1: 'en_match fee?',
   matchFeeModalInfo:
     'en_The match host may need to receive a match fee from the challenger to cover expenses to host a match.',
-  matchHostChallengeText: 'en_Who the match host and challenger areen_:',
+  matchHostChallengeText: 'en_Who the match host and challenger are',
   matchFeeModalInfo1:
     'en_If you receive a challenge or invite someone to send you a challenge, you will be the match host and the opponent will be the challenger in the resulting match.',
   whatMatchHostDo: 'en_What the match host must doen_:',
@@ -2277,4 +2277,14 @@ export default {
   warningTextForFee: 'en_Do you want to reconsider a',
   warningTextForFee1: 'en_match fee?',
   changecapital: 'en_CHANGE',
+  youWillBeChallenger: 'en_You will be the challenger.',
+  youWillBeHost: 'en_You will be the match host.',
+  addText: 'en_Add',
+  scorekeeperText: 'en_Scorekeeper',
+  hostAndChallengerText: 'en_Who are the match host and challenger?',
+  whatChallengerHostShouldDo: 'en_What the match host & challenger should do',
+  whatChallengerHostShouldDoDescription:
+    'en_The match host is responsible to secure match venue, referees and scorekeeper as set by his or her incoming challenge settings or on the mutual agreement. Meanwhile, the challenger has to follow match rules and payment terms set by the match host.',
+  matchHostChallengeTextDescription:
+    'en_If you send a challenge or are invited to send a challenge to someone, you will be the challenger and the opponent will be the match host in the match created from the challenge.',
 };

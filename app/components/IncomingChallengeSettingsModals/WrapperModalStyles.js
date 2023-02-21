@@ -1,4 +1,4 @@
-import {Dimensions, StyleSheet} from 'react-native';
+import {StyleSheet} from 'react-native';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
@@ -6,18 +6,20 @@ const styles = StyleSheet.create({
   parent: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.6)',
-    justifyContent: 'flex-end',
+    // justifyContent: 'flex-end',
+    paddingTop: 50,
   },
   card: {
+    flex: 1,
     backgroundColor: colors.whiteColor,
-    height: Dimensions.get('window').height - 50,
+    // height: Dimensions.get('window').height - 50,
     borderTopRightRadius: 20,
     borderTopLeftRadius: 20,
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 5,
-    elevation: 15,
+    elevation: 5,
   },
   headerRow: {
     padding: 18,

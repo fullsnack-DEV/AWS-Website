@@ -10,6 +10,7 @@ import {
   Pressable,
   Image,
   Alert,
+  TouchableOpacity,
 } from 'react-native';
 import {strings} from '../../../../../Localization/translation';
 import {getGroupIndex, getUserIndex} from '../../../../api/elasticSearch';
@@ -33,9 +34,12 @@ const CongratulationsModal = ({
   joinTeam = () => {},
   searchTeam = () => {},
   createTeam = () => {},
+  goToSportActivityHome = () => {},
 }) => {
   const [playerList, setPlayersList] = useState([]);
   const [teamsList, setTeamsList] = useState([]);
+  const [showChallengeModal, setShowChallengeModal] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
@@ -102,12 +106,22 @@ const CongratulationsModal = ({
           },
         });
       }
-
+      setLoading(true);
       getUserIndex(playersQuery)
         .then((res) => {
-          setPlayersList(res);
+          const newList =
+            res.length > 0
+              ? res.filter(
+                  (item) => item.user_id !== authContext.entity.auth.user_id,
+                )
+              : [];
+          setTimeout(() => {
+            setLoading(false);
+          }, 20);
+          setPlayersList(newList);
         })
         .catch((e) => {
+          setLoading(false);
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
@@ -175,12 +189,17 @@ const CongratulationsModal = ({
         entity_type: {query: 'club'},
       },
     });
+    setLoading(true);
     getGroupIndex(queryParams)
       .then((response) => {
+        setTimeout(() => {
+          setLoading(false);
+        }, 20);
         setTeamsList(response);
       })
       .catch((e) => {
         console.log(e);
+        setLoading(false);
       });
   }, [authContext.entity.auth.user, sportName]);
 
@@ -202,17 +221,17 @@ const CongratulationsModal = ({
         <PlayersListNearYou
           list={playerList}
           sportType={sportType}
+          loading={loading}
           onChanllenge={() => {
+            setShowChallengeModal(true);
+          }}
+          searchPlayer={() => {
             closeModal();
-            onChanllenge({
+            searchPlayer({
               sport,
               sport_type: sportType,
               location: authContext.entity.auth.user?.country,
             });
-          }}
-          searchPlayer={() => {
-            closeModal();
-            searchPlayer();
           }}
           onUserClick={(item) => {
             closeModal();
@@ -225,6 +244,7 @@ const CongratulationsModal = ({
     return (
       <TeamsListNearYou
         list={teamsList}
+        loading={loading}
         searchTeam={() => {
           closeModal();
           searchTeam();
@@ -284,7 +304,11 @@ const CongratulationsModal = ({
               <Text style={styles.congratsSportText}>{sportName}</Text>
             </Text>
 
-            <Pressable style={styles.buttonContainer}>
+            <Pressable
+              style={styles.buttonContainer}
+              onPress={() => {
+                goToSportActivityHome();
+              }}>
               <Text style={styles.buttonText}>
                 {strings.goToSportActivityHomeText}
               </Text>
@@ -297,6 +321,52 @@ const CongratulationsModal = ({
             {renderList(sportType)}
           </View>
         </View>
+
+        <Modal visible={showChallengeModal} transparent>
+          <View style={styles.parent}>
+            <View style={styles.container1}>
+              <TouchableOpacity
+                style={styles.challengeContainer}
+                onPress={() => {
+                  closeModal();
+                  onChanllenge({
+                    sport,
+                    sport_type: sportType,
+                    location: authContext.entity.auth.user?.country,
+                  });
+                }}>
+                <Text style={styles.challengeText}>{strings.challenge}</Text>
+                <Text style={styles.normalText}>
+                  ({strings.youWillBeChallenger})
+                </Text>
+                <Text style={[styles.normalText, {marginTop: 8}]}>
+                  $ 20 CAD / match
+                </Text>
+              </TouchableOpacity>
+              <View style={styles.separator} />
+              <TouchableOpacity
+                style={styles.container2}
+                onPress={() => {
+                  closeModal();
+                  onChanllenge({
+                    sport,
+                    sport_type: sportType,
+                    location: authContext.entity.auth.user?.country,
+                  });
+                }}>
+                <Text style={styles.challengeText}>
+                  {strings.inviteToChallenge}
+                </Text>
+                <Text style={styles.normalText}>({strings.youWillBeHost})</Text>
+              </TouchableOpacity>
+            </View>
+            <TouchableOpacity
+              style={styles.cancelButton}
+              onPress={() => setShowChallengeModal(false)}>
+              <Text style={styles.challengeText}>{strings.cancel}</Text>
+            </TouchableOpacity>
+          </View>
+        </Modal>
       </View>
     </Modal>
   );
@@ -364,6 +434,48 @@ const styles = StyleSheet.create({
     height: 1,
     marginVertical: 25,
     backgroundColor: colors.lightGrayBackground,
+  },
+  container1: {
+    backgroundColor: colors.lightWhite,
+    opacity: 0.96,
+    margin: 15,
+    borderRadius: 13,
+  },
+  challengeContainer: {
+    alignItems: 'center',
+    paddingTop: 17,
+    paddingBottom: 13,
+  },
+  challengeText: {
+    fontSize: 20,
+    lineHeight: 24,
+    fontFamily: fonts.RRegular,
+    color: colors.requestConfirmColor,
+  },
+  normalText: {
+    fontSize: 16,
+    lineHeight: 24,
+    fontFamily: fonts.RRegular,
+    color: colors.requestConfirmColor,
+  },
+  separator: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: colors.darkGrayTrashColor,
+  },
+  container2: {
+    alignItems: 'center',
+    paddingTop: 33,
+    paddingBottom: 28,
+  },
+  cancelButton: {
+    backgroundColor: colors.lightWhite,
+    opacity: 0.9,
+    marginHorizontal: 15,
+    marginBottom: 35,
+    borderRadius: 13,
+    padding: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 export default CongratulationsModal;
