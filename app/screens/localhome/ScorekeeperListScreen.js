@@ -178,7 +178,7 @@ export default function ScorekeeperListScreen({navigation, route}) {
         })
         .catch((e) => {
           setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e);
+            Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
         });
     },

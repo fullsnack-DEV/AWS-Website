@@ -99,7 +99,7 @@ const RefereeBookingDateAndTime = ({navigation, route}) => {
           .catch((error) => {
             setLoading(false);
             setTimeout(() => {
-              Alert.alert(strings.alertmessagetitle, error);
+              Alert.alert(strings.alertmessagetitle, error.message);
             }, 10);
           });
       } else {

@@ -84,7 +84,7 @@ export default function TerminateAccountScreen({navigation, route}) {
       .catch((e) => {
         setloading(false);
         setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e);
+          Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
   };
@@ -115,7 +115,7 @@ export default function TerminateAccountScreen({navigation, route}) {
       .catch((e) => {
         setloading(false);
         setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e);
+          Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
   };

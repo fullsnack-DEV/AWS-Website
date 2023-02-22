@@ -404,7 +404,10 @@ export default function EditLineUpScreen({navigation, route}) {
         })
         .catch((error) => {
           setLoading(false);
-          setTimeout(() => Alert.alert(strings.alertmessagetitle, error), 10);
+          setTimeout(
+            () => Alert.alert(strings.alertmessagetitle, error.message),
+            10,
+          );
         });
     } else {
       setLoading(false);
