@@ -299,15 +299,22 @@ export default function CreateMemberProfileForm1({navigation, route}) {
           </TouchableOpacity>
         </View>
 
-        <View>
+        <View
+          style={{
+            marginTop: 8,
+          }}>
           <TCLable title={strings.nameText.toUpperCase()} required={true} />
           <View
             style={{
               flexDirection: 'row',
               alignItems: 'center',
-              marginTop: 12,
+              marginTop: 10,
             }}>
             <TCTextField
+              style={{
+                flex: 1,
+                marginHorizontal: 8,
+              }}
               value={firstName}
               autoCapitalize="none"
               autoCorrect={false}
@@ -315,6 +322,10 @@ export default function CreateMemberProfileForm1({navigation, route}) {
               placeholder={strings.firstName}
             />
             <TCTextField
+              style={{
+                flex: 1,
+                marginHorizontal: 8,
+              }}
               value={lastName}
               autoCapitalize="none"
               autoCorrect={false}
@@ -327,7 +338,7 @@ export default function CreateMemberProfileForm1({navigation, route}) {
           <TCLable
             title={strings.homeCity.toUpperCase()}
             required={true}
-            style={{marginBottom: 12}}
+            style={{marginBottom: 10, marginTop: 25}}
           />
           <TouchableOpacity onPress={() => setVisibleLocationModal(true)}>
             <TCTextField
@@ -344,7 +355,7 @@ export default function CreateMemberProfileForm1({navigation, route}) {
           <TCLable
             title={strings.emailtitle.toUpperCase()}
             required={true}
-            style={{marginBottom: 12}}
+            style={{marginBottom: 10, marginTop: 25}}
           />
           <TCTextField
             value={email}
@@ -438,7 +449,7 @@ const styles = StyleSheet.create({
     right: 0,
   },
   nextButtonStyle: {
-    fontFamily: fonts.RRegular,
+    fontFamily: fonts.RMedium,
     fontSize: 16,
     marginRight: 10,
   },

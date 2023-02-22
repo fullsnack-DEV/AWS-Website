@@ -10,10 +10,12 @@ import fonts from '../Constants/Fonts';
 export default function TCUserRoleBadge({
   title = strings.admin,
   titleColor = colors.themeColor,
+  gradientColor = colors.blackGradientColor,
+  gradientColor1 = colors.whiteGradientColor,
 }) {
   return (
     <LinearGradient
-      colors={[colors.whiteGradientColor, colors.blackGradientColor]}
+      colors={[gradientColor1, gradientColor]}
       style={styles.badgeView}>
       <Text style={[styles.roleTitle, {color: titleColor}]}>{title}</Text>
     </LinearGradient>
@@ -26,7 +28,7 @@ const styles = StyleSheet.create({
     marginLeft: 0,
     marginRight: 4,
     alignItems: 'center',
-    borderRadius: 5,
+    borderRadius: 4,
     height: 16,
     justifyContent: 'center',
     paddingLeft: 5,

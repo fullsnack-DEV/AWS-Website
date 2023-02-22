@@ -57,7 +57,7 @@ export default function CurrencySettingScreen({navigation}) {
       .catch((e) => {
         setloading(false);
         setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
+          Alert.alert(strings.alertmessagetitle, e);
         }, 10);
       });
   };

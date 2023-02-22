@@ -272,11 +272,6 @@ export default function RequestBasicInfoScreen({navigation, route}) {
 
   // Form Validation
   const checkValidation = () => {
-    if (setting.birthday && memberInfo?.birthday === '') {
-      Alert.alert('Towns Cup', 'Please fill birthday.');
-      return false;
-    }
-
     if (setting?.height && memberInfo.height) {
       if (!memberInfo.height.height_type) {
         Alert.alert('Towns Cup', 'Please select height measurement');
@@ -325,13 +320,10 @@ export default function RequestBasicInfoScreen({navigation, route}) {
   };
 
   const editMemberBasicInfo = () => {
-    setloading(true);
-    const bodyParams = {update_profile_info: updateProfile};
+    const bodyParams = {...memberInfo, update_profile_info: updateProfile};
 
-    bodyParams.gender = memberInfo?.gender;
-    if (setting?.birthday === true) {
-      bodyParams.birthday = memberInfo?.birthday;
-    }
+    setloading(true);
+
     if (setting?.height === true) {
       bodyParams.height = memberInfo?.height;
     }
@@ -359,9 +351,6 @@ export default function RequestBasicInfoScreen({navigation, route}) {
       bodyParams.postal_code = memberInfo?.postal_code;
     }
 
-    console.log('====================================');
-    console.log('BODY:->', bodyParams);
-    console.log('====================================');
     approveBasicInfoRequest(
       route?.params?.groupID,
       route?.params?.requestID,

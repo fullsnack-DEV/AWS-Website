@@ -930,6 +930,7 @@ export default {
   allNInvoice: 'en_All ({0})',
   noLogFoundText: 'en_No Logs Found',
   deleteInvoice: 'en_Delete Invoice',
+  invoice: 'en_Invoice',
 
   inviteToChallengeText:
     'en_Through “Invite to challenge”, you can invite another team to challenge your team.',
@@ -2169,8 +2170,10 @@ export default {
   removeMemberFromGroup: 'en_Remove this member from team',
   basicInfoRequestText:
     'en_{0} wants to collect your basic info. You may choose the sections you want to send or edit each section befor you send the information.',
+
   requestBasicInfoTitle: 'en_Request Basic Info',
   reservations: 'en_Reservations',
+
   leavereviewinsmall: 'en_Leave Review',
   doubleteamtitle:
     'en_Please, rate the performance of {0} and leave a review for the team below.',
@@ -2194,6 +2197,7 @@ export default {
     "en_Describe what you thought about the team's performance and sportsmanship pertaining to the match.",
   writeplayerreviewplacholder:
     "en_Describe what you thought about the player's performance and sportsmanship pertaining to the match.",
+
   sportQuestion: 'en_What sports do you play?',
   sportQuestionDescription:
     'en_Do you play multiple sports? Register as a player in one sport first, and then register in another sport. ',
@@ -2292,4 +2296,22 @@ export default {
   matchHostChallengeTextDescription:
     'en_If you send a challenge or are invited to send a challenge to someone, you will be the challenger and the opponent will be the match host in the match created from the challenge.',
 
+  sentBasicInfoText:
+    'en_You can send a request to collect the member’s basic info.',
+  birthdayAgeText: 'en_Birthday, age',
+
+  requestInfoAcceptedText:
+    'en_When the request is accepted, the basic info in this profile will be updated with the info provided by the member. A user may choose to only provide some of the basic info items.',
+  showAgainText: 'en_Don’t show this again.',
+  updateMyProfile: 'en_Update this information on my profile.',
+  requestBasicInfoTitle: 'en_Request Basic Info',
+  inviteMemberToGroup: 'en_Invite member to {0}',
+  chatsTitle: 'en_Chats',
+  statusPlaceholder: 'en_Status',
+  dominantFoot: 'en_Dominant foot',
+  dateFormatPlaceholder: 'en_MM DD YYYY',
+  nojoinedTeamAvailable: 'en_  No Joined Teams Available',
+  //Message Navigator
+  messageChat: 'en_Message Chat',
+  memberProfile: 'en_Member Profile',
 };

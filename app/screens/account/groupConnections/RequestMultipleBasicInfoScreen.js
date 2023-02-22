@@ -172,15 +172,15 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-      <View style={{marginTop: 10}}>
+      <View style={{margin: 15}}>
         <TCSearchBox
-          width={'90%'}
           alignSelf="center"
           onChangeText={(text) => {
             searchFilterFunction(text);
           }}
         />
       </View>
+
       <TCProfileTag dataSource={players} onTagCancelPress={handleTagPress} />
       <FlatList
         extraData={players}

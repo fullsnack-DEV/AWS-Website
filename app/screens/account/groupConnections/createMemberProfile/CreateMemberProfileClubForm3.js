@@ -143,10 +143,13 @@ export default function CreateMemberProfileClubForm3({navigation, route}) {
       <ActivityLoader visible={loading} />
       <TCFormProgress totalSteps={3} curruentStep={3} />
 
-      <View style={{marginTop: 15}}>
+      <View
+        style={{
+          marginTop: -8,
+        }}>
         <TCLabel
           title={strings.writeNotesPlaceholder.toUpperCase()}
-          style={{marginBottom: 15}}
+          style={{marginBottom: 7}}
         />
         <TCTextField
           value={note}
@@ -155,9 +158,12 @@ export default function CreateMemberProfileClubForm3({navigation, route}) {
           onChangeText={(text) => setNote(text)}
           placeholder={strings.notesPlaceholder}
           keyboardType={'default'}
+          style={{
+            marginBottom: 30,
+          }}
         />
 
-        <View style={{flexDirection: 'row', margin: 15}}>
+        <View style={{flexDirection: 'row', paddingHorizontal: 25}}>
           <TouchableOpacity
             onPress={() => {
               setJoinTCCheck(!joinTCCheck);
@@ -186,7 +192,7 @@ const styles = StyleSheet.create({
   },
 
   nextButtonStyle: {
-    fontFamily: fonts.RRegular,
+    fontFamily: fonts.RMedium,
     fontSize: 16,
     marginRight: 10,
   },
@@ -194,6 +200,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     fontSize: 16,
     color: colors.lightBlackColor,
-    marginLeft: 15,
+    marginLeft: 10,
   },
 });

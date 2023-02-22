@@ -183,6 +183,9 @@ export default function InviteMembersBySearchScreen({navigation}) {
       </Text>
       <TCSearchBox
         width={'90%'}
+        style={{
+          marginTop: -5,
+        }}
         alignSelf="center"
         onChangeText={(text) => {
           // searchFilterFunction(text)
@@ -204,13 +207,22 @@ export default function InviteMembersBySearchScreen({navigation}) {
         }}
       />
 
-      <View style={{marginLeft: 15, marginRight: 15}}>
+      <View
+        style={{
+          marginLeft: 15,
+          marginRight: 15,
+
+          marginTop: 15,
+        }}>
         <TCProfileTag dataSource={players} onTagCancelPress={handleTagPress} />
       </View>
 
       {players.filter((obj) => obj.isChecked).length <= 0 &&
         searchText.length <= 0 && (
-          <View>
+          <View
+            style={{
+              marginTop: -5,
+            }}>
             <Pressable
               style={styles.inviteEmailStyle}
               onPress={() => {
@@ -241,10 +253,9 @@ export default function InviteMembersBySearchScreen({navigation}) {
                 }}
               />
             </View>
-            <TCThinDivider />
           </View>
         )}
-
+      <TCThinDivider />
       <FlatList
         extraData={players}
         showsVerticalScrollIndicator={false}

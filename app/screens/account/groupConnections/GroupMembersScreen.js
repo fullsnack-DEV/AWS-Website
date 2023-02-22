@@ -17,7 +17,7 @@ import {
   Text,
   TouchableOpacity,
 } from 'react-native';
-import {useIsFocused} from '@react-navigation/native';
+import {useIsFocused, useNavigationState} from '@react-navigation/native';
 
 import ActionSheet from 'react-native-actionsheet';
 // import Modal from 'react-native-modal';
@@ -42,6 +42,7 @@ import {getHitSlop} from '../../../utils';
 import {followUser, unfollowUser} from '../../../api/Users';
 import TCFollowUnfollwButton from '../../../components/TCFollowUnfollwButton';
 import Verbs from '../../../Constants/Verbs';
+import Header from '../../../components/Home/Header';
 
 export default function GroupMembersScreen({navigation, route}) {
   const actionSheet = useRef();
@@ -58,8 +59,12 @@ export default function GroupMembersScreen({navigation, route}) {
 
   const [switchUser] = useState(authContext.entity);
   const [groupObj] = useState(route.params?.groupObj ?? authContext.entity.obj);
+  const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
+  const [pointEvent, setPointEvent] = useState('auto');
 
   const [groupID] = useState(route.params?.groupID ?? authContext.entity.uid);
+  const routes = useNavigationState((state) => state.routes);
+  const currentRoute = routes[0].name;
 
   useEffect(() => {
     getMembers();
@@ -84,6 +89,7 @@ export default function GroupMembersScreen({navigation, route}) {
   };
   useLayoutEffect(() => {
     navigation.setOptions({
+      headerShown: currentRoute !== 'GroupMembersScreen',
       headerRight: () =>
         switchUser.uid === groupID && (
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
@@ -104,7 +110,28 @@ export default function GroupMembersScreen({navigation, route}) {
           </View>
         ),
     });
-  }, [navigation, switchUser, groupID]);
+  }, [navigation, switchUser, groupID, currentRoute]);
+
+  useEffect(() => {
+    setIsAccountDeactivated(false);
+    setPointEvent('auto');
+    if (isFocused) {
+      if (authContext?.entity?.obj?.is_pause === true) {
+        setIsAccountDeactivated(true);
+        setPointEvent('none');
+      }
+      if (authContext?.entity?.obj?.is_deactivate === true) {
+        setIsAccountDeactivated(true);
+        setPointEvent('none');
+      }
+    }
+  }, [
+    authContext.entity?.obj.entity_type,
+    authContext.entity?.obj?.is_deactivate,
+    authContext.entity?.obj?.is_pause,
+    authContext.entity.role,
+    isFocused,
+  ]);
 
   const searchFilterFunction = (text) => {
     const result = members.filter(
@@ -331,42 +358,50 @@ export default function GroupMembersScreen({navigation, route}) {
                     />
                   )}
                 </TouchableOpacity>
-                <View style={{flexDirection: 'row'}}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                  }}>
                   {data?.is_admin && (
                     <TCUserRoleBadge
                       title="Admin"
                       titleColor={colors.themeColor}
+                      gradientColor={colors.lightGrayBackground}
+                      gradientColor1={colors.lightGrayBackground}
+                      style={{
+                        marginLeft: 5,
+                      }}
                     />
                   )}
-                  {data?.is_coach && (
+                  {!data?.is_coach && (
                     <TCUserRoleBadge
                       title="Coach"
                       titleColor={colors.greeColor}
+                      gradientColor={colors.lightGrayBackground}
+                      gradientColor1={colors.lightGrayBackground}
+                      style={{
+                        marginLeft: 5,
+                      }}
                     />
                   )}
                   {data?.is_member && (
                     <TCUserRoleBadge
                       title="Player"
                       titleColor={colors.playerBadgeColor}
+                      gradientColor={colors.lightGrayBackground}
+                      gradientColor1={colors.lightGrayBackground}
+                      style={{
+                        marginLeft: 5,
+                      }}
                     />
                   )}
                 </View>
               </View>
             </View>
-            <View>
-              <View style={styles.bottomViewContainer}>
-                {/* <Text style={styles.skillText} numberOfLines={2}>Forward, Midfielder, Goal Keeper</Text> */}
-                {data?.status && (
-                  <Text style={styles.awayStatusText} numberOfLines={1}>
-                    {data?.status.join(', ')}
-                  </Text>
-                )}
-              </View>
-            </View>
           </View>
           {renderFollowUnfollowArrow(data, index)}
         </View>
-        <TCThinDivider marginTop={20} />
+        <TCThinDivider />
       </>
     ),
     [onPressProfilePhotoAndTitle, renderFollowUnfollowArrow],
@@ -375,16 +410,59 @@ export default function GroupMembersScreen({navigation, route}) {
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
+      <View
+        style={{
+          opacity: isAccountDeactivated ? 0.5 : 1,
+        }}
+        pointerEvents={pointEvent}>
+        {currentRoute === 'GroupMembersScreen' && (
+          <Header
+            leftComponent={
+              <Text style={styles.eventTitleTextStyle}>
+                {strings.membersTitle}
+              </Text>
+            }
+            showBackgroundColor={true}
+            rightComponent={
+              <View>
+                {switchUser.uid === groupID && (
+                  <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                    <TouchableWithoutFeedback
+                      onPress={() => actionSheet.current.show()}>
+                      <Image
+                        source={images.createMember}
+                        style={styles.createMemberStyle}
+                      />
+                    </TouchableWithoutFeedback>
+                    <TouchableWithoutFeedback
+                      onPress={() => actionSheetPlus.current.show()}>
+                      <Image
+                        source={images.vertical3Dot}
+                        style={styles.navigationRightItem}
+                      />
+                    </TouchableWithoutFeedback>
+                  </View>
+                )}
+              </View>
+            }
+          />
+        )}
+        <View style={styles.headerSeperator} />
+      </View>
       <View tabLabel={strings.membersTitle} style={{flex: 1}}>
         <View style={styles.searchBarView}>
           <TCSearchBox
-            // editable={members?.length > 0}
             onChangeText={(text) => searchFilterFunction(text)}
+            placeholderText={strings.searchText}
+            style={{
+              height: 40,
+            }}
           />
         </View>
         {/* eslint-disable-next-line no-nested-ternary */}
         {members.length > 0 ? (
           <FlatList
+            style={{marginTop: -10}}
             data={members}
             renderItem={renderMembers}
             keyExtractor={(item, index) => index.toString()}
@@ -399,7 +477,6 @@ export default function GroupMembersScreen({navigation, route}) {
         options={[
           strings.inviteMemberText,
           strings.createMemberProfileText,
-
           strings.cancel,
         ]}
         cancelButtonIndex={2}
@@ -416,10 +493,9 @@ export default function GroupMembersScreen({navigation, route}) {
         ref={actionSheetPlus}
         options={[
           strings.invoice,
+          strings.cancel,
           strings.viewPrivacy,
           strings.sendrequestForBaicInfoText,
-
-          strings.cancel,
         ]}
         cancelButtonIndex={3}
         onPress={(index) => {
@@ -449,20 +525,17 @@ const styles = StyleSheet.create({
   // },
   searchBarView: {
     flexDirection: 'row',
-    marginLeft: 20,
-    marginTop: 20,
-    marginBottom: 20,
+    margin: 15,
   },
   navigationRightItem: {
-    height: 15,
-    marginRight: 20,
+    height: 25,
+    marginRight: 10,
     resizeMode: 'contain',
-    tintColor: colors.blackColor,
-    width: 15,
+    width: 25,
   },
   createMemberStyle: {
     height: 25,
-    marginRight: 20,
+    marginRight: 15,
     resizeMode: 'contain',
     width: 25,
   },
@@ -474,7 +547,6 @@ const styles = StyleSheet.create({
     borderRadius: 80,
   },
   roleViewContainer: {
-    marginTop: 20,
     marginLeft: 20,
     marginRight: 20,
     flexDirection: 'row',
@@ -482,6 +554,11 @@ const styles = StyleSheet.create({
   },
   topViewContainer: {
     flexDirection: 'row',
+
+    height: 35,
+    alignItems: 'center',
+    marginBottom: 15,
+    marginTop: 15,
   },
 
   topTextContainer: {
@@ -492,19 +569,11 @@ const styles = StyleSheet.create({
   nameText: {
     fontSize: 16,
     color: colors.lightBlackColor,
-    fontFamily: fonts.RMedium,
     marginRight: 10,
-  },
-  bottomViewContainer: {
-    marginLeft: 55,
-    marginTop: 5,
+    fontFamily: fonts.RMedium,
+    lineHeight: 24,
   },
 
-  awayStatusText: {
-    fontSize: 12,
-    color: colors.themeColor,
-    fontFamily: fonts.RRegular,
-  },
   buttonContainer: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -513,7 +582,7 @@ const styles = StyleSheet.create({
     height: 15,
     width: 15,
     resizeMode: 'contain',
-    tintColor: colors.darkGrayTrashColor,
+    tintColor: colors.lightBlackColor,
   },
   unlinedImage: {
     height: 15,
@@ -523,5 +592,24 @@ const styles = StyleSheet.create({
   imageTouchStyle: {
     alignItems: 'center',
     justifyContent: 'center',
+  },
+
+  eventTitleTextStyle: {
+    width: 120,
+    textAlign: 'center',
+    fontFamily: fonts.Roboto,
+    fontWeight: '700',
+    fontSize: 20,
+    lineHeight: 18,
+    paddingTop: 5,
+    color: colors.lightBlackColor,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  headerSeperator: {
+    backgroundColor: colors.grayBackgroundColor,
+    marginVertical: 0,
+    height: 2,
+    width: '100%',
   },
 });

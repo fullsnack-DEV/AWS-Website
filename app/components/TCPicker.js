@@ -47,16 +47,20 @@ export default function TCPicker({
 const styles = StyleSheet.create({
   inputAndroid: {
     alignSelf: 'center',
+
     backgroundColor: colors.textFieldBackground,
     borderRadius: 5,
     color: colors.lightBlackColor,
-    elevation: 3,
+
     fontSize: 16,
     fontFamily: fonts.RRegular,
     paddingHorizontal: 15,
     paddingRight: 30,
     paddingVertical: 10,
+    height: 40,
 
+    elevation: 0,
+    textAlign: 'center',
     width: '92%',
   },
   inputIOS: {

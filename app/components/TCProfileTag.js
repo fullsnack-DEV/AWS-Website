@@ -46,17 +46,15 @@ export default function TCProfileTag({dataSource, onTagCancelPress}) {
     </>
   );
   return (
-    <View>
-      <FlatList
-        data={dataSource}
-        renderItem={renderTags}
-        keyExtractor={(item, index) => index.toString()}
-        style={styles.tagListStyle}
-        horizontal={true}
-        showsHorizontalScrollIndicator={false}
-        ItemSeparatorComponent={() => <View style={{width: 5}} />}
-      />
-    </View>
+    <FlatList
+      data={dataSource}
+      renderItem={renderTags}
+      keyExtractor={(item, index) => index.toString()}
+      horizontal={true}
+      showsHorizontalScrollIndicator={false}
+      ItemSeparatorComponent={() => <View style={{width: 5}} />}
+      style={{marginLeft: 15, marginRight: 15, marginBottom: 15}}
+    />
   );
 }
 
@@ -71,10 +69,6 @@ const styles = StyleSheet.create({
     right: 2,
   },
 
-  tagListStyle: {
-    marginTop: 20,
-    marginBottom: 10,
-  },
   tagTitleText: {
     marginRight: 5,
     marginTop: 5,

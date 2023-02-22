@@ -282,7 +282,7 @@ const Summary = ({
       })
       .catch((error) => {
         console.log('error L ', error);
-        Alert.alert(strings.alertmessagetitle, error.message);
+        Alert.alert(strings.alertmessagetitle, error);
       });
   };
 

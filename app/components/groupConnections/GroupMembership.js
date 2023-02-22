@@ -72,18 +72,33 @@ const GroupMembership = ({
                 <TCUserRoleBadge
                   title={strings.admin}
                   titleColor={colors.themeColor}
+                  gradientColor={colors.lightGrayBackground}
+                  gradientColor1={colors.lightGrayBackground}
+                  style={{
+                    marginLeft: 5,
+                  }}
                 />
               )}
               {groupData.is_coach && (
                 <TCUserRoleBadge
                   title={strings.coach}
                   titleColor={colors.greeColor}
+                  gradientColor={colors.lightGrayBackground}
+                  gradientColor1={colors.lightGrayBackground}
+                  style={{
+                    marginLeft: 5,
+                  }}
                 />
               )}
               {groupData.is_member && (
                 <TCUserRoleBadge
                   title={strings.player}
                   titleColor={colors.playerBadgeColor}
+                  gradientColor={colors.lightGrayBackground}
+                  gradientColor1={colors.lightGrayBackground}
+                  style={{
+                    marginLeft: 5,
+                  }}
                 />
               )}
             </View>
@@ -143,7 +158,7 @@ const styles = StyleSheet.create({
 
   topViewContainer: {
     flexDirection: 'row',
-    marginTop: 10,
+
     marginLeft: 20,
     marginRight: 20,
     justifyContent: 'space-between',

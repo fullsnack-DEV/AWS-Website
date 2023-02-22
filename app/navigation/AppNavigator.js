@@ -40,6 +40,7 @@ import LocalHomeNavigator from './LocalHomeNavigator';
 import {strings} from '../../Localization/translation';
 import ScheduleNavigator from './ScheduleNavigator';
 import MembersNavigator from './MembersNavigator';
+import fonts from '../Constants/Fonts';
 
 // import HomeNavigator from './HomeNavigator';
 // import HomeNavigator from './HomeNavigator';
@@ -297,7 +298,8 @@ const getTabBarVisibility = (route) => {
     routeName === 'TrashScreen' ||
     routeName === 'LanguageSettingScreen' ||
     routeName === 'MessageChat' ||
-    routeName === 'InviteMembersByEmailScreen'
+    routeName === 'InviteMembersByEmailScreen' ||
+    routeName === 'BasicInfoScreen'
   ) {
     return false;
   }
@@ -582,6 +584,7 @@ const AppNavigator = ({navigation}) => {
         options={({route}) => ({
           tabBarTestID: 'newsfeed-tab',
           headerShown: false,
+
           // tabBarVisible: getTabBarVisibility(route),
           tabBarStyle: {display: getTabBarVisibility(routes) ? 'flex' : 'none'},
           tabBarIcon: ({focused}) => {

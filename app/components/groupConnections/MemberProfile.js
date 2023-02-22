@@ -14,7 +14,6 @@ import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 
 export default function MemberProfile({isChecked, onPress, playerDetail}) {
-  console.log('player detail :=>', playerDetail);
   return (
     <>
       {isChecked ? (
@@ -130,14 +129,18 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
   },
   whiteNameText: {
-    fontSize: 16,
     color: colors.lightBlackColor,
-    fontFamily: fonts.RBold,
+    fontFamily: fonts.Roboto,
+    fontWeight: '500',
+    fontSize: 16,
+    lineHeight: 24,
   },
   locationText: {
-    fontSize: 14,
     color: colors.lightBlackColor,
-    fontFamily: fonts.RLight,
+    fontFamily: fonts.Roboto,
+    fontWeight: '300',
+    fontSize: 14,
+    lineHeight: 21,
   },
   whiteLocationText: {
     fontSize: 14,

@@ -3,6 +3,7 @@ import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 
 import colors from '../Constants/Colors';
+import {strings} from '../../Localization/translation';
 
 import MessageMainScreen from '../screens/message/MessageMainScreen';
 import MessageInviteScreen from '../screens/message/MessageInviteScreen';
@@ -14,28 +15,37 @@ import MessageEditInviteeScreen from '../screens/message/MessageEditInviteeScree
 import FeedViewScreen from '../components/newsFeed/feedView/FeedViewScreen';
 import SearchScreen from '../screens/search/SearchScreen';
 import MessageChat from '../components/message/MessageChat';
+import fonts from '../Constants/Fonts';
 
 const Stack = createStackNavigator();
 
 const MessageNavigator = () => (
   <Stack.Navigator
     screenOptions={{
+      gestureEnabled: false,
       headerBackTitleVisible: false,
+      headerTitleStyle: {
+        textAlign: 'center',
+        fontFamily: fonts.Roboto,
+        fontWeight: '700',
+        fontSize: 16,
+        lineHeight: 17,
+        paddingTop: 5,
+        color: colors.lightBlackColor,
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
+      headerStyle: {
+        backgroundColor: colors.whiteColor,
+        borderBottomColor: colors.grayColor,
+        borderBottomWidth: 0.3,
+      },
     }}>
     <Stack.Screen
       name="MessageMainScreen"
       component={MessageMainScreen}
       options={{
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
         headerShown: false,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -43,33 +53,15 @@ const MessageNavigator = () => (
       component={MessageSearchScreen}
       options={{
         title: 'Neymar JR',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
         headerShown: false,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
       name="MessageChat"
       component={MessageChat}
       options={{
-        title: 'Message Chat',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
+        title: strings.messageChat,
         headerShown: false,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -77,17 +69,9 @@ const MessageNavigator = () => (
       name="MessageInviteScreen"
       component={MessageInviteScreen}
       options={{
-        title: 'Message Chat',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
+        title: strings.messageChat,
+
         headerShown: false,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -99,17 +83,9 @@ const MessageNavigator = () => (
       name="MessageEditInviteeScreen"
       component={MessageEditInviteeScreen}
       options={{
-        title: 'Message Chat',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
+        title: strings.messageChat,
+
         headerShown: false,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -117,68 +93,34 @@ const MessageNavigator = () => (
       name="MessageNewGroupScreen"
       component={MessageNewGroupScreen}
       options={{
-        title: 'Message Chat',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
+        title: strings.messageChat,
+
         headerShown: false,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
       name="MessageEditGroupScreen"
       component={MessageEditGroupScreen}
       options={{
-        title: 'Message',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
+        title: strings.message,
+
         headerShown: false,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
       name="HomeScreen"
       component={HomeScreen}
       options={{
-        title: 'Home',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
+        title: strings.home,
+
         headerShown: false,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
       name="SearchScreen"
       component={SearchScreen}
       options={{
-        title: 'Search',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
+        title: strings.searchText,
       }}
     />
   </Stack.Navigator>

@@ -19,6 +19,7 @@ import {
   FlatList,
   TouchableOpacity,
   Linking,
+  Pressable,
 } from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
 import {format} from 'react-string-format';
@@ -197,7 +198,7 @@ export default function MembersProfileScreen({navigation, route}) {
           fontSize: 18,
           color: colors.userPostTimeColor,
         }}>
-        No Joined Teams Available
+        {strings.nojoinedTeamAvailable}
       </Text>
     </View>
   );
@@ -205,6 +206,8 @@ export default function MembersProfileScreen({navigation, route}) {
   const renderSeparator = () => <TCThinDivider marginTop={20} width={'100%'} />;
 
   const getLocation = () => {
+    console.log(memberDetail, 'FromDate');
+
     let locationString = '';
 
     if (memberDetail?.connected) {
@@ -383,6 +386,16 @@ export default function MembersProfileScreen({navigation, route}) {
                   : strings.NAText
               }
             />
+
+            <TCInfoField
+              title={strings.age}
+              value={
+                memberDetail?.birthday
+                  ? getAge(new Date(memberDetail?.birthday))
+                  : strings.NAText
+              }
+            />
+
             <TCInfoField
               title={strings.height}
               value={
@@ -397,15 +410,6 @@ export default function MembersProfileScreen({navigation, route}) {
               value={
                 memberDetail?.weight
                   ? `${memberDetail.weight.weight} ${memberDetail.weight.weight_type}`
-                  : strings.NAText
-              }
-            />
-
-            <TCInfoField
-              title={strings.age}
-              value={
-                memberDetail?.birthday
-                  ? getAge(new Date(memberDetail?.birthday))
                   : strings.NAText
               }
             />
@@ -463,7 +467,11 @@ export default function MembersProfileScreen({navigation, route}) {
 			</View> */}
 
             <View style={styles.sectionEditView}>
-              <Text style={styles.basicInfoTitle}>
+              <Text
+                style={[
+                  styles.basicInfoTitle,
+                  {marginBottom: 12, marginTop: 2},
+                ]}>
                 {entity.role === Verbs.entityTypeTeam
                   ? strings.specifications
                   : strings.membershipTitle}
@@ -496,6 +504,7 @@ export default function MembersProfileScreen({navigation, route}) {
             {memberDetail?.teams?.length > 0 && (
               <TCThinDivider marginTop={20} width={'100%'} />
             )}
+
             <FlatList
               data={
                 entity.role === Verbs.entityTypeClub
@@ -519,24 +528,31 @@ export default function MembersProfileScreen({navigation, route}) {
               ListEmptyComponent={listEmptyView}
               ItemSeparatorComponent={renderSeparator}
               renderItem={({item}) => (
-                <GroupMembership
-                  groupData={item}
-                  switchID={entity.uid}
-                  edit={editTeam}
-                  onEditPressed={() => {
-                    navigation.navigate('EditMemberTeamInfoScreen', {
-                      groupMemberDetail: item,
-                    });
-                  }}
-                />
+                <Pressable
+                  style={{
+                    marginTop: 15,
+                    marginBottom: 17,
+                  }}>
+                  <GroupMembership
+                    groupData={item}
+                    switchID={entity.uid}
+                    edit={editTeam}
+                    onEditPressed={() => {
+                      navigation.navigate('EditMemberTeamInfoScreen', {
+                        groupMemberDetail: item,
+                      });
+                    }}
+                  />
+                </Pressable>
               )}
               keyExtractor={(item, index) => index.toString()}
               scrollEnabled={false}
             />
           </View>
-          <TCThickDivider marginTop={20} />
+          <TCThickDivider marginTop={10} />
+
           <View>
-            <View style={styles.sectionEditView}>
+            <View style={[styles.sectionEditView, {marginTop: 15}]}>
               <Text style={styles.basicInfoTitle}>
                 {strings.writeNotesPlaceholder}
               </Text>
@@ -554,7 +570,7 @@ export default function MembersProfileScreen({navigation, route}) {
             <Text style={styles.describeText} numberOfLines={50}>
               {memberDetail?.note}
             </Text>
-            <TCThickDivider marginTop={20} />
+            <TCThickDivider />
             <Text
               style={styles.removeTextStyle}
               onPress={() => {
@@ -613,11 +629,10 @@ export default function MembersProfileScreen({navigation, route}) {
 }
 const styles = StyleSheet.create({
   navigationRightItem: {
-    height: 15,
-    marginRight: 20,
+    height: 25,
+    marginRight: 15,
     resizeMode: 'contain',
-    tintColor: colors.blackColor,
-    width: 15,
+    width: 25,
   },
   backArrowStyle: {
     height: 20,
@@ -631,8 +646,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   roleViewContainer: {
-    marginTop: 20,
-    marginLeft: 15,
+    marginTop: 19,
+    marginLeft: 12,
     marginRight: 15,
     justifyContent: 'space-between',
   },
@@ -646,7 +661,10 @@ const styles = StyleSheet.create({
   basicInfoTitle: {
     fontSize: 20,
     color: colors.lightBlackColor,
-    fontFamily: fonts.RRegular,
+    textTransform: 'uppercase',
+    fontFamily: fonts.RMedium,
+    //  fontWeight: '500',
+    lineHeight: 30,
   },
   familyView: {
     flexDirection: 'row',
@@ -666,8 +684,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    margin: 15,
-    marginRight: 20,
+    marginTop: 20,
+    marginLeft: 15,
+    marginRight: 15,
   },
   describeText: {
     fontSize: 16,
@@ -703,6 +722,21 @@ const styles = StyleSheet.create({
     color: colors.darkThemeColor,
     textDecorationLine: 'underline',
     textAlign: 'center',
-    margin: 15,
+    marginTop: 25,
+    marginBottom: 38,
+  },
+  messageButtonStyle: {
+    marginTop: 0,
+    height: 25,
+    width: '100%',
+    backgroundColor: '#F5F5F5',
+    elevation: 0,
+    shadowOffset: 0,
+    shadowRadius: 0,
+  },
+  buttonTextStyle: {
+    fontFamily: fonts.RBold,
+    fontSize: 12,
+    shadowColor: colors.whiteColor,
   },
 });

@@ -37,7 +37,7 @@ export default function GoingListScreen({navigation, route}) {
       })
       .catch((e) => {
         setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
+          Alert.alert(strings.alertmessagetitle, e);
         }, 10);
       });
   }, [route?.params?.going_ids]);

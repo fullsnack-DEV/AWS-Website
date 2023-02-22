@@ -558,7 +558,9 @@ export default function BasicInfoScreen({navigation, route}) {
           <TCLabel title={strings.birthDatePlaceholder} />
           <View style={styles.staticTextView}>
             <Text style={styles.staticText}>
-              {moment(userInfo?.birthday * 1000).format('MMM DD,YYYY')}
+              {moment(Utility.getJSDate(userInfo?.birthday)).format(
+                'MMM DD,YYYY',
+              )}
             </Text>
           </View>
         </View>

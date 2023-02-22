@@ -259,29 +259,32 @@ const Stack = createStackNavigator();
 const LocalHomeNavigator = () => (
   <Stack.Navigator
     screenOptions={{
-      // headerTintColor: colors.blackColor,
-      // headerTransparent: true,
-      // headerTitle: true,
-
       gestureEnabled: false,
       headerBackTitleVisible: false,
-      // <Image source={images.backArrow} style={{height:12,width:12,resizeMode:'contain'}} />,
+      headerTitleStyle: {
+        textAlign: 'center',
+        fontFamily: fonts.Roboto,
+        fontWeight: '700',
+        fontSize: 16,
+        lineHeight: 17,
+        paddingTop: 5,
+        color: colors.lightBlackColor,
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
+      headerStyle: {
+        backgroundColor: colors.whiteColor,
+        borderBottomColor: colors.grayColor,
+        borderBottomWidth: 0.3,
+      },
     }}>
     <Stack.Screen
       name="LocalHomeScreen"
       component={LocalHomeScreen}
       options={{
         title: '',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
+
         headerShown: false,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -289,16 +292,8 @@ const LocalHomeNavigator = () => (
       component={MessageNavigator}
       options={{
         title: 'Message Chat',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
+
         headerShown: false,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -306,16 +301,8 @@ const LocalHomeNavigator = () => (
       component={RecentMatchScreen}
       options={{
         title: 'Recent Matches',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
+
         headerShown: true,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -323,16 +310,8 @@ const LocalHomeNavigator = () => (
       component={UpcomingMatchScreen}
       options={{
         title: 'Upcoming Matches',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
+
         headerShown: true,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -340,16 +319,8 @@ const LocalHomeNavigator = () => (
       component={LookingForChallengeScreen}
       options={{
         title: 'Availble For Challenge',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
+
         headerShown: true,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -357,15 +328,6 @@ const LocalHomeNavigator = () => (
       component={RefereeAgreementScreen}
       options={{
         title: 'Challenge',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -374,15 +336,6 @@ const LocalHomeNavigator = () => (
       component={ScorekeeperAgreementScreen}
       options={{
         title: 'Challenge',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -390,15 +343,6 @@ const LocalHomeNavigator = () => (
       component={RefereeInviteAgreementScreen}
       options={{
         title: 'Invite to Challenge',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -407,15 +351,6 @@ const LocalHomeNavigator = () => (
       component={ScorekeeperInviteAgreementScreen}
       options={{
         title: 'Invite to Challenge',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -423,16 +358,8 @@ const LocalHomeNavigator = () => (
       component={RecruitingPlayerScreen}
       options={{
         title: strings.recruitingPlayerText,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
+
         headerShown: true,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -440,16 +367,8 @@ const LocalHomeNavigator = () => (
       component={LookingTeamScreen}
       options={{
         title: 'Looking for a Team',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
+
         headerShown: true,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -457,16 +376,8 @@ const LocalHomeNavigator = () => (
       component={RefereesListScreen}
       options={{
         title: 'Referees',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
+
         headerShown: true,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -474,16 +385,8 @@ const LocalHomeNavigator = () => (
       component={ScorekeeperListScreen}
       options={{
         title: 'Scorekeepers',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
+
         headerShown: true,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -491,16 +394,8 @@ const LocalHomeNavigator = () => (
       component={SearchCityScreen}
       options={{
         title: 'Search Location',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
+
         headerShown: true,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -510,9 +405,6 @@ const LocalHomeNavigator = () => (
       options={{
         title: '',
         headerTintColor: colors.whiteColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
 
         headerTransparent: true,
         headerStyle: {
@@ -532,16 +424,8 @@ const LocalHomeNavigator = () => (
       component={HomeScreen}
       options={{
         title: 'Home',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
+
         headerShown: false,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -549,16 +433,8 @@ const LocalHomeNavigator = () => (
       component={SportSettingScreen}
       options={{
         title: 'Sports',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
+
         headerShown: true,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -566,16 +442,8 @@ const LocalHomeNavigator = () => (
       component={AddOrDeleteSport}
       options={{
         title: 'Sports',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
+
         headerShown: true,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -598,16 +466,8 @@ const LocalHomeNavigator = () => (
       component={EntitySearchScreen}
       options={{
         title: 'Search',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
+
         // headerShown: false,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -615,15 +475,6 @@ const LocalHomeNavigator = () => (
       component={WritePostScreen}
       options={{
         title: 'Write Post',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -633,14 +484,6 @@ const LocalHomeNavigator = () => (
       options={{
         title: strings.registerAsPlayerTitle,
         headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -649,14 +492,6 @@ const LocalHomeNavigator = () => (
       options={{
         title: strings.registerAsPlayerTitle,
         headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -665,14 +500,6 @@ const LocalHomeNavigator = () => (
       options={{
         title: strings.registerAsPlayerTitle,
         headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -680,15 +507,10 @@ const LocalHomeNavigator = () => (
       component={RegisterReferee}
       options={{
         title: 'Register as Referee',
-        headerTintColor: colors.blackColor,
+
         headerTitleStyle: {
           alignSelf: 'center',
           fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
         },
       }}
     />
@@ -697,15 +519,6 @@ const LocalHomeNavigator = () => (
       component={RegisterRefereeForm2}
       options={{
         title: 'Register as Referee',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -735,15 +548,10 @@ const LocalHomeNavigator = () => (
       component={RegisterScorekeeper}
       options={{
         title: 'Register as Scorekeeper',
-        headerTintColor: colors.blackColor,
+
         headerTitleStyle: {
           alignSelf: 'center',
           fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
         },
       }}
     />
@@ -753,15 +561,6 @@ const LocalHomeNavigator = () => (
       component={RegisterScorekeeperForm2}
       options={{
         title: 'Register as Scorekeeper',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -769,15 +568,6 @@ const LocalHomeNavigator = () => (
       component={CreateTeamForm1}
       options={{
         title: 'Create Team',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -785,15 +575,6 @@ const LocalHomeNavigator = () => (
       component={CreateTeamForm2}
       options={{
         title: 'Create Team',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -801,15 +582,6 @@ const LocalHomeNavigator = () => (
       component={CreateTeamForm3}
       options={{
         title: 'Create Team',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -817,15 +589,6 @@ const LocalHomeNavigator = () => (
       component={CreateTeamForm4}
       options={{
         title: 'Create Team',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -833,15 +596,6 @@ const LocalHomeNavigator = () => (
       component={CreateClubForm1}
       options={{
         title: 'Create Club',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -849,15 +603,6 @@ const LocalHomeNavigator = () => (
       component={CreateClubForm2}
       options={{
         title: 'Create Club',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -865,15 +610,6 @@ const LocalHomeNavigator = () => (
       component={CreateClubForm3}
       options={{
         title: 'Create Club',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -911,15 +647,6 @@ const LocalHomeNavigator = () => (
       component={EntityGallaryScreen}
       options={{
         title: 'Gallary',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -927,15 +654,6 @@ const LocalHomeNavigator = () => (
       component={UserGalleryScreen}
       options={{
         title: 'Gallery',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -943,15 +661,6 @@ const LocalHomeNavigator = () => (
       component={UserConnections}
       options={{
         title: strings.connections,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -966,15 +675,6 @@ const LocalHomeNavigator = () => (
       component={GroupListScreen}
       options={{
         title: 'Club',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -983,15 +683,6 @@ const LocalHomeNavigator = () => (
       component={EditPersonalProfileScreen}
       options={{
         title: 'Edit Profile',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -999,15 +690,6 @@ const LocalHomeNavigator = () => (
       component={EditGroupProfileScreen}
       options={{
         title: 'Edit Profile',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -1016,16 +698,8 @@ const LocalHomeNavigator = () => (
       component={EditPostScreen}
       options={{
         title: 'Edit Post',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
+
         headerShown: false,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -1034,15 +708,6 @@ const LocalHomeNavigator = () => (
       component={UserTagSelectionListScreen}
       options={{
         title: 'Tag',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -1051,16 +716,8 @@ const LocalHomeNavigator = () => (
       component={WriteCommentScreen}
       options={{
         title: 'Write Comment',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
+
         headerShown: false,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -1069,15 +726,6 @@ const LocalHomeNavigator = () => (
       component={UserAboutScreen}
       options={{
         title: strings.editabouttitle,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -1086,15 +734,6 @@ const LocalHomeNavigator = () => (
       component={UserBasicInfoScreen}
       options={{
         title: strings.editbasicinfotitle,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -1103,15 +742,6 @@ const LocalHomeNavigator = () => (
       component={GroupMembersScreen}
       options={{
         title: strings.membersTitle,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -1123,15 +753,6 @@ const LocalHomeNavigator = () => (
       options={{
         title: 'Schedule',
         headerShown: false,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -1139,15 +760,6 @@ const LocalHomeNavigator = () => (
       component={EntityInfoScreen}
       options={{
         title: 'Info',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -1156,15 +768,6 @@ const LocalHomeNavigator = () => (
       component={EntityReviewScreen}
       options={{
         title: 'Review',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -1173,15 +776,6 @@ const LocalHomeNavigator = () => (
       component={EntityStatScreen}
       options={{
         title: 'Stats',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -1189,15 +783,6 @@ const LocalHomeNavigator = () => (
       component={EntityScoreboardScreen}
       options={{
         title: 'Scoreboard',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -1206,15 +791,6 @@ const LocalHomeNavigator = () => (
       component={GameDetail}
       options={{
         title: 'Game',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -1222,15 +798,6 @@ const LocalHomeNavigator = () => (
       component={EventScreen}
       options={{
         title: 'Event',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -1238,15 +805,6 @@ const LocalHomeNavigator = () => (
       component={GoingListScreen}
       options={{
         title: 'Going',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -1255,15 +813,6 @@ const LocalHomeNavigator = () => (
       component={AcceptEventInviteScreen}
       options={{
         title: 'Respond',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -1271,15 +820,6 @@ const LocalHomeNavigator = () => (
       component={InviteToEventScreen}
       options={{
         title: 'Invite',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -1287,15 +827,6 @@ const LocalHomeNavigator = () => (
       component={EditEventScreen}
       options={{
         title: 'Edit Event',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -1303,15 +834,6 @@ const LocalHomeNavigator = () => (
       component={CreateEventScreen}
       options={{
         title: 'Create an Event',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -1333,15 +855,6 @@ const LocalHomeNavigator = () => (
       component={GroupEventScreen}
       options={{
         title: 'Group Events',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -1364,15 +877,6 @@ const LocalHomeNavigator = () => (
       component={SoccerRecording}
       options={{
         title: 'Match Records',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -1380,15 +884,6 @@ const LocalHomeNavigator = () => (
       component={TennisRecording}
       options={{
         title: 'Match Records',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -1396,15 +891,6 @@ const LocalHomeNavigator = () => (
       component={SoccerRecordList}
       options={{
         title: 'Match Record',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -1412,15 +898,6 @@ const LocalHomeNavigator = () => (
       component={SoccerApproveDisapproveConfirmation}
       options={{
         title: 'Match Record',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -1428,15 +905,6 @@ const LocalHomeNavigator = () => (
       component={GameDetailRecord}
       options={{
         title: 'Match Record',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -1461,15 +929,6 @@ const LocalHomeNavigator = () => (
       component={BookReferee}
       options={{
         title: 'Book a referee',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -1477,15 +936,10 @@ const LocalHomeNavigator = () => (
       component={RefereeBookingDateAndTime}
       options={{
         title: 'Book a referee',
-        headerTintColor: colors.blackColor,
+
         headerTitleStyle: {
           fontSize: 16,
           fontFamily: fonts.RBold,
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
         },
       }}
     />
@@ -1495,15 +949,6 @@ const LocalHomeNavigator = () => (
       component={RefereeSelectMatch}
       options={{
         title: 'Choose a match',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -1520,15 +965,6 @@ const LocalHomeNavigator = () => (
       component={BookScorekeeper}
       options={{
         title: 'Book a scorekeeper',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -1536,15 +972,10 @@ const LocalHomeNavigator = () => (
       component={ScorekeeperBookingDateAndTime}
       options={{
         title: 'Book a scorekeeper',
-        headerTintColor: colors.blackColor,
+
         headerTitleStyle: {
           fontSize: 16,
           fontFamily: fonts.RBold,
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
         },
       }}
     />
@@ -1562,15 +993,6 @@ const LocalHomeNavigator = () => (
       component={EditLineUpScreen}
       options={{
         title: 'Edit Lineup',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -1578,15 +1000,6 @@ const LocalHomeNavigator = () => (
       component={EditLineUpCoachScreen}
       options={{
         title: 'Edit Lineup',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -1595,15 +1008,6 @@ const LocalHomeNavigator = () => (
       component={EditRosterScreen}
       options={{
         title: 'Edit Roster',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -1612,15 +1016,6 @@ const LocalHomeNavigator = () => (
       component={AcceptDeclineChallengeScreen}
       options={{
         title: 'Challenge',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -1629,15 +1024,6 @@ const LocalHomeNavigator = () => (
       component={SearchPlayerScreen}
       options={{
         title: 'Choose a Player',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -1645,15 +1031,6 @@ const LocalHomeNavigator = () => (
       component={JoinedTeamsScreen}
       options={{
         title: 'Teams',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -1661,15 +1038,6 @@ const LocalHomeNavigator = () => (
       component={JoinedClubsScreen}
       options={{
         title: 'Clubs',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -1677,15 +1045,6 @@ const LocalHomeNavigator = () => (
       component={RefereeReservationScreen}
       options={{
         title: 'Referee Reservation',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -1693,15 +1052,6 @@ const LocalHomeNavigator = () => (
       component={RefereeApprovalScreen}
       options={{
         title: 'Referee Approval Request',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -1709,15 +1059,6 @@ const LocalHomeNavigator = () => (
       component={ScorekeeperApprovalScreen}
       options={{
         title: 'Scorekeeper Approval Request',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -1725,15 +1066,6 @@ const LocalHomeNavigator = () => (
       component={GroupSettingPrivacyScreen}
       options={{
         title: 'Settings',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -1741,15 +1073,6 @@ const LocalHomeNavigator = () => (
       component={UserSettingPrivacyScreen}
       options={{
         title: 'Setting & Privacy',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -1765,15 +1088,6 @@ const LocalHomeNavigator = () => (
       component={PersonalInformationScreen}
       options={{
         title: 'Personal Information',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -1781,15 +1095,6 @@ const LocalHomeNavigator = () => (
       component={AccountInfoScreen}
       options={{
         title: 'Account Info',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -1797,15 +1102,6 @@ const LocalHomeNavigator = () => (
       component={BasicInfoScreen}
       options={{
         title: 'Basic Info',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -1813,15 +1109,6 @@ const LocalHomeNavigator = () => (
       component={MembersProfileScreen}
       options={{
         title: 'Member Profile',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -1829,15 +1116,6 @@ const LocalHomeNavigator = () => (
       component={InviteMembersByEmailScreen}
       options={{
         title: strings.inviteByEmail,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -1845,15 +1123,6 @@ const LocalHomeNavigator = () => (
       component={InviteMembersBySearchScreen}
       options={{
         title: strings.inviteBySearchText,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -1861,16 +1130,7 @@ const LocalHomeNavigator = () => (
       name="RequestMultipleBasicInfoScreen"
       component={RequestMultipleBasicInfoScreen}
       options={{
-        title: 'Send request for basic info',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
+        title: strings.sendRequestText,
       }}
     />
     <Stack.Screen
@@ -1910,15 +1170,6 @@ const LocalHomeNavigator = () => (
       component={MembersViewPrivacyScreen}
       options={{
         title: 'View Privacy',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -1926,15 +1177,6 @@ const LocalHomeNavigator = () => (
       component={CreateMemberProfileForm1}
       options={{
         title: strings.createMemberProfileText,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -1942,15 +1184,6 @@ const LocalHomeNavigator = () => (
       component={CreateMemberProfileTeamForm3}
       options={{
         title: strings.createMemberProfileText,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -1958,15 +1191,6 @@ const LocalHomeNavigator = () => (
       component={CreateMemberProfileForm2}
       options={{
         title: strings.createMemberProfileText,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -1974,15 +1198,6 @@ const LocalHomeNavigator = () => (
       component={CreateMemberProfileClubForm3}
       options={{
         title: strings.createMemberProfileText,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -1999,15 +1214,6 @@ const LocalHomeNavigator = () => (
       component={ClubSettingScreen}
       options={{
         title: 'Settings',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -2015,15 +1221,6 @@ const LocalHomeNavigator = () => (
       component={ConnectMemberAccountScreen}
       options={{
         title: 'Connect Member Account',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -2031,15 +1228,6 @@ const LocalHomeNavigator = () => (
       component={EditMemberInfoScreen}
       options={{
         title: 'Name',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -2047,15 +1235,6 @@ const LocalHomeNavigator = () => (
       component={EditMemberBasicInfoScreen}
       options={{
         title: strings.editbasicinfotitle,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -2063,15 +1242,6 @@ const LocalHomeNavigator = () => (
       component={RequestBasicInfoScreen}
       options={{
         title: strings.requestBasicInfoTitle,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -2079,15 +1249,6 @@ const LocalHomeNavigator = () => (
       component={EditMemberTeamInfoScreen}
       options={{
         title: '',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -2095,15 +1256,6 @@ const LocalHomeNavigator = () => (
       component={EditMemberAuthInfoScreen}
       options={{
         title: '',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -2111,15 +1263,6 @@ const LocalHomeNavigator = () => (
       component={EditClubNotesScreen}
       options={{
         title: '',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -2128,15 +1271,6 @@ const LocalHomeNavigator = () => (
       component={ChooseAddressScreen}
       options={{
         title: 'Venue',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -2170,15 +1304,6 @@ const LocalHomeNavigator = () => (
       component={PayAgainScreen}
       options={{
         title: 'Pay',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -2186,15 +1311,6 @@ const LocalHomeNavigator = () => (
       component={PayAgainRefereeScreen}
       options={{
         title: 'Pay',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -2202,15 +1318,6 @@ const LocalHomeNavigator = () => (
       component={ChangeReservationInfoScreen}
       options={{
         title: strings.changeMatchReservation,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -2218,15 +1325,6 @@ const LocalHomeNavigator = () => (
       component={CurruentReservationScreen}
       options={{
         title: 'Curruent Match Reservation',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -2234,15 +1332,6 @@ const LocalHomeNavigator = () => (
       component={CurruentRefereeReservationScreen}
       options={{
         title: 'Curruent Referee Reservation',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -2250,15 +1339,6 @@ const LocalHomeNavigator = () => (
       component={EditFeeScreen}
       options={{
         title: 'Challenge',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -2287,15 +1367,6 @@ const LocalHomeNavigator = () => (
       component={GroupLongTextScreen}
       options={{
         title: strings.editbio,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -2304,15 +1375,6 @@ const LocalHomeNavigator = () => (
       component={EditGroupContactScreen}
       options={{
         title: strings.editcontact,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -2321,15 +1383,6 @@ const LocalHomeNavigator = () => (
       component={EditGroupBasicInfoScreen}
       options={{
         title: strings.editbasicinfotitle,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -2338,15 +1391,6 @@ const LocalHomeNavigator = () => (
       component={GameFeeEditScreen}
       options={{
         title: strings.gamefeetitle,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -2355,15 +1399,6 @@ const LocalHomeNavigator = () => (
       component={PaymentMethodsScreen}
       options={{
         title: 'Payment Methods',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -2371,15 +1406,6 @@ const LocalHomeNavigator = () => (
       component={PayoutMethodList}
       options={{
         title: 'Payout Methods',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -2387,15 +1413,6 @@ const LocalHomeNavigator = () => (
       component={PayoutMethodScreen}
       options={{
         title: 'Payout Method',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -2404,15 +1421,6 @@ const LocalHomeNavigator = () => (
       component={AddCardScreen}
       options={{
         title: 'Add a Card',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -2421,15 +1429,6 @@ const LocalHomeNavigator = () => (
       component={EditChallenge}
       options={{
         title: strings.changeMatchReservation,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -2437,15 +1436,6 @@ const LocalHomeNavigator = () => (
       component={NotificationsListScreen}
       options={{
         title: 'Notifications',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -2453,15 +1443,6 @@ const LocalHomeNavigator = () => (
       component={TrashScreen}
       options={{
         title: 'Trash',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -2469,15 +1450,6 @@ const LocalHomeNavigator = () => (
       component={PendingRequestScreen}
       options={{
         title: 'Pending Request',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -2485,15 +1457,6 @@ const LocalHomeNavigator = () => (
       component={EditRefereeFeeScreen}
       options={{
         title: strings.refereeFee,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -2501,15 +1464,6 @@ const LocalHomeNavigator = () => (
       component={EditRefereeReservation}
       options={{
         title: 'Change Referee Reservation',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -2517,15 +1471,6 @@ const LocalHomeNavigator = () => (
       component={AlterRefereeScreen}
       options={{
         title: 'Change Referee Reservation',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -2534,15 +1479,6 @@ const LocalHomeNavigator = () => (
       component={AlterChallengeScreen}
       options={{
         title: 'Game Reservation',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -2550,15 +1486,6 @@ const LocalHomeNavigator = () => (
       component={CurrencySettingScreen}
       options={{
         title: 'Currency Setting',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -2566,15 +1493,6 @@ const LocalHomeNavigator = () => (
       component={ReviewPlayerList}
       options={{
         title: 'Player',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -2589,15 +1507,6 @@ const LocalHomeNavigator = () => (
       component={ReviewRefereeList}
       options={{
         title: 'Referee',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -2622,15 +1531,6 @@ const LocalHomeNavigator = () => (
       component={ScorekeeperReservationScreen}
       options={{
         title: 'Scorekeeper Reservation',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -2645,15 +1545,6 @@ const LocalHomeNavigator = () => (
       component={EditScorekeeperReservation}
       options={{
         title: 'Change Scorekeeper Reservation',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -2661,15 +1552,6 @@ const LocalHomeNavigator = () => (
       component={EditScorekeeperFeeScreen}
       options={{
         title: strings.scorekeeperFee,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -2678,15 +1560,6 @@ const LocalHomeNavigator = () => (
       component={PayAgainScorekeeperScreen}
       options={{
         title: 'Pay',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -2694,15 +1567,6 @@ const LocalHomeNavigator = () => (
       component={CurruentScorekeeperReservationScreen}
       options={{
         title: 'Curruent Scorekeeper Reservation',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -2711,15 +1575,6 @@ const LocalHomeNavigator = () => (
       component={AlterScorekeeperScreen}
       options={{
         title: 'Change Scorekeeper Reservation',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -2728,15 +1583,6 @@ const LocalHomeNavigator = () => (
       component={ScorekeeperSelectMatch}
       options={{
         title: 'Choose a match',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -2774,15 +1620,6 @@ const LocalHomeNavigator = () => (
       component={SingleNotificationScreen}
       options={{
         title: '',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -2790,15 +1627,6 @@ const LocalHomeNavigator = () => (
       component={ManageChallengeScreen}
       options={{
         title: 'Manage Challenge',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -2806,15 +1634,6 @@ const LocalHomeNavigator = () => (
       component={SportActivityScreen}
       options={{
         title: 'Sports Activities',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -2822,15 +1641,6 @@ const LocalHomeNavigator = () => (
       component={ActivitySettingScreen}
       options={{
         title: ' ',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -2838,15 +1648,6 @@ const LocalHomeNavigator = () => (
       component={DeactivatedSportsListScreen}
       options={{
         title: 'Deactivated Sports Activities',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -2855,15 +1656,6 @@ const LocalHomeNavigator = () => (
       component={SportActivitiesScreen}
       options={{
         title: 'Sports Activities',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -2871,15 +1663,6 @@ const LocalHomeNavigator = () => (
       component={SportActivityTagScreen}
       options={{
         title: 'Order',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -2888,15 +1671,6 @@ const LocalHomeNavigator = () => (
       component={ChangeSportsOrderScreen}
       options={{
         title: 'Change List of Sports',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -2905,15 +1679,6 @@ const LocalHomeNavigator = () => (
       component={ChangeOtherListScreen}
       options={{
         title: 'Change List Of Organizers',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -2922,15 +1687,6 @@ const LocalHomeNavigator = () => (
       component={SportHideUnhideScreen}
       options={{
         title: 'Hide & Unhide',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -2938,15 +1694,6 @@ const LocalHomeNavigator = () => (
       component={RefereeReservationSetting}
       options={{
         title: 'Referee Reservation Setting',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -2955,15 +1702,6 @@ const LocalHomeNavigator = () => (
       component={ScorekeeperReservationSetting}
       options={{
         title: 'Scorekeeper Reservation Setting',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -2971,15 +1709,6 @@ const LocalHomeNavigator = () => (
       component={GameType}
       options={{
         title: 'Game Type',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -2987,15 +1716,6 @@ const LocalHomeNavigator = () => (
       component={RefundPolicy}
       options={{
         title: 'Refund Policies',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -3004,15 +1724,6 @@ const LocalHomeNavigator = () => (
       component={GameFee}
       options={{
         title: 'Match Fee',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -3021,15 +1732,6 @@ const LocalHomeNavigator = () => (
       component={GameRules}
       options={{
         title: 'Game Rules',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -3037,15 +1739,6 @@ const LocalHomeNavigator = () => (
       component={Venue}
       options={{
         title: 'Venue',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -3053,15 +1746,6 @@ const LocalHomeNavigator = () => (
       component={HomeAway}
       options={{
         title: strings.homeAndAway,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -3070,15 +1754,6 @@ const LocalHomeNavigator = () => (
       component={Availibility}
       options={{
         title: 'Availibility',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -3086,15 +1761,6 @@ const LocalHomeNavigator = () => (
       component={RefereesSetting}
       options={{
         title: 'Referee',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -3102,15 +1768,6 @@ const LocalHomeNavigator = () => (
       component={ScorekeepersSetting}
       options={{
         title: 'Scorekeeper',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -3118,15 +1775,6 @@ const LocalHomeNavigator = () => (
       component={GameDuration}
       options={{
         title: 'Game Duration',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -3134,15 +1782,6 @@ const LocalHomeNavigator = () => (
       component={GameTennisDuration}
       options={{
         title: 'Sets, points & Duration',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -3151,15 +1790,6 @@ const LocalHomeNavigator = () => (
       component={UserScoreboardScreen}
       options={{
         title: 'Scoreboard',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -3168,15 +1798,6 @@ const LocalHomeNavigator = () => (
       component={ChallengeScreen}
       options={{
         title: 'Challenge',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -3185,15 +1806,6 @@ const LocalHomeNavigator = () => (
       component={InviteChallengeScreen}
       options={{
         title: 'Invite to Challenge',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -3202,15 +1814,6 @@ const LocalHomeNavigator = () => (
       component={ChooseVenueScreen}
       options={{
         title: 'Venue',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -3219,15 +1822,6 @@ const LocalHomeNavigator = () => (
       component={ChallengePreviewScreen}
       options={{
         title: 'Challenge',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -3236,15 +1830,6 @@ const LocalHomeNavigator = () => (
       component={ChallengePaymentScreen}
       options={{
         title: 'Challenge',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -3253,15 +1838,6 @@ const LocalHomeNavigator = () => (
       component={ChooseTimeSlotScreen}
       options={{
         title: strings.chooseDateTimeText,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -3279,15 +1855,6 @@ const LocalHomeNavigator = () => (
       component={RespondToInviteScreen}
       options={{
         title: 'Respond to invite to create team',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -3296,15 +1863,6 @@ const LocalHomeNavigator = () => (
       component={InvoiceScreen}
       options={{
         title: 'Invoicing',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -3312,15 +1870,6 @@ const LocalHomeNavigator = () => (
       component={MembersDetailScreen}
       options={{
         title: 'Invoicing',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -3329,15 +1878,6 @@ const LocalHomeNavigator = () => (
       component={BatchDetailScreen}
       options={{
         title: 'Membership Fee',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -3346,15 +1886,6 @@ const LocalHomeNavigator = () => (
       component={TeamInvoiceDetailScreen}
       options={{
         title: 'Membership Fee',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -3363,15 +1894,6 @@ const LocalHomeNavigator = () => (
       component={AddLogScreen}
       options={{
         title: 'Log Manually',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -3379,15 +1901,6 @@ const LocalHomeNavigator = () => (
       component={UserInvoiceScreen}
       options={{
         title: 'Invoices',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -3396,15 +1909,6 @@ const LocalHomeNavigator = () => (
       component={InvoiceDetailScreen}
       options={{
         title: 'Membership Fee',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -3413,15 +1917,6 @@ const LocalHomeNavigator = () => (
       component={LogDetailScreen}
       options={{
         title: 'Log',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -3430,15 +1925,6 @@ const LocalHomeNavigator = () => (
       component={CanceledInvoicesScreen}
       options={{
         title: 'Canceled invoices',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -3459,15 +1945,6 @@ const LocalHomeNavigator = () => (
       component={InvoiceFilterScreen}
       options={{
         title: 'Invoicing',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -3476,15 +1953,6 @@ const LocalHomeNavigator = () => (
       component={AvailibilityReferee}
       options={{
         title: 'Availibility',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -3493,15 +1961,6 @@ const LocalHomeNavigator = () => (
       component={AvailableAreaReferee}
       options={{
         title: 'Available Area',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -3509,15 +1968,6 @@ const LocalHomeNavigator = () => (
       component={RefundPolicyReferee}
       options={{
         title: 'Refund Policy',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -3526,15 +1976,6 @@ const LocalHomeNavigator = () => (
       component={RefundPolicyScorekeeper}
       options={{
         title: 'Refund Policy',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -3543,15 +1984,6 @@ const LocalHomeNavigator = () => (
       component={RefereeFee}
       options={{
         title: 'Referee Fee',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -3560,15 +1992,6 @@ const LocalHomeNavigator = () => (
       component={AvailableAreaScorekeeper}
       options={{
         title: 'Available Area',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -3576,15 +1999,6 @@ const LocalHomeNavigator = () => (
       component={ScorekeeperFee}
       options={{
         title: 'Scorekeeper Fee',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -3593,15 +2007,6 @@ const LocalHomeNavigator = () => (
       component={LookingForSettingScreen}
       options={{
         title: 'Setting',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -3616,15 +2021,6 @@ const LocalHomeNavigator = () => (
       component={DeactivateSportScreen}
       options={{
         title: 'Deactivate Activity',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -3632,15 +2028,6 @@ const LocalHomeNavigator = () => (
       component={DeactivateAccountScreen}
       options={{
         title: 'Deactivate Account',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -3648,15 +2035,6 @@ const LocalHomeNavigator = () => (
       component={PauseGroupScreen}
       options={{
         title: 'Pause Team',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -3665,15 +2043,6 @@ const LocalHomeNavigator = () => (
       component={TerminateAccountScreen}
       options={{
         title: 'Terminate Account',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -3681,16 +2050,6 @@ const LocalHomeNavigator = () => (
       component={SearchScreen}
       options={{
         title: 'Search',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -3698,15 +2057,6 @@ const LocalHomeNavigator = () => (
       component={RespondForInviteScreen}
       options={{
         title: 'Respond',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -3715,16 +2065,8 @@ const LocalHomeNavigator = () => (
       component={SportAccountSettingScreen}
       options={{
         title: 'Settings',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
+
         headerShown: true,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -3732,16 +2074,8 @@ const LocalHomeNavigator = () => (
       component={GroupMembersSettingScreen}
       options={{
         title: strings.membersTitle,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
+
         headerShown: true,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -3749,16 +2083,8 @@ const LocalHomeNavigator = () => (
       component={RecruitingMemberScreen}
       options={{
         title: strings.hiringPlayerTitle,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
+
         headerShown: true,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -3766,16 +2092,8 @@ const LocalHomeNavigator = () => (
       component={WhoCanJoinTeamScreen}
       options={{
         title: 'Who Can Join Team',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
+
         headerShown: true,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -3784,16 +2102,8 @@ const LocalHomeNavigator = () => (
       component={GroupInviteYouScreen}
       options={{
         title: 'Who Can Join Team',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
+
         headerShown: true,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -3802,16 +2112,8 @@ const LocalHomeNavigator = () => (
       component={UserEventSettingPrivacyScreen}
       options={{
         title: '',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
+
         headerShown: true,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -3820,16 +2122,8 @@ const LocalHomeNavigator = () => (
       component={WhatEventInviteScreen}
       options={{
         title: '',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
+
         headerShown: true,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -3838,16 +2132,8 @@ const LocalHomeNavigator = () => (
       component={GroupInviteSettingPrivacyScreen}
       options={{
         title: 'Who Can Join Team',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
+
         headerShown: true,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -3855,16 +2141,8 @@ const LocalHomeNavigator = () => (
       component={EventSettingPrivacyScreen}
       options={{
         title: 'Event',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
+
         headerShown: true,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -3873,16 +2151,8 @@ const LocalHomeNavigator = () => (
       component={WhoCreateEventScreen}
       options={{
         title: 'Who Can Create Event',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
+
         headerShown: true,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -3891,16 +2161,8 @@ const LocalHomeNavigator = () => (
       component={WhoCanInviteEventScreen}
       options={{
         title: 'Who Can Invite People',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
+
         headerShown: true,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -3908,16 +2170,8 @@ const LocalHomeNavigator = () => (
       component={ClubSettingPrivacyScreen}
       options={{
         title: 'Club',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
+
         headerShown: true,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -3926,16 +2180,8 @@ const LocalHomeNavigator = () => (
       component={ClubInviteTeamScreen}
       options={{
         title: 'Can Club Invite Team',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
+
         headerShown: true,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -3944,16 +2190,8 @@ const LocalHomeNavigator = () => (
       component={TeamJoinClubScreen}
       options={{
         title: strings.whatTeamJoinClub,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
+
         headerShown: true,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -3962,16 +2200,8 @@ const LocalHomeNavigator = () => (
       component={TeamSettingPrivacyScreen}
       options={{
         title: 'Team',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
+
         headerShown: true,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
     <Stack.Screen
@@ -3979,16 +2209,8 @@ const LocalHomeNavigator = () => (
       component={WhoCanInviteMemberScreen}
       options={{
         title: 'Who Can Invite Member',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
+
         headerShown: true,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -3997,16 +2219,8 @@ const LocalHomeNavigator = () => (
       component={GroupsScreen}
       options={{
         title: 'Clubs',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
+
         headerShown: true,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 
@@ -4015,16 +2229,8 @@ const LocalHomeNavigator = () => (
       component={LanguageSettingScreen}
       options={{
         title: strings.appLanguage,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
+
         headerShown: true,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
   </Stack.Navigator>

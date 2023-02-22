@@ -123,7 +123,7 @@ const CongratulationsModal = ({
         .catch((e) => {
           setLoading(false);
           setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
+            Alert.alert(strings.alertmessagetitle, e);
           }, 10);
         });
     }

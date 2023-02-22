@@ -50,7 +50,7 @@ export default function CreateMemberProfileForm2({navigation, route}) {
   const isFocused = useIsFocused();
 
   const [gender, setGender] = useState();
-  const [dominant, setDominant] = useState();
+  const [dominant, setDominant] = useState('Right');
 
   const [birthday, setBirthday] = useState();
   const [showDate, setShowDate] = useState(false);
@@ -251,8 +251,8 @@ export default function CreateMemberProfileForm2({navigation, route}) {
       style={{
         flexDirection: 'row',
         align: 'center',
-        marginLeft: 15,
-        marginRight: 15,
+        marginLeft: 10,
+        marginRight: 10,
         justifyContent: 'space-between',
       }}>
       <View style={{...styles.halfMatchFeeView}}>
@@ -312,7 +312,10 @@ export default function CreateMemberProfileForm2({navigation, route}) {
             paddingRight: 30,
             backgroundColor: colors.textFieldBackground,
             borderRadius: 5,
+            height: 40,
+
             textAlign: 'center',
+
             ...styles.shadowStyle,
           },
         }}
@@ -328,8 +331,8 @@ export default function CreateMemberProfileForm2({navigation, route}) {
       style={{
         flexDirection: 'row',
         align: 'center',
-        marginLeft: 15,
-        marginRight: 15,
+        marginLeft: 10,
+        marginRight: 10,
         justifyContent: 'space-between',
       }}>
       <View style={{...styles.halfMatchFeeView, ...styles.shadowStyle}}>
@@ -378,6 +381,7 @@ export default function CreateMemberProfileForm2({navigation, route}) {
             backgroundColor: colors.textFieldBackground,
             borderRadius: 5,
             textAlign: 'center',
+            height: 40,
             ...styles.shadowStyle,
           },
           inputAndroid: {
@@ -390,6 +394,7 @@ export default function CreateMemberProfileForm2({navigation, route}) {
             backgroundColor: colors.textFieldBackground,
             borderRadius: 5,
             textAlign: 'center',
+            height: 40,
             ...styles.shadowStyle,
           },
         }}
@@ -428,11 +433,11 @@ export default function CreateMemberProfileForm2({navigation, route}) {
       <View>
         <TCLabel
           title={strings.gender.toUpperCase()}
-          style={{marginBottom: 12}}
+          style={{marginBottom: 10, marginTop: 20}}
         />
         <TCPicker
           dataSource={DataSource.Gender}
-          placeholder={strings.selectGenderPlaceholder}
+          placeholder={strings.choose}
           value={gender}
           onValueChange={(value) => {
             setGender(value);
@@ -442,7 +447,7 @@ export default function CreateMemberProfileForm2({navigation, route}) {
       <View>
         <TCLabel
           title={strings.birthDatePlaceholder.toUpperCase()}
-          style={{marginBottom: 12}}
+          style={{marginBottom: 10, marginTop: 25}}
         />
 
         <TCTouchableLabel
@@ -460,13 +465,13 @@ export default function CreateMemberProfileForm2({navigation, route}) {
 
       <TCLabel
         title={strings.height.toUpperCase()}
-        style={{marginBottom: 12}}
+        style={{marginBottom: 10, marginTop: 25}}
       />
       {heightView()}
 
       <TCLabel
         title={strings.weight.toUpperCase()}
-        style={{marginBottom: 12}}
+        style={{marginBottom: 10, marginTop: 25}}
       />
       {weightView()}
       {authContext.entity.obj.sport === 'soccer' &&
@@ -490,7 +495,7 @@ export default function CreateMemberProfileForm2({navigation, route}) {
       <View>
         <TCLabel
           title={strings.phone.toUpperCase()}
-          style={{marginBottom: 12}}
+          style={{marginBottom: 10, marginTop: 25}}
         />
         <FlatList
           data={phoneNumber}
@@ -506,6 +511,12 @@ export default function CreateMemberProfileForm2({navigation, route}) {
           alignSelf="center"
           marginTop={15}
           onPress={() => addPhoneNumber()}
+          marginBottom={15}
+          elevation={0}
+          backgroundColor={'#F5F5F5'}
+          styletext={{
+            fontFamily: fonts.RBold,
+          }}
         />
       )}
 
@@ -590,9 +601,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     fontSize: widthPercentageToDP('3.5%'),
     paddingHorizontal: 15,
+
     paddingRight: 30,
     paddingVertical: Platform.OS === 'ios' ? 12 : 0,
     width: widthPercentageToDP('46%'),
+    height: 40,
   },
   halffeeText: {
     alignSelf: 'center',
