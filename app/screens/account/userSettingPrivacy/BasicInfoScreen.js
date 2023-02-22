@@ -1,6 +1,6 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable default-case */
-import React, {useState, useEffect, useLayoutEffect, useContext} from 'react';
+import React, {useState, useLayoutEffect, useContext} from 'react';
 import {
   StyleSheet,
   View,
@@ -8,21 +8,16 @@ import {
   Image,
   TextInput,
   TouchableOpacity,
-  TouchableWithoutFeedback,
   Alert,
   FlatList,
-  Dimensions,
   Platform,
   Pressable,
 } from 'react-native';
 
-import {useIsFocused} from '@react-navigation/native';
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import moment from 'moment';
 import RNPickerSelect from 'react-native-picker-select';
-import Modal from 'react-native-modal';
-import {getGeocoordinatesWithPlaceName} from '../../../utils/location';
-import {getHitSlop, widthPercentageToDP} from '../../../utils';
+
 import {updateUserProfile} from '../../../api/Users';
 import AuthContext from '../../../auth/context';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
@@ -37,23 +32,28 @@ import TCKeyboardView from '../../../components/TCKeyboardView';
 import TCTextField from '../../../components/TCTextField';
 import uploadImages from '../../../utils/imageAction';
 import {getQBAccountType, QBupdateUser} from '../../../utils/QuickBlox';
-import {searchLocations} from '../../../api/External';
-import TCThinDivider from '../../../components/TCThinDivider';
+
 import TCCountryCodeModal from '../../../components/TCCountryCodeModal';
 import {heightMesurement, weightMesurement} from '../../../utils/constant';
-import locationModalStyles from '../../../Constants/LocationModalStyle';
+
+import AddressLocationModal from '../../../components/AddressLocationModal/AddressLocationModal';
 
 export default function BasicInfoScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
-  const isFocused = useIsFocused();
+
+  const [visibleAddressModal, setVisibleAddressModal] = useState(false);
 
   // For activity indigator
   const [loading, setloading] = useState(false);
   const [userInfo, setUserInfo] = useState(authContext.entity.obj);
   const [profileImageChanged, setProfileImageChanged] = useState(false);
+
   const [streetAddress, setStreetAddress] = useState(
     authContext.entity.obj?.street_address,
   );
+
+  const [stateFull, setStateFull] = useState();
+
   const [city, setCity] = useState(
     route?.params?.city ? route?.params?.city : authContext.entity.obj?.city,
   );
@@ -83,14 +83,8 @@ export default function BasicInfoScreen({navigation, route}) {
         ],
   );
 
-  const [locationPopup, setLocationPopup] = useState(false);
   const [countryCodeVisible, setCountryCodeVisible] = useState(false);
   const [selectedCountryCode, setSelectedCountryCode] = useState();
-
-  const [noData, setNoData] = useState(false);
-  const [searchText, setSearchText] = useState('');
-  const [cityData, setCityData] = useState([]);
-  const [currentLocation, setCurrentLocation] = useState();
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -106,102 +100,6 @@ export default function BasicInfoScreen({navigation, route}) {
     postalCode,
     streetAddress,
   ]);
-
-  useEffect(() => {
-    if (isFocused) {
-      if (
-        route?.params?.city &&
-        route?.params?.state &&
-        route?.params?.country
-      ) {
-        setCity(route?.params?.city);
-        setState(route?.params?.state);
-        setCountry(route?.params?.country);
-      }
-    }
-  }, [
-    isFocused,
-    route?.params?.city,
-    route?.params?.country,
-    route?.params?.state,
-  ]);
-
-  useEffect(() => {
-    getLocationData(searchText);
-  }, [searchText]);
-
-  const getLocationData = async (searchLocationText) => {
-    if (searchLocationText.length >= 3) {
-      searchLocations(searchLocationText).then((response) => {
-        setNoData(false);
-        setCityData(response.predictions);
-      });
-    } else {
-      setNoData(true);
-      setCityData([]);
-    }
-  };
-
-  useEffect(() => {
-    setloading(true);
-    getGeocoordinatesWithPlaceName(Platform.OS)
-      .then((location) => {
-        setloading(false);
-        if (location.position) {
-          setCurrentLocation(location);
-        } else {
-          setCurrentLocation(null);
-        }
-      })
-      .catch((e) => {
-        setloading(false);
-        if (e.message === strings.userdeniedgps) {
-          setCurrentLocation(null);
-        } else {
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
-        }
-      });
-  }, []);
-
-  const renderItem = ({item, index}) => (
-    <TouchableWithoutFeedback
-      style={styles.listItem}
-      onPress={() => onSelectLocation(item)}>
-      <View>
-        <Text style={styles.cityList}>{cityData[index].description}</Text>
-        <TCThinDivider
-          width={'100%'}
-          backgroundColor={colors.grayBackgroundColor}
-        />
-      </View>
-    </TouchableWithoutFeedback>
-  );
-
-  const onSelectLocation = async (item) => {
-    if (item.terms.length === 1) {
-      setCity(undefined);
-      setState(undefined);
-      setCountry(item.terms[0].value);
-    } else if (item.terms.length === 2) {
-      setCity(item.terms[0].value);
-      setState(undefined);
-      setCountry(item.terms[1].value);
-    } else if (item.terms.length > 2) {
-      setCity(item.terms[item.terms.length - 3].value);
-      setState(item.terms[item.terms.length - 2].value);
-      setCountry(item?.terms[item.terms.length - 1].value);
-    }
-    setLocationPopup(false);
-  };
-
-  const onSelectCurrentLocation = async () => {
-    setCity(currentLocation.city);
-    setState(currentLocation.state);
-    setCountry(currentLocation.country);
-    setLocationPopup(false);
-  };
 
   // Form Validation
   const checkValidation = () => {
@@ -266,15 +164,17 @@ export default function BasicInfoScreen({navigation, route}) {
     if (checkValidation()) {
       setloading(true);
       const bodyParams = {...userInfo};
+
       bodyParams.first_name = userInfo.first_name;
       bodyParams.last_name = userInfo.last_name;
       bodyParams.full_name = `${userInfo.first_name} ${userInfo.last_name}`;
 
-      bodyParams.city = city;
-      bodyParams.state_abbr = state;
-      bodyParams.country = country;
+      bodyParams.address_city = city;
+      bodyParams.address_state_abbr = state;
+      bodyParams.address_country = country;
       bodyParams.street_address = streetAddress;
-      bodyParams.postal_code = postalCode;
+      bodyParams.address_postal_code = postalCode;
+      bodyParams.address_state = stateFull;
 
       bodyParams.description = userInfo.description;
       bodyParams.height = userInfo.height;
@@ -287,6 +187,7 @@ export default function BasicInfoScreen({navigation, route}) {
         bodyParams.phone_numbers = userInfo.phone_numbers;
         bodyParams.country_code = userInfo.country_code;
       }
+
       if (profileImageChanged) {
         const imageArray = [];
         imageArray.push({path: userInfo.thumbnail});
@@ -513,6 +414,23 @@ export default function BasicInfoScreen({navigation, route}) {
     </View>
   );
 
+  const onSelectAddress = (_location) => {
+    setStateFull(_location.state_full);
+    setCity(_location.city);
+    setState(_location.state);
+    setCountry(_location.country);
+
+    setStreetAddress(_location.formattedAddress);
+  };
+
+  const setCityandPostal = (street, code) => {
+    console.log();
+    setPostalCode(code);
+    setStreetAddress(
+      [street, city, state, country, code].filter((w) => w).join(', '),
+    );
+  };
+
   const renderPhoneNumber = ({item, index}) => (
     <View style={styles.fieldView}>
       <View
@@ -659,135 +577,36 @@ export default function BasicInfoScreen({navigation, route}) {
           renderItem={renderPhoneNumber}
         />
 
-        <View>
-          <TCLabel title={strings.mailingAddressText} />
-          <TCTextField
-            value={streetAddress}
-            onChangeText={(text) => setStreetAddress(text)}
-            placeholder={strings.streetAddress}
-            keyboardType={'default'}
-            autoCapitalize="none"
-            autoCorrect={false}
-            // onFocus={() => setLocationFieldVisible(true)}
-            style={{backgroundColor: colors.textFieldBackground}}
-          />
-        </View>
-
         <TouchableOpacity
-          onPress={() =>
-            // navigation.navigate('SearchLocationScreen', {
-            //   comeFrom: 'PersonalInformationScreen',
-            // })
-            setLocationPopup(true)
-          }>
-          <TextInput
-            placeholder={strings.searchCityPlaceholder}
-            placeholderTextColor={colors.userPostTimeColor}
-            style={[
-              styles.matchFeeTxt,
-              {marginBottom: 5},
-              {backgroundColor: colors.textFieldBackground},
-            ]}
-            value={[city, state, country].filter((v) => v).join(', ')}
-            editable={false}
-            pointerEvents="none"></TextInput>
+          onPress={() => {
+            setVisibleAddressModal(true);
+          }}>
+          <View>
+            <TCLabel
+              title={strings.address.toUpperCase()}
+              style={{marginBottom: 12}}
+            />
+            <TCTextField
+              value={streetAddress}
+              // onChangeText={onChangeLocationText}
+              autoCapitalize="none"
+              autoCorrect={false}
+              placeholder={strings.streetAddress}
+              pointerEvents="none"
+              editable={false}
+            />
+          </View>
         </TouchableOpacity>
 
-        <View>
-          <TCTextField
-            value={postalCode}
-            onChangeText={(text) => setPostalCode(text)}
-            placeholder={strings.postalCode}
-            keyboardType={'default'}
-            style={{backgroundColor: colors.textFieldBackground}}
-          />
-        </View>
-        <View style={{paddingBottom: 20}} />
-        <Modal
-          onBackdropPress={() => setLocationPopup(false)}
-          isVisible={locationPopup}
-          animationInTiming={300}
-          animationOutTiming={800}
-          backdropTransitionInTiming={300}
-          backdropTransitionOutTiming={800}
-          style={{
-            margin: 0,
-          }}>
-          <View
-            style={[
-              styles.bottomPopupContainer,
-              {height: Dimensions.get('window').height - 50},
-            ]}>
-            <View style={styles.topHeaderContainer}>
-              <TouchableOpacity
-                hitSlop={getHitSlop(15)}
-                style={styles.closeButton}
-                onPress={() => {
-                  setLocationPopup(false);
-                }}>
-                <Image source={images.crossImage} style={styles.closeButton} />
-              </TouchableOpacity>
-              <Text style={styles.moreText}>Home City</Text>
-            </View>
-            <TCThinDivider
-              width={'100%'}
-              marginBottom={15}
-              backgroundColor={colors.thinDividerColor}
-            />
-            <View style={styles.sectionStyle}>
-              <TextInput
-                // Indiër - For Test
-                value={searchText}
-                autoCorrect={false}
-                spellCheck={false}
-                style={styles.textInput}
-                placeholder={strings.searchByCity}
-                clearButtonMode="always"
-                placeholderTextColor={colors.userPostTimeColor}
-                onChangeText={(text) => setSearchText(text)}
-              />
-            </View>
-            {searchText.length < 3 && (
-              <Text style={locationModalStyles.noDataText}>
-                {strings.threeCharToSeeAddress}
-              </Text>
-            )}
-            {currentLocation && noData && searchText?.length === 0 && (
-              <View style={{flex: 1}}>
-                <TouchableWithoutFeedback
-                  style={styles.listItem}
-                  onPress={() => onSelectCurrentLocation()}>
-                  <View>
-                    <Text style={[styles.cityList, {marginBottom: 3}]}>
-                      {[
-                        currentLocation?.city,
-                        currentLocation?.state,
-                        currentLocation?.country,
-                      ]
-                        .filter((v) => v)
-                        .join(', ')}
-                    </Text>
-                    <Text style={styles.curruentLocationText}>
-                      {strings.currentLocationText}
-                    </Text>
+        <AddressLocationModal
+          visibleLocationModal={visibleAddressModal}
+          setVisibleAddressModalhandler={() => setVisibleAddressModal(false)}
+          onAddressSelect={onSelectAddress}
+          handleSetLocationOptions={onSelectAddress}
+          onDonePress={(street, code) => setCityandPostal(street, code)}
+        />
 
-                    <TCThinDivider
-                      width={'100%'}
-                      backgroundColor={colors.grayBackgroundColor}
-                    />
-                  </View>
-                </TouchableWithoutFeedback>
-              </View>
-            )}
-            {cityData.length > 0 && (
-              <FlatList
-                data={cityData}
-                renderItem={renderItem}
-                keyExtractor={(index) => index.toString()}
-              />
-            )}
-          </View>
-        </Modal>
+        <View style={{paddingBottom: 20}} />
 
         <TCCountryCodeModal
           countryCodeVisible={countryCodeVisible}
@@ -857,18 +676,6 @@ const styles = StyleSheet.create({
     width: 100,
     textAlign: 'right',
   },
-  matchFeeTxt: {
-    alignSelf: 'center',
-    backgroundColor: colors.offwhite,
-    borderRadius: 5,
-    color: colors.lightBlackColor,
-    fontSize: 16,
-    marginTop: 12,
-    paddingHorizontal: 10,
-    paddingRight: 30,
-    paddingVertical: 12,
-    width: wp('92%'),
-  },
 
   miniDownArrow: {
     alignSelf: 'center',
@@ -889,109 +696,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
-  },
-  bottomPopupContainer: {
-    paddingBottom: Platform.OS === 'ios' ? 30 : 0,
-    backgroundColor: colors.whiteColor,
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    position: 'absolute',
-    bottom: 0,
-    width: '100%',
-
-    ...Platform.select({
-      ios: {
-        shadowColor: colors.googleColor,
-        shadowOffset: {width: 0, height: 3},
-        shadowOpacity: 0.5,
-        shadowRadius: 8,
-      },
-      android: {
-        elevation: 15,
-      },
-    }),
-  },
-  topHeaderContainer: {
-    height: 60,
-    // justifyContent: 'space-between',
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginLeft: 0,
-    marginRight: 0,
-  },
-  closeButton: {
-    alignSelf: 'center',
-    width: 25,
-    height: 25,
-    resizeMode: 'contain',
-    left: 5,
-  },
-
-  moreText: {
-    fontSize: 16,
-    fontFamily: fonts.RBold,
-    color: colors.lightBlackColor,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: widthPercentageToDP('36%'),
-  },
-  sectionStyle: {
-    alignItems: 'center',
-    backgroundColor: colors.textFieldBackground,
-    borderRadius: 25,
-
-    flexDirection: 'row',
-    height: 50,
-    justifyContent: 'center',
-    margin: wp('4%'),
-    paddingLeft: 17,
-    paddingRight: 5,
-
-    // shadowColor: colors.googleColor,
-    // shadowOffset: {width: 0, height: 4},
-    // shadowOpacity: 0.5,
-    // shadowRadius: 4,
-    // elevation: 5,
-  },
-  listItem: {
-    flexDirection: 'row',
-    marginLeft: wp('10%'),
-    width: wp('80%'),
-  },
-
-  cityList: {
-    color: colors.lightBlackColor,
-    fontSize: wp('4%'),
-    textAlign: 'left',
-    fontFamily: fonts.RRegular,
-    // paddingLeft: wp('1%'),
-    width: wp('70%'),
-    // margin: wp('4%'),
-    marginBottom: wp('4%'),
-    marginRight: wp('4%'),
-    marginTop: wp('4%'),
-    marginLeft: 30,
-    textAlignVertical: 'center',
-  },
-  curruentLocationText: {
-    color: colors.userPostTimeColor,
-    fontSize: wp('3%'),
-    textAlign: 'left',
-    fontFamily: fonts.RRegular,
-
-    // paddingLeft: wp('1%'),
-    width: wp('70%'),
-    margin: wp('4%'),
-    marginTop: wp('0%'),
-    marginLeft: 30,
-    textAlignVertical: 'center',
-  },
-  textInput: {
-    color: colors.userPostTimeColor,
-    flex: 1,
-    fontFamily: fonts.RRegular,
-    fontSize: wp('4.5%'),
-    paddingLeft: 10,
   },
 
   codeContainer: {

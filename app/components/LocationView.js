@@ -1,13 +1,10 @@
 import React from 'react';
-import {TouchableOpacity, StyleSheet, Text, View} from 'react-native';
+import {TouchableOpacity, StyleSheet, View} from 'react-native';
 import {strings} from '../../Localization/translation';
-import colors from '../Constants/Colors';
-import fonts from '../Constants/Fonts';
 import TCLabel from './TCLabel';
 import TCTextField from './TCTextField';
 
 function LocationView({
-  onPressVisibleLocationPopup,
   onChangeLocationText,
   locationText,
   locationString,
@@ -28,9 +25,6 @@ function LocationView({
         ) : (
           <View style={{marginTop: 0, marginBottom: 12}} />
         )}
-        <Text style={styles.title} onPress={onPressVisibleLocationPopup}>
-          {strings.searchForAddress}
-        </Text>
       </View>
 
       <TCTextField
@@ -73,12 +67,6 @@ const styles = StyleSheet.create({
     marginRight: 15,
 
     alignItems: 'center',
-  },
-  title: {
-    fontSize: 12,
-    fontFamily: fonts.RMedium,
-    color: colors.lightBlackColor,
-    textDecorationLine: 'underline',
   },
 });
 

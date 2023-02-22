@@ -291,6 +291,7 @@ export default function CreateClubForm1({navigation}) {
         title={strings.homeCityTitleText}
         setVisibleLocationModalhandler={() => setVisibleLocationModal(false)}
         onLocationSelect={handleSetLocationOptions}
+        placeholder={strings.searchByCity}
       />
     </>
   );

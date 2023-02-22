@@ -579,7 +579,11 @@ export default function UpcomingMatchScreen({navigation, route}) {
   );
 
   const handleSetLocationOptions = (location) => {
-    setLocation(location.city);
+    if (location.hasOwnProperty('address')) {
+      setLocation(location?.formattedAddress);
+    } else {
+      setLocation(location?.city);
+    }
   };
 
   return (
@@ -795,10 +799,6 @@ export default function UpcomingMatchScreen({navigation, route}) {
                     <TouchableWithoutFeedback
                       onPress={() => {
                         setLocationFilterOpetion(3);
-                        //setSettingPopup(false);
-                        // navigation.navigate('SearchCityScreen', {
-                        //   comeFrom: 'UpcomingMatchScreen',
-                        // });
 
                         setVisibleLocationModal(true);
                       }}>
@@ -1140,11 +1140,13 @@ export default function UpcomingMatchScreen({navigation, route}) {
 
           <LocationModal
             visibleLocationModal={visibleLocationModal}
-            title={strings.homeCityTitleText}
+            title={strings.cityStateOrCountryTitle}
             setVisibleLocationModalhandler={() =>
               setVisibleLocationModal(false)
             }
             onLocationSelect={handleSetLocationOptions}
+            placeholder={strings.searchTitle}
+            type={'country'}
           />
 
           <Modal

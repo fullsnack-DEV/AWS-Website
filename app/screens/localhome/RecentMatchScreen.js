@@ -1,12 +1,6 @@
 /* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable array-callback-return */
-import React, {
-  useCallback,
-  useState,
-  useEffect,
-  useContext,
-  useRef,
-} from 'react';
+import React, {useCallback, useState, useEffect, useContext} from 'react';
 import {
   View,
   StyleSheet,
@@ -100,7 +94,6 @@ export default function RecentMatchScreen({navigation, route}) {
     sport_type: route.params?.filters?.sport_type,
   });
   const [location, setLocation] = useState(route?.params?.filters?.location);
-  const callchildfunc = useRef(null);
 
   console.log('Recent Match Filter:=>', filters);
 
@@ -566,7 +559,11 @@ export default function RecentMatchScreen({navigation, route}) {
   );
 
   const handleSetLocationOptions = (location) => {
-    setLocation(location.city);
+    if (location.hasOwnProperty('address')) {
+      setLocation(location?.formattedAddress);
+    } else {
+      setLocation(location?.city);
+    }
   };
 
   return (
@@ -782,11 +779,7 @@ export default function RecentMatchScreen({navigation, route}) {
                     <TouchableWithoutFeedback
                       onPress={() => {
                         setLocationFilterOpetion(locationType.SEARCH_CITY);
-                        // setSettingPopup(false);
-                        // navigation.navigate('SearchCityScreen', {
-                        //   comeFrom: 'RecentMatchScreen',
-                        // });
-                        //callchildfunc.current();
+
                         setVisibleLocationModal(true);
                       }}>
                       <View
@@ -1043,7 +1036,7 @@ export default function RecentMatchScreen({navigation, route}) {
                     margin: 15,
                     justifyContent: 'space-between',
                   }}>
-                  <View style={{}}>
+                  <View>
                     <Text style={styles.filterTitle}>
                       {strings.teamOrPlayer}
                     </Text>
@@ -1127,11 +1120,13 @@ export default function RecentMatchScreen({navigation, route}) {
 
           <LocationModal
             visibleLocationModal={visibleLocationModal}
-            title={strings.homeCityTitleText}
+            title={strings.cityStateOrCountryTitle}
             setVisibleLocationModalhandler={() =>
               setVisibleLocationModal(false)
             }
+            placeholder={strings.searchTitle}
             onLocationSelect={handleSetLocationOptions}
+            type={'country'}
           />
 
           <Modal

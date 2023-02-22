@@ -2277,6 +2277,10 @@ export default {
   warningTextForFee: 'en_Do you want to reconsider a',
   warningTextForFee1: 'en_match fee?',
   changecapital: 'en_CHANGE',
+
+  filladdressmanually: 'en_ Fill in the address manually',
+  cityStateOrCountryTitle: 'en_City, State or Country',
+
   youWillBeChallenger: 'en_You will be the challenger.',
   youWillBeHost: 'en_You will be the match host.',
   addText: 'en_Add',
@@ -2287,4 +2291,5 @@ export default {
     'en_The match host is responsible to secure match venue, referees and scorekeeper as set by his or her incoming challenge settings or on the mutual agreement. Meanwhile, the challenger has to follow match rules and payment terms set by the match host.',
   matchHostChallengeTextDescription:
     'en_If you send a challenge or are invited to send a challenge to someone, you will be the challenger and the opponent will be the match host in the match created from the challenge.',
+
 };

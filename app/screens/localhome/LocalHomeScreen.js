@@ -1186,7 +1186,12 @@ export default function LocalHomeScreen({navigation, route}) {
   };
 
   const handleSetLocationOptions = (locations) => {
-    setLocation(locations.city);
+    if ('address' in locations) {
+      setLocation(locations?.address);
+    } else {
+      setLocation(locations?.city);
+    }
+
     setLocationSelectedViaModal(true);
     setLocationPopup(false);
   };
@@ -1647,11 +1652,13 @@ export default function LocalHomeScreen({navigation, route}) {
 
           <LocationModal
             visibleLocationModal={visibleLocationModal}
-            title={strings.homeCityTitleText}
+            title={strings.cityStateOrCountryTitle}
             setVisibleLocationModalhandler={() =>
               setVisibleLocationModal(false)
             }
             onLocationSelect={handleSetLocationOptions}
+            placeholder={strings.searchTitle}
+            type={'country'}
           />
 
           <TouchableWithoutFeedback
