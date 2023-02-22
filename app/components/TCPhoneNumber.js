@@ -70,7 +70,7 @@ const TCPhoneNumber = ({
 const styles = StyleSheet.create({
   mainContainer: {
     flexDirection: 'row',
-    // marginLeft: 8,
+
     marginRight: 8,
     marginBottom: 10,
     justifyContent: 'space-between',
