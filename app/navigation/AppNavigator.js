@@ -272,7 +272,7 @@ const getTabBarVisibility = (route) => {
     routeName === 'WriteReviewScreen' ||
     routeName === 'SoccerHome' ||
     routeName === 'TennisHome' ||
-    routeName === 'LeaveReviewTennis' ||
+    routeName === 'LeaveReview' ||
     routeName === 'GroupSettingPrivacyScreen' ||
     routeName === 'UserSettingPrivacyScreen' ||
     routeName === 'PauseGroupScreen' ||
