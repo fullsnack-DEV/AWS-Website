@@ -14,6 +14,7 @@ import {
   Text,
   FlatList,
   SafeAreaView,
+  BackHandler,
 } from 'react-native';
 import {Modalize} from 'react-native-modalize';
 import {useIsFocused} from '@react-navigation/native';
@@ -104,15 +105,25 @@ const SoccerHome = ({navigation, route}) => {
   const [homeTeam, setHomeTeam] = useState();
   const [awayTeam, setAwayTeam] = useState();
 
+  function handleBackButtonClick() {
+    navigation.goBack();
+
+    return true;
+  }
+
   useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick);
+
     if (isFocused && gameData) {
       const soccerSportData = authContext.sports?.filter(
-          (item) => item.sport === gameData?.sport,
-        )[0];
+        (item) => item.sport === gameData?.sport,
+      )[0];
 
       const teamReviewProp = soccerSportData?.team_review_properties ?? [];
-      const refereeReviewProp = soccerSportData?.referee_review_properties ?? [];
-      const scorekeeperReviewProp = soccerSportData?.scorekeeper_review_properties ?? [];
+      const refereeReviewProp =
+        soccerSportData?.referee_review_properties ?? [];
+      const scorekeeperReviewProp =
+        soccerSportData?.scorekeeper_review_properties ?? [];
       const starReviewProp = [];
       const sliderReviewPropForReferee = [];
       const starReviewPropForReferee = [];
@@ -120,8 +131,12 @@ const SoccerHome = ({navigation, route}) => {
       const starReviewPropForScorekeeper = [];
 
       if (teamReviewProp?.length) {
-          teamReviewProp.filter((item) => {
-            if (item.type === 'star' || item.type === 'topstar' || item.type === 'bottomstar') {
+        teamReviewProp.filter((item) => {
+          if (
+            item.type === 'star' ||
+            item.type === 'topstar' ||
+            item.type === 'bottomstar'
+          ) {
             starReviewProp.push(item);
           }
           return true;
@@ -132,7 +147,11 @@ const SoccerHome = ({navigation, route}) => {
         refereeReviewProp.filter((item) => {
           if (item.type === 'slider') {
             sliderReviewPropForReferee.push(item.name.toLowerCase());
-          } else if (item.type === 'star' || item.type === 'topstar' || item.type === 'bottomstar') {
+          } else if (
+            item.type === 'star' ||
+            item.type === 'topstar' ||
+            item.type === 'bottomstar'
+          ) {
             starReviewPropForReferee.push(item);
           }
           return true;
@@ -144,7 +163,11 @@ const SoccerHome = ({navigation, route}) => {
         scorekeeperReviewProp.filter((item) => {
           if (item.type === 'slider') {
             sliderReviewPropForScorekeeper.push(item.name.toLowerCase());
-          } else if (item.type === 'star' || item.type === 'topstar' || item.type === 'bottomstar') {
+          } else if (
+            item.type === 'star' ||
+            item.type === 'topstar' ||
+            item.type === 'bottomstar'
+          ) {
             starReviewPropForScorekeeper.push(item);
           }
           return true;
@@ -153,6 +176,12 @@ const SoccerHome = ({navigation, route}) => {
         setStarAttributesForScorekeeper([...starReviewPropForScorekeeper]);
       }
     }
+    return () => {
+      BackHandler.removeEventListener(
+        'hardwareBackPress',
+        handleBackButtonClick,
+      );
+    };
   }, [gameData, isFocused]);
 
   useEffect(() => {
@@ -1093,11 +1122,11 @@ const SoccerHome = ({navigation, route}) => {
       if (reservationDetail?.isHome) {
         if (gameData?.home_review_id) {
           isReviewed = true;
-          reviewID = gameData.home_review_id
+          reviewID = gameData.home_review_id;
         }
       } else if (gameData?.away_review_id) {
         isReviewed = true;
-        reviewID = gameData.away_review_id
+        reviewID = gameData.away_review_id;
       }
 
       return (
@@ -1110,7 +1139,7 @@ const SoccerHome = ({navigation, route}) => {
           profileImage={reservationDetail?.thumbnail}
           onReviewPress={() => {
             if (isReviewed) {
-              getGameReviewsData(reviewID,reservationDetail.isHome);
+              getGameReviewsData(reviewID, reservationDetail.isHome);
             } else {
               modalizeRef.current.close();
               navigation.navigate('LeaveReview', {
@@ -1312,6 +1341,7 @@ const SoccerHome = ({navigation, route}) => {
               shadow={true}
               onPress={() => {
                 setIsShowReviewRow(true);
+                modalizeRef.current.open('top');
               }}
             />
           ) : (

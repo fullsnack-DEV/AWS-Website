@@ -34,6 +34,7 @@ const locationModalStyles = StyleSheet.create({
     fontFamily: fonts.RBold,
     color: colors.lightBlackColor,
     paddingBottom: 8,
+    marginLeft: 15,
   },
   closeButton: {
     alignSelf: 'center',

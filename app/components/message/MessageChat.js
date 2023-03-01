@@ -1103,11 +1103,17 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   eventTextStyle: {
-    fontSize: 16,
     color: colors.lightBlackColor,
-    fontFamily: fonts.RBold,
     alignSelf: 'center',
     width: wp(60),
+    textAlign: 'center',
+    fontFamily: fonts.Roboto,
+
+    fontSize: 20,
+    lineHeight: 18,
+    paddingTop: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   bottomTextUpperContainer: {
     backgroundColor: colors.whiteColor,

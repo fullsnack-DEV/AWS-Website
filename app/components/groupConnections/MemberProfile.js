@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Image,
   TouchableWithoutFeedback,
+  Pressable,
 } from 'react-native';
 
 import LinearGradient from 'react-native-linear-gradient';
@@ -14,7 +15,6 @@ import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 
 export default function MemberProfile({isChecked, onPress, playerDetail}) {
-  console.log('player detail :=>', playerDetail);
   return (
     <>
       {isChecked ? (
@@ -47,10 +47,22 @@ export default function MemberProfile({isChecked, onPress, playerDetail}) {
                 </Text>
               </View>
             </View>
-            <Image
-              source={images.orangeCheckBox}
-              style={styles.checkGreenImage}
-            />
+            <Pressable
+              onPress={onPress}
+              style={{
+                height: 22,
+                width: 22,
+                borderWidth: 0.3,
+                borderRadius: 7,
+                borderColor: colors.veryLightGray,
+
+                alignSelf: 'center',
+              }}>
+              <Image
+                source={images.orangeCheckBox}
+                style={styles.checkGreenImage}
+              />
+            </Pressable>
           </LinearGradient>
         </TouchableWithoutFeedback>
       ) : (
@@ -82,7 +94,18 @@ export default function MemberProfile({isChecked, onPress, playerDetail}) {
                 </Text>
               </View>
             </View>
-            <Image source={images.whiteUncheck} style={styles.checkImage} />
+            <Pressable
+              onPress={onPress}
+              style={{
+                height: 22,
+                width: 22,
+                borderWidth: 1,
+                borderColor: colors.veryLightGray,
+                borderRadius: 7,
+                alignSelf: 'center',
+              }}>
+              <Image source={images.whiteUncheck} style={styles.checkImage} />
+            </Pressable>
           </View>
         </TouchableWithoutFeedback>
       )}
@@ -130,14 +153,18 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
   },
   whiteNameText: {
-    fontSize: 16,
     color: colors.lightBlackColor,
-    fontFamily: fonts.RBold,
+    fontFamily: fonts.Roboto,
+    fontWeight: '500',
+    fontSize: 16,
+    lineHeight: 24,
   },
   locationText: {
-    fontSize: 14,
     color: colors.lightBlackColor,
-    fontFamily: fonts.RLight,
+    fontFamily: fonts.Roboto,
+
+    fontSize: 14,
+    lineHeight: 21,
   },
   whiteLocationText: {
     fontSize: 14,

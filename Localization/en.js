@@ -45,7 +45,7 @@ export default {
   injuredPlaceholder: 'en_Injured',
   longTermAwayPlaceholder: 'en_Long-term Away',
   suspendedPlaceholder: 'en_Suspended',
-  writeNotesPlaceholder: 'en_Notes',
+  writeNotesPlaceholder: 'en_Note',
   writedownRulesPlaceholder: 'en_Write down the rules',
   enterEmailPlaceholder: 'en_Enter your email address',
   passwordPlaceHolder: 'en_Password',
@@ -934,6 +934,7 @@ export default {
   allNInvoice: 'en_All ({0})',
   noLogFoundText: 'en_No Logs Found',
   deleteInvoice: 'en_Delete Invoice',
+  invoice: 'en_Invoice',
 
   inviteToChallengeText:
     'en_Through “Invite to challenge”, you can invite another team to challenge your team.',
@@ -1177,9 +1178,9 @@ export default {
 
   sendRequestText: 'en_Send request for basic info',
   collectMemberInfoText:
-    'en_You can send a request to collect a member’s basic info. When it is accepted, this basic info will be updated with the information provided by the member.',
+    'en_You can send a request to collect this member’s basic info. When the request is accepted, the basic info in this  profile will be updated with the info provided by the member. A user may choose to only provide some of  the basic info items.',
 
-  adminAuthorityText: 'en_Admin Authority And Role',
+  adminAuthorityText: 'en_Admin Authority',
   syncInfoText: 'en_Sync Info',
   importMembersText:
     'en_How do you like to update a member’s profile by Importing member’s account info?',
@@ -2152,8 +2153,8 @@ export default {
 
   unabletofecthgps: 'en_Unable to fetch current location',
   userdeniedgps: 'en_GPS Location is denied by user',
-  inviteByEmail: 'en_Invite By Email',
-  copyInviteUrl: 'en_Copy Invitation URL',
+  inviteByEmail: 'en_Invite by Email',
+  copyInviteUrl: 'en_Copy Invitation URL to TownsCup',
   doNotEnterSameEmail:
     'en_Please do not enter the same email address mutiple times.',
   homeCity: 'en_Home City',
@@ -2169,12 +2170,14 @@ export default {
   addressValidation: 'en_Please fill address field',
   profileCreated: 'en_The member profile has been created in your {0}.',
   registerAsPlayerTitle: 'en_Register as Player',
-  multipleRequestSent: 'en_Requests for basic info were sent to {0} members.',
+  multipleRequestSent: '{0} en_Requests for basic info were sent.',
   removeMemberFromGroup: 'en_Remove this member from team',
   basicInfoRequestText:
-    'en_{0} wants to collect your basic info. You may choose the sections you want to send or edit each section befor you send the information.',
+    'en_{0} wants to collect your basic info. You may choose the items you want to send or edit each items before you send the information.',
+
   requestBasicInfoTitle: 'en_Request Basic Info',
   reservations: 'en_Reservations',
+
   leavereviewinsmall: 'en_Leave Review',
   doubleteamtitle:
     'en_Please, rate the performance of {0} and leave a review for the team below.',
@@ -2198,6 +2201,7 @@ export default {
     "en_Describe what you thought about the team's performance and sportsmanship pertaining to the match.",
   writeplayerreviewplacholder:
     "en_Describe what you thought about the player's performance and sportsmanship pertaining to the match.",
+
   sportQuestion: 'en_What sports do you play?',
   sportQuestionDescription:
     'en_Do you play multiple sports? Register as a player in one sport first, and then register in another sport. ',
@@ -2296,6 +2300,84 @@ export default {
   matchHostChallengeTextDescription:
     'en_If you send a challenge or are invited to send a challenge to someone, you will be the challenger and the opponent will be the match host in the match created from the challenge.',
 
+
+  sentBasicInfoText:
+    'en_You can send a request to collect the member’s basic info.',
+  birthdayAgeText: 'en_Birthday, age',
+
+  requestInfoAcceptedText:
+    'en_When the request is accepted, the basic info in this profile will be updated with the info provided by the member. A user may choose to only provide some of the basic info items.',
+  showAgainText: 'en_Don’t show this again.',
+  updateMyProfile: 'en_Update this information on my profile.',
+  requestBasicInfoTitle: 'en_Request Basic Info',
+  inviteMemberToGroup: 'en_Invite member to {0}',
+  chatsTitle: 'en_Chats',
+  statusPlaceholder: 'en_Status',
+  dominantFoot: 'en_Dominant foot',
+  dateFormatPlaceholder: 'en_MM DD YYYY',
+  nojoinedTeamAvailable: 'en_  No Joined Teams Available',
+  //Message Navigator
+  messageChat: 'en_Message Chat',
+  memberProfile: 'en_Member Profile',
+
+  groupEvent: 'en_Group Events',
+  memberProfile: 'en_Member Profile',
+  whoCanJoinTeam: 'en_Who Can Join Team',
+  writePost: 'en_Write Post',
+  tag: 'en_Tag',
+  gallary: 'en_Gallary',
+  game: 'en_Game',
+  event: 'en_Event',
+  going: 'en_Going',
+  respond: 'en_respond',
+  invite: 'en_Invite',
+  editEvent: 'en_Edit Event',
+  createAnEvent: 'en_Create an Event',
+  matchRecord: 'en_Match Records',
+  bookaRefree: 'en_Book a referee',
+  chooseaMatch: 'en_Choose a match',
+  bookScorekeeper: 'en_Book a scorekeeper',
+  editLinup: 'en_Edit Lineup',
+  editRoster: 'en_Edit Roster',
+  challenge: 'en_Challenge',
+  choosePlayer: 'en_Choose a Player',
+  teams: 'en_Teams',
+  refreeApprovalRequest: 'en_Referee Approval Request',
+  scoreKeeperApprovalRequest: 'en_Scorekeeper Approval Request',
+  settings: 'en_Settings',
+  settingAndPrivacy: 'en_Setting & Privacy',
+  personalInfoTitle: 'en_Personal Information',
+  venueText: 'en_Venue',
+  payText: 'en_Pay',
+  currentMatchReservation: 'en_Curruent Match Reservation',
+  currentRefreeReservation: 'en_Curruent Referee Reservation',
+  paymentMethod: 'en_Payment Methods',
+  messageChat: 'en_Message Chat',
+  notifications: 'en_Notifications',
+  pendingRequest: 'en_Pending Request',
+  gameReservation: 'en_Game Reservation',
+  playerText: 'e_Player',
+  refreeText: 'en_Referee',
+  currentScoreKeeperReservation: 'en_Curruent Scorekeeper Reservation',
+  orderText: 'en_Order',
+  changeListOfSport: 'en_Change List of Sports',
+  chnageListOfOrganizer: 'en_Change List Of Organizers',
+  refreeReservationSetting: 'en_Referee Reservation Setting',
+  scoreKeeperReservationSetting: 'en_Scorekeeper Reservation Setting',
+  gameType: 'en_Game Type',
+  refundPolicies: 'en_Refund Policies',
+  gameRules: 'en_Game Rules',
+  availability: 'en_Availibility',
+  gameDuration: 'en_Game Duration',
+  setPointDuration: 'en_Sets, points & Duration',
+  logText: 'en_log',
+  deactivateActivity: 'en_Deactivate Activity',
+  specifications: 'en_specifications',
+  emailInvitationSent: '{0} en_invitation were sent',
+  oneemailInvitationSent: '{0} en_invitation was sent',
+  basicInfoRequestSent: 'en_requests for basic info were sent',
+  editSpecification: 'en_Edit Specifications',
+
   detailAddressPlaceholder: 'en_Fill in Detailed Address',
 
   seeAllText: 'en_See all',
@@ -2317,4 +2399,5 @@ export default {
   levelText: 'en_Level',
   matchVenueInfo:
     'en_The challenger can choose one of the available venues when they challenge the match host.',
+
 };

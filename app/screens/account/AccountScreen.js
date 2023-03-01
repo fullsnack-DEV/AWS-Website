@@ -1321,10 +1321,16 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   eventTitleTextStyle: {
+    width: 120,
+    textAlign: 'center',
+    fontFamily: fonts.Roboto,
+    fontWeight: '700',
     fontSize: 20,
-    fontFamily: fonts.RBold,
+    lineHeight: 18,
+    paddingTop: 5,
     color: colors.lightBlackColor,
-    width: 200,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   separateLine: {
     borderColor: colors.veryLightGray,

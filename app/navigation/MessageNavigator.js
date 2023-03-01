@@ -3,6 +3,7 @@ import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 
 import colors from '../Constants/Colors';
+import {strings} from '../../Localization/translation';
 
 import MessageMainScreen from '../screens/message/MessageMainScreen';
 import MessageInviteScreen from '../screens/message/MessageInviteScreen';
@@ -14,6 +15,9 @@ import MessageEditInviteeScreen from '../screens/message/MessageEditInviteeScree
 import FeedViewScreen from '../components/newsFeed/feedView/FeedViewScreen';
 import SearchScreen from '../screens/search/SearchScreen';
 import MessageChat from '../components/message/MessageChat';
+
+import fonts from '../Constants/Fonts';
+
 import SportActivityHome from '../screens/home/SportActivity/SportActivityHome';
 import EditWrapperScreen from '../screens/home/SportActivity/EditWrapperScreen';
 
@@ -22,17 +26,34 @@ const Stack = createStackNavigator();
 const MessageNavigator = () => (
   <Stack.Navigator
     screenOptions={{
+      gestureEnabled: false,
       headerBackTitleVisible: false,
+      headerTitleStyle: {
+        textAlign: 'center',
+        fontFamily: fonts.Roboto,
+        fontWeight: '700',
+        fontSize: 16,
+        lineHeight: 17,
+        paddingTop: 5,
+        color: colors.lightBlackColor,
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
+      headerStyle: {
+        backgroundColor: colors.whiteColor,
+        borderBottomColor: colors.grayColor,
+        borderBottomWidth: 0.3,
+      },
     }}>
     <Stack.Screen
       name="MessageMainScreen"
       component={MessageMainScreen}
       options={{
+        headerShown: false,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
         },
-        headerShown: false,
         headerStyle: {
           backgroundColor: colors.whiteColor,
           borderBottomColor: colors.grayColor,
@@ -45,6 +66,7 @@ const MessageNavigator = () => (
       component={MessageSearchScreen}
       options={{
         title: 'Neymar JR',
+
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -61,12 +83,14 @@ const MessageNavigator = () => (
       name="MessageChat"
       component={MessageChat}
       options={{
-        title: 'Message Chat',
+        title: strings.messageChat,
+        headerShown: false,
+
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
         },
-        headerShown: false,
+
         headerStyle: {
           backgroundColor: colors.whiteColor,
           borderBottomColor: colors.grayColor,
@@ -79,11 +103,13 @@ const MessageNavigator = () => (
       name="MessageInviteScreen"
       component={MessageInviteScreen}
       options={{
-        title: 'Message Chat',
+        title: strings.messageChat,
+
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
         },
+
         headerShown: false,
         headerStyle: {
           backgroundColor: colors.whiteColor,
@@ -101,7 +127,8 @@ const MessageNavigator = () => (
       name="MessageEditInviteeScreen"
       component={MessageEditInviteeScreen}
       options={{
-        title: 'Message Chat',
+        title: strings.messageChat,
+
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -119,7 +146,7 @@ const MessageNavigator = () => (
       name="MessageNewGroupScreen"
       component={MessageNewGroupScreen}
       options={{
-        title: 'Message Chat',
+        title: strings.messageChat,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -136,7 +163,7 @@ const MessageNavigator = () => (
       name="MessageEditGroupScreen"
       component={MessageEditGroupScreen}
       options={{
-        title: 'Message',
+        title: strings.message,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -153,11 +180,12 @@ const MessageNavigator = () => (
       name="HomeScreen"
       component={HomeScreen}
       options={{
-        title: 'Home',
+        title: strings.home,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
         },
+
         headerShown: false,
         headerStyle: {
           backgroundColor: colors.whiteColor,
@@ -174,18 +202,19 @@ const MessageNavigator = () => (
     <Stack.Screen
       name="EditWrapperScreen"
       component={EditWrapperScreen}
-      options={{headerShown: false}}
+      options={{
+        headerShown: false,
+      }}
     />
     <Stack.Screen
       name="SearchScreen"
       component={SearchScreen}
       options={{
-        title: 'Search',
+        title: strings.searchText,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
         },
-
         headerStyle: {
           backgroundColor: colors.whiteColor,
           borderBottomColor: colors.grayColor,

@@ -202,7 +202,7 @@ export default function RecruitingPlayerScreen({navigation, route}) {
         })
         .catch((e) => {
           setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);;
+            Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
         });
     },

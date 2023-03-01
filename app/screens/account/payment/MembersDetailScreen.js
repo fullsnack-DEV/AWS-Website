@@ -597,7 +597,6 @@ export default function MembersDetailScreen({navigation, route}) {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    // backgroundColor: colors.grayBackgroundColor,
   },
   navTitle: {
     fontFamily: fonts.RBold,

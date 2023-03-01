@@ -84,7 +84,6 @@ export default function TerminateAccountScreen({navigation, route}) {
       .catch((e) => {
         setloading(false);
         setTimeout(() => {
-          console.log(e)
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });

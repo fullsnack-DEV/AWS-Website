@@ -8,7 +8,7 @@ import {strings} from '../../Localization/translation';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import images from '../Constants/ImagePath';
-import {countryCode} from '../utils';
+import {countryCode, widthPercentageToDP} from '../utils';
 
 const TCPhoneNumber = ({
   placeholder,
@@ -70,10 +70,11 @@ const TCPhoneNumber = ({
 const styles = StyleSheet.create({
   mainContainer: {
     flexDirection: 'row',
-    marginLeft: 15,
-    marginRight: 15,
+
+    marginRight: 8,
     marginBottom: 10,
     justifyContent: 'space-between',
+    alignSelf: 'center',
   },
   halfMatchFeeView: {
     backgroundColor: colors.textFieldBackground,
@@ -103,35 +104,34 @@ const styles = StyleSheet.create({
     tintColor: colors.grayColor,
     top: 15,
     width: 12,
-    right: 15,
+    right: 30,
   },
   inputIOS: {
     height: 40,
     fontSize: 16,
     fontFamily: fonts.RRegular,
-    paddingVertical: 12,
-    paddingHorizontal: 15,
-    width: 175,
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+
     color: colors.lightBlackColor,
+    marginHorizontal: 15,
     paddingRight: 30,
     backgroundColor: colors.textFieldBackground,
-
+    width: widthPercentageToDP('45%'),
     borderRadius: 5,
   },
   inputAndroid: {
     height: 40,
-
+    marginHorizontal: 10,
     fontSize: 16,
     fontFamily: fonts.RRegular,
-    paddingVertical: 12,
-    paddingHorizontal: 15,
+    paddingVertical: 10,
+    paddingHorizontal: 10,
     color: colors.lightBlackColor,
     paddingRight: 30,
     backgroundColor: colors.textFieldBackground,
-    width: 170,
+    width: widthPercentageToDP('45%'),
     borderRadius: 5,
-
-    elevation: 3,
   },
 });
 

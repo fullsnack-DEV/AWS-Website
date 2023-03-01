@@ -261,13 +261,24 @@ const Stack = createStackNavigator();
 const LocalHomeNavigator = () => (
   <Stack.Navigator
     screenOptions={{
-      // headerTintColor: colors.blackColor,
-      // headerTransparent: true,
-      // headerTitle: true,
-
       gestureEnabled: false,
       headerBackTitleVisible: false,
-      // <Image source={images.backArrow} style={{height:12,width:12,resizeMode:'contain'}} />,
+      headerTitleStyle: {
+        textAlign: 'center',
+        fontFamily: fonts.RBold,
+
+        fontSize: 16,
+        lineHeight: 17,
+        paddingTop: 5,
+        color: colors.lightBlackColor,
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
+      headerStyle: {
+        backgroundColor: colors.whiteColor,
+        borderBottomColor: colors.grayColor,
+        borderBottomWidth: 0.3,
+      },
     }}>
     <Stack.Screen
       name="LocalHomeScreen"

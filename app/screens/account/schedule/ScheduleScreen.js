@@ -1570,10 +1570,16 @@ const styles = StyleSheet.create({
   },
 
   eventTitleTextStyle: {
-    fontSize: 20,
-    fontFamily: fonts.RBold,
-    color: colors.lightBlackColor,
     width: 125,
+    textAlign: 'center',
+    fontFamily: fonts.Roboto,
+    fontWeight: '700',
+    fontSize: 20,
+    lineHeight: 18,
+    paddingTop: 5,
+    color: colors.lightBlackColor,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 
   separateLine: {

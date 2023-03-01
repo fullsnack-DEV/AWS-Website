@@ -31,7 +31,7 @@ function TCKeyboardView({
         contentContainerStyle={{flex: 1}}
         extraScrollHeight={hp(5)}>
         <View style={{flex: 1}}>
-          <ScrollView style={{flex: 1}} bounces={false}>
+          <ScrollView bounces={false} showsVerticalScrollIndicator={false}>
             <SafeAreaView>{children}</SafeAreaView>
           </ScrollView>
         </View>

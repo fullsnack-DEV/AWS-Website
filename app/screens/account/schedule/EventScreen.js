@@ -44,12 +44,12 @@ import TCProfileButton from '../../../components/TCProfileButton';
 import {getGroupIndex, getUserIndex} from '../../../api/elasticSearch';
 import TCProfileView from '../../../components/TCProfileView';
 import Verbs from '../../../Constants/Verbs';
-import { 
+import {
   getJSDate,
   ordinal_suffix_of,
   getDayFromDate,
-  countNumberOfWeekFromDay
- } from '../../../utils';
+  countNumberOfWeekFromDay,
+} from '../../../utils';
 
 export default function EventScreen({navigation, route}) {
   const actionSheet = useRef();
@@ -89,42 +89,37 @@ export default function EventScreen({navigation, route}) {
     if (eventData.untilDate) {
       untilTime = getJSDate(eventData.untilDate);
     }
-    if(eventData.repeat === Verbs.eventRecurringEnum.Daily){
+    if (eventData.repeat === Verbs.eventRecurringEnum.Daily) {
       repeatString = strings.daily;
-    }
-    else if(eventData.repeat === Verbs.eventRecurringEnum.Weekly){
+    } else if (eventData.repeat === Verbs.eventRecurringEnum.Weekly) {
       repeatString = strings.weekly;
-    }
-    else if(eventData.repeat === Verbs.eventRecurringEnum.WeekOfMonth){
+    } else if (eventData.repeat === Verbs.eventRecurringEnum.WeekOfMonth) {
       repeatString = format(
         strings.monthlyOnText,
         `${countNumberOfWeekFromDay(startTime)} ${getDayFromDate(startTime)}`,
       );
-    }
-    else if(eventData.repeat === Verbs.eventRecurringEnum.DayOfMonth){
+    } else if (eventData.repeat === Verbs.eventRecurringEnum.DayOfMonth) {
       repeatString = format(
         strings.monthlyOnDayText,
         ordinal_suffix_of(startTime.getDate()),
       );
-    }
-    else if(eventData.repeat === Verbs.eventRecurringEnum.WeekOfYear){
+    } else if (eventData.repeat === Verbs.eventRecurringEnum.WeekOfYear) {
       repeatString = format(
         strings.yearlyOnText,
         `${countNumberOfWeekFromDay(startTime)} ${getDayFromDate(startTime)}`,
       );
-    }
-    else if(eventData.repeat === Verbs.eventRecurringEnum.DayOfYear){
+    } else if (eventData.repeat === Verbs.eventRecurringEnum.DayOfYear) {
       repeatString = format(
         strings.yearlyOnDayText,
         ordinal_suffix_of(startTime.getDate()),
       );
     }
 
-    if(eventData.repeat !== Verbs.eventRecurringEnum.Never){
+    if (eventData.repeat !== Verbs.eventRecurringEnum.Never) {
       repeatString = format(
         strings.repeatTime,
         repeatString,
-        moment(untilTime).format('MMM DD, YYYY hh:mm a')
+        moment(untilTime).format('MMM DD, YYYY hh:mm a'),
       );
     }
 
@@ -342,16 +337,19 @@ export default function EventScreen({navigation, route}) {
         <View style={styles.containerStyle}>
           <Text style={styles.headerTextStyle}>{strings.organizerTitle}</Text>
           {organizer && (
-          <TCProfileView
-            type="medium"
-            name={organizer.group_name ?? organizer.full_name}
-            location={`${organizer.city}, ${organizer.state_abbr ? organizer.state_abbr:''}${organizer.state_abbr ? ',':''} ${organizer.country}`}
-            image={
-              organizer.thumbnail ? {uri: organizer.thumbnail} : images.teamPH
-            }
-            alignSelf={'flex-start'}
-            marginTop={10}
-          />)}
+            <TCProfileView
+              type="medium"
+              name={organizer.group_name ?? organizer.full_name}
+              location={`${organizer.city}, ${
+                organizer.state_abbr ? organizer.state_abbr : ''
+              }${organizer.state_abbr ? ',' : ''} ${organizer.country}`}
+              image={
+                organizer.thumbnail ? {uri: organizer.thumbnail} : images.teamPH
+              }
+              alignSelf={'flex-start'}
+              marginTop={10}
+            />
+          )}
         </View>
         <TCThinDivider marginTop={10} />
 

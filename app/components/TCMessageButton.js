@@ -11,6 +11,7 @@ export default function TCMessageButton({
   width = 75,
   height = 25,
   borderColor,
+  styletext,
   ...props
 }) {
   return (
@@ -21,7 +22,7 @@ export default function TCMessageButton({
           {borderColor: borderColor ?? color, width, height},
           props,
         ]}>
-        <Text style={[styles.buttonTitle, {color}]}>{title}</Text>
+        <Text style={[styles.buttonTitle, {color}, styletext]}>{title}</Text>
       </View>
     </TouchableWithoutFeedback>
   );
@@ -38,9 +39,7 @@ const styles = StyleSheet.create({
 
     backgroundColor: colors.whiteColor,
     shadowColor: colors.grayColor,
-    shadowOffset: {width: 0, height: 3},
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
+
     borderWidth: 1,
     borderColor: colors.greeColor,
     elevation: 2,

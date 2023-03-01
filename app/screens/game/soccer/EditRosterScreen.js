@@ -274,7 +274,10 @@ export default function EditRosterScreen({navigation, route}) {
           })
           .catch((error) => {
             setLoading(false);
-            setTimeout(() => Alert.alert(strings.alertmessagetitle, error.message), 10);
+            setTimeout(
+              () => Alert.alert(strings.alertmessagetitle, error.message),
+              10,
+            );
           });
       }
     } else if (tempNonRosterArray.length > 0) {
@@ -291,7 +294,10 @@ export default function EditRosterScreen({navigation, route}) {
         })
         .catch((error) => {
           setLoading(false);
-          setTimeout(() => Alert.alert(strings.alertmessagetitle, error.message), 10);
+          setTimeout(
+            () => Alert.alert(strings.alertmessagetitle, error.message),
+            10,
+          );
         });
     } else {
       setLoading(false);

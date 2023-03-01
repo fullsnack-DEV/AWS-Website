@@ -201,14 +201,25 @@ const Stack = createStackNavigator();
 const ScheduleNavigator = () => (
   <Stack.Navigator
     screenOptions={{
-      // headerTintColor: colors.blackColor,
-      // headerTransparent: true,
-      // headerTitle: true,
       gestureEnabled: false,
       headerBackTitleVisible: false,
+      headerTitleStyle: {
+        textAlign: 'center',
+        fontFamily: fonts.Roboto,
+        fontWeight: '700',
+        fontSize: 16,
+        lineHeight: 17,
+        paddingTop: 5,
+        color: colors.lightBlackColor,
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
+      headerStyle: {
+        backgroundColor: colors.whiteColor,
+        borderBottomColor: colors.grayColor,
+        borderBottomWidth: 0.3,
+      },
     }}>
-    {/* Accounts screens */}
-
     <Stack.Screen
       name="ScheduleScreen"
       component={ScheduleScreen}

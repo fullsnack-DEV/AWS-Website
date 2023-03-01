@@ -232,7 +232,9 @@ const MessageMainScreen = ({navigation}) => {
     () => (
       <Header
         showBackgroundColor={true}
-        leftComponent={<Text style={styles.eventTextStyle}>Chats</Text>}
+        leftComponent={
+          <Text style={styles.eventTextStyle}>{strings.chatsTitle}</Text>
+        }
         rightComponent={
           authContext?.entity?.QB && (
             <View style={{flexDirection: 'row'}}>
@@ -421,9 +423,16 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   eventTextStyle: {
+    width: 90,
+    textAlign: 'center',
+    fontFamily: fonts.Roboto,
+    fontWeight: '700',
     fontSize: 20,
-    fontFamily: fonts.RBold,
-    width: 60,
+    lineHeight: 18,
+    paddingTop: 5,
+    color: colors.lightBlackColor,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   separateLine: {
     borderColor: colors.writePostSepratorColor,

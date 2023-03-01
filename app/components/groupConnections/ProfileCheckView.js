@@ -1,3 +1,6 @@
+/* eslint-disable consistent-return */
+/* eslint-disable no-empty */
+
 import React from 'react';
 import {
   Text,
@@ -5,6 +8,7 @@ import {
   StyleSheet,
   Image,
   TouchableWithoutFeedback,
+  Pressable,
 } from 'react-native';
 
 import LinearGradient from 'react-native-linear-gradient';
@@ -14,7 +18,20 @@ import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 
 export default function ProfileCheckView({isChecked, onPress, playerDetail}) {
-  console.log('player detail :=>', playerDetail);
+  const RenderSportDetail = () => {
+    const sportname = playerDetail.registered_sports?.[0].sport;
+    const numOfSports = playerDetail.registered_sports?.length - 1;
+
+    const capitalizeLetter =
+      sportname?.charAt(0).toUpperCase() + sportname?.slice(1);
+
+    if (sportname === null || numOfSports === 'NaN') {
+    } else if (numOfSports === 0) {
+      return `${capitalizeLetter}`;
+    }
+    return `${capitalizeLetter} and ${numOfSports} more`;
+  };
+
   return (
     <>
       {isChecked ? (
@@ -39,12 +56,29 @@ export default function ProfileCheckView({isChecked, onPress, playerDetail}) {
                 <Text style={styles.whiteLocationText} numberOfLines={1}>
                   {playerDetail.city}
                 </Text>
+                <Text
+                  style={[styles.locationText, {textTransform: 'capitalize'}]}
+                  numberOfLines={1}>
+                  {RenderSportDetail()}
+                </Text>
               </View>
             </View>
-            <Image
-              source={images.orangeCheckBox}
-              style={styles.checkGreenImage}
-            />
+            <Pressable
+              onPress={onPress}
+              style={{
+                height: 22,
+                width: 22,
+                borderWidth: StyleSheet.hairlineWidth,
+                borderRadius: 7,
+                borderColor: colors.veryLightGray,
+
+                alignSelf: 'center',
+              }}>
+              <Image
+                source={images.orangeCheckBox}
+                style={styles.checkGreenImage}
+              />
+            </Pressable>
           </LinearGradient>
         </TouchableWithoutFeedback>
       ) : (
@@ -67,9 +101,23 @@ export default function ProfileCheckView({isChecked, onPress, playerDetail}) {
                 <Text style={styles.locationText} numberOfLines={1}>
                   {playerDetail.city}
                 </Text>
+                <Text style={styles.locationText} numberOfLines={1}>
+                  {RenderSportDetail()}
+                </Text>
               </View>
             </View>
-            <Image source={images.whiteUncheck} style={styles.checkImage} />
+            <Pressable
+              onPress={onPress}
+              style={{
+                height: 22,
+                width: 22,
+                borderWidth: 1,
+                borderColor: colors.veryLightGray,
+                borderRadius: 7,
+                alignSelf: 'center',
+              }}>
+              <Image source={images.whiteUncheck} style={styles.checkImage} />
+            </Pressable>
           </View>
         </TouchableWithoutFeedback>
       )}
@@ -93,8 +141,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingRight: 10,
     paddingLeft: 10,
-    marginBottom: 10,
-
+    marginBottom: 16,
+    marginTop: 13,
     borderRadius: 10,
   },
 
@@ -126,13 +174,13 @@ const styles = StyleSheet.create({
   checkImage: {
     height: 22,
     width: 22,
-    resizeMode: 'contain',
+    paddingVertical: 1,
     alignSelf: 'center',
   },
   checkGreenImage: {
     height: 22,
     width: 22,
-    resizeMode: 'contain',
+    resizeMode: 'cover',
     alignSelf: 'center',
   },
 });

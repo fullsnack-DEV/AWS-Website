@@ -14,6 +14,7 @@ import {
   Pressable,
   Image,
   SafeAreaView,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import Modal from 'react-native-modal';
 
@@ -82,6 +83,15 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
           {strings.send}
         </Text>
       ),
+
+      headerLeft: () => (
+        <TouchableWithoutFeedback
+          onPress={() => {
+            navigation.navigate('GroupMembersScreen');
+          }}>
+          <Image source={images.backArrow} style={styles.backArrowStyle} />
+        </TouchableWithoutFeedback>
+      ),
     });
   }, [navigation, selectedList, searchPlayers, isInfoModalVisible, showCheck]);
 
@@ -95,6 +105,30 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
     });
     setSelectedList(selectedPlayers);
   };
+
+  const infoList = [
+    {
+      title: strings.gender,
+    },
+    {
+      title: strings.birthdayAgeText,
+    },
+    {
+      title: strings.height,
+    },
+    {
+      title: strings.weight,
+    },
+    {
+      title: strings.phoneNumber,
+    },
+    {
+      title: strings.emailPlaceHolder,
+    },
+    {
+      title: strings.emailPlaceHolder,
+    },
+  ];
 
   const renderPlayer = ({item, index}) => (
     <MemberProfile
@@ -134,10 +168,13 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
         x?.first_name?.toLowerCase().includes(text.toLowerCase()) ||
         x?.last_name?.toLowerCase().includes(text.toLowerCase()),
     );
+
     if (text.length > 0) {
       setPlayers(result);
+      console.log(players, 'From log 1');
     } else {
       setPlayers(searchPlayers);
+      console.log(players, 'From log');
     }
   };
 
@@ -153,7 +190,7 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
             showAlert(
               format(strings.multipleRequestSent, selectedList?.length),
               () => {
-                navigation.goBack();
+                navigation.navigate('GroupMembersScreen');
               },
             );
           }, 10);
@@ -169,20 +206,60 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
     }
   };
 
+  const RenderInfoDetail = ({item}) => (
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+      }}>
+      <View
+        style={{
+          width: 5,
+          height: 5,
+          backgroundColor: colors.blackColor,
+          borderRadius: 50,
+        }}
+      />
+      <Text style={styles.basicInfoList}>{item?.title}</Text>
+    </View>
+  );
+
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-      <View style={{marginTop: 10}}>
+      <View style={{marginTop: 15}}>
         <TCSearchBox
           width={'90%'}
+          placeholderText={strings.searchText}
           alignSelf="center"
           onChangeText={(text) => {
             searchFilterFunction(text);
           }}
         />
       </View>
-      <TCProfileTag dataSource={players} onTagCancelPress={handleTagPress} />
+      {/* if player is selected then only show this profile Tag */}
+
+      {selectPlayer.length > 0 ? (
+        <View
+          style={{
+            marginTop: 15,
+            marginBottom: 22,
+          }}>
+          <TCProfileTag
+            dataSource={players}
+            onTagCancelPress={handleTagPress}
+            style={{
+              marginLeft: 10,
+              marginRight: 0,
+            }}
+          />
+        </View>
+      ) : null}
+
       <FlatList
+        style={{
+          marginTop: -15,
+        }}
         extraData={players}
         showsVerticalScrollIndicator={false}
         data={players}
@@ -214,8 +291,6 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
             borderTopRightRadius: 30,
           }}>
           <View style={styles.titlePopup}>
-            <Text style={styles.doneText}></Text>
-
             <Text style={styles.startTime}></Text>
             <Pressable
               hitSlop={getHitSlop(15)}
@@ -227,27 +302,32 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
           </View>
           <Text
             style={{
-              fontFamily: fonts.RRegular,
+              fontFamily: fonts.RMedium,
               fontSize: 20,
-              margin: 15,
+              marginLeft: 30,
+              marginRight: 44,
+              marginBottom: 15,
               color: colors.lightBlackColor,
             }}>
             {strings.sentBasicInfoText}
           </Text>
-          <Text style={styles.basicInfoList}>• {strings.gender}</Text>
-          <Text style={styles.basicInfoList}>• {strings.birthdayAgeText}</Text>
-          <Text style={styles.basicInfoList}>• {strings.height}</Text>
-          <Text style={styles.basicInfoList}>• {strings.weight}</Text>
-          <Text style={styles.basicInfoList}>• {strings.phoneNumber}</Text>
-          <Text style={styles.basicInfoList}>• {strings.emailPlaceHolder}</Text>
-          <Text style={styles.basicInfoList}>• {strings.address}</Text>
+          <View
+            style={{
+              marginLeft: 30,
+            }}>
+            <FlatList
+              data={infoList}
+              renderItem={({item}) => <RenderInfoDetail item={item} />}
+            />
+          </View>
 
           <Text style={styles.basicInfoRequestText}>
             {strings.requestInfoAcceptedText}
           </Text>
 
           <SafeAreaView>
-            <View style={{flexDirection: 'row', margin: 15}}>
+            <View
+              style={{flexDirection: 'row', marginLeft: 25, marginBottom: 5}}>
               <Pressable
                 onPress={async () => {
                   await setStorage('showPopup', showCheck);
@@ -257,7 +337,7 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
                   source={
                     showCheck ? images.orangeCheckBox : images.uncheckWhite
                   }
-                  style={{height: 22, width: 22, resizeMode: 'contain'}}
+                  style={{height: 18, width: 18, resizeMode: 'contain'}}
                 />
               </Pressable>
               <Text style={styles.checkBoxItemText}>
@@ -276,7 +356,7 @@ const styles = StyleSheet.create({
   },
 
   sendButtonStyle: {
-    fontFamily: fonts.RRegular,
+    fontFamily: fonts.RMedium,
     fontSize: 16,
     marginRight: 10,
   },
@@ -303,32 +383,35 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     fontSize: 16,
   },
-  doneText: {
-    alignSelf: 'center',
-    textAlignVertical: 'center',
-    fontFamily: fonts.RRegular,
-    fontSize: 14,
-    color: colors.lightBlackColor,
-    marginRight: 15,
-  },
+
   basicInfoList: {
     fontFamily: fonts.RRegular,
     fontSize: 16,
     color: colors.lightBlackColor,
-    marginLeft: 15,
+    marginLeft: 10,
     marginBottom: 5,
   },
   basicInfoRequestText: {
     fontFamily: fonts.RRegular,
     fontSize: 16,
     color: colors.lightBlackColor,
-    margin: 15,
+    marginLeft: 30,
+    marginRight: 26,
+    lineHeight: 24,
+    marginTop: 15,
+    marginBottom: 30,
   },
 
   checkBoxItemText: {
     fontFamily: fonts.RRegular,
     fontSize: 14,
     color: colors.veryLightBlack,
-    marginLeft: 15,
+    marginLeft: 7,
+  },
+  backArrowStyle: {
+    height: 22,
+    marginLeft: 10,
+    resizeMode: 'contain',
+    tintColor: colors.blackColor,
   },
 });

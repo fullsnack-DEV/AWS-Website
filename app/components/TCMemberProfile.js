@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
   topViewContainer: {
     flexDirection: 'row',
     flex: 1,
-    marginLeft: 15,
+    marginLeft: 12,
     marginRight: 15,
   },
 
@@ -50,9 +50,10 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   nameText: {
-    fontSize: 20,
-    fontFamily: fonts.RMedium,
     marginRight: 25,
+    fontFamily: fonts.RBold,
+
+    fontSize: 20,
   },
 
   locationText: {

@@ -25,6 +25,7 @@
     "nodemodule:remove": "rm -rf node_modules package-lock.json"
   },
   "dependencies": {
+    "@alessiocancian/react-native-actionsheet": "^3.2.0",
     "@fawazahmed/react-native-read-more": "^2.3.6",
     "@invertase/react-native-apple-authentication": "^2.1.5",
     "@ptomasroos/react-native-multi-slider": "^2.2.2",

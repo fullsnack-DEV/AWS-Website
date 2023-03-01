@@ -44,6 +44,7 @@ import {
   monthNames,
   weightMesurement,
 } from '../../../../utils/constant';
+import AddressLocationModal from '../../../../components/AddressLocationModal/AddressLocationModal';
 
 let entity = {};
 
@@ -54,14 +55,15 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
   const [minDateValue, setMinDateValue] = useState(new Date());
   const [maxDateValue, setMaxDateValue] = useState(new Date());
   const [loading, setloading] = useState(false);
-  const [location, setLocation] = useState(
-    route?.params?.memberInfo?.city
-      ? `${route?.params?.memberInfo?.city}, ${route?.params?.memberInfo?.state_abbr}, ${route?.params?.memberInfo?.country}`
-      : '',
-  );
-
+  const [postalCode, setPostalCode] = useState('');
   const [showDate, setShowDate] = useState(false);
   const [role, setRole] = useState('');
+  const [location, setLocation] = useState();
+  const [city, setCity] = useState();
+  const [state, setState] = useState();
+  const [country, setCountry] = useState();
+  const [visibleLocationModal, setVisibleLocationModal] = useState(false);
+
   const [phoneNumber, setPhoneNumber] = useState([
     {
       id: 0,
@@ -93,6 +95,12 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
       ],
     );
     setMemberInfo(route.params.memberInfo);
+
+    setCity(route.params.memberInfo?.city);
+    setCountry(route.params.memberInfo?.coutry);
+    setState(route.params.memberInfo?.state);
+    setLocation(route.params.memberInfo?.location);
+
     getAuthEntity();
   }, []);
 
@@ -103,13 +111,6 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
         route?.params?.state &&
         route?.params?.country
       ) {
-        setMemberInfo({
-          ...memberInfo,
-          city: route?.params?.city,
-          state_abbr: route?.params?.state,
-          country: route?.params?.country,
-        });
-
         setLocation(
           `${route?.params?.city}, ${route?.params?.state}, ${route?.params?.country}`,
         );
@@ -145,7 +146,7 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
               editMemberBasicInfo();
             }
           }}>
-          {strings.done}
+          {strings.save}
         </Text>
       ),
     });
@@ -268,25 +269,18 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
       }}
     />
   );
-  const shadowStyle = {
-    elevation: 3,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 0.5},
-    shadowOpacity: 0.16,
-    shadowRadius: 1,
-  };
+
   const heightView = () => (
-    <View style={styles.fieldView}>
+    <View>
       <View
         style={{
           flexDirection: 'row',
-          marginTop: 12,
           align: 'center',
           marginLeft: 15,
           marginRight: 15,
           justifyContent: 'space-between',
         }}>
-        <View style={{...styles.halfMatchFeeView, ...shadowStyle}}>
+        <View style={{...styles.halfMatchFeeView, height: 40}}>
           <TextInput
             placeholder={strings.height}
             style={{...styles.halffeeText}}
@@ -321,27 +315,29 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
           value={memberInfo?.height?.height_type}
           useNativeAndroidPickerStyle={false}
           style={{
+            placeholder: {
+              color: colors.blackColor,
+            },
             inputIOS: {
               fontSize: wp('3.5%'),
               paddingVertical: 12,
               paddingHorizontal: 15,
               width: wp('45%'),
               color: 'black',
-              paddingRight: 30,
-              backgroundColor: colors.offwhite,
+              backgroundColor: colors.lightGrey,
               borderRadius: 5,
-              ...shadowStyle,
+              textAlign: 'center',
             },
             inputAndroid: {
-              fontSize: wp('4%'),
               paddingVertical: 12,
               paddingHorizontal: 15,
-              width: wp('45%'),
+              width: widthPercentageToDP('45%'),
               color: 'black',
               paddingRight: 30,
-              backgroundColor: colors.offwhite,
+              backgroundColor: colors.textFieldBackground,
               borderRadius: 5,
-              ...shadowStyle,
+              textAlign: 'center',
+              height: 40,
             },
           }}
           Icon={() => (
@@ -353,17 +349,16 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
   );
 
   const weightView = () => (
-    <View style={styles.fieldView}>
+    <View>
       <View
         style={{
           flexDirection: 'row',
-          marginTop: 12,
           align: 'center',
           marginLeft: 15,
           marginRight: 15,
           justifyContent: 'space-between',
         }}>
-        <View style={{...styles.halfMatchFeeView, ...shadowStyle}}>
+        <View style={{...styles.halfMatchFeeView, height: 40}}>
           <TextInput
             placeholder={strings.weight}
             style={{...styles.halffeeText}}
@@ -398,27 +393,30 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
           value={memberInfo?.weight?.weight_type}
           useNativeAndroidPickerStyle={false}
           style={{
+            placeholder: {
+              color: colors.blackColor,
+            },
             inputIOS: {
               fontSize: wp('3.5%'),
               paddingVertical: 12,
               paddingHorizontal: 15,
               width: wp('45%'),
               color: 'black',
-              paddingRight: 30,
-              backgroundColor: colors.offwhite,
+              backgroundColor: colors.lightGrey,
               borderRadius: 5,
-              ...shadowStyle,
+              textAlign: 'center',
             },
             inputAndroid: {
-              fontSize: wp('4%'),
+              fontSize: widthPercentageToDP('4%'),
               paddingVertical: 12,
               paddingHorizontal: 15,
-              width: wp('45%'),
+              width: widthPercentageToDP('45%'),
               color: 'black',
               paddingRight: 30,
-              backgroundColor: colors.offwhite,
+              backgroundColor: colors.textFieldBackground,
               borderRadius: 5,
-              ...shadowStyle,
+              textAlign: 'center',
+              height: 40,
             },
           }}
           Icon={() => (
@@ -448,6 +446,37 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
       });
   };
 
+  const onSelectAddress = (_location) => {
+    setCity(_location.city);
+    setState(_location.state);
+    setCountry(_location.country);
+    setPostalCode(_location.postalCode);
+    setLocation(_location.formattedAddress);
+
+    setMemberInfo({
+      ...memberInfo,
+      city: _location.city,
+      state_abbr: _location.state,
+      country: _location.country,
+      location: _location.formattedAddress,
+    });
+  };
+
+  const setCityandPostal = (street, code) => {
+    setCity(street);
+    setPostalCode(code);
+
+    if (code === '') {
+      setMemberInfo({...memberInfo, postal_code: code});
+    }
+  };
+
+  const locationString = () =>
+    [location, city, state, country, postalCode].filter((v) => v).join(', ');
+
+  const addressManualString = () =>
+    [city, state, country, location, postalCode].filter((w) => w).join(', ');
+
   return (
     <TCKeyboardView>
       <ActivityLoader visible={loading} />
@@ -461,7 +490,7 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
             }}
             style={styles.outerContainerStyle}>
             <LinearGradient
-              colors={[colors.whiteColor, colors.whiteColor]}
+              colors={[colors.lightGrey, colors.lightGrey]}
               style={styles.containerStyle}>
               <Text
                 style={[styles.buttonText, {color: colors.lightBlackColor}]}>
@@ -476,8 +505,18 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
         </View>
       )}
 
-      <View>
-        <TCLabel title={strings.gender} />
+      <View
+        style={{
+          marginTop: -10,
+        }}>
+        <TCLabel
+          title={strings.gender}
+          style={{
+            textTransform: 'uppercase',
+            lineHeight: 24,
+            marginBottom: 10,
+          }}
+        />
         <TCPicker
           // disabled={!!memberInfo.gender}
           dataSource={DataSource.Gender}
@@ -489,7 +528,14 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
         />
       </View>
       <View>
-        <TCLabel title={strings.birthDatePlaceholder} />
+        <TCLabel
+          title={strings.birthDatePlaceholder}
+          style={{
+            textTransform: 'uppercase',
+            lineHeight: 24,
+            marginBottom: 10,
+          }}
+        />
         <TCTouchableLabel
           title={
             memberInfo.birthday &&
@@ -499,19 +545,44 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
               memberInfo.birthday,
             ).getFullYear()}`
           }
+          textStyle={{
+            textAlign: 'center',
+          }}
           placeholder={strings.birthDatePlaceholder}
           onPress={() => setShowDate(!showDate)}
         />
       </View>
 
-      <TCLabel title={strings.height} />
+      <TCLabel
+        title={strings.height}
+        style={{
+          textTransform: 'uppercase',
+          lineHeight: 24,
+          marginBottom: 10,
+        }}
+      />
       {heightView()}
 
-      <TCLabel title={strings.weight} />
+      <TCLabel
+        title={strings.weight}
+        style={{
+          textTransform: 'uppercase',
+          lineHeight: 24,
+          marginBottom: 10,
+        }}
+      />
       {weightView()}
 
       <View>
-        <TCLabel title={strings.emailPlaceHolder} required={true} />
+        <TCLabel
+          title={strings.emailPlaceHolder}
+          required={true}
+          style={{
+            textTransform: 'uppercase',
+            lineHeight: 24,
+            marginBottom: 10,
+          }}
+        />
         <TCTextField
           editable={false}
           value={memberInfo.email}
@@ -521,7 +592,14 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
         />
       </View>
       <View>
-        <TCLabel title={strings.phone} />
+        <TCLabel
+          title={strings.phone}
+          style={{
+            textTransform: 'uppercase',
+            lineHeight: 24,
+            marginBottom: 10,
+          }}
+        />
         <FlatList
           data={phoneNumber}
           renderItem={renderPhoneNumber}
@@ -530,74 +608,74 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
         />
       </View>
       <TCMessageButton
+        borderColor={colors.whiteColor}
+        color={colors.lightBlackColor}
         title={strings.addPhone}
-        width={85}
+        backgroundColor={colors.lightGrey}
+        paddingVertical={5}
+        elevation={0}
+        width={120}
+        height={28}
         alignSelf="center"
-        marginTop={15}
+        styletext={{
+          fontFamily: fonts.RBold,
+        }}
+        marginTop={20}
         onPress={() => addPhoneNumber()}
       />
-      <View>
-        <TCLabel title={strings.address} />
-        <TCTextField
-          value={memberInfo.street_address}
-          onChangeText={(text) =>
-            setMemberInfo({...memberInfo, street_address: text})
-          }
-          placeholder={strings.addressPlaceholder}
-          keyboardType={'default'}
-        />
-      </View>
 
       <TouchableOpacity
-        onPress={() =>
-          navigation.navigate('SearchLocationScreen', {
-            comeFrom: 'EditMemberBasicInfoScreen',
-          })
-        }>
-        <TextInput
-          placeholder={strings.searchCityPlaceholder}
-          placeholderTextColor={colors.userPostTimeColor}
-          style={[styles.matchFeeTxt, {marginBottom: 5}]}
-          value={location}
-          editable={false}
-          pointerEvents="none"></TextInput>
-      </TouchableOpacity>
+        onPress={() => {
+          setVisibleLocationModal(true);
+        }}>
+        <View
+          style={{
+            paddingBottom: 20,
+          }}>
+          <TCLabel
+            title={strings.address.toUpperCase()}
+            style={{marginBottom: 10, marginTop: 27}}
+          />
 
-      <View>
-        <TCTextField
-          value={memberInfo.postal_code}
-          onChangeText={(text) => {
-            if (text === '') {
-              setMemberInfo({...memberInfo, postal_code: text});
-            }
-          }}
-          placeholder={strings.postalCodeText}
-          keyboardType={'name-phone-pad'}
-          maxLength={8}
-        />
-      </View>
-      <View style={{marginBottom: 20}} />
+          <TCTextField
+            value={locationString() || addressManualString()}
+            autoCapitalize="none"
+            autoCorrect={false}
+            placeholder={strings.streetAddress}
+            pointerEvents="none"
+            editable={false}
+          />
+        </View>
+      </TouchableOpacity>
 
       {showDate && (
         <View>
           <DateTimePickerView
             visible={showDate}
-            date={memberInfo?.birthday}
+            // date={new Date()}
             onDone={handleDonePress}
             onCancel={handleCancelPress}
             onHide={handleCancelPress}
-            minimumDate={maxDateValue}
-            maximumDate={minDateValue}
+            minimumDate={minDateValue}
+            maximumDate={maxDateValue}
             mode={'date'}
           />
         </View>
       )}
+
+      <AddressLocationModal
+        visibleLocationModal={visibleLocationModal}
+        setVisibleAddressModalhandler={() => setVisibleLocationModal(false)}
+        onAddressSelect={onSelectAddress}
+        handleSetLocationOptions={onSelectAddress}
+        onDonePress={(street, code) => setCityandPostal(street, code)}
+      />
     </TCKeyboardView>
   );
 }
 const styles = StyleSheet.create({
   nextButtonStyle: {
-    fontFamily: fonts.RRegular,
+    fontFamily: fonts.RMedium,
     fontSize: 16,
     marginRight: 10,
   },
@@ -605,7 +683,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
-    margin: 15,
+    marginTop: 10,
+    marginLeft: 15,
+    marginRight: 10,
+    marginBottom: 23,
+    lineHeight: 23,
   },
   miniDownArrow: {
     alignSelf: 'center',
@@ -620,7 +702,7 @@ const styles = StyleSheet.create({
   },
   halfMatchFeeView: {
     alignSelf: 'center',
-    backgroundColor: colors.offwhite,
+    backgroundColor: colors.lightGrey,
     borderRadius: 5,
     color: 'black',
     flexDirection: 'row',
@@ -634,18 +716,16 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     fontSize: wp('3.8%'),
     width: '90%',
+    textAlign: 'center',
   },
 
   outerContainerStyle: {
     width: '80%',
     alignSelf: 'center',
     alignItems: 'center',
-    shadowColor: colors.blackColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.16,
-    shadowRadius: 3,
-    elevation: 1.5,
-    marginTop: 15,
+
+    marginTop: 20,
+    marginBottom: 10,
   },
   containerStyle: {
     flexDirection: 'row',
@@ -657,29 +737,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     alignSelf: 'center',
-    fontSize: 12,
+    fontSize: 14,
     fontFamily: fonts.RBold,
-  },
-  fieldView: {
-    marginTop: 15,
-  },
-  matchFeeTxt: {
-    alignSelf: 'center',
-    backgroundColor: colors.offwhite,
-    borderRadius: 5,
-    color: 'black',
-    elevation: 3,
-    fontSize: widthPercentageToDP('3.8%'),
-    height: 40,
-
-    marginTop: 12,
-    paddingHorizontal: 15,
-    paddingRight: 30,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
-
-    width: widthPercentageToDP('92%'),
   },
 });

@@ -27,25 +27,31 @@ export default function TCInfoField({
 const styles = StyleSheet.create({
   fieldView: {
     flexDirection: 'row',
-    marginLeft: 25,
+    marginLeft: 15,
     marginRight: 20,
     marginTop: 10,
     marginBottom: 10,
     alignItems: 'center',
+    alignSelf: 'center',
   },
   fieldTitle: {
     fontSize: 16,
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RLight,
-    flex: 0.3,
+    color: colors.veryLightBlack,
+    flex: 0.4,
     marginRight: 15,
-    // paddingTop: 4,
+
+    fontFamily: fonts.RMedium,
+
+    lineHeight: 24,
   },
   fieldValue: {
     fontSize: 16,
     color: colors.lightBlackColor,
-    fontFamily: fonts.RRegular,
     flex: 0.65,
-    marginLeft: 15,
+    marginLeft: 30,
+
+    fontFamily: fonts.RRegular,
+
+    lineHeight: 21,
   },
 });

@@ -91,6 +91,7 @@ export default function CreateMemberProfileTeamForm3({navigation, route}) {
   const createMember = () => {
     setLoading(true);
     let bodyParams = {is_invite: joinTCCheck};
+
     if (route.params.form2.full_image) {
       const imageArray = [];
 

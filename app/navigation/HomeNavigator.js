@@ -1456,7 +1456,7 @@ const HomeNavigator = () => (
       name="InviteMembersBySearchScreen"
       component={InviteMembersBySearchScreen}
       options={{
-        title: strings.inviteBySearchText,
+        title: strings.inviteMemberText,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -1473,7 +1473,7 @@ const HomeNavigator = () => (
       name="RequestMultipleBasicInfoScreen"
       component={RequestMultipleBasicInfoScreen}
       options={{
-        title: 'Send request for basic info',
+        title: strings.sendRequestText,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
