@@ -210,6 +210,8 @@ import BasicInfoScreen from '../screens/account/userSettingPrivacy/BasicInfoScre
 import PendingRequestScreen from '../screens/notificationsScreen/PendingRequestScreen';
 import TrashScreen from '../screens/notificationsScreen/TrashScreen';
 import LanguageSettingScreen from '../screens/account/userSettingPrivacy/LanguageSettingScreen';
+import SportActivityHome from '../screens/home/SportActivity/SportActivityHome';
+import EditWrapperScreen from '../screens/home/SportActivity/EditWrapperScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -245,6 +247,16 @@ const HomeNavigator = () => (
           borderBottomWidth: 0.3,
         },
       }}
+    />
+    <Stack.Screen
+      name="SportActivityHome"
+      component={SportActivityHome}
+      options={{headerShown: false}}
+    />
+    <Stack.Screen
+      name="EditWrapperScreen"
+      component={EditWrapperScreen}
+      options={{headerShown: false}}
     />
     <Stack.Screen
       name="GroupListScreen"

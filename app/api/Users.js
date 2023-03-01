@@ -280,3 +280,10 @@ export const userTerminate = (authContext) =>
     url: `${Config.BASE_URL}/users/terminate`,
     authContext,
   });
+
+export const getUserReviewsById = (userId, sport, role, authContext) =>
+  makeAPIRequest({
+    method: 'get',
+    url: `${Config.BASE_URL}/users/${userId}/reviews?sport=${sport}&role=${role}`,
+    authContext,
+  });

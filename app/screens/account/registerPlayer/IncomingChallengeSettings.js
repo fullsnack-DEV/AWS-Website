@@ -150,6 +150,15 @@ export default function IncomingChallengeSettings({navigation, route}) {
     } else {
       const registerdPlayerData = playerObject.registered_sports.map((item) => {
         if (item.sport_name === sportName && item.sport_type === sportType) {
+          if (item.sport === Verbs.tennisSport) {
+            return {
+              ...item,
+              setting: {
+                ...settingObject,
+                ntrp: '1.0',
+              },
+            };
+          }
           return {
             ...item,
             setting: {

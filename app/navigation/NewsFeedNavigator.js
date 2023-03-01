@@ -89,6 +89,8 @@ import EntityStatScreen from '../screens/home/EntityStatScreen';
 import GameTennisDuration from '../screens/challenge/manageChallenge/settings/GameTennisDuration';
 import {strings} from '../../Localization/translation';
 import MessageNavigator from './MessageNavigator';
+import SportActivityHome from '../screens/home/SportActivity/SportActivityHome';
+import EditWrapperScreen from '../screens/home/SportActivity/EditWrapperScreen';
 
 const Stack = createStackNavigator();
 
@@ -261,6 +263,16 @@ const NewsFeedNavigator = () => (
           borderBottomWidth: 0.3,
         },
       }}
+    />
+    <Stack.Screen
+      name="SportActivityHome"
+      component={SportActivityHome}
+      options={{headerShown: false}}
+    />
+    <Stack.Screen
+      name="EditWrapperScreen"
+      component={EditWrapperScreen}
+      options={{headerShown: false}}
     />
     <Stack.Screen
       name="ScheduleScreen"

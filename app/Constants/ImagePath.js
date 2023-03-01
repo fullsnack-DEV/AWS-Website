@@ -449,6 +449,12 @@ const images = {
   createMember: require('../assets/images/createMember.png'),
   unlinked: require('../assets/images/unlinked.png'),
   createTeamRoundIcon: require('../assets/images/createTeam.png'),
+
+  scoreBoardBackgroundImage: require('../assets/images/scoreboardBg.png'),
+  moreOptions: require('../assets/images/moreOptions.png'),
+  infoIcon: require('../assets/images/infoIcon.png'),
+  clubPatchIcon: require('../assets/images/clubPatch.png'),
+  teamPatchIcon: require('../assets/images/teamPatch.png'),
 };
 
 export default images;

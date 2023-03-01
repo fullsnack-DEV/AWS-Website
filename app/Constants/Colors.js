@@ -134,5 +134,8 @@ const colors = {
   textFieldBackground: '#f5f5f5',
   messageTextColor: '#532E00',
   lightGrey2: '#777777',
+  darkGrey: '#D6D6D6',
+  greyBorderColor: '#DDDDDD',
+  winGraphColor: '#157EFB',
 };
 export default colors;

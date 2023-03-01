@@ -267,6 +267,8 @@ import UserEventSettingPrivacyScreen from '../screens/account/GroupSetting/UserE
 import WhatEventInviteScreen from '../screens/account/GroupSetting/WhatEventInviteScreen';
 import WhoCanInviteEventScreen from '../screens/account/GroupSetting/WhoCanInviteEventScreen';
 import LanguageSettingScreen from '../screens/account/userSettingPrivacy/LanguageSettingScreen';
+import SportActivityHome from '../screens/home/SportActivity/SportActivityHome';
+import EditWrapperScreen from '../screens/home/SportActivity/EditWrapperScreen';
 
 // Scorekeeper Review Screen
 
@@ -304,7 +306,16 @@ const AccountNavigator = () => (
         },
       }}
     />
-
+    <Stack.Screen
+      name="SportActivityHome"
+      component={SportActivityHome}
+      options={{headerShown: false}}
+    />
+    <Stack.Screen
+      name="EditWrapperScreen"
+      component={EditWrapperScreen}
+      options={{headerShown: false}}
+    />
     <Stack.Screen
       name="GroupListScreen"
       component={GroupListScreen}
@@ -2301,7 +2312,7 @@ const AccountNavigator = () => (
         headerShown: false,
       }}
     />
-    
+
     {/* Scorekeeper screens */}
     <Stack.Screen
       name="ScorekeeperReservationScreen"

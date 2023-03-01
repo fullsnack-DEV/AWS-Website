@@ -510,6 +510,10 @@ export default {
   pendingrequests: 'en_PENDING REQUESTS',
   today: 'en_TODAY',
   earlier: 'en_EARLIER',
+  yesterday: 'en_YESTERDAY',
+  past: 'en_PAST',
+  tomorrow: 'en_TOMORROW',
+  future: 'en_FUTURE',
 
   trashmessage:
     'en_Notifications in trash will be permanently deleted 60 days after they are moved in trash.',
@@ -2294,4 +2298,23 @@ export default {
 
   detailAddressPlaceholder: 'en_Fill in Detailed Address',
 
+  seeAllText: 'en_See all',
+  completedText: 'en_completed',
+  noMatchText: 'en_NO MATCHES',
+  playingText: 'en_Playing',
+  past6Months: 'en_Past 6 months',
+  winningPercentage: 'en_Winning\nPercentage',
+  overallRatingsText: 'en_Overall Rating',
+  reportThisAccount: 'en_Report This Account',
+  blockThisAccount: 'en_Block This Account',
+  ratings: 'en_Ratings',
+  etiquette: 'en_Etiquette',
+  respectForReferee: 'en_Respect For Referees',
+  punctuality: 'en_Punctuality',
+  detailInfoAboutRating: 'en_Deatail info about ratings',
+  homeFacility: 'en_Home Facility',
+  matchVenues: 'en_Match Venues',
+  levelText: 'en_Level',
+  matchVenueInfo:
+    'en_The challenger can choose one of the available venues when they challenge the match host.',
 };

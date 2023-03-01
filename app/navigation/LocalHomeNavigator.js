@@ -253,6 +253,8 @@ import WriteCommentScreen from '../screens/newsfeeds/WriteCommentScreen';
 import UserAboutScreen from '../screens/home/user/UserAboutScreen';
 import UserBasicInfoScreen from '../screens/home/user/UserBasicInfoScreen';
 import GroupMembersScreen from '../screens/account/groupConnections/GroupMembersScreen';
+import SportActivityHome from '../screens/home/SportActivity/SportActivityHome';
+import EditWrapperScreen from '../screens/home/SportActivity/EditWrapperScreen';
 
 const Stack = createStackNavigator();
 
@@ -543,6 +545,16 @@ const LocalHomeNavigator = () => (
           borderBottomWidth: 0.3,
         },
       }}
+    />
+    <Stack.Screen
+      name="SportActivityHome"
+      component={SportActivityHome}
+      options={{headerShown: false}}
+    />
+    <Stack.Screen
+      name="EditWrapperScreen"
+      component={EditWrapperScreen}
+      options={{headerShown: false}}
     />
     <Stack.Screen
       name="SportSettingScreen"

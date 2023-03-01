@@ -14,6 +14,8 @@ import MessageEditInviteeScreen from '../screens/message/MessageEditInviteeScree
 import FeedViewScreen from '../components/newsFeed/feedView/FeedViewScreen';
 import SearchScreen from '../screens/search/SearchScreen';
 import MessageChat from '../components/message/MessageChat';
+import SportActivityHome from '../screens/home/SportActivity/SportActivityHome';
+import EditWrapperScreen from '../screens/home/SportActivity/EditWrapperScreen';
 
 const Stack = createStackNavigator();
 
@@ -163,6 +165,16 @@ const MessageNavigator = () => (
           borderBottomWidth: 0.3,
         },
       }}
+    />
+    <Stack.Screen
+      name="SportActivityHome"
+      component={SportActivityHome}
+      options={{headerShown: false}}
+    />
+    <Stack.Screen
+      name="EditWrapperScreen"
+      component={EditWrapperScreen}
+      options={{headerShown: false}}
     />
     <Stack.Screen
       name="SearchScreen"
