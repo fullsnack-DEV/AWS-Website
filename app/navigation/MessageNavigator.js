@@ -21,7 +21,6 @@ import fonts from '../Constants/Fonts';
 import SportActivityHome from '../screens/home/SportActivity/SportActivityHome';
 import EditWrapperScreen from '../screens/home/SportActivity/EditWrapperScreen';
 
-
 const Stack = createStackNavigator();
 
 const MessageNavigator = () => (
@@ -51,6 +50,15 @@ const MessageNavigator = () => (
       component={MessageMainScreen}
       options={{
         headerShown: false,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -58,7 +66,17 @@ const MessageNavigator = () => (
       component={MessageSearchScreen}
       options={{
         title: 'Neymar JR',
+
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
         headerShown: false,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -67,6 +85,17 @@ const MessageNavigator = () => (
       options={{
         title: strings.messageChat,
         headerShown: false,
+
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -76,7 +105,17 @@ const MessageNavigator = () => (
       options={{
         title: strings.messageChat,
 
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+
         headerShown: false,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -90,7 +129,16 @@ const MessageNavigator = () => (
       options={{
         title: strings.messageChat,
 
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
         headerShown: false,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -108,8 +156,16 @@ const MessageNavigator = () => (
       component={MessageEditGroupScreen}
       options={{
         title: strings.message,
-
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
         headerShown: false,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -117,8 +173,17 @@ const MessageNavigator = () => (
       component={HomeScreen}
       options={{
         title: strings.home,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
 
         headerShown: false,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -129,13 +194,24 @@ const MessageNavigator = () => (
     <Stack.Screen
       name="EditWrapperScreen"
       component={EditWrapperScreen}
-      options={{headerShown: false}}
+      options={{
+        headerShown: false,
+      }}
     />
     <Stack.Screen
       name="SearchScreen"
       component={SearchScreen}
       options={{
         title: strings.searchText,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
   </Stack.Navigator>
