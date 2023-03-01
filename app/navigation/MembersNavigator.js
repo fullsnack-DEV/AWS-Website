@@ -249,6 +249,15 @@ const MembersNavigator = () => (
       options={{
         title: strings.membersTitle,
         headerShown: true,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -258,6 +267,16 @@ const MembersNavigator = () => (
       options={{
         title: '',
         headerShown: true,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -298,6 +317,16 @@ const MembersNavigator = () => (
       component={InviteMembersByEmailScreen}
       options={{
         title: strings.inviteByEmail,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -305,6 +334,16 @@ const MembersNavigator = () => (
       component={InviteMembersBySearchScreen}
       options={{
         title: strings.inviteMemberText,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -364,6 +403,16 @@ const MembersNavigator = () => (
         title: strings.membersTitle,
 
         headerShown: true,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -375,6 +424,11 @@ const MembersNavigator = () => (
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
         },
         headerShown: true,
       }}
@@ -389,6 +443,11 @@ const MembersNavigator = () => (
         headerTitleStyle: {
           fontWeight: '500',
         },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
         headerShown: true,
       }}
     />
@@ -402,6 +461,11 @@ const MembersNavigator = () => (
         headerTitleStyle: {
           fontWeight: '500',
         },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
         headerShown: true,
       }}
     />
@@ -411,6 +475,15 @@ const MembersNavigator = () => (
       component={CreateMemberProfileForm1}
       options={{
         title: strings.createMemberProfileText,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -425,6 +498,15 @@ const MembersNavigator = () => (
       component={CreateMemberProfileForm2}
       options={{
         title: strings.createMemberProfileText,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -456,6 +538,14 @@ const MembersNavigator = () => (
       options={{
         title: 'Club',
         headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 

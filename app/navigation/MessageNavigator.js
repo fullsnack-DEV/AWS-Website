@@ -147,8 +147,16 @@ const MessageNavigator = () => (
       component={MessageNewGroupScreen}
       options={{
         title: strings.messageChat,
-
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
         headerShown: false,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
