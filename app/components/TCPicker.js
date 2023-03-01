@@ -59,7 +59,6 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     height: 40,
 
-    elevation: 0,
     textAlign: 'center',
     width: '92%',
   },

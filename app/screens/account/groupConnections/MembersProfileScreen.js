@@ -196,23 +196,7 @@ export default function MembersProfileScreen({navigation, route}) {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
-  }, [
-    authContext,
-    groupMemberDetail.appearance,
-    groupMemberDetail.group_id,
-    groupMemberDetail.is_admin,
-    groupMemberDetail.is_coach,
-    groupMemberDetail.is_member,
-    groupMemberDetail.is_parent,
-    groupMemberDetail.is_others,
-    groupMemberDetail.jersey_number,
-    groupMemberDetail.note,
-    groupMemberDetail.positions,
-    groupMemberDetail.status,
-    groupMemberDetail.user_id,
-    navigation,
-    positions,
-  ]);
+  }, [authContext, groupMemberDetail, navigation, positions]);
 
   const renderPosition = ({item, index}) => (
     <TCTextField

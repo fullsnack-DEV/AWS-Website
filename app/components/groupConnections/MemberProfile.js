@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
   locationText: {
     color: colors.lightBlackColor,
     fontFamily: fonts.Roboto,
-    fontWeight: '300',
+
     fontSize: 14,
     lineHeight: 21,
   },

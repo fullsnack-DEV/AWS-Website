@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
   nameText: {
     marginRight: 25,
     fontFamily: fonts.RBold,
-    // fontWeight: '700',
+
     fontSize: 20,
   },
 

@@ -201,8 +201,6 @@ export default function CreateMemberProfileTeamForm3({navigation, route}) {
             <Text style={styles.checkBoxItemText}>{strings.parent}</Text>
             <TouchableOpacity
               onPress={() => {
-                console.log(groupMemberDetail.is_parent, 'From parent');
-
                 setGroupMemberDetail({
                   ...groupMemberDetail,
                   is_parent: !groupMemberDetail.is_parent,

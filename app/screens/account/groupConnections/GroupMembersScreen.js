@@ -607,8 +607,8 @@ const styles = StyleSheet.create({
   eventTitleTextStyle: {
     width: 120,
     textAlign: 'center',
-    fontFamily: fonts.Roboto,
-    fontWeight: '700',
+    fontFamily: fonts.RBold,
+
     fontSize: 20,
     lineHeight: 18,
     paddingTop: 5,

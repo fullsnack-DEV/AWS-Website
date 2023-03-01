@@ -265,8 +265,8 @@ const LocalHomeNavigator = () => (
       headerBackTitleVisible: false,
       headerTitleStyle: {
         textAlign: 'center',
-        fontFamily: fonts.Roboto,
-        fontWeight: '700',
+        fontFamily: fonts.RBold,
+
         fontSize: 16,
         lineHeight: 17,
         paddingTop: 5,

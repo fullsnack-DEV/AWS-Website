@@ -68,7 +68,7 @@ export default function ProfileCheckView({isChecked, onPress, playerDetail}) {
               style={{
                 height: 22,
                 width: 22,
-                borderWidth: 0.3,
+                borderWidth: StyleSheet.hairlineWidth,
                 borderRadius: 7,
                 borderColor: colors.veryLightGray,
 
