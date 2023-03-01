@@ -1,0 +1,177 @@
+// @flow
+import React from 'react';
+import {View, StyleSheet, Text, Image, TouchableOpacity} from 'react-native';
+import {strings} from '../../../../../Localization/translation';
+import {ShimmerView} from '../../../../components/shimmer/commonComponents/ShimmerCommonComponents';
+import colors from '../../../../Constants/Colors';
+import fonts from '../../../../Constants/Fonts';
+import images from '../../../../Constants/ImagePath';
+import Verbs from '../../../../Constants/Verbs';
+import {displayLocation} from '../../../../utils';
+
+const UserInfo = ({
+  user = {},
+  onMore = () => {},
+  isLookingForClub = false,
+  onMessageClick = () => {},
+  isAdmin = false,
+  containerStyle = {},
+  screenType = Verbs.screenTypeModal,
+  level = 0,
+  loading = false,
+}) =>
+  loading ? (
+    <View style={[styles.row, containerStyle]}>
+      <ShimmerView
+        style={{marginRight: 10, borderRadius: 50}}
+        width={50}
+        height={50}
+      />
+      <View style={{flex: 1}}>
+        <ShimmerView
+          style={{width: '80%', marginVertical: 0, marginBottom: 4}}
+        />
+        <ShimmerView
+          style={{width: '45%', marginVertical: 0, marginBottom: 4}}
+        />
+        <ShimmerView
+          style={{width: '45%', marginVertical: 0, marginBottom: 4}}
+        />
+      </View>
+    </View>
+  ) : (
+    <View style={[styles.parent, containerStyle]}>
+      <View style={styles.row}>
+        <View style={styles.imageContainer}>
+          <Image
+            source={
+              user.thumbnail ? {uri: user.thumbnail} : images.profilePlaceHolder
+            }
+            style={styles.image}
+          />
+        </View>
+        <View style={{flex: 1}}>
+          <Text style={styles.name}>{user.full_name}</Text>
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <Text style={styles.location}>{displayLocation(user)}</Text>
+            <View style={styles.levelContainer}>
+              <Text style={styles.newText}>
+                {level > 0 ? `Lv.${level}` : strings.newText.toUpperCase()}
+              </Text>
+            </View>
+          </View>
+          {isLookingForClub ? (
+            <View style={styles.lookingForClubContainer}>
+              <Text style={styles.lookingForClubText}>
+                {strings.lookingForClubText}!
+              </Text>
+            </View>
+          ) : null}
+        </View>
+        {!isAdmin && screenType === Verbs.screenTypeModal ? (
+          <TouchableOpacity
+            style={styles.messageIconContainer}
+            onPress={onMessageClick}>
+            <Image source={images.tab_message} style={styles.image} />
+          </TouchableOpacity>
+        ) : null}
+      </View>
+      {screenType !== Verbs.screenTypeMainScreen ? (
+        <Text style={styles.description} numberOfLines={3}>
+          {user.description}{' '}
+          <TouchableOpacity onPress={onMore}>
+            <Text style={styles.moreText}>{strings.moreText}</Text>
+          </TouchableOpacity>
+        </Text>
+      ) : null}
+    </View>
+  );
+
+const styles = StyleSheet.create({
+  parent: {
+    // marginBottom: 25,
+  },
+  name: {
+    fontSize: 20,
+    lineHeight: 25,
+    fontFamily: fonts.RMedium,
+    color: colors.lightBlackColor,
+  },
+  imageContainer: {
+    width: 45,
+    height: 45,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 10,
+    borderRadius: 23,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.ligherGray,
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'contain',
+    borderRadius: 23,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  description: {
+    fontSize: 16,
+    lineHeight: 24,
+    color: colors.lightBlackColor,
+    marginTop: 10,
+    fontFamily: fonts.RRegular,
+  },
+  moreText: {
+    fontSize: 12,
+    lineHeight: 18,
+    color: colors.userPostTimeColor,
+    fontFamily: fonts.RRegular,
+  },
+  lookingForClubContainer: {
+    backgroundColor: colors.yellowColorCard,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 3,
+    paddingVertical: 2,
+    paddingHorizontal: 5,
+    marginTop: 7,
+    alignSelf: 'baseline',
+  },
+  lookingForClubText: {
+    fontSize: 12,
+    lineHeight: 14,
+    color: colors.whiteColor,
+    fontFamily: fonts.RBold,
+  },
+  messageIconContainer: {
+    width: 25,
+    height: 25,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 13,
+  },
+  location: {
+    fontSize: 14,
+    lineHeight: 21,
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RLight,
+  },
+  levelContainer: {
+    borderWidth: 1,
+    marginLeft: 5,
+    borderColor: colors.yellowColor,
+    paddingVertical: 2,
+    paddingHorizontal: 6,
+    borderRadius: 3,
+  },
+  newText: {
+    fontSize: 12,
+    lineHeight: 14,
+    fontFamily: fonts.RMedium,
+    color: colors.yellowColor,
+  },
+});
+export default UserInfo;

@@ -1234,6 +1234,7 @@ const TennisHome = ({navigation, route}) => {
               getGameReviewsData(reviewID, reservationDetail.isHome);
             } else {
               modalizeRef.current.close();
+
               navigation.navigate('LeaveReview', {
                 gameData,
                 selectedTeam: reservationDetail?.isHome ? 'home' : 'away',

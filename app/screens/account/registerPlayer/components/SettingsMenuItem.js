@@ -27,20 +27,24 @@ const SettingsMenuItem = ({
 
         case strings.gameType:
           return (
-            <Text style={styles.normalStyle}>{settingObject.game_type}</Text>
+            <Text style={styles.normalStyle}>
+              {settingObject.game_type || Verbs.friendly}
+            </Text>
           );
 
         case strings.gameFee:
           return (
             <Text style={styles.normalStyle}>
-              {`${settingObject.game_fee?.fee} ${settingObject.game_fee?.currency_type}/${strings.match}`}
+              {`${settingObject.game_fee?.fee || 0} ${
+                settingObject.game_fee?.currency_type || Verbs.cad
+              }/${strings.match}`}
             </Text>
           );
 
         case strings.refundPolicy:
           return (
             <Text style={styles.normalStyle}>
-              {settingObject.refund_policy}
+              {settingObject.refund_policy || Verbs.flexibleText}
             </Text>
           );
 
@@ -95,9 +99,9 @@ const SettingsMenuItem = ({
     return <Text style={styles.normalStyle}>{strings.incomplete}</Text>;
   };
 
-  return (
+  return item.key ? (
     <>
-      <View style={[styles.headerRow, {paddingBottom: 0}]}>
+      <View style={styles.menuItemRow}>
         <View style={{flex: 1}}>
           <Text style={[styles.headerTitle, {textAlign: 'left'}]}>
             {item.key.toUpperCase()}
@@ -106,11 +110,7 @@ const SettingsMenuItem = ({
         {item.key === strings.sport ? (
           <Text style={styles.normalStyle}>{sportName}</Text>
         ) : (
-          <View
-            style={[
-              styles.headerRow,
-              {paddingHorizontal: 0, paddingBottom: 0},
-            ]}>
+          <View style={[styles.menuItemRow, {paddingHorizontal: 0}]}>
             {item.key !== strings.gameRules &&
             item.key !== strings.venue &&
             item.key !== strings.setGamesDuration
@@ -139,7 +139,7 @@ const SettingsMenuItem = ({
 
       <View style={styles.divider} />
     </>
-  );
+  ) : null;
 };
 
 export default SettingsMenuItem;

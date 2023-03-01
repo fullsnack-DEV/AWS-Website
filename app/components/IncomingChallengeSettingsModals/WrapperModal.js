@@ -3,6 +3,7 @@ import React, {useEffect, useState} from 'react';
 import {View, Modal, Pressable, Image, Text} from 'react-native';
 import {strings} from '../../../Localization/translation';
 import images from '../../Constants/ImagePath';
+import Verbs from '../../Constants/Verbs';
 import AvailabilityModal from './AvailabilityModal';
 import CancellationPolicyModal from './CancellationPolicyModal';
 import GameRulesModal from './GameRulesModal';
@@ -21,8 +22,6 @@ const WrapperModal = ({
   onSave = () => {},
   settingsObj = null,
   sportName = '',
-  onChangeCurrency = () => {},
-  currency = '',
 }) => {
   const [settings, setSettings] = useState({});
 
@@ -60,10 +59,21 @@ const WrapperModal = ({
           <MatchFeeModal
             gameFee={settings.game_fee}
             onChange={(gameFee) => {
-              setSettings({...settings, game_fee: gameFee});
+              setSettings({
+                ...settings,
+                game_fee: {...settings.game_fee, fee: gameFee || 0},
+              });
             }}
-            onChangeCurrency={onChangeCurrency}
-            currency={currency}
+            onChangeCurrency={(selectedCurrency) => {
+              setSettings({
+                ...settings,
+                game_fee: {
+                  ...settings.game_fee,
+                  currency_type: selectedCurrency,
+                },
+              });
+            }}
+            currency={settings?.game_fee?.currency_type ?? Verbs.cad}
           />
         );
 
@@ -103,12 +113,12 @@ const WrapperModal = ({
         return (
           <SetsGamesDurationModal
             gameDuration={
-              settings.default_setting_key === 'Set'
+              settings.sport.toLowerCase() === Verbs.tennisSport
                 ? settings.score_rules
                 : settings.game_duration
             }
             onChange={(gameDuration) => {
-              if (settings.default_setting_key === 'Set') {
+              if (settings.sport.toLowerCase() === Verbs.tennisSport) {
                 setSettings({...settings, score_rules: {...gameDuration}});
               } else {
                 setSettings({...settings, game_duration: {...gameDuration}});
@@ -164,10 +174,12 @@ const WrapperModal = ({
       <View style={styles.parent}>
         <View style={styles.card}>
           <View style={styles.headerRow}>
-            <Pressable style={{width: 26, height: 26}} onPress={closeModal}>
-              <Image source={images.crossImage} style={styles.image} />
-            </Pressable>
-            <View style={{flex: 1, alignItems: 'center'}}>
+            <View style={{flex: 1}}>
+              <Pressable style={{width: 26, height: 26}} onPress={closeModal}>
+                <Image source={images.crossImage} style={styles.image} />
+              </Pressable>
+            </View>
+            <View style={styles.headerTitleContainer}>
               <Text style={styles.headerTitle}>{title}</Text>
             </View>
             <Pressable

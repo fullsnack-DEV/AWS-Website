@@ -498,6 +498,7 @@ export default function PersonalInformationScreen({navigation, route}) {
         title={strings.homeCityTitleText}
         onLocationSelect={handleSetLocationOptions}
         setVisibleLocationModalhandler={() => setLocationPopup(false)}
+        placeholder={strings.searchByCity}
       />
 
       <ActionSheet

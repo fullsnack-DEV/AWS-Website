@@ -18,9 +18,7 @@ const SportsListModal = ({
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
-    if (sport?.sport_type) {
-      setSelectedSport(sport);
-    }
+    setSelectedSport(sport);
   }, [sport]);
 
   return (
@@ -28,10 +26,12 @@ const SportsListModal = ({
       <View style={styles.parent}>
         <View style={styles.card}>
           <View style={styles.headerRow}>
-            <Pressable style={{width: 26, height: 26}} onPress={closeList}>
-              <Image source={images.crossImage} style={styles.image} />
-            </Pressable>
-            <View style={{flex: 1, alignItems: 'center'}}>
+            <View style={{flex: 1}}>
+              <Pressable style={{width: 26, height: 26}} onPress={closeList}>
+                <Image source={images.crossImage} style={styles.image} />
+              </Pressable>
+            </View>
+            <View style={styles.headerTitleContainer}>
               <Text style={styles.headerTitle}>
                 {sport?.sport_type
                   ? strings.sportTextTitle

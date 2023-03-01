@@ -29,19 +29,6 @@ import WrapperModal from '../../../components/IncomingChallengeSettingsModals/Wr
 import DataSource from '../../../Constants/DataSource';
 import HostChallengerInfoModal from './modals/HostChallengerInfoModal';
 
-const challengeSettingMenu = [
-  {key: strings.sport},
-  {key: strings.availability},
-  {key: strings.gameType},
-  {key: strings.gameFee},
-  {key: strings.refundPolicy},
-  // {key: strings.setGamesDuration},
-  {key: strings.venue},
-  {key: strings.gameRules},
-  {key: strings.Referee},
-  {key: strings.scorekeeperText},
-];
-
 export default function IncomingChallengeSettings({navigation, route}) {
   const [settingObject, setSettingObject] = useState({});
   const authContext = useContext(AuthContext);
@@ -55,12 +42,18 @@ export default function IncomingChallengeSettings({navigation, route}) {
   const [showModal, setShowModal] = useState(false);
   const [modalObj, setModalObj] = useState({});
   const [showHostChallengerModal, setShowHosChallengerModal] = useState(false);
-
-  useEffect(() => {
-    if (settingType === 'Set') {
-      challengeSettingMenu.push({key: strings.setGamesDuration});
-    }
-  }, [settingType]);
+  const challengeSettingMenu = [
+    {key: strings.sport},
+    {key: strings.availability},
+    {key: strings.gameType},
+    {key: strings.gameFee},
+    {key: strings.refundPolicy},
+    {key: settingType === 'Set' ? strings.setGamesDuration : ''},
+    {key: strings.venue},
+    {key: strings.gameRules},
+    {key: strings.Referee},
+    {key: strings.scorekeeperText},
+  ];
 
   useEffect(() => {
     if (route.params.settingObj) {
@@ -92,7 +85,6 @@ export default function IncomingChallengeSettings({navigation, route}) {
           setModalObj({
             title: option,
             settingsObj: settingObject,
-            currency: authContext.entity.obj?.currency_type ?? Verbs.usd,
           });
           setShowModal(true);
           break;
@@ -152,12 +144,21 @@ export default function IncomingChallengeSettings({navigation, route}) {
   };
 
   const onSave = () => {
-    if (settingObject.game_fee.fee === 0 && !isAlreadyWarned) {
+    if (settingObject.game_fee?.fee === 0 && !isAlreadyWarned) {
       setShowMatchFeeReminderModal(true);
       setIsAlreadyWarned(true);
     } else {
       const registerdPlayerData = playerObject.registered_sports.map((item) => {
         if (item.sport_name === sportName && item.sport_type === sportType) {
+          if (item.sport === Verbs.tennisSport) {
+            return {
+              ...item,
+              setting: {
+                ...settingObject,
+                ntrp: '1.0',
+              },
+            };
+          }
           return {
             ...item,
             setting: {
@@ -194,23 +195,20 @@ export default function IncomingChallengeSettings({navigation, route}) {
 
   return (
     <SafeAreaView style={styles.parent}>
-      <View
-        style={[
-          styles.headerRow,
-          Platform.OS === 'android' ? {paddingTop: 8} : {},
-        ]}>
-        <Pressable
-          style={styles.backIconContainer}
-          onPress={() => {
-            navigation.goBack();
-          }}>
-          <Image source={images.backArrow} style={styles.image} />
-        </Pressable>
-        <View style={{alignItems: 'center'}}>
+      <View style={styles.headerRow}>
+        <View style={{flex: 1}}>
+          <Pressable
+            style={styles.backIconContainer}
+            onPress={() => {
+              navigation.goBack();
+            }}>
+            <Image source={images.backArrow} style={styles.image} />
+          </Pressable>
+        </View>
+        <View style={styles.headerTitleContainer}>
           <Text style={styles.headerTitle}>
             {strings.registerAsPlayerTitle}
           </Text>
-          <Text style={styles.subHeading}>{sportName}</Text>
         </View>
         {loading ? (
           <ActivityIndicator size={'small'} />
@@ -270,6 +268,7 @@ export default function IncomingChallengeSettings({navigation, route}) {
 
       <CongratulationsModal
         isVisible={congratulationsModal}
+        settingsObj={settingObject}
         closeModal={() => {
           setCongratulationsModal(false);
           navigation.navigate('AccountScreen', {
@@ -281,15 +280,34 @@ export default function IncomingChallengeSettings({navigation, route}) {
         sportName={sportName}
         sport={sport}
         sportType={sportType}
-        onChanllenge={() => {
-          // navigation.navigate('LookingForChallengeScreen', {
-          //   filters,
-          // });
+        onChanllenge={(type, payload) => {
+          const obj = {
+            setting: payload.setting,
+            sportName: payload.sport,
+            sportType: payload.sport_type,
+            groupObj: payload.groupObj,
+          };
+          if (type === strings.challenge) {
+            navigation.navigate('ChallengeScreen', {
+              ...obj,
+            });
+          }
+
+          if (type === strings.inviteToChallenge) {
+            navigation.navigate('InviteChallengeScreen', {
+              ...obj,
+            });
+          }
         }}
         searchPlayer={(filters) => {
-          navigation.navigate('LookingForChallengeScreen', {
-            filters,
-          });
+          if (filters.sport_type === Verbs.sportTypeSingle) {
+            navigation.navigate('LookingForChallengeScreen', {
+              filters,
+            });
+          }
+          if (filters.sport_type === Verbs.sportTypeDouble) {
+            //
+          }
         }}
         onUserClick={(userData) => {
           if (!userData) return;
@@ -306,30 +324,18 @@ export default function IncomingChallengeSettings({navigation, route}) {
             menuBtnVisible: false,
           });
         }}
-        searchTeam={() => {
-          let sportsData = [];
-          authContext.sports.map((item) =>
-            item.format.map((innerObj) => {
-              const sportList = [{...item, ...innerObj}];
-              sportArr = [...sportArr, ...sportList];
-              return null;
-            }),
-          );
-          const sports = sportsData.map((item) => ({
-            label: item?.sport_name,
-            value: item?.sport_name.toLowerCase(),
-          }));
-
-          navigation.navigate('EntitySearchScreen', {
-            sportsList: sports,
-            sportsArray: sportsData,
-            activeTab: 1,
+        searchTeam={(filters) => {
+          navigation.navigate('RecruitingPlayerScreen', {
+            filters: {
+              ...filters,
+              groupTeam: strings.teamstitle,
+            },
           });
         }}
-        joinTeam={(filters) => {
-          navigation.navigate('LookingTeamScreen', {
-            filters,
-          });
+        joinTeam={() => {
+          // navigation.navigate('LookingTeamScreen', {
+          //   filters,
+          // });
         }}
         createTeam={() => {
           navigation.navigate('CreateTeamForm1');
@@ -341,6 +347,7 @@ export default function IncomingChallengeSettings({navigation, route}) {
             role: authContext.entity.role,
             backButtonVisible: true,
             menuBtnVisible: false,
+            comeFrom: 'IncomingChallengeSettings',
           });
         }}
       />
@@ -365,9 +372,6 @@ export default function IncomingChallengeSettings({navigation, route}) {
         onSave={(settings) => {
           setShowModal(false);
           setSettingObject({...settingObject, ...settings});
-        }}
-        onChangeCurrency={() => {
-          console.log({DataSource});
         }}
       />
     </SafeAreaView>

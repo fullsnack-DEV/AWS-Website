@@ -31,6 +31,7 @@ import {
   getGroupIndex,
   getUserIndex,
 } from '../api/elasticSearch';
+import Verbs from '../Constants/Verbs';
 
 export const deviceHeight = Dimensions.get('window').height;
 export const deviceWidth = Dimensions.get('window').width;
@@ -2085,6 +2086,28 @@ export const getSportObjectByName = (sportName, authContext) => {
     (item) => item?.sport_name === sportName,
   )[0];
   return filterObject;
+};
+
+export const getSportIconUrl = async (sport, entityType, authContext) => {
+  const setting = await getStorage('appSetting');
+  const baseUrl = setting?.base_url_sporticon ?? '';
+  const sportObj = authContext.sports.find((item) => item.sport === sport);
+
+  if (sportObj) {
+    if (
+      entityType === Verbs.entityTypeUser ||
+      entityType === Verbs.entityTypePlayer
+    ) {
+      return `${baseUrl}${sportObj.player_image}`;
+    }
+    if (entityType === Verbs.entityTypeScorekeeper) {
+      return `${baseUrl}${sportObj.scorekeeper_image}`;
+    }
+    if (entityType === Verbs.entityTypeReferee) {
+      return `${baseUrl}${sportObj.referee_image}`;
+    }
+  }
+  return '';
 };
 
 export const getSportImage = (sportName, type, authContext) => {

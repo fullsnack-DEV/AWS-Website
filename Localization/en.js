@@ -510,6 +510,10 @@ export default {
   pendingrequests: 'en_PENDING REQUESTS',
   today: 'en_TODAY',
   earlier: 'en_EARLIER',
+  yesterday: 'en_YESTERDAY',
+  past: 'en_PAST',
+  tomorrow: 'en_TOMORROW',
+  future: 'en_FUTURE',
 
   trashmessage:
     'en_Notifications in trash will be permanently deleted 60 days after they are moved in trash.',
@@ -2241,7 +2245,7 @@ export default {
     'en_Other players can’t challenge you to play a match in ',
   changeAvailabilityText:
     'en_You can change availability of a specific period on your schedule.',
-  chooseMatchType: 'en_Choose a Match type that you want.',
+  chooseMatchType: 'en_Choose a match type that you want.',
   gameTypeOfficalInfo:
     'en_The match result has an effect on TC points and TC rankings of the challenger and you.',
   gameTypeFriendlyInfo:
@@ -2295,6 +2299,7 @@ export default {
     'en_The match host is responsible to secure match venue, referees and scorekeeper as set by his or her incoming challenge settings or on the mutual agreement. Meanwhile, the challenger has to follow match rules and payment terms set by the match host.',
   matchHostChallengeTextDescription:
     'en_If you send a challenge or are invited to send a challenge to someone, you will be the challenger and the opponent will be the match host in the match created from the challenge.',
+
 
   sentBasicInfoText:
     'en_You can send a request to collect the member’s basic info.',
@@ -2372,4 +2377,27 @@ export default {
   oneemailInvitationSent: '{0} en_invitation was sent',
   basicInfoRequestSent: 'en_requests for basic info were sent',
   editSpecification: 'en_Edit Specifications',
+
+  detailAddressPlaceholder: 'en_Fill in Detailed Address',
+
+  seeAllText: 'en_See all',
+  completedText: 'en_completed',
+  noMatchText: 'en_NO MATCHES',
+  playingText: 'en_Playing',
+  past6Months: 'en_Past 6 months',
+  winningPercentage: 'en_Winning\nPercentage',
+  overallRatingsText: 'en_Overall Rating',
+  reportThisAccount: 'en_Report This Account',
+  blockThisAccount: 'en_Block This Account',
+  ratings: 'en_Ratings',
+  etiquette: 'en_Etiquette',
+  respectForReferee: 'en_Respect For Referees',
+  punctuality: 'en_Punctuality',
+  detailInfoAboutRating: 'en_Deatail info about ratings',
+  homeFacility: 'en_Home Facility',
+  matchVenues: 'en_Match Venues',
+  levelText: 'en_Level',
+  matchVenueInfo:
+    'en_The challenger can choose one of the available venues when they challenge the match host.',
+
 };

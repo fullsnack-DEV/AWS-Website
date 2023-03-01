@@ -79,6 +79,8 @@ const Verbs = {
   like: 'like',
   unlike: 'unlike',
   reply: 'reply',
+  screenTypeModal: 'modal',
+  screenTypeMainScreen: 'mainScreen',
   eventRecurringEnum: {
     Never: 0,
     Daily: 1,

@@ -192,6 +192,8 @@ import PendingRequestScreen from '../screens/notificationsScreen/PendingRequestS
 import TrashScreen from '../screens/notificationsScreen/TrashScreen';
 import LanguageSettingScreen from '../screens/account/userSettingPrivacy/LanguageSettingScreen';
 import ChooseTimeSlotScreen from '../screens/challenge/createChallenge/ChooseTimeSlotScreen';
+import SportActivityHome from '../screens/home/SportActivity/SportActivityHome';
+import EditWrapperScreen from '../screens/home/SportActivity/EditWrapperScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -1302,6 +1304,16 @@ const ScheduleNavigator = () => (
       }}
     />
 
+    <Stack.Screen
+      name="SportActivityHome"
+      component={SportActivityHome}
+      options={{headerShown: false}}
+    />
+    <Stack.Screen
+      name="EditWrapperScreen"
+      component={EditWrapperScreen}
+      options={{headerShown: false}}
+    />
     <Stack.Screen
       name="GroupListScreen"
       component={GroupListScreen}

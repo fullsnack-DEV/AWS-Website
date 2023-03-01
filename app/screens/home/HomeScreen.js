@@ -131,7 +131,7 @@ import {getGameHomeScreen} from '../../utils/gameUtils';
 import TCInnerLoader from '../../components/TCInnerLoader';
 import TCThinDivider from '../../components/TCThinDivider';
 import ScorekeeperInfoSection from '../../components/Home/User/ScorekeeperInfoSection';
-import PlayInModule from './playInModule/PlayInModule';
+// import PlayInModule from './playInModule/PlayInModule';
 import TCGradientDivider from '../../components/TCThinGradientDivider';
 import HomeFeed from '../homeFeed/HomeFeed';
 import RefereeFeedPostItems from '../../components/game/soccer/home/review/reviewForReferee/RefereeFeedPostItems';
@@ -157,6 +157,7 @@ import {
   history_Data,
 } from '../../utils/constant';
 import Verbs from '../../Constants/Verbs';
+import SportActivityModal from './SportActivity/SportActivityModal';
 // import { getSetting } from '../challenge/manageChallenge/settingUtility';
 let entityObject = {};
 
@@ -592,7 +593,9 @@ const HomeScreen = ({navigation, route}) => {
             {route?.params?.backButtonVisible === true && (
               <TouchableOpacity
                 onPress={() => {
-                  if (
+                  if (route.params?.comeFrom === 'IncomingChallengeSettings') {
+                    navigation.navigate('AccountScreen');
+                  } else if (
                     route?.params?.isEntityCreated &&
                     route?.params?.backButtonVisible
                   ) {
@@ -2838,51 +2841,50 @@ const HomeScreen = ({navigation, route}) => {
     return (
       <View style={{marginLeft: 10, marginRight: 10}}>
         <View style={styles.bgImageStyle}>
-          {currentUserData.entity_type !== Verbs.entityTypeClub &&
-            !hideScore && (
-              <ImageBackground
-                source={images.profileLevel}
+          {currentUserData.entity_type !== Verbs.entityTypeClub && !hideScore && (
+            <ImageBackground
+              source={images.profileLevel}
+              style={{
+                height: 58,
+                width: 93,
+                resizeMode: 'contain',
+                alignItems: 'center',
+                justifyContent: 'center',
+                alignSelf: 'flex-start',
+              }}>
+              <View
                 style={{
-                  height: 58,
-                  width: 93,
-                  resizeMode: 'contain',
+                  flexDirection: 'row',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  alignSelf: 'flex-start',
+                  marginBottom: 8,
                 }}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    marginBottom: 8,
-                  }}>
-                  <FastImage
-                    source={images.tc_message_top_icon}
-                    resizeMode={'contain'}
-                    style={{height: 35, width: 35}}
-                  />
-                  <View style={{flexDirection: 'column', alignItems: 'center'}}>
-                    <Text
-                      style={{
-                        fontFamily: fonts.RBold,
-                        fontSize: 16,
-                        color: colors.lightBlackColor,
-                      }}>
-                      {currentUserData?.point ?? 0}
-                    </Text>
-                    <Text
-                      style={{
-                        fontFamily: fonts.RMedium,
-                        fontSize: 10,
-                        color: colors.lightBlackColor,
-                      }}>
-                      {strings.points}
-                    </Text>
-                  </View>
+                <FastImage
+                  source={images.tc_message_top_icon}
+                  resizeMode={'contain'}
+                  style={{height: 35, width: 35}}
+                />
+                <View style={{flexDirection: 'column', alignItems: 'center'}}>
+                  <Text
+                    style={{
+                      fontFamily: fonts.RBold,
+                      fontSize: 16,
+                      color: colors.lightBlackColor,
+                    }}>
+                    {currentUserData?.point ?? 0}
+                  </Text>
+                  <Text
+                    style={{
+                      fontFamily: fonts.RMedium,
+                      fontSize: 10,
+                      color: colors.lightBlackColor,
+                    }}>
+                    {strings.points}
+                  </Text>
                 </View>
-              </ImageBackground>
-            )}
+              </View>
+            </ImageBackground>
+          )}
         </View>
       </View>
     );
@@ -3529,11 +3531,11 @@ const HomeScreen = ({navigation, route}) => {
     </>
   );
 
-  const openPlayInModal = useCallback(() => setPlaysInModalVisible(true), []);
+  // const openPlayInModal = useCallback(() => setPlaysInModalVisible(true), []);
 
-  const onPlayInModalClose = useCallback(() => {
-    setPlaysInModalVisible(false);
-  }, []);
+  // const onPlayInModalClose = useCallback(() => {
+  //   setPlaysInModalVisible(false);
+  // }, []);
 
   const renderImageProgress = useMemo(() => <ImageProgress />, []);
 
@@ -4110,6 +4112,46 @@ const HomeScreen = ({navigation, route}) => {
       });
   };
 
+  const handleSectionClick = (section) => {
+    setPlaysInModalVisible(false);
+    navigation.navigate('SportActivityHome', {
+      sport: currentPlayInObject?.sport,
+      sportType: currentPlayInObject?.sport_type,
+      uid: route.params.uid,
+      selectedTab: section,
+    });
+  };
+
+  const handleChallengeClick = (selectedOption) => {
+    setPlaysInModalVisible(false);
+
+    switch (selectedOption) {
+      case strings.inviteToChallenge:
+        navigation.navigate('InviteChallengeScreen', {
+          setting: currentPlayInObject?.setting,
+          sportName: currentPlayInObject?.sport,
+          sportType: currentPlayInObject?.sport_type,
+          groupObj: currentUserData,
+        });
+        break;
+
+      case strings.refereeOffer:
+        break;
+
+      case strings.scorekeeperOffer:
+        break;
+
+      case strings.reportThisAccount:
+        break;
+
+      case strings.blockThisAccount:
+        break;
+
+      default:
+        break;
+    }
+  };
+
   return (
     <View style={styles.mainContainer}>
       {renderHeader}
@@ -4353,7 +4395,24 @@ const HomeScreen = ({navigation, route}) => {
           )}
         </View>
 
-        {useMemo(
+        <SportActivityModal
+          isVisible={playsInModalVisible}
+          closeModal={() => setPlaysInModalVisible(false)}
+          isAdmin={isAdmin}
+          userData={currentUserData}
+          sport={currentPlayInObject?.sport}
+          sportObj={currentPlayInObject}
+          sportName={Utility.getSportName(currentPlayInObject, authContext)}
+          onSeeAll={handleSectionClick}
+          handleChallengeClick={handleChallengeClick}
+          onMessageClick={() => {
+            navigation.push('MessageChat', {
+              screen: 'MessageChat',
+              params: {userId: currentUserData?.user_id},
+            });
+          }}
+        />
+        {/* {useMemo(
           () =>
             playsInModalVisible && (
               <PlayInModule
@@ -4377,7 +4436,7 @@ const HomeScreen = ({navigation, route}) => {
             openPlayInModal,
             playsInModalVisible,
           ],
-        )}
+        )} */}
 
         {/* Referee In Modal */}
         {refereesInModalVisible && (
@@ -4420,7 +4479,8 @@ const HomeScreen = ({navigation, route}) => {
                       : 0
                   }
                   currencyType={
-                    refereeSettingObject?.game_fee?.currency_type ?? strings.defaultCurrency
+                    refereeSettingObject?.game_fee?.currency_type ??
+                    strings.defaultCurrency
                   }
                   onBookRefereePress={() => {
                     if (
@@ -4957,7 +5017,8 @@ const HomeScreen = ({navigation, route}) => {
                       : 0
                   }
                   currencyType={
-                    scorekeeperSettingObject?.game_fee?.currency_type ?? strings.defaultCurrency
+                    scorekeeperSettingObject?.game_fee?.currency_type ??
+                    strings.defaultCurrency
                   }
                   onBookRefereePress={() => {
                     if (
