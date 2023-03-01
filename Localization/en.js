@@ -2237,7 +2237,7 @@ export default {
     'en_Other players can’t challenge you to play a match in ',
   changeAvailabilityText:
     'en_You can change availability of a specific period on your schedule.',
-  chooseMatchType: 'en_Choose a Match type that you want.',
+  chooseMatchType: 'en_Choose a match type that you want.',
   gameTypeOfficalInfo:
     'en_The match result has an effect on TC points and TC rankings of the challenger and you.',
   gameTypeFriendlyInfo:
@@ -2291,5 +2291,7 @@ export default {
     'en_The match host is responsible to secure match venue, referees and scorekeeper as set by his or her incoming challenge settings or on the mutual agreement. Meanwhile, the challenger has to follow match rules and payment terms set by the match host.',
   matchHostChallengeTextDescription:
     'en_If you send a challenge or are invited to send a challenge to someone, you will be the challenger and the opponent will be the match host in the match created from the challenge.',
+
   detailAddressPlaceholder: 'en_Fill in Detailed Address',
+
 };

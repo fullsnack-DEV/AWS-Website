@@ -1164,7 +1164,7 @@ const TennisHome = ({navigation, route}) => {
         .then((response) => {
           setLoading(false);
           modalizeRef.current.close();
-          navigation.navigate('LeaveReviewTennis', {
+          navigation.navigate('LeaveReview', {
             gameData,
             gameReviewData: response.payload,
             selectedTeam: isHome ? 'home' : 'away',
@@ -1218,7 +1218,8 @@ const TennisHome = ({navigation, route}) => {
               getGameReviewsData(reviewID,reservationDetail.isHome);
             } else {
               modalizeRef.current.close();
-              navigation.navigate('LeaveReviewTennis', {
+              console.log('LeaveReviewTennis')
+              navigation.navigate('LeaveReview', {
                 gameData,
                 selectedTeam: reservationDetail?.isHome ? 'home' : 'away',
                 starAttributes: gameData?.user_challenge

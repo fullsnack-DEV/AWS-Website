@@ -20,18 +20,28 @@ const styles = StyleSheet.create({
     elevation: 15,
   },
   headerRow: {
-    padding: 18,
+    paddingTop: 15,
+    paddingLeft: 15,
+    paddingRight: 17,
+    paddingBottom: 10,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+  headerTitleContainer: {
+    flex: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   headerTitle: {
     fontSize: 16,
+    lineHeight: 24,
     fontFamily: fonts.RBold,
     textAlign: 'center',
   },
   buttonContainer: {
-    alignItems: 'center',
+    flex: 1,
+    alignItems: 'flex-end',
     justifyContent: 'center',
   },
   buttonText: {
@@ -45,8 +55,8 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   divider: {
-    height: 2,
-    backgroundColor: colors.thinDividerColor,
+    height: 1,
+    backgroundColor: colors.grayBackgroundColor,
   },
   container: {
     paddingHorizontal: 30,
@@ -55,6 +65,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
+    lineHeight: 30,
     fontFamily: fonts.RMedium,
     marginBottom: 7,
   },

@@ -142,14 +142,20 @@ const RegisterPlayer = ({navigation, route}) => {
   return (
     <SafeAreaView style={styles.parent}>
       <View style={styles.headerRow}>
-        <Pressable
-          style={styles.backIconContainer}
-          onPress={() => {
-            navigation.goBack();
-          }}>
-          <Image source={images.backArrow} style={styles.image} />
-        </Pressable>
-        <Text style={styles.headerTitle}>{strings.registerAsPlayerTitle}</Text>
+        <View style={{flex: 1}}>
+          <Pressable
+            style={styles.backIconContainer}
+            onPress={() => {
+              navigation.navigate('AccountScreen');
+            }}>
+            <Image source={images.backArrow} style={styles.image} />
+          </Pressable>
+        </View>
+        <View style={styles.headerTitleContainer}>
+          <Text style={styles.headerTitle}>
+            {strings.registerAsPlayerTitle}
+          </Text>
+        </View>
         {loading ? (
           <ActivityIndicator size={'small'} />
         ) : (
@@ -168,9 +174,16 @@ const RegisterPlayer = ({navigation, route}) => {
           </Pressable>
         )}
       </View>
-      <TCFormProgress totalSteps={2} curruentStep={1} />
+      {selectedSport?.sport_type === Verbs.singleSport ? (
+        <TCFormProgress totalSteps={2} curruentStep={1} />
+      ) : (
+        <View
+          style={{height: 1, backgroundColor: colors.writePostSepratorColor}}
+        />
+      )}
+
       <View style={styles.container}>
-        <View style={{marginBottom: 25}}>
+        <View style={{marginBottom: 35}}>
           <Text style={styles.inputLabel}>
             {strings.whichSport}{' '}
             <Text style={[styles.inputLabel, {color: colors.redColor}]}>*</Text>
@@ -201,7 +214,7 @@ const RegisterPlayer = ({navigation, route}) => {
           />
         </View> */}
 
-        <View style={{marginBottom: 25}}>
+        <View>
           <Text style={styles.inputLabel}>{strings.bio.toUpperCase()}</Text>
           <Pressable
             style={[styles.inputContainer, {minHeight: 100}]}
@@ -245,6 +258,7 @@ const RegisterPlayer = ({navigation, route}) => {
       /> */}
       <CongratulationsModal
         isVisible={showCongratulationsModal}
+        settingsObj={selectedSport?.default_setting}
         closeModal={() => {
           setShowCongratulationsModal(true);
           navigation.navigate('AccountScreen', {
@@ -256,15 +270,34 @@ const RegisterPlayer = ({navigation, route}) => {
         sportName={selectedSport?.sport_name}
         sport={selectedSport?.sport}
         sportType={selectedSport?.sport_type}
-        onChanllenge={() => {
-          // navigation.navigate('LookingForChallengeScreen', {
-          //   filters,
-          // });
+        onChanllenge={(type, payload) => {
+          const obj = {
+            setting: payload.setting,
+            sportName: payload.sport,
+            sportType: payload.sport_type,
+            groupObj: payload.groupObj,
+          };
+          if (type === strings.challenge) {
+            navigation.navigate('ChallengeScreen', {
+              ...obj,
+            });
+          }
+
+          if (type === strings.inviteToChallenge) {
+            navigation.navigate('InviteChallengeScreen', {
+              ...obj,
+            });
+          }
         }}
         searchPlayer={(filters) => {
-          navigation.navigate('LookingForChallengeScreen', {
-            filters,
-          });
+          if (filters.sport_type === Verbs.sportTypeSingle) {
+            navigation.navigate('LookingForChallengeScreen', {
+              filters,
+            });
+          }
+          if (filters.sport_type === Verbs.sportTypeDouble) {
+            //
+          }
         }}
         onUserClick={(userData) => {
           if (!userData) return;
@@ -281,22 +314,18 @@ const RegisterPlayer = ({navigation, route}) => {
             menuBtnVisible: false,
           });
         }}
-        searchTeam={() => {
-          const sports = sportsData.map((item) => ({
-            label: item?.sport_name,
-            value: item?.sport_name.toLowerCase(),
-          }));
-
-          navigation.navigate('EntitySearchScreen', {
-            sportsList: sports,
-            sportsArray: sportsData,
-            activeTab: 1,
+        searchTeam={(filters) => {
+          navigation.navigate('RecruitingPlayerScreen', {
+            filters: {
+              ...filters,
+              groupTeam: strings.teamstitle,
+            },
           });
         }}
-        joinTeam={(filters) => {
-          navigation.navigate('LookingTeamScreen', {
-            filters,
-          });
+        joinTeam={() => {
+          // navigation.navigate('LookingTeamScreen', {
+          //   filters,
+          // });
         }}
         createTeam={() => {
           navigation.navigate('CreateTeamForm1');
@@ -308,6 +337,7 @@ const RegisterPlayer = ({navigation, route}) => {
             role: authContext.entity.role,
             backButtonVisible: true,
             menuBtnVisible: false,
+            comeFrom: 'IncomingChallengeSettings',
           });
         }}
       />
@@ -328,20 +358,30 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 13,
-    paddingBottom: 13,
+    paddingLeft: 10,
+    paddingRight: 14,
+    paddingBottom: 12,
+    paddingTop: 8,
+  },
+  headerTitleContainer: {
+    flex: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   headerTitle: {
     fontSize: 16,
+    lineHeight: 24,
     fontFamily: fonts.RBold,
     textAlign: 'center',
   },
   buttonContainer: {
-    alignItems: 'center',
+    alignItems: 'flex-end',
     justifyContent: 'center',
+    flex: 1,
   },
   buttonText: {
     fontSize: 16,
+    lineHeight: 24,
     fontFamily: fonts.RMedium,
     textAlign: 'center',
   },
@@ -364,13 +404,14 @@ const styles = StyleSheet.create({
   inputContainer: {
     backgroundColor: colors.textFieldBackground,
     borderRadius: 5,
-    marginTop: 5,
-    padding: 2,
+    marginTop: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
   },
   input: {
     fontSize: 16,
     color: colors.lightBlackColor,
-    padding: 10,
+    padding: 0,
   },
 });
 

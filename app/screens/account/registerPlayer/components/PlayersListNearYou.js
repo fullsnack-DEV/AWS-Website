@@ -13,6 +13,7 @@ import colors from '../../../../Constants/Colors';
 import fonts from '../../../../Constants/Fonts';
 import images from '../../../../Constants/ImagePath';
 import Verbs from '../../../../Constants/Verbs';
+import {displayLocation} from '../../../../utils';
 import ListShimmer from './ListShimmer';
 
 const PlayersListNearYou = ({
@@ -50,13 +51,13 @@ const PlayersListNearYou = ({
           </Text>
 
           <Text style={styles.address} numberOfLines={1}>
-            {`${item.state ? `${item.state}, ` : ''}${item.country}`}
+            {displayLocation(item)}
           </Text>
         </TouchableOpacity>
         {sportType === Verbs.sportTypeSingle ? (
           <TouchableOpacity
             style={styles.buttonContainer}
-            onPress={onChanllenge}>
+            onPress={() => onChanllenge(item)}>
             <Text style={styles.buttonText}>{strings.challenge}</Text>
           </TouchableOpacity>
         ) : null}
