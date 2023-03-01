@@ -128,12 +128,28 @@ const AddressLocationModal = ({
           enabled={false}
           style={locationModalStyles.mainView}>
           {!addressManual ? (
-            <View style={locationModalStyles.headerView}>
-              <TouchableOpacity onPress={() => {}}></TouchableOpacity>
-              <Text style={locationModalStyles.headerText}>
+            <View
+              style={[
+                locationModalStyles.headerView,
+                {justifyContent: 'center'},
+              ]}>
+              <Text
+                style={[
+                  locationModalStyles.headerText,
+                  {
+                    textAlign: 'center',
+                    paddingBottom: 8,
+                  },
+                ]}>
                 {strings.address}
               </Text>
-              <View style={{paddingTop: 20, height: '100%'}}>
+              <View
+                style={{
+                  paddingTop: 20,
+                  height: '100%',
+                  position: 'absolute',
+                  right: 21,
+                }}>
                 <TouchableOpacity
                   hitSlop={getHitSlop(15)}
                   style={locationModalStyles.closeButton}
@@ -160,21 +176,27 @@ const AddressLocationModal = ({
                   setAddressManual(false);
                 }}>
                 <Image
-                  source={images.backArrow}
-                  style={[
-                    locationModalStyles.closeButton,
-
-                    {
-                      marginLeft: 0,
-                      marginRight: 0,
-                      width: 20,
-                      height: 20,
-                      marginTop: 7,
-                    },
-                  ]}
+                  source={images.nextArrow}
+                  style={{
+                    height: 22,
+                    width: 20,
+                    marginTop: 7,
+                    resizeMode: 'contain',
+                    tintColor: colors.blackColor,
+                    transform: [{rotate: '180deg'}],
+                  }}
                 />
               </TouchableOpacity>
-              <Text style={locationModalStyles.headerText}>
+              <Text
+                style={[
+                  locationModalStyles.headerText,
+                  {
+                    textAlign: 'center',
+                    paddingBottom: 8,
+                    alignSelf: 'center',
+                    marginLeft: 30,
+                  },
+                ]}>
                 {strings.address}
               </Text>
               <View style={{paddingTop: 20, height: '100%'}}>
@@ -185,9 +207,8 @@ const AddressLocationModal = ({
                   }}>
                   <Text
                     style={{
-                      fontFamily: fonts.RRegular,
+                      fontFamily: fonts.RMedium,
                       fontSize: 15,
-                      fontWeight: '600',
                     }}>
                     {strings.done}
                   </Text>
@@ -258,7 +279,7 @@ const AddressLocationModal = ({
               style={{
                 width: '100%',
                 position: 'absolute',
-                top: 80,
+                top: 76,
               }}>
               <LocationView
                 onChangeLocationText={(text) => setLocation(text)}

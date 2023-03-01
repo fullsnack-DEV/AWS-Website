@@ -20,10 +20,10 @@ function LocationView({
           <TCLabel
             title={strings.address.toUpperCase()}
             required={true}
-            style={{marginTop: 0, marginBottom: 12}}
+            style={{marginTop: 0, marginBottom: 10}}
           />
         ) : (
-          <View style={{marginTop: 0, marginBottom: 12}} />
+          <View style={{marginTop: 0, marginBottom: 10}} />
         )}
       </View>
 
@@ -32,7 +32,7 @@ function LocationView({
         onChangeText={onChangeLocationText}
         autoCapitalize="none"
         autoCorrect={false}
-        placeholder={strings.streetAddress}
+        placeholder={strings.detailAddressPlaceholder}
       />
 
       <View style={{marginTop: 15}}>
