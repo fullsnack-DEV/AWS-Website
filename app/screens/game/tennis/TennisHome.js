@@ -130,7 +130,11 @@ const TennisHome = ({navigation, route}) => {
 
     if (teamReviewProp?.length) {
       teamReviewProp.filter((item) => {
-        if (item.type === 'star' || item.type === 'topstar' || item.type === 'bottomstar') {
+        if (
+          item.type === 'star' ||
+          item.type === 'topstar' ||
+          item.type === 'bottomstar'
+        ) {
           starReviewPropForTeam.push(item);
         }
         return true;
@@ -139,7 +143,11 @@ const TennisHome = ({navigation, route}) => {
     }
     if (playerReviewProp?.length) {
       playerReviewProp.filter((item) => {
-        if (item.type === 'star' || item.type === 'topstar' || item.type === 'bottomstar') {
+        if (
+          item.type === 'star' ||
+          item.type === 'topstar' ||
+          item.type === 'bottomstar'
+        ) {
           starReviewPropForPlayer.push(item);
         }
         return true;
@@ -150,7 +158,11 @@ const TennisHome = ({navigation, route}) => {
       refereeReviewProp.filter((item) => {
         if (item.type === 'slider') {
           sliderReviewPropForReferee.push(item.name.toLowerCase());
-        } else if (item.type === 'star' || item.type === 'topstar' || item.type === 'bottomstar') {
+        } else if (
+          item.type === 'star' ||
+          item.type === 'topstar' ||
+          item.type === 'bottomstar'
+        ) {
           starReviewPropForReferee.push(item);
         }
         return true;
@@ -162,7 +174,11 @@ const TennisHome = ({navigation, route}) => {
       scorekeeperReviewProp.filter((item) => {
         if (item.type === 'slider') {
           sliderReviewPropForScorekeeper.push(item.name.toLowerCase());
-        } else if (item.type === 'star' || item.type === 'topstar' || item.type === 'bottomstar') {
+        } else if (
+          item.type === 'star' ||
+          item.type === 'topstar' ||
+          item.type === 'bottomstar'
+        ) {
           starReviewPropForScorekeeper.push(item);
         }
         return true;
@@ -1164,7 +1180,7 @@ const TennisHome = ({navigation, route}) => {
         .then((response) => {
           setLoading(false);
           modalizeRef.current.close();
-          navigation.navigate('LeaveReviewTennis', {
+          navigation.navigate('LeaveReview', {
             gameData,
             gameReviewData: response.payload,
             selectedTeam: isHome ? 'home' : 'away',
@@ -1198,11 +1214,11 @@ const TennisHome = ({navigation, route}) => {
       if (reservationDetail.isHome) {
         if (gameData.home_review_id) {
           isReviewed = true;
-          reviewID = gameData.home_review_id
+          reviewID = gameData.home_review_id;
         }
       } else if (gameData.away_review_id) {
         isReviewed = true;
-        reviewID = gameData.away_review_id
+        reviewID = gameData.away_review_id;
       }
 
       return (
@@ -1215,10 +1231,10 @@ const TennisHome = ({navigation, route}) => {
           profileImage={reservationDetail.thumbnail}
           onReviewPress={() => {
             if (isReviewed) {
-              getGameReviewsData(reviewID,reservationDetail.isHome);
+              getGameReviewsData(reviewID, reservationDetail.isHome);
             } else {
               modalizeRef.current.close();
-              navigation.navigate('LeaveReviewTennis', {
+              navigation.navigate('LeaveReview', {
                 gameData,
                 selectedTeam: reservationDetail?.isHome ? 'home' : 'away',
                 starAttributes: gameData?.user_challenge

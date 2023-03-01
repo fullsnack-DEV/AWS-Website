@@ -304,8 +304,11 @@ const AccountNavigator = () => (
       name="HomeScreen"
       component={HomeScreen}
       options={{
-        title: 'Home',
-
+        title: strings.home,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
         headerShown: false,
       }}
     />
@@ -314,7 +317,16 @@ const AccountNavigator = () => (
       name="GroupListScreen"
       component={GroupListScreen}
       options={{
-        title: 'Club',
+        title: strings.club,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -322,14 +334,32 @@ const AccountNavigator = () => (
       name="EditPersonalProfileScreen"
       component={EditPersonalProfileScreen}
       options={{
-        title: 'Edit Profile',
+        title: strings.editprofiletitle,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="EditGroupProfileScreen"
       component={EditGroupProfileScreen}
       options={{
-        title: 'Edit Profile',
+        title: strings.editprofiletitle,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -337,7 +367,16 @@ const AccountNavigator = () => (
       name="WritePostScreen"
       component={WritePostScreen}
       options={{
-        title: 'Write Post',
+        title: strings.writePost,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -345,7 +384,11 @@ const AccountNavigator = () => (
       name="EditPostScreen"
       component={EditPostScreen}
       options={{
-        title: 'Edit Post',
+        title: strings.editPost,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
         headerShown: false,
       }}
     />
@@ -354,7 +397,16 @@ const AccountNavigator = () => (
       name="UserTagSelectionListScreen"
       component={UserTagSelectionListScreen}
       options={{
-        title: 'Tag',
+        title: strings.tag,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -362,8 +414,11 @@ const AccountNavigator = () => (
       name="WriteCommentScreen"
       component={WriteCommentScreen}
       options={{
-        title: 'Write Comment',
-
+        title: strings.writeComment,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
         headerShown: false,
       }}
     />
@@ -407,7 +462,7 @@ const AccountNavigator = () => (
       name="ScheduleScreen"
       component={ScheduleScreen}
       options={{
-        title: 'Schedule',
+        title: strings.scheduleTitle,
         headerShown: false,
       }}
     />
@@ -415,7 +470,16 @@ const AccountNavigator = () => (
       name="EntityInfoScreen"
       component={EntityInfoScreen}
       options={{
-        title: 'Info',
+        title: strings.infoTitle,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -423,7 +487,16 @@ const AccountNavigator = () => (
       name="EntityReviewScreen"
       component={EntityReviewScreen}
       options={{
-        title: 'Review',
+        title: strings.reviewTitle,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -431,42 +504,96 @@ const AccountNavigator = () => (
       name="EntityStatScreen"
       component={EntityStatScreen}
       options={{
-        title: 'Stats',
+        title: strings.statsTitle,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="EntityScoreboardScreen"
       component={EntityScoreboardScreen}
       options={{
-        title: 'Scoreboard',
+        title: strings.scoreboard,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="EntityGallaryScreen"
       component={EntityGallaryScreen}
       options={{
-        title: 'Gallary',
+        title: strings.gallary,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="GameDetail"
       component={GameDetail}
       options={{
-        title: 'Game',
+        title: strings.game,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="EventScreen"
       component={EventScreen}
       options={{
-        title: 'Event',
+        title: strings.event,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="GoingListScreen"
       component={GoingListScreen}
       options={{
-        title: 'Going',
+        title: strings.going,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -474,28 +601,64 @@ const AccountNavigator = () => (
       name="AcceptEventInviteScreen"
       component={AcceptEventInviteScreen}
       options={{
-        title: 'Respond',
+        title: strings.respond,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="InviteToEventScreen"
       component={InviteToEventScreen}
       options={{
-        title: 'Invite',
+        title: strings.invite,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="EditEventScreen"
       component={EditEventScreen}
       options={{
-        title: 'Edit Event',
+        title: strings.editEvent,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="CreateEventScreen"
       component={CreateEventScreen}
       options={{
-        title: 'Create an Event',
+        title: strings.createAnEvent,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -516,7 +679,16 @@ const AccountNavigator = () => (
       name="GroupEventScreen"
       component={GroupEventScreen}
       options={{
-        title: 'Group Events',
+        title: strings.groupEvent,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -546,35 +718,80 @@ const AccountNavigator = () => (
       name="SoccerRecording"
       component={SoccerRecording}
       options={{
-        title: 'Match Records',
+        title: strings.matchRecord,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="TennisRecording"
       component={TennisRecording}
       options={{
-        title: 'Match Records',
+        title: strings.matchRecord,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="SoccerRecordList"
       component={SoccerRecordList}
       options={{
-        title: 'Match Record',
+        title: strings.matchRecord,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="SoccerApproveDisapproveConfirmation"
       component={SoccerApproveDisapproveConfirmation}
       options={{
-        title: 'Match Record',
+        title: strings.matchRecord,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="GameDetailRecord"
       component={GameDetailRecord}
       options={{
-        title: 'Match Record',
+        title: strings.matchRecord,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -607,15 +824,24 @@ const AccountNavigator = () => (
       name="BookReferee"
       component={BookReferee}
       options={{
-        title: 'Book a referee',
+        title: strings.bookaRefree,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="RefereeBookingDateAndTime"
       component={RefereeBookingDateAndTime}
       options={{
-        title: 'Book a referee',
-
+        title: strings.bookaRefree,
+        headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontSize: 16,
           fontFamily: fonts.RBold,
@@ -627,7 +853,16 @@ const AccountNavigator = () => (
       name="RefereeSelectMatch"
       component={RefereeSelectMatch}
       options={{
-        title: 'Choose a match',
+        title: strings.chooseaMatch,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -643,15 +878,24 @@ const AccountNavigator = () => (
       name="BookScorekeeper"
       component={BookScorekeeper}
       options={{
-        title: 'Book a scorekeeper',
+        title: strings.bookScorekeeper,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="ScorekeeperBookingDateAndTime"
       component={ScorekeeperBookingDateAndTime}
       options={{
-        title: 'Book a scorekeeper',
-
+        title: strings.bookScorekeeper,
+        headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontSize: 16,
           fontFamily: fonts.RBold,
@@ -679,14 +923,32 @@ const AccountNavigator = () => (
       name="EditLineUpScreen"
       component={EditLineUpScreen}
       options={{
-        title: 'Edit Lineup',
+        title: strings.editLinup,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="EditLineUpCoachScreen"
       component={EditLineUpCoachScreen}
       options={{
-        title: 'Edit Lineup',
+        title: strings.editLinup,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -694,7 +956,16 @@ const AccountNavigator = () => (
       name="EditRosterScreen"
       component={EditRosterScreen}
       options={{
-        title: 'Edit Roster',
+        title: strings.editRoster,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -727,8 +998,8 @@ const AccountNavigator = () => (
       name="RegisterReferee"
       component={RegisterReferee}
       options={{
-        title: 'Register as Referee',
-
+        title: strings.registerRefereeTitle,
+        headerTintColor: colors.blackColor,
         headerTitleStyle: {
           alignSelf: 'center',
           fontWeight: '500',
@@ -739,7 +1010,16 @@ const AccountNavigator = () => (
       name="RegisterRefereeForm2"
       component={RegisterRefereeForm2}
       options={{
-        title: 'Register as Referee',
+        title: strings.registerRefereeTitle,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -760,56 +1040,128 @@ const AccountNavigator = () => (
       name="AcceptDeclineChallengeScreen"
       component={AcceptDeclineChallengeScreen}
       options={{
-        title: 'Challenge',
+        title: strings.challenge,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="CreateTeamForm1"
       component={CreateTeamForm1}
       options={{
-        title: 'Create Team',
+        title: strings.createTeamText,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="CreateTeamForm2"
       component={CreateTeamForm2}
       options={{
-        title: 'Create Team',
+        title: strings.createTeamText,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="CreateTeamForm3"
       component={CreateTeamForm3}
       options={{
-        title: 'Create Team',
+        title: strings.createTeamText,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="CreateTeamForm4"
       component={CreateTeamForm4}
       options={{
-        title: 'Create Team',
+        title: strings.createTeamText,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="CreateClubForm1"
       component={CreateClubForm1}
       options={{
-        title: 'Create Club',
+        title: strings.createClubText,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="CreateClubForm2"
       component={CreateClubForm2}
       options={{
-        title: 'Create Club',
+        title: strings.createClubText,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="CreateClubForm3"
       component={CreateClubForm3}
       options={{
-        title: 'Create Club',
+        title: strings.createClubText,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -845,56 +1197,128 @@ const AccountNavigator = () => (
       name="SearchPlayerScreen"
       component={SearchPlayerScreen}
       options={{
-        title: 'Choose a Player',
+        title: strings.choosePlayer,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="JoinedTeamsScreen"
       component={JoinedTeamsScreen}
       options={{
-        title: 'Teams',
+        title: strings.teams,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="JoinedClubsScreen"
       component={JoinedClubsScreen}
       options={{
-        title: 'Clubs',
+        title: strings.clubstitle,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="RefereeReservationScreen"
       component={RefereeReservationScreen}
       options={{
-        title: 'Referee Reservation',
+        title: strings.refereeScreenTitle,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="RefereeApprovalScreen"
       component={RefereeApprovalScreen}
       options={{
-        title: 'Referee Approval Request',
+        title: strings.refreeApprovalRequest,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="ScorekeeperApprovalScreen"
       component={ScorekeeperApprovalScreen}
       options={{
-        title: 'Scorekeeper Approval Request',
+        title: strings.scoreKeeperApprovalRequest,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="GroupSettingPrivacyScreen"
       component={GroupSettingPrivacyScreen}
       options={{
-        title: 'Settings',
+        title: strings.settings,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="UserSettingPrivacyScreen"
       component={UserSettingPrivacyScreen}
       options={{
-        title: 'Setting & Privacy',
+        title: strings.settingAndPrivacy,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -909,28 +1333,64 @@ const AccountNavigator = () => (
       name="PersonalInformationScreen"
       component={PersonalInformationScreen}
       options={{
-        title: 'Personal Information',
+        title: strings.personalInfoTitle,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="AccountInfoScreen"
       component={AccountInfoScreen}
       options={{
-        title: 'Account Info',
+        title: strings.accountInfo,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="BasicInfoScreen"
       component={BasicInfoScreen}
       options={{
-        title: 'Basic Info',
+        title: strings.basicInfoText,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="MembersProfileScreen"
       component={MembersProfileScreen}
       options={{
-        title: 'Member Profile',
+        title: strings.memberProfile,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -944,7 +1404,7 @@ const AccountNavigator = () => (
       name="InviteMembersBySearchScreen"
       component={InviteMembersBySearchScreen}
       options={{
-        title: strings.inviteBySearchText,
+        title: strings.inviteMemberText,
       }}
     />
 
@@ -953,6 +1413,15 @@ const AccountNavigator = () => (
       component={RequestMultipleBasicInfoScreen}
       options={{
         title: strings.sendRequestText,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -991,7 +1460,16 @@ const AccountNavigator = () => (
       name="MembersViewPrivacyScreen"
       component={MembersViewPrivacyScreen}
       options={{
-        title: 'View Privacy',
+        title: strings.viewPrivacy,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -1035,7 +1513,16 @@ const AccountNavigator = () => (
       name="ClubSettingScreen"
       component={ClubSettingScreen}
       options={{
-        title: 'Settings',
+        title: strings.settings,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -1049,7 +1536,16 @@ const AccountNavigator = () => (
       name="EditMemberInfoScreen"
       component={EditMemberInfoScreen}
       options={{
-        title: 'Name',
+        title: strings.nameText,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -1092,7 +1588,16 @@ const AccountNavigator = () => (
       name="ChooseAddressScreen"
       component={ChooseAddressScreen}
       options={{
-        title: 'Venue',
+        title: strings.venueText,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -1125,14 +1630,32 @@ const AccountNavigator = () => (
       name="PayAgainScreen"
       component={PayAgainScreen}
       options={{
-        title: 'Pay',
+        title: strings.payText,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="PayAgainRefereeScreen"
       component={PayAgainRefereeScreen}
       options={{
-        title: 'Pay',
+        title: strings.payText,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -1146,21 +1669,48 @@ const AccountNavigator = () => (
       name="CurruentReservationScreen"
       component={CurruentReservationScreen}
       options={{
-        title: 'Curruent Match Reservation',
+        title: strings.currentMatchReservation,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="CurruentRefereeReservationScreen"
       component={CurruentRefereeReservationScreen}
       options={{
-        title: 'Curruent Referee Reservation',
+        title: strings.currentRefreeReservation,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="EditFeeScreen"
       component={EditFeeScreen}
       options={{
-        title: 'Challenge',
+        title: strings.challenge,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -1220,21 +1770,48 @@ const AccountNavigator = () => (
       name="PaymentMethodsScreen"
       component={PaymentMethodsScreen}
       options={{
-        title: 'Payment Methods',
+        title: strings.paymentMethod,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="PayoutMethodList"
       component={PayoutMethodList}
       options={{
-        title: 'Payout Methods',
+        title: strings.paymentMethod,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="PayoutMethodScreen"
       component={PayoutMethodScreen}
       options={{
-        title: 'Payout Method',
+        title: strings.paymentMethod,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -1242,15 +1819,27 @@ const AccountNavigator = () => (
       name="AddCardScreen"
       component={AddCardScreen}
       options={{
-        title: 'Add a Card',
+        title: strings.addacard,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="MessageChat"
       component={MessageNavigator}
       options={{
-        title: 'Message Chat',
-
+        title: strings.messageChat,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
         headerShown: false,
       }}
     />
@@ -1265,21 +1854,48 @@ const AccountNavigator = () => (
       name="NotificationsListScreen"
       component={NotificationsListScreen}
       options={{
-        title: 'Notifications',
+        title: strings.notifications,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="TrashScreen"
       component={TrashScreen}
       options={{
-        title: 'Trash',
+        title: strings.trash,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="PendingRequestScreen"
       component={PendingRequestScreen}
       options={{
-        title: 'Pending Request',
+        title: strings.pendingRequest,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -1293,14 +1909,32 @@ const AccountNavigator = () => (
       name="EditRefereeReservation"
       component={EditRefereeReservation}
       options={{
-        title: 'Change Referee Reservation',
+        title: strings.changeRefereeReservation,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="AlterRefereeScreen"
       component={AlterRefereeScreen}
       options={{
-        title: 'Change Referee Reservation',
+        title: strings.changeRefereeReservation,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -1308,21 +1942,48 @@ const AccountNavigator = () => (
       name="AlterChallengeScreen"
       component={AlterChallengeScreen}
       options={{
-        title: 'Game Reservation',
+        title: strings.gameReservation,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="CurrencySettingScreen"
       component={CurrencySettingScreen}
       options={{
-        title: 'Currency Setting',
+        title: strings.currencySetting,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="ReviewPlayerList"
       component={ReviewPlayerList}
       options={{
-        title: 'Player',
+        title: strings.playerText,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -1336,15 +1997,24 @@ const AccountNavigator = () => (
       name="ReviewRefereeList"
       component={ReviewRefereeList}
       options={{
-        title: 'Referee',
+        title: strings.refreeText,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="RegisterScorekeeper"
       component={RegisterScorekeeper}
       options={{
-        title: 'Register as Scorekeeper',
-
+        title: strings.registerScorekeeperTitle,
+        headerTintColor: colors.blackColor,
         headerTitleStyle: {
           alignSelf: 'center',
           fontWeight: '500',
@@ -1355,7 +2025,16 @@ const AccountNavigator = () => (
       name="RegisterScorekeeperForm2"
       component={RegisterScorekeeperForm2}
       options={{
-        title: 'Register as Scorekeeper',
+        title: strings.registerScorekeeperTitle,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -1385,7 +2064,16 @@ const AccountNavigator = () => (
       name="ScorekeeperReservationScreen"
       component={ScorekeeperReservationScreen}
       options={{
-        title: 'Scorekeeper Reservation',
+        title: strings.scorekeeperScreenTitle,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -1399,7 +2087,16 @@ const AccountNavigator = () => (
       name="EditScorekeeperReservation"
       component={EditScorekeeperReservation}
       options={{
-        title: 'Change Scorekeeper Reservation',
+        title: strings.changeScorekeeperReservation,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -1414,14 +2111,32 @@ const AccountNavigator = () => (
       name="PayAgainScorekeeperScreen"
       component={PayAgainScorekeeperScreen}
       options={{
-        title: 'Pay',
+        title: strings.payText,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="CurruentScorekeeperReservationScreen"
       component={CurruentScorekeeperReservationScreen}
       options={{
-        title: 'Curruent Scorekeeper Reservation',
+        title: strings.currentScoreKeeperReservation,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -1429,7 +2144,16 @@ const AccountNavigator = () => (
       name="AlterScorekeeperScreen"
       component={AlterScorekeeperScreen}
       options={{
-        title: 'Change Scorekeeper Reservation',
+        title: strings.changeScorekeeperReservation,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -1437,7 +2161,16 @@ const AccountNavigator = () => (
       name="ScorekeeperSelectMatch"
       component={ScorekeeperSelectMatch}
       options={{
-        title: 'Choose a match',
+        title: strings.chooseaMatch,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -1460,7 +2193,16 @@ const AccountNavigator = () => (
       name="ReviewScorekeeperList"
       component={ReviewScorekeeperList}
       options={{
-        title: 'Referee',
+        title: strings.refreeText,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -1487,14 +2229,32 @@ const AccountNavigator = () => (
       name="ManageChallengeScreen"
       component={ManageChallengeScreen}
       options={{
-        title: 'Manage Challenge',
+        title: strings.manageChallengeShhetItem,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="SportActivityScreen"
       component={SportActivityScreen}
       options={{
-        title: 'Sports Activities',
+        title: strings.sportActivity,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -1508,7 +2268,16 @@ const AccountNavigator = () => (
       name="DeactivatedSportsListScreen"
       component={DeactivatedSportsListScreen}
       options={{
-        title: 'Deactivated Sports Activities',
+        title: strings.deactivatedSportsActivities,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -1516,14 +2285,32 @@ const AccountNavigator = () => (
       name="SportActivitiesScreen"
       component={SportActivitiesScreen}
       options={{
-        title: 'Sports Activities',
+        title: strings.sportActivity,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="SportActivityTagScreen"
       component={SportActivityTagScreen}
       options={{
-        title: 'Order',
+        title: strings.orderText,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -1531,7 +2318,16 @@ const AccountNavigator = () => (
       name="ChangeSportsOrderScreen"
       component={ChangeSportsOrderScreen}
       options={{
-        title: 'Change List of Sports',
+        title: strings.changeListOfSport,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -1539,7 +2335,16 @@ const AccountNavigator = () => (
       name="ChangeOtherListScreen"
       component={ChangeOtherListScreen}
       options={{
-        title: 'Change List Of Organizers',
+        title: strings.chnageListOfOrganizer,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -1547,14 +2352,32 @@ const AccountNavigator = () => (
       name="SportHideUnhideScreen"
       component={SportHideUnhideScreen}
       options={{
-        title: 'Hide & Unhide',
+        title: strings.hideUnhide,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="RefereeReservationSetting"
       component={RefereeReservationSetting}
       options={{
-        title: 'Referee Reservation Setting',
+        title: strings.refreeReservationSetting,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -1562,21 +2385,48 @@ const AccountNavigator = () => (
       name="ScorekeeperReservationSetting"
       component={ScorekeeperReservationSetting}
       options={{
-        title: 'Scorekeeper Reservation Setting',
+        title: strings.scoreKeeperReservationSetting,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="GameType"
       component={GameType}
       options={{
-        title: 'Game Type',
+        title: strings.gameType,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="RefundPolicy"
       component={RefundPolicy}
       options={{
-        title: 'Refund Policies',
+        title: strings.refundPolicies,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -1584,7 +2434,16 @@ const AccountNavigator = () => (
       name="GameFee"
       component={GameFee}
       options={{
-        title: 'Match Fee',
+        title: strings.gameFee,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -1592,14 +2451,32 @@ const AccountNavigator = () => (
       name="GameRules"
       component={GameRules}
       options={{
-        title: 'Game Rules',
+        title: strings.gameRules,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="Venue"
       component={Venue}
       options={{
-        title: 'Venue',
+        title: strings.venueText,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -1614,35 +2491,80 @@ const AccountNavigator = () => (
       name="Availibility"
       component={Availibility}
       options={{
-        title: 'Availibility',
+        title: strings.availability,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="RefereesSetting"
       component={RefereesSetting}
       options={{
-        title: 'Referee',
+        title: strings.refreeText,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="ScorekeepersSetting"
       component={ScorekeepersSetting}
       options={{
-        title: 'Scorekeeper',
+        title: strings.scorekeeperText,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="GameDuration"
       component={GameDuration}
       options={{
-        title: 'Game Duration',
+        title: strings.gameDuration,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="GameTennisDuration"
       component={GameTennisDuration}
       options={{
-        title: 'Sets, points & Duration',
+        title: strings.setPointDuration,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -1654,14 +2576,32 @@ const AccountNavigator = () => (
       name="UserGalleryScreen"
       component={UserGalleryScreen}
       options={{
-        title: 'Gallery',
+        title: strings.gallary,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="UserScoreboardScreen"
       component={UserScoreboardScreen}
       options={{
-        title: 'Scoreboard',
+        title: strings.scoreboard,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -1669,7 +2609,16 @@ const AccountNavigator = () => (
       name="ChallengeScreen"
       component={ChallengeScreen}
       options={{
-        title: 'Challenge',
+        title: strings.challenge,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -1677,7 +2626,16 @@ const AccountNavigator = () => (
       name="RefereeAgreementScreen"
       component={RefereeAgreementScreen}
       options={{
-        title: 'Challenge',
+        title: strings.challenge,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -1685,14 +2643,32 @@ const AccountNavigator = () => (
       name="ScorekeeperAgreementScreen"
       component={ScorekeeperAgreementScreen}
       options={{
-        title: 'Challenge',
+        title: strings.challenge,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="RefereeInviteAgreementScreen"
       component={RefereeInviteAgreementScreen}
       options={{
-        title: 'Invite to Challenge',
+        title: strings.inviteToChallenge,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -1700,7 +2676,16 @@ const AccountNavigator = () => (
       name="ScorekeeperInviteAgreementScreen"
       component={ScorekeeperInviteAgreementScreen}
       options={{
-        title: 'Invite to Challenge',
+        title: strings.inviteToChallenge,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -1708,7 +2693,16 @@ const AccountNavigator = () => (
       name="InviteChallengeScreen"
       component={InviteChallengeScreen}
       options={{
-        title: 'Invite to Challenge',
+        title: strings.inviteToChallenge,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -1716,7 +2710,16 @@ const AccountNavigator = () => (
       name="ChooseVenueScreen"
       component={ChooseVenueScreen}
       options={{
-        title: 'Venue',
+        title: strings.venueText,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -1724,7 +2727,16 @@ const AccountNavigator = () => (
       name="ChallengePreviewScreen"
       component={ChallengePreviewScreen}
       options={{
-        title: 'Challenge',
+        title: strings.challenge,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -1732,7 +2744,16 @@ const AccountNavigator = () => (
       name="ChallengePaymentScreen"
       component={ChallengePaymentScreen}
       options={{
-        title: 'Challenge',
+        title: strings.challenge,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -1757,7 +2778,16 @@ const AccountNavigator = () => (
       name="RespondToInviteScreen"
       component={RespondToInviteScreen}
       options={{
-        title: 'Respond to invite to create team',
+        title: strings.respondToInviteCreateTeam,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -1765,14 +2795,32 @@ const AccountNavigator = () => (
       name="InvoiceScreen"
       component={InvoiceScreen}
       options={{
-        title: 'Invoicing',
+        title: strings.invoicingTitleText,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="MembersDetailScreen"
       component={MembersDetailScreen}
       options={{
-        title: 'Invoicing',
+        title: strings.invoicingTitleText,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -1780,7 +2828,16 @@ const AccountNavigator = () => (
       name="BatchDetailScreen"
       component={BatchDetailScreen}
       options={{
-        title: 'Membership Fee',
+        title: strings.membershipFeeTitle,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -1788,7 +2845,16 @@ const AccountNavigator = () => (
       name="TeamInvoiceDetailScreen"
       component={TeamInvoiceDetailScreen}
       options={{
-        title: 'Membership Fee',
+        title: strings.membershipFeeTitle,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -1796,14 +2862,32 @@ const AccountNavigator = () => (
       name="AddLogScreen"
       component={AddLogScreen}
       options={{
-        title: 'Log Manually',
+        title: strings.logManually,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="UserInvoiceScreen"
       component={UserInvoiceScreen}
       options={{
-        title: 'Invoices',
+        title: strings.invoicesTitle,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -1811,7 +2895,16 @@ const AccountNavigator = () => (
       name="InvoiceDetailScreen"
       component={InvoiceDetailScreen}
       options={{
-        title: 'Membership Fee',
+        title: strings.membershipFee,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -1819,7 +2912,16 @@ const AccountNavigator = () => (
       name="LogDetailScreen"
       component={LogDetailScreen}
       options={{
-        title: 'Log',
+        title: strings.logText,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -1827,7 +2929,16 @@ const AccountNavigator = () => (
       name="CanceledInvoicesScreen"
       component={CanceledInvoicesScreen}
       options={{
-        title: 'Canceled invoices',
+        title: strings.cancelledInvoiceText,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -1847,7 +2958,16 @@ const AccountNavigator = () => (
       name="InvoiceFilterScreen"
       component={InvoiceFilterScreen}
       options={{
-        title: 'Invoicing',
+        title: strings.invoicingTitleText,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -1855,7 +2975,16 @@ const AccountNavigator = () => (
       name="AvailibilityReferee"
       component={AvailibilityReferee}
       options={{
-        title: 'Availibility',
+        title: strings.availability,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -1863,14 +2992,32 @@ const AccountNavigator = () => (
       name="AvailableAreaReferee"
       component={AvailableAreaReferee}
       options={{
-        title: 'Available Area',
+        title: strings.availableAreaText,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="RefundPolicyReferee"
       component={RefundPolicyReferee}
       options={{
-        title: 'Refund Policy',
+        title: strings.refundPolicy,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -1878,7 +3025,16 @@ const AccountNavigator = () => (
       name="RefundPolicyScorekeeper"
       component={RefundPolicyScorekeeper}
       options={{
-        title: 'Refund Policy',
+        title: strings.refundPolicy,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -1886,7 +3042,16 @@ const AccountNavigator = () => (
       name="RefereeFee"
       component={RefereeFee}
       options={{
-        title: 'Referee Fee',
+        title: strings.refereeFee,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -1894,7 +3059,16 @@ const AccountNavigator = () => (
       name="AvailibilityScorekeeper"
       component={AvailibilityScorekeeper}
       options={{
-        title: 'Availibility',
+        title: strings.availability,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -1902,14 +3076,32 @@ const AccountNavigator = () => (
       name="AvailableAreaScorekeeper"
       component={AvailableAreaScorekeeper}
       options={{
-        title: 'Available Area',
+        title: strings.availableAreaText,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="ScorekeeperFee"
       component={ScorekeeperFee}
       options={{
-        title: 'Scorekeeper Fee',
+        title: strings.scorekeeperFee,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -1917,7 +3109,16 @@ const AccountNavigator = () => (
       name="LookingForSettingScreen"
       component={LookingForSettingScreen}
       options={{
-        title: 'Setting',
+        title: strings.setting,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -1931,14 +3132,32 @@ const AccountNavigator = () => (
       name="DeactivateSportScreen"
       component={DeactivateSportScreen}
       options={{
-        title: 'Deactivate Activity',
+        title: strings.deactivateActivity,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="DeactivateAccountScreen"
       component={DeactivateAccountScreen}
       options={{
-        title: 'Deactivate Account',
+        title: strings.deactivateAccountText,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -2011,8 +3230,11 @@ const AccountNavigator = () => (
       name="WhoCanJoinTeamScreen"
       component={WhoCanJoinTeamScreen}
       options={{
-        title: 'Who Can Join Team',
-
+        title: strings.whoCanJoinTeam,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
         headerShown: true,
       }}
     />
@@ -2021,8 +3243,11 @@ const AccountNavigator = () => (
       name="GroupInviteYouScreen"
       component={GroupInviteYouScreen}
       options={{
-        title: 'Who Can Join Team',
-
+        title: strings.whoCanJoinTeam,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
         headerShown: true,
       }}
     />
@@ -2051,8 +3276,11 @@ const AccountNavigator = () => (
       name="GroupInviteSettingPrivacyScreen"
       component={GroupInviteSettingPrivacyScreen}
       options={{
-        title: 'Who Can Join Team',
-
+        title: strings.whoCanJoinTeam,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
         headerShown: true,
       }}
     />
@@ -2070,8 +3298,11 @@ const AccountNavigator = () => (
       name="WhoCreateEventScreen"
       component={WhoCreateEventScreen}
       options={{
-        title: 'Who Can Create Event',
-
+        title: strings.whoCanCreateEventText,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
         headerShown: true,
       }}
     />
@@ -2080,8 +3311,11 @@ const AccountNavigator = () => (
       name="WhoCanInviteEventScreen"
       component={WhoCanInviteEventScreen}
       options={{
-        title: 'Who Can Invite People',
-
+        title: strings.whoCanInvitePeopleText,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
         headerShown: true,
       }}
     />
@@ -2089,8 +3323,11 @@ const AccountNavigator = () => (
       name="ClubSettingPrivacyScreen"
       component={ClubSettingPrivacyScreen}
       options={{
-        title: 'Club',
-
+        title: strings.club,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
         headerShown: true,
       }}
     />
@@ -2099,8 +3336,11 @@ const AccountNavigator = () => (
       name="ClubInviteTeamScreen"
       component={ClubInviteTeamScreen}
       options={{
-        title: 'Can Club Invite Team',
-
+        title: strings.canClubInviteTeamText,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
         headerShown: true,
       }}
     />
@@ -2119,8 +3359,11 @@ const AccountNavigator = () => (
       name="TeamSettingPrivacyScreen"
       component={TeamSettingPrivacyScreen}
       options={{
-        title: 'Team',
-
+        title: strings.team,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
         headerShown: true,
       }}
     />
@@ -2128,8 +3371,11 @@ const AccountNavigator = () => (
       name="WhoCanInviteMemberScreen"
       component={WhoCanInviteMemberScreen}
       options={{
-        title: 'Who Can Invite Member',
-
+        title: strings.whoCanInviteMemberText,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
         headerShown: true,
       }}
     />

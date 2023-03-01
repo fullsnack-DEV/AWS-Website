@@ -1,4 +1,6 @@
 /* eslint-disable no-param-reassign */
+/* eslint-disable no-nested-ternary */
+
 import React, {useContext} from 'react';
 import {
   Text,
@@ -22,6 +24,7 @@ const GroupMembership = ({
   switchID,
   edit = false,
   onEditPressed,
+  onlybadge = false,
 }) => {
   let typeImage = '';
   const authContext = useContext(AuthContext);
@@ -51,22 +54,26 @@ const GroupMembership = ({
     <>
       <View style={styles.topViewContainer}>
         <View style={{flexDirection: 'row'}}>
-          <Image
-            source={
-              groupData.thumbnail
-                ? {uri: groupData.thumbnail}
-                : images.profilePlaceHolder
-            }
-            style={styles.profileImage}
-          />
+          {!onlybadge && (
+            <Image
+              source={
+                groupData.thumbnail
+                  ? {uri: groupData.thumbnail}
+                  : images.profilePlaceHolder
+              }
+              style={styles.profileImage}
+            />
+          )}
 
           <View style={styles.topTextContainer}>
-            <View style={{flexDirection: 'row', alignItems: 'center'}}>
-              <Text style={styles.nameText} numberOfLines={5}>
-                {groupData.group_name}
-              </Text>
-              <Image source={typeImage} style={styles.teamTImage} />
-            </View>
+            {!onlybadge && (
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <Text style={styles.nameText} numberOfLines={5}>
+                  {groupData.group_name}
+                </Text>
+                <Image source={typeImage} style={styles.teamTImage} />
+              </View>
+            )}
             <View style={{flexDirection: 'row'}}>
               {groupData.is_admin && (
                 <TCUserRoleBadge
@@ -101,6 +108,28 @@ const GroupMembership = ({
                   }}
                 />
               )}
+              {groupData.is_parent && (
+                <TCUserRoleBadge
+                  title={strings.parent}
+                  titleColor={colors.playerBadgeColor}
+                  gradientColor={colors.lightGrayBackground}
+                  gradientColor1={colors.lightGrayBackground}
+                  style={{
+                    marginLeft: 5,
+                  }}
+                />
+              )}
+              {groupData.is_others && (
+                <TCUserRoleBadge
+                  title={strings.other}
+                  titleColor={colors.playerBadgeColor}
+                  gradientColor={colors.lightGrayBackground}
+                  gradientColor1={colors.lightGrayBackground}
+                  style={{
+                    marginLeft: 5,
+                  }}
+                />
+              )}
             </View>
           </View>
         </View>
@@ -112,7 +141,10 @@ const GroupMembership = ({
         ) : null}
       </View>
       {authContext.entity.role === 'team' && (
-        <>
+        <View
+          style={{
+            marginTop: 5,
+          }}>
           <TCInfoField
             title={strings.positionPlaceholder}
             value={
@@ -121,7 +153,6 @@ const GroupMembership = ({
                 : strings.NAText
             }
             marginLeft={25}
-            marginTop={30}
           />
           <TCInfoField
             title={strings.jerseyNumberPlaceholder}
@@ -134,12 +165,16 @@ const GroupMembership = ({
           <TCInfoField
             title={strings.statusPlaceholder}
             value={
-              groupData.status ? groupData.status.join(', ') : strings.NAText
+              groupData.status
+                ? groupData.status.length > 0
+                  ? groupData.status.join(', ')
+                  : strings.NAText
+                : strings.NAText
             }
             marginLeft={25}
             color={colors.darkThemeColor}
           />
-        </>
+        </View>
       )}
       {/* {groupData.note ? (
         <Text style={styles.groupDescriptionText}>{groupData.note}</Text>

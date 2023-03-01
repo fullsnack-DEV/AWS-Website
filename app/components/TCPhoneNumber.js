@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     tintColor: colors.grayColor,
     top: 15,
     width: 12,
-    right: 22,
+    right: 30,
   },
   inputIOS: {
     height: 40,

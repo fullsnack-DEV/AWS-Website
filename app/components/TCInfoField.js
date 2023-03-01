@@ -27,7 +27,7 @@ export default function TCInfoField({
 const styles = StyleSheet.create({
   fieldView: {
     flexDirection: 'row',
-    marginLeft: 25,
+    marginLeft: 15,
     marginRight: 20,
     marginTop: 10,
     marginBottom: 10,
@@ -41,18 +41,17 @@ const styles = StyleSheet.create({
     marginRight: 15,
 
     fontFamily: fonts.RMedium,
-    // fontWeight: '500',
+
     lineHeight: 24,
-    // paddingTop: 4,
   },
   fieldValue: {
     fontSize: 16,
     color: colors.lightBlackColor,
     flex: 0.65,
-    marginLeft: 70,
-    // backgroundColor: 'red',
+    marginLeft: 30,
+
     fontFamily: fonts.RRegular,
-    // fontWeight: '400',
+
     lineHeight: 21,
   },
 });

@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Image,
   TouchableWithoutFeedback,
+  Pressable,
 } from 'react-native';
 
 import LinearGradient from 'react-native-linear-gradient';
@@ -46,10 +47,22 @@ export default function MemberProfile({isChecked, onPress, playerDetail}) {
                 </Text>
               </View>
             </View>
-            <Image
-              source={images.orangeCheckBox}
-              style={styles.checkGreenImage}
-            />
+            <Pressable
+              onPress={onPress}
+              style={{
+                height: 22,
+                width: 22,
+                borderWidth: 0.3,
+                borderRadius: 7,
+                borderColor: colors.veryLightGray,
+
+                alignSelf: 'center',
+              }}>
+              <Image
+                source={images.orangeCheckBox}
+                style={styles.checkGreenImage}
+              />
+            </Pressable>
           </LinearGradient>
         </TouchableWithoutFeedback>
       ) : (
@@ -81,7 +94,18 @@ export default function MemberProfile({isChecked, onPress, playerDetail}) {
                 </Text>
               </View>
             </View>
-            <Image source={images.whiteUncheck} style={styles.checkImage} />
+            <Pressable
+              onPress={onPress}
+              style={{
+                height: 22,
+                width: 22,
+                borderWidth: 1,
+                borderColor: colors.veryLightGray,
+                borderRadius: 7,
+                alignSelf: 'center',
+              }}>
+              <Image source={images.whiteUncheck} style={styles.checkImage} />
+            </Pressable>
           </View>
         </TouchableWithoutFeedback>
       )}

@@ -58,9 +58,11 @@ export default function CreateMemberProfileForm2({navigation, route}) {
   const [minDateValue, setMinDateValue] = useState(new Date());
   const [memberInfo, setMemberInfo] = useState({
     height: {
+      height: 0,
       height_type: 'ft',
     },
     weight: {
+      weight: 0,
       weight_type: 'lb',
     },
   });
@@ -161,8 +163,6 @@ export default function CreateMemberProfileForm2({navigation, route}) {
   ]);
 
   const pressedNext = () => {
-    console.log(location, city, postalCode, state);
-
     if (validation()) {
       const membersAuthority = {
         ...memberInfo,
@@ -412,8 +412,6 @@ export default function CreateMemberProfileForm2({navigation, route}) {
     [city, state, country, location, postalCode].filter((w) => w).join(', ');
 
   const onSelectAddress = (_location) => {
-    console.log(_location, ' _location on manual press');
-
     setCity(_location.city);
     setState(_location.state);
     setCountry(_location.country);
@@ -511,7 +509,6 @@ export default function CreateMemberProfileForm2({navigation, route}) {
           alignSelf="center"
           marginTop={15}
           onPress={() => addPhoneNumber()}
-          marginBottom={15}
           elevation={0}
           backgroundColor={'#F5F5F5'}
           styletext={{
@@ -523,18 +520,15 @@ export default function CreateMemberProfileForm2({navigation, route}) {
       <TouchableOpacity
         onPress={() => {
           setVisibleLocationModal(true);
-          // setAddressManual(false);
-          // setSearchText('');
         }}>
         <View>
           <TCLabel
             title={strings.address.toUpperCase()}
-            style={{marginBottom: 12}}
+            style={{marginBottom: 10, marginTop: 25}}
           />
 
           <TCTextField
             value={locationString() || addressManualString()}
-            // onChangeText={onChangeLocationText}
             autoCapitalize="none"
             autoCorrect={false}
             placeholder={strings.streetAddress}

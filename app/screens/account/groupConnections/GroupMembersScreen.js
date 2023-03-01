@@ -19,7 +19,7 @@ import {
 } from 'react-native';
 import {useIsFocused, useNavigationState} from '@react-navigation/native';
 
-import ActionSheet from 'react-native-actionsheet';
+import ActionSheet from '@alessiocancian/react-native-actionsheet';
 // import Modal from 'react-native-modal';
 // import LinearGradient from 'react-native-linear-gradient';
 import AuthContext from '../../../auth/context';
@@ -109,6 +109,15 @@ export default function GroupMembersScreen({navigation, route}) {
             </TouchableWithoutFeedback>
           </View>
         ),
+
+      headerLeft: () => (
+        <TouchableWithoutFeedback
+          onPress={() => {
+            navigation.goBack();
+          }}>
+          <Image source={images.backArrow} style={styles.backArrowStyle} />
+        </TouchableWithoutFeedback>
+      ),
     });
   }, [navigation, switchUser, groupID, currentRoute]);
 
@@ -373,7 +382,7 @@ export default function GroupMembersScreen({navigation, route}) {
                       }}
                     />
                   )}
-                  {!data?.is_coach && (
+                  {data?.is_coach && (
                     <TCUserRoleBadge
                       title="Coach"
                       titleColor={colors.greeColor}
@@ -492,25 +501,26 @@ export default function GroupMembersScreen({navigation, route}) {
       <ActionSheet
         ref={actionSheetPlus}
         options={[
-          strings.invoice,
-          strings.cancel,
-          strings.viewPrivacy,
           strings.sendrequestForBaicInfoText,
+          strings.invoice,
+          strings.privacyPolicy,
+          strings.cancel,
         ]}
         cancelButtonIndex={3}
         onPress={(index) => {
           if (index === 0) {
-            Alert.alert(strings.underDevelopment);
+            navigation.navigate('RequestMultipleBasicInfoScreen', {groupID});
           } else if (index === 1) {
             Alert.alert(strings.underDevelopment);
           } else if (index === 2) {
-            navigation.navigate('RequestMultipleBasicInfoScreen', {groupID});
+            Alert.alert(strings.underDevelopment);
           }
         }}
       />
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
@@ -611,5 +621,11 @@ const styles = StyleSheet.create({
     marginVertical: 0,
     height: 2,
     width: '100%',
+  },
+  backArrowStyle: {
+    height: 22,
+    marginLeft: 10,
+    resizeMode: 'contain',
+    tintColor: colors.blackColor,
   },
 });

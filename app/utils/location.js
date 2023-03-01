@@ -87,7 +87,7 @@ const getGeocoordinates = () =>
         // FIXME: not sure why reject not working here. resolving for now with error data
         resolve(error);
       },
-      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+      {enableHighAccuracy: true, timeout: 15000, maximumAge: 1000},
     );
   });
 

@@ -13,6 +13,7 @@ import {
   Alert,
   Image,
   Pressable,
+  TouchableWithoutFeedback,
 } from 'react-native';
 
 import ClipboardToast from 'react-native-clipboard-toast';
@@ -30,6 +31,7 @@ import TCProfileTag from '../../../components/TCProfileTag';
 import {getUserIndex} from '../../../api/elasticSearch';
 import TCThinDivider from '../../../components/TCThinDivider';
 import images from '../../../Constants/ImagePath';
+import {showAlert} from '../../../utils';
 
 let stopFetchMore = true;
 
@@ -54,6 +56,14 @@ export default function InviteMembersBySearchScreen({navigation}) {
           {strings.send}
         </Text>
       ),
+      headerLeft: () => (
+        <TouchableWithoutFeedback
+          onPress={() => {
+            navigation.goBack();
+          }}>
+          <Image source={images.backArrow} style={styles.backArrowStyle} />
+        </TouchableWithoutFeedback>
+      ),
     });
   }, [navigation, selectedList]);
 
@@ -65,11 +75,24 @@ export default function InviteMembersBySearchScreen({navigation}) {
       userIds: selectedList,
       uid: entity.uid,
     };
-    console.log('Obj::', obj);
+
     sendInvitationInGroup(obj, authContext)
       .then(() => {
         setloading(false);
-        navigation.navigate('InvitationSentScreen');
+
+        setTimeout(() => {
+          showAlert(
+            format(
+              selectedList?.length > 1
+                ? strings.emailInvitationSent
+                : strings.oneemailInvitationSent,
+              selectedList?.length,
+            ),
+            () => {
+              navigation.goBack();
+            },
+          );
+        }, 10);
       })
       .catch((e) => {
         setloading(false);
@@ -173,55 +196,13 @@ export default function InviteMembersBySearchScreen({navigation}) {
     </View>
   );
 
-  const ItemSeparatorComponent = useCallback(() => <TCThinDivider />, []);
-
-  return (
-    <View style={styles.mainContainer}>
-      <ActivityLoader visible={loading} />
-      <Text style={styles.infoTextStyle}>
-        {format(strings.inviteSearchText, authContext.entity.role)}
-      </Text>
-      <TCSearchBox
-        width={'90%'}
-        style={{
-          marginTop: -5,
-        }}
-        alignSelf="center"
-        onChangeText={(text) => {
-          // searchFilterFunction(text)
-
-          const tempFilter = {...filters};
-
-          if (text?.length > 0) {
-            tempFilter.searchText = text;
-          } else {
-            delete tempFilter.searchText;
-          }
-          setFilters({
-            ...tempFilter,
-          });
-          setPageFrom(0);
-          setPlayers([]);
-          applyFilter(tempFilter);
-          setSearchText(text);
-        }}
-      />
-
-      <View
-        style={{
-          marginLeft: 15,
-          marginRight: 15,
-
-          marginTop: 15,
-        }}>
-        <TCProfileTag dataSource={players} onTagCancelPress={handleTagPress} />
-      </View>
-
+  const listHeaderComponent = () => (
+    <>
       {players.filter((obj) => obj.isChecked).length <= 0 &&
         searchText.length <= 0 && (
           <View
             style={{
-              marginTop: -5,
+              marginTop: 25,
             }}>
             <Pressable
               style={styles.inviteEmailStyle}
@@ -256,8 +237,58 @@ export default function InviteMembersBySearchScreen({navigation}) {
           </View>
         )}
       <TCThinDivider />
+    </>
+  );
+
+  const ItemSeparatorComponent = useCallback(() => <TCThinDivider />, []);
+
+  return (
+    <View style={styles.mainContainer}>
+      <ActivityLoader visible={loading} />
+      <Text style={styles.infoTextStyle}>
+        {format(strings.inviteSearchText, authContext.entity.role)}
+      </Text>
+      <TCSearchBox
+        width={'90%'}
+        placeholderText={strings.searchText}
+        alignSelf="center"
+        onChangeText={(text) => {
+          const tempFilter = {...filters};
+
+          if (text?.length > 0) {
+            tempFilter.searchText = text;
+          } else {
+            delete tempFilter.searchText;
+          }
+          setFilters({
+            ...tempFilter,
+          });
+          setPageFrom(0);
+          setPlayers([]);
+          applyFilter(tempFilter);
+          setSearchText(text);
+        }}
+      />
+
+      {selectedList.length > 0 && (
+        <View
+          style={{
+            marginTop: 15,
+          }}>
+          <TCProfileTag
+            dataSource={players}
+            onTagCancelPress={handleTagPress}
+            style={{
+              marginLeft: 10,
+              marginRight: 0,
+            }}
+          />
+        </View>
+      )}
+
       <FlatList
         extraData={players}
+        ListHeaderComponent={listHeaderComponent}
         showsVerticalScrollIndicator={false}
         data={players}
         keyExtractor={(item, index) => index.toString()}
@@ -279,14 +310,15 @@ const styles = StyleSheet.create({
   },
   infoTextStyle: {
     marginTop: 20,
-    marginLeft: 20,
-    marginBottom: 20,
-    fontFamily: fonts.RRegular,
+    marginLeft: 15,
+    marginBottom: 10,
+    fontFamily: fonts.RMedium,
     fontSize: 20,
     color: colors.lightBlackColor,
+    lineHeight: 30,
   },
   sendButtonStyle: {
-    fontFamily: fonts.RRegular,
+    fontFamily: fonts.RMedium,
     fontSize: 16,
     marginRight: 10,
   },
@@ -314,5 +346,11 @@ const styles = StyleSheet.create({
     margin: 25,
     marginBottom: 15,
     marginTop: 0,
+  },
+  backArrowStyle: {
+    height: 22,
+    marginLeft: 10,
+    resizeMode: 'contain',
+    tintColor: colors.blackColor,
   },
 });

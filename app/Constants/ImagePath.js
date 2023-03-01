@@ -449,6 +449,8 @@ const images = {
   createMember: require('../assets/images/createMember.png'),
   unlinked: require('../assets/images/unlinked.png'),
   createTeamRoundIcon: require('../assets/images/createTeam.png'),
+
+  invoiceIcon: require('../assets/images/invvoice.png'),
 };
 
 export default images;

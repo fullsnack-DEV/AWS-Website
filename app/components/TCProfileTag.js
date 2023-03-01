@@ -13,11 +13,11 @@ import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import images from '../Constants/ImagePath';
 
-export default function TCProfileTag({dataSource, onTagCancelPress}) {
+export default function TCProfileTag({dataSource, onTagCancelPress, style}) {
   const renderTags = ({item, index}) => (
     <>
       {item.isChecked && (
-        <View style={{alignItems: 'center'}}>
+        <View style={{alignItems: 'center', marginLeft: 7}}>
           <View
             style={{
               borderRadius: 90,
@@ -52,8 +52,7 @@ export default function TCProfileTag({dataSource, onTagCancelPress}) {
       keyExtractor={(item, index) => index.toString()}
       horizontal={true}
       showsHorizontalScrollIndicator={false}
-      ItemSeparatorComponent={() => <View style={{width: 5}} />}
-      style={{marginLeft: 15, marginRight: 15, marginBottom: 15}}
+      style={[styles.listStyle, style]}
     />
   );
 }
@@ -84,5 +83,10 @@ const styles = StyleSheet.create({
     width: 45,
 
     alignSelf: 'center',
+  },
+  listStyle: {
+    marginLeft: 15,
+    marginRight: 15,
+    marginBottom: 15,
   },
 });

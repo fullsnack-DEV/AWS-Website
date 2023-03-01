@@ -1122,7 +1122,7 @@ const LocalHomeNavigator = () => (
       name="InviteMembersBySearchScreen"
       component={InviteMembersBySearchScreen}
       options={{
-        title: strings.inviteBySearchText,
+        title: strings.inviteMemberText,
       }}
     />
 

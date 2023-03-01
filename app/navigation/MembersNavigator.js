@@ -264,7 +264,16 @@ const MembersNavigator = () => (
       name="GroupEventScreen"
       component={GroupEventScreen}
       options={{
-        title: 'Group Events',
+        title: strings.groupEvent,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -273,6 +282,15 @@ const MembersNavigator = () => (
       component={MembersProfileScreen}
       options={{
         title: strings.memberProfile,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -286,7 +304,7 @@ const MembersNavigator = () => (
       name="InviteMembersBySearchScreen"
       component={InviteMembersBySearchScreen}
       options={{
-        title: strings.inviteBySearchText,
+        title: strings.inviteMemberText,
       }}
     />
 
@@ -326,7 +344,16 @@ const MembersNavigator = () => (
       name="MembersViewPrivacyScreen"
       component={MembersViewPrivacyScreen}
       options={{
-        title: 'View Privacy',
+        title: strings.viewPrivacy,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -344,8 +371,11 @@ const MembersNavigator = () => (
       name="GroupInviteYouScreen"
       component={GroupInviteYouScreen}
       options={{
-        title: 'Who Can Join Team',
-
+        title: strings.whoCanJoinTeam,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
         headerShown: true,
       }}
     />
@@ -354,8 +384,11 @@ const MembersNavigator = () => (
       name="GroupInviteSettingPrivacyScreen"
       component={GroupInviteSettingPrivacyScreen}
       options={{
-        title: 'Who Can Join Team',
-
+        title: strings.whoCanJoinTeam,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
         headerShown: true,
       }}
     />
@@ -364,8 +397,11 @@ const MembersNavigator = () => (
       name="GroupsScreen"
       component={GroupsScreen}
       options={{
-        title: 'Clubs',
-
+        title: strings.clubstitle,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
         headerShown: true,
       }}
     />

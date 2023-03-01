@@ -1444,7 +1444,7 @@ const HomeNavigator = () => (
       name="InviteMembersBySearchScreen"
       component={InviteMembersBySearchScreen}
       options={{
-        title: strings.inviteBySearchText,
+        title: strings.inviteMemberText,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

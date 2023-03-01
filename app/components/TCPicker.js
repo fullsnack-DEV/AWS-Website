@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     height: 12,
     resizeMode: 'contain',
-    right: 25,
+    right: 30,
     tintColor: colors.grayColor,
     top: 15,
     width: 12,

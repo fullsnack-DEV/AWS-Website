@@ -1,4 +1,4 @@
-/* eslint-disable */ 
+/* eslint-disable */
 /* eslint-disable no-unused-vars */
 /* eslint-disable array-callback-return */
 /* eslint-disable consistent-return */
@@ -273,7 +273,7 @@ const getTabBarVisibility = (route) => {
     routeName === 'WriteReviewScreen' ||
     routeName === 'SoccerHome' ||
     routeName === 'TennisHome' ||
-    routeName === 'LeaveReviewTennis' ||
+    routeName === 'LeaveReview' ||
     routeName === 'GroupSettingPrivacyScreen' ||
     routeName === 'UserSettingPrivacyScreen' ||
     routeName === 'PauseGroupScreen' ||

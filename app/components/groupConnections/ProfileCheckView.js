@@ -1,3 +1,6 @@
+/* eslint-disable consistent-return */
+/* eslint-disable no-empty */
+
 import React from 'react';
 import {
   Text,
@@ -15,6 +18,20 @@ import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 
 export default function ProfileCheckView({isChecked, onPress, playerDetail}) {
+  const RenderSportDetail = () => {
+    const sportname = playerDetail.registered_sports?.[0].sport;
+    const numOfSports = playerDetail.registered_sports?.length - 1;
+
+    const capitalizeLetter =
+      sportname?.charAt(0).toUpperCase() + sportname?.slice(1);
+
+    if (sportname === null || numOfSports === 'NaN') {
+    } else if (numOfSports === 0) {
+      return `${capitalizeLetter}`;
+    }
+    return `${capitalizeLetter} and ${numOfSports} more`;
+  };
+
   return (
     <>
       {isChecked ? (
@@ -38,6 +55,11 @@ export default function ProfileCheckView({isChecked, onPress, playerDetail}) {
                 </Text>
                 <Text style={styles.whiteLocationText} numberOfLines={1}>
                   {playerDetail.city}
+                </Text>
+                <Text
+                  style={[styles.locationText, {textTransform: 'capitalize'}]}
+                  numberOfLines={1}>
+                  {RenderSportDetail()}
                 </Text>
               </View>
             </View>
@@ -79,6 +101,9 @@ export default function ProfileCheckView({isChecked, onPress, playerDetail}) {
                 <Text style={styles.locationText} numberOfLines={1}>
                   {playerDetail.city}
                 </Text>
+                <Text style={styles.locationText} numberOfLines={1}>
+                  {RenderSportDetail()}
+                </Text>
               </View>
             </View>
             <Pressable
@@ -116,7 +141,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingRight: 10,
     paddingLeft: 10,
-    marginBottom: 15,
+    marginBottom: 16,
     marginTop: 13,
     borderRadius: 10,
   },
