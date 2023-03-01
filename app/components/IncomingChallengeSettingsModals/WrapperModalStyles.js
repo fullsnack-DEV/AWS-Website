@@ -22,10 +22,18 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   headerRow: {
-    padding: 18,
+    paddingTop: 15,
+    paddingBottom: 10,
+    paddingLeft: 15,
+    paddingRight: 17,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+  },
+  headerTitleContainer: {
+    flex: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   headerTitle: {
     fontSize: 16,
@@ -33,7 +41,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   buttonContainer: {
-    alignItems: 'center',
+    flex: 1,
+    alignItems: 'flex-end',
     justifyContent: 'center',
   },
   buttonText: {

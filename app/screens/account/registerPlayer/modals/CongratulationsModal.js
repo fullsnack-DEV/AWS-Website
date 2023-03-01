@@ -35,11 +35,13 @@ const CongratulationsModal = ({
   searchTeam = () => {},
   createTeam = () => {},
   goToSportActivityHome = () => {},
+  settingsObj = {},
 }) => {
   const [playerList, setPlayersList] = useState([]);
   const [teamsList, setTeamsList] = useState([]);
   const [showChallengeModal, setShowChallengeModal] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [selectedUser, setSelectedUser] = useState({});
 
   const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
@@ -184,11 +186,11 @@ const CongratulationsModal = ({
         entity_type: {query: 'team'},
       },
     });
-    queryParams.query.bool.must[1].bool.should.push({
-      match: {
-        entity_type: {query: 'club'},
-      },
-    });
+    // queryParams.query.bool.must[1].bool.should.push({
+    //   match: {
+    //     entity_type: {query: 'club'},
+    //   },
+    // });
     setLoading(true);
     getGroupIndex(queryParams)
       .then((response) => {
@@ -222,15 +224,16 @@ const CongratulationsModal = ({
           list={playerList}
           sportType={sportType}
           loading={loading}
-          onChanllenge={() => {
+          onChanllenge={(user) => {
             setShowChallengeModal(true);
+            setSelectedUser(user);
           }}
           searchPlayer={() => {
             closeModal();
             searchPlayer({
               sport,
               sport_type: sportType,
-              location: authContext.entity.auth.user?.country,
+              location: authContext.entity.auth.user?.city,
             });
           }}
           onUserClick={(item) => {
@@ -247,15 +250,15 @@ const CongratulationsModal = ({
         loading={loading}
         searchTeam={() => {
           closeModal();
-          searchTeam();
+          searchTeam({
+            sport,
+            sport_type: sportType,
+            location: authContext.entity.auth.user?.city,
+          });
         }}
         joinTeam={() => {
           closeModal();
-          joinTeam({
-            sport,
-            sport_type: sportType,
-            location: authContext.entity.auth.user?.country,
-          });
+          joinTeam();
         }}
         createTeam={() => {
           closeModal();
@@ -282,6 +285,16 @@ const CongratulationsModal = ({
     }
   };
 
+  const handleChallengePress = (type) => {
+    closeModal();
+    onChanllenge(type, {
+      sport,
+      sport_type: sportType,
+      groupObj: selectedUser,
+      setting: settingsObj,
+    });
+  };
+
   return (
     <Modal
       visible={isVisible}
@@ -291,33 +304,30 @@ const CongratulationsModal = ({
       }}>
       <View style={styles.parent}>
         <View style={styles.card}>
-          <View style={{paddingHorizontal: 15, paddingTop: 25}}>
-            <Pressable
-              style={{width: 25, height: 25, alignSelf: 'flex-end'}}
-              onPress={closeModal}>
+          <View style={styles.closeButtonContainer}>
+            <Pressable style={styles.closeIcon} onPress={closeModal}>
               <Image source={images.crossImage} style={styles.image} />
             </Pressable>
           </View>
-          <View style={{padding: 25}}>
+          <View style={{marginHorizontal: 35, marginTop: 70, marginBottom: 25}}>
             <Text style={styles.congratsText}>
               {strings.congratsModalTitle}
               <Text style={styles.congratsSportText}>{sportName}</Text>
             </Text>
-
-            <Pressable
-              style={styles.buttonContainer}
-              onPress={() => {
-                goToSportActivityHome();
-              }}>
-              <Text style={styles.buttonText}>
-                {strings.goToSportActivityHomeText}
-              </Text>
-            </Pressable>
-
-            <Text style={styles.description}>{getModalInfo(sportType)}</Text>
           </View>
+          <Pressable
+            style={styles.buttonContainer}
+            onPress={() => {
+              goToSportActivityHome();
+            }}>
+            <Text style={styles.buttonText}>
+              {strings.goToSportActivityHomeText}
+            </Text>
+          </Pressable>
+
+          <Text style={styles.description}>{getModalInfo(sportType)}</Text>
           <View style={styles.dividor} />
-          <View style={{paddingHorizontal: 25, flex: 1}}>
+          <View style={{paddingHorizontal: 25, flex: 1, paddingTop: 7}}>
             {renderList(sportType)}
           </View>
         </View>
@@ -327,14 +337,7 @@ const CongratulationsModal = ({
             <View style={styles.container1}>
               <TouchableOpacity
                 style={styles.challengeContainer}
-                onPress={() => {
-                  closeModal();
-                  onChanllenge({
-                    sport,
-                    sport_type: sportType,
-                    location: authContext.entity.auth.user?.country,
-                  });
-                }}>
+                onPress={() => handleChallengePress(strings.challenge)}>
                 <Text style={styles.challengeText}>{strings.challenge}</Text>
                 <Text style={styles.normalText}>
                   ({strings.youWillBeChallenger})
@@ -346,14 +349,7 @@ const CongratulationsModal = ({
               <View style={styles.separator} />
               <TouchableOpacity
                 style={styles.container2}
-                onPress={() => {
-                  closeModal();
-                  onChanllenge({
-                    sport,
-                    sport_type: sportType,
-                    location: authContext.entity.auth.user?.country,
-                  });
-                }}>
+                onPress={() => handleChallengePress(strings.inviteToChallenge)}>
                 <Text style={styles.challengeText}>
                   {strings.inviteToChallenge}
                 </Text>
@@ -413,10 +409,11 @@ const styles = StyleSheet.create({
   buttonContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 16,
+    padding: 8,
     backgroundColor: colors.lightGrey,
     borderRadius: 5,
-    marginVertical: 25,
+    marginHorizontal: 25,
+    marginBottom: 20,
   },
   buttonText: {
     fontSize: 16,
@@ -429,6 +426,7 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     color: colors.lightBlackColor,
     fontFamily: fonts.RRegular,
+    marginHorizontal: 25,
   },
   dividor: {
     height: 1,
@@ -476,6 +474,15 @@ const styles = StyleSheet.create({
     padding: 15,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  closeButtonContainer: {
+    position: 'absolute',
+    right: 15,
+    top: 20,
+  },
+  closeIcon: {
+    width: 25,
+    height: 25,
   },
 });
 export default CongratulationsModal;

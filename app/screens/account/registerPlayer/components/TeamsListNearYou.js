@@ -12,6 +12,7 @@ import {strings} from '../../../../../Localization/translation';
 import colors from '../../../../Constants/Colors';
 import fonts from '../../../../Constants/Fonts';
 import images from '../../../../Constants/ImagePath';
+import {displayLocation} from '../../../../utils';
 import ListShimmer from './ListShimmer';
 
 const TeamsListNearYou = ({
@@ -56,9 +57,7 @@ const TeamsListNearYou = ({
             </Text>
 
             <Text style={styles.address} numberOfLines={1}>
-              {`${item.state_abbr ? `${item.state_abbr}, ` : ''}${
-                item.country
-              }`}
+              {displayLocation(item)}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.buttonContainer} onPress={joinTeam}>
@@ -176,7 +175,8 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     paddingVertical: 5,
-    paddingHorizontal: 25,
+    // paddingHorizontal: 25,
+    width: 75,
     backgroundColor: colors.lightGrayBackground,
     borderRadius: 5,
     alignItems: 'center',

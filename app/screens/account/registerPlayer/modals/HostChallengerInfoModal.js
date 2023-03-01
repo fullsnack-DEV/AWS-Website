@@ -23,7 +23,7 @@ const HostChallengerInfoModal = ({
         <TouchableOpacity
           style={styles.closeButtonContainer}
           onPress={closeModal}>
-          <Image source={images.closeSearch} style={styles.image} />
+          <Image source={images.crossImage} style={styles.image} />
         </TouchableOpacity>
         <View style={{paddingHorizontal: 25, paddingBottom: 21}}>
           <View style={{marginBottom: 25}}>

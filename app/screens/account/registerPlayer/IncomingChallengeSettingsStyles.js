@@ -15,17 +15,25 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 13,
+    paddingLeft: 10,
+    paddingRight: 17,
+    paddingTop: 8,
     paddingBottom: 13,
   },
+  headerTitleContainer: {
+    flex: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   headerTitle: {
-    fontSize: 20,
-    lineHeight: 30,
+    fontSize: 16,
+    lineHeight: 24,
     fontFamily: fonts.RBold,
     textAlign: 'center',
   },
   buttonContainer: {
-    alignItems: 'center',
+    flex: 1,
+    alignItems: 'flex-end',
     justifyContent: 'center',
   },
   buttonText: {
@@ -108,6 +116,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 24,
     color: colors.lightBlackColor,
+  },
+  menuItemRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 14,
   },
 });
 
