@@ -312,6 +312,11 @@ const AccountNavigator = () => (
           fontWeight: '500',
         },
         headerShown: false,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -401,6 +406,11 @@ const AccountNavigator = () => (
           fontWeight: '500',
         },
         headerShown: false,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -431,6 +441,11 @@ const AccountNavigator = () => (
           fontWeight: '500',
         },
         headerShown: false,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -439,6 +454,15 @@ const AccountNavigator = () => (
       component={UserAboutScreen}
       options={{
         title: strings.editabouttitle,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -447,6 +471,15 @@ const AccountNavigator = () => (
       component={UserBasicInfoScreen}
       options={{
         title: strings.editbasicinfotitle,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -464,6 +497,15 @@ const AccountNavigator = () => (
       component={GroupMembersScreen}
       options={{
         title: strings.membersTitle,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -475,6 +517,15 @@ const AccountNavigator = () => (
       options={{
         title: strings.scheduleTitle,
         headerShown: false,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -857,6 +908,11 @@ const AccountNavigator = () => (
           fontSize: 16,
           fontFamily: fonts.RBold,
         },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -911,6 +967,11 @@ const AccountNavigator = () => (
           fontSize: 16,
           fontFamily: fonts.RBold,
         },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -928,6 +989,15 @@ const AccountNavigator = () => (
       component={UserConnections}
       options={{
         title: strings.connections,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -1014,6 +1084,11 @@ const AccountNavigator = () => (
         headerTitleStyle: {
           alignSelf: 'center',
           fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
         },
       }}
     />
@@ -1409,6 +1484,15 @@ const AccountNavigator = () => (
       component={InviteMembersByEmailScreen}
       options={{
         title: strings.inviteByEmail,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -1416,6 +1500,16 @@ const AccountNavigator = () => (
       component={InviteMembersBySearchScreen}
       options={{
         title: strings.inviteMemberText,
+
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -1488,6 +1582,15 @@ const AccountNavigator = () => (
       component={CreateMemberProfileForm1}
       options={{
         title: strings.createMemberProfileText,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -1495,6 +1598,15 @@ const AccountNavigator = () => (
       component={CreateMemberProfileTeamForm3}
       options={{
         title: strings.createMemberProfileText,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -1502,6 +1614,15 @@ const AccountNavigator = () => (
       component={CreateMemberProfileForm2}
       options={{
         title: strings.createMemberProfileText,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -1509,6 +1630,15 @@ const AccountNavigator = () => (
       component={CreateMemberProfileClubForm3}
       options={{
         title: strings.createMemberProfileText,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -1541,6 +1671,15 @@ const AccountNavigator = () => (
       component={ConnectMemberAccountScreen}
       options={{
         title: 'Connect Member Account',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -1564,6 +1703,15 @@ const AccountNavigator = () => (
       component={EditMemberBasicInfoScreen}
       options={{
         title: strings.editbasicinfotitle,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -1571,6 +1719,15 @@ const AccountNavigator = () => (
       component={RequestBasicInfoScreen}
       options={{
         title: strings.requestBasicInfoTitle,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -1578,6 +1735,15 @@ const AccountNavigator = () => (
       component={EditMemberTeamInfoScreen}
       options={{
         title: '',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -1585,6 +1751,15 @@ const AccountNavigator = () => (
       component={EditMemberAuthInfoScreen}
       options={{
         title: '',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -1592,6 +1767,15 @@ const AccountNavigator = () => (
       component={EditClubNotesScreen}
       options={{
         title: '',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -1674,6 +1858,15 @@ const AccountNavigator = () => (
       component={ChangeReservationInfoScreen}
       options={{
         title: strings.changeMatchReservation,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -1750,6 +1943,15 @@ const AccountNavigator = () => (
       component={GroupLongTextScreen}
       options={{
         title: strings.editbio,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -1758,6 +1960,15 @@ const AccountNavigator = () => (
       component={EditGroupContactScreen}
       options={{
         title: strings.editcontact,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -1766,6 +1977,15 @@ const AccountNavigator = () => (
       component={EditGroupBasicInfoScreen}
       options={{
         title: strings.editbasicinfotitle,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -1774,6 +1994,15 @@ const AccountNavigator = () => (
       component={GameFeeEditScreen}
       options={{
         title: strings.gamefeetitle,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -1852,6 +2081,11 @@ const AccountNavigator = () => (
           fontWeight: '500',
         },
         headerShown: false,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -1859,6 +2093,15 @@ const AccountNavigator = () => (
       component={EditChallenge}
       options={{
         title: strings.changeMatchReservation,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -1914,6 +2157,15 @@ const AccountNavigator = () => (
       component={EditRefereeFeeScreen}
       options={{
         title: strings.refereeFee,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -2030,6 +2282,11 @@ const AccountNavigator = () => (
           alignSelf: 'center',
           fontWeight: '500',
         },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -2115,6 +2372,15 @@ const AccountNavigator = () => (
       component={EditScorekeeperFeeScreen}
       options={{
         title: strings.scorekeeperFee,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -2234,6 +2500,15 @@ const AccountNavigator = () => (
       component={SingleNotificationScreen}
       options={{
         title: '',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -2273,6 +2548,15 @@ const AccountNavigator = () => (
       component={ActivitySettingScreen}
       options={{
         title: ' ',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -2495,6 +2779,15 @@ const AccountNavigator = () => (
       component={HomeAway}
       options={{
         title: strings.homeAndAway,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -2773,6 +3066,15 @@ const AccountNavigator = () => (
       component={ChooseTimeSlotScreen}
       options={{
         title: strings.chooseDateTimeText,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -3176,6 +3478,15 @@ const AccountNavigator = () => (
       component={PauseGroupScreen}
       options={{
         title: 'Pause Team',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -3184,6 +3495,15 @@ const AccountNavigator = () => (
       component={TerminateAccountScreen}
       options={{
         title: 'Terminate Account',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -3191,6 +3511,16 @@ const AccountNavigator = () => (
       component={SearchScreen}
       options={{
         title: 'Search',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -3198,6 +3528,15 @@ const AccountNavigator = () => (
       component={RespondForInviteScreen}
       options={{
         title: 'Respond',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -3205,8 +3544,17 @@ const AccountNavigator = () => (
       component={SportSettingScreen}
       options={{
         title: 'Sports',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
 
         headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -3215,8 +3563,17 @@ const AccountNavigator = () => (
       component={SportAccountSettingScreen}
       options={{
         title: 'Settings',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
 
         headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -3224,8 +3581,17 @@ const AccountNavigator = () => (
       component={GroupMembersSettingScreen}
       options={{
         title: strings.membersTitle,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
 
         headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -3233,7 +3599,15 @@ const AccountNavigator = () => (
       component={RecruitingMemberScreen}
       options={{
         title: strings.hiringPlayerTitle,
-
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
         headerShown: true,
       }}
     />
@@ -3247,6 +3621,11 @@ const AccountNavigator = () => (
           fontWeight: '500',
         },
         headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -3260,6 +3639,11 @@ const AccountNavigator = () => (
           fontWeight: '500',
         },
         headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -3268,8 +3652,17 @@ const AccountNavigator = () => (
       component={UserEventSettingPrivacyScreen}
       options={{
         title: '',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
 
         headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -3278,8 +3671,17 @@ const AccountNavigator = () => (
       component={WhatEventInviteScreen}
       options={{
         title: '',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
 
         headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -3293,6 +3695,11 @@ const AccountNavigator = () => (
           fontWeight: '500',
         },
         headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -3300,8 +3707,17 @@ const AccountNavigator = () => (
       component={EventSettingPrivacyScreen}
       options={{
         title: 'Event',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
 
         headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -3315,6 +3731,11 @@ const AccountNavigator = () => (
           fontWeight: '500',
         },
         headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -3328,6 +3749,11 @@ const AccountNavigator = () => (
           fontWeight: '500',
         },
         headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -3340,6 +3766,11 @@ const AccountNavigator = () => (
           fontWeight: '500',
         },
         headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -3353,6 +3784,11 @@ const AccountNavigator = () => (
           fontWeight: '500',
         },
         headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -3361,8 +3797,17 @@ const AccountNavigator = () => (
       component={TeamJoinClubScreen}
       options={{
         title: strings.whatTeamJoinClub,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
 
         headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -3376,6 +3821,11 @@ const AccountNavigator = () => (
           fontWeight: '500',
         },
         headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -3388,6 +3838,11 @@ const AccountNavigator = () => (
           fontWeight: '500',
         },
         headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -3396,8 +3851,17 @@ const AccountNavigator = () => (
       component={GroupsScreen}
       options={{
         title: 'Clubs',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
 
         headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -3406,8 +3870,17 @@ const AccountNavigator = () => (
       component={LanguageSettingScreen}
       options={{
         title: strings.appLanguage,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
 
         headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
   </Stack.Navigator>
