@@ -41,6 +41,7 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
   const [selectedList, setSelectedList] = useState([]);
   const [isInfoModalVisible, setIsInfoModalVisible] = useState(false);
   const [showCheck, setShowCheck] = useState(false);
+  const [searchText, setSearchText] = useState('');
 
   const selectedPlayers = [];
   useEffect(() => {
@@ -125,18 +126,19 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
     {
       title: strings.emailPlaceHolder,
     },
-    {
-      title: strings.emailPlaceHolder,
-    },
   ];
 
-  const renderPlayer = ({item, index}) => (
-    <MemberProfile
-      playerDetail={item}
-      isChecked={item.isChecked}
-      onPress={() => selectPlayer({item, index})}
-    />
-  );
+  const renderPlayer = ({item, index}) => {
+    console.log(item, 'From item');
+
+    return (
+      <MemberProfile
+        playerDetail={item}
+        isChecked={item.isChecked}
+        onPress={() => selectPlayer({item, index})}
+      />
+    );
+  };
   const handleTagPress = ({index}) => {
     players[index].isChecked = false;
     setPlayers([...players]);
@@ -233,7 +235,13 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
           placeholderText={strings.searchText}
           alignSelf="center"
           onChangeText={(text) => {
-            searchFilterFunction(text);
+            setSearchText(text);
+            searchFilterFunction(searchText);
+          }}
+          value={searchText}
+          onPressClear={() => {
+            setSearchText('');
+            searchFilterFunction('');
           }}
         />
       </View>
@@ -243,7 +251,7 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
         <View
           style={{
             marginTop: 15,
-            marginBottom: 22,
+            marginBottom: 15,
           }}>
           <TCProfileTag
             dataSource={players}
@@ -254,20 +262,23 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
             }}
           />
         </View>
-      ) : null}
+      ) : (
+        <View />
+      )}
+      <View>
+        <FlatList
+          style={{}}
+          extraData={players}
+          showsVerticalScrollIndicator={false}
+          data={players}
+          keyExtractor={(item, index) => index.toString()}
+          ItemSeparatorComponent={ItemSeparatorComponent}
+          renderItem={renderPlayer}
+          ListEmptyComponent={listEmptyComponent}
+          ListFooterComponent={() => <View style={{marginBottom: 15}} />}
+        />
+      </View>
 
-      <FlatList
-        style={{
-          marginTop: -15,
-        }}
-        extraData={players}
-        showsVerticalScrollIndicator={false}
-        data={players}
-        keyExtractor={(item, index) => index.toString()}
-        ItemSeparatorComponent={ItemSeparatorComponent}
-        renderItem={renderPlayer}
-        ListEmptyComponent={listEmptyComponent}
-      />
       <Modal
         isVisible={isInfoModalVisible}
         onBackdropPress={() => setIsInfoModalVisible(false)}

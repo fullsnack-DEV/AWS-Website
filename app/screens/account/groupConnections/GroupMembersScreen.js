@@ -76,6 +76,7 @@ export default function GroupMembersScreen({navigation, route}) {
       getGroupMembers(groupID, authContext)
         .then((response) => {
           setMembers(response.payload);
+
           setSearchMember(response.payload);
           setloading(false);
         })
@@ -330,6 +331,7 @@ export default function GroupMembersScreen({navigation, route}) {
   const renderMembers = useCallback(
     ({item: data, index}) => (
       <>
+        {console.log(data, 'From Data')}
         <View style={styles.roleViewContainer}>
           <View
             style={{
@@ -397,6 +399,28 @@ export default function GroupMembersScreen({navigation, route}) {
                     <TCUserRoleBadge
                       title="Player"
                       titleColor={colors.playerBadgeColor}
+                      gradientColor={colors.lightGrayBackground}
+                      gradientColor1={colors.lightGrayBackground}
+                      style={{
+                        marginLeft: 5,
+                      }}
+                    />
+                  )}
+                  {data?.is_parent && (
+                    <TCUserRoleBadge
+                      title="Parent"
+                      titleColor={colors.yellowColor}
+                      gradientColor={colors.lightGrayBackground}
+                      gradientColor1={colors.lightGrayBackground}
+                      style={{
+                        marginLeft: 5,
+                      }}
+                    />
+                  )}
+                  {data?.is_others && (
+                    <TCUserRoleBadge
+                      title="Other"
+                      titleColor={colors.veryLightBlack}
                       gradientColor={colors.lightGrayBackground}
                       gradientColor1={colors.lightGrayBackground}
                       style={{

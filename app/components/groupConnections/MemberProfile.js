@@ -43,7 +43,7 @@ export default function MemberProfile({isChecked, onPress, playerDetail}) {
                   {playerDetail.first_name} {playerDetail.last_name}
                 </Text>
                 <Text style={styles.whiteLocationText} numberOfLines={1}>
-                  {playerDetail.city}
+                  {playerDetail.home_city || playerDetail?.user_city}
                 </Text>
               </View>
             </View>
@@ -70,6 +70,7 @@ export default function MemberProfile({isChecked, onPress, playerDetail}) {
           onPress={onPress}
           disabled={!playerDetail.connected}>
           <View
+            pointerEvents={playerDetail?.connected ? 'auto' : 'none'}
             style={[
               styles.topViewContainer,
               {opacity: playerDetail.connected ? 1 : 0.5},
@@ -89,8 +90,8 @@ export default function MemberProfile({isChecked, onPress, playerDetail}) {
                 <Text style={styles.mediumNameText} numberOfLines={1}>
                   {playerDetail.first_name} {playerDetail.last_name}
                 </Text>
-                <Text style={styles.locationText} numberOfLines={1}>
-                  {playerDetail.city}
+                <Text style={styles.whiteLocationText} numberOfLines={1}>
+                  {playerDetail.city || playerDetail?.user_city}
                 </Text>
               </View>
             </View>
@@ -115,9 +116,9 @@ export default function MemberProfile({isChecked, onPress, playerDetail}) {
 const styles = StyleSheet.create({
   profileImage: {
     alignSelf: 'center',
-    height: 36,
+    height: 40,
     resizeMode: 'cover',
-    width: 36,
+    width: 40,
     borderRadius: 18,
   },
 
@@ -129,8 +130,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingRight: 10,
     paddingLeft: 10,
-    marginBottom: 10,
-
+    marginBottom: 16,
+    marginTop: 13,
     borderRadius: 10,
   },
   profileView: {
@@ -148,24 +149,20 @@ const styles = StyleSheet.create({
   },
 
   mediumNameText: {
-    fontSize: 16,
     color: colors.lightBlackColor,
-    fontFamily: fonts.RBold,
-  },
-  whiteNameText: {
-    color: colors.lightBlackColor,
-    fontFamily: fonts.Roboto,
-    fontWeight: '500',
+    fontFamily: fonts.RMedium,
+
     fontSize: 16,
     lineHeight: 24,
   },
-  locationText: {
+  whiteNameText: {
     color: colors.lightBlackColor,
-    fontFamily: fonts.Roboto,
+    fontFamily: fonts.RMedium,
 
-    fontSize: 14,
-    lineHeight: 21,
+    fontSize: 16,
+    lineHeight: 24,
   },
+
   whiteLocationText: {
     fontSize: 14,
     color: colors.lightBlackColor,
