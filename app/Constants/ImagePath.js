@@ -450,7 +450,6 @@ const images = {
   unlinked: require('../assets/images/unlinked.png'),
   createTeamRoundIcon: require('../assets/images/createTeam.png'),
 
-
   invoiceIcon: require('../assets/images/invvoice.png'),
 
   scoreBoardBackgroundImage: require('../assets/images/scoreboardBg.png'),
@@ -458,7 +457,7 @@ const images = {
   infoIcon: require('../assets/images/infoIcon.png'),
   clubPatchIcon: require('../assets/images/clubPatch.png'),
   teamPatchIcon: require('../assets/images/teamPatch.png'),
-
+  editProfilePencil: require('../assets/images/EditprofilePencil.png'),
 };
 
 export default images;

@@ -375,7 +375,7 @@ export default function GroupMembersScreen({navigation, route}) {
                   }}>
                   {data?.is_admin && (
                     <TCUserRoleBadge
-                      title="Admin"
+                      title={strings.admin}
                       titleColor={colors.themeColor}
                       gradientColor={colors.lightGrayBackground}
                       gradientColor1={colors.lightGrayBackground}
@@ -386,7 +386,7 @@ export default function GroupMembersScreen({navigation, route}) {
                   )}
                   {data?.is_coach && (
                     <TCUserRoleBadge
-                      title="Coach"
+                      title={strings.coach}
                       titleColor={colors.greeColor}
                       gradientColor={colors.lightGrayBackground}
                       gradientColor1={colors.lightGrayBackground}
@@ -397,7 +397,7 @@ export default function GroupMembersScreen({navigation, route}) {
                   )}
                   {data?.is_member && (
                     <TCUserRoleBadge
-                      title="Player"
+                      title={strings.player}
                       titleColor={colors.playerBadgeColor}
                       gradientColor={colors.lightGrayBackground}
                       gradientColor1={colors.lightGrayBackground}
@@ -408,7 +408,7 @@ export default function GroupMembersScreen({navigation, route}) {
                   )}
                   {data?.is_parent && (
                     <TCUserRoleBadge
-                      title="Parent"
+                      title={strings.parentBadgeText}
                       titleColor={colors.yellowColor}
                       gradientColor={colors.lightGrayBackground}
                       gradientColor1={colors.lightGrayBackground}
@@ -419,7 +419,7 @@ export default function GroupMembersScreen({navigation, route}) {
                   )}
                   {data?.is_others && (
                     <TCUserRoleBadge
-                      title="Other"
+                      title={strings.other}
                       titleColor={colors.veryLightBlack}
                       gradientColor={colors.lightGrayBackground}
                       gradientColor1={colors.lightGrayBackground}

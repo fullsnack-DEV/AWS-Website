@@ -1224,6 +1224,8 @@ export default {
   NAText: 'en_N/A',
   joinedClubOnText:
     'en_Joined club on {0} {1}, {2}\nLast updated by {3} {4} on {5} {6} ,{7}',
+  joinedTeamOnText:
+    'en_Joined Team on {0} {1}, {2}\nLast updated by {3} {4} on {5} {6} ,{7}',
   inviteOrConnectAccountText: 'en_Invite or Connect to an Account',
   requestForBasicInfoWereSentText:
     'en_Requests for basic info were sent to {0} members.',
@@ -2175,7 +2177,7 @@ export default {
   basicInfoRequestText:
     'en_{0} wants to collect your basic info. You may choose the items you want to send or edit each items before you send the information.',
 
-  requestBasicInfoTitle: 'en_Request Basic Info',
+  requestBasicInfoTitle: 'en_Request for Basic Info',
   reservations: 'en_Reservations',
 
   leavereviewinsmall: 'en_Leave Review',
@@ -2300,7 +2302,6 @@ export default {
   matchHostChallengeTextDescription:
     'en_If you send a challenge or are invited to send a challenge to someone, you will be the challenger and the opponent will be the match host in the match created from the challenge.',
 
-
   sentBasicInfoText:
     'en_You can send a request to collect the member’s basic info.',
   birthdayAgeText: 'en_Birthday, age',
@@ -2309,7 +2310,7 @@ export default {
     'en_When the request is accepted, the basic info in this profile will be updated with the info provided by the member. A user may choose to only provide some of the basic info items.',
   showAgainText: 'en_Don’t show this again.',
   updateMyProfile: 'en_Update this information on my profile.',
-  requestBasicInfoTitle: 'en_Request Basic Info',
+  requestBasicInfoTitle: 'en_Request for Basic Info',
   inviteMemberToGroup: 'en_Invite member to {0}',
   chatsTitle: 'en_Chats',
   statusPlaceholder: 'en_Status',
@@ -2399,5 +2400,5 @@ export default {
   levelText: 'en_Level',
   matchVenueInfo:
     'en_The challenger can choose one of the available venues when they challenge the match host.',
-
+  parentBadgeText: 'en_Parent',
 };

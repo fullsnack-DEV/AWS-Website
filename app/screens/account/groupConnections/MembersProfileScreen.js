@@ -225,14 +225,17 @@ export default function MembersProfileScreen({navigation, route}) {
   };
 
   useEffect(() => {
-    console.log(memberDetail?.status, 'from status');
-  });
-
-  useEffect(() => {
     if (isFocused) {
       getMemberInformation();
     }
   }, [isFocused]);
+
+  useEffect(() => {
+    console.log(memberDetail?.status, 'from status');
+    if (memberDetail?.connected) {
+      setEditProfile(false);
+    }
+  });
 
   const getAge = (dateString) => {
     const today = new Date();
@@ -847,7 +850,10 @@ export default function MembersProfileScreen({navigation, route}) {
                       memberInfo: memberDetail,
                     });
                   }}>
-                  <Image source={images.editSection} style={styles.editImage} />
+                  <Image
+                    source={images.editProfilePencil}
+                    style={styles.editImage}
+                  />
                 </TouchableWithoutFeedback>
               )}
             </View>
@@ -864,7 +870,9 @@ export default function MembersProfileScreen({navigation, route}) {
               }}>
               <Text style={styles.undatedTimeText} numberOfLines={2}>
                 {format(
-                  strings.joinedClubOnText,
+                  entity.role === Verbs.entityTypeClub
+                    ? strings.joinedClubOnText
+                    : strings.joinedTeamOnText,
                   shortMonthNames[
                     getJSDate(memberDetail.joined_date).getMonth()
                   ],
@@ -959,7 +967,10 @@ export default function MembersProfileScreen({navigation, route}) {
                       memberInfo: memberDetail,
                     })
                   }>
-                  <Image source={images.editSection} style={styles.editImage} />
+                  <Image
+                    source={images.editProfilePencil}
+                    style={styles.editImage}
+                  />
                 </TouchableWithoutFeedback>
               )}
             </View>
@@ -1042,7 +1053,7 @@ export default function MembersProfileScreen({navigation, route}) {
                   <Text style={styles.basicInfoTitle}>{strings.family}</Text>
                   <TouchableWithoutFeedback>
                     <Image
-                      source={images.editSection}
+                      source={images.editProfilePencil}
                       style={styles.editImage}
                     />
                   </TouchableWithoutFeedback>
@@ -1182,7 +1193,10 @@ export default function MembersProfileScreen({navigation, route}) {
                     setMemberInfo(memberDetail);
                     setVisibleNotesModal(true);
                   }}>
-                  <Image source={images.editSection} style={styles.editImage} />
+                  <Image
+                    source={images.editProfilePencil}
+                    style={styles.editImage}
+                  />
                 </TouchableWithoutFeedback>
               )}
             </View>
@@ -1297,9 +1311,9 @@ const styles = StyleSheet.create({
   },
   editImage: {
     alignSelf: 'center',
-    height: 18,
+    height: 15,
     resizeMode: 'contain',
-    width: 18,
+    width: 12,
   },
   sectionEditView: {
     flexDirection: 'row',

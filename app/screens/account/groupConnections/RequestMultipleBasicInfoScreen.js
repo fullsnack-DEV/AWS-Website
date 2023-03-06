@@ -17,7 +17,7 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native';
 import Modal from 'react-native-modal';
-
+import {useIsFocused} from '@react-navigation/native';
 import {format} from 'react-string-format';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import {strings} from '../../../../Localization/translation';
@@ -42,8 +42,9 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
   const [isInfoModalVisible, setIsInfoModalVisible] = useState(false);
   const [showCheck, setShowCheck] = useState(false);
   const [searchText, setSearchText] = useState('');
-
+  const isFocused = useIsFocused();
   const selectedPlayers = [];
+
   useEffect(() => {
     setloading(true);
 
@@ -73,7 +74,7 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
-  }, []);
+  }, [isFocused]);
 
   useLayoutEffect(() => {
     navigation.setOptions({

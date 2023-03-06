@@ -1721,7 +1721,8 @@ const AccountNavigator = () => (
         title: strings.requestBasicInfoTitle,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
-          fontWeight: '500',
+          fontFamily: fonts.RMedium,
+          fontSize: 16,
         },
         headerStyle: {
           backgroundColor: colors.whiteColor,

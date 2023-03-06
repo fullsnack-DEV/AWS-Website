@@ -110,8 +110,8 @@ const GroupMembership = ({
               )}
               {groupData.is_parent && (
                 <TCUserRoleBadge
-                  title={strings.parent}
-                  titleColor={colors.playerBadgeColor}
+                  title={strings.parentBadgeText}
+                  titleColor={colors.yellowColor}
                   gradientColor={colors.lightGrayBackground}
                   gradientColor1={colors.lightGrayBackground}
                   style={{
@@ -122,7 +122,7 @@ const GroupMembership = ({
               {groupData.is_others && (
                 <TCUserRoleBadge
                   title={strings.other}
-                  titleColor={colors.playerBadgeColor}
+                  titleColor={colors.veryLightBlack}
                   gradientColor={colors.lightGrayBackground}
                   gradientColor1={colors.lightGrayBackground}
                   style={{
@@ -136,7 +136,7 @@ const GroupMembership = ({
         {(edit || groupData.group_id === switchID) &&
         authContext.entity.role === groupData.entity_type ? (
           <TouchableWithoutFeedback onPress={onEditPressed}>
-            <Image source={images.editSection} style={styles.editImage} />
+            <Image source={images.editProfilePencil} style={styles.editImage} />
           </TouchableWithoutFeedback>
         ) : null}
       </View>
@@ -206,9 +206,9 @@ const styles = StyleSheet.create({
 
   editImage: {
     alignSelf: 'center',
-    height: 18,
+    height: 15,
     resizeMode: 'contain',
-    width: 18,
+    width: 12,
   },
   teamTImage: {
     marginHorizontal: 5,

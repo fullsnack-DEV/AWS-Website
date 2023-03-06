@@ -36,8 +36,7 @@ import TCThickDivider from '../../../components/TCThickDivider';
 import TCKeyboardView from '../../../components/TCKeyboardView';
 import AuthContext from '../../../auth/context';
 import colors from '../../../Constants/Colors';
-import {widthPercentageToDP} from '../../../utils';
-import {searchAddress, searchCityState} from '../../../api/External';
+
 import TCPicker from '../../../components/TCPicker';
 import DataSource from '../../../Constants/DataSource';
 import TCTextField from '../../../components/TCTextField';
@@ -51,7 +50,19 @@ export default function RequestBasicInfoScreen({navigation, route}) {
   const isFocused = useIsFocused();
 
   const [loading, setloading] = useState(false);
-  const [memberInfo, setMemberInfo] = useState(route.params.groupObj);
+  const [memberInfo, setMemberInfo] = useState(
+    {
+      height: {
+        height: 0,
+        height_type: 'ft',
+      },
+      weight: {
+        weight: 0,
+        weight_type: 'lb',
+      },
+    },
+    route.params.groupObj,
+  );
   const [role, setRole] = useState('');
 
   const [visibleLocationModal, setVisibleLocationModal] = useState(false);
@@ -193,12 +204,23 @@ export default function RequestBasicInfoScreen({navigation, route}) {
 
   // Form Validation
   const checkValidation = () => {
-    if (setting?.height && memberInfo.height) {
-      if (!memberInfo.height.height_type) {
+    Alert.alert('in validation');
+
+    console.log(memberInfo.height, 'vl');
+
+    if (setting?.height && memberInfo.height !== null) {
+      if (!memberInfo.height?.height_type) {
+        console.log(memberInfo.height?.height_type, 'from height');
+
         Alert.alert('Towns Cup', 'Please select height measurement');
         return false;
       }
-      if (memberInfo.height.height <= 0 || memberInfo.height.height >= 1000) {
+      if (
+        memberInfo.height.height <= 0 ||
+        memberInfo.height.height >= 1000 ||
+        memberInfo.height.height === undefined
+      ) {
+        console.log(memberInfo.height.height, 'From height1');
         Alert.alert('Towns Cup', 'Please enter valid height.');
         return false;
       }
@@ -248,6 +270,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
     if (setting?.height === true) {
       bodyParams.height = memberInfo?.height;
     }
+
     if (setting?.weight === true) {
       bodyParams.weight = memberInfo?.weight;
     }
@@ -271,6 +294,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
       bodyParams.country = memberInfo?.country;
       bodyParams.postal_code = memberInfo?.postal_code;
     }
+    console.log(bodyParams, 'From body');
 
     approveBasicInfoRequest(
       route?.params?.groupID,
@@ -364,7 +388,10 @@ export default function RequestBasicInfoScreen({navigation, route}) {
                 ...memberInfo,
                 height: {
                   height: text,
-                  height_type: memberInfo?.height?.height_type,
+                  height_type:
+                    memberInfo?.height?.height_type === undefined
+                      ? heightMesurement[1].value
+                      : memberInfo?.height?.height_type,
                 },
               });
             }}
@@ -373,11 +400,14 @@ export default function RequestBasicInfoScreen({navigation, route}) {
         </View>
         <RNPickerSelect
           placeholder={{
-            label: heightMesurement[1].label,
-            value: heightMesurement[1].value,
+            label: strings.heightTypeText,
+            value: null,
           }}
           items={heightMesurement}
+          value={'ft'}
           onValueChange={(value) => {
+            console.log(value, 'From val');
+
             setMemberInfo({
               ...memberInfo,
               height: {
@@ -386,7 +416,6 @@ export default function RequestBasicInfoScreen({navigation, route}) {
               },
             });
           }}
-          value={memberInfo?.height?.height_type}
           useNativeAndroidPickerStyle={false}
           style={{
             placeholder: {
@@ -485,6 +514,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
               backgroundColor: colors.lightGrey,
               borderRadius: 5,
               textAlign: 'center',
+              height: 40,
             },
             inputAndroid: {
               fontSize: wp('4%'),
@@ -496,6 +526,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
               backgroundColor: colors.lightGrey,
               borderRadius: 5,
               textAlign: 'center',
+              height: 40,
             },
           }}
           Icon={() => (
@@ -807,7 +838,8 @@ export default function RequestBasicInfoScreen({navigation, route}) {
         <TouchableOpacity
           onPress={() => {
             if (checkValidation()) {
-              editMemberBasicInfo();
+              // editMemberBasicInfo();
+              Alert.alert('after validation');
             }
           }}
           style={{
