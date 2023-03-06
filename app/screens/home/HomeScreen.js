@@ -85,6 +85,7 @@ import {
   leaveTeam,
   inviteTeam,
   groupUnpaused,
+  cancelGroupInvite,
 } from '../../api/Groups';
 import * as RefereeUtils from '../referee/RefereeUtility';
 import * as ScorekeeperUtils from '../scorekeeper/ScorekeeperUtility';
@@ -117,6 +118,8 @@ import ReviewSection from '../../components/Home/ReviewSection';
 import ReviewRecentMatch from '../../components/Home/ReviewRecentMatch';
 import RefereeReviewerList from './RefereeReviewerList';
 import * as Utility from '../../utils';
+import {acceptRequest, declineRequest} from '../../api/Notificaitons';
+
 import {
   QB_ACCOUNT_TYPE,
   QBconnectAndSubscribe,
@@ -155,6 +158,7 @@ import {
   TAB_ITEMS_SCOREKEEPER,
   league_Data,
   history_Data,
+  ErrorCodes,
 } from '../../utils/constant';
 import Verbs from '../../Constants/Verbs';
 import SportActivityModal from './SportActivity/SportActivityModal';
@@ -294,6 +298,17 @@ const HomeScreen = ({navigation, route}) => {
           // strings.sportActivity,
           strings.cancel,
         ];
+  const actionSheet = useRef();
+  const [actionSheetTitle, setActionSheetTitle] = useState('');
+  const cancelReqActionSheet = useRef();
+  const [actionObject] = useState({
+    activity_id: '',
+    entity_type: '',
+    group_id: '',
+    invited_id: '',
+    action: '',
+  });
+
   useEffect(() => {
     setTimeout(() => {
       SetHideScore(true);
@@ -499,11 +514,31 @@ const HomeScreen = ({navigation, route}) => {
         );
     }
   }, [authContext, isTeamHome, route?.params?.uid]);
+  const createActionObject = (
+    entityType,
+    groupId,
+    activityID,
+    invitedId,
+    action,
+  ) => {
+    actionObject.entity_type = entityType;
+    actionObject.group_id = groupId;
+    actionObject.activity_id = activityID;
+    actionObject.action = action;
+    actionObject.invited_id = invitedId;
+  };
+  const reSetActionObject = () => {
+    actionObject.entity_type = '';
+    actionObject.group_id = '';
+    actionObject.activity_id = '';
+    actionObject.action = '';
+    actionObject.invited_id = '';
+  };
 
   const getUserData = (uid, admin) => {
     // setloading(true);
 
-    getUserDetails(uid, authContext)
+    getUserDetails(uid, authContext, true)
       .then((res1) => {
         const userDetails = res1.payload;
         if (!userDetails.games) {
@@ -530,7 +565,26 @@ const HomeScreen = ({navigation, route}) => {
           // userDetails.games.push({ sport_name: strings.addPlaying, item_type: 'add_new' })
           // userDetails.referee_data.push({ sport_name: strings.addRefereeing, item_type: 'add_new' })
         }
-
+        // Team to user case for invite Functionality
+        if (userDetails.invite_request) {
+          createActionObject(
+            userDetails.invite_request.entity_type,
+            userDetails.invite_request.group_id,
+            userDetails.invite_request.activity_id,
+            userDetails.invite_request.invited_id,
+            userDetails.invite_request.action,
+          );
+          if (userDetails.invite_request.entity_type === Verbs.entityTypeUser) {
+            userDetails.inviteBtnTitle = strings.inviteRequested;
+          } else if (
+            userDetails.invite_request.entity_type === Verbs.entityTypeClub ||
+            userDetails.invite_request.entity_type === Verbs.entityTypeTeam
+          ) {
+            userDetails.inviteBtnTitle = strings.invited;
+          }
+        } else {
+          userDetails.inviteBtnTitle = strings.invite;
+        }
         const groupQuery = {
           query: {
             terms: {
@@ -745,7 +799,7 @@ const HomeScreen = ({navigation, route}) => {
       getUserData(uid, admin);
     } else {
       const promises = [
-        getGroupDetails(uid, authContext),
+        getGroupDetails(uid, authContext, true),
         getGroupMembers(uid, authContext),
       ];
       if (clubHome) {
@@ -778,7 +832,29 @@ const HomeScreen = ({navigation, route}) => {
           if (clubHome) {
             groupDetails.joined_teams = res3.payload;
           }
+          if (groupDetails.invite_request) {
+            createActionObject(
+              groupDetails.invite_request.entity_type,
+              uid,
+              groupDetails.invite_request.activity_id,
+              groupDetails.invite_request.invited_id,
+              groupDetails.invite_request.action,
+            );
 
+            if (
+              groupDetails.invite_request.entity_type === Verbs.entityTypeUser
+            ) {
+              groupDetails.joinBtnTitle = strings.joinRequested;
+            } else if (
+              groupDetails.invite_request.entity_type ===
+                Verbs.entityTypeClub ||
+              groupDetails.invite_request.entity_type === Verbs.entityTypeTeam
+            ) {
+              groupDetails.joinBtnTitle = strings.invited;
+            }
+          } else {
+            groupDetails.joinBtnTitle = strings.join;
+          }
           entityObject = groupDetails;
           setCurrentUserData({...groupDetails});
           setIsClubHome(clubHome);
@@ -928,9 +1004,17 @@ const HomeScreen = ({navigation, route}) => {
       uid: authContext.entity.uid,
     };
     inviteUser(params, userID, authContext)
-      .then(() => {
+      .then((response) => {
+        currentUserData.inviteBtnTitle = strings.invited;
+        entityObject = currentUserData;
         setloading(false);
-
+        createActionObject(
+          authContext.entity.role,
+          authContext.entity.uid,
+          response.payload.id,
+          userID,
+          Verbs.inviteVerb,
+        );
         setTimeout(() => {
           Alert.alert(
             strings.alertmessagetitle,
@@ -1003,17 +1087,11 @@ const HomeScreen = ({navigation, route}) => {
   };
 
   const userJoinGroup = () => {
-    currentUserData.is_joined = true;
-    currentUserData.member_count += 1;
-    if (currentUserData.is_following === false) {
-      callFollowGroup(true);
-    }
-    entityObject = currentUserData;
-
-    setCurrentUserData({...currentUserData});
+    setloading(true);
     const params = {};
     joinTeam(params, userID, authContext)
       .then((response) => {
+        /*
         if (response.payload.error_code === 101) {
           Alert.alert(
             '',
@@ -1041,13 +1119,116 @@ const HomeScreen = ({navigation, route}) => {
             {cancelable: false},
           );
         }
+        */
+        if (response.payload.error_code === ErrorCodes.MEMBEREXISTERRORCODE) {
+          Alert.alert(
+            '',
+            response.payload.user_message,
+            [
+              {
+                text: 'Join',
+                onPress: () => {
+                  joinTeam({...params, is_confirm: true}, userID, authContext)
+                    .then(() => {
+                      // Succefully join case
+                      currentUserData.is_joined = true;
+                      currentUserData.member_count += 1;
+                      if (currentUserData.is_following === false) {
+                        callFollowGroup(true);
+                      }
+                      entityObject = currentUserData;
+                    })
+                    .catch((error) => {
+                      setTimeout(() => {
+                        Alert.alert(strings.alertmessagetitle, error.message);
+                      }, 10);
+                    });
+                },
+                style: 'destructive',
+              },
+              {
+                text: 'Cancel',
+                onPress: () => {},
+                style: 'cancel',
+              },
+            ],
+            {cancelable: false},
+          );
+        } else if (
+          response.payload.error_code === ErrorCodes.MEMBERALREADYERRORCODE
+        ) {
+          Alert.alert(strings.alertmessagetitle, response.payload.user_message);
+        } else if (
+          response.payload.error_code ===
+          ErrorCodes.MEMBERALREADYINVITEERRORCODE
+        ) {
+          setloading(false);
+          const messageStr = response.payload.user_message;
+          setActionSheetTitle(messageStr);
+          setloading(false);
+          setTimeout(() => {
+            actionSheet.current.show();
+          }, 50);
+        } else if (
+          response.payload.error_code ===
+          ErrorCodes.MEMBERALREADYREQUESTERRORCODE
+        ) {
+          setloading(false);
+          const messageStr = response.payload.user_message;
+          setActionSheetTitle(messageStr);
+          setTimeout(() => {
+            cancelReqActionSheet.current.show();
+          }, 50);
+        } else if (
+          response.payload.error_code === ErrorCodes.MEMBERINVITEONLYERRORCODE
+        ) {
+          setloading(false);
+          Alert.alert(strings.alertmessagetitle, response.payload.user_message);
+        } else if (response.payload.action === Verbs.joinVerb) {
+          // Succefully Join case
+          setloading(false);
+          currentUserData.is_joined = true;
+          currentUserData.member_count += 1;
+          if (currentUserData.is_following === false) {
+            callFollowGroup(true);
+          }
+          entityObject = currentUserData;
+          setCurrentUserData({...currentUserData});
+          Alert.alert(strings.alertmessagetitle, strings.acceptRequestMessage);
+        } else if (response.payload.action === Verbs.requestVerb) {
+          createActionObject(
+            authContext.entity.role,
+            currentUserData.group_id,
+            response.payload.id,
+            authContext.entity.uid,
+            response.payload.action,
+          );
+          currentUserData.joinBtnTitle = strings.joinRequested;
+          entityObject = currentUserData;
+          setloading(false);
+          Alert.alert(strings.alertmessagetitle, strings.sendRequest);
+        } else {
+          // Succefully Join case
+          currentUserData.is_joined = true;
+          setloading(false);
+          currentUserData.member_count += 1;
+          if (currentUserData.is_following === false) {
+            callFollowGroup(true);
+          }
+          entityObject = currentUserData;
+          setCurrentUserData({...currentUserData});
+          createActionObject(
+            authContext.entity.role,
+            currentUserData.group_id,
+            response.payload.id,
+            authContext.entity.uid,
+            response.payload.action,
+          );
+          Alert.alert(strings.alertmessagetitle, strings.acceptRequestMessage);
+        }
       })
       .catch((error) => {
-        currentUserData.is_joined = false;
-        currentUserData.member_count -= 1;
-        entityObject = currentUserData;
-
-        setCurrentUserData({...currentUserData});
+        setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message);
         }, 10);
@@ -1211,7 +1392,17 @@ const HomeScreen = ({navigation, route}) => {
           callUnfollowUser();
           break;
         case Verbs.inviteVerb:
-          clubInviteUser();
+          if (actionObject.action === Verbs.requestVerb) {
+          } else if (actionObject.action === Verbs.inviteVerb) {
+            setActionSheetTitle(
+              format(strings.alreadySendRequestMsg, currentUserData.full_name),
+            );
+            setTimeout(() => {
+              cancelReqActionSheet.current.show();
+            }, 10);
+          } else {
+            clubInviteUser();
+          }
           break;
         case Verbs.messageVerb:
           onMessageButtonPress(currentUserData);
@@ -1317,7 +1508,23 @@ const HomeScreen = ({navigation, route}) => {
           callUnfollowGroup();
           break;
         case Verbs.joinVerb:
-          userJoinGroup();
+          if (actionObject.action === Verbs.requestVerb) {
+            setActionSheetTitle(
+              format(strings.alreadySendRequestMsg, currentUserData.group_name),
+            );
+            setTimeout(() => {
+              cancelReqActionSheet.current.show();
+            }, 10);
+          } else if (actionObject.action === Verbs.inviteVerb) {
+            setActionSheetTitle(
+              format(strings.alreadyInviteMsg, currentUserData.group_name),
+            );
+            setTimeout(() => {
+              actionSheet.current.show();
+            }, 10);
+          } else {
+            userJoinGroup();
+          }
           break;
         case Verbs.leaveVerb:
           userLeaveGroup();
@@ -4151,7 +4358,81 @@ const HomeScreen = ({navigation, route}) => {
         break;
     }
   };
+  const onAccept = (requestId) => {
+    setloading(true);
+    acceptRequest({}, requestId, authContext)
+      .then(() => {
+        // Succefully join case
+        currentUserData.is_joined = true;
+        currentUserData.member_count += 1;
+        if (currentUserData.is_following === false) {
+          callFollowGroup(true);
+        }
+        entityObject = currentUserData;
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, strings.acceptRequestMessage);
+        }, 10);
+      })
+      .catch((error) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, error.message);
+        }, 10);
+      });
+  };
 
+  const onDecline = (requestId) => {
+    setloading(true);
+    declineRequest(requestId, authContext)
+      .then(() => {
+        currentUserData.joinBtnTitle = strings.join;
+        entityObject = currentUserData;
+        reSetActionObject();
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(
+            strings.alertmessagetitle,
+            strings.declinedRequestMessage,
+          );
+        }, 10);
+      })
+      .catch((error) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, error.message);
+        }, 10);
+      });
+  };
+
+  const cancelGroupInvitation = () => {
+    setloading(true);
+    const params = {
+      group_id: actionObject.group_id,
+      invited_id: actionObject.invited_id,
+      activity_id: actionObject.activity_id,
+    };
+    cancelGroupInvite(params, authContext)
+      .then(() => {
+        currentUserData.joinBtnTitle = strings.join;
+        currentUserData.inviteBtnTitle = strings.invite;
+        entityObject = currentUserData;
+        reSetActionObject();
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(
+            strings.alertmessagetitle,
+            strings.declinedRequestMessage,
+          );
+        }, 10);
+      })
+      .catch((error) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, error.message);
+        }, 10);
+      });
+  };
   return (
     <View style={styles.mainContainer}>
       {renderHeader}
@@ -4362,6 +4643,34 @@ const HomeScreen = ({navigation, route}) => {
                 }
               });
             } else if (offerOpetions()[index] === strings.cancel) {
+            }
+          }}
+        />
+        <ActionSheet
+          ref={actionSheet}
+          title={actionSheetTitle}
+          options={[
+            strings.acceptInvite,
+            strings.declineInvite,
+            strings.cancel,
+          ]}
+          cancelButtonIndex={3}
+          onPress={(index) => {
+            if (index === 0) {
+              onAccept(actionObject.activity_id);
+            } else if (index === 1) {
+              onDecline(actionObject.activity_id);
+            }
+          }}
+        />
+        <ActionSheet
+          ref={cancelReqActionSheet}
+          title={actionSheetTitle}
+          options={[strings.cancelRequestTitle, strings.cancel]}
+          cancelButtonIndex={2}
+          onPress={(index) => {
+            if (index === 0) {
+              cancelGroupInvitation();
             }
           }}
         />

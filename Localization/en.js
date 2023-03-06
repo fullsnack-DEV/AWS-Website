@@ -2300,7 +2300,6 @@ export default {
   matchHostChallengeTextDescription:
     'en_If you send a challenge or are invited to send a challenge to someone, you will be the challenger and the opponent will be the match host in the match created from the challenge.',
 
-
   sentBasicInfoText:
     'en_You can send a request to collect the member’s basic info.',
   birthdayAgeText: 'en_Birthday, age',
@@ -2399,5 +2398,16 @@ export default {
   levelText: 'en_Level',
   matchVenueInfo:
     'en_The challenger can choose one of the available venues when they challenge the match host.',
-
+  acceptInvite: 'en_Accept Invite',
+  declineInvite: 'en_Decline Invite',
+  acceptRequestMessage: 'en_Successfully join',
+  declinedRequestMessage: 'en_Successfully cancel join request',
+  book: 'en_Book',
+  sendRequest: 'en_Successfully send a request',
+  alreadyInviteMsg: 'en_You have already been invited to {0}',
+  alreadySendRequestMsg:
+    'en_You sent a request to join "{0}". It is still pending.',
+  inviteRequested: 'en_Invite Requested',
+  invited: 'en_Invited',
+  joinRequested: 'en_Join Requested',
 };

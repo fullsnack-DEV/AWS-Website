@@ -2,10 +2,10 @@
 import Config from 'react-native-config';
 import makeAPIRequest from '../utils/Global';
 
-export const getGroupDetails = (groupID, authContext) =>
+export const getGroupDetails = (groupID, authContext, getRequest = false) =>
   makeAPIRequest({
     method: 'get',
-    url: `${Config.BASE_URL}/groups/${groupID}`,
+    url: `${Config.BASE_URL}/groups/${groupID}?getRequest=${getRequest}`,
     authContext,
   });
 
@@ -239,4 +239,11 @@ export const groupTerminate = (authContext) =>
     method: 'delete',
     url: `${Config.BASE_URL}/groups/terminate`,
     authContext,
+  });
+export const cancelGroupInvite = (params, authContext) =>
+  makeAPIRequest({
+    method: 'delete',
+    url: `${Config.BASE_URL}/groups/invite`,
+    authContext,
+    data: params,
   });
