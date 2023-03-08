@@ -320,6 +320,7 @@ const MembersNavigator = () => (
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
+          fontSize: 16,
         },
 
         headerStyle: {

@@ -584,7 +584,7 @@ const AppNavigator = ({navigation}) => {
         options={({route}) => ({
           tabBarTestID: 'newsfeed-tab',
           headerShown: false,
-
+          unmountOnBlur: true,
           // tabBarVisible: getTabBarVisibility(route),
           tabBarStyle: {display: getTabBarVisibility(routes) ? 'flex' : 'none'},
           tabBarIcon: ({focused}) => {
@@ -666,6 +666,7 @@ const AppNavigator = ({navigation}) => {
             tabBarBadge:
               unreadNotificationCount > 300 ? '300+' : unreadNotificationCount,
           }),
+          unmountOnBlur: true,
           tabBarBadgeStyle: {zIndex: 10, fontSize: 12},
           // tabBarVisible: getTabBarVisibility(route),
           tabBarStyle: {display: getTabBarVisibility(routes) ? 'flex' : 'none'},

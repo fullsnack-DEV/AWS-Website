@@ -1892,8 +1892,10 @@ const LocalHomeNavigator = () => (
       options={{
         title: 'Send request for basic info',
         headerTintColor: colors.blackColor,
+
         headerTitleStyle: {
-          fontWeight: '500',
+          fontFamily: fonts.RBold,
+          fontSize: 16,
         },
         headerStyle: {
           backgroundColor: colors.whiteColor,

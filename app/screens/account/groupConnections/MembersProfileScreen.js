@@ -225,14 +225,17 @@ export default function MembersProfileScreen({navigation, route}) {
   };
 
   useEffect(() => {
-    console.log(memberDetail?.status, 'from status');
-  });
-
-  useEffect(() => {
     if (isFocused) {
       getMemberInformation();
     }
   }, [isFocused]);
+
+  useEffect(() => {
+    console.log(memberDetail?.status, 'from status');
+    if (memberDetail?.connected) {
+      setEditProfile(false);
+    }
+  });
 
   const getAge = (dateString) => {
     const today = new Date();
@@ -825,7 +828,7 @@ export default function MembersProfileScreen({navigation, route}) {
       {OpenRefreanceModal()}
 
       {memberDetail && !firstTimeLoad && (
-        <ScrollView>
+        <ScrollView showsVerticalScrollIndicator={false}>
           <View style={styles.roleViewContainer}>
             <View style={styles.roleView}>
               <TCMemberProfile
@@ -847,7 +850,10 @@ export default function MembersProfileScreen({navigation, route}) {
                       memberInfo: memberDetail,
                     });
                   }}>
-                  <Image source={images.editSection} style={styles.editImage} />
+                  <Image
+                    source={images.editProfilePencil}
+                    style={styles.editImage}
+                  />
                 </TouchableWithoutFeedback>
               )}
             </View>
@@ -864,7 +870,9 @@ export default function MembersProfileScreen({navigation, route}) {
               }}>
               <Text style={styles.undatedTimeText} numberOfLines={2}>
                 {format(
-                  strings.joinedClubOnText,
+                  entity.role === Verbs.entityTypeClub
+                    ? strings.joinedClubOnText
+                    : strings.joinedTeamOnText,
                   shortMonthNames[
                     getJSDate(memberDetail.joined_date).getMonth()
                   ],
@@ -946,7 +954,7 @@ export default function MembersProfileScreen({navigation, route}) {
               </TouchableOpacity>
             )}
           </View>
-          <TCThickDivider marginTop={20} />
+          <TCThickDivider marginTop={26} />
           <View>
             <View style={styles.sectionEditView}>
               <Text style={styles.basicInfoTitle}>
@@ -959,7 +967,10 @@ export default function MembersProfileScreen({navigation, route}) {
                       memberInfo: memberDetail,
                     })
                   }>
-                  <Image source={images.editSection} style={styles.editImage} />
+                  <Image
+                    source={images.editProfilePencil}
+                    style={styles.editImage}
+                  />
                 </TouchableWithoutFeedback>
               )}
             </View>
@@ -1042,7 +1053,7 @@ export default function MembersProfileScreen({navigation, route}) {
                   <Text style={styles.basicInfoTitle}>{strings.family}</Text>
                   <TouchableWithoutFeedback>
                     <Image
-                      source={images.editSection}
+                      source={images.editProfilePencil}
                       style={styles.editImage}
                     />
                   </TouchableWithoutFeedback>
@@ -1080,30 +1091,28 @@ export default function MembersProfileScreen({navigation, route}) {
               </Text>
             </View>
             {memberDetail.group && entity.role === Verbs.entityTypeClub && (
-              <Pressable>
-                <GroupMembership
-                  groupData={memberDetail.group}
-                  switchID={entity.uid}
-                  edit={!editTeam}
-                  onEditPressed={() =>
-                    navigation.navigate('EditMemberAuthInfoScreen', {
-                      groupMemberDetail: {
-                        ...memberDetail.group,
-                        positions: memberDetail?.positions,
-                        jersey_number: memberDetail?.jersey_number,
-                        appearance: memberDetail?.appearance,
-                        status: memberDetail?.status,
-                        is_admin: memberDetail?.is_admin,
-                        is_others: memberDetail?.is_others,
-                        is_member: memberDetail?.is_member,
-                        is_coach: memberDetail?.is_coach,
-                        note: memberDetail?.note,
-                        user_id: memberDetail?.user_id,
-                      },
-                    })
-                  }
-                />
-              </Pressable>
+              <GroupMembership
+                groupData={memberDetail.group}
+                switchID={entity.uid}
+                edit={!editTeam}
+                onEditPressed={() =>
+                  navigation.navigate('EditMemberAuthInfoScreen', {
+                    groupMemberDetail: {
+                      ...memberDetail.group,
+                      positions: memberDetail?.positions,
+                      jersey_number: memberDetail?.jersey_number,
+                      appearance: memberDetail?.appearance,
+                      status: memberDetail?.status,
+                      is_admin: memberDetail?.is_admin,
+                      is_others: memberDetail?.is_others,
+                      is_member: memberDetail?.is_member,
+                      is_coach: memberDetail?.is_coach,
+                      note: memberDetail?.note,
+                      user_id: memberDetail?.user_id,
+                    },
+                  })
+                }
+              />
             )}
             {memberDetail?.teams?.length > 0 && (
               <TCThinDivider
@@ -1182,7 +1191,10 @@ export default function MembersProfileScreen({navigation, route}) {
                     setMemberInfo(memberDetail);
                     setVisibleNotesModal(true);
                   }}>
-                  <Image source={images.editSection} style={styles.editImage} />
+                  <Image
+                    source={images.editProfilePencil}
+                    style={styles.editImage}
+                  />
                 </TouchableWithoutFeedback>
               )}
             </View>
@@ -1297,9 +1309,9 @@ const styles = StyleSheet.create({
   },
   editImage: {
     alignSelf: 'center',
-    height: 18,
+    height: 15,
     resizeMode: 'contain',
-    width: 18,
+    width: 12,
   },
   sectionEditView: {
     flexDirection: 'row',

@@ -53,9 +53,9 @@ export default function InviteMembersByEmailScreen({navigation}) {
   const sendInvitation = () => {
     const entity = authContext.entity;
 
-    const invalidEmails = email.filter(
-      (obj) => Utility.validateEmail(obj.email) === false,
-    );
+    // const invalidEmails = email.filter(
+    //   (obj) => Utility.validateEmail(obj.email) === false,
+    // );
 
     const duplicateIds = email
       .map((e) => e.email)
@@ -63,18 +63,20 @@ export default function InviteMembersByEmailScreen({navigation}) {
       .filter((obj) => email[obj])
       .map((e) => email[e].email);
 
-    if (invalidEmails.length > 0) {
+    if (email[0].email === '') {
       Utility.showAlert(strings.validEmailMessage);
-    } else if (duplicateIds.length > 0) {
+    } else if (duplicateIds.some((e) => e === email[0].email)) {
       Utility.showAlert(strings.doNotEnterSameEmail);
     } else {
       setloading(true);
       const emails = email.map((i) => i.email);
+
       const obj = {
         entity_type: entity.role,
         emailIds: emails,
         uid: entity.uid,
       };
+
       sendInvitationInGroup(obj, authContext)
         .then(() => {
           setEmail([
@@ -128,12 +130,14 @@ export default function InviteMembersByEmailScreen({navigation}) {
 
         <TCMessageButton
           title={strings.addEmailText}
-          width={95}
+          width={130}
           alignSelf="center"
           marginBottom={10}
           onPress={() => addEmail(1)}
           color={colors.lightBlackColor}
           borderColor={colors.whiteColor}
+          backgroundColor={colors.grayBackgroundColor}
+          marginTop={25}
         />
       </ScrollView>
       <SafeAreaView />
@@ -147,13 +151,13 @@ const styles = StyleSheet.create({
   },
   infoTextStyle: {
     margin: 15,
-    fontFamily: fonts.RRegular,
+    fontFamily: fonts.RMedium,
     fontSize: 20,
     color: colors.lightBlackColor,
   },
 
   sendButtonStyle: {
-    fontFamily: fonts.RRegular,
+    fontFamily: fonts.RMedium,
     fontSize: 16,
     marginRight: 10,
   },
