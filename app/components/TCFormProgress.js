@@ -1,6 +1,5 @@
 import React from 'react';
 import {Dimensions, StyleSheet, View} from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 
 import colors from '../Constants/Colors';
 
@@ -21,8 +20,7 @@ export default function TCFormProgress({
         },
         props,
       ]}>
-      <LinearGradient
-        colors={[colors.themeColor1, colors.themeColor3]}
+      <View
         style={[
           styles.buttonView,
           {
@@ -30,7 +28,8 @@ export default function TCFormProgress({
             width: (Dimensions.get('window').width / totalSteps) * curruentStep,
             height: 5,
           },
-        ]}></LinearGradient>
+        ]}
+      />
     </View>
   );
 }

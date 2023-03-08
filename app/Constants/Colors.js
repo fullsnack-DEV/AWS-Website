@@ -137,5 +137,6 @@ const colors = {
   darkGrey: '#D6D6D6',
   greyBorderColor: '#DDDDDD',
   winGraphColor: '#157EFB',
+  availabilityBarColor: '#70D486',
 };
 export default colors;

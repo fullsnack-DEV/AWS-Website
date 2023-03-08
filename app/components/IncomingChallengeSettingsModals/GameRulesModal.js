@@ -10,7 +10,7 @@ const GameRulesModal = ({
   onChange = () => {},
 }) => {
   const inputRef = useRef();
-  const inputRef1 = useRef();
+  // const inputRef1 = useRef();
   return (
     <View>
       <Text style={styles.title}>{strings.gameRulesTitle}</Text>
@@ -37,7 +37,7 @@ const GameRulesModal = ({
         />
       </Pressable>
 
-      <Text style={styles.inputLabel}>{strings.gameRulesSubTitle2}</Text>
+      {/* <Text style={styles.inputLabel}>{strings.gameRulesSubTitle2}</Text>
       <Pressable
         style={[styles.inputContainer, {minHeight: 100, marginBottom: 10}]}
         onPress={() => {
@@ -57,7 +57,7 @@ const GameRulesModal = ({
           value={specialRules}
           maxLength={50}
         />
-      </Pressable>
+      </Pressable> */}
     </View>
   );
 };

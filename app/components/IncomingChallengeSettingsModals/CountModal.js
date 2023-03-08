@@ -3,7 +3,6 @@ import React, {useCallback, useEffect, useState} from 'react';
 import {Modal, Text, TouchableOpacity, Pressable, FlatList} from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
 import {format} from 'react-string-format';
-import styles from './WrapperModalStyles';
 import modalStyles from './ModalStyles';
 import colors from '../../Constants/Colors';
 import Verbs from '../../Constants/Verbs';
@@ -66,7 +65,13 @@ const CountModal = ({
 
   return (
     <Modal visible={isVisible} transparent>
-      <Pressable style={styles.parent} onPress={closeModal}>
+      <Pressable
+        style={{
+          flex: 1,
+          backgroundColor: 'rgba(0,0,0,0.6)',
+          justifyContent: 'flex-end',
+        }}
+        onPress={closeModal}>
         <Pressable style={modalStyles.countModalCard} onPress={() => {}}>
           <FlatList
             data={countList}

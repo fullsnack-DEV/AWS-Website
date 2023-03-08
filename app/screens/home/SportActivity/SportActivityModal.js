@@ -1,13 +1,6 @@
 // @flow
 import React, {useCallback, useContext, useEffect, useState} from 'react';
-import {
-  View,
-  Text,
-  Modal,
-  TouchableOpacity,
-  Image,
-  ScrollView,
-} from 'react-native';
+import {View, Modal, ScrollView, StyleSheet, Dimensions} from 'react-native';
 import {strings} from '../../../../Localization/translation';
 import {getGameScoreboardEvents} from '../../../api/Games';
 import AuthContext from '../../../auth/context';
@@ -18,11 +11,12 @@ import Verbs from '../../../Constants/Verbs';
 import ChallengeButton from './components/ChallengeButton';
 import ReviewSection from './components/ReviewSection';
 import ScoreBoardList from './components/ScoreBoardList';
-import styles from './SportActivityModalStyles';
 import StatSection from './components/StatSection';
 import UserInfo from './components/UserInfo';
 import TeamsList from './components/TeamsList';
-import {getSportIconUrl} from '../../../utils';
+import {getCalendar, getSportIconUrl, getTCDate} from '../../../utils';
+import ScreenHeader from '../../../components/ScreenHeader';
+import AvailabilitySection from './components/availability/AvailabilitySection';
 
 const SportActivityModal = ({
   sport,
@@ -43,6 +37,8 @@ const SportActivityModal = ({
   const [isReferee, setIsReferee] = useState(false);
   const [isUserWithSameSport, setIsUserWithSameSport] = useState(false);
   const [sportIcon, setSportIcon] = useState('');
+  const [availabilityList, setAvailabilityList] = useState([]);
+  const [fetchingAvailability, setFectchingAavailability] = useState(false);
 
   const getMatchList = useCallback(() => {
     setIsFetchingMatchList(true);
@@ -61,11 +57,32 @@ const SportActivityModal = ({
       });
   }, [authContext, sport, userData]);
 
+  const getAvailability = useCallback(() => {
+    const date = new Date();
+    date.setDate(new Date().getDate() + 7);
+    setFectchingAavailability(true);
+    getCalendar(
+      userData.user_id,
+      getTCDate(new Date()),
+      getTCDate(date),
+      'blocked',
+    )
+      .then((res) => {
+        setAvailabilityList(res);
+        setFectchingAavailability(false);
+      })
+      .catch((err) => {
+        console.log({err});
+        setFectchingAavailability(false);
+      });
+  }, [userData]);
+
   useEffect(() => {
     if (isVisible) {
       getMatchList();
+      getAvailability();
     }
-  }, [isVisible, getMatchList]);
+  }, [isVisible, getMatchList, getAvailability]);
 
   useEffect(() => {
     getSportIconUrl(sport, userData.entity_type, authContext).then((url) => {
@@ -74,52 +91,48 @@ const SportActivityModal = ({
   }, [sport, authContext, userData]);
 
   useEffect(() => {
-    (userData.scorekeeper_data ?? []).forEach((item) => {
-      setIsScoreKeeper(
+    const scorekeeperObj = (userData.scorekeeper_data ?? []).find(
+      (item) =>
         item.sport === sportObj?.sport &&
-          item.sport_type === sportObj?.sport_type,
-      );
-    });
+        item.sport_type === sportObj?.sport_type,
+    );
+    if (scorekeeperObj) {
+      setIsScoreKeeper(true);
+    }
     // registered_sports
-    (userData.referee_data ?? []).forEach((item) => {
-      setIsReferee(
+    const refereeObj = (userData.referee_data ?? []).find(
+      (item) =>
         item.sport === sportObj?.sport &&
-          item.sport_type === sportObj?.sport_type,
-      );
-    });
+        item.sport_type === sportObj?.sport_type,
+    );
+    if (refereeObj) {
+      setIsReferee(true);
+    }
 
-    (userData.registered_sports ?? []).forEach((item) => {
-      setIsUserWithSameSport(
+    const userWithSameSport = (userData.registered_sports ?? []).find(
+      (item) =>
         item.sport === sportObj?.sport &&
-          item.sport_type === sportObj?.sport_type,
-      );
-    });
+        item.sport_type === sportObj?.sport_type,
+    );
+    if (userWithSameSport) {
+      setIsUserWithSameSport(true);
+    }
   }, [userData, sportObj]);
 
   return (
     <Modal visible={isVisible} transparent animationType="slide">
       <View style={styles.parent}>
         <View style={styles.card}>
-          <View style={styles.headerRow}>
-            <View />
-            <View style={styles.row}>
-              <View style={styles.imageContainer}>
-                <Image
-                  source={sportIcon ? {uri: sportIcon} : images.accountMySports}
-                  style={styles.image}
-                />
-              </View>
-              <Text style={styles.headerRowTitle}>
-                {`${strings.playingText} ${sportName}`}
-              </Text>
-            </View>
-            <TouchableOpacity
-              style={styles.headerButtonContainer}
-              onPress={closeModal}>
-              <Image source={images.closeSearch} style={styles.image} />
-            </TouchableOpacity>
-          </View>
-          <View style={{height: 3, backgroundColor: colors.themeColor}} />
+          <ScreenHeader
+            sportIcon={sportIcon}
+            title={`${strings.playingText} ${sportName}`}
+            rightIcon2={images.closeSearch}
+            rightIcon2Press={closeModal}
+            containerStyle={{
+              borderBottomWidth: 3,
+              borderBottomColor: colors.themeColor,
+            }}
+          />
           <ScrollView showsVerticalScrollIndicator={false}>
             <View style={{padding: 15, flex: 1}}>
               <UserInfo
@@ -139,6 +152,13 @@ const SportActivityModal = ({
                 isUserWithSameSport={isUserWithSameSport}
                 onPress={handleChallengeClick}
               />
+
+              {sportObj?.sport_type === Verbs.singleSport ? (
+                <AvailabilitySection
+                  list={availabilityList}
+                  loading={fetchingAvailability}
+                />
+              ) : null}
 
               {sportObj?.sport_type !== Verbs.singleSport ? (
                 <TeamsList
@@ -176,5 +196,24 @@ const SportActivityModal = ({
     </Modal>
   );
 };
+
+const styles = StyleSheet.create({
+  parent: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    justifyContent: 'flex-end',
+  },
+  card: {
+    backgroundColor: colors.whiteColor,
+    height: Dimensions.get('window').height - 50,
+    borderTopRightRadius: 20,
+    borderTopLeftRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 1},
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
+    elevation: 15,
+  },
+});
 
 export default SportActivityModal;
