@@ -331,7 +331,6 @@ export default function GroupMembersScreen({navigation, route}) {
   const renderMembers = useCallback(
     ({item: data, index}) => (
       <>
-        {console.log(data, 'From Data')}
         <View style={styles.roleViewContainer}>
           <View
             style={{

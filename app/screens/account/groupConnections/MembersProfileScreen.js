@@ -828,7 +828,7 @@ export default function MembersProfileScreen({navigation, route}) {
       {OpenRefreanceModal()}
 
       {memberDetail && !firstTimeLoad && (
-        <ScrollView>
+        <ScrollView showsVerticalScrollIndicator={false}>
           <View style={styles.roleViewContainer}>
             <View style={styles.roleView}>
               <TCMemberProfile
@@ -954,7 +954,7 @@ export default function MembersProfileScreen({navigation, route}) {
               </TouchableOpacity>
             )}
           </View>
-          <TCThickDivider marginTop={20} />
+          <TCThickDivider marginTop={26} />
           <View>
             <View style={styles.sectionEditView}>
               <Text style={styles.basicInfoTitle}>
@@ -1091,30 +1091,28 @@ export default function MembersProfileScreen({navigation, route}) {
               </Text>
             </View>
             {memberDetail.group && entity.role === Verbs.entityTypeClub && (
-              <Pressable>
-                <GroupMembership
-                  groupData={memberDetail.group}
-                  switchID={entity.uid}
-                  edit={!editTeam}
-                  onEditPressed={() =>
-                    navigation.navigate('EditMemberAuthInfoScreen', {
-                      groupMemberDetail: {
-                        ...memberDetail.group,
-                        positions: memberDetail?.positions,
-                        jersey_number: memberDetail?.jersey_number,
-                        appearance: memberDetail?.appearance,
-                        status: memberDetail?.status,
-                        is_admin: memberDetail?.is_admin,
-                        is_others: memberDetail?.is_others,
-                        is_member: memberDetail?.is_member,
-                        is_coach: memberDetail?.is_coach,
-                        note: memberDetail?.note,
-                        user_id: memberDetail?.user_id,
-                      },
-                    })
-                  }
-                />
-              </Pressable>
+              <GroupMembership
+                groupData={memberDetail.group}
+                switchID={entity.uid}
+                edit={!editTeam}
+                onEditPressed={() =>
+                  navigation.navigate('EditMemberAuthInfoScreen', {
+                    groupMemberDetail: {
+                      ...memberDetail.group,
+                      positions: memberDetail?.positions,
+                      jersey_number: memberDetail?.jersey_number,
+                      appearance: memberDetail?.appearance,
+                      status: memberDetail?.status,
+                      is_admin: memberDetail?.is_admin,
+                      is_others: memberDetail?.is_others,
+                      is_member: memberDetail?.is_member,
+                      is_coach: memberDetail?.is_coach,
+                      note: memberDetail?.note,
+                      user_id: memberDetail?.user_id,
+                    },
+                  })
+                }
+              />
             )}
             {memberDetail?.teams?.length > 0 && (
               <TCThinDivider

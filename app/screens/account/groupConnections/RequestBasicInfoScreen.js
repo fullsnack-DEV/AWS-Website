@@ -204,14 +204,8 @@ export default function RequestBasicInfoScreen({navigation, route}) {
 
   // Form Validation
   const checkValidation = () => {
-    Alert.alert('in validation');
-
-    console.log(memberInfo.height, 'vl');
-
     if (setting?.height && memberInfo.height !== null) {
       if (!memberInfo.height?.height_type) {
-        console.log(memberInfo.height?.height_type, 'from height');
-
         Alert.alert('Towns Cup', 'Please select height measurement');
         return false;
       }
@@ -220,7 +214,6 @@ export default function RequestBasicInfoScreen({navigation, route}) {
         memberInfo.height.height >= 1000 ||
         memberInfo.height.height === undefined
       ) {
-        console.log(memberInfo.height.height, 'From height1');
         Alert.alert('Towns Cup', 'Please enter valid height.');
         return false;
       }
@@ -294,7 +287,6 @@ export default function RequestBasicInfoScreen({navigation, route}) {
       bodyParams.country = memberInfo?.country;
       bodyParams.postal_code = memberInfo?.postal_code;
     }
-    console.log(bodyParams, 'From body');
 
     approveBasicInfoRequest(
       route?.params?.groupID,
@@ -406,8 +398,6 @@ export default function RequestBasicInfoScreen({navigation, route}) {
           items={heightMesurement}
           value={'ft'}
           onValueChange={(value) => {
-            console.log(value, 'From val');
-
             setMemberInfo({
               ...memberInfo,
               height: {
@@ -476,7 +466,10 @@ export default function RequestBasicInfoScreen({navigation, route}) {
                 ...memberInfo,
                 weight: {
                   weight: text,
-                  weight_type: memberInfo?.weight?.weight_type,
+                  weight_type:
+                    memberInfo?.weight?.weight === undefined
+                      ? weightMesurement[1].value
+                      : memberInfo?.weight?.weight_type,
                 },
               });
             }}
@@ -485,8 +478,8 @@ export default function RequestBasicInfoScreen({navigation, route}) {
         </View>
         <RNPickerSelect
           placeholder={{
-            label: weightMesurement[1].label,
-            value: weightMesurement[1].value,
+            label: strings.weightTypeText,
+            value: null,
           }}
           items={weightMesurement}
           onValueChange={(value) => {
@@ -838,8 +831,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
         <TouchableOpacity
           onPress={() => {
             if (checkValidation()) {
-              // editMemberBasicInfo();
-              Alert.alert('after validation');
+              editMemberBasicInfo();
             }
           }}
           style={{

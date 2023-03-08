@@ -436,7 +436,7 @@ export default {
   enterAboutPlaceholder: 'en_Enter Your About',
 
   inviteEmailText:
-    'en_Please enter the e-mail account of the person that you want to invite to the {0}.',
+    'en_Please enter the e-mail account of the person that you want to invite to join TownsCup.',
   inviteSearchText: 'en_Who do you want to invite to your {0}?',
   inviteEventText: 'en_Who do you want to invite to the event?',
 

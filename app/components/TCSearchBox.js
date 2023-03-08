@@ -26,8 +26,6 @@ export default function TCSearchBox({
   onPressClear,
   ...props
 }) {
-  console.log(value, 'Frommmm');
-
   return (
     <View style={{...styles.sectionStyle, ...style}} {...props}>
       {/* <Image source={images.searchLocation} style={styles.searchImg} /> */}

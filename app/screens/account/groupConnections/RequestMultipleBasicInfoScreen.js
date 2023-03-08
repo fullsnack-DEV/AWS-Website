@@ -129,17 +129,14 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
     },
   ];
 
-  const renderPlayer = ({item, index}) => {
-    console.log(item, 'From item');
+  const renderPlayer = ({item, index}) => (
+    <MemberProfile
+      playerDetail={item}
+      isChecked={item.isChecked}
+      onPress={() => selectPlayer({item, index})}
+    />
+  );
 
-    return (
-      <MemberProfile
-        playerDetail={item}
-        isChecked={item.isChecked}
-        onPress={() => selectPlayer({item, index})}
-      />
-    );
-  };
   const handleTagPress = ({index}) => {
     players[index].isChecked = false;
     setPlayers([...players]);
@@ -174,10 +171,8 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
 
     if (text.length > 0) {
       setPlayers(result);
-      console.log(players, 'From log 1');
     } else {
       setPlayers(searchPlayers);
-      console.log(players, 'From log');
     }
   };
 
