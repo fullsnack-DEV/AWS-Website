@@ -31,7 +31,7 @@ export default function EventScheduleScreen({
   useEffect(() => {
     console.log('eventData aa', eventData)
     let events = eventData.filter(
-      (obj) => (obj?.game_id && obj?.game) || obj?.title,
+      (obj) => (obj.game_id && obj.game) || obj.title,
     );
 
 
