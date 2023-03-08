@@ -269,6 +269,8 @@ import WhoCanInviteEventScreen from '../screens/account/GroupSetting/WhoCanInvit
 import LanguageSettingScreen from '../screens/account/userSettingPrivacy/LanguageSettingScreen';
 import SportActivityHome from '../screens/home/SportActivity/SportActivityHome';
 import EditWrapperScreen from '../screens/home/SportActivity/EditWrapperScreen';
+import PrivacySettingsScreen from '../screens/home/SportActivity/PrivacySettingsScreen';
+import ReviewDetailsScreen from '../screens/home/SportActivity/ReviewDetailsScreen';
 
 // Scorekeeper Review Screen
 
@@ -327,6 +329,16 @@ const AccountNavigator = () => (
     <Stack.Screen
       name="EditWrapperScreen"
       component={EditWrapperScreen}
+      options={{headerShown: false}}
+    />
+    <Stack.Screen
+      name="PrivacySettingsScreen"
+      component={PrivacySettingsScreen}
+      options={{headerShown: false}}
+    />
+    <Stack.Screen
+      name="ReviewDetailsScreen"
+      component={ReviewDetailsScreen}
       options={{headerShown: false}}
     />
     <Stack.Screen
@@ -1721,7 +1733,8 @@ const AccountNavigator = () => (
         title: strings.requestBasicInfoTitle,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
-          fontWeight: '500',
+          fontFamily: fonts.RMedium,
+          fontSize: 16,
         },
         headerStyle: {
           backgroundColor: colors.whiteColor,

@@ -436,7 +436,7 @@ export default {
   enterAboutPlaceholder: 'en_Enter Your About',
 
   inviteEmailText:
-    'en_Please enter the e-mail account of the person that you want to invite to the {0}.',
+    'en_Please enter the e-mail account of the person that you want to invite to join TownsCup.',
   inviteSearchText: 'en_Who do you want to invite to your {0}?',
   inviteEventText: 'en_Who do you want to invite to the event?',
 
@@ -538,6 +538,8 @@ export default {
 
   bioPrivacyTitle: 'en_Who can see Bio?',
   basicInfoPrivacyTitle: 'en_Who can see each category in Basic Info?',
+  basicInfoSportsPrivacyTitle:
+    'en_Who can see the following items of your basic info in this sports activity page?',
   ntrpPrivacyTitle: 'en_Who can see NTRP?',
   homePlacePrivacyTitle: 'en_Who can see Home Place?',
   teamPrivacyTitle: 'en_Who can see Teams?',
@@ -1224,6 +1226,8 @@ export default {
   NAText: 'en_N/A',
   joinedClubOnText:
     'en_Joined club on {0} {1}, {2}\nLast updated by {3} {4} on {5} {6} ,{7}',
+  joinedTeamOnText:
+    'en_Joined Team on {0} {1}, {2}\nLast updated by {3} {4} on {5} {6} ,{7}',
   inviteOrConnectAccountText: 'en_Invite or Connect to an Account',
   requestForBasicInfoWereSentText:
     'en_Requests for basic info were sent to {0} members.',
@@ -2175,7 +2179,7 @@ export default {
   basicInfoRequestText:
     'en_{0} wants to collect your basic info. You may choose the items you want to send or edit each items before you send the information.',
 
-  requestBasicInfoTitle: 'en_Request Basic Info',
+  requestBasicInfoTitle: 'en_Request for Basic Info',
   reservations: 'en_Reservations',
 
   leavereviewinsmall: 'en_Leave Review',
@@ -2308,7 +2312,7 @@ export default {
     'en_When the request is accepted, the basic info in this profile will be updated with the info provided by the member. A user may choose to only provide some of the basic info items.',
   showAgainText: 'en_Don’t show this again.',
   updateMyProfile: 'en_Update this information on my profile.',
-  requestBasicInfoTitle: 'en_Request Basic Info',
+  requestBasicInfoTitle: 'en_Request for Basic Info',
   inviteMemberToGroup: 'en_Invite member to {0}',
   chatsTitle: 'en_Chats',
   statusPlaceholder: 'en_Status',
@@ -2410,4 +2414,22 @@ export default {
   inviteRequested: 'en_Invite Requested',
   invited: 'en_Invited',
   joinRequested: 'en_Join Requested',
+  parentBadgeText: 'en_Parent',
+  leaveReplyText: 'en_Leave a reply',
+  ratingsInfo:
+    'en_You can reply to a review up to 7 days after the review period has ended. Once you have submitted your reply, you cannot change or delete your reply. ',
+  reportThisSportActivityPage: 'en_Report This Sports Activity Page',
+  blockUserAccount: 'en_Block This User Account',
+  reportThisReview: 'en_Report This Review',
+  reportThisReply: 'en_Report This Reply',
+  tcLevelPointsText: 'en_TC LEVEL & POINTS',
+  tcLevel: 'en_TC Level',
+  dmRate: 'en_DM RATE',
+  dmsText: 'en_DMs',
+  dtsText: 'en_D&Ts',
+  disputedMatches: 'en_Disputed Matches',
+  playedMatches: 'en_Played {0} matches',
+  playedInTeams: 'en_Played in {0} teams',
+
+
 };

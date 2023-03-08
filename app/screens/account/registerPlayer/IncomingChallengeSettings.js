@@ -28,6 +28,7 @@ import SettingsMenuItem from './components/SettingsMenuItem';
 import WrapperModal from '../../../components/IncomingChallengeSettingsModals/WrapperModal';
 import DataSource from '../../../Constants/DataSource';
 import HostChallengerInfoModal from './modals/HostChallengerInfoModal';
+import ScreenHeader from '../../../components/ScreenHeader';
 
 export default function IncomingChallengeSettings({navigation, route}) {
   const [settingObject, setSettingObject] = useState({});
@@ -195,33 +196,26 @@ export default function IncomingChallengeSettings({navigation, route}) {
 
   return (
     <SafeAreaView style={styles.parent}>
-      <View style={styles.headerRow}>
-        <View style={{flex: 1}}>
-          <Pressable
-            style={styles.backIconContainer}
-            onPress={() => {
-              navigation.goBack();
-            }}>
-            <Image source={images.backArrow} style={styles.image} />
-          </Pressable>
-        </View>
-        <View style={styles.headerTitleContainer}>
-          <Text style={styles.headerTitle}>
-            {strings.registerAsPlayerTitle}
-          </Text>
-        </View>
-        {loading ? (
-          <ActivityIndicator size={'small'} />
-        ) : (
-          <Pressable
-            style={styles.buttonContainer}
-            onPress={() => {
-              onSave();
-            }}>
-            <Text style={styles.buttonText}>{strings.done}</Text>
-          </Pressable>
-        )}
-      </View>
+      <ScreenHeader
+        title={strings.registerAsPlayerTitle}
+        leftIcon={images.backArrow}
+        leftIconPress={() => {
+          navigation.goBack();
+        }}
+        isRightIconText
+        rightButtonText={strings.done}
+        onRightButtonPress={() => {
+          onSave();
+        }}
+        loading={loading}
+        containerStyle={{
+          paddingLeft: 10,
+          paddingRight: 17,
+          paddingTop: 8,
+          paddingBottom: 13,
+          borderBottomWidth: 0,
+        }}
+      />
       <TCFormProgress totalSteps={2} curruentStep={2} />
 
       <View style={{flex: 1}}>
@@ -340,14 +334,25 @@ export default function IncomingChallengeSettings({navigation, route}) {
         createTeam={() => {
           navigation.navigate('CreateTeamForm1');
         }}
-        goToSportActivityHome={() => {
+        goToSportActivityHome={({sport, sportType}) => {
           setCongratulationsModal(false);
-          navigation.navigate('HomeScreen', {
+          // navigation.navigate('HomeScreen', {
+          //   uid: authContext.entity.uid,
+          //   role: authContext.entity.role,
+          //   backButtonVisible: true,
+          //   menuBtnVisible: false,
+          //   comeFrom: 'IncomingChallengeSettings',
+          // });
+          navigation.navigate('SportActivityHome', {
+            sport,
+            sportType,
             uid: authContext.entity.uid,
-            role: authContext.entity.role,
-            backButtonVisible: true,
-            menuBtnVisible: false,
-            comeFrom: 'IncomingChallengeSettings',
+            selectedTab: strings.infoTitle,
+            backScreen: 'AccountScreen',
+            backScreenParams: {
+              createdSportName: sport,
+              sportType,
+            },
           });
         }}
       />

@@ -76,6 +76,7 @@ export default function GroupMembersScreen({navigation, route}) {
       getGroupMembers(groupID, authContext)
         .then((response) => {
           setMembers(response.payload);
+
           setSearchMember(response.payload);
           setloading(false);
         })
@@ -373,7 +374,7 @@ export default function GroupMembersScreen({navigation, route}) {
                   }}>
                   {data?.is_admin && (
                     <TCUserRoleBadge
-                      title="Admin"
+                      title={strings.admin}
                       titleColor={colors.themeColor}
                       gradientColor={colors.lightGrayBackground}
                       gradientColor1={colors.lightGrayBackground}
@@ -384,7 +385,7 @@ export default function GroupMembersScreen({navigation, route}) {
                   )}
                   {data?.is_coach && (
                     <TCUserRoleBadge
-                      title="Coach"
+                      title={strings.coach}
                       titleColor={colors.greeColor}
                       gradientColor={colors.lightGrayBackground}
                       gradientColor1={colors.lightGrayBackground}
@@ -395,8 +396,30 @@ export default function GroupMembersScreen({navigation, route}) {
                   )}
                   {data?.is_member && (
                     <TCUserRoleBadge
-                      title="Player"
+                      title={strings.player}
                       titleColor={colors.playerBadgeColor}
+                      gradientColor={colors.lightGrayBackground}
+                      gradientColor1={colors.lightGrayBackground}
+                      style={{
+                        marginLeft: 5,
+                      }}
+                    />
+                  )}
+                  {data?.is_parent && (
+                    <TCUserRoleBadge
+                      title={strings.parentBadgeText}
+                      titleColor={colors.yellowColor}
+                      gradientColor={colors.lightGrayBackground}
+                      gradientColor1={colors.lightGrayBackground}
+                      style={{
+                        marginLeft: 5,
+                      }}
+                    />
+                  )}
+                  {data?.is_others && (
+                    <TCUserRoleBadge
+                      title={strings.other}
+                      titleColor={colors.veryLightBlack}
                       gradientColor={colors.lightGrayBackground}
                       gradientColor1={colors.lightGrayBackground}
                       style={{

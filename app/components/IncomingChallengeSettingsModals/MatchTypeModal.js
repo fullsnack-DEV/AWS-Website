@@ -62,9 +62,15 @@ const MatchTypeModal = ({gameType = '', onChange = () => {}}) => {
   return (
     <View>
       <Text style={styles.title}>{strings.chooseMatchType}</Text>
-      {gameTypeList.map((item) => (
+      {gameTypeList.map((item, index) => (
         <View
-          style={[styles.row, {paddingHorizontal: 10, marginBottom: 13}]}
+          style={[
+            styles.row,
+            {
+              paddingHorizontal: 10,
+              marginBottom: index === gameTypeList.length - 1 ? 0 : 13,
+            },
+          ]}
           key={item.id}>
           <Text style={styles.label}>{item.label}</Text>
 

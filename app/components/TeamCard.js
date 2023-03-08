@@ -6,9 +6,16 @@ import fonts from '../Constants/Fonts';
 import images from '../Constants/ImagePath';
 import {displayLocation} from '../utils';
 
-const TeamCard = ({item = {}, onPress = () => {}, containerStyle = {}}) => (
+const TeamCard = ({
+  item = {},
+  onPress = () => {},
+  containerStyle = {},
+  iconStyle = {},
+  titleStyle = {},
+  locationTextStyle = {},
+}) => (
   <Pressable style={[styles.parent, containerStyle]} onPress={onPress}>
-    <View style={styles.iconContainer}>
+    <View style={[styles.iconContainer, iconStyle]}>
       <Image
         source={item.thumbnail ? {uri: item.thumbnail} : images.teamPatchIcon}
         style={styles.image}
@@ -18,10 +25,12 @@ const TeamCard = ({item = {}, onPress = () => {}, containerStyle = {}}) => (
       </View>
     </View>
     <View>
-      <Text style={styles.name} numberOfLines={1}>
+      <Text style={[styles.name, titleStyle]} numberOfLines={1}>
         {item.group_name}
       </Text>
-      <Text style={styles.location}>{displayLocation(item)}</Text>
+      <Text style={[styles.location, locationTextStyle]}>
+        {displayLocation(item)}
+      </Text>
     </View>
   </Pressable>
 );

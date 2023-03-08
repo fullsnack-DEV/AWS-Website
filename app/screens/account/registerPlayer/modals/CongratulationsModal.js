@@ -312,13 +312,13 @@ const CongratulationsModal = ({
           <View style={{marginHorizontal: 35, marginTop: 70, marginBottom: 25}}>
             <Text style={styles.congratsText}>
               {strings.congratsModalTitle}
-              <Text style={styles.congratsSportText}>{sportName}</Text>
+              <Text style={styles.congratsSportText}>{sportName}.</Text>
             </Text>
           </View>
           <Pressable
             style={styles.buttonContainer}
             onPress={() => {
-              goToSportActivityHome();
+              goToSportActivityHome({sport, sportType});
             }}>
             <Text style={styles.buttonText}>
               {strings.goToSportActivityHomeText}
@@ -431,7 +431,7 @@ const styles = StyleSheet.create({
   dividor: {
     height: 1,
     marginVertical: 25,
-    backgroundColor: colors.lightGrayBackground,
+    backgroundColor: colors.grayBackgroundColor,
   },
   container1: {
     backgroundColor: colors.lightWhite,

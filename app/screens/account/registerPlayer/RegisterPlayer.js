@@ -6,15 +6,14 @@ import {
   Text,
   SafeAreaView,
   Pressable,
-  Image,
   TextInput,
   Keyboard,
   Alert,
-  ActivityIndicator,
 } from 'react-native';
 import {strings} from '../../../../Localization/translation';
 import {patchPlayer} from '../../../api/Users';
 import AuthContext from '../../../auth/context';
+import ScreenHeader from '../../../components/ScreenHeader';
 import TCFormProgress from '../../../components/TCFormProgress';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
@@ -141,39 +140,22 @@ const RegisterPlayer = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={styles.parent}>
-      <View style={styles.headerRow}>
-        <View style={{flex: 1}}>
-          <Pressable
-            style={styles.backIconContainer}
-            onPress={() => {
-              navigation.navigate('AccountScreen');
-            }}>
-            <Image source={images.backArrow} style={styles.image} />
-          </Pressable>
-        </View>
-        <View style={styles.headerTitleContainer}>
-          <Text style={styles.headerTitle}>
-            {strings.registerAsPlayerTitle}
-          </Text>
-        </View>
-        {loading ? (
-          <ActivityIndicator size={'small'} />
-        ) : (
-          <Pressable style={styles.buttonContainer} onPress={handleNextOrApply}>
-            <Text
-              style={[
-                styles.buttonText,
-                selectedSport?.sport_type && selectedSport?.sport_name
-                  ? {}
-                  : {opacity: 0.5},
-              ]}>
-              {selectedSport?.sport_type === Verbs.singleSport
-                ? strings.next
-                : strings.done}
-            </Text>
-          </Pressable>
-        )}
-      </View>
+      <ScreenHeader
+        title={strings.registerAsPlayerTitle}
+        leftIcon={images.backArrow}
+        leftIconPress={() => {
+          navigation.navigate('AccountScreen');
+        }}
+        isRightIconText
+        rightButtonText={
+          selectedSport?.sport_type === Verbs.singleSport
+            ? strings.next
+            : strings.done
+        }
+        onRightButtonPress={handleNextOrApply}
+        loading={loading}
+        containerStyle={styles.headerRow}
+      />
       {selectedSport?.sport_type === Verbs.singleSport ? (
         <TCFormProgress totalSteps={2} curruentStep={1} />
       ) : (
@@ -330,14 +312,25 @@ const RegisterPlayer = ({navigation, route}) => {
         createTeam={() => {
           navigation.navigate('CreateTeamForm1');
         }}
-        goToSportActivityHome={() => {
+        goToSportActivityHome={({sport, sportType}) => {
           setShowCongratulationsModal(false);
-          navigation.navigate('HomeScreen', {
+          // navigation.navigate('HomeScreen', {
+          //   uid: authContext.entity.uid,
+          //   role: authContext.entity.role,
+          //   backButtonVisible: true,
+          //   menuBtnVisible: false,
+          //   comeFrom: 'IncomingChallengeSettings',
+          // });
+          navigation.navigate('SportActivityHome', {
+            sport,
+            sportType,
             uid: authContext.entity.uid,
-            role: authContext.entity.role,
-            backButtonVisible: true,
-            menuBtnVisible: false,
-            comeFrom: 'IncomingChallengeSettings',
+            selectedTab: strings.infoTitle,
+            backScreen: 'AccountScreen',
+            backScreenParams: {
+              createdSportName: selectedSport?.sport_name,
+              sportType: selectedSport?.sport_type,
+            },
           });
         }}
       />
@@ -355,46 +348,10 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingLeft: 10,
     paddingRight: 14,
     paddingBottom: 12,
     paddingTop: 8,
-  },
-  headerTitleContainer: {
-    flex: 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  headerTitle: {
-    fontSize: 16,
-    lineHeight: 24,
-    fontFamily: fonts.RBold,
-    textAlign: 'center',
-  },
-  buttonContainer: {
-    alignItems: 'flex-end',
-    justifyContent: 'center',
-    flex: 1,
-  },
-  buttonText: {
-    fontSize: 16,
-    lineHeight: 24,
-    fontFamily: fonts.RMedium,
-    textAlign: 'center',
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'contain',
-  },
-  backIconContainer: {
-    width: 25,
-    height: 25,
-    alignItems: 'center',
-    justifyContent: 'center',
+    borderBottomWidth: 0,
   },
   inputLabel: {
     fontSize: 16,

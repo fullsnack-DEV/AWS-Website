@@ -52,8 +52,6 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
 
-  const [minDateValue, setMinDateValue] = useState(new Date());
-  const [maxDateValue, setMaxDateValue] = useState(new Date());
   const [loading, setloading] = useState(false);
   const [postalCode, setPostalCode] = useState('');
   const [showDate, setShowDate] = useState(false);
@@ -80,8 +78,6 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
     mindate.setFullYear(mindate.getFullYear() - 13);
     maxdate.setFullYear(maxdate.getFullYear() - 123);
     // setDateValue(mindate);
-    setMinDateValue(mindate);
-    setMaxDateValue(maxdate);
   }, []);
 
   useEffect(() => {
@@ -652,12 +648,12 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
         <View>
           <DateTimePickerView
             visible={showDate}
-            // date={new Date()}
+            date={new Date()}
             onDone={handleDonePress}
             onCancel={handleCancelPress}
             onHide={handleCancelPress}
-            minimumDate={minDateValue}
-            maximumDate={maxDateValue}
+            // minimumDate={minDateValue}
+            // maximumDate={maxDateValue}
             mode={'date'}
           />
         </View>

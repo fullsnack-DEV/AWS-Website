@@ -255,6 +255,7 @@ import UserBasicInfoScreen from '../screens/home/user/UserBasicInfoScreen';
 import GroupMembersScreen from '../screens/account/groupConnections/GroupMembersScreen';
 import SportActivityHome from '../screens/home/SportActivity/SportActivityHome';
 import EditWrapperScreen from '../screens/home/SportActivity/EditWrapperScreen';
+import ReviewDetailsScreen from '../screens/home/SportActivity/ReviewDetailsScreen';
 
 const Stack = createStackNavigator();
 
@@ -565,6 +566,11 @@ const LocalHomeNavigator = () => (
     <Stack.Screen
       name="EditWrapperScreen"
       component={EditWrapperScreen}
+      options={{headerShown: false}}
+    />
+    <Stack.Screen
+      name="ReviewDetailsScreen"
+      component={ReviewDetailsScreen}
       options={{headerShown: false}}
     />
     <Stack.Screen
@@ -1886,8 +1892,10 @@ const LocalHomeNavigator = () => (
       options={{
         title: 'Send request for basic info',
         headerTintColor: colors.blackColor,
+
         headerTitleStyle: {
-          fontWeight: '500',
+          fontFamily: fonts.RBold,
+          fontSize: 16,
         },
         headerStyle: {
           backgroundColor: colors.whiteColor,

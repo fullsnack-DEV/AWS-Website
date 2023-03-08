@@ -1,22 +1,12 @@
 // @flow
 import React, {useContext, useEffect, useState} from 'react';
-import {
-  View,
-  StyleSheet,
-  Text,
-  SafeAreaView,
-  TouchableOpacity,
-  Image,
-  Alert,
-  ActivityIndicator,
-} from 'react-native';
+import {SafeAreaView, Alert} from 'react-native';
 import {strings} from '../../../../Localization/translation';
 import {patchPlayer} from '../../../api/Users';
 import AuthContext from '../../../auth/context';
-import colors from '../../../Constants/Colors';
-import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
-import {setStorage} from '../../../utils';
+import {setAuthContextData} from '../../../utils';
+import ScreenHeader from '../../../components/ScreenHeader';
 import EditBasicInfoScreen from './contentScreens/EditBasicInfoScreen';
 import EditBioScreen from './contentScreens/EditBioScreen';
 import EditHomeFacilityScreen from './contentScreens/EditHomeFacilityScreen';
@@ -96,13 +86,7 @@ const EditWrapperScreen = ({navigation, route}) => {
     patchPlayer(userData, authContext)
       .then(async (res) => {
         setLoading(false);
-        const entity = authContext.entity;
-        entity.auth.user = res.payload;
-        entity.obj = res.payload;
-        authContext.setEntity({...entity});
-        authContext.setUser(res.payload);
-        await setStorage('authContextUser', res.payload);
-        await setStorage('authContextEntity', {...entity});
+        await setAuthContextData(res.payload, authContext);
         navigation.navigate('SportActivityHome', {
           sport: sportObj?.sport,
           sportType: sportObj?.sport_type,
@@ -116,78 +100,23 @@ const EditWrapperScreen = ({navigation, route}) => {
   };
 
   return (
-    <SafeAreaView style={styles.parent}>
-      <View style={styles.headerRow}>
-        <View style={{flex: 1}}>
-          <TouchableOpacity
-            style={styles.iconContainer}
-            onPress={() => {
-              navigation.goBack();
-            }}>
-            <Image source={images.backArrow} style={styles.image} />
-          </TouchableOpacity>
-        </View>
-        <View style={{flexDirection: 'row', alignItems: 'center', flex: 2}}>
-          <View style={[styles.iconContainer, {width: 40, height: 40}]}>
-            <Image
-              source={sportIcon ? {uri: sportIcon} : images.accountMySports}
-              style={styles.image}
-            />
-          </View>
-          <Text style={styles.headerTitle}>{title}</Text>
-        </View>
-        <View style={{flex: 1, alignItems: 'flex-end'}}>
-          {loading ? (
-            <ActivityIndicator size={'small'} />
-          ) : (
-            <TouchableOpacity onPress={handleSave}>
-              <Text style={styles.buttonText}>{strings.save}</Text>
-            </TouchableOpacity>
-          )}
-        </View>
-      </View>
+    <SafeAreaView style={{flex: 1}}>
+      <ScreenHeader
+        sportIcon={sportIcon}
+        title={title}
+        leftIcon={images.backArrow}
+        leftIconPress={() => {
+          navigation.goBack();
+        }}
+        isRightIconText
+        rightButtonText={strings.save}
+        onRightButtonPress={handleSave}
+        loading={loading}
+      />
 
       {renderView()}
     </SafeAreaView>
   );
 };
 
-const styles = StyleSheet.create({
-  parent: {
-    flex: 1,
-  },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingLeft: 10,
-    paddingRight: 16,
-    paddingBottom: 4,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.writePostSepratorColor,
-  },
-  headerTitle: {
-    fontSize: 16,
-    lineHeight: 24,
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RBold,
-  },
-  iconContainer: {
-    width: 25,
-    height: 25,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'contain',
-  },
-  buttonText: {
-    fontSize: 16,
-    lineHeight: 19,
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RMedium,
-  },
-});
 export default EditWrapperScreen;
