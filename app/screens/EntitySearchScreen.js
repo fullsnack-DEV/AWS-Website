@@ -284,7 +284,7 @@ export default function EntitySearchScreen({navigation, route}) {
       })
       .catch((e) => {
         setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e);
+          Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
   }, [generalFilter, pageSize, generalPageFrom, generalList]);
@@ -373,7 +373,6 @@ export default function EntitySearchScreen({navigation, route}) {
         });
       }
     }
-    console.log('playersQuery', JSON.stringify(playersQuery));
     getUserIndex(playersQuery)
       .then((res) => {
         if (res.length > 0) {
@@ -385,7 +384,7 @@ export default function EntitySearchScreen({navigation, route}) {
       })
       .catch((e) => {
         setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e);
+          Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
   }, [playerFilter, pageSize, pageFrom, playerList]);
@@ -526,7 +525,7 @@ export default function EntitySearchScreen({navigation, route}) {
       })
       .catch((e) => {
         setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e);
+          Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
   }, [pageSize, refereesPageFrom, referees, refereeFilters]);
@@ -661,7 +660,7 @@ export default function EntitySearchScreen({navigation, route}) {
       })
       .catch((e) => {
         setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e);
+          Alert.alert(strings.alertmessagetitle, e.messagee);
         }, 10);
       });
   }, [pageSize, scorekeeperPageFrom, scorekeepers, scoreKeeperFilters]);
@@ -755,7 +754,7 @@ export default function EntitySearchScreen({navigation, route}) {
       })
       .catch((e) => {
         setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e);
+          Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
   }, [pageSize, teamsPageFrom, teams, teamFilters]);
@@ -852,7 +851,7 @@ export default function EntitySearchScreen({navigation, route}) {
       })
       .catch((e) => {
         setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e);
+          Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
   }, [pageSize, clubsPageFrom, clubs, clubFilters]);
@@ -1554,7 +1553,7 @@ export default function EntitySearchScreen({navigation, route}) {
             response.payload.user_message,
             [
               {
-                text: 'Join',
+                text: strings.join,
                 onPress: () => {
                   joinTeam({...params, is_confirm: true}, groupId, authContext)
                     .then(() => {})
@@ -1567,7 +1566,7 @@ export default function EntitySearchScreen({navigation, route}) {
                 style: 'destructive',
               },
               {
-                text: 'Cancel',
+                text: strings.cancel,
                 onPress: () => {},
                 style: 'cancel',
               },
@@ -1604,9 +1603,9 @@ export default function EntitySearchScreen({navigation, route}) {
           response.payload.error_code === ErrorCodes.MEMBERINVITEONLYERRORCODE
         ) {
           Alert.alert(strings.alertmessagetitle, response.payload.user_message);
-        } else if (response.payload.action === 'join') {
+        } else if (response.payload.action === Verbs.joinVerb) {
           Alert.alert(strings.alertmessagetitle, strings.acceptRequestMessage);
-        } else if (response.payload.action === 'request') {
+        } else if (response.payload.action === Verbs.requestVerb) {
           Alert.alert(strings.alertmessagetitle, strings.sendRequest);
         } else {
           Alert.alert(strings.alertmessagetitle, strings.acceptRequestMessage);

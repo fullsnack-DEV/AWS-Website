@@ -27,7 +27,7 @@ function TCTeamSearchView({
   let teamImagePH = '';
   let isChallengeButtonShow = false;
   let isJoinButton = false;
-  if (data.entity_type === 'team') {
+  if (data.entity_type === Verbs.entityTypeTeam) {
     teamIcon = images.newTeamIcon;
     teamImagePH = images.teamBcgPlaceholder;
     if (
@@ -43,13 +43,13 @@ function TCTeamSearchView({
     ) {
       isChallengeButtonShow = true;
     }
-  } else if (data.entity_type === 'club') {
+  } else if (data.entity_type === Verbs.entityTypeClub) {
     teamIcon = images.newClubIcon;
     teamImagePH = images.clubBcgPlaceholder;
     if (authContext.entity.role === Verbs.entityTypeUser) {
       isJoinButton = true;
     }
-  } else if (data.entity_type === 'league') {
+  } else if (data.entity_type === Verbs.entityTypeLeague) {
     teamIcon = images.myLeagues;
     teamImagePH = images.leaguePlaceholder;
   }

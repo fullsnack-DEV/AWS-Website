@@ -116,7 +116,6 @@ function TCPlayerView({
       isBookButtonShow = false;
     }
   }
-
   return (
     <TouchableOpacity onPress={onPress}>
       <View style={styles.viewContainer}>
