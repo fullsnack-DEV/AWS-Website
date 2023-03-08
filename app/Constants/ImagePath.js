@@ -458,6 +458,10 @@ const images = {
   clubPatchIcon: require('../assets/images/clubPatch.png'),
   teamPatchIcon: require('../assets/images/teamPatch.png'),
   editProfilePencil: require('../assets/images/EditprofilePencil.png'),
+  activityImage: require('../assets/images/activityImage.png'),
+  activityImage1: require('../assets/images/activityImage1.png'),
+  activityImage2: require('../assets/images/activityImage2.png'),
+
 };
 
 export default images;

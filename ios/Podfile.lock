@@ -130,7 +130,7 @@ PODS:
     - RNPermissions
   - Permission-PhotoLibrary (3.6.1):
     - RNPermissions
-  - PromisesObjC (2.1.1)
+  - PromisesObjC (2.2.0)
   - QuickBlox (2.17.11)
   - quickblox-react-native-sdk (0.6.0-beta):
     - QuickBlox (~> 2.17.11)
@@ -907,7 +907,7 @@ SPEC CHECKSUMS:
   Permission-LocationAlways: 8d99b025c9f73c696e0cdb367e42525f2e9a26f2
   Permission-LocationWhenInUse: 3ba99e45c852763f730eabecec2870c2382b7bd4
   Permission-PhotoLibrary: 5b34ca67279f7201ae109cef36f9806a6596002d
-  PromisesObjC: ab77feca74fa2823e7af4249b8326368e61014cb
+  PromisesObjC: 09985d6d70fbe7878040aa746d78236e6946d2ef
   QuickBlox: 37d2eb7d791782469ba14fa40122633185944c01
   quickblox-react-native-sdk: f508f098c5ad961da587231f9a0b2c8c48aa5f26
   Quickblox-WebRTC: 162d2421d91cfb3d4f7e01f87e095633ca52bb1d

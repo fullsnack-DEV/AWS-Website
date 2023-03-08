@@ -47,6 +47,7 @@ import TrashScreen from '../screens/notificationsScreen/TrashScreen';
 import {strings} from '../../Localization/translation';
 import SportActivityHome from '../screens/home/SportActivity/SportActivityHome';
 import EditWrapperScreen from '../screens/home/SportActivity/EditWrapperScreen';
+import ReviewDetailsScreen from '../screens/home/SportActivity/ReviewDetailsScreen';
 
 const Stack = createStackNavigator();
 
@@ -567,7 +568,11 @@ const ReservationNavigator = () => (
       component={EditWrapperScreen}
       options={{headerShown: false}}
     />
-
+    <Stack.Screen
+      name="ReviewDetailsScreen"
+      component={ReviewDetailsScreen}
+      options={{headerShown: false}}
+    />
     <Stack.Screen
       name={'FeedViewScreen'}
       component={FeedViewScreen}

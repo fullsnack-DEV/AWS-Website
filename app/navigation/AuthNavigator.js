@@ -22,6 +22,7 @@ import colors from '../Constants/Colors';
 import SignupFromLoginScreen from '../screens/authScreens/SignupFromLoginScreen';
 import SportActivityHome from '../screens/home/SportActivity/SportActivityHome';
 import EditWrapperScreen from '../screens/home/SportActivity/EditWrapperScreen';
+import ReviewDetailsScreen from '../screens/home/SportActivity/ReviewDetailsScreen';
 
 const Stack = createStackNavigator();
 
@@ -84,6 +85,11 @@ const AuthNavigator = () => (
     <Stack.Screen
       name="EditWrapperScreen"
       component={EditWrapperScreen}
+      options={{headerShown: false}}
+    />
+    <Stack.Screen
+      name="ReviewDetailsScreen"
+      component={ReviewDetailsScreen}
       options={{headerShown: false}}
     />
     <Stack.Screen

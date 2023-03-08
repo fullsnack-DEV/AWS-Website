@@ -18,7 +18,14 @@ const Labels = {
   losses: strings.losses,
 };
 
-const StatsGraph = ({wins = 0, draws = 0, losses = 0, total = 0}) => {
+const StatsGraph = ({
+  wins = 0,
+  draws = 0,
+  losses = 0,
+  total = 0,
+  showTotalMatches = true,
+  containerStyle = {},
+}) => {
   const [chartData, setChartData] = useState([
     {
       percentage: 100,
@@ -60,7 +67,7 @@ const StatsGraph = ({wins = 0, draws = 0, losses = 0, total = 0}) => {
   }, [wins, draws, losses, total, calculatePercentage]);
 
   return (
-    <View style={styles.parent}>
+    <View style={[styles.parent, containerStyle]}>
       <View
         style={{
           flex: 1,
@@ -80,16 +87,19 @@ const StatsGraph = ({wins = 0, draws = 0, losses = 0, total = 0}) => {
         </View>
       </View>
       <View style={{flex: 1}}>
-        <Text style={[styles.totalText, {marginBottom: 10}]}>
-          {strings.totalMatches}{' '}
-          <Text
-            style={[
-              styles.totalText,
-              {fontFamily: fonts.RMedium, marginBottom: 10},
-            ]}>
-            {total}
+        {showTotalMatches ? (
+          <Text style={[styles.totalText, {marginBottom: 10}]}>
+            {strings.totalMatches}{' '}
+            <Text
+              style={[
+                styles.totalText,
+                {fontFamily: fonts.RMedium, marginBottom: 10},
+              ]}>
+              {total}
+            </Text>
           </Text>
-        </Text>
+        ) : null}
+
         {Object.keys(percentageObject).map((item, index) => (
           <View style={styles.row} key={`${index}${item}`}>
             <Text style={[styles.totalText, {textAlign: 'left'}]}>

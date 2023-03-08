@@ -34,7 +34,9 @@ const CustomDropDown = ({
         return selectedValue;
 
       default:
-        return `${selectedValue} ${prefix}(s)`;
+        return `${selectedValue} ${prefix}${
+          parseInt(selectedValue, 10) > 1 ? 's' : ''
+        }`;
     }
   };
 

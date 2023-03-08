@@ -538,6 +538,8 @@ export default {
 
   bioPrivacyTitle: 'en_Who can see Bio?',
   basicInfoPrivacyTitle: 'en_Who can see each category in Basic Info?',
+  basicInfoSportsPrivacyTitle:
+    'en_Who can see the following items of your basic info in this sports activity page?',
   ntrpPrivacyTitle: 'en_Who can see NTRP?',
   homePlacePrivacyTitle: 'en_Who can see Home Place?',
   teamPrivacyTitle: 'en_Who can see Teams?',
@@ -2400,5 +2402,23 @@ export default {
   levelText: 'en_Level',
   matchVenueInfo:
     'en_The challenger can choose one of the available venues when they challenge the match host.',
+
   parentBadgeText: 'en_Parent',
+
+  leaveReplyText: 'en_Leave a reply',
+  ratingsInfo:
+    'en_You can reply to a review up to 7 days after the review period has ended. Once you have submitted your reply, you cannot change or delete your reply. ',
+  reportThisSportActivityPage: 'en_Report This Sports Activity Page',
+  blockUserAccount: 'en_Block This User Account',
+  reportThisReview: 'en_Report This Review',
+  reportThisReply: 'en_Report This Reply',
+  tcLevelPointsText: 'en_TC LEVEL & POINTS',
+  tcLevel: 'en_TC Level',
+  dmRate: 'en_DM RATE',
+  dmsText: 'en_DMs',
+  dtsText: 'en_D&Ts',
+  disputedMatches: 'en_Disputed Matches',
+  playedMatches: 'en_Played {0} matches',
+  playedInTeams: 'en_Played in {0} teams',
+
 };

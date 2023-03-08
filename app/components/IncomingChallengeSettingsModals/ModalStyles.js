@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
   },
   greyContainer: {
     paddingHorizontal: 10,
-    paddingVertical: 13,
+    paddingVertical: 14,
     backgroundColor: colors.textFieldBackground,
     borderRadius: 5,
     marginTop: 34,

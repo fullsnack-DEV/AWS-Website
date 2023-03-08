@@ -94,7 +94,7 @@ const ScoreBoardList = ({
   const renderList = () => {
     if (loading) {
       return (
-        <View style={{minHeight: 200}}>
+        <View style={styles.loaderView}>
           <ActivityIndicator size={'small'} />
         </View>
       );
@@ -235,6 +235,11 @@ const styles = StyleSheet.create({
     lineHeight: 30,
     fontFamily: fonts.RBold,
     color: colors.lightBlackColor,
+  },
+  loaderView: {
+    minHeight: 150,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 export default ScoreBoardList;

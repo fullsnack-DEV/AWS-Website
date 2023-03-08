@@ -29,9 +29,15 @@ const AvailabilityModal = ({
   <View style={{flex: 1, justifyContent: 'space-between'}}>
     <View>
       <Text style={styles.title}>{strings.availabilityModalTitle}</Text>
-      {RadioButtonList.map((item) => (
+      {RadioButtonList.map((item, index) => (
         <View
-          style={[styles.row, {paddingHorizontal: 10, marginBottom: 13}]}
+          style={[
+            styles.row,
+            {
+              paddingHorizontal: 10,
+              marginBottom: index === RadioButtonList.length - 1 ? 0 : 13,
+            },
+          ]}
           key={item.id}>
           <Text style={styles.label}>{item.label}</Text>
 
