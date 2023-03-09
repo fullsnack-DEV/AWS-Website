@@ -1213,7 +1213,7 @@ const MembersNavigator = () => (
       name="EditMemberInfoScreen"
       component={EditMemberInfoScreen}
       options={{
-        title: 'Edit Profile',
+        title: strings.editprofiletitle,
         headerTintColor: colors.blackColor,
       }}
     />

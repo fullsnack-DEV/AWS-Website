@@ -288,9 +288,8 @@ export default function MembersProfileScreen({navigation, route}) {
   const deleteMemberProfile = (groupId, memberId) => {
     setloading(true);
     deleteMember(groupId, memberId, authContext)
-      .then((response) => {
+      .then(() => {
         setloading(false);
-        console.log(response, 'From res');
 
         navigation.navigate('GroupMembersScreen');
       })
