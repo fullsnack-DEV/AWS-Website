@@ -165,14 +165,6 @@ const Summary = ({
           }
           return true;
         });
-        console.log(
-          'sliderReviewPropForScorekeeper',
-          sliderReviewPropForScorekeeper,
-        );
-        console.log(
-          'starReviewPropForScorekeeper',
-          starReviewPropForScorekeeper,
-        );
         setSliderAttributesForScorekeeper([...sliderReviewPropForScorekeeper]);
         setStarAttributesForScorekeeper([...starReviewPropForScorekeeper]);
       }
@@ -241,7 +233,6 @@ const Summary = ({
                 // setLeaveReviewText(`LEAVE A REVIEW FOR ${teamName}`);
                 setLeaveReviewText(strings.leaveReviewText);
               }
-              console.log('set home');
               setplayerFrom('home');
               break;
             }
@@ -258,8 +249,6 @@ const Summary = ({
                   // setLeaveReviewText(`LEAVE A REVIEW FOR ${teamName}`);
                   setLeaveReviewText(strings.leaveReviewText);
                 }
-                console.log('set away');
-
                 setplayerFrom('away');
                 break;
               }
@@ -286,10 +275,6 @@ const Summary = ({
       });
   };
 
-  console.log('isMemberOfHomeAway', isMemberOfHomeAway);
-  console.log('isRefereeAdmin', isRefereeAdmin);
-  console.log('isScorekeeperAdmin', isScorekeeperAdmin);
-
   const showLeaveReviewButton = () =>
     isMemberOfHomeAway || isRefereeAdmin || isScorekeeperAdmin;
 
@@ -298,7 +283,6 @@ const Summary = ({
       setLoading(true);
       getGameReview(gameData?.game_id, item?.review_id, authContext)
         .then((response) => {
-          console.log('Get review of referee::=>', response.payload);
           navigation.navigate('RefereeReviewScreen', {
             gameReviewData: response.payload,
             gameData,
@@ -327,7 +311,6 @@ const Summary = ({
       setLoading(true);
       getGameReview(gameData?.game_id, item?.review_id, authContext)
         .then((response) => {
-          console.log('Get review of scorekeeper::=>', response.payload);
           navigation.navigate('ScorekeeperReviewScreen', {
             gameReviewData: response.payload,
             gameData,
@@ -357,12 +340,6 @@ const Summary = ({
       setLoading(true);
       getGameReview(gameData?.game_id, reviewID, authContext)
         .then((response) => {
-          console.log(
-            'Edit Review By Review ID Response::=>',
-            response.payload,
-          );
-          console.log('selectedTeamForReview::=>', selectedTeamForReview);
-
           navigation.navigate('LeaveReview', {
             gameData,
             gameReviewData: response.payload,
@@ -405,7 +382,6 @@ const Summary = ({
     (index, sections) => {
       console.log('Sections:=>', sections);
       if (index === 0) {
-        console.log('gameData?.review_id:=>', gameData?.review_id);
         if (gameData?.review_id) {
           getGameReviewsData();
         } else {
@@ -486,7 +462,6 @@ const Summary = ({
                   } else if (gameData?.away_review_id) {
                     getGameReviewsData(gameData?.away_review_id);
                   } else {
-                    console.log('clicked leavereview');
                     navigation.navigate('LeaveReview', {
                       gameData,
                       selectedTeam: playerFrom === 'home' ? 'away' : 'home',
@@ -578,7 +553,6 @@ const Summary = ({
         unFollowUser={unFollowSoccerUser}
         onReviewPress={(referee) => {
           setPressedReferee(referee);
-          console.log('Referee Pressed:=>', referee);
           if (referee?.review_id) {
             getRefereeReviewsData(referee);
           } else {
@@ -692,7 +666,6 @@ const Summary = ({
         const reviewObj = {
           ...teamReview,
         };
-        console.log('Edited Review Object::=>', teamReview);
         patchScorekeeperReview(
           scorekeeper_id,
           gameData?.game_id,
@@ -755,7 +728,6 @@ const Summary = ({
         const reviewObj = {
           ...teamReview,
         };
-        console.log('Edited Review Object::=>', teamReview);
         patchRefereeReview(
           referee_id,
           gameData?.game_id,
@@ -819,8 +791,6 @@ const Summary = ({
         const reviewObj = {
           ...teamReview,
         };
-
-        console.log('Edited Review Object::=>', reviewObj);
         patchGameReview(gameData?.game_id, reviewID, reviewObj, authContext)
           .then(() => {
             setLoading(false);
@@ -836,7 +806,6 @@ const Summary = ({
             // navigation.goBack();
           });
       } else {
-        console.log('New Review Object::=>', reviewsData);
         setLoading(true);
         addGameReview(gameData?.game_id, reviewsData, authContext)
           .then(() => {
@@ -862,7 +831,7 @@ const Summary = ({
       const alreadyUrlDone = [];
       const createUrlData = [];
 
-      if (reviewsData.attachments.length > 0) {
+      if (reviewsData.attachments?.length > 0) {
         reviewsData.attachments.map((dataItem) => {
           if (dataItem.thumbnail) {
             alreadyUrlDone.push(dataItem);
@@ -900,7 +869,7 @@ const Summary = ({
       const alreadyUrlDone = [];
       const createUrlData = [];
 
-      if (reviewsData.attachments.length > 0) {
+      if (reviewsData.attachments?.length > 0) {
         reviewsData.attachments.map((dataItem) => {
           if (dataItem.thumbnail) {
             alreadyUrlDone.push(dataItem);
@@ -944,7 +913,7 @@ const Summary = ({
       const alreadyUrlDone = [];
       const createUrlData = [];
 
-      if (reviewsData.attachments.length > 0) {
+      if (reviewsData.attachments?.length > 0) {
         reviewsData.attachments.map((dataItem) => {
           if (dataItem.thumbnail) {
             alreadyUrlDone.push(dataItem);
@@ -995,7 +964,6 @@ const Summary = ({
         <Text
           style={styles.sendText}
           onPress={() => {
-            console.log('OKOK');
           }}>
           Send
         </Text>
@@ -1064,7 +1032,6 @@ const Summary = ({
                   style={styles.doneText}
                   onPress={() => {
                     setIsPopupVisible(false);
-                    console.log('gameData?.review_id:=>', gameData?.review_id);
                     if (playerFrom === '' && selectedTeamForReview) {
                       if (selectedTeamForReview === 'home') {
                         if (gameData?.home_review_id) {
@@ -1082,7 +1049,6 @@ const Summary = ({
                       }
                       if (selectedTeamForReview === 'away') {
                         if (gameData?.away_review_id) {
-                          console.log('ddddd away');
                           getGameReviewsData(gameData?.away_review_id);
                         } else {
                           navigation.navigate('LeaveReview', {
