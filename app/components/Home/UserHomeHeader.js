@@ -160,7 +160,8 @@ const UserHomeHeader = ({
                               ]}
                               startGradientColor={colors.whiteColor}
                               endGradientColor={colors.whiteColor}
-                              title={strings.invite}
+                              // title={strings.invite}
+                              title={currentUserData.inviteBtnTitle}
                               onPress={() => {
                                 onAction('invite');
                               }}

@@ -66,7 +66,7 @@ export default function ClubHomeTopSection({
                   outerContainerStyle={styles.userButtonOuterStyle}
                   style={styles.userButtonStyle}
                   textStyle={styles.buttonTextStyle}
-                  title={strings.join}
+                  title={clubDetails.joinBtnTitle}
                   onPress={() => {
                     onAction('join');
                   }}

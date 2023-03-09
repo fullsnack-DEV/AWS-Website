@@ -50,7 +50,7 @@ export default function TeamHomeTopSection({
                   outerContainerStyle={styles.userButtonOuterStyle}
                   style={styles.userButtonStyle}
                   textStyle={styles.buttonTextStyle}
-                  title={strings.join}
+                  title={teamDetails.joinBtnTitle}
                   onPress={() => {
                     onAction('join');
                   }}

@@ -95,10 +95,10 @@ export const sendInvitationInGroup = (params, authContext) =>
     authContext,
   });
 
-export const getUserDetails = (uid, authContext) =>
+export const getUserDetails = (uid, authContext, getRequest = false) =>
   makeAPIRequest({
     method: 'get',
-    url: `${Config.BASE_URL}/users/${uid}`,
+    url: `${Config.BASE_URL}/users/${uid}?getRequest=${getRequest}`,
     authContext,
   });
 

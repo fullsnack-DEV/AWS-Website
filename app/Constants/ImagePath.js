@@ -181,10 +181,12 @@ const images = {
   switchAccount: require('../assets/images/switch_account.png'),
   teamPlaceholder: require('../assets/images/team_placeholder.png'),
   newTeamPlaceHolder: require('../assets/images/newTeamPlaceHolder.png'),
+  teamBcgPlaceholder: require('../assets/images/team_bcg_placeHolder.png'),
   tennisArrowRight: require('../assets/images/tennis_arrow_right.png'),
   tennisArrowLeft: require('../assets/images/tennis_arrow_left.png'),
   noSpecicPlayer: require('../assets/images/ic_no_specific.png'),
   clubPlaceholder: require('../assets/images/club_placeholder.png'),
+  clubBcgPlaceholder: require('../assets/images/club_bcg_placeHolder.png'),
   leaguePlaceholder: require('../assets/images/league_placeholder.png'),
   teamPlaceholderSmall: require('../assets/images/teamplaceholder.png'),
   clubPlaceholderSmall: require('../assets/images/clubplaceholder.png'),
@@ -449,9 +451,7 @@ const images = {
   createMember: require('../assets/images/createMember.png'),
   unlinked: require('../assets/images/unlinked.png'),
   createTeamRoundIcon: require('../assets/images/createTeam.png'),
-
   invoiceIcon: require('../assets/images/invvoice.png'),
-
   scoreBoardBackgroundImage: require('../assets/images/scoreboardBg.png'),
   moreOptions: require('../assets/images/moreOptions.png'),
   infoIcon: require('../assets/images/infoIcon.png'),

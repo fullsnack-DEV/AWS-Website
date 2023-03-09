@@ -2402,9 +2402,19 @@ export default {
   levelText: 'en_Level',
   matchVenueInfo:
     'en_The challenger can choose one of the available venues when they challenge the match host.',
-
+  acceptInvite: 'en_Accept Invite',
+  declineInvite: 'en_Decline Invite',
+  acceptRequestMessage: 'en_Successfully join',
+  declinedRequestMessage: 'en_Successfully cancel join request',
+  book: 'en_Book',
+  sendRequest: 'en_Successfully send a request',
+  alreadyInviteMsg: 'en_You have already been invited to {0}',
+  alreadySendRequestMsg:
+    'en_You sent a request to join "{0}". It is still pending.',
+  inviteRequested: 'en_Invite Requested',
+  invited: 'en_Invited',
+  joinRequested: 'en_Join Requested',
   parentBadgeText: 'en_Parent',
-
   leaveReplyText: 'en_Leave a reply',
   ratingsInfo:
     'en_You can reply to a review up to 7 days after the review period has ended. Once you have submitted your reply, you cannot change or delete your reply. ',
@@ -2420,5 +2430,6 @@ export default {
   disputedMatches: 'en_Disputed Matches',
   playedMatches: 'en_Played {0} matches',
   playedInTeams: 'en_Played in {0} teams',
+
 
 };

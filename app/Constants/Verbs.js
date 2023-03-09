@@ -99,6 +99,7 @@ const Verbs = {
   countTypeRatio: 'Ratio',
   countTypeSets: 'Sets',
   countTypeTime: 'Time',
+  requestVerb: 'request',
 };
 
 export default Verbs;
