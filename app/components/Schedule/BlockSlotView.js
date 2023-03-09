@@ -6,6 +6,7 @@ import ActionSheet from 'react-native-actionsheet';
 import LinearGradient from 'react-native-linear-gradient';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
+import * as Utility from '../../utils/index';
 // import {strings} from '../../../../Localization/translation';
 
 
@@ -26,7 +27,7 @@ export default function BlockSlotView({
   const FreeSlotStatus = useRef();
   const CurrentItem = useRef();
   const getTimeFormat = (dateValue) =>
-  moment(new Date(dateValue * 1000)).format('h:mma');
+  moment(Utility.getJSDate(dateValue)).format('h:mma');
 
 
   const BlockAvailibityStatus = () => {

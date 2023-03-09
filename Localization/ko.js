@@ -982,5 +982,5 @@ export default {
   chooseCancellationPolicyTitle: 'Choose Cancellation Policy.',
 
   // Events
-  makeAvailable: 'en_Make Available'
+  makeAvailable: 'Make Available'
 };

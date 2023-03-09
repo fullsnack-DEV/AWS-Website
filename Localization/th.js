@@ -983,5 +983,5 @@ export default {
 
 
   // Events
-  makeAvailable: 'en_Make Available'
+  makeAvailable: 'Make Available'
 };

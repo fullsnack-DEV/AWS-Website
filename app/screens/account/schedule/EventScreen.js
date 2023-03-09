@@ -77,6 +77,10 @@ export default function EventScreen({navigation, route}) {
   let untilTime = '';
   let gameDataLati = null;
   let gameDataLongi = null;
+  const reportText = 'Report This Event';
+  const blockEventOrganiser = 'Block Event Organiser';
+  const attendyText = 'The event may be canceled by the organizer if the minimum number of the attendees isn’t met.';
+  const feeText = 'The event may be canceled by the organizer if the minimum number of the attendees isn’t met.';
   // let blocked = false;
  
   let repeatString = strings.never;
@@ -399,12 +403,12 @@ export default function EventScreen({navigation, route}) {
             infoType === 'attendee' ? (
               <View>
                 <Text style={styles.titleText}>{strings.numberOfAttend}</Text>
-                <Text style={styles.contentText}>The event may be canceled by the organizer if the minimum number of the attendees isn’t met.</Text>
+                <Text style={styles.contentText}>{attendyText}</Text>
               </View>
             ):(
               <View>
                 <Text style={styles.titleText}>{strings.eventFeeTitle}</Text>
-                <Text style={styles.contentText}>The event may be canceled by the organizer if the minimum number of the attendees isn’t met.</Text>
+                <Text style={styles.contentText}>{feeText}</Text>
               </View>
             )}
           </View>
@@ -861,7 +865,7 @@ export default function EventScreen({navigation, route}) {
       />
       <ActionSheet
         ref={userActionSheet}
-        options={['Report This Event', 'Block Event Oraganizer', strings.cancel]}
+        options={[reportText, blockEventOrganiser, strings.cancel]}
         cancelButtonIndex={2}
         // destructiveButtonIndex={1}
         onPress={() => {}}

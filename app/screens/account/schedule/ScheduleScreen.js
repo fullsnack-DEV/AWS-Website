@@ -1789,7 +1789,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
-    marginRight: widthPercentageToDP('3%'),
+    marginRight: wp('3%'),
   },
   closeFilterButton: {
     width: 20,

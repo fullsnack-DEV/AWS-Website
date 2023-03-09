@@ -27,7 +27,7 @@ export default {
   until: 'Until',
   weekly: 'Weekly',
   addTime: 'Add time',
-  addSportsTitle: 'en_Add a sport',
+  addSportsTitle: 'Add a sport',
   congratsModalTitle: 'Congratulations! You are now registered as a player in ',
   setAvailable: 'Set available',
   block: 'Block',
