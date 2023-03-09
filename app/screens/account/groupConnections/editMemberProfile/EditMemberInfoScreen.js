@@ -13,6 +13,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
+  TouchableWithoutFeedback,
 } from 'react-native';
 
 import ActionSheet from 'react-native-actionsheet';
@@ -27,6 +28,8 @@ import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
 import TCLable from '../../../../components/TCLabel';
 import TCTextField from '../../../../components/TCTextField';
+import TCKeyboardView from '../../../../components/TCKeyboardView';
+import LocationModal from '../../../../components/LocationModal/LocationModal';
 
 export default function EditMemberInfoScreen({navigation, route}) {
   const actionSheet = useRef();
@@ -36,8 +39,14 @@ export default function EditMemberInfoScreen({navigation, route}) {
 
   const [memberInfo, setMemberInfo] = useState({});
 
+  const [visibleLocationModal, setVisibleLocationModal] = useState(false);
+
+  const [homeCity, setHomeCity] = useState();
+
   useEffect(() => {
     setMemberInfo(route.params.memberInfo);
+
+    setHomeCity(route.params.memberInfo?.home_city);
   }, []);
 
   useLayoutEffect(() => {
@@ -57,6 +66,14 @@ export default function EditMemberInfoScreen({navigation, route}) {
           }}>
           Done
         </Text>
+      ),
+      headerLeft: () => (
+        <TouchableWithoutFeedback
+          onPress={() => {
+            navigation.goBack();
+          }}>
+          <Image source={images.backArrow} style={styles.backArrowStyle} />
+        </TouchableWithoutFeedback>
       ),
     });
   }, [navigation, memberInfo]);
@@ -82,8 +99,9 @@ export default function EditMemberInfoScreen({navigation, route}) {
             first_name: memberInfo.first_name,
             last_name: memberInfo.last_name,
             use_profile_pic: false,
+            city: memberInfo.city,
           };
-          console.log('BODY PARAMS:', bodyParams);
+
           editMemberInfo(
             memberInfo?.group?.group_id,
             memberInfo?.user_id,
@@ -102,12 +120,14 @@ export default function EditMemberInfoScreen({navigation, route}) {
           first_name: memberInfo.first_name,
           last_name: memberInfo.last_name,
           use_profile_pic: true,
+          city: memberInfo.city,
         };
       } else {
         bodyParams = {
           first_name: memberInfo.first_name,
           last_name: memberInfo.last_name,
           use_profile_pic: false,
+          city: memberInfo.city,
         };
       }
 
@@ -186,50 +206,126 @@ export default function EditMemberInfoScreen({navigation, route}) {
     return [strings.camera, strings.album, strings.cancelTitle];
   };
 
+  const handleSetLocationOptions = (location) => {
+    setHomeCity(
+      [location.city, location.state, location.country]
+        .filter((v) => v)
+        .join(', '),
+    );
+
+    setMemberInfo({
+      ...memberInfo,
+      city: location.city,
+      state_abbr: location.state,
+      country: location.country,
+    });
+  };
+
   return (
     <ScrollView style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-      <View style={styles.profileView}>
-        <Image
-          source={
-            memberInfo.full_image
-              ? {uri: memberInfo.full_image}
-              : images.profilePlaceHolder
-          }
-          style={styles.profileChoose}
-        />
-        <TouchableOpacity
-          style={styles.choosePhoto}
-          onPress={() => onProfileImageClicked()}>
-          <Image source={images.certificateUpload} style={styles.choosePhoto} />
-        </TouchableOpacity>
-      </View>
 
-      {memberInfo?.connected ? (
-        <Text
-          style={
-            styles.fixedNameText
-          }>{`${memberInfo.first_name} ${memberInfo.last_name}`}</Text>
-      ) : (
-        <View>
-          <TCLable title={strings.nameText} required={true} />
-          <TCTextField
-            value={memberInfo.first_name}
-            onChangeText={(text) =>
-              setMemberInfo({...memberInfo, first_name: text})
+      <TCKeyboardView>
+        <View style={styles.profileView}>
+          <Image
+            source={
+              memberInfo.full_image
+                ? {uri: memberInfo.full_image}
+                : images.profilePlaceHolder
             }
-            placeholder={strings.firstName}
+            style={styles.profileChoose}
           />
-          <TCTextField
-            value={memberInfo.last_name}
-            onChangeText={(text) =>
-              setMemberInfo({...memberInfo, last_name: text})
-            }
-            placeholder={strings.lastName}
-            style={{marginTop: 12}}
-          />
+          <TouchableOpacity
+            style={styles.choosePhoto}
+            onPress={() => onProfileImageClicked()}>
+            <Image
+              source={images.certificateUpload}
+              style={styles.choosePhoto}
+            />
+          </TouchableOpacity>
         </View>
-      )}
+
+        <View
+          style={{
+            marginTop: 8,
+          }}>
+          <TCLable title={strings.nameText.toUpperCase()} required={true} />
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              marginTop: 10,
+            }}>
+            <TCTextField
+              style={{
+                flex: 1,
+                marginHorizontal: 8,
+              }}
+              value={memberInfo?.first_name}
+              autoCapitalize="none"
+              autoCorrect={false}
+              onChangeText={(text) =>
+                setMemberInfo({...memberInfo, first_name: text})
+              }
+              placeholder={strings.firstName}
+            />
+            <TCTextField
+              style={{
+                flex: 1,
+                marginHorizontal: 8,
+              }}
+              value={memberInfo?.last_name}
+              autoCapitalize="none"
+              autoCorrect={false}
+              onChangeText={(text) =>
+                setMemberInfo({...memberInfo, last_name: text})
+              }
+              placeholder={strings.lastName}
+            />
+          </View>
+        </View>
+        <View>
+          <TCLable
+            title={strings.homeCity.toUpperCase()}
+            required={true}
+            style={{marginBottom: 10, marginTop: 25}}
+          />
+          <TouchableOpacity onPress={() => setVisibleLocationModal(true)}>
+            <TCTextField
+              value={homeCity}
+              autoCapitalize="none"
+              autoCorrect={false}
+              placeholder={strings.homeCity}
+              pointerEvents="none"
+              editable={false}
+            />
+          </TouchableOpacity>
+        </View>
+        <View>
+          <TCLable
+            title={strings.emailtitle.toUpperCase()}
+            required={true}
+            style={{marginBottom: 10, marginTop: 25}}
+          />
+          <TCTextField
+            value={memberInfo?.email}
+            autoCapitalize="none"
+            editable={false}
+            autoCorrect={false}
+            placeholder={strings.emailPlaceHolder}
+            keyboardType={'email-address'}
+          />
+          <Text style={styles.notesStyle}>{strings.emailNotes}</Text>
+        </View>
+      </TCKeyboardView>
+
+      <LocationModal
+        visibleLocationModal={visibleLocationModal}
+        title={strings.homeCityTitleText}
+        setVisibleLocationModalhandler={() => setVisibleLocationModal(false)}
+        onLocationSelect={handleSetLocationOptions}
+        placeholder={strings.searchByCity}
+      />
 
       <ActionSheet
         ref={actionSheet}
@@ -288,15 +384,21 @@ const styles = StyleSheet.create({
     right: 0,
   },
   nextButtonStyle: {
-    fontFamily: fonts.RRegular,
+    fontFamily: fonts.RMedium,
     fontSize: 16,
     marginRight: 10,
   },
-  fixedNameText: {
-    marginTop: 10,
-    textAlign: 'center',
-    fontSize: 20,
-    fontFamily: fonts.RMedium,
-    color: colors.lightBlackColor,
+
+  notesStyle: {
+    fontSize: 14,
+    fontFamily: fonts.RRegular,
+    color: colors.userPostTimeColor,
+    margin: 15,
+  },
+  backArrowStyle: {
+    height: 20,
+    marginLeft: 15,
+    resizeMode: 'contain',
+    tintColor: colors.blackColor,
   },
 });

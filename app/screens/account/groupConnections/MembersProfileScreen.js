@@ -231,7 +231,6 @@ export default function MembersProfileScreen({navigation, route}) {
   }, [isFocused]);
 
   useEffect(() => {
-    console.log(memberDetail?.status, 'from status');
     if (memberDetail?.connected) {
       setEditProfile(false);
     }
@@ -289,8 +288,10 @@ export default function MembersProfileScreen({navigation, route}) {
   const deleteMemberProfile = (groupId, memberId) => {
     setloading(true);
     deleteMember(groupId, memberId, authContext)
-      .then(() => {
+      .then((response) => {
         setloading(false);
+        console.log(response, 'From res');
+
         navigation.navigate('GroupMembersScreen');
       })
       .catch((e) => {
@@ -329,8 +330,6 @@ export default function MembersProfileScreen({navigation, route}) {
   const renderSeparator = () => <TCThinDivider marginTop={20} width={'100%'} />;
 
   const getLocation = () => {
-    console.log(memberDetail, 'FromDate');
-
     let locationString = '';
 
     if (memberDetail?.connected) {
