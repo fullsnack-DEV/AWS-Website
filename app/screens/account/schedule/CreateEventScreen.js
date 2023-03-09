@@ -108,6 +108,10 @@ export default function CreateEventScreen({navigation, route}) {
   const [modalPostedInvite, setModalPostedInvite] = useState(false);
   const [sportsSelection, setSportsSelection] = useState();
   const [selectedSport, setSelectedSport] = useState();
+  const see = 'see';
+  const join = 'join';
+  const posted = 'posted';
+  const invite = 'invite';
 
   const [whoOption, setWhoOption] = useState();
   const [whoCanJoinOption, setWhoCanJoinOption] = useState({
@@ -412,11 +416,11 @@ export default function CreateEventScreen({navigation, route}) {
     <TouchableOpacity
       style={styles.listItem}
       onPress={() => {
-        if (whoOption === 'see') {
+        if (whoOption === see) {
           setWhoCanSeeOption(item);
-        } else if(whoOption === 'join') {
+        } else if(whoOption === join) {
           setWhoCanJoinOption(item);
-        }else if(whoOption === 'invite'){
+        }else if(whoOption === invite){
           setWhoCanInviteOption(item);
         }else{
           setEventPosted(item)
@@ -437,10 +441,10 @@ export default function CreateEventScreen({navigation, route}) {
         }}>
         <Text style={styles.languageList}>{item.text}</Text>
         <View style={styles.checkbox}>
-          {(whoOption === 'see' && whoCanSeeOption.value === item?.value) ||
-          (whoOption === 'join' && whoCanJoinOption.value === item?.value) || 
-          (whoOption === 'posted' && eventPosted.value === item?.value) || 
-          (whoOption === 'invite' && whoCanInviteOption.value === item?.value) ? (
+          {(whoOption === see && whoCanSeeOption.value === item?.value) ||
+          (whoOption === join && whoCanJoinOption.value === item?.value) || 
+          (whoOption === posted && eventPosted.value === item?.value) || 
+          (whoOption === invite && whoCanInviteOption.value === item?.value) ? (
             <Image
               source={images.radioCheckYellow}
               style={styles.checkboxImg}
