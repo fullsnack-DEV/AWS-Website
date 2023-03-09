@@ -454,7 +454,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
           marginRight: 15,
           justifyContent: 'space-between',
           marginTop: 10,
-          marginBottom: 25,
+          marginBottom: 27,
         }}>
         <View style={{...styles.halfMatchFeeView}}>
           <TextInput
@@ -591,12 +591,8 @@ export default function RequestBasicInfoScreen({navigation, route}) {
             </View>
 
             <View style={{marginLeft: 50}}>
-              <Text style={styles.fixedText}>
-                {/* {memberInfo?.gender} */}
+              <Text style={[styles.fixedText, {textTransform: 'capitalize'}]}>
                 {memberInfo.gender}
-                {/* {memberInfo?.gender == !''
-                  ? firstLetterCapital(memberInfo?.gender)
-                  : memberInfo?.gender} */}
               </Text>
             </View>
           </View>
@@ -724,7 +720,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
           value={memberInfo.email}
           style={{
             marginTop: 12,
-            marginBottom: 25,
+            marginBottom: 27,
           }}
           onChangeText={(text) => setMemberInfo({...memberInfo, email: text})}
           autoCapitalize="none"
@@ -800,7 +796,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
             editable={false}
             style={{
               marginTop: 10,
-              marginBottom: 25,
+              marginBottom: 27,
             }}
           />
         </TouchableOpacity>
@@ -927,7 +923,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.lightBlackColor,
     marginTop: 8,
-    marginBottom: 25,
+    marginBottom: 27,
     lineHeight: 24,
   },
   backArrowStyle: {

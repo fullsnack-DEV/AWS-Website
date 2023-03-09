@@ -9,6 +9,7 @@ import {
   Image,
   Platform,
   TouchableOpacity,
+  TouchableWithoutFeedback,
 } from 'react-native';
 
 import RNPickerSelect from 'react-native-picker-select';
@@ -144,6 +145,14 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
           }}>
           {strings.save}
         </Text>
+      ),
+      headerLeft: () => (
+        <TouchableWithoutFeedback
+          onPress={() => {
+            navigation.goBack();
+          }}>
+          <Image source={images.backArrow} style={styles.backArrowStyle} />
+        </TouchableWithoutFeedback>
       ),
     });
   }, [navigation, memberInfo, role, phoneNumber, showDate]);
@@ -735,5 +744,11 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     fontSize: 14,
     fontFamily: fonts.RBold,
+  },
+  backArrowStyle: {
+    height: 20,
+    marginLeft: 15,
+    resizeMode: 'contain',
+    tintColor: colors.blackColor,
   },
 });

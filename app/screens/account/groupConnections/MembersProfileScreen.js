@@ -975,6 +975,9 @@ export default function MembersProfileScreen({navigation, route}) {
               )}
             </View>
             <TCInfoField
+              valueStyle={{
+                textTransform: 'capitalize',
+              }}
               title={strings.gender}
               value={
                 memberDetail?.gender ? memberDetail?.gender : strings.NAText
