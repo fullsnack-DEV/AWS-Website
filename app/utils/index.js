@@ -2150,12 +2150,12 @@ export const getGamesList = async (eventsList) => {
   let groupIDs = [];
 
   eventsList.map((game) => {
-    if (game.user_challenge) {
+    if (game.user_challenge && !game.cal_id) {
       userIDs.push(game.home_team);
       userIDs.push(game.away_team);
-    } else if (game.owner_id && game.owner_type === 'users') {
+    } else if (game.cal_id && game.owner_id && game.owner_type === 'users') {
       userIDs.push(game.owner_id);
-    } else if (game.owner_id && game.owner_type === 'groups') {
+    } else if (game.cal_id && game.owner_id && game.owner_type === 'groups') {
       groupIDs.push(game.owner_id);
     } else {
       groupIDs.push(game.home_team);

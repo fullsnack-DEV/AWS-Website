@@ -516,6 +516,7 @@ export default function ScheduleScreen({navigation, route}) {
         setAllSlots(eventTimeTableData);
         let gameIDs = [...new Set(response.map((item) => item.game_id))];
         gameIDs = (gameIDs || []).filter((item) => item !== undefined);
+
         if (gameIDs.length > 0) {
           const gameList = {
             query: {
@@ -534,11 +535,12 @@ export default function ScheduleScreen({navigation, route}) {
 
             const pendingChallenge = listObj.filter((obj) => obj !== undefined);
 
-            Utility.getGamesList([
+            const gamelists = [
               ...games,
               ...pendingChallenge,
               ...response.filter((obj) => obj.owner_id),
-            ]).then((gamedata) => {
+            ]
+            Utility.getGamesList(gamelists).then((gamedata) => {
               setloading(false);
               configureEvents(eventTimeTableData, gamedata);
             });

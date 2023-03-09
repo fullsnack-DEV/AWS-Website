@@ -113,9 +113,40 @@ const LeaveReview = ({navigation, route}) => {
   const createReview = () => {
     if (isValidReview()) {
       /* eslint-disable  no-unused-expressions */
-      currentForm === 1 ? 
-      gameData.home_team.user_id ? reviewsData.player_id = gameData.home_team.user_id : reviewsData.team_id = gameData.home_team.group_id
-      : gameData.away_team.user_id ? reviewsData.player_id = gameData.away_team.user_id : reviewsData.team_id = gameData.away_team.group_id
+      currentForm === 1
+        ? gameData.home_team.user_id
+          ? (reviewsData.player_id = gameData.home_team.user_id)
+          : (reviewsData.team_id = gameData.home_team.group_id)
+        : gameData.away_team.user_id
+        ? (reviewsData.player_id = gameData.away_team.user_id)
+        : (reviewsData.team_id = gameData.away_team.group_id);
+
+      // set is_review properties
+      if (reviewsData.comment?.length > 0) {
+        reviewsData.is_review = 1;
+      } else {
+        reviewsData.is_review = 0;
+      }
+
+      // set is_rating properties
+      const keys = {};
+      let isRating = false;
+      starAttributes.map((item) => {
+        if (!(!isRefereeAvailable && item.name === 'respectforreferre')) {
+          keys[item.name] = 0;
+        }
+      });
+      Object.keys(keys).map((key) => {
+        if (reviewsData[key] > 0) {
+          isRating = true;
+        }
+      });
+
+      if (isRating) {
+        reviewsData.is_rating = 1;
+      } else {
+        reviewsData.is_rating = 0;
+      }
 
       onPressReview(currentForm, currentForm === 1
         ? !!gameData.home_review_id
