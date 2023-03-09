@@ -105,6 +105,7 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
       }
       return obj;
     });
+
     setSelectedList(selectedPlayers);
   };
 
@@ -243,7 +244,7 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
       </View>
       {/* if player is selected then only show this profile Tag */}
 
-      {selectPlayer.length > 0 ? (
+      {selectPlayer.length > 0 && (
         <View
           style={{
             marginTop: 15,
@@ -258,12 +259,9 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
             }}
           />
         </View>
-      ) : (
-        <View />
       )}
       <View>
         <FlatList
-          style={{}}
           extraData={players}
           showsVerticalScrollIndicator={false}
           data={players}
@@ -271,7 +269,7 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
           ItemSeparatorComponent={ItemSeparatorComponent}
           renderItem={renderPlayer}
           ListEmptyComponent={listEmptyComponent}
-          ListFooterComponent={() => <View style={{marginBottom: 15}} />}
+          ListFooterComponent={() => <View style={{marginBottom: 180}} />}
         />
       </View>
 

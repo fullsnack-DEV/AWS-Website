@@ -511,6 +511,7 @@ export default function GroupMembersScreen({navigation, route}) {
           strings.createMemberProfileText,
           strings.cancel,
         ]}
+        userInterfaceStyle="light"
         cancelButtonIndex={2}
         onPress={(index) => {
           if (index === 0) {
@@ -529,6 +530,7 @@ export default function GroupMembersScreen({navigation, route}) {
           strings.privacyPolicy,
           strings.cancel,
         ]}
+        userInterfaceStyle="light"
         cancelButtonIndex={3}
         onPress={(index) => {
           if (index === 0) {
