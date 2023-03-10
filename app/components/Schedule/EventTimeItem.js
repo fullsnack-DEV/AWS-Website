@@ -1,28 +1,33 @@
 import React from 'react';
-import {StyleSheet, View, Text} from 'react-native';
+import {StyleSheet, View, Text, Image} from 'react-native';
 import {
-  heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
+import images from '../../Constants/ImagePath';
 
-function EventTimeItem({from, fromTime, to, toTime, repeat, repeatTime}) {
+function EventTimeItem({fromTime, location}) {
   return (
     <View style={styles.containerStyle}>
       <View style={styles.timeValueStyle}>
-        <Text style={styles.fromTextStyle}>{from}</Text>
+        <Image
+        source={images.eventClock}
+        style={{width: 14, height: 14, marginRight: 10}}
+        />
         <Text style={styles.fromTimeTextStyle}>{fromTime}</Text>
       </View>
       <View style={styles.timeValueStyle}>
-        <Text style={styles.fromTextStyle}>{to}</Text>
-        <Text style={styles.fromTimeTextStyle}>{toTime}</Text>
+        <Image
+        source={images.eventMap}
+        style={{width: 14, height: 18, marginRight: 10}}
+        />
+        <Text style={styles.fromTimeTextStyle}>{location}</Text>
       </View>
-      <View style={styles.timeSepratorView} />
+      {/* <View style={styles.timeSepratorView} />
       <View style={styles.timeValueStyle}>
-        <Text style={styles.fromTextStyle}>{repeat}</Text>
         <Text style={styles.fromTimeTextStyle}>{repeatTime}</Text>
-      </View>
+      </View> */}
     </View>
   );
 }
@@ -30,28 +35,21 @@ function EventTimeItem({from, fromTime, to, toTime, repeat, repeatTime}) {
 const styles = StyleSheet.create({
   containerStyle: {
     width: wp('96%'),
+    marginTop: 20
   },
   timeValueStyle: {
     flexDirection: 'row',
     paddingHorizontal: 15,
     marginVertical: 3,
-  },
-  fromTextStyle: {
-    width: wp('18%'),
-    fontFamily: fonts.RLight,
-    fontSize: 16,
+    alignContent: 'center',
+    alignItems: 'center'
   },
   fromTimeTextStyle: {
     fontFamily: fonts.RRegular,
     fontSize: 16,
     color: colors.lightBlackColor,
-  },
-  timeSepratorView: {
-    borderColor: colors.writePostSepratorColor,
-    borderWidth: 0.5,
-    marginRight: wp('4%'),
-    marginVertical: hp('1%'),
-  },
+    lineHeight: 24
+  }
 });
 
 export default EventTimeItem;

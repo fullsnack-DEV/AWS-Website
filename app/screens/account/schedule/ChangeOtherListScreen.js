@@ -15,7 +15,7 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
-import FlatList from 'react-native-drag-flatlist';
+import DraggableFlatList from 'react-native-drag-flatlist';
 import * as Utility from '../../../utils/index';
 import {getUserSettings, saveUserSettings} from '../../../api/Users';
 import AuthContext from '../../../auth/context';
@@ -49,6 +49,7 @@ export default function ChangeOtherListScreen({navigation, route}) {
             'schedule_group_filter',
             response.payload.schedule_group_filter,
           );
+          route?.params?.onBackClick(true);
           navigation.goBack();
           setLoading(false);
         })
@@ -123,7 +124,7 @@ export default function ChangeOtherListScreen({navigation, route}) {
     ({item, drag}) =>
       item.sport !== Verbs.allStatus && (
         <View style={styles.sportsBackgroundView}>
-          <View style={{flexDirection: 'row'}}>
+          <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
             <TouchableOpacity
               onPress={() => {
                 const findIndex = addedGroups.findIndex(
@@ -144,7 +145,16 @@ export default function ChangeOtherListScreen({navigation, route}) {
                 style={styles.addIconStyle}
               />
             </TouchableOpacity>
-
+            {
+            item.thumbnail ? (
+            <Image source={{uri: item.thumbnail}} style={{width: 20, height: 20, marginRight: 10, borderRadius: 50}}/>
+            ): (
+              item.entity_type === 'team' ? (
+                <Image source={images.teamPatch} style={{width: 20, height: 20, marginRight: 10, borderRadius: 50}}/>
+              ) : (
+                <Image source={images.clubPatch} style={{width: 20, height: 20, marginRight: 10, borderRadius: 50}}/>
+              )
+            )}
             <Text style={styles.sportNameTitle}>{item.group_name}</Text>
           </View>
           <TouchableOpacity onLongPress={drag} style={{alignSelf: 'center'}}>
@@ -159,7 +169,7 @@ export default function ChangeOtherListScreen({navigation, route}) {
     ({item}) =>
       item.sport !== Verbs.allStatus && (
         <View style={styles.sportsBackgroundView}>
-          <View style={{flexDirection: 'row'}}>
+          <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
             <TouchableOpacity
               onPress={() => {
                 if (addedGroups.length < 10) {
@@ -181,17 +191,16 @@ export default function ChangeOtherListScreen({navigation, route}) {
               style={{alignSelf: 'center'}}>
               <Image source={images.addSportList} style={styles.addIconStyle} />
             </TouchableOpacity>
-            {/* <FastImage
-              source={{
-                uri: `${image_url}${Utility.getSportImage(
-                  item.sport,
-                  item.type,
-                  authContext,
-                )}`,
-              }}
-              style={styles.sportsIcon}
-              resizeMode={'contain'}
-            /> */}
+            {
+            item.thumbnail ? (
+            <Image source={{uri: item.thumbnail}} style={{width: 20, height: 20, marginRight: 10, borderRadius: 50}}/>
+            ): (
+              item.entity_type === 'team' ? (
+                <Image source={images.teamPatch} style={{width: 20, height: 20, marginRight: 10, borderRadius: 50}}/>
+              ) : (
+                <Image source={images.clubPatch} style={{width: 20, height: 20, marginRight: 10, borderRadius: 50}}/>
+              )
+            )}
             <Text style={styles.sportNameTitle}>{item.group_name}</Text>
           </View>
         </View>
@@ -202,13 +211,13 @@ export default function ChangeOtherListScreen({navigation, route}) {
   return (
     <SafeAreaView style={{flex: 1}}>
       <ActivityLoader visible={loading} />
+      <View style={{flex: 1, paddingBottom: 20}}>
       <Text style={styles.mainTextStyle}>
         {strings.organizerDisplayInFilterBartext}
       </Text>
       <Text style={styles.subTitle}>{strings.upTo10OrganizerText}</Text>
-
       {addedGroups.length > 0 ? (
-        <FlatList
+        <DraggableFlatList
           showsHorizontalScrollIndicator={false}
           data={addedGroups}
           keyExtractor={(item, index) => index.toString()}
@@ -231,14 +240,14 @@ export default function ChangeOtherListScreen({navigation, route}) {
           }}
         />
       ) : (
-        <View style={{marginTop: 15}}>
+        <View style={{marginTop: 10}}>
           <Text style={styles.noEventText}>{strings.noOrganizers}</Text>
         </View>
       )}
       <Text style={styles.otherTitle}>{strings.otherOrganizers}</Text>
 
       {removedGroups.length > 0 ? (
-        <FlatList
+        <DraggableFlatList
           showsHorizontalScrollIndicator={false}
           data={removedGroups}
           keyExtractor={(item, index) => index.toString()}
@@ -260,6 +269,7 @@ export default function ChangeOtherListScreen({navigation, route}) {
       <Text style={styles.headerTextStyle}>
         {strings.someOrganizerJoinEventText}
       </Text>
+      </View>
     </SafeAreaView>
   );
 }
@@ -333,20 +343,16 @@ const styles = StyleSheet.create({
   },
 
   sportsBackgroundView: {
-    alignSelf: 'center',
-    backgroundColor: colors.whiteColor,
-    borderRadius: 8,
-    elevation: 5,
+    alignSelf: 'flex-start',
+    backgroundColor: colors.lightGrey,
+    borderRadius: 6,
+    // elevation: 5,
     flexDirection: 'row',
-    height: 40,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 5},
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    width: Utility.widthPercentageToDP('86%'),
-    // alignItems: 'center',
+    height: 35,
+    width: Utility.widthPercentageToDP('92%'),
     justifyContent: 'space-between',
     marginBottom: 15,
+    marginLeft: 15
   },
   noEventText: {
     fontSize: 20,

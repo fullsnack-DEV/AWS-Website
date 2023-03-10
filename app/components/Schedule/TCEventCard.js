@@ -1,9 +1,7 @@
 import React, {useContext} from 'react';
-import {StyleSheet, View, Text, TouchableWithoutFeedback} from 'react-native';
+import {StyleSheet, View, Text, TouchableWithoutFeedback, ImageBackground} from 'react-native';
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import moment from 'moment';
-import LinearGradient from 'react-native-linear-gradient';
-import FastImage from 'react-native-fast-image';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
@@ -21,7 +19,6 @@ export default function TCEventCard({
   const isGame = !!(data?.game_id && data?.game);
 
   const startDate = getJSDate(data.start_datetime);
-  const endDate = getJSDate(data.end_datetime);
 
   const location =
     data?.location?.location_name ??
@@ -31,95 +28,53 @@ export default function TCEventCard({
   const title = isGame ? getSportName(data.game, authContext) : data.title;
 
   return (
-    <TouchableWithoutFeedback style={styles.backgroundView} onPress={onPress}>
-      <View style={styles.backgroundView} onPress={onPress}>
-        <LinearGradient
-          colors={[colors.greenGradientEnd, colors.greenGradientStart]}
-          style={styles.colorView}>
-          {data?.allDay && data?.allDay === true ? (
-            <Text style={styles.allTypeText}>{'All'}</Text>
-          ) : (
-            <Text style={styles.dateMonthText}>
-              {moment(startDate).format('h')}
-              <Text style={styles.dateMonthSmallText}>
-                :{moment(startDate).format('mm')}
-              </Text>
-            </Text>
-          )}
-          {data?.allDay && data?.allDay === true ? (
-            <Text style={styles.dateText}>Day</Text>
-          ) : (
-            <Text style={styles.dateText}>{moment(startDate).format('a')}</Text>
-          )}
-        </LinearGradient>
+    <TouchableWithoutFeedback onPress={onPress}>
+      <View style={styles.backgroundView}>
+        <View>
+          <ImageBackground 
+          imageStyle={styles.imageBorder}
+          source={data?.background_thumbnail
+            ? {uri: data?.background_thumbnail}
+            : images.backgroudPlaceholder} 
+          resizeMode="cover" 
+          style={styles.eventImage}>
+             <View style={{height: 100}}/>
+          </ImageBackground>
+        </View>
         <View style={styles.eventText}>
           <View style={styles.eventTitlewithDot}>
             <View>
               <Text
-                style={[
-                  styles.eventTitle,
-                  {color: colors.greenGradientStart, width: 200},
-                ]}
+                style={styles.eventTitle}
                 numberOfLines={1}>
                 {title}
               </Text>
               <View style={styles.bottomView}>
-                <Text style={styles.eventTime}>{`${moment(startDate).format(
-                  'h:mma',
+                  <Text style={styles.eventTime}>{`${moment(startDate).format(
+                  'ddd, MMM DD',
                 )} - `}</Text>
-                <Text style={styles.eventTime}>
-                  {moment(endDate).format('h:mma')}
-                </Text>
-                {location !== '' && (
-                  <Text style={[styles.eventTime, {marginHorizontal: 5}]}>
+                <Text style={styles.eventTime}>{`${moment(startDate).format(
+                  'h:mma'
+                )} `}</Text>
+               {data?.going?.length && (
+                <>
+                  <Text style={styles.eventTime}> | </Text>
+                  <Text numberOfLines={1} style={{...styles.eventTime, flex: 1}}>
                     {' '}
-                    |{' '}
+                    {data?.going?.length ?? 0}
+                    {strings.going}
                   </Text>
+                </>
                 )}
-                <Text numberOfLines={1} style={{...styles.eventTime, flex: 1}}>
-                  {' '}
-                  {data?.going?.length ?? 0}
-                  {strings.going}
-                </Text>
-              </View>
-
-              <View style={styles.bottomView}>
+                
+                {location !== '' && (
+                  <Text style={styles.eventTime}> | </Text>
+                )}
                 <Text numberOfLines={1} style={{...styles.eventTime, flex: 1}}>
                   {location !== '' && location}
                 </Text>
               </View>
             </View>
-
-            <FastImage
-              source={
-                data?.background_thumbnail
-                  ? {uri: data?.background_thumbnail}
-                  : images.backgroudPlaceholder
-              }
-              style={{height: 66, width: 66, borderRadius: 5}}
-            />
-          </View>
-          <View
-            style={{flexDirection: 'row', alignItems: 'center', marginTop: 10}}>
-            <FastImage
-              source={
-                data?.owner_obj?.thumbnail
-                  ? {uri: data?.owner_obj?.thumbnail}
-                  : images.profilePlaceHolder
-              }
-              style={{height: 15, width: 15, borderRadius: 30}}
-            />
-            <Text
-              numberOfLines={1}
-              style={{
-                fontSize: 12,
-                color: colors.lightBlackColor,
-                fontFamily: fonts.RBold,
-                flex: 1,
-                marginLeft: 5,
-              }}>
-              {data?.owner_obj?.group_name ?? data?.owner_obj?.full_name}
-            </Text>
           </View>
         </View>
       </View>
@@ -128,12 +83,19 @@ export default function TCEventCard({
 }
 
 const styles = StyleSheet.create({
+  eventImage:{
+    flex: 1
+  },
+  imageBorder: { 
+    borderTopLeftRadius: 10, 
+    borderTopRightRadius: 10
+  },
   backgroundView: {
     alignSelf: 'center',
     backgroundColor: colors.whiteColor,
     borderRadius: 10,
     elevation: 5,
-    flexDirection: 'row',
+    flexDirection: 'column',
     marginBottom: 15,
     shadowColor: colors.googleColor,
     shadowOffset: {width: 0, height: 2},
@@ -146,50 +108,20 @@ const styles = StyleSheet.create({
     marginTop: 10,
     alignItems: 'center',
   },
-  colorView: {
-    alignItems: 'center',
-    backgroundColor: colors.orangeColor,
-    borderBottomLeftRadius: 5,
-    borderTopLeftRadius: 5,
-    paddingTop: 10,
-    paddingLeft: 5,
-    width: wp('12%'),
-  },
-  dateMonthText: {
-    color: colors.whiteColor,
-    fontSize: 20,
-    fontFamily: fonts.RBold,
-  },
-  dateMonthSmallText: {
-    color: colors.whiteColor,
-    fontSize: 10,
-    fontFamily: fonts.RBold,
-  },
-  allTypeText: {
-    color: colors.whiteColor,
-    fontSize: 20,
-    fontFamily: fonts.RBold,
-  },
-  dateText: {
-    color: colors.whiteColor,
-    fontSize: 16,
-    fontFamily: fonts.RLight,
-  },
-
   eventText: {
     padding: 10,
     width: wp('83%'),
   },
   eventTime: {
     fontSize: 12,
-    color: colors.lightBlackColor,
+    color: colors.darkBlackColor,
     fontFamily: fonts.RLight,
   },
   eventTitle: {
     fontSize: 16,
     fontFamily: fonts.RMedium,
     width: wp('70%'),
-    color: colors.googleColor,
+    color: colors.darkBlackColor,
   },
   eventTitlewithDot: {
     flex: 1,

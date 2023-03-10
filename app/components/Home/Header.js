@@ -10,7 +10,6 @@ function Header({
   centerContainerStyle,
   rightComponent,
   rightContainerStyle,
-  // mainContainerStyle,
   statusbarColor,
   translucent,
   barStyle,

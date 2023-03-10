@@ -4,7 +4,6 @@ import FastImage from 'react-native-fast-image';
 import images from '../../../Constants/ImagePath';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
-import TCGradientButton from '../../../components/TCGradientButton';
 import {heightPercentageToDP as hp} from '../../../utils';
 import TCGroupNameBadge from '../../../components/TCGroupNameBadge';
 import {strings} from '../../../../Localization/translation';
@@ -49,36 +48,13 @@ const TCRemoveUser = ({
           {subTitle}
         </Text>
       </TouchableOpacity>
-      <View style={{flex: 0.25, alignItems: 'center'}}>
-        <View>
-          <TCGradientButton
-            rightIconStyle={{
-              height: 6,
-              width: 10,
-              resizeMode: 'contain',
-              marginLeft: 3,
-              tintColor: colors.lightBlackColor,
-            }}
-            onPress={onRemovePress}
-            outerContainerStyle={{
-              borderRadius: 5,
-              height: 25,
-              width: 75,
-            }}
-            title={strings.remove}
-            startGradientColor={colors.whiteColor}
-            endGradientColor={colors.whiteColor}
-            textStyle={{
-              color: colors.darkThemeColor,
-              fontSize: 11,
-              fontFamily: fonts.RBold,
-            }}
-            style={{
-              borderRadius: 5,
-              height: '100%',
-              width: '100%',
-            }}
-          />
+      <View style={{flex: 0.35, alignItems: 'center'}}>
+        <View style={{backgroundColor: colors.lightGrey, padding: 5, borderRadius: 5}}>
+          <TouchableOpacity onPress={onRemovePress}>
+            <Text style={{color: colors.darkThemeColor}}>
+            {strings.remove}
+            </Text>
+          </TouchableOpacity>
         </View>
       </View>
     </View>

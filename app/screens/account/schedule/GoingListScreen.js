@@ -100,8 +100,10 @@ export default function GoingListScreen({navigation, route}) {
                   is_following={item?.is_following}
                   onRemovePress={() => {
                     Alert.alert(
-                      strings.areYouSureWantToRemoveText,
-                      '',
+                      `Are you sure want to remove  ${(item?.entity_type === Verbs.entityTypePlayer
+                        ? item?.full_name
+                        : item?.group_name)}?`,
+                      'The event fee should be refunded when an attendee is removed.',
                       [
                         {
                           text: strings.cancel,

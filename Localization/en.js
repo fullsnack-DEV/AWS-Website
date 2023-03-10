@@ -2432,4 +2432,7 @@ export default {
   playedInTeams: 'en_Played in {0} teams',
 
 
+
+  // Events
+  makeAvailable: 'en_Make Available'
 };
