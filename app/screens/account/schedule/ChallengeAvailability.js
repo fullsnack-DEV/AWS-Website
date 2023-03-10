@@ -263,8 +263,6 @@ export default function ChallengeAvailability({
                   rule = `FREQ=YEARLY;BYMONTHDAY=${startDate.getDate()};BYMONTH=${startDate.getMonth()}`;
                 }
 
-                console.log('RULE', rule);
-
                 if (challenge_item.is_recurring === true) {
                   obj.untilDate = getTCDate(challenge_item.untilDate);
                   obj.rrule = rule;

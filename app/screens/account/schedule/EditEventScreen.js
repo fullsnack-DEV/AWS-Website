@@ -90,7 +90,7 @@ export default function EditEventScreen({navigation, route}) {
   const [eventPosted, setEventPosted] = useState({
     ...eventData?.event_posted_at,
   });
-  console.log('Event Data', eventData)
+ 
   const [minAttendees, setMinAttendees] = useState(eventData.min_attendees);
   const [maxAttendees, setMaxAttendees] = useState(eventData.max_attendees);
   const [eventFee, setEventFee] = useState(eventData.event_fee.value);
@@ -285,7 +285,6 @@ export default function EditEventScreen({navigation, route}) {
     if (isFocused) {
       getSports();
       if (route?.params?.locationName) {
-        console.log('route.params.locationDetail', route.params.locationDetail)
         setLocationDetail({
               ...locationDetail,
               latitude:route.params.locationDetail.lat,

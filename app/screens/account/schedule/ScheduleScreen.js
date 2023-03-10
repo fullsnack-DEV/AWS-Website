@@ -491,7 +491,6 @@ export default function ScheduleScreen({navigation, route}) {
     
     Utility.getEventsSlots(authContext?.entity?.uid, Utility.getTCDate(new Date()), type, rangeTime)
       .then((response) => {
-        console.log('API RESPONSE OF SEARCH', response);
         let resCalenders = [];
         if (response) {
           if(data) {
@@ -582,14 +581,12 @@ export default function ScheduleScreen({navigation, route}) {
             setloading(false);
           })
           .catch((error) => {
-            console.log('QB error : ', error);
             setloading(false);
           });
       })
       .catch((e) => {
         setloading(false);
         setTimeout(() => {
-          console.log('Error==>', e.message);
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
@@ -612,14 +609,12 @@ export default function ScheduleScreen({navigation, route}) {
             setloading(false);
           })
           .catch((error) => {
-            console.log('QB error : ', error);
             setloading(false);
           });
       })
       .catch((e) => {
         setloading(false);
         setTimeout(() => {
-          console.log('Error==>', e.message);
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
@@ -663,7 +658,6 @@ export default function ScheduleScreen({navigation, route}) {
             index,
             viewPosition: 0.8,
           });
-          console.log('selected sport::=>', item);
           setSelectedOptions({
             option: sortFilterOption,
             title: item,
@@ -689,7 +683,6 @@ export default function ScheduleScreen({navigation, route}) {
             index,
             viewPosition: 0.5,
           });
-          console.log('selected sport::=>', item);
           setSelectedOptions({
             option: sortFilterOption,
             title: item,
@@ -711,7 +704,6 @@ export default function ScheduleScreen({navigation, route}) {
             index,
             viewPosition: 0.5,
           });
-          console.log('selected sport::=>', item);
           setSelectedOptions({
             option: sortFilterOption,
             title: item,
@@ -1097,7 +1089,6 @@ export default function ScheduleScreen({navigation, route}) {
                     })
                     .catch((e) => {
                       setIndigator(false);
-                      console.log('Error :-', e);
                     });
                 }
               }}

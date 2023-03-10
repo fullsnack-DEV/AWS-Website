@@ -216,7 +216,6 @@ export default function EventScreen({navigation, route}) {
       getGroupIndex(getGroupDetailQuery)
         .then((res) => {
           setOrganizer(res[0]);
-          console.log('dsfdsfasd', res[0]);
         })
         .catch((e) => {
           setTimeout(() => {
@@ -231,7 +230,6 @@ export default function EventScreen({navigation, route}) {
           )?.[0];
           setOrganizer(org);
           setGoing(res);
-          console.log('dsfdsfasd', res);
         })
         .catch((e) => {
           setTimeout(() => {
@@ -357,7 +355,6 @@ export default function EventScreen({navigation, route}) {
     setloading(true);
     attendEvent(eventData.cal_id, authContext)
       .then((response) => {
-        console.log('response of attend', response);
         setEventData(response?.payload);
         setloading(false);
       })

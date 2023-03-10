@@ -49,7 +49,6 @@ export default function AvailibilityScheduleScreen({
     
     
     useEffect(() => {
-        console.log('ALL DATA', allData)
         // setAllData(allSlots)
         prepareSlotArray(selectedDate)
 
@@ -108,7 +107,6 @@ export default function AvailibilityScheduleScreen({
             }
         }
 
-        console.log('Current Date SLots', temp)
 
         let timeSlots = [];
 
@@ -170,8 +168,6 @@ export default function AvailibilityScheduleScreen({
           new Date(a.start_datetime) - new Date(b.start_datetime)
         ));
 
-
-        console.log('SORTED ARRAY', blockedSlots);
     
         blockedSlots.forEach((blockedSlot) =>  {
           if (lastSlotTime > blockedSlot?.start_datetime) {

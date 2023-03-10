@@ -697,7 +697,6 @@ export default function CreateEventScreen({navigation, route}) {
 
     createEvent(entityRole, uid, data, authContext)
       .then(() => { 
-        console.log('Event Response', data)
         setTimeout(() => {
           setloading(false);
           navigation.navigate('ScheduleScreen');
