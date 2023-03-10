@@ -322,7 +322,6 @@ export default function CreateEventScreen({navigation, route}) {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
-      alert(route.params.comeName)
       if (route.params.comeName) {
         setloading(true);
         getGeocoordinatesWithPlaceName(Platform.OS)
@@ -828,9 +827,7 @@ export default function CreateEventScreen({navigation, route}) {
     setSearchLocation(_location.formattedAddress)
   };
 
-  const setCityandPostal = (street, code) => {
-    console.log(street, code)
-  }
+  
   return (
     <>
       <ActivityLoader visible={loading} />
@@ -983,7 +980,7 @@ export default function CreateEventScreen({navigation, route}) {
                 setVisibleAddressModalhandler={() => setVisibleLocationModal(false)}
                 onAddressSelect={onSelectAddress}
                 handleSetLocationOptions={onSelectAddress}
-                onDonePress={(street, code) => setCityandPostal(street, code)}
+                onDonePress={() => {}}
               />
               </>
             ): null}

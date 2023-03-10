@@ -279,7 +279,6 @@ export default function EventScreen({navigation, route}) {
 
   const checkIsGoing = () => {
     if(!['user', 'player'].includes(authContext.entity.role)) {
-      alert(authContext.entity.role)
       return false;
     }
 

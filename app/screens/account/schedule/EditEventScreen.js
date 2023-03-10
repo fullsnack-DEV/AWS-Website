@@ -115,6 +115,7 @@ export default function EditEventScreen({navigation, route}) {
   const [recurringEditModal, setRecurringEditModal] =  useState(false);
   const [visibleLocationModal, setVisibleLocationModal] = useState(false);
 
+
   const recurringEditList = [
     {text: 'This event Only', value: 0},
     {
@@ -798,9 +799,7 @@ export default function EditEventScreen({navigation, route}) {
     setSearchLocation(_location.formattedAddress)
   };
 
-  const setCityandPostal = (street, code) => {
-    console.log(street, code)
-  }
+
 
   return (
     <>
@@ -1005,7 +1004,7 @@ export default function EditEventScreen({navigation, route}) {
                 setVisibleAddressModalhandler={() => setVisibleLocationModal(false)}
                 onAddressSelect={onSelectAddress}
                 handleSetLocationOptions={onSelectAddress}
-                onDonePress={(street, code) => setCityandPostal(street, code)}
+                onDonePress={() => {}}
               />
               </>
             ): null}
