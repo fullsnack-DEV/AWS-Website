@@ -580,7 +580,7 @@ export default function ScheduleScreen({navigation, route}) {
           .then(() => {
             setloading(false);
           })
-          .catch((error) => {
+          .catch(() => {
             setloading(false);
           });
       })
@@ -608,7 +608,7 @@ export default function ScheduleScreen({navigation, route}) {
           .then(() => {
             setloading(false);
           })
-          .catch((error) => {
+          .catch(() => {
             setloading(false);
           });
       })
@@ -1087,7 +1087,7 @@ export default function ScheduleScreen({navigation, route}) {
                         gameData: item,
                       });
                     })
-                    .catch((e) => {
+                    .catch(() => {
                       setIndigator(false);
                     });
                 }
