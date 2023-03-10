@@ -79,8 +79,6 @@ export default function InviteMembersByEmailScreen({navigation}) {
         uid: entity.uid,
       };
 
-      console.log(obj, 'sendobj');
-
       sendInvitationInGroup(obj, authContext)
         .then(() => {
           setEmail([
