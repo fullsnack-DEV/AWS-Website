@@ -217,6 +217,7 @@ import BasicInfoScreen from '../screens/account/userSettingPrivacy/BasicInfoScre
 import PendingRequestScreen from '../screens/notificationsScreen/PendingRequestScreen';
 import TrashScreen from '../screens/notificationsScreen/TrashScreen';
 import LanguageSettingScreen from '../screens/account/userSettingPrivacy/LanguageSettingScreen';
+import RequestMultipleBasicInfoScreen from '../screens/account/groupConnections/RequestMultipleBasicInfoScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -340,6 +341,24 @@ const MembersNavigator = () => (
           fontWeight: '500',
         },
         headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+
+    <Stack.Screen
+      name="RequestMultipleBasicInfoScreen"
+      component={RequestMultipleBasicInfoScreen}
+      options={{
+        title: strings.sendRequestText,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+          fontSize: 16,
+        },
         headerStyle: {
           backgroundColor: colors.whiteColor,
           borderBottomColor: colors.grayColor,
