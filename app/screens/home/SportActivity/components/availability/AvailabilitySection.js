@@ -14,7 +14,7 @@ import fonts from '../../../../../Constants/Fonts';
 import {getJSDate} from '../../../../../utils';
 import AvailabilityBar from './AvailabilityBar';
 
-const AvailabilitySection = ({list = [], loading = false}) => {
+const AvailabilitySection = ({list = [], loading = false , onSeeAll = () => {}}) => {
   const [leftColumn, setLeftColumn] = useState([]);
   const [rightColumn, setRightColumn] = useState([]);
   const [availability, setAvailability] = useState({});
@@ -77,7 +77,7 @@ const AvailabilitySection = ({list = [], loading = false}) => {
     <View style={styles.parent}>
       <View style={styles.row}>
         <Text style={styles.title}>{strings.availability}</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={onSeeAll}>
           <Text style={styles.buttonText}>{strings.seeAllText}</Text>
         </TouchableOpacity>
       </View>

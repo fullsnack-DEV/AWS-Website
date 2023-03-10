@@ -17,6 +17,7 @@ import {getSportIconUrl, getSportName} from '../../../utils';
 import ScreenHeader from '../../../components/ScreenHeader';
 import BottomSheet from '../../../components/modals/BottomSheet';
 import StatsContentScreen from './contentScreens/StatsContentScreen';
+import AvailabilityScreen from './contentScreens/AvailabilityContentScreen';
 
 const SportActivityHome = ({navigation, route}) => {
   const [userData, setCurrentUserData] = useState({});
@@ -294,6 +295,9 @@ const SportActivityHome = ({navigation, route}) => {
 
       case strings.stats:
         return <StatsContentScreen sportType={sportObj?.sport_type} />;
+
+      case strings.availability:
+        return <AvailabilityScreen userData={userData}/>
 
       default:
         return null;

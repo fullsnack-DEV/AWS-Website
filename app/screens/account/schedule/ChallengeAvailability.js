@@ -271,7 +271,7 @@ export default function ChallengeAvailability({
                 filterData.push(obj);
               });
 
-
+           
               editSlots(entityRole, uid, filterData, authContext)
               .then(() => {
                 setTimeout(() => {

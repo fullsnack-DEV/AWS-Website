@@ -157,6 +157,7 @@ const SportActivityModal = ({
                 <AvailabilitySection
                   list={availabilityList}
                   loading={fetchingAvailability}
+                  onSeeAll={() => onSeeAll(strings.availability)}
                 />
               ) : null}
 
