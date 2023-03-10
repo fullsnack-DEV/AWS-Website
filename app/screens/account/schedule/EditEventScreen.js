@@ -71,6 +71,7 @@ import GroupEventItems from '../../../components/Schedule/GroupEvent/GroupEventI
 import uploadImages from '../../../utils/imageAction';
 import {editEvent} from '../../../api/Schedule';
 import Verbs from '../../../Constants/Verbs';
+import AddressLocationModal from '../../../components/AddressLocationModal/AddressLocationModal';
 
 export default function EditEventScreen({navigation, route}) {
   const eventPostedList = [
@@ -112,6 +113,8 @@ export default function EditEventScreen({navigation, route}) {
   const [sportsSelection, setSportsSelection] = useState(eventData?.selected_sport);
   const [selectedSport, setSelectedSport] = useState(eventData?.selected_sport);
   const [recurringEditModal, setRecurringEditModal] =  useState(false);
+  const [visibleLocationModal, setVisibleLocationModal] = useState(false);
+
   const recurringEditList = [
     {text: 'This event Only', value: 0},
     {
@@ -790,6 +793,14 @@ export default function EditEventScreen({navigation, route}) {
     </View>
   );
 
+  const onSelectAddress = (_location) => {
+    setLocationDetail({...locationDetail, latitude: _location.latitude, longitude : _location.longitude});
+    setSearchLocation(_location.formattedAddress)
+  };
+
+  const setCityandPostal = (street, code) => {
+    console.log(street, code)
+  }
 
   return (
     <>
@@ -957,10 +968,7 @@ export default function EditEventScreen({navigation, route}) {
                 showShadow={false}
                 showNextArrow={true}
                 onPress={() => {
-                  navigation.navigate('SearchLocationScreen', {
-                    comeFrom: 'EditEventScreen',
-                  });
-                  navigation.setParams({comeName: null});
+                  setVisibleLocationModal(true)
                 }}
                 style={{
                   width: '98%',
@@ -990,6 +998,14 @@ export default function EditEventScreen({navigation, route}) {
                 multiline={true}
                 textAlignVertical={'center'}
                 placeholderTextColor={colors.userPostTimeColor}
+              />
+
+              <AddressLocationModal
+                visibleLocationModal={visibleLocationModal}
+                setVisibleAddressModalhandler={() => setVisibleLocationModal(false)}
+                onAddressSelect={onSelectAddress}
+                handleSetLocationOptions={onSelectAddress}
+                onDonePress={(street, code) => setCityandPostal(street, code)}
               />
               </>
             ): null}
