@@ -30,6 +30,7 @@ import ActivityLoader from '../../../components/loader/ActivityLoader';
 export default function AvailibilityScheduleScreen({
     allSlots,
     onDayPress,
+    userData = {}
 }){
     const [weeklyCalender, setWeeklyCalender] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -46,10 +47,14 @@ export default function AvailibilityScheduleScreen({
     const entity = authContext.entity;
     const uid = entity.uid || entity.auth.user_id;
     const entityRole = entity.role === Verbs.entityTypeUser ? 'users' : 'groups';   
+
+    useEffect(() => {
+        setAllData(allSlots)
+    },[]);
     
     
     useEffect(() => {
-        // setAllData(allSlots)
+        
         prepareSlotArray(selectedDate)
 
         const blocked = []
@@ -106,7 +111,6 @@ export default function AvailibilityScheduleScreen({
             temp.push(blockedSlot);
             }
         }
-
 
         let timeSlots = [];
 
@@ -503,32 +507,38 @@ export default function AvailibilityScheduleScreen({
                                 strings={strings}
                                 deleteSlot={deleteSlot}
                                 createSlot={createSlot}
+                                userData={userData}
+                                uid={uid}
                             />
                         ))
                     }
                 </ScrollView>
             </View>
 
-            <View 
-            style={{
-                flexDirection : 'row', 
-                justifyContent: 'center',
-                marginTop: 10,
-                marginBottom: 40
-            }}>
-                <TouchableOpacity 
-                    onPress={() => 
-                    setVisibleAvailabilityModal(true)
-                }
-                >
-                    <Text 
-                    style={{
-                        textDecorationLine: 'underline',
-                        textDecorationStyle: 'solid',
-                        textDecorationColor: '#000'
-                    }}>Edit Availability</Text>
-                </TouchableOpacity>
-            </View>
+            {
+            (Object.entries(userData).length > 0 && userData.user_id === uid) || 
+            Object.entries(userData).length === 0 ? (
+                <View 
+                style={{
+                    flexDirection : 'row', 
+                    justifyContent: 'center',
+                    marginTop: 10,
+                    marginBottom: 40
+                }}>
+                    <TouchableOpacity 
+                        onPress={() => 
+                        setVisibleAvailabilityModal(true)
+                    }
+                    >
+                        <Text 
+                        style={{
+                            textDecorationLine: 'underline',
+                            textDecorationStyle: 'solid',
+                            textDecorationColor: '#000'
+                        }}>Edit Availability</Text>
+                    </TouchableOpacity>
+                </View>
+            ): null}
         </ScrollView>
         
 
@@ -538,7 +548,7 @@ export default function AvailibilityScheduleScreen({
            backdropColor="black"
            style={{margin: 0, justifyContent: 'flex-end'}}
            hasBackdrop
-            onBackdropPress={() => {
+            onBackdropPress={() => { 
                 setVisibleAvailabilityModal(false);
             }}
             backdropOpacity={0}>

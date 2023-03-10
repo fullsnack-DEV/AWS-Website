@@ -20,7 +20,9 @@ export default function BlockSlotView({
   slots,
   strings,
   deleteSlot,
-  createSlot
+  createSlot,
+  userData,
+  uid
 }) {
 
   const BlockSlotStatus = useRef();
@@ -70,9 +72,12 @@ export default function BlockSlotView({
       ) : item.blocked ? (
         <TouchableOpacity
         ref={CurrentItem} 
-        onPress={() =>  { 
-          CurrentItem.current.value = item;
-          FreeBlockStatus()
+        onPress={() =>  {
+          if((Object.entries(userData).length > 0 && userData.user_id === uid) || 
+          Object.entries(userData).length === 0){ 
+            CurrentItem.current.value = item;
+            FreeBlockStatus()
+          }
         }}
         >
           <View
@@ -99,8 +104,11 @@ export default function BlockSlotView({
         <TouchableOpacity 
         ref={CurrentItem} 
         onPress={() =>  { 
-          CurrentItem.current.value = item;
-          BlockAvailibityStatus()
+          if((Object.entries(userData).length > 0 && userData.user_id === uid) || 
+          Object.entries(userData).length === 0){ 
+            CurrentItem.current.value = item;
+            BlockAvailibityStatus()
+          }
         }}>
           <View
             style={{
