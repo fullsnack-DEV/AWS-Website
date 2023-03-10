@@ -73,6 +73,7 @@ import {getGroups} from '../../../api/Groups';
 import GroupEventItems from '../../../components/Schedule/GroupEvent/GroupEventItems';
 import uploadImages from '../../../utils/imageAction';
 import Verbs from '../../../Constants/Verbs';
+import AddressLocationModal from '../../../components/AddressLocationModal/AddressLocationModal';
 
 export default function CreateEventScreen({navigation, route}) {
   const eventPostedList = [
@@ -108,6 +109,8 @@ export default function CreateEventScreen({navigation, route}) {
   const [modalPostedInvite, setModalPostedInvite] = useState(false);
   const [sportsSelection, setSportsSelection] = useState();
   const [selectedSport, setSelectedSport] = useState();
+  const [visibleLocationModal, setVisibleLocationModal] = useState(false);
+
   const see = 'see';
   const join = 'join';
   const posted = 'posted';
@@ -818,6 +821,13 @@ export default function CreateEventScreen({navigation, route}) {
     }
   };
 
+
+  const onSelectAddress = (_location) => {
+    setLocationDetail({...locationDetail, latitude: _location.latitude, longitude : _location.longitude});
+    setSearchLocation(_location.formattedAddress)
+  };
+
+  
   return (
     <>
       <ActivityLoader visible={loading} />
@@ -933,10 +943,7 @@ export default function CreateEventScreen({navigation, route}) {
                 showShadow={false}
                 showNextArrow={false}
                 onPress={() => {
-                  navigation.navigate('SearchLocationScreen', {
-                    comeFrom: 'CreateEventScreen',
-                  });
-                  navigation.setParams({comeName: null});
+                  setVisibleLocationModal(true)
                 }}
                 style={{
                   width: '98%',
@@ -966,6 +973,14 @@ export default function CreateEventScreen({navigation, route}) {
                 multiline={true}
                 textAlignVertical={'center'}
                 placeholderTextColor={colors.userPostTimeColor}
+              />
+
+              <AddressLocationModal
+                visibleLocationModal={visibleLocationModal}
+                setVisibleAddressModalhandler={() => setVisibleLocationModal(false)}
+                onAddressSelect={onSelectAddress}
+                handleSetLocationOptions={onSelectAddress}
+                onDonePress={() => {}}
               />
               </>
             ): null}

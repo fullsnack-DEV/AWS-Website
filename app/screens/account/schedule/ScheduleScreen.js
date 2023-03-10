@@ -29,7 +29,7 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 
-// import {RRule} from 'rrule';
+import {RRule} from 'rrule';
 
 import Modal from 'react-native-modal';
 import ActionSheet from 'react-native-actionsheet';
@@ -193,22 +193,22 @@ export default function ScheduleScreen({navigation, route}) {
   };
 
   
-  // const getEventOccuranceFromRule = (event) => {
-  //   const ruleObj = RRule.parseString(event.rrule);
-  //   ruleObj.dtstart = Utility.getJSDate(event.start_datetime);
-  //   ruleObj.until = Utility.getJSDate(event.untilDate);
-  //   const rule = new RRule(ruleObj);
-  //   const duration = event.end_datetime - event.start_datetime;
-  //   let occr = rule.all();
-  //   occr = occr.map((RRItem) => {
-  //     const newEvent = {...event};
-  //     newEvent.start_datetime = Utility.getTCDate(RRItem);
-  //     newEvent.end_datetime = newEvent.start_datetime + duration;
-  //     RRItem = newEvent;
-  //     return RRItem;
-  //   });
-  //   return occr;
-  // };
+  const getEventOccuranceFromRule = (event) => {
+    const ruleObj = RRule.parseString(event.rrule);
+    ruleObj.dtstart = Utility.getJSDate(event.start_datetime);
+    ruleObj.until = Utility.getJSDate(event.untilDate);
+    const rule = new RRule(ruleObj);
+    const duration = event.end_datetime - event.start_datetime;
+    let occr = rule.all();
+    occr = occr.map((RRItem) => {
+      const newEvent = {...event};
+      newEvent.start_datetime = Utility.getTCDate(RRItem);
+      newEvent.end_datetime = newEvent.start_datetime + duration;
+      RRItem = newEvent;
+      return RRItem;
+    });
+    return occr;
+  };
 
 
   useEffect(() => {
@@ -492,6 +492,7 @@ export default function ScheduleScreen({navigation, route}) {
     Utility.getEventsSlots(authContext?.entity?.uid, Utility.getTCDate(new Date()), type, rangeTime)
       .then((response) => {
         let resCalenders = [];
+        let eventsCal = [];
         if (response) {
           if(data) {
             response = [...response, data];
@@ -501,6 +502,10 @@ export default function ScheduleScreen({navigation, route}) {
             if (obj.cal_type === 'blocked') {
               return obj;
             }
+            return false;
+          });
+
+          eventsCal = response.filter((obj) => {     
             if (obj.cal_type === 'event') {
               if (obj?.expiry_datetime) {
                 if (obj?.expiry_datetime >= Utility.getTCDate(new Date())) {
@@ -510,15 +515,23 @@ export default function ScheduleScreen({navigation, route}) {
                 return obj;
               }
             }
+            return false;
           });
         
         }
+        setAllSlots(resCalenders);
 
-        resCalenders.forEach((item) => {
-          eventTimeTableData.push(item);
+        eventsCal.forEach((item) => {
+          if (item?.rrule) {
+            let rEvents = getEventOccuranceFromRule(item);
+            rEvents = rEvents.filter(
+              (x) => x.end_datetime > Utility.getTCDate(new Date()),
+            );
+            eventTimeTableData.push(...rEvents);
+          } else {
+            eventTimeTableData.push(item);
+          }
         });
-
-        setAllSlots(eventTimeTableData);
 
         let gameIDs = [...new Set(response.map((item) => item.game_id))];
         gameIDs = (gameIDs || []).filter((item) => item !== undefined);
