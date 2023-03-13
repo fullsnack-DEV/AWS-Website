@@ -2430,9 +2430,14 @@ export default {
   disputedMatches: 'en_Disputed Matches',
   playedMatches: 'en_Played {0} matches',
   playedInTeams: 'en_Played in {0} teams',
-
-
+  adminPrivilege: 'en_Edit Admin Privilige ',
 
   // Events
-  makeAvailable: 'en_Make Available'
+  makeAvailable: 'en_Make Available',
+  collectBasicInfo: 'en_Do you want to collect basic info for this user?',
+  collectBasicInfoSubTxt:
+    'en_You can send a request to collect the member’s basic info such as gender, birthday, age, height, weight, phone number, email address and address. ',
+  basicRequestText:
+    'en_When the request is accepted, the basic info in this profile will be updated with the info provided by the member. A user may choose to only provide some of the basic info items.',
+  editAdminPrivillege: 'en_Edit Admin Privilege',
 };

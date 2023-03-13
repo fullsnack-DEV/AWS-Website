@@ -25,6 +25,7 @@ import {
   TouchableOpacity,
   Linking,
   Pressable,
+  Platform,
 } from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
 import {format} from 'react-string-format';
@@ -34,6 +35,7 @@ import {
   getGroupMembersInfo,
   deleteMember,
   patchMember,
+  sendBasicInfoRequest,
 } from '../../../api/Groups';
 import locationModalStyles from '../../../Constants/LocationModalStyle';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
@@ -83,8 +85,16 @@ export default function MembersProfileScreen({navigation, route}) {
   const [visibleNotesModal, setVisibleNotesModal] = useState(false);
   const [memberInfo, setMemberInfo] = useState({});
   const [groupMemberDetail, setGroupMemberDetail] = useState({});
-
+  const [showBasicInfoRequestModal, setShowBasicInfoRequestModal] =
+    useState(false);
+  const [showAdminPrivillege, setShowAdminPrivillege] = useState(false);
   const [positions, setPositions] = useState();
+  const [setting, setSetting] = useState({
+    is_member: true,
+    is_admin: memberDetail?.is_admin,
+  });
+
+  entity = authContext.entity;
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -231,6 +241,13 @@ export default function MembersProfileScreen({navigation, route}) {
   }, [isFocused]);
 
   useEffect(() => {
+    setSetting({
+      is_member: true,
+      is_admin: memberDetail?.is_admin,
+    });
+  }, [isFocused, showAdminPrivillege]);
+
+  useEffect(() => {
     if (memberDetail?.connected) {
       setEditProfile(false);
     }
@@ -347,6 +364,54 @@ export default function MembersProfileScreen({navigation, route}) {
       locationString = `${memberDetail?.city}, ${memberDetail?.state_abbr}, ${memberDetail?.country}`;
     }
     return locationString;
+  };
+
+  const sendRequestforInfo = () => {
+    const ids = [];
+    ids.push(memberDetail?.user_id);
+
+    setloading(true);
+
+    sendBasicInfoRequest(route?.params?.groupID, ids, authContext)
+      .then(() => {
+        setloading(false);
+
+        setTimeout(() => {
+          showAlert(format(strings.basicInfoRequestSent), () => {
+            setShowBasicInfoRequestModal(false);
+          });
+        }, 10);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
+
+  const onEditAdminPrivPress = () => {
+    setloading(true);
+    const bodyParams = {...memberDetail, ...setting};
+
+    patchMember(
+      entity?.obj?.group_id,
+      memberDetail.user_id,
+      bodyParams,
+      authContext,
+    )
+      .then(() => {
+        setloading(false);
+        getMemberInformation();
+        // navigation.pop(2);
+        setShowAdminPrivillege(false);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
   };
 
   const OpenRefreanceModal = () => (
@@ -818,12 +883,183 @@ export default function MembersProfileScreen({navigation, route}) {
     </Modal>
   );
 
+  const OpenInfoRequestModal = () => (
+    <Modal
+      isVisible={showBasicInfoRequestModal}
+      onBackdropPress={() => setShowBasicInfoRequestModal(false)}
+      animationInTiming={300}
+      animationOutTiming={800}
+      backdropTransitionInTiming={50}
+      backdropTransitionOutTiming={50}
+      style={{
+        margin: 0,
+        top: 0,
+      }}>
+      <View
+        style={{
+          backgroundColor: 'white',
+          position: 'absolute',
+          bottom: 0,
+          right: 0,
+          left: 0,
+
+          borderTopLeftRadius: 30,
+          borderTopRightRadius: 30,
+        }}>
+        <View style={styles.titlePopup}>
+          <Text style={styles.startTime}>
+            {strings.sendrequestForBaicInfoText}
+          </Text>
+          <Pressable
+            hitSlop={getHitSlop(15)}
+            onPress={() => {
+              setShowBasicInfoRequestModal(false);
+            }}>
+            <Image source={images.cancelImage} style={styles.closeButton} />
+          </Pressable>
+        </View>
+        <View style={locationModalStyles.separatorLine} />
+        <ActivityLoader visible={loading} />
+        <Text
+          style={{
+            fontFamily: fonts.RMedium,
+            fontSize: 20,
+            marginLeft: 30,
+            marginRight: 44,
+            marginTop: 25,
+            color: colors.lightBlackColor,
+          }}>
+          {strings.collectBasicInfo}
+        </Text>
+
+        <Text style={styles.basicInfoRequestText}>
+          {strings.collectBasicInfoSubTxt}
+        </Text>
+        <Text style={styles.basicInfoSubtxt}>{strings.basicRequestText}</Text>
+
+        <TouchableOpacity
+          style={styles.sendbtn}
+          onPress={() => sendRequestforInfo()}>
+          <Text
+            style={{
+              fontSize: 16,
+              fontFamily: fonts.RBold,
+              lineHeight: 24,
+              textTransform: 'uppercase',
+              color: colors.orangeColor,
+            }}>
+            {strings.send}
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </Modal>
+  );
+
+  const OpenAdminPrivillege = () => (
+    <Modal
+      isVisible={showAdminPrivillege}
+      onBackdropPress={() => setShowBasicInfoRequestModal(false)}
+      animationInTiming={300}
+      animationOutTiming={800}
+      backdropTransitionInTiming={300}
+      backdropTransitionOutTiming={800}
+      style={{
+        margin: 0,
+      }}>
+      <View
+        behavior="height"
+        enabled={false}
+        style={{
+          width: '100%',
+          backgroundColor: 'white',
+          position: 'absolute',
+          bottom: 0,
+          right: 0,
+          left: 0,
+          shadowColor: '#000',
+          shadowOffset: {width: 0, height: 1},
+          shadowOpacity: 0.5,
+          shadowRadius: 5,
+          elevation: 15,
+          borderTopLeftRadius: 30,
+          borderTopRightRadius: 30,
+          flex: 1,
+        }}>
+        <View style={styles.privellegtitle}>
+          <Pressable
+            hitSlop={getHitSlop(15)}
+            onPress={() => {
+              setShowAdminPrivillege(false);
+            }}>
+            <Image
+              source={images.cancelImage}
+              style={styles.closebtnprivillege}
+            />
+          </Pressable>
+          <Text
+            style={[
+              styles.startTime,
+              {alignSelf: 'center', marginLeft: 20, marginTop: 16},
+            ]}>
+            {strings.editAdminPrivillege}
+          </Text>
+          <Pressable onPress={() => onEditAdminPrivPress()}>
+            <Text
+              style={{
+                fontSize: 16,
+                fontFamily: fonts.RMedium,
+                marginRight: 20,
+                marginTop: 10,
+              }}>
+              {strings.save}
+            </Text>
+          </Pressable>
+        </View>
+        <ActivityLoader visible={loading} />
+        <View style={locationModalStyles.separatorLine} />
+        <View style={styles.checkBoxContainerPrv}>
+          <Text style={styles.checkBoxItemText}>
+            {format(
+              strings.adminText_dy,
+              entity.role.charAt(0).toUpperCase() + entity.role.slice(1),
+            )}
+          </Text>
+          <TouchableOpacity
+            onPress={() => {
+              const admin_setting = !setting.is_admin;
+              if (admin_setting) {
+                setSetting({
+                  ...setting,
+                  is_member: true,
+                  is_admin: admin_setting,
+                });
+              } else {
+                setSetting({
+                  ...setting,
+                  is_admin: false,
+                });
+              }
+            }}>
+            <Image
+              source={
+                setting.is_admin ? images.orangeCheckBox : images.uncheckWhite
+              }
+              style={{height: 22, width: 22, resizeMode: 'contain'}}
+            />
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  );
+
   return (
     <SafeAreaView>
       <ActivityLoader visible={loading} />
       <TCInnerLoader visible={firstTimeLoad} size={50} />
       {OpenNoteModal()}
       {OpenRefreanceModal()}
+      {OpenInfoRequestModal()}
+      {OpenAdminPrivillege()}
 
       {memberDetail && !firstTimeLoad && (
         <ScrollView showsVerticalScrollIndicator={false}>
@@ -1241,17 +1477,20 @@ export default function MembersProfileScreen({navigation, route}) {
           <ActionSheet
             ref={actionSheet}
             // title={'News Feed Post'}
-            options={
-              switchUser.role === Verbs.entityTypeTeam
-                ? [strings.membershipAdminAuthText, strings.cancel]
-                : [strings.membershipAdminAuthText, strings.cancel]
-            }
-            cancelButtonIndex={1}
+            options={[
+              strings.sendrequestForBaicInfoText,
+              strings.adminPrivilege,
+              strings.cancel,
+            ]}
+            cancelButtonIndex={2}
             onPress={(index) => {
-              if (index === 0) {
-                navigation.navigate('EditMemberAuthInfoScreen', {
-                  groupMemberDetail: memberDetail,
-                });
+              if (index === 1) {
+                setShowAdminPrivillege(true);
+                // navigation.navigate('EditMemberAuthInfoScreen', {
+                //   groupMemberDetail: memberDetail,
+                // });
+              } else if (index === 0) {
+                setShowBasicInfoRequestModal(true);
               }
             }}
           />
@@ -1396,5 +1635,90 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.lightBlackColor,
     marginLeft: 10,
+  },
+
+  titlePopup: {
+    flexDirection: 'row',
+    height: 50,
+    alignItems: 'center',
+    alignSelf: 'center',
+  },
+  startTime: {
+    alignSelf: 'center',
+    textAlignVertical: 'center',
+    fontFamily: fonts.RMedium,
+    fontSize: 16,
+    marginTop: 13,
+    marginBottom: 9,
+    lineHeight: 22,
+    textAlign: 'center',
+  },
+
+  closeButton: {
+    height: 15,
+    width: 15,
+    resizeMode: 'cover',
+
+    position: 'absolute',
+    right: -60,
+    top: -5,
+  },
+  basicInfoRequestText: {
+    fontFamily: fonts.RRegular,
+    fontSize: 16,
+    color: colors.lightBlackColor,
+    marginLeft: 30,
+    marginRight: 26,
+    lineHeight: 24,
+    marginTop: 15,
+  },
+  basicInfoSubtxt: {
+    fontFamily: fonts.RRegular,
+    fontSize: 16,
+    color: colors.lightBlackColor,
+    marginLeft: 30,
+    marginRight: 26,
+    lineHeight: 24,
+    marginTop: 12,
+    marginBottom: 30,
+  },
+
+  sendbtn: {
+    width: 345,
+    borderRadius: 20,
+    backgroundColor: colors.offwhite,
+    elevation: 3,
+    alignSelf: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 40,
+    marginBottom: 25,
+    shadowOffset: {width: 0, height: 1.6},
+    shadowColor:
+      Platform.OS === 'android' ? colors.lightGrey2 : colors.shadowColor,
+    shadowOpacity: 4,
+    shadowRadius: 2,
+  },
+  privellegtitle: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  closebtnprivillege: {
+    height: 15,
+    width: 15,
+    resizeMode: 'cover',
+    marginLeft: 30,
+    marginTop: 10,
+  },
+  checkBoxContainerPrv: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 25,
+    marginBottom: 210,
+    justifyContent: 'space-between',
+    marginRight: 15,
+    marginTop: 35,
+    paddingHorizontal: 15,
   },
 });
