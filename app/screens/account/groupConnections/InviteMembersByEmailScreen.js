@@ -71,9 +71,11 @@ export default function InviteMembersByEmailScreen({navigation}) {
       setloading(true);
       const emails = email.map((i) => i.email);
 
+      const array = emails.filter((item) => item);
+
       const obj = {
         entity_type: entity.role,
-        emailIds: emails,
+        emailIds: array,
         uid: entity.uid,
       };
 

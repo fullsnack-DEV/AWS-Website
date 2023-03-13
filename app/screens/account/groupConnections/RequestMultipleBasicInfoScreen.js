@@ -89,7 +89,7 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
       headerLeft: () => (
         <TouchableWithoutFeedback
           onPress={() => {
-            navigation.navigate('GroupMembersScreen');
+            navigation.goBack();
           }}>
           <Image source={images.backArrow} style={styles.backArrowStyle} />
         </TouchableWithoutFeedback>
