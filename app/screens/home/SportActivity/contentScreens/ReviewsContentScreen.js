@@ -14,20 +14,25 @@ import {getUserReviews} from '../../../../api/Games';
 import AuthContext from '../../../../auth/context';
 import colors from '../../../../Constants/Colors';
 import fonts from '../../../../Constants/Fonts';
+import Verbs from '../../../../Constants/Verbs';
+import {getRatingsOptions} from '../../../../utils';
 import ReviewsList from '../components/reviews/ReviewsList';
 
-const ratingsOption = [
-  strings.etiquette,
-  strings.respectForReferee,
-  strings.punctuality,
-];
-
-const ReviewsContentScreen = ({userId, onPressMore = () => {}}) => {
+const ReviewsContentScreen = ({
+  userId,
+  sportObj = {},
+  onPressMore = () => {},
+  isAdmin = false,
+  onReply = () => {},
+  onPressMedia = () => {},
+  onPressGame = () => {},
+}) => {
   const [ratings, setRatings] = useState({});
   const [loading, setLoading] = useState(false);
-  // const [reviews, setReviews] = useState([]);
+  const [reviews, setReviews] = useState([]);
   const [totalReviews, setTotalReviews] = useState(0);
   const [totalRatings, setTotalRatings] = useState(0);
+  const [ratingsOption, setRatingsOption] = useState([]);
 
   const authContext = useContext(AuthContext);
 
@@ -35,16 +40,8 @@ const ReviewsContentScreen = ({userId, onPressMore = () => {}}) => {
     setLoading(true);
     getUserReviews(userId, authContext)
       .then((res) => {
-        const obj = {};
-        obj[strings.etiquette] = 0;
-        obj[strings.respectForReferee] = 0;
-        obj[strings.punctuality] = 0;
-        setRatings({...obj});
-
         const result = res.payload?.reviews.results ?? [];
-        // setReviews(result);
-        setTotalRatings(result.length);
-        setTotalReviews(result.length);
+        setReviews(result);
 
         setLoading(false);
       })
@@ -60,6 +57,25 @@ const ReviewsContentScreen = ({userId, onPressMore = () => {}}) => {
     }
   }, [userId, getReviews]);
 
+  useEffect(() => {
+    const list = getRatingsOptions(
+      authContext,
+      sportObj?.sport,
+      Verbs.entityTypePlayer,
+    );
+    setRatingsOption([...list]);
+  }, [authContext, sportObj]);
+
+  useEffect(() => {
+    if (sportObj?.avg_review) {
+      const ratingOpt = {...sportObj.avg_review};
+      delete ratingOpt.total_avg;
+      setRatings(ratingOpt);
+      setTotalRatings(sportObj.total_ratings ?? 0);
+      setTotalReviews(sportObj.total_reviews ?? 0);
+    }
+  }, [sportObj]);
+
   return loading ? (
     <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
       <ActivityIndicator size={'large'} />
@@ -72,41 +88,44 @@ const ReviewsContentScreen = ({userId, onPressMore = () => {}}) => {
             {strings.ratings.toUpperCase()} ({totalRatings})
           </Text>
 
-          {ratingsOption.map((item, index) => (
-            <View
-              style={[
-                styles.row,
-                {justifyContent: 'space-between', marginBottom: 15},
-              ]}
-              key={index}>
-              <View>
-                <Text style={styles.label}>{item}</Text>
+          {ratingsOption.length > 0 &&
+            ratingsOption.map((item, index) => (
+              <View
+                style={[
+                  styles.row,
+                  {justifyContent: 'space-between', marginBottom: 15},
+                ]}
+                key={index}>
+                <View>
+                  <Text style={styles.label}>{item.title}</Text>
+                </View>
+                <View style={styles.row}>
+                  <AirbnbRating
+                    count={5}
+                    defaultRating={ratings[item.name] ?? 0}
+                    showRating={false}
+                    size={23}
+                    selectedColor={colors.themeColor}
+                  />
+                  <Text
+                    style={[
+                      styles.label,
+                      {
+                        color:
+                          parseFloat(ratings[item.name]).toFixed(1) > 0
+                            ? colors.themeColor
+                            : colors.userPostTimeColor,
+                        fontFamily: fonts.RMedium,
+                        marginLeft: 10,
+                      },
+                    ]}>
+                    {ratings[item.name]
+                      ? parseFloat(ratings[item.name]).toFixed(1)
+                      : 0}
+                  </Text>
+                </View>
               </View>
-              <View style={styles.row}>
-                <AirbnbRating
-                  count={5}
-                  defaultRating={ratings[item]}
-                  showRating={false}
-                  size={23}
-                  selectedColor={colors.themeColor}
-                />
-                <Text
-                  style={[
-                    styles.label,
-                    {
-                      color:
-                        ratings[item] > 0
-                          ? colors.themeColor
-                          : colors.userPostTimeColor,
-                      fontFamily: fonts.RMedium,
-                      marginLeft: 10,
-                    },
-                  ]}>
-                  {parseFloat(ratings[item]).toFixed(1)}
-                </Text>
-              </View>
-            </View>
-          ))}
+            ))}
 
           <TouchableOpacity style={styles.buttonContainer}>
             <Text style={styles.buttonText}>
@@ -117,12 +136,19 @@ const ReviewsContentScreen = ({userId, onPressMore = () => {}}) => {
         <View
           style={{height: 7, backgroundColor: colors.grayBackgroundColor}}
         />
-        <View style={{paddingHorizontal: 15, paddingVertical: 25}}>
+        <View style={{paddingHorizontal: 15, paddingTop: 25}}>
           <Text style={styles.title}>
             {strings.reviews.toUpperCase()} ({totalReviews})
           </Text>
-          <ReviewsList onPressMore={onPressMore} />
         </View>
+        <ReviewsList
+          onPressMore={onPressMore}
+          list={reviews}
+          isAdmin={isAdmin}
+          onReply={onReply}
+          onPressMedia={onPressMedia}
+          onPressGame={onPressGame}
+        />
       </ScrollView>
     </View>
   );
@@ -131,6 +157,7 @@ const ReviewsContentScreen = ({userId, onPressMore = () => {}}) => {
 const styles = StyleSheet.create({
   parent: {
     flex: 1,
+    backgroundColor: colors.whiteColor,
   },
   title: {
     fontSize: 20,

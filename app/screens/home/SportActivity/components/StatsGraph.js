@@ -37,6 +37,11 @@ const StatsGraph = ({
     draws: 0,
     losses: 0,
   });
+  const [object, setObject] = useState({
+    wins: 0,
+    draws: 0,
+    losses: 0,
+  });
 
   const calculatePercentage = useCallback(
     (value) => {
@@ -63,6 +68,11 @@ const StatsGraph = ({
 
       setChartData([...data]);
       setPercentageObject(obj);
+      setObject({
+        wins,
+        draws,
+        losses,
+      });
     }
   }, [wins, draws, losses, total, calculatePercentage]);
 
@@ -127,7 +137,7 @@ const StatsGraph = ({
                   color: Colors[item],
                 },
               ]}>
-              {percentageObject[item]}
+              {object[item]}
             </Text>
           </View>
         ))}

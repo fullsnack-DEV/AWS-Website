@@ -271,6 +271,7 @@ import SportActivityHome from '../screens/home/SportActivity/SportActivityHome';
 import EditWrapperScreen from '../screens/home/SportActivity/EditWrapperScreen';
 import PrivacySettingsScreen from '../screens/home/SportActivity/PrivacySettingsScreen';
 import ReviewDetailsScreen from '../screens/home/SportActivity/ReviewDetailsScreen';
+import ReplyScreen from '../screens/home/SportActivity/contentScreens/ReplyScreen';
 
 // Scorekeeper Review Screen
 
@@ -339,6 +340,11 @@ const AccountNavigator = () => (
     <Stack.Screen
       name="ReviewDetailsScreen"
       component={ReviewDetailsScreen}
+      options={{headerShown: false}}
+    />
+    <Stack.Screen
+      name="ReplyScreen"
+      component={ReplyScreen}
       options={{headerShown: false}}
     />
     <Stack.Screen

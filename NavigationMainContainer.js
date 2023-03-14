@@ -11,6 +11,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import firebase from '@react-native-firebase/app';
 import jwtDecode from 'jwt-decode';
 import {Host} from 'react-native-portalize';
+import {createStackNavigator} from '@react-navigation/stack';
 import AuthContext from './app/auth/context';
 import AuthNavigator from './app/navigation/AuthNavigator';
 import AppNavigator from './app/navigation/AppNavigator';
@@ -22,7 +23,10 @@ import {
   QBLogout,
 } from './app/utils/QuickBlox';
 import ActivityLoader from './app/components/loader/ActivityLoader';
-import { removeFBToken } from './app/api/Users';
+import {removeFBToken} from './app/api/Users';
+import LoneStackNavigator from './app/navigation/LoneStackNavigator';
+
+const Stack = createStackNavigator();
 
 export default function NavigationMainContainer() {
   const authContext = useContext(AuthContext);
@@ -31,7 +35,7 @@ export default function NavigationMainContainer() {
 
   const resetApp = useCallback(async () => {
     QBLogout();
-    if(authContext.entity){
+    if (authContext.entity) {
       await removeFBToken(authContext);
     }
 
@@ -152,8 +156,20 @@ export default function NavigationMainContainer() {
         <NavigationContainer theme={navigationTheme}>
           <Host>
             {authContext?.entity?.isLoggedIn ? (
-              <AppNavigator />
+              <Stack.Navigator initialRouteName="App">
+                <Stack.Screen
+                  name="App"
+                  component={AppNavigator}
+                  options={{headerShown: false}}
+                />
+                <Stack.Screen
+                  name="LoneStack"
+                  component={LoneStackNavigator}
+                  options={{headerShown: false}}
+                />
+              </Stack.Navigator>
             ) : (
+              // <AppNavigator />
               <AuthNavigator />
             )}
           </Host>

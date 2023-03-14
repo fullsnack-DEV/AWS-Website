@@ -1012,7 +1012,7 @@ export default {
   refereebookingnote:
     'en_By selecting the button below, I agree to the Game Rules cancellation policy and refund policy. I also agree to pay the total amount shown above.',
   scorekeeper: 'en_Scorekeeper',
-  gameRules: 'en_Match Rules',
+  gameRulesTitle: 'en_Match Rules',
   // Challenge screen
   typeOfGame: 'en_Match Type',
   matchFee: 'en_Match Fee',
@@ -1589,7 +1589,7 @@ export default {
     'en_Please edit the reservation details below before you send the alteration request.',
 
   setGamesDuration: 'en_Sets, Games & Duration',
-  gameType: 'en_Match Type',
+  gameTypeTitle: 'en_Match Type',
   gamePointsAffectText:
     'en_The game result has an effect on TC points of the challengee and you.',
 
@@ -2216,7 +2216,7 @@ export default {
   incomingChallengeSettingsInfo:
     'en_Please review your incoming challenge settings. These settings will be applied to (the match reservation process) and  the match (a match) ONLY when you are the match host.\nWhen you are the  Challenger, the opponent’s incoming challenge settings Will be applied.',
   congratulationModalInfo:
-    'en_You can now not only send challenges to others and invite them to challenge you, but you can also receive a challenge from them.',
+    'en_You can now not only send challenges to others, but you can also receive a challenge from them.',
   searchForPlayer: 'en_Search for more players',
   congratsModalTeamInfo:
     'en_Now join or create a team to play a match. You can join or create it now or later.',
@@ -2430,10 +2430,13 @@ export default {
   disputedMatches: 'en_Disputed Matches',
   playedMatches: 'en_Played {0} matches',
   playedInTeams: 'en_Played in {0} teams',
-  adminPrivilege: 'en_Edit Admin Privilige ',
 
   // Events
   makeAvailable: 'en_Make Available',
+  noReviewsText: 'en_No Reviews',
+  editReviewSentenceCase: 'en_Edit Review',
+  deleteReviewSentenceCase: 'en_Delete Review',
+  pastMonthsText: 'en_Past {0} months',
   collectBasicInfo: 'en_Do you want to collect basic info for this user?',
   collectBasicInfoSubTxt:
     'en_You can send a request to collect the member’s basic info such as gender, birthday, age, height, weight, phone number, email address and address. ',
