@@ -10,7 +10,7 @@ import AuthContext from '../../../auth/context';
 import TCEventCard from '../../../components/Schedule/TCEventCard';
 import {strings} from '../../../../Localization/translation';
 import Verbs from '../../../Constants/Verbs';
-import { getJSDate, getTCDate } from '../../../utils';
+import { getJSDate } from '../../../utils';
 
 const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 

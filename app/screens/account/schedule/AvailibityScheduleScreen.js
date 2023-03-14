@@ -114,43 +114,43 @@ export default function AvailibilityScheduleScreen({
         }
 
         let timeSlots = [];
-        let availableSlots = [];
+        let allAvailableSlots = [];
 
         if (temp?.[0]?.allDay === true && temp?.[0]?.blocked === true) {
             setSlots(temp);
         } else {
             timeSlots = createCalenderTimeSlots(Utility.getTCDate(start), 24, temp);
             setSlots(timeSlots);
-            availableSlots = getAvailableSlots(timeSlots , dateObj);
+            allAvailableSlots = getAvailableSlots(timeSlots , dateObj);
         }
 
-        setAvailableSlots(availableSlots);
+        setAvailableSlots(allAvailableSlots);
     }
 
 
 
 
     const getAvailableSlots = (timeSlots , dateObj) => {
-        let availableSlots = [];
+        const availableTempSlots = [];
         timeSlots.forEach((item) => {
             if(!item.blocked) {
-                availableSlots.push(item);
+                availableTempSlots.push(item);
             }
         });
 
-        let formattedAvailableSLots = [];
+        const formattedAvailableSLots = [];
         const start = new Date(dateObj);
         start.setHours(0, 0, 0, 0);
-        availableSlots.forEach((item,index) => {
-            let tempSlot = {};
-            let minutes = Math.ceil((item.end_datetime - item.start_datetime)/60);
-            let minutePercent = Math.ceil((minutes / 1440) * 100);
+        availableTempSlots.forEach((item) => {
+            const tempSlot = {};
+            const minutes = Math.ceil((item.end_datetime - item.start_datetime)/60);
+            const minutePercent = Math.ceil((minutes / 1440) * 100);
             
-            let gap = Math.ceil((item.start_datetime - (start.getTime() / 1000))/60);
-            let gapPercent = Math.ceil((gap / 1440) * 100);
+            const gap = Math.ceil((item.start_datetime - (start.getTime() / 1000))/60);
+            const gapPercent = Math.ceil((gap / 1440) * 100);
 
-            tempSlot['width'] = minutePercent;
-            tempSlot['marginLeft'] = gapPercent;
+            tempSlot.width = minutePercent;
+            tempSlot.marginLeft = gapPercent;
 
             formattedAvailableSLots.push(tempSlot)
         });

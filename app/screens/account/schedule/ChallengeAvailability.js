@@ -610,13 +610,6 @@ const styles = StyleSheet.create({
   activeEventPrivacyText: {
     fontSize: 12,
   },
-  deleteTextStyle: {
-    alignSelf: 'flex-end',
-    marginRight: 5,
-    fontSize: 14,
-    fontFamily: fonts.RRegular,
-    color: colors.redDelColor,
-  },
   toggleViewStyle: {
     flexDirection: 'row',
     justifyContent: 'space-between',
