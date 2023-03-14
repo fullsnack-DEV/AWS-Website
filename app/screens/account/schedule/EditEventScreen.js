@@ -650,14 +650,13 @@ export default function EditEventScreen({navigation, route}) {
         return true;
       }
       data.recurringOption = recurrringOption;
-      return true;
     }
 
     editEvent(entityRole, uid, data, authContext)
     .then((response) => {
       console.log('Response :-', response);
       setloading(false);
-      navigation.navigate('EventScreen');
+      navigation.goBack()
     })
     .catch((e) => {
       setloading(false);
