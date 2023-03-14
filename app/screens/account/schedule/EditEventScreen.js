@@ -649,7 +649,7 @@ export default function EditEventScreen({navigation, route}) {
         setloading(false);
         return true;
       }
-      data.recurringOption = recurrringOption;
+      data.recurring_modification_type = recurrringOption;
     }
 
     editEvent(entityRole, uid, data, authContext)
