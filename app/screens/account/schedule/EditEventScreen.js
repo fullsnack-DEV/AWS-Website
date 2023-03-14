@@ -1117,7 +1117,6 @@ export default function EditEventScreen({navigation, route}) {
               />
             </EventItemRender>
 
-
             <View style={styles.containerStyle}>
               <Text style={styles.headerTextStyle}>
                 {strings.eventFeeTitle}

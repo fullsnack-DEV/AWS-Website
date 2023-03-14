@@ -567,7 +567,7 @@ export default function EventScreen({navigation, route}) {
                   lineHeight: 24,
                   fontWeight: activeTab === 'info' ? 'bold' : '',
                   color: activeTab === 'info' ? colors.themeColor : colors.lightBlackColor,
-                  paddingBottom: 10
+                  paddingVertical: 10
                 }}>Info</Text>
               </TouchableOpacity>
             </View>
@@ -586,7 +586,7 @@ export default function EventScreen({navigation, route}) {
                   lineHeight: 24,
                   fontWeight: activeTab === 'post' ? 'bold' : '',
                   color: activeTab === 'post' ? colors.themeColor : colors.lightBlackColor,
-                  paddingBottom: 10
+                  paddingVertical: 10
                 }}>Post</Text>
               </TouchableOpacity>
             </View>

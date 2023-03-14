@@ -38,6 +38,7 @@ export default function AvailibilityScheduleScreen({
     const [slots, setSlots] = useState([]);
     const [slotList, setSlotList] = useState([]);
     const [blockedDaySlots , setBlockedDaySlots] = useState([]);
+    const [availableSlots, setAvailableSlots] = useState([]);
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [editableSlots, setEditableSlots] = useState([]);
     const [editableSlotsType, setEditableSlotsType] = useState(true);
@@ -113,13 +114,48 @@ export default function AvailibilityScheduleScreen({
         }
 
         let timeSlots = [];
+        let availableSlots = [];
 
         if (temp?.[0]?.allDay === true && temp?.[0]?.blocked === true) {
             setSlots(temp);
         } else {
             timeSlots = createCalenderTimeSlots(Utility.getTCDate(start), 24, temp);
             setSlots(timeSlots);
+            availableSlots = getAvailableSlots(timeSlots , dateObj);
         }
+
+        setAvailableSlots(availableSlots);
+    }
+
+
+
+
+    const getAvailableSlots = (timeSlots , dateObj) => {
+        let availableSlots = [];
+        timeSlots.forEach((item) => {
+            if(!item.blocked) {
+                availableSlots.push(item);
+            }
+        });
+
+        let formattedAvailableSLots = [];
+        const start = new Date(dateObj);
+        start.setHours(0, 0, 0, 0);
+        availableSlots.forEach((item,index) => {
+            let tempSlot = {};
+            let minutes = Math.ceil((item.end_datetime - item.start_datetime)/60);
+            let minutePercent = Math.ceil((minutes / 1440) * 100);
+            
+            let gap = Math.ceil((item.start_datetime - (start.getTime() / 1000))/60);
+            let gapPercent = Math.ceil((gap / 1440) * 100);
+
+            tempSlot['width'] = minutePercent;
+            tempSlot['marginLeft'] = gapPercent;
+
+            formattedAvailableSLots.push(tempSlot)
+        });
+
+        return formattedAvailableSLots;
     }
 
 
@@ -493,6 +529,43 @@ export default function AvailibilityScheduleScreen({
                     }}>
                     {strings.availableTimeForChallenge}
                 </Text>
+                <View style={{position: 'relative', width:'100%', paddingHorizontal: '8%'}}>
+                    <View style={{justifyContent:'space-between', flexDirection: 'row'}}>
+                        <Text>0</Text>
+                        <Text style={{marginLeft: 5}}>6</Text>
+                        <Text style={{marginLeft: 5}}>12</Text>
+                        <Text style={{marginLeft: 5}}>18</Text>
+                        <Text>24</Text>
+                    </View>
+                    <View
+                        style={{
+                            width: '100%',
+                            height: 20,
+                            marginVertical: 10,
+                            borderRadius: 2,
+                            borderColor: '#f5f5f5',
+                            borderWidth: 1,
+                            backgroundColor: '#f5f5f5',
+                        }}
+                    />
+                    {
+                    availableSlots.map((item) => (
+                    <>
+                        <View
+                            style={{
+                                width: `${item.width}%`,
+                                height: 20,
+                                marginVertical: 10,
+                                borderRadius: 2,
+                                backgroundColor: '#70D486',
+                                position: 'absolute',
+                                left: `${item.marginLeft + 9.5}%`,
+                                top:17
+                            }}
+                        />
+                    </>
+                    ))}
+                </View>
                 <ScrollView >
                     {
                         slotList.map((item , key) => (

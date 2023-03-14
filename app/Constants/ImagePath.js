@@ -474,6 +474,7 @@ const images = {
   eventMap : require('../assets/images/event_map.png'),
   roundTick : require('../assets/images/round_tick.png'),
   roundCross : require('../assets/images/round_cross.png'),
+  crossSingle : require('../assets/images/cross-single.png'),
 };
 
 export default images;

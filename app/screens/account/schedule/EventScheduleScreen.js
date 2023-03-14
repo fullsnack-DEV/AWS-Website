@@ -10,7 +10,7 @@ import AuthContext from '../../../auth/context';
 import TCEventCard from '../../../components/Schedule/TCEventCard';
 import {strings} from '../../../../Localization/translation';
 import Verbs from '../../../Constants/Verbs';
-import { getJSDate } from '../../../utils';
+import { getJSDate, getTCDate } from '../../../utils';
 
 const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -126,16 +126,19 @@ export default function EventScheduleScreen({
     }
     if (events.length > 0) {
       const result = _(events)
-        .groupBy((event) =>
-          event.start_datetime
+        .groupBy((event) => 
+          // event.start_datetime,
+          moment(getJSDate(event.start_datetime)).format('MMM DD, YYYY')
         )
         .value();
+      
       const filData = [];
       for (const property in result) {
         let temp = {};
         const value = result[property];
         temp = {
           title: property,
+          time: result[property].length > 0 ? result[property][0]?.start_datetime : '',
           data: result[property].length > 0 ? value : [],
         };
         filData.push(temp);
@@ -206,7 +209,7 @@ export default function EventScheduleScreen({
             (section?.data || [])?.filter((obj) => obj.cal_type === 'event')
               .length > 0 && (
               <Text style={styles.sectionHeader}>
-                {days[new Date(section.title * 1000).getDay()]},  {moment(getJSDate(section.title)).format('MMM DD, YYYY')}
+                {days[new Date(section.time * 1000).getDay()]},  {section.title}
               </Text>
             )
           }

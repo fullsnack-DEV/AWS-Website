@@ -1021,16 +1021,19 @@ export default function ScheduleScreen({navigation, route}) {
                 {strings.availability}
               </Text>
             </View>
-            <TouchableOpacity
-              onPress={() => {
-                setFilterPopup(true);
-              }}>
-              <FastImage
-                source={images.localHomeFilter}
-                style={{height: 25, width: 25}}
-                resizeMode={'contain'}
-              />
-            </TouchableOpacity>
+            {
+            scheduleIndexCounter === 0 && (
+              <TouchableOpacity
+                onPress={() => {
+                  setFilterPopup(true);
+                }}>
+                <FastImage
+                  source={images.localHomeFilter}
+                  style={{height: 25, width: 25}}
+                  resizeMode={'contain'}
+                />
+              </TouchableOpacity>
+            )}
           </View>
 
 
@@ -1167,7 +1170,8 @@ export default function ScheduleScreen({navigation, route}) {
           onBackdropPress={() => {
             setIsRefereeModal(false);
           }}
-          backdropOpacity={0}>
+          backdropOpacity={0}
+        >
           <SafeAreaView style={styles.modalMainViewStyle}>
             <Header
               mainContainerStyle={styles.headerMainContainerStyle}
