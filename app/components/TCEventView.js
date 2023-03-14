@@ -97,27 +97,21 @@ export default function TCEventView({
           resizeMode="cover" 
           imageStyle={styles.imageBorder}
           style={styles.eventImage}>
-             <View style={{height: 100}}/>
+              <View style={{height: 100}}/>
+              <View style={styles.eventTitlewithDot}>
+                <Text
+                  style={[
+                    styles.eventTitle,
+                    {color: colors.whiteColor},
+                  ]}
+                  numberOfLines={1}>
+                  {title.toUpperCase()}
+                </Text>
+              </View>
           </ImageBackground>
         </View>
         <View style={styles.eventText}>
-          <View style={styles.eventTitlewithDot}>
-            <Text
-              style={[
-                styles.eventTitle,
-                {color: isGame ? colors.themeColor : colors.greenGradientStart},
-              ]}
-              numberOfLines={1}>
-              {title}
-            </Text>
-            {/* {showDot && (
-              <TouchableOpacity
-                onPress={onThreeDotPress}
-                hitSlop={getHitSlop(15)}>
-                <Image source={images.vertical3Dot} style={styles.threedot} />
-              </TouchableOpacity>
-            )} */}
-          </View>
+          
           {description && (
           <Text style={styles.eventDescription} numberOfLines={2}>
             {description}
@@ -209,12 +203,17 @@ const styles = StyleSheet.create({
   eventTitle: {
     fontSize: 16,
     fontFamily: fonts.RMedium,
-    width: wp('70%'),
+    width: wp('90%'),
     color: colors.googleColor,
+    textShadowColor: 'rgba(0, 0, 0, 1)',
+    textShadowOffset: {width: -1, height: 1},
+    textShadowRadius: 10,
+    fontWeight: 'bold'
   },
   eventTitlewithDot: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    padding: 10,
   },
   challengeContainer:{
     padding: 10,

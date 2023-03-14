@@ -699,10 +699,12 @@ export default function CreateEventScreen({navigation, route}) {
     }
 
     createEvent(entityRole, uid, data, authContext)
-      .then(() => { 
+      .then((response) => { 
         setTimeout(() => {
           setloading(false);
-          navigation.navigate('ScheduleScreen');
+          navigation.navigate('ScheduleScreen' , {
+            event : response.payload[0]
+          });
         }, 1000);
       })
       .catch((e) => {

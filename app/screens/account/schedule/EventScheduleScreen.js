@@ -14,7 +14,7 @@ import { getJSDate } from '../../../utils';
 
 const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-export default function EventScheduleScreen({
+export default function  EventScheduleScreen({
   onItemPress,
   eventData,
   onThreeDotPress,

@@ -394,7 +394,7 @@ export default function AvailibilityScheduleScreen({
         }
         else{
             background_color = colors.whiteColor;
-            text_color = 'green';
+            text_color = colors.availabilityBarColor;
         }
 
         customDatesStyles.push({
@@ -531,11 +531,11 @@ export default function AvailibilityScheduleScreen({
                 </Text>
                 <View style={{position: 'relative', width:'100%', paddingHorizontal: '8%'}}>
                     <View style={{justifyContent:'space-between', flexDirection: 'row'}}>
-                        <Text>0</Text>
-                        <Text style={{marginLeft: 5}}>6</Text>
-                        <Text style={{marginLeft: 5}}>12</Text>
-                        <Text style={{marginLeft: 5}}>18</Text>
-                        <Text>24</Text>
+                        <Text style={{color: colors.darkGrey}}>0</Text>
+                        <Text style={{marginLeft: 5, color: colors.darkGrey}}>6</Text>
+                        <Text style={{marginLeft: 5 ,color: colors.darkGrey}}>12</Text>
+                        <Text style={{marginLeft: 5, color: colors.darkGrey}}>18</Text>
+                        <Text style={{color: colors.darkGrey}}>24</Text>
                     </View>
                     <View
                         style={{
