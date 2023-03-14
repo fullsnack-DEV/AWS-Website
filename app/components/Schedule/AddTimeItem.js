@@ -1,5 +1,6 @@
 import React from 'react';
 import {StyleSheet, Text, TouchableOpacity, Image} from 'react-native';
+import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
 function AddTimeItem({source, addTimeText, onAddTimePress, containerStyle}) {
