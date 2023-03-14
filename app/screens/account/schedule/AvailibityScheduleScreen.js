@@ -543,9 +543,9 @@ export default function AvailibilityScheduleScreen({
                             height: 20,
                             marginVertical: 10,
                             borderRadius: 2,
-                            borderColor: '#f5f5f5',
+                            borderColor: colors.lightGrey,
                             borderWidth: 1,
-                            backgroundColor: '#f5f5f5',
+                            backgroundColor: colors.lightGrey,
                         }}
                     />
                     {
@@ -557,7 +557,7 @@ export default function AvailibilityScheduleScreen({
                                 height: 20,
                                 marginVertical: 10,
                                 borderRadius: 2,
-                                backgroundColor: '#70D486',
+                                backgroundColor: colors.availabilityBarColor,
                                 position: 'absolute',
                                 left: `${item.marginLeft + 9.5}%`,
                                 top:17

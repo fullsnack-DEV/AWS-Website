@@ -21,20 +21,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#F5F5F5',
-    backgroundColor: '#F5F5F5',
+    borderColor: colors.lightGrey,
+    backgroundColor: colors.lightGrey,
     borderRadius: 8,
   },
   imageStyle: {
     width: 10,
     height: 10,
     marginRight: 5,
-    tintColor: '#333',
+    tintColor: colors.blackColor,
   },
   addTimeTextStyle: {
     fontSize: 12,
     fontFamily: fonts.RMedium,
-    color: '#333',
+    color: colors.blackColor,
   },
 });
 
