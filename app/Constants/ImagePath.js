@@ -462,19 +462,19 @@ const images = {
   activityImage1: require('../assets/images/activityImage1.png'),
   activityImage2: require('../assets/images/activityImage2.png'),
 
-
-
   // Events
-  challengeDefault : require('../assets/images/challenge_default.png'),
-  eventDefault : require('../assets/images/event_default.png'),
-  leftArrow : require('../assets/images/left_arrow.png'),
-  rightArrow : require('../assets/images/right_arrow.png'),
-  toggleCal : require('../assets/images/toggle_cal.png'),
-  eventClock : require('../assets/images/event_clock.png'),
-  eventMap : require('../assets/images/event_map.png'),
-  roundTick : require('../assets/images/round_tick.png'),
-  roundCross : require('../assets/images/round_cross.png'),
-  crossSingle : require('../assets/images/cross-single.png'),
+  challengeDefault: require('../assets/images/challenge_default.png'),
+  eventDefault: require('../assets/images/event_default.png'),
+  leftArrow: require('../assets/images/left_arrow.png'),
+  rightArrow: require('../assets/images/right_arrow.png'),
+  toggleCal: require('../assets/images/toggle_cal.png'),
+  eventClock: require('../assets/images/event_clock.png'),
+  eventMap: require('../assets/images/event_map.png'),
+  roundTick: require('../assets/images/round_tick.png'),
+  roundCross: require('../assets/images/round_cross.png'),
+  whiteBackArrow: require('../assets/images/whiteBackArrow.png'),
+  white3Dots: require('../assets/images/white3Dots.png'),
+  crossSingle : require('../assets/images/cross-single.png')
 };
 
 export default images;

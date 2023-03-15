@@ -43,19 +43,14 @@ const CustomDropDown = ({
   return (
     <>
       <Pressable
-        style={[
-          styles.greyContainer,
-          styles.row,
-          {marginTop: 0, flex: 1, marginLeft: 15},
-          parentStyle,
-        ]}
+        style={[styles.dropDownInput, parentStyle]}
         onPress={() => {
           setShowModal(true);
         }}>
         <View style={{alignItems: 'center', flex: 1}}>
           <Text style={styles.label}>{getLabel()}</Text>
         </View>
-        <View style={styles.buttonContainer}>
+        <View style={styles.dropDownIcon}>
           <Image source={images.dropDownArrow} style={styles.image} />
         </View>
       </Pressable>

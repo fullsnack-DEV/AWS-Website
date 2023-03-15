@@ -1,10 +1,13 @@
-import {StyleSheet} from 'react-native';
+import {Dimensions, StyleSheet} from 'react-native';
 import colors from '../../../../../Constants/Colors';
 import fonts from '../../../../../Constants/Fonts';
 
 const styles = StyleSheet.create({
   parent: {
-    paddingHorizontal: 8,
+    flex: 1,
+    width: Dimensions.get('window').width - 30,
+    marginRight: 15,
+    paddingHorizontal: 10,
     paddingVertical: 15,
     backgroundColor: colors.whiteColor,
     borderRadius: 5,
@@ -16,6 +19,7 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.1608,
     shadowRadius: 15,
+    justifyContent: 'space-between',
   },
   description: {
     fontSize: 16,
@@ -114,6 +118,21 @@ const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 18,
     color: colors.userPostTimeColor,
+    fontFamily: fonts.RRegular,
+  },
+  imageMask: {
+    position: 'absolute',
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    width: 104,
+    height: 104,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 10,
+  },
+  reply: {
+    fontSize: 16,
+    lineHeight: 22,
+    color: colors.extraLightBlackColor,
     fontFamily: fonts.RRegular,
   },
 });

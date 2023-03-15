@@ -2037,12 +2037,11 @@ export const getCalendar = async (
   }
 };
 
-
 export const getEventsSlots = async (
   participantId,
   fromDate,
   type,
-  rangeTime
+  rangeTime,
 ) => {
   try {
     return getStorage('scheduleSetting').then(async (ids) => {
@@ -2073,20 +2072,20 @@ export const getEventsSlots = async (
         },
       };
 
-      if(type === 'future') {
+      if (type === 'future') {
         body.query.bool.must.push({
           range: {actual_enddatetime: {gt: fromDate}},
         });
-        if(rangeTime > 0) {
+        if (rangeTime > 0) {
           body.query.bool.must.push({
             range: {actual_enddatetime: {lt: rangeTime}},
           });
         }
-      }else{
+      } else {
         body.query.bool.must.push({
           range: {start_datetime: {lt: fromDate}},
         });
-        if(rangeTime > 0) {
+        if (rangeTime > 0) {
           body.query.bool.must.push({
             range: {start_datetime: {gt: rangeTime}},
           });
@@ -2174,7 +2173,7 @@ export const getSportIconUrl = async (sport, entityType, authContext) => {
 };
 
 export const getSportImage = (sportName, type, authContext) => {
-  console.log('TYPET', type)
+  console.log('TYPET', type);
   if (type === 'player') {
     const tempObj = authContext.sports.filter(
       (obj) => obj.sport === sportName,
@@ -2540,4 +2539,66 @@ export const getSportList = (authContext) => {
   });
 
   return [...newData];
+};
+
+export const calculateReviewPeriod = (item = {}, reviews = []) => {
+  let isOpponentReview = true;
+  let isRefereeReview = true;
+  let isScorekeeperReview = true;
+  const obj = {
+    isReviewPeriodEnd: false,
+    isReplyToReviewPeridEnd: false,
+  };
+  reviews.forEach((ele) => {
+    const reviewObj = JSON.parse(ele.object)?.playerReview;
+    isOpponentReview = reviewObj.member === Verbs.entityTypeOpponent;
+    isRefereeReview = reviewObj.member === Verbs.entityTypeReferee;
+    isScorekeeperReview = reviewObj.member === Verbs.entityTypeScorekeeper;
+  });
+
+  const isAllReviewCompleted =
+    isOpponentReview && isRefereeReview && isScorekeeperReview;
+
+  const matchEndTime = moment(
+    getJSDate(item.game.data?.end_time).getTime(),
+  ).format('l');
+  const today = moment().format('l');
+  const diff = moment(today).diff(matchEndTime, 'days');
+
+  obj.isReviewPeriodEnd = diff > 5 || isAllReviewCompleted;
+  obj.isReviewPeriodEnd = diff > 0 && diff <= 7;
+
+  return obj;
+};
+
+export const getRatingsOptions = (
+  authContext,
+  sport,
+  entityType = Verbs.entityTypePlayer,
+) => {
+  const obj = authContext.sports.find((item) => item.sport === sport);
+
+  if (obj) {
+    let properties = [];
+    if (entityType === Verbs.entityTypePlayer) {
+      properties = obj.player_review_properties ?? [];
+    }
+    if (entityType === Verbs.entityTypeScorekeeper) {
+      properties = obj.scorekeeper_review_properties ?? [];
+    }
+    if (entityType === Verbs.entityTypeReferee) {
+      properties = obj.referee_review_properties ?? [];
+    }
+
+    const list = properties.map((item) => {
+      const option = {
+        name: item.name,
+        title: item.title,
+      };
+      return option;
+    });
+
+    return list ?? [];
+  }
+  return [];
 };

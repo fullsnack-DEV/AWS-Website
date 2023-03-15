@@ -44,7 +44,7 @@ const WrapperModal = ({
           />
         );
 
-      case strings.gameType:
+      case strings.gameTypeTitle:
         return (
           <MatchTypeModal
             gameType={settings.game_type}
@@ -149,7 +149,7 @@ const WrapperModal = ({
           />
         );
 
-      case strings.gameRules:
+      case strings.gameRulesTitle:
         return (
           <GameRulesModal
             generalRules={settings.general_rules}

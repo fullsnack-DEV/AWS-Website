@@ -80,14 +80,15 @@ const styles = StyleSheet.create({
   countModalCard: {
     backgroundColor: colors.whiteColor,
     maxHeight: Dimensions.get('window').height - 50,
-    borderTopRightRadius: 20,
-    borderTopLeftRadius: 20,
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 5,
     elevation: 15,
     paddingVertical: 25,
+    marginHorizontal: 30,
+    marginBottom: 55,
+    borderRadius: 10,
   },
   inputLabel: {
     fontSize: 16,
@@ -125,6 +126,23 @@ const styles = StyleSheet.create({
     lineHeight: 21,
     fontFamily: fonts.RBold,
     color: colors.lightBlackColor,
+  },
+  dropDownInput: {
+    flex: 1,
+    height: 35,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: colors.textFieldBackground,
+    borderRadius: 5,
+    marginLeft: 15,
+    paddingHorizontal: 10,
+  },
+  dropDownIcon: {
+    width: 10,
+    height: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 

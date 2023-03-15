@@ -12,6 +12,7 @@ const Verbs = {
   entityTypeUsers: 'users',
   entityTypeReferee: 'referee',
   entityTypeScorekeeper: 'scorekeeper',
+  entityTypeOpponent: 'opponent',
 
   tennisSport: 'tennis',
   doubleSport: 'double',

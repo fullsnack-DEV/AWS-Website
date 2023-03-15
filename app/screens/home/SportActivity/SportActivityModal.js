@@ -2,7 +2,7 @@
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {View, Modal, ScrollView, StyleSheet, Dimensions} from 'react-native';
 import {strings} from '../../../../Localization/translation';
-import {getGameScoreboardEvents} from '../../../api/Games';
+import {getGameScoreboardEvents, getGameStatsData} from '../../../api/Games';
 import AuthContext from '../../../auth/context';
 
 import colors from '../../../Constants/Colors';
@@ -39,6 +39,12 @@ const SportActivityModal = ({
   const [sportIcon, setSportIcon] = useState('');
   const [availabilityList, setAvailabilityList] = useState([]);
   const [fetchingAvailability, setFectchingAavailability] = useState(false);
+  const [statsObject, setStatsObject] = useState({
+    totalWins: 0,
+    totalLosses: 0,
+    totalDraws: 0,
+    totalMatches: 0,
+  });
 
   const getMatchList = useCallback(() => {
     setIsFetchingMatchList(true);
@@ -77,12 +83,40 @@ const SportActivityModal = ({
       });
   }, [userData]);
 
+  const loadStatsData = useCallback(() => {
+    const date = new Date();
+    date.setMonth(date.getMonth() - 6);
+    const chartParameter = {
+      sport,
+      fromDate: getTCDate(date),
+    };
+    getGameStatsData(userData?.user_id, chartParameter, authContext)
+      .then((res) => {
+        const list = res.payload.filter((item) => item.sport_name === sport);
+        let totalMatches = 0;
+        let totalWins = 0;
+        let totalLosses = 0;
+        let totalDraws = 0;
+        list.forEach((item) => {
+          totalMatches += item.stats.all.total_games;
+          totalWins += item.stats.all.winner;
+          totalLosses += item.stats.all.looser;
+          totalDraws += item.stats.all.draw;
+        });
+        setStatsObject({totalMatches, totalWins, totalLosses, totalDraws});
+      })
+      .catch((err) => {
+        console.log({err});
+      });
+  }, [authContext, sport, userData]);
+
   useEffect(() => {
     if (isVisible) {
       getMatchList();
       getAvailability();
+      loadStatsData();
     }
-  }, [isVisible, getMatchList, getAvailability]);
+  }, [isVisible, getMatchList, getAvailability, loadStatsData]);
 
   useEffect(() => {
     getSportIconUrl(sport, userData.entity_type, authContext).then((url) => {
@@ -179,6 +213,7 @@ const SportActivityModal = ({
               <StatSection
                 onSeeAll={() => onSeeAll(strings.statsTitle)}
                 sportType={sportObj?.sport_type}
+                {...statsObject}
               />
               {sportObj?.sport_type === Verbs.singleSport ? (
                 <ReviewSection

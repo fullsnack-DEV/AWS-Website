@@ -18,6 +18,7 @@ import ScreenHeader from '../../../components/ScreenHeader';
 import BottomSheet from '../../../components/modals/BottomSheet';
 import StatsContentScreen from './contentScreens/StatsContentScreen';
 import AvailabilityScreen from './contentScreens/AvailabilityContentScreen';
+import {getGameHomeScreen} from '../../../utils/gameUtils';
 
 const SportActivityHome = ({navigation, route}) => {
   const [userData, setCurrentUserData] = useState({});
@@ -285,19 +286,62 @@ const SportActivityHome = ({navigation, route}) => {
         return (
           <ReviewsContentScreen
             userId={userData.user_id}
-            onPressMore={() => {
-              navigation.navigate('ReviewDetailsScreen');
+            sportObj={sportObj}
+            onPressMore={(review, dateTime) => {
+              navigation.navigate('ReviewDetailsScreen', {
+                review,
+                dateTime,
+                sport,
+                sportType,
+              });
             }}
-            // sport={sportObj?.sport}
-            // role={userData.entity_type}
+            isAdmin={isAdmin}
+            onReply={(activityId) => {
+              navigation.navigate('ReplyScreen', {
+                sport,
+                sportType,
+                activityId,
+              });
+            }}
+            onPressMedia={(list, user, date) => {
+              navigation.navigate('LoneStack', {
+                screen: 'MediaScreen',
+                params: {
+                  mediaList: list,
+                  user,
+                  sport,
+                  sportType,
+                  userId: user.id,
+                  createDate: date,
+                },
+              });
+            }}
+            onPressGame={(review) => {
+              if (review.game.id && review.game.data.sport) {
+                const gameHome = getGameHomeScreen(
+                  review.game.data.sport.replace(' ', '_'),
+                );
+
+                navigation.navigate(gameHome, {
+                  gameId: review.game.id,
+                });
+              }
+            }}
           />
         );
 
       case strings.stats:
-        return <StatsContentScreen sportType={sportObj?.sport_type} />;
+        return (
+          <StatsContentScreen
+            sportType={sportObj?.sport_type}
+            sport={sportObj?.sport}
+            authContext={authContext}
+            userId={userData?.user_id}
+          />
+        );
 
       case strings.availability:
-        return <AvailabilityScreen userData={userData}/>
+        return <AvailabilityScreen userData={userData} />;
 
       default:
         return null;

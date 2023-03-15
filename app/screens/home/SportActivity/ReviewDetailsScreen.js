@@ -1,176 +1,129 @@
 // @flow
 import moment from 'moment';
-import React from 'react';
-import {
-  View,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  Image,
-  TextInput,
-} from 'react-native';
+import React, {useContext} from 'react';
+import {View, SafeAreaView, StyleSheet, FlatList} from 'react-native';
 import {strings} from '../../../../Localization/translation';
+import AuthContext from '../../../auth/context';
 import ScreenHeader from '../../../components/ScreenHeader';
 import colors from '../../../Constants/Colors';
-import fonts from '../../../Constants/Fonts';
+
 import images from '../../../Constants/ImagePath';
+import {calculateReviewPeriod} from '../../../utils';
+import {getGameHomeScreen} from '../../../utils/gameUtils';
+import ActivityCard from './components/reviews/ActivityCard';
+import GameCard from './components/reviews/GameCard';
 
-const ReviewDetailsScreen = ({navigation}) => (
-  <SafeAreaView style={styles.parent}>
-    <ScreenHeader
-      title={strings.reviews}
-      containerStyle={{paddingBottom: 10}}
-      leftIcon={images.backArrow}
-      leftIconPress={() => {
-        navigation.goBack();
-      }}
-      rightIcon2={images.chat3Dot}
-    />
-    <View style={styles.container}>
-      <View style={styles.row}>
-        <View style={styles.profile}>
-          <Image source={images.usaImage} style={styles.image} />
-        </View>
-        <View>
-          <Text style={styles.userName}>Christiano Ronaldo</Text>
-          <Text style={styles.date}>{moment().format('MMM DD')}</Text>
-        </View>
+const ReviewDetailsScreen = ({navigation, route}) => {
+  const {review, dateTime, sport, sportType} = route.params;
+  const authContext = useContext(AuthContext);
+
+  return (
+    <SafeAreaView style={styles.parent}>
+      <ScreenHeader
+        title={`${moment(dateTime).format('MMM DD')}'s ${strings.reviews}`}
+        containerStyle={{paddingBottom: 10}}
+        leftIcon={images.backArrow}
+        leftIconPress={() => {
+          navigation.goBack();
+        }}
+        rightIcon2={images.chat3Dot}
+      />
+      <View style={styles.container}>
+        <GameCard
+          data={review.game}
+          onCardPress={() => {
+            if (review.game.id && review.game.data.sport) {
+              const gameHome = getGameHomeScreen(
+                review.game.data.sport.replace(' ', '_'),
+              );
+
+              navigation.navigate(gameHome, {
+                gameId: review.game.id,
+              });
+            }
+          }}
+        />
       </View>
-      <Text style={styles.description}>
-        Association football, more commonly known as football or soccer, is a
-        team sport played between two teams of eleven betweenn Association
-        football, more commonly known as football or soccer, is a team sport
-        played between two teams of eleven betweenn Association football, more
-        commonly known as football or soccer, is a team sport played between two
-        teams of eleven betweenneei.
-      </Text>
-      <View style={[styles.row, {marginVertical: 15}]}>
-        <View style={styles.activityImageContainer}>
-          <Image source={images.activityImage} style={styles.image} />
-        </View>
-
-        <View style={styles.activityImageContainer}>
-          <Image source={images.activityImage1} style={styles.image} />
-          <View style={{position: 'absolute', alignItems: 'center'}}>
-            <View style={styles.videoBtn}>
-              <Image source={images.videoPlayIcon} style={styles.image} />
-            </View>
-            <Text style={styles.timer}>0:32</Text>
-          </View>
-        </View>
-
-        <View style={styles.activityImageContainer}>
-          <Image source={images.activityImage2} style={styles.image} />
-          <View style={{position: 'absolute'}}>
-            <Text style={styles.count}>+ 3</Text>
-          </View>
-        </View>
+      <View style={styles.container2}>
+        <FlatList
+          data={review.reviews}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({item}) => (
+            <>
+              <ActivityCard
+                item={item}
+                isReviewPeriodEnd={
+                  calculateReviewPeriod(item, review.reviews).isReviewPeriodEnd
+                }
+                isReplyToReviewPeriodEnd={
+                  calculateReviewPeriod(item).isReplyToReviewPeridEnd
+                }
+                // onPressMore={() => onPressMore(review)}
+                userProfile={authContext.entity.obj.full_image}
+                authContext={authContext}
+                isAdmin={item.home_team?.id === authContext.entity.obj.user_id}
+                onReply={(activityId) => {
+                  navigation.navigate('ReplyScreen', {
+                    sport,
+                    sportType,
+                    activityId,
+                  });
+                }}
+                onPressMedia={(list, user, date) => {
+                  navigation.navigate('LoneStack', {
+                    screen: 'MediaScreen',
+                    params: {
+                      mediaList: list,
+                      user,
+                      sport,
+                      sportType,
+                      userId: user.id,
+                      createDate: date,
+                    },
+                  });
+                }}
+                containerStyle={styles.card}
+              />
+              <View style={styles.dividor} />
+            </>
+          )}
+        />
       </View>
-      <View style={styles.row}>
-        <View style={[styles.profile, {marginRight: 7}]}>
-          <Image source={images.usaImage} style={styles.image} />
-        </View>
-
-        <TextInput placeholder={strings.leaveReplyText} style={styles.input} />
-      </View>
-    </View>
-  </SafeAreaView>
-);
+    </SafeAreaView>
+  );
+};
 
 const styles = StyleSheet.create({
   parent: {
     flex: 1,
   },
   container: {
-    paddingHorizontal: 18,
-    paddingVertical: 25,
+    paddingHorizontal: 15,
+    paddingVertical: 20,
+    backgroundColor: colors.grayBackgroundColor,
   },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  profile: {
-    width: 40,
-    height: 40,
-    borderWidth: 1,
-    borderColor: colors.greyBorderColor,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 10,
-  },
-  image: {
+  dividor: {
+    height: 7,
     width: '100%',
-    height: '100%',
-    resizeMode: 'cover',
-    borderRadius: 20,
+    marginVertical: 25,
+    backgroundColor: colors.grayBackgroundColor,
   },
-  userName: {
-    fontSize: 16,
-    lineHeight: 24,
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RBold,
-  },
-  date: {
-    fontSize: 14,
-    lineHeight: 16,
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RRegular,
-    marginRight: 7,
-  },
-  description: {
-    fontSize: 16,
-    lineHeight: 24,
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RRegular,
-    marginTop: 6,
-  },
-  input: {
-    flex: 1,
-    height: 40,
-    backgroundColor: colors.textFieldBackground,
-    borderRadius: 5,
-    paddingVertical: 12,
-    paddingHorizontal: 10,
-    fontSize: 14,
-    lineHeight: 16,
-    color: colors.userPostTimeColor,
-    fontFamily: fonts.RRegular,
-  },
-  activityImageContainer: {
-    width: 104,
-    height: 104,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 10,
-    marginRight: 9,
-    elevation: 5,
-    shadowColor: colors.blackColor,
+  card: {
+    marginRight: 0,
+    elevation: 0,
     shadowOffset: {
       width: 0,
-      height: 5,
+      height: 0,
     },
-    shadowOpacity: 0.1608,
-    shadowRadius: 15,
+    shadowOpacity: 0,
+    shadowRadius: 0,
+    paddingHorizontal: 18,
+    width: '100%',
   },
-  videoBtn: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
+  container2: {
+    flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
-  },
-  count: {
-    color: colors.whiteColor,
-    fontSize: 19,
-    lineHeight: 24,
-    fontFamily: fonts.RRegular,
-  },
-  timer: {
-    fontSize: 9,
-    lineHeight: 24,
-    fontFamily: fonts.RMedium,
-    color: colors.whiteColor,
+    paddingTop: 10,
   },
 });
 export default ReviewDetailsScreen;
