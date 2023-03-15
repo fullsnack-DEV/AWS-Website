@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
   },
   dateSelectStyle: {
     borderRadius: 5,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: colors.lightGrey,
     color: colors.lightBlackColor,
     padding: 10,
 

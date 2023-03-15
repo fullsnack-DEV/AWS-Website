@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 5,
     marginBottom: 15,
-    backgroundColor: '#F5F5F5'
+    backgroundColor: colors.lightGrey
   },
   headerTextStyle: {
     fontSize: 16,

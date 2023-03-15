@@ -209,7 +209,7 @@ export default function  EventScheduleScreen({
             (section?.data || [])?.filter((obj) => obj.cal_type === 'event')
               .length > 0 && (
               <Text style={styles.sectionHeader}>
-                {days[new Date(section.time * 1000).getDay()]},  {section.title}
+                {days[getJSDate(section.time).getDay()]},  {section.title}
               </Text>
             )
           }

@@ -146,7 +146,7 @@ export default function AvailibilityScheduleScreen({
             const minutes = Math.ceil((item.end_datetime - item.start_datetime)/60);
             const minutePercent = Math.ceil((minutes / 1440) * 100);
             
-            const gap = Math.ceil((item.start_datetime - (start.getTime() / 1000))/60);
+            const gap = Math.ceil((item.start_datetime - (Utility.getTCDate(start)))/60);
             const gapPercent = Math.ceil((gap / 1440) * 100);
 
             tempSlot.width = minutePercent;
