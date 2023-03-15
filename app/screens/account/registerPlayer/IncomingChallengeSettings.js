@@ -46,12 +46,12 @@ export default function IncomingChallengeSettings({navigation, route}) {
   const challengeSettingMenu = [
     {key: strings.sport},
     {key: strings.availability},
-    {key: strings.gameType},
+    {key: strings.gameTypeTitle},
     {key: strings.gameFee},
     {key: strings.refundPolicy},
     {key: settingType === 'Set' ? strings.setGamesDuration : ''},
     {key: strings.venue},
-    {key: strings.gameRules},
+    {key: strings.gameRulesTitle},
     {key: strings.Referee},
     {key: strings.scorekeeperText},
   ];
@@ -74,7 +74,7 @@ export default function IncomingChallengeSettings({navigation, route}) {
           setShowModal(true);
           break;
 
-        case strings.gameType:
+        case strings.gameTypeTitle:
           setModalObj({
             title: option,
             settingsObj: settingObject,
@@ -130,7 +130,7 @@ export default function IncomingChallengeSettings({navigation, route}) {
           setShowModal(true);
           break;
 
-        case strings.gameRules:
+        case strings.gameRulesTitle:
           setModalObj({
             title: option,
             settingsObj: settingObject,
@@ -378,6 +378,7 @@ export default function IncomingChallengeSettings({navigation, route}) {
           setShowModal(false);
           setSettingObject({...settingObject, ...settings});
         }}
+        entityType={Verbs.entityTypePlayer}
       />
     </SafeAreaView>
   );

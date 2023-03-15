@@ -48,9 +48,9 @@ const styles = StyleSheet.create({
     padding: wp('1.5%'),
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.textFieldBackground,
     borderRadius: 5,
     marginBottom: 15,
+    backgroundColor: colors.lightGrey
   },
   headerTextStyle: {
     fontSize: 16,

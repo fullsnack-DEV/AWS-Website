@@ -8,86 +8,191 @@ import {
   Dimensions,
   TouchableOpacity,
   ScrollView,
+  Platform,
 } from 'react-native';
 
 import colors from '../../../../Constants/Colors';
 import fonts from '../../../../Constants/Fonts';
 import {strings} from '../../../../../Localization/translation';
+import Verbs from '../../../../Constants/Verbs';
 
 const MatchFeeReminder = ({
   isVisible,
   onAddMatchFee = () => {},
   onContinue = () => {},
-}) => (
-  <Modal visible={isVisible} transparent>
-    <View style={styles.parent}>
-      <View style={styles.card}>
-        <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
-          <Text style={styles.title}>
-            {strings.warningTextForFee}{' '}
-            <Text style={[styles.title, {color: colors.themeColor}]}>
-              {strings.warningTextForFee1}
-            </Text>
-          </Text>
+  entityType = Verbs.entityTypePlayer,
+}) => {
+  const getTitle = () => {
+    switch (entityType) {
+      case Verbs.entityTypePlayer:
+        return strings.warningTextForFee1;
 
-          <Text style={[styles.description, {marginBottom: 23}]}>
-            {strings.matchFeeModalInfo}
-          </Text>
+      case Verbs.entityTypeReferee:
+        return strings.refereeFee.toLowerCase();
 
-          <Text
-            style={[
-              styles.description,
-              {fontFamily: fonts.RBold, marginBottom: 8},
-            ]}>
-            {strings.matchHostChallengeText}:
-          </Text>
+      case Verbs.entityTypeScorekeeper:
+        return strings.scorekeeperFee.toLowerCase();
 
-          <Text style={[styles.description, {marginBottom: 18}]}>
-            {strings.matchFeeModalInfo1}
-          </Text>
+      default:
+        return '';
+    }
+  };
 
-          <Text
-            style={[
-              styles.description,
-              {fontFamily: fonts.RBold, marginBottom: 8},
-            ]}>
-            {strings.whatMatchHostDo}
-          </Text>
+  return (
+    <Modal visible={isVisible} transparent>
+      <View style={styles.parent}>
+        <View style={styles.card}>
+          {entityType === Verbs.entityTypePlayer ? (
+            <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
+              <Text style={styles.title}>
+                {strings.warningTextForFee}{' '}
+                <Text style={[styles.title, {color: colors.themeColor}]}>
+                  {getTitle()}?
+                </Text>
+              </Text>
 
-          <Text style={[styles.description, {marginBottom: 8}]}>
-            {strings.matchFeeModalInfo2}
-          </Text>
+              <Text style={[styles.description, {marginBottom: 23}]}>
+                {strings.matchFeeModalInfo}
+              </Text>
 
-          <Text style={[styles.description, {marginBottom: 23}]}>
-            {'Venue\nReferees\nScorekeepers'}
-          </Text>
+              <Text
+                style={[
+                  styles.description,
+                  {fontFamily: fonts.RBold, marginBottom: 8},
+                ]}>
+                {strings.matchHostChallengeText}:
+              </Text>
 
-          <TouchableOpacity
-            style={[
-              styles.buttonContainer,
-              {marginBottom: 15, backgroundColor: colors.themeColor},
-            ]}
-            onPress={onAddMatchFee}>
-            <Text style={[styles.buttonText, {color: colors.whiteColor}]}>
-              {strings.addMatchFeeText}
-            </Text>
-          </TouchableOpacity>
+              <Text style={[styles.description, {marginBottom: 18}]}>
+                {strings.matchFeeModalInfo1}
+              </Text>
 
-          <TouchableOpacity
-            style={[
-              styles.buttonContainer,
-              {marginBottom: 15, backgroundColor: colors.grayBackgroundColor},
-            ]}
-            onPress={onContinue}>
-            <Text style={styles.buttonText}>
-              {strings.continueWithNoMatchFeeText}
-            </Text>
-          </TouchableOpacity>
-        </ScrollView>
+              <Text
+                style={[
+                  styles.description,
+                  {fontFamily: fonts.RBold, marginBottom: 8},
+                ]}>
+                {strings.whatMatchHostDo}
+              </Text>
+
+              <Text style={[styles.description, {marginBottom: 8}]}>
+                {strings.matchFeeModalInfo2}
+              </Text>
+
+              <Text style={[styles.description, {marginBottom: 23}]}>
+                {'Venue\nReferees\nScorekeepers'}
+              </Text>
+
+              <TouchableOpacity
+                style={[
+                  styles.buttonContainer,
+                  {marginBottom: 15, backgroundColor: colors.themeColor},
+                ]}
+                onPress={onAddMatchFee}>
+                <Text style={[styles.buttonText, {color: colors.whiteColor}]}>
+                  {strings.addMatchFeeText}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.buttonContainer,
+                  {
+                    marginBottom: 15,
+                    backgroundColor: colors.grayBackgroundColor,
+                  },
+                ]}
+                onPress={onContinue}>
+                <Text style={styles.buttonText}>
+                  {strings.continueWithNoMatchFeeText}
+                </Text>
+              </TouchableOpacity>
+            </ScrollView>
+          ) : (
+            <View
+              style={{
+                flex: 1,
+                justifyContent: 'space-between',
+                marginBottom: Platform.OS === 'ios' ? 50 : 0,
+              }}>
+              <View>
+                <Text style={styles.title}>
+                  {strings.warningTextForFee}{' '}
+                  <Text style={[styles.title, {color: colors.themeColor}]}>
+                    {getTitle()}?
+                  </Text>
+                </Text>
+
+                <Text style={[styles.description, {marginBottom: 23}]}>
+                  {strings.matchFeeModalInfo}
+                </Text>
+              </View>
+              {entityType === Verbs.entityTypeReferee ? (
+                <View>
+                  <TouchableOpacity
+                    style={[
+                      styles.buttonContainer,
+                      {marginBottom: 15, backgroundColor: colors.themeColor},
+                    ]}
+                    onPress={onAddMatchFee}>
+                    <Text
+                      style={[styles.buttonText, {color: colors.whiteColor}]}>
+                      {strings.addRefereeFee}
+                    </Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={[
+                      styles.buttonContainer,
+                      {
+                        marginBottom: 15,
+                        backgroundColor: colors.grayBackgroundColor,
+                      },
+                    ]}
+                    onPress={onContinue}>
+                    <Text style={styles.buttonText}>
+                      {strings.continueWithNoRefereeFee}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              ) : null}
+
+              {entityType === Verbs.entityTypeScorekeeper ? (
+                <View>
+                  <TouchableOpacity
+                    style={[
+                      styles.buttonContainer,
+                      {marginBottom: 15, backgroundColor: colors.themeColor},
+                    ]}
+                    onPress={onAddMatchFee}>
+                    <Text
+                      style={[styles.buttonText, {color: colors.whiteColor}]}>
+                      {strings.addScorekeeperFee}
+                    </Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={[
+                      styles.buttonContainer,
+                      {
+                        marginBottom: 15,
+                        backgroundColor: colors.grayBackgroundColor,
+                      },
+                    ]}
+                    onPress={onContinue}>
+                    <Text style={styles.buttonText}>
+                      {strings.continueWithNoScorekeeperFee}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              ) : null}
+            </View>
+          )}
+        </View>
       </View>
-    </View>
-  </Modal>
-);
+    </Modal>
+  );
+};
 
 const styles = StyleSheet.create({
   parent: {

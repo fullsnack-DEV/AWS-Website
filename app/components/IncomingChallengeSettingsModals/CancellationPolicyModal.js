@@ -5,6 +5,7 @@ import {strings} from '../../../Localization/translation';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 import styles from './ModalStyles';
+import Verbs from '../../Constants/Verbs';
 
 const policiesTypeList = [
   {label: strings.strictText, id: 1},
@@ -12,10 +13,16 @@ const policiesTypeList = [
   {label: strings.flexibleText, id: 3},
 ];
 
+const policyEnum = {
+  1: Verbs.strictText,
+  2: Verbs.moderateText,
+  3: Verbs.flexibleText,
+};
+
 const CancellationPolicyModal = ({refundPolicy = '', onChange = () => {}}) => {
   const getDescription = () => {
     switch (refundPolicy) {
-      case strings.strictText:
+      case Verbs.strictText:
         return (
           <>
             <View style={{marginBottom: 25}}>
@@ -43,7 +50,7 @@ const CancellationPolicyModal = ({refundPolicy = '', onChange = () => {}}) => {
           </>
         );
 
-      case strings.moderateText:
+      case Verbs.moderateText:
         return (
           <>
             <View style={{marginBottom: 25}}>
@@ -71,7 +78,7 @@ const CancellationPolicyModal = ({refundPolicy = '', onChange = () => {}}) => {
           </>
         );
 
-      case strings.flexibleText:
+      case Verbs.flexibleText:
         return (
           <>
             <View style={{marginBottom: 25}}>
@@ -115,8 +122,8 @@ const CancellationPolicyModal = ({refundPolicy = '', onChange = () => {}}) => {
 
           <TouchableOpacity
             style={styles.radioContainer}
-            onPress={() => onChange(item.label)}>
-            {refundPolicy === item.label ? (
+            onPress={() => onChange(policyEnum[item.id])}>
+            {refundPolicy === policyEnum[item.id] ? (
               <Image source={images.radioCheckYellow} style={styles.image} />
             ) : (
               <Image source={images.radioUnselect} style={styles.image} />

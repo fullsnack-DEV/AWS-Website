@@ -649,13 +649,14 @@ export default function EditEventScreen({navigation, route}) {
         setloading(false);
         return true;
       }
+      data.recurring_modification_type = recurrringOption;
     }
 
     editEvent(entityRole, uid, data, authContext)
     .then((response) => {
       console.log('Response :-', response);
       setloading(false);
-      navigation.navigate('EventScreen');
+      navigation.goBack()
     })
     .catch((e) => {
       setloading(false);
@@ -1116,7 +1117,6 @@ export default function EditEventScreen({navigation, route}) {
                 onSecondTabPress={() => setIsBlocked(false)}
               />
             </EventItemRender>
-
 
             <View style={styles.containerStyle}>
               <Text style={styles.headerTextStyle}>

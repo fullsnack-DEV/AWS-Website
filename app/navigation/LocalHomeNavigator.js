@@ -36,7 +36,6 @@ import CreateTeamForm2 from '../screens/account/createGroup/createTeam/CreateTea
 import CreateTeamForm1 from '../screens/account/createGroup/createTeam/CreateTeamForm1';
 import RegisterPlayerSuccess from '../screens/account/registerPlayer/RegisterPlayerSuccess';
 import RegisterRefereeSuccess from '../screens/account/registerReferee/RegisterRefereeSuccess';
-import RegisterRefereeForm2 from '../screens/account/registerReferee/RegisterRefereeForm2';
 import RegisterReferee from '../screens/account/registerReferee/RegisterReferee';
 import RegisterPlayerForm2 from '../screens/account/registerPlayer/RegisterPlayerForm2';
 import IncomingChallengeSettings from '../screens/account/registerPlayer/IncomingChallengeSettings';
@@ -256,6 +255,7 @@ import GroupMembersScreen from '../screens/account/groupConnections/GroupMembers
 import SportActivityHome from '../screens/home/SportActivity/SportActivityHome';
 import EditWrapperScreen from '../screens/home/SportActivity/EditWrapperScreen';
 import ReviewDetailsScreen from '../screens/home/SportActivity/ReviewDetailsScreen';
+import IncomingReservationSettings from '../screens/account/registerReferee/IncomingReservationSettings';
 
 const Stack = createStackNavigator();
 
@@ -707,35 +707,12 @@ const LocalHomeNavigator = () => (
     <Stack.Screen
       name="RegisterReferee"
       component={RegisterReferee}
-      options={{
-        title: 'Register as Referee',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          alignSelf: 'center',
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
+      options={{headerShown: false}}
     />
     <Stack.Screen
-      name="RegisterRefereeForm2"
-      component={RegisterRefereeForm2}
-      options={{
-        title: 'Register as Referee',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
+      name="IncomingReservationSettings"
+      component={IncomingReservationSettings}
+      options={{headerShown: false}}
     />
     <Stack.Screen
       name="RegisterRefereeSuccess"
@@ -762,19 +739,7 @@ const LocalHomeNavigator = () => (
     <Stack.Screen
       name="RegisterScorekeeper"
       component={RegisterScorekeeper}
-      options={{
-        title: 'Register as Scorekeeper',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          alignSelf: 'center',
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
+       options={{headerShown: false}}
     />
 
     <Stack.Screen

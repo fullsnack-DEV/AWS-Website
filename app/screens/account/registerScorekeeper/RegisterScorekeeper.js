@@ -1,491 +1,379 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import {
   Alert,
-  Dimensions,
-  FlatList,
   Image,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  TouchableWithoutFeedback,
   View,
-  SafeAreaView,
 } from 'react-native';
-import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
-import {format} from 'react-string-format';
-
-import Modal from 'react-native-modal';
-
+import FastImage from 'react-native-fast-image';
+import ImagePicker from 'react-native-image-crop-picker';
 import images from '../../../Constants/ImagePath';
 import {strings} from '../../../../Localization/translation';
 import colors from '../../../Constants/Colors';
-import fonts from '../../../Constants/Fonts';
 import AuthContext from '../../../auth/context';
-import {getUserDetails} from '../../../api/Users';
 import TCKeyboardView from '../../../components/TCKeyboardView';
-import TCThinDivider from '../../../components/TCThinDivider';
-import {getHitSlop, getSportName, languageList} from '../../../utils';
+import {getSportList, getSportName} from '../../../utils';
 import TCFormProgress from '../../../components/TCFormProgress';
 import TCLabel from '../../../components/TCLabel';
-import TCGradientButton from '../../../components/TCGradientButton';
+import ScreenHeader from '../../../components/ScreenHeader';
+import Verbs from '../../../Constants/Verbs';
+import SportsListModal from '../registerPlayer/modals/SportsListModal';
+import fonts from '../../../Constants/Fonts';
+import uploadImages from '../../../utils/imageAction';
+import TCInnerLoader from '../../../components/TCInnerLoader';
 
-export default function RegisterScorekeeper({navigation}) {
-  const authContext = useContext(AuthContext);
-  const [isModalVisible, setModalVisible] = useState(false);
-  const [scorekeepersData, setScorekeepersData] = useState([]);
+const MAX_CERTIFICATE_UPLOAD = 5;
+const certificate = {title: '', url: '', thumbnail: '', isLoading: false};
+
+const RegisterScorekeeper = ({navigation, route}) => {
   const [sportList, setSportList] = useState([]);
-  const [sports, setSports] = useState('');
-  const [sportsSelection, setSportsSelection] = useState();
-  const [sportTypeSelection, setSportTypeSelection] = useState();
+  const [selectedSport, setSelectedSport] = useState('');
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
+  const [bio, setBio] = useState('');
+  const [certificateList, setCertificateList] = useState([certificate]);
 
-  const [description, onChangeText] = useState('');
-  const [selectedLanguages, setSelectedLanguages] = useState([]);
-  const [languages, setLanguages] = useState([]);
-  const [languagesName, setLanguagesName] = useState('');
+  const authContext = useContext(AuthContext);
+  const bioInputRef = useRef();
 
-  const selectedLanguage = [];
   useEffect(() => {
-    setSportList(authContext.sports);
-    getUserDetails(authContext?.entity?.uid, authContext).then((res) => {
-      setScorekeepersData(res?.payload?.scorekeeper_data);
-    });
-
-    const arr = [];
-    for (const tempData of languageList) {
-      tempData.isChecked = false;
-      arr.push(tempData);
-    }
-    setLanguages(arr);
+    const sportsArr = getSportList(
+      authContext,
+      Verbs.menuOptionTypeScorekeeping,
+    );
+    setSportList(sportsArr);
   }, [authContext]);
+
   useEffect(() => {
-    let languageText = '';
-    if (selectedLanguages) {
-      selectedLanguages.map((langItem, index) => {
-        languageText = languageText + (index ? ', ' : '') + langItem;
-        return null;
-      });
-      setLanguagesName(languageText);
+    if (route.params.sport_name) {
+      setSelectedSport({...route.params});
     }
-  }, [selectedLanguages]);
-
-  const toggleModal = () => {
-    setModalVisible(!isModalVisible);
-  };
-
-  const isIconCheckedOrNot = ({item, index}) => {
-    languages[index].isChecked = !item.isChecked;
-
-    setLanguages([...languages]);
-
-    for (const temp of languages) {
-      if (temp.isChecked) {
-        selectedLanguage.push(temp.language);
-      }
-    }
-    setSelectedLanguages(selectedLanguage);
-  };
-  const renderLanguage = ({item, index}) => (
-    <TouchableWithoutFeedback
-      style={styles.listItem}
-      onPress={() => {
-        isIconCheckedOrNot({item, index});
-      }}>
-      <View
-        style={{
-          padding: 20,
-          alignItems: 'center',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-        }}>
-        <Text style={styles.languageList}>{item.language}</Text>
-        <View style={styles.checkbox}>
-          {languages[index].isChecked ? (
-            <Image source={images.orangeCheckBox} style={styles.checkboxImg} />
-          ) : (
-            <Image source={images.uncheckWhite} style={styles.checkboxImg} />
-          )}
-        </View>
-      </View>
-    </TouchableWithoutFeedback>
-  );
+  }, [route.params]);
 
   const checkValidation = () => {
-    if (!sports) {
-      Alert.alert(strings.appName, strings.sportcannotbeblank);
-      return false;
-    }
-    if (selectedLanguages.length <= 0) {
-      Alert.alert(strings.appName, strings.languageCannotBlank);
-      return false;
-    }
-    if (description === '') {
-      Alert.alert(strings.appName, strings.descriptionCanNotBlank);
-      return false;
-    }
-    const isExist = scorekeepersData?.filter((item) => item?.sport === sports);
-    if (isExist?.length) {
-      Alert.alert(
-        strings.appName,
-        format(strings.youAlreadyRegisterScorekeeper, sports),
-      );
-      return false;
-    }
-    return true;
+    let isValid = true;
+    certificateList.forEach((item) => {
+      if (item.title === '' && item.url === '') {
+        isValid = isValid && true;
+      } else if (item.url && !item.title) {
+        isValid = false;
+        Alert.alert(strings.warningCertificateTitleText);
+      } else if (item.title && !item.url) {
+        isValid = false;
+        Alert.alert(strings.warningCertificateImageText);
+      }
+    });
+    return isValid;
   };
-  const renderSports = ({item}) => (
-    <TouchableWithoutFeedback
-      style={styles.listItem}
-      onPress={() => {
-        setSportTypeSelection(item?.format[0]?.sport_type);
-        setSportsSelection(item);
-      }}>
-      <View
-        style={{
-          padding: 20,
-          alignItems: 'center',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-        }}>
-        <Text style={styles.languageList}>
-          {getSportName(item, authContext)}
-        </Text>
-        <View style={styles.checkbox}>
-          {sportsSelection?.sport === item?.sport ? (
-            <Image
-              source={images.radioSelectYellow}
-              style={styles.checkboxImg}
-            />
-          ) : (
-            <Image source={images.radioUnselect} style={styles.checkboxImg} />
-          )}
-        </View>
-      </View>
-    </TouchableWithoutFeedback>
-  );
-  const nextOnPress = () => {
+
+  const onNextPress = () => {
     const isValid = checkValidation();
     if (isValid) {
       const bodyParams = {
-        sport: sportsSelection.sport,
-        sport_type: sportTypeSelection,
-        sport_image: sportsSelection.scorekeeper_image,
-        sport_name : sportsSelection.sport_name,
-        descriptions: description,
+        sport: selectedSport.sport,
+        // sport_type: selectedSport.sport_type,
+        sport_image: selectedSport.referee_image,
+        sport_name: selectedSport.sport_name,
+        descriptions: bio,
         is_active: true,
+        certificates: [],
+        is_published: true,
+        type: Verbs.entityTypeScorekeeper,
       };
-
-      const languageData = [];
-      if (selectedLanguages?.length) {
-        selectedLanguages.map((item) =>
-          languageData.push({language_name: item}),
-        );
-      }
-      bodyParams.language = languageData;
-      // bodyParams.certificates = certificate;
-
-      console.log('Body::=>', bodyParams);
-
-      navigation.navigate('RegisterScorekeeperForm2', {
+      const refereeData = [
+        ...(authContext.entity.obj.scorekeeper_data || []),
         bodyParams,
+      ];
+      navigation.navigate('IncomingReservationSettings', {
+        bodyParams: refereeData,
+        entityType: Verbs.entityTypeScorekeeper,
+        settingObj: selectedSport?.setting
+          ? selectedSport.setting
+          : {
+              available_area: {
+                address_list: [
+                  {
+                    address: `${authContext.entity.obj?.city}, ${authContext.entity.obj?.country}`,
+                  },
+                ],
+                is_specific_address: true,
+              },
+              entity_type: Verbs.entityTypeScorekeeper,
+              game_fee: {
+                currency_type: Verbs.cad,
+                fee: 0,
+              },
+              scorekeeper_availibility: Verbs.on,
+              refund_policy: Verbs.flexibleText,
+              sport: selectedSport.sport,
+            },
+        sportName: selectedSport.sport_name,
       });
+    }
+  };
+
+  const handleCertification = async (index) => {
+    const list = [...certificateList];
+
+    const result = await ImagePicker.openPicker({
+      width: 300,
+      height: 400,
+      cropping: true,
+      maxFiles: 1,
+    });
+
+    if (result?.path) {
+      list[index] = {
+        ...list[index],
+        url: result.path,
+        thumbnail: result.path,
+        isLoading: true,
+      };
+      setCertificateList([...list]);
+      uploadImages([result], authContext)
+        .then((responses) => {
+          list[index] = {
+            ...list[index],
+            url: responses?.[0].fullImage ?? '',
+            thumbnail: responses?.[0].thumbnail ?? '',
+            isLoading: false,
+          };
+          if (certificateList.length < MAX_CERTIFICATE_UPLOAD) {
+            setCertificateList([...list, certificate]);
+          } else {
+            setCertificateList(list);
+          }
+        })
+        .catch(() => {
+          list[index] = {
+            ...list[index],
+            isLoading: false,
+          };
+        });
     }
   };
 
   return (
-    <>
-      <TCKeyboardView style={{flex: 1}}>
-        <ScrollView>
-          <TCFormProgress totalSteps={2} curruentStep={1} />
-
-          <View>
-            <TCLabel title={strings.whichSport} required={true} />
-            <TouchableOpacity onPress={() => setVisibleSportsModal(true)}>
-              <View style={styles.searchView}>
-                <TextInput
-                  style={styles.searchTextField}
-                  placeholder={strings.selectSportPlaceholderScorekeeper}
-                  value={getSportName(sportsSelection, authContext)}
-                  editable={false}
-                  pointerEvents="none"
-                />
-              </View>
-            </TouchableOpacity>
-          </View>
-
-          <View>
-            <TCLabel title={strings.whichLanguage} required={true} />
-            <TouchableOpacity onPress={toggleModal}>
-              <View style={styles.searchView}>
-                <TextInput
-                  style={styles.searchTextField}
-                  placeholder={strings.languagePlaceholder}
-                  value={languagesName}
-                  editable={false}
-                  pointerEvents="none"
-                />
-              </View>
-            </TouchableOpacity>
-          </View>
-
-          <View style={{marginBottom: 10}}>
-            <TCLabel title={strings.describeSelf} required={true} />
-            <TextInput
-              style={styles.descriptionTxt}
-              onChangeText={(text) => onChangeText(text)}
-              value={description}
-              multiline
-              textAlignVertical={'top'}
-              numberOfLines={4}
-              placeholder={strings.descriptionScorekeeperPlaceholder}
-            />
-          </View>
-        </ScrollView>
-      </TCKeyboardView>
-
-      <SafeAreaView>
-        <TCGradientButton
-          isDisabled={
-            sports === '' ||
-            selectedLanguages?.length <= 0 ||
-            description === ''
-          }
-          title={strings.nextTitle}
-          style={{marginBottom: 5}}
-          onPress={nextOnPress}
-        />
-      </SafeAreaView>
-
-      <Modal
-        isVisible={isModalVisible}
-        onBackdropPress={() => setModalVisible(false)}
-        onRequestClose={() => setModalVisible(false)}
-        style={{
-          margin: 0,
+    <TCKeyboardView style={{flex: 1}}>
+      <ScreenHeader
+        title={strings.registerScorekeeperTitle}
+        leftIcon={images.backArrow}
+        leftIconPress={() => {
+          navigation.navigate('AccountScreen');
         }}
-        animationInTiming={300}
-        animationOutTiming={800}
-        backdropTransitionInTiming={300}
-        backdropTransitionOutTiming={800}>
-        <View
-          style={{
-            width: '100%',
-            height: Dimensions.get('window').height / 1.3,
-            backgroundColor: 'white',
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            borderTopLeftRadius: 30,
-            borderTopRightRadius: 30,
-            shadowColor: '#000',
-            shadowOffset: {width: 0, height: 1},
-            shadowOpacity: 0.5,
-            shadowRadius: 5,
-            elevation: 15,
-          }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              paddingHorizontal: 15,
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}>
-            <TouchableOpacity
-              hitSlop={getHitSlop(15)}
-              style={styles.closeButton}
-              onPress={() => setModalVisible(false)}>
-              <Image source={images.cancelImage} style={styles.closeButton} />
-            </TouchableOpacity>
-            <Text
-              style={{
-                alignSelf: 'center',
-                marginVertical: 20,
-                fontSize: 16,
-                fontFamily: fonts.RBold,
-                color: colors.lightBlackColor,
-              }}>
-              {strings.languages}
-            </Text>
-            <TouchableOpacity
-              onPress={() => {
-                for (const temp of languages) {
-                  if (temp.isChecked) {
-                    selectedLanguage.push(temp.language);
-                  }
-                }
-                setSelectedLanguages(selectedLanguage);
-                toggleModal();
-              }}>
-              <Text
-                style={{
-                  alignSelf: 'center',
-                  marginVertical: 20,
-                  fontSize: 16,
-                  fontFamily: fonts.RRegular,
-                  color: colors.themeColor,
-                }}>
-                {strings.apply}
-              </Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.separatorLine} />
-          <FlatList
-            ItemSeparatorComponent={() => <TCThinDivider />}
-            data={languages}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={renderLanguage}
+        containerStyle={{paddingBottom: 14}}
+        isRightIconText
+        rightButtonText={strings.next}
+        onRightButtonPress={onNextPress}
+      />
+      <TCFormProgress totalSteps={2} curruentStep={1} />
+      <ScrollView
+        contentContainerStyle={{paddingTop: 25, paddingHorizontal: 15}}>
+        <View>
+          <TCLabel
+            title={strings.whichSport}
+            required={true}
+            style={{marginLeft: 0, marginTop: 0}}
           />
+          <TouchableOpacity
+            style={styles.searchView}
+            onPress={() => setVisibleSportsModal(true)}>
+            <TextInput
+              style={styles.searchTextField}
+              placeholder={strings.selectSportPlaceholderScorekeeper}
+              value={getSportName(selectedSport, authContext)}
+              editable={false}
+              pointerEvents="none"
+            />
+          </TouchableOpacity>
         </View>
-      </Modal>
 
-      <Modal
+        <View>
+          <TCLabel
+            title={strings.bio.toUpperCase()}
+            style={{marginLeft: 0, marginTop: 0}}
+          />
+          <TouchableOpacity
+            style={[styles.searchView, {minHeight: 100}]}
+            onPress={() => {
+              bioInputRef.current?.focus();
+            }}>
+            <TextInput
+              ref={bioInputRef}
+              style={styles.searchTextField}
+              onChangeText={(text) => setBio(text)}
+              value={bio}
+              multiline
+              placeholder={strings.descriptionScorekeeperPlaceholder}
+              maxLength={50}
+            />
+          </TouchableOpacity>
+        </View>
+
+        <View>
+          <TCLabel
+            title={strings.certiTitle}
+            required={false}
+            style={{marginLeft: 0, marginTop: 0}}
+          />
+          {certificateList.length > 0 &&
+            certificateList.map((item, index) => (
+              <View key={index} style={{marginBottom: 15}}>
+                <View style={[styles.searchView, {marginBottom: 25}]}>
+                  <TextInput
+                    style={styles.searchTextField}
+                    placeholder={strings.titleOrDescriptionText}
+                    value={item.title}
+                    onChangeText={(text) => {
+                      const list = [...certificateList];
+                      list[index] = {
+                        ...list[index],
+                        title: text,
+                      };
+                      setCertificateList(list);
+                    }}
+                  />
+                </View>
+                {item.url ? (
+                  <View style={styles.certificateContainer}>
+                    <Image source={{uri: item.url}} style={styles.image} />
+                    <TouchableOpacity
+                      style={styles.closeIcon}
+                      onPress={() => {
+                        const list = [...certificateList];
+                        list.splice(index, 1);
+                        if (list.length === 0) {
+                          setCertificateList([certificate]);
+                        } else {
+                          setCertificateList(list);
+                        }
+                      }}>
+                      <Image source={images.closeRound} style={styles.image} />
+                    </TouchableOpacity>
+                    {item.isLoading ? (
+                      <View style={styles.maskView}>
+                        <TCInnerLoader visible />
+                        <Text style={styles.maskViewText}>
+                          {strings.uploadingText}
+                        </Text>
+                      </View>
+                    ) : null}
+                  </View>
+                ) : (
+                  <TouchableOpacity
+                    style={styles.addCertificateButton}
+                    onPress={() => handleCertification(index)}>
+                    <FastImage
+                      resizeMode={FastImage.resizeMode.cover}
+                      source={images.messageCamera}
+                      style={styles.imageStyle}
+                    />
+                    <Text style={styles.addCertificateText}>
+                      {strings.addCertificateTitle}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+            ))}
+          <Text style={styles.certificateDescription}>
+            {strings.scorekeeperCertificationDescription}
+          </Text>
+        </View>
+      </ScrollView>
+      <SportsListModal
         isVisible={visibleSportsModal}
-        onBackdropPress={() => setVisibleSportsModal(false)}
-        onRequestClose={() => setVisibleSportsModal(false)}
-        animationInTiming={300}
-        animationOutTiming={800}
-        backdropTransitionInTiming={300}
-        backdropTransitionOutTiming={800}
-        style={{
-          margin: 0,
-        }}>
-        <View
-          style={{
-            width: '100%',
-            height: Dimensions.get('window').height / 1.3,
-            backgroundColor: 'white',
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            borderTopLeftRadius: 30,
-            borderTopRightRadius: 30,
-            shadowColor: '#000',
-            shadowOffset: {width: 0, height: 1},
-            shadowOpacity: 0.5,
-            shadowRadius: 5,
-            elevation: 15,
-          }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              paddingHorizontal: 15,
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}>
-            <TouchableOpacity
-              hitSlop={getHitSlop(15)}
-              style={styles.closeButton}
-              onPress={() => setVisibleSportsModal(false)}>
-              <Image source={images.cancelImage} style={styles.closeButton} />
-            </TouchableOpacity>
-            <Text
-              style={{
-                alignSelf: 'center',
-                marginVertical: 20,
-                fontSize: 16,
-                fontFamily: fonts.RBold,
-                color: colors.lightBlackColor,
-              }}>
-              {strings.sportsTitleText}
-            </Text>
-            <TouchableOpacity
-              onPress={() => {
-                setSports(sportsSelection.sport);
-                setVisibleSportsModal(false);
-              }}>
-              <Text
-                style={{
-                  alignSelf: 'center',
-                  marginVertical: 20,
-                  fontSize: 16,
-                  fontFamily: fonts.RRegular,
-                  color: colors.themeColor,
-                }}>
-                {strings.apply}
-              </Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.separatorLine} />
-          <FlatList
-            ItemSeparatorComponent={() => <TCThinDivider />}
-            data={sportList}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={renderSports}
-          />
-        </View>
-      </Modal>
-    </>
+        closeList={() => setVisibleSportsModal(false)}
+        title={strings.registerRefereeTitle}
+        sportsList={sportList}
+        onNext={(sport) => {
+          setVisibleSportsModal(false);
+          setSelectedSport({...sport});
+        }}
+        sport={selectedSport}
+      />
+    </TCKeyboardView>
   );
-}
+};
 const styles = StyleSheet.create({
-  separatorLine: {
-    alignSelf: 'center',
-    backgroundColor: colors.grayColor,
-    height: 0.5,
-    width: wp('100%'),
-  },
-
-  languageList: {
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RRegular,
-    fontSize: wp('4%'),
-  },
-  checkbox: {},
   searchView: {
-    alignSelf: 'center',
     backgroundColor: colors.textFieldBackground,
     borderRadius: 5,
-    flexDirection: 'row',
-    height: 40,
-
     marginTop: 10,
-    paddingLeft: 15,
-
-    width: wp('92%'),
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    marginBottom: 35,
   },
   searchTextField: {
-    alignSelf: 'center',
-    flex: 1,
-    width: wp('80%'),
     fontSize: 16,
-    fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
+    padding: 0,
   },
-
-  listItem: {
-    marginTop: 5,
+  addCertificateButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 5,
+    height: 150,
+    backgroundColor: colors.textFieldBackground,
   },
-
-  closeButton: {
-    alignSelf: 'center',
-    width: 13,
-    height: 13,
-    marginLeft: 5,
+  addCertificateText: {
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RBold,
+    fontSize: 12,
+    lineHeight: 18,
+  },
+  imageStyle: {
+    width: 27,
+    height: 20,
+    marginBottom: 15,
+  },
+  certificateDescription: {
+    fontSize: 12,
+    lineHeight: 21,
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RRegular,
+  },
+  certificateContainer: {
+    width: 150,
+    height: 195,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
     resizeMode: 'contain',
   },
-
-  descriptionTxt: {
-    height: 100,
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    color: colors.lightBlackColor,
-
-    width: wp('92%'),
-    alignSelf: 'center',
-    marginTop: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 15,
-    paddingRight: 30,
-    backgroundColor: colors.textFieldBackground,
-    borderRadius: 5,
-  },
-
-  checkboxImg: {
+  closeIcon: {
+    position: 'absolute',
     width: 22,
     height: 22,
-    resizeMode: 'contain',
-    alignSelf: 'center',
+    borderRadius: 22,
+    right: -10,
+    top: -8,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: colors.whiteColor,
+  },
+  maskView: {
+    position: 'absolute',
+    width: 150,
+    height: 195,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  maskViewText: {
+    fontFamily: fonts.RLight,
+    fontSize: 20,
+    lineHeight: 30,
+    color: colors.whiteColor,
+    marginLeft: 5,
   },
 });
+
+export default RegisterScorekeeper;

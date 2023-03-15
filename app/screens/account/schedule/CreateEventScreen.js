@@ -699,10 +699,12 @@ export default function CreateEventScreen({navigation, route}) {
     }
 
     createEvent(entityRole, uid, data, authContext)
-      .then(() => { 
+      .then((response) => { 
         setTimeout(() => {
           setloading(false);
-          navigation.navigate('ScheduleScreen');
+          navigation.navigate('ScheduleScreen' , {
+            event : response.payload[0]
+          });
         }, 1000);
       })
       .catch((e) => {
@@ -1223,26 +1225,7 @@ export default function CreateEventScreen({navigation, route}) {
                 </View>
               )}
 
-            {/* <View style={styles.containerStyle}>
-              <Text style={styles.headerTextStyle}>{strings.whereEventPosted}</Text>
-              <TouchableOpacity
-                onPress={() => {
-                  setWhoOption('posted');
-                  setModalPostedInvite(true);
-                }}>
-                <View style={styles.dropContainer}>
-                  <Text style={styles.textInputDropStyle}>
-                    {eventPosted.text}
-                  </Text>
-                  <Image
-                    source={images.dropDownArrow}
-                    style={styles.downArrowWhoCan}
-                  />
-                </View>
-              </TouchableOpacity>
-            </View> */}
-           
-
+            
             <View style={styles.containerStyle}>
               <Text style={styles.headerTextStyle}>WHO CAN INVITE</Text>
               <TouchableOpacity
@@ -1297,7 +1280,7 @@ export default function CreateEventScreen({navigation, route}) {
                 </View>
             )}
 
-            {/* <View style={styles.containerStyle}>
+            <View style={styles.containerStyle}>
               <Text style={styles.headerTextStyle}>{strings.whoCanSee}</Text>
               <TouchableOpacity
                 onPress={() => {
@@ -1314,7 +1297,7 @@ export default function CreateEventScreen({navigation, route}) {
                   />
                 </View>
               </TouchableOpacity>
-            </View> */}
+            </View>
             {whoCanSeeOption.value === 2 &&
               authContext.entity.role === Verbs.entityTypeUser && (
                 <View>
@@ -1351,7 +1334,25 @@ export default function CreateEventScreen({navigation, route}) {
                 </View>
               )}
 
-            
+            <View style={styles.containerStyle}>
+              <Text style={styles.headerTextStyle}>{strings.whereEventPosted}</Text>
+              <TouchableOpacity
+                onPress={() => {
+                  setWhoOption('posted');
+                  setModalPostedInvite(true);
+                }}>
+                <View style={styles.dropContainer}>
+                  <Text style={styles.textInputDropStyle}>
+                    {eventPosted.text}
+                  </Text>
+                  <Image
+                    source={images.dropDownArrow}
+                    style={styles.downArrowWhoCan}
+                  />
+                </View>
+              </TouchableOpacity>
+            </View>
+
             <DateTimePickerView
               date={eventStartDateTime}
               visible={startDateVisible}

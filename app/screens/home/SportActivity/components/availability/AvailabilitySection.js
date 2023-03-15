@@ -14,7 +14,11 @@ import fonts from '../../../../../Constants/Fonts';
 import {getJSDate} from '../../../../../utils';
 import AvailabilityBar from './AvailabilityBar';
 
-const AvailabilitySection = ({list = [], loading = false , onSeeAll = () => {}}) => {
+const AvailabilitySection = ({
+  list = [],
+  loading = false,
+  onSeeAll = () => {},
+}) => {
   const [leftColumn, setLeftColumn] = useState([]);
   const [rightColumn, setRightColumn] = useState([]);
   const [availability, setAvailability] = useState({});

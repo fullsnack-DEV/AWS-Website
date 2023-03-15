@@ -15,6 +15,7 @@ import colors from '../../Constants/Colors';
 import DataSource from '../../Constants/DataSource';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
+import Verbs from '../../Constants/Verbs';
 
 import styles from './ModalStyles';
 import modalStyles from './WrapperModalStyles';
@@ -24,11 +25,28 @@ const MatchFeeModal = ({
   onChange = () => {},
   onChangeCurrency = () => {},
   currency = '',
+  entityType = Verbs.entityTypePlayer,
 }) => {
   const [showCurrencyModal, setShowCurrencyModal] = useState(false);
+
+  const getTitle = () => {
+    switch (entityType) {
+      case Verbs.entityTypePlayer:
+        return strings.matchFeeModalTitle;
+
+      case Verbs.entityTypeReferee:
+        return strings.refereeFee;
+
+      case Verbs.entityTypeScorekeeper:
+        return strings.scorekeeperFee;
+
+      default:
+        return '';
+    }
+  };
   return (
     <View>
-      <Text style={styles.title}>{strings.matchFeeModalTitle}</Text>
+      <Text style={styles.title}>{getTitle()}</Text>
 
       <View
         style={[

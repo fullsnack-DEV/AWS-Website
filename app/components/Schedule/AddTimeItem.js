@@ -22,19 +22,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: colors.greeColor,
+    borderColor: colors.lightGrey,
+    backgroundColor: colors.lightGrey,
     borderRadius: 8,
   },
   imageStyle: {
     width: 10,
     height: 10,
     marginRight: 5,
-    tintColor: colors.greeColor,
+    tintColor: colors.blackColor,
   },
   addTimeTextStyle: {
     fontSize: 12,
     fontFamily: fonts.RMedium,
-    color: colors.greeColor,
+    color: colors.blackColor,
   },
 });
 

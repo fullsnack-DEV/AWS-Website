@@ -94,6 +94,9 @@ export default function AccountScreen({navigation, route}) {
   const [sports, setSports] = useState([]);
   const [sportsData, setSportsData] = useState([]);
   const [imageBaseUrl, setImageBaseUrl] = useState('');
+  const [selectedMenuOptionType, setSelectedMenuOptionType] = useState(
+    Verbs.menuOptionTypePlaying,
+  );
 
   useEffect(() => {
     if (isFocused) {
@@ -104,9 +107,9 @@ export default function AccountScreen({navigation, route}) {
   }, [isFocused]);
 
   useEffect(() => {
-    const sportArr = Utility.getSportList(authContext);
+    const sportArr = Utility.getSportList(authContext, selectedMenuOptionType);
     setSportsData([...sportArr]);
-  }, [authContext]);
+  }, [authContext, selectedMenuOptionType]);
 
   useEffect(() => {
     const {switchToUser} = route?.params || 'lklk';
@@ -460,15 +463,12 @@ export default function AccountScreen({navigation, route}) {
         }
       } else {
         if (option == strings.addSportsTitle) {
-          // if (sportsData.length === 0) {
-          //   Alert.alert('No more sport is available.');
-          // } else {
-          // }
-          setVisibleSportsModal(true);
           setNavigationOptions({
             screenName: rowObj.navigateTo.screenName,
             data: rowObj.navigateTo.data,
           });
+          setSelectedMenuOptionType(rowObj.menuOptionType);
+          setVisibleSportsModal(true);
         } else {
           navigation.navigate(
             rowObj.navigateTo.screenName,
@@ -604,6 +604,22 @@ export default function AccountScreen({navigation, route}) {
 
     setSports(list);
   }, [authContext]);
+
+  const getModalTitle = (section) => {
+    switch (section) {
+      case Verbs.menuOptionTypePlaying:
+        return strings.registerAsPlayerTitle;
+
+      case Verbs.menuOptionTypeRefereeing:
+        return strings.registerRefereeTitle;
+
+      case Verbs.menuOptionTypeScorekeeping:
+        return strings.registerScorekeeperTitle;
+
+      default:
+        return '';
+    }
+  };
 
   return (
     <SafeAreaView style={styles.mainContainer} testID="account-screen">
@@ -1200,6 +1216,7 @@ export default function AccountScreen({navigation, route}) {
       <SportsListModal
         isVisible={visibleSportsModal}
         closeList={() => setVisibleSportsModal(false)}
+        title={getModalTitle(selectedMenuOptionType)}
         sportsList={sportsData}
         onNext={(sport) => {
           setVisibleSportsModal(false);

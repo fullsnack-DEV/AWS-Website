@@ -221,6 +221,7 @@ const RegisterPlayer = ({navigation, route}) => {
       <SportsListModal
         isVisible={visibleSportsModal}
         closeList={() => setVisibleSportsModal(false)}
+        title={strings.registerAsPlayerTitle}
         sportsList={sportsData}
         onNext={(sport) => {
           setVisibleSportsModal(false);

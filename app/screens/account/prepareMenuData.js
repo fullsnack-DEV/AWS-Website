@@ -120,6 +120,7 @@ export const prepareUserMenu = (authContext, teams, clubs, baseUrl) => {
         {
           option: strings.addSportsTitle,
           icon: images.addSport,
+          menuOptionType: Verbs.menuOptionTypePlaying,
           navigateTo: {
             screenName: 'RegisterPlayer',
           },
@@ -136,9 +137,10 @@ export const prepareUserMenu = (authContext, teams, clubs, baseUrl) => {
           authContext,
         ),
         {
-          option: strings.registerRefereeTitle,
+          option: strings.addSportsTitle,
           icon: images.registerReferee,
           iconRight: images.nextArrow,
+          menuOptionType: Verbs.menuOptionTypeRefereeing,
           navigateTo: {
             screenName: 'RegisterReferee',
           },
@@ -155,8 +157,9 @@ export const prepareUserMenu = (authContext, teams, clubs, baseUrl) => {
           authContext,
         ),
         {
-          option: strings.registerScorekeeperTitle,
+          option: strings.addSportsTitle,
           icon: images.registerScorekeeper,
+          menuOptionType: Verbs.menuOptionTypeScorekeeping,
           navigateTo: {
             screenName: 'RegisterScorekeeper',
           },

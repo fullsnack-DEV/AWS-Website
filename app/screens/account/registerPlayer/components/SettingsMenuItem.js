@@ -25,7 +25,7 @@ const SettingsMenuItem = ({
             </Text>
           );
 
-        case strings.gameType:
+        case strings.gameTypeTitle:
           return (
             <Text style={styles.normalStyle}>
               {settingObject.game_type || Verbs.friendly}
@@ -59,7 +59,7 @@ const SettingsMenuItem = ({
           }
           return <Text style={styles.venue}>{strings.noVenues}</Text>;
 
-        case strings.gameRules:
+        case strings.gameRulesTitle:
           return (
             <Text style={styles.venue}>
               {settingObject.special_rules
@@ -111,7 +111,7 @@ const SettingsMenuItem = ({
           <Text style={styles.normalStyle}>{sportName}</Text>
         ) : (
           <View style={[styles.menuItemRow, {paddingHorizontal: 0}]}>
-            {item.key !== strings.gameRules &&
+            {item.key !== strings.gameRulesTitle &&
             item.key !== strings.venue &&
             item.key !== strings.setGamesDuration
               ? getSettingValue(item.key)
@@ -131,7 +131,7 @@ const SettingsMenuItem = ({
           </View>
         )}
       </View>
-      {item.key === strings.gameRules ||
+      {item.key === strings.gameRulesTitle ||
       item.key === strings.venue ||
       item.key === strings.setGamesDuration
         ? getSettingValue(item.key)
