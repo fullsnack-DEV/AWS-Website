@@ -13,6 +13,7 @@ const SportsListModal = ({
   sportsList = [],
   onNext = () => {},
   sport = null,
+  title = '',
 }) => {
   const [selectedSport, setSelectedSport] = useState(null);
   const authContext = useContext(AuthContext);
@@ -20,6 +21,34 @@ const SportsListModal = ({
   useEffect(() => {
     setSelectedSport(sport);
   }, [sport]);
+
+  const getQuestionAndDescription = () => {
+    switch (title) {
+      case strings.registerAsPlayerTitle:
+        return {
+          question: strings.sportQuestion,
+          description: strings.sportQuestionDescription,
+        };
+
+      case strings.registerRefereeTitle:
+        return {
+          question: strings.sportRefereeQuestion,
+          description: strings.sportRefereeQuestionDescription,
+        };
+
+      case strings.registerScorekeeperTitle:
+        return {
+          question: strings.scoreKeeperQuestion,
+          description: strings.scoreKeeperQuestionDescription,
+        };
+
+      default:
+        return {
+          question: '',
+          description: '',
+        };
+    }
+  };
 
   return (
     <Modal visible={isVisible} transparent animationType="slide">
@@ -33,9 +62,7 @@ const SportsListModal = ({
             </View>
             <View style={styles.headerTitleContainer}>
               <Text style={styles.headerTitle}>
-                {sport?.sport_type
-                  ? strings.sportTextTitle
-                  : strings.registerAsPlayerTitle}
+                {sport?.sport ? strings.sportTextTitle : title}
               </Text>
             </View>
             <Pressable
@@ -51,15 +78,17 @@ const SportsListModal = ({
                   styles.buttonText,
                   selectedSport?.sport_name ? {} : {opacity: 0.5},
                 ]}>
-                {sport?.sport_type ? strings.apply : strings.next}
+                {sport?.sport ? strings.apply : strings.next}
               </Text>
             </Pressable>
           </View>
           <View style={styles.divider} />
           <View style={styles.container}>
-            <Text style={styles.title}>{strings.sportQuestion}</Text>
+            <Text style={styles.title}>
+              {getQuestionAndDescription().question}
+            </Text>
             <Text style={styles.description}>
-              {strings.sportQuestionDescription}
+              {getQuestionAndDescription().description}
             </Text>
             <FlatList
               data={sportsList}

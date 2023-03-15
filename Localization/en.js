@@ -171,7 +171,7 @@ export default {
   canNotChangeGender:
     'en_You can’t change your gender once you have completed the sign-up process.',
   // CreateTeam Screen 1
-  star: 'en_*',
+  star: '*',
   newText: 'en_new',
   SportsTextFieldTitle: 'en_Choose a sport that the team will play.',
 
@@ -332,11 +332,12 @@ export default {
 
   // Register Referee Screen
   certificateTitle: 'en_Certificates',
-  certiTitle: 'en_CERTIFICATE',
+  certiTitle: 'en_CERTIFICATES',
   addCertiTitle: 'en_Add a Certificate',
   addCertiMainTitle:
     'en_Please add the certificates or documents showing your professional experience.',
-  descriptionRefereePlaceholder: 'en_Describe yourself as a referee',
+  descriptionRefereePlaceholder:
+    'en_Describe yourself as a referee in this sport. ',
   certificateSubTitle:
     'en_Please add the certificates or documents showing your professional experience.',
   addCertificateTitle: 'en_ + Add Image of Certificate',
@@ -732,7 +733,8 @@ export default {
   punchualityDescScorekeeper:
     'en_Did the the scorekeeper arrive at the match place on time?',
   chooseTeamFirst: 'en_Please choose any one team for review.',
-  descriptionScorekeeperPlaceholder: 'en_Describe yourself as a scorekeeper',
+  descriptionScorekeeperPlaceholder:
+    'en_Describe yourself as a scorekeeper in this sport. ',
 
   editReviewText: 'en_EDIT REVIEW FOR A TEAM',
   leaveReviewText: 'en_LEAVE REVIEW FOR A TEAM',
@@ -2443,4 +2445,37 @@ export default {
   basicRequestText:
     'en_When the request is accepted, the basic info in this profile will be updated with the info provided by the member. A user may choose to only provide some of the basic info items.',
   editAdminPrivillege: 'en_Edit Admin Privilege',
+  sportRefereeQuestion: 'en_What sport do you want to referee?',
+  sportRefereeQuestionDescription:
+    'en_Do you want to referee multiple sports? Register as a referee in one sport first, and then register in another sport.',
+  certificationDescription:
+    'en_You can upload any certificates or documents that prove or are related to the experience as a referee.',
+  warningCertificateImageText: 'en_Please add the image of the certificate.',
+  warningCertificateTitleText: 'en_Please add the title of the certificate.',
+  incomingReservationSettings: 'en_Incoming Reservation Settings',
+  incomingReservationSettingsDescription:
+    'en_Please review your incoming reservation settings. These settings are only applicable to the referee reservation when you are booked as a referee. When you book another referee for a match, their incoming reservation settings Will be applied.',
+  servicableAreas: 'en_Serviceable Areas',
+  areasText: 'en_areas',
+  refereeFeeTitle: 'en_Set the referee fee that you want to charge.',
+  addRefereeFee: 'en_ADD REFEREE FEE',
+  continueWithNoRefereeFee: 'en_CONTINUE WITH NO REFEREE FEE',
+  refereeCongratulationsModal:
+    'en_You can now receive referee booking requests from teams and players, and also can sent offers to teams and players.',
+  scoreKeeperQuestion: 'en_What sport do you work as a scorekeeper?',
+  scoreKeeperQuestionDescription:
+    'en_Do you work as a scorekeeper in multiple sports? Register as a referee in one sport first, and then register in another sport.',
+  scorekeeperCertificationDescription:
+    'en_You can upload any certificates or documents that prove or are related to the experience as a scorekeeper.',
+  addScorekeeperFee: 'en_ADD SCOREKEEPER FEE',
+  continueWithNoScorekeeperFee: 'en_CONTINUE WITH NO SCOREKEEPER FEE',
+  refereeCongratsModalTitle:
+    'Congratulations! \nYou are now registered as a referee in',
+  scoreKeeperCongratsModalTitle:
+    'Congratulations! \nYou are now registered as a scorekeeper in',
+  scoreKeeperCongratulationsModal:
+    'en_You can now receive scorekeeper booking requests from teams and players, and also can sent offers to teams and players.',
+  matchesNearYou: 'en_MATCHES NEAR YOU',
+  matchHostText: 'en_Match Host',
+  sendOfferText: 'en_Send Offer',
 };

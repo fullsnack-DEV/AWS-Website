@@ -88,7 +88,6 @@ const getTabBarVisibility = (route) => {
     routeName === 'RegisterPlayerForm2' ||
     routeName === 'IncomingChallengeSettings' ||
     routeName === 'RegisterReferee' ||
-    routeName === 'RegisterRefereeForm2' ||
     routeName === 'CreateTeamForm1' ||
     routeName === 'CreateTeamForm2' ||
     routeName === 'CreateTeamForm3' ||

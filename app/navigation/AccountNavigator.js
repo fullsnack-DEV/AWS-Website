@@ -30,7 +30,6 @@ import IncomingChallengeSettings from '../screens/account/registerPlayer/Incomin
 import RegisterPlayer from '../screens/account/registerPlayer/RegisterPlayer';
 import RegisterPlayerForm2 from '../screens/account/registerPlayer/RegisterPlayerForm2';
 import RegisterReferee from '../screens/account/registerReferee/RegisterReferee';
-import RegisterRefereeForm2 from '../screens/account/registerReferee/RegisterRefereeForm2';
 import CreateTeamForm1 from '../screens/account/createGroup/createTeam/CreateTeamForm1';
 import CreateTeamForm2 from '../screens/account/createGroup/createTeam/CreateTeamForm2';
 import CreateTeamForm3 from '../screens/account/createGroup/createTeam/CreateTeamForm3';
@@ -272,6 +271,7 @@ import EditWrapperScreen from '../screens/home/SportActivity/EditWrapperScreen';
 import PrivacySettingsScreen from '../screens/home/SportActivity/PrivacySettingsScreen';
 import ReviewDetailsScreen from '../screens/home/SportActivity/ReviewDetailsScreen';
 import ReplyScreen from '../screens/home/SportActivity/contentScreens/ReplyScreen';
+import IncomingReservationSettings from '../screens/account/registerReferee/IncomingReservationSettings';
 
 // Scorekeeper Review Screen
 
@@ -1096,35 +1096,12 @@ const AccountNavigator = () => (
     <Stack.Screen
       name="RegisterReferee"
       component={RegisterReferee}
-      options={{
-        title: strings.registerRefereeTitle,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          alignSelf: 'center',
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
+      options={{headerShown: false}}
     />
     <Stack.Screen
-      name="RegisterRefereeForm2"
-      component={RegisterRefereeForm2}
-      options={{
-        title: strings.registerRefereeTitle,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
+      name="IncomingReservationSettings"
+      component={IncomingReservationSettings}
+      options={{headerShown: false}}
     />
     <Stack.Screen
       name="RegisterRefereeSuccess"
@@ -2294,19 +2271,7 @@ const AccountNavigator = () => (
     <Stack.Screen
       name="RegisterScorekeeper"
       component={RegisterScorekeeper}
-      options={{
-        title: strings.registerScorekeeperTitle,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          alignSelf: 'center',
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
+      options={{headerShown: false}}
     />
     <Stack.Screen
       name="RegisterScorekeeperForm2"

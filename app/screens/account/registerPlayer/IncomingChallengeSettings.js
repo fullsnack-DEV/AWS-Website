@@ -378,6 +378,7 @@ export default function IncomingChallengeSettings({navigation, route}) {
           setShowModal(false);
           setSettingObject({...settingObject, ...settings});
         }}
+        entityType={Verbs.entityTypePlayer}
       />
     </SafeAreaView>
   );

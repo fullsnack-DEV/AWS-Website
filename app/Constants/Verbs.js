@@ -101,6 +101,9 @@ const Verbs = {
   countTypeSets: 'Sets',
   countTypeTime: 'Time',
   requestVerb: 'request',
+  menuOptionTypePlaying: 'Playing',
+  menuOptionTypeRefereeing: 'Refereeing',
+  menuOptionTypeScorekeeping: 'Scorekeeping',
 };
 
 export default Verbs;

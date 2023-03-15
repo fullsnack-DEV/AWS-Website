@@ -22,6 +22,7 @@ const WrapperModal = ({
   onSave = () => {},
   settingsObj = null,
   sportName = '',
+  entityType = '',
 }) => {
   const [settings, setSettings] = useState({});
 
@@ -36,11 +37,16 @@ const WrapperModal = ({
       case strings.availability:
         return (
           <AvailabilityModal
-            availability={settings?.availability}
+            availability={
+              settings?.availability ||
+              settings?.referee_availibility ||
+              settings?.scorekeeper_availibility
+            }
             sportName={sportName}
-            onChange={(availability) => {
-              setSettings({...settings, availability});
+            onChange={(obj) => {
+              setSettings({...settings, ...obj});
             }}
+            entityType={entityType}
           />
         );
 
@@ -55,6 +61,8 @@ const WrapperModal = ({
         );
 
       case strings.gameFee:
+      case strings.refereeFee:
+      case strings.scorekeeperFee:
         return (
           <MatchFeeModal
             gameFee={settings.game_fee}
@@ -74,6 +82,7 @@ const WrapperModal = ({
               });
             }}
             currency={settings?.game_fee?.currency_type ?? Verbs.cad}
+            entityType={entityType}
           />
         );
 
