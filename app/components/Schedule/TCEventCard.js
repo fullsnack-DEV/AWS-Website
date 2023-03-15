@@ -38,18 +38,18 @@ export default function TCEventCard({
             : images.backgroudPlaceholder} 
           resizeMode="cover" 
           style={styles.eventImage}>
-             <View style={{height: 100}}/>
+              <View style={{height: 100}}/>
+              <View style={styles.eventTitlewithDot}>
+                <Text
+                  style={styles.eventTitle}
+                  numberOfLines={1}>
+                  {title.toUpperCase()}
+                </Text>
+              </View>
           </ImageBackground>
         </View>
         <View style={styles.eventText}>
-          <View style={styles.eventTitlewithDot}>
-            <View>
-              <Text
-                style={styles.eventTitle}
-                numberOfLines={1}>
-                {title}
-              </Text>
-              <View style={styles.bottomView}>
+            <View style={styles.bottomView}>
                   <Text style={styles.eventTime}>{`${moment(startDate).format(
                   'ddd, MMM DD',
                 )} - `}</Text>
@@ -73,10 +73,8 @@ export default function TCEventCard({
                 <Text numberOfLines={1} style={{...styles.eventTime, flex: 1}}>
                   {location !== '' && location}
                 </Text>
-              </View>
             </View>
           </View>
-        </View>
       </View>
     </TouchableWithoutFeedback>
   );
@@ -110,6 +108,7 @@ const styles = StyleSheet.create({
   },
   eventText: {
     padding: 10,
+    paddingVertical: 15,
     width: wp('83%'),
   },
   eventTime: {
@@ -121,11 +120,16 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RMedium,
     width: wp('70%'),
-    color: colors.darkBlackColor,
+    color: colors.whiteColor,
+    textShadowColor: 'rgba(0, 0, 0, 1)',
+    textShadowOffset: {width: -1, height: 1},
+    textShadowRadius: 10,
+    fontWeight: 'bold'
   },
   eventTitlewithDot: {
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    padding: 10,
   },
 });

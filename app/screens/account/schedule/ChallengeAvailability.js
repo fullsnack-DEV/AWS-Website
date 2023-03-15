@@ -297,14 +297,14 @@ export default function ChallengeAvailability({
       />
       <View style={styles.sperateLine} />
       <View>
-        <ScrollView bounces={false} style={{height : '75%'}}>
+        <ScrollView bounces={false} style={{height : '85%'}}>
           <SafeAreaView>
             <EventItemRender title={strings.editChallengeTitle}>
               <FlatList
                 data={challengeAvailable}
                 showsHorizontalScrollIndicator={false}
                 renderItem={({item: data, index}) => (
-                  <View style={{marginTop: 10}}>
+                  <View style={{marginTop: 10, backgroundColor: '#F5F5F5', padding: 10}}>
                     <View style={styles.toggleViewStyle}>
                       <View style={{flexDirection: 'row'}}>
                         <TouchableOpacity
@@ -327,18 +327,24 @@ export default function ChallengeAvailability({
                         </TouchableOpacity>
                         <Text style={styles.allDayText}>{strings.allDay}</Text>
                       </View>
-                      <Text
-                        style={styles.deleteTextStyle}
+                      <TouchableOpacity
                         onPress={() => {
                           deleteItemById(data.id);
                         }}>
-                        {strings.delete}
-                      </Text>
+                          <Image
+                            source={
+                              images.crossSingle
+                            }
+                            style={styles.checkboxImg}
+                            resizeMode={'contain'}
+                          />
+                      </TouchableOpacity>
                     </View>
                     <EventTimeSelectItem
                       title={strings.starts}
                       toggle={!challengeAvailable[index].allDay}
                       headerTextStyle={{paddingLeft: 0}}
+                      style={{backgroundColor: '#FFF', width: wp('88%')}}
                       date={
                         challengeAvailable[index].start_datetime
                           ? moment(
@@ -359,6 +365,7 @@ export default function ChallengeAvailability({
                       }}
                     />
                     <EventTimeSelectItem
+                      style={{backgroundColor: '#FFF', width: wp('88%')}}
                       title={strings.ends}
                       toggle={!challengeAvailable[index].allDay}
                       headerTextStyle={{paddingLeft: 0}}
@@ -385,6 +392,7 @@ export default function ChallengeAvailability({
                     />
 
                     <EventMonthlySelection
+                      containerStyle={{backgroundColor: '#FFF', width: wp('88%')}}
                       title={strings.repeat}
                       dataSource={[
                         {label: strings.daily, value: Verbs.eventRecurringEnum.Daily},
@@ -602,13 +610,6 @@ const styles = StyleSheet.create({
   activeEventPrivacyText: {
     fontSize: 12,
   },
-  deleteTextStyle: {
-    alignSelf: 'flex-end',
-    marginRight: 5,
-    fontSize: 14,
-    fontFamily: fonts.RRegular,
-    color: colors.redDelColor,
-  },
   toggleViewStyle: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -622,8 +623,8 @@ const styles = StyleSheet.create({
     marginLeft: wp('1.5%'),
   },
   checkboxImg: {
-    width: wp('5.5%'),
-    height: wp('5.5%'),
+    width: wp('4.5%'),
+    height: wp('4.5%'),
   },
   checkbox: {
     alignSelf: 'center',

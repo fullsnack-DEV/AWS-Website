@@ -474,6 +474,7 @@ const images = {
   roundCross: require('../assets/images/round_cross.png'),
   whiteBackArrow: require('../assets/images/whiteBackArrow.png'),
   white3Dots: require('../assets/images/white3Dots.png'),
+  crossSingle : require('../assets/images/cross-single.png')
 };
 
 export default images;

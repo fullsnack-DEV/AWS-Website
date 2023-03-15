@@ -183,6 +183,7 @@ export default function ScheduleScreen({navigation, route}) {
     authContext.entity?.obj?.is_pause,
     authContext.entity.role,
     isFocused,
+    indigator
   ]);
 
 
@@ -291,7 +292,7 @@ export default function ScheduleScreen({navigation, route}) {
         console.log('Error==>', e.message);
         Alert.alert(e.message);
       });
-  }, [authContext, isFocused]);
+  }, [authContext, isFocused, indigator]);
 
 
   const configureEvents = useCallback((eventsData, games) => {
@@ -1021,16 +1022,19 @@ export default function ScheduleScreen({navigation, route}) {
                 {strings.availability}
               </Text>
             </View>
-            <TouchableOpacity
-              onPress={() => {
-                setFilterPopup(true);
-              }}>
-              <FastImage
-                source={images.localHomeFilter}
-                style={{height: 25, width: 25}}
-                resizeMode={'contain'}
-              />
-            </TouchableOpacity>
+            {
+            scheduleIndexCounter === 0 && (
+              <TouchableOpacity
+                onPress={() => {
+                  setFilterPopup(true);
+                }}>
+                <FastImage
+                  source={images.localHomeFilter}
+                  style={{height: 25, width: 25}}
+                  resizeMode={'contain'}
+                />
+              </TouchableOpacity>
+            )}
           </View>
 
 
@@ -1167,7 +1171,8 @@ export default function ScheduleScreen({navigation, route}) {
           onBackdropPress={() => {
             setIsRefereeModal(false);
           }}
-          backdropOpacity={0}>
+          backdropOpacity={0}
+        >
           <SafeAreaView style={styles.modalMainViewStyle}>
             <Header
               mainContainerStyle={styles.headerMainContainerStyle}
@@ -1294,13 +1299,16 @@ export default function ScheduleScreen({navigation, route}) {
               <Text
                 style={styles.applyText}
                 onPress={async() => {
-                  getEventsAndSlotsList({}, timeFilterOpetion, timeSelectionOption.value);
+                  setFilterPopup(false)
+                  setIndigator(true)
+                  await getEventsAndSlotsList({}, timeFilterOpetion, timeSelectionOption.value);
                   setFilterSetting({
                     ...filterSetting,
                     sort: sortFilterOption,
                     time: timeFilterOpetion,
                   });
-                  setFilterPopup(false);
+                  setIndigator(false)
+                  
                 }}>
                 {strings.apply}
               </Text>
@@ -1368,8 +1376,24 @@ export default function ScheduleScreen({navigation, route}) {
                   </View>
                 </TouchableOpacity>
 
-                <TouchableOpacity>
-
+                <TouchableOpacity
+                onPress={() => {
+                  setSortFilterOpetion(2);
+                  setTimeFilterOpetion(0);
+                  setRsvpFilterOption(0);
+                }}
+                >
+                  <View 
+                  style={{
+                    backgroundColor: colors.lightGrey, 
+                    paddingHorizontal: 50,
+                    paddingVertical: 5,
+                    alignSelf: 'center',
+                    borderRadius: 5,
+                    marginTop: 20
+                  }}>
+                    <Text>Reset</Text>
+                  </View>
                 </TouchableOpacity>
                 </>
               </ScrollView>

@@ -119,7 +119,7 @@ export default function WeeklyCalender({colors, onDayPress, blockedDaySlots, sel
         }else if(moment(new Date()).format('YYYY-MM-DD') === item.customDate){
             color = colors.themeColor;
         }else{
-            color =  'green';
+            color =  colors.availabilityBarColor;
         }
 
         return color;

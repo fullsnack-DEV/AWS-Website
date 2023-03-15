@@ -38,6 +38,7 @@ export default function AvailibilityScheduleScreen({
     const [slots, setSlots] = useState([]);
     const [slotList, setSlotList] = useState([]);
     const [blockedDaySlots , setBlockedDaySlots] = useState([]);
+    const [availableSlots, setAvailableSlots] = useState([]);
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [editableSlots, setEditableSlots] = useState([]);
     const [editableSlotsType, setEditableSlotsType] = useState(true);
@@ -113,13 +114,48 @@ export default function AvailibilityScheduleScreen({
         }
 
         let timeSlots = [];
+        let allAvailableSlots = [];
 
         if (temp?.[0]?.allDay === true && temp?.[0]?.blocked === true) {
             setSlots(temp);
         } else {
             timeSlots = createCalenderTimeSlots(Utility.getTCDate(start), 24, temp);
             setSlots(timeSlots);
+            allAvailableSlots = getAvailableSlots(timeSlots , dateObj);
         }
+
+        setAvailableSlots(allAvailableSlots);
+    }
+
+
+
+
+    const getAvailableSlots = (timeSlots , dateObj) => {
+        const availableTempSlots = [];
+        timeSlots.forEach((item) => {
+            if(!item.blocked) {
+                availableTempSlots.push(item);
+            }
+        });
+
+        const formattedAvailableSLots = [];
+        const start = new Date(dateObj);
+        start.setHours(0, 0, 0, 0);
+        availableTempSlots.forEach((item) => {
+            const tempSlot = {};
+            const minutes = Math.ceil((item.end_datetime - item.start_datetime)/60);
+            const minutePercent = Math.ceil((minutes / 1440) * 100);
+            
+            const gap = Math.ceil((item.start_datetime - (Utility.getTCDate(start)))/60);
+            const gapPercent = Math.ceil((gap / 1440) * 100);
+
+            tempSlot.width = minutePercent;
+            tempSlot.marginLeft = gapPercent;
+
+            formattedAvailableSLots.push(tempSlot)
+        });
+
+        return formattedAvailableSLots;
     }
 
 
@@ -358,7 +394,7 @@ export default function AvailibilityScheduleScreen({
         }
         else{
             background_color = colors.whiteColor;
-            text_color = 'green';
+            text_color = colors.availabilityBarColor;
         }
 
         customDatesStyles.push({
@@ -493,6 +529,43 @@ export default function AvailibilityScheduleScreen({
                     }}>
                     {strings.availableTimeForChallenge}
                 </Text>
+                <View style={{position: 'relative', width:'100%', paddingHorizontal: '8%'}}>
+                    <View style={{justifyContent:'space-between', flexDirection: 'row'}}>
+                        <Text style={{color: colors.darkGrey}}>0</Text>
+                        <Text style={{marginLeft: 5, color: colors.darkGrey}}>6</Text>
+                        <Text style={{marginLeft: 5 ,color: colors.darkGrey}}>12</Text>
+                        <Text style={{marginLeft: 5, color: colors.darkGrey}}>18</Text>
+                        <Text style={{color: colors.darkGrey}}>24</Text>
+                    </View>
+                    <View
+                        style={{
+                            width: '100%',
+                            height: 20,
+                            marginVertical: 10,
+                            borderRadius: 2,
+                            borderColor: colors.lightGrey,
+                            borderWidth: 1,
+                            backgroundColor: colors.lightGrey,
+                        }}
+                    />
+                    {
+                    availableSlots.map((item) => (
+                    <>
+                        <View
+                            style={{
+                                width: `${item.width}%`,
+                                height: 20,
+                                marginVertical: 10,
+                                borderRadius: 2,
+                                backgroundColor: colors.availabilityBarColor,
+                                position: 'absolute',
+                                left: `${item.marginLeft + 9.5}%`,
+                                top:17
+                            }}
+                        />
+                    </>
+                    ))}
+                </View>
                 <ScrollView >
                     {
                         slotList.map((item , key) => (

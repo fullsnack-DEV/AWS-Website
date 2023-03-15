@@ -11,9 +11,10 @@ function EventTimeSelectItem({
   onDatePress,
   toggle,
   headerTextStyle,
+  style
 }) {
   return (
-    <TouchableOpacity style={styles.dateSelectStyle} onPress={onDatePress}>
+    <TouchableOpacity style={[styles.dateSelectStyle, style]} onPress={onDatePress}>
       <Text style={[styles.headerTextStyle, headerTextStyle]}>{title}</Text>
       <Text style={styles.dateTextStyle}>{date}</Text>
       {toggle && (
@@ -31,9 +32,8 @@ const styles = StyleSheet.create({
     width: wp('20'),
   },
   dateSelectStyle: {
-    backgroundColor: colors.textFieldBackground,
     borderRadius: 5,
-
+    backgroundColor: colors.lightGrey,
     color: colors.lightBlackColor,
     padding: 10,
 
