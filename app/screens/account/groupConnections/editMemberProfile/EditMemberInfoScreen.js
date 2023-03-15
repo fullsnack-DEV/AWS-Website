@@ -1,3 +1,4 @@
+/* object-shorthand */
 import React, {
   useState,
   useEffect,
@@ -43,6 +44,8 @@ export default function EditMemberInfoScreen({navigation, route}) {
 
   const [homeCity, setHomeCity] = useState();
 
+  const [city, setCity] = useState();
+
   useEffect(() => {
     setMemberInfo(route.params.memberInfo);
 
@@ -80,6 +83,9 @@ export default function EditMemberInfoScreen({navigation, route}) {
 
   const editInfo = () => {
     setloading(true);
+
+    console.log(authContext, 'From auth');
+
     let bodyParams = {};
     if (editPhoto) {
       const imageArray = [];
@@ -99,7 +105,10 @@ export default function EditMemberInfoScreen({navigation, route}) {
             first_name: memberInfo.first_name,
             last_name: memberInfo.last_name,
             use_profile_pic: false,
-            city: memberInfo.city,
+            home_city: homeCity,
+            city,
+
+            last_updatedBy: `${authContext.user.full_name}`,
           };
 
           editMemberInfo(
@@ -120,14 +129,17 @@ export default function EditMemberInfoScreen({navigation, route}) {
           first_name: memberInfo.first_name,
           last_name: memberInfo.last_name,
           use_profile_pic: true,
-          city: memberInfo.city,
+          home_city: homeCity,
+          city,
         };
       } else {
         bodyParams = {
           first_name: memberInfo.first_name,
           last_name: memberInfo.last_name,
           use_profile_pic: false,
-          city: memberInfo.city,
+          city,
+          home_city: homeCity,
+          last_updatedBy: `${authContext.user.full_name}`,
         };
       }
 
@@ -212,6 +224,8 @@ export default function EditMemberInfoScreen({navigation, route}) {
         .filter((v) => v)
         .join(', '),
     );
+
+    setCity(location.city);
 
     setMemberInfo({
       ...memberInfo,

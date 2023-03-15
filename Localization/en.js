@@ -2445,6 +2445,24 @@ export default {
   basicRequestText:
     'en_When the request is accepted, the basic info in this profile will be updated with the info provided by the member. A user may choose to only provide some of the basic info items.',
   editAdminPrivillege: 'en_Edit Admin Privilege',
+
+  adminremoved:
+    'en_You were removed from Vancouver Whitecaps FC, and your account has been switched to your personal account.',
+  onlyAdmin:
+    'en_{0} is the only admin of  {1}.  Please add a new admin before remove {0}.',
+
+  lastmember:
+    'en_This member is the last member of the {0}. When you remove this member from the {0}, the  {0} will still be active, but no one except for previous members will be able to join the  {0}. Are you sure you want to remove this member from {0}?',
+  childMemberError:
+    'en_Please remove the member from all the teams in your club first before removing the member from the club.',
+  whocanseeMember: 'en_Who can see members ?',
+  teamMember: 'en_Team Members',
+  clubMember: 'en_Club Members',
+  whoCanSeefollwer: 'en_Who can see followers ?',
+  onlyTeamAndclub: 'en_Only Team and Club',
+  onlyClub: 'en_Only_Club',
+  onlyTeam: 'en_Only_Team',
+
   sportRefereeQuestion: 'en_What sport do you want to referee?',
   sportRefereeQuestionDescription:
     'en_Do you want to referee multiple sports? Register as a referee in one sport first, and then register in another sport.',
@@ -2478,4 +2496,5 @@ export default {
   matchesNearYou: 'en_MATCHES NEAR YOU',
   matchHostText: 'en_Match Host',
   sendOfferText: 'en_Send Offer',
+
 };

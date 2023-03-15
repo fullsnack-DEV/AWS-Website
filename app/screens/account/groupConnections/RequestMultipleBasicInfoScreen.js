@@ -47,6 +47,7 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
 
   useEffect(() => {
     setloading(true);
+    setSelectedList([]);
 
     getGroupMembers(route.params?.groupID, authContext)
       .then((response) => {
@@ -105,6 +106,8 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
       }
       return obj;
     });
+
+    console.log(selectedList.length, 'from arragy');
 
     setSelectedList(selectedPlayers);
   };
@@ -223,6 +226,31 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
     </View>
   );
 
+  const ListHeaderComponent = useCallback(
+    () => (
+      <>
+        {selectedList.length > 0 && (
+          <View
+            style={{
+              backgroundColor: colors.whiteColor,
+              display: selectedList.length > 0 ? 'flex' : 'none',
+            }}>
+            <TCProfileTag
+              dataSource={players}
+              onTagCancelPress={handleTagPress}
+              style={{
+                marginLeft: 10,
+                marginRight: 0,
+                marginTop: selectedList.length > 0 ? 15 : 0,
+              }}
+            />
+          </View>
+        )}
+      </>
+    ),
+    [selectedList],
+  );
+
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
@@ -242,33 +270,18 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
           }}
         />
       </View>
-      {/* if player is selected then only show this profile Tag */}
 
-      {selectPlayer.length > 0 && (
-        <View
-          style={{
-            marginTop: 15,
-            marginBottom: 15,
-          }}>
-          <TCProfileTag
-            dataSource={players}
-            onTagCancelPress={handleTagPress}
-            style={{
-              marginLeft: 10,
-              marginRight: 0,
-            }}
-          />
-        </View>
-      )}
-      <View>
+      <View style={{marginTop: 5}}>
         <FlatList
           extraData={players}
           showsVerticalScrollIndicator={false}
           data={players}
           keyExtractor={(item, index) => index.toString()}
           ItemSeparatorComponent={ItemSeparatorComponent}
+          ListHeaderComponent={ListHeaderComponent()}
           renderItem={renderPlayer}
           ListEmptyComponent={listEmptyComponent}
+          stickyHeaderIndices={[0]}
           ListFooterComponent={() => <View style={{marginBottom: 180}} />}
         />
       </View>

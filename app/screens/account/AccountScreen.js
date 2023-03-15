@@ -69,8 +69,9 @@ import Verbs from '../../Constants/Verbs';
 import TCSwitchProfileRow from './connections/TCSwitchProfileRow';
 import AccountMenuRow from './connections/AccountMenuRow';
 import SportsListModal from './registerPlayer/modals/SportsListModal';
+
 // FIXME: fix all warning in useCallBack()
-export default function AccountScreen({navigation}) {
+export default function AccountScreen({navigation, route}) {
   const scrollRef = useRef();
   const isFocused = useIsFocused();
 
@@ -110,11 +111,34 @@ export default function AccountScreen({navigation}) {
     setSportsData([...sportArr]);
   }, [authContext, selectedMenuOptionType]);
 
+  useEffect(() => {
+    const {switchToUser} = route?.params || 'lklk';
+
+    if (switchToUser === 'fromMember') {
+      setTimeout(() => {
+        Alert.alert(
+          strings.adminremoved,
+          '',
+          [
+            {
+              text: 'OK',
+              onPress: () => {
+                navigation.setParams({switchToUser: 'lkl'});
+              },
+            },
+          ],
+          {cancelable: false},
+        );
+      }, 2000);
+    }
+  }, [route]);
+
   const [navigationOptions, setNavigationOptions] = useState({});
 
   useEffect(() => {
     setIsAccountDeactivated(false);
     setPointEvent('auto');
+
     if (isFocused) {
       if (authContext?.entity?.obj?.is_pause === true) {
         setIsAccountDeactivated(true);
@@ -292,6 +316,7 @@ export default function AccountScreen({navigation}) {
   const switchProfile = useCallback(
     (switchTo) => {
       let currentEntity = authContext.entity;
+
       delete currentEntity?.QB;
       if (
         switchTo?.entity_type === Verbs.entityTypePlayer ||
@@ -375,6 +400,7 @@ export default function AccountScreen({navigation}) {
 
   const onSwitchProfile = useCallback(({item}) => {
     const currentEntity = switchProfile(item);
+
     scrollRef.current.scrollTo({x: 0, y: 0});
     authContext.setEntity({...currentEntity});
     Utility.setStorage('authContextEntity', {...currentEntity});
@@ -805,7 +831,10 @@ export default function AccountScreen({navigation}) {
                         }}>
                         <Image
                           source={placeHolder}
-                          style={{...styles.profileImg, resizeMode: 'contain'}}
+                          style={{
+                            ...styles.profileImg,
+                            resizeMode: 'contain',
+                          }}
                         />
                         <View
                           style={{
@@ -936,7 +965,10 @@ export default function AccountScreen({navigation}) {
                         }}>
                         <Image
                           source={placeHolder}
-                          style={{...styles.profileImg, resizeMode: 'contain'}}
+                          style={{
+                            ...styles.profileImg,
+                            resizeMode: 'contain',
+                          }}
                         />
                         <View
                           style={{
@@ -1137,6 +1169,7 @@ export default function AccountScreen({navigation}) {
           <Text style={styles.switchAccount}>{strings.logOut}</Text>
         </TouchableWithoutFeedback>
       </ScrollView>
+
       {/* Rules notes modal */}
 
       <Modal

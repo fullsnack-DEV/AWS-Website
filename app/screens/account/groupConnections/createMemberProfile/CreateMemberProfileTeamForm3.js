@@ -253,6 +253,11 @@ export default function CreateMemberProfileTeamForm3({navigation, route}) {
             onPress={() => addPosition()}
             borderColor={colors.whiteColor}
             color={colors.lightBlackColor}
+            elevation={0}
+            backgroundColor={colors.lightGrey}
+            styletext={{
+              fontFamily: fonts.RBold,
+            }}
           />
         )}
         <View>
