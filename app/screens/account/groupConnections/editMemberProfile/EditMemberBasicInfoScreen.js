@@ -71,7 +71,16 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
     },
   ]);
 
-  const [memberInfo, setMemberInfo] = useState({});
+  const [memberInfo, setMemberInfo] = useState({
+    height: {
+      height: 0,
+      height_type: 'ft',
+    },
+    weight: {
+      weight: 0,
+      weight_type: 'lb',
+    },
+  });
 
   useEffect(() => {
     const mindate = new Date();
@@ -92,11 +101,14 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
       ],
     );
     setMemberInfo(route.params.memberInfo);
+    console.log(route.params.memberInfo, 'from route');
 
     setCity(route.params.memberInfo?.city);
     setCountry(route.params.memberInfo?.coutry);
     setState(route.params.memberInfo?.state);
-    setLocation(route.params.memberInfo?.location);
+    setLocation(route.params.memberInfo?.street_address);
+
+    console.log(route.params.memberInfo.street_address, 'from route');
 
     getAuthEntity();
   }, []);
@@ -182,7 +194,7 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
         Alert.alert(strings.appName, strings.heightValidation);
         return false;
       }
-      if (memberInfo.height.height <= 0 || memberInfo.height.height >= 1000) {
+      if (memberInfo.height.height < 0 || memberInfo.height.height >= 1000) {
         Alert.alert(strings.appName, strings.validHeightValidation);
         return false;
       }
@@ -192,7 +204,7 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
         Alert.alert(strings.appName, strings.weightValidation);
         return false;
       }
-      if (memberInfo.weight.weight <= 0 || memberInfo.weight.weight >= 1000) {
+      if (memberInfo.weight.weight < 0 || memberInfo.weight.weight >= 1000) {
         Alert.alert(strings.appName, strings.validWeightValidation);
         return false;
       }
@@ -321,7 +333,7 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
           useNativeAndroidPickerStyle={false}
           style={{
             placeholder: {
-              color: colors.blackColor,
+              color: colors.userPostTimeColor,
             },
             inputIOS: {
               fontSize: wp('3.5%'),
@@ -399,7 +411,7 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
           useNativeAndroidPickerStyle={false}
           style={{
             placeholder: {
-              color: colors.blackColor,
+              color: colors.userPostTimeColor,
             },
             inputIOS: {
               fontSize: wp('3.5%'),
@@ -463,7 +475,7 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
       city: _location.city,
       state_abbr: _location.state,
       country: _location.country,
-      location: _location.formattedAddress,
+      street_address: _location.formattedAddress,
     });
   };
 
@@ -525,6 +537,7 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
         <TCPicker
           // disabled={!!memberInfo.gender}
           dataSource={DataSource.Gender}
+          color={colors.userPostTimeColor}
           placeholder={strings.selectGenderPlaceholder}
           value={memberInfo?.gender}
           onValueChange={(value) =>
@@ -552,7 +565,10 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
           }
           textStyle={{
             textAlign: 'center',
+
+            fontFamily: fonts.RRegular,
           }}
+          placeholderTextColor={'#999999'}
           placeholder={strings.birthDatePlaceholder}
           onPress={() => setShowDate(!showDate)}
         />

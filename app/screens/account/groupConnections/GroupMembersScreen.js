@@ -17,7 +17,11 @@ import {
   Text,
   TouchableOpacity,
 } from 'react-native';
-import {useIsFocused, useNavigationState} from '@react-navigation/native';
+import {
+  useFocusEffect,
+  useIsFocused,
+  useNavigationState,
+} from '@react-navigation/native';
 
 import ActionSheet from '@alessiocancian/react-native-actionsheet';
 // import Modal from 'react-native-modal';
@@ -61,7 +65,7 @@ export default function GroupMembersScreen({navigation, route}) {
   const [groupObj] = useState(route.params?.groupObj ?? authContext.entity.obj);
   const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
   const [pointEvent, setPointEvent] = useState('auto');
-
+  const [active, setActive] = useState(true);
   const [groupID] = useState(route.params?.groupID ?? authContext.entity.uid);
   const routes = useNavigationState((state) => state.routes);
   const currentRoute = routes[0].name;
@@ -69,6 +73,15 @@ export default function GroupMembersScreen({navigation, route}) {
   useEffect(() => {
     getMembers();
   }, [isFocused]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if (active) {
+        getMembers();
+        setActive(false);
+      }
+    }, [isFocused, currentRoute]),
+  );
 
   const getMembers = async () => {
     setloading(true);
@@ -162,9 +175,10 @@ export default function GroupMembersScreen({navigation, route}) {
         memberID: item?.user_id,
         whoSeeID: item?.group_id,
         groupID,
+        members,
       });
     },
-    [navigation, groupID],
+    [navigation, groupID, members],
   );
 
   const callFollowUser = useCallback(
@@ -538,7 +552,7 @@ export default function GroupMembersScreen({navigation, route}) {
           } else if (index === 1) {
             Alert.alert(strings.underDevelopment);
           } else if (index === 2) {
-            Alert.alert(strings.underDevelopment);
+            navigation.navigate('MembersViewPrivacyScreen');
           }
         }}
       />

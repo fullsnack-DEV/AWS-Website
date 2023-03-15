@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {createStackNavigator} from '@react-navigation/stack';
+import {createStackNavigator, TransitionPresets} from '@react-navigation/stack';
 
 import HomeScreen from '../screens/home/HomeScreen';
 import GroupListScreen from '../screens/home/GroupListScreen';
@@ -279,12 +279,11 @@ const Stack = createStackNavigator();
 const AccountNavigator = () => (
   <Stack.Navigator
     screenOptions={{
-      gestureEnabled: false,
       headerBackTitleVisible: false,
       headerTitleStyle: {
         textAlign: 'center',
         fontFamily: fonts.RBold,
-
+        gestureDirection: 'horizontal-inverted',
         fontSize: 16,
         lineHeight: 17,
         paddingTop: 5,
@@ -301,7 +300,14 @@ const AccountNavigator = () => (
     <Stack.Screen
       name="AccountScreen"
       component={AccountScreen}
-      options={{headerShown: false}}
+      initialParams={{
+        switchToUser: false,
+      }}
+      options={{
+        headerShown: false,
+        animationEnabled: true,
+        ...TransitionPresets.ModalSlideFromBottomIOS,
+      }}
     />
 
     <Stack.Screen
@@ -334,7 +340,9 @@ const AccountNavigator = () => (
     <Stack.Screen
       name="PrivacySettingsScreen"
       component={PrivacySettingsScreen}
-      options={{headerShown: false}}
+      options={{
+        headerShown: false,
+      }}
     />
     <Stack.Screen
       name="ReviewDetailsScreen"

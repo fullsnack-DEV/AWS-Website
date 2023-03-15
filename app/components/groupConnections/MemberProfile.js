@@ -136,19 +136,19 @@ const styles = StyleSheet.create({
     height: 40,
     resizeMode: 'cover',
     width: 40,
-    borderRadius: 18,
+    borderRadius: 50,
   },
 
   topViewContainer: {
     flexDirection: 'row',
-    height: 60,
+
     width: '90%',
     alignSelf: 'center',
     justifyContent: 'space-between',
     paddingRight: 10,
     paddingLeft: 10,
     marginBottom: 16,
-    marginTop: 13,
+    marginTop: 15,
     borderRadius: 10,
   },
   profileView: {

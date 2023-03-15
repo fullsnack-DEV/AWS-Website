@@ -503,14 +503,14 @@ export default function CreateMemberProfileForm2({navigation, route}) {
       {phoneNumber?.length < 5 && (
         <TCMessageButton
           title={strings.addPhone}
-          width={100}
+          width={120}
           borderColor={colors.whiteColor}
           color={colors.lightBlackColor}
           alignSelf="center"
           marginTop={15}
           onPress={() => addPhoneNumber()}
           elevation={0}
-          backgroundColor={'#F5F5F5'}
+          backgroundColor={colors.lightGrey}
           styletext={{
             fontFamily: fonts.RBold,
           }}

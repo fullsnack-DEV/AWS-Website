@@ -661,6 +661,9 @@ const AppNavigator = ({navigation}) => {
         name="Account"
         navigation={navigation}
         component={AccountNavigator}
+        initialParams={{
+          switchToUser: false,
+        }}
         options={({route}) => ({
           ...(unreadNotificationCount > 0 && {
             tabBarBadge:
