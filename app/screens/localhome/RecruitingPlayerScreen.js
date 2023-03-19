@@ -33,12 +33,13 @@ import TCThinDivider from '../../components/TCThinDivider';
 import {strings} from '../../../Localization/translation';
 import {getEntityIndex} from '../../api/elasticSearch';
 import TCTagsFilter from '../../components/TCTagsFilter';
-import TCRecruitingPlayers from '../../components/TCRecruitingPlayers';
+// import TCRecruitingPlayers from '../../components/TCRecruitingPlayers';
 import {groupsType, locationType} from '../../utils/constant';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import Verbs from '../../Constants/Verbs';
 import {getGeocoordinatesWithPlaceName} from '../../utils/location';
 import LocationModal from '../../components/LocationModal/LocationModal';
+import TCTeamSearchView from '../../components/TCTeamSearchView';
 
 let stopFetchMore = true;
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
@@ -216,7 +217,7 @@ export default function RecruitingPlayerScreen({navigation, route}) {
   const renderRecruitingPlayerListView = useCallback(
     ({item}) => (
       <View style={[styles.separator, {flex: 1}]}>
-        <TCRecruitingPlayers
+        {/* <TCRecruitingPlayers
           data={item}
           entityType={item.entity_type}
           selectedSport={selectedSport}
@@ -227,6 +228,36 @@ export default function RecruitingPlayerScreen({navigation, route}) {
               backButtonVisible: true,
               menuBtnVisible: false,
             });
+          }}
+        /> */}
+        <TCTeamSearchView
+          data={item}
+          authContext={authContext}
+          isClub={item.entity_type === Verbs.entityTypeClub}
+          showStar={item.entity_type === Verbs.entityTypeTeam}
+          sportFilter={
+            (item.entity_type === Verbs.entityTypeTeam && filters) ||
+            (item.entity_type == Verbs.entityTypeClub && filters)
+          }
+          onPress={() => {
+            navigation.navigate('HomeScreen', {
+              uid: ['user', 'player']?.includes(item?.entity_type)
+                ? item?.user_id
+                : item?.group_id,
+              role: ['user', 'player']?.includes(item?.entity_type)
+                ? 'user'
+                : item.entity_type,
+              backButtonVisible: true,
+              menuBtnVisible: false,
+            });
+          }}
+          onPressChallengeButton={(dataObj) => {
+            setChallengePopup(true);
+            setSettingObject(dataObj.setting);
+            setCurrentUserData(dataObj);
+          }}
+          onPressJoinButton={(groupId) => {
+            userJoinGroup(groupId);
           }}
         />
       </View>

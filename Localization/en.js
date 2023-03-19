@@ -2410,4 +2410,5 @@ export default {
   inviteRequested: 'en_Invite Requested',
   invited: 'en_Invited',
   joinRequested: 'en_Join Requested',
+  groupsRecruitingMembers: 'en_Groups Recruiting Members',
 };

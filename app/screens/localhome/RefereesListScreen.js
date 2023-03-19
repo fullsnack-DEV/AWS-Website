@@ -29,13 +29,14 @@ import fonts from '../../Constants/Fonts';
 import TCThinDivider from '../../components/TCThinDivider';
 import {strings} from '../../../Localization/translation';
 import {getUserIndex} from '../../api/elasticSearch';
-import TCRefereeView from '../../components/TCRefereeView';
+// import TCRefereeView from '../../components/TCRefereeView';
 import TCTagsFilter from '../../components/TCTagsFilter';
 import {getGeocoordinatesWithPlaceName} from '../../utils/location';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import LocationContext from '../../context/LocationContext';
 import {locationType} from '../../utils/constant';
 import LocationModal from '../../components/LocationModal/LocationModal';
+import TCPlayerView from '../../components/TCPlayerView';
 
 let stopFetchMore = true;
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
@@ -48,14 +49,18 @@ export default function RefereesListScreen({navigation, route}) {
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
   const [settingPopup, setSettingPopup] = useState(false);
   /* eslint-disable */
+  // const [locationFilterOpetion, setLocationFilterOpetion] = useState(
+  //   locationContext?.selectedLocation.toUpperCase() ===
+  //     /* eslint-disable */
+  //     authContext.entity.obj?.city?.toUpperCase()
+  //     ? 1
+  //     : locationContext?.selectedLocation === strings.worldTitleText
+  //     ? 0
+  //     : 2,
+  // );
+
   const [locationFilterOpetion, setLocationFilterOpetion] = useState(
-    locationContext?.selectedLocation.toUpperCase() ===
-      /* eslint-disable */
-      authContext.entity.obj?.city?.toUpperCase()
-      ? 1
-      : locationContext?.selectedLocation === strings.worldTitleText
-      ? 0
-      : 2,
+    route.params.locationOption,
   );
   const [sports, setSports] = useState([]);
   const [minFee, setMinFee] = useState(0);
@@ -195,7 +200,7 @@ export default function RefereesListScreen({navigation, route}) {
   const renderRefereesScorekeeperListView = useCallback(
     ({item}) => (
       <View style={[styles.separator, {flex: 1}]}>
-        <TCRefereeView
+        {/* <TCRefereeView
           data={item}
           showStar={true}
           sport={selectedSport}
@@ -210,6 +215,43 @@ export default function RefereesListScreen({navigation, route}) {
               backButtonVisible: true,
               menuBtnVisible: false,
             });
+          }}
+        /> */}
+        <TCPlayerView
+          data={item}
+          authContext={authContext}
+          subTab={strings.refereesTitle}
+          showStar={filters.sport !== strings.all && true}
+          showSport={true}
+          sportFilter={filters}
+          onPress={() => {
+            navigation.navigate('HomeScreen', {
+              uid: ['user', 'player']?.includes(item?.entity_type)
+                ? item?.user_id
+                : item?.group_id,
+              role: ['user', 'player']?.includes(item?.entity_type)
+                ? 'user'
+                : item.entity_type,
+              backButtonVisible: true,
+              menuBtnVisible: false,
+            });
+          }}
+          onPressBookButton={(refereeObj, sportObject) => {
+            if (
+              sportObject.setting?.referee_availibility &&
+              sportObject.setting?.game_fee &&
+              sportObject.setting?.refund_policy &&
+              sportObject.setting?.available_area
+            ) {
+              navigation.navigate('RefereeBookingDateAndTime', {
+                settingObj: sportObject.setting,
+                userData: refereeObj,
+                showMatches: true,
+                sportName: sportObject.sport,
+              });
+            } else {
+              Alert.alert(strings.refereeSettingNotConfigureValidation);
+            }
           }}
         />
       </View>
@@ -308,7 +350,6 @@ export default function RefereesListScreen({navigation, route}) {
     console.log('apply filter', fil);
     getReferees(fil);
   }, []);
-
   const applyValidation = useCallback(() => {
     if (Number(minFee) > 0 && Number(maxFee) <= 0) {
       Alert.alert(strings.refereeFeeMax);
@@ -529,6 +570,7 @@ export default function RefereesListScreen({navigation, route}) {
                   onPress={() => {
                     if (applyValidation()) {
                       setSettingPopup(false);
+
                       const tempFilter = {...filters};
                       tempFilter.sport = selectedSport.sport;
                       tempFilter.sport_type = selectedSport.sport_type;
@@ -550,10 +592,16 @@ export default function RefereesListScreen({navigation, route}) {
                       }
                       if (minFee && maxFee) {
                         tempFilter.refereeFee = `${minFee}-${maxFee}`;
+                        filters.refereeFee = tempFilter.refereeFee;
                       }
-                      setFilters({
-                        ...tempFilter,
-                      });
+                      // setTimeout(() => {
+                      //   setFilters({
+                      //     ...tempFilter,
+                      //   });
+                      // }, 1000);
+                      filters.sport = tempFilter.sport;
+                      filters.sport_type = tempFilter.sport_type;
+                      filters.location = tempFilter.location;
                       setPageFrom(0);
                       setReferees([]);
                       applyFilter(tempFilter);
