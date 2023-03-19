@@ -980,4 +980,7 @@ export default {
   matchFeeModalTitle:
     'Set the match fee that you want to Charge to a challenger.',
   chooseCancellationPolicyTitle: 'Choose Cancellation Policy.',
+
+  // Events
+  makeAvailable: 'Make Available'
 };

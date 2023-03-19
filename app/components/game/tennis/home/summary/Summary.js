@@ -82,7 +82,6 @@ const Summary = ({
   isMember = true,
   getGameDetails,
 }) => {
-  console.log('GAME DATA:=>', gameData);
   const imageUploadContext = useContext(ImageUploadContext);
   const authContext = useContext(AuthContext);
 
@@ -133,8 +132,6 @@ const Summary = ({
     const tennisSportData = authContext?.sports?.filter(
       (item) => item.sport === gameData?.sport,
     )[0];
-
-    console.log('tennisSportData', authContext?.sports);
 
     const teamReviewProp = tennisSportData?.team_review_properties ?? [];
     const playerReviewProp = tennisSportData?.player_review_properties ?? [];
@@ -241,7 +238,6 @@ const Summary = ({
       found = true;
       teamName =
         gameData?.away_team?.full_name ?? gameData?.away_team?.group_name;
-      console.log('Team name Data:=>', teamName);
       if (gameData?.home_review_id || gameData?.away_review_id) {
         // setLeaveReviewText(`EDIT A REVIEW FOR ${teamName}`);
         if (gameData?.home_team?.group_name) {
@@ -338,7 +334,6 @@ const Summary = ({
           if (homeTeamPlayers?.[i]?.member_id === authContext.entity.uid) {
             found = true;
             teamName = gameData?.away_team?.group_name;
-            console.log('Team name Data:=>', teamName);
             if (gameData?.home_review_id || gameData?.away_review_id) {
               // setLeaveReviewText(`EDIT A REVIEW FOR ${teamName}`);
               setLeaveReviewText(strings.editReviewText);
@@ -407,7 +402,6 @@ const Summary = ({
           ...teamReview,
         };
 
-        console.log('Edited Review Object::=>', reviewObj);
         patchPlayerReview(
           currentForm === 1 ? getHomeID() : getAwayID(),
           gameData?.game_id,
@@ -430,7 +424,6 @@ const Summary = ({
             // navigation.goBack();
           });
       } else {
-        console.log('New Review Object::=>', reviewsData);
         setLoading(true);
         addPlayerReview(
           currentForm === 1 ? getHomeID() : getAwayID(),
@@ -478,7 +471,6 @@ const Summary = ({
           ...teamReview,
         };
 
-        console.log('Edited Review Object patchOrAddReviewTeam::=>', reviewObj);
         patchGameReview(gameData?.game_id, reviewID, reviewObj, authContext)
           .then(() => {
             setLoading(false);
@@ -493,7 +485,6 @@ const Summary = ({
             );
           });
       } else {
-        console.log('New Review Object::=>', reviewsData);
         setLoading(true);
         addGameReview(gameData?.game_id, reviewsData, authContext)
           .then(() => {
@@ -519,9 +510,7 @@ const Summary = ({
       const alreadyUrlDone = [];
       const createUrlData = [];
 
-      console.log('Main review data:', reviewData);
-
-      if (reviewsData.attachments.length > 0) {
+      if (reviewsData.attachments?.length > 0) {
         reviewsData.attachments.map((dataItem) => {
           if (dataItem.thumbnail) {
             alreadyUrlDone.push(dataItem);
@@ -669,7 +658,6 @@ const Summary = ({
       setLoading(true);
       getGameReview(gameData?.game_id, item?.review_id, authContext)
         .then((response) => {
-          console.log('Get review of referee::=>', response.payload);
           setLoading(false);
           navigation.navigate('RefereeReviewScreen', {
             gameReviewData: response.payload,
@@ -698,7 +686,6 @@ const Summary = ({
       setLoading(true);
       getGameReview(gameData?.game_id, item?.review_id, authContext)
         .then((response) => {
-          console.log('Get review of scorekeeper::=>', response.payload);
           setLoading(false);
           navigation.navigate('ScorekeeperReviewScreen', {
             gameReviewData: response.payload,
@@ -797,10 +784,6 @@ const Summary = ({
                       } else if (gameData?.away_review_id) {
                         getGameReviewsData(gameData?.away_review_id);
                       } else {
-                        console.log(
-                          'starAttributesForPlayer',
-                          starAttributesForPlayer,
-                        );
                         navigation.navigate('LeaveReviewTennis', {
                           gameData,
                           selectedTeam: playerFrom === 'home' ? 'away' : 'home',
@@ -952,7 +935,6 @@ const Summary = ({
         followUser={followTennisUser}
         unFollowUser={unFollowTennisUser}
         onReviewPress={(referee) => {
-          console.log('Referee Pressed:=>', referee);
           if (referee?.review_id) {
             getRefereeReviewsData(referee);
           }
@@ -1065,7 +1047,6 @@ const Summary = ({
         const reviewObj = {
           ...teamReview,
         };
-        console.log('Edited Review Object::=>', teamReview);
         patchRefereeReview(
           referee_id,
           gameData?.game_id,
@@ -1128,7 +1109,6 @@ const Summary = ({
         const reviewObj = {
           ...teamReview,
         };
-        console.log('Edited Review Object::=>', teamReview);
         patchScorekeeperReview(
           scorekeeper_id,
           gameData?.game_id,
@@ -1178,7 +1158,7 @@ const Summary = ({
       const alreadyUrlDone = [];
       const createUrlData = [];
 
-      if (reviewsData.attachments.length > 0) {
+      if (reviewsData.attachments?.length > 0) {
         reviewsData.attachments.map((dataItem) => {
           if (dataItem.thumbnail) {
             alreadyUrlDone.push(dataItem);
@@ -1221,7 +1201,7 @@ const Summary = ({
       const alreadyUrlDone = [];
       const createUrlData = [];
 
-      if (reviewsData.attachments.length > 0) {
+      if (reviewsData.attachments?.length > 0) {
         reviewsData.attachments.map((dataItem) => {
           if (dataItem.thumbnail) {
             alreadyUrlDone.push(dataItem);

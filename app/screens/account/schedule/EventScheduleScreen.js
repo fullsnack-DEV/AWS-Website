@@ -14,7 +14,7 @@ import { getJSDate } from '../../../utils';
 
 const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-export default function EventScheduleScreen({
+export default function  EventScheduleScreen({
   onItemPress,
   eventData,
   onThreeDotPress,
@@ -29,9 +29,9 @@ export default function EventScheduleScreen({
   const [filterData, setFilterData] = useState(null);
 
   useEffect(() => {
-    console.log('eventData aa', eventData)
+
     let events = eventData.filter(
-      (obj) => (obj?.game_id && obj?.game) || obj?.title,
+      (obj) => (obj.game_id && obj.game) || obj.title,
     );
 
 
@@ -126,16 +126,19 @@ export default function EventScheduleScreen({
     }
     if (events.length > 0) {
       const result = _(events)
-        .groupBy((event) =>
-          moment(getJSDate(event.start_datetime)).format('MMM DD, YYYY'),
+        .groupBy((event) => 
+          // event.start_datetime,
+          moment(getJSDate(event.start_datetime)).format('MMM DD, YYYY')
         )
         .value();
+      
       const filData = [];
       for (const property in result) {
         let temp = {};
         const value = result[property];
         temp = {
           title: property,
+          time: result[property].length > 0 ? result[property][0]?.start_datetime : '',
           data: result[property].length > 0 ? value : [],
         };
         filData.push(temp);
@@ -145,6 +148,8 @@ export default function EventScheduleScreen({
       setFilterData([]);
     }
   }, [eventData, filterOptions, selectedFilter]);
+
+
 
   return (
     <View style={styles.mainContainer}>
@@ -162,6 +167,7 @@ export default function EventScheduleScreen({
           }
           renderItem={({item}) => {
             if (item.cal_type === 'event') {
+              
               if (item?.game_id && item?.game) {
                 return (
                   <TCEventView
@@ -203,7 +209,7 @@ export default function EventScheduleScreen({
             (section?.data || [])?.filter((obj) => obj.cal_type === 'event')
               .length > 0 && (
               <Text style={styles.sectionHeader}>
-                {days[new Date(section.title).getDay()]}, {section.title}
+                {days[getJSDate(section.time).getDay()]},  {section.title}
               </Text>
             )
           }
@@ -226,7 +232,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingLeft: 12,
     backgroundColor: colors.whiteColor,
-    paddingTop: 10,
+    paddingTop: 20,
     paddingBottom: 10,
   },
   dataNotFoundText: {

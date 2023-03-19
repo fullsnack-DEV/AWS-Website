@@ -24,6 +24,7 @@ function EventBetweenUserItem({
       </View>
       <Text style={styles.vsTextStyle}>{'vs'}</Text>
       <View style={styles.firstUserViewStyle}>
+        <Text style={styles.textStyle}>{secondText}</Text>
         <View style={styles.eventImageViewStyle}>
           <Image
             source={secondUserImage}
@@ -31,7 +32,6 @@ function EventBetweenUserItem({
             resizeMode={'cover'}
           />
         </View>
-        <Text style={styles.textStyle}>{secondText}</Text>
       </View>
     </View>
   );
@@ -41,10 +41,9 @@ const styles = StyleSheet.create({
   containerStyle: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 15,
-    marginBottom: 8,
     justifyContent: 'space-between',
-    width: wp('76%'),
+    // width: wp('95%'),
+    backgroundColor :'#fff'
   },
   firstUserViewStyle: {
     flexDirection: 'row',
@@ -52,14 +51,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   eventImageViewStyle: {
-    height: 40,
-    width: 40,
+    height: 35,
+    width: 35,
     borderRadius: 20,
-    shadowOpacity: 0.5,
-    shadowOffset: {
-      height: 1,
-      width: 0,
-    },
+    borderWidth: 1,
+    borderColor: '#ccc',
     marginHorizontal: 5,
     elevation: 5,
     backgroundColor: colors.whiteColor,
@@ -67,14 +63,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   imageStyle: {
-    width: 35,
-    height: 35,
-    borderRadius: 35 / 2,
+    width: 25,
+    height: 25,
+    borderRadius: 25 / 2,
   },
   textStyle: {
     width: wp('20%'),
     fontSize: 12,
     fontFamily: fonts.RMedium,
+    lineHeight:25,
     color: colors.lightBlackColor,
   },
   vsTextStyle: {

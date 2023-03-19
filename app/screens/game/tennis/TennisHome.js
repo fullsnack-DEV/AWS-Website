@@ -635,7 +635,7 @@ const TennisHome = ({navigation, route}) => {
       const alreadyUrlDone = [];
       const createUrlData = [];
 
-      if (reviewsData.attachments.length > 0) {
+      if (reviewsData.attachments?.length > 0) {
         reviewsData.attachments.map((dataItem) => {
           if (dataItem.thumbnail) {
             alreadyUrlDone.push(dataItem);
@@ -836,7 +836,7 @@ const TennisHome = ({navigation, route}) => {
       const alreadyUrlDone = [];
       const createUrlData = [];
 
-      if (reviewsData.attachments.length > 0) {
+      if (reviewsData.attachments?.length > 0) {
         reviewsData.attachments.map((dataItem) => {
           if (dataItem.thumbnail) {
             alreadyUrlDone.push(dataItem);

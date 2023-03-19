@@ -136,6 +136,34 @@ export default function ScorekeeperReviewScreen({navigation, route}) {
 
   const createReview = () => {
     if (isValidReview()) {
+      // set is_review properties
+      if (reviewsData.comment?.length > 0) {
+        reviewsData.is_review = 1;
+      } else {
+        reviewsData.is_review = 0;
+      }
+
+      // set is_rating properties
+      const keys = {};
+      let isRating = false;
+      sliderAttributesForScorekeeper.map((item) => {
+        keys[item] = 0;
+      });
+      starAttributesForScorekeeper.map((item) => {
+        keys[item.name] = 0;
+      });
+      Object.keys(keys).map((key) => {
+        if (reviewsData[key] > 0) {
+          isRating = true;
+        }
+      });
+
+      if (isRating) {
+        reviewsData.is_rating = 1;
+      } else {
+        reviewsData.is_rating = 0;
+      }
+
       onPressReview(1, !!userData?.review_id, reviewsData, userData?.user_id);
       navigation.goBack();
     }

@@ -12,15 +12,13 @@ import {
   StyleSheet,
   Text,
   Image,
-  ScrollView,
   TouchableOpacity,
   Alert,
   SafeAreaView,
 } from 'react-native';
 
-import FlatList from 'react-native-drag-flatlist';
+import DraggableFlatList from 'react-native-drag-flatlist';
 import ActionSheet from 'react-native-actionsheet';
-import {widthPercentageToDP} from 'react-native-responsive-screen';
 import FastImage from 'react-native-fast-image';
 import * as Utility from '../../../utils';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
@@ -47,6 +45,7 @@ export default function ChangeSportsOrderScreen({navigation, route}) {
   });
 
   useEffect(() => {
+    console.log('AUTH CONTEXT', authContext.sports)
     const sportsList = [
       ...(authContext?.entity?.obj?.registered_sports?.filter(
         (obj) => obj.is_active,
@@ -136,7 +135,7 @@ export default function ChangeSportsOrderScreen({navigation, route}) {
       saveUserSettings(params, authContext)
         .then((response) => {
           console.log('After save setting', response);
-
+          route?.params?.onBackClick(true);
           navigation.goBack();
           setloading(false);
         })
@@ -184,8 +183,9 @@ export default function ChangeSportsOrderScreen({navigation, route}) {
             style={styles.sportsIcon}
             resizeMode={'contain'}
           />
+         
           <Text style={styles.sportNameTitle}>
-            {item?.sport?.[0].toUpperCase() + item?.sport?.slice(1)}
+            {item?.sport?.[0].toUpperCase() + item?.sport?.slice(1)} {console.log('Item', item)}
           </Text>
         </View>
         <TouchableOpacity onLongPress={drag} style={{alignSelf: 'center'}}>
@@ -241,122 +241,129 @@ export default function ChangeSportsOrderScreen({navigation, route}) {
   );
 
   return (
-    <SafeAreaView>
-      <ScrollView scrollEnabled={false}>
+    <SafeAreaView style={{flex: 1}}>
         <ActivityLoader visible={loading} />
-        <Text style={styles.mainTitle}>Sports displayed in filter bar</Text>
-        <Text style={styles.subTitle}>
-          Upto 10 sports will be displayed in the filter bar.
-        </Text>
+        <View style={{flex: 1, paddingBottom: 20}}>
+          <Text style={styles.mainTextStyle}>Sports displayed in filter bar</Text>
+          <Text style={styles.subTitle}>
+            Upto 10 sports will be displayed in the filter bar.
+          </Text>
 
-        {addedSport.length > 0 ? (
-          <FlatList
-            showsHorizontalScrollIndicator={false}
-            data={addedSport}
-            keyExtractor={keyExtractor}
-            renderItem={renderRemoveSportsActivity}
-            ListEmptyComponent={
-              <View style={{marginTop: 15}}>
-                <Text style={styles.noEventText}>No Sports</Text>
-                <Text style={styles.dataNotFoundText}>
-                  New events will appear here.
-                </Text>
-              </View>
-            }
-            style={{
-              flex: 1,
-              width: '100%',
-              alignContent: 'center',
-              marginBottom: 15,
-              paddingVertical: 15,
-            }}
-            dragHitSlop={{
-              top: 15,
-              bottom: 15,
-              left: 15,
-              right: 15,
-            }}
-            onMoveEnd={(data) => {
-              console.log('DATATATATATA:=', data);
-              addedSport([...data]);
+          {addedSport.length > 0 ? (
+            <DraggableFlatList
+              showsHorizontalScrollIndicator={false}
+              data={addedSport}
+              keyExtractor={keyExtractor}
+              renderItem={renderRemoveSportsActivity}
+              ListEmptyComponent={
+                <View style={{marginTop: 15}}>
+                  <Text style={styles.noEventText}>No Sports</Text>
+                  <Text style={styles.dataNotFoundText}>
+                    New events will appear here.
+                  </Text>
+                </View>
+              }
+              style={{
+                flex: 1,
+                width: '100%',
+                alignContent: 'center',
+                marginBottom: 15,
+                paddingVertical: 15,
+              }}
+              dragHitSlop={{
+                top: 15,
+                bottom: 15,
+                left: 15,
+                right: 15,
+              }}
+              onMoveEnd={(data) => {
+                setAddedSport([...data]);
+              }}
+            />
+          ) : (
+            <View style={{marginTop: 15}}>
+              <Text style={styles.noEventText}>No Sports</Text>
+            </View>
+          )}
+          <Text style={styles.otherTitle}>Other sports</Text>
+          {removedSport.length > 0 ? (
+            <DraggableFlatList
+              showsHorizontalScrollIndicator={false}
+              data={removedSport}
+              keyExtractor={keyExtractor}
+              renderItem={renderAddSportsActivity}
+              style={{
+                flex: 1,
+                width: '100%',
+                alignContent: 'center',
+                marginBottom: 15,
+                paddingVertical: 15,
+              }}
+            />
+          ) : (
+            <View style={{marginTop: 15}}>
+              <Text style={styles.noEventText}>No Sports</Text>
+            </View>
+          )}
+          <Text style={styles.headerTextStyle}>
+            Some sports of events you are going to join or joined are not visible
+            here.
+          </Text>
+          <ActionSheet
+            ref={actionSheet}
+            options={[
+              'Add New Sports Activity',
+              'sports Activity Tags Order',
+              'List / Unlist',
+              strings.cancel,
+            ]}
+            cancelButtonIndex={3}
+            onPress={(index) => {
+              if (index === 0) {
+                console.log('0');
+              } else if (index === 1) {
+                console.log('1');
+              } else if (index === 2) {
+                navigation.navigate('SportActivityScreen');
+              } else if (index === 3) {
+                console.log('3');
+              }
             }}
           />
-        ) : (
-          <View style={{marginTop: 15}}>
-            <Text style={styles.noEventText}>No Sports</Text>
-          </View>
-        )}
-        <Text style={styles.otherTitle}>Other sports</Text>
-        {removedSport.length > 0 ? (
-          <FlatList
-            showsHorizontalScrollIndicator={false}
-            data={removedSport}
-            keyExtractor={keyExtractor}
-            renderItem={renderAddSportsActivity}
-            style={{
-              flex: 1,
-              width: '100%',
-              alignContent: 'center',
-              marginBottom: 15,
-              paddingVertical: 15,
-            }}
-          />
-        ) : (
-          <View style={{marginTop: 15}}>
-            <Text style={styles.noEventText}>No Sports</Text>
-          </View>
-        )}
-        <Text style={styles.staticText}>
-          Some sports of events you are going to join or joined are not visible
-          here.
-        </Text>
-        <ActionSheet
-          ref={actionSheet}
-          options={[
-            'Add New Sports Activity',
-            'sports Activity Tags Order',
-            'List / Unlist',
-            strings.cancel,
-          ]}
-          cancelButtonIndex={3}
-          onPress={(index) => {
-            if (index === 0) {
-              console.log('0');
-            } else if (index === 1) {
-              console.log('1');
-            } else if (index === 2) {
-              navigation.navigate('SportActivityScreen');
-            } else if (index === 3) {
-              console.log('3');
-            }
-          }}
-        />
-      </ScrollView>
+        </View>
     </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
-  mainTitle: {
-    flex: 1,
-    fontFamily: fonts.RBold,
-    fontSize: 16,
-    color: colors.lightBlackColor,
-    margin: 15,
-    marginBottom: 0,
-  },
-  staticText: {
-    fontFamily: fonts.RRegular,
-    fontSize: 14,
-    color: colors.lightBlackColor,
-    margin: 15,
-  },
   otherTitle: {
-    flex: 1,
     fontFamily: fonts.RBold,
     fontSize: 16,
     color: colors.lightBlackColor,
     margin: 15,
     marginBottom: 15,
+  },
+
+  headerTextStyle: {
+    fontFamily: fonts.RRegular,
+    fontSize: 14,
+    color: colors.lightBlackColor,
+    margin: 15,
+    marginBottom: 0,
+  },
+  mainTextStyle: {
+    fontFamily: fonts.RBold,
+    fontSize: 16,
+    color: colors.lightBlackColor,
+    marginLeft: 15,
+    marginTop: 15,
+  },
+
+  backImageStyle: {
+    height: 20,
+    width: 15,
+    tintColor: colors.lightBlackColor,
+    resizeMode: 'contain',
+    marginLeft: 15,
   },
   subTitle: {
     fontFamily: fonts.RRegular,
@@ -366,13 +373,6 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
 
-  sportsIcon: {
-    height: 40,
-    width: 40,
-    alignSelf: 'center',
-    marginLeft: 15,
-    marginRight: 15,
-  },
   moveIconStyle: {
     resizeMode: 'cover',
     height: 13,
@@ -386,6 +386,7 @@ const styles = StyleSheet.create({
     width: 20,
     alignSelf: 'center',
     marginLeft: 15,
+    marginRight: 15,
   },
   sportNameTitle: {
     fontSize: 16,
@@ -396,27 +397,16 @@ const styles = StyleSheet.create({
   },
 
   sportsBackgroundView: {
-    alignSelf: 'center',
-    backgroundColor: colors.whiteColor,
-    borderRadius: 8,
-    elevation: 5,
+    alignSelf: 'flex-start',
+    backgroundColor: colors.lightGrey,
+    borderRadius: 6,
+    // elevation: 5,
     flexDirection: 'row',
-    height: 40,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 5},
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    width: widthPercentageToDP('86%'),
-    // alignItems: 'center',
+    height: 35,
+    width: Utility.widthPercentageToDP('92%'),
     justifyContent: 'space-between',
     marginBottom: 15,
-  },
-  backImageStyle: {
-    height: 20,
-    width: 15,
-    tintColor: colors.lightBlackColor,
-    resizeMode: 'contain',
-    marginLeft: 15,
+    marginLeft: 15
   },
   noEventText: {
     fontSize: 20,

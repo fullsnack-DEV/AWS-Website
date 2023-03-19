@@ -127,10 +127,10 @@ export default function ProfileCheckView({isChecked, onPress, playerDetail}) {
 const styles = StyleSheet.create({
   profileImage: {
     alignSelf: 'center',
-    height: 40,
+    height: 42,
     resizeMode: 'cover',
-    width: 40,
-    borderRadius: 18,
+    width: 42,
+    borderRadius: 50,
   },
 
   topViewContainer: {

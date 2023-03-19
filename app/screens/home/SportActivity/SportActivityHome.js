@@ -1,14 +1,10 @@
 // @flow
 import React, {useCallback, useContext, useEffect, useState} from 'react';
-import {View, StyleSheet, Text, SafeAreaView, Image} from 'react-native';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import {StyleSheet, SafeAreaView} from 'react-native';
 import {strings} from '../../../../Localization/translation';
 import {getGroupIndex} from '../../../api/elasticSearch';
 import {getUserDetails} from '../../../api/Users';
 import AuthContext from '../../../auth/context';
-
-import colors from '../../../Constants/Colors';
-import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 import Verbs from '../../../Constants/Verbs';
 import ChallengeButton from './components/ChallengeButton';
@@ -18,6 +14,11 @@ import ScoreboardContentScreen from './contentScreens/ScoreboardContentScreen';
 import SportActivityTabBar from './components/SportActivityTabBar';
 import UserInfo from './components/UserInfo';
 import {getSportIconUrl, getSportName} from '../../../utils';
+import ScreenHeader from '../../../components/ScreenHeader';
+import BottomSheet from '../../../components/modals/BottomSheet';
+import StatsContentScreen from './contentScreens/StatsContentScreen';
+import AvailabilityScreen from './contentScreens/AvailabilityContentScreen';
+import {getGameHomeScreen} from '../../../utils/gameUtils';
 
 const SportActivityHome = ({navigation, route}) => {
   const [userData, setCurrentUserData] = useState({});
@@ -29,8 +30,11 @@ const SportActivityHome = ({navigation, route}) => {
   const [sportObj, setSportObj] = useState({});
   const [isFectchingUser, setIsFetchingUser] = useState(false);
   const [sportIcon, setSportIcon] = useState('');
+  const [showMoreOptions, setShowMoreOptions] = useState(false);
+  const [options, setOptions] = useState([]);
 
-  const {sport, sportType, uid, selectedTab} = route.params;
+  const {sport, sportType, uid, selectedTab, backScreen, backScreenParams} =
+    route.params;
   const authContext = useContext(AuthContext);
 
   const getUserData = useCallback(
@@ -149,6 +153,25 @@ const SportActivityHome = ({navigation, route}) => {
     }
   }, [userData, sport, sportType]);
 
+  useEffect(() => {
+    if (sportType === Verbs.singleSport) {
+      if (isAdmin) {
+        setOptions([
+          strings.incomingChallengeSettingsTitle,
+          strings.lookingForTeamTitle,
+          strings.deactivateActivityText,
+        ]);
+      } else {
+        setOptions([
+          strings.reportThisSportActivityPage,
+          strings.blockUserAccount,
+        ]);
+      }
+    } else {
+      setOptions([strings.reportThisAccount, strings.blockThisAccount]);
+    }
+  }, [isAdmin, sportType]);
+
   const handleChallengeClick = (selectedOption) => {
     switch (selectedOption) {
       case strings.inviteToChallenge:
@@ -194,6 +217,49 @@ const SportActivityHome = ({navigation, route}) => {
     }
   };
 
+  const handlePrivacySettings = (sectionName, privacyKey) => {
+    navigation.navigate('PrivacySettingsScreen', {
+      sportIcon,
+      section: sectionName,
+      sport: sportObj?.sport,
+      sportType: sportObj?.sport_type,
+      privacyKey,
+    });
+  };
+
+  const handleMoreOptions = (selectedOption) => {
+    switch (selectedOption) {
+      case strings.incomingChallengeSettingsTitle:
+        navigation.navigate('ManageChallengeScreen', {
+          groupObj: userData,
+          sportName: sportObj?.sport,
+          sportType: sportObj?.sport_type,
+        });
+        break;
+
+      case strings.lookingForTeamTitle:
+        break;
+
+      case strings.deactivateActivityText:
+        break;
+
+      case strings.reportThisSportActivityPage:
+        break;
+
+      case strings.blockUserAccount:
+        break;
+
+      case strings.reportThisAccount:
+        break;
+
+      case strings.blockThisAccount:
+        break;
+
+      default:
+        break;
+    }
+  };
+
   const renderContent = () => {
     if (!activeTab) return null;
     switch (activeTab) {
@@ -204,6 +270,7 @@ const SportActivityHome = ({navigation, route}) => {
             sportObj={sportObj}
             isAdmin={isAdmin}
             handleEditOption={handleEditNavigation}
+            openPrivacySettings={handlePrivacySettings}
           />
         );
 
@@ -219,10 +286,62 @@ const SportActivityHome = ({navigation, route}) => {
         return (
           <ReviewsContentScreen
             userId={userData.user_id}
-            sport={sportObj?.sport}
-            role={userData.entity_type}
+            sportObj={sportObj}
+            onPressMore={(review, dateTime) => {
+              navigation.navigate('ReviewDetailsScreen', {
+                review,
+                dateTime,
+                sport,
+                sportType,
+              });
+            }}
+            isAdmin={isAdmin}
+            onReply={(activityId) => {
+              navigation.navigate('ReplyScreen', {
+                sport,
+                sportType,
+                activityId,
+              });
+            }}
+            onPressMedia={(list, user, date) => {
+              navigation.navigate('LoneStack', {
+                screen: 'MediaScreen',
+                params: {
+                  mediaList: list,
+                  user,
+                  sport,
+                  sportType,
+                  userId: user.id,
+                  createDate: date,
+                },
+              });
+            }}
+            onPressGame={(review) => {
+              if (review.game.id && review.game.data.sport) {
+                const gameHome = getGameHomeScreen(
+                  review.game.data.sport.replace(' ', '_'),
+                );
+
+                navigation.navigate(gameHome, {
+                  gameId: review.game.id,
+                });
+              }
+            }}
           />
         );
+
+      case strings.stats:
+        return (
+          <StatsContentScreen
+            sportType={sportObj?.sport_type}
+            sport={sportObj?.sport}
+            authContext={authContext}
+            userId={userData?.user_id}
+          />
+        );
+
+      case strings.availability:
+        return <AvailabilityScreen userData={userData} />;
 
       default:
         return null;
@@ -231,41 +350,31 @@ const SportActivityHome = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={styles.parent}>
-      <View style={styles.headerRow}>
-        <TouchableOpacity
-          style={styles.iconContainer}
-          onPress={() => {
+      <ScreenHeader
+        sportIcon={sportIcon}
+        title={`${strings.playingTitleText} ${
+          sportObj ? getSportName(sportObj, authContext) : ''
+        }`}
+        leftIcon={images.backArrow}
+        leftIconPress={() => {
+          if (backScreen) {
+            navigation.navigate(backScreen, {...backScreenParams});
+          } else {
             navigation.navigate('HomeScreen', {
               uid: userData.user_id,
               role: userData.entity_type,
               backButtonVisible: true,
               menuBtnVisible: false,
             });
-          }}>
-          <Image source={images.backArrow} style={styles.image} />
-        </TouchableOpacity>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <View style={[styles.iconContainer, {width: 40, height: 40}]}>
-            <Image
-              source={sportIcon ? {uri: sportIcon} : images.accountMySports}
-              style={styles.image}
-            />
-          </View>
-          <Text style={styles.headerTitle}>{`${strings.playingTitleText} ${
-            sportObj ? getSportName(sportObj, authContext) : ''
-          }`}</Text>
-        </View>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          {!isAdmin ? (
-            <TouchableOpacity style={styles.iconContainer}>
-              <Image source={images.tab_message} style={styles.image} />
-            </TouchableOpacity>
-          ) : null}
-          <TouchableOpacity style={styles.iconContainer}>
-            <Image source={images.chat3Dot} style={styles.image} />
-          </TouchableOpacity>
-        </View>
-      </View>
+          }
+        }}
+        rightIcon1={!isAdmin ? images.tab_message : null}
+        rightIcon2={images.chat3Dot}
+        containerStyle={{paddingBottom: 10}}
+        rightIcon2Press={() => {
+          setShowMoreOptions(true);
+        }}
+      />
 
       <UserInfo
         screenType={Verbs.screenTypeMainScreen}
@@ -300,6 +409,16 @@ const SportActivityHome = ({navigation, route}) => {
         onTabChange={(tab) => setActiveTab(tab)}
       />
       {renderContent()}
+      <BottomSheet
+        isVisible={showMoreOptions}
+        closeModal={() => {
+          setShowMoreOptions(false);
+        }}
+        optionList={options}
+        onSelect={(option) => {
+          handleMoreOptions(option);
+        }}
+      />
     </SafeAreaView>
   );
 };
@@ -307,31 +426,6 @@ const SportActivityHome = ({navigation, route}) => {
 const styles = StyleSheet.create({
   parent: {
     flex: 1,
-  },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.writePostSepratorColor,
-  },
-  headerTitle: {
-    fontSize: 16,
-    lineHeight: 24,
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RBold,
-  },
-  iconContainer: {
-    width: 25,
-    height: 25,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'contain',
   },
   userInfoContainer: {
     paddingHorizontal: 15,

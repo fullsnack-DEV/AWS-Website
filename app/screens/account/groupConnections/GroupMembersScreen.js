@@ -17,7 +17,11 @@ import {
   Text,
   TouchableOpacity,
 } from 'react-native';
-import {useIsFocused, useNavigationState} from '@react-navigation/native';
+import {
+  useFocusEffect,
+  useIsFocused,
+  useNavigationState,
+} from '@react-navigation/native';
 
 import ActionSheet from '@alessiocancian/react-native-actionsheet';
 // import Modal from 'react-native-modal';
@@ -61,7 +65,7 @@ export default function GroupMembersScreen({navigation, route}) {
   const [groupObj] = useState(route.params?.groupObj ?? authContext.entity.obj);
   const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
   const [pointEvent, setPointEvent] = useState('auto');
-
+  const [active, setActive] = useState(true);
   const [groupID] = useState(route.params?.groupID ?? authContext.entity.uid);
   const routes = useNavigationState((state) => state.routes);
   const currentRoute = routes[0].name;
@@ -70,12 +74,22 @@ export default function GroupMembersScreen({navigation, route}) {
     getMembers();
   }, [isFocused]);
 
+  useFocusEffect(
+    React.useCallback(() => {
+      if (active) {
+        getMembers();
+        setActive(false);
+      }
+    }, [isFocused, currentRoute]),
+  );
+
   const getMembers = async () => {
     setloading(true);
     if (groupID) {
       getGroupMembers(groupID, authContext)
         .then((response) => {
           setMembers(response.payload);
+
           setSearchMember(response.payload);
           setloading(false);
         })
@@ -161,9 +175,10 @@ export default function GroupMembersScreen({navigation, route}) {
         memberID: item?.user_id,
         whoSeeID: item?.group_id,
         groupID,
+        members,
       });
     },
-    [navigation, groupID],
+    [navigation, groupID, members],
   );
 
   const callFollowUser = useCallback(
@@ -373,7 +388,7 @@ export default function GroupMembersScreen({navigation, route}) {
                   }}>
                   {data?.is_admin && (
                     <TCUserRoleBadge
-                      title="Admin"
+                      title={strings.admin}
                       titleColor={colors.themeColor}
                       gradientColor={colors.lightGrayBackground}
                       gradientColor1={colors.lightGrayBackground}
@@ -384,7 +399,7 @@ export default function GroupMembersScreen({navigation, route}) {
                   )}
                   {data?.is_coach && (
                     <TCUserRoleBadge
-                      title="Coach"
+                      title={strings.coach}
                       titleColor={colors.greeColor}
                       gradientColor={colors.lightGrayBackground}
                       gradientColor1={colors.lightGrayBackground}
@@ -395,8 +410,30 @@ export default function GroupMembersScreen({navigation, route}) {
                   )}
                   {data?.is_member && (
                     <TCUserRoleBadge
-                      title="Player"
+                      title={strings.player}
                       titleColor={colors.playerBadgeColor}
+                      gradientColor={colors.lightGrayBackground}
+                      gradientColor1={colors.lightGrayBackground}
+                      style={{
+                        marginLeft: 5,
+                      }}
+                    />
+                  )}
+                  {data?.is_parent && (
+                    <TCUserRoleBadge
+                      title={strings.parentBadgeText}
+                      titleColor={colors.yellowColor}
+                      gradientColor={colors.lightGrayBackground}
+                      gradientColor1={colors.lightGrayBackground}
+                      style={{
+                        marginLeft: 5,
+                      }}
+                    />
+                  )}
+                  {data?.is_others && (
+                    <TCUserRoleBadge
+                      title={strings.other}
+                      titleColor={colors.veryLightBlack}
                       gradientColor={colors.lightGrayBackground}
                       gradientColor1={colors.lightGrayBackground}
                       style={{
@@ -488,6 +525,7 @@ export default function GroupMembersScreen({navigation, route}) {
           strings.createMemberProfileText,
           strings.cancel,
         ]}
+        userInterfaceStyle="light"
         cancelButtonIndex={2}
         onPress={(index) => {
           if (index === 0) {
@@ -506,6 +544,7 @@ export default function GroupMembersScreen({navigation, route}) {
           strings.privacyPolicy,
           strings.cancel,
         ]}
+        userInterfaceStyle="light"
         cancelButtonIndex={3}
         onPress={(index) => {
           if (index === 0) {
@@ -513,7 +552,7 @@ export default function GroupMembersScreen({navigation, route}) {
           } else if (index === 1) {
             Alert.alert(strings.underDevelopment);
           } else if (index === 2) {
-            Alert.alert(strings.underDevelopment);
+            navigation.navigate('MembersViewPrivacyScreen');
           }
         }}
       />

@@ -42,7 +42,6 @@ const styles = StyleSheet.create({
 
     borderWidth: 1,
     borderColor: colors.greeColor,
-    elevation: 2,
   },
   buttonTitle: {
     alignSelf: 'center',

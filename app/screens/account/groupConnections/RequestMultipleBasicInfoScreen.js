@@ -17,7 +17,7 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native';
 import Modal from 'react-native-modal';
-
+import {useIsFocused} from '@react-navigation/native';
 import {format} from 'react-string-format';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import {strings} from '../../../../Localization/translation';
@@ -41,10 +41,13 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
   const [selectedList, setSelectedList] = useState([]);
   const [isInfoModalVisible, setIsInfoModalVisible] = useState(false);
   const [showCheck, setShowCheck] = useState(false);
-
+  const [searchText, setSearchText] = useState('');
+  const isFocused = useIsFocused();
   const selectedPlayers = [];
+
   useEffect(() => {
     setloading(true);
+    setSelectedList([]);
 
     getGroupMembers(route.params?.groupID, authContext)
       .then((response) => {
@@ -72,7 +75,7 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
-  }, []);
+  }, [isFocused]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -87,7 +90,7 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
       headerLeft: () => (
         <TouchableWithoutFeedback
           onPress={() => {
-            navigation.navigate('GroupMembersScreen');
+            navigation.goBack();
           }}>
           <Image source={images.backArrow} style={styles.backArrowStyle} />
         </TouchableWithoutFeedback>
@@ -103,6 +106,9 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
       }
       return obj;
     });
+
+    console.log(selectedList.length, 'from arragy');
+
     setSelectedList(selectedPlayers);
   };
 
@@ -125,9 +131,6 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
     {
       title: strings.emailPlaceHolder,
     },
-    {
-      title: strings.emailPlaceHolder,
-    },
   ];
 
   const renderPlayer = ({item, index}) => (
@@ -137,6 +140,7 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
       onPress={() => selectPlayer({item, index})}
     />
   );
+
   const handleTagPress = ({index}) => {
     players[index].isChecked = false;
     setPlayers([...players]);
@@ -171,10 +175,8 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
 
     if (text.length > 0) {
       setPlayers(result);
-      console.log(players, 'From log 1');
     } else {
       setPlayers(searchPlayers);
-      console.log(players, 'From log');
     }
   };
 
@@ -224,6 +226,31 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
     </View>
   );
 
+  const ListHeaderComponent = useCallback(
+    () => (
+      <>
+        {selectedList.length > 0 && (
+          <View
+            style={{
+              backgroundColor: colors.whiteColor,
+              display: selectedList.length > 0 ? 'flex' : 'none',
+            }}>
+            <TCProfileTag
+              dataSource={players}
+              onTagCancelPress={handleTagPress}
+              style={{
+                marginLeft: 10,
+                marginRight: 0,
+                marginTop: selectedList.length > 0 ? 15 : 0,
+              }}
+            />
+          </View>
+        )}
+      </>
+    ),
+    [selectedList],
+  );
+
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
@@ -233,41 +260,32 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
           placeholderText={strings.searchText}
           alignSelf="center"
           onChangeText={(text) => {
-            searchFilterFunction(text);
+            setSearchText(text);
+            searchFilterFunction(searchText);
+          }}
+          value={searchText}
+          onPressClear={() => {
+            setSearchText('');
+            searchFilterFunction('');
           }}
         />
       </View>
-      {/* if player is selected then only show this profile Tag */}
 
-      {selectPlayer.length > 0 ? (
-        <View
-          style={{
-            marginTop: 15,
-            marginBottom: 22,
-          }}>
-          <TCProfileTag
-            dataSource={players}
-            onTagCancelPress={handleTagPress}
-            style={{
-              marginLeft: 10,
-              marginRight: 0,
-            }}
-          />
-        </View>
-      ) : null}
+      <View style={{marginTop: 5}}>
+        <FlatList
+          extraData={players}
+          showsVerticalScrollIndicator={false}
+          data={players}
+          keyExtractor={(item, index) => index.toString()}
+          ItemSeparatorComponent={ItemSeparatorComponent}
+          ListHeaderComponent={ListHeaderComponent()}
+          renderItem={renderPlayer}
+          ListEmptyComponent={listEmptyComponent}
+          stickyHeaderIndices={[0]}
+          ListFooterComponent={() => <View style={{marginBottom: 180}} />}
+        />
+      </View>
 
-      <FlatList
-        style={{
-          marginTop: -15,
-        }}
-        extraData={players}
-        showsVerticalScrollIndicator={false}
-        data={players}
-        keyExtractor={(item, index) => index.toString()}
-        ItemSeparatorComponent={ItemSeparatorComponent}
-        renderItem={renderPlayer}
-        ListEmptyComponent={listEmptyComponent}
-      />
       <Modal
         isVisible={isInfoModalVisible}
         onBackdropPress={() => setIsInfoModalVisible(false)}

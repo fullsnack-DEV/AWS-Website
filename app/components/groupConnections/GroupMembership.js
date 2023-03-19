@@ -18,6 +18,7 @@ import TCInfoField from '../TCInfoField';
 import TCUserRoleBadge from '../TCUserRoleBadge';
 import AuthContext from '../../auth/context';
 import {strings} from '../../../Localization/translation';
+import Verbs from '../../Constants/Verbs';
 
 const GroupMembership = ({
   groupData,
@@ -110,8 +111,8 @@ const GroupMembership = ({
               )}
               {groupData.is_parent && (
                 <TCUserRoleBadge
-                  title={strings.parent}
-                  titleColor={colors.playerBadgeColor}
+                  title={strings.parentBadgeText}
+                  titleColor={colors.yellowColor}
                   gradientColor={colors.lightGrayBackground}
                   gradientColor1={colors.lightGrayBackground}
                   style={{
@@ -122,7 +123,7 @@ const GroupMembership = ({
               {groupData.is_others && (
                 <TCUserRoleBadge
                   title={strings.other}
-                  titleColor={colors.playerBadgeColor}
+                  titleColor={colors.veryLightBlack}
                   gradientColor={colors.lightGrayBackground}
                   gradientColor1={colors.lightGrayBackground}
                   style={{
@@ -134,13 +135,13 @@ const GroupMembership = ({
           </View>
         </View>
         {(edit || groupData.group_id === switchID) &&
-        authContext.entity.role === groupData.entity_type ? (
+        authContext.entity.role === Verbs.entityTypeTeam ? (
           <TouchableWithoutFeedback onPress={onEditPressed}>
-            <Image source={images.editSection} style={styles.editImage} />
+            <Image source={images.editProfilePencil} style={styles.editImage} />
           </TouchableWithoutFeedback>
         ) : null}
       </View>
-      {authContext.entity.role === 'team' && (
+      {authContext.entity.role === Verbs.entityTypeTeam && (
         <View
           style={{
             marginTop: 5,
@@ -193,7 +194,6 @@ const styles = StyleSheet.create({
 
   topViewContainer: {
     flexDirection: 'row',
-
     marginLeft: 20,
     marginRight: 20,
     justifyContent: 'space-between',
@@ -206,9 +206,9 @@ const styles = StyleSheet.create({
 
   editImage: {
     alignSelf: 'center',
-    height: 18,
+    height: 15,
     resizeMode: 'contain',
-    width: 18,
+    width: 12,
   },
   teamTImage: {
     marginHorizontal: 5,

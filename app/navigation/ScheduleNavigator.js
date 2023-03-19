@@ -32,7 +32,6 @@ import RegisterPlayer from '../screens/account/registerPlayer/RegisterPlayer';
 import RegisterPlayerForm2 from '../screens/account/registerPlayer/RegisterPlayerForm2';
 import IncomingChallengeSettings from '../screens/account/registerPlayer/IncomingChallengeSettings';
 import RegisterReferee from '../screens/account/registerReferee/RegisterReferee';
-import RegisterRefereeForm2 from '../screens/account/registerReferee/RegisterRefereeForm2';
 import CreateTeamForm1 from '../screens/account/createGroup/createTeam/CreateTeamForm1';
 import CreateTeamForm2 from '../screens/account/createGroup/createTeam/CreateTeamForm2';
 import CreateTeamForm3 from '../screens/account/createGroup/createTeam/CreateTeamForm3';
@@ -194,6 +193,8 @@ import LanguageSettingScreen from '../screens/account/userSettingPrivacy/Languag
 import ChooseTimeSlotScreen from '../screens/challenge/createChallenge/ChooseTimeSlotScreen';
 import SportActivityHome from '../screens/home/SportActivity/SportActivityHome';
 import EditWrapperScreen from '../screens/home/SportActivity/EditWrapperScreen';
+import ReviewDetailsScreen from '../screens/home/SportActivity/ReviewDetailsScreen';
+import IncomingReservationSettings from '../screens/account/registerReferee/IncomingReservationSettings';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -795,35 +796,12 @@ const ScheduleNavigator = () => (
     <Stack.Screen
       name="RegisterReferee"
       component={RegisterReferee}
-      options={{
-        title: 'Register as Referee',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          alignSelf: 'center',
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
+      options={{headerShown: false}}
     />
     <Stack.Screen
-      name="RegisterRefereeForm2"
-      component={RegisterRefereeForm2}
-      options={{
-        title: 'Register as Referee',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
+      name="IncomingReservationSettings"
+      component={IncomingReservationSettings}
+      options={{headerShown: false}}
     />
     <Stack.Screen
       name="RegisterRefereeSuccess"
@@ -2033,19 +2011,7 @@ const ScheduleNavigator = () => (
     <Stack.Screen
       name="RegisterScorekeeper"
       component={RegisterScorekeeper}
-      options={{
-        title: 'Register as Scorekeeper',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          alignSelf: 'center',
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
+      options={{headerShown: false}}
     />
     <Stack.Screen
       name="RegisterScorekeeperForm2"
@@ -2279,6 +2245,11 @@ const ScheduleNavigator = () => (
     <Stack.Screen
       name="EditWrapperScreen"
       component={EditWrapperScreen}
+      options={{headerShown: false}}
+    />
+    <Stack.Screen
+      name="ReviewDetailsScreen"
+      component={ReviewDetailsScreen}
       options={{headerShown: false}}
     />
     <Stack.Screen

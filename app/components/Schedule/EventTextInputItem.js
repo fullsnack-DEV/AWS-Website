@@ -11,6 +11,7 @@ function EventTextInputItem({
   placeholder,
   multiline,
   isRequired = false,
+  numberOfLines
 }) {
   return (
     <View style={styles.containerStyle}>
@@ -20,7 +21,7 @@ function EventTextInputItem({
       </Text>
       <TextInput
         placeholder={placeholder}
-        style={styles.textInputStyle}
+        style={multiline ? styles.textAreaStyle : styles.textInputStyle}
         onChangeText={onChangeText}
         value={value}
         multiline={multiline}
@@ -28,6 +29,7 @@ function EventTextInputItem({
         placeholderTextColor={colors.userPostTimeColor}
         autoCapitalize="none"
         autoCorrect={false}
+        numberOfLines={numberOfLines}
       />
     </View>
   );
@@ -54,6 +56,16 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RRegular,
   },
+  textAreaStyle: {
+    backgroundColor: colors.textFieldBackground,
+    borderRadius: 5,
+    color: colors.lightBlackColor,
+    padding: 10,
+    marginTop: 10,
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    height:150
+  }
 });
 
 export default EventTextInputItem;

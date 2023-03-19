@@ -53,7 +53,7 @@ export default function InviteToEventScreen({navigation, route}) {
         setloading(false);
         console.log('Response of Invitation sent:', response);
         Alert.alert(
-          strings.inviteWasSendText,
+          response.payload.to.length > 1 ?  `${response.payload.to.length} invitations were sent.` : strings.inviteWasSendText,
           '',
           [
             {

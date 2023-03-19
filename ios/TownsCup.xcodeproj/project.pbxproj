@@ -27,26 +27,25 @@
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		1F1E804D299B43DB005931FB /* libswiftWebKit.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F1E804C299B43DB005931FB /* libswiftWebKit.tbd */; };
+		23C8DD0CBFF94A70D8A74B15 /* libPods-townscup_reactnative-townscup_reactnativeTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 39E19293EEC790FA4A1552A4 /* libPods-townscup_reactnative-townscup_reactnativeTests.a */; };
 		2D02E4BC1E0B4A80006451C7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		2D02E4BD1E0B4A84006451C7 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		2D02E4BF1E0B4AB3006451C7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		2DCD954D1E0B4F2C00145EB5 /* townscup_reactnativeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* townscup_reactnativeTests.m */; };
-
-		33B76956C71347AC1984C622 /* libPods-townscup_reactnative.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A838BBAB2699686F2863D45A /* libPods-townscup_reactnative.a */; };
-		3A96C11B8B0FCEEF6E6C0B52 /* libPods-townscup_reactnative-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16AE2C50A8344BA077C3F8AB /* libPods-townscup_reactnative-tvOS.a */; };
+		42FF14AE6C8ED8C25D20BB2D /* libPods-townscup_reactnative-tvOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 458623E79494E351C4A09DD0 /* libPods-townscup_reactnative-tvOSTests.a */; };
 		528491C42587B7BC0069B7ED /* TownsCup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528491C32587B7BC0069B7ED /* TownsCup.swift */; };
 		68DA8E4E2787670B00A510E6 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 68DA8E4D2787670B00A510E6 /* GoogleService-Info.plist */; };
-		7579FD791446D086BF1CF208 /* libPods-townscup_reactnative-tvOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A5F526C2AA9405A400F06958 /* libPods-townscup_reactnative-tvOSTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		884E78272535950600014A3D /* libRNGoogleSignin.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 884E78262535950600014A3D /* libRNGoogleSignin.a */; };
-		8D5EA38E2AF09E184E55103C /* libPods-townscup_reactnative-townscup_reactnativeTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 39E19293EEC790FA4A1552A4 /* libPods-townscup_reactnative-townscup_reactnativeTests.a */; };
-		D64C02E37006EC5993307233 /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
-
+		B26BFFE8EE04B59936A1A35B /* libPods-townscup_reactnative-townscup_reactnativeTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A39C09FE05E54A0DEAEC1D7 /* libPods-townscup_reactnative-townscup_reactnativeTests.a */; };
 		DAC0E4382705DBB20006A40D /* GoogleService-Info-stage.plist in Resources */ = {isa = PBXBuildFile; fileRef = DAC0E4342705DBB20006A40D /* GoogleService-Info-stage.plist */; };
 		DAC0E43A2705DBB20006A40D /* GoogleService-Info-dev.plist in Resources */ = {isa = PBXBuildFile; fileRef = DAC0E4362705DBB20006A40D /* GoogleService-Info-dev.plist */; };
 		DAC0E43B2705DBB20006A40D /* GoogleService-Info-qa.plist in Resources */ = {isa = PBXBuildFile; fileRef = DAC0E4372705DBB20006A40D /* GoogleService-Info-qa.plist */; };
+		DCD12EAAA344AD1A8E9A3C75 /* libPods-townscup_reactnative-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D943FF2D59AECC5FDA097A2A /* libPods-townscup_reactnative-tvOS.a */; };
 		E34687092761BD65001E4A49 /* GoogleService-Info-prod.plist in Resources */ = {isa = PBXBuildFile; fileRef = E34687082761BD65001E4A49 /* GoogleService-Info-prod.plist */; };
 		E34F20E928ED719D008FBF18 /* main.jsbundle in Resources */ = {isa = PBXBuildFile; fileRef = E34F20E828ED719D008FBF18 /* main.jsbundle */; };
+		ED6B538CCF0ACC4CBF4898B6 /* libPods-townscup_reactnative.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2141B32DE0FF31D8DDD72AED /* libPods-townscup_reactnative.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,8 +69,6 @@
 		00E356EE1AD99517003FC87E /* townscup_reactnativeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = townscup_reactnativeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* townscup_reactnativeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = townscup_reactnativeTests.m; sourceTree = "<group>"; };
-
-
 		046ACE50251CA905009CBADE /* Roboto-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-Medium.ttf"; sourceTree = "<group>"; };
 		046ACE51251CA905009CBADE /* Roboto-LightItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-LightItalic.ttf"; sourceTree = "<group>"; };
 		046ACE52251CA905009CBADE /* Lato-Black.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Lato-Black.ttf"; sourceTree = "<group>"; };
@@ -88,101 +85,91 @@
 		046ACE5D251CA906009CBADE /* Roboto-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-Regular.ttf"; sourceTree = "<group>"; };
 		046ACE5E251CA906009CBADE /* Roboto-Thin.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-Thin.ttf"; sourceTree = "<group>"; };
 		046ACE5F251CA906009CBADE /* Roboto-BlackItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-BlackItalic.ttf"; sourceTree = "<group>"; };
-
-		04DF87C245173BB04C9CAE4C /* Pods-townscup_reactnative-townscup_reactnativeTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-townscup_reactnativeTests.debug.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-townscup_reactnativeTests/Pods-townscup_reactnative-townscup_reactnativeTests.debug.xcconfig"; sourceTree = "<group>"; };
-		04FE7DE3527AC1755A486ABB /* Pods-townscup_reactnative.debug_production.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative.debug_production.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative/Pods-townscup_reactnative.debug_production.xcconfig"; sourceTree = "<group>"; };
-		0868C380A6663072D591CA25 /* Pods-townscup_reactnative-townscup_reactnativeTests.debug_staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-townscup_reactnativeTests.debug_staging.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-townscup_reactnativeTests/Pods-townscup_reactnative-townscup_reactnativeTests.debug_staging.xcconfig"; sourceTree = "<group>"; };
-		0B0070FE27EC6DA0BBD444DD /* Pods-townscup_reactnative-tvOS.distribution.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOS.distribution.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOS/Pods-townscup_reactnative-tvOS.distribution.xcconfig"; sourceTree = "<group>"; };
-		0BF67E22ADBA4DE285679F9B /* Pods-townscup_reactnative-tvOSTests.release_production.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOSTests.release_production.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOSTests/Pods-townscup_reactnative-tvOSTests.release_production.xcconfig"; sourceTree = "<group>"; };
-
+		0A39C09FE05E54A0DEAEC1D7 /* libPods-townscup_reactnative-townscup_reactnativeTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-townscup_reactnative-townscup_reactnativeTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0F3D5154EDE7429BBCF6A7F4 /* Feather.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Feather.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Feather.ttf"; sourceTree = "<group>"; };
-		13439B9B09C179C55338D688 /* Pods-townscup_reactnative-tvOSTests.debug_production.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOSTests.debug_production.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOSTests/Pods-townscup_reactnative-tvOSTests.debug_production.xcconfig"; sourceTree = "<group>"; };
+		0FF18F35A7DB05BCB36CF911 /* Pods-townscup_reactnative-tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOS.release.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOS/Pods-townscup_reactnative-tvOS.release.xcconfig"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* townscup_reactnative.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = townscup_reactnative.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = townscup_reactnative/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = townscup_reactnative/AppDelegate.m; sourceTree = "<group>"; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = townscup_reactnative/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = townscup_reactnative/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = townscup_reactnative/main.m; sourceTree = "<group>"; };
-
-		157CEA7A8346BDB54E67C1AC /* Pods-townscup_reactnative-tvOSTests.debug_development.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOSTests.debug_development.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOSTests/Pods-townscup_reactnative-tvOSTests.debug_development.xcconfig"; sourceTree = "<group>"; };
-		15BA1A54ADFF9ABFEFB05DAB /* Pods-townscup_reactnative-tvOSTests.distribution.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOSTests.distribution.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOSTests/Pods-townscup_reactnative-tvOSTests.distribution.xcconfig"; sourceTree = "<group>"; };
 		15CA67CB260AD0E40064255D /* townscup_reactnative.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = townscup_reactnative.entitlements; path = townscup_reactnative/townscup_reactnative.entitlements; sourceTree = "<group>"; };
-		16AE2C50A8344BA077C3F8AB /* libPods-townscup_reactnative-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-townscup_reactnative-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		1C547CD6B7F18D81C4BF876A /* Pods-townscup_reactnative-tvOS.release_production.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOS.release_production.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOS/Pods-townscup_reactnative-tvOS.release_production.xcconfig"; sourceTree = "<group>"; };
-		1D942E10F46FB77444FBA0B7 /* Pods-townscup_reactnative-townscup_reactnativeTests.debug_production.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-townscup_reactnativeTests.debug_production.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-townscup_reactnativeTests/Pods-townscup_reactnative-townscup_reactnativeTests.debug_production.xcconfig"; sourceTree = "<group>"; };
-		1F39E260056248E41813F0A8 /* Pods-townscup_reactnative.debug_qa.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative.debug_qa.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative/Pods-townscup_reactnative.debug_qa.xcconfig"; sourceTree = "<group>"; };
+		17651BBAABE0E9D71045E6A9 /* Pods-townscup_reactnative-tvOSTests.release_staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOSTests.release_staging.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOSTests/Pods-townscup_reactnative-tvOSTests.release_staging.xcconfig"; sourceTree = "<group>"; };
+		19DFFA1A30C4A1C0B9FB83CF /* Pods-townscup_reactnative-townscup_reactnativeTests.release_staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-townscup_reactnativeTests.release_staging.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-townscup_reactnativeTests/Pods-townscup_reactnative-townscup_reactnativeTests.release_staging.xcconfig"; sourceTree = "<group>"; };
+		1B8C54D6925D094061554D55 /* Pods-townscup_reactnative.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative.release.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative/Pods-townscup_reactnative.release.xcconfig"; sourceTree = "<group>"; };
+		1E59F3967CEB409436A571BC /* Pods-townscup_reactnative-tvOS.release_qa.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOS.release_qa.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOS/Pods-townscup_reactnative-tvOS.release_qa.xcconfig"; sourceTree = "<group>"; };
 		1FAE134CB8D64B38AE62E9CF /* Ionicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Ionicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Ionicons.ttf"; sourceTree = "<group>"; };
-		1FEF136DD6BDB0ABF2DEAC55 /* Pods-townscup_reactnative.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative.debug.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative/Pods-townscup_reactnative.debug.xcconfig"; sourceTree = "<group>"; };
-		209FDA9779918ED8951DC7CA /* Pods-townscup_reactnative.debug_development.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative.debug_development.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative/Pods-townscup_reactnative.debug_development.xcconfig"; sourceTree = "<group>"; };
-
+		2141B32DE0FF31D8DDD72AED /* libPods-townscup_reactnative.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-townscup_reactnative.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		26ED209ABE10414298C7F3DB /* MaterialIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialIcons.ttf"; sourceTree = "<group>"; };
+		28A12B645498DB3B31203358 /* Pods-townscup_reactnative-townscup_reactnativeTests.release_development.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-townscup_reactnativeTests.release_development.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-townscup_reactnativeTests/Pods-townscup_reactnative-townscup_reactnativeTests.release_development.xcconfig"; sourceTree = "<group>"; };
 		2D02E47B1E0B4A5D006451C7 /* townscup_reactnative-tvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "townscup_reactnative-tvOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D02E4901E0B4A5D006451C7 /* townscup_reactnative-tvOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "townscup_reactnative-tvOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D12534D090B4900B24E641F /* FontAwesome5_Brands.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Brands.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Brands.ttf"; sourceTree = "<group>"; };
-
-		2F79A3D448F4634FB2777F8B /* Pods-townscup_reactnative-tvOS.debug_development.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOS.debug_development.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOS/Pods-townscup_reactnative-tvOS.debug_development.xcconfig"; sourceTree = "<group>"; };
-		2FCB5DDD6C397D0A3FBCDDA7 /* Pods-townscup_reactnative-tvOS.debug_production.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOS.debug_production.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOS/Pods-townscup_reactnative-tvOS.debug_production.xcconfig"; sourceTree = "<group>"; };
-		32D9B4B1A9DB7C93A1D6C6E0 /* Pods-townscup_reactnative.debug_staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative.debug_staging.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative/Pods-townscup_reactnative.debug_staging.xcconfig"; sourceTree = "<group>"; };
-		347D64E63D709B4279D5C55D /* Pods-townscup_reactnative-tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOS.debug.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOS/Pods-townscup_reactnative-tvOS.debug.xcconfig"; sourceTree = "<group>"; };
-		34EF0EE0271A7EBF15502F84 /* Pods-townscup_reactnative-tvOSTests.release_staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOSTests.release_staging.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOSTests/Pods-townscup_reactnative-tvOSTests.release_staging.xcconfig"; sourceTree = "<group>"; };
-		39E19293EEC790FA4A1552A4 /* libPods-townscup_reactnative-townscup_reactnativeTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-townscup_reactnative-townscup_reactnativeTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		3F39B15423D2B4A48E44B165 /* Pods-townscup_reactnative-tvOSTests.debug_qa.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOSTests.debug_qa.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOSTests/Pods-townscup_reactnative-tvOSTests.debug_qa.xcconfig"; sourceTree = "<group>"; };
-		437E70D931230CA9BE0143D7 /* Pods-townscup_reactnative-townscup_reactnativeTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-townscup_reactnativeTests.release.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-townscup_reactnativeTests/Pods-townscup_reactnative-townscup_reactnativeTests.release.xcconfig"; sourceTree = "<group>"; };
+		2F1D01E651487A86A8FEBD64 /* Pods-townscup_reactnative-townscup_reactnativeTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-townscup_reactnativeTests.release.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-townscup_reactnativeTests/Pods-townscup_reactnative-townscup_reactnativeTests.release.xcconfig"; sourceTree = "<group>"; };
+		3B7C5DC3F58B1857E38D4E65 /* Pods-townscup_reactnative-tvOSTests.distribution.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOSTests.distribution.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOSTests/Pods-townscup_reactnative-tvOSTests.distribution.xcconfig"; sourceTree = "<group>"; };
 		4415B23A9A3549B7908FBF5F /* FontAwesome5_Solid.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Solid.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Solid.ttf"; sourceTree = "<group>"; };
 		4498FA24F4514D43B45069A6 /* Zocial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Zocial.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Zocial.ttf"; sourceTree = "<group>"; };
-		45F3BFEB2FA2C9DBFC0E36A9 /* Pods-townscup_reactnative-tvOS.release_staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOS.release_staging.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOS/Pods-townscup_reactnative-tvOS.release_staging.xcconfig"; sourceTree = "<group>"; };
+		458623E79494E351C4A09DD0 /* libPods-townscup_reactnative-tvOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-townscup_reactnative-tvOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		47C9A4CC72D7443DA0E7F0A6 /* Fontisto.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Fontisto.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Fontisto.ttf"; sourceTree = "<group>"; };
-		47E77A585E7DEC9A12191136 /* Pods-townscup_reactnative-tvOS.release_qa.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOS.release_qa.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOS/Pods-townscup_reactnative-tvOS.release_qa.xcconfig"; sourceTree = "<group>"; };
-		4904FA3E4EB5302AF9B7E08E /* Pods-townscup_reactnative-tvOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOSTests.release.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOSTests/Pods-townscup_reactnative-tvOSTests.release.xcconfig"; sourceTree = "<group>"; };
+		4A9B7CEFF2A1FA34662D9B13 /* Pods-townscup_reactnative-tvOS.debug_staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOS.debug_staging.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOS/Pods-townscup_reactnative-tvOS.debug_staging.xcconfig"; sourceTree = "<group>"; };
 		528491C22587B7BC0069B7ED /* townscup_reactnative-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "townscup_reactnative-Bridging-Header.h"; sourceTree = "<group>"; };
 		528491C32587B7BC0069B7ED /* TownsCup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TownsCup.swift; sourceTree = "<group>"; };
-		60EAE55114AA97A997AD6E5A /* Pods-townscup_reactnative.distribution.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative.distribution.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative/Pods-townscup_reactnative.distribution.xcconfig"; sourceTree = "<group>"; };
+		5522B780786EBE9B262EFF95 /* Pods-townscup_reactnative-townscup_reactnativeTests.debug_qa.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-townscup_reactnativeTests.debug_qa.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-townscup_reactnativeTests/Pods-townscup_reactnative-townscup_reactnativeTests.debug_qa.xcconfig"; sourceTree = "<group>"; };
+		581ED510BB3366DE50FBA0DE /* Pods-townscup_reactnative.release_production.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative.release_production.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative/Pods-townscup_reactnative.release_production.xcconfig"; sourceTree = "<group>"; };
+		58827393FC6953FD3AE08973 /* Pods-townscup_reactnative-tvOSTests.release_qa.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOSTests.release_qa.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOSTests/Pods-townscup_reactnative-tvOSTests.release_qa.xcconfig"; sourceTree = "<group>"; };
+		59D121CFEC3F7A9E00AB1B8F /* Pods-townscup_reactnative-tvOS.debug_development.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOS.debug_development.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOS/Pods-townscup_reactnative-tvOS.debug_development.xcconfig"; sourceTree = "<group>"; };
+		5EB978D05E5F6817549BDFD2 /* Pods-townscup_reactnative-tvOSTests.release_production.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOSTests.release_production.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOSTests/Pods-townscup_reactnative-tvOSTests.release_production.xcconfig"; sourceTree = "<group>"; };
+		5EE5440EC517649E9B6124E4 /* Pods-townscup_reactnative.distribution.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative.distribution.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative/Pods-townscup_reactnative.distribution.xcconfig"; sourceTree = "<group>"; };
+		5FD25717EE143E5899B8B31D /* Pods-townscup_reactnative-townscup_reactnativeTests.debug_staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-townscup_reactnativeTests.debug_staging.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-townscup_reactnativeTests/Pods-townscup_reactnative-townscup_reactnativeTests.debug_staging.xcconfig"; sourceTree = "<group>"; };
+		63035DE916E373B0C480EE06 /* Pods-townscup_reactnative-townscup_reactnativeTests.debug_development.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-townscup_reactnativeTests.debug_development.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-townscup_reactnativeTests/Pods-townscup_reactnative-townscup_reactnativeTests.debug_development.xcconfig"; sourceTree = "<group>"; };
+		6377D90C4A9EBB0A6D731E04 /* Pods-townscup_reactnative.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative.debug.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative/Pods-townscup_reactnative.debug.xcconfig"; sourceTree = "<group>"; };
 		68DA8E4D2787670B00A510E6 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "townscup_reactnative/Firebase/GoogleService-Info.plist"; sourceTree = "<group>"; };
-		6C182C25761A6756413D0AB0 /* Pods-townscup_reactnative-tvOSTests.debug_staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOSTests.debug_staging.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOSTests/Pods-townscup_reactnative-tvOSTests.debug_staging.xcconfig"; sourceTree = "<group>"; };
-		6D4DA3D8BA1A84EDE42C2AEE /* Pods-townscup_reactnative.release_production.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative.release_production.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative/Pods-townscup_reactnative.release_production.xcconfig"; sourceTree = "<group>"; };
-		70AF206983793B591C34D92D /* Pods-townscup_reactnative.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative.release.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative/Pods-townscup_reactnative.release.xcconfig"; sourceTree = "<group>"; };
-		73ED060FEC14D2F61C9ACC2A /* Pods-townscup_reactnative-tvOS.debug_staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOS.debug_staging.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOS/Pods-townscup_reactnative-tvOS.debug_staging.xcconfig"; sourceTree = "<group>"; };
-		740FA5B762F38DB31138D04F /* Pods-townscup_reactnative.release_qa.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative.release_qa.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative/Pods-townscup_reactnative.release_qa.xcconfig"; sourceTree = "<group>"; };
+		697C411D6C560773C7526E8F /* Pods-townscup_reactnative-townscup_reactnativeTests.debug_production.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-townscup_reactnativeTests.debug_production.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-townscup_reactnativeTests/Pods-townscup_reactnative-townscup_reactnativeTests.debug_production.xcconfig"; sourceTree = "<group>"; };
+		7010B68D0668D66C9F829D82 /* Pods-townscup_reactnative.release_staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative.release_staging.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative/Pods-townscup_reactnative.release_staging.xcconfig"; sourceTree = "<group>"; };
+		7198C371F93AB23477AD514F /* Pods-townscup_reactnative-tvOSTests.debug_qa.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOSTests.debug_qa.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOSTests/Pods-townscup_reactnative-tvOSTests.debug_qa.xcconfig"; sourceTree = "<group>"; };
+		73037D732FA0781B8AA56977 /* Pods-townscup_reactnative-tvOSTests.release_development.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOSTests.release_development.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOSTests/Pods-townscup_reactnative-tvOSTests.release_development.xcconfig"; sourceTree = "<group>"; };
+		772EACEC8519F87DA20C48A8 /* Pods-townscup_reactnative-townscup_reactnativeTests.release_qa.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-townscup_reactnativeTests.release_qa.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-townscup_reactnativeTests/Pods-townscup_reactnative-townscup_reactnativeTests.release_qa.xcconfig"; sourceTree = "<group>"; };
 		786DE0305AD149CF91FFAF7E /* FontAwesome5_Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Regular.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Regular.ttf"; sourceTree = "<group>"; };
-		7BB20DF4068652672E12D6C0 /* Pods-townscup_reactnative-tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOS.release.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOS/Pods-townscup_reactnative-tvOS.release.xcconfig"; sourceTree = "<group>"; };
+		7E510408AB36F11C02505EF7 /* Pods-townscup_reactnative-tvOS.release_production.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOS.release_production.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOS/Pods-townscup_reactnative-tvOS.release_production.xcconfig"; sourceTree = "<group>"; };
+		8042F8AE1CCB487F163C1CF3 /* Pods-townscup_reactnative-tvOS.release_staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOS.release_staging.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOS/Pods-townscup_reactnative-tvOS.release_staging.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = townscup_reactnative/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		84376E427C5043D59C76FA98 /* MaterialCommunityIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialCommunityIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf"; sourceTree = "<group>"; };
-		84B68666F852ABB1714C134C /* Pods-townscup_reactnative-tvOSTests.debug_production.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOSTests.debug_production.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOSTests/Pods-townscup_reactnative-tvOSTests.debug_production.xcconfig"; sourceTree = "<group>"; };
-
 		884E78262535950600014A3D /* libRNGoogleSignin.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libRNGoogleSignin.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		8A3274DE8A57410794143DE7 /* AntDesign.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = AntDesign.ttf; path = "../node_modules/react-native-vector-icons/Fonts/AntDesign.ttf"; sourceTree = "<group>"; };
-		8C5F9E5030B2257BC3D1A51D /* Pods-townscup_reactnative-tvOSTests.release_staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOSTests.release_staging.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOSTests/Pods-townscup_reactnative-tvOSTests.release_staging.xcconfig"; sourceTree = "<group>"; };
+		8BA78BB62118C1C3D6F4402A /* Pods-townscup_reactnative.debug_development.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative.debug_development.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative/Pods-townscup_reactnative.debug_development.xcconfig"; sourceTree = "<group>"; };
+		8CF817BDCFEDFC1DBDFCDB25 /* Pods-townscup_reactnative-tvOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOSTests.release.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOSTests/Pods-townscup_reactnative-tvOSTests.release.xcconfig"; sourceTree = "<group>"; };
 		8DF0D96D45244A26893BE26D /* FontAwesome.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf"; sourceTree = "<group>"; };
-
-		8E95704C765FD89E7CC1C3F8 /* Pods-townscup_reactnative-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOSTests.debug.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOSTests/Pods-townscup_reactnative-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
-		97FDA09DD9783A74BD8A710F /* Pods-townscup_reactnative-townscup_reactnativeTests.release_staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-townscup_reactnativeTests.release_staging.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-townscup_reactnativeTests/Pods-townscup_reactnative-townscup_reactnativeTests.release_staging.xcconfig"; sourceTree = "<group>"; };
-		9A9D8FBBBDA2CBD11879A70A /* Pods-townscup_reactnative-tvOSTests.release_qa.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOSTests.release_qa.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOSTests/Pods-townscup_reactnative-tvOSTests.release_qa.xcconfig"; sourceTree = "<group>"; };
+		939605C92C05211B80C26A39 /* Pods-townscup_reactnative-townscup_reactnativeTests.distribution.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-townscup_reactnativeTests.distribution.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-townscup_reactnativeTests/Pods-townscup_reactnative-townscup_reactnativeTests.distribution.xcconfig"; sourceTree = "<group>"; };
+		94582DEFC8775508CC58DD02 /* Pods-townscup_reactnative-tvOS.release_development.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOS.release_development.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOS/Pods-townscup_reactnative-tvOS.release_development.xcconfig"; sourceTree = "<group>"; };
+		98280EC6238A1CAE24D74E96 /* Pods-townscup_reactnative.debug_qa.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative.debug_qa.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative/Pods-townscup_reactnative.debug_qa.xcconfig"; sourceTree = "<group>"; };
+		9D8C6F4C91CBCD0DE22082AA /* Pods-townscup_reactnative-tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOS.debug.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOS/Pods-townscup_reactnative-tvOS.debug.xcconfig"; sourceTree = "<group>"; };
+		A10281BF90713D3BFD5CA567 /* Pods-townscup_reactnative-tvOS.debug_production.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOS.debug_production.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOS/Pods-townscup_reactnative-tvOS.debug_production.xcconfig"; sourceTree = "<group>"; };
 		A26DE5A7BB36480DB15AF8BE /* EvilIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = EvilIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf"; sourceTree = "<group>"; };
-		A5F526C2AA9405A400F06958 /* libPods-townscup_reactnative-tvOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-townscup_reactnative-tvOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		A838BBAB2699686F2863D45A /* libPods-townscup_reactnative.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-townscup_reactnative.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A4BF939086CE840B237F443F /* Pods-townscup_reactnative.debug_staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative.debug_staging.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative/Pods-townscup_reactnative.debug_staging.xcconfig"; sourceTree = "<group>"; };
 		A8B9DE7D1F6747FD8FC56C35 /* Entypo.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Entypo.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Entypo.ttf"; sourceTree = "<group>"; };
-		AF302B9F7FA5DB6F7384F282 /* Pods-townscup_reactnative-townscup_reactnativeTests.release_qa.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-townscup_reactnativeTests.release_qa.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-townscup_reactnativeTests/Pods-townscup_reactnative-townscup_reactnativeTests.release_qa.xcconfig"; sourceTree = "<group>"; };
-		B03FFE314A8F60F770DD81D0 /* Pods-townscup_reactnative.release_staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative.release_staging.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative/Pods-townscup_reactnative.release_staging.xcconfig"; sourceTree = "<group>"; };
-		B13BDA2B37D60F4E1134DDD4 /* Pods-townscup_reactnative.release_development.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative.release_development.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative/Pods-townscup_reactnative.release_development.xcconfig"; sourceTree = "<group>"; };
-		B4BA014E28B5C69C70585378 /* Pods-townscup_reactnative-townscup_reactnativeTests.release_development.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-townscup_reactnativeTests.release_development.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-townscup_reactnativeTests/Pods-townscup_reactnative-townscup_reactnativeTests.release_development.xcconfig"; sourceTree = "<group>"; };
-		C11121C72C9DA7B37F7D3F2D /* Pods-townscup_reactnative-townscup_reactnativeTests.release_production.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-townscup_reactnativeTests.release_production.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-townscup_reactnativeTests/Pods-townscup_reactnative-townscup_reactnativeTests.release_production.xcconfig"; sourceTree = "<group>"; };
+		B180C2793DC2AE25E9F65909 /* Pods-townscup_reactnative-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOSTests.debug.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOSTests/Pods-townscup_reactnative-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
+		B3633F784BD5C4F01FC48487 /* Pods-townscup_reactnative.release_development.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative.release_development.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative/Pods-townscup_reactnative.release_development.xcconfig"; sourceTree = "<group>"; };
+		B5C97DA4C5E3B4230B57F719 /* Pods-townscup_reactnative-townscup_reactnativeTests.release_production.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-townscup_reactnativeTests.release_production.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-townscup_reactnativeTests/Pods-townscup_reactnative-townscup_reactnativeTests.release_production.xcconfig"; sourceTree = "<group>"; };
+		BF6EC917C2B491BF4476BDA0 /* Pods-townscup_reactnative.debug_production.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative.debug_production.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative/Pods-townscup_reactnative.debug_production.xcconfig"; sourceTree = "<group>"; };
+		C28EBB3CA43045D42EEF818F /* Pods-townscup_reactnative-tvOS.distribution.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOS.distribution.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOS/Pods-townscup_reactnative-tvOS.distribution.xcconfig"; sourceTree = "<group>"; };
 		CC873254D4664C0DA0FCF368 /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = SimpleLineIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf"; sourceTree = "<group>"; };
-		CE13AE21745C8CBDAB1535C7 /* Pods-townscup_reactnative-townscup_reactnativeTests.debug_qa.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-townscup_reactnativeTests.debug_qa.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-townscup_reactnativeTests/Pods-townscup_reactnative-townscup_reactnativeTests.debug_qa.xcconfig"; sourceTree = "<group>"; };
-		CF79B4877289E0892EB2B424 /* Pods-townscup_reactnative-townscup_reactnativeTests.debug_development.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-townscup_reactnativeTests.debug_development.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-townscup_reactnativeTests/Pods-townscup_reactnative-townscup_reactnativeTests.debug_development.xcconfig"; sourceTree = "<group>"; };
-		D24E4148F081E7D16F8F2A0B /* Pods-townscup_reactnative-townscup_reactnativeTests.distribution.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-townscup_reactnativeTests.distribution.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-townscup_reactnativeTests/Pods-townscup_reactnative-townscup_reactnativeTests.distribution.xcconfig"; sourceTree = "<group>"; };
-		D639CF27A384118B24B0423C /* Pods-townscup_reactnative-tvOS.release_development.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOS.release_development.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOS/Pods-townscup_reactnative-tvOS.release_development.xcconfig"; sourceTree = "<group>"; };
+		CEEEE13FC425B1591C51B83E /* Pods-townscup_reactnative-tvOSTests.debug_production.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOSTests.debug_production.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOSTests/Pods-townscup_reactnative-tvOSTests.debug_production.xcconfig"; sourceTree = "<group>"; };
+		D943FF2D59AECC5FDA097A2A /* libPods-townscup_reactnative-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-townscup_reactnative-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DAC0E4342705DBB20006A40D /* GoogleService-Info-stage.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info-stage.plist"; path = "townscup_reactnative/Firebase/GoogleService-Info-stage.plist"; sourceTree = "<group>"; };
 		DAC0E4362705DBB20006A40D /* GoogleService-Info-dev.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info-dev.plist"; path = "townscup_reactnative/Firebase/GoogleService-Info-dev.plist"; sourceTree = "<group>"; };
 		DAC0E4372705DBB20006A40D /* GoogleService-Info-qa.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info-qa.plist"; path = "townscup_reactnative/Firebase/GoogleService-Info-qa.plist"; sourceTree = "<group>"; };
+		DB1FEA1F6C5AD2820DE1ED02 /* Pods-townscup_reactnative-tvOSTests.debug_staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOSTests.debug_staging.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOSTests/Pods-townscup_reactnative-tvOSTests.debug_staging.xcconfig"; sourceTree = "<group>"; };
 		DE3AF37B2F374109924821A3 /* Octicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Octicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Octicons.ttf"; sourceTree = "<group>"; };
+		E298D67545F1258DFCCB603F /* Pods-townscup_reactnative-townscup_reactnativeTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-townscup_reactnativeTests.debug.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-townscup_reactnativeTests/Pods-townscup_reactnative-townscup_reactnativeTests.debug.xcconfig"; sourceTree = "<group>"; };
 		E34687082761BD65001E4A49 /* GoogleService-Info-prod.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info-prod.plist"; sourceTree = "<group>"; };
 		E34F20E828ED719D008FBF18 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
-		ECE6C23703AB2A7B0ECE1AC7 /* Pods-townscup_reactnative-tvOSTests.release_development.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOSTests.release_development.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOSTests/Pods-townscup_reactnative-tvOSTests.release_development.xcconfig"; sourceTree = "<group>"; };
+		EAE615D30F8BC343267EEACC /* Pods-townscup_reactnative.release_qa.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative.release_qa.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative/Pods-townscup_reactnative.release_qa.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
+		F147536E992D5E8D6079B1A8 /* Pods-townscup_reactnative-tvOS.debug_qa.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOS.debug_qa.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOS/Pods-townscup_reactnative-tvOS.debug_qa.xcconfig"; sourceTree = "<group>"; };
 		F1EB42378DA4477EA5A20810 /* Foundation.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Foundation.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Foundation.ttf"; sourceTree = "<group>"; };
-		F64CCBFC54DE0CF11BAED807 /* Pods-townscup_reactnative-tvOS.debug_qa.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOS.debug_qa.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOS/Pods-townscup_reactnative-tvOS.debug_qa.xcconfig"; sourceTree = "<group>"; };
-
+		FECA227002E4FF7CFB67CDC4 /* Pods-townscup_reactnative-tvOSTests.debug_development.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOSTests.debug_development.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOSTests/Pods-townscup_reactnative-tvOSTests.debug_development.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -190,9 +177,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-
-				8D5EA38E2AF09E184E55103C /* libPods-townscup_reactnative-townscup_reactnativeTests.a in Frameworks */,
-
+				B26BFFE8EE04B59936A1A35B /* libPods-townscup_reactnative-townscup_reactnativeTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -200,10 +185,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1F1E804D299B43DB005931FB /* libswiftWebKit.tbd in Frameworks */,
 				884E78272535950600014A3D /* libRNGoogleSignin.a in Frameworks */,
-
-				33B76956C71347AC1984C622 /* libPods-townscup_reactnative.a in Frameworks */,
-
+				ED6B538CCF0ACC4CBF4898B6 /* libPods-townscup_reactnative.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -211,10 +195,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-
-				D64C02E37006EC5993307233 /* BuildFile in Frameworks */,
-				3A96C11B8B0FCEEF6E6C0B52 /* libPods-townscup_reactnative-tvOS.a in Frameworks */,
-
+				DCD12EAAA344AD1A8E9A3C75 /* libPods-townscup_reactnative-tvOS.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -222,9 +203,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-
-				7579FD791446D086BF1CF208 /* libPods-townscup_reactnative-tvOSTests.a in Frameworks */,
-
+				42FF14AE6C8ED8C25D20BB2D /* libPods-townscup_reactnative-tvOSTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -290,15 +269,14 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				1F1E804C299B43DB005931FB /* libswiftWebKit.tbd */,
 				884E78262535950600014A3D /* libRNGoogleSignin.a */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				ED2971642150620600B7C4FE /* JavaScriptCore.framework */,
-
-				A838BBAB2699686F2863D45A /* libPods-townscup_reactnative.a */,
-				39E19293EEC790FA4A1552A4 /* libPods-townscup_reactnative-townscup_reactnativeTests.a */,
-				A5F526C2AA9405A400F06958 /* libPods-townscup_reactnative-tvOSTests.a */,
-				16AE2C50A8344BA077C3F8AB /* libPods-townscup_reactnative-tvOS.a */,
-
+				2141B32DE0FF31D8DDD72AED /* libPods-townscup_reactnative.a */,
+				0A39C09FE05E54A0DEAEC1D7 /* libPods-townscup_reactnative-townscup_reactnativeTests.a */,
+				D943FF2D59AECC5FDA097A2A /* libPods-townscup_reactnative-tvOS.a */,
+				458623E79494E351C4A09DD0 /* libPods-townscup_reactnative-tvOSTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -366,52 +344,50 @@
 		B4D5D76FF167400057ABAB5C /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-
-				209FDA9779918ED8951DC7CA /* Pods-townscup_reactnative.debug_development.xcconfig */,
-				1F39E260056248E41813F0A8 /* Pods-townscup_reactnative.debug_qa.xcconfig */,
-				32D9B4B1A9DB7C93A1D6C6E0 /* Pods-townscup_reactnative.debug_staging.xcconfig */,
-				04FE7DE3527AC1755A486ABB /* Pods-townscup_reactnative.debug_production.xcconfig */,
-				1FEF136DD6BDB0ABF2DEAC55 /* Pods-townscup_reactnative.debug.xcconfig */,
-				B13BDA2B37D60F4E1134DDD4 /* Pods-townscup_reactnative.release_development.xcconfig */,
-				740FA5B762F38DB31138D04F /* Pods-townscup_reactnative.release_qa.xcconfig */,
-				6D4DA3D8BA1A84EDE42C2AEE /* Pods-townscup_reactnative.release_production.xcconfig */,
-				B03FFE314A8F60F770DD81D0 /* Pods-townscup_reactnative.release_staging.xcconfig */,
-				70AF206983793B591C34D92D /* Pods-townscup_reactnative.release.xcconfig */,
-				60EAE55114AA97A997AD6E5A /* Pods-townscup_reactnative.distribution.xcconfig */,
-				CF79B4877289E0892EB2B424 /* Pods-townscup_reactnative-townscup_reactnativeTests.debug_development.xcconfig */,
-				CE13AE21745C8CBDAB1535C7 /* Pods-townscup_reactnative-townscup_reactnativeTests.debug_qa.xcconfig */,
-				0868C380A6663072D591CA25 /* Pods-townscup_reactnative-townscup_reactnativeTests.debug_staging.xcconfig */,
-				1D942E10F46FB77444FBA0B7 /* Pods-townscup_reactnative-townscup_reactnativeTests.debug_production.xcconfig */,
-				04DF87C245173BB04C9CAE4C /* Pods-townscup_reactnative-townscup_reactnativeTests.debug.xcconfig */,
-				B4BA014E28B5C69C70585378 /* Pods-townscup_reactnative-townscup_reactnativeTests.release_development.xcconfig */,
-				AF302B9F7FA5DB6F7384F282 /* Pods-townscup_reactnative-townscup_reactnativeTests.release_qa.xcconfig */,
-				C11121C72C9DA7B37F7D3F2D /* Pods-townscup_reactnative-townscup_reactnativeTests.release_production.xcconfig */,
-				97FDA09DD9783A74BD8A710F /* Pods-townscup_reactnative-townscup_reactnativeTests.release_staging.xcconfig */,
-				437E70D931230CA9BE0143D7 /* Pods-townscup_reactnative-townscup_reactnativeTests.release.xcconfig */,
-				D24E4148F081E7D16F8F2A0B /* Pods-townscup_reactnative-townscup_reactnativeTests.distribution.xcconfig */,
-				F64CCBFC54DE0CF11BAED807 /* Pods-townscup_reactnative-tvOS.debug_qa.xcconfig */,
-				73ED060FEC14D2F61C9ACC2A /* Pods-townscup_reactnative-tvOS.debug_staging.xcconfig */,
-				2FCB5DDD6C397D0A3FBCDDA7 /* Pods-townscup_reactnative-tvOS.debug_production.xcconfig */,
-				347D64E63D709B4279D5C55D /* Pods-townscup_reactnative-tvOS.debug.xcconfig */,
-				D639CF27A384118B24B0423C /* Pods-townscup_reactnative-tvOS.release_development.xcconfig */,
-				47E77A585E7DEC9A12191136 /* Pods-townscup_reactnative-tvOS.release_qa.xcconfig */,
-				1C547CD6B7F18D81C4BF876A /* Pods-townscup_reactnative-tvOS.release_production.xcconfig */,
-				45F3BFEB2FA2C9DBFC0E36A9 /* Pods-townscup_reactnative-tvOS.release_staging.xcconfig */,
-				7BB20DF4068652672E12D6C0 /* Pods-townscup_reactnative-tvOS.release.xcconfig */,
-				0B0070FE27EC6DA0BBD444DD /* Pods-townscup_reactnative-tvOS.distribution.xcconfig */,
-				157CEA7A8346BDB54E67C1AC /* Pods-townscup_reactnative-tvOSTests.debug_development.xcconfig */,
-				3F39B15423D2B4A48E44B165 /* Pods-townscup_reactnative-tvOSTests.debug_qa.xcconfig */,
-				6C182C25761A6756413D0AB0 /* Pods-townscup_reactnative-tvOSTests.debug_staging.xcconfig */,
-				84B68666F852ABB1714C134C /* Pods-townscup_reactnative-tvOSTests.debug_production.xcconfig */,
-				8E95704C765FD89E7CC1C3F8 /* Pods-townscup_reactnative-tvOSTests.debug.xcconfig */,
-				ECE6C23703AB2A7B0ECE1AC7 /* Pods-townscup_reactnative-tvOSTests.release_development.xcconfig */,
-				9A9D8FBBBDA2CBD11879A70A /* Pods-townscup_reactnative-tvOSTests.release_qa.xcconfig */,
-				0BF67E22ADBA4DE285679F9B /* Pods-townscup_reactnative-tvOSTests.release_production.xcconfig */,
-				34EF0EE0271A7EBF15502F84 /* Pods-townscup_reactnative-tvOSTests.release_staging.xcconfig */,
-				4904FA3E4EB5302AF9B7E08E /* Pods-townscup_reactnative-tvOSTests.release.xcconfig */,
-				15BA1A54ADFF9ABFEFB05DAB /* Pods-townscup_reactnative-tvOSTests.distribution.xcconfig */,
-				2F79A3D448F4634FB2777F8B /* Pods-townscup_reactnative-tvOS.debug_development.xcconfig */,
-
+				8BA78BB62118C1C3D6F4402A /* Pods-townscup_reactnative.debug_development.xcconfig */,
+				98280EC6238A1CAE24D74E96 /* Pods-townscup_reactnative.debug_qa.xcconfig */,
+				A4BF939086CE840B237F443F /* Pods-townscup_reactnative.debug_staging.xcconfig */,
+				BF6EC917C2B491BF4476BDA0 /* Pods-townscup_reactnative.debug_production.xcconfig */,
+				6377D90C4A9EBB0A6D731E04 /* Pods-townscup_reactnative.debug.xcconfig */,
+				B3633F784BD5C4F01FC48487 /* Pods-townscup_reactnative.release_development.xcconfig */,
+				EAE615D30F8BC343267EEACC /* Pods-townscup_reactnative.release_qa.xcconfig */,
+				581ED510BB3366DE50FBA0DE /* Pods-townscup_reactnative.release_production.xcconfig */,
+				7010B68D0668D66C9F829D82 /* Pods-townscup_reactnative.release_staging.xcconfig */,
+				1B8C54D6925D094061554D55 /* Pods-townscup_reactnative.release.xcconfig */,
+				5EE5440EC517649E9B6124E4 /* Pods-townscup_reactnative.distribution.xcconfig */,
+				63035DE916E373B0C480EE06 /* Pods-townscup_reactnative-townscup_reactnativeTests.debug_development.xcconfig */,
+				5522B780786EBE9B262EFF95 /* Pods-townscup_reactnative-townscup_reactnativeTests.debug_qa.xcconfig */,
+				5FD25717EE143E5899B8B31D /* Pods-townscup_reactnative-townscup_reactnativeTests.debug_staging.xcconfig */,
+				697C411D6C560773C7526E8F /* Pods-townscup_reactnative-townscup_reactnativeTests.debug_production.xcconfig */,
+				E298D67545F1258DFCCB603F /* Pods-townscup_reactnative-townscup_reactnativeTests.debug.xcconfig */,
+				28A12B645498DB3B31203358 /* Pods-townscup_reactnative-townscup_reactnativeTests.release_development.xcconfig */,
+				772EACEC8519F87DA20C48A8 /* Pods-townscup_reactnative-townscup_reactnativeTests.release_qa.xcconfig */,
+				B5C97DA4C5E3B4230B57F719 /* Pods-townscup_reactnative-townscup_reactnativeTests.release_production.xcconfig */,
+				19DFFA1A30C4A1C0B9FB83CF /* Pods-townscup_reactnative-townscup_reactnativeTests.release_staging.xcconfig */,
+				2F1D01E651487A86A8FEBD64 /* Pods-townscup_reactnative-townscup_reactnativeTests.release.xcconfig */,
+				939605C92C05211B80C26A39 /* Pods-townscup_reactnative-townscup_reactnativeTests.distribution.xcconfig */,
+				59D121CFEC3F7A9E00AB1B8F /* Pods-townscup_reactnative-tvOS.debug_development.xcconfig */,
+				F147536E992D5E8D6079B1A8 /* Pods-townscup_reactnative-tvOS.debug_qa.xcconfig */,
+				4A9B7CEFF2A1FA34662D9B13 /* Pods-townscup_reactnative-tvOS.debug_staging.xcconfig */,
+				A10281BF90713D3BFD5CA567 /* Pods-townscup_reactnative-tvOS.debug_production.xcconfig */,
+				9D8C6F4C91CBCD0DE22082AA /* Pods-townscup_reactnative-tvOS.debug.xcconfig */,
+				94582DEFC8775508CC58DD02 /* Pods-townscup_reactnative-tvOS.release_development.xcconfig */,
+				1E59F3967CEB409436A571BC /* Pods-townscup_reactnative-tvOS.release_qa.xcconfig */,
+				7E510408AB36F11C02505EF7 /* Pods-townscup_reactnative-tvOS.release_production.xcconfig */,
+				8042F8AE1CCB487F163C1CF3 /* Pods-townscup_reactnative-tvOS.release_staging.xcconfig */,
+				0FF18F35A7DB05BCB36CF911 /* Pods-townscup_reactnative-tvOS.release.xcconfig */,
+				C28EBB3CA43045D42EEF818F /* Pods-townscup_reactnative-tvOS.distribution.xcconfig */,
+				FECA227002E4FF7CFB67CDC4 /* Pods-townscup_reactnative-tvOSTests.debug_development.xcconfig */,
+				7198C371F93AB23477AD514F /* Pods-townscup_reactnative-tvOSTests.debug_qa.xcconfig */,
+				DB1FEA1F6C5AD2820DE1ED02 /* Pods-townscup_reactnative-tvOSTests.debug_staging.xcconfig */,
+				CEEEE13FC425B1591C51B83E /* Pods-townscup_reactnative-tvOSTests.debug_production.xcconfig */,
+				B180C2793DC2AE25E9F65909 /* Pods-townscup_reactnative-tvOSTests.debug.xcconfig */,
+				73037D732FA0781B8AA56977 /* Pods-townscup_reactnative-tvOSTests.release_development.xcconfig */,
+				58827393FC6953FD3AE08973 /* Pods-townscup_reactnative-tvOSTests.release_qa.xcconfig */,
+				5EB978D05E5F6817549BDFD2 /* Pods-townscup_reactnative-tvOSTests.release_production.xcconfig */,
+				17651BBAABE0E9D71045E6A9 /* Pods-townscup_reactnative-tvOSTests.release_staging.xcconfig */,
+				8CF817BDCFEDFC1DBDFCDB25 /* Pods-townscup_reactnative-tvOSTests.release.xcconfig */,
+				3B7C5DC3F58B1857E38D4E65 /* Pods-townscup_reactnative-tvOSTests.distribution.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -435,14 +411,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "townscup_reactnativeTests" */;
 			buildPhases = (
-
-				6318920CCF4E4C83DFE0E22C /* [CP] Check Pods Manifest.lock */,
+				9160F39A185E9D329A4D864F /* [CP] Check Pods Manifest.lock */,
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
-				E509F91A9E91F5BC14B94AB2 /* [CP] Embed Pods Frameworks */,
-				517AA81C7A231EE183A967E5 /* [CP] Copy Pods Resources */,
-
+				ED7114FB7DF89A26D150DB25 /* [CP] Embed Pods Frameworks */,
+				A4D946C1717759D208447CC5 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -458,21 +432,17 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "townscup_reactnative" */;
 			buildPhases = (
-
-				0F9FA2F347CC2F522999B7D5 /* [CP] Check Pods Manifest.lock */,
-
+				7E0F6BFA0FE696BC1B7E4CBA /* [CP] Check Pods Manifest.lock */,
 				FD10A7F022414F080027D42C /* Start Packager */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				DA472A1B27058C2100E2D21B /* Run Script */,
-
-				752366E09F2CE08F4F48B390 /* [CP] Embed Pods Frameworks */,
-				81070437B4F7FC588046C374 /* [CP] Copy Pods Resources */,
-				2FCF46433CAB908D625E47AE /* [CP-User] [RNFB] Core Configuration */,
-				42818DE6C0D714A82ACCF871 /* [CP-User] [RNFB] Crashlytics Configuration */,
-
+				752366E09F2CE08F4F48B390 /* ShellScript */,
+				9F580E8DF1E15CA0B086843D /* [CP] Embed Pods Frameworks */,
+				050EE0F3781B9593753C43EB /* [CP] Copy Pods Resources */,
+				2AAB89800B2C63CEC6822209 /* [CP-User] [RNFB] Core Configuration */,
+				7A1564127269C52B7F60442B /* [CP-User] [RNFB] Crashlytics Configuration */,
 			);
 			buildRules = (
 			);
@@ -487,9 +457,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 2D02E4BA1E0B4A5E006451C7 /* Build configuration list for PBXNativeTarget "townscup_reactnative-tvOS" */;
 			buildPhases = (
-
-				426E5F61E1F8D7FF1C52BEB9 /* [CP] Check Pods Manifest.lock */,
-
+				D56A2A710E15BD7329CB9CCD /* [CP] Check Pods Manifest.lock */,
 				FD10A7F122414F3F0027D42C /* Start Packager */,
 				2D02E4771E0B4A5D006451C7 /* Sources */,
 				2D02E4781E0B4A5D006451C7 /* Frameworks */,
@@ -509,9 +477,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 2D02E4BB1E0B4A5E006451C7 /* Build configuration list for PBXNativeTarget "townscup_reactnative-tvOSTests" */;
 			buildPhases = (
-
-				037D3B44EC671EC13C24134D /* [CP] Check Pods Manifest.lock */,
-
+				1A4E9AA57AFE1C04151C5979 /* [CP] Check Pods Manifest.lock */,
 				2D02E48C1E0B4A5D006451C7 /* Sources */,
 				2D02E48D1E0B4A5D006451C7 /* Frameworks */,
 				2D02E48E1E0B4A5D006451C7 /* Resources */,
@@ -648,9 +614,75 @@
 			shellPath = /bin/sh;
 			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh\n";
 		};
-
-		037D3B44EC671EC13C24134D /* [CP] Check Pods Manifest.lock */ = {
-
+		050EE0F3781B9593753C43EB /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-townscup_reactnative/Pods-townscup_reactnative-resources.sh",
+				"${PODS_ROOT}/FBSDKCoreKit/FacebookSDKStrings.bundle",
+				"${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/RNImageCropPicker/QBImagePicker.bundle",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/AntDesign.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Entypo.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Feather.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Brands.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Regular.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Solid.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Fontisto.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Foundation.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Ionicons.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/MaterialIcons.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Octicons.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Zocial.ttf",
+				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/Stripe/Stripe.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/Stripe/Stripe3DS2.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/StripeCore/StripeCore.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/StripeFinancialConnections/StripeFinancialConnections.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/StripeUICore/StripeUICore.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/TOCropViewController/TOCropViewControllerBundle.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FacebookSDKStrings.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleSignIn.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/QBImagePicker.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AntDesign.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Entypo.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EvilIcons.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Feather.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome5_Brands.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome5_Regular.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome5_Solid.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Fontisto.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Foundation.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Ionicons.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/MaterialCommunityIcons.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/MaterialIcons.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Octicons.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SimpleLineIcons.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Zocial.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AccessibilityResources.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Stripe.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Stripe3DS2.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/StripeCore.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/StripeFinancialConnections.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/StripeUICore.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/TOCropViewControllerBundle.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-townscup_reactnative/Pods-townscup_reactnative-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		1A4E9AA57AFE1C04151C5979 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -658,46 +690,32 @@
 			inputFileListPaths = (
 			);
 			inputPaths = (
-
-
 				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
 				"${PODS_ROOT}/Manifest.lock",
 			);
 			name = "[CP] Check Pods Manifest.lock";
 			outputFileListPaths = (
-
-
 			);
 			outputPaths = (
 				"$(DERIVED_FILE_DIR)/Pods-townscup_reactnative-tvOSTests-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		0F9FA2F347CC2F522999B7D5 /* [CP] Check Pods Manifest.lock */ = {
-
+		2AAB89800B2C63CEC6822209 /* [CP-User] [RNFB] Core Configuration */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
+				"$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
 			);
-
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-townscup_reactnative-checkManifestLockResult.txt",
-			);
+			name = "[CP-User] [RNFB] Core Configuration";
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
+			shellScript = "#!/usr/bin/env bash\n#\n# Copyright (c) 2016-present Invertase Limited & Contributors\n#\n# Licensed under the Apache License, Version 2.0 (the \"License\");\n# you may not use this library except in compliance with the License.\n# You may obtain a copy of the License at\n#\n#   http://www.apache.org/licenses/LICENSE-2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License for the specific language governing permissions and\n# limitations under the License.\n#\nset -e\n\n_MAX_LOOKUPS=2;\n_SEARCH_RESULT=''\n_RN_ROOT_EXISTS=''\n_CURRENT_LOOKUPS=1\n_JSON_ROOT=\"'react-native'\"\n_JSON_FILE_NAME='firebase.json'\n_JSON_OUTPUT_BASE64='e30=' # { }\n_CURRENT_SEARCH_DIR=${PROJECT_DIR}\n_PLIST_BUDDY=/usr/libexec/PlistBuddy\n_TARGET_PLIST=\"${BUILT_PRODUCTS_DIR}/${INFOPLIST_PATH}\"\n_DSYM_PLIST=\"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist\"\n\n# plist arrays\n_PLIST_ENTRY_KEYS=()\n_PLIST_ENTRY_TYPES=()\n_PLIST_ENTRY_VALUES=()\n\nfunction setPlistValue {\n  echo \"info:      setting plist entry '$1' of type '$2' in file '$4'\"\n  ${_PLIST_BUDDY} -c \"Add :$1 $2 '$3'\" $4 || echo \"info:      '$1' already exists\"\n}\n\nfunction getFirebaseJsonKeyValue () {\n  if [[ ${_RN_ROOT_EXISTS} ]]; then\n    ruby -e \"require 'rubygems';require 'json'; output=JSON.parse('$1'); puts output[$_JSON_ROOT]['$2']\"\n  else\n    echo \"\"\n  fi;\n}\n\nfunction jsonBoolToYesNo () {\n  if [[ $1 == \"false\" ]]; then\n    echo \"NO\"\n  elif [[ $1 == \"true\" ]]; then\n    echo \"YES\"\n  else echo \"NO\"\n  fi\n}\n\necho \"info: -> RNFB build script started\"\necho \"info: 1) Locating ${_JSON_FILE_NAME} file:\"\n\nif [[ -z ${_CURRENT_SEARCH_DIR} ]]; then\n  _CURRENT_SEARCH_DIR=$(pwd)\nfi;\n\nwhile true; do\n  _CURRENT_SEARCH_DIR=$(dirname \"$_CURRENT_SEARCH_DIR\")\n  if [[ \"$_CURRENT_SEARCH_DIR\" == \"/\" ]] || [[ ${_CURRENT_LOOKUPS} -gt ${_MAX_LOOKUPS} ]]; then break; fi;\n  echo \"info:      ($_CURRENT_LOOKUPS of $_MAX_LOOKUPS) Searching in '$_CURRENT_SEARCH_DIR' for a ${_JSON_FILE_NAME} file.\"\n  _SEARCH_RESULT=$(find \"$_CURRENT_SEARCH_DIR\" -maxdepth 2 -name ${_JSON_FILE_NAME} -print | /usr/bin/head -n 1)\n  if [[ ${_SEARCH_RESULT} ]]; then\n    echo \"info:      ${_JSON_FILE_NAME} found at $_SEARCH_RESULT\"\n    break;\n  fi;\n  _CURRENT_LOOKUPS=$((_CURRENT_LOOKUPS+1))\ndone\n\nif [[ ${_SEARCH_RESULT} ]]; then\n  _JSON_OUTPUT_RAW=$(cat \"${_SEARCH_RESULT}\")\n  _RN_ROOT_EXISTS=$(ruby -e \"require 'rubygems';require 'json'; output=JSON.parse('$_JSON_OUTPUT_RAW'); puts output[$_JSON_ROOT]\" || echo '')\n\n  if [[ ${_RN_ROOT_EXISTS} ]]; then\n    if ! python3 --version >/dev/null 2>&1; then echo \"python3 not found, firebase.json file processing error.\" && exit 1; fi\n    _JSON_OUTPUT_BASE64=$(python3 -c 'import json,sys,base64;print(base64.b64encode(bytes(json.dumps(json.loads(open('\"'${_SEARCH_RESULT}'\"', '\"'rb'\"').read())['${_JSON_ROOT}']), '\"'utf-8'\"')).decode())' || echo \"e30=\")\n  fi\n\n  _PLIST_ENTRY_KEYS+=(\"firebase_json_raw\")\n  _PLIST_ENTRY_TYPES+=(\"string\")\n  _PLIST_ENTRY_VALUES+=(\"$_JSON_OUTPUT_BASE64\")\n\n  # config.app_data_collection_default_enabled\n  _APP_DATA_COLLECTION_ENABLED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"app_data_collection_default_enabled\")\n  if [[ $_APP_DATA_COLLECTION_ENABLED ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseDataCollectionDefaultEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_APP_DATA_COLLECTION_ENABLED\")\")\n  fi\n\n  # config.analytics_auto_collection_enabled\n  _ANALYTICS_AUTO_COLLECTION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_auto_collection_enabled\")\n  if [[ $_ANALYTICS_AUTO_COLLECTION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FIREBASE_ANALYTICS_COLLECTION_ENABLED\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_AUTO_COLLECTION\")\")\n  fi\n\n  # config.analytics_collection_deactivated\n  _ANALYTICS_DEACTIVATED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_collection_deactivated\")\n  if [[ $_ANALYTICS_DEACTIVATED ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FIREBASE_ANALYTICS_COLLECTION_DEACTIVATED\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_DEACTIVATED\")\")\n  fi\n\n  # config.analytics_idfv_collection_enabled\n  _ANALYTICS_IDFV_COLLECTION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_idfv_collection_enabled\")\n  if [[ $_ANALYTICS_IDFV_COLLECTION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_IDFV_COLLECTION_ENABLED\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_IDFV_COLLECTION\")\")\n  fi\n\n  # config.analytics_default_allow_ad_personalization_signals\n  _ANALYTICS_PERSONALIZATION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_default_allow_ad_personalization_signals\")\n  if [[ $_ANALYTICS_PERSONALIZATION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_PERSONALIZATION_SIGNALS\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_PERSONALIZATION\")\")\n  fi\n\n  # config.google_analytics_automatic_screen_reporting_enabled\n  _ANALYTICS_AUTO_SCREEN_REPORTING=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"google_analytics_automatic_screen_reporting_enabled\")\n  if [[ $_ANALYTICS_AUTO_SCREEN_REPORTING ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseAutomaticScreenReportingEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_AUTO_SCREEN_REPORTING\")\")\n  fi\n\n  # config.perf_auto_collection_enabled\n  _PERF_AUTO_COLLECTION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"perf_auto_collection_enabled\")\n  if [[ $_PERF_AUTO_COLLECTION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"firebase_performance_collection_enabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_PERF_AUTO_COLLECTION\")\")\n  fi\n\n  # config.perf_collection_deactivated\n  _PERF_DEACTIVATED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"perf_collection_deactivated\")\n  if [[ $_PERF_DEACTIVATED ]]; then\n    _PLIST_ENTRY_KEYS+=(\"firebase_performance_collection_deactivated\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_PERF_DEACTIVATED\")\")\n  fi\n\n  # config.messaging_auto_init_enabled\n  _MESSAGING_AUTO_INIT=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"messaging_auto_init_enabled\")\n  if [[ $_MESSAGING_AUTO_INIT ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseMessagingAutoInitEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_MESSAGING_AUTO_INIT\")\")\n  fi\n\n  # config.in_app_messaging_auto_colllection_enabled\n  _FIAM_AUTO_INIT=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"in_app_messaging_auto_collection_enabled\")\n  if [[ $_FIAM_AUTO_INIT ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseInAppMessagingAutomaticDataCollectionEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_FIAM_AUTO_INIT\")\")\n  fi\n\n  # config.app_check_token_auto_refresh\n  _APP_CHECK_TOKEN_AUTO_REFRESH=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"app_check_token_auto_refresh\")\n  if [[ $_APP_CHECK_TOKEN_AUTO_REFRESH ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseAppCheckTokenAutoRefreshEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_APP_CHECK_TOKEN_AUTO_REFRESH\")\")\n  fi\n\n  # config.crashlytics_disable_auto_disabler - undocumented for now - mainly for debugging, document if becomes useful\n  _CRASHLYTICS_AUTO_DISABLE_ENABLED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"crashlytics_disable_auto_disabler\")\n  if [[ $_CRASHLYTICS_AUTO_DISABLE_ENABLED == \"true\" ]]; then\n    echo \"Disabled Crashlytics auto disabler.\" # do nothing\n  else\n    _PLIST_ENTRY_KEYS+=(\"FirebaseCrashlyticsCollectionEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"NO\")\n  fi\nelse\n  _PLIST_ENTRY_KEYS+=(\"firebase_json_raw\")\n  _PLIST_ENTRY_TYPES+=(\"string\")\n  _PLIST_ENTRY_VALUES+=(\"$_JSON_OUTPUT_BASE64\")\n  echo \"warning:   A firebase.json file was not found, whilst this file is optional it is recommended to include it to configure firebase services in React Native Firebase.\"\nfi;\n\necho \"info: 2) Injecting Info.plist entries: \"\n\n# Log out the keys we're adding\nfor i in \"${!_PLIST_ENTRY_KEYS[@]}\"; do\n  echo \"    ->  $i) ${_PLIST_ENTRY_KEYS[$i]}\" \"${_PLIST_ENTRY_TYPES[$i]}\" \"${_PLIST_ENTRY_VALUES[$i]}\"\ndone\n\nfor plist in \"${_TARGET_PLIST}\" \"${_DSYM_PLIST}\" ; do\n  if [[ -f \"${plist}\" ]]; then\n\n    # paths with spaces break the call to setPlistValue. temporarily modify\n    # the shell internal field separator variable (IFS), which normally\n    # includes spaces, to consist only of line breaks\n    oldifs=$IFS\n    IFS=\"\n\"\n\n    for i in \"${!_PLIST_ENTRY_KEYS[@]}\"; do\n      setPlistValue \"${_PLIST_ENTRY_KEYS[$i]}\" \"${_PLIST_ENTRY_TYPES[$i]}\" \"${_PLIST_ENTRY_VALUES[$i]}\" \"${plist}\"\n    done\n\n    # restore the original internal field separator value\n    IFS=$oldifs\n  else\n    echo \"warning:   A Info.plist build output file was not found (${plist})\"\n  fi\ndone\n\necho \"info: <- RNFB build script finished\"\n";
 		};
 		2D02E4CB1E0B4B27006451C7 /* Bundle React Native Code And Images */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -713,22 +731,7 @@
 			shellPath = /bin/sh;
 			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh\n";
 		};
-		2FCF46433CAB908D625E47AE /* [CP-User] [RNFB] Core Configuration */ = {
-
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-
-				"$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
-			);
-			name = "[CP-User] [RNFB] Core Configuration";
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "#!/usr/bin/env bash\n#\n# Copyright (c) 2016-present Invertase Limited & Contributors\n#\n# Licensed under the Apache License, Version 2.0 (the \"License\");\n# you may not use this library except in compliance with the License.\n# You may obtain a copy of the License at\n#\n#   http://www.apache.org/licenses/LICENSE-2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License for the specific language governing permissions and\n# limitations under the License.\n#\nset -e\n\n_MAX_LOOKUPS=2;\n_SEARCH_RESULT=''\n_RN_ROOT_EXISTS=''\n_CURRENT_LOOKUPS=1\n_JSON_ROOT=\"'react-native'\"\n_JSON_FILE_NAME='firebase.json'\n_JSON_OUTPUT_BASE64='e30=' # { }\n_CURRENT_SEARCH_DIR=${PROJECT_DIR}\n_PLIST_BUDDY=/usr/libexec/PlistBuddy\n_TARGET_PLIST=\"${BUILT_PRODUCTS_DIR}/${INFOPLIST_PATH}\"\n_DSYM_PLIST=\"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist\"\n\n# plist arrays\n_PLIST_ENTRY_KEYS=()\n_PLIST_ENTRY_TYPES=()\n_PLIST_ENTRY_VALUES=()\n\nfunction setPlistValue {\n  echo \"info:      setting plist entry '$1' of type '$2' in file '$4'\"\n  ${_PLIST_BUDDY} -c \"Add :$1 $2 '$3'\" $4 || echo \"info:      '$1' already exists\"\n}\n\nfunction getFirebaseJsonKeyValue () {\n  if [[ ${_RN_ROOT_EXISTS} ]]; then\n    ruby -e \"require 'rubygems';require 'json'; output=JSON.parse('$1'); puts output[$_JSON_ROOT]['$2']\"\n  else\n    echo \"\"\n  fi;\n}\n\nfunction jsonBoolToYesNo () {\n  if [[ $1 == \"false\" ]]; then\n    echo \"NO\"\n  elif [[ $1 == \"true\" ]]; then\n    echo \"YES\"\n  else echo \"NO\"\n  fi\n}\n\necho \"info: -> RNFB build script started\"\necho \"info: 1) Locating ${_JSON_FILE_NAME} file:\"\n\nif [[ -z ${_CURRENT_SEARCH_DIR} ]]; then\n  _CURRENT_SEARCH_DIR=$(pwd)\nfi;\n\nwhile true; do\n  _CURRENT_SEARCH_DIR=$(dirname \"$_CURRENT_SEARCH_DIR\")\n  if [[ \"$_CURRENT_SEARCH_DIR\" == \"/\" ]] || [[ ${_CURRENT_LOOKUPS} -gt ${_MAX_LOOKUPS} ]]; then break; fi;\n  echo \"info:      ($_CURRENT_LOOKUPS of $_MAX_LOOKUPS) Searching in '$_CURRENT_SEARCH_DIR' for a ${_JSON_FILE_NAME} file.\"\n  _SEARCH_RESULT=$(find \"$_CURRENT_SEARCH_DIR\" -maxdepth 2 -name ${_JSON_FILE_NAME} -print | /usr/bin/head -n 1)\n  if [[ ${_SEARCH_RESULT} ]]; then\n    echo \"info:      ${_JSON_FILE_NAME} found at $_SEARCH_RESULT\"\n    break;\n  fi;\n  _CURRENT_LOOKUPS=$((_CURRENT_LOOKUPS+1))\ndone\n\nif [[ ${_SEARCH_RESULT} ]]; then\n  _JSON_OUTPUT_RAW=$(cat \"${_SEARCH_RESULT}\")\n  _RN_ROOT_EXISTS=$(ruby -e \"require 'rubygems';require 'json'; output=JSON.parse('$_JSON_OUTPUT_RAW'); puts output[$_JSON_ROOT]\" || echo '')\n\n  if [[ ${_RN_ROOT_EXISTS} ]]; then\n    if ! python3 --version >/dev/null 2>&1; then echo \"python3 not found, firebase.json file processing error.\" && exit 1; fi\n    _JSON_OUTPUT_BASE64=$(python3 -c 'import json,sys,base64;print(base64.b64encode(bytes(json.dumps(json.loads(open('\"'${_SEARCH_RESULT}'\"', '\"'rb'\"').read())['${_JSON_ROOT}']), '\"'utf-8'\"')).decode())' || echo \"e30=\")\n  fi\n\n  _PLIST_ENTRY_KEYS+=(\"firebase_json_raw\")\n  _PLIST_ENTRY_TYPES+=(\"string\")\n  _PLIST_ENTRY_VALUES+=(\"$_JSON_OUTPUT_BASE64\")\n\n  # config.app_data_collection_default_enabled\n  _APP_DATA_COLLECTION_ENABLED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"app_data_collection_default_enabled\")\n  if [[ $_APP_DATA_COLLECTION_ENABLED ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseDataCollectionDefaultEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_APP_DATA_COLLECTION_ENABLED\")\")\n  fi\n\n  # config.analytics_auto_collection_enabled\n  _ANALYTICS_AUTO_COLLECTION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_auto_collection_enabled\")\n  if [[ $_ANALYTICS_AUTO_COLLECTION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FIREBASE_ANALYTICS_COLLECTION_ENABLED\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_AUTO_COLLECTION\")\")\n  fi\n\n  # config.analytics_collection_deactivated\n  _ANALYTICS_DEACTIVATED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_collection_deactivated\")\n  if [[ $_ANALYTICS_DEACTIVATED ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FIREBASE_ANALYTICS_COLLECTION_DEACTIVATED\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_DEACTIVATED\")\")\n  fi\n\n  # config.analytics_idfv_collection_enabled\n  _ANALYTICS_IDFV_COLLECTION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_idfv_collection_enabled\")\n  if [[ $_ANALYTICS_IDFV_COLLECTION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_IDFV_COLLECTION_ENABLED\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_IDFV_COLLECTION\")\")\n  fi\n\n  # config.analytics_default_allow_ad_personalization_signals\n  _ANALYTICS_PERSONALIZATION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_default_allow_ad_personalization_signals\")\n  if [[ $_ANALYTICS_PERSONALIZATION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_PERSONALIZATION_SIGNALS\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_PERSONALIZATION\")\")\n  fi\n\n  # config.google_analytics_automatic_screen_reporting_enabled\n  _ANALYTICS_AUTO_SCREEN_REPORTING=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"google_analytics_automatic_screen_reporting_enabled\")\n  if [[ $_ANALYTICS_AUTO_SCREEN_REPORTING ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseAutomaticScreenReportingEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_AUTO_SCREEN_REPORTING\")\")\n  fi\n\n  # config.perf_auto_collection_enabled\n  _PERF_AUTO_COLLECTION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"perf_auto_collection_enabled\")\n  if [[ $_PERF_AUTO_COLLECTION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"firebase_performance_collection_enabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_PERF_AUTO_COLLECTION\")\")\n  fi\n\n  # config.perf_collection_deactivated\n  _PERF_DEACTIVATED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"perf_collection_deactivated\")\n  if [[ $_PERF_DEACTIVATED ]]; then\n    _PLIST_ENTRY_KEYS+=(\"firebase_performance_collection_deactivated\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_PERF_DEACTIVATED\")\")\n  fi\n\n  # config.messaging_auto_init_enabled\n  _MESSAGING_AUTO_INIT=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"messaging_auto_init_enabled\")\n  if [[ $_MESSAGING_AUTO_INIT ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseMessagingAutoInitEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_MESSAGING_AUTO_INIT\")\")\n  fi\n\n  # config.in_app_messaging_auto_colllection_enabled\n  _FIAM_AUTO_INIT=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"in_app_messaging_auto_collection_enabled\")\n  if [[ $_FIAM_AUTO_INIT ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseInAppMessagingAutomaticDataCollectionEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_FIAM_AUTO_INIT\")\")\n  fi\n\n  # config.app_check_token_auto_refresh\n  _APP_CHECK_TOKEN_AUTO_REFRESH=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"app_check_token_auto_refresh\")\n  if [[ $_APP_CHECK_TOKEN_AUTO_REFRESH ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseAppCheckTokenAutoRefreshEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_APP_CHECK_TOKEN_AUTO_REFRESH\")\")\n  fi\n\n  # config.crashlytics_disable_auto_disabler - undocumented for now - mainly for debugging, document if becomes useful\n  _CRASHLYTICS_AUTO_DISABLE_ENABLED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"crashlytics_disable_auto_disabler\")\n  if [[ $_CRASHLYTICS_AUTO_DISABLE_ENABLED == \"true\" ]]; then\n    echo \"Disabled Crashlytics auto disabler.\" # do nothing\n  else\n    _PLIST_ENTRY_KEYS+=(\"FirebaseCrashlyticsCollectionEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"NO\")\n  fi\nelse\n  _PLIST_ENTRY_KEYS+=(\"firebase_json_raw\")\n  _PLIST_ENTRY_TYPES+=(\"string\")\n  _PLIST_ENTRY_VALUES+=(\"$_JSON_OUTPUT_BASE64\")\n  echo \"warning:   A firebase.json file was not found, whilst this file is optional it is recommended to include it to configure firebase services in React Native Firebase.\"\nfi;\n\necho \"info: 2) Injecting Info.plist entries: \"\n\n# Log out the keys we're adding\nfor i in \"${!_PLIST_ENTRY_KEYS[@]}\"; do\n  echo \"    ->  $i) ${_PLIST_ENTRY_KEYS[$i]}\" \"${_PLIST_ENTRY_TYPES[$i]}\" \"${_PLIST_ENTRY_VALUES[$i]}\"\ndone\n\nfor plist in \"${_TARGET_PLIST}\" \"${_DSYM_PLIST}\" ; do\n  if [[ -f \"${plist}\" ]]; then\n\n    # paths with spaces break the call to setPlistValue. temporarily modify\n    # the shell internal field separator variable (IFS), which normally\n    # includes spaces, to consist only of line breaks\n    oldifs=$IFS\n    IFS=\"\n\"\n\n    for i in \"${!_PLIST_ENTRY_KEYS[@]}\"; do\n      setPlistValue \"${_PLIST_ENTRY_KEYS[$i]}\" \"${_PLIST_ENTRY_TYPES[$i]}\" \"${_PLIST_ENTRY_VALUES[$i]}\" \"${plist}\"\n    done\n\n    # restore the original internal field separator value\n    IFS=$oldifs\n  else\n    echo \"warning:   A Info.plist build output file was not found (${plist})\"\n  fi\ndone\n\necho \"info: <- RNFB build script finished\"\n";
-		};
-		426E5F61E1F8D7FF1C52BEB9 /* [CP] Check Pods Manifest.lock */ = {
+		752366E09F2CE08F4F48B390 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -736,7 +739,39 @@
 			inputFileListPaths = (
 			);
 			inputPaths = (
-
+				"${PODS_ROOT}/Target Support Files/Pods-townscup_reactnative/Pods-townscup_reactnative-frameworks.sh",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/QuickBlox/Quickblox.framework/Quickblox",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/Quickblox-WebRTC/QuickbloxWebRTC.framework/QuickbloxWebRTC",
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-townscup_reactnative/Pods-townscup_reactnative-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		7A1564127269C52B7F60442B /* [CP-User] [RNFB] Crashlytics Configuration */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}",
+				"$(SRCROOT)/$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
+			);
+			name = "[CP-User] [RNFB] Crashlytics Configuration";
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#!/usr/bin/env bash\n#\n# Copyright (c) 2016-present Invertase Limited & Contributors\n#\n# Licensed under the Apache License, Version 2.0 (the \"License\");\n# you may not use this library except in compliance with the License.\n# You may obtain a copy of the License at\n#\n#   http://www.apache.org/licenses/LICENSE-2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License for the specific language governing permissions and\n# limitations under the License.\n#\nset -e\n\nif [[ ${PODS_ROOT} ]]; then\n  echo \"info: Exec FirebaseCrashlytics Run from Pods\"\n  \"${PODS_ROOT}/FirebaseCrashlytics/run\"\nelse\n  echo \"info: Exec FirebaseCrashlytics Run from framework\"\n  \"${PROJECT_DIR}/FirebaseCrashlytics.framework/run\"\nfi\n";
+		};
+		7E0F6BFA0FE696BC1B7E4CBA /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
 				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
 				"${PODS_ROOT}/Manifest.lock",
 			);
@@ -744,34 +779,56 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-townscup_reactnative-tvOS-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-townscup_reactnative-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-
-		42818DE6C0D714A82ACCF871 /* [CP-User] [RNFB] Crashlytics Configuration */ = {
-
+		9160F39A185E9D329A4D864F /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-townscup_reactnative-townscup_reactnativeTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		9F580E8DF1E15CA0B086843D /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
-
-				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}",
-				"$(SRCROOT)/$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
-
+				"${PODS_ROOT}/Target Support Files/Pods-townscup_reactnative/Pods-townscup_reactnative-frameworks.sh",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/QuickBlox/Quickblox.framework/Quickblox",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/Quickblox-WebRTC/QuickbloxWebRTC.framework/QuickbloxWebRTC",
 			);
-			name = "[CP-User] [RNFB] Crashlytics Configuration";
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Quickblox.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/QuickbloxWebRTC.framework",
+			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-
-			shellScript = "#!/usr/bin/env bash\n#\n# Copyright (c) 2016-present Invertase Limited & Contributors\n#\n# Licensed under the Apache License, Version 2.0 (the \"License\");\n# you may not use this library except in compliance with the License.\n# You may obtain a copy of the License at\n#\n#   http://www.apache.org/licenses/LICENSE-2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License for the specific language governing permissions and\n# limitations under the License.\n#\nset -e\n\nif [[ ${PODS_ROOT} ]]; then\n  echo \"info: Exec FirebaseCrashlytics Run from Pods\"\n  \"${PODS_ROOT}/FirebaseCrashlytics/run\"\nelse\n  echo \"info: Exec FirebaseCrashlytics Run from framework\"\n  \"${PROJECT_DIR}/FirebaseCrashlytics.framework/run\"\nfi\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-townscup_reactnative/Pods-townscup_reactnative-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
 		};
-		517AA81C7A231EE183A967E5 /* [CP] Copy Pods Resources */ = {
-
+		A4D946C1717759D208447CC5 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -839,127 +896,9 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-townscup_reactnative-townscup_reactnativeTests/Pods-townscup_reactnative-townscup_reactnativeTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-
-		6318920CCF4E4C83DFE0E22C /* [CP] Check Pods Manifest.lock */ = {
-
+		D56A2A710E15BD7329CB9CCD /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-townscup_reactnative-townscup_reactnativeTests/Pods-townscup_reactnative-townscup_reactnativeTests-frameworks.sh",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/QuickBlox/Quickblox.framework/Quickblox",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/Quickblox-WebRTC/QuickbloxWebRTC.framework/QuickbloxWebRTC",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-
-				"$(DERIVED_FILE_DIR)/Pods-townscup_reactnative-townscup_reactnativeTests-checkManifestLockResult.txt",
-
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-townscup_reactnative-townscup_reactnativeTests/Pods-townscup_reactnative-townscup_reactnativeTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-
-		752366E09F2CE08F4F48B390 /* [CP] Embed Pods Frameworks */ = {
-
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-
-				"${PODS_ROOT}/Target Support Files/Pods-townscup_reactnative/Pods-townscup_reactnative-frameworks.sh",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/QuickBlox/Quickblox.framework/Quickblox",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/Quickblox-WebRTC/QuickbloxWebRTC.framework/QuickbloxWebRTC",
-
-		
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-townscup_reactnative-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-townscup_reactnative/Pods-townscup_reactnative-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		81070437B4F7FC588046C374 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-townscup_reactnative/Pods-townscup_reactnative-resources.sh",
-				"${PODS_ROOT}/FBSDKCoreKit/FacebookSDKStrings.bundle",
-				"${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/RNImageCropPicker/QBImagePicker.bundle",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/AntDesign.ttf",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Entypo.ttf",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Feather.ttf",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Brands.ttf",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Regular.ttf",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Solid.ttf",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Fontisto.ttf",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Foundation.ttf",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Ionicons.ttf",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/MaterialIcons.ttf",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Octicons.ttf",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Zocial.ttf",
-				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/Stripe/Stripe.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/Stripe/Stripe3DS2.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/StripeCore/StripeCore.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/StripeFinancialConnections/StripeFinancialConnections.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/StripeUICore/StripeUICore.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/TOCropViewController/TOCropViewControllerBundle.bundle",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FacebookSDKStrings.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleSignIn.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/QBImagePicker.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AntDesign.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Entypo.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EvilIcons.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Feather.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome5_Brands.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome5_Regular.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome5_Solid.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Fontisto.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Foundation.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Ionicons.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/MaterialCommunityIcons.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/MaterialIcons.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Octicons.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SimpleLineIcons.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Zocial.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AccessibilityResources.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Stripe.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Stripe3DS2.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/StripeCore.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/StripeFinancialConnections.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/StripeUICore.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/TOCropViewControllerBundle.bundle",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-townscup_reactnative/Pods-townscup_reactnative-resources.sh\"\n";
-
-			showEnvVarsInLog = 0;
-		};
-		DA472A1B27058C2100E2D21B /* Run Script */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 12;
 			files = (
 			);
 			inputFileListPaths = (
@@ -972,22 +911,19 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-townscup_reactnative-tvOSTests-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-townscup_reactnative-tvOS-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-
-		E509F91A9E91F5BC14B94AB2 /* [CP] Embed Pods Frameworks */ = {
-
+		ED7114FB7DF89A26D150DB25 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
-
 				"${PODS_ROOT}/Target Support Files/Pods-townscup_reactnative-townscup_reactnativeTests/Pods-townscup_reactnative-townscup_reactnativeTests-frameworks.sh",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/QuickBlox/Quickblox.framework/Quickblox",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/Quickblox-WebRTC/QuickbloxWebRTC.framework/QuickbloxWebRTC",
@@ -996,15 +932,11 @@
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Quickblox.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/QuickbloxWebRTC.framework",
-
 			);
-			name = "[CP-User] [RNFB] Crashlytics Configuration";
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-townscup_reactnative-townscup_reactnativeTests/Pods-townscup_reactnative-townscup_reactnativeTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
-
 		};
 		FD10A7F022414F080027D42C /* Start Packager */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1100,9 +1032,7 @@
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug_Development */ = {
 			isa = XCBuildConfiguration;
-
-			baseConfigurationReference = CF79B4877289E0892EB2B424 /* Pods-townscup_reactnative-townscup_reactnativeTests.debug_development.xcconfig */;
-
+			baseConfigurationReference = 63035DE916E373B0C480EE06 /* Pods-townscup_reactnative-townscup_reactnativeTests.debug_development.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -1128,9 +1058,7 @@
 		};
 		00E356F71AD99517003FC87E /* Release_Development */ = {
 			isa = XCBuildConfiguration;
-
-			baseConfigurationReference = B4BA014E28B5C69C70585378 /* Pods-townscup_reactnative-townscup_reactnativeTests.release_development.xcconfig */;
-
+			baseConfigurationReference = 28A12B645498DB3B31203358 /* Pods-townscup_reactnative-townscup_reactnativeTests.release_development.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -1153,9 +1081,7 @@
 		};
 		13B07F941A680F5B00A75B9A /* Debug_Development */ = {
 			isa = XCBuildConfiguration;
-
-			baseConfigurationReference = 209FDA9779918ED8951DC7CA /* Pods-townscup_reactnative.debug_development.xcconfig */;
-
+			baseConfigurationReference = 8BA78BB62118C1C3D6F4402A /* Pods-townscup_reactnative.debug_development.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -1171,6 +1097,10 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SDKROOT)/usr/lib/swift",
+				);
 				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -1190,9 +1120,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release_Development */ = {
 			isa = XCBuildConfiguration;
-
-			baseConfigurationReference = B13BDA2B37D60F4E1134DDD4 /* Pods-townscup_reactnative.release_development.xcconfig */;
-
+			baseConfigurationReference = B3633F784BD5C4F01FC48487 /* Pods-townscup_reactnative.release_development.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -1209,6 +1137,10 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SDKROOT)/usr/lib/swift",
+				);
 				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -1228,9 +1160,7 @@
 		};
 		2D02E4971E0B4A5E006451C7 /* Debug_Development */ = {
 			isa = XCBuildConfiguration;
-
-			baseConfigurationReference = 2F79A3D448F4634FB2777F8B /* Pods-townscup_reactnative-tvOS.debug_development.xcconfig */;
-
+			baseConfigurationReference = 59D121CFEC3F7A9E00AB1B8F /* Pods-townscup_reactnative-tvOS.debug_development.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -1261,9 +1191,7 @@
 		};
 		2D02E4981E0B4A5E006451C7 /* Release_Development */ = {
 			isa = XCBuildConfiguration;
-
-			baseConfigurationReference = D639CF27A384118B24B0423C /* Pods-townscup_reactnative-tvOS.release_development.xcconfig */;
-
+			baseConfigurationReference = 94582DEFC8775508CC58DD02 /* Pods-townscup_reactnative-tvOS.release_development.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -1294,9 +1222,7 @@
 		};
 		2D02E4991E0B4A5E006451C7 /* Debug_Development */ = {
 			isa = XCBuildConfiguration;
-
-			baseConfigurationReference = 157CEA7A8346BDB54E67C1AC /* Pods-townscup_reactnative-tvOSTests.debug_development.xcconfig */;
-
+			baseConfigurationReference = FECA227002E4FF7CFB67CDC4 /* Pods-townscup_reactnative-tvOSTests.debug_development.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
@@ -1324,9 +1250,7 @@
 		};
 		2D02E49A1E0B4A5E006451C7 /* Release_Development */ = {
 			isa = XCBuildConfiguration;
-
-			baseConfigurationReference = ECE6C23703AB2A7B0ECE1AC7 /* Pods-townscup_reactnative-tvOSTests.release_development.xcconfig */;
-
+			baseConfigurationReference = 73037D732FA0781B8AA56977 /* Pods-townscup_reactnative-tvOSTests.release_development.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
@@ -1404,9 +1328,7 @@
 		};
 		71E7151C254E90CB00782727 /* Distribution */ = {
 			isa = XCBuildConfiguration;
-
-			baseConfigurationReference = 60EAE55114AA97A997AD6E5A /* Pods-townscup_reactnative.distribution.xcconfig */;
-
+			baseConfigurationReference = 5EE5440EC517649E9B6124E4 /* Pods-townscup_reactnative.distribution.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -1423,6 +1345,10 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SDKROOT)/usr/lib/swift",
+				);
 				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -1442,9 +1368,7 @@
 		};
 		71E7151D254E90CB00782727 /* Distribution */ = {
 			isa = XCBuildConfiguration;
-
-			baseConfigurationReference = D24E4148F081E7D16F8F2A0B /* Pods-townscup_reactnative-townscup_reactnativeTests.distribution.xcconfig */;
-
+			baseConfigurationReference = 939605C92C05211B80C26A39 /* Pods-townscup_reactnative-townscup_reactnativeTests.distribution.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -1467,9 +1391,7 @@
 		};
 		71E7151E254E90CB00782727 /* Distribution */ = {
 			isa = XCBuildConfiguration;
-
-			baseConfigurationReference = 0B0070FE27EC6DA0BBD444DD /* Pods-townscup_reactnative-tvOS.distribution.xcconfig */;
-
+			baseConfigurationReference = C28EBB3CA43045D42EEF818F /* Pods-townscup_reactnative-tvOS.distribution.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -1500,9 +1422,7 @@
 		};
 		71E7151F254E90CB00782727 /* Distribution */ = {
 			isa = XCBuildConfiguration;
-
-			baseConfigurationReference = 15BA1A54ADFF9ABFEFB05DAB /* Pods-townscup_reactnative-tvOSTests.distribution.xcconfig */;
-
+			baseConfigurationReference = 3B7C5DC3F58B1857E38D4E65 /* Pods-townscup_reactnative-tvOSTests.distribution.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
@@ -1694,9 +1614,7 @@
 		};
 		DA00F7472705F02600934F04 /* Debug_QA */ = {
 			isa = XCBuildConfiguration;
-
-			baseConfigurationReference = 1F39E260056248E41813F0A8 /* Pods-townscup_reactnative.debug_qa.xcconfig */;
-
+			baseConfigurationReference = 98280EC6238A1CAE24D74E96 /* Pods-townscup_reactnative.debug_qa.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -1712,6 +1630,10 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SDKROOT)/usr/lib/swift",
+				);
 				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -1731,9 +1653,7 @@
 		};
 		DA00F7482705F02600934F04 /* Debug_QA */ = {
 			isa = XCBuildConfiguration;
-
-			baseConfigurationReference = CE13AE21745C8CBDAB1535C7 /* Pods-townscup_reactnative-townscup_reactnativeTests.debug_qa.xcconfig */;
-
+			baseConfigurationReference = 5522B780786EBE9B262EFF95 /* Pods-townscup_reactnative-townscup_reactnativeTests.debug_qa.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -1759,9 +1679,7 @@
 		};
 		DA00F7492705F02600934F04 /* Debug_QA */ = {
 			isa = XCBuildConfiguration;
-
-			baseConfigurationReference = F64CCBFC54DE0CF11BAED807 /* Pods-townscup_reactnative-tvOS.debug_qa.xcconfig */;
-
+			baseConfigurationReference = F147536E992D5E8D6079B1A8 /* Pods-townscup_reactnative-tvOS.debug_qa.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -1792,9 +1710,7 @@
 		};
 		DA00F74A2705F02600934F04 /* Debug_QA */ = {
 			isa = XCBuildConfiguration;
-
-			baseConfigurationReference = 3F39B15423D2B4A48E44B165 /* Pods-townscup_reactnative-tvOSTests.debug_qa.xcconfig */;
-
+			baseConfigurationReference = 7198C371F93AB23477AD514F /* Pods-townscup_reactnative-tvOSTests.debug_qa.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
@@ -1872,10 +1788,7 @@
 		};
 		DA00F74C2705F03000934F04 /* Release_QA */ = {
 			isa = XCBuildConfiguration;
-
-			baseConfigurationReference = 740FA5B762F38DB31138D04F /* Pods-townscup_reactnative.release_qa.xcconfig */;
-
-
+			baseConfigurationReference = EAE615D30F8BC343267EEACC /* Pods-townscup_reactnative.release_qa.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -1892,6 +1805,10 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SDKROOT)/usr/lib/swift",
+				);
 				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -1911,9 +1828,7 @@
 		};
 		DA00F74D2705F03000934F04 /* Release_QA */ = {
 			isa = XCBuildConfiguration;
-
-			baseConfigurationReference = AF302B9F7FA5DB6F7384F282 /* Pods-townscup_reactnative-townscup_reactnativeTests.release_qa.xcconfig */;
-
+			baseConfigurationReference = 772EACEC8519F87DA20C48A8 /* Pods-townscup_reactnative-townscup_reactnativeTests.release_qa.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -1936,9 +1851,7 @@
 		};
 		DA00F74E2705F03000934F04 /* Release_QA */ = {
 			isa = XCBuildConfiguration;
-
-			baseConfigurationReference = 47E77A585E7DEC9A12191136 /* Pods-townscup_reactnative-tvOS.release_qa.xcconfig */;
-
+			baseConfigurationReference = 1E59F3967CEB409436A571BC /* Pods-townscup_reactnative-tvOS.release_qa.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -1969,9 +1882,7 @@
 		};
 		DA00F74F2705F03000934F04 /* Release_QA */ = {
 			isa = XCBuildConfiguration;
-
-			baseConfigurationReference = 9A9D8FBBBDA2CBD11879A70A /* Pods-townscup_reactnative-tvOSTests.release_qa.xcconfig */;
-
+			baseConfigurationReference = 58827393FC6953FD3AE08973 /* Pods-townscup_reactnative-tvOSTests.release_qa.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
@@ -2056,9 +1967,7 @@
 		};
 		DA472A1F2705BF6F00E2D21B /* Debug */ = {
 			isa = XCBuildConfiguration;
-
-			baseConfigurationReference = 1FEF136DD6BDB0ABF2DEAC55 /* Pods-townscup_reactnative.debug.xcconfig */;
-
+			baseConfigurationReference = 6377D90C4A9EBB0A6D731E04 /* Pods-townscup_reactnative.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -2074,6 +1983,10 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SDKROOT)/usr/lib/swift",
+				);
 				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -2094,9 +2007,7 @@
 		};
 		DA472A202705BF6F00E2D21B /* Debug */ = {
 			isa = XCBuildConfiguration;
-
-			baseConfigurationReference = 04DF87C245173BB04C9CAE4C /* Pods-townscup_reactnative-townscup_reactnativeTests.debug.xcconfig */;
-
+			baseConfigurationReference = E298D67545F1258DFCCB603F /* Pods-townscup_reactnative-townscup_reactnativeTests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -2122,9 +2033,7 @@
 		};
 		DA472A212705BF6F00E2D21B /* Debug */ = {
 			isa = XCBuildConfiguration;
-
-			baseConfigurationReference = 347D64E63D709B4279D5C55D /* Pods-townscup_reactnative-tvOS.debug.xcconfig */;
-
+			baseConfigurationReference = 9D8C6F4C91CBCD0DE22082AA /* Pods-townscup_reactnative-tvOS.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -2155,9 +2064,7 @@
 		};
 		DA472A222705BF6F00E2D21B /* Debug */ = {
 			isa = XCBuildConfiguration;
-
-			baseConfigurationReference = 8E95704C765FD89E7CC1C3F8 /* Pods-townscup_reactnative-tvOSTests.debug.xcconfig */;
-
+			baseConfigurationReference = B180C2793DC2AE25E9F65909 /* Pods-townscup_reactnative-tvOSTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
@@ -2235,9 +2142,7 @@
 		};
 		DA472A242705BF7D00E2D21B /* Release */ = {
 			isa = XCBuildConfiguration;
-
-			baseConfigurationReference = 70AF206983793B591C34D92D /* Pods-townscup_reactnative.release.xcconfig */;
-
+			baseConfigurationReference = 1B8C54D6925D094061554D55 /* Pods-townscup_reactnative.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -2254,6 +2159,10 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SDKROOT)/usr/lib/swift",
+				);
 				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -2273,9 +2182,7 @@
 		};
 		DA472A252705BF7D00E2D21B /* Release */ = {
 			isa = XCBuildConfiguration;
-
-			baseConfigurationReference = 437E70D931230CA9BE0143D7 /* Pods-townscup_reactnative-townscup_reactnativeTests.release.xcconfig */;
-
+			baseConfigurationReference = 2F1D01E651487A86A8FEBD64 /* Pods-townscup_reactnative-townscup_reactnativeTests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -2298,9 +2205,7 @@
 		};
 		DA472A262705BF7D00E2D21B /* Release */ = {
 			isa = XCBuildConfiguration;
-
-			baseConfigurationReference = 7BB20DF4068652672E12D6C0 /* Pods-townscup_reactnative-tvOS.release.xcconfig */;
-
+			baseConfigurationReference = 0FF18F35A7DB05BCB36CF911 /* Pods-townscup_reactnative-tvOS.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -2331,9 +2236,7 @@
 		};
 		DA472A272705BF7D00E2D21B /* Release */ = {
 			isa = XCBuildConfiguration;
-
-			baseConfigurationReference = 4904FA3E4EB5302AF9B7E08E /* Pods-townscup_reactnative-tvOSTests.release.xcconfig */;
-
+			baseConfigurationReference = 8CF817BDCFEDFC1DBDFCDB25 /* Pods-townscup_reactnative-tvOSTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
@@ -2418,9 +2321,7 @@
 		};
 		DA472A2E2705BFB900E2D21B /* Debug_Production */ = {
 			isa = XCBuildConfiguration;
-
-			baseConfigurationReference = 04FE7DE3527AC1755A486ABB /* Pods-townscup_reactnative.debug_production.xcconfig */;
-
+			baseConfigurationReference = BF6EC917C2B491BF4476BDA0 /* Pods-townscup_reactnative.debug_production.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -2436,6 +2337,10 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SDKROOT)/usr/lib/swift",
+				);
 				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -2455,9 +2360,7 @@
 		};
 		DA472A2F2705BFB900E2D21B /* Debug_Production */ = {
 			isa = XCBuildConfiguration;
-
-			baseConfigurationReference = 1D942E10F46FB77444FBA0B7 /* Pods-townscup_reactnative-townscup_reactnativeTests.debug_production.xcconfig */;
-
+			baseConfigurationReference = 697C411D6C560773C7526E8F /* Pods-townscup_reactnative-townscup_reactnativeTests.debug_production.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -2483,9 +2386,7 @@
 		};
 		DA472A302705BFB900E2D21B /* Debug_Production */ = {
 			isa = XCBuildConfiguration;
-
-			baseConfigurationReference = 2FCB5DDD6C397D0A3FBCDDA7 /* Pods-townscup_reactnative-tvOS.debug_production.xcconfig */;
-
+			baseConfigurationReference = A10281BF90713D3BFD5CA567 /* Pods-townscup_reactnative-tvOS.debug_production.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -2516,9 +2417,7 @@
 		};
 		DA472A312705BFB900E2D21B /* Debug_Production */ = {
 			isa = XCBuildConfiguration;
-
-			baseConfigurationReference = 84B68666F852ABB1714C134C /* Pods-townscup_reactnative-tvOSTests.debug_production.xcconfig */;
-
+			baseConfigurationReference = CEEEE13FC425B1591C51B83E /* Pods-townscup_reactnative-tvOSTests.debug_production.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
@@ -2603,9 +2502,7 @@
 		};
 		DA472A332705BFC400E2D21B /* Debug_Staging */ = {
 			isa = XCBuildConfiguration;
-
-			baseConfigurationReference = 32D9B4B1A9DB7C93A1D6C6E0 /* Pods-townscup_reactnative.debug_staging.xcconfig */;
-
+			baseConfigurationReference = A4BF939086CE840B237F443F /* Pods-townscup_reactnative.debug_staging.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -2621,6 +2518,10 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SDKROOT)/usr/lib/swift",
+				);
 				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -2640,9 +2541,7 @@
 		};
 		DA472A342705BFC400E2D21B /* Debug_Staging */ = {
 			isa = XCBuildConfiguration;
-
-			baseConfigurationReference = 0868C380A6663072D591CA25 /* Pods-townscup_reactnative-townscup_reactnativeTests.debug_staging.xcconfig */;
-
+			baseConfigurationReference = 5FD25717EE143E5899B8B31D /* Pods-townscup_reactnative-townscup_reactnativeTests.debug_staging.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -2668,9 +2567,7 @@
 		};
 		DA472A352705BFC400E2D21B /* Debug_Staging */ = {
 			isa = XCBuildConfiguration;
-
-			baseConfigurationReference = 73ED060FEC14D2F61C9ACC2A /* Pods-townscup_reactnative-tvOS.debug_staging.xcconfig */;
-
+			baseConfigurationReference = 4A9B7CEFF2A1FA34662D9B13 /* Pods-townscup_reactnative-tvOS.debug_staging.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -2701,9 +2598,7 @@
 		};
 		DA472A362705BFC400E2D21B /* Debug_Staging */ = {
 			isa = XCBuildConfiguration;
-
-			baseConfigurationReference = 6C182C25761A6756413D0AB0 /* Pods-townscup_reactnative-tvOSTests.debug_staging.xcconfig */;
-
+			baseConfigurationReference = DB1FEA1F6C5AD2820DE1ED02 /* Pods-townscup_reactnative-tvOSTests.debug_staging.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
@@ -2781,9 +2676,7 @@
 		};
 		DA472A3D2705BFDF00E2D21B /* Release_Staging */ = {
 			isa = XCBuildConfiguration;
-
-			baseConfigurationReference = B03FFE314A8F60F770DD81D0 /* Pods-townscup_reactnative.release_staging.xcconfig */;
-
+			baseConfigurationReference = 7010B68D0668D66C9F829D82 /* Pods-townscup_reactnative.release_staging.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -2800,6 +2693,10 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SDKROOT)/usr/lib/swift",
+				);
 				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -2819,9 +2716,7 @@
 		};
 		DA472A3E2705BFDF00E2D21B /* Release_Staging */ = {
 			isa = XCBuildConfiguration;
-
-			baseConfigurationReference = 97FDA09DD9783A74BD8A710F /* Pods-townscup_reactnative-townscup_reactnativeTests.release_staging.xcconfig */;
-
+			baseConfigurationReference = 19DFFA1A30C4A1C0B9FB83CF /* Pods-townscup_reactnative-townscup_reactnativeTests.release_staging.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -2844,9 +2739,7 @@
 		};
 		DA472A3F2705BFDF00E2D21B /* Release_Staging */ = {
 			isa = XCBuildConfiguration;
-
-			baseConfigurationReference = 45F3BFEB2FA2C9DBFC0E36A9 /* Pods-townscup_reactnative-tvOS.release_staging.xcconfig */;
-
+			baseConfigurationReference = 8042F8AE1CCB487F163C1CF3 /* Pods-townscup_reactnative-tvOS.release_staging.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -2877,9 +2770,7 @@
 		};
 		DA472A402705BFDF00E2D21B /* Release_Staging */ = {
 			isa = XCBuildConfiguration;
-
-			baseConfigurationReference = 34EF0EE0271A7EBF15502F84 /* Pods-townscup_reactnative-tvOSTests.release_staging.xcconfig */;
-
+			baseConfigurationReference = 17651BBAABE0E9D71045E6A9 /* Pods-townscup_reactnative-tvOSTests.release_staging.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
@@ -2957,9 +2848,7 @@
 		};
 		DA472A422705BFED00E2D21B /* Release_Production */ = {
 			isa = XCBuildConfiguration;
-
-			baseConfigurationReference = 6D4DA3D8BA1A84EDE42C2AEE /* Pods-townscup_reactnative.release_production.xcconfig */;
-
+			baseConfigurationReference = 581ED510BB3366DE50FBA0DE /* Pods-townscup_reactnative.release_production.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -2976,6 +2865,10 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SDKROOT)/usr/lib/swift",
+				);
 				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -2995,9 +2888,7 @@
 		};
 		DA472A432705BFED00E2D21B /* Release_Production */ = {
 			isa = XCBuildConfiguration;
-
-			baseConfigurationReference = C11121C72C9DA7B37F7D3F2D /* Pods-townscup_reactnative-townscup_reactnativeTests.release_production.xcconfig */;
-
+			baseConfigurationReference = B5C97DA4C5E3B4230B57F719 /* Pods-townscup_reactnative-townscup_reactnativeTests.release_production.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -3020,9 +2911,7 @@
 		};
 		DA472A442705BFED00E2D21B /* Release_Production */ = {
 			isa = XCBuildConfiguration;
-
-			baseConfigurationReference = 1C547CD6B7F18D81C4BF876A /* Pods-townscup_reactnative-tvOS.release_production.xcconfig */;
-
+			baseConfigurationReference = 7E510408AB36F11C02505EF7 /* Pods-townscup_reactnative-tvOS.release_production.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -3053,9 +2942,7 @@
 		};
 		DA472A452705BFED00E2D21B /* Release_Production */ = {
 			isa = XCBuildConfiguration;
-
-			baseConfigurationReference = 0BF67E22ADBA4DE285679F9B /* Pods-townscup_reactnative-tvOSTests.release_production.xcconfig */;
-
+			baseConfigurationReference = 5EB978D05E5F6817549BDFD2 /* Pods-townscup_reactnative-tvOSTests.release_production.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;

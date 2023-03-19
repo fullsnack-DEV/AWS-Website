@@ -22,6 +22,7 @@ import styles from './InfoContentScreenStyles';
 import TeamsList from '../components/TeamsList';
 import UserDetails from '../components/UserDetails';
 import Venues from '../components/Venues';
+import {privacyKey} from '../../../../Constants/GeneralConstants';
 
 const OptionList = [
   strings.bio,
@@ -155,7 +156,7 @@ const InfoContentScreen = ({
         return null;
     }
   };
-
+  // console.log({user});
   const editOptions = (sectionName) => {
     switch (sectionName) {
       case strings.bio:
@@ -163,6 +164,7 @@ const InfoContentScreen = ({
           section: sectionName,
           buttonText: strings.editbio,
           showPrivacy: true,
+          privacyKey: privacyKey.bio,
         });
         setShowEditModal(true);
         break;
@@ -170,8 +172,10 @@ const InfoContentScreen = ({
       case strings.basicInfoText:
         setEditModalInfo({
           section: sectionName,
-          buttonText: strings.editBasicInfoText,
+          // buttonText: strings.editBasicInfoText,
+          buttonText: '',
           showPrivacy: true,
+          privacyKey: privacyKey.basicInfo,
         });
         setShowEditModal(true);
         break;
@@ -181,6 +185,7 @@ const InfoContentScreen = ({
           section: sectionName,
           buttonText: '',
           showPrivacy: true,
+          privacyKey: privacyKey.club,
         });
         setShowEditModal(true);
         break;
@@ -190,6 +195,7 @@ const InfoContentScreen = ({
           section: sectionName,
           buttonText: '',
           showPrivacy: true,
+          privacyKey: privacyKey.leagues,
         });
         setShowEditModal(true);
         break;
@@ -199,6 +205,7 @@ const InfoContentScreen = ({
           section: sectionName,
           buttonText: strings.editHomePlaceText,
           showPrivacy: true,
+          privacyKey: privacyKey.homeFacility,
         });
         setShowEditModal(true);
         break;
@@ -208,6 +215,7 @@ const InfoContentScreen = ({
           section: sectionName,
           buttonText: strings.editNTRPText,
           showPrivacy: true,
+          privacyKey: privacyKey.ntrp,
         });
         setShowEditModal(true);
         break;
@@ -217,6 +225,7 @@ const InfoContentScreen = ({
           section: sectionName,
           buttonText: strings.challengeSettingText,
           showPrivacy: false,
+          privacyKey: '',
         });
         setShowEditModal(true);
         break;
@@ -317,7 +326,10 @@ const InfoContentScreen = ({
               <Pressable
                 style={styles.modalButtonContainer}
                 onPress={() => {
-                  openPrivacySettings(editModalInfo.section);
+                  openPrivacySettings(
+                    editModalInfo.section,
+                    editModalInfo.privacyKey,
+                  );
                   setShowEditModal(false);
                 }}>
                 <Text style={styles.modalButtonText}>

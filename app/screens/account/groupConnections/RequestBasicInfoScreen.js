@@ -36,8 +36,7 @@ import TCThickDivider from '../../../components/TCThickDivider';
 import TCKeyboardView from '../../../components/TCKeyboardView';
 import AuthContext from '../../../auth/context';
 import colors from '../../../Constants/Colors';
-import {widthPercentageToDP} from '../../../utils';
-import {searchAddress, searchCityState} from '../../../api/External';
+
 import TCPicker from '../../../components/TCPicker';
 import DataSource from '../../../Constants/DataSource';
 import TCTextField from '../../../components/TCTextField';
@@ -51,7 +50,19 @@ export default function RequestBasicInfoScreen({navigation, route}) {
   const isFocused = useIsFocused();
 
   const [loading, setloading] = useState(false);
-  const [memberInfo, setMemberInfo] = useState(route.params.groupObj);
+  const [memberInfo, setMemberInfo] = useState(
+    {
+      height: {
+        height: 0,
+        height_type: 'ft',
+      },
+      weight: {
+        weight: 0,
+        weight_type: 'lb',
+      },
+    },
+    route.params.groupObj,
+  );
   const [role, setRole] = useState('');
 
   const [visibleLocationModal, setVisibleLocationModal] = useState(false);
@@ -193,12 +204,16 @@ export default function RequestBasicInfoScreen({navigation, route}) {
 
   // Form Validation
   const checkValidation = () => {
-    if (setting?.height && memberInfo.height) {
-      if (!memberInfo.height.height_type) {
+    if (setting?.height && memberInfo.height !== null) {
+      if (!memberInfo.height?.height_type) {
         Alert.alert('Towns Cup', 'Please select height measurement');
         return false;
       }
-      if (memberInfo.height.height <= 0 || memberInfo.height.height >= 1000) {
+      if (
+        memberInfo.height.height <= 0 ||
+        memberInfo.height.height >= 1000 ||
+        memberInfo.height.height === undefined
+      ) {
         Alert.alert('Towns Cup', 'Please enter valid height.');
         return false;
       }
@@ -248,6 +263,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
     if (setting?.height === true) {
       bodyParams.height = memberInfo?.height;
     }
+
     if (setting?.weight === true) {
       bodyParams.weight = memberInfo?.weight;
     }
@@ -364,7 +380,10 @@ export default function RequestBasicInfoScreen({navigation, route}) {
                 ...memberInfo,
                 height: {
                   height: text,
-                  height_type: memberInfo?.height?.height_type,
+                  height_type:
+                    memberInfo?.height?.height_type === undefined
+                      ? heightMesurement[1].value
+                      : memberInfo?.height?.height_type,
                 },
               });
             }}
@@ -373,10 +392,11 @@ export default function RequestBasicInfoScreen({navigation, route}) {
         </View>
         <RNPickerSelect
           placeholder={{
-            label: heightMesurement[1].label,
-            value: heightMesurement[1].value,
+            label: strings.heightTypeText,
+            value: null,
           }}
           items={heightMesurement}
+          value={'ft'}
           onValueChange={(value) => {
             setMemberInfo({
               ...memberInfo,
@@ -386,7 +406,6 @@ export default function RequestBasicInfoScreen({navigation, route}) {
               },
             });
           }}
-          value={memberInfo?.height?.height_type}
           useNativeAndroidPickerStyle={false}
           style={{
             placeholder: {
@@ -435,7 +454,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
           marginRight: 15,
           justifyContent: 'space-between',
           marginTop: 10,
-          marginBottom: 25,
+          marginBottom: 27,
         }}>
         <View style={{...styles.halfMatchFeeView}}>
           <TextInput
@@ -447,7 +466,10 @@ export default function RequestBasicInfoScreen({navigation, route}) {
                 ...memberInfo,
                 weight: {
                   weight: text,
-                  weight_type: memberInfo?.weight?.weight_type,
+                  weight_type:
+                    memberInfo?.weight?.weight === undefined
+                      ? weightMesurement[1].value
+                      : memberInfo?.weight?.weight_type,
                 },
               });
             }}
@@ -456,8 +478,8 @@ export default function RequestBasicInfoScreen({navigation, route}) {
         </View>
         <RNPickerSelect
           placeholder={{
-            label: weightMesurement[1].label,
-            value: weightMesurement[1].value,
+            label: strings.weightTypeText,
+            value: null,
           }}
           items={weightMesurement}
           onValueChange={(value) => {
@@ -485,6 +507,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
               backgroundColor: colors.lightGrey,
               borderRadius: 5,
               textAlign: 'center',
+              height: 40,
             },
             inputAndroid: {
               fontSize: wp('4%'),
@@ -496,6 +519,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
               backgroundColor: colors.lightGrey,
               borderRadius: 5,
               textAlign: 'center',
+              height: 40,
             },
           }}
           Icon={() => (
@@ -567,12 +591,8 @@ export default function RequestBasicInfoScreen({navigation, route}) {
             </View>
 
             <View style={{marginLeft: 50}}>
-              <Text style={styles.fixedText}>
-                {/* {memberInfo?.gender} */}
+              <Text style={[styles.fixedText, {textTransform: 'capitalize'}]}>
                 {memberInfo.gender}
-                {/* {memberInfo?.gender == !''
-                  ? firstLetterCapital(memberInfo?.gender)
-                  : memberInfo?.gender} */}
               </Text>
             </View>
           </View>
@@ -700,7 +720,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
           value={memberInfo.email}
           style={{
             marginTop: 12,
-            marginBottom: 25,
+            marginBottom: 27,
           }}
           onChangeText={(text) => setMemberInfo({...memberInfo, email: text})}
           autoCapitalize="none"
@@ -776,7 +796,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
             editable={false}
             style={{
               marginTop: 10,
-              marginBottom: 25,
+              marginBottom: 27,
             }}
           />
         </TouchableOpacity>
@@ -903,7 +923,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.lightBlackColor,
     marginTop: 8,
-    marginBottom: 25,
+    marginBottom: 27,
     lineHeight: 24,
   },
   backArrowStyle: {

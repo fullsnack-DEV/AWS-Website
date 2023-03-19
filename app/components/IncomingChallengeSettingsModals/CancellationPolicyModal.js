@@ -4,14 +4,20 @@ import {Image, Text, TouchableOpacity, View} from 'react-native';
 import {strings} from '../../../Localization/translation';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
-import Verbs from '../../Constants/Verbs';
 import styles from './ModalStyles';
+import Verbs from '../../Constants/Verbs';
 
 const policiesTypeList = [
-  {label: Verbs.strictText, id: 1},
-  {label: Verbs.moderateText, id: 2},
-  {label: Verbs.flexibleText, id: 3},
+  {label: strings.strictText, id: 1},
+  {label: strings.moderateText, id: 2},
+  {label: strings.flexibleText, id: 3},
 ];
+
+const policyEnum = {
+  1: Verbs.strictText,
+  2: Verbs.moderateText,
+  3: Verbs.flexibleText,
+};
 
 const CancellationPolicyModal = ({refundPolicy = '', onChange = () => {}}) => {
   const getDescription = () => {
@@ -21,7 +27,7 @@ const CancellationPolicyModal = ({refundPolicy = '', onChange = () => {}}) => {
           <>
             <View style={{marginBottom: 25}}>
               <Text style={[styles.greyText, {fontFamily: fonts.RBold}]}>
-                {Verbs.strictText}
+                {strings.strictText}
               </Text>
               <Text style={[styles.greyText, {fontFamily: fonts.RBold}]}>
                 {strings.strictPoint1Title}
@@ -49,7 +55,7 @@ const CancellationPolicyModal = ({refundPolicy = '', onChange = () => {}}) => {
           <>
             <View style={{marginBottom: 25}}>
               <Text style={[styles.greyText, {fontFamily: fonts.RBold}]}>
-                {Verbs.moderateText}
+                {strings.moderateText}
               </Text>
               <Text style={[styles.greyText, {fontFamily: fonts.RBold}]}>
                 {strings.moderatePoint1Title}
@@ -77,7 +83,7 @@ const CancellationPolicyModal = ({refundPolicy = '', onChange = () => {}}) => {
           <>
             <View style={{marginBottom: 25}}>
               <Text style={[styles.greyText, {fontFamily: fonts.RBold}]}>
-                {Verbs.flexibleText}
+                {strings.flexibleText}
               </Text>
               <Text style={[styles.greyText, {fontFamily: fonts.RBold}]}>
                 {strings.flexiblePoint1Title}
@@ -102,16 +108,22 @@ const CancellationPolicyModal = ({refundPolicy = '', onChange = () => {}}) => {
     <View>
       <Text style={styles.title}>{strings.chooseCancellationPolicyTitle}</Text>
 
-      {policiesTypeList.map((item) => (
+      {policiesTypeList.map((item, index) => (
         <View
-          style={[styles.row, {paddingHorizontal: 10, marginBottom: 13}]}
+          style={[
+            styles.row,
+            {
+              paddingHorizontal: 10,
+              marginBottom: policiesTypeList.length - 1 === index ? 0 : 13,
+            },
+          ]}
           key={item.id}>
           <Text style={styles.label}>{item.label}</Text>
 
           <TouchableOpacity
             style={styles.radioContainer}
-            onPress={() => onChange(item.label)}>
-            {refundPolicy === item.label ? (
+            onPress={() => onChange(policyEnum[item.id])}>
+            {refundPolicy === policyEnum[item.id] ? (
               <Image source={images.radioCheckYellow} style={styles.image} />
             ) : (
               <Image source={images.radioUnselect} style={styles.image} />

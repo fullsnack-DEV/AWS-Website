@@ -451,14 +451,30 @@ const images = {
   createMember: require('../assets/images/createMember.png'),
   unlinked: require('../assets/images/unlinked.png'),
   createTeamRoundIcon: require('../assets/images/createTeam.png'),
-
   invoiceIcon: require('../assets/images/invvoice.png'),
-
   scoreBoardBackgroundImage: require('../assets/images/scoreboardBg.png'),
   moreOptions: require('../assets/images/moreOptions.png'),
   infoIcon: require('../assets/images/infoIcon.png'),
   clubPatchIcon: require('../assets/images/clubPatch.png'),
   teamPatchIcon: require('../assets/images/teamPatch.png'),
+  editProfilePencil: require('../assets/images/EditprofilePencil.png'),
+  activityImage: require('../assets/images/activityImage.png'),
+  activityImage1: require('../assets/images/activityImage1.png'),
+  activityImage2: require('../assets/images/activityImage2.png'),
+
+  // Events
+  challengeDefault: require('../assets/images/challenge_default.png'),
+  eventDefault: require('../assets/images/event_default.png'),
+  leftArrow: require('../assets/images/left_arrow.png'),
+  rightArrow: require('../assets/images/right_arrow.png'),
+  toggleCal: require('../assets/images/toggle_cal.png'),
+  eventClock: require('../assets/images/event_clock.png'),
+  eventMap: require('../assets/images/event_map.png'),
+  roundTick: require('../assets/images/round_tick.png'),
+  roundCross: require('../assets/images/round_cross.png'),
+  whiteBackArrow: require('../assets/images/whiteBackArrow.png'),
+  white3Dots: require('../assets/images/white3Dots.png'),
+  crossSingle : require('../assets/images/cross-single.png')
 };
 
 export default images;

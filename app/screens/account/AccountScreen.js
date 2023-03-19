@@ -69,8 +69,9 @@ import Verbs from '../../Constants/Verbs';
 import TCSwitchProfileRow from './connections/TCSwitchProfileRow';
 import AccountMenuRow from './connections/AccountMenuRow';
 import SportsListModal from './registerPlayer/modals/SportsListModal';
+
 // FIXME: fix all warning in useCallBack()
-export default function AccountScreen({navigation}) {
+export default function AccountScreen({navigation, route}) {
   const scrollRef = useRef();
   const isFocused = useIsFocused();
 
@@ -93,6 +94,9 @@ export default function AccountScreen({navigation}) {
   const [sports, setSports] = useState([]);
   const [sportsData, setSportsData] = useState([]);
   const [imageBaseUrl, setImageBaseUrl] = useState('');
+  const [selectedMenuOptionType, setSelectedMenuOptionType] = useState(
+    Verbs.menuOptionTypePlaying,
+  );
 
   useEffect(() => {
     if (isFocused) {
@@ -103,15 +107,38 @@ export default function AccountScreen({navigation}) {
   }, [isFocused]);
 
   useEffect(() => {
-    const sportArr = Utility.getSportList(authContext);
+    const sportArr = Utility.getSportList(authContext, selectedMenuOptionType);
     setSportsData([...sportArr]);
-  }, [authContext]);
+  }, [authContext, selectedMenuOptionType]);
+
+  useEffect(() => {
+    const {switchToUser} = route?.params || 'lklk';
+
+    if (switchToUser === 'fromMember') {
+      setTimeout(() => {
+        Alert.alert(
+          strings.adminremoved,
+          '',
+          [
+            {
+              text: 'OK',
+              onPress: () => {
+                navigation.setParams({switchToUser: 'lkl'});
+              },
+            },
+          ],
+          {cancelable: false},
+        );
+      }, 2000);
+    }
+  }, [route]);
 
   const [navigationOptions, setNavigationOptions] = useState({});
 
   useEffect(() => {
     setIsAccountDeactivated(false);
     setPointEvent('auto');
+
     if (isFocused) {
       if (authContext?.entity?.obj?.is_pause === true) {
         setIsAccountDeactivated(true);
@@ -289,6 +316,7 @@ export default function AccountScreen({navigation}) {
   const switchProfile = useCallback(
     (switchTo) => {
       let currentEntity = authContext.entity;
+
       delete currentEntity?.QB;
       if (
         switchTo?.entity_type === Verbs.entityTypePlayer ||
@@ -372,6 +400,7 @@ export default function AccountScreen({navigation}) {
 
   const onSwitchProfile = useCallback(({item}) => {
     const currentEntity = switchProfile(item);
+
     scrollRef.current.scrollTo({x: 0, y: 0});
     authContext.setEntity({...currentEntity});
     Utility.setStorage('authContextEntity', {...currentEntity});
@@ -434,15 +463,12 @@ export default function AccountScreen({navigation}) {
         }
       } else {
         if (option == strings.addSportsTitle) {
-          // if (sportsData.length === 0) {
-          //   Alert.alert('No more sport is available.');
-          // } else {
-          // }
-          setVisibleSportsModal(true);
           setNavigationOptions({
             screenName: rowObj.navigateTo.screenName,
             data: rowObj.navigateTo.data,
           });
+          setSelectedMenuOptionType(rowObj.menuOptionType);
+          setVisibleSportsModal(true);
         } else {
           navigation.navigate(
             rowObj.navigateTo.screenName,
@@ -578,6 +604,22 @@ export default function AccountScreen({navigation}) {
 
     setSports(list);
   }, [authContext]);
+
+  const getModalTitle = (section) => {
+    switch (section) {
+      case Verbs.menuOptionTypePlaying:
+        return strings.registerAsPlayerTitle;
+
+      case Verbs.menuOptionTypeRefereeing:
+        return strings.registerRefereeTitle;
+
+      case Verbs.menuOptionTypeScorekeeping:
+        return strings.registerScorekeeperTitle;
+
+      default:
+        return '';
+    }
+  };
 
   return (
     <SafeAreaView style={styles.mainContainer} testID="account-screen">
@@ -789,7 +831,10 @@ export default function AccountScreen({navigation}) {
                         }}>
                         <Image
                           source={placeHolder}
-                          style={{...styles.profileImg, resizeMode: 'contain'}}
+                          style={{
+                            ...styles.profileImg,
+                            resizeMode: 'contain',
+                          }}
                         />
                         <View
                           style={{
@@ -920,7 +965,10 @@ export default function AccountScreen({navigation}) {
                         }}>
                         <Image
                           source={placeHolder}
-                          style={{...styles.profileImg, resizeMode: 'contain'}}
+                          style={{
+                            ...styles.profileImg,
+                            resizeMode: 'contain',
+                          }}
                         />
                         <View
                           style={{
@@ -1121,6 +1169,7 @@ export default function AccountScreen({navigation}) {
           <Text style={styles.switchAccount}>{strings.logOut}</Text>
         </TouchableWithoutFeedback>
       </ScrollView>
+
       {/* Rules notes modal */}
 
       <Modal
@@ -1167,6 +1216,7 @@ export default function AccountScreen({navigation}) {
       <SportsListModal
         isVisible={visibleSportsModal}
         closeList={() => setVisibleSportsModal(false)}
+        title={getModalTitle(selectedMenuOptionType)}
         sportsList={sportsData}
         onNext={(sport) => {
           setVisibleSportsModal(false);

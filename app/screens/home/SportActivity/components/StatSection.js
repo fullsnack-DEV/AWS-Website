@@ -11,6 +11,9 @@ const StatSection = ({
   onSeeAll = () => {},
   sportType = '',
   totalMatches = 0,
+  totalWins = 0,
+  totalLosses = 0,
+  totalDraws = 0,
 }) => (
   <View style={styles.parent}>
     <View style={styles.row}>
@@ -29,7 +32,12 @@ const StatSection = ({
       </TouchableOpacity>
     </View>
     {sportType === Verbs.singleSport ? (
-      <StatsGraph wins={20} draws={40} losses={10} total={70} />
+      <StatsGraph
+        wins={totalWins}
+        draws={totalDraws}
+        losses={totalLosses}
+        total={totalMatches}
+      />
     ) : (
       <View style={styles.container}>
         <Text style={styles.count}>{totalMatches}</Text>

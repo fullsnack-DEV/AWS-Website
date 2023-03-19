@@ -196,48 +196,70 @@ export default function InviteMembersBySearchScreen({navigation}) {
     </View>
   );
 
-  const listHeaderComponent = () => (
-    <>
-      {players.filter((obj) => obj.isChecked).length <= 0 &&
-        searchText.length <= 0 && (
+  const listHeaderComponent = useCallback(
+    () => (
+      <View
+        style={{
+          backgroundColor: colors.whiteColor,
+        }}>
+        {players.filter((obj) => obj.isChecked).length <= 0 &&
+          searchText.length <= 0 && (
+            <View
+              style={{
+                marginTop: 25,
+              }}>
+              <Pressable
+                style={styles.inviteEmailStyle}
+                onPress={() => {
+                  navigation.navigate('InviteMembersByEmailScreen');
+                }}>
+                <Image source={images.inviteEmail} style={styles.imageIcon} />
+                <Text style={styles.textTitle}>{strings.inviteByEmail}</Text>
+              </Pressable>
+              <TCThinDivider />
+              <View style={styles.imageTextContainer}>
+                <Image source={images.copyUrl} style={styles.imageIcon} />
+
+                <ClipboardToast
+                  textToShow={strings.copyInviteUrl}
+                  textToCopy={'Hello is underdevelopment'}
+                  toastText={'Text copied to clipboard!'}
+                  containerStyle={styles.textTitle}
+                  textStyle={{
+                    fontSize: 16,
+                    fontFamily: fonts.RRegular,
+                    color: colors.lightBlackColor,
+                  }}
+                  toastDuration={2000}
+                  toastPosition={'bottom'}
+                  toastDelay={1000}
+                  toastOnShow={() => {
+                    console.log('Is Copied');
+                  }}
+                />
+              </View>
+            </View>
+          )}
+
+        {selectedList.length > 0 && (
           <View
             style={{
-              marginTop: 25,
+              marginTop: 15,
             }}>
-            <Pressable
-              style={styles.inviteEmailStyle}
-              onPress={() => {
-                navigation.navigate('InviteMembersByEmailScreen');
-              }}>
-              <Image source={images.inviteEmail} style={styles.imageIcon} />
-              <Text style={styles.textTitle}>{strings.inviteByEmail}</Text>
-            </Pressable>
-            <TCThinDivider />
-            <View style={styles.imageTextContainer}>
-              <Image source={images.copyUrl} style={styles.imageIcon} />
-
-              <ClipboardToast
-                textToShow={strings.copyInviteUrl}
-                textToCopy={'Hello is underdevelopment'}
-                toastText={'Text copied to clipboard!'}
-                containerStyle={styles.textTitle}
-                textStyle={{
-                  fontSize: 16,
-                  fontFamily: fonts.RRegular,
-                  color: colors.lightBlackColor,
-                }}
-                toastDuration={2000}
-                toastPosition={'bottom'}
-                toastDelay={1000}
-                toastOnShow={() => {
-                  console.log('Is Copied');
-                }}
-              />
-            </View>
+            <TCProfileTag
+              dataSource={players}
+              onTagCancelPress={handleTagPress}
+              style={{
+                marginLeft: 10,
+                marginRight: 0,
+              }}
+            />
           </View>
         )}
-      <TCThinDivider />
-    </>
+        <TCThinDivider />
+      </View>
+    ),
+    [players],
   );
 
   const ItemSeparatorComponent = useCallback(() => <TCThinDivider />, []);
@@ -270,22 +292,6 @@ export default function InviteMembersBySearchScreen({navigation}) {
         }}
       />
 
-      {selectedList.length > 0 && (
-        <View
-          style={{
-            marginTop: 15,
-          }}>
-          <TCProfileTag
-            dataSource={players}
-            onTagCancelPress={handleTagPress}
-            style={{
-              marginLeft: 10,
-              marginRight: 0,
-            }}
-          />
-        </View>
-      )}
-
       <FlatList
         extraData={players}
         ListHeaderComponent={listHeaderComponent}
@@ -299,6 +305,7 @@ export default function InviteMembersBySearchScreen({navigation}) {
         onScrollBeginDrag={() => {
           stopFetchMore = false;
         }}
+        stickyHeaderIndices={[0]}
         ListEmptyComponent={listEmptyComponent}
       />
     </View>

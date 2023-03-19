@@ -171,7 +171,7 @@ export default {
   canNotChangeGender:
     'en_You can’t change your gender once you have completed the sign-up process.',
   // CreateTeam Screen 1
-  star: 'en_*',
+  star: '*',
   newText: 'en_new',
   SportsTextFieldTitle: 'en_Choose a sport that the team will play.',
 
@@ -332,11 +332,12 @@ export default {
 
   // Register Referee Screen
   certificateTitle: 'en_Certificates',
-  certiTitle: 'en_CERTIFICATE',
+  certiTitle: 'en_CERTIFICATES',
   addCertiTitle: 'en_Add a Certificate',
   addCertiMainTitle:
     'en_Please add the certificates or documents showing your professional experience.',
-  descriptionRefereePlaceholder: 'en_Describe yourself as a referee',
+  descriptionRefereePlaceholder:
+    'en_Describe yourself as a referee in this sport. ',
   certificateSubTitle:
     'en_Please add the certificates or documents showing your professional experience.',
   addCertificateTitle: 'en_ + Add Image of Certificate',
@@ -436,7 +437,7 @@ export default {
   enterAboutPlaceholder: 'en_Enter Your About',
 
   inviteEmailText:
-    'en_Please enter the e-mail account of the person that you want to invite to the {0}.',
+    'en_Please enter the e-mail account of the person that you want to invite to join TownsCup.',
   inviteSearchText: 'en_Who do you want to invite to your {0}?',
   inviteEventText: 'en_Who do you want to invite to the event?',
 
@@ -538,6 +539,8 @@ export default {
 
   bioPrivacyTitle: 'en_Who can see Bio?',
   basicInfoPrivacyTitle: 'en_Who can see each category in Basic Info?',
+  basicInfoSportsPrivacyTitle:
+    'en_Who can see the following items of your basic info in this sports activity page?',
   ntrpPrivacyTitle: 'en_Who can see NTRP?',
   homePlacePrivacyTitle: 'en_Who can see Home Place?',
   teamPrivacyTitle: 'en_Who can see Teams?',
@@ -730,7 +733,8 @@ export default {
   punchualityDescScorekeeper:
     'en_Did the the scorekeeper arrive at the match place on time?',
   chooseTeamFirst: 'en_Please choose any one team for review.',
-  descriptionScorekeeperPlaceholder: 'en_Describe yourself as a scorekeeper',
+  descriptionScorekeeperPlaceholder:
+    'en_Describe yourself as a scorekeeper in this sport. ',
 
   editReviewText: 'en_EDIT REVIEW FOR A TEAM',
   leaveReviewText: 'en_LEAVE REVIEW FOR A TEAM',
@@ -1010,7 +1014,7 @@ export default {
   refereebookingnote:
     'en_By selecting the button below, I agree to the Game Rules cancellation policy and refund policy. I also agree to pay the total amount shown above.',
   scorekeeper: 'en_Scorekeeper',
-  gameRules: 'en_Match Rules',
+  gameRulesTitle: 'en_Match Rules',
   // Challenge screen
   typeOfGame: 'en_Match Type',
   matchFee: 'en_Match Fee',
@@ -1224,6 +1228,8 @@ export default {
   NAText: 'en_N/A',
   joinedClubOnText:
     'en_Joined club on {0} {1}, {2}\nLast updated by {3} {4} on {5} {6} ,{7}',
+  joinedTeamOnText:
+    'en_Joined Team on {0} {1}, {2}\nLast updated by {3} {4} on {5} {6} ,{7}',
   inviteOrConnectAccountText: 'en_Invite or Connect to an Account',
   requestForBasicInfoWereSentText:
     'en_Requests for basic info were sent to {0} members.',
@@ -1585,7 +1591,7 @@ export default {
     'en_Please edit the reservation details below before you send the alteration request.',
 
   setGamesDuration: 'en_Sets, Games & Duration',
-  gameType: 'en_Match Type',
+  gameTypeTitle: 'en_Match Type',
   gamePointsAffectText:
     'en_The game result has an effect on TC points of the challengee and you.',
 
@@ -2175,7 +2181,7 @@ export default {
   basicInfoRequestText:
     'en_{0} wants to collect your basic info. You may choose the items you want to send or edit each items before you send the information.',
 
-  requestBasicInfoTitle: 'en_Request Basic Info',
+  requestBasicInfoTitle: 'en_Request for Basic Info',
   reservations: 'en_Reservations',
 
   leavereviewinsmall: 'en_Leave Review',
@@ -2212,7 +2218,7 @@ export default {
   incomingChallengeSettingsInfo:
     'en_Please review your incoming challenge settings. These settings will be applied to (the match reservation process) and  the match (a match) ONLY when you are the match host.\nWhen you are the  Challenger, the opponent’s incoming challenge settings Will be applied.',
   congratulationModalInfo:
-    'en_You can now not only send challenges to others and invite them to challenge you, but you can also receive a challenge from them.',
+    'en_You can now not only send challenges to others, but you can also receive a challenge from them.',
   searchForPlayer: 'en_Search for more players',
   congratsModalTeamInfo:
     'en_Now join or create a team to play a match. You can join or create it now or later.',
@@ -2308,7 +2314,7 @@ export default {
     'en_When the request is accepted, the basic info in this profile will be updated with the info provided by the member. A user may choose to only provide some of the basic info items.',
   showAgainText: 'en_Don’t show this again.',
   updateMyProfile: 'en_Update this information on my profile.',
-  requestBasicInfoTitle: 'en_Request Basic Info',
+  requestBasicInfoTitle: 'en_Request for Basic Info',
   inviteMemberToGroup: 'en_Invite member to {0}',
   chatsTitle: 'en_Chats',
   statusPlaceholder: 'en_Status',
@@ -2411,4 +2417,84 @@ export default {
   invited: 'en_Invited',
   joinRequested: 'en_Join Requested',
   groupsRecruitingMembers: 'en_Groups Recruiting Members',
+  parentBadgeText: 'en_Parent',
+  leaveReplyText: 'en_Leave a reply',
+  ratingsInfo:
+    'en_You can reply to a review up to 7 days after the review period has ended. Once you have submitted your reply, you cannot change or delete your reply. ',
+  reportThisSportActivityPage: 'en_Report This Sports Activity Page',
+  blockUserAccount: 'en_Block This User Account',
+  reportThisReview: 'en_Report This Review',
+  reportThisReply: 'en_Report This Reply',
+  tcLevelPointsText: 'en_TC LEVEL & POINTS',
+  tcLevel: 'en_TC Level',
+  dmRate: 'en_DM RATE',
+  dmsText: 'en_DMs',
+  dtsText: 'en_D&Ts',
+  disputedMatches: 'en_Disputed Matches',
+  playedMatches: 'en_Played {0} matches',
+  playedInTeams: 'en_Played in {0} teams',
+
+  // Events
+  makeAvailable: 'en_Make Available',
+  noReviewsText: 'en_No Reviews',
+  editReviewSentenceCase: 'en_Edit Review',
+  deleteReviewSentenceCase: 'en_Delete Review',
+  pastMonthsText: 'en_Past {0} months',
+  collectBasicInfo: 'en_Do you want to collect basic info for this user?',
+  collectBasicInfoSubTxt:
+    'en_You can send a request to collect the member’s basic info such as gender, birthday, age, height, weight, phone number, email address and address. ',
+  basicRequestText:
+    'en_When the request is accepted, the basic info in this profile will be updated with the info provided by the member. A user may choose to only provide some of the basic info items.',
+  editAdminPrivillege: 'en_Edit Admin Privilege',
+
+  adminremoved:
+    'en_You were removed from Vancouver Whitecaps FC, and your account has been switched to your personal account.',
+  onlyAdmin:
+    'en_{0} is the only admin of  {1}.  Please add a new admin before remove {0}.',
+
+  lastmember:
+    'en_This member is the last member of the {0}. When you remove this member from the {0}, the  {0} will still be active, but no one except for previous members will be able to join the  {0}. Are you sure you want to remove this member from {0}?',
+  childMemberError:
+    'en_Please remove the member from all the teams in your club first before removing the member from the club.',
+  whocanseeMember: 'en_Who can see members ?',
+  teamMember: 'en_Team Members',
+  clubMember: 'en_Club Members',
+  whoCanSeefollwer: 'en_Who can see followers ?',
+  onlyTeamAndclub: 'en_Only Team and Club',
+  onlyClub: 'en_Only_Club',
+  onlyTeam: 'en_Only_Team',
+
+  sportRefereeQuestion: 'en_What sport do you want to referee?',
+  sportRefereeQuestionDescription:
+    'en_Do you want to referee multiple sports? Register as a referee in one sport first, and then register in another sport.',
+  certificationDescription:
+    'en_You can upload any certificates or documents that prove or are related to the experience as a referee.',
+  warningCertificateImageText: 'en_Please add the image of the certificate.',
+  warningCertificateTitleText: 'en_Please add the title of the certificate.',
+  incomingReservationSettings: 'en_Incoming Reservation Settings',
+  incomingReservationSettingsDescription:
+    'en_Please review your incoming reservation settings. These settings are only applicable to the referee reservation when you are booked as a referee. When you book another referee for a match, their incoming reservation settings Will be applied.',
+  servicableAreas: 'en_Serviceable Areas',
+  areasText: 'en_areas',
+  refereeFeeTitle: 'en_Set the referee fee that you want to charge.',
+  addRefereeFee: 'en_ADD REFEREE FEE',
+  continueWithNoRefereeFee: 'en_CONTINUE WITH NO REFEREE FEE',
+  refereeCongratulationsModal:
+    'en_You can now receive referee booking requests from teams and players, and also can sent offers to teams and players.',
+  scoreKeeperQuestion: 'en_What sport do you work as a scorekeeper?',
+  scoreKeeperQuestionDescription:
+    'en_Do you work as a scorekeeper in multiple sports? Register as a referee in one sport first, and then register in another sport.',
+  scorekeeperCertificationDescription:
+    'en_You can upload any certificates or documents that prove or are related to the experience as a scorekeeper.',
+  addScorekeeperFee: 'en_ADD SCOREKEEPER FEE',
+  continueWithNoScorekeeperFee: 'en_CONTINUE WITH NO SCOREKEEPER FEE',
+  refereeCongratsModalTitle:
+    'Congratulations! \nYou are now registered as a referee in',
+  scoreKeeperCongratsModalTitle:
+    'Congratulations! \nYou are now registered as a scorekeeper in',
+  scoreKeeperCongratulationsModal:
+    'en_You can now receive scorekeeper booking requests from teams and players, and also can sent offers to teams and players.',
+  matchesNearYou: 'en_MATCHES NEAR YOU',
+  matchHostText: 'en_Match Host',
+  sendOfferText: 'en_Send Offer',
 };

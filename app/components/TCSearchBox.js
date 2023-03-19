@@ -1,5 +1,11 @@
 import React from 'react';
-import {StyleSheet, View, TextInput} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  TextInput,
+  TouchableOpacity,
+  Image,
+} from 'react-native';
 
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 
@@ -7,6 +13,7 @@ import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import {strings} from '../../Localization/translation';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
+import images from '../Constants/ImagePath';
 
 export default function TCSearchBox({
   testID,
@@ -16,6 +23,7 @@ export default function TCSearchBox({
   placeholderText = strings.searchHereText,
   editable = true,
   textInputRef,
+  onPressClear,
   ...props
 }) {
   return (
@@ -36,6 +44,11 @@ export default function TCSearchBox({
         placeholderTextColor={colors.userPostTimeColor}
         onChangeText={onChangeText}
       />
+      {value?.length > 0 && (
+        <TouchableOpacity onPress={onPressClear} style={styles.clearContainer}>
+          <Image source={images.closeRound} style={styles.clearImg} />
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
@@ -58,6 +71,17 @@ const styles = StyleSheet.create({
   //     resizeMode: 'contain',
   //     width: 15,
   //   },
+  clearImg: {
+    height: 15,
+    width: 15,
+    resizeMode: 'contain',
+    marginRight: 12,
+    alignSelf: 'center',
+  },
+  clearContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   textInput: {
     color: colors.blackColor,
     flex: 1,

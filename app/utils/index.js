@@ -2037,6 +2037,68 @@ export const getCalendar = async (
   }
 };
 
+export const getEventsSlots = async (
+  participantId,
+  fromDate,
+  type,
+  rangeTime,
+) => {
+  try {
+    return getStorage('scheduleSetting').then(async (ids) => {
+      const IDs = ids ?? [];
+      const participants = [];
+      participants.push(participantId);
+      const body = {
+        size: 100,
+        query: {
+          bool: {
+            must: [
+              {
+                bool: {
+                  should: [
+                    {
+                      terms: {
+                        'participants.entity_id.keyword': [
+                          ...participants,
+                          ...IDs,
+                        ],
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+        },
+      };
+
+      if (type === 'future') {
+        body.query.bool.must.push({
+          range: {actual_enddatetime: {gt: fromDate}},
+        });
+        if (rangeTime > 0) {
+          body.query.bool.must.push({
+            range: {actual_enddatetime: {lt: rangeTime}},
+          });
+        }
+      } else {
+        body.query.bool.must.push({
+          range: {start_datetime: {lt: fromDate}},
+        });
+        if (rangeTime > 0) {
+          body.query.bool.must.push({
+            range: {start_datetime: {gt: rangeTime}},
+          });
+        }
+      }
+      console.log('calender elastic search :=>', JSON.stringify(body));
+      return getCalendarIndex(body);
+    });
+  } catch (error) {
+    return [];
+  }
+};
+
 export const uniqueArray = (array, propertyName) =>
   array.filter(
     (e, i) => array.findIndex((a) => a[propertyName] === e[propertyName]) === i,
@@ -2111,23 +2173,24 @@ export const getSportIconUrl = async (sport, entityType, authContext) => {
 };
 
 export const getSportImage = (sportName, type, authContext) => {
+  console.log('TYPET', type);
   if (type === 'player') {
     const tempObj = authContext.sports.filter(
       (obj) => obj.sport === sportName,
     )[0];
-    return tempObj?.player_image;
+    return tempObj;
   } else {
     if (type === 'referee') {
       const tempObj = authContext.sports.filter(
         (obj) => obj.sport === sportName,
       )[0];
-      return tempObj?.referee_image;
+      return tempObj;
     }
     if (type === 'scorekeeper') {
       const tempObj = authContext.sports.filter(
         (obj) => obj.sport === sportName,
       )[0];
-      return tempObj?.scorekeeper_image;
+      return tempObj;
     } // let sportArr = [];
     // authContext.sports.map((item) => {
     //   sportArr = [...sportArr, ...item.format];
@@ -2150,12 +2213,12 @@ export const getGamesList = async (eventsList) => {
   let groupIDs = [];
 
   eventsList.map((game) => {
-    if (game.user_challenge) {
+    if (game.user_challenge && !game.cal_id) {
       userIDs.push(game.home_team);
       userIDs.push(game.away_team);
-    } else if (game.owner_id && game.owner_type === 'users') {
+    } else if (game.cal_id && game.owner_id && game.owner_type === 'users') {
       userIDs.push(game.owner_id);
-    } else if (game.owner_id && game.owner_type === 'groups') {
+    } else if (game.cal_id && game.owner_id && game.owner_type === 'groups') {
       groupIDs.push(game.owner_id);
     } else {
       groupIDs.push(game.home_team);
@@ -2360,7 +2423,7 @@ export const countNumberOfWeekFromDay = (date) => {
   const endDate = date;
   const givenDay = date.getDay();
   let numberOfDates = 0;
-  while (startDate < endDate) {
+  while (startDate <= endDate) {
     if (startDate.getDay() === givenDay) {
       numberOfDates += 1;
     }
@@ -2374,7 +2437,7 @@ export const countNumberOfWeeks = (date) => {
   const endDate = date;
   const givenDay = date.getDay();
   let numberOfDates = 0;
-  while (startDate < endDate) {
+  while (startDate <= endDate) {
     if (startDate.getDay() === givenDay) {
       numberOfDates += 1;
     }
@@ -2457,17 +2520,34 @@ export const setAuthContextData = async (data, authContext) => {
   await setStorage('authContextEntity', {...entity});
 };
 
-export const getSportList = (authContext) => {
+export const getSportList = (
+  authContext,
+  role = Verbs.menuOptionTypePlaying,
+) => {
   let sportArr = [];
-  authContext.sports.map((item) =>
-    item.format.map((innerObj) => {
-      sportArr = [...sportArr, ...[{...item, ...innerObj}]];
-      return null;
-    }),
-  );
+  if (role === Verbs.menuOptionTypePlaying) {
+    authContext.sports.map((item) =>
+      item.format.map((innerObj) => {
+        sportArr = [...sportArr, ...[{...item, ...innerObj}]];
+        return null;
+      }),
+    );
+  } else {
+    sportArr = [...authContext.sports];
+  }
+
   const newData = [];
+  let alreadyAddedSportsList = [];
+
+  if (role === Verbs.menuOptionTypePlaying) {
+    alreadyAddedSportsList = authContext.entity.obj.registered_sports ?? [];
+  } else if (role === Verbs.menuOptionTypeRefereeing) {
+    alreadyAddedSportsList = authContext.entity.obj.referee_data ?? [];
+  } else if (role === Verbs.menuOptionTypeScorekeeping) {
+    alreadyAddedSportsList = authContext.entity.obj.scorekeeper_data ?? [];
+  }
   sportArr.forEach((item) => {
-    const obj = (authContext.entity.obj.registered_sports ?? []).find(
+    const obj = alreadyAddedSportsList.find(
       (ele) => ele.sport === item.sport && ele.sport_type === item.sport_type,
     );
     if (!obj) {
@@ -2476,4 +2556,66 @@ export const getSportList = (authContext) => {
   });
 
   return [...newData];
+};
+
+export const calculateReviewPeriod = (item = {}, reviews = []) => {
+  let isOpponentReview = true;
+  let isRefereeReview = true;
+  let isScorekeeperReview = true;
+  const obj = {
+    isReviewPeriodEnd: false,
+    isReplyToReviewPeridEnd: false,
+  };
+  reviews.forEach((ele) => {
+    const reviewObj = JSON.parse(ele.object)?.playerReview;
+    isOpponentReview = reviewObj.member === Verbs.entityTypeOpponent;
+    isRefereeReview = reviewObj.member === Verbs.entityTypeReferee;
+    isScorekeeperReview = reviewObj.member === Verbs.entityTypeScorekeeper;
+  });
+
+  const isAllReviewCompleted =
+    isOpponentReview && isRefereeReview && isScorekeeperReview;
+
+  const matchEndTime = moment(
+    getJSDate(item.game.data?.end_time).getTime(),
+  ).format('l');
+  const today = moment().format('l');
+  const diff = moment(today).diff(matchEndTime, 'days');
+
+  obj.isReviewPeriodEnd = diff > 5 || isAllReviewCompleted;
+  obj.isReviewPeriodEnd = diff > 0 && diff <= 7;
+
+  return obj;
+};
+
+export const getRatingsOptions = (
+  authContext,
+  sport,
+  entityType = Verbs.entityTypePlayer,
+) => {
+  const obj = authContext.sports.find((item) => item.sport === sport);
+
+  if (obj) {
+    let properties = [];
+    if (entityType === Verbs.entityTypePlayer) {
+      properties = obj.player_review_properties ?? [];
+    }
+    if (entityType === Verbs.entityTypeScorekeeper) {
+      properties = obj.scorekeeper_review_properties ?? [];
+    }
+    if (entityType === Verbs.entityTypeReferee) {
+      properties = obj.referee_review_properties ?? [];
+    }
+
+    const list = properties.map((item) => {
+      const option = {
+        name: item.name,
+        title: item.title,
+      };
+      return option;
+    });
+
+    return list ?? [];
+  }
+  return [];
 };

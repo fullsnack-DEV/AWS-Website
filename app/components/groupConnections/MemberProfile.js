@@ -23,10 +23,7 @@ export default function MemberProfile({isChecked, onPress, playerDetail}) {
           disabled={!playerDetail.connected}>
           <LinearGradient
             colors={[colors.whiteColor, colors.whiteColor]}
-            style={[
-              styles.topViewContainer,
-              {opacity: playerDetail.connected ? 1 : 0.5},
-            ]}>
+            style={styles.topViewContainer}>
             <View style={{flexDirection: 'row'}}>
               <View style={styles.profileView}>
                 <Image
@@ -39,12 +36,14 @@ export default function MemberProfile({isChecked, onPress, playerDetail}) {
                 />
               </View>
               <View style={styles.topTextContainer}>
-                <Text style={styles.whiteNameText} numberOfLines={1}>
-                  {playerDetail.first_name} {playerDetail.last_name}
-                </Text>
-                <Text style={styles.whiteLocationText} numberOfLines={1}>
-                  {playerDetail.city}
-                </Text>
+                <View>
+                  <Text style={styles.whiteNameText} numberOfLines={1}>
+                    {playerDetail.first_name} {playerDetail.last_name}
+                  </Text>
+                  <Text style={styles.whiteLocationText} numberOfLines={1}>
+                    {playerDetail.home_city || playerDetail?.user_city}
+                  </Text>
+                </View>
               </View>
             </View>
             <Pressable
@@ -70,9 +69,12 @@ export default function MemberProfile({isChecked, onPress, playerDetail}) {
           onPress={onPress}
           disabled={!playerDetail.connected}>
           <View
+            // pointerEvents={playerDetail?.connected ? 'auto' : 'none'}
             style={[
               styles.topViewContainer,
-              {opacity: playerDetail.connected ? 1 : 0.5},
+              {
+                opacity: playerDetail.connected ? 1 : 0.5,
+              },
             ]}>
             <View style={{flexDirection: 'row'}}>
               <View style={styles.profileView}>
@@ -85,16 +87,32 @@ export default function MemberProfile({isChecked, onPress, playerDetail}) {
                   style={styles.profileImage}
                 />
               </View>
+
               <View style={styles.topTextContainer}>
-                <Text style={styles.mediumNameText} numberOfLines={1}>
-                  {playerDetail.first_name} {playerDetail.last_name}
-                </Text>
-                <Text style={styles.locationText} numberOfLines={1}>
-                  {playerDetail.city}
-                </Text>
+                <View>
+                  <Text style={styles.mediumNameText} numberOfLines={1}>
+                    {playerDetail.first_name} {playerDetail.last_name}
+                  </Text>
+                  <Text style={styles.whiteLocationText} numberOfLines={1}>
+                    {playerDetail.city || playerDetail?.user_city}
+                  </Text>
+                </View>
+                {!playerDetail?.connected && (
+                  <View
+                    style={{
+                      marginLeft: 10,
+                    }}>
+                    <Image
+                      source={images.unlinked}
+                      style={styles.unlinedImage}
+                    />
+                  </View>
+                )}
               </View>
             </View>
+
             <Pressable
+              pointerEvents={playerDetail?.connected ? 'auto' : 'none'}
               onPress={onPress}
               style={{
                 height: 22,
@@ -115,22 +133,22 @@ export default function MemberProfile({isChecked, onPress, playerDetail}) {
 const styles = StyleSheet.create({
   profileImage: {
     alignSelf: 'center',
-    height: 36,
+    height: 40,
     resizeMode: 'cover',
-    width: 36,
-    borderRadius: 18,
+    width: 40,
+    borderRadius: 50,
   },
 
   topViewContainer: {
     flexDirection: 'row',
-    height: 60,
+
     width: '90%',
     alignSelf: 'center',
     justifyContent: 'space-between',
     paddingRight: 10,
     paddingLeft: 10,
-    marginBottom: 10,
-
+    marginBottom: 16,
+    marginTop: 15,
     borderRadius: 10,
   },
   profileView: {
@@ -145,27 +163,26 @@ const styles = StyleSheet.create({
   topTextContainer: {
     marginLeft: 10,
     alignSelf: 'center',
+
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 
   mediumNameText: {
-    fontSize: 16,
     color: colors.lightBlackColor,
-    fontFamily: fonts.RBold,
-  },
-  whiteNameText: {
-    color: colors.lightBlackColor,
-    fontFamily: fonts.Roboto,
-    fontWeight: '500',
+    fontFamily: fonts.RMedium,
+
     fontSize: 16,
     lineHeight: 24,
   },
-  locationText: {
+  whiteNameText: {
     color: colors.lightBlackColor,
-    fontFamily: fonts.Roboto,
+    fontFamily: fonts.RMedium,
 
-    fontSize: 14,
-    lineHeight: 21,
+    fontSize: 16,
+    lineHeight: 24,
   },
+
   whiteLocationText: {
     fontSize: 14,
     color: colors.lightBlackColor,
@@ -182,5 +199,10 @@ const styles = StyleSheet.create({
     width: 22,
     resizeMode: 'contain',
     alignSelf: 'center',
+  },
+  unlinedImage: {
+    height: 15,
+    width: 15,
+    resizeMode: 'contain',
   },
 });

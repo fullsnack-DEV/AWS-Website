@@ -45,7 +45,13 @@ function TCTouchableLabel({
           <TextInput
             placeholder={placeholder}
             placeholderTextColor={placeholderTextColor}
-            style={[styles.textInput, textStyle]}
+            style={[
+              styles.textInput,
+              textStyle,
+              {
+                opacity: title === '' ? 0.5 : 1,
+              },
+            ]}
             value={title}
             editable={false}
             pointerEvents="none"

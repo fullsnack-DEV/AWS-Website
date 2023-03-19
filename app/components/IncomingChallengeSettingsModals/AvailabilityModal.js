@@ -25,45 +25,79 @@ const AvailabilityModal = ({
   availability = Verbs.on,
   onChange = () => {},
   sportName,
-}) => (
-  <View style={{flex: 1, justifyContent: 'space-between'}}>
-    <View>
-      <Text style={styles.title}>{strings.availabilityModalTitle}</Text>
-      {RadioButtonList.map((item) => (
-        <View
-          style={[styles.row, {paddingHorizontal: 10, marginBottom: 13}]}
-          key={item.id}>
-          <Text style={styles.label}>{item.label}</Text>
+  entityType = Verbs.entityTypePlayer,
+}) => {
+  const getTitle = () => {
+    switch (entityType) {
+      case Verbs.entityTypePlayer:
+        return strings.availabilityModalTitle;
 
-          <TouchableOpacity
-            style={styles.radioContainer}
-            onPress={() => onChange(item.value)}>
-            {availability === item.value ? (
-              <Image source={images.radioCheckYellow} style={styles.image} />
-            ) : (
-              <Image source={images.radioUnselect} style={styles.image} />
-            )}
-          </TouchableOpacity>
+      case Verbs.entityTypeReferee:
+        return strings.availibilityRefereeTitle;
+
+      case Verbs.entityTypeScorekeeper:
+        return strings.availibilityScorekeeperTitle;
+
+      default:
+        return '';
+    }
+  };
+  return (
+    <View style={{flex: 1, justifyContent: 'space-between'}}>
+      <View>
+        <Text style={styles.title}>{getTitle()}</Text>
+        {RadioButtonList.map((item, index) => (
+          <View
+            style={[
+              styles.row,
+              {
+                paddingHorizontal: 10,
+                marginBottom: index === RadioButtonList.length - 1 ? 0 : 13,
+              },
+            ]}
+            key={item.id}>
+            <Text style={styles.label}>{item.label}</Text>
+
+            <TouchableOpacity
+              style={styles.radioContainer}
+              onPress={() => {
+                let obj = {};
+                if (entityType === Verbs.entityTypeReferee) {
+                  obj = {referee_availibility: item.value};
+                } else if (entityType === Verbs.entityTypeScorekeeper) {
+                  obj = {scorekeeper_availibility: item.value};
+                } else {
+                  obj = {availability: item.value};
+                }
+                onChange(obj);
+              }}>
+              {availability === item.value ? (
+                <Image source={images.radioCheckYellow} style={styles.image} />
+              ) : (
+                <Image source={images.radioUnselect} style={styles.image} />
+              )}
+            </TouchableOpacity>
+          </View>
+        ))}
+
+        <View style={styles.greyContainer}>
+          <Text style={[styles.greyText, {fontFamily: fonts.RBold}]}>
+            {availability === Verbs.on ? strings.yes : strings.no}
+          </Text>
+          <Text style={styles.greyText}>
+            {`${
+              availability === Verbs.on
+                ? strings.availabilityInfoForYes
+                : strings.availabilityInfoForNo
+            }${sportName}`}
+          </Text>
         </View>
-      ))}
-
-      <View style={styles.greyContainer}>
-        <Text style={[styles.greyText, {fontFamily: fonts.RBold}]}>
-          {availability === Verbs.on ? strings.yes : strings.no}
-        </Text>
-        <Text style={styles.greyText}>
-          {`${
-            availability === Verbs.on
-              ? strings.availabilityInfoForYes
-              : strings.availabilityInfoForNo
-          }${sportName}`}
-        </Text>
+      </View>
+      <View style={styles.bottomContainer}>
+        <Text style={styles.smallText}>{strings.changeAvailabilityText}</Text>
       </View>
     </View>
-    <View style={styles.bottomContainer}>
-      <Text style={styles.smallText}>{strings.changeAvailabilityText}</Text>
-    </View>
-  </View>
-);
+  );
+};
 
 export default AvailabilityModal;

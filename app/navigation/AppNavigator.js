@@ -88,7 +88,6 @@ const getTabBarVisibility = (route) => {
     routeName === 'RegisterPlayerForm2' ||
     routeName === 'IncomingChallengeSettings' ||
     routeName === 'RegisterReferee' ||
-    routeName === 'RegisterRefereeForm2' ||
     routeName === 'CreateTeamForm1' ||
     routeName === 'CreateTeamForm2' ||
     routeName === 'CreateTeamForm3' ||
@@ -584,7 +583,7 @@ const AppNavigator = ({navigation}) => {
         options={({route}) => ({
           tabBarTestID: 'newsfeed-tab',
           headerShown: false,
-
+          unmountOnBlur: true,
           // tabBarVisible: getTabBarVisibility(route),
           tabBarStyle: {display: getTabBarVisibility(routes) ? 'flex' : 'none'},
           tabBarIcon: ({focused}) => {
@@ -661,11 +660,15 @@ const AppNavigator = ({navigation}) => {
         name="Account"
         navigation={navigation}
         component={AccountNavigator}
+        initialParams={{
+          switchToUser: false,
+        }}
         options={({route}) => ({
           ...(unreadNotificationCount > 0 && {
             tabBarBadge:
               unreadNotificationCount > 300 ? '300+' : unreadNotificationCount,
           }),
+          unmountOnBlur: true,
           tabBarBadgeStyle: {zIndex: 10, fontSize: 12},
           // tabBarVisible: getTabBarVisibility(route),
           tabBarStyle: {display: getTabBarVisibility(routes) ? 'flex' : 'none'},
