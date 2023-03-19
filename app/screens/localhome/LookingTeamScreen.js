@@ -20,6 +20,8 @@ import {
 } from 'react-native';
 import Modal from 'react-native-modal';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import LinearGradient from 'react-native-linear-gradient';
+import {format} from 'react-string-format';
 import AuthContext from '../../auth/context';
 import LocationContext from '../../context/LocationContext';
 import * as Utility from '../../utils';
@@ -31,11 +33,14 @@ import TCThinDivider from '../../components/TCThinDivider';
 import {strings} from '../../../Localization/translation';
 import {getUserIndex} from '../../api/elasticSearch';
 import TCTagsFilter from '../../components/TCTagsFilter';
-import TCLookingForEntityView from '../../components/TCLookingForEntityView';
+// import TCLookingForEntityView from '../../components/TCLookingForEntityView';
 import {getGeocoordinatesWithPlaceName} from '../../utils/location';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import {locationType} from '../../utils/constant';
 import LocationModal from '../../components/LocationModal/LocationModal';
+import TCPlayerView from '../../components/TCPlayerView';
+import {inviteUser} from '../../api/Users';
+import Verbs from '../../Constants/Verbs';
 
 let stopFetchMore = true;
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
@@ -49,15 +54,15 @@ export default function LookingTeamScreen({navigation, route}) {
   const [settingPopup, setSettingPopup] = useState(false);
   const [visibleLocationModal, setVisibleLocationModal] = useState(false);
   /* eslint-disable */
-  const [locationFilterOpetion, setLocationFilterOpetion] = useState(
-    locationContext?.selectedLocation.toUpperCase() ===
-      /* eslint-disable */
-      authContext.entity.obj?.city?.toUpperCase()
-      ? 1
-      : locationContext?.selectedLocation === strings.worldTitleText
-      ? 0
-      : 2,
-  );
+  // const [locationFilterOpetion, setLocationFilterOpetion] = useState(
+  //   locationContext?.selectedLocation.toUpperCase() ===
+  //     /* eslint-disable */
+  //     authContext.entity.obj?.city?.toUpperCase()
+  //     ? 1
+  //     : locationContext?.selectedLocation === strings.worldTitleText
+  //     ? 0
+  //     : 2,
+  // );
 
   const [sports, setSports] = useState([]);
 
@@ -73,9 +78,26 @@ export default function LookingTeamScreen({navigation, route}) {
   const [location, setLocation] = useState(
     route?.params?.filters?.location ?? route.params?.locationText,
   );
-
   const [lastSelection, setLastSelection] = useState(0);
 
+  // new changes
+  const [locationFilterOpetion, setLocationFilterOpetion] = useState(
+    route.params.locationOption,
+  );
+  const [isSearchPlaceholder, setIsSearchPlaceholder] = useState(
+    locationFilterOpetion === 3 ? false : true,
+  );
+  const [selectedLocation, setSelectedLocation] = useState(
+    route.params?.filters?.location,
+  );
+  const [challengePopup, setChallengePopup] = useState(false);
+  const [currentUserData, setCurrentUserData] = useState({});
+  const [settingObject, setSettingObject] = useState();
+  const [selectedChallengeOption, setSelectedChallengeOption] = useState();
+  const [mySettingObject] = useState(authContext.entity.obj.setting);
+  const [myGroupDetail] = useState(
+    authContext.entity.role === Verbs.entityTypeTeam && authContext.entity.obj,
+  );
   useEffect(() => {
     if (settingPopup) {
       setLastSelection(locationFilterOpetion);
@@ -194,7 +216,7 @@ export default function LookingTeamScreen({navigation, route}) {
   const renderLookingEntityListView = useCallback(
     ({item}) => (
       <View style={[styles.separator, {flex: 1}]}>
-        <TCLookingForEntityView
+        {/* <TCLookingForEntityView
           data={item}
           showStar={false}
           sport={selectedSport?.sport}
@@ -209,6 +231,34 @@ export default function LookingTeamScreen({navigation, route}) {
               backButtonVisible: true,
               menuBtnVisible: false,
             });
+          }}
+        /> */}
+        <TCPlayerView
+          data={item}
+          authContext={authContext}
+          showStar={filters.sport !== strings.all && true}
+          showSport={true}
+          subTab={strings.playerTitle}
+          sportFilter={filters}
+          onPress={() => {
+            navigation.navigate('HomeScreen', {
+              uid: ['user', 'player']?.includes(item?.entity_type)
+                ? item?.user_id
+                : item?.group_id,
+              role: ['user', 'player']?.includes(item?.entity_type)
+                ? 'user'
+                : item.entity_type,
+              backButtonVisible: true,
+              menuBtnVisible: false,
+            });
+          }}
+          onPressChallengButton={(dataObj, sportsObj) => {
+            setChallengePopup(true);
+            setSettingObject(sportsObj.setting);
+            setCurrentUserData(dataObj);
+          }}
+          onPressInviteButton={(dataObj) => {
+            groupInviteUser(dataObj);
           }}
         />
       </View>
@@ -245,6 +295,8 @@ export default function LookingTeamScreen({navigation, route}) {
         }
         if (Object.keys(item)[0] === 'location') {
           tempFilter.location = strings.worldTitleText;
+          setIsSearchPlaceholder(true);
+          setLocationFilterOpetion(0);
         }
 
         // delete tempFilter[key];
@@ -388,12 +440,38 @@ export default function LookingTeamScreen({navigation, route}) {
 
   const handleSetLocationOptions = (location) => {
     if (location.hasOwnProperty('address')) {
-      setLocation(location?.formattedAddress);
+      // setLocation(location?.formattedAddress);
+      setSelectedLocation(location?.formattedAddress);
     } else {
-      setLocation(location?.city);
+      // setLocation(location?.city);
+      setSelectedLocation(location?.city);
     }
   };
+  const groupInviteUser = async (dataObj) => {
+    setloading(true);
+    const params = {
+      entity_type: authContext.entity.role,
+      uid: authContext.entity.uid,
+    };
+    inviteUser(params, dataObj.user_id, authContext)
+      .then(() => {
+        setloading(false);
 
+        setTimeout(() => {
+          Alert.alert(
+            strings.alertmessagetitle,
+            format(strings.entityInvitedSuccessfully, `${dataObj.full_name}`),
+          );
+        }, 10);
+      })
+      .catch((error) => {
+        setloading(false);
+
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, error.message);
+        }, 10);
+      });
+  };
   return (
     <SafeAreaView style={{flex: 1}}>
       <ActivityLoader visible={loading} />
@@ -479,10 +557,10 @@ export default function LookingTeamScreen({navigation, route}) {
                 <Text style={styles.locationText}>{strings.filter}</Text>
                 <Text
                   style={styles.doneText}
-                  onPress={async () => {
+                  onPress={() => {
                     const tempFilter = {...filters};
                     tempFilter.sport = selectedSport.sport;
-
+                    tempFilter.sport_type = selectedSport?.sport_type;
                     // setTimeout(() => {
                     if (locationFilterOpetion === 0) {
                       setLocation(strings.worldTitleText);
@@ -496,11 +574,16 @@ export default function LookingTeamScreen({navigation, route}) {
                     } else if (locationFilterOpetion === 2) {
                       getLocation();
                       tempFilter.location = location;
+                    } else if (locationFilterOpetion === 3) {
+                      setLocation(selectedLocation);
                     }
 
-                    await setFilters({
-                      ...tempFilter,
-                    });
+                    // await setFilters({
+                    //   ...tempFilter,
+                    // });
+                    filters.sport = tempFilter.sport;
+                    filters.sport_type = tempFilter.sport_type;
+                    filters.location = tempFilter.location;
                     setPageFrom(0);
                     setLookingEntity([]);
                     applyFilter(tempFilter);
@@ -909,6 +992,252 @@ export default function LookingTeamScreen({navigation, route}) {
           mode={'datetime'}
         /> */}
       </Modal>
+      <Modal
+        onBackdropPress={() => setChallengePopup(false)}
+        backdropOpacity={1}
+        animationType="slide"
+        hasBackdrop
+        style={{
+          margin: 0,
+          backgroundColor: colors.blackOpacityColor,
+        }}
+        visible={challengePopup}>
+        <View style={styles.bottomPopupContainer}>
+          <View style={styles.viewsContainer}>
+            <Text
+              onPress={() => setChallengePopup(false)}
+              style={styles.cancelText}>
+              {strings.cancel}
+            </Text>
+            <Text style={styles.challengeText}>{strings.challenge}</Text>
+            <Text style={styles.challengeText}> </Text>
+          </View>
+          <TCThinDivider width={'100%'} />
+          <TouchableWithoutFeedback
+            onPress={() => {
+              setSelectedChallengeOption(0);
+              const obj = settingObject;
+              if (obj?.availibility === Verbs.on) {
+                if (
+                  currentUserData.sport_type === Verbs.doubleSport &&
+                  (!('player_deactivated' in currentUserData) ||
+                    !currentUserData?.player_deactivated) &&
+                  (!('player_leaved' in currentUserData) ||
+                    !currentUserData?.player_leaved) &&
+                  (!('player_leaved' in myGroupDetail) ||
+                    !myGroupDetail?.player_leaved)
+                ) {
+                  if (
+                    (obj?.game_duration || obj?.score_rules) &&
+                    obj?.availibility &&
+                    obj?.special_rules !== undefined &&
+                    obj?.general_rules !== undefined &&
+                    obj?.responsible_for_referee &&
+                    obj?.responsible_for_scorekeeper &&
+                    obj?.game_fee &&
+                    obj?.venue &&
+                    obj?.refund_policy &&
+                    obj?.home_away &&
+                    obj?.game_type
+                  ) {
+                    setChallengePopup(false);
+
+                    navigation.navigate('ChallengeScreen', {
+                      setting: obj,
+                      sportName: currentUserData?.sport,
+                      sportType: currentUserData?.sport_type,
+                      groupObj: currentUserData,
+                    });
+                  } else {
+                    Alert.alert(strings.teamHaveNoCompletedSetting);
+                  }
+                } else {
+                  console.log('in else continue :', currentUserData);
+                  if (currentUserData.sport_type === Verbs.doubleSport) {
+                    if (
+                      'player_deactivated' in currentUserData &&
+                      currentUserData?.player_deactivated
+                    ) {
+                      Alert.alert(strings.playerDeactivatedSport);
+                    } else if (
+                      'player_leaved' in currentUserData &&
+                      currentUserData?.player_leaved
+                    ) {
+                      Alert.alert(
+                        format(
+                          strings.groupHaveNo2Player,
+                          currentUserData?.group_name,
+                        ),
+                      );
+                    } else if (
+                      'player_leaved' in myGroupDetail &&
+                      myGroupDetail?.player_leaved
+                    ) {
+                      Alert.alert(strings.youHaveNo2Player);
+                    }
+                  } else {
+                    setChallengePopup(false);
+
+                    navigation.navigate('ChallengeScreen', {
+                      setting: obj,
+                      sportName: obj?.sport,
+                      sportType: obj?.sport_type,
+                      groupObj: currentUserData,
+                    });
+                  }
+                }
+              } else {
+                Alert.alert(strings.oppTeamNotForChallenge);
+              }
+            }}>
+            {selectedChallengeOption === 0 ? (
+              <LinearGradient
+                colors={[colors.yellowColor, colors.orangeGradientColor]}
+                style={styles.backgroundView}>
+                <Text
+                  style={[
+                    styles.curruentLocationText,
+                    {color: colors.whiteColor},
+                  ]}>
+                  {strings.continueToChallenge}
+                </Text>
+              </LinearGradient>
+            ) : (
+              <View style={styles.backgroundView}>
+                <Text style={styles.curruentLocationText}>
+                  {strings.continueToChallenge}
+                </Text>
+              </View>
+            )}
+          </TouchableWithoutFeedback>
+          <TouchableWithoutFeedback
+            onPress={() => {
+              setSelectedChallengeOption(1);
+
+              const obj = mySettingObject;
+              if (obj?.availibility === Verbs.on) {
+                if (
+                  myGroupDetail.sport_type === Verbs.doubleSport &&
+                  (!('player_deactivated' in myGroupDetail) ||
+                    !myGroupDetail?.player_deactivated) &&
+                  (!('player_leaved' in currentUserData) ||
+                    !currentUserData?.player_leaved) &&
+                  (!('player_leaved' in myGroupDetail) ||
+                    !myGroupDetail?.player_leaved)
+                ) {
+                  if (
+                    (obj?.game_duration || obj?.score_rules) &&
+                    obj?.availibility &&
+                    obj?.special_rules !== undefined &&
+                    obj?.general_rules !== undefined &&
+                    obj?.responsible_for_referee &&
+                    obj?.responsible_for_scorekeeper &&
+                    obj?.game_fee &&
+                    obj?.venue &&
+                    obj?.refund_policy &&
+                    obj?.home_away &&
+                    obj?.game_type
+                  ) {
+                    setChallengePopup(false);
+                    if (myGroupDetail.is_pause === true) {
+                      Alert.alert(
+                        format(strings.groupPaused, myGroupDetail.group_name),
+                      );
+                    } else {
+                      navigation.navigate('InviteChallengeScreen', {
+                        setting: obj,
+                        sportName: currentUserData?.sport,
+                        sportType: currentUserData?.sport_type,
+                        groupObj: currentUserData,
+                      });
+                    }
+                  } else {
+                    setTimeout(() => {
+                      Alert.alert(
+                        strings.completeSettingBeforeInvite,
+                        '',
+                        [
+                          {
+                            text: strings.cancel,
+                            onPress: () => console.log('Cancel Pressed!'),
+                          },
+                          {
+                            text: strings.okTitleText,
+                            onPress: () => {
+                              if (currentUserData?.is_pause === true) {
+                                Alert.alert(strings.yourTeamPaused);
+                              } else {
+                                navigation.navigate('ManageChallengeScreen', {
+                                  groupObj: currentUserData,
+                                  sportName: currentUserData.sport,
+                                  sportType: currentUserData?.sport_type,
+                                });
+                              }
+                            },
+                          },
+                        ],
+                        {cancelable: false},
+                      );
+                    }, 1000);
+                  }
+                } else if (myGroupDetail.sport_type === Verbs.doubleSport) {
+                  if (
+                    'player_deactivated' in myGroupDetail &&
+                    myGroupDetail?.player_deactivated
+                  ) {
+                    Alert.alert(strings.playerDeactivatedSport);
+                  } else if (
+                    'player_leaved' in currentUserData ||
+                    currentUserData?.player_leaved
+                  ) {
+                    Alert.alert(
+                      format(
+                        strings.groupHaveNo2Player,
+                        currentUserData?.group_name,
+                      ),
+                    );
+                  } else if (
+                    'player_leaved' in myGroupDetail ||
+                    myGroupDetail?.player_leaved
+                  ) {
+                    Alert.alert(strings.youHaveNo2Player);
+                  }
+                } else {
+                  setChallengePopup(false);
+                  if (myGroupDetail.is_pause === true) {
+                    Alert.alert(strings.yourTeamPaused);
+                  } else {
+                    setChallengePopup(false);
+                    navigation.navigate('InviteChallengeScreen', {
+                      setting: obj,
+                      sportName: currentUserData?.sport,
+                      sportType: currentUserData?.sport_type,
+                      groupObj: currentUserData,
+                    });
+                  }
+                }
+              } else {
+                Alert.alert(strings.availibilityOff);
+              }
+            }}>
+            {selectedChallengeOption === 1 ? (
+              <LinearGradient
+                colors={[colors.yellowColor, colors.orangeGradientColor]}
+                style={styles.backgroundView}>
+                <Text style={[styles.myCityText, {color: colors.whiteColor}]}>
+                  {strings.inviteToChallenge}
+                </Text>
+              </LinearGradient>
+            ) : (
+              <View style={styles.backgroundView}>
+                <Text style={styles.myCityText}>
+                  {strings.inviteToChallenge}
+                </Text>
+              </View>
+            )}
+          </TouchableWithoutFeedback>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -1133,5 +1462,38 @@ const styles = StyleSheet.create({
     width: 40,
     borderRadius: 15,
     backgroundColor: '#DADBDA',
+  },
+  // New sytles -===>
+  backgroundView: {
+    alignSelf: 'center',
+    backgroundColor: colors.whiteColor,
+    borderRadius: 8,
+    elevation: 5,
+    flexDirection: 'row',
+    height: 50,
+    shadowColor: colors.googleColor,
+    shadowOffset: {width: 0, height: 5},
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    width: '86%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 15,
+  },
+
+  curruentLocationText: {
+    fontSize: 16,
+    fontFamily: fonts.RMedium,
+    color: colors.lightBlackColor,
+  },
+  myCityText: {
+    fontSize: 16,
+    fontFamily: fonts.RMedium,
+    color: colors.lightBlackColor,
+  },
+  challengeText: {
+    fontSize: 16,
+    fontFamily: fonts.RMedium,
+    color: colors.lightBlackColor,
   },
 });

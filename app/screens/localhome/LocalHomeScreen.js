@@ -1602,11 +1602,18 @@ export default function LocalHomeScreen({navigation, route}) {
                 title={strings.lookingForTeamTitle}
                 showArrow={true}
                 viewStyle={{marginTop: 20, marginBottom: 15}}
-                onPress={() =>
+                onPress={() => {
+                  const data = {
+                    sport: filters.sport,
+                    sport_type: filters.sport_type,
+                    location,
+                  };
+                  const option = getLocationOption();
                   navigation.navigate('LookingTeamScreen', {
-                    filters,
-                  })
-                }
+                    filters: data,
+                    locationOption: option,
+                  });
+                }}
               />
               <FlatList
                 horizontal={true}
