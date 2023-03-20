@@ -1663,7 +1663,7 @@ export default function MembersProfileScreen({navigation, route}) {
             // title={'News Feed Post'}
             options={[
               strings.sendrequestForBaicInfoText,
-              strings.adminPrivilege,
+              strings.editAdminPrivillege,
               strings.cancel,
             ]}
             cancelButtonIndex={2}
