@@ -1191,11 +1191,23 @@ export default function LocalHomeScreen({navigation, route}) {
     } else {
       setLocation(locations?.city);
     }
-
     setLocationSelectedViaModal(true);
     setLocationPopup(false);
   };
-
+  const getLocationOption = () => {
+    if (selectedLocationOption === 0) {
+      return 2;
+    }
+    if (selectedLocationOption === 1) {
+      return 1;
+    }
+    if (selectedLocationOption === 2) {
+      return 0;
+    }
+    if (selectedLocationOption === 3) {
+      return 3;
+    }
+  };
   return (
     <View style={{flex: 1}}>
       <ActivityLoader visible={loading} />
@@ -1482,9 +1494,15 @@ export default function LocalHomeScreen({navigation, route}) {
                 showArrow={true}
                 viewStyle={{marginTop: 20, marginBottom: 15}}
                 onPress={() => {
-                  console.log('Applicable filter::=>', filters);
+                  const data = {
+                    sport: filters.sport,
+                    sport_type: filters.sport_type,
+                    location,
+                  };
+                  const option = getLocationOption();
                   navigation.navigate('RefereesListScreen', {
-                    filters,
+                    filters: data,
+                    locationOption: option,
                   });
                 }}
               />
@@ -1511,11 +1529,18 @@ export default function LocalHomeScreen({navigation, route}) {
                 title={strings.scorekeeperTitle}
                 showArrow={true}
                 viewStyle={{marginTop: 20, marginBottom: 15}}
-                onPress={() =>
+                onPress={() => {
+                  const data = {
+                    sport: filters.sport,
+                    sport_type: filters.sport_type,
+                    location,
+                  };
+                  const option = getLocationOption();
                   navigation.navigate('ScorekeeperListScreen', {
-                    filters,
-                  })
-                }
+                    filters: data,
+                    locationOption: option,
+                  });
+                }}
               />
               <FlatList
                 horizontal={true}
@@ -1577,11 +1602,18 @@ export default function LocalHomeScreen({navigation, route}) {
                 title={strings.lookingForTeamTitle}
                 showArrow={true}
                 viewStyle={{marginTop: 20, marginBottom: 15}}
-                onPress={() =>
+                onPress={() => {
+                  const data = {
+                    sport: filters.sport,
+                    sport_type: filters.sport_type,
+                    location,
+                  };
+                  const option = getLocationOption();
                   navigation.navigate('LookingTeamScreen', {
-                    filters,
-                  })
-                }
+                    filters: data,
+                    locationOption: option,
+                  });
+                }}
               />
               <FlatList
                 horizontal={true}

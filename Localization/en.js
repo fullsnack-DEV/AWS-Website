@@ -2416,6 +2416,7 @@ export default {
   inviteRequested: 'en_Invite Requested',
   invited: 'en_Invited',
   joinRequested: 'en_Join Requested',
+  groupsRecruitingMembers: 'en_Groups Recruiting Members',
   parentBadgeText: 'en_Parent',
   leaveReplyText: 'en_Leave a reply',
   ratingsInfo:
@@ -2496,5 +2497,4 @@ export default {
   matchesNearYou: 'en_MATCHES NEAR YOU',
   matchHostText: 'en_Match Host',
   sendOfferText: 'en_Send Offer',
-
 };
