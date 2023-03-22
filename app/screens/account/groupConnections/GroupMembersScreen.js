@@ -78,12 +78,6 @@ export default function GroupMembersScreen({navigation, route}) {
   const [userJoinedGrpList, setUserJoinedGrpList] = useState();
   const [clubToCheckAdmin, setClubToCheckAdmin] = useState(false);
 
-  const PRIVACY_GROUP_MEMBER_TEAMMEMBERS = 2;
-  const PRIVACY_GROUP_MEMBER_CLUBMEMBERS = 3;
-  const PRIVACY_GROUP_MEMBER_TEAM = 4;
-  const PRIVACY_GROUP_MEMBER_CLUB = 5;
-  const PRIVACY_GROUP_MEMBER_TEAMCLUB = 6;
-
   const callGroup = async (groupIDs, authContexts) => {
     const response = await getGroupDetails(groupIDs, authContexts);
 
@@ -341,7 +335,7 @@ export default function GroupMembersScreen({navigation, route}) {
                   <>
                     {/* 3 for Club member */}
                     {groupObjNew?.who_can_see_member_profile ===
-                      PRIVACY_GROUP_MEMBER_CLUBMEMBERS &&
+                      Verbs.PRIVACY_GROUP_MEMBER_CLUBMEMBERS &&
                       userJoinedGrpList?.some((el) =>
                         groupObjNew?.parent_groups?.includes(el.group_id),
                       ) && (
@@ -381,7 +375,7 @@ export default function GroupMembersScreen({navigation, route}) {
                     {/* Team member */}
 
                     {groupObjNew?.who_can_see_member_profile ===
-                      PRIVACY_GROUP_MEMBER_TEAMMEMBERS &&
+                      Verbs.PRIVACY_GROUP_MEMBER_TEAMMEMBERS &&
                       members.some(
                         (el) => el.user_id === authContext.user.user_id,
                       ) && (
@@ -398,7 +392,7 @@ export default function GroupMembersScreen({navigation, route}) {
 
                     {/* Team admin only */}
                     {groupObjNew?.who_can_see_member_profile ===
-                      PRIVACY_GROUP_MEMBER_TEAM &&
+                      Verbs.PRIVACY_GROUP_MEMBER_TEAM &&
                       groupObjNew?.am_i_admin && (
                         <TouchableOpacity
                           style={[styles.buttonContainer, {marginLeft: 15}]}
@@ -414,7 +408,7 @@ export default function GroupMembersScreen({navigation, route}) {
                     {/* club and team admin */}
 
                     {groupObjNew?.who_can_see_member_profile ===
-                      PRIVACY_GROUP_MEMBER_TEAMCLUB &&
+                      Verbs.PRIVACY_GROUP_MEMBER_TEAMCLUB &&
                       clubToCheckAdmin && (
                         <TouchableOpacity
                           style={[styles.buttonContainer, {marginLeft: 15}]}
@@ -428,7 +422,7 @@ export default function GroupMembersScreen({navigation, route}) {
                       )}
 
                     {groupObjNew?.who_can_see_member_profile ===
-                      PRIVACY_GROUP_MEMBER_TEAMCLUB &&
+                      Verbs.PRIVACY_GROUP_MEMBER_TEAMCLUB &&
                       groupObjNew?.am_i_admin && (
                         <TouchableOpacity
                           style={[styles.buttonContainer, {marginLeft: 15}]}
@@ -448,7 +442,7 @@ export default function GroupMembersScreen({navigation, route}) {
               {groupObjNew?.entity_type === Verbs.entityTypeClub && (
                 <>
                   {groupObjNew?.who_can_see_member_profile ===
-                    PRIVACY_GROUP_MEMBER_CLUBMEMBERS &&
+                    Verbs.PRIVACY_GROUP_MEMBER_CLUBMEMBERS &&
                     members.some(
                       (el) => el.user_id === authContext.user.user_id,
                     ) && (
@@ -465,7 +459,7 @@ export default function GroupMembersScreen({navigation, route}) {
 
                   {/* club admin */}
                   {groupObjNew?.who_can_see_member_profile ===
-                    PRIVACY_GROUP_MEMBER_CLUB &&
+                    Verbs.PRIVACY_GROUP_MEMBER_CLUB &&
                     groupObjNew?.am_i_admin && (
                       <TouchableOpacity
                         style={[styles.buttonContainer, {marginLeft: 15}]}
@@ -484,7 +478,7 @@ export default function GroupMembersScreen({navigation, route}) {
                 !groupObjNew?.parent_groups?.length > 0 && (
                   <>
                     {groupObjNew?.who_can_see_member_profile ===
-                      PRIVACY_GROUP_MEMBER_TEAMMEMBERS &&
+                      Verbs.PRIVACY_GROUP_MEMBER_TEAMMEMBERS &&
                       members.some(
                         (el) => el.user_id === authContext.user.user_id,
                       ) && (
@@ -500,7 +494,7 @@ export default function GroupMembersScreen({navigation, route}) {
                       )}
 
                     {groupObjNew?.who_can_see_member_profile ===
-                      PRIVACY_GROUP_MEMBER_TEAM &&
+                      Verbs.PRIVACY_GROUP_MEMBER_TEAM &&
                       groupObjNew?.am_i_admin && (
                         <TouchableOpacity
                           style={[styles.buttonContainer, {marginLeft: 15}]}
@@ -535,7 +529,7 @@ export default function GroupMembersScreen({navigation, route}) {
             />
 
             {groupObj?.who_can_see_member_profile ===
-              PRIVACY_GROUP_MEMBER_TEAMMEMBERS && (
+              Verbs.PRIVACY_GROUP_MEMBER_TEAMMEMBERS && (
               <TouchableOpacity
                 style={[styles.buttonContainer, {marginLeft: 15}]}
                 onPress={() => onPressProfile(data)}

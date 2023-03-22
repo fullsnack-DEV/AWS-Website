@@ -35,9 +35,15 @@ export default function MembersViewPrivacyScreen({navigation, route}) {
 
   const [OpenInfo, setOpenInfo] = useState(false);
   const [obj, SetObj] = useState({
-    members: authContext.entity.obj.who_can_see_member ?? 0,
-    followers: authContext.entity.obj.who_can_see_follower ?? 0,
-    profiles: authContext.entity.obj.who_can_see_member_profile ?? 3,
+    members:
+      authContext.entity.obj.who_can_see_member ??
+      Verbs.PRIVACY_GROUP_MEMBER_EVERYONE,
+    followers:
+      authContext.entity.obj.who_can_see_follower ??
+      Verbs.PRIVACY_GROUP_MEMBER_EVERYONE,
+    profiles:
+      authContext.entity.obj.who_can_see_member_profile ??
+      Verbs.PRIVACY_GROUP_MEMBER_CLUBMEMBERS,
   });
 
   // constants
@@ -51,14 +57,6 @@ export default function MembersViewPrivacyScreen({navigation, route}) {
       profiles: response.payload.who_can_see_member_profile,
     });
   };
-
-  const PRIVACY_GROUP_MEMBER_EVERYONE = 0;
-  const PRIVACY_GROUP_MEMBER_FOLLOWER = 1;
-  const PRIVACY_GROUP_MEMBER_TEAMMEMBERS = 2;
-  const PRIVACY_GROUP_MEMBER_CLUBMEMBERS = 3;
-  const PRIVACY_GROUP_MEMBER_TEAM = 4;
-  const PRIVACY_GROUP_MEMBER_CLUB = 5;
-  const PRIVACY_GROUP_MEMBER_TEAMCLUB = 6;
 
   useEffect(() => {
     callGroup(route.params?.groupID, authContext);
@@ -204,12 +202,12 @@ export default function MembersViewPrivacyScreen({navigation, route}) {
             <TouchableOpacity
               style={styles.radioButtonView}
               onPress={() => {
-                SetObj({...obj, members: PRIVACY_GROUP_MEMBER_EVERYONE});
+                SetObj({...obj, members: Verbs.PRIVACY_GROUP_MEMBER_EVERYONE});
               }}>
               <Text style={styles.radioText}>{strings.everyoneTitleText}</Text>
               <Image
                 source={
-                  obj.members === PRIVACY_GROUP_MEMBER_EVERYONE
+                  obj.members === Verbs.PRIVACY_GROUP_MEMBER_EVERYONE
                     ? images.radioRoundOrange
                     : images.radioUnselect
                 }
@@ -222,14 +220,17 @@ export default function MembersViewPrivacyScreen({navigation, route}) {
               <TouchableOpacity
                 style={styles.radioButtonView}
                 onPress={() => {
-                  SetObj({...obj, members: PRIVACY_GROUP_MEMBER_FOLLOWER});
+                  SetObj({
+                    ...obj,
+                    members: Verbs.PRIVACY_GROUP_MEMBER_FOLLOWER,
+                  });
                 }}>
                 <Text style={styles.radioText}>
                   {strings.folloersAndClubMembers}
                 </Text>
                 <Image
                   source={
-                    obj.members === PRIVACY_GROUP_MEMBER_FOLLOWER
+                    obj.members === Verbs.PRIVACY_GROUP_MEMBER_FOLLOWER
                       ? images.radioRoundOrange
                       : images.radioUnselect
                   }
@@ -240,14 +241,17 @@ export default function MembersViewPrivacyScreen({navigation, route}) {
               <TouchableOpacity
                 style={styles.radioButtonView}
                 onPress={() => {
-                  SetObj({...obj, members: PRIVACY_GROUP_MEMBER_FOLLOWER});
+                  SetObj({
+                    ...obj,
+                    members: Verbs.PRIVACY_GROUP_MEMBER_FOLLOWER,
+                  });
                 }}>
                 <Text style={styles.radioText}>
                   {strings.followerTitleText}
                 </Text>
                 <Image
                   source={
-                    obj.members === PRIVACY_GROUP_MEMBER_FOLLOWER
+                    obj.members === Verbs.PRIVACY_GROUP_MEMBER_FOLLOWER
                       ? images.radioRoundOrange
                       : images.radioUnselect
                   }
@@ -261,12 +265,15 @@ export default function MembersViewPrivacyScreen({navigation, route}) {
                 <TouchableOpacity
                   style={styles.radioButtonView}
                   onPress={() => {
-                    SetObj({...obj, members: PRIVACY_GROUP_MEMBER_CLUBMEMBERS});
+                    SetObj({
+                      ...obj,
+                      members: Verbs.PRIVACY_GROUP_MEMBER_CLUBMEMBERS,
+                    });
                   }}>
                   <Text style={styles.radioText}>{strings.clubMember}</Text>
                   <Image
                     source={
-                      obj.members === PRIVACY_GROUP_MEMBER_CLUBMEMBERS
+                      obj.members === Verbs.PRIVACY_GROUP_MEMBER_CLUBMEMBERS
                         ? images.radioRoundOrange
                         : images.radioUnselect
                     }
@@ -278,12 +285,15 @@ export default function MembersViewPrivacyScreen({navigation, route}) {
               <TouchableOpacity
                 style={styles.radioButtonView}
                 onPress={() => {
-                  SetObj({...obj, members: PRIVACY_GROUP_MEMBER_CLUBMEMBERS});
+                  SetObj({
+                    ...obj,
+                    members: Verbs.PRIVACY_GROUP_MEMBER_CLUBMEMBERS,
+                  });
                 }}>
                 <Text style={styles.radioText}>{strings.clubMember}</Text>
                 <Image
                   source={
-                    obj.members === PRIVACY_GROUP_MEMBER_CLUBMEMBERS
+                    obj.members === Verbs.PRIVACY_GROUP_MEMBER_CLUBMEMBERS
                       ? images.radioRoundOrange
                       : images.radioUnselect
                   }
@@ -296,7 +306,10 @@ export default function MembersViewPrivacyScreen({navigation, route}) {
               <TouchableOpacity
                 style={styles.radioButtonView}
                 onPress={() => {
-                  SetObj({...obj, members: PRIVACY_GROUP_MEMBER_TEAMMEMBERS});
+                  SetObj({
+                    ...obj,
+                    members: Verbs.PRIVACY_GROUP_MEMBER_TEAMMEMBERS,
+                  });
                 }}>
                 <Pressable
                   onPress={() => {
@@ -328,7 +341,7 @@ export default function MembersViewPrivacyScreen({navigation, route}) {
 
                 <Image
                   source={
-                    obj.members === PRIVACY_GROUP_MEMBER_TEAMMEMBERS
+                    obj.members === Verbs.PRIVACY_GROUP_MEMBER_TEAMMEMBERS
                       ? images.radioRoundOrange
                       : images.radioUnselect
                   }
@@ -347,12 +360,15 @@ export default function MembersViewPrivacyScreen({navigation, route}) {
             <TouchableOpacity
               style={styles.radioButtonView}
               onPress={() => {
-                SetObj({...obj, followers: PRIVACY_GROUP_MEMBER_EVERYONE});
+                SetObj({
+                  ...obj,
+                  followers: Verbs.PRIVACY_GROUP_MEMBER_EVERYONE,
+                });
               }}>
               <Text style={styles.radioText}>{strings.everyoneTitleText}</Text>
               <Image
                 source={
-                  obj.followers === PRIVACY_GROUP_MEMBER_EVERYONE
+                  obj.followers === Verbs.PRIVACY_GROUP_MEMBER_EVERYONE
                     ? images.radioRoundOrange
                     : images.radioUnselect
                 }
@@ -365,14 +381,17 @@ export default function MembersViewPrivacyScreen({navigation, route}) {
               <TouchableOpacity
                 style={styles.radioButtonView}
                 onPress={() => {
-                  SetObj({...obj, followers: PRIVACY_GROUP_MEMBER_FOLLOWER});
+                  SetObj({
+                    ...obj,
+                    followers: Verbs.PRIVACY_GROUP_MEMBER_FOLLOWER,
+                  });
                 }}>
                 <Text style={styles.radioText}>
                   {strings.folloersAndClubMembers}
                 </Text>
                 <Image
                   source={
-                    obj.followers === PRIVACY_GROUP_MEMBER_FOLLOWER
+                    obj.followers === Verbs.PRIVACY_GROUP_MEMBER_FOLLOWER
                       ? images.radioRoundOrange
                       : images.radioUnselect
                   }
@@ -383,14 +402,17 @@ export default function MembersViewPrivacyScreen({navigation, route}) {
               <TouchableOpacity
                 style={styles.radioButtonView}
                 onPress={() => {
-                  SetObj({...obj, followers: PRIVACY_GROUP_MEMBER_FOLLOWER});
+                  SetObj({
+                    ...obj,
+                    followers: Verbs.PRIVACY_GROUP_MEMBER_FOLLOWER,
+                  });
                 }}>
                 <Text style={styles.radioText}>
                   {strings.followerTitleText}
                 </Text>
                 <Image
                   source={
-                    obj.followers === PRIVACY_GROUP_MEMBER_FOLLOWER
+                    obj.followers === Verbs.PRIVACY_GROUP_MEMBER_FOLLOWER
                       ? images.radioRoundOrange
                       : images.radioUnselect
                   }
@@ -422,13 +444,13 @@ export default function MembersViewPrivacyScreen({navigation, route}) {
                   onPress={() => {
                     SetObj({
                       ...obj,
-                      followers: PRIVACY_GROUP_MEMBER_CLUBMEMBERS,
+                      followers: Verbs.PRIVACY_GROUP_MEMBER_CLUBMEMBERS,
                     });
                   }}>
                   <Text style={styles.radioText}>{strings.clubMember}</Text>
                   <Image
                     source={
-                      obj.followers === PRIVACY_GROUP_MEMBER_CLUBMEMBERS
+                      obj.followers === Verbs.PRIVACY_GROUP_MEMBER_CLUBMEMBERS
                         ? images.radioRoundOrange
                         : images.radioUnselect
                     }
@@ -440,12 +462,15 @@ export default function MembersViewPrivacyScreen({navigation, route}) {
               <TouchableOpacity
                 style={styles.radioButtonView}
                 onPress={() => {
-                  SetObj({...obj, followers: PRIVACY_GROUP_MEMBER_CLUBMEMBERS});
+                  SetObj({
+                    ...obj,
+                    followers: Verbs.PRIVACY_GROUP_MEMBER_CLUBMEMBERS,
+                  });
                 }}>
                 <Text style={styles.radioText}>{strings.clubMember}</Text>
                 <Image
                   source={
-                    obj.followers === PRIVACY_GROUP_MEMBER_CLUBMEMBERS
+                    obj.followers === Verbs.PRIVACY_GROUP_MEMBER_CLUBMEMBERS
                       ? images.radioRoundOrange
                       : images.radioUnselect
                   }
@@ -458,7 +483,10 @@ export default function MembersViewPrivacyScreen({navigation, route}) {
               <TouchableOpacity
                 style={styles.radioButtonView}
                 onPress={() => {
-                  SetObj({...obj, followers: PRIVACY_GROUP_MEMBER_TEAMMEMBERS});
+                  SetObj({
+                    ...obj,
+                    followers: Verbs.PRIVACY_GROUP_MEMBER_TEAMMEMBERS,
+                  });
                 }}>
                 <Pressable
                   onPress={() => {
@@ -489,7 +517,7 @@ export default function MembersViewPrivacyScreen({navigation, route}) {
 
                 <Image
                   source={
-                    obj.followers === PRIVACY_GROUP_MEMBER_TEAMMEMBERS
+                    obj.followers === Verbs.PRIVACY_GROUP_MEMBER_TEAMMEMBERS
                       ? images.radioRoundOrange
                       : images.radioUnselect
                   }
@@ -512,14 +540,14 @@ export default function MembersViewPrivacyScreen({navigation, route}) {
                   onPress={() => {
                     SetObj({
                       ...obj,
-                      profiles: PRIVACY_GROUP_MEMBER_CLUBMEMBERS,
+                      profiles: Verbs.PRIVACY_GROUP_MEMBER_CLUBMEMBERS,
                     });
                   }}>
                   <Text style={styles.radioText}>{strings.clubMember}</Text>
 
                   <Image
                     source={
-                      obj.profiles === PRIVACY_GROUP_MEMBER_CLUBMEMBERS
+                      obj.profiles === Verbs.PRIVACY_GROUP_MEMBER_CLUBMEMBERS
                         ? images.radioRoundOrange
                         : images.radioUnselect
                     }
@@ -562,7 +590,7 @@ export default function MembersViewPrivacyScreen({navigation, route}) {
 
                 <Image
                   source={
-                    obj.profiles === PRIVACY_GROUP_MEMBER_TEAMMEMBERS
+                    obj.profiles === Verbs.PRIVACY_GROUP_MEMBER_TEAMMEMBERS
                       ? images.radioRoundOrange
                       : images.radioUnselect
                   }
@@ -575,12 +603,15 @@ export default function MembersViewPrivacyScreen({navigation, route}) {
               <TouchableOpacity
                 style={styles.radioButtonView}
                 onPress={() => {
-                  SetObj({...obj, profiles: PRIVACY_GROUP_MEMBER_CLUBMEMBERS});
+                  SetObj({
+                    ...obj,
+                    profiles: Verbs.PRIVACY_GROUP_MEMBER_CLUBMEMBERS,
+                  });
                 }}>
                 <Text style={styles.radioText}>{strings.clubMember}</Text>
                 <Image
                   source={
-                    obj.profiles === PRIVACY_GROUP_MEMBER_CLUBMEMBERS
+                    obj.profiles === Verbs.PRIVACY_GROUP_MEMBER_CLUBMEMBERS
                       ? images.radioRoundOrange
                       : images.radioUnselect
                   }
@@ -594,14 +625,17 @@ export default function MembersViewPrivacyScreen({navigation, route}) {
                 <TouchableOpacity
                   style={styles.radioButtonView}
                   onPress={() => {
-                    SetObj({...obj, profiles: PRIVACY_GROUP_MEMBER_TEAMCLUB});
+                    SetObj({
+                      ...obj,
+                      profiles: Verbs.PRIVACY_GROUP_MEMBER_TEAMCLUB,
+                    });
                   }}>
                   <Text style={styles.radioText}>
                     {strings.onlyTeamAndclub}
                   </Text>
                   <Image
                     source={
-                      obj.profiles === PRIVACY_GROUP_MEMBER_TEAMCLUB
+                      obj.profiles === Verbs.PRIVACY_GROUP_MEMBER_TEAMCLUB
                         ? images.radioRoundOrange
                         : images.radioUnselect
                     }
@@ -612,13 +646,13 @@ export default function MembersViewPrivacyScreen({navigation, route}) {
                 <TouchableOpacity
                   style={styles.radioButtonView}
                   onPress={() => {
-                    SetObj({...obj, profiles: PRIVACY_GROUP_MEMBER_TEAM});
+                    SetObj({...obj, profiles: Verbs.PRIVACY_GROUP_MEMBER_TEAM});
                   }}>
                   {/* for team team only and for club club only */}
                   <Text style={styles.radioText}>{strings.teamOnly}</Text>
                   <Image
                     source={
-                      obj.profiles === PRIVACY_GROUP_MEMBER_TEAM
+                      obj.profiles === Verbs.PRIVACY_GROUP_MEMBER_TEAM
                         ? images.radioRoundOrange
                         : images.radioUnselect
                     }
@@ -632,13 +666,16 @@ export default function MembersViewPrivacyScreen({navigation, route}) {
                   <TouchableOpacity
                     style={styles.radioButtonView}
                     onPress={() => {
-                      SetObj({...obj, profiles: PRIVACY_GROUP_MEMBER_TEAM});
+                      SetObj({
+                        ...obj,
+                        profiles: Verbs.PRIVACY_GROUP_MEMBER_TEAM,
+                      });
                     }}>
                     {/* for team team only and for club club only */}
                     <Text style={styles.radioText}>{strings.teamOnly}</Text>
                     <Image
                       source={
-                        obj.profiles === PRIVACY_GROUP_MEMBER_TEAM
+                        obj.profiles === Verbs.PRIVACY_GROUP_MEMBER_TEAM
                           ? images.radioRoundOrange
                           : images.radioUnselect
                       }
@@ -649,13 +686,16 @@ export default function MembersViewPrivacyScreen({navigation, route}) {
                   <TouchableOpacity
                     style={styles.radioButtonView}
                     onPress={() => {
-                      SetObj({...obj, profiles: PRIVACY_GROUP_MEMBER_CLUB});
+                      SetObj({
+                        ...obj,
+                        profiles: Verbs.PRIVACY_GROUP_MEMBER_CLUB,
+                      });
                     }}>
                     {/* for team team only and for club club only */}
                     <Text style={styles.radioText}>{strings.clubOnly}</Text>
                     <Image
                       source={
-                        obj.profiles === PRIVACY_GROUP_MEMBER_CLUB
+                        obj.profiles === Verbs.PRIVACY_GROUP_MEMBER_CLUB
                           ? images.radioRoundOrange
                           : images.radioUnselect
                       }
