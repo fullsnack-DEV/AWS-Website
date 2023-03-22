@@ -2,6 +2,7 @@
 import React from 'react';
 import {View, StyleSheet, Text, Image, TouchableOpacity} from 'react-native';
 import {strings} from '../../../../../Localization/translation';
+import LevelBars from '../../../../components/LevelBars';
 import {ShimmerView} from '../../../../components/shimmer/commonComponents/ShimmerCommonComponents';
 import colors from '../../../../Constants/Colors';
 import fonts from '../../../../Constants/Fonts';
@@ -19,6 +20,8 @@ const UserInfo = ({
   screenType = Verbs.screenTypeModal,
   level = 0,
   loading = false,
+  entityType = Verbs.entityTypePlayer,
+  description = '',
 }) =>
   loading ? (
     <View style={[styles.row, containerStyle]}>
@@ -54,13 +57,20 @@ const UserInfo = ({
           <Text style={styles.name}>{user.full_name}</Text>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <Text style={styles.location}>{displayLocation(user)}</Text>
-            <View style={styles.levelContainer}>
-              <Text style={styles.newText}>
-                {level > 0 ? `Lv.${level}` : strings.newText.toUpperCase()}
-              </Text>
-            </View>
+            {entityType === Verbs.entityTypePlayer ? (
+              <>
+                <View style={styles.levelContainer}>
+                  <Text style={styles.newText}>
+                    {level > 0 ? `Lv.${level}` : strings.newText.toUpperCase()}
+                  </Text>
+                </View>
+                <View style={{marginLeft: 5}}>
+                  <LevelBars level={level} />
+                </View>
+              </>
+            ) : null}
           </View>
-          {isLookingForClub ? (
+          {isLookingForClub && entityType === Verbs.entityTypePlayer ? (
             <View style={styles.lookingForClubContainer}>
               <Text style={styles.lookingForClubText}>
                 {strings.lookingForClubText}!
@@ -78,7 +88,7 @@ const UserInfo = ({
       </View>
       {screenType !== Verbs.screenTypeMainScreen ? (
         <Text style={styles.description} numberOfLines={3}>
-          {user.description}{' '}
+          {description}{' '}
           <TouchableOpacity onPress={onMore}>
             <Text style={styles.moreText}>{strings.moreText}</Text>
           </TouchableOpacity>

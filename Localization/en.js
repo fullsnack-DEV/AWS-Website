@@ -2498,8 +2498,21 @@ export default {
   matchHostText: 'en_Match Host',
   sendOfferText: 'en_Send Offer',
 
+
   folloersAndClubMembers: 'en_Followers and Club Members',
   infoPrivacyTeamMember:
     'en_If you choose this option, clubs (admins) which your team belongs to also can see your {0}.',
+
+
+  refereedMatchesTitle: 'en_Refereed Matches',
+  addCerticateTitle: 'en_+ Add Certificates',
+  editServicableAreasText: 'en_Edit Serviceable Areas',
+  reportCertificate: 'en_Report This Certificate',
+  reportUser: 'en_Block This User',
+  hourText: 'en_hour',
+  matchText: 'en_match',
+  incomingReservationSettingsScoreKeeper:
+    'en_Please review your incoming reservation settings. These settings are only applicable to the scorekeeper reservation when you are booked as a scorekeeper. When you book another scorekeeper for a match, their incoming reservation settings Will be applied.',
+  registerDate: '{0} in {1}',
 
 };

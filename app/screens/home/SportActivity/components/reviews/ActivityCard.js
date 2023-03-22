@@ -19,6 +19,7 @@ import MediaList from './MediaList';
 import {getReactions} from '../../../../../api/NewsFeeds';
 import colors from '../../../../../Constants/Colors';
 import {formatTimestampForDisplay} from '../../../../../utils/formatTimestampForDisplay';
+import Verbs from '../../../../../Constants/Verbs';
 
 const ActivityCard = ({
   item = {},
@@ -31,6 +32,7 @@ const ActivityCard = ({
   onReply = () => {},
   onPressMedia = () => {},
   containerStyle = {},
+  entityType,
 }) => {
   const [showModal, setShowModal] = useState(false);
   const [playerReview, setPlayerReview] = useState({});
@@ -54,9 +56,20 @@ const ActivityCard = ({
 
   useEffect(() => {
     if (item.object) {
-      setPlayerReview(JSON.parse(item.object)?.playerReview ?? {});
+      let review = {};
+      if (entityType === Verbs.entityTypePlayer) {
+        review = JSON.parse(item.object)?.playerReview ?? {};
+      }
+      if (entityType === Verbs.entityTypeReferee) {
+        review = JSON.parse(item.object)?.refereeReview ?? {};
+      }
+      if (entityType === Verbs.entityTypeScorekeeper) {
+        review = JSON.parse(item.object)?.scorekeeperReview ?? {};
+      }
+
+      setPlayerReview(review);
     }
-  }, [item]);
+  }, [item, entityType]);
 
   useEffect(() => {
     if (isFocused) {
@@ -69,7 +82,16 @@ const ActivityCard = ({
   };
 
   const getReviewMoreOptions = () => {
-    const review = JSON.parse(item.object)?.playerReview ?? {};
+    let review = {};
+    if (entityType === Verbs.entityTypePlayer) {
+      review = JSON.parse(item.object)?.playerReview ?? {};
+    }
+    if (entityType === Verbs.entityTypeReferee) {
+      review = JSON.parse(item.object)?.refereeReview ?? {};
+    }
+    if (entityType === Verbs.entityTypeScorekeeper) {
+      review = JSON.parse(item.object)?.scorekeeperReview ?? {};
+    }
 
     if (review.reviewer_id === authContext.entity.obj.user_id) {
       if (isReviewPeriodEnd && !isReplyToReviewPeriodEnd) {

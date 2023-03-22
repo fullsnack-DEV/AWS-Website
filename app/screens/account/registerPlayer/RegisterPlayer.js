@@ -19,7 +19,7 @@ import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 import Verbs from '../../../Constants/Verbs';
-import {getSportList, setAuthContextData} from '../../../utils';
+import {getSportList, getTCDate, setAuthContextData} from '../../../utils';
 import CongratulationsModal from './modals/CongratulationsModal';
 // import LanguagesListModal from './modals/LanguagesListModal';
 import SportsListModal from './modals/SportsListModal';
@@ -97,6 +97,7 @@ const RegisterPlayer = ({navigation, route}) => {
         // language: selectedLanguages,
         lookingForTeamClub: true,
         default_setting: {},
+        created_at: getTCDate(new Date()),
       };
 
       const registerdPlayerData = [

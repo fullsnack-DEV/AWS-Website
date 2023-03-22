@@ -11,9 +11,13 @@ const ClubList = ({list = [], sport = ''}) => {
 
   useEffect(() => {
     if (list.length > 0) {
-      const newList = list.filter(
-        (item) => item.sports_string.toLowerCase() === sport,
-      );
+      const newList = [];
+      list.forEach((item) => {
+        const obj = item.sports.find((ele) => ele.sport === sport);
+        if (obj) {
+          newList.push(item);
+        }
+      });
       setClubsList(newList);
     }
   }, [sport, list]);

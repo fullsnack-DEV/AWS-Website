@@ -11,6 +11,8 @@ import {
   Pressable,
   Dimensions,
 } from 'react-native';
+import {useIsFocused} from '@react-navigation/native';
+import {format} from 'react-string-format';
 import {strings} from '../../../../../Localization/translation';
 import EventMapView from '../../../../components/Schedule/EventMapView';
 import colors from '../../../../Constants/Colors';
@@ -23,13 +25,23 @@ import TeamsList from '../components/TeamsList';
 import UserDetails from '../components/UserDetails';
 import Venues from '../components/Venues';
 import {privacyKey} from '../../../../Constants/GeneralConstants';
+import {getJSDate} from '../../../../utils';
+import CertificateList from '../components/CertificateList';
+import ServicableArea from '../components/ServicableArea';
+import {getTitleForRegister} from '../../../../utils/sportsActivityUtils';
 
 const OptionList = [
   strings.bio,
   strings.basicInfoText,
-  strings.matchVenues,
   strings.clubstitle,
   strings.leagues,
+];
+
+const OptionList1 = [
+  strings.bio,
+  strings.basicInfoText,
+  strings.certiTitle,
+  strings.servicableAreas,
 ];
 
 const InfoContentScreen = ({
@@ -38,6 +50,8 @@ const InfoContentScreen = ({
   isAdmin = false,
   handleEditOption = () => {},
   openPrivacySettings = () => {},
+  entityType = Verbs.entityTypePlayer,
+  onPressCertificate = () => {},
 }) => {
   const [options, setOptions] = useState([]);
   const [showInfo, setShowInfo] = useState(false);
@@ -48,26 +62,32 @@ const InfoContentScreen = ({
     showPrivacy: false,
   });
 
+  const isFocused = useIsFocused();
+
   useEffect(() => {
-    if (
-      (user.entity_type === Verbs.entityTypePlayer ||
-        user.entity_type === Verbs.entityTypeUser) &&
-      sportObj.sport_type === Verbs.singleSport
-    ) {
-      const arr = [...OptionList];
-      arr.splice(2, 0, strings.homeFacility);
+    if (isFocused) {
+      if (entityType !== Verbs.entityTypePlayer) {
+        setOptions(OptionList1);
+      } else if (
+        (user.entity_type === Verbs.entityTypePlayer ||
+          user.entity_type === Verbs.entityTypeUser) &&
+        sportObj.sport_type === Verbs.singleSport
+      ) {
+        const arr = [...OptionList];
+        arr.splice(2, 0, strings.homeFacility);
+        arr.splice(3, 0, strings.matchVenues);
+        if (sportObj.sport === Verbs.tennisSport) {
+          arr.splice(4, 0, strings.ntrpTitle);
+        }
 
-      if (sportObj.sport === Verbs.tennisSport) {
-        arr.splice(3, 0, strings.ntrpTitle);
+        setOptions([...arr]);
+      } else {
+        const arr = [...OptionList];
+        arr.splice(2, 0, strings.teamstitle);
+        setOptions([...arr]);
       }
-
-      setOptions([...arr]);
-    } else {
-      const arr = [...OptionList];
-      arr.splice(2, 0, strings.teamstitle);
-      setOptions([...arr]);
     }
-  }, [user, sportObj]);
+  }, [user, sportObj, entityType, isFocused]);
 
   const renderSectionContent = (sectionName) => {
     switch (sectionName) {
@@ -75,14 +95,22 @@ const InfoContentScreen = ({
         return (
           <>
             <Text style={styles.label} numberOfLines={7}>
-              {user.description}{' '}
+              {sportObj.descriptions}{' '}
               <TouchableOpacity style={{paddingTop: 4}}>
                 <Text style={styles.smallText}>{strings.moreText}</Text>
               </TouchableOpacity>
             </Text>
-            <Text style={[styles.smallText, {marginTop: 5}]}>
-              {strings.signedupin} {moment(user.created_at).format('YYYY')}
-            </Text>
+            {sportObj?.created_at ? (
+              <Text style={[styles.smallText, {marginTop: 5}]}>
+                {format(
+                  strings.registerDate,
+                  getTitleForRegister(entityType),
+                  moment(
+                    getJSDate(new Date(sportObj.created_at).getTime()),
+                  ).format('YYYY'),
+                )}
+              </Text>
+            ) : null}
           </>
         );
 
@@ -117,7 +145,9 @@ const InfoContentScreen = ({
             />
           </View>
         ) : (
-          <Text style={styles.label}>{strings.noneText}</Text>
+          <Text style={[styles.label, {paddingHorizontal: 17}]}>
+            {strings.noneText}
+          </Text>
         );
 
       case strings.ntrpTitle:
@@ -152,11 +182,27 @@ const InfoContentScreen = ({
           />
         );
 
+      case strings.certiTitle:
+        return (
+          <CertificateList
+            list={sportObj?.certificates ?? []}
+            onAdd={() =>
+              handleEditOption(sectionName, strings.editCertificateText)
+            }
+            onPress={onPressCertificate}
+          />
+        );
+
+      case strings.servicableAreas:
+        return (
+          <ServicableArea avialableArea={sportObj.setting?.available_area} />
+        );
+
       default:
         return null;
     }
   };
-  // console.log({user});
+
   const editOptions = (sectionName) => {
     switch (sectionName) {
       case strings.bio:
@@ -231,6 +277,26 @@ const InfoContentScreen = ({
         break;
 
       case strings.teamstitle:
+        break;
+
+      case strings.certiTitle:
+        setEditModalInfo({
+          section: sectionName,
+          buttonText: strings.editCertificateText,
+          showPrivacy: false,
+          privacyKey: '',
+        });
+        setShowEditModal(true);
+        break;
+
+      case strings.servicableAreas:
+        setEditModalInfo({
+          section: sectionName,
+          buttonText: strings.editServicableAreasText,
+          showPrivacy: false,
+          privacyKey: '',
+        });
+        setShowEditModal(true);
         break;
 
       default:

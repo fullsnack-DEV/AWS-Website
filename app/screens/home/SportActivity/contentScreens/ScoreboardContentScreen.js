@@ -3,7 +3,7 @@ import {useIsFocused} from '@react-navigation/native';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {View, StyleSheet, Text, TouchableOpacity} from 'react-native';
 import {strings} from '../../../../../Localization/translation';
-import {getGameScoreboardEvents} from '../../../../api/Games';
+import {getGameScoreboardEvents, getRefereedMatch} from '../../../../api/Games';
 import AuthContext from '../../../../auth/context';
 import colors from '../../../../Constants/Colors';
 import fonts from '../../../../Constants/Fonts';
@@ -11,7 +11,11 @@ import GameStatus from '../../../../Constants/GameStatus';
 import Verbs from '../../../../Constants/Verbs';
 import ScoreBoardList from '../components/ScoreBoardList';
 
-const ScoreboardContentScreen = ({userData = {}, sport = ''}) => {
+const ScoreboardContentScreen = ({
+  userData = {},
+  sport = '',
+  entityType = Verbs.entityTypePlayer,
+}) => {
   const [scoreboardList, setScoreboardList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [matchCount, setMatchCount] = useState({
@@ -23,6 +27,27 @@ const ScoreboardContentScreen = ({userData = {}, sport = ''}) => {
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
 
+  const setMatchData = (data = []) => {
+    if (data.length > 0) {
+      const completedList = [];
+      const upcomingList = [];
+
+      data.forEach((item) => {
+        const isGameEnded = item.status === GameStatus.ended;
+        const isFutureDate = item.start_datetime > new Date().getTime();
+        if (isGameEnded) {
+          completedList.push(item);
+        } else if (!isGameEnded && isFutureDate) {
+          upcomingList.push(item);
+        }
+      });
+      setMatchCount({
+        completed: completedList.length,
+        upcoming: upcomingList.length,
+      });
+    }
+  };
+
   const getScoreboardList = useCallback(() => {
     setLoading(true);
     const params = {
@@ -33,24 +58,7 @@ const ScoreboardContentScreen = ({userData = {}, sport = ''}) => {
     getGameScoreboardEvents(userData.user_id, params, authContext)
       .then((res) => {
         setScoreboardList(res.payload);
-        if (res.payload.length > 0) {
-          const completedList = [];
-          const upcomingList = [];
-
-          res.payload.forEach((item) => {
-            const isGameEnded = item.status === GameStatus.ended;
-            const isFutureDate = item.start_datetime > new Date().getTime();
-            if (isGameEnded) {
-              completedList.push(item);
-            } else if (!isGameEnded && isFutureDate) {
-              upcomingList.push(item);
-            }
-          });
-          setMatchCount({
-            completed: completedList.length,
-            upcoming: upcomingList.length,
-          });
-        }
+        setMatchData(res.payload);
         setLoading(false);
       })
       .catch(() => {
@@ -58,11 +66,29 @@ const ScoreboardContentScreen = ({userData = {}, sport = ''}) => {
       });
   }, [sport, userData, authContext]);
 
+  const getRefereeMatchList = useCallback(() => {
+    setLoading(true);
+    getRefereedMatch(userData?.user_id, sport, authContext)
+      .then((res) => {
+        setScoreboardList(res.payload);
+        setMatchData(res.payload);
+        setLoading(false);
+      })
+      .catch(() => {
+        setLoading(false);
+      });
+  }, [userData, sport, authContext]);
+
   useEffect(() => {
     if (isFocused) {
-      getScoreboardList();
+      if (entityType === Verbs.entityTypePlayer) {
+        getScoreboardList();
+      }
+      if (entityType === Verbs.entityTypeReferee) {
+        getRefereeMatchList();
+      }
     }
-  }, [isFocused, getScoreboardList]);
+  }, [isFocused, getScoreboardList, entityType, getRefereeMatchList]);
 
   const getSectionList = () => {
     if (selectedTab === strings.completedTitleText) {

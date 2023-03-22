@@ -104,6 +104,7 @@ const Verbs = {
   menuOptionTypePlaying: 'Playing',
   menuOptionTypeRefereeing: 'Refereeing',
   menuOptionTypeScorekeeping: 'Scorekeeping',
+
   PRIVACY_GROUP_MEMBER_EVERYONE: 0,
   PRIVACY_GROUP_MEMBER_FOLLOWER: 1,
   PRIVACY_GROUP_MEMBER_TEAMMEMBERS: 2,
@@ -111,6 +112,11 @@ const Verbs = {
   PRIVACY_GROUP_MEMBER_TEAM: 4,
   PRIVACY_GROUP_MEMBER_CLUB: 5,
   PRIVACY_GROUP_MEMBER_TEAMCLUB: 6,
+
+  allText: 'all',
+  homeText: 'home',
+  awayText: 'away',
+
 };
 
 export default Verbs;
