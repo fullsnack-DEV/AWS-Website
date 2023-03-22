@@ -660,15 +660,12 @@ const AppNavigator = ({navigation}) => {
         name="Account"
         navigation={navigation}
         component={AccountNavigator}
-        initialParams={{
-          switchToUser: false,
-        }}
         options={({route}) => ({
           ...(unreadNotificationCount > 0 && {
             tabBarBadge:
               unreadNotificationCount > 300 ? '300+' : unreadNotificationCount,
           }),
-          unmountOnBlur: true,
+          unmountOnBlur: false,
           tabBarBadgeStyle: {zIndex: 10, fontSize: 12},
           // tabBarVisible: getTabBarVisibility(route),
           tabBarStyle: {display: getTabBarVisibility(routes) ? 'flex' : 'none'},

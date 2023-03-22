@@ -1,6 +1,6 @@
 /* eslint-disable array-callback-return */
 /* eslint-disable no-shadow */
-import React, {useState, useContext, useLayoutEffect} from 'react';
+import React, {useState, useContext, useLayoutEffect, useEffect} from 'react';
 import {
   Text,
   View,
@@ -13,8 +13,9 @@ import {
   TouchableWithoutFeedback,
   Pressable,
 } from 'react-native';
-
-import {patchGroup} from '../../../api/Groups';
+import Modal from 'react-native-modal';
+import {format} from 'react-string-format';
+import {getGroupDetails, patchGroup} from '../../../api/Groups';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors';
@@ -25,26 +26,38 @@ import AuthContext from '../../../auth/context';
 import * as Utility from '../../../utils';
 import Verbs from '../../../Constants/Verbs';
 
-export default function MembersViewPrivacyScreen({navigation}) {
+export default function MembersViewPrivacyScreen({navigation, route}) {
   // For activity indigator
   const authContext = useContext(AuthContext);
 
   const [loading, setloading] = useState(false);
-  const [member, setMember] = useState(
-    authContext.entity.obj.who_can_see_member ?? 1,
-  );
-  const [follower, setFollower] = useState(
-    authContext.entity.obj.who_can_see_follower ?? 1,
-  );
-  const [profile, setProfile] = useState(
-    authContext.entity.obj.who_can_see_member_profile ?? 3,
-  );
+  const [modalstring, setModalString] = useState('');
 
+  const [OpenInfo, setOpenInfo] = useState(false);
   const [obj, SetObj] = useState({
-    members: 3,
-    followers: 0,
-    profiles: 0,
+    members: authContext.entity.obj.who_can_see_member ?? 0,
+    followers: authContext.entity.obj.who_can_see_follower ?? 0,
+    profiles: authContext.entity.obj.who_can_see_member_profile ?? 3,
   });
+
+  const callGroup = async (groupID, authContext) => {
+    const response = await getGroupDetails(groupID, authContext);
+
+    // console.log(response.payload, 'get grp');
+
+    console.log(authContext.entity, 'from auth');
+
+    SetObj({
+      members: response.payload.who_can_see_member,
+      followers: response.payload.who_can_see_follower,
+      profiles: response.payload.who_can_see_member_profile,
+    });
+  };
+  // console.log(obj, 'From obj');
+
+  useEffect(() => {
+    callGroup(route.params?.groupID, authContext);
+  }, []);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -106,9 +119,78 @@ export default function MembersViewPrivacyScreen({navigation}) {
       });
   };
 
+  const OpenInfoModal = () => (
+    <Modal
+      isVisible={OpenInfo}
+      onBackdropPress={() => setOpenInfo(false)}
+      animationInTiming={300}
+      animationOutTiming={800}
+      backdropTransitionInTiming={300}
+      backdropTransitionOutTiming={800}
+      style={{
+        margin: 0,
+      }}>
+      <View
+        behavior="height"
+        enabled={false}
+        style={{
+          width: '100%',
+          backgroundColor: 'white',
+          position: 'absolute',
+          bottom: 0,
+          right: 0,
+          left: 0,
+          shadowColor: '#000',
+          shadowOffset: {width: 0, height: 1},
+          shadowOpacity: 0.5,
+          shadowRadius: 5,
+          elevation: 15,
+          borderTopLeftRadius: 30,
+          borderTopRightRadius: 30,
+          flex: 1,
+        }}>
+        <View
+          style={{
+            height: 140,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <View
+            style={{
+              marginTop: 16,
+            }}>
+            <View
+              style={{
+                width: 40,
+                height: 5,
+                backgroundColor: colors.modalHandleColor,
+              }}
+            />
+          </View>
+          <Text
+            style={{
+              marginTop: 24,
+              marginBottom: 25,
+              lineHeight: 24,
+              fontSize: 16,
+              fontFamily: fonts.RRegular,
+
+              paddingLeft: 24,
+              paddingRight: 21,
+            }}>
+            {format(strings.infoPrivacyTeamMember, modalstring)}
+          </Text>
+        </View>
+      </View>
+    </Modal>
+  );
+
+  // render team and club differently
+
   return (
     <SafeAreaView style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
+      <OpenInfoModal />
       <ScrollView>
         <Text style={styles.titleStyle}>{strings.membersTitle}</Text>
         <View style={[styles.privacyCell, {marginTop: 15}]}>
@@ -117,42 +199,50 @@ export default function MembersViewPrivacyScreen({navigation}) {
             <TouchableOpacity
               style={styles.radioButtonView}
               onPress={() => {
-                setMember(0);
                 SetObj({...obj, members: 0});
               }}>
               <Text style={styles.radioText}>{strings.everyoneTitleText}</Text>
               <Image
                 source={
-                  member === 0 ? images.radioRoundOrange : images.radioUnselect
+                  obj.members === 0
+                    ? images.radioRoundOrange
+                    : images.radioUnselect
                 }
                 style={styles.radioImage}
               />
             </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.radioButtonView}
-              onPress={() => {
-                setMember(1);
-                SetObj({...obj, members: 1});
-              }}>
-              <Text style={styles.radioText}>{strings.followerTitleText}</Text>
-              <Image
-                source={
-                  member === 1 ? images.radioRoundOrange : images.radioUnselect
-                }
-                style={styles.radioImage}
-              />
-            </TouchableOpacity>
-            {authContext.entity.role === Verbs.entityTypeTeam && (
+
+            {authContext.entity.obj.parent_groups?.length >= 1 &&
+            authContext.entity.role === Verbs.entityTypeTeam ? (
               <TouchableOpacity
                 style={styles.radioButtonView}
                 onPress={() => {
-                  setMember(2);
-                  SetObj({...obj, members: 2});
+                  SetObj({...obj, members: 1});
                 }}>
-                <Text style={styles.radioText}>{strings.teamMember}</Text>
+                <Text style={styles.radioText}>
+                  {strings.folloersAndClubMembers}
+                </Text>
                 <Image
                   source={
-                    member === 2
+                    obj.members === 1
+                      ? images.radioRoundOrange
+                      : images.radioUnselect
+                  }
+                  style={styles.radioImage}
+                />
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                style={styles.radioButtonView}
+                onPress={() => {
+                  SetObj({...obj, members: 1});
+                }}>
+                <Text style={styles.radioText}>
+                  {strings.followerTitleText}
+                </Text>
+                <Image
+                  source={
+                    obj.members === 1
                       ? images.radioRoundOrange
                       : images.radioUnselect
                   }
@@ -161,18 +251,17 @@ export default function MembersViewPrivacyScreen({navigation}) {
               </TouchableOpacity>
             )}
 
-            {authContext.entity.auth?.user?.parent_groups?.length >= 1 &&
+            {authContext.entity.obj.parent_groups?.length >= 1 &&
               authContext.entity.role === Verbs.entityTypeTeam && (
                 <TouchableOpacity
                   style={styles.radioButtonView}
                   onPress={() => {
-                    setMember(3);
                     SetObj({...obj, members: 3});
                   }}>
                   <Text style={styles.radioText}>{strings.clubMember}</Text>
                   <Image
                     source={
-                      member === 3
+                      obj.members === 3
                         ? images.radioRoundOrange
                         : images.radioUnselect
                     }
@@ -184,13 +273,57 @@ export default function MembersViewPrivacyScreen({navigation}) {
               <TouchableOpacity
                 style={styles.radioButtonView}
                 onPress={() => {
-                  setMember(3);
                   SetObj({...obj, members: 3});
                 }}>
                 <Text style={styles.radioText}>{strings.clubMember}</Text>
                 <Image
                   source={
-                    member === 3
+                    obj.members === 3
+                      ? images.radioRoundOrange
+                      : images.radioUnselect
+                  }
+                  style={styles.radioImage}
+                />
+              </TouchableOpacity>
+            )}
+
+            {authContext.entity.role === Verbs.entityTypeTeam && (
+              <TouchableOpacity
+                style={styles.radioButtonView}
+                onPress={() => {
+                  SetObj({...obj, members: 2});
+                }}>
+                <Pressable
+                  onPress={() => {
+                    setOpenInfo(true);
+
+                    setModalString('members');
+                  }}
+                  hitSlop={Utility.getHitSlop(15)}
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                  <Text style={styles.radioText}>{strings.teamMember}</Text>
+                  <Image
+                    source={images.infoIcon}
+                    style={{
+                      height: 15,
+                      width: 15,
+                      marginLeft: -9,
+                      marginTop: 3,
+                      display:
+                        authContext.entity.obj.parent_groups?.length >= 1
+                          ? 'flex'
+                          : 'none',
+                    }}
+                  />
+                </Pressable>
+
+                <Image
+                  source={
+                    obj.members === 2
                       ? images.radioRoundOrange
                       : images.radioUnselect
                   }
@@ -209,46 +342,50 @@ export default function MembersViewPrivacyScreen({navigation}) {
             <TouchableOpacity
               style={styles.radioButtonView}
               onPress={() => {
-                setFollower(0);
                 SetObj({...obj, followers: 0});
               }}>
               <Text style={styles.radioText}>{strings.everyoneTitleText}</Text>
               <Image
                 source={
-                  follower === 0
+                  obj.followers === 0
                     ? images.radioRoundOrange
                     : images.radioUnselect
                 }
                 style={styles.radioImage}
               />
             </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.radioButtonView}
-              onPress={() => {
-                setFollower(1);
-                SetObj({...obj, followers: 1});
-              }}>
-              <Text style={styles.radioText}>{strings.followerTitleText}</Text>
-              <Image
-                source={
-                  follower === 1
-                    ? images.radioRoundOrange
-                    : images.radioUnselect
-                }
-                style={styles.radioImage}
-              />
-            </TouchableOpacity>
-            {authContext.entity.role === Verbs.entityTypeTeam && (
+
+            {authContext.entity.obj.parent_groups?.length >= 1 &&
+            authContext.entity.role === Verbs.entityTypeTeam ? (
               <TouchableOpacity
                 style={styles.radioButtonView}
                 onPress={() => {
-                  setFollower(2);
-                  SetObj({...obj, followers: 2});
+                  SetObj({...obj, followers: 1});
                 }}>
-                <Text style={styles.radioText}>{strings.teamMember}</Text>
+                <Text style={styles.radioText}>
+                  {strings.folloersAndClubMembers}
+                </Text>
                 <Image
                   source={
-                    follower === 2
+                    obj.followers === 1
+                      ? images.radioRoundOrange
+                      : images.radioUnselect
+                  }
+                  style={styles.radioImage}
+                />
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                style={styles.radioButtonView}
+                onPress={() => {
+                  SetObj({...obj, followers: 1});
+                }}>
+                <Text style={styles.radioText}>
+                  {strings.followerTitleText}
+                </Text>
+                <Image
+                  source={
+                    obj.followers === 1
                       ? images.radioRoundOrange
                       : images.radioUnselect
                   }
@@ -256,18 +393,34 @@ export default function MembersViewPrivacyScreen({navigation}) {
                 />
               </TouchableOpacity>
             )}
-            {authContext.entity.auth?.user?.parent_groups?.length >= 1 &&
+
+            {/* <TouchableOpacity
+              style={styles.radioButtonView}
+              onPress={() => {
+                SetObj({...obj, followers: 1});
+              }}>
+              <Text style={styles.radioText}>{strings.followerTitleText}</Text>
+              <Image
+                source={
+                  obj.followers === 1
+                    ? images.radioRoundOrange
+                    : images.radioUnselect
+                }
+                style={styles.radioImage}
+              />
+            </TouchableOpacity> */}
+
+            {authContext.entity.obj.parent_groups?.length >= 1 &&
               authContext.entity.role === Verbs.entityTypeTeam && (
                 <TouchableOpacity
                   style={styles.radioButtonView}
                   onPress={() => {
-                    setFollower(3);
                     SetObj({...obj, followers: 3});
                   }}>
                   <Text style={styles.radioText}>{strings.clubMember}</Text>
                   <Image
                     source={
-                      follower === 3
+                      obj.followers === 3
                         ? images.radioRoundOrange
                         : images.radioUnselect
                     }
@@ -279,13 +432,56 @@ export default function MembersViewPrivacyScreen({navigation}) {
               <TouchableOpacity
                 style={styles.radioButtonView}
                 onPress={() => {
-                  setFollower(3);
                   SetObj({...obj, followers: 3});
                 }}>
                 <Text style={styles.radioText}>{strings.clubMember}</Text>
                 <Image
                   source={
-                    follower === 3
+                    obj.followers === 3
+                      ? images.radioRoundOrange
+                      : images.radioUnselect
+                  }
+                  style={styles.radioImage}
+                />
+              </TouchableOpacity>
+            )}
+
+            {authContext.entity.role === Verbs.entityTypeTeam && (
+              <TouchableOpacity
+                style={styles.radioButtonView}
+                onPress={() => {
+                  SetObj({...obj, followers: 2});
+                }}>
+                <Pressable
+                  onPress={() => {
+                    setOpenInfo(true);
+                    setModalString('followers');
+                  }}
+                  hitSlop={Utility.getHitSlop(15)}
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                  <Text style={styles.radioText}>{strings.teamMember}</Text>
+                  <Image
+                    source={images.infoIcon}
+                    style={{
+                      height: 15,
+                      width: 15,
+                      marginLeft: -9,
+                      marginTop: 3,
+                      display:
+                        authContext.entity.obj.parent_groups?.length >= 1
+                          ? 'flex'
+                          : 'none',
+                    }}
+                  />
+                </Pressable>
+
+                <Image
+                  source={
+                    obj.followers === 2
                       ? images.radioRoundOrange
                       : images.radioUnselect
                   }
@@ -301,36 +497,18 @@ export default function MembersViewPrivacyScreen({navigation}) {
             {strings.whoCanSeeMemberProfileText}
           </Text>
           <View style={styles.radioMainView}>
-            {authContext.entity.role === Verbs.entityTypeTeam && (
-              <TouchableOpacity
-                style={styles.radioButtonView}
-                onPress={() => {
-                  setProfile(2);
-                  SetObj({...obj, profiles: 2});
-                }}>
-                <Text style={styles.radioText}>{strings.teamMember}</Text>
-                <Image
-                  source={
-                    profile === 2
-                      ? images.radioRoundOrange
-                      : images.radioUnselect
-                  }
-                  style={styles.radioImage}
-                />
-              </TouchableOpacity>
-            )}
-            {authContext.entity.auth?.user?.parent_groups?.length >= 1 &&
+            {authContext.entity.obj.parent_groups?.length >= 1 &&
               authContext.entity.role === Verbs.entityTypeTeam && (
                 <TouchableOpacity
                   style={styles.radioButtonView}
                   onPress={() => {
-                    setProfile(3);
                     SetObj({...obj, profiles: 3});
                   }}>
                   <Text style={styles.radioText}>{strings.clubMember}</Text>
+
                   <Image
                     source={
-                      profile === 3
+                      obj.profiles === 3
                         ? images.radioRoundOrange
                         : images.radioUnselect
                     }
@@ -338,18 +516,42 @@ export default function MembersViewPrivacyScreen({navigation}) {
                   />
                 </TouchableOpacity>
               )}
-
-            {authContext.entity.role === Verbs.entityTypeClub && (
+            {authContext.entity.role === Verbs.entityTypeTeam && (
               <TouchableOpacity
                 style={styles.radioButtonView}
                 onPress={() => {
-                  setProfile(3);
-                  SetObj({...obj, profiles: 3});
+                  SetObj({...obj, profiles: 2});
                 }}>
-                <Text style={styles.radioText}>{strings.clubMember}</Text>
+                <Pressable
+                  onPress={() => {
+                    setOpenInfo(true);
+                    setModalString('member profile');
+                  }}
+                  hitSlop={Utility.getHitSlop(15)}
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                  <Text style={styles.radioText}>{strings.teamMember}</Text>
+                  <Image
+                    source={images.infoIcon}
+                    style={{
+                      height: 15,
+                      width: 15,
+                      marginLeft: -9,
+                      marginTop: 3,
+                      display:
+                        authContext.entity.obj.parent_groups?.length >= 1
+                          ? 'flex'
+                          : 'none',
+                    }}
+                  />
+                </Pressable>
+
                 <Image
                   source={
-                    profile === 3
+                    obj.profiles === 2
                       ? images.radioRoundOrange
                       : images.radioUnselect
                   }
@@ -358,40 +560,99 @@ export default function MembersViewPrivacyScreen({navigation}) {
               </TouchableOpacity>
             )}
 
-            {authContext.entity.auth?.user?.parent_groups?.length >= 1 ? (
+            {authContext.entity.role === Verbs.entityTypeClub && (
               <TouchableOpacity
                 style={styles.radioButtonView}
                 onPress={() => {
-                  setProfile(6);
-                  SetObj({...obj, profiles: 6});
+                  SetObj({...obj, profiles: 3});
                 }}>
-                <Text style={styles.radioText}>{strings.onlyTeamAndclub}</Text>
+                <Text style={styles.radioText}>{strings.clubMember}</Text>
                 <Image
                   source={
-                    profile === 6
+                    obj.profiles === 3
                       ? images.radioRoundOrange
                       : images.radioUnselect
                   }
                   style={styles.radioImage}
                 />
               </TouchableOpacity>
+            )}
+
+            {authContext.entity.obj.parent_groups?.length >= 1 ? (
+              <>
+                <TouchableOpacity
+                  style={styles.radioButtonView}
+                  onPress={() => {
+                    SetObj({...obj, profiles: 6});
+                  }}>
+                  <Text style={styles.radioText}>
+                    {strings.onlyTeamAndclub}
+                  </Text>
+                  <Image
+                    source={
+                      obj.profiles === 6
+                        ? images.radioRoundOrange
+                        : images.radioUnselect
+                    }
+                    style={styles.radioImage}
+                  />
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.radioButtonView}
+                  onPress={() => {
+                    SetObj({...obj, profiles: 4});
+                  }}>
+                  {/* for team team only and for club club only */}
+                  <Text style={styles.radioText}>{strings.teamOnly}</Text>
+                  <Image
+                    source={
+                      obj.profiles === 4
+                        ? images.radioRoundOrange
+                        : images.radioUnselect
+                    }
+                    style={styles.radioImage}
+                  />
+                </TouchableOpacity>
+              </>
             ) : (
-              <TouchableOpacity
-                style={styles.radioButtonView}
-                onPress={() => {
-                  setProfile(6);
-                  SetObj({...obj, profiles: 6});
-                }}>
-                <Text style={styles.radioText}>{strings.onlyClub}</Text>
-                <Image
-                  source={
-                    profile === 6
-                      ? images.radioRoundOrange
-                      : images.radioUnselect
-                  }
-                  style={styles.radioImage}
-                />
-              </TouchableOpacity>
+              <>
+                {authContext.entity.role === Verbs.entityTypeTeam ? (
+                  <TouchableOpacity
+                    style={styles.radioButtonView}
+                    onPress={() => {
+                      SetObj({...obj, profiles: 4});
+                    }}>
+                    {/* for team team only and for club club only */}
+                    <Text style={styles.radioText}>{strings.teamOnly}</Text>
+                    <Image
+                      source={
+                        obj.profiles === 4
+                          ? images.radioRoundOrange
+                          : images.radioUnselect
+                      }
+                      style={styles.radioImage}
+                    />
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity
+                    style={styles.radioButtonView}
+                    onPress={() => {
+                      SetObj({...obj, profiles: 5});
+                    }}>
+                    {/* for team team only and for club club only */}
+                    <Text style={styles.radioText}>{strings.clubOnly}</Text>
+                    <Image
+                      source={
+                        obj.profiles === 5
+                          ? images.radioRoundOrange
+                          : images.radioUnselect
+                      }
+                      style={styles.radioImage}
+                    />
+                  </TouchableOpacity>
+                )}
+              </>
             )}
           </View>
         </View>

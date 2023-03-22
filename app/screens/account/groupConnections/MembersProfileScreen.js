@@ -26,11 +26,13 @@ import {
   Linking,
   Pressable,
   Platform,
+  Animated,
 } from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
 import {format} from 'react-string-format';
 import Modal from 'react-native-modal';
 import ActionSheet from 'react-native-actionsheet';
+
 import {
   getGroupMembersInfo,
   deleteMember,
@@ -101,6 +103,8 @@ export default function MembersProfileScreen({navigation, route}) {
 
   useLayoutEffect(() => {
     navigation.setOptions({
+      headerShown: showSwitchScreen ? false : true,
+
       headerRight: () =>
         whoSeeID === entity.uid &&
         !loading && (
@@ -237,15 +241,12 @@ export default function MembersProfileScreen({navigation, route}) {
     setPositions([...positions, obj]);
   };
 
-  // useFocusEffect(() => {
-  //   getMembers();
-  // }, [navigation]);
-
   useEffect(() => {
     if (isFocused) {
       getMemberInformation();
       getMembers();
     }
+    console.log(authContext, 'From auth');
   }, [isFocused, navigation, route]);
 
   useEffect(() => {
@@ -441,6 +442,12 @@ export default function MembersProfileScreen({navigation, route}) {
   const onDeleteMemberProfile = (groupId, memberId, toaccount = false) => {
     if (toaccount) {
       setShowSwitchScreen(true);
+
+      Animated.timing(animProgress, {
+        useNativeDriver: false,
+        toValue: 100,
+        duration: 600,
+      }).start();
     } else {
       setloading(true);
     }
@@ -456,7 +463,9 @@ export default function MembersProfileScreen({navigation, route}) {
           navigation.navigate('Account', {
             screen: 'AccountScreen',
             params: {
-              switchToUser: true,
+              switchToUser: 'fromMember',
+              authFromMember: authContext.user,
+              grpname: switchUser,
             },
           });
         } else if (response?.payload.error_code === validator) {
@@ -474,10 +483,6 @@ export default function MembersProfileScreen({navigation, route}) {
         } else {
           navigation.navigate('GroupMembersScreen');
         }
-
-        // else {
-        //   navigation.navigate('GroupMembersScreen');
-        // }
       })
       .catch((e) => {
         setloading(false);
@@ -1222,13 +1227,29 @@ export default function MembersProfileScreen({navigation, route}) {
     </Modal>
   );
 
+  const animProgress = React.useState(new Animated.Value(0))[0];
+
+  const animWidthPrecent = animProgress.interpolate({
+    inputRange: [0, 50, 100],
+    outputRange: ['0%', '50%', '100%'],
+  });
+
+  let placeHolder = images.teamSqure;
+  if (authContext.entity.role === Verbs.entityTypeClub) {
+    placeHolder = images.clubPlaceholderSmall;
+  } else if (authContext.entity.role === Verbs.entityTypeTeam) {
+    placeHolder = images.teamPlaceholderSmall;
+  } else {
+    placeHolder = images.profilePlaceHolder;
+  }
+
   return (
     <SafeAreaView>
       {showSwitchScreen && (
         <View
           style={{
             flex: 1,
-            backgroundColor: colors.lightGrey,
+            backgroundColor: '#F5F5F5',
             justifyContent: 'center',
             alignItems: 'center',
             ...StyleSheet.absoluteFillObject,
@@ -1237,36 +1258,64 @@ export default function MembersProfileScreen({navigation, route}) {
           <View
             style={{
               flex: 1,
-              backgroundColor: colors.orangeColorCard,
+              backgroundColor: '#F5F5F5',
               opacity: 0.8,
               justifyContent: 'center',
               alignItems: 'center',
               ...StyleSheet.absoluteFillObject,
-              marginHorizontal: 20,
-              marginVertical: 25,
+              marginTop: 300,
               zIndex: 1000,
-              borderRadius: 20,
             }}>
             <ActivityLoader visible={false} />
+            <View style={styles.profileImageContainer}>
+              <Image
+                source={
+                  authContext.user?.thumbnail || ''
+                    ? {uri: authContext.user?.thumbnail}
+                    : placeHolder
+                }
+                style={styles.profileImg}
+              />
+            </View>
             <View
               style={{
-                height: 70,
-                width: 70,
-                borderRadius: 50,
-                backgroundColor: colors.whiteColor,
-              }}
-            />
-            <Text
-              style={{
-                marginTop: 10,
-                lineHeight: 24,
-                fontFamily: fonts.RBold,
-                fontSize: 16,
-                textAlign: 'center',
+                marginTop: 15,
               }}>
-              Switching Profile ....
-            </Text>
+              <Text
+                style={{
+                  lineHeight: 24,
+                  fontFamily: fonts.RMedium,
+                  fontSize: 16,
+                  textAlign: 'center',
+                }}>
+                Switching to
+              </Text>
+              <Text
+                style={{
+                  lineHeight: 24,
+                  fontFamily: fonts.RBold,
+                  fontSize: 16,
+                  textAlign: 'center',
+                }}>
+                {authContext.user?.full_name}
+              </Text>
+            </View>
+
+            <View
+              style={{
+                width: 135,
+                height: 5,
+                backgroundColor: '#F2F2F2',
+                borderRadius: 20,
+
+                marginTop: 279,
+              }}>
+              <Animated.View
+                style={[styles.progressBar, {width: animWidthPrecent}]}
+              />
+            </View>
           </View>
+          {/* PRogree Bar */}
         </View>
       )}
 
@@ -1901,5 +1950,31 @@ const styles = StyleSheet.create({
     marginRight: 15,
     marginTop: 35,
     paddingHorizontal: 15,
+  },
+  profileImageContainer: {
+    height: 55,
+    width: 55,
+    backgroundColor: colors.whiteColor,
+    borderRadius: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: colors.blackColor,
+    shadowOffset: {height: 1.5, width: 0},
+    shadowRadius: 3,
+    shadowOpacity: 0.16,
+    elevation: 3,
+  },
+  profileImg: {
+    height: 60,
+    width: 60,
+    resizeMode: 'cover',
+    alignSelf: 'center',
+    borderRadius: 100,
+  },
+
+  progressBar: {
+    width: '100%',
+    height: 5,
+    backgroundColor: colors.orangeGradientColor,
   },
 });

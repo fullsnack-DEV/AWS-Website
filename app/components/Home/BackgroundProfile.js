@@ -13,6 +13,7 @@ import AuthContext from '../../auth/context';
 export default function BackgroundProfile({
   currentUserData,
   onConnectionButtonPress,
+
   imageSize = 50,
   placeHolderSize = 60,
 }) {

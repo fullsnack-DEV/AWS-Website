@@ -30,7 +30,11 @@ import AuthContext from '../../../auth/context';
 import TCSearchBox from '../../../components/TCSearchBox';
 import TCNoDataView from '../../../components/TCNoDataView';
 
-import {getGroupMembers} from '../../../api/Groups';
+import {
+  getGroupDetails,
+  getGroupMembers,
+  getJoinedGroups,
+} from '../../../api/Groups';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 
 import images from '../../../Constants/ImagePath';
@@ -62,13 +66,29 @@ export default function GroupMembersScreen({navigation, route}) {
   const [members, setMembers] = useState([]);
 
   const [switchUser] = useState(authContext.entity);
-  const [groupObj] = useState(route.params?.groupObj ?? authContext.entity.obj);
+  const [groupObj] = useState(route.params?.groupObj);
   const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
   const [pointEvent, setPointEvent] = useState('auto');
   const [active, setActive] = useState(true);
+
+  const [groupObjNew, setGroupObjNew] = useState();
   const [groupID] = useState(route.params?.groupID ?? authContext.entity.uid);
   const routes = useNavigationState((state) => state.routes);
   const currentRoute = routes[0].name;
+  const [userJoinedGrpList, setUserJoinedGrpList] = useState();
+  const [clubToCheckAdmin, setClubToCheckAdmin] = useState();
+
+  const callGroup = async (groupIDs, authContexts) => {
+    const response = await getGroupDetails(groupIDs, authContexts);
+
+    setGroupObjNew(response.payload);
+  };
+
+  const getGroupsLoggedInUser = () => {
+    getJoinedGroups(Verbs.entityTypeClub, authContext).then((response) => {
+      setUserJoinedGrpList(response.payload);
+    });
+  };
 
   useEffect(() => {
     getMembers();
@@ -136,6 +156,8 @@ export default function GroupMembersScreen({navigation, route}) {
   }, [navigation, switchUser, groupID, currentRoute]);
 
   useEffect(() => {
+    callGroup(groupID, authContext);
+    getGroupsLoggedInUser();
     setIsAccountDeactivated(false);
     setPointEvent('auto');
     if (isFocused) {
@@ -255,6 +277,17 @@ export default function GroupMembersScreen({navigation, route}) {
     [navigation],
   );
 
+  const checkIfClubAdmin = async () => {
+    const op = authContext.user?.clubIds?.filter((el) =>
+      groupObjNew?.parent_groups?.includes(el),
+    );
+
+    const response = await getGroupDetails(op[0], authContext);
+
+    setClubToCheckAdmin(response.payload.am_i_admin);
+    // if(response.payload)
+  };
+
   const renderFollowUnfollowArrow = useCallback(
     (data, index) => {
       if (
@@ -278,28 +311,204 @@ export default function GroupMembersScreen({navigation, route}) {
       }
       if (data.is_following) {
         if (authContext.entity.uid !== data?.user_id && data?.connected) {
+          checkIfClubAdmin();
           return (
             <View style={{flexDirection: 'row'}}>
               <TCFollowUnfollwButton
-                outerContainerStyle={styles.firstButtonOuterStyle}
+                outerContainerStyles={styles.firstButtonOuterStyle}
                 style={styles.firstButtonStyle}
                 title={strings.following}
                 isFollowing={data.is_following}
+                startGradientColor={colors.lightGrey}
+                endGradientColor={colors.lightGrey}
                 onPress={() => {
                   onUserAction('unfollow', data, index);
                 }}
               />
-              {groupObj?.who_can_see_member_profile === 2 && (
-                <TouchableOpacity
-                  style={[styles.buttonContainer, {marginLeft: 15}]}
-                  onPress={() => onPressProfile(data)}
-                  hitSlop={getHitSlop(15)}>
-                  <Image
-                    source={images.arrowGraterthan}
-                    style={styles.arrowStyle}
-                  />
-                </TouchableOpacity>
+
+              {/* when team is connected to club */}
+
+              {groupObjNew?.entity_type === Verbs.entityTypeTeam &&
+                groupObjNew?.parent_groups?.length > 0 && (
+                  <>
+                    {/* 3 for Club member */}
+                    {groupObjNew?.who_can_see_member_profile === 3 &&
+                      userJoinedGrpList?.some((el) =>
+                        groupObjNew?.parent_groups?.includes(el.group_id),
+                      ) && (
+                        <TouchableOpacity
+                          style={[
+                            styles.buttonContainer,
+                            {marginLeft: 15, backgroundColor: 'red'},
+                          ]}
+                          onPress={() => onPressProfile(data)}
+                          hitSlop={getHitSlop(15)}>
+                          <Image
+                            source={images.arrowGraterthan}
+                            style={styles.arrowStyle}
+                          />
+                        </TouchableOpacity>
+                      )}
+
+                    {/* 2 for Team member with club selected */}
+
+                    {/* if club member is selected and the team member can also see the arrow */}
+
+                    {/* {groupObjNew?.who_can_see_member_profile === 3 &&
+                members.some(
+                  (el) => el.user_id === authContext.user.user_id,
+                ) && (
+                  <TouchableOpacity
+                    style={[
+                      styles.buttonContainer,
+                      {marginLeft: 15, backgroundColor: 'hotpink'},
+                    ]}
+                    onPress={() => onPressProfile(data)}
+                    hitSlop={getHitSlop(15)}>
+                    <Image
+                      source={images.arrowGraterthan}
+                      style={styles.arrowStyle}
+                    />
+                  </TouchableOpacity>
+                )} */}
+
+                    {/* Team member */}
+
+                    {groupObjNew?.who_can_see_member_profile === 2 &&
+                      members.some(
+                        (el) => el.user_id === authContext.user.user_id,
+                      ) && (
+                        <TouchableOpacity
+                          style={[
+                            styles.buttonContainer,
+                            {marginLeft: 15, backgroundColor: 'yellow'},
+                          ]}
+                          onPress={() => onPressProfile(data)}
+                          hitSlop={getHitSlop(15)}>
+                          <Image
+                            source={images.arrowGraterthan}
+                            style={styles.arrowStyle}
+                          />
+                        </TouchableOpacity>
+                      )}
+
+                    {/* Team admin only */}
+                    {groupObjNew?.who_can_see_member_profile === 4 &&
+                      groupObjNew?.am_i_admin && (
+                        <TouchableOpacity
+                          style={[
+                            styles.buttonContainer,
+                            {marginLeft: 15, backgroundColor: 'green'},
+                          ]}
+                          onPress={() => onPressProfile(data)}
+                          hitSlop={getHitSlop(15)}>
+                          <Image
+                            source={images.arrowGraterthan}
+                            style={styles.arrowStyle}
+                          />
+                        </TouchableOpacity>
+                      )}
+
+                    {/* club and team admin */}
+
+                    {groupObjNew?.who_can_see_member_profile === 6 &&
+                      clubToCheckAdmin && (
+                        <TouchableOpacity
+                          style={[styles.buttonContainer, {marginLeft: 15}]}
+                          onPress={() => onPressProfile(data)}
+                          hitSlop={getHitSlop(15)}>
+                          <Image
+                            source={images.arrowGraterthan}
+                            style={styles.arrowStyle}
+                          />
+                        </TouchableOpacity>
+                      )}
+
+                    {groupObjNew?.who_can_see_member_profile === 6 &&
+                      groupObjNew?.am_i_admin && (
+                        <TouchableOpacity
+                          style={[
+                            styles.buttonContainer,
+                            {marginLeft: 15, backgroundColor: 'orange'},
+                          ]}
+                          onPress={() => onPressProfile(data)}
+                          hitSlop={getHitSlop(15)}>
+                          <Image
+                            source={images.arrowGraterthan}
+                            style={styles.arrowStyle}
+                          />
+                        </TouchableOpacity>
+                      )}
+
+                    {/* to find club admin get the club deta */}
+                  </>
+                )}
+
+              {groupObjNew?.entity_type === Verbs.entityTypeClub && (
+                <>
+                  {groupObjNew?.who_can_see_member_profile === 3 &&
+                    members.some(
+                      (el) => el.user_id === authContext.user.user_id,
+                    ) && (
+                      <TouchableOpacity
+                        style={[styles.buttonContainer, {marginLeft: 15}]}
+                        onPress={() => onPressProfile(data)}
+                        hitSlop={getHitSlop(15)}>
+                        <Image
+                          source={images.arrowGraterthan}
+                          style={styles.arrowStyle}
+                        />
+                      </TouchableOpacity>
+                    )}
+
+                  {/* club admin */}
+                  {groupObjNew?.who_can_see_member_profile === 5 &&
+                    groupObjNew?.am_i_admin && (
+                      <TouchableOpacity
+                        style={[styles.buttonContainer, {marginLeft: 15}]}
+                        onPress={() => onPressProfile(data)}
+                        hitSlop={getHitSlop(15)}>
+                        <Image
+                          source={images.arrowGraterthan}
+                          style={styles.arrowStyle}
+                        />
+                      </TouchableOpacity>
+                    )}
+                </>
               )}
+
+              {groupObjNew?.entity_type === Verbs.entityTypeTeam &&
+                !groupObjNew?.parent_groups?.length > 0 && (
+                  <>
+                    {groupObjNew?.who_can_see_member_profile === 2 &&
+                      members.some(
+                        (el) => el.user_id === authContext.user.user_id,
+                      ) && (
+                        <TouchableOpacity
+                          style={[styles.buttonContainer, {marginLeft: 15}]}
+                          onPress={() => onPressProfile(data)}
+                          hitSlop={getHitSlop(15)}>
+                          <Image
+                            source={images.arrowGraterthan}
+                            style={styles.arrowStyle}
+                          />
+                        </TouchableOpacity>
+                      )}
+
+                    {groupObjNew?.who_can_see_member_profile === 4 &&
+                      groupObjNew?.am_i_admin && (
+                        <TouchableOpacity
+                          style={[styles.buttonContainer, {marginLeft: 15}]}
+                          onPress={() => onPressProfile(data)}
+                          hitSlop={getHitSlop(15)}>
+                          <Image
+                            source={images.arrowGraterthan}
+                            style={styles.arrowStyle}
+                          />
+                        </TouchableOpacity>
+                      )}
+                  </>
+                )}
             </View>
           );
         }
@@ -309,14 +518,17 @@ export default function GroupMembersScreen({navigation, route}) {
         return (
           <View style={{flexDirection: 'row'}}>
             <TCFollowUnfollwButton
-              outerContainerStyle={styles.firstButtonOuterStyle}
+              outerContainerStyles={styles.firstButtonOuterStyle}
               style={styles.firstButtonStyle}
               title={strings.follow}
               isFollowing={data.is_following}
+              startGradientColor={colors.lightGrey}
+              endGradientColor={colors.lightGrey}
               onPress={() => {
                 onUserAction('follow', data, index);
               }}
             />
+
             {groupObj?.who_can_see_member_profile === 2 && (
               <TouchableOpacity
                 style={[styles.buttonContainer, {marginLeft: 15}]}
@@ -331,6 +543,7 @@ export default function GroupMembersScreen({navigation, route}) {
           </View>
         );
       }
+
       return <View />;
     },
     [
@@ -552,7 +765,7 @@ export default function GroupMembersScreen({navigation, route}) {
           } else if (index === 1) {
             Alert.alert(strings.underDevelopment);
           } else if (index === 2) {
-            navigation.navigate('MembersViewPrivacyScreen');
+            navigation.navigate('MembersViewPrivacyScreen', {groupID});
           }
         }}
       />
@@ -666,5 +879,16 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     resizeMode: 'contain',
     tintColor: colors.blackColor,
+  },
+  firstButtonStyle: {
+    paddingHorizontal: 12,
+  },
+  firstButtonOuterStyle: {
+    width: 100,
+    height: 30,
+    paddingTop: 5,
+    padding: 6,
+
+    borderRadius: 5,
   },
 });

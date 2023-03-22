@@ -7,6 +7,7 @@ import fonts from '../Constants/Fonts';
 const TCFollowUnfollowButton = ({
   title,
   onPress,
+  outerContainerStyles,
 
   rightIcon,
   rightIconStyle,
@@ -17,7 +18,7 @@ const TCFollowUnfollowButton = ({
   <TouchableOpacity onPress={onPress} style={styles.outerContainerStyle}>
     <LinearGradient
       colors={[endGradientColor, startGradientColor]}
-      style={styles.containerStyle}>
+      style={[styles.containerStyle, outerContainerStyles]}>
       <Text
         style={[
           styles.buttonText,
@@ -38,24 +39,25 @@ const TCFollowUnfollowButton = ({
 const styles = StyleSheet.create({
   outerContainerStyle: {
     alignSelf: 'center',
-    shadowColor: colors.blackColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.16,
-    shadowRadius: 3,
-    elevation: 1.5,
+    // shadowColor: colors.blackColor,
+    // shadowOffset: {width: 0, height: 1},
+    // shadowOpacity: 0.16,
+    // shadowRadius: 3,
+    // elevation: 1.5,
   },
   containerStyle: {
     flexDirection: 'row',
     borderRadius: 5,
     justifyContent: 'center',
-    margin: 0,
-    height: 24,
+    // margin: 0,
+    height: 25,
     width: 80,
   },
   buttonText: {
     alignSelf: 'center',
     fontSize: 12,
     fontFamily: fonts.RBold,
+    lineHeight: 14,
   },
   rightIconStyle: {
     alignSelf: 'center',
