@@ -70,6 +70,9 @@ export default function UserConnections({navigation, route}) {
           <FlatList
             data={data}
             keyExtractor={(item, index) => index.toString()}
+            style={{
+              marginTop: 15,
+            }}
             renderItem={({item}) => {
               const showFollowUnfollowButton =
                 userRole === Verbs.entityTypeUser &&

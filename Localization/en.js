@@ -1274,9 +1274,9 @@ export default {
   whoCanInviteToYourEventText: 'en_Who can invite people to your {0} event?',
 
   teamAndMembersText: 'en_Team & members',
-  teamOnly: 'en_Team only',
+  teamOnly: 'en_Team (admin) only',
   clubAndMembersText: 'en_Club & members',
-  clubOnly: 'en_Club only',
+  clubOnly: 'en_Club (admin) only',
   whoCanInviteMemberText: 'en_Who Can Invite Member',
   whoCanInviteMemberToText: 'en_Who can invite a member to {0}?',
   membersProfile: 'en_Members Profile',
@@ -2448,7 +2448,7 @@ export default {
   editAdminPrivillege: 'en_Edit Admin Privilege',
 
   adminremoved:
-    'en_You were removed from Vancouver Whitecaps FC, and your account has been switched to your personal account.',
+    'en_You were removed from {0}, and your account has been switched to your personal account.',
   onlyAdmin:
     'en_{0} is the only admin of  {1}.  Please add a new admin before remove {0}.',
 
@@ -2457,12 +2457,12 @@ export default {
   childMemberError:
     'en_Please remove the member from all the teams in your club first before removing the member from the club.',
   whocanseeMember: 'en_Who can see members ?',
-  teamMember: 'en_Team Members',
-  clubMember: 'en_Club Members',
+  teamMember: 'en_Team members',
+  clubMember: 'en_Club members',
   whoCanSeefollwer: 'en_Who can see followers ?',
-  onlyTeamAndclub: 'en_Only Team and Club',
-  onlyClub: 'en_Only_Club',
-  onlyTeam: 'en_Only_Team',
+  onlyTeamAndclub: 'en_Club and Team (admin)',
+  onlyClub: 'en_Only_Club (admin)',
+  onlyTeam: 'en_Only_Team (admin)',
 
   sportRefereeQuestion: 'en_What sport do you want to referee?',
   sportRefereeQuestionDescription:
@@ -2497,6 +2497,13 @@ export default {
   matchesNearYou: 'en_MATCHES NEAR YOU',
   matchHostText: 'en_Match Host',
   sendOfferText: 'en_Send Offer',
+
+
+  folloersAndClubMembers: 'en_Followers and Club Members',
+  infoPrivacyTeamMember:
+    'en_If you choose this option, clubs (admins) which your team belongs to also can see your {0}.',
+
+
   refereedMatchesTitle: 'en_Refereed Matches',
   addCerticateTitle: 'en_+ Add Certificates',
   editServicableAreasText: 'en_Edit Serviceable Areas',
@@ -2507,4 +2514,5 @@ export default {
   incomingReservationSettingsScoreKeeper:
     'en_Please review your incoming reservation settings. These settings are only applicable to the scorekeeper reservation when you are booked as a scorekeeper. When you book another scorekeeper for a match, their incoming reservation settings Will be applied.',
   registerDate: '{0} in {1}',
+
 };

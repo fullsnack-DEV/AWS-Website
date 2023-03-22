@@ -1,5 +1,13 @@
-import React, {useState} from 'react';
-import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
+import React, {useState, useLayoutEffect} from 'react';
+import {
+  Text,
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  Image,
+} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 import FastImage from 'react-native-fast-image';
 import images from '../../../Constants/ImagePath';
 import fonts from '../../../Constants/Fonts';
@@ -19,7 +27,22 @@ const TCUserList = ({
   showFollowUnfollowButton = true,
   onProfilePress = () => {},
 }) => {
+  const navigation = useNavigation();
+
   const [follow, setFollow] = useState(is_following);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <TouchableWithoutFeedback
+          onPress={() => {
+            navigation.goBack();
+          }}>
+          <Image source={images.backArrow} style={styles.backArrowStyle} />
+        </TouchableWithoutFeedback>
+      ),
+    });
+  });
 
   return (
     <View>
@@ -27,7 +50,8 @@ const TCUserList = ({
         style={{
           alignItems: 'center',
           flexDirection: 'row',
-          marginVertical: 5,
+          paddingTop: 10,
+          paddingBottom: 10,
           marginHorizontal: 15,
         }}>
         <TouchableOpacity
@@ -43,8 +67,19 @@ const TCUserList = ({
         </TouchableOpacity>
         <TouchableOpacity
           onPress={onProfilePress}
-          style={{flex: 0.65, paddingVertical: 10, justifyContent: 'center'}}>
-          <TCGroupNameBadge name={title} groupType={entityType} />
+          style={{
+            flex: 1,
+
+            justifyContent: 'center',
+            marginLeft: 5,
+          }}>
+          <View
+            style={{
+              marginTop: 3,
+            }}>
+            <TCGroupNameBadge name={title} groupType={entityType} />
+          </View>
+
           <Text
             style={{
               fontSize: 14,
@@ -65,6 +100,7 @@ const TCUserList = ({
                   resizeMode: 'contain',
                   marginLeft: 3,
                   tintColor: colors.lightBlackColor,
+                  display: 'none',
                 }}
                 onPress={() => {
                   setFollow(!follow);
@@ -73,19 +109,20 @@ const TCUserList = ({
                 outerContainerStyle={{
                   borderRadius: 5,
                   height: 25,
-                  width: 75,
+                  width: 87,
+                  marginRight: 15,
                 }}
                 title={follow ? strings.following : strings.follow}
                 startGradientColor={
-                  !follow ? colors.yellowColor : colors.whiteColor
+                  !follow ? colors.lightGrey : colors.lightGrey
                 }
-                endGradientColor={
-                  !follow ? colors.themeColor : colors.whiteColor
-                }
+                endGradientColor={!follow ? colors.lightGrey : colors.lightGrey}
                 textStyle={{
-                  color: !follow ? colors.whiteColor : colors.lightBlackColor,
+                  color: !follow ? colors.themeColor : colors.lightBlackColor,
                   fontSize: 11,
                   fontFamily: fonts.RBold,
+                  lineHeight: 14,
+                  alignSelf: 'center',
                 }}
                 style={{
                   borderRadius: 5,
@@ -109,6 +146,12 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderColor: colors.grayBackgroundColor,
     marginVertical: hp(0.7),
+  },
+  backArrowStyle: {
+    height: 20,
+    marginLeft: 15,
+    resizeMode: 'contain',
+    tintColor: colors.blackColor,
   },
 });
 export default TCUserList;

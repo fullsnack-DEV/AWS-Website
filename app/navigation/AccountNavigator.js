@@ -301,9 +301,6 @@ const AccountNavigator = () => (
     <Stack.Screen
       name="AccountScreen"
       component={AccountScreen}
-      initialParams={{
-        switchToUser: false,
-      }}
       options={{
         headerShown: false,
         animationEnabled: true,

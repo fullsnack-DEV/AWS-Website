@@ -3112,7 +3112,7 @@ const HomeScreen = ({navigation, route}) => {
         onConnectionButtonPress={onConnectionButtonPress}
       />
     ),
-    [currentUserData, onConnectionButtonPress],
+    [currentUserData, onConnectionButtonPress, navigation],
   );
 
   const renderHeaderBackgroundUserProfile = useMemo(
