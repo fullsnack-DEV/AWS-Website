@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import {format} from 'react-string-format';
 import {strings} from '../../../../../Localization/translation';
-import {getGameStatsData} from '../../../../api/Games';
+import {getGameStatsData, getStatsRDMData} from '../../../../api/Games';
 import BottomSheet from '../../../../components/modals/BottomSheet';
 import TeamCard from '../../../../components/TeamCard';
 import colors from '../../../../Constants/Colors';
@@ -28,19 +28,27 @@ const OptionsList = [
   format(strings.pastMonthsText, 9),
   format(strings.pastMonthsText, 12),
 ];
+const val = {
+  totalWins: 0,
+  totalLosses: 0,
+  totalDraws: 0,
+  totalMatches: 0,
+};
+const defaultStats = {
+  all: val,
+  away: val,
+  home: val,
+};
 
 const StatsContentScreen = ({sportType = '', sport, authContext, userId}) => {
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [statsObject, setStatsObject] = useState({
-    totalWins: 0,
-    totalLosses: 0,
-    totalDraws: 0,
-    totalMatches: 0,
-  });
+  const [statsObject, setStatsObject] = useState(defaultStats);
   const [selectedMonths, setSelectedMonths] = useState(
     format(strings.pastMonthsText, 3),
   );
+  const [dmRate, setDMRate] = useState({});
+
   const isFocused = useIsFocused();
 
   const loadStatsData = useCallback(
@@ -64,22 +72,40 @@ const StatsContentScreen = ({sportType = '', sport, authContext, userId}) => {
       getGameStatsData(userId, chartParameter, authContext)
         .then((res) => {
           const list = res.payload.filter((item) => item.sport_name === sport);
-          let totalMatches = 0;
-          let totalWins = 0;
-          let totalLosses = 0;
-          let totalDraws = 0;
+          const obj = {...defaultStats};
           list.forEach((item) => {
-            totalMatches += item.stats.all.total_games;
-            totalWins += item.stats.all.winner;
-            totalLosses += item.stats.all.looser;
-            totalDraws += item.stats.all.draw;
+            let totalMatches = 0;
+            let totalWins = 0;
+            let totalLosses = 0;
+            let totalDraws = 0;
+            Object.keys(defaultStats).forEach((ele) => {
+              totalMatches += item.stats[ele].total_games;
+              totalWins += item.stats[ele].winner;
+              totalLosses += item.stats[ele].looser;
+              totalDraws += item.stats[ele].draw;
+              obj[ele] = {
+                totalMatches,
+                totalWins,
+                totalLosses,
+                totalDraws,
+              };
+            });
           });
-          setStatsObject({totalMatches, totalWins, totalLosses, totalDraws});
+
+          setStatsObject(obj);
           setLoading(false);
         })
         .catch((err) => {
           console.log({err});
           setLoading(false);
+        });
+
+      getStatsRDMData(userId, chartParameter, authContext)
+        .then((response) => {
+          setDMRate(response.payload);
+        })
+        .catch((err) => {
+          console.log({err});
         });
     },
     [authContext, sport, userId],
@@ -90,6 +116,26 @@ const StatsContentScreen = ({sportType = '', sport, authContext, userId}) => {
       loadStatsData();
     }
   }, [loadStatsData, isFocused]);
+
+  const getGraphTitle = (option) => {
+    switch (option) {
+      case Verbs.allText:
+        return strings.total;
+
+      case Verbs.homeText:
+        return strings.home;
+
+      case Verbs.awayText:
+        return strings.away;
+
+      default:
+        return '';
+    }
+  };
+
+  const dmPercentage = parseFloat(
+    (dmRate?.approved_games / dmRate.total_games) * 100,
+  ).toFixed(2);
 
   return loading ? (
     <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
@@ -117,26 +163,28 @@ const StatsContentScreen = ({sportType = '', sport, authContext, userId}) => {
             />
           </TouchableOpacity>
         </View>
-        <View style={{marginTop: 20}}>
-          {sportType === Verbs.singleSport ? (
-            <Text style={styles.label}>
-              {strings.total} {statsObject.totalMatches}
-            </Text>
-          ) : (
-            <Text style={styles.label}>
-              {format(strings.playedMatches, statsObject.totalMatches)}
-            </Text>
-          )}
+        {Object.keys(statsObject).map((item, index) => (
+          <View style={{marginTop: 20}} key={index}>
+            {sportType === Verbs.singleSport ? (
+              <Text style={styles.label}>
+                {getGraphTitle(item)} {statsObject[item].totalMatches}
+              </Text>
+            ) : (
+              <Text style={styles.label}>
+                {format(strings.playedMatches, statsObject.totalMatches)}
+              </Text>
+            )}
 
-          <StatsGraph
-            total={statsObject.totalMatches}
-            wins={statsObject.totalWins}
-            losses={statsObject.totalLosses}
-            draws={statsObject.totalDraws}
-            showTotalMatches={false}
-            containerStyle={{alignItems: 'center'}}
-          />
-        </View>
+            <StatsGraph
+              total={statsObject[item].totalMatches}
+              wins={statsObject[item].totalWins}
+              losses={statsObject[item].totalLosses}
+              draws={statsObject[item].totalDraws}
+              showTotalMatches={false}
+              containerStyle={{alignItems: 'center'}}
+            />
+          </View>
+        ))}
       </View>
       {sportType === Verbs.singleSport ? (
         <>
@@ -255,12 +303,15 @@ const StatsContentScreen = ({sportType = '', sport, authContext, userId}) => {
                 <View
                   style={[
                     styles.progressBar,
-                    {width: '10%', backgroundColor: colors.googleColor},
+                    {
+                      width: `${dmPercentage}%`,
+                      backgroundColor: colors.googleColor,
+                    },
                   ]}
                 />
               </View>
               <Text style={[styles.label, {marginTop: 10, marginBottom: 0}]}>
-                4%
+                {dmRate?.total_games ? dmPercentage : 0}%
               </Text>
             </View>
 
@@ -273,7 +324,7 @@ const StatsContentScreen = ({sportType = '', sport, authContext, userId}) => {
               <View style={{alignItems: 'flex-end'}}>
                 <Text
                   style={(styles.label, {marginBottom: 0, textAlign: 'right'})}>
-                  -
+                  {dmRate?.approved_games ?? '-'}
                 </Text>
               </View>
             </View>
@@ -289,7 +340,7 @@ const StatsContentScreen = ({sportType = '', sport, authContext, userId}) => {
               <View style={{alignItems: 'flex-end'}}>
                 <Text
                   style={(styles.label, {marginBottom: 0, textAlign: 'right'})}>
-                  -
+                  {dmRate?.disapproved_games ?? '-'}
                 </Text>
               </View>
             </View>
@@ -312,7 +363,7 @@ const StatsContentScreen = ({sportType = '', sport, authContext, userId}) => {
               <View style={{alignItems: 'flex-end'}}>
                 <Text
                   style={(styles.label, {marginBottom: 0, textAlign: 'right'})}>
-                  -
+                  {dmRate?.total_games ?? '-'}
                 </Text>
               </View>
             </View>

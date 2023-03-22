@@ -24,6 +24,7 @@ const ScoreBoardList = ({
   screenType = Verbs.screenTypeModal,
   sectionList = [],
   matchCount = 0,
+  title = strings.scoreboard,
 }) => {
   const [scoreboardList, setScoreboardList] = useState({});
   const prepareSeparateList = useCallback(() => {
@@ -171,7 +172,7 @@ const ScoreBoardList = ({
   return screenType === Verbs.screenTypeModal ? (
     <View style={styles.parent}>
       <View style={styles.row}>
-        <Text style={styles.title}>{strings.scoreboard}</Text>
+        <Text style={styles.title}>{title}</Text>
         <TouchableOpacity onPress={onSeeAll}>
           <Text style={styles.buttonText}>{strings.seeAllText}</Text>
         </TouchableOpacity>

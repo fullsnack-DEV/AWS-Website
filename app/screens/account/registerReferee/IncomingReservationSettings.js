@@ -120,7 +120,7 @@ const IncomingReservationSettings = ({navigation, route}) => {
         .then(async (response) => {
           if (response.status === true) {
             await setAuthContextData(response.payload, authContext);
-            //    setShowCongratulationsModal(true);
+            setShowCongratulationsModal(true);
           } else {
             Alert.alert(strings.appName, response.messages);
           }

@@ -10,7 +10,7 @@ import {
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {AirbnbRating} from 'react-native-ratings';
 import {strings} from '../../../../../Localization/translation';
-import {getUserReviews} from '../../../../api/Games';
+import {getReviewsByRole} from '../../../../api/Games';
 import AuthContext from '../../../../auth/context';
 import colors from '../../../../Constants/Colors';
 import fonts from '../../../../Constants/Fonts';
@@ -26,6 +26,7 @@ const ReviewsContentScreen = ({
   onReply = () => {},
   onPressMedia = () => {},
   onPressGame = () => {},
+  entityType = Verbs.entityTypePlayer,
 }) => {
   const [ratings, setRatings] = useState({});
   const [loading, setLoading] = useState(false);
@@ -38,18 +39,16 @@ const ReviewsContentScreen = ({
 
   const getReviews = useCallback(() => {
     setLoading(true);
-    getUserReviews(userId, authContext)
+    getReviewsByRole(userId, sportObj?.sport, entityType, authContext)
       .then((res) => {
         const result = res.payload?.reviews.results ?? [];
         setReviews(result);
-
         setLoading(false);
       })
-      .catch((err) => {
-        console.log({err});
+      .catch(() => {
         setLoading(false);
       });
-  }, [userId, authContext]);
+  }, [userId, sportObj, entityType, authContext]);
 
   useEffect(() => {
     if (userId) {
@@ -58,13 +57,9 @@ const ReviewsContentScreen = ({
   }, [userId, getReviews]);
 
   useEffect(() => {
-    const list = getRatingsOptions(
-      authContext,
-      sportObj?.sport,
-      Verbs.entityTypePlayer,
-    );
+    const list = getRatingsOptions(authContext, sportObj?.sport, entityType);
     setRatingsOption([...list]);
-  }, [authContext, sportObj]);
+  }, [authContext, sportObj, entityType]);
 
   useEffect(() => {
     if (sportObj?.avg_review) {
@@ -148,6 +143,7 @@ const ReviewsContentScreen = ({
           onReply={onReply}
           onPressMedia={onPressMedia}
           onPressGame={onPressGame}
+          entityType={entityType}
         />
       </ScrollView>
     </View>

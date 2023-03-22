@@ -19,6 +19,7 @@ const UserInfo = ({
   screenType = Verbs.screenTypeModal,
   level = 0,
   loading = false,
+  entityType = Verbs.entityTypePlayer,
 }) =>
   loading ? (
     <View style={[styles.row, containerStyle]}>
@@ -54,13 +55,15 @@ const UserInfo = ({
           <Text style={styles.name}>{user.full_name}</Text>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <Text style={styles.location}>{displayLocation(user)}</Text>
-            <View style={styles.levelContainer}>
-              <Text style={styles.newText}>
-                {level > 0 ? `Lv.${level}` : strings.newText.toUpperCase()}
-              </Text>
-            </View>
+            {entityType === Verbs.entityTypePlayer ? (
+              <View style={styles.levelContainer}>
+                <Text style={styles.newText}>
+                  {level > 0 ? `Lv.${level}` : strings.newText.toUpperCase()}
+                </Text>
+              </View>
+            ) : null}
           </View>
-          {isLookingForClub ? (
+          {isLookingForClub && entityType === Verbs.entityTypePlayer ? (
             <View style={styles.lookingForClubContainer}>
               <Text style={styles.lookingForClubText}>
                 {strings.lookingForClubText}!

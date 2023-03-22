@@ -2,7 +2,11 @@
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {View, Modal, ScrollView, StyleSheet, Dimensions} from 'react-native';
 import {strings} from '../../../../Localization/translation';
-import {getGameScoreboardEvents, getGameStatsData} from '../../../api/Games';
+import {
+  getGameScoreboardEvents,
+  getGameStatsData,
+  getRefereedMatch,
+} from '../../../api/Games';
 import AuthContext from '../../../auth/context';
 
 import colors from '../../../Constants/Colors';
@@ -17,6 +21,12 @@ import TeamsList from './components/TeamsList';
 import {getCalendar, getSportIconUrl, getTCDate} from '../../../utils';
 import ScreenHeader from '../../../components/ScreenHeader';
 import AvailabilitySection from './components/availability/AvailabilitySection';
+import {
+  getHeaderTitle,
+  getIsAvailable,
+  getProgressBarColor,
+  getScoreboardListTitle,
+} from '../../../utils/sportsActivityUtils';
 
 const SportActivityModal = ({
   sport,
@@ -29,6 +39,10 @@ const SportActivityModal = ({
   sportObj = {},
   handleChallengeClick = () => {},
   onMessageClick = () => {},
+  entityType = Verbs.entityTypePlayer,
+  continueToChallenge = () => {},
+  bookReferee = () => {},
+  bookScoreKeeper = () => {},
 }) => {
   const authContext = useContext(AuthContext);
   const [matchList, setMatchList] = useState([]);
@@ -110,13 +124,38 @@ const SportActivityModal = ({
       });
   }, [authContext, sport, userData]);
 
+  const getRefereeMatchList = useCallback(() => {
+    setIsFetchingMatchList(true);
+    getRefereedMatch(userData?.user_id, sport, authContext)
+      .then((res) => {
+        setMatchList(res.payload);
+        setIsFetchingMatchList(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setIsFetchingMatchList(false);
+      });
+  }, [userData, sport, authContext]);
+
   useEffect(() => {
     if (isVisible) {
-      getMatchList();
       getAvailability();
-      loadStatsData();
+      if (entityType === Verbs.entityTypePlayer) {
+        getMatchList();
+        loadStatsData();
+      }
+      if (entityType === Verbs.entityTypeReferee) {
+        getRefereeMatchList();
+      }
     }
-  }, [isVisible, getMatchList, getAvailability, loadStatsData]);
+  }, [
+    isVisible,
+    getMatchList,
+    getAvailability,
+    loadStatsData,
+    getRefereeMatchList,
+    entityType,
+  ]);
 
   useEffect(() => {
     getSportIconUrl(sport, userData.entity_type, authContext).then((url) => {
@@ -159,12 +198,12 @@ const SportActivityModal = ({
         <View style={styles.card}>
           <ScreenHeader
             sportIcon={sportIcon}
-            title={`${strings.playingText} ${sportName}`}
+            title={`${getHeaderTitle(entityType)} ${sportName}`}
             rightIcon2={images.closeSearch}
             rightIcon2Press={closeModal}
             containerStyle={{
               borderBottomWidth: 3,
-              borderBottomColor: colors.themeColor,
+              borderBottomColor: getProgressBarColor(entityType),
             }}
           />
           <ScrollView showsVerticalScrollIndicator={false}>
@@ -177,14 +216,20 @@ const SportActivityModal = ({
                 isAdmin={isAdmin}
                 onMessageClick={onMessageClick}
                 level={sportObj?.level}
+                entityType={entityType}
               />
               <ChallengeButton
                 isAdmin={isAdmin}
-                isAvailable={sportObj?.setting?.availibility === 'On'}
+                isAvailable={getIsAvailable(entityType)}
                 isScorekeeper={isScorekeeper}
                 isReferee={isReferee}
                 isUserWithSameSport={isUserWithSameSport}
-                onPress={handleChallengeClick}
+                inviteToChallenge={handleChallengeClick}
+                gameFee={sportObj?.setting?.game_fee ?? {}}
+                entityType={entityType}
+                continueToChallenge={continueToChallenge}
+                bookReferee={bookReferee}
+                bookScoreKeeper={bookScoreKeeper}
               />
 
               {sportObj?.sport_type === Verbs.singleSport ? (
@@ -195,7 +240,8 @@ const SportActivityModal = ({
                 />
               ) : null}
 
-              {sportObj?.sport_type !== Verbs.singleSport ? (
+              {sportObj?.sport_type !== Verbs.singleSport &&
+              entityType === Verbs.entityTypePlayer ? (
                 <TeamsList
                   list={userData.joined_teams ?? []}
                   sportType={sportObj?.sport_type}
@@ -207,20 +253,24 @@ const SportActivityModal = ({
               <ScoreBoardList
                 loading={isFetchingMatchList}
                 matchList={matchList}
-                onSeeAll={() => onSeeAll(strings.scoreboard)}
+                onSeeAll={() => onSeeAll(getScoreboardListTitle(entityType))}
                 screenType={Verbs.screenTypeModal}
+                title={getScoreboardListTitle(entityType)}
               />
-              <StatSection
-                onSeeAll={() => onSeeAll(strings.statsTitle)}
-                sportType={sportObj?.sport_type}
-                {...statsObject}
-              />
+              {entityType === Verbs.entityTypePlayer ? (
+                <StatSection
+                  onSeeAll={() => onSeeAll(strings.statsTitle)}
+                  sportType={sportObj?.sport_type}
+                  {...statsObject}
+                />
+              ) : null}
+
               {sportObj?.sport_type === Verbs.singleSport ? (
                 <ReviewSection
                   onSeeAll={() => onSeeAll(strings.reviews)}
                   ratings={
                     sportObj?.avg_review?.total_avg
-                      ? parseFloat(sportObj.avg_review.total_avg).toFixed(2)
+                      ? parseFloat(sportObj.avg_review.total_avg).toFixed(1)
                       : 0.0
                   }
                 />

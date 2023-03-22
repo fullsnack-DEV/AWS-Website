@@ -2547,9 +2547,14 @@ export const getSportList = (
     alreadyAddedSportsList = authContext.entity.obj.scorekeeper_data ?? [];
   }
   sportArr.forEach((item) => {
-    const obj = alreadyAddedSportsList.find(
-      (ele) => ele.sport === item.sport && ele.sport_type === item.sport_type,
-    );
+    let obj = {};
+    if (role === Verbs.menuOptionTypePlaying) {
+      obj = alreadyAddedSportsList.find(
+        (ele) => ele.sport === item.sport && ele.sport_type === item.sport_type,
+      );
+    } else {
+      obj = alreadyAddedSportsList.find((ele) => ele.sport === item.sport);
+    }
     if (!obj) {
       newData.push(item);
     }
@@ -2568,9 +2573,9 @@ export const calculateReviewPeriod = (item = {}, reviews = []) => {
   };
   reviews.forEach((ele) => {
     const reviewObj = JSON.parse(ele.object)?.playerReview;
-    isOpponentReview = reviewObj.member === Verbs.entityTypeOpponent;
-    isRefereeReview = reviewObj.member === Verbs.entityTypeReferee;
-    isScorekeeperReview = reviewObj.member === Verbs.entityTypeScorekeeper;
+    isOpponentReview = reviewObj?.member === Verbs.entityTypeOpponent;
+    isRefereeReview = reviewObj?.member === Verbs.entityTypeReferee;
+    isScorekeeperReview = reviewObj?.member === Verbs.entityTypeScorekeeper;
   });
 
   const isAllReviewCompleted =

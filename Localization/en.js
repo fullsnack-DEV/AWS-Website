@@ -2497,4 +2497,11 @@ export default {
   matchesNearYou: 'en_MATCHES NEAR YOU',
   matchHostText: 'en_Match Host',
   sendOfferText: 'en_Send Offer',
+  refereedMatchesTitle: 'en_Refereed Matches',
+  addCerticateTitle: 'en_+ Add Certificates',
+  editServicableAreasText: 'en_Edit Serviceable Areas',
+  reportCertificate: 'en_Report This Certificate',
+  reportUser: 'en_Block This User',
+  hourText: 'en_hour',
+  matchText: 'en_match',
 };

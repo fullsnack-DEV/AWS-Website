@@ -70,7 +70,7 @@ import {
   followUser,
   unfollowUser,
   inviteUser,
-  patchRegisterRefereeDetails,
+  // patchRegisterRefereeDetails,
   patchRegisterScorekeeperDetails,
   userActivate,
 } from '../../api/Users';
@@ -113,7 +113,7 @@ import EventCalendar from '../../components/Schedule/EventCalendar/EventCalendar
 import CalendarTimeTableView from '../../components/Schedule/CalendarTimeTableView';
 import EventBlockTimeTableView from '../../components/Schedule/EventBlockTimeTableView';
 import RefereesProfileSection from '../../components/Home/User/RefereesProfileSection';
-import RefereeInfoSection from '../../components/Home/RefereeInfoSection';
+// import RefereeInfoSection from '../../components/Home/RefereeInfoSection';
 import ReviewSection from '../../components/Home/ReviewSection';
 import ReviewRecentMatch from '../../components/Home/ReviewRecentMatch';
 import RefereeReviewerList from './RefereeReviewerList';
@@ -137,7 +137,7 @@ import ScorekeeperInfoSection from '../../components/Home/User/ScorekeeperInfoSe
 // import PlayInModule from './playInModule/PlayInModule';
 import TCGradientDivider from '../../components/TCThinGradientDivider';
 import HomeFeed from '../homeFeed/HomeFeed';
-import RefereeFeedPostItems from '../../components/game/soccer/home/review/reviewForReferee/RefereeFeedPostItems';
+// import RefereeFeedPostItems from '../../components/game/soccer/home/review/reviewForReferee/RefereeFeedPostItems';
 import ScorekeeperFeedPostItems from '../../components/game/soccer/home/review/reviewForScorekeeper/ScorekeeperFeedPostItems';
 import ProfileScreenShimmer from '../../components/shimmer/account/ProfileScreenShimmer';
 import {ImageUploadContext} from '../../context/GetContexts';
@@ -154,7 +154,7 @@ import {
 } from '../../api/elasticSearch';
 import TCAccountDeactivate from '../../components/TCAccountDeactivate';
 import {
-  TAB_ITEMS_REFEREE,
+  // TAB_ITEMS_REFEREE,
   TAB_ITEMS_SCOREKEEPER,
   league_Data,
   history_Data,
@@ -186,8 +186,8 @@ const HomeScreen = ({navigation, route}) => {
   const [isUserHome, setIsUserHome] = useState(false);
   const [isClubHome, setIsClubHome] = useState(false);
   const [isTeamHome, setIsTeamHome] = useState(false);
-  const [playsInModalVisible, setPlaysInModalVisible] = useState(false);
-  const [refereesInModalVisible, setRefereesInModalVisible] = useState(false);
+  // const [playsInModalVisible, setPlaysInModalVisible] = useState(false);
+  // const [refereesInModalVisible, setRefereesInModalVisible] = useState(false);
   const [scorekeeperInModalVisible, setScorekeeperInModalVisible] =
     useState(false);
   const [reviewDetailModalVisible, setReviewDetailModalVisible] =
@@ -196,11 +196,11 @@ const HomeScreen = ({navigation, route}) => {
   const [feedDetailIndex, setFeedDetailIndex] = useState(0);
   const [orangeFeed, setOrangeFeed] = useState(false);
   const [reviewGameData, setReviewGameData] = useState();
-  const [refereeInfoModalVisible, setRefereeInfoModalVisible] = useState(false);
+  // const [refereeInfoModalVisible, setRefereeInfoModalVisible] = useState(false);
   const [scorekeeperInfoModalVisible, setScorekeeperInfoModalVisible] =
     useState(false);
-  const [refereeMatchModalVisible, setRefereeMatchModalVisible] =
-    useState(false);
+  // const [refereeMatchModalVisible, setRefereeMatchModalVisible] =
+  //   useState(false);
   const [scorekeeperMatchModalVisible, setScorekeeperMatchModalVisible] =
     useState(false);
   const [reviewsModalVisible, setReviewsModalVisible] = useState(false);
@@ -217,11 +217,11 @@ const HomeScreen = ({navigation, route}) => {
   const [scheduleIndexCounter, setScheduleIndexCounter] = useState(0);
   // eslint-disable-next-line no-unused-vars
   const [currentTab, setCurrentTab] = useState(0);
-  const [currentRefereeTab, setRefereeCurrentTab] = useState(0);
+  // const [currentRefereeTab, setRefereeCurrentTab] = useState(0);
   const [currentScorekeeperTab, setScorekeeperCurrentTab] = useState(0);
 
-  const [refereeReviewData, setRefereeReviewData] = useState();
-  const [averageRefereeReview, setAverageRefereeReview] = useState();
+  // const [refereeReviewData, setRefereeReviewData] = useState();
+  // const [averageRefereeReview, setAverageRefereeReview] = useState();
   const [scorekeeperReviewData, setScorekeeperReviewData] = useState();
   const [averageScorekeeperReview, setAverageScorekeeperReview] = useState();
 
@@ -250,7 +250,7 @@ const HomeScreen = ({navigation, route}) => {
   const [timetableSelectDate, setTimeTableSelectDate] = useState(new Date());
   const [searchLocation, setSearchLocation] = useState('');
   const [sportName, setSportName] = useState('');
-  const [selectRefereeData, setSelectRefereeData] = useState(null);
+  // const [selectRefereeData, setSelectRefereeData] = useState(null);
   const [selectScorekeeperData, setSelectScorekeeperData] = useState(null);
   const [languagesName, setLanguagesName] = useState('');
   const [refereeReservData, setRefereeReserveData] = useState([]);
@@ -308,6 +308,9 @@ const HomeScreen = ({navigation, route}) => {
     invited_id: '',
     action: '',
   });
+  const [showSportsModal, setShowSportsModal] = useState(false);
+  const [entityType, setEntityType] = useState(false);
+  const [sportObject, setSportObject] = useState({});
 
   useEffect(() => {
     setTimeout(() => {
@@ -470,7 +473,8 @@ const HomeScreen = ({navigation, route}) => {
       navigation.push(navigateScreen, params);
     }
     if (route?.params?.locationName) {
-      setPlaysInModalVisible(true);
+      setShowSportsModal(true);
+      setEntityType(Verbs.entityTypePlayer);
       setSearchLocation(route.params.locationName);
     }
   }, [route?.params]);
@@ -514,14 +518,8 @@ const HomeScreen = ({navigation, route}) => {
         );
     }
   }, [authContext, isTeamHome, route?.params?.uid]);
-  const createActionObject = (
-    entityType,
-    groupId,
-    activityID,
-    invitedId,
-    action,
-  ) => {
-    actionObject.entity_type = entityType;
+  const createActionObject = (type, groupId, activityID, invitedId, action) => {
+    actionObject.entity_type = type;
     actionObject.group_id = groupId;
     actionObject.activity_id = activityID;
     actionObject.action = action;
@@ -1585,10 +1583,10 @@ const HomeScreen = ({navigation, route}) => {
     console.log('memberObject', memberObject);
   };
 
-  const onGroupListPress = (groupList, entityType) => {
+  const onGroupListPress = (groupList, type) => {
     navigation.push('GroupListScreen', {
       groups: groupList,
-      entity_type: entityType,
+      entity_type: type,
     });
   };
 
@@ -1710,14 +1708,21 @@ const HomeScreen = ({navigation, route}) => {
     (refereeInObject) => {
       if (refereeInObject) {
         const entity = authContext.entity;
-        let languagesListName = [];
+        if (currentUserData) {
+          const refereeSport = (currentUserData.referee_data ?? []).find(
+            (refereeItem) => refereeItem.sport === refereeInObject.sport,
+          );
+          setSportObject(refereeSport);
+          setShowSportsModal(!showSportsModal);
+          setEntityType(Verbs.entityTypeReferee);
+        }
         if (currentUserData) {
           const refereeSport = currentUserData.referee_data.filter(
             (refereeItem) => refereeItem.sport === refereeInObject.sport,
           )[0];
 
-          setSelectRefereeData(refereeSport);
-          languagesListName = refereeSport.language;
+          // setSelectRefereeData(refereeSport);
+          // languagesListName = refereeSport.language;
 
           if (refereeSport?.avg_review) {
             let array = Object.keys(refereeSport.avg_review);
@@ -1731,20 +1736,20 @@ const HomeScreen = ({navigation, route}) => {
               refereeProperty.push(obj);
             }
 
-            setAverageRefereeReview(refereeProperty);
+            // setAverageRefereeReview(refereeProperty);
           } else {
-            setAverageRefereeReview();
+            // setAverageRefereeReview();
           }
         }
-        if (languagesListName.length > 0) {
-          languagesListName.map((langItem, index) => {
-            language_string =
-              language_string + (index ? ', ' : '') + langItem.language_name;
-            return null;
-          });
-          setLanguagesName(language_string);
-        }
-        setRefereesInModalVisible(!refereesInModalVisible);
+        // if (languagesListName.length > 0) {
+        //   languagesListName.map((langItem, index) => {
+        //     language_string =
+        //       language_string + (index ? ', ' : '') + langItem.language_name;
+        //     return null;
+        //   });
+        //   setLanguagesName(language_string);
+        // }
+        // setRefereesInModalVisible(!refereesInModalVisible);
         setSportName(Utility.getSportName(refereeInObject, authContext));
 
         getRefereedMatch(
@@ -1786,11 +1791,12 @@ const HomeScreen = ({navigation, route}) => {
           authContext,
         )
           .then((res) => {
-            if (res?.payload) {
-              setRefereeReviewData(res?.payload);
-            } else {
-              setRefereeReviewData();
-            }
+            console.log({res});
+            // if (res?.payload) {
+            //   setRefereeReviewData(res?.payload);
+            // } else {
+            //   setRefereeReviewData();
+            // }
           })
           .catch((error) =>
             Alert.alert(strings.alertmessagetitle, error.message),
@@ -1815,7 +1821,7 @@ const HomeScreen = ({navigation, route}) => {
         navigation.navigate('RegisterReferee');
       }
     },
-    [authContext, route?.params, currentUserData, refereesInModalVisible],
+    [authContext, route?.params, currentUserData],
   );
 
   const onAddRolePress = useCallback(() => {
@@ -1927,7 +1933,9 @@ const HomeScreen = ({navigation, route}) => {
 
         setTimeout(() => {
           setCurrentPlayInObject({...playInObject});
-          setPlaysInModalVisible(!playsInModalVisible);
+          setSportObject({...playInObject});
+          setShowSportsModal(!showSportsModal);
+          setEntityType(Verbs.entityTypePlayer);
         }, 10);
 
         getSettingOfBoth(playInObject);
@@ -1935,7 +1943,7 @@ const HomeScreen = ({navigation, route}) => {
         navigation.navigate('RegisterPlayer');
       }
     },
-    [navigation, playsInModalVisible],
+    [navigation],
   );
 
   const reviewerDetailModal = useCallback(() => {
@@ -2009,114 +2017,114 @@ const HomeScreen = ({navigation, route}) => {
     return [strings.editText, strings.deleteText, strings.cancel];
   }, [refereeFound, selectedEventItem]);
 
-  const renderRefereesTabContainer = (tabKey) => (
-    <View style={{flex: 1}}>
-      {/* Referee Info */}
-      {tabKey === 0 && (
-        <RefereeInfoSection
-          data={currentUserData}
-          refereeSetting={refereeSettingObject}
-          selectRefereeData={selectRefereeData}
-          searchLocation={searchLocation}
-          languagesName={languagesName}
-          onSavePress={(params) => {
-            let languagesListName = [];
-            patchRegisterRefereeDetails(params, authContext)
-              .then((res) => {
-                const changedata = currentUserData;
-                changedata.referee_data = res.payload.referee_data;
-                changedata.gender = res.payload.gender;
-                changedata.birthday = res.payload.birthday;
-                setCurrentUserData(changedata);
+  // const renderRefereesTabContainer = (tabKey) => (
+  //   <View style={{flex: 1}}>
+  //     {/* Referee Info */}
+  //     {tabKey === 0 && (
+  //       <RefereeInfoSection
+  //         data={currentUserData}
+  //         refereeSetting={refereeSettingObject}
+  //         selectRefereeData={selectRefereeData}
+  //         searchLocation={searchLocation}
+  //         languagesName={languagesName}
+  //         onSavePress={(params) => {
+  //           let languagesListName = [];
+  //           patchRegisterRefereeDetails(params, authContext)
+  //             .then((res) => {
+  //               const changedata = currentUserData;
+  //               changedata.referee_data = res.payload.referee_data;
+  //               changedata.gender = res.payload.gender;
+  //               changedata.birthday = res.payload.birthday;
+  //               setCurrentUserData(changedata);
 
-                if (res.payload.referee_data) {
-                  res.payload.referee_data.map((refereeItem) => {
-                    if (refereeItem.sport === sportName) {
-                      setSelectRefereeData(refereeItem);
-                      languagesListName = refereeItem.language;
-                    }
-                    return null;
-                  });
-                }
-                if (languagesListName.length > 0) {
-                  languagesListName.map((langItem, index) => {
-                    language_string =
-                      language_string +
-                      (index ? ', ' : '') +
-                      langItem.language_name;
-                    return null;
-                  });
-                  setLanguagesName(language_string);
-                }
-              })
-              .catch((error) => {
-                console.log('error coming', error);
-                Alert.alert(strings.alertmessagetitle, error.message);
-              });
-          }}
-          navigation={navigation}
-        />
-      )}
+  //               if (res.payload.referee_data) {
+  //                 res.payload.referee_data.map((refereeItem) => {
+  //                   if (refereeItem.sport === sportName) {
+  //                     setSelectRefereeData(refereeItem);
+  //                     languagesListName = refereeItem.language;
+  //                   }
+  //                   return null;
+  //                 });
+  //               }
+  //               if (languagesListName.length > 0) {
+  //                 languagesListName.map((langItem, index) => {
+  //                   language_string =
+  //                     language_string +
+  //                     (index ? ', ' : '') +
+  //                     langItem.language_name;
+  //                   return null;
+  //                 });
+  //                 setLanguagesName(language_string);
+  //               }
+  //             })
+  //             .catch((error) => {
+  //               console.log('error coming', error);
+  //               Alert.alert(strings.alertmessagetitle, error.message);
+  //             });
+  //         }}
+  //         navigation={navigation}
+  //       />
+  //     )}
 
-      {/* Recent Match */}
-      {tabKey === 1 && (
-        <View>
-          <ScheduleTabView
-            firstTabTitle={format(
-              strings.completedNGame,
-              refereeRecentMatch.length,
-            )}
-            secondTabTitle={format(
-              strings.upcomingNGame,
-              refereeUpcomingMatch.length,
-            )}
-            indexCounter={scoreboardTabNumber}
-            eventPrivacyContianer={{width: wp('70%')}}
-            onFirstTabPress={() => setScroboardTabNumber(0)}
-            onSecondTabPress={() => setScroboardTabNumber(1)}
-          />
-          {scoreboardTabNumber === 0 && (
-            <ScoreboardSportsScreen
-              onBackPress={() => setRefereesInModalVisible(true)}
-              sportsData={refereeRecentMatch}
-              showEventNumbers={false}
-              showAssistReferee={true}
-              navigation={navigation}
-              onItemPress={() => {
-                setRefereeMatchModalVisible(false);
-                setRefereesInModalVisible(false);
-              }}
-            />
-          )}
-          {scoreboardTabNumber === 1 && (
-            <UpcomingMatchScreen
-              onBackPress={() => setRefereesInModalVisible(true)}
-              sportsData={refereeUpcomingMatch}
-              showEventNumbers={true}
-              navigation={navigation}
-              onItemPress={() => {
-                setPlaysInModalVisible(false);
-              }}
-            />
-          )}
-        </View>
-      )}
+  //     {/* Recent Match */}
+  //     {tabKey === 1 && (
+  //       <View>
+  //         <ScheduleTabView
+  //           firstTabTitle={format(
+  //             strings.completedNGame,
+  //             refereeRecentMatch.length,
+  //           )}
+  //           secondTabTitle={format(
+  //             strings.upcomingNGame,
+  //             refereeUpcomingMatch.length,
+  //           )}
+  //           indexCounter={scoreboardTabNumber}
+  //           eventPrivacyContianer={{width: wp('70%')}}
+  //           onFirstTabPress={() => setScroboardTabNumber(0)}
+  //           onSecondTabPress={() => setScroboardTabNumber(1)}
+  //         />
+  //         {scoreboardTabNumber === 0 && (
+  //           <ScoreboardSportsScreen
+  //             onBackPress={() => setRefereesInModalVisible(true)}
+  //             sportsData={refereeRecentMatch}
+  //             showEventNumbers={false}
+  //             showAssistReferee={true}
+  //             navigation={navigation}
+  //             onItemPress={() => {
+  //               setRefereeMatchModalVisible(false);
+  //               setRefereesInModalVisible(false);
+  //             }}
+  //           />
+  //         )}
+  //         {scoreboardTabNumber === 1 && (
+  //           <UpcomingMatchScreen
+  //             onBackPress={() => setRefereesInModalVisible(true)}
+  //             sportsData={refereeUpcomingMatch}
+  //             showEventNumbers={true}
+  //             navigation={navigation}
+  //             onItemPress={() => {
+  //               setPlaysInModalVisible(false);
+  //             }}
+  //           />
+  //         )}
+  //       </View>
+  //     )}
 
-      {/* Reviews */}
-      {tabKey === 2 && (
-        <View>
-          <ReviewSection
-            onFeedPress={onFeedPress}
-            reviewsData={averageRefereeReview}
-            reviewsFeed={refereeReviewData}
-            onReadMorePress={() => {
-              reviewerDetailModal();
-            }}
-          />
-        </View>
-      )}
-    </View>
-  );
+  //     {/* Reviews */}
+  //     {tabKey === 2 && (
+  //       <View>
+  //         <ReviewSection
+  //           onFeedPress={onFeedPress}
+  //           reviewsData={averageRefereeReview}
+  //           reviewsFeed={refereeReviewData}
+  //           onReadMorePress={() => {
+  //             reviewerDetailModal();
+  //           }}
+  //         />
+  //       </View>
+  //     )}
+  //   </View>
+  // );
 
   const renderScorekeeperTabContainer = (tabKey) => (
     <View style={{flex: 1}}>
@@ -2141,7 +2149,7 @@ const HomeScreen = ({navigation, route}) => {
                 if (res.payload.scorekeeper_data) {
                   res.payload.scorekeeper_data.map((scorekeeperItem) => {
                     if (scorekeeperItem.sport === sportName) {
-                      setSelectRefereeData(scorekeeperItem);
+                      // setSelectRefereeData(scorekeeperItem);
                       languagesListName = scorekeeperItem.language;
                     }
                     return null;
@@ -2191,7 +2199,7 @@ const HomeScreen = ({navigation, route}) => {
               showAssistReferee={true}
               navigation={navigation}
               onItemPress={() => {
-                setRefereeMatchModalVisible(false);
+                // setRefereeMatchModalVisible(false);
                 setScorekeeperInModalVisible(false);
               }}
             />
@@ -2204,7 +2212,7 @@ const HomeScreen = ({navigation, route}) => {
               navigation={navigation}
               onItemPress={() => {
                 setScorekeeperInModalVisible(false);
-                setPlaysInModalVisible(false);
+                setShowSportsModal(false);
               }}
             />
           )}
@@ -2551,8 +2559,8 @@ const HomeScreen = ({navigation, route}) => {
         }
         navigation={navigation}
         onItemPress={() => {
-          setRefereeMatchModalVisible(false);
-          setRefereesInModalVisible(false);
+          // setRefereeMatchModalVisible(false);
+          setShowSportsModal(false);
         }}
       />
     </View>
@@ -3588,16 +3596,16 @@ const HomeScreen = ({navigation, route}) => {
     ],
   );
 
-  const onFeedPress = useCallback(
-    (feed, index, gameData, detailIndex, orangeFeedPress) => {
-      setReviewGameData(gameData);
-      setFeedDataIndex(index);
-      setFeedDetailIndex(detailIndex);
-      setOrangeFeed(orangeFeedPress);
-      setReviewDetailModalVisible(true);
-    },
-    [],
-  );
+  // const onFeedPress = useCallback(
+  //   (feed, index, gameData, detailIndex, orangeFeedPress) => {
+  //     setReviewGameData(gameData);
+  //     setFeedDataIndex(index);
+  //     setFeedDetailIndex(detailIndex);
+  //     setOrangeFeed(orangeFeedPress);
+  //     setReviewDetailModalVisible(true);
+  //   },
+  //   [],
+  // );
 
   const onScorekeeperFeedPress = useCallback(
     (feed, index, gameData, detailIndex, orangeFeedPress) => {
@@ -3638,34 +3646,34 @@ const HomeScreen = ({navigation, route}) => {
     [],
   );
 
-  const renderNewsFeed = useCallback(
-    ({item}) => {
-      // const onDeleteButtonPress = () => onDeletePost(item)
-      // const onProfileButtonPress = () => onProfilePress(item)
-      // const onLikeButtonPress = () => onLikePress(item)
-      const onDeleteButtonPress = () => Alert.alert(strings.deleteText);
-      const onProfileButtonPress = () => {
-        // setReviewDetailModalVisible(!reviewDetailModalVisible)
-        // setRefereeInfoModalVisible(!refereeInfoModalVisible)
-        // onProfilePress(item)
-      };
-      const onLikeButtonPress = () => onLikePress(item);
-      return (
-        <RefereeFeedPostItems
-          // pullRefresh={pullRefresh}
-          item={item}
-          navigation={navigation}
-          caller_id={authContext.entity.uid}
-          // onEditPressDone={onEditPressDone}
-          onImageProfilePress={onProfileButtonPress}
-          onLikePress={onLikeButtonPress}
-          onDeletePost={onDeleteButtonPress}
-          profileObject={currentUserData}
-        />
-      );
-    },
-    [authContext.entity.uid, currentUserData, navigation, onLikePress],
-  );
+  // const renderNewsFeed = useCallback(
+  //   ({item}) => {
+  //     // const onDeleteButtonPress = () => onDeletePost(item)
+  //     // const onProfileButtonPress = () => onProfilePress(item)
+  //     // const onLikeButtonPress = () => onLikePress(item)
+  //     const onDeleteButtonPress = () => Alert.alert(strings.deleteText);
+  //     const onProfileButtonPress = () => {
+  //       // setReviewDetailModalVisible(!reviewDetailModalVisible)
+  //       // setRefereeInfoModalVisible(!refereeInfoModalVisible)
+  //       // onProfilePress(item)
+  //     };
+  //     const onLikeButtonPress = () => onLikePress(item);
+  //     return (
+  //       <RefereeFeedPostItems
+  //         // pullRefresh={pullRefresh}
+  //         item={item}
+  //         navigation={navigation}
+  //         caller_id={authContext.entity.uid}
+  //         // onEditPressDone={onEditPressDone}
+  //         onImageProfilePress={onProfileButtonPress}
+  //         onLikePress={onLikeButtonPress}
+  //         onDeletePost={onDeleteButtonPress}
+  //         profileObject={currentUserData}
+  //       />
+  //     );
+  //   },
+  //   [authContext.entity.uid, currentUserData, navigation, onLikePress],
+  // );
 
   const renderScorekeeperFeed = useCallback(
     ({item}) => {
@@ -3748,14 +3756,14 @@ const HomeScreen = ({navigation, route}) => {
 
   const switchQBAccount = async (accountData, entity) => {
     let currentEntity = entity;
-    const entityType = accountData?.entity_type;
-    const uid = entityType === Verbs.entityTypePlayer ? 'user_id' : 'group_id';
+    const entity_type = accountData?.entity_type;
+    const uid = entity_type === Verbs.entityTypePlayer ? 'user_id' : 'group_id';
     QBLogout()
       .then(() => {
         const {USER, CLUB, TEAM} = QB_ACCOUNT_TYPE;
         let accountType = USER;
-        if (entityType === Verbs.entityTypeClub) accountType = CLUB;
-        else if (entityType === Verbs.entityTypeTeam) accountType = TEAM;
+        if (entity_type === Verbs.entityTypeClub) accountType = CLUB;
+        else if (entity_type === Verbs.entityTypeTeam) accountType = TEAM;
 
         QBlogin(
           accountData[uid],
@@ -4110,40 +4118,40 @@ const HomeScreen = ({navigation, route}) => {
       });
   };
 
-  const renderRefereeHeader = useMemo(() => {
-    console.log('');
-    return (
-      <Header
-        mainContainerStyle={styles.headerMainContainerStyle}
-        centerComponent={
-          <View style={styles.headerCenterViewStyle}>
-            <Image
-              source={images.refereesInImage}
-              style={styles.refereesImageStyle}
-              resizeMode={'contain'}
-            />
-            <Text style={styles.playInTextStyle}>
-              {format(strings.refereeInSport, sportName || '')}
-            </Text>
-          </View>
-        }
-        rightComponent={
-          <TouchableOpacity
-            onPress={() => {
-              setRefereesInModalVisible(false);
-              setRefereeCurrentTab(0);
-            }}
-            style={{padding: 10}}>
-            <Image
-              source={images.cancelWhite}
-              style={styles.cancelImageStyle}
-              resizeMode={'contain'}
-            />
-          </TouchableOpacity>
-        }
-      />
-    );
-  }, []);
+  // const renderRefereeHeader = useMemo(() => {
+  //   console.log('');
+  //   return (
+  //     <Header
+  //       mainContainerStyle={styles.headerMainContainerStyle}
+  //       centerComponent={
+  //         <View style={styles.headerCenterViewStyle}>
+  //           <Image
+  //             source={images.refereesInImage}
+  //             style={styles.refereesImageStyle}
+  //             resizeMode={'contain'}
+  //           />
+  //           <Text style={styles.playInTextStyle}>
+  //             {format(strings.refereeInSport, sportName || '')}
+  //           </Text>
+  //         </View>
+  //       }
+  //       rightComponent={
+  //         <TouchableOpacity
+  //           onPress={() => {
+  //             setRefereesInModalVisible(false);
+  //             setRefereeCurrentTab(0);
+  //           }}
+  //           style={{padding: 10}}>
+  //           <Image
+  //             source={images.cancelWhite}
+  //             style={styles.cancelImageStyle}
+  //             resizeMode={'contain'}
+  //           />
+  //         </TouchableOpacity>
+  //       }
+  //     />
+  //   );
+  // }, []);
 
   const renderScorekeeperHeader = useMemo(() => {
     console.log('');
@@ -4320,44 +4328,16 @@ const HomeScreen = ({navigation, route}) => {
   };
 
   const handleSectionClick = (section) => {
-    setPlaysInModalVisible(false);
+    setShowSportsModal(false);
     navigation.navigate('SportActivityHome', {
-      sport: currentPlayInObject?.sport,
-      sportType: currentPlayInObject?.sport_type,
+      sport: sportObject?.sport,
+      sportType: sportObject?.sport_type,
       uid: route.params.uid,
       selectedTab: section,
+      entityType,
     });
   };
 
-  const handleChallengeClick = (selectedOption) => {
-    setPlaysInModalVisible(false);
-
-    switch (selectedOption) {
-      case strings.inviteToChallenge:
-        navigation.navigate('InviteChallengeScreen', {
-          setting: currentPlayInObject?.setting,
-          sportName: currentPlayInObject?.sport,
-          sportType: currentPlayInObject?.sport_type,
-          groupObj: currentUserData,
-        });
-        break;
-
-      case strings.refereeOffer:
-        break;
-
-      case strings.scorekeeperOffer:
-        break;
-
-      case strings.reportThisAccount:
-        break;
-
-      case strings.blockThisAccount:
-        break;
-
-      default:
-        break;
-    }
-  };
   const onAccept = (requestId) => {
     setloading(true);
     acceptRequest({}, requestId, authContext)
@@ -4705,19 +4685,54 @@ const HomeScreen = ({navigation, route}) => {
         </View>
 
         <SportActivityModal
-          isVisible={playsInModalVisible}
-          closeModal={() => setPlaysInModalVisible(false)}
+          isVisible={showSportsModal}
+          closeModal={() => {
+            setShowSportsModal(false);
+          }}
           isAdmin={isAdmin}
           userData={currentUserData}
-          sport={currentPlayInObject?.sport}
-          sportObj={currentPlayInObject}
-          sportName={Utility.getSportName(currentPlayInObject, authContext)}
+          sport={sportObject?.sport}
+          sportObj={sportObject}
+          sportName={Utility.getSportName(sportObject, authContext)}
           onSeeAll={handleSectionClick}
-          handleChallengeClick={handleChallengeClick}
+          handleChallengeClick={() => {
+            navigation.navigate('InviteChallengeScreen', {
+              setting: currentPlayInObject?.setting,
+              sportName: currentPlayInObject?.sport,
+              sportType: currentPlayInObject?.sport_type,
+              groupObj: currentUserData,
+            });
+          }}
           onMessageClick={() => {
             navigation.push('MessageChat', {
               screen: 'MessageChat',
               params: {userId: currentUserData?.user_id},
+            });
+          }}
+          entityType={entityType}
+          continueToChallenge={() => {
+            setShowSportsModal(false);
+            navigation.navigate('ChallengeScreen', {
+              setting: sportObject?.setting ?? {},
+              sportName: sportObject?.sport,
+              sportType: sportObject?.sport_type,
+              groupObj: currentUserData,
+            });
+          }}
+          bookReferee={() => {
+            navigation.navigate('RefereeBookingDateAndTime', {
+              settingObj: sportObject?.setting ?? {},
+              userData: currentUserData,
+              showMatches: true,
+              sportName,
+            });
+          }}
+          bookScoreKeeper={() => {
+            navigation.navigate('ScorekeeperBookingDateAndTime', {
+              settingObj: sportObject?.setting ?? {},
+              userData: currentUserData,
+              showMatches: true,
+              sportName,
             });
           }}
         />
@@ -4748,7 +4763,7 @@ const HomeScreen = ({navigation, route}) => {
         )} */}
 
         {/* Referee In Modal */}
-        {refereesInModalVisible && (
+        {/* {refereesInModalVisible && (
           <Modal
             isVisible={refereesInModalVisible}
             backdropColor="black"
@@ -4759,11 +4774,11 @@ const HomeScreen = ({navigation, route}) => {
             }}
             hasBackdrop
             onBackdropPress={() => setRefereesInModalVisible(false)}
-            backdropOpacity={0}>
-            <View style={styles.modalContainerViewStyle}>
+            backdropOpacity={0}> */}
+        {/* <View style={styles.modalContainerViewStyle}>
               <SafeAreaView style={{flex: 1}}>
                 {renderRefereeHeader}
-                {/* <TCThinDivider backgroundColor={colors.refereeHomeDividerColor} width={'100%'} height={2}/> */}
+                
                 <TCGradientDivider width={'100%'} height={3} />
                 <RefereesProfileSection
                   isReferee={true}
@@ -4819,10 +4834,10 @@ const HomeScreen = ({navigation, route}) => {
                   tabVerticalScroll={false}
                 />
               </SafeAreaView>
-            </View>
+            </View> */}
 
-            {/* Review Detail View */}
-            {reviewDetailModalVisible && (
+        {/* Review Detail View */}
+        {/* {reviewDetailModalVisible && (
               <Modal
                 isVisible={reviewDetailModalVisible}
                 backdropColor="black"
@@ -4908,12 +4923,12 @@ const HomeScreen = ({navigation, route}) => {
           // onLikePress={onLikeButtonPress}
           // onDeletePost={onDeleteButtonPress}
       /> */}
-                </SafeAreaView>
+        {/* </SafeAreaView>
               </Modal>
-            )}
+            )}  */}
 
-            {/* Review Detail View */}
-            {refereeInfoModalVisible && (
+        {/* Review Detail View */}
+        {/* {refereeInfoModalVisible && (
               <Modal
                 isVisible={refereeInfoModalVisible}
                 backdropColor="black"
@@ -5016,9 +5031,9 @@ const HomeScreen = ({navigation, route}) => {
                   />
                 </SafeAreaView>
               </Modal>
-            )}
+            )} */}
 
-            {refereeMatchModalVisible && (
+        {/* {refereeMatchModalVisible && (
               <Modal
                 isVisible={refereeMatchModalVisible}
                 backdropColor="black"
@@ -5115,9 +5130,9 @@ const HomeScreen = ({navigation, route}) => {
                   )}
                 </SafeAreaView>
               </Modal>
-            )}
+            )} */}
 
-            {reviewsModalVisible && (
+        {/* {reviewsModalVisible && (
               <Modal
                 isVisible={reviewsModalVisible}
                 backdropColor="black"
@@ -5277,9 +5292,9 @@ const HomeScreen = ({navigation, route}) => {
                   </Modal>
                 )}
               </Modal>
-            )}
-          </Modal>
-        )}
+            )} */}
+        {/* </Modal>
+        )} */}
 
         {/* Scorekeeper model */}
         {scorekeeperInModalVisible && (
@@ -5374,7 +5389,7 @@ const HomeScreen = ({navigation, route}) => {
                   backgroundColor: colors.blackOpacityColor,
                 }}
                 hasBackdrop
-                onBackdropPress={() => setRefereeInfoModalVisible(false)}
+                // onBackdropPress={() => setRefereeInfoModalVisible(false)}
                 backdropOpacity={0}>
                 <SafeAreaView
                   style={[
@@ -5654,7 +5669,7 @@ const HomeScreen = ({navigation, route}) => {
                       showEventNumbers={true}
                       navigation={navigation}
                       onItemPress={() => {
-                        setPlaysInModalVisible(false);
+                        setShowSportsModal(false);
                       }}
                     />
                   )}

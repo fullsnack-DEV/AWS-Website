@@ -104,6 +104,9 @@ const Verbs = {
   menuOptionTypePlaying: 'Playing',
   menuOptionTypeRefereeing: 'Refereeing',
   menuOptionTypeScorekeeping: 'Scorekeeping',
+  allText: 'all',
+  homeText: 'home',
+  awayText: 'away',
 };
 
 export default Verbs;
