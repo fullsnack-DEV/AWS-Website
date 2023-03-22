@@ -1,6 +1,12 @@
 /* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable array-callback-return */
-import React, {useCallback, useState, useEffect, useContext} from 'react';
+import React, {
+  useCallback,
+  useState,
+  useEffect,
+  useContext,
+  useRef,
+} from 'react';
 import {
   View,
   StyleSheet,
@@ -21,6 +27,9 @@ import {
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Modal from 'react-native-modal';
 import FastImage from 'react-native-fast-image';
+import ActionSheet from 'react-native-actionsheet';
+import LinearGradient from 'react-native-linear-gradient';
+import {format} from 'react-string-format';
 import AuthContext from '../../auth/context';
 import LocationContext from '../../context/LocationContext';
 import * as Utility from '../../utils';
@@ -33,12 +42,15 @@ import TCThinDivider from '../../components/TCThinDivider';
 import {strings} from '../../../Localization/translation';
 import {getEntityIndex} from '../../api/elasticSearch';
 import TCTagsFilter from '../../components/TCTagsFilter';
-import TCRecruitingPlayers from '../../components/TCRecruitingPlayers';
-import {groupsType, locationType} from '../../utils/constant';
+// import TCRecruitingPlayers from '../../components/TCRecruitingPlayers';
+import {groupsType, locationType, ErrorCodes} from '../../utils/constant';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import Verbs from '../../Constants/Verbs';
 import {getGeocoordinatesWithPlaceName} from '../../utils/location';
 import LocationModal from '../../components/LocationModal/LocationModal';
+import TCTeamSearchView from '../../components/TCTeamSearchView';
+import {joinTeam} from '../../api/Groups';
+import {acceptRequest, declineRequest} from '../../api/Notificaitons';
 
 let stopFetchMore = true;
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
@@ -79,6 +91,19 @@ export default function RecruitingPlayerScreen({navigation, route}) {
     route.params?.filters?.location ?? route.params?.locationText,
   );
   const [lastSelection, setLastSelection] = useState(0);
+
+  const [challengePopup, setChallengePopup] = useState(false);
+  const [currentUserData, setCurrentUserData] = useState({});
+  const [settingObject, setSettingObject] = useState();
+  const actionSheet = useRef();
+  const [message, setMessage] = useState('');
+  const [activityId, setActibityId] = useState();
+  const cancelReqActionSheet = useRef();
+  const [selectedChallengeOption, setSelectedChallengeOption] = useState();
+  const [mySettingObject] = useState(authContext.entity.obj.setting);
+  const [myGroupDetail] = useState(
+    authContext.entity.role === Verbs.entityTypeTeam && authContext.entity.obj,
+  );
   useEffect(() => {
     if (settingPopup) {
       setLastSelection(locationFilterOpetion);
@@ -216,7 +241,7 @@ export default function RecruitingPlayerScreen({navigation, route}) {
   const renderRecruitingPlayerListView = useCallback(
     ({item}) => (
       <View style={[styles.separator, {flex: 1}]}>
-        <TCRecruitingPlayers
+        {/* <TCRecruitingPlayers
           data={item}
           entityType={item.entity_type}
           selectedSport={selectedSport}
@@ -227,6 +252,36 @@ export default function RecruitingPlayerScreen({navigation, route}) {
               backButtonVisible: true,
               menuBtnVisible: false,
             });
+          }}
+        /> */}
+        <TCTeamSearchView
+          data={item}
+          authContext={authContext}
+          isClub={item.entity_type === Verbs.entityTypeClub}
+          showStar={item.entity_type === Verbs.entityTypeTeam}
+          sportFilter={
+            (item.entity_type === Verbs.entityTypeTeam && filters) ||
+            (item.entity_type == Verbs.entityTypeClub && filters)
+          }
+          onPress={() => {
+            navigation.navigate('HomeScreen', {
+              uid: ['user', 'player']?.includes(item?.entity_type)
+                ? item?.user_id
+                : item?.group_id,
+              role: ['user', 'player']?.includes(item?.entity_type)
+                ? 'user'
+                : item.entity_type,
+              backButtonVisible: true,
+              menuBtnVisible: false,
+            });
+          }}
+          onPressChallengeButton={(dataObj) => {
+            setChallengePopup(true);
+            setSettingObject(dataObj.setting);
+            setCurrentUserData(dataObj);
+          }}
+          onPressJoinButton={(groupId) => {
+            userJoinGroup(groupId);
           }}
         />
       </View>
@@ -475,6 +530,121 @@ export default function RecruitingPlayerScreen({navigation, route}) {
     }
   };
 
+  const userJoinGroup = (groupId) => {
+    console.log('group id', groupId);
+    setloading(true);
+    const params = {};
+    joinTeam(params, groupId, authContext)
+      .then((response) => {
+        setloading(false);
+        if (response.payload.error_code === ErrorCodes.MEMBEREXISTERRORCODE) {
+          Alert.alert(
+            '',
+            response.payload.user_message,
+            [
+              {
+                text: strings.join,
+                onPress: () => {
+                  joinTeam({...params, is_confirm: true}, groupId, authContext)
+                    .then(() => {})
+                    .catch((error) => {
+                      setTimeout(() => {
+                        Alert.alert(strings.alertmessagetitle, error.message);
+                      }, 10);
+                    });
+                },
+                style: 'destructive',
+              },
+              {
+                text: strings.cancel,
+                onPress: () => {},
+                style: 'cancel',
+              },
+            ],
+            {cancelable: false},
+          );
+        } else if (
+          response.payload.error_code === ErrorCodes.MEMBERALREADYERRORCODE
+        ) {
+          Alert.alert(strings.alertmessagetitle, response.payload.user_message);
+        } else if (
+          response.payload.error_code ===
+          ErrorCodes.MEMBERALREADYINVITEERRORCODE
+        ) {
+          setloading(false);
+          const messageStr = response.payload.user_message;
+          setMessage(messageStr);
+          setTimeout(() => {
+            setActibityId(response.payload.data.activity_id);
+            setloading(false);
+            actionSheet.current.show();
+          }, 50);
+        } else if (
+          response.payload.error_code ===
+          ErrorCodes.MEMBERALREADYREQUESTERRORCODE
+        ) {
+          const messageStr = response.payload.user_message;
+          setActibityId(response.payload.data.activity_id);
+          setMessage(messageStr);
+          setTimeout(() => {
+            cancelReqActionSheet.current.show();
+          }, 50);
+        } else if (
+          response.payload.error_code === ErrorCodes.MEMBERINVITEONLYERRORCODE
+        ) {
+          Alert.alert(strings.alertmessagetitle, response.payload.user_message);
+        } else if (response.payload.action === Verbs.joinVerb) {
+          Alert.alert(strings.alertmessagetitle, strings.acceptRequestMessage);
+        } else if (response.payload.action === Verbs.requestVerb) {
+          Alert.alert(strings.alertmessagetitle, strings.sendRequest);
+        } else {
+          Alert.alert(strings.alertmessagetitle, strings.acceptRequestMessage);
+        }
+      })
+      .catch((error) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, error.message);
+        }, 10);
+      });
+  };
+  const onAccept = (requestId) => {
+    setloading(true);
+    acceptRequest({}, requestId, authContext)
+      .then(() => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, strings.acceptRequestMessage);
+        }, 10);
+      })
+      .catch((error) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, error.message);
+        }, 10);
+      });
+  };
+
+  const onDecline = (requestId) => {
+    setloading(true);
+
+    declineRequest(requestId, authContext)
+      .then(() => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(
+            strings.alertmessagetitle,
+            strings.declinedRequestMessage,
+          );
+        }, 10);
+      })
+      .catch((error) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, error.message);
+        }, 10);
+      });
+  };
   return (
     <SafeAreaView style={{flex: 1}}>
       <ActivityLoader visible={loading} />
@@ -527,6 +697,30 @@ export default function RecruitingPlayerScreen({navigation, route}) {
           stopFetchMore = false;
         }}
         ListEmptyComponent={listEmptyComponent}
+      />
+      <ActionSheet
+        ref={actionSheet}
+        title={message}
+        options={[strings.acceptInvite, strings.declineInvite, strings.cancel]}
+        cancelButtonIndex={3}
+        onPress={(index) => {
+          if (index === 0) {
+            onAccept(activityId);
+          } else if (index === 1) {
+            onDecline(activityId);
+          }
+        }}
+      />
+      <ActionSheet
+        ref={cancelReqActionSheet}
+        title={message}
+        options={[strings.cancelRequestTitle, strings.cancel]}
+        cancelButtonIndex={2}
+        onPress={(index) => {
+          if (index === 0) {
+            onDecline(activityId);
+          }
+        }}
       />
       <Modal
         onBackdropPress={() => {
@@ -913,6 +1107,252 @@ export default function RecruitingPlayerScreen({navigation, route}) {
           </Modal>
         </View>
       </Modal>
+      <Modal
+        onBackdropPress={() => setChallengePopup(false)}
+        backdropOpacity={1}
+        animationType="slide"
+        hasBackdrop
+        style={{
+          margin: 0,
+          backgroundColor: colors.blackOpacityColor,
+        }}
+        visible={challengePopup}>
+        <View style={styles.bottomPopupContainer}>
+          <View style={styles.viewsContainer}>
+            <Text
+              onPress={() => setChallengePopup(false)}
+              style={styles.cancelText}>
+              {strings.cancel}
+            </Text>
+            <Text style={styles.challengeText}>{strings.challenge}</Text>
+            <Text style={styles.challengeText}> </Text>
+          </View>
+          <TCThinDivider width={'100%'} />
+          <TouchableWithoutFeedback
+            onPress={() => {
+              setSelectedChallengeOption(0);
+              const obj = settingObject;
+              if (obj?.availibility === Verbs.on) {
+                if (
+                  currentUserData.sport_type === Verbs.doubleSport &&
+                  (!('player_deactivated' in currentUserData) ||
+                    !currentUserData?.player_deactivated) &&
+                  (!('player_leaved' in currentUserData) ||
+                    !currentUserData?.player_leaved) &&
+                  (!('player_leaved' in myGroupDetail) ||
+                    !myGroupDetail?.player_leaved)
+                ) {
+                  if (
+                    (obj?.game_duration || obj?.score_rules) &&
+                    obj?.availibility &&
+                    obj?.special_rules !== undefined &&
+                    obj?.general_rules !== undefined &&
+                    obj?.responsible_for_referee &&
+                    obj?.responsible_for_scorekeeper &&
+                    obj?.game_fee &&
+                    obj?.venue &&
+                    obj?.refund_policy &&
+                    obj?.home_away &&
+                    obj?.game_type
+                  ) {
+                    setChallengePopup(false);
+
+                    navigation.navigate('ChallengeScreen', {
+                      setting: obj,
+                      sportName: currentUserData?.sport,
+                      sportType: currentUserData?.sport_type,
+                      groupObj: currentUserData,
+                    });
+                  } else {
+                    Alert.alert(strings.teamHaveNoCompletedSetting);
+                  }
+                } else {
+                  console.log('in else continue :', currentUserData);
+                  if (currentUserData.sport_type === Verbs.doubleSport) {
+                    if (
+                      'player_deactivated' in currentUserData &&
+                      currentUserData?.player_deactivated
+                    ) {
+                      Alert.alert(strings.playerDeactivatedSport);
+                    } else if (
+                      'player_leaved' in currentUserData &&
+                      currentUserData?.player_leaved
+                    ) {
+                      Alert.alert(
+                        format(
+                          strings.groupHaveNo2Player,
+                          currentUserData?.group_name,
+                        ),
+                      );
+                    } else if (
+                      'player_leaved' in myGroupDetail &&
+                      myGroupDetail?.player_leaved
+                    ) {
+                      Alert.alert(strings.youHaveNo2Player);
+                    }
+                  } else {
+                    setChallengePopup(false);
+
+                    navigation.navigate('ChallengeScreen', {
+                      setting: obj,
+                      sportName: obj?.sport,
+                      sportType: obj?.sport_type,
+                      groupObj: currentUserData,
+                    });
+                  }
+                }
+              } else {
+                Alert.alert(strings.oppTeamNotForChallenge);
+              }
+            }}>
+            {selectedChallengeOption === 0 ? (
+              <LinearGradient
+                colors={[colors.yellowColor, colors.orangeGradientColor]}
+                style={styles.backgroundView}>
+                <Text
+                  style={[
+                    styles.curruentLocationText,
+                    {color: colors.whiteColor},
+                  ]}>
+                  {strings.continueToChallenge}
+                </Text>
+              </LinearGradient>
+            ) : (
+              <View style={styles.backgroundView}>
+                <Text style={styles.curruentLocationText}>
+                  {strings.continueToChallenge}
+                </Text>
+              </View>
+            )}
+          </TouchableWithoutFeedback>
+          <TouchableWithoutFeedback
+            onPress={() => {
+              setSelectedChallengeOption(1);
+
+              const obj = mySettingObject;
+              if (obj?.availibility === Verbs.on) {
+                if (
+                  myGroupDetail.sport_type === Verbs.doubleSport &&
+                  (!('player_deactivated' in myGroupDetail) ||
+                    !myGroupDetail?.player_deactivated) &&
+                  (!('player_leaved' in currentUserData) ||
+                    !currentUserData?.player_leaved) &&
+                  (!('player_leaved' in myGroupDetail) ||
+                    !myGroupDetail?.player_leaved)
+                ) {
+                  if (
+                    (obj?.game_duration || obj?.score_rules) &&
+                    obj?.availibility &&
+                    obj?.special_rules !== undefined &&
+                    obj?.general_rules !== undefined &&
+                    obj?.responsible_for_referee &&
+                    obj?.responsible_for_scorekeeper &&
+                    obj?.game_fee &&
+                    obj?.venue &&
+                    obj?.refund_policy &&
+                    obj?.home_away &&
+                    obj?.game_type
+                  ) {
+                    setChallengePopup(false);
+                    if (myGroupDetail.is_pause === true) {
+                      Alert.alert(
+                        format(strings.groupPaused, myGroupDetail.group_name),
+                      );
+                    } else {
+                      navigation.navigate('InviteChallengeScreen', {
+                        setting: obj,
+                        sportName: currentUserData?.sport,
+                        sportType: currentUserData?.sport_type,
+                        groupObj: currentUserData,
+                      });
+                    }
+                  } else {
+                    setTimeout(() => {
+                      Alert.alert(
+                        strings.completeSettingBeforeInvite,
+                        '',
+                        [
+                          {
+                            text: strings.cancel,
+                            onPress: () => console.log('Cancel Pressed!'),
+                          },
+                          {
+                            text: strings.okTitleText,
+                            onPress: () => {
+                              if (currentUserData?.is_pause === true) {
+                                Alert.alert(strings.yourTeamPaused);
+                              } else {
+                                navigation.navigate('ManageChallengeScreen', {
+                                  groupObj: currentUserData,
+                                  sportName: currentUserData.sport,
+                                  sportType: currentUserData?.sport_type,
+                                });
+                              }
+                            },
+                          },
+                        ],
+                        {cancelable: false},
+                      );
+                    }, 1000);
+                  }
+                } else if (myGroupDetail.sport_type === Verbs.doubleSport) {
+                  if (
+                    'player_deactivated' in myGroupDetail &&
+                    myGroupDetail?.player_deactivated
+                  ) {
+                    Alert.alert(strings.playerDeactivatedSport);
+                  } else if (
+                    'player_leaved' in currentUserData ||
+                    currentUserData?.player_leaved
+                  ) {
+                    Alert.alert(
+                      format(
+                        strings.groupHaveNo2Player,
+                        currentUserData?.group_name,
+                      ),
+                    );
+                  } else if (
+                    'player_leaved' in myGroupDetail ||
+                    myGroupDetail?.player_leaved
+                  ) {
+                    Alert.alert(strings.youHaveNo2Player);
+                  }
+                } else {
+                  setChallengePopup(false);
+                  if (myGroupDetail.is_pause === true) {
+                    Alert.alert(strings.yourTeamPaused);
+                  } else {
+                    setChallengePopup(false);
+                    navigation.navigate('InviteChallengeScreen', {
+                      setting: obj,
+                      sportName: currentUserData?.sport,
+                      sportType: currentUserData?.sport_type,
+                      groupObj: currentUserData,
+                    });
+                  }
+                }
+              } else {
+                Alert.alert(strings.availibilityOff);
+              }
+            }}>
+            {selectedChallengeOption === 1 ? (
+              <LinearGradient
+                colors={[colors.yellowColor, colors.orangeGradientColor]}
+                style={styles.backgroundView}>
+                <Text style={[styles.myCityText, {color: colors.whiteColor}]}>
+                  {strings.inviteToChallenge}
+                </Text>
+              </LinearGradient>
+            ) : (
+              <View style={styles.backgroundView}>
+                <Text style={styles.myCityText}>
+                  {strings.inviteToChallenge}
+                </Text>
+              </View>
+            )}
+          </TouchableWithoutFeedback>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -1146,5 +1586,39 @@ const styles = StyleSheet.create({
     width: 40,
     borderRadius: 15,
     backgroundColor: '#DADBDA',
+  },
+
+  // New sytles -===>
+  backgroundView: {
+    alignSelf: 'center',
+    backgroundColor: colors.whiteColor,
+    borderRadius: 8,
+    elevation: 5,
+    flexDirection: 'row',
+    height: 50,
+    shadowColor: colors.googleColor,
+    shadowOffset: {width: 0, height: 5},
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    width: '86%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 15,
+  },
+
+  curruentLocationText: {
+    fontSize: 16,
+    fontFamily: fonts.RMedium,
+    color: colors.lightBlackColor,
+  },
+  myCityText: {
+    fontSize: 16,
+    fontFamily: fonts.RMedium,
+    color: colors.lightBlackColor,
+  },
+  challengeText: {
+    fontSize: 16,
+    fontFamily: fonts.RMedium,
+    color: colors.lightBlackColor,
   },
 });

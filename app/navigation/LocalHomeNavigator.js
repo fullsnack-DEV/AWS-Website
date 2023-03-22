@@ -436,7 +436,7 @@ const LocalHomeNavigator = () => (
       name="RecruitingPlayerScreen"
       component={RecruitingPlayerScreen}
       options={{
-        title: strings.recruitingPlayerText,
+        title: strings.groupsRecruitingMembers,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

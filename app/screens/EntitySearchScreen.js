@@ -1070,7 +1070,7 @@ export default function EntitySearchScreen({navigation, route}) {
           color: colors.grayColor,
           fontSize: 15,
         }}>
-        No Records Found
+        {strings.noRecordFoundText}
       </Text>
     </View>
   );
@@ -1962,20 +1962,38 @@ export default function EntitySearchScreen({navigation, route}) {
                   setCurrentUserData(dataObj);
                 }}
                 onPressBookButton={(refereeObj, sportObject) => {
-                  if (
-                    sportObject.setting?.referee_availibility &&
-                    sportObject.setting?.game_fee &&
-                    sportObject.setting?.refund_policy &&
-                    sportObject.setting?.available_area
-                  ) {
-                    navigation.navigate('RefereeBookingDateAndTime', {
-                      settingObj: sportObject.setting,
-                      userData: refereeObj,
-                      showMatches: true,
-                      sportName: sportObject.sport,
-                    });
-                  } else {
-                    Alert.alert(strings.refereeSettingNotConfigureValidation);
+                  if (currentSubTab === strings.refereesTitle) {
+                    if (
+                      sportObject.setting?.referee_availibility &&
+                      sportObject.setting?.game_fee &&
+                      sportObject.setting?.refund_policy &&
+                      sportObject.setting?.available_area
+                    ) {
+                      navigation.navigate('RefereeBookingDateAndTime', {
+                        settingObj: sportObject.setting,
+                        userData: refereeObj,
+                        showMatches: true,
+                        sportName: sportObject.sport,
+                      });
+                    } else {
+                      Alert.alert(strings.refereeSettingNotConfigureValidation);
+                    }
+                  } else if (currentSubTab === strings.scorekeeperTitle) {
+                    if (
+                      sportObject.setting?.scorekeeper_availibility &&
+                      sportObject.setting?.game_fee &&
+                      sportObject.setting?.refund_policy &&
+                      sportObject.setting?.available_area
+                    ) {
+                      navigation.navigate('ScorekeeperBookingDateAndTime', {
+                        settingObj: sportObject.setting,
+                        userData: refereeObj,
+                        showMatches: true,
+                        sportName: sportObject.sport,
+                      });
+                    } else {
+                      Alert.alert(strings.scorekeeperSetiingNotValidation);
+                    }
                   }
                 }}
                 onPressInviteButton={(dataObj) => {

@@ -68,7 +68,7 @@ function TCPlayerView({
       sports.length === 1 &&
       sports[0].setting?.referee_availibility === 'On' &&
       authContext.entity.uid !== data.user_id &&
-      authContext.user?.registered_sports?.some(
+      authContext.entity.obj.registered_sports?.some(
         (sport) => sport.sport === sports[0].sport,
       ) &&
       sports[0].sport_type === 'single'
@@ -79,9 +79,7 @@ function TCPlayerView({
       sports.length === 1 &&
       sports[0].setting?.referee_availibility === 'On' &&
       authContext.entity.uid !== data.user_id &&
-      authContext.user?.registered_sports?.some(
-        (sport) => sport.sport === sports[0].sport,
-      )
+      authContext.entity?.obj.sport === sports[0].sport
     ) {
       isBookButtonShow = true;
     } else if (authContext.entity.role === Verbs.entityTypeClub) {
@@ -96,7 +94,7 @@ function TCPlayerView({
       sports.length === 1 &&
       sports[0].setting?.scorekeeper_availibility === 'On' &&
       authContext.entity.uid !== data.user_id &&
-      authContext.user?.registered_sports?.some(
+      authContext.entity.obj.registered_sports?.some(
         (sport) => sport.sport === sports[0].sport,
       ) &&
       sports[0].sport_type === 'single'
@@ -107,9 +105,7 @@ function TCPlayerView({
       sports.length === 1 &&
       sports[0].setting?.scorekeeper_availibility === 'On' &&
       authContext.entity.uid !== data.user_id &&
-      authContext.user?.registered_sports?.some(
-        (sport) => sport.sport === sports[0].sport,
-      )
+      authContext.entity?.obj.sport === sports[0].sport
     ) {
       isBookButtonShow = true;
     } else if (authContext.entity.role === Verbs.entityTypeClub) {
@@ -155,7 +151,7 @@ function TCPlayerView({
               {/* <Image source={images.orangeStar} style={styles.starImage} /> */}
               <Text style={styles.starPoints} numberOfLines={2}>
                 {'★ 5.0'} · {sports[0]?.setting?.game_fee?.fee}{' '}
-                {sports[0].setting?.game_fee?.currency_type}
+                {sports[0]?.setting?.game_fee?.currency_type}
               </Text>
             </View>
           )}

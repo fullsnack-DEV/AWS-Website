@@ -30,10 +30,7 @@ function TCTeamSearchView({
   if (data.entity_type === Verbs.entityTypeTeam) {
     teamIcon = images.newTeamIcon;
     teamImagePH = images.teamBcgPlaceholder;
-    if (
-      authContext.entity.role === Verbs.entityTypeUser &&
-      data.setting?.availibility === 'On'
-    ) {
+    if (authContext.entity.role === Verbs.entityTypeUser) {
       isJoinButton = true;
     } else if (
       authContext.entity.role === Verbs.entityTypeTeam &&
