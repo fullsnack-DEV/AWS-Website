@@ -2504,4 +2504,7 @@ export default {
   reportUser: 'en_Block This User',
   hourText: 'en_hour',
   matchText: 'en_match',
+  incomingReservationSettingsScoreKeeper:
+    'en_Please review your incoming reservation settings. These settings are only applicable to the scorekeeper reservation when you are booked as a scorekeeper. When you book another scorekeeper for a match, their incoming reservation settings Will be applied.',
+  registerDate: '{0} in {1}',
 };

@@ -194,7 +194,7 @@ const RegisterReferee = ({navigation, route}) => {
             style={{marginLeft: 0, marginTop: 0}}
           />
           <TouchableOpacity
-            style={[styles.searchView, {minHeight: 100}]}
+            style={[styles.searchView, {minHeight: 100, paddingVertical: 5}]}
             onPress={() => {
               bioInputRef.current?.focus();
             }}>
@@ -327,7 +327,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   certificateDescription: {
-    fontSize: 12,
+    fontSize: 14,
     lineHeight: 21,
     color: colors.lightBlackColor,
     fontFamily: fonts.RRegular,

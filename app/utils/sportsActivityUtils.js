@@ -5,7 +5,7 @@ import Verbs from '../Constants/Verbs';
 const getProgressBarColor = (entityType = Verbs.entityTypePlayer) => {
   switch (entityType) {
     case Verbs.entityTypePlayer:
-      return colors.themeColor;
+      return colors.darkYellowColor;
 
     case Verbs.entityTypeReferee:
       return colors.darkThemeColor;
@@ -66,9 +66,26 @@ const getScoreboardListTitle = (entityType = Verbs.entityTypePlayer) => {
   }
 };
 
+const getTitleForRegister = (entityType = Verbs.entityTypePlayer) => {
+  switch (entityType) {
+    case Verbs.entityTypePlayer:
+      return strings.registerAsPlayerTitle;
+
+    case Verbs.entityTypeReferee:
+      return strings.registerRefereeTitle;
+
+    case Verbs.entityTypeScorekeeper:
+      return strings.registerScorekeeperTitle;
+
+    default:
+      return '';
+  }
+};
+
 export {
   getProgressBarColor,
   getIsAvailable,
   getHeaderTitle,
   getScoreboardListTitle,
+  getTitleForRegister,
 };

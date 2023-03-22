@@ -47,13 +47,16 @@ const StatsContentScreen = ({sportType = '', sport, authContext, userId}) => {
   const [selectedMonths, setSelectedMonths] = useState(
     format(strings.pastMonthsText, 3),
   );
+  const [selectedMonthsDMRate, setSelectedMonthsDMRate] = useState(
+    format(strings.pastMonthsText, 3),
+  );
+  const [showOptionModal, setOptionModal] = useState(false);
   const [dmRate, setDMRate] = useState({});
 
   const isFocused = useIsFocused();
 
-  const loadStatsData = useCallback(
+  const getPayload = useCallback(
     (month = format(strings.pastMonthsText, 3)) => {
-      setLoading(true);
       const date = new Date();
 
       if (month === format(strings.pastMonthsText, 3)) {
@@ -69,6 +72,15 @@ const StatsContentScreen = ({sportType = '', sport, authContext, userId}) => {
         sport,
         fromDate: getTCDate(date),
       };
+      return chartParameter;
+    },
+    [sport],
+  );
+
+  const loadStatsData = useCallback(
+    (month = format(strings.pastMonthsText, 3)) => {
+      setLoading(true);
+      const chartParameter = getPayload(month);
       getGameStatsData(userId, chartParameter, authContext)
         .then((res) => {
           const list = res.payload.filter((item) => item.sport_name === sport);
@@ -99,7 +111,13 @@ const StatsContentScreen = ({sportType = '', sport, authContext, userId}) => {
           console.log({err});
           setLoading(false);
         });
+    },
+    [authContext, sport, userId, getPayload],
+  );
 
+  const getRDMData = useCallback(
+    (month = format(strings.pastMonthsText, 3)) => {
+      const chartParameter = getPayload(month);
       getStatsRDMData(userId, chartParameter, authContext)
         .then((response) => {
           setDMRate(response.payload);
@@ -108,14 +126,15 @@ const StatsContentScreen = ({sportType = '', sport, authContext, userId}) => {
           console.log({err});
         });
     },
-    [authContext, sport, userId],
+    [authContext, userId, getPayload],
   );
 
   useEffect(() => {
     if (isFocused) {
       loadStatsData();
+      getRDMData();
     }
-  }, [loadStatsData, isFocused]);
+  }, [loadStatsData, isFocused, getRDMData]);
 
   const getGraphTitle = (option) => {
     switch (option) {
@@ -286,8 +305,10 @@ const StatsContentScreen = ({sportType = '', sport, authContext, userId}) => {
                   <Image source={images.infoIcon} style={styles.image} />
                 </TouchableOpacity>
               </View>
-              <TouchableOpacity style={styles.dropDownContainer}>
-                <Text style={styles.dropDownLabel}>{strings.past6Months}</Text>
+              <TouchableOpacity
+                style={styles.dropDownContainer}
+                onPress={() => setOptionModal(true)}>
+                <Text style={styles.dropDownLabel}>{selectedMonthsDMRate}</Text>
                 <Image
                   source={images.dropDownArrow}
                   style={{width: 10, height: 10, marginLeft: 5}}
@@ -395,6 +416,16 @@ const StatsContentScreen = ({sportType = '', sport, authContext, userId}) => {
           setShowModal(false);
           loadStatsData(value);
           setSelectedMonths(value);
+        }}
+      />
+      <BottomSheet
+        isVisible={showOptionModal}
+        optionList={OptionsList}
+        closeModal={() => setShowModal(false)}
+        onSelect={(value) => {
+          setOptionModal(false);
+          getRDMData(value);
+          setSelectedMonthsDMRate(value);
         }}
       />
     </ScrollView>

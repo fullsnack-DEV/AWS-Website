@@ -12,6 +12,7 @@ import {
   Dimensions,
 } from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
+import {format} from 'react-string-format';
 import {strings} from '../../../../../Localization/translation';
 import EventMapView from '../../../../components/Schedule/EventMapView';
 import colors from '../../../../Constants/Colors';
@@ -27,11 +28,11 @@ import {privacyKey} from '../../../../Constants/GeneralConstants';
 import {getJSDate} from '../../../../utils';
 import CertificateList from '../components/CertificateList';
 import ServicableArea from '../components/ServicableArea';
+import {getTitleForRegister} from '../../../../utils/sportsActivityUtils';
 
 const OptionList = [
   strings.bio,
   strings.basicInfoText,
-  strings.matchVenues,
   strings.clubstitle,
   strings.leagues,
 ];
@@ -74,9 +75,9 @@ const InfoContentScreen = ({
       ) {
         const arr = [...OptionList];
         arr.splice(2, 0, strings.homeFacility);
-
+        arr.splice(3, 0, strings.matchVenues);
         if (sportObj.sport === Verbs.tennisSport) {
-          arr.splice(3, 0, strings.ntrpTitle);
+          arr.splice(4, 0, strings.ntrpTitle);
         }
 
         setOptions([...arr]);
@@ -94,17 +95,22 @@ const InfoContentScreen = ({
         return (
           <>
             <Text style={styles.label} numberOfLines={7}>
-              {user.description}{' '}
+              {sportObj.descriptions}{' '}
               <TouchableOpacity style={{paddingTop: 4}}>
                 <Text style={styles.smallText}>{strings.moreText}</Text>
               </TouchableOpacity>
             </Text>
-            <Text style={[styles.smallText, {marginTop: 5}]}>
-              {strings.signedupin}{' '}
-              {moment(getJSDate(new Date(user.created_at).getTime())).format(
-                'YYYY',
-              )}
-            </Text>
+            {sportObj?.created_at ? (
+              <Text style={[styles.smallText, {marginTop: 5}]}>
+                {format(
+                  strings.registerDate,
+                  getTitleForRegister(entityType),
+                  moment(
+                    getJSDate(new Date(sportObj.created_at).getTime()),
+                  ).format('YYYY'),
+                )}
+              </Text>
+            ) : null}
           </>
         );
 
@@ -139,7 +145,9 @@ const InfoContentScreen = ({
             />
           </View>
         ) : (
-          <Text style={styles.label}>{strings.noneText}</Text>
+          <Text style={[styles.label, {paddingHorizontal: 17}]}>
+            {strings.noneText}
+          </Text>
         );
 
       case strings.ntrpTitle:

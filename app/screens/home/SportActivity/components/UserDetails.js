@@ -5,6 +5,7 @@ import {View, StyleSheet, Text} from 'react-native';
 import {strings} from '../../../../../Localization/translation';
 import colors from '../../../../Constants/Colors';
 import fonts from '../../../../Constants/Fonts';
+import {getJSDate} from '../../../../utils';
 
 const UserDetails = ({user = {}}) => {
   const getLanguage = () => {
@@ -65,7 +66,47 @@ const UserDetails = ({user = {}}) => {
           </View>
           <View style={{alignItems: 'flex-start'}}>
             <Text style={[styles.label, {textAlign: 'right'}]}>
-              {moment(user.birthday).format('YYYY')}
+              {moment(getJSDate(new Date(user.birthday).getTime())).format(
+                'YYYY',
+              )}
+            </Text>
+          </View>
+        </View>
+      ) : null}
+
+      {user?.height ? (
+        <View style={styles.row}>
+          <View style={{alignItems: 'flex-start'}}>
+            <Text
+              style={[
+                styles.label,
+                {fontFamily: fonts.RMedium, color: colors.googleColor},
+              ]}>
+              {strings.height}
+            </Text>
+          </View>
+          <View style={{alignItems: 'flex-start'}}>
+            <Text style={[styles.label, {textAlign: 'right'}]}>
+              {user.height?.height} {user.height?.height_type}
+            </Text>
+          </View>
+        </View>
+      ) : null}
+
+      {user?.weight ? (
+        <View style={styles.row}>
+          <View style={{alignItems: 'flex-start'}}>
+            <Text
+              style={[
+                styles.label,
+                {fontFamily: fonts.RMedium, color: colors.googleColor},
+              ]}>
+              {strings.weight}
+            </Text>
+          </View>
+          <View style={{alignItems: 'flex-start'}}>
+            <Text style={[styles.label, {textAlign: 'right'}]}>
+              {user.weight?.weight} {user.weight?.weight_type}
             </Text>
           </View>
         </View>

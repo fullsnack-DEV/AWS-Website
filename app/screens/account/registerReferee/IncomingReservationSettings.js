@@ -18,7 +18,7 @@ import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 import Verbs from '../../../Constants/Verbs';
-import {setAuthContextData} from '../../../utils';
+import {getTCDate, setAuthContextData} from '../../../utils';
 import MatchFeeReminder from '../registerPlayer/modals/MatchFeeReminder';
 import MenuItem from './components/MenuItem';
 import RefereeCongratulationsModal from './components/RefereeCongratulationsModal';
@@ -98,6 +98,7 @@ const IncomingReservationSettings = ({navigation, route}) => {
             setting: {
               ...settingsObject,
             },
+            created_at: getTCDate(new Date()),
           };
         }
         return item;
@@ -164,7 +165,9 @@ const IncomingReservationSettings = ({navigation, route}) => {
                   {strings.incomingReservationSettings}
                 </Text>
                 <Text style={styles.description}>
-                  {strings.incomingReservationSettingsDescription}
+                  {entityType === Verbs.entityTypeReferee
+                    ? strings.incomingReservationSettingsDescription
+                    : strings.incomingReservationSettingsScoreKeeper}
                 </Text>
               </View>
               <View style={styles.separator} />

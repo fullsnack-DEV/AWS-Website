@@ -199,7 +199,7 @@ const SportActivityModal = ({
           <ScreenHeader
             sportIcon={sportIcon}
             title={`${getHeaderTitle(entityType)} ${sportName}`}
-            rightIcon2={images.closeSearch}
+            rightIcon2={images.crossImage}
             rightIcon2Press={closeModal}
             containerStyle={{
               borderBottomWidth: 3,
@@ -217,6 +217,7 @@ const SportActivityModal = ({
                 onMessageClick={onMessageClick}
                 level={sportObj?.level}
                 entityType={entityType}
+                description={sportObj?.descriptions}
               />
               <ChallengeButton
                 isAdmin={isAdmin}

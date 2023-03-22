@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   FlatList,
   ScrollView,
+  Image,
 } from 'react-native';
 import moment from 'moment';
 import {strings} from '../../../../../Localization/translation';
@@ -16,6 +17,7 @@ import fonts from '../../../../Constants/Fonts';
 import Verbs from '../../../../Constants/Verbs';
 import GameStatus from '../../../../Constants/GameStatus';
 import ScoreboardCard from './ScoreboardCard';
+import images from '../../../../Constants/ImagePath';
 
 const ScoreBoardList = ({
   loading = false,
@@ -116,9 +118,10 @@ const ScoreBoardList = ({
       );
     }
     return (
-      <View style={styles.emptyContainer}>
-        <Text style={styles.warningText}>{strings.noMatchText}</Text>
-      </View>
+      <Image
+        style={{height: 188, width: '100%', marginTop: 10}}
+        source={images.noScoreboardImage}
+      />
     );
   };
 
@@ -219,11 +222,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 24,
     color: colors.lightBlackColor,
-  },
-  emptyContainer: {
-    minHeight: 200,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   warningText: {
     fontSize: 14,
