@@ -246,7 +246,6 @@ export default function MembersProfileScreen({navigation, route}) {
       getMemberInformation();
       getMembers();
     }
-    console.log(authContext, 'From auth');
   }, [isFocused, navigation, route]);
 
   useEffect(() => {
@@ -1249,7 +1248,7 @@ export default function MembersProfileScreen({navigation, route}) {
         <View
           style={{
             flex: 1,
-            backgroundColor: '#F5F5F5',
+            backgroundColor: colors.lightGrey,
             justifyContent: 'center',
             alignItems: 'center',
             ...StyleSheet.absoluteFillObject,
@@ -1258,7 +1257,7 @@ export default function MembersProfileScreen({navigation, route}) {
           <View
             style={{
               flex: 1,
-              backgroundColor: '#F5F5F5',
+              backgroundColor: colors.lightGrey,
               opacity: 0.8,
               justifyContent: 'center',
               alignItems: 'center',
