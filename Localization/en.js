@@ -210,7 +210,7 @@ export default {
   locationTitle: 'en_Current City',
   searchCityText: 'en_Search City',
 
-  locationClubTitle: 'en_Where is the home city of the club?',
+  locationClubTitle: 'en_HOME CITY',
   currentCity: 'en_Home City',
   birthdateText: 'en_Choose Date of birth',
   searchCityPlaceholder: 'en_Search by city',
@@ -2496,6 +2496,9 @@ export default {
   matchHostText: 'en_Match Host',
   sendOfferText: 'en_Send Offer',
 
+  clubNameCaps: 'en_CLUB NAME',
+
+
   folloersAndClubMembers: 'en_Followers and Club Members',
   infoPrivacyTeamMember:
     'en_If you choose this option, clubs (admins) which your team belongs to also can see your {0}.',
@@ -2521,4 +2524,5 @@ export default {
   lookingForClubOption: 'en_Looking for club!',
   lookingForBottomText:
     'en_If you select “Yes, display it.”, your profile may be displayed on the “{0}” section in Local Home. ',
+
 };
