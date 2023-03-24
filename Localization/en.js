@@ -1936,10 +1936,8 @@ export default {
   resultDisapprovedMatches: 'en_(Result-Dissapproved Matches)',
   TCPerGame: 'en_STATS Per game ( 3 sets )',
   wins: 'en_Wins',
-  lookingNewTeam:
-    "en_Are you Looking for a new team? Your profile may be displayed on Local Home if you choose 'Yes'.",
-  lookingNewClub:
-    "en_Are you Looking for a new club? Your profile may be displayed on Local Home if you choose 'Yes'.",
+  lookingNewClubTeam:
+    'en_Are you looking for a new team to join? Do you want to display the badge below on your profile?',
   scoreboard: 'en_Scoreboard',
   stats: 'en_Stats',
   reviews: 'en_Reviews',
@@ -2498,11 +2496,9 @@ export default {
   matchHostText: 'en_Match Host',
   sendOfferText: 'en_Send Offer',
 
-
   folloersAndClubMembers: 'en_Followers and Club Members',
   infoPrivacyTeamMember:
     'en_If you choose this option, clubs (admins) which your team belongs to also can see your {0}.',
-
 
   refereedMatchesTitle: 'en_Refereed Matches',
   addCerticateTitle: 'en_+ Add Certificates',
@@ -2514,5 +2510,15 @@ export default {
   incomingReservationSettingsScoreKeeper:
     'en_Please review your incoming reservation settings. These settings are only applicable to the scorekeeper reservation when you are booked as a scorekeeper. When you book another scorekeeper for a match, their incoming reservation settings Will be applied.',
   registerDate: '{0} in {1}',
-
+  refereeFeeInfo: 'en_How much do you want to Charge for The match?',
+  scorekeeperFeeInfo:
+    'en_How much do you want to Charge for The scorekeeper fee?',
+  matchRulesInfo:
+    'en_Write down match rules that the Challenger and you should follow.',
+  yesDisplayItText: 'en_Yes, display it.',
+  noDisplayItText: 'en_No, don’t display it.',
+  lookingForTeamOption: 'en_Looking for team!',
+  lookingForClubOption: 'en_Looking for club!',
+  lookingForBottomText:
+    'en_If you select “Yes, display it.”, your profile may be displayed on the “{0}” section in Local Home. ',
 };

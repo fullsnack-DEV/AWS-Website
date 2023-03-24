@@ -82,10 +82,43 @@ const getTitleForRegister = (entityType = Verbs.entityTypePlayer) => {
   }
 };
 
+const getEntitySportList = (user = {}, role = Verbs.entityTypePlayer) => {
+  let sportList = [];
+  if (role === Verbs.entityTypePlayer) {
+    sportList = user.registered_sports ?? [];
+  } else if (role === Verbs.entityTypeReferee) {
+    sportList = user.referee_data ?? [];
+  } else if (role === Verbs.entityTypeScorekeeper) {
+    sportList = user.scorekeeper_data ?? [];
+  }
+
+  return [...sportList];
+};
+
+const getEntitySport = ({
+  user = {},
+  role = Verbs.entityTypePlayer,
+  sportType = '',
+  sport = '',
+}) => {
+  const sportList = getEntitySportList(user, role);
+  let obj = {};
+  if (role === Verbs.entityTypePlayer) {
+    obj = sportList.find(
+      (ele) => ele.sport === sport && ele.sport_type === sportType,
+    );
+  } else {
+    obj = sportList.find((ele) => ele.sport === sport);
+  }
+  return obj ?? {};
+};
+
 export {
   getProgressBarColor,
   getIsAvailable,
   getHeaderTitle,
   getScoreboardListTitle,
   getTitleForRegister,
+  getEntitySportList,
+  getEntitySport,
 };

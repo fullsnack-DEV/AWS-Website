@@ -58,7 +58,8 @@ const SportActivityTabBar = ({
 
   return (
     <View style={styles.parent}>
-      {sportType === Verbs.singleSport ? (
+      {sportType === Verbs.singleSport ||
+      entityType !== Verbs.entityTypePlayer ? (
         <FlatList
           data={menuList}
           keyExtractor={(item, index) => index}

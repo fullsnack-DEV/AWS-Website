@@ -101,6 +101,7 @@ const ReviewsContentScreen = ({
                     showRating={false}
                     size={23}
                     selectedColor={colors.themeColor}
+                    isDisabled
                   />
                   <Text
                     style={[

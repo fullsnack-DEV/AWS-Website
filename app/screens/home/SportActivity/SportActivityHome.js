@@ -186,23 +186,33 @@ const SportActivityHome = ({navigation, route}) => {
   }, [userData, sport, sportType, getSports, entityType]);
 
   useEffect(() => {
-    if (sportType === Verbs.singleSport) {
-      if (isAdmin) {
-        setOptions([
-          strings.incomingChallengeSettingsTitle,
-          strings.lookingForTeamTitle,
-          strings.deactivateActivityText,
-        ]);
+    if (isAdmin) {
+      if (entityType === Verbs.entityTypePlayer) {
+        if (sportType === Verbs.singleSport) {
+          setOptions([
+            strings.incomingChallengeSettingsTitle,
+            strings.lookingForClubText,
+            strings.deactivateActivityText,
+          ]);
+        } else {
+          setOptions([
+            strings.lookingForTeamText,
+            strings.deactivateActivityText,
+          ]);
+        }
       } else {
         setOptions([
-          strings.reportThisSportActivityPage,
-          strings.blockUserAccount,
+          strings.incomingReservationSettings,
+          strings.deactivateActivityText,
         ]);
       }
     } else {
-      setOptions([strings.reportThisAccount, strings.blockThisAccount]);
+      setOptions([
+        strings.reportThisSportActivityPage,
+        strings.blockUserAccount,
+      ]);
     }
-  }, [isAdmin, sportType]);
+  }, [isAdmin, sportType, entityType]);
 
   const handleEditNavigation = (sectionName, title) => {
     if (sectionName === strings.matchVenues) {
@@ -233,6 +243,7 @@ const SportActivityHome = ({navigation, route}) => {
   };
 
   const handleMoreOptions = (selectedOption) => {
+    setShowMoreOptions(false);
     switch (selectedOption) {
       case strings.incomingChallengeSettingsTitle:
         navigation.navigate('ManageChallengeScreen', {
@@ -242,22 +253,45 @@ const SportActivityHome = ({navigation, route}) => {
         });
         break;
 
-      case strings.lookingForTeamTitle:
+      case strings.lookingForClubText:
+      case strings.lookingForTeamText:
+        navigation.navigate('LookingForSettingScreen', {
+          sport: sportObj,
+          entityType,
+          comeFrom: 'SportActivityHome',
+          routeParams: {
+            sport: sportObj?.sport,
+            sportType: sportObj?.sport_type,
+            uid: route.params.uid,
+            entityType,
+          },
+        });
+        break;
+
+      case strings.incomingReservationSettings:
+        if (entityType === Verbs.entityTypeReferee) {
+          navigation.navigate('RefereeReservationSetting', {
+            sportName: sportObj?.sport,
+          });
+        }
+
+        if (entityType === Verbs.entityTypeScorekeeper) {
+          navigation.navigate('ScorekeeperReservationSetting', {
+            sportName: sportObj?.sport,
+          });
+        }
         break;
 
       case strings.deactivateActivityText:
+        navigation.navigate('DeactivateSportScreen', {
+          sportObj,
+        });
         break;
 
       case strings.reportThisSportActivityPage:
         break;
 
       case strings.blockUserAccount:
-        break;
-
-      case strings.reportThisAccount:
-        break;
-
-      case strings.blockThisAccount:
         break;
 
       default:

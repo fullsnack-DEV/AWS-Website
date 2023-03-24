@@ -74,7 +74,7 @@ const UserDetails = ({user = {}}) => {
         </View>
       ) : null}
 
-      {user?.height ? (
+      {user.height?.height ? (
         <View style={styles.row}>
           <View style={{alignItems: 'flex-start'}}>
             <Text
@@ -87,13 +87,13 @@ const UserDetails = ({user = {}}) => {
           </View>
           <View style={{alignItems: 'flex-start'}}>
             <Text style={[styles.label, {textAlign: 'right'}]}>
-              {user.height?.height} {user.height?.height_type}
+              {user.height.height} {user.height?.height_type}
             </Text>
           </View>
         </View>
       ) : null}
 
-      {user?.weight ? (
+      {user.weight?.weight ? (
         <View style={styles.row}>
           <View style={{alignItems: 'flex-start'}}>
             <Text
@@ -106,7 +106,7 @@ const UserDetails = ({user = {}}) => {
           </View>
           <View style={{alignItems: 'flex-start'}}>
             <Text style={[styles.label, {textAlign: 'right'}]}>
-              {user.weight?.weight} {user.weight?.weight_type}
+              {user.weight.weight} {user.weight?.weight_type}
             </Text>
           </View>
         </View>

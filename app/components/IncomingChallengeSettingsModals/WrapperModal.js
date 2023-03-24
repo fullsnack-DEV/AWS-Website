@@ -162,12 +162,10 @@ const WrapperModal = ({
         return (
           <GameRulesModal
             generalRules={settings.general_rules}
-            specialRules={settings.special_rules}
-            onChange={({generalRules, specialRules}) => {
+            onChange={(generalRules) => {
               setSettings({
                 ...settings,
                 general_rules: generalRules,
-                special_rules: specialRules,
               });
             }}
           />

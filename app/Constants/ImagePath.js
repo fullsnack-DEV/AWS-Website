@@ -478,6 +478,7 @@ const images = {
   certificateCamera: require('../assets/images/certificateCamera.png'),
   refreshIcon: require('../assets/images/refreshIcon.png'),
   noScoreboardImage: require('../assets/images/noScoreboardImage.png'),
+  lookingForImg: require('../assets/images/lookingForImg.png'),
 };
 
 export default images;

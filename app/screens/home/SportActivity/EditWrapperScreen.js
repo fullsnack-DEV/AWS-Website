@@ -12,11 +12,14 @@ import EditBioScreen from './contentScreens/EditBioScreen';
 import EditHomeFacilityScreen from './contentScreens/EditHomeFacilityScreen';
 import EditNTRPScreen from './contentScreens/EditNTRPScreen';
 import EditCertificateScreen from './contentScreens/EditCertificateScreen';
+import {getEntitySportList} from '../../../utils/sportsActivityUtils';
+import Verbs from '../../../Constants/Verbs';
 
 const EditWrapperScreen = ({navigation, route}) => {
   const [userData, setUserData] = useState({});
   const [loading, setLoading] = useState(false);
   const [selectedCertificates, setSelectedCertificates] = useState([]);
+  const [updatedSportObj, setUpdatedSportObj] = useState({});
 
   const {section, title, sportObj, sportIcon, entityType} = route.params;
   const authContext = useContext(AuthContext);
@@ -31,13 +34,25 @@ const EditWrapperScreen = ({navigation, route}) => {
     }
   }, [sportObj?.certificates]);
 
+  useEffect(() => {
+    if (sportObj) {
+      setUpdatedSportObj(sportObj);
+    }
+  }, [sportObj]);
+
   const renderView = () => {
     switch (section) {
       case strings.bio:
         return (
           <EditBioScreen
-            bio={userData.description}
-            setData={(bio) => setUserData({...userData, description: bio})}
+            bio={updatedSportObj.descriptions}
+            setData={(bio) => {
+              const obj = {
+                ...updatedSportObj,
+                descriptions: bio,
+              };
+              setUpdatedSportObj(obj);
+            }}
           />
         );
 
@@ -165,7 +180,22 @@ const EditWrapperScreen = ({navigation, route}) => {
     if (section === strings.certiTitle) {
       handleCertifcate();
     } else {
-      updateUser(userData);
+      const newList = getEntitySportList(userData).map((ele) => {
+        if (ele.sport === sportObj?.sport) {
+          return {...updatedSportObj};
+        }
+        return {...ele};
+      });
+      const data = {...userData};
+      if (entityType === Verbs.entityTypePlayer) {
+        data.registered_sports = newList;
+      } else if (entityType === Verbs.entityTypeReferee) {
+        data.referee_data = newList;
+      } else if (entityType === Verbs.entityTypeScorekeeper) {
+        data.scorekeeper_data = newList;
+      }
+      setUserData(data);
+      updateUser(data);
     }
   };
 

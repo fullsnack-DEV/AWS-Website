@@ -90,9 +90,8 @@ export default function GroupSettingPrivacyScreen({navigation}) {
     } else if (opetions === strings.privacyText) {
       Alert.alert(strings.thisFeatureisUnderDevelopment);
     } else if (
-      (opetions === authContext.entity.role) === Verbs.entityTypeClub
-        ? strings.pauseClubTitle
-        : strings.pauseTeamTitle
+      opetions === strings.pauseClubTitle ||
+      opetions === strings.pauseTeamTitle
     ) {
       navigation.navigate('PauseGroupScreen');
     } else if (opetions === strings.terminateAccountText) {

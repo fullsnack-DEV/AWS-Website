@@ -108,6 +108,7 @@ const RegisterReferee = ({navigation, route}) => {
               sport: selectedSport.sport,
             },
         sportName: selectedSport.sport_name,
+        sport: selectedSport.sport,
       });
     }
   };

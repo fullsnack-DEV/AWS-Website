@@ -34,7 +34,7 @@ const IncomingReservationSettings = ({navigation, route}) => {
   const [showCongratulationsModal, setShowCongratulationsModal] =
     useState(false);
 
-  const {bodyParams, settingObj, sportName, entityType} = route.params;
+  const {bodyParams, settingObj, sportName, entityType, sport} = route.params;
   const authContext = useContext(AuthContext);
 
   const reservationSettingMenu = [
@@ -227,7 +227,18 @@ const IncomingReservationSettings = ({navigation, route}) => {
         entityType={entityType}
         sport={settingObj.sport}
         goToSportActivityHome={() => {
-          // navigation to sport activity referee home
+          setShowCongratulationsModal(false);
+          navigation.navigate('SportActivityHome', {
+            sport,
+            entityType,
+            uid: authContext.entity.uid,
+            selectedTab: strings.infoTitle,
+            backScreen: 'AccountScreen',
+            backScreenParams: {
+              createdSportName: sport,
+              // sportType: selectedSport?.sport_type,
+            },
+          });
         }}
       />
     </SafeAreaView>

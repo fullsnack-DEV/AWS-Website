@@ -28,6 +28,7 @@ const ReviewSection = ({onSeeAll = () => {}, ratings = 0}) => (
           showRating={false}
           size={23}
           isDisabled
+          selectedColor={colors.themeColor}
         />
         <Text
           style={[

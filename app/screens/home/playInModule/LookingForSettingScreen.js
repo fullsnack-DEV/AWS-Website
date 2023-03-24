@@ -1,4 +1,4 @@
-import React, {useState, useContext, useLayoutEffect, useEffect} from 'react';
+import React, {useState, useContext, useEffect, useCallback} from 'react';
 import {
   StyleSheet,
   Text,
@@ -7,127 +7,77 @@ import {
   SafeAreaView,
   TouchableWithoutFeedback,
   Image,
-  FlatList,
 } from 'react-native';
 
+import {format} from 'react-string-format';
 import {patchPlayer} from '../../../api/Users';
 import AuthContext from '../../../auth/context';
-import ActivityLoader from '../../../components/loader/ActivityLoader';
 import * as Utility from '../../../utils';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
 import {strings} from '../../../../Localization/translation';
 import images from '../../../Constants/ImagePath';
 import Verbs from '../../../Constants/Verbs';
+import {
+  getEntitySport,
+  getEntitySportList,
+} from '../../../utils/sportsActivityUtils';
+import ScreenHeader from '../../../components/ScreenHeader';
 
 export default function LookingForSettingScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const [loading, setloading] = useState(false);
-  const [lookingFor, setLookingFor] = useState(true);
-  const [sportObj] = useState(route?.params?.sport);
-  const [type] = useState(route?.params?.type);
-  const lookingOpetions = [
-    {key: strings.yes, id: 1},
-    {key: strings.no, id: 0},
-  ];
+  const [lookingFor, setLookingFor] = useState(strings.yesDisplayItText);
+  const [sportObj] = useState(route.params.sport);
+  const lookingOpetions = [strings.yesDisplayItText, strings.noDisplayItText];
+  const {entityType, comeFrom, routeParams} = route.params;
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerTitle: () => (
-        <Text style={styles.titleTextStyle}>
-          {sportObj?.sport_type === Verbs.singleSport
-            ? strings.lookingForClubText
-            : strings.lookingForTeamText}
-        </Text>
-      ),
-      headerRight: () => (
-        <Text style={styles.doneButtonStyle} onPress={() => updateProfile()}>
-          {strings.save}
-        </Text>
-      ),
-    });
-  }, [navigation, lookingFor, sportObj.sport]);
-
-  useEffect(() => {
-    let selectedSport;
-    if (type === Verbs.entityTypeReferee) {
-      selectedSport = authContext?.entity?.obj?.referee_data?.filter(
-        (obj) => obj?.sport === sportObj?.sport,
-      )[0];
-    } else if (type === Verbs.entityTypeScorekeeper) {
-      selectedSport = authContext?.entity?.obj?.scorekeeper_data?.filter(
-        (obj) => obj?.sport === sportObj?.sport,
-      )[0];
-    } else {
-      selectedSport = authContext?.entity?.obj?.registered_sports?.filter(
-        (obj) =>
-          obj?.sport === sportObj?.sport &&
-          obj?.sport_type === sportObj?.sport_type,
-      )[0];
+  const getHeaderTitle = useCallback(() => {
+    if (entityType === Verbs.entityTypePlayer) {
+      if (sportObj?.sport_type === Verbs.singleSport) {
+        return strings.lookingForClubText;
+      }
+      return strings.lookingForTeamText;
     }
+    return strings.lookingForClubText;
+  }, [sportObj, entityType]);
 
-    setLookingFor(selectedSport?.lookingForTeamClub);
-  }, [
-    authContext?.entity?.obj?.referee_data,
-    authContext?.entity?.obj?.registered_sports,
-    authContext?.entity?.obj?.scorekeeper_data,
-    sportObj?.sport,
-    sportObj?.sport_type,
-    type,
-  ]);
-  const updateProfile = () => {
+  const updateProfile = useCallback(() => {
     setloading(true);
-    let registerdData, refereeData, scorekeeperData, selectedSport;
-    if (type === Verbs.entityTypeReferee) {
-      refereeData = authContext?.entity?.obj?.referee_data?.filter(
-        (obj) => obj?.sport !== sportObj?.sport,
-      );
-      selectedSport = authContext?.entity?.obj?.referee_data?.filter(
-        (obj) => obj?.sport === sportObj?.sport,
-      )[0];
-    } else if (type === Verbs.entityTypeScorekeeper) {
-      scorekeeperData = authContext?.entity?.obj?.scorekeeper_data?.filter(
-        (obj) => obj?.sport !== sportObj?.sport,
-      );
-      selectedSport = authContext?.entity?.obj?.scorekeeper_data?.filter(
-        (obj) => obj?.sport === sportObj?.sport,
-      )[0];
-    } else {
-      registerdData = authContext?.entity?.obj?.registered_sports?.filter(
-        (obj) =>
-          obj?.sport !== sportObj?.sport &&
-          obj?.sport_type !== sportObj?.sport_type,
-      );
-      selectedSport = authContext?.entity?.obj?.registered_sports?.filter(
-        (obj) =>
-          obj?.sport === sportObj?.sport &&
-          obj?.sport_type === sportObj?.sport_type,
-      )[0];
-    }
-
-    selectedSport.lookingForTeamClub = lookingFor;
+    const selectedSport = getEntitySport({
+      user: authContext.entity.obj,
+      role: entityType,
+      sportType: sportObj?.sport_type,
+      sport: sportObj?.sport,
+    });
+    const list = getEntitySportList(authContext.entity.obj, entityType);
+    const sportList = list.map((item) => {
+      if (item.sport === selectedSport.sport) {
+        return {
+          ...selectedSport,
+          lookingForTeamClub: lookingFor === strings.yesDisplayItText,
+        };
+      }
+      return item;
+    });
 
     let body = {};
-    if (type === Verbs.entityTypeReferee) {
-      refereeData.push(selectedSport);
-
+    if (entityType === Verbs.entityTypeReferee) {
       body = {
-        ...authContext?.entity?.obj,
-        referee_data: refereeData,
+        ...authContext.entity.obj,
+        referee_data: sportList,
       };
-    } else if (type === Verbs.entityTypeScorekeeper) {
-      scorekeeperData.push(selectedSport);
-
+    }
+    if (entityType === Verbs.entityTypeScorekeeper) {
       body = {
-        ...authContext?.entity?.obj,
-        scorekeeper_data: scorekeeperData,
+        ...authContext.entity.obj,
+        scorekeeper_data: sportList,
       };
-    } else {
-      registerdData.push(selectedSport);
-
+    }
+    if (entityType === Verbs.entityTypePlayer) {
       body = {
-        ...authContext?.entity?.obj,
-        registered_sports: registerdData,
+        ...authContext.entity.obj,
+        registered_sports: sportList,
       };
     }
 
@@ -135,14 +85,12 @@ export default function LookingForSettingScreen({navigation, route}) {
       .then(async (response) => {
         if (response.status === true) {
           setloading(false);
-          const entity = authContext.entity;
-          entity.auth.user = response.payload;
-          entity.obj = response.payload;
-          authContext.setEntity({...entity});
-          authContext.setUser(response.payload);
-          await Utility.setStorage('authContextUser', response.payload);
-          await Utility.setStorage('authContextEntity', {...entity});
-          navigation.goBack();
+          await Utility.setAuthContextData(response.payload, authContext);
+          if (comeFrom) {
+            navigation.navigate(comeFrom, {...routeParams});
+          } else {
+            navigation.navigate('SportActivityScreen');
+          }
         } else {
           Alert.alert(strings.appName, response.messages);
         }
@@ -154,77 +102,144 @@ export default function LookingForSettingScreen({navigation, route}) {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
-  };
+  }, [
+    authContext,
+    lookingFor,
+    navigation,
+    sportObj,
+    entityType,
+    comeFrom,
+    routeParams,
+  ]);
 
-  const renderLookingTypes = ({item}) => (
-    <TouchableWithoutFeedback
-      onPress={() => {
-        setLookingFor(!lookingFor);
-      }}>
-      <View style={styles.radioItem}>
-        <Text style={styles.languageList}>{item.key}</Text>
-        <View style={styles.checkbox}>
-          {item?.key === (lookingFor ? strings.yes : strings.no) ? (
-            <Image
-              source={images.radioCheckYellow}
-              style={styles.checkboxImg}
-            />
-          ) : (
-            <Image source={images.radioUnselect} style={styles.checkboxImg} />
-          )}
-        </View>
-      </View>
-    </TouchableWithoutFeedback>
-  );
+  useEffect(() => {
+    const selectedSport = getEntitySport({
+      user: authContext.entity.obj,
+      role: entityType,
+      sportType: sportObj?.sport_type,
+      sport: sportObj?.sport,
+    });
+
+    setLookingFor(
+      selectedSport?.lookingForTeamClub
+        ? strings.yesDisplayItText
+        : strings.noDisplayItText,
+    );
+  }, [authContext, sportObj, entityType]);
 
   return (
     <SafeAreaView style={{flex: 1}}>
-      <ActivityLoader visible={loading} />
-      {sportObj?.sport_type === 'single' ? (
-        <Text style={styles.screenTitle}>{strings.lookingNewClub}</Text>
-      ) : (
-        <Text style={styles.screenTitle}>{strings.lookingNewTeam}</Text>
-      )}
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginRight: 15,
-        }}>
-        <FlatList
-          // ItemSeparatorComponent={() => <TCThinDivider />}
-          data={lookingOpetions}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={renderLookingTypes}
-        />
+      <ScreenHeader
+        title={getHeaderTitle()}
+        leftIcon={images.backArrow}
+        leftIconPress={() => {
+          if (comeFrom) {
+            navigation.navigate(comeFrom, {...routeParams});
+          } else {
+            navigation.goBack();
+          }
+        }}
+        isRightIconText
+        rightButtonText={strings.save}
+        onRightButtonPress={updateProfile}
+        loading={loading}
+        containerStyle={styles.headerRow}
+      />
+      <View style={styles.container}>
+        <View>
+          <Text style={styles.screenTitle}>{strings.lookingNewClubTeam}</Text>
+          <View style={styles.lookingContainer}>
+            <Text style={styles.lookingContainerText}>
+              {sportObj?.sport_type === Verbs.singleSport
+                ? strings.lookingForClubOption
+                : strings.lookingForTeamOption}
+            </Text>
+          </View>
+          <View style={{marginTop: 25}}>
+            {lookingOpetions.map((item, index) => (
+              <TouchableWithoutFeedback
+                onPress={() => setLookingFor(item)}
+                key={index}>
+                <View
+                  style={[
+                    styles.radioItem,
+                    index === lookingOpetions.length - 1
+                      ? {marginBottom: 0}
+                      : {},
+                  ]}>
+                  <Text style={styles.languageList}>{item}</Text>
+                  <View>
+                    {item === lookingFor ? (
+                      <Image
+                        source={images.radioCheckYellow}
+                        style={styles.checkboxImg}
+                      />
+                    ) : (
+                      <Image
+                        source={images.radioUnselect}
+                        style={styles.checkboxImg}
+                      />
+                    )}
+                  </View>
+                </View>
+              </TouchableWithoutFeedback>
+            ))}
+          </View>
+        </View>
+        <View style={{alignItems: 'center', justifyContent: 'center'}}>
+          <View style={{width: 240, height: 230}}>
+            <Image
+              source={images.lookingForImg}
+              style={{width: '100%', height: '100%', resizeMode: 'cover'}}
+            />
+          </View>
+        </View>
+        <Text style={styles.languageList}>
+          {format(strings.lookingForBottomText, getHeaderTitle())}
+        </Text>
       </View>
-      <View style={{flex: 1}} />
     </SafeAreaView>
   );
 }
+
 const styles = StyleSheet.create({
-  doneButtonStyle: {
-    fontFamily: fonts.RRegular,
-    fontSize: 16,
-    marginRight: 10,
+  container: {
+    flex: 1,
+    paddingHorizontal: 15,
+    paddingTop: 24,
+    paddingBottom: 4,
+    justifyContent: 'space-between',
   },
-  titleTextStyle: {
-    fontSize: 16,
-    fontFamily: fonts.RBold,
-    color: colors.lightBlackColor,
-    alignSelf: 'center',
+  headerRow: {
+    paddingBottom: 14,
+    paddingTop: 6,
+    paddingLeft: 10,
+    paddingRight: 15,
   },
   screenTitle: {
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
+    fontSize: 20,
+    lineHeight: 30,
+    fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
-    margin: 15,
+    marginBottom: 8,
+  },
+  lookingContainer: {
+    backgroundColor: colors.tabFontColor,
+    borderRadius: 5,
+    alignSelf: 'baseline',
+    paddingHorizontal: 5,
+  },
+  lookingContainerText: {
+    fontSize: 12,
+    lineHeight: 18,
+    color: colors.whiteColor,
+    fontFamily: fonts.RMedium,
   },
   languageList: {
     color: colors.lightBlackColor,
     fontFamily: fonts.RRegular,
     fontSize: 16,
+    lineHeight: 24,
   },
   checkboxImg: {
     width: 22,
@@ -232,13 +247,11 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     alignSelf: 'center',
   },
-  checkbox: {},
   radioItem: {
-    paddingLeft: 25,
-    paddingTop: 15,
-    paddingRight: 25,
-    alignItems: 'center',
+    paddingHorizontal: 10,
+    marginBottom: 15,
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
   },
 });

@@ -22,8 +22,24 @@ const UserInfo = ({
   loading = false,
   entityType = Verbs.entityTypePlayer,
   description = '',
-}) =>
-  loading ? (
+  sportType = '',
+}) => {
+  const getLookingForContainer = () => {
+    if (isLookingForClub && entityType === Verbs.entityTypePlayer) {
+      return (
+        <View style={styles.lookingForClubContainer}>
+          <Text style={styles.lookingForClubText}>
+            {sportType === Verbs.singleSport
+              ? strings.lookingForClubOption
+              : strings.lookingForTeamOption}
+          </Text>
+        </View>
+      );
+    }
+    return null;
+  };
+
+  return loading ? (
     <View style={[styles.row, containerStyle]}>
       <ShimmerView
         style={{marginRight: 10, borderRadius: 50}}
@@ -70,13 +86,7 @@ const UserInfo = ({
               </>
             ) : null}
           </View>
-          {isLookingForClub && entityType === Verbs.entityTypePlayer ? (
-            <View style={styles.lookingForClubContainer}>
-              <Text style={styles.lookingForClubText}>
-                {strings.lookingForClubText}!
-              </Text>
-            </View>
-          ) : null}
+          {getLookingForContainer()}
         </View>
         {!isAdmin && screenType === Verbs.screenTypeModal ? (
           <TouchableOpacity
@@ -96,7 +106,7 @@ const UserInfo = ({
       ) : null}
     </View>
   );
-
+};
 const styles = StyleSheet.create({
   parent: {
     // marginBottom: 25,

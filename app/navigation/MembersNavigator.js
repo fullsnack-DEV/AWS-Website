@@ -1834,10 +1834,7 @@ const MembersNavigator = () => (
     <Stack.Screen
       name="LookingForSettingScreen"
       component={LookingForSettingScreen}
-      options={{
-        title: 'Setting',
-        headerTintColor: colors.blackColor,
-      }}
+      options={{headerShown: false}}
     />
     <Stack.Screen
       name="DeactivateSportScreen"

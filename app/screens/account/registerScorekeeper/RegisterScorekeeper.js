@@ -111,6 +111,7 @@ const RegisterScorekeeper = ({navigation, route}) => {
               sport: selectedSport.sport,
             },
         sportName: selectedSport.sport_name,
+        sport: selectedSport.sport,
       });
     }
   };
