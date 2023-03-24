@@ -19,6 +19,7 @@ import {
 } from 'react-native';
 
 import ActionSheet from 'react-native-actionsheet';
+import {format} from 'react-string-format';
 import ImagePicker from 'react-native-image-crop-picker';
 import {check, PERMISSIONS, RESULTS, request} from 'react-native-permissions';
 import images from '../../../../Constants/ImagePath';
@@ -39,6 +40,8 @@ import DateTimePickerView from '../../../../components/Schedule/DateTimePickerMo
 import {checkTownscupEmail} from '../../../../api/Users';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import LocationModal from '../../../../components/LocationModal/LocationModal';
+
+import Verbs from '../../../../Constants/Verbs';
 
 let entity = {};
 
@@ -357,6 +360,7 @@ export default function CreateMemberProfileForm1({navigation, route}) {
             required={true}
             style={{marginBottom: 10, marginTop: 25}}
           />
+
           <TCTextField
             value={email}
             autoCapitalize="none"
@@ -365,7 +369,14 @@ export default function CreateMemberProfileForm1({navigation, route}) {
             placeholder={strings.emailPlaceHolder}
             keyboardType={'email-address'}
           />
-          <Text style={styles.notesStyle}>{strings.emailNotes}</Text>
+          <Text style={styles.notesStyle}>
+            {format(
+              strings.emailNotes,
+              authContext.entity.role === Verbs.entityTypeClub
+                ? Verbs.entityTypeClub
+                : Verbs.entityTypeTeam,
+            )}
+          </Text>
         </View>
 
         <ActionSheet
