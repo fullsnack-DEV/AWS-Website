@@ -18,7 +18,7 @@ import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 import Verbs from '../../../Constants/Verbs';
-import {setAuthContextData} from '../../../utils';
+import {getTCDate, setAuthContextData} from '../../../utils';
 import MatchFeeReminder from '../registerPlayer/modals/MatchFeeReminder';
 import MenuItem from './components/MenuItem';
 import RefereeCongratulationsModal from './components/RefereeCongratulationsModal';
@@ -34,7 +34,7 @@ const IncomingReservationSettings = ({navigation, route}) => {
   const [showCongratulationsModal, setShowCongratulationsModal] =
     useState(false);
 
-  const {bodyParams, settingObj, sportName, entityType} = route.params;
+  const {bodyParams, settingObj, sportName, entityType, sport} = route.params;
   const authContext = useContext(AuthContext);
 
   const reservationSettingMenu = [
@@ -98,6 +98,7 @@ const IncomingReservationSettings = ({navigation, route}) => {
             setting: {
               ...settingsObject,
             },
+            created_at: getTCDate(new Date()),
           };
         }
         return item;
@@ -120,7 +121,7 @@ const IncomingReservationSettings = ({navigation, route}) => {
         .then(async (response) => {
           if (response.status === true) {
             await setAuthContextData(response.payload, authContext);
-            //    setShowCongratulationsModal(true);
+            setShowCongratulationsModal(true);
           } else {
             Alert.alert(strings.appName, response.messages);
           }
@@ -164,7 +165,9 @@ const IncomingReservationSettings = ({navigation, route}) => {
                   {strings.incomingReservationSettings}
                 </Text>
                 <Text style={styles.description}>
-                  {strings.incomingReservationSettingsDescription}
+                  {entityType === Verbs.entityTypeReferee
+                    ? strings.incomingReservationSettingsDescription
+                    : strings.incomingReservationSettingsScoreKeeper}
                 </Text>
               </View>
               <View style={styles.separator} />
@@ -224,7 +227,18 @@ const IncomingReservationSettings = ({navigation, route}) => {
         entityType={entityType}
         sport={settingObj.sport}
         goToSportActivityHome={() => {
-          // navigation to sport activity referee home
+          setShowCongratulationsModal(false);
+          navigation.navigate('SportActivityHome', {
+            sport,
+            entityType,
+            uid: authContext.entity.uid,
+            selectedTab: strings.infoTitle,
+            backScreen: 'AccountScreen',
+            backScreenParams: {
+              createdSportName: sport,
+              // sportType: selectedSport?.sport_type,
+            },
+          });
         }}
       />
     </SafeAreaView>

@@ -19,6 +19,7 @@ const ReviewsList = ({
   onReply = () => {},
   onPressMedia = () => {},
   onPressGame = () => {},
+  entityType,
 }) => {
   const authContext = useContext(AuthContext);
 
@@ -56,6 +57,7 @@ const ReviewsList = ({
                     isAdmin={isAdmin}
                     onReply={() => onReply(item.id)}
                     onPressMedia={onPressMedia}
+                    entityType={entityType}
                   />
                 )}
                 sliderWidth={sliderWidth}

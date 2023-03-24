@@ -68,6 +68,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     height: 40,
     borderRadius: 20,
+
     justifyContent: 'center',
   },
   buttonText: {

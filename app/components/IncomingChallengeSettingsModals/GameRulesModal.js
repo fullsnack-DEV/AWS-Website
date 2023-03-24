@@ -4,18 +4,13 @@ import {View, Text, TextInput, Pressable} from 'react-native';
 import {strings} from '../../../Localization/translation';
 import styles from './ModalStyles';
 
-const GameRulesModal = ({
-  generalRules = '',
-  specialRules = '',
-  onChange = () => {},
-}) => {
+const GameRulesModal = ({generalRules = '', onChange = () => {}}) => {
   const inputRef = useRef();
-  // const inputRef1 = useRef();
+
   return (
     <View>
-      <Text style={styles.title}>{strings.gameRulesTitle}</Text>
+      <Text style={styles.title}>{strings.matchRulesInfo}</Text>
 
-      <Text style={styles.inputLabel}>{strings.gameRulesSubTitle1}</Text>
       <Pressable
         style={[styles.inputContainer, {minHeight: 100, marginBottom: 10}]}
         onPress={() => {
@@ -24,40 +19,14 @@ const GameRulesModal = ({
         <TextInput
           ref={inputRef}
           style={styles.input}
-          placeholder={strings.generalRulesPlaceholder}
+          placeholder={strings.matchrules}
           multiline
           onChangeText={(text) => {
-            onChange({
-              generalRules: text,
-              specialRules,
-            });
+            onChange(text);
           }}
           value={generalRules}
-          maxLength={50}
         />
       </Pressable>
-
-      {/* <Text style={styles.inputLabel}>{strings.gameRulesSubTitle2}</Text>
-      <Pressable
-        style={[styles.inputContainer, {minHeight: 100, marginBottom: 10}]}
-        onPress={() => {
-          inputRef1.current?.focus();
-        }}>
-        <TextInput
-          ref={inputRef1}
-          style={styles.input}
-          placeholder={strings.specialRulesPlaceholder}
-          multiline
-          onChangeText={(text) => {
-            onChange({
-              generalRules,
-              specialRules: text,
-            });
-          }}
-          value={specialRules}
-          maxLength={50}
-        />
-      </Pressable> */}
     </View>
   );
 };

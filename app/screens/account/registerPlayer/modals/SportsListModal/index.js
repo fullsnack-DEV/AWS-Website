@@ -1,10 +1,8 @@
 // @flow
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {FlatList, Image, Modal, Pressable, Text, View} from 'react-native';
 import {strings} from '../../../../../../Localization/translation';
-import AuthContext from '../../../../../auth/context';
 import images from '../../../../../Constants/ImagePath';
-import {getSportName} from '../../../../../utils';
 import styles from './styles';
 
 const SportsListModal = ({
@@ -16,7 +14,6 @@ const SportsListModal = ({
   title = '',
 }) => {
   const [selectedSport, setSelectedSport] = useState(null);
-  const authContext = useContext(AuthContext);
 
   useEffect(() => {
     setSelectedSport(sport);
@@ -99,9 +96,7 @@ const SportsListModal = ({
                   <Pressable
                     style={styles.listItem}
                     onPress={() => setSelectedSport(item)}>
-                    <Text style={styles.listLabel}>
-                      {getSportName(item, authContext)}
-                    </Text>
+                    <Text style={styles.listLabel}>{item.sport_name}</Text>
                     <View style={styles.listIconContainer}>
                       {selectedSport?.sport_name === item?.sport_name &&
                       selectedSport?.sport_type === item?.sport_type ? (

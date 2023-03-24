@@ -32,7 +32,6 @@ export default function DeactivateSportScreen({navigation, route}) {
   useEffect(() => {
     getGroups(authContext)
       .then((response) => {
-        console.log('Get user groups Data Res ::--', response);
         if (
           response.payload.clubs?.length > 0 ||
           response.payload.teams?.length > 0
@@ -56,7 +55,7 @@ export default function DeactivateSportScreen({navigation, route}) {
       .catch((error) => {
         Alert.alert(strings.alertmessagetitle, error.message);
       });
-  }, [authContext]);
+  }, [authContext, sportObj]);
 
   const getSpportText = () => {
     if (sportObj?.type === 'referee') {
@@ -79,7 +78,6 @@ export default function DeactivateSportScreen({navigation, route}) {
     };
     sportDeactivate(body, authContext)
       .then(async (response) => {
-        console.log('deactivate sport ', response);
         setloading(false);
         const entity = authContext.entity;
         entity.auth.user = response.payload;
@@ -116,18 +114,6 @@ export default function DeactivateSportScreen({navigation, route}) {
         <TCGradientButton
           title={strings.deactivateTitle}
           onPress={() => {
-            // Alert.alert('',
-            //   'Please leave all clubs, leagues and seasons before you deactivate Tennis Singles.');
-
-            // if (showLeaveMsg) {
-            //   Alert.alert(
-            //     '',
-            //     `Please leave all teams, clubs and leagues before you deactivate ${Utility.getSportName(
-            //       sportObj,
-            //       authContext,
-            //     )}.`,
-            //   );
-            // } else {
             Alert.alert(
               `Are you sure you want to deactivate ${Utility.getSportName(
                 sportObj,
@@ -143,15 +129,6 @@ export default function DeactivateSportScreen({navigation, route}) {
                   text: 'Deactivate',
                   style: 'destructive',
                   onPress: () => {
-                    // if (type === 'referee') {
-                    //   patchReferee();
-                    // }
-                    // if (type === 'scorekeeper') {
-                    //   patchScorekeeper();
-                    // }
-                    // if (type === 'player') {
-                    //   patchPlayerIn();
-                    // }
                     deactivateSport();
                   },
                 },

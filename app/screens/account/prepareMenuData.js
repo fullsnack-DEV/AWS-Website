@@ -2,7 +2,8 @@ import images from '../../Constants/ImagePath';
 import {strings} from '../../../Localization/translation';
 // import {getSportIcon} from '../../utils/index';
 import Verbs from '../../Constants/Verbs';
-import {getSportImage, getSportName} from '../../utils';
+import {getSportName} from '../../utils';
+import {getEntitySportList} from '../../utils/sportsActivityUtils';
 // TODO: Move this file to right place. Improve this methods
 
 // TODO: call utility.getSportName() to fetch correct sports title
@@ -10,21 +11,20 @@ import {getSportImage, getSportName} from '../../utils';
 const prepareSportsSubMenuOfUser = (sports, baseUrl, authContext) => {
   let updatedList = [];
   if (sports) {
-    updatedList = sports.map((item) => {
-      const iconName = getSportImage(item.sport, item.type, authContext);
-      return {
-        option: getSportName(item, authContext),
-        icon: iconName ? `${baseUrl}${iconName}` : images.accountMyScoreKeeping,
-        iconRight: images.settingSport,
-        navigateTo: {
-          screenName: 'SportAccountSettingScreen',
-          data: {
-            type: item.type,
-            sport: item,
-          },
+    updatedList = sports.map((item) => ({
+      option: getSportName(item, authContext),
+      icon: item?.sport_image
+        ? `${baseUrl}${item.sport_image}`
+        : images.accountMyScoreKeeping,
+      iconRight: images.settingSport,
+      navigateTo: {
+        screenName: 'SportAccountSettingScreen',
+        data: {
+          type: item.type,
+          sport: item,
         },
-      };
-    });
+      },
+    }));
   }
   return updatedList;
 };
@@ -113,14 +113,14 @@ export const prepareUserMenu = (authContext, teams, clubs, baseUrl) => {
       icon: images.accountMySports,
       member: [
         ...prepareSportsSubMenuOfUser(
-          authContext.entity.obj.registered_sports ?? [],
+          getEntitySportList(authContext.entity.obj, Verbs.entityTypePlayer),
           baseUrl,
           authContext,
         ),
         {
           option: strings.addSportsTitle,
           icon: images.addSport,
-          menuOptionType: Verbs.menuOptionTypePlaying,
+          menuOptionType: Verbs.entityTypePlayer,
           navigateTo: {
             screenName: 'RegisterPlayer',
           },
@@ -132,7 +132,7 @@ export const prepareUserMenu = (authContext, teams, clubs, baseUrl) => {
       icon: images.accountMyRefereeing,
       member: [
         ...prepareSportsSubMenuOfUser(
-          authContext.entity.obj.referee_data ?? [],
+          getEntitySportList(authContext.entity.obj, Verbs.entityTypeReferee),
           baseUrl,
           authContext,
         ),
@@ -140,7 +140,7 @@ export const prepareUserMenu = (authContext, teams, clubs, baseUrl) => {
           option: strings.addSportsTitle,
           icon: images.registerReferee,
           iconRight: images.nextArrow,
-          menuOptionType: Verbs.menuOptionTypeRefereeing,
+          menuOptionType: Verbs.entityTypeReferee,
           navigateTo: {
             screenName: 'RegisterReferee',
           },
@@ -152,14 +152,17 @@ export const prepareUserMenu = (authContext, teams, clubs, baseUrl) => {
       icon: images.accountMyScoreKeeping,
       member: [
         ...prepareSportsSubMenuOfUser(
-          authContext.entity.obj.scorekeeper_data ?? [],
+          getEntitySportList(
+            authContext.entity.obj,
+            Verbs.entityTypeScorekeeper,
+          ),
           baseUrl,
           authContext,
         ),
         {
           option: strings.addSportsTitle,
           icon: images.registerScorekeeper,
-          menuOptionType: Verbs.menuOptionTypeScorekeeping,
+          menuOptionType: Verbs.entityTypeScorekeeper,
           navigateTo: {
             screenName: 'RegisterScorekeeper',
           },

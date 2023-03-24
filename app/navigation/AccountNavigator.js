@@ -301,9 +301,6 @@ const AccountNavigator = () => (
     <Stack.Screen
       name="AccountScreen"
       component={AccountScreen}
-      initialParams={{
-        switchToUser: false,
-      }}
       options={{
         headerShown: false,
         animationEnabled: true,
@@ -3413,18 +3410,7 @@ const AccountNavigator = () => (
     <Stack.Screen
       name="LookingForSettingScreen"
       component={LookingForSettingScreen}
-      options={{
-        title: strings.setting,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
+      options={{headerShown: false}}
     />
     <Stack.Screen
       name="ReservationAcceptDeclineScreen"

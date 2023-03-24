@@ -35,10 +35,10 @@ const MatchFeeModal = ({
         return strings.matchFeeModalTitle;
 
       case Verbs.entityTypeReferee:
-        return strings.refereeFee;
+        return strings.refereeFeeInfo;
 
       case Verbs.entityTypeScorekeeper:
-        return strings.scorekeeperFee;
+        return strings.scorekeeperFeeInfo;
 
       default:
         return '';

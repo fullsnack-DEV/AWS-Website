@@ -119,7 +119,7 @@ export default function SportAccountSettingScreen({navigation, route}) {
       options === strings.lookingForTeamText
     ) {
       navigation.navigate('LookingForSettingScreen', {
-        type,
+        entityType: type,
         sport,
       });
     } else if (options === strings.deactivateActivityText) {

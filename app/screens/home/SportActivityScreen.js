@@ -23,6 +23,7 @@ import TCThinDivider from '../../components/TCThinDivider';
 import {getUserDetails} from '../../api/Users';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import {strings} from '../../../Localization/translation';
+import Verbs from '../../Constants/Verbs';
 
 export default function SportActivityScreen({navigation}) {
   const isFocused = useIsFocused();
@@ -50,12 +51,15 @@ export default function SportActivityScreen({navigation}) {
 
   const keyExtractor = useCallback((item, index) => index.toString(), []);
 
-  const renderSports = ({item}) => (
+  const renderSports = (item = {}, entityType = Verbs.entityTypePlayer) => (
     <View>
       <TouchableWithoutFeedback
         style={styles.listContainer}
         onPress={() => {
-          navigation.navigate('ActivitySettingScreen', {sport: item});
+          navigation.navigate('ActivitySettingScreen', {
+            sport: item,
+            entityType,
+          });
         }}>
         <View style={{flexDirection: 'row'}}>
           <Text style={styles.listItems}>
@@ -80,7 +84,7 @@ export default function SportActivityScreen({navigation}) {
               ?.filter((obj) => obj.is_active)
               .sort((a, b) => a.sport.localeCompare(b.sport))}
             keyExtractor={keyExtractor}
-            renderItem={renderSports}
+            renderItem={({item}) => renderSports(item, Verbs.entityTypePlayer)}
           />
         </View>
       )}
@@ -94,7 +98,7 @@ export default function SportActivityScreen({navigation}) {
               ?.filter((obj) => obj.is_active)
               .sort((a, b) => a.sport.localeCompare(b.sport))}
             keyExtractor={keyExtractor}
-            renderItem={renderSports}
+            renderItem={({item}) => renderSports(item, Verbs.entityTypeReferee)}
           />
         </View>
       )}
@@ -108,7 +112,9 @@ export default function SportActivityScreen({navigation}) {
               ?.filter((obj) => obj.is_active)
               .sort((a, b) => a.sport.localeCompare(b.sport))}
             keyExtractor={keyExtractor}
-            renderItem={renderSports}
+            renderItem={({item}) =>
+              renderSports(item, Verbs.entityTypeScorekeeper)
+            }
           />
         </View>
       )}

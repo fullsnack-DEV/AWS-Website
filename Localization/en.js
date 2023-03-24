@@ -1274,9 +1274,9 @@ export default {
   whoCanInviteToYourEventText: 'en_Who can invite people to your {0} event?',
 
   teamAndMembersText: 'en_Team & members',
-  teamOnly: 'en_Team only',
+  teamOnly: 'en_Team (admin) only',
   clubAndMembersText: 'en_Club & members',
-  clubOnly: 'en_Club only',
+  clubOnly: 'en_Club (admin) only',
   whoCanInviteMemberText: 'en_Who Can Invite Member',
   whoCanInviteMemberToText: 'en_Who can invite a member to {0}?',
   membersProfile: 'en_Members Profile',
@@ -1936,10 +1936,8 @@ export default {
   resultDisapprovedMatches: 'en_(Result-Dissapproved Matches)',
   TCPerGame: 'en_STATS Per game ( 3 sets )',
   wins: 'en_Wins',
-  lookingNewTeam:
-    "en_Are you Looking for a new team? Your profile may be displayed on Local Home if you choose 'Yes'.",
-  lookingNewClub:
-    "en_Are you Looking for a new club? Your profile may be displayed on Local Home if you choose 'Yes'.",
+  lookingNewClubTeam:
+    'en_Are you looking for a new team to join? Do you want to display the badge below on your profile?',
   scoreboard: 'en_Scoreboard',
   stats: 'en_Stats',
   reviews: 'en_Reviews',
@@ -2448,7 +2446,7 @@ export default {
   editAdminPrivillege: 'en_Edit Admin Privilege',
 
   adminremoved:
-    'en_You were removed from Vancouver Whitecaps FC, and your account has been switched to your personal account.',
+    'en_You were removed from {0}, and your account has been switched to your personal account.',
   onlyAdmin:
     'en_{0} is the only admin of  {1}.  Please add a new admin before remove {0}.',
 
@@ -2457,12 +2455,12 @@ export default {
   childMemberError:
     'en_Please remove the member from all the teams in your club first before removing the member from the club.',
   whocanseeMember: 'en_Who can see members ?',
-  teamMember: 'en_Team Members',
-  clubMember: 'en_Club Members',
+  teamMember: 'en_Team members',
+  clubMember: 'en_Club members',
   whoCanSeefollwer: 'en_Who can see followers ?',
-  onlyTeamAndclub: 'en_Only Team and Club',
-  onlyClub: 'en_Only_Club',
-  onlyTeam: 'en_Only_Team',
+  onlyTeamAndclub: 'en_Club and Team (admin)',
+  onlyClub: 'en_Only_Club (admin)',
+  onlyTeam: 'en_Only_Team (admin)',
 
   sportRefereeQuestion: 'en_What sport do you want to referee?',
   sportRefereeQuestionDescription:
@@ -2497,5 +2495,34 @@ export default {
   matchesNearYou: 'en_MATCHES NEAR YOU',
   matchHostText: 'en_Match Host',
   sendOfferText: 'en_Send Offer',
+
   clubNameCaps: 'en_CLUB NAME',
+
+
+  folloersAndClubMembers: 'en_Followers and Club Members',
+  infoPrivacyTeamMember:
+    'en_If you choose this option, clubs (admins) which your team belongs to also can see your {0}.',
+
+  refereedMatchesTitle: 'en_Refereed Matches',
+  addCerticateTitle: 'en_+ Add Certificates',
+  editServicableAreasText: 'en_Edit Serviceable Areas',
+  reportCertificate: 'en_Report This Certificate',
+  reportUser: 'en_Block This User',
+  hourText: 'en_hour',
+  matchText: 'en_match',
+  incomingReservationSettingsScoreKeeper:
+    'en_Please review your incoming reservation settings. These settings are only applicable to the scorekeeper reservation when you are booked as a scorekeeper. When you book another scorekeeper for a match, their incoming reservation settings Will be applied.',
+  registerDate: '{0} in {1}',
+  refereeFeeInfo: 'en_How much do you want to Charge for The match?',
+  scorekeeperFeeInfo:
+    'en_How much do you want to Charge for The scorekeeper fee?',
+  matchRulesInfo:
+    'en_Write down match rules that the Challenger and you should follow.',
+  yesDisplayItText: 'en_Yes, display it.',
+  noDisplayItText: 'en_No, don’t display it.',
+  lookingForTeamOption: 'en_Looking for team!',
+  lookingForClubOption: 'en_Looking for club!',
+  lookingForBottomText:
+    'en_If you select “Yes, display it.”, your profile may be displayed on the “{0}” section in Local Home. ',
+
 };

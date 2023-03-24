@@ -69,7 +69,7 @@ const WrapperModal = ({
             onChange={(gameFee) => {
               setSettings({
                 ...settings,
-                game_fee: {...settings.game_fee, fee: gameFee || 0},
+                game_fee: {...settings.game_fee, fee: gameFee},
               });
             }}
             onChangeCurrency={(selectedCurrency) => {
@@ -162,12 +162,10 @@ const WrapperModal = ({
         return (
           <GameRulesModal
             generalRules={settings.general_rules}
-            specialRules={settings.special_rules}
-            onChange={({generalRules, specialRules}) => {
+            onChange={(generalRules) => {
               setSettings({
                 ...settings,
                 general_rules: generalRules,
-                special_rules: specialRules,
               });
             }}
           />

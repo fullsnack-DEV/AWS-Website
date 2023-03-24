@@ -19,6 +19,10 @@ import BottomSheet from '../../../components/modals/BottomSheet';
 import StatsContentScreen from './contentScreens/StatsContentScreen';
 import AvailabilityScreen from './contentScreens/AvailabilityContentScreen';
 import {getGameHomeScreen} from '../../../utils/gameUtils';
+import {
+  getHeaderTitle,
+  getIsAvailable,
+} from '../../../utils/sportsActivityUtils';
 
 const SportActivityHome = ({navigation, route}) => {
   const [userData, setCurrentUserData] = useState({});
@@ -33,8 +37,15 @@ const SportActivityHome = ({navigation, route}) => {
   const [showMoreOptions, setShowMoreOptions] = useState(false);
   const [options, setOptions] = useState([]);
 
-  const {sport, sportType, uid, selectedTab, backScreen, backScreenParams} =
-    route.params;
+  const {
+    sport,
+    sportType,
+    uid,
+    selectedTab,
+    backScreen,
+    backScreenParams,
+    entityType,
+  } = route.params;
   const authContext = useContext(AuthContext);
 
   const getUserData = useCallback(
@@ -111,6 +122,8 @@ const SportActivityHome = ({navigation, route}) => {
   useEffect(() => {
     if (selectedTab) {
       setActiveTab(selectedTab);
+    } else {
+      setActiveTab(strings.infoTitle);
     }
   }, [selectedTab]);
 
@@ -144,61 +157,62 @@ const SportActivityHome = ({navigation, route}) => {
     });
   }, [userData, sportObj]);
 
+  const getSports = useCallback(() => {
+    switch (entityType) {
+      case Verbs.entityTypePlayer:
+        return userData.registered_sports ?? [];
+
+      case Verbs.entityTypeReferee:
+        return userData.referee_data ?? [];
+
+      case Verbs.entityTypeScorekeeper:
+        return userData.scorekeeper_data ?? [];
+
+      default:
+        return [];
+    }
+  }, [entityType, userData]);
+
   useEffect(() => {
-    if (userData.user_id && userData.registered_sports?.length > 0) {
-      const obj = userData.registered_sports.find(
-        (item) => item.sport === sport && item.sport_type === sportType,
+    if (userData.user_id) {
+      const sports = getSports();
+      const obj = sports.find((item) =>
+        entityType === Verbs.entityTypePlayer
+          ? item.sport === sport && item.sport_type === sportType
+          : item.sport === sport,
       );
       setSportObj(obj);
     }
-  }, [userData, sport, sportType]);
+  }, [userData, sport, sportType, getSports, entityType]);
 
   useEffect(() => {
-    if (sportType === Verbs.singleSport) {
-      if (isAdmin) {
-        setOptions([
-          strings.incomingChallengeSettingsTitle,
-          strings.lookingForTeamTitle,
-          strings.deactivateActivityText,
-        ]);
+    if (isAdmin) {
+      if (entityType === Verbs.entityTypePlayer) {
+        if (sportType === Verbs.singleSport) {
+          setOptions([
+            strings.incomingChallengeSettingsTitle,
+            strings.lookingForClubText,
+            strings.deactivateActivityText,
+          ]);
+        } else {
+          setOptions([
+            strings.lookingForTeamText,
+            strings.deactivateActivityText,
+          ]);
+        }
       } else {
         setOptions([
-          strings.reportThisSportActivityPage,
-          strings.blockUserAccount,
+          strings.incomingReservationSettings,
+          strings.deactivateActivityText,
         ]);
       }
     } else {
-      setOptions([strings.reportThisAccount, strings.blockThisAccount]);
+      setOptions([
+        strings.reportThisSportActivityPage,
+        strings.blockUserAccount,
+      ]);
     }
-  }, [isAdmin, sportType]);
-
-  const handleChallengeClick = (selectedOption) => {
-    switch (selectedOption) {
-      case strings.inviteToChallenge:
-        navigation.navigate('InviteChallengeScreen', {
-          setting: sportObj?.setting,
-          sportName: sportObj?.sport,
-          sportType: sportObj?.sport_type,
-          groupObj: userData,
-        });
-        break;
-
-      case strings.refereeOffer:
-        break;
-
-      case strings.scorekeeperOffer:
-        break;
-
-      case strings.reportThisAccount:
-        break;
-
-      case strings.blockThisAccount:
-        break;
-
-      default:
-        break;
-    }
-  };
+  }, [isAdmin, sportType, entityType]);
 
   const handleEditNavigation = (sectionName, title) => {
     if (sectionName === strings.matchVenues) {
@@ -213,6 +227,7 @@ const SportActivityHome = ({navigation, route}) => {
         title,
         sportObj,
         sportIcon,
+        entityType,
       });
     }
   };
@@ -228,6 +243,7 @@ const SportActivityHome = ({navigation, route}) => {
   };
 
   const handleMoreOptions = (selectedOption) => {
+    setShowMoreOptions(false);
     switch (selectedOption) {
       case strings.incomingChallengeSettingsTitle:
         navigation.navigate('ManageChallengeScreen', {
@@ -237,22 +253,45 @@ const SportActivityHome = ({navigation, route}) => {
         });
         break;
 
-      case strings.lookingForTeamTitle:
+      case strings.lookingForClubText:
+      case strings.lookingForTeamText:
+        navigation.navigate('LookingForSettingScreen', {
+          sport: sportObj,
+          entityType,
+          comeFrom: 'SportActivityHome',
+          routeParams: {
+            sport: sportObj?.sport,
+            sportType: sportObj?.sport_type,
+            uid: route.params.uid,
+            entityType,
+          },
+        });
+        break;
+
+      case strings.incomingReservationSettings:
+        if (entityType === Verbs.entityTypeReferee) {
+          navigation.navigate('RefereeReservationSetting', {
+            sportName: sportObj?.sport,
+          });
+        }
+
+        if (entityType === Verbs.entityTypeScorekeeper) {
+          navigation.navigate('ScorekeeperReservationSetting', {
+            sportName: sportObj?.sport,
+          });
+        }
         break;
 
       case strings.deactivateActivityText:
+        navigation.navigate('DeactivateSportScreen', {
+          sportObj,
+        });
         break;
 
       case strings.reportThisSportActivityPage:
         break;
 
       case strings.blockUserAccount:
-        break;
-
-      case strings.reportThisAccount:
-        break;
-
-      case strings.blockThisAccount:
         break;
 
       default:
@@ -271,14 +310,30 @@ const SportActivityHome = ({navigation, route}) => {
             isAdmin={isAdmin}
             handleEditOption={handleEditNavigation}
             openPrivacySettings={handlePrivacySettings}
+            entityType={entityType}
+            onPressCertificate={(certificate, count) => {
+              navigation.navigate('LoneStack', {
+                screen: 'CertificateDisplayScreen',
+                params: {
+                  user: userData,
+                  certificate,
+                  count,
+                  sport,
+                  entityType,
+                },
+              });
+            }}
           />
         );
 
       case strings.scoreboard:
+      case strings.refereedMatchesTitle:
+      case strings.matchesTitleText:
         return (
           <ScoreboardContentScreen
             userData={userData}
             sport={sportObj?.sport}
+            entityType={entityType}
           />
         );
 
@@ -287,6 +342,7 @@ const SportActivityHome = ({navigation, route}) => {
           <ReviewsContentScreen
             userId={userData.user_id}
             sportObj={sportObj}
+            entityType={entityType}
             onPressMore={(review, dateTime) => {
               navigation.navigate('ReviewDetailsScreen', {
                 review,
@@ -352,7 +408,7 @@ const SportActivityHome = ({navigation, route}) => {
     <SafeAreaView style={styles.parent}>
       <ScreenHeader
         sportIcon={sportIcon}
-        title={`${strings.playingTitleText} ${
+        title={`${getHeaderTitle(entityType)} ${
           sportObj ? getSportName(sportObj, authContext) : ''
         }`}
         leftIcon={images.backArrow}
@@ -390,23 +446,58 @@ const SportActivityHome = ({navigation, route}) => {
         }}
         level={sportObj?.level}
         loading={isFectchingUser}
+        entityType={entityType}
       />
 
       <ChallengeButton
         isAdmin={isAdmin}
-        isAvailable={sportObj?.setting?.availibility === 'On'}
+        isAvailable={getIsAvailable(entityType)}
         isScorekeeper={isScorekeeper}
         isReferee={isReferee}
         isUserWithSameSport={isUserWithSameSport}
-        onPress={handleChallengeClick}
+        inviteToChallenge={() => {
+          navigation.navigate('InviteChallengeScreen', {
+            setting: sportObj?.setting,
+            sportName: sportObj?.sport,
+            sportType: sportObj?.sport_type,
+            groupObj: userData,
+          });
+        }}
         containerStyle={{paddingHorizontal: 16, marginTop: 0, marginBottom: 20}}
+        gameFee={sportObj?.setting?.game_fee ?? {}}
+        entityType={entityType}
+        continueToChallenge={() => {
+          navigation.navigate('ChallengeScreen', {
+            setting: sportObj?.setting ?? {},
+            sportName: sportObj?.sport,
+            sportType: sportObj?.sport_type,
+            groupObj: userData,
+          });
+        }}
+        bookReferee={() => {
+          navigation.navigate('RefereeBookingDateAndTime', {
+            userData,
+            showMatches: true,
+            sportName: sportObj?.sport,
+            settingObj: sportObj?.setting ?? {},
+          });
+        }}
+        bookScoreKeeper={() => {
+          navigation.navigate('ScorekeeperBookingDateAndTime', {
+            userData,
+            showMatches: true,
+            sportName: sportObj?.sport,
+            settingObj: sportObj?.setting ?? {},
+          });
+        }}
       />
 
       <SportActivityTabBar
-        sport={sportObj?.sport}
+        // sport={sportObj?.sport}
         sportType={sportObj?.sport_type}
         activeTab={selectedTab || strings.infoTitle}
         onTabChange={(tab) => setActiveTab(tab)}
+        entityType={entityType}
       />
       {renderContent()}
       <BottomSheet

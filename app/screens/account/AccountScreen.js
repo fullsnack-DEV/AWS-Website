@@ -25,7 +25,7 @@ import Modal from 'react-native-modal';
 import firebase from '@react-native-firebase/app';
 import ExpanableList from 'react-native-expandable-section-flatlist';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
-import {useIsFocused} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {format} from 'react-string-format';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
@@ -69,6 +69,11 @@ import Verbs from '../../Constants/Verbs';
 import TCSwitchProfileRow from './connections/TCSwitchProfileRow';
 import AccountMenuRow from './connections/AccountMenuRow';
 import SportsListModal from './registerPlayer/modals/SportsListModal';
+import {NavigationActions} from 'react-navigation';
+import {
+  getExcludedSportsList,
+  getTitleForRegister,
+} from '../../utils/sportsActivityUtils';
 
 // FIXME: fix all warning in useCallBack()
 export default function AccountScreen({navigation, route}) {
@@ -95,8 +100,42 @@ export default function AccountScreen({navigation, route}) {
   const [sportsData, setSportsData] = useState([]);
   const [imageBaseUrl, setImageBaseUrl] = useState('');
   const [selectedMenuOptionType, setSelectedMenuOptionType] = useState(
-    Verbs.menuOptionTypePlaying,
+    Verbs.entityTypePlayer,
   );
+
+  const navigations = useNavigation();
+
+  useEffect(() => {
+    if (route.params?.switchToUser === 'fromMember') {
+      const entityTobeUpdated = switchProfile(route.params?.authFromMember);
+
+      authContext.setEntity({...entityTobeUpdated});
+
+      switchQBAccount(authContext.user, entityTobeUpdated);
+      navigations.setParams({
+        switchToUser: '',
+      });
+
+      const SetParamsoptions = NavigationActions.setParams({
+        params: {
+          switchToUser: '',
+          key: 'AccountScreen',
+        },
+      });
+      Alert.alert(
+        format(strings.adminremoved, route.params?.grpname.obj.group_name),
+        '',
+        [
+          {
+            text: 'OK',
+            onPress: () => navigations.dispatch(SetParamsoptions),
+          },
+        ],
+        {cancelable: false},
+      );
+    }
+    return () => {};
+  }, [isFocused]);
 
   useEffect(() => {
     if (isFocused) {
@@ -107,31 +146,33 @@ export default function AccountScreen({navigation, route}) {
   }, [isFocused]);
 
   useEffect(() => {
-    const sportArr = Utility.getSportList(authContext, selectedMenuOptionType);
+    const sportArr = getExcludedSportsList(authContext, selectedMenuOptionType);
     setSportsData([...sportArr]);
   }, [authContext, selectedMenuOptionType]);
 
-  useEffect(() => {
-    const {switchToUser} = route?.params || 'lklk';
+  // useEffect(() => {
+  //   const {switchToUser} = route?.params || '';
 
-    if (switchToUser === 'fromMember') {
-      setTimeout(() => {
-        Alert.alert(
-          strings.adminremoved,
-          '',
-          [
-            {
-              text: 'OK',
-              onPress: () => {
-                navigation.setParams({switchToUser: 'lkl'});
-              },
-            },
-          ],
-          {cancelable: false},
-        );
-      }, 2000);
-    }
-  }, [route]);
+  //   if (switchToUser === 'fromMember') {
+  //     const TimeOut = setTimeout(() => {
+  //       Alert.alert(
+  //         strings.adminremoved,
+  //         '',
+  //         [
+  //           {
+  //             text: 'OK',
+  //             onPress: () => {
+  //               navigation.setParams({switchToUser: 'lkl'});
+  //             },
+  //           },
+  //         ],
+  //         {cancelable: false},
+  //       );
+  //     }, 2000);
+
+  //     clearTimeout(TimeOut);
+  //   }
+  // }, [route?.params, isFocused]);
 
   const [navigationOptions, setNavigationOptions] = useState({});
 
@@ -402,8 +443,10 @@ export default function AccountScreen({navigation, route}) {
     const currentEntity = switchProfile(item);
 
     scrollRef.current.scrollTo({x: 0, y: 0});
+
     authContext.setEntity({...currentEntity});
     Utility.setStorage('authContextEntity', {...currentEntity});
+
     switchQBAccount(item, currentEntity);
   }, []);
 
@@ -604,22 +647,6 @@ export default function AccountScreen({navigation, route}) {
 
     setSports(list);
   }, [authContext]);
-
-  const getModalTitle = (section) => {
-    switch (section) {
-      case Verbs.menuOptionTypePlaying:
-        return strings.registerAsPlayerTitle;
-
-      case Verbs.menuOptionTypeRefereeing:
-        return strings.registerRefereeTitle;
-
-      case Verbs.menuOptionTypeScorekeeping:
-        return strings.registerScorekeeperTitle;
-
-      default:
-        return '';
-    }
-  };
 
   return (
     <SafeAreaView style={styles.mainContainer} testID="account-screen">
@@ -1216,7 +1243,7 @@ export default function AccountScreen({navigation, route}) {
       <SportsListModal
         isVisible={visibleSportsModal}
         closeList={() => setVisibleSportsModal(false)}
-        title={getModalTitle(selectedMenuOptionType)}
+        title={getTitleForRegister(selectedMenuOptionType)}
         sportsList={sportsData}
         onNext={(sport) => {
           setVisibleSportsModal(false);

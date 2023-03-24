@@ -739,7 +739,7 @@ const LocalHomeNavigator = () => (
     <Stack.Screen
       name="RegisterScorekeeper"
       component={RegisterScorekeeper}
-       options={{headerShown: false}}
+      options={{headerShown: false}}
     />
 
     <Stack.Screen
@@ -3587,18 +3587,7 @@ const LocalHomeNavigator = () => (
     <Stack.Screen
       name="LookingForSettingScreen"
       component={LookingForSettingScreen}
-      options={{
-        title: 'Setting',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
+      options={{headerShown: false}}
     />
     <Stack.Screen
       name="ReservationAcceptDeclineScreen"

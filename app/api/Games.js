@@ -362,6 +362,13 @@ const getShortsList = async (location, authContext) =>
     authContext,
   });
 
+const getReviewsByRole = async (userID, sport, role, authContext) =>
+  makeAPIRequest({
+    method: 'get',
+    url: `${Config.BASE_URL}/users/${userID}/reviews?sport=${sport}&role=${role}`,
+    authContext,
+  });
+
 export {
   GameRecordStatus,
   getSportsList,
@@ -411,4 +418,5 @@ export {
   getUserReviews,
   getGameMemberDetails,
   getStatsRDMData,
+  getReviewsByRole,
 };

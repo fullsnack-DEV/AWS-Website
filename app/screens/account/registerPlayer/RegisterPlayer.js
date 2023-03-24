@@ -19,7 +19,8 @@ import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 import Verbs from '../../../Constants/Verbs';
-import {getSportList, setAuthContextData} from '../../../utils';
+import {getTCDate, setAuthContextData} from '../../../utils';
+import {getExcludedSportsList} from '../../../utils/sportsActivityUtils';
 import CongratulationsModal from './modals/CongratulationsModal';
 // import LanguagesListModal from './modals/LanguagesListModal';
 import SportsListModal from './modals/SportsListModal';
@@ -49,7 +50,7 @@ const RegisterPlayer = ({navigation, route}) => {
   // }, []);
 
   useEffect(() => {
-    const sportArr = getSportList(authContext);
+    const sportArr = getExcludedSportsList(authContext);
     setSportsData([...sportArr]);
   }, [authContext]);
 
@@ -94,9 +95,9 @@ const RegisterPlayer = ({navigation, route}) => {
         descriptions: bio,
         is_published: true,
         type: Verbs.entityTypePlayer,
-        // language: selectedLanguages,
         lookingForTeamClub: true,
         default_setting: {},
+        created_at: getTCDate(new Date()),
       };
 
       const registerdPlayerData = [

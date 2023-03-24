@@ -23,6 +23,7 @@ import AuthContext from '../../../../auth/context';
 import colors from '../../../../Constants/Colors';
 import fonts from '../../../../Constants/Fonts';
 import images from '../../../../Constants/ImagePath';
+import Verbs from '../../../../Constants/Verbs';
 import {getSportName} from '../../../../utils';
 
 export default function ActivitySettingScreen({navigation, route}) {
@@ -40,8 +41,8 @@ export default function ActivitySettingScreen({navigation, route}) {
   }, [authContext, navigation, sportObj]);
 
   const getSettingMenu = useCallback(() => {
-    if (sportObj?.type === 'player') {
-      if (sportObj?.sport_type === 'single') {
+    if (sportObj?.type === Verbs.entityTypePlayer) {
+      if (sportObj?.sport_type === Verbs.singleSport) {
         setUserSetting([
           {key: strings.lookingForClubText, id: 1},
           {key: strings.deactivateActivityText, id: 2},
@@ -52,12 +53,12 @@ export default function ActivitySettingScreen({navigation, route}) {
           {key: strings.deactivateActivityText, id: 2},
         ]);
       }
-    } else if (sportObj?.sport_type === 'single') {
+    } else if (sportObj?.sport_type === Verbs.singleSport) {
       setUserSetting([{key: strings.deactivateActivityText, id: 1}]);
     } else {
       setUserSetting([{key: strings.deactivateActivityText, id: 1}]);
     }
-  }, [authContext, sportObj]);
+  }, [sportObj]);
 
   useEffect(() => {
     getSettingMenu();
@@ -67,11 +68,13 @@ export default function ActivitySettingScreen({navigation, route}) {
     if (opetions === strings.lookingForTeamText) {
       navigation.navigate('LookingForSettingScreen', {
         sport: sportObj,
+        entityType: route.params.entityType,
       });
     }
     if (opetions === strings.lookingForClubText) {
       navigation.navigate('LookingForSettingScreen', {
         sport: sportObj,
+        entityType: route.params.entityType,
       });
     } else if (opetions === strings.deactivateActivityText) {
       navigation.navigate('DeactivateSportScreen', {
@@ -90,7 +93,7 @@ export default function ActivitySettingScreen({navigation, route}) {
         {(item.key === strings.lookingForTeamText ||
           item.key === strings.lookingForClubText) && (
           <Text style={styles.currencyTypeStyle}>
-            {sportObj.is_active ? strings.yes : strings.no}
+            {sportObj?.lookingForTeamClub ? strings.yes : strings.no}
           </Text>
         )}
         <Image source={images.nextArrow} style={styles.nextArrow} />

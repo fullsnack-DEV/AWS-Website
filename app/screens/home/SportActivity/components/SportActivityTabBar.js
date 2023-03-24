@@ -1,5 +1,5 @@
 // @flow
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {View, StyleSheet, Text, FlatList, TouchableOpacity} from 'react-native';
 import {strings} from '../../../../../Localization/translation';
 import colors from '../../../../Constants/Colors';
@@ -15,11 +15,17 @@ const TennisSinglesTabList = [
 ];
 
 const TabList = [strings.infoTitle, strings.scoreboard, strings.stats];
+const OthersList = [
+  strings.infoTitle,
+  strings.availability,
+  strings.matchesTitleText,
+  strings.reviews,
+];
 
 const SportActivityTabBar = ({
   activeTab,
-  sport,
   sportType,
+  entityType,
   onTabChange = () => {},
 }) => {
   const [selectedTab, setSelectedTab] = useState('');
@@ -31,19 +37,29 @@ const SportActivityTabBar = ({
     }
   }, [activeTab]);
 
-  useEffect(() => {
-    if (sportType) {
-      if (sportType === Verbs.singleSport) {
-        setMenuList(TennisSinglesTabList);
-      } else {
-        setMenuList(TabList);
-      }
+  const getMenuList = useCallback(() => {
+    switch (entityType) {
+      case Verbs.entityTypePlayer:
+        return sportType === Verbs.singleSport ? TennisSinglesTabList : TabList;
+
+      case Verbs.entityTypeReferee:
+      case Verbs.entityTypeScorekeeper:
+        return OthersList;
+
+      default:
+        return [];
     }
-  }, [sport, sportType]);
+  }, [entityType, sportType]);
+
+  useEffect(() => {
+    const menu = getMenuList();
+    setMenuList(menu);
+  }, [getMenuList]);
 
   return (
     <View style={styles.parent}>
-      {sportType === Verbs.singleSport ? (
+      {sportType === Verbs.singleSport ||
+      entityType !== Verbs.entityTypePlayer ? (
         <FlatList
           data={menuList}
           keyExtractor={(item, index) => index}
