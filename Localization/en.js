@@ -210,7 +210,7 @@ export default {
   locationTitle: 'en_Current City',
   searchCityText: 'en_Search City',
 
-  locationClubTitle: 'en_Where is the home city of the club?',
+  locationClubTitle: 'en_HOME CITY',
   currentCity: 'en_Home City',
   birthdateText: 'en_Choose Date of birth',
   searchCityPlaceholder: 'en_Search by city',
@@ -2497,4 +2497,5 @@ export default {
   matchesNearYou: 'en_MATCHES NEAR YOU',
   matchHostText: 'en_Match Host',
   sendOfferText: 'en_Send Offer',
+  clubNameCaps: 'en_CLUB NAME',
 };

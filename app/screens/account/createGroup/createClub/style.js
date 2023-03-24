@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
   },
   fieldView: {
-    marginTop: 15,
+    marginTop: 35,
   },
 
   mainContainer: {
@@ -46,6 +46,24 @@ const styles = StyleSheet.create({
     width: widthPercentageToDP('92%'),
   },
 
+  inputTextField: {
+    alignSelf: 'center',
+    backgroundColor: colors.lightGrey,
+    borderRadius: 5,
+    color: 'black',
+
+    fontSize: widthPercentageToDP('3.8%'),
+    height: 40,
+
+    marginTop: 10,
+    paddingHorizontal: 10,
+    paddingRight: 30,
+
+    paddingVertical: 12,
+
+    width: widthPercentageToDP('92%'),
+  },
+
   smallTxt: {
     color: colors.grayColor,
     fontSize: widthPercentageToDP('2.8%'),
@@ -55,7 +73,7 @@ const styles = StyleSheet.create({
   },
   languageView: {
     alignSelf: 'center',
-    backgroundColor: colors.whiteColor,
+    backgroundColor: colors.lightGrey,
     borderRadius: 5,
     color: 'black',
     elevation: 3,
@@ -66,10 +84,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingRight: 30,
     paddingVertical: 12,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
 
     width: widthPercentageToDP('92%'),
   },
@@ -80,8 +94,8 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
   },
   languagePlaceholderText: {
-    backgroundColor: colors.whiteColor,
-    color: colors.userPostTimeColor,
+    backgroundColor: colors.lightGrey,
+    color: colors.lightGrey,
     fontSize: 16,
     fontFamily: fonts.RRegular,
   },
@@ -130,7 +144,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     width: 13,
     height: 13,
-    marginLeft: 5,
+    marginLeft: 20,
     resizeMode: 'contain',
   },
 
@@ -168,6 +182,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginLeft: widthPercentageToDP('10%'),
     width: widthPercentageToDP('80%'),
+    paddingHorizontal: 60,
   },
 
   searchImg: {
@@ -213,26 +228,6 @@ const styles = StyleSheet.create({
     paddingLeft: 15,
   },
 
-  descriptionTxt: {
-    height: 120,
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    width: widthPercentageToDP('92%'),
-    alignSelf: 'center',
-    marginTop: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 15,
-    color: colors.lightBlackColor,
-    paddingRight: 30,
-    backgroundColor: colors.offwhite,
-    borderRadius: 5,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
-    elevation: 3,
-  },
-
   describeTitle: {
     fontSize: 16,
     color: colors.lightBlackColor,
@@ -248,6 +243,26 @@ const styles = StyleSheet.create({
     marginTop: 5,
     marginBottom: 3,
     marginLeft: 25,
+  },
+  descriptionTxt: {
+    height: 120,
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    width: widthPercentageToDP('92%'),
+    alignSelf: 'center',
+    marginTop: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 15,
+    color: colors.userPostTimeColor,
+    paddingRight: 30,
+    backgroundColor: colors.lightGrey,
+    borderRadius: 5,
+  },
+  backArrowStyle: {
+    height: 20,
+    marginLeft: 15,
+    resizeMode: 'contain',
+    tintColor: colors.blackColor,
   },
 });
 

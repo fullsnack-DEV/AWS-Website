@@ -18,6 +18,8 @@ function TCProfileImageControl({
   bgImageButtonStyle,
   profileImageButtonStyle,
   showEditButtons = false,
+  bgImageContainerStyle,
+  profileCameraButtonStyle,
 }) {
   return (
     <View style={{flex: 1}}>
@@ -32,7 +34,7 @@ function TCProfileImageControl({
         />
         {showEditButtons && (
           <TouchableOpacity
-            style={styles.bgCameraButtonStyle}
+            style={[styles.bgCameraButtonStyle, bgImageContainerStyle]}
             onPress={onPressBGImage}>
             <Image
               style={[styles.bgImageButtonStyle, bgImageButtonStyle]}
@@ -45,14 +47,16 @@ function TCProfileImageControl({
         imageStyle={[
           styles.profileImageStyle,
           profileImageStyle,
+
           {marginTop: showEditButtons ? -40 : -36},
         ]}
         source={profileImage || profileImagePlaceholder}
         defaultSource={profileImagePlaceholder}
+        resizeMode={'cover'}
       />
       {showEditButtons && (
         <TouchableOpacity
-          style={styles.profileCameraButtonStyle}
+          style={[styles.profileCameraButtonStyle, profileCameraButtonStyle]}
           onPress={onPressProfileImage}>
           <Image
             style={[styles.profileImageButtonStyle, profileImageButtonStyle]}
@@ -84,7 +88,6 @@ const styles = StyleSheet.create({
     borderRadius: 35.5,
     borderWidth: 2,
     alignSelf: 'center',
-    borderColor: colors.whiteColor,
   },
   bgCameraButtonStyle: {
     height: 22,
