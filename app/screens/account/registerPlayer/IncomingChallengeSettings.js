@@ -265,11 +265,15 @@ export default function IncomingChallengeSettings({navigation, route}) {
         settingsObj={settingObject}
         closeModal={() => {
           setCongratulationsModal(false);
-          navigation.navigate('AccountScreen', {
-            createdSportName: sportName,
-            // eslint-disable-next-line
-            sportType: sportType,
-          });
+          if (route.params?.comeFrom) {
+            navigation.navigate(route.params.comeFrom);
+          } else {
+            navigation.navigate('AccountScreen', {
+              createdSportName: sportName,
+              // eslint-disable-next-line
+              sportType: sportType,
+            });
+          }
         }}
         sportName={sportName}
         sport={sport}

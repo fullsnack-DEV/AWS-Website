@@ -59,7 +59,7 @@ const getScoreboardListTitle = (entityType = Verbs.entityTypePlayer) => {
       return strings.refereedMatchesTitle;
 
     case Verbs.entityTypeScorekeeper:
-      return '';
+      return strings.scorekeptMatches;
 
     default:
       return '';
@@ -270,6 +270,22 @@ const getSportName = (sport = '', sportType = '', sportList = []) => {
   return obj.sport_name;
 };
 
+const getCardBorderColor = (entityType) => {
+  switch (entityType) {
+    case Verbs.entityTypePlayer:
+      return [colors.yellowColor, colors.orangeGradientColor];
+
+    case Verbs.entityTypeReferee:
+      return [colors.darkThemeColor, colors.darkThemeColor];
+
+    case Verbs.entityTypeScorekeeper:
+      return [colors.blueGradiantEnd, colors.blueGradiantStart];
+
+    default:
+      return [];
+  }
+};
+
 export {
   getProgressBarColor,
   getIsAvailable,
@@ -282,4 +298,5 @@ export {
   getExcludedSportsList,
   getSportDetails,
   getSportName,
+  getCardBorderColor,
 };

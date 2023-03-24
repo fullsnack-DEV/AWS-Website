@@ -1595,16 +1595,28 @@ const HomeScreen = ({navigation, route}) => {
   const scorekeeperInModal = useCallback(
     (scorekeeperInObject) => {
       if (scorekeeperInObject) {
+        if (currentUserData) {
+          const scorekeeperSport = (
+            currentUserData.scorekeeper_data ?? []
+          ).find(
+            (scorekeeperItem) =>
+              scorekeeperItem.sport === scorekeeperInObject.sport,
+          );
+          setSportObject(scorekeeperSport);
+          setShowSportsModal(!showSportsModal);
+          setEntityType(Verbs.entityTypeScorekeeper);
+        }
+
         const entity = authContext.entity;
-        let languagesListName = [];
+        // let languagesListName = [];
 
         const scorekeeperSport = currentUserData.scorekeeper_data.filter(
           (scorekeeperItem) =>
             scorekeeperItem.sport === scorekeeperInObject.sport,
         )[0];
 
-        setSelectScorekeeperData(scorekeeperSport);
-        languagesListName = scorekeeperSport.language;
+        // setSelectScorekeeperData(scorekeeperSport);
+        // languagesListName = scorekeeperSport.language;
 
         if (scorekeeperSport?.avg_review) {
           let array = Object.keys(scorekeeperSport.avg_review);
@@ -1621,15 +1633,15 @@ const HomeScreen = ({navigation, route}) => {
         } else {
           setAverageScorekeeperReview();
         }
-        if (languagesListName.length > 0) {
-          languagesListName.map((langItem, index) => {
-            language_string =
-              language_string + (index ? ', ' : '') + langItem.language_name;
-            return null;
-          });
-          setLanguagesName(language_string);
-        }
-        setScorekeeperInModalVisible(!scorekeeperInModalVisible);
+        // if (languagesListName.length > 0) {
+        //   languagesListName.map((langItem, index) => {
+        //     language_string =
+        //       language_string + (index ? ', ' : '') + langItem.language_name;
+        //     return null;
+        //   });
+        //   setLanguagesName(language_string);
+        // }
+        // setScorekeeperInModalVisible(!scorekeeperInModalVisible);
         setSportName(Utility.getSportName(scorekeeperInObject, authContext));
 
         getScorekeeperMatch(
@@ -1829,8 +1841,11 @@ const HomeScreen = ({navigation, route}) => {
   }, [addRoleActionSheet]);
 
   const onMoreRolePress = useCallback(() => {
-    navigation.navigate('SportActivitiesScreen');
-  }, []);
+    navigation.navigate('SportActivitiesScreen', {
+      isAdmin,
+      currentUserData,
+    });
+  }, [currentUserData, isAdmin]);
 
   const refereeFound = useCallback(
     (data) =>
@@ -4522,7 +4537,10 @@ const HomeScreen = ({navigation, route}) => {
             } else if (index === 1) {
               // navigation.navigate('SportActivityScreen');
               if (authContext.entity.role === Verbs.entityTypeUser) {
-                navigation.navigate('SportActivitiesScreen');
+                navigation.navigate('SportActivitiesScreen', {
+                  isAdmin,
+                  currentUserData,
+                });
               }
             }
           }}

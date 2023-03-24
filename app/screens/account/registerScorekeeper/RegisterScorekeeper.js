@@ -111,6 +111,7 @@ const RegisterScorekeeper = ({navigation, route}) => {
             },
         sportName: selectedSport.sport_name,
         sport: selectedSport.sport,
+        comeFrom: route.params?.comeFrom ?? '',
       });
     }
   };
@@ -162,7 +163,11 @@ const RegisterScorekeeper = ({navigation, route}) => {
         title={strings.registerScorekeeperTitle}
         leftIcon={images.backArrow}
         leftIconPress={() => {
-          navigation.navigate('AccountScreen');
+          if (route.params?.comeFrom) {
+            navigation.navigate(route.params.comeFrom);
+          } else {
+            navigation.navigate('AccountScreen');
+          }
         }}
         containerStyle={{paddingBottom: 14}}
         isRightIconText

@@ -1,9 +1,5 @@
-/* eslint-disable react/jsx-key */
-/* eslint-disable no-unsafe-optional-chaining */
-/* eslint-disable array-callback-return */
 import React, {
   useContext,
-  useCallback,
   useLayoutEffect,
   useRef,
   useState,
@@ -17,6 +13,8 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  FlatList,
+  Pressable,
 } from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
@@ -32,19 +30,36 @@ import {strings} from '../../../Localization/translation';
 import ActivityLoader from '../loader/ActivityLoader';
 import TCProfileButton from '../TCProfileButton';
 import Verbs from '../../Constants/Verbs';
+import {
+  getCardBorderColor,
+  getEntitySportList,
+  getSportDetails,
+} from '../../utils/sportsActivityUtils';
+import SportActivityModal from '../../screens/home/SportActivity/SportActivityModal';
 
-let image_url = '';
+const EntityType = [
+  {entity: Verbs.entityTypePlayer, label: strings.playingTitleText},
+  {
+    entity: Verbs.entityTypeReferee,
+    label: strings.refereeingTitleText,
+  },
+  {entity: Verbs.entityTypeScorekeeper, label: strings.scorekeepingTitleText},
+];
 
-export default function SportActivitiesScreen({navigation}) {
+export default function SportActivitiesScreen({navigation, route}) {
   const actionSheet = useRef();
   const addRoleActionSheet = useRef();
   const isFocused = useIsFocused();
 
   const [loading, setloading] = useState(false);
   const [userObject, setUserObject] = useState();
+  const [imageBaseUrl, setImageBaseUrl] = useState('');
+  const [showSportsModal, setShowSportsModal] = useState(false);
+  const [selectedSport, setSelectedSport] = useState({});
+  const [selectedEntity, setSelectedEntity] = useState(Verbs.entityTypePlayer);
 
+  const {isAdmin, currentUserData} = route.params;
   const authContext = useContext(AuthContext);
-  console.log('authContext', authContext.entity.obj);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -62,8 +77,10 @@ export default function SportActivitiesScreen({navigation}) {
   }, [navigation]);
 
   useEffect(() => {
-    image_url = global.sport_icon_baseurl;
     if (isFocused) {
+      Utility.getStorage('appSetting').then((setting) => {
+        setImageBaseUrl(setting.base_url_sporticon);
+      });
       setloading(true);
       getUserDetails(authContext?.entity?.uid, authContext)
         .then((response) => {
@@ -79,175 +96,69 @@ export default function SportActivitiesScreen({navigation}) {
     }
   }, [authContext, isFocused]);
 
-  const sportsView = useCallback(({item}) => {
-    console.log(
-      'image_url:',
-      image_url,
-      Utility.getSportImage(item.sport, item.type, authContext),
+  const sportsView = (item, entityType) => {
+    const sport = getSportDetails(
+      item.sport,
+      item.sport_type,
+      authContext.sports,
+      entityType,
     );
     return (
-      <View style={styles.sportView}>
+      <Pressable
+        style={styles.sportView}
+        onPress={() => {
+          setSelectedSport(sport);
+          setSelectedEntity(entityType);
+          setShowSportsModal(true);
+        }}>
         <LinearGradient
-          colors={
-            (item?.type === Verbs.entityTypePlayer && [
-              colors.yellowColor,
-              colors.orangeGradientColor,
-            ]) ||
-            (item?.type === Verbs.entityTypeReferee && [
-              colors.yellowColor,
-              colors.darkThemeColor,
-            ]) ||
-            (item?.type === Verbs.entityTypeScorekeeper && [
-              colors.blueGradiantEnd,
-              colors.blueGradiantStart,
-            ])
-          }
-          style={styles.backgroundView}></LinearGradient>
+          colors={getCardBorderColor(entityType)}
+          style={styles.backgroundView}
+        />
         <View style={styles.innerViewContainer}>
           <View style={styles.viewContainer}>
             <FastImage
               source={{
-                uri: `${image_url}${Utility.getSportImage(
-                  item.sport,
-                  item.type,
-                  authContext,
-                )}`,
+                uri: `${imageBaseUrl}${sport.sport_image}`,
               }}
               style={styles.sportIcon}
               resizeMode={'cover'}
             />
             <View>
-              <Text style={styles.sportName}>
-                {Utility.getSportName(item, authContext)}
-              </Text>
+              <Text style={styles.sportName}>{sport.sport_name}</Text>
               <Text style={styles.matchCount}>0 match</Text>
             </View>
           </View>
         </View>
-      </View>
+      </Pressable>
     );
-  }, []);
-
-  const refereeSportsView = useCallback(
-    ({item}) => (
-      <View style={styles.sportView}>
-        <LinearGradient
-          colors={[colors.darkThemeColor, colors.darkThemeColor]}
-          style={styles.backgroundView}></LinearGradient>
-        <View style={styles.innerViewContainer}>
-          <View style={styles.viewContainer}>
-            <Image
-              source={{
-                uri: `${image_url}${Utility.getSportImage(
-                  item.sport,
-                  item.type,
-                  authContext,
-                )}`,
-              }}
-              style={styles.sportIcon}
-            />
-            <View>
-              <Text style={styles.sportName}>
-                {Utility.getSportName(item, authContext)}
-              </Text>
-              <Text style={styles.matchCount}>0 match</Text>
-            </View>
-          </View>
-        </View>
-      </View>
-    ),
-    [],
-  );
-
-  const scorekeeperSportsView = useCallback(
-    ({item}) => (
-      <View style={styles.sportView}>
-        <LinearGradient
-          colors={[colors.blueGradiantEnd, colors.blueGradiantStart]}
-          style={styles.backgroundView}></LinearGradient>
-        <View style={styles.innerViewContainer}>
-          <View style={styles.viewContainer}>
-            <Image
-              source={{
-                uri: `${image_url}${Utility.getSportImage(
-                  item.sport,
-                  item.type,
-                  authContext,
-                )}`,
-              }}
-              style={styles.sportIcon}
-            />
-            <View>
-              <Text style={styles.sportName}>
-                {Utility.getSportName(item, authContext)}
-              </Text>
-              <Text style={styles.matchCount}>0 match</Text>
-            </View>
-          </View>
-        </View>
-      </View>
-    ),
-    [],
-  );
+  };
 
   return (
     <>
       {!loading && (
         <ScrollView>
           <ActivityLoader visible={loading} />
-          <View>
-            {userObject?.registered_sports?.filter(
-              (obj) =>
-                obj.type === Verbs.entityTypePlayer && obj.is_active === true,
-            )?.length > 0 && (
-              <View style={styles.listContainer}>
-                <Text style={styles.listTitle}>Playing</Text>
-                {userObject?.registered_sports
-                  ?.filter(
-                    (obj) =>
-                      obj.type === Verbs.entityTypePlayer &&
-                      obj.is_active === true,
-                  )
-                  .sort((a, b) => a.sport.localeCompare(b.sport))
-                  .map((item) => sportsView({item}))}
-              </View>
-            )}
-
-            {userObject?.referee_data?.filter(
-              (obj) =>
-                obj.type === Verbs.entityTypeReferee && obj.is_active === true,
-            )?.length > 0 && (
-              <View style={styles.listContainer}>
-                <Text style={styles.listTitle}>Refereeing</Text>
-                {userObject?.referee_data
-                  ?.filter(
-                    (obj) =>
-                      obj.type === Verbs.entityTypeReferee &&
-                      obj.is_active === true,
-                  )
-                  .sort((a, b) => a.sport.localeCompare(b.sport))
-                  .map((item) => refereeSportsView({item}))}
-              </View>
-            )}
-
-            {userObject?.scorekeeper_data?.filter(
-              (obj) =>
-                obj.type === Verbs.entityTypeScorekeeper &&
-                obj.is_active === true,
-            )?.length > 0 && (
-              <View style={styles.listContainer}>
-                <Text style={styles.listTitle}>Scorekeeping</Text>
-                {userObject?.scorekeeper_data
-                  ?.filter(
-                    (obj) =>
-                      obj.type === Verbs.entityTypeScorekeeper &&
-                      obj.is_active === true,
-                  )
-                  .sort((a, b) => a.sport.localeCompare(b.sport))
-                  .map((item) => scorekeeperSportsView({item}))}
-              </View>
-            )}
-          </View>
+          <FlatList
+            data={EntityType}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({item}) => {
+              const list = getEntitySportList(userObject, item.entity).filter(
+                (obj) => obj.is_active === true,
+              );
+              if (list.length > 0) {
+                return (
+                  <View style={styles.listContainer}>
+                    <Text style={styles.listTitle}>{item.label}</Text>
+                    {list
+                      .sort((a, b) => a.sport.localeCompare(b.sport))
+                      .map((ele) => sportsView(ele, item.entity))}
+                  </View>
+                );
+              }
+              return null;
+            }}
+          />
 
           <TCProfileButton
             title={strings.addSportsActivity}
@@ -296,6 +207,59 @@ export default function SportActivitiesScreen({navigation}) {
             // Add Scorekeeper
             navigation.navigate('RegisterScorekeeper');
           }
+        }}
+      />
+
+      <SportActivityModal
+        isVisible={showSportsModal}
+        closeModal={() => {
+          setShowSportsModal(false);
+        }}
+        isAdmin={isAdmin}
+        userData={currentUserData}
+        sport={selectedSport?.sport}
+        sportObj={selectedSport}
+        sportName={Utility.getSportName(selectedSport, authContext)}
+        // onSeeAll={handleSectionClick}
+        handleChallengeClick={() => {
+          navigation.navigate('InviteChallengeScreen', {
+            setting: selectedSport?.setting,
+            sportName: selectedSport?.sport,
+            sportType: selectedSport?.sport_type,
+            groupObj: currentUserData,
+          });
+        }}
+        onMessageClick={() => {
+          navigation.push('MessageChat', {
+            screen: 'MessageChat',
+            params: {userId: currentUserData?.user_id},
+          });
+        }}
+        entityType={selectedEntity}
+        continueToChallenge={() => {
+          setShowSportsModal(false);
+          navigation.navigate('ChallengeScreen', {
+            setting: selectedSport?.setting ?? {},
+            sportName: selectedSport?.sport,
+            sportType: selectedSport?.sport_type,
+            groupObj: currentUserData,
+          });
+        }}
+        bookReferee={() => {
+          navigation.navigate('RefereeBookingDateAndTime', {
+            settingObj: selectedSport?.setting ?? {},
+            userData: currentUserData,
+            showMatches: true,
+            sportName: selectedSport?.sport,
+          });
+        }}
+        bookScoreKeeper={() => {
+          navigation.navigate('ScorekeeperBookingDateAndTime', {
+            settingObj: selectedSport?.setting ?? {},
+            userData: currentUserData,
+            showMatches: true,
+            sportName: selectedSport?.sport,
+          });
         }}
       />
     </>

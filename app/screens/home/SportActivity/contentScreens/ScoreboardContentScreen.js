@@ -3,7 +3,11 @@ import {useIsFocused} from '@react-navigation/native';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {View, StyleSheet, Text, TouchableOpacity} from 'react-native';
 import {strings} from '../../../../../Localization/translation';
-import {getGameScoreboardEvents, getRefereedMatch} from '../../../../api/Games';
+import {
+  getGameScoreboardEvents,
+  getRefereedMatch,
+  getScorekeeperMatch,
+} from '../../../../api/Games';
 import AuthContext from '../../../../auth/context';
 import colors from '../../../../Constants/Colors';
 import fonts from '../../../../Constants/Fonts';
@@ -79,6 +83,19 @@ const ScoreboardContentScreen = ({
       });
   }, [userData, sport, authContext]);
 
+  const getScorekeeperMatchList = useCallback(() => {
+    setLoading(true);
+    getScorekeeperMatch(userData?.user_id, sport, authContext)
+      .then((res) => {
+        setScoreboardList(res.payload);
+        setMatchData(res.payload);
+        setLoading(false);
+      })
+      .catch(() => {
+        setLoading(false);
+      });
+  }, [userData, sport, authContext]);
+
   useEffect(() => {
     if (isFocused) {
       if (entityType === Verbs.entityTypePlayer) {
@@ -87,8 +104,17 @@ const ScoreboardContentScreen = ({
       if (entityType === Verbs.entityTypeReferee) {
         getRefereeMatchList();
       }
+      if (entityType === Verbs.entityTypeScorekeeper) {
+        getScorekeeperMatchList();
+      }
     }
-  }, [isFocused, getScoreboardList, entityType, getRefereeMatchList]);
+  }, [
+    isFocused,
+    getScoreboardList,
+    entityType,
+    getRefereeMatchList,
+    getScorekeeperMatchList,
+  ]);
 
   const getSectionList = () => {
     if (selectedTab === strings.completedTitleText) {

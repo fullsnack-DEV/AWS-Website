@@ -2498,7 +2498,6 @@ export default {
 
   clubNameCaps: 'en_CLUB NAME',
 
-
   folloersAndClubMembers: 'en_Followers and Club Members',
   infoPrivacyTeamMember:
     'en_If you choose this option, clubs (admins) which your team belongs to also can see your {0}.',
@@ -2524,5 +2523,5 @@ export default {
   lookingForClubOption: 'en_Looking for club!',
   lookingForBottomText:
     'en_If you select “Yes, display it.”, your profile may be displayed on the “{0}” section in Local Home. ',
-
+  scorekeptMatches: 'en_Scorekept Matches',
 };

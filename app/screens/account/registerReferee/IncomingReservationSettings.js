@@ -217,11 +217,15 @@ const IncomingReservationSettings = ({navigation, route}) => {
         isVisible={showCongratulationsModal}
         closeModal={() => {
           setShowCongratulationsModal(false);
-          navigation.navigate('AccountScreen', {
-            createdSportName: sportName,
-            // eslint-disable-next-line
-            // sportType: sportType,
-          });
+          if (route.params?.comeFrom) {
+            navigation.navigate(route.params.comeFrom);
+          } else {
+            navigation.navigate('AccountScreen', {
+              createdSportName: sportName,
+              // eslint-disable-next-line
+              // sportType: sportType,
+            });
+          }
         }}
         sportName={sportName}
         entityType={entityType}
