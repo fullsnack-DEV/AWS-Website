@@ -16,7 +16,7 @@ import {strings} from '../../../../Localization/translation';
 import colors from '../../../Constants/Colors';
 import AuthContext from '../../../auth/context';
 import TCKeyboardView from '../../../components/TCKeyboardView';
-import {getSportList, getSportName} from '../../../utils';
+import {getSportName} from '../../../utils';
 import TCFormProgress from '../../../components/TCFormProgress';
 import TCLabel from '../../../components/TCLabel';
 import ScreenHeader from '../../../components/ScreenHeader';
@@ -25,6 +25,7 @@ import SportsListModal from '../registerPlayer/modals/SportsListModal';
 import fonts from '../../../Constants/Fonts';
 import uploadImages from '../../../utils/imageAction';
 import TCInnerLoader from '../../../components/TCInnerLoader';
+import {getExcludedSportsList} from '../../../utils/sportsActivityUtils';
 
 const MAX_CERTIFICATE_UPLOAD = 5;
 const certificate = {title: '', url: '', thumbnail: '', isLoading: false};
@@ -40,9 +41,9 @@ const RegisterScorekeeper = ({navigation, route}) => {
   const bioInputRef = useRef();
 
   useEffect(() => {
-    const sportsArr = getSportList(
+    const sportsArr = getExcludedSportsList(
       authContext,
-      Verbs.menuOptionTypeScorekeeping,
+      Verbs.entityTypeScorekeeper,
     );
     setSportList(sportsArr);
   }, [authContext]);
@@ -74,8 +75,6 @@ const RegisterScorekeeper = ({navigation, route}) => {
     if (isValid) {
       const bodyParams = {
         sport: selectedSport.sport,
-        // sport_type: selectedSport.sport_type,
-        sport_image: selectedSport.referee_image,
         sport_name: selectedSport.sport_name,
         descriptions: bio,
         is_active: true,

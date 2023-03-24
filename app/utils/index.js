@@ -2520,49 +2520,6 @@ export const setAuthContextData = async (data, authContext) => {
   await setStorage('authContextEntity', {...entity});
 };
 
-export const getSportList = (
-  authContext,
-  role = Verbs.menuOptionTypePlaying,
-) => {
-  let sportArr = [];
-  if (role === Verbs.menuOptionTypePlaying) {
-    authContext.sports.map((item) =>
-      item.format.map((innerObj) => {
-        sportArr = [...sportArr, ...[{...item, ...innerObj}]];
-        return null;
-      }),
-    );
-  } else {
-    sportArr = [...authContext.sports];
-  }
-
-  const newData = [];
-  let alreadyAddedSportsList = [];
-
-  if (role === Verbs.menuOptionTypePlaying) {
-    alreadyAddedSportsList = authContext.entity.obj.registered_sports ?? [];
-  } else if (role === Verbs.menuOptionTypeRefereeing) {
-    alreadyAddedSportsList = authContext.entity.obj.referee_data ?? [];
-  } else if (role === Verbs.menuOptionTypeScorekeeping) {
-    alreadyAddedSportsList = authContext.entity.obj.scorekeeper_data ?? [];
-  }
-  sportArr.forEach((item) => {
-    let obj = {};
-    if (role === Verbs.menuOptionTypePlaying) {
-      obj = alreadyAddedSportsList.find(
-        (ele) => ele.sport === item.sport && ele.sport_type === item.sport_type,
-      );
-    } else {
-      obj = alreadyAddedSportsList.find((ele) => ele.sport === item.sport);
-    }
-    if (!obj) {
-      newData.push(item);
-    }
-  });
-
-  return [...newData];
-};
-
 export const calculateReviewPeriod = (item = {}, reviews = []) => {
   let isOpponentReview = true;
   let isRefereeReview = true;

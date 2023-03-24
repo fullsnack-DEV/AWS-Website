@@ -70,6 +70,10 @@ import TCSwitchProfileRow from './connections/TCSwitchProfileRow';
 import AccountMenuRow from './connections/AccountMenuRow';
 import SportsListModal from './registerPlayer/modals/SportsListModal';
 import {NavigationActions} from 'react-navigation';
+import {
+  getExcludedSportsList,
+  getTitleForRegister,
+} from '../../utils/sportsActivityUtils';
 
 // FIXME: fix all warning in useCallBack()
 export default function AccountScreen({navigation, route}) {
@@ -96,7 +100,7 @@ export default function AccountScreen({navigation, route}) {
   const [sportsData, setSportsData] = useState([]);
   const [imageBaseUrl, setImageBaseUrl] = useState('');
   const [selectedMenuOptionType, setSelectedMenuOptionType] = useState(
-    Verbs.menuOptionTypePlaying,
+    Verbs.entityTypePlayer,
   );
 
   const navigations = useNavigation();
@@ -142,7 +146,7 @@ export default function AccountScreen({navigation, route}) {
   }, [isFocused]);
 
   useEffect(() => {
-    const sportArr = Utility.getSportList(authContext, selectedMenuOptionType);
+    const sportArr = getExcludedSportsList(authContext, selectedMenuOptionType);
     setSportsData([...sportArr]);
   }, [authContext, selectedMenuOptionType]);
 
@@ -643,22 +647,6 @@ export default function AccountScreen({navigation, route}) {
 
     setSports(list);
   }, [authContext]);
-
-  const getModalTitle = (section) => {
-    switch (section) {
-      case Verbs.menuOptionTypePlaying:
-        return strings.registerAsPlayerTitle;
-
-      case Verbs.menuOptionTypeRefereeing:
-        return strings.registerRefereeTitle;
-
-      case Verbs.menuOptionTypeScorekeeping:
-        return strings.registerScorekeeperTitle;
-
-      default:
-        return '';
-    }
-  };
 
   return (
     <SafeAreaView style={styles.mainContainer} testID="account-screen">
@@ -1255,7 +1243,7 @@ export default function AccountScreen({navigation, route}) {
       <SportsListModal
         isVisible={visibleSportsModal}
         closeList={() => setVisibleSportsModal(false)}
-        title={getModalTitle(selectedMenuOptionType)}
+        title={getTitleForRegister(selectedMenuOptionType)}
         sportsList={sportsData}
         onNext={(sport) => {
           setVisibleSportsModal(false);
