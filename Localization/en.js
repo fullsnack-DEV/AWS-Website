@@ -2167,7 +2167,7 @@ export default {
   emailExistInTC:
     'en_This email address has been registered for a user account. You can invite the user instead of creating the profile.',
   emailNotes:
-    'en_The member profile created with this email address will be merged with the user account with the same email address when the user joins the team.',
+    'en_The member profile created with this email address will be merged with the user account with the same email address when the user joins the {0}.',
   notesPlaceholder: 'en_Write any additional notes here.',
   cityStateCountry: 'en_City, State, Country',
   searchForAddress: 'en_Search for Address',

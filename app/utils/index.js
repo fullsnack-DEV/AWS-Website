@@ -1361,7 +1361,7 @@ export const showAlertWithoutTitle = (
   message,
   onOkPress = () => console.log('OK Pressed'),
 ) => {
-  Alert.alert(message, [{text: strings.okTitleText, onPress: onOkPress}], {
+  Alert.alert('', message, [{text: strings.okTitleText, onPress: onOkPress}], {
     cancelable: false,
   });
 };

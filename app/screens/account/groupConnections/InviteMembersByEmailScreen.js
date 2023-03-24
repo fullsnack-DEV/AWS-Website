@@ -6,6 +6,8 @@ import {
   FlatList,
   SafeAreaView,
   ScrollView,
+  Image,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import {sendInvitationInGroup} from '../../../api/Users';
 import TCTextField from '../../../components/TCTextField';
@@ -16,6 +18,7 @@ import fonts from '../../../Constants/Fonts';
 import AuthContext from '../../../auth/context';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import * as Utility from '../../../utils/index';
+import images from '../../../Constants/ImagePath';
 
 export default function InviteMembersByEmailScreen({navigation}) {
   const authContext = useContext(AuthContext);
@@ -47,8 +50,51 @@ export default function InviteMembersByEmailScreen({navigation}) {
           {strings.send}
         </Text>
       ),
+      headerLeft: () => (
+        <TouchableWithoutFeedback
+          onPress={() => {
+            navigation.goBack();
+          }}>
+          <Image source={images.backArrow} style={styles.backArrowStyle} />
+        </TouchableWithoutFeedback>
+      ),
     });
   }, [navigation, email]);
+
+  const ValidateEmail = (emailAddress) => {
+    const emailWithoutEmptymails = emailAddress.filter((e) => e.email !== '');
+
+    const re =
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+    const Validates = emailWithoutEmptymails.map((e) =>
+      re.test(String(e.email).toLowerCase()),
+    );
+
+    const allTrue = !Validates.some((el) => el === false);
+
+    return allTrue;
+  };
+
+  const duplicateIds = email
+    .map((e) => e.email)
+    .map((e, i, final) => final.indexOf(e) !== i && i)
+    .filter((obj) => email[obj])
+    .map((e) => email[e].email);
+
+  const findDuplicates = (emails) => {
+    const emailWithoutEmptymails = emails.filter((e) => e.email !== '');
+
+    let isDuplicate = emailWithoutEmptymails.map((val) =>
+      duplicateIds.some((e) => e === val.email),
+    );
+
+    const allTrue = !isDuplicate.some((el) => el === true);
+
+    isDuplicate = [];
+
+    return allTrue;
+  };
 
   const sendInvitation = () => {
     const entity = authContext.entity;
@@ -57,16 +103,12 @@ export default function InviteMembersByEmailScreen({navigation}) {
     //   (obj) => Utility.validateEmail(obj.email) === false,
     // );
 
-    const duplicateIds = email
-      .map((e) => e.email)
-      .map((e, i, final) => final.indexOf(e) !== i && i)
-      .filter((obj) => email[obj])
-      .map((e) => email[e].email);
-
     if (email[0].email === '') {
       Utility.showAlert(strings.validEmailMessage);
-    } else if (duplicateIds.some((e) => e === email[0].email)) {
+    } else if (findDuplicates(email) === false) {
       Utility.showAlert(strings.doNotEnterSameEmail);
+    } else if (ValidateEmail(email) === false) {
+      Utility.showAlertWithoutTitle(strings.validEmailMessage);
     } else {
       setloading(true);
       const emails = email.map((i) => i.email);
@@ -167,5 +209,11 @@ const styles = StyleSheet.create({
   flateListStyle: {
     paddingTop: 10,
     flexGrow: 0,
+  },
+  backArrowStyle: {
+    height: 20,
+    marginLeft: 15,
+    resizeMode: 'contain',
+    tintColor: colors.blackColor,
   },
 });
