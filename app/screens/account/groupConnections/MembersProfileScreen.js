@@ -445,7 +445,7 @@ export default function MembersProfileScreen({navigation, route}) {
       Animated.timing(animProgress, {
         useNativeDriver: false,
         toValue: 100,
-        duration: 600,
+        duration: 200,
       }).start();
     } else {
       setloading(true);
@@ -455,7 +455,7 @@ export default function MembersProfileScreen({navigation, route}) {
       .then((response) => {
         setloading(false);
         setShowSwitchScreen(false);
-        console.log(response, 'from back');
+
         const validator = 102;
 
         if (toaccount) {
@@ -1233,14 +1233,7 @@ export default function MembersProfileScreen({navigation, route}) {
     outputRange: ['0%', '50%', '100%'],
   });
 
-  let placeHolder = images.teamSqure;
-  if (authContext.entity.role === Verbs.entityTypeClub) {
-    placeHolder = images.clubPlaceholderSmall;
-  } else if (authContext.entity.role === Verbs.entityTypeTeam) {
-    placeHolder = images.teamPlaceholderSmall;
-  } else {
-    placeHolder = images.profilePlaceHolder;
-  }
+  const placeHolder = images.profilePlaceHolder;
 
   return (
     <SafeAreaView>
@@ -1248,7 +1241,7 @@ export default function MembersProfileScreen({navigation, route}) {
         <View
           style={{
             flex: 1,
-            backgroundColor: colors.lightGrey,
+            backgroundColor: colors.whiteColor,
             justifyContent: 'center',
             alignItems: 'center',
             ...StyleSheet.absoluteFillObject,
@@ -1257,8 +1250,8 @@ export default function MembersProfileScreen({navigation, route}) {
           <View
             style={{
               flex: 1,
-              backgroundColor: colors.lightGrey,
-              opacity: 0.8,
+              backgroundColor: colors.whiteColor,
+
               justifyContent: 'center',
               alignItems: 'center',
               ...StyleSheet.absoluteFillObject,
@@ -1266,16 +1259,25 @@ export default function MembersProfileScreen({navigation, route}) {
               zIndex: 1000,
             }}>
             <ActivityLoader visible={false} />
-            <View style={styles.profileImageContainer}>
-              <Image
-                source={
-                  authContext.user?.thumbnail || ''
-                    ? {uri: authContext.user?.thumbnail}
-                    : placeHolder
-                }
-                style={styles.profileImg}
-              />
-            </View>
+            <TouchableOpacity
+              onPress={() => {
+                Animated.timing(animProgress, {
+                  useNativeDriver: false,
+                  toValue: 100,
+                  duration: 700,
+                }).start();
+              }}>
+              <View style={styles.profileImageContainer}>
+                <Image
+                  source={
+                    authContext.user?.thumbnail || ''
+                      ? {uri: authContext.user?.thumbnail}
+                      : placeHolder
+                  }
+                  style={styles.profileImg}
+                />
+              </View>
+            </TouchableOpacity>
             <View
               style={{
                 marginTop: 15,
@@ -1310,7 +1312,13 @@ export default function MembersProfileScreen({navigation, route}) {
                 marginTop: 279,
               }}>
               <Animated.View
-                style={[styles.progressBar, {width: animWidthPrecent}]}
+                style={[
+                  styles.progressBar,
+                  {
+                    width: animWidthPrecent,
+                    backgroundColor: colors.orangeGradientColor,
+                  },
+                ]}
               />
             </View>
           </View>

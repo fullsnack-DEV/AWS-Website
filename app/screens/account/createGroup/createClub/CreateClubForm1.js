@@ -7,6 +7,7 @@ import React, {
   useContext,
   useRef,
   useLayoutEffect,
+  useCallback,
 } from 'react';
 import {
   View,
@@ -20,6 +21,9 @@ import {
   Dimensions,
   Platform,
   Alert,
+  StyleSheet,
+  Animated,
+  Pressable,
 } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
 import Modal from 'react-native-modal';
@@ -27,26 +31,36 @@ import ActionSheet from 'react-native-actionsheet';
 import {check, PERMISSIONS, RESULTS, request} from 'react-native-permissions';
 
 import {useIsFocused} from '@react-navigation/native';
+import LinearGradient from 'react-native-linear-gradient';
 import AuthContext from '../../../../auth/context';
 import images from '../../../../Constants/ImagePath';
 import {strings} from '../../../../../Localization/translation';
 import colors from '../../../../Constants/Colors';
 import fonts from '../../../../Constants/Fonts';
 
-import TCFormProgress from '../../../../components/TCFormProgress';
-
 import TCLabel from '../../../../components/TCLabel';
 import TCThinDivider from '../../../../components/TCThinDivider';
-import {deleteConfirmation, getHitSlop, getSportName} from '../../../../utils';
+import {
+  deleteConfirmation,
+  getHitSlop,
+  getSportName,
+  showAlertWithoutTitle,
+} from '../../../../utils';
 
 import styles from './style';
 import LocationModal from '../../../../components/LocationModal/LocationModal';
 import TCProfileImageControl from '../../../../components/TCProfileImageControl';
 
+import Verbs from '../../../../Constants/Verbs';
+
+import {createGroup} from '../../../../api/Groups';
+import uploadImages from '../../../../utils/imageAction';
+import ActivityLoader from '../../../../components/loader/ActivityLoader';
+
 export default function CreateClubForm1({navigation}) {
   const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
-
+  const [loading, setloading] = useState(false);
   const [clubName, setClubName] = useState('');
   const [location, setLocation] = useState('');
   const [city, setCity] = useState('');
@@ -62,9 +76,12 @@ export default function CreateClubForm1({navigation}) {
   const [backgroundThumbnail, setBackgroundThumbnail] = useState();
 
   const [thumbnail, setThumbnail] = useState();
+  const [showSwitchScreen, setShowSwitchScreen] = useState(false);
   const actionSheet = useRef();
 
   const actionSheetWithDelete = useRef();
+
+  const animProgress = React.useState(new Animated.Value(0))[0];
 
   useEffect(() => {
     getSports();
@@ -93,6 +110,11 @@ export default function CreateClubForm1({navigation}) {
     setSportList(arr);
   };
 
+  // useEffect(() => {
+  //   const sportArr = getExcludedSportsList(authContext, selectedMenuOptionType);
+  //   setSportList([...sportArr]);
+  // }, [authContext, selectedMenuOptionType]);
+
   useEffect(() => {
     let sportText = '';
     if (selectedSports.length > 0) {
@@ -105,7 +127,7 @@ export default function CreateClubForm1({navigation}) {
       });
       setSportsName(sportText);
     }
-  }, [authContext, selectedSports]);
+  }, [authContext, selectedSports, visibleSportsModal]);
 
   const isIconCheckedOrNot = ({item, index}) => {
     sportList[index].isChecked = !item.isChecked;
@@ -144,26 +166,160 @@ export default function CreateClubForm1({navigation}) {
     setVisibleSportsModal(!visibleSportsModal);
   };
 
-  const onNextPressed = () => {
+  const checkClubValidations = useCallback(() => {
+    if (clubName === '') {
+      showAlertWithoutTitle('clubname');
+      return false;
+    }
+    if (location === '') {
+      showAlertWithoutTitle(strings.homeCityCannotBlack);
+      return false;
+    }
+    if (sportList.length < 0) {
+      showAlertWithoutTitle('sport list');
+      return false;
+    }
+
+    return true;
+  }, [clubName, location, sportList, description]);
+
+  const onNextPressed = async () => {
+    setShowSwitchScreen(true);
+    onANimate(20);
+
     const newArray = selectedSports.map((obj) => {
       delete obj.isChecked;
       delete obj.entity_type;
       return obj;
     });
-    const obj = {
+
+    const bodyParams = {
       sports: newArray, // Object of sport
       sports_string: sportsName,
       group_name: clubName,
       city,
       state_abbr: state,
       country,
+      descriptions: description,
+      entity_type: Verbs.entityTypeClub,
     };
-    console.log('Form 1:=> ', obj);
-    navigation.navigate('CreateClubForm2', {
-      createClubForm1: {
-        ...obj,
-      },
-    });
+
+    console.log(sportsName, 'From sport');
+
+    if (thumbnail) {
+      bodyParams.thumbnail = thumbnail;
+    }
+    if (backgroundThumbnail) {
+      bodyParams.background_thumbnail = backgroundThumbnail;
+    }
+
+    console.log('bodyPARAMS:: ', bodyParams);
+    const entity = authContext.entity;
+
+    if (bodyParams?.thumbnail || bodyParams?.background_thumbnail) {
+      const imageArray = [];
+      if (bodyParams?.thumbnail) {
+        imageArray.push({path: bodyParams?.thumbnail});
+      }
+      if (bodyParams?.background_thumbnail) {
+        imageArray.push({path: bodyParams?.background_thumbnail});
+      }
+      uploadImages(imageArray, authContext)
+        .then((responses) => {
+          const attachments = responses.map((item) => ({
+            type: 'image',
+            url: item.fullImage,
+            thumbnail: item.thumbnail,
+          }));
+          if (bodyParams?.thumbnail) {
+            bodyParams.thumbnail = attachments[0].thumbnail;
+            bodyParams.full_image = attachments[0].url;
+          }
+
+          if (bodyParams?.background_thumbnail) {
+            let bgInfo = attachments[0];
+            if (attachments.length > 1) {
+              bgInfo = attachments[1];
+            }
+            bodyParams.background_thumbnail = bgInfo.thumbnail;
+            bodyParams.background_full_image = bgInfo.url;
+          }
+
+          createGroup(
+            bodyParams,
+            entity.role === Verbs.entityTypeTeam && entity.uid,
+            entity.role === Verbs.entityTypeTeam && Verbs.entityTypeTeam,
+            authContext,
+          )
+            .then((response) => {
+              setloading(false);
+
+              navigation.push('HomeScreen', {
+                uid: response.payload.group_id,
+                role: response.payload.entity_type,
+                backButtonVisible: false,
+                menuBtnVisible: false,
+                isEntityCreated: true,
+                groupName: response.payload.group_name,
+                entityObj: response.payload,
+              });
+
+              setShowSwitchScreen(false);
+            })
+            .catch((e) => {
+              setloading(false);
+              setShowSwitchScreen(false);
+              setTimeout(() => {
+                Alert.alert(strings.alertmessagetitle, e.message);
+              }, 10);
+            });
+        })
+        .catch((e) => {
+          setTimeout(() => {
+            Alert.alert(strings.appName, e.messages);
+          }, 0.1);
+        });
+    } else {
+      onANimate(100);
+      createGroup(
+        bodyParams,
+        // entity.uid,
+        // entity.role === 'team' ? 'team' : 'user',
+        entity.role === Verbs.entityTypeTeam && entity.uid,
+        entity.role === Verbs.entityTypeTeam && Verbs.entityTypeTeam,
+        authContext,
+      )
+        .then((response) => {
+          setloading(false);
+
+          navigation.push('HomeScreen', {
+            uid: response.payload.group_id,
+            role: response.payload.entity_type,
+            backButtonVisible: false,
+            menuBtnVisible: false,
+            isEntityCreated: true,
+            groupName: response.payload.group_name,
+            entityObj: response.payload,
+          });
+
+          setShowSwitchScreen(false);
+        })
+        .catch((e) => {
+          setloading(false);
+          setShowSwitchScreen(false);
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
+    }
+  };
+
+  const onANimate = (val) => {
+    Animated.timing(animProgress, {
+      useNativeDriver: false,
+      toValue: val,
+      duration: 800,
+    }).start();
   };
 
   const handleSetLocationOptions = (locations) => {
@@ -210,7 +366,10 @@ export default function CreateClubForm1({navigation}) {
               marginRight: 10,
             }}
             onPress={() => {
-              onNextPressed();
+              if (checkClubValidations()) {
+                // Alert.alert('Pressed');
+                onNextPressed();
+              }
             }}>
             {strings.next}
           </Text>
@@ -226,7 +385,16 @@ export default function CreateClubForm1({navigation}) {
         </TouchableWithoutFeedback>
       ),
     });
-  }, []);
+  }, [
+    clubName,
+    description,
+    location,
+    sportList,
+    sportsName,
+    visibleSportsModal,
+  ]);
+
+  // for next press
 
   const openImagePicker = (width = 400, height = 400) => {
     let cropCircle = false;
@@ -325,11 +493,155 @@ export default function CreateClubForm1({navigation}) {
     });
   };
 
+  const animWidthPrecent = animProgress.interpolate({
+    inputRange: [0, 50, 100],
+    outputRange: ['0%', '50%', '100%'],
+  });
+
+  const placeHolder = images.clubPlaceholderSmall;
+
   return (
     <>
-      <TCFormProgress totalSteps={3} curruentStep={1} />
+      {showSwitchScreen && (
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: colors.whiteColor,
+            justifyContent: 'center',
+            alignItems: 'center',
+            ...StyleSheet.absoluteFillObject,
+            zIndex: 10,
+          }}>
+          <View
+            style={{
+              flex: 1,
+              backgroundColor: colors.whiteColor,
+              opacity: 0.8,
+              justifyContent: 'center',
+              alignItems: 'center',
+              ...StyleSheet.absoluteFillObject,
+              marginTop: 300,
+              zIndex: 1000,
+            }}>
+            <ActivityLoader visible={false} />
+            <Pressable
+              style={styles.profileImageContainer}
+              onPress={() => onANimate(56)}>
+              <View
+                style={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+
+                  borderRadius: 100,
+                  alignSelf: 'center',
+                  width: 60,
+                  height: 60,
+                  borderWidth: 1,
+                  borderColor: '#DDDDDD',
+                }}>
+                <View>
+                  <Image
+                    source={images.clubPatch}
+                    style={{
+                      height: 15,
+                      width: 15,
+                      resizeMode: 'cover',
+                      position: 'absolute',
+                      left: 10,
+                      top: 45,
+                    }}
+                  />
+                </View>
+                <Image
+                  source={placeHolder}
+                  style={{
+                    ...styles.profileImg,
+                    resizeMode: 'contain',
+                    alignSelf: 'center',
+                    marginTop: 5,
+                  }}
+                />
+                <View
+                  style={{
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    alignSelf: 'center',
+                    position: 'absolute',
+                    top: 0,
+                    bottom: 0,
+                    right: 0,
+                    left: 0,
+                  }}>
+                  <Text
+                    style={{
+                      marginTop: -5,
+                      textAlign: 'center',
+                      color: colors.whiteColor,
+                      fontFamily: fonts.RBold,
+                      fontSize: 16,
+                    }}>
+                    {clubName.charAt(0)}
+                  </Text>
+                </View>
+              </View>
+            </Pressable>
+            <View
+              style={{
+                marginTop: 15,
+              }}>
+              <Text
+                style={{
+                  lineHeight: 24,
+                  fontFamily: fonts.RMedium,
+                  fontSize: 16,
+                  textAlign: 'center',
+                }}>
+                Switching to
+              </Text>
+              <Text
+                style={{
+                  lineHeight: 24,
+                  fontFamily: fonts.RBold,
+                  fontSize: 16,
+                  textAlign: 'center',
+                }}>
+                {clubName}
+              </Text>
+            </View>
+
+            <Animated.View
+              style={{
+                width: 135,
+                height: 5,
+                backgroundColor: '#F2F2F2',
+                borderRadius: 20,
+
+                marginTop: 279,
+              }}>
+              <Animated.View
+                style={[
+                  styles.progressBar,
+                  {
+                    width: animWidthPrecent,
+                  },
+                ]}>
+                <LinearGradient
+                  style={styles.progressBar}
+                  colors={['rgba(170, 216, 64, 0.6)', 'rgba(0, 193, 104, 0.6)']}
+                  start={{x: 0, y: 0.5}}
+                  end={{x: 1, y: 0.5}}></LinearGradient>
+              </Animated.View>
+            </Animated.View>
+          </View>
+          {/* PRogree Bar */}
+        </View>
+      )}
+
+      {/* <TCFormProgress totalSteps={3} curruentStep={2} /> */}
 
       <ScrollView style={styles.mainContainer}>
+        <ActivityLoader visible={loading} />
+
         <View>
           <TCProfileImageControl
             profileImage={thumbnail ? {uri: thumbnail} : images.clubPlaceholder}
@@ -376,6 +688,7 @@ export default function CreateClubForm1({navigation}) {
 
           <View style={[styles.fieldView, {marginTop: 25}]}>
             <TCLabel
+              required={true}
               title={strings.clubNameCaps}
               style={{
                 lineHeight: 24,
@@ -393,7 +706,11 @@ export default function CreateClubForm1({navigation}) {
           </View>
 
           <View style={styles.fieldView}>
-            <TCLabel title={strings.locationClubTitle} style={{marginTop: 0}} />
+            <TCLabel
+              title={strings.locationClubTitle}
+              style={{marginTop: 0}}
+              required={true}
+            />
             <TouchableOpacity onPress={() => setVisibleLocationModal(true)}>
               <TextInput
                 placeholder={strings.searchCityPlaceholder}
@@ -405,7 +722,11 @@ export default function CreateClubForm1({navigation}) {
             </TouchableOpacity>
           </View>
           <View style={styles.fieldView}>
-            <TCLabel title={strings.sport} style={{marginTop: 0}} />
+            <TCLabel
+              title={strings.sport}
+              style={{marginTop: 0}}
+              required={true}
+            />
             <TouchableOpacity style={styles.languageView} onPress={toggleModal}>
               <Text
                 style={
@@ -439,7 +760,7 @@ export default function CreateClubForm1({navigation}) {
               textAlignVertical={'top'}
               numberOfLines={4}
               placeholder={strings.descriptionClubTextPlaceholder}
-              placeholderTextColor={'black'}
+              placeholderTextColor={colors.userPostTimeColor}
             />
           </View>
         </View>
@@ -450,8 +771,9 @@ export default function CreateClubForm1({navigation}) {
 
         <View style={{flex: 1}} />
       </ScrollView>
+
       {/* <TCGradientButton
-        // isDisabled={clubName === '' || location === '' || sportsName === ''}
+        isDisabled={clubName === '' || location === '' || sportsName === ''}
         title={strings.nextTitle}
         style={{marginBottom: 30}}
         onPress={onNextPressed}
@@ -504,7 +826,8 @@ export default function CreateClubForm1({navigation}) {
           }
         }}
       />
-      {/* <SportsListModal
+      {/* 
+      <SportsListModal
         isVisible={visibleSportsModal}
         closeList={() => setVisibleSportsModal(false)}
         title={strings.sport}

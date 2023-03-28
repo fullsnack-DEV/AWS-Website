@@ -1158,6 +1158,7 @@ const AccountNavigator = () => (
       name="CreateTeamForm2"
       component={CreateTeamForm2}
       options={{
+        headerShown: false,
         title: strings.createTeamText,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {

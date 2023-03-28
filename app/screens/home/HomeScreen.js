@@ -162,6 +162,7 @@ import {
 } from '../../utils/constant';
 import Verbs from '../../Constants/Verbs';
 import SportActivityModal from './SportActivity/SportActivityModal';
+import CongratulationsModal from '../account/registerPlayer/modals/CongratulationsModal';
 // import { getSetting } from '../challenge/manageChallenge/settingUtility';
 let entityObject = {};
 
@@ -301,6 +302,7 @@ const HomeScreen = ({navigation, route}) => {
   const actionSheet = useRef();
   const [actionSheetTitle, setActionSheetTitle] = useState('');
   const cancelReqActionSheet = useRef();
+  const [congratulationsModal, setCongratulationsModal] = useState(false);
   const [actionObject] = useState({
     activity_id: '',
     entity_type: '',
@@ -342,10 +344,14 @@ const HomeScreen = ({navigation, route}) => {
 
   useEffect(() => {
     if (route?.params?.isEntityCreated) {
+      console.log(route?.params?.entityObj, 'from entity');
+
       onSwitchProfile(route?.params?.entityObj);
-      setTimeout(() => {
-        confirmationRef.current.open();
-      }, 1000);
+      setCongratulationsModal(true);
+
+      // setTimeout(() => {
+      //   confirmationRef.current.open();
+      // }, 1000);
     }
   }, [route?.params?.entityObj, route?.params?.isEntityCreated]);
 
@@ -3112,7 +3118,7 @@ const HomeScreen = ({navigation, route}) => {
         onConnectionButtonPress={onConnectionButtonPress}
       />
     ),
-    [currentUserData, onConnectionButtonPress, navigation],
+    [currentUserData, onConnectionButtonPress],
   );
 
   const renderHeaderBackgroundUserProfile = useMemo(
@@ -3804,6 +3810,28 @@ const HomeScreen = ({navigation, route}) => {
     switchProfile(item)
       .then((currentEntity) => {
         switchQBAccount(item, currentEntity);
+
+        // show congrats modal when team is created according to new flow
+
+        // show alert when club is created
+
+        if (authContext.entity.role === Verbs.entityTypeClub) {
+          Alert.alert(
+            format(route?.params?.groupName),
+            strings.clubIsCreated,
+            authContext.entity.role === Verbs.entityTypeClub
+              ? strings.clubIsCreatedSub
+              : strings.teamCreatedSub,
+
+            [
+              {
+                text: 'OK',
+                onPress: () => console.log('pressed'),
+              },
+            ],
+            {cancelable: false},
+          );
+        }
       })
       .catch((e) => {
         setTimeout(() => {
@@ -4483,7 +4511,6 @@ const HomeScreen = ({navigation, route}) => {
             }
           }}
         />
-
         <ActionSheet
           ref={manageChallengeActionSheet}
           // options={[
@@ -4683,7 +4710,6 @@ const HomeScreen = ({navigation, route}) => {
             />
           )}
         </View>
-
         <SportActivityModal
           isVisible={showSportsModal}
           closeModal={() => {
@@ -4761,7 +4787,6 @@ const HomeScreen = ({navigation, route}) => {
             playsInModalVisible,
           ],
         )} */}
-
         {/* Referee In Modal */}
         {/* {refereesInModalVisible && (
           <Modal
@@ -4835,7 +4860,6 @@ const HomeScreen = ({navigation, route}) => {
                 />
               </SafeAreaView>
             </View> */}
-
         {/* Review Detail View */}
         {/* {reviewDetailModalVisible && (
               <Modal
@@ -4926,7 +4950,6 @@ const HomeScreen = ({navigation, route}) => {
         {/* </SafeAreaView>
               </Modal>
             )}  */}
-
         {/* Review Detail View */}
         {/* {refereeInfoModalVisible && (
               <Modal
@@ -5032,7 +5055,6 @@ const HomeScreen = ({navigation, route}) => {
                 </SafeAreaView>
               </Modal>
             )} */}
-
         {/* {refereeMatchModalVisible && (
               <Modal
                 isVisible={refereeMatchModalVisible}
@@ -5131,7 +5153,6 @@ const HomeScreen = ({navigation, route}) => {
                 </SafeAreaView>
               </Modal>
             )} */}
-
         {/* {reviewsModalVisible && (
               <Modal
                 isVisible={reviewsModalVisible}
@@ -5295,7 +5316,6 @@ const HomeScreen = ({navigation, route}) => {
             )} */}
         {/* </Modal>
         )} */}
-
         {/* Scorekeeper model */}
         {scorekeeperInModalVisible && (
           <Modal
@@ -5840,7 +5860,6 @@ const HomeScreen = ({navigation, route}) => {
             )}
           </Modal>
         )}
-
         {/* Entity create modal */}
         <Portal>
           <Modalize
@@ -5907,7 +5926,7 @@ const HomeScreen = ({navigation, route}) => {
                     alignItems: 'center',
                   }}>
                   <Text style={[styles.foundText, {fontFamily: fonts.RBold}]}>
-                    {`${route?.params?.groupName}`}
+                    {`${route?.params?.groupName}  `}
                   </Text>
                   <View
                     style={{
@@ -5994,9 +6013,7 @@ const HomeScreen = ({navigation, route}) => {
             flatListProps={flatListRefereeProps}
           />
         </Portal>
-
         {/* Scorekeeper offer */}
-
         <Portal>
           <Modalize
             visible={scorekeeperOfferModalVisible}
@@ -6105,7 +6122,6 @@ const HomeScreen = ({navigation, route}) => {
           </View>
         </Modal>
         {/* Entity create modal */}
-
         {/* Create Challenge modal */}
         <Modal
           onBackdropPress={() => setChallengePopup(false)}
@@ -6360,7 +6376,6 @@ const HomeScreen = ({navigation, route}) => {
           </View>
         </Modal>
         {/* Create Challenge modal */}
-
         {/* Sports list  modal */}
         <Modal
           isVisible={visibleSportsModal}
@@ -6432,11 +6447,98 @@ const HomeScreen = ({navigation, route}) => {
             />
           </View>
         </Modal>
-
         {!createEventModal && currentTab === 3 && (
           <CreateEventButton
             source={images.plus}
             onPress={() => setCreateEventModal(true)}
+          />
+        )}
+        {authContext.entity.role === Verbs.entityTypeTeam && (
+          <CongratulationsModal
+            isVisible={congratulationsModal}
+            settingsObj={settingObject}
+            title={strings.congratsTeamCreated}
+            subtitle={strings.congratesSubTitle}
+            fromCreateTeam={true}
+            closeModal={() => {
+              setCongratulationsModal(false);
+              // navigation.navigate('AccountScreen', {
+              //   createdSportName: sportName,
+              //   // eslint-disable-next-line
+              //   sportType: sportType,
+              // });
+            }}
+            sportName={route.params.entityObj?.setting.sport}
+            sport={route.params.entityObj?.setting.sport}
+            sportType={
+              route.params.entityObj?.setting.sport_type ===
+              route.params.entityObj?.setting.sport
+                ? 'team'
+                : route.params.entityObj?.setting.sport_type
+            }
+            // onChanllenge={(type, payload) => {
+            //   const obj = {
+            //     setting: payload.setting,
+            //     sportName: payload.sport,
+            //     sportType: payload.sport_type,
+            //     groupObj: payload.groupObj,
+            //   };
+            //   if (type === strings.challenge) {
+            //     navigation.navigate('ChallengeScreen', {
+            //       ...obj,
+            //     });
+            //   }
+
+            //   if (type === strings.inviteToChallenge) {
+            //     navigation.navigate('InviteChallengeScreen', {
+            //       ...obj,
+            //     });
+            //   }
+            // }}
+            // searchPlayer={(filters) => {
+            //   if (filters.sport_type === Verbs.sportTypeSingle) {
+            //     navigation.navigate('LookingForChallengeScreen', {
+            //       filters,
+            //     });
+            //   }
+            //   if (filters.sport_type === Verbs.sportTypeDouble) {
+            //     //
+            //   }
+            // }}
+            // onUserClick={(userData) => {
+            //   if (!userData) return;
+            //   navigation.navigate('HomeScreen', {
+            //     uid:
+            //       userData.entity_type === Verbs.entityTypePlayer ||
+            //       userData.entity_type === Verbs.entityTypeUser
+            //         ? userData.user_id
+            //         : userData.group_id,
+            //     role: ['user', 'player']?.includes(userData.entity_type)
+            //       ? 'user'
+            //       : userData.entity_type,
+            //     backButtonVisible: true,
+            //     menuBtnVisible: false,
+            //   });
+            // }}
+            searchTeam={(filters) => {
+              navigation.navigate('LookingForChallengeScreen', {
+                filters: {
+                  ...filters,
+                  groupTeam: strings.teamstitle,
+                },
+              });
+            }}
+            // joinTeam={() => {
+            //   // navigation.navigate('LookingTeamScreen', {
+            //   //   filters,
+            //   // });
+            // }}
+            // createTeam={() => {
+            //   navigation.navigate('CreateTeamForm1');
+            // }}
+            goToSportActivityHome={() => {
+              setCongratulationsModal(false);
+            }}
           />
         )}
 

@@ -2498,7 +2498,6 @@ export default {
 
   clubNameCaps: 'en_CLUB NAME',
 
-
   folloersAndClubMembers: 'en_Followers and Club Members',
   infoPrivacyTeamMember:
     'en_If you choose this option, clubs (admins) which your team belongs to also can see your {0}.',
@@ -2524,5 +2523,23 @@ export default {
   lookingForClubOption: 'en_Looking for club!',
   lookingForBottomText:
     'en_If you select “Yes, display it.”, your profile may be displayed on the “{0}” section in Local Home. ',
+  clubIsCreated: 'en_{0} \n has been created',
 
+  clubIsCreatedSub:
+    'en_ Your account has been switched to the account of the club.',
+  teamCreatedSub:
+    'en_ Your account has been switched to the account of the team.',
+  pleaseFillTeanName: 'en_Please fill in team name.',
+  pleaseFillHomeCity: 'en_Please fill in home city.',
+  pleaseFillPlayerGender: 'en_Please fill in player’s genders.',
+  pleaseSelectLanguage: 'en_Please Select the Langauage',
+  incomingChallengeSettingsTitleTeam:
+    'en_Please review your team’s incoming challenge settings. These settings are only applicable to the match reservation when your team is the match host. When your team is the Challenger, the opponent’s incoming challenge settings Will be applied.',
+  createTeamModalTitle: 'en_What sport does the new team will play?',
+  congratsTeamCreated:
+    'en_Congratulations! \nVancouver Whitecaps FC has been created.',
+  congratesSubTitle:
+    'en_Your account has been switched to VancouverWhitecaps FC.  ',
+  whoDoYouwantToCreateTeamWith:
+    'en_Who do you want to create the newteam with?',
 };

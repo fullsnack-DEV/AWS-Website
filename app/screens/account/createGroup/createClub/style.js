@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
     width: widthPercentageToDP('92%'),
   },
   languageText: {
-    backgroundColor: colors.whiteColor,
+    backgroundColor: colors.lightGrey,
     color: colors.lightBlackColor,
     fontSize: 16,
     fontFamily: fonts.RRegular,
@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
     paddingVertical: 12,
     paddingHorizontal: 15,
-    color: colors.userPostTimeColor,
+    color: colors.blackColor,
     paddingRight: 30,
     backgroundColor: colors.lightGrey,
     borderRadius: 5,
@@ -263,6 +263,18 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     resizeMode: 'contain',
     tintColor: colors.blackColor,
+  },
+
+  progressBar: {
+    width: '100%',
+    height: 5,
+  },
+  profileImg: {
+    height: 50,
+    width: 50,
+    resizeMode: 'cover',
+    alignSelf: 'center',
+    borderRadius: 25,
   },
 });
 

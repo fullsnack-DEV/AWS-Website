@@ -4,14 +4,10 @@ import React, {useState, useEffect, useContext} from 'react';
 import {
   View,
   Text,
-  Image,
   FlatList,
   TouchableOpacity,
   Alert,
   SafeAreaView,
-  Pressable,
-  ActivityIndicator,
-  Platform,
 } from 'react-native';
 
 import AuthContext from '../../../auth/context';

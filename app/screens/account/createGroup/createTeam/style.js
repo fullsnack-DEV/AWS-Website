@@ -51,19 +51,19 @@ const styles = StyleSheet.create({
   },
   matchFeeTxt: {
     alignSelf: 'center',
-    backgroundColor: colors.offwhite,
+    backgroundColor: colors.lightGrey,
     borderRadius: 5,
     color: 'black',
-    elevation: 3,
+
     fontSize: widthPercentageToDP('3.8%'),
     height: 40,
-    marginTop: 12,
-    paddingHorizontal: 15,
+
+    marginTop: 10,
+    paddingHorizontal: 10,
     paddingRight: 30,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
+
+    paddingVertical: 12,
+
     width: widthPercentageToDP('92%'),
   },
   searchView: {
@@ -91,8 +91,8 @@ const styles = StyleSheet.create({
 
   closeButton: {
     alignSelf: 'center',
-    width: 13,
-    height: 13,
+    width: 20,
+    height: 20,
     marginLeft: 5,
     resizeMode: 'contain',
   },
@@ -108,6 +108,7 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     fontFamily: fonts.RRegular,
     fontSize: widthPercentageToDP('4%'),
+    lineHeight: 24,
   },
   checkboxImg: {
     width: 22,
@@ -124,11 +125,6 @@ const styles = StyleSheet.create({
     width: widthPercentageToDP('70%'),
     margin: widthPercentageToDP('4%'),
     textAlignVertical: 'center',
-  },
-  listItem: {
-    flexDirection: 'row',
-    marginLeft: widthPercentageToDP('10%'),
-    width: widthPercentageToDP('80%'),
   },
 
   searchImg: {
@@ -170,7 +166,7 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     right: 15,
 
-    tintColor: colors.grayColor,
+    tintColor: colors.blackColor,
 
     top: 15,
     width: 12,
@@ -229,13 +225,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     color: colors.lightBlackColor,
     paddingRight: 30,
-    backgroundColor: colors.offwhite,
+    backgroundColor: colors.lightGrey,
     borderRadius: 5,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
-    elevation: 3,
   },
 
   describeTitle: {
@@ -253,6 +244,58 @@ const styles = StyleSheet.create({
     marginTop: 5,
     marginBottom: 3,
     marginLeft: 25,
+  },
+  listItem: {
+    flexDirection: 'row',
+    //  marginLeft: widthPercentageToDP('10%'),
+    //  width: widthPercentageToDP('80%'),
+    paddingHorizontal: 80,
+  },
+  backArrowStyle: {
+    height: 20,
+    marginLeft: 15,
+    resizeMode: 'contain',
+    tintColor: colors.blackColor,
+  },
+  profileImage: {
+    height: 40,
+    width: 40,
+    borderRadius: 80,
+  },
+
+  topViewContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+
+    // width: 200,
+  },
+  profileView: {
+    backgroundColor: colors.whiteColor,
+    height: 44,
+    width: 44,
+    borderRadius: 88,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  topTextContainer: {
+    marginLeft: 10,
+    alignSelf: 'center',
+    marginTop: 5,
+  },
+  nameText: {
+    fontSize: 20,
+    fontFamily: fonts.RMedium,
+    // width: 200,
+  },
+  mediumNameText: {
+    fontSize: 16,
+    fontFamily: fonts.RBold,
+    width: 200,
+  },
+  locationText: {
+    fontSize: 14,
+    fontFamily: fonts.RLight,
   },
 });
 

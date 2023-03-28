@@ -24,6 +24,9 @@ import TeamsListNearYou from '../components/TeamsListNearYou';
 
 const CongratulationsModal = ({
   isVisible,
+  title = strings.congratsModalTitle,
+  subtitle = '',
+  fromCreateTeam = false,
   closeModal = () => {},
   sportName,
   sportType,
@@ -248,6 +251,7 @@ const CongratulationsModal = ({
       <TeamsListNearYou
         list={teamsList}
         loading={loading}
+        fromCreateTeam={fromCreateTeam}
         searchTeam={() => {
           closeModal();
           searchTeam({
@@ -267,6 +271,10 @@ const CongratulationsModal = ({
         onUserClick={(item) => {
           closeModal();
           onUserClick(item);
+        }}
+        onChanllenge={(user) => {
+          setShowChallengeModal(true);
+          setSelectedUser(user);
         }}
       />
     );
@@ -311,21 +319,54 @@ const CongratulationsModal = ({
           </View>
           <View style={{marginHorizontal: 35, marginTop: 70, marginBottom: 25}}>
             <Text style={styles.congratsText}>
-              {strings.congratsModalTitle}
-              <Text style={styles.congratsSportText}>{sportName}.</Text>
+              {title}
+              {!fromCreateTeam && (
+                <Text style={styles.congratsSportText}>{sportName}.</Text>
+              )}
             </Text>
-          </View>
-          <Pressable
-            style={styles.buttonContainer}
-            onPress={() => {
-              goToSportActivityHome({sport, sportType});
-            }}>
-            <Text style={styles.buttonText}>
-              {strings.goToSportActivityHomeText}
-            </Text>
-          </Pressable>
 
-          <Text style={styles.description}>{getModalInfo(sportType)}</Text>
+            {fromCreateTeam && (
+              <Text style={styles.description}>{subtitle}</Text>
+            )}
+          </View>
+
+          {fromCreateTeam ? (
+            <>
+              <Pressable
+                style={styles.buttonContainer}
+                onPress={() => {
+                  goToSportActivityHome({sport, sportType});
+                }}>
+                <Text style={[styles.buttonText, {textTransform: 'uppercase'}]}>
+                  {strings.goToTeamHomeText}
+                </Text>
+              </Pressable>
+
+              <Pressable
+                style={styles.buttonContainer}
+                onPress={() => {
+                  goToSportActivityHome({sport, sportType});
+                }}>
+                <Text style={[styles.buttonText, {textTransform: 'uppercase'}]}>
+                  {strings.inviteMemberText}
+                </Text>
+              </Pressable>
+            </>
+          ) : (
+            <Pressable
+              style={styles.buttonContainer}
+              onPress={() => {
+                goToSportActivityHome({sport, sportType});
+              }}>
+              <Text style={styles.buttonText}>
+                {strings.goToSportActivityHomeText}
+              </Text>
+            </Pressable>
+          )}
+
+          {!fromCreateTeam && (
+            <Text style={styles.description}>{getModalInfo(sportType)}</Text>
+          )}
           <View style={styles.dividor} />
           <View style={{paddingHorizontal: 25, flex: 1, paddingTop: 7}}>
             {renderList(sportType)}

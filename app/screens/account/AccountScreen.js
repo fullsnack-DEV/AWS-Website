@@ -88,7 +88,8 @@ export default function AccountScreen({navigation, route}) {
   const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
   const [pointEvent, setPointEvent] = useState('auto');
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
-
+  const [visibleSportsModalForTeam, setVisibleSportsModalForTeam] =
+    useState(false);
   const [teamList, setTeamList] = useState([]);
   const [clubList, setClubList] = useState([]);
   const [accountMenu, setAccountMenu] = useState([]);
@@ -149,30 +150,6 @@ export default function AccountScreen({navigation, route}) {
     const sportArr = getExcludedSportsList(authContext, selectedMenuOptionType);
     setSportsData([...sportArr]);
   }, [authContext, selectedMenuOptionType]);
-
-  // useEffect(() => {
-  //   const {switchToUser} = route?.params || '';
-
-  //   if (switchToUser === 'fromMember') {
-  //     const TimeOut = setTimeout(() => {
-  //       Alert.alert(
-  //         strings.adminremoved,
-  //         '',
-  //         [
-  //           {
-  //             text: 'OK',
-  //             onPress: () => {
-  //               navigation.setParams({switchToUser: 'lkl'});
-  //             },
-  //           },
-  //         ],
-  //         {cancelable: false},
-  //       );
-  //     }, 2000);
-
-  //     clearTimeout(TimeOut);
-  //   }
-  // }, [route?.params, isFocused]);
 
   const [navigationOptions, setNavigationOptions] = useState({});
 
@@ -512,6 +489,14 @@ export default function AccountScreen({navigation, route}) {
           });
           setSelectedMenuOptionType(rowObj.menuOptionType);
           setVisibleSportsModal(true);
+        } else if (option === strings.createTeamText) {
+          setVisibleSportsModalForTeam(true);
+
+          setSelectedMenuOptionType(rowObj.menuOptionType);
+          setNavigationOptions({
+            screenName: rowObj.navigateTo.screenName,
+            data: rowObj.navigateTo.data,
+          });
         } else {
           navigation.navigate(
             rowObj.navigateTo.screenName,
@@ -1247,6 +1232,18 @@ export default function AccountScreen({navigation, route}) {
         sportsList={sportsData}
         onNext={(sport) => {
           setVisibleSportsModal(false);
+          navigation.navigate(navigationOptions.screenName, sport);
+        }}
+      />
+
+      <SportsListModal
+        isVisible={visibleSportsModalForTeam}
+        closeList={() => setVisibleSportsModalForTeam(false)}
+        title={strings.createTeamText}
+        sportsList={sportsData}
+        onNext={(sport) => {
+          console.log(sport, 'From sport');
+          setVisibleSportsModalForTeam(false);
           navigation.navigate(navigationOptions.screenName, sport);
         }}
       />
