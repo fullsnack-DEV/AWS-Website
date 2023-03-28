@@ -1286,7 +1286,7 @@ export default function CreateEventScreen({navigation, route}) {
 
             
             <View style={styles.containerStyle}>
-              <Text style={styles.headerTextStyle}>WHO CAN INVITE</Text>
+              <Text style={styles.headerTextStyle}>{strings.whoCanInvite}</Text>
               <TouchableOpacity
                 onPress={() => {
                   setWhoOption('invite');
@@ -1359,7 +1359,7 @@ export default function CreateEventScreen({navigation, route}) {
                   />
                 </TouchableOpacity>
                 <Text style={[styles.allDayText, {flex: 1, flexWrap: 'wrap'}]}>
-                  Display the event on Posts as soon as the event is created.
+                  {strings.eventPostCreate}
                 </Text>
               </View>
             </View>

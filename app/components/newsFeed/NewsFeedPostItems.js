@@ -64,7 +64,6 @@ const NewsFeedPostItems = memo(
     const [showLikeModal, setShowLikeModal] = useState(false);
     useEffect(() => {
       let filterLike = [];
-      console.log('Feed OBJ', item);
       if (item?.reaction_counts?.clap !== undefined) {
         setLikeCount(item?.reaction_counts?.clap);
       }

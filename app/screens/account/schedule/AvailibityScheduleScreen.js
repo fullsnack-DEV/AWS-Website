@@ -661,7 +661,7 @@ export default function AvailibilityScheduleScreen({
                         textDecorationStyle: 'solid',
                         textDecorationColor: '#000',
                       }}>
-                      Edit Availability
+                      {strings.editAvailability}
                     </Text>
                   </TouchableOpacity>
                 </View>
