@@ -1,12 +1,13 @@
 /* eslint-disable no-nested-ternary */
-import React , {useRef} from 'react';
-import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
+import React , {useRef, useState} from 'react';
+import {StyleSheet, View, Text, TouchableOpacity, SafeAreaView, Dimensions} from 'react-native';
 import moment from 'moment';
-import ActionSheet from 'react-native-actionsheet';
 import LinearGradient from 'react-native-linear-gradient';
+import Modal from 'react-native-modal';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 import * as Utility from '../../utils/index';
+import ChallengeAvailability from '../../screens/account/schedule/ChallengeAvailability';
 // import {strings} from '../../../../Localization/translation';
 
 
@@ -19,28 +20,22 @@ export default function BlockSlotView({
   index,
   slots,
   strings,
-  deleteSlot,
-  createSlot,
   userData,
-  uid
+  uid,
+  addToSlotData,
+  deleteFromSlotData
 }) {
 
-  const BlockSlotStatus = useRef();
-  const FreeSlotStatus = useRef();
+
   const CurrentItem = useRef();
+  const [visibleAvailabilityModal, setVisibleAvailabilityModal] =
+  useState(false);
+  const [heightRange, setHeightRange] = useState(0.6);
   const getTimeFormat = (dateValue) =>
   moment(Utility.getJSDate(dateValue)).format('h:mma');
 
 
-  const BlockAvailibityStatus = () => {
-    BlockSlotStatus.current.show();
-  }
-
-
-  const FreeBlockStatus = () => {
-    FreeSlotStatus.current.show();
-  }
-
+  
   return (
     <>
       {selected ? (
@@ -76,7 +71,8 @@ export default function BlockSlotView({
           if((Object.entries(userData).length > 0 && userData.user_id === uid) || 
           Object.entries(userData).length === 0){ 
             CurrentItem.current.value = item;
-            FreeBlockStatus()
+            setVisibleAvailabilityModal(true);
+            // FreeBlockStatus()
           }
         }}
         >
@@ -86,7 +82,7 @@ export default function BlockSlotView({
               marginBottom: 8,
               backgroundColor: '#F2F2F2',
               height: 40,
-              width: '85%',
+              width: '90%',
               alignSelf: 'center',
               borderRadius: 10,
               alignItems: 'center',
@@ -107,7 +103,8 @@ export default function BlockSlotView({
           if((Object.entries(userData).length > 0 && userData.user_id === uid) || 
           Object.entries(userData).length === 0){ 
             CurrentItem.current.value = item;
-            BlockAvailibityStatus()
+            setVisibleAvailabilityModal(true);
+            // BlockAvailibityStatus()
           }
         }}>
           <View
@@ -116,7 +113,7 @@ export default function BlockSlotView({
               marginBottom: 8,
               backgroundColor: '#F2F2F2',
               height: 40,
-              width: '85%',
+              width: '90%',
               alignSelf: 'center',
               borderRadius: 10,
               alignItems: 'center',
@@ -137,33 +134,26 @@ export default function BlockSlotView({
         </TouchableOpacity>
       )}
 
-      <ActionSheet
-        ref={BlockSlotStatus}
-        options={[
-          strings.block,
-          strings.cancel,
-        ]}
-        cancelButtonIndex={2}
-        onPress={(itemIndex) => {
-          if (itemIndex === 0) {
-            createSlot(CurrentItem.current.value)
-          }
+      {/*  Availability modal */}
+      <Modal
+        isVisible={visibleAvailabilityModal}
+        backdropColor="black"
+        style={{margin: 0, justifyContent: 'flex-end'}}
+        hasBackdrop
+        onBackdropPress={() => {
+          setVisibleAvailabilityModal(false);
         }}
-      />
-
-      <ActionSheet
-        ref={FreeSlotStatus}
-        options={[
-          strings.makeAvailable,
-          strings.cancel,
-        ]}
-        cancelButtonIndex={2}
-        onPress={(itemIndex) => {
-          if (itemIndex === 0) {
-            deleteSlot(CurrentItem.current.value)
-          }
-        }}
-      />
+        backdropOpacity={0}>
+        <SafeAreaView style={[styles.modalMainViewStyle, {height: Dimensions.get('window').height * heightRange}]}>
+          <ChallengeAvailability
+            setVisibleAvailabilityModal={setVisibleAvailabilityModal}
+            slots={[CurrentItem?.current?.value]}
+            addToSlotData={addToSlotData}
+            deleteFromSlotData={deleteFromSlotData}
+            setHeightRange={setHeightRange}
+          />
+        </SafeAreaView>
+      </Modal>
     </>
   );
 }
@@ -181,5 +171,15 @@ const styles = StyleSheet.create({
     color: colors.linesepratorColor,
     fontFamily: fonts.RMedium,
     textAlign: 'center',
+  },
+  modalMainViewStyle: {
+    shadowOpacity: 0.15,
+    shadowOffset: {
+      height: -10,
+      width: 0,
+    },
+    backgroundColor: colors.whiteColor,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20
   },
 });

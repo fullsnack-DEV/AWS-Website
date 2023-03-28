@@ -8,13 +8,13 @@ import {
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
-export default function BlockAvailableTabView({
+export default function AvailabilityTypeTabView({
   onFirstTabPress,
   onSecondTabPress,
-  blocked,
+  oneTime,
   style,
-  startGradientColor = colors.whiteColor,
-  endGradientColor = colors.whiteColor,
+  startGradientColor = colors.grayBackgroundColor,
+  endGradientColor = colors.grayBackgroundColor,
   firstTabTitle,
   secondTabTitle,
   activeEventPricacy,
@@ -29,17 +29,16 @@ export default function BlockAvailableTabView({
       <TouchableOpacity
         onPress={onFirstTabPress}
         style={
-          blocked
-            ? [styles.activeEventPricacy, activeEventPricacy]
+            oneTime
+            ? [styles.activeEventPricacy, activeEventPricacy, {backgroundColor: colors.whiteColor}]
             : [styles.inactiveEventPricacy, inactiveEventPricacy]
         }>
         <Text
           style={
-            blocked
+            oneTime
               ? [
                   styles.activeEventPrivacyText,
                   activeEventPrivacyText,
-                  {color: colors.grayColor},
                 ]
               : [styles.inactiveEventPrivacyText, inactiveEventPrivacyText]
           }>
@@ -49,13 +48,13 @@ export default function BlockAvailableTabView({
       <TouchableOpacity
         onPress={onSecondTabPress}
         style={
-          !blocked
-            ? [styles.activeEventPricacy, activeEventPricacy]
+          !oneTime
+            ? [styles.activeEventPricacy, activeEventPricacy, {backgroundColor: colors.whiteColor}]
             : [styles.inactiveEventPricacy, inactiveEventPricacy]
         }>
         <Text
           style={
-            !blocked
+            !oneTime
               ? [styles.activeEventPrivacyText, activeEventPrivacyText]
               : [styles.inactiveEventPrivacyText, inactiveEventPrivacyText]
           }>
@@ -71,7 +70,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     borderRadius: wp('1.5%'),
     paddingHorizontal: wp('1%'),
-    paddingVertical: wp('0.5%'),
+    paddingVertical: wp('1%'),
     marginVertical: 10,
     width: wp('94%'),
     alignSelf: 'center',
@@ -79,7 +78,7 @@ const styles = StyleSheet.create({
   },
   activeEventPricacy: {
     flex: 1,
-    // backgroundColor: colors.grayBackgroundColor,
+    backgroundColor: colors.whiteColor,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: wp('1.5%'),
@@ -90,16 +89,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   activeEventPrivacyText: {
-    color: colors.greeColor,
+    color: colors.blackColor,
     fontFamily: fonts.RBold,
     letterSpacing: 0.5,
     fontSize: 12,
   },
   inactiveEventPrivacyText: {
-    color: colors.grayColor,
+    color: colors.blackColor,
     fontFamily: fonts.RBold,
     letterSpacing: 0.5,
     fontSize: 12,
-    paddingVertical: hp('0.8'),
+    paddingVertical: hp('0.5'),
   },
 });

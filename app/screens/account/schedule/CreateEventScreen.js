@@ -719,7 +719,7 @@ export default function CreateEventScreen({navigation, route}) {
       setloading(true);
       const entity = authContext.entity;
       const entityRole =
-        entity.role === Verbs.entityTypeUser ? Verbs.entityTypeUsers : Verbs.entityTypeGroups;
+      entity.role === Verbs.entityTypeUser ? Verbs.entityTypeUsers : Verbs.entityTypeGroups;
       const data = [
         {
           title: eventTitle,
@@ -1096,6 +1096,10 @@ export default function CreateEventScreen({navigation, route}) {
                 secondTabTitle={strings.availableText}
                 onFirstTabPress={() => setIsBlocked(true)}
                 onSecondTabPress={() => setIsBlocked(false)}
+                startGradientColor={colors.grayBackgroundColor}
+                endGradientColor={colors.grayBackgroundColor}
+                activeEventPricacy={styles.activeEventPricacy}
+                inactiveEventPricacy={styles.inactiveEventPricacy}
               />
             </EventItemRender>
 
@@ -1169,6 +1173,61 @@ export default function CreateEventScreen({navigation, route}) {
                 max={maxAttendees}
               />
             </View>
+
+
+            <View style={styles.containerStyle}>
+              <Text style={styles.headerTextStyle}>{strings.whoCanSee}</Text>
+              <TouchableOpacity
+                onPress={() => {
+                  setWhoOption('see');
+                  setVisibleWhoModal(true);
+                }}>
+                <View style={styles.dropContainer}>
+                  <Text style={styles.textInputDropStyle}>
+                    {whoCanSeeOption.text}
+                  </Text>
+                  <Image
+                    source={images.dropDownArrow}
+                    style={styles.downArrowWhoCan}
+                  />
+                </View>
+              </TouchableOpacity>
+            </View>
+            {whoCanSeeOption.value === 2 &&
+              authContext.entity.role === Verbs.entityTypeUser && (
+                <View>
+                  <View style={styles.allStyle}>
+                    <Text style={styles.titleTextStyle}>{strings.all}</Text>
+                    <TouchableOpacity
+                      onPress={() => {
+                        setIsAll(!isAll);
+                        const groups = groupsSeeList.map((obj) => ({
+                          ...obj,
+                          isSelected: !isAll,
+                        }));
+                        setGroupsSeeList([...groups]);
+                      }}>
+                      <Image
+                        source={
+                          isAll ? images.orangeCheckBox : images.uncheckWhite
+                        }
+                        style={styles.imageStyle}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                  <FlatList
+                    scrollEnabled={false}
+                    data={[...groupsSeeList]}
+                    showsVerticalScrollIndicator={false}
+                    ItemSeparatorComponent={() => (
+                      <View style={{height: wp('4%')}} />
+                    )}
+                    renderItem={renderSeeGroups}
+                    keyExtractor={(item, index) => index.toString()}
+                    style={styles.listStyle}
+                  />
+                </View>
+            )}
 
            
             <View style={styles.containerStyle}>
@@ -1281,60 +1340,31 @@ export default function CreateEventScreen({navigation, route}) {
             )}
 
             <View style={styles.containerStyle}>
-              <Text style={styles.headerTextStyle}>{strings.whoCanSee}</Text>
-              <TouchableOpacity
-                onPress={() => {
-                  setWhoOption('see');
-                  setVisibleWhoModal(true);
-                }}>
-                <View style={styles.dropContainer}>
-                  <Text style={styles.textInputDropStyle}>
-                    {whoCanSeeOption.text}
-                  </Text>
+              <View style={{flexDirection: 'row'}}>
+                <TouchableOpacity
+                  style={styles.checkboxPost}
+                  onPress={() => {
+                    if(eventPosted.value === 1) {
+                      setEventPosted({value: 0, text: strings.scheduleOnlyText})
+                    }else{
+                      setEventPosted({value: 1, text: strings.scheduleAndPostText})
+                    }
+                  }}>
                   <Image
-                    source={images.dropDownArrow}
-                    style={styles.downArrowWhoCan}
+                    source={
+                      eventPosted.value === 1 ? images.yellowCheckBox : images.uncheckWhite
+                    }
+                    style={styles.checkboxPostImg}
+                    resizeMode={'contain'}
                   />
-                </View>
-              </TouchableOpacity>
+                </TouchableOpacity>
+                <Text style={[styles.allDayText, {flex: 1, flexWrap: 'wrap'}]}>
+                  Display the event on Posts as soon as the event is created.
+                </Text>
+              </View>
             </View>
-            {whoCanSeeOption.value === 2 &&
-              authContext.entity.role === Verbs.entityTypeUser && (
-                <View>
-                  <View style={styles.allStyle}>
-                    <Text style={styles.titleTextStyle}>{strings.all}</Text>
-                    <TouchableOpacity
-                      onPress={() => {
-                        setIsAll(!isAll);
-                        const groups = groupsSeeList.map((obj) => ({
-                          ...obj,
-                          isSelected: !isAll,
-                        }));
-                        setGroupsSeeList([...groups]);
-                      }}>
-                      <Image
-                        source={
-                          isAll ? images.orangeCheckBox : images.uncheckWhite
-                        }
-                        style={styles.imageStyle}
-                      />
-                    </TouchableOpacity>
-                  </View>
-                  <FlatList
-                    scrollEnabled={false}
-                    data={[...groupsSeeList]}
-                    showsVerticalScrollIndicator={false}
-                    ItemSeparatorComponent={() => (
-                      <View style={{height: wp('4%')}} />
-                    )}
-                    renderItem={renderSeeGroups}
-                    keyExtractor={(item, index) => index.toString()}
-                    style={styles.listStyle}
-                  />
-                </View>
-              )}
 
-            <View style={styles.containerStyle}>
+            {/* <View style={styles.containerStyle}>
               <Text style={styles.headerTextStyle}>{strings.whereEventPosted}</Text>
               <TouchableOpacity
                 onPress={() => {
@@ -1351,7 +1381,7 @@ export default function CreateEventScreen({navigation, route}) {
                   />
                 </View>
               </TouchableOpacity>
-            </View>
+            </View> */}
 
             <DateTimePickerView
               date={eventStartDateTime}
@@ -1672,6 +1702,15 @@ export default function CreateEventScreen({navigation, route}) {
 }
 
 const styles = StyleSheet.create({
+  checkboxPostImg: {
+    width: wp('4.5%'),
+    height: wp('4.5%'),
+    marginTop: 5
+  },
+  checkboxPost: {
+    left: wp(0),
+    marginRight: 10
+  },
   sperateLine: {
     borderColor: colors.writePostSepratorColor,
     borderWidth: 0.5,
@@ -1685,12 +1724,12 @@ const styles = StyleSheet.create({
   //   alignItems: 'center',
   //   marginBottom: 8,
   // },
-  // allDayText: {
-  //   fontSize: 16,
-  //   fontFamily: fonts.RRegular,
-  //   color: colors.lightBlackColor,
-  //   right: wp('8%'),
-  // },
+  allDayText: {
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
+   
+  },
   availableSubHeader: {
     fontSize: 16,
     fontFamily: fonts.RRegular,
@@ -1867,5 +1906,13 @@ const styles = StyleSheet.create({
     tintColor: colors.lightBlackColor,
     resizeMode: 'contain',
     marginLeft: 15,
+  },
+  activeEventPricacy: {
+    paddingVertical: 4,
+    borderRadius: 6,
+    backgroundColor: colors.whiteColor
+  },
+  inactiveEventPricacy: {
+    paddingVertical: 2,
   },
 });
