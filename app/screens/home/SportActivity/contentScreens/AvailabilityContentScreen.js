@@ -21,7 +21,7 @@ const AvailabilityContentScreen = ({userData}) => {
                 }
                 return false;
             });
-            setData(resCalenders)
+            setData(resCalenders) 
         });
     }
 
