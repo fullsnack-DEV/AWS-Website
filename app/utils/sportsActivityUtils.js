@@ -195,6 +195,14 @@ const getExcludedSportsList = (authContext, role = Verbs.entityTypePlayer) => {
   return newData;
 };
 
+const getSportDefaultSettings = (sport = '', sportList = []) => {
+  if (sport) {
+    const sportObj = sportList.find((item) => item.sport === sport);
+    return sportObj?.default_setting ?? {};
+  }
+  return {};
+};
+
 const getSportDetails = (
   sport = '',
   sportType = '',
@@ -299,4 +307,5 @@ export {
   getSportDetails,
   getSportName,
   getCardBorderColor,
+  getSportDefaultSettings,
 };

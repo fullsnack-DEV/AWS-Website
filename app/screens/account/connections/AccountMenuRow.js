@@ -1,6 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import React, {memo} from 'react';
-import {Text, View, StyleSheet, Image} from 'react-native';
+import {Text, View, StyleSheet, Image, Pressable} from 'react-native';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
@@ -9,31 +9,41 @@ import {strings} from '../../../../Localization/translation';
 const AccountMenuRow = ({
   item,
   isAccountDeactivated,
-  onPress,
+  onPressSetting,
+  onPressSport,
   onPressCancelRequest,
 }) => (
   <View>
     {!isAccountDeactivated && (
-      <TouchableWithoutFeedback style={styles.listContainer} onPress={onPress}>
-        <View style={item.icon &&
-              typeof item.icon === 'string' ?{...styles.subMenuContainer} : {...styles.subMenuPlaceHolderContainer}}>
-          <Image
-            source={
-              item.icon &&
-              typeof item.icon === 'string' ?
-              {uri: item.icon}
-                : item.icon
-            }
-            style={item.icon &&
-              typeof item.icon === 'string' ? {...styles.subMenuItem} : {...styles.subMenuItemPlaceHolder}}
-          />
-        </View>
-        <Text style={styles.listItems}>
-          {item.option.group_name ??
-            item.option}
-        </Text>
-        <Image source={item?.iconRight} style={styles.nextArrow} />
-      </TouchableWithoutFeedback>
+      <View style={styles.listContainer}>
+        <Pressable style={styles.listContainer} onPress={onPressSport}>
+          <View
+            style={
+              item.icon && typeof item.icon === 'string'
+                ? {...styles.subMenuContainer}
+                : {...styles.subMenuPlaceHolderContainer}
+            }>
+            <Image
+              source={
+                item.icon && typeof item.icon === 'string'
+                  ? {uri: item.icon}
+                  : item.icon
+              }
+              style={
+                item.icon && typeof item.icon === 'string'
+                  ? {...styles.subMenuItem}
+                  : {...styles.subMenuItemPlaceHolder}
+              }
+            />
+          </View>
+          <Text style={styles.listItems}>
+            {item.option.group_name ?? item.option}
+          </Text>
+        </Pressable>
+        <Pressable onPress={onPressSetting}>
+          <Image source={item?.iconRight} style={styles.nextArrow} />
+        </Pressable>
+      </View>
     )}
     {item?.option?.request_id && (
       <TouchableWithoutFeedback onPress={onPressCancelRequest}>
@@ -48,10 +58,10 @@ const AccountMenuRow = ({
 );
 
 const styles = StyleSheet.create({
-  subMenuContainer:{
-    marginVertical: 5, 
+  subMenuContainer: {
+    marginVertical: 5,
     alignItems: 'center',
-    justifyContent:'center',
+    justifyContent: 'center',
     height: 40,
     marginLeft: 45,
     width: 40,
@@ -61,12 +71,12 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 2,
     elevation: 4,
-    backgroundColor:'transparent'
+    backgroundColor: 'transparent',
   },
-  subMenuPlaceHolderContainer:{
-    marginVertical: 5, 
+  subMenuPlaceHolderContainer: {
+    marginVertical: 5,
     alignItems: 'center',
-    justifyContent:'center',
+    justifyContent: 'center',
     height: 40,
     marginLeft: 45,
     width: 40,
@@ -78,9 +88,9 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     width: 35,
     borderRadius: 20,
-    top:1,
+    top: 1,
   },
-  subMenuItemPlaceHolder:{
+  subMenuItemPlaceHolder: {
     alignSelf: 'center',
     height: 40,
     resizeMode: 'contain',
@@ -116,6 +126,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'space-between',
     flexDirection: 'row',
+    alignItems: 'center',
   },
   listItems: {
     flex: 1,

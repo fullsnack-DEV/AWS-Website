@@ -819,13 +819,13 @@ export default {
 
   manageChallengeShhetItem: 'en_Manage Challenge',
   challengeSettingTitle:
-    'en_These challenge settings will be applied when a team challenges your team. When your team challenges another team, the team’s challenge setting will be applied for the challenge.',
+    'en_These settings are only applicable to the match reservation when you are the match host. When you are the challenger, the opponent’s incoming challenge settings will be applied.',
 
   challengeSettingNotes:
     'en_In order to activate the “challenge” button and receive a challenge (game Reservation request), please fill in and save all the lists below.',
 
   refereeSettingHeading:
-    'en_These referee reservation settings will be applied when you receive a referee reservation request.',
+    'en_Please complete the incoming referee reservation settings in order to receive a reservation request.',
   refereeSettingNotes:
     'en_In order to activate the "book referee" button and receive a referee reservation request, please fill in and save all the lists above.',
   gameTyleTitle: 'en_Choose a game type.',
@@ -835,7 +835,7 @@ export default {
     'en_The game result has no effect on TC points and TC level of the challenger and you.',
 
   scorekeeperSettingHeading:
-    'en_These scorekeeper reservation settings will be applied when you receive a scorekeeper reservation request.',
+    'en_Please complete the incoming scorekeeper reservation settings in order to receive a reservation request.',
   scorekeeperSettingNotes:
     'en_In order to activate the "book scorekeeper" button and receive a scorekeeper reservation request, please fill in and save all the lists above.',
 
@@ -1731,7 +1731,9 @@ export default {
 
   youSetting: 'en_You: {0}',
   nReferees: 'en_{0} Referees',
-  nScorekeeper: 'en_{0} Scorekeepers',
+  nScorekeepers: 'en_{0} Scorekeepers',
+  nRefereeText: 'en_{0} Referee',
+  nScorekeeperText: 'en_{0} Scorekeeper',
   incomplete: 'en_incomplete',
   fillAllFields: 'en_Please fill all fields.',
   venuesN: 'en_Venue {0}',
@@ -2524,4 +2526,8 @@ export default {
   lookingForBottomText:
     'en_If you select “Yes, display it.”, your profile may be displayed on the “{0}” section in Local Home. ',
   scorekeptMatches: 'en_Scorekept Matches',
+  challengeScreenBottomText:
+    'en_These settings will be applied only to incoming challenges that you will receive.',
+  reservationScreenBottomText:
+    'en_These settings will be applied only to incoming {0} reservation requests that you will receive.',
 };

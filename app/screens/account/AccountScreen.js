@@ -544,13 +544,30 @@ export default function AccountScreen({navigation, route}) {
         <AccountMenuRow
           item={rowItem}
           isAccountDeactivated={isAccountDeactivated}
-          onPress={() => handleSectionMemberClick(rowItem)}
+          onPressSetting={() => handleSectionMemberClick(rowItem)}
           onPressCancelRequest={() =>
             onCancelTeamRequest('cancel', rowItem?.option?.request_id)
           }
+          onPressSport={() => {
+            if (
+              rowItem.option?.entity_type === Verbs.entityTypeTeam ||
+              rowItem.option?.entity_type === Verbs.entityTypeClub
+            ) {
+              return;
+            } else {
+              navigation.navigate('SportActivityHome', {
+                sport: rowItem.sport.sport,
+                sportType: rowItem.sport.sport_type ?? '',
+                uid: authContext.entity.obj.user_id,
+                selectedTab: strings.infoTitle,
+                entityType: rowItem.sport.type,
+                backScreen: 'AccountScreen',
+              });
+            }
+          }}
         />
       ) : null,
-    [handleSectionMemberClick, isAccountDeactivated],
+    [handleSectionMemberClick, isAccountDeactivated, authContext],
   );
 
   let placeHolder = images.teamSqure;

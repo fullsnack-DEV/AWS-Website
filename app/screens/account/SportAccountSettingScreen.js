@@ -11,24 +11,20 @@ import {
   Text,
   Image,
   FlatList,
-  TouchableWithoutFeedback,
-  ScrollView,
   SafeAreaView,
   TouchableOpacity,
+  Pressable,
 } from 'react-native';
-
-import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import {useIsFocused} from '@react-navigation/native';
 
 import {format} from 'react-string-format';
 import fonts from '../../Constants/Fonts';
-import Header from '../../components/Home/Header';
 import AuthContext from '../../auth/context';
 import colors from '../../Constants/Colors';
-import {firstLetterCapital, getSportName} from '../../utils';
 import images from '../../Constants/ImagePath';
 import {strings} from '../../../Localization/translation';
 import Verbs from '../../Constants/Verbs';
+import {getSportDetails} from '../../utils/sportsActivityUtils';
 
 export default function SportAccountSettingScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
@@ -37,8 +33,9 @@ export default function SportAccountSettingScreen({navigation, route}) {
   const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
   const [pointEvent, setPointEvent] = useState('auto');
   const [userSetting, setUserSetting] = useState();
-  const [sport] = useState(route?.params?.sport);
-  const [type] = useState(route?.params?.type);
+  const [sport] = useState(route.params.sport);
+  const [type] = useState(route.params.type);
+  const [sportObj, setSportObj] = useState({});
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -50,51 +47,48 @@ export default function SportAccountSettingScreen({navigation, route}) {
     setIsAccountDeactivated(false);
     setPointEvent('auto');
     if (isFocused) {
-      if (authContext?.entity?.obj?.is_pause === true) {
-        setIsAccountDeactivated(true);
-        setPointEvent('none');
-      }
-      if (authContext?.entity?.obj?.is_deactivate === true) {
+      if (
+        authContext.entity.obj?.is_pause === true ||
+        authContext.entity.obj?.is_deactivate === true
+      ) {
         setIsAccountDeactivated(true);
         setPointEvent('none');
       }
     }
-  }, [
-    authContext.entity?.obj.entity_type,
-    authContext.entity?.obj?.is_deactivate,
-    authContext.entity?.obj?.is_pause,
-    authContext.entity.role,
-    isFocused,
-    pointEvent,
-  ]);
+  }, [authContext, isFocused]);
+
+  useEffect(() => {
+    const sportDetails = getSportDetails(
+      sport.sport,
+      sport.sport_type,
+      authContext.sports,
+      type,
+    );
+    setSportObj(sportDetails);
+  }, [authContext.sports, sport, type]);
 
   const getUserSettingMenu = useCallback(() => {
-    if (
-      sport?.sport_type === Verbs.singleSport ||
-      ![Verbs.entityTypePlayer, Verbs.entityTypeUser].includes(type)
-    ) {
-      setUserSetting([
-        {
-          key: format(
-            strings.challengeSetting,
-            [Verbs.entityTypePlayer, Verbs.entityTypeUser].includes(type)
-              ? Verbs.challenge
-              : Verbs.reservation,
-          ),
-          id: 1,
-        },
-        {key: strings.deactivateActivityText, id: 2},
-      ]);
+    const list = [strings.deactivateActivityText];
+    if (type === Verbs.entityTypePlayer) {
+      if (sport?.sport_type === Verbs.singleSport) {
+        list.splice(0, 0, format(strings.challengeSetting, Verbs.challenge));
+        list.splice(1, 0, strings.lookingForClubText);
+      } else {
+        list.splice(0, 0, strings.lookingForTeamText);
+      }
     } else {
-      setUserSetting([{key: strings.deactivateActivityText, id: 1}]);
+      list.splice(0, 0, format(strings.challengeSetting, Verbs.reservation));
+      list.splice(1, 0, strings.lookingForTeamText);
     }
+
+    setUserSetting(list);
   }, [sport?.sport_type, type]);
 
   useEffect(() => {
     getUserSettingMenu();
   }, [getUserSettingMenu]);
 
-  const handleOpetions = (options) => {
+  const handleOptions = (options) => {
     if (options.toLowerCase() === strings.challengeSettingText.toLowerCase()) {
       navigation.navigate('ManageChallengeScreen', {
         groupObj: authContext.entity.obj,
@@ -105,7 +99,6 @@ export default function SportAccountSettingScreen({navigation, route}) {
       options.toLowerCase() === strings.reservationSettingText.toLowerCase()
     ) {
       if (type === Verbs.entityTypeReferee) {
-        console.log('options:=>', options);
         navigation.navigate('RefereeReservationSetting', {
           sportName: sport.sport,
         });
@@ -121,6 +114,8 @@ export default function SportAccountSettingScreen({navigation, route}) {
       navigation.navigate('LookingForSettingScreen', {
         entityType: type,
         sport,
+        comeFrom: 'SportAccountSettingScreen',
+        routeParams: {type, sport},
       });
     } else if (options === strings.deactivateActivityText) {
       navigation.navigate('DeactivateSportScreen', {
@@ -130,127 +125,121 @@ export default function SportAccountSettingScreen({navigation, route}) {
   };
 
   const renderMenu = ({item, index}) => (
-    <TouchableWithoutFeedback
-      style={styles.listContainer}
-      onPress={() => {
-        handleOpetions(item.key);
-      }}>
-      <View
-        style={{
-          flexDirection: 'row',
-          opacity: isAccountDeactivated && index <= 3 ? 0.5 : 1,
+    <>
+      <Pressable
+        style={[
+          styles.row,
+          styles.menuItem,
+          {opacity: isAccountDeactivated && index <= 3 ? 0.5 : 1},
+        ]}
+        onPress={() => {
+          handleOptions(item);
         }}
         pointerEvents={
           isAccountDeactivated && index <= 3 ? pointEvent : 'auto'
         }>
-        <Text style={styles.listItems}>{item.key}</Text>
-        {item.key === 'Currency' && authContext?.entity?.obj?.currency_type && (
-          <Text style={styles.currencyTypeStyle}>
-            {authContext?.entity?.obj?.currency_type}
-          </Text>
-        )}
-        <Image source={images.nextArrow} style={styles.nextArrow} />
-      </View>
-    </TouchableWithoutFeedback>
+        <View style={{flex: 1}}>
+          <Text style={styles.label}>{item}</Text>
+        </View>
+        <View style={styles.row}>
+          {item === strings.lookingForClubText ||
+          item === strings.lookingForTeamText ? (
+            <Text style={[styles.label, {color: colors.greenColorCard}]}>
+              {sport?.lookingForTeamClub ? strings.yes : strings.no}
+            </Text>
+          ) : null}
+
+          <Image source={images.nextArrow} style={styles.nextArrow} />
+        </View>
+      </Pressable>
+
+      <View style={styles.separatorLine} />
+    </>
   );
+
   return (
     <SafeAreaView style={{flex: 1}}>
-      <Header
-        leftComponent={
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Image source={images.backArrow} style={styles.backImageStyle} />
-          </TouchableOpacity>
-        }
-        centerComponent={
-          <Text
-            style={{
-              fontSize: 16,
-              color: colors.lightBlackColor,
-              textAlign: 'center',
-              fontFamily: fonts.RBold,
-            }}>
-            {strings.settingsTitleText}
-            {'\n'}
-            <Text
-              style={{
-                fontSize: 12,
-                color: colors.lightBlackColor,
-                textAlign: 'center',
-                fontFamily: fonts.RRegular,
-              }}>
-              {type === Verbs.entityTypeReferee ||
-              type === Verbs.entityTypeScorekeeper
-                ? firstLetterCapital(sport.sport)
-                : getSportName(sport, authContext)}
-            </Text>
-          </Text>
-        }
+      <View style={styles.headerRow}>
+        <TouchableOpacity
+          style={styles.backIcon}
+          onPress={() => {
+            navigation.goBack();
+          }}>
+          <Image source={images.backArrow} style={styles.image} />
+        </TouchableOpacity>
+        <View style={{flex: 1, alignItems: 'center'}}>
+          <Text style={styles.headerTitle}>{strings.settingsTitleText}</Text>
+          <Text style={styles.headerText}>{sportObj.sport_name}</Text>
+        </View>
+        <View style={styles.backIcon} />
+      </View>
+
+      <FlatList
+        data={userSetting}
+        keyExtractor={(index) => index.toString()}
+        contentContainerStyle={{paddingHorizontal: 15, paddingTop: 25}}
+        renderItem={renderMenu}
+        showsVerticalScrollIndicator={false}
+        bounces={false}
       />
-      <View
-        style={{
-          width: '100%',
-          height: 0.5,
-          backgroundColor: colors.writePostSepratorColor,
-        }}
-      />
-      <ScrollView style={styles.mainContainer}>
-        <FlatList
-          data={userSetting}
-          keyExtractor={(index) => index.toString()}
-          renderItem={renderMenu}
-          ItemSeparatorComponent={() => (
-            <View style={styles.separatorLine}></View>
-          )}
-        />
-        <View style={styles.separatorLine}></View>
-      </ScrollView>
     </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
-  listContainer: {
-    flex: 1,
+  label: {
+    fontSize: 16,
+    lineHeight: 24,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
+  },
+  row: {
     flexDirection: 'row',
+    alignItems: 'center',
   },
-  listItems: {
-    flex: 1,
-    padding: 20,
-    paddingLeft: 15,
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    color: colors.blackColor,
-    alignSelf: 'center',
-  },
-  currencyTypeStyle: {
-    marginRight: 10,
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    color: colors.greeColor,
-    alignSelf: 'center',
-  },
-  mainContainer: {
-    flex: 1,
-    flexDirection: 'column',
+  menuItem: {
+    justifyContent: 'space-between',
+    paddingHorizontal: 10,
   },
   nextArrow: {
-    alignSelf: 'center',
-    flex: 0.1,
-    height: 15,
-    marginRight: 10,
-    resizeMode: 'contain',
-    tintColor: colors.lightBlackColor,
-    width: 15,
+    width: 8,
+    height: 14,
+    marginLeft: 15,
   },
   separatorLine: {
-    alignSelf: 'center',
-    backgroundColor: colors.lightgrayColor,
-    height: 0.5,
-    width: wp('90%'),
+    backgroundColor: colors.grayBackgroundColor,
+    height: 1,
+    marginVertical: 15,
   },
-  backImageStyle: {
-    height: 20,
-    width: 10,
-    tintColor: colors.lightBlackColor,
+  backIcon: {
+    width: 25,
+    height: 25,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
     resizeMode: 'contain',
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingBottom: 6,
+    paddingTop: 3,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.writePostSepratorColor,
+  },
+  headerTitle: {
+    fontSize: 16,
+    lineHeight: 16,
+    fontFamily: fonts.RBold,
+    color: colors.lightBlackColor,
+  },
+  headerText: {
+    fontSize: 12,
+    lineHeight: 18,
+    fontFamily: fonts.RMedium,
+    color: colors.lightBlackColor,
   },
 });

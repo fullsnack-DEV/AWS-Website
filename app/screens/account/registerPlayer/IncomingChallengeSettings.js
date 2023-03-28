@@ -62,7 +62,7 @@ export default function IncomingChallengeSettings({navigation, route}) {
     }
   }, [route.params.settingObj]);
 
-  const handleOpetions = (option) => {
+  const handleOptions = (option) => {
     if (settingObject) {
       switch (option) {
         case strings.availability:
@@ -248,7 +248,7 @@ export default function IncomingChallengeSettings({navigation, route}) {
             <SettingsMenuItem
               sportName={sportName}
               item={item}
-              handleOpetions={handleOpetions}
+              handleOptions={handleOptions}
               settingObject={settingObject}
             />
           )}
@@ -364,7 +364,7 @@ export default function IncomingChallengeSettings({navigation, route}) {
         isVisible={showMatchFeeReminderModal}
         onAddMatchFee={() => {
           setShowMatchFeeReminderModal(false);
-          handleOpetions(strings.gameFee);
+          handleOptions(strings.gameFee);
         }}
         onContinue={() => {
           setShowMatchFeeReminderModal(false);

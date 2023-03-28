@@ -1,456 +1,391 @@
-/* eslint-disable no-nested-ternary */
 import React, {useState, useEffect, useContext, useCallback} from 'react';
 import {
-  StyleSheet,
   View,
   Text,
   Image,
   FlatList,
-  TouchableWithoutFeedback,
-  ScrollView,
+  SafeAreaView,
   TouchableOpacity,
+  Pressable,
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
-
-import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
-import LinearGradient from 'react-native-linear-gradient';
 import {format} from 'react-string-format';
 import AuthContext from '../../../auth/context';
-import colors from '../../../Constants/Colors';
-import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 import {strings} from '../../../../Localization/translation';
 import Verbs from '../../../Constants/Verbs';
+import {
+  getEntitySport,
+  getSportDefaultSettings,
+  getSportDetails,
+} from '../../../utils/sportsActivityUtils';
+import HostChallengerInfoModal from '../../account/registerPlayer/modals/HostChallengerInfoModal';
+import styles from './MangeChallengeStyles';
+import colors from '../../../Constants/Colors';
+import WrapperModal from '../../../components/IncomingChallengeSettingsModals/WrapperModal';
+import {patchPlayer} from '../../../api/Users';
+import {setAuthContextData} from '../../../utils';
 
 export default function ManageChallengeScreen({navigation, route}) {
   const [settingObject, setSettingObject] = useState();
-  const [showBottomNotes, setShowBottomNotes] = useState(true);
+  const [showHostChallengerModal, setShowHosChallengerModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [modalObj, setModalObj] = useState({});
+  const [sportObj, setSportObj] = useState({});
+  const [loading, setloading] = useState(false);
+
   const authContext = useContext(AuthContext);
+  const {sportName, sportType, groupObj} = route.params;
 
-  const [sportName] = useState(route?.params?.sportName);
+  const getSettings = useCallback(
+    (user) => {
+      const sport = getEntitySport({
+        user,
+        role: Verbs.entityTypePlayer,
+        sportType,
+        sport: sportName,
+      });
 
-  const [sportType] = useState(route?.params?.sportType);
-  const [groupObj] = useState(route?.params?.groupObj);
-
-  const getSettings = useCallback(() => {
-    if (authContext.entity.role === 'team') {
-      setSettingObject(authContext?.entity?.obj?.setting);
-    }
-    if (
-      authContext.entity.role === Verbs.entityTypePlayer ||
-      authContext.entity.role === Verbs.entityTypeUser
-    ) {
-      setSettingObject(
-        (authContext?.entity?.obj?.registered_sports ?? []).filter(
-          (obj) => obj.sport === sportName && obj.sport_type === sportType,
-        )?.[0]?.setting,
-      );
-    }
-  }, [authContext, sportName, sportType]);
+      if (sport?.setting) {
+        setSettingObject(sport.setting);
+      } else {
+        const setting = getSportDefaultSettings(sportName, authContext.sports);
+        setSettingObject(setting);
+      }
+    },
+    [sportName, sportType, authContext.sports],
+  );
 
   useEffect(() => {
-    if (route?.params?.settingObj) {
-      setSettingObject(route?.params?.settingObj);
-    } else {
-      getSettings();
-    }
-  }, [authContext, getSettings, route?.params?.settingObj, sportName]);
+    getSettings(groupObj);
+  }, [getSettings, groupObj]);
+
+  useEffect(() => {
+    const sportDetails = getSportDetails(
+      sportName,
+      sportType,
+      authContext.sports,
+    );
+    setSportObj(sportDetails);
+  }, [authContext.sports, sportName, sportType]);
 
   const challengeSettingMenu = [
-    {key: strings.availability, id: 1},
-    {key: strings.gameType, id: 2},
-    {key: strings.gameFee, id: 3},
-    {key: strings.refundPolicy, id: 4},
-    {key: strings.homeAndAway, id: 5},
+    {key: strings.availability},
+    {key: strings.gameTypeTitle},
+    {key: strings.gameFee},
+    {key: strings.refundPolicy},
     {
       key:
-        sportName === Verbs.tennisSport
-          ? strings.setsPointsDuration
+        getSportDefaultSettings(sportName, authContext.sports)
+          ?.default_setting_key === Verbs.setText
+          ? strings.setGamesDuration
           : strings.gameDuration,
-      id: 6,
     },
-    {key: strings.venue, id: 7},
-    {key: strings.gameRules, id: 8},
-    {key: strings.refereesTitle, id: 9},
-    {key: strings.scorekeeperTitle, id: 10},
+    {key: strings.venue},
+    {key: strings.gameRulesTitle},
+    {key: strings.Referee},
+    {key: strings.scorekeeperText},
   ];
-  const handleOptions = async (options) => {
-    if (options === strings.availability) {
-      if (settingObject) {
-        navigation.navigate('Availibility', {
-          settingObj: settingObject,
-          comeFrom: 'ManageChallengeScreen',
-          groupObj,
-          sportName,
-          sportType,
-        });
-      } else {
-        navigation.navigate('Availibility', {
-          comeFrom: 'ManageChallengeScreen',
-          sportName,
-          sportType,
-        });
+
+  const getSettingValue = (option) => {
+    if (settingObject) {
+      switch (option) {
+        case strings.availability:
+          return settingObject.availability ?? Verbs.on;
+
+        case strings.gameTypeTitle:
+          return settingObject.game_type ?? Verbs.friendly;
+
+        case strings.gameFee:
+          return `${settingObject.game_fee?.fee || 0} ${
+            settingObject.game_fee?.currency_type || Verbs.cad
+          }`;
+
+        case strings.refundPolicy:
+          return settingObject.refund_policy || Verbs.flexibleText;
+
+        case strings.setGamesDuration:
+          return `${settingObject.score_rules?.match_duration}`;
+
+        case strings.gameDuration:
+          return `${settingObject?.game_duration?.totalHours}h ${settingObject?.game_duration?.totalMinutes}m`;
+
+        case strings.venue:
+          if (settingObject.venue?.length > 0) {
+            if (settingObject.venue.length === 1) {
+              return settingObject.venue[0].address;
+            }
+            return format(strings.nVenues, settingObject.venue.length);
+          }
+          return format(strings.nVenues, 0);
+
+        case strings.gameRulesTitle:
+          return strings.completedTitleText;
+
+        case strings.Referee:
+          return settingObject.responsible_for_referee?.who_secure?.length > 0
+            ? format(
+                settingObject.responsible_for_referee.who_secure?.length > 1
+                  ? strings.nReferees
+                  : strings.nRefereeText,
+                settingObject.responsible_for_referee.who_secure?.length,
+              )
+            : null;
+
+        case strings.scorekeeperText:
+          return settingObject?.responsible_for_scorekeeper?.who_secure
+            ?.length > 0
+            ? format(
+                settingObject.responsible_for_scorekeeper.who_secure?.length > 1
+                  ? strings.nScorekeepers
+                  : strings.nScorekeeperText,
+                settingObject.responsible_for_scorekeeper.who_secure?.length,
+              )
+            : null;
+
+        default:
+          return null;
       }
-    } else if (options === strings.gameType) {
-      if (settingObject) {
-        navigation.navigate('GameType', {
-          settingObj: settingObject,
-          comeFrom: 'ManageChallengeScreen',
-          sportName,
-          sportType,
-        });
-      } else {
-        navigation.navigate('GameType', {
-          comeFrom: 'ManageChallengeScreen',
-          sportName,
-          sportType,
-        });
-      }
-    } else if (options === strings.gameFee) {
-      if (settingObject) {
-        navigation.navigate('GameFee', {
-          settingObj: settingObject,
-          comeFrom: 'ManageChallengeScreen',
-          sportName,
-          sportType,
-        });
-      } else {
-        navigation.navigate('GameFee', {
-          comeFrom: 'ManageChallengeScreen',
-          sportName,
-          sportType,
-        });
-      }
-    } else if (options === strings.refundPolicy) {
-      if (settingObject) {
-        navigation.navigate('RefundPolicy', {
-          settingObj: settingObject,
-          comeFrom: 'ManageChallengeScreen',
-          sportName,
-          sportType,
-        });
-      } else {
-        navigation.navigate('RefundPolicy', {
-          comeFrom: 'ManageChallengeScreen',
-          sportName,
-          sportType,
-        });
-      }
-    } else if (options === strings.homeAndAway) {
-      if (settingObject) {
-        navigation.navigate('HomeAway', {
-          settingObj: settingObject,
-          comeFrom: 'ManageChallengeScreen',
-          sportName,
-          sportType,
-        });
-      } else {
-        navigation.navigate('HomeAway', {
-          comeFrom: 'ManageChallengeScreen',
-          sportName,
-          sportType,
-        });
-      }
-    } else if (options === strings.gameDuration) {
-      console.log(settingObject);
-      if (settingObject) {
-        navigation.navigate('GameDuration', {
-          settingObj: settingObject,
-          comeFrom: 'ManageChallengeScreen',
-          sportName,
-          sportType,
-        });
-      } else {
-        navigation.navigate('GameDuration', {
-          comeFrom: 'ManageChallengeScreen',
-          sportName,
-          sportType,
-        });
-      }
-    } else if (options === strings.setsPointsDuration) {
-      if (settingObject) {
-        navigation.navigate('GameTennisDuration', {
-          settingObj: settingObject,
-          comeFrom: 'ManageChallengeScreen',
-          sportName,
-          sportType,
-        });
-      } else {
-        navigation.navigate('GameTennisDuration', {
-          comeFrom: 'ManageChallengeScreen',
-          sportName,
-          sportType,
-        });
-      }
-    } else if (options === strings.venue) {
-      if (settingObject) {
-        navigation.navigate('Venue', {
-          settingObj: settingObject,
-          comeFrom: 'ManageChallengeScreen',
-          sportName,
-          sportType,
-        });
-      } else {
-        navigation.navigate('Venue', {
-          comeFrom: 'ManageChallengeScreen',
-          sportName,
-          sportType,
-        });
-      }
-    } else if (options === strings.gameRules) {
-      if (settingObject) {
-        navigation.navigate('GameRules', {
-          settingObj: settingObject,
-          comeFrom: 'ManageChallengeScreen',
-          sportName,
-          sportType,
-        });
-      } else {
-        navigation.navigate('GameRules', {
-          comeFrom: 'ManageChallengeScreen',
-          sportName,
-          sportType,
-        });
-      }
-    } else if (options === strings.refereesTitle) {
-      if (settingObject) {
-        navigation.navigate('RefereesSetting', {
-          settingObj: settingObject,
-          comeFrom: 'ManageChallengeScreen',
-          sportName,
-          sportType,
-        });
-      } else {
-        navigation.navigate('RefereesSetting', {
-          comeFrom: 'ManageChallengeScreen',
-          sportName,
-          sportType,
-        });
-      }
-    } else if (options === strings.scorekeeperTitle) {
-      if (settingObject) {
-        navigation.navigate('ScorekeepersSetting', {
-          settingObj: settingObject,
-          comeFrom: 'ManageChallengeScreen',
-          sportName,
-          sportType,
-        });
-      } else {
-        navigation.navigate('ScorekeepersSetting', {
-          comeFrom: 'ManageChallengeScreen',
-          sportName,
-          sportType,
-        });
+    }
+    return null;
+  };
+
+  const handleOptions = (option) => {
+    if (settingObject) {
+      switch (option) {
+        case strings.availability:
+          setModalObj({
+            title: option,
+            settingsObj: settingObject,
+            sportName,
+          });
+          setShowModal(true);
+          break;
+
+        case strings.gameTypeTitle:
+          setModalObj({
+            title: option,
+            settingsObj: settingObject,
+          });
+          setShowModal(true);
+          break;
+
+        case strings.gameFee:
+          setModalObj({
+            title: option,
+            settingsObj: settingObject,
+          });
+          setShowModal(true);
+          break;
+
+        case strings.refundPolicy:
+          setModalObj({
+            title: option,
+            settingsObj: settingObject,
+          });
+          setShowModal(true);
+          break;
+
+        case strings.Referee:
+          setModalObj({
+            title: option,
+            settingsObj: settingObject,
+          });
+          setShowModal(true);
+          break;
+
+        case strings.scorekeeperText:
+          setModalObj({
+            title: option,
+            settingsObj: settingObject,
+          });
+          setShowModal(true);
+          break;
+
+        case strings.setGamesDuration:
+        case strings.gameDuration:
+          setModalObj({
+            title: option,
+            settingsObj: settingObject,
+          });
+          setShowModal(true);
+          break;
+
+        case strings.venue:
+          setModalObj({
+            title: option,
+            settingsObj: settingObject,
+          });
+          setShowModal(true);
+          break;
+
+        case strings.gameRulesTitle:
+          setModalObj({
+            title: option,
+            settingsObj: settingObject,
+          });
+          setShowModal(true);
+          break;
+
+        default:
+          break;
       }
     }
   };
-  const getSettingValue = (item) => {
-    if (item.key === strings.availability) {
-      if (settingObject?.availibility) {
-        return settingObject?.availibility;
-      }
-    }
 
-    if (item.key === strings.gameType) {
-      if (settingObject?.game_type) {
-        return settingObject?.game_type;
-      }
-    }
-    if (item.key === strings.gameFee) {
-      if (settingObject?.game_fee) {
-        return `${settingObject.game_fee.fee} ${settingObject.game_fee.currency_type}`;
-      }
-    }
-    if (item.key === strings.refundPolicy) {
-      if (settingObject?.refund_policy) {
-        return settingObject?.refund_policy;
-      }
-    }
-    if (item.key === strings.homeAndAway) {
-      if (settingObject?.home_away) {
-        return format(strings.youSetting, settingObject?.home_away);
-      }
-    }
-    if (item.key === strings.gameDuration) {
-      if (settingObject?.game_duration) {
-        return `${settingObject?.game_duration?.totalHours}h ${settingObject?.game_duration?.totalMinutes}m`;
-      }
-    }
-    if (item.key === strings.setsPointsDuration) {
-      if (settingObject?.score_rules) {
-        return `${settingObject?.score_rules?.match_duration}`;
-      }
-    }
-
-    if (item.key === strings.venue) {
-      if (settingObject?.venue) {
-        return format(strings.nVenues, settingObject?.venue?.length);
-      }
-    }
-
-    if (item.key === strings.gameRules) {
-      if (settingObject?.general_rules || settingObject?.general_rules === '') {
-        return strings.completedTitleText;
-      }
-    }
-
-    if (item.key === strings.refereesTitle) {
-      if (settingObject?.responsible_for_referee) {
-        return format(
-          strings.nReferees,
-          settingObject?.responsible_for_referee?.who_secure
-            ? settingObject?.responsible_for_referee?.who_secure?.length
-            : strings.no,
-        );
-      }
-    }
-
-    if (item.key === strings.scorekeeperTitle) {
-      if (settingObject?.responsible_for_scorekeeper) {
-        return format(
-          strings.nScorekeeper,
-          settingObject?.responsible_for_scorekeeper?.who_secure
-            ? settingObject?.responsible_for_scorekeeper?.who_secure?.length
-            : strings.no,
-        );
-      }
-    }
-
-    return strings.incomplete;
-  };
   const renderMenu = ({item}) => (
-    <TouchableWithoutFeedback
-      style={styles.listContainer}
-      onPress={() => {
-        handleOptions(item.key);
-      }}>
-      <View style={{flexDirection: 'row'}}>
-        <Text style={styles.listItems}>{item.key}</Text>
+    <View style={{paddingHorizontal: 15}}>
+      <Pressable
+        style={[styles.row, styles.menuItem]}
+        onPress={() => {
+          handleOptions(item.key);
+        }}>
+        <View style={{flex: 1}}>
+          <Text style={styles.label}>{item.key}</Text>
+        </View>
+        <View style={[styles.row, {flex: 1}]}>
+          <View style={{flex: 1, alignItems: 'flex-end'}}>
+            <Text
+              style={[
+                styles.label,
+                getSettingValue(item.key)
+                  ? {color: colors.greenColorCard}
+                  : {color: colors.redColor},
+              ]}
+              numberOfLines={1}>
+              {getSettingValue(item.key) ?? strings.incomplete}
+            </Text>
+          </View>
 
-        {getSettingValue(item) === strings.incomplete ? (
-          <Text style={styles.incompleteStyle}>
-            {/* {getSettingValue(item)} */}
-            {strings.incomplete}
-          </Text>
-        ) : (
-          <Text style={styles.completeStyle}>
-            {getSettingValue(item)}
-            {/* {`$${gameFee?.fee} ${gameFee?.currency_type}`} */}
-          </Text>
-        )}
+          <Image source={images.nextArrow} style={styles.nextArrow} />
+        </View>
+      </Pressable>
 
-        <Image source={images.nextArrow} style={styles.nextArrow} />
-      </View>
-    </TouchableWithoutFeedback>
+      <View style={styles.separatorLine} />
+    </View>
   );
+
+  const handleSave = (settings) => {
+    if (!groupObj) {
+      return;
+    }
+    const updatedSettings = {...settingObject, ...settings};
+    const registerdPlayerData = groupObj.registered_sports.map((item) => {
+      if (item.sport === sportName && item.sport_type === sportType) {
+        if (item.sport === Verbs.tennisSport) {
+          return {
+            ...item,
+            setting: {
+              ...updatedSettings,
+              ntrp: '1.0',
+            },
+          };
+        }
+
+        return {
+          ...item,
+          setting: {
+            ...updatedSettings,
+          },
+        };
+      }
+      return item;
+    });
+
+    const body = {
+      ...groupObj,
+      registered_sports: registerdPlayerData,
+    };
+
+    setloading(true);
+    patchPlayer(body, authContext)
+      .then(async (response) => {
+        if (response.status === true) {
+          getSettings(response.payload);
+          await setAuthContextData(response.payload, authContext);
+        } else {
+          Alert.alert(strings.appName, response.messages);
+        }
+        setloading(false);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
 
   return (
-    <>
-      <ScrollView style={styles.mainContainer} testID="manage-challenge-screen">
-        {/* <ActivityLoader visible={loading} /> */}
-
-        <View
-          style={{padding: 15, backgroundColor: colors.grayBackgroundColor}}>
-          <Text
-            style={{
-              fontSize: 14,
-              fontFamily: fonts.RRegular,
-              color: colors.lightBlackColor,
-            }}>
-            {strings.challengeSettingTitle}
+    <SafeAreaView style={{flex: 1}}>
+      <View style={styles.headerRow}>
+        <TouchableOpacity
+          style={styles.backIcon}
+          onPress={() => {
+            navigation.goBack();
+          }}>
+          <Image source={images.backArrow} style={styles.image} />
+        </TouchableOpacity>
+        <View style={{flex: 1, alignItems: 'center'}}>
+          <Text style={styles.headerTitle}>
+            {strings.incomingChallengeSettingsTitle}
           </Text>
+          <Text style={styles.headerText}>{sportObj.sport_name}</Text>
         </View>
-        <FlatList
-          data={challengeSettingMenu}
-          keyExtractor={(index) => index.toString()}
-          renderItem={renderMenu}
-          ItemSeparatorComponent={() => (
-            <View style={styles.separatorLine}></View>
-          )}
-        />
-        <View style={styles.separatorLine}></View>
-      </ScrollView>
-      {showBottomNotes && (
-        <LinearGradient
-          colors={[colors.yellowColor, colors.orangeGradientColor]}
-          style={styles.challengeNotesView}>
-          <Text
-            style={{
-              color: colors.whiteColor,
-              fontFamily: fonts.RBold,
-              fontSize: 14,
-              width: '88%',
-            }}>
-            {strings.challengeSettingNotes}
-          </Text>
-          <TouchableOpacity onPress={() => setShowBottomNotes(false)}>
-            <Image
-              source={images.cancelWhite}
-              style={{
-                height: 10,
-                width: 10,
-                resizeMode: 'contain',
-                tintColor: colors.whiteColor,
-              }}
-            />
-          </TouchableOpacity>
-        </LinearGradient>
-      )}
-    </>
+        <View style={styles.backIcon} />
+      </View>
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size={'large'} color={colors.whiteColor} />
+        </View>
+      ) : null}
+      <FlatList
+        data={challengeSettingMenu}
+        keyExtractor={(index) => index.toString()}
+        ListHeaderComponent={() => (
+          <>
+            <View style={styles.greyContainer}>
+              <Text style={styles.greyContainerText}>
+                {strings.challengeSettingTitle}
+              </Text>
+            </View>
+            <TouchableOpacity
+              style={styles.textButtonContainer}
+              onPress={() => setShowHosChallengerModal(true)}>
+              <Text style={styles.textButton}>
+                {strings.hostAndChallengerText}
+              </Text>
+            </TouchableOpacity>
+          </>
+        )}
+        renderItem={renderMenu}
+        showsVerticalScrollIndicator={false}
+        ListFooterComponent={() => (
+          <View style={{marginTop: 25, marginBottom: 15}}>
+            <Text style={styles.label}>
+              {strings.challengeScreenBottomText}
+            </Text>
+          </View>
+        )}
+      />
+
+      <HostChallengerInfoModal
+        isVisible={showHostChallengerModal}
+        closeModal={() => setShowHosChallengerModal(false)}
+      />
+      <WrapperModal
+        isVisible={showModal}
+        closeModal={() => {
+          setShowModal(false);
+        }}
+        {...modalObj}
+        onSave={(settings) => {
+          setShowModal(false);
+          handleSave(settings);
+        }}
+        entityType={Verbs.entityTypePlayer}
+      />
+    </SafeAreaView>
   );
 }
-const styles = StyleSheet.create({
-  listContainer: {
-    flex: 1,
-    flexDirection: 'row',
-  },
-  listItems: {
-    flex: 1,
-    padding: 20,
-    paddingLeft: 15,
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    color: colors.blackColor,
-    alignSelf: 'center',
-  },
-  incompleteStyle: {
-    marginRight: 10,
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    color: colors.redColor,
-    alignSelf: 'center',
-  },
-  completeStyle: {
-    marginRight: 10,
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    color: colors.completeTextColor,
-    alignSelf: 'center',
-  },
-  mainContainer: {
-    flex: 1,
-    flexDirection: 'column',
-  },
-  nextArrow: {
-    alignSelf: 'center',
-    flex: 0.1,
-    height: 15,
-    marginRight: 10,
-    resizeMode: 'contain',
-    tintColor: colors.lightBlackColor,
-    width: 15,
-  },
-  separatorLine: {
-    alignSelf: 'center',
-    backgroundColor: colors.lightgrayColor,
-    height: 0.5,
-    width: wp('90%'),
-  },
-  challengeNotesView: {
-    padding: 15,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingBottom: 40,
-  },
-});

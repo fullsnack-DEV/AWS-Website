@@ -56,9 +56,13 @@ export default function SportActivityScreen({navigation}) {
       <TouchableWithoutFeedback
         style={styles.listContainer}
         onPress={() => {
-          navigation.navigate('ActivitySettingScreen', {
+          // navigation.navigate('ActivitySettingScreen', {
+          //   sport: item,
+          //   entityType,
+          // });
+          navigation.navigate('SportAccountSettingScreen', {
+            type: entityType,
             sport: item,
-            entityType,
           });
         }}>
         <View style={{flexDirection: 'row'}}>

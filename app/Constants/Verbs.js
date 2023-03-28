@@ -116,7 +116,7 @@ const Verbs = {
   allText: 'all',
   homeText: 'home',
   awayText: 'away',
-
+  setText: 'Set',
 };
 
 export default Verbs;

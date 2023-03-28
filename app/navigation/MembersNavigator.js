@@ -1736,10 +1736,7 @@ const MembersNavigator = () => (
     <Stack.Screen
       name="ManageChallengeScreen"
       component={ManageChallengeScreen}
-      options={{
-        title: 'Manage Challenge',
-        headerTintColor: colors.blackColor,
-      }}
+      options={{headerShown: false}}
     />
 
     <Stack.Screen
