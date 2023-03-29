@@ -56,6 +56,9 @@ export default function AvailibilityScheduleScreen({
   const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
   useEffect(() => {
+    if(allSlots.length === 0) {
+      setListView(false);
+    }
     setAllData(allSlots);
     setWeeklyCalender(false)
     setLoading(false)
