@@ -1080,6 +1080,7 @@ export default {
   withInText: 'en_Within',
   ofText: 'en_of',
   generalText: 'en_General',
+  userTitleText: 'en_users',
   peopleTitleText: 'en_People',
   groupsTitleText: 'en_Groups',
   postsTitleText: 'en_Posts',
@@ -2536,4 +2537,7 @@ export default {
   eventPostCreate: 'en_Display the event on Posts as soon as the event is created.',
   whoCanInvite: 'en_WHO CAN INVITE',
   editAvailability: 'en_Edit Availability',
+
+  updateRecurringEvent: 'en_Update recurring event',
+  deleteRecurringEvent: 'en_Delete recurring event'
 };
