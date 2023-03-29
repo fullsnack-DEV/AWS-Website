@@ -14,6 +14,7 @@ import {
   SafeAreaView,
   Alert,
   FlatList,
+  Dimensions
 } from 'react-native';
 import moment from 'moment';
 import {ScrollView} from 'react-native-gesture-handler';
@@ -39,7 +40,7 @@ import EventBackgroundPhoto from '../../../components/Schedule/EventBackgroundPh
 import AuthContext from '../../../auth/context';
 import TCThinDivider from '../../../components/TCThinDivider';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
-import {attendEvent, deleteEvent, getEventById} from '../../../api/Schedule';
+import {attendEvent, deleteEvent} from '../../../api/Schedule';
 import TCProfileButton from '../../../components/TCProfileButton';
 import {getGroupIndex, getUserIndex} from '../../../api/elasticSearch';
 import TCProfileView from '../../../components/TCProfileView';
@@ -53,7 +54,8 @@ import {
  import{getUserFollowerFollowing} from '../../../api/Users';
  import{getGroupMembers} from '../../../api/Groups';
 
-export default function EventScreen({navigation, route}) {
+export default function EventScreen({navigation, route}) { 
+  console.log('DATA', route?.params?.data)
   const actionSheet = useRef();
   const userActionSheet = useRef();
   const isFocused = useIsFocused();
@@ -68,6 +70,19 @@ export default function EventScreen({navigation, route}) {
   const [myMembers, setMyMembers] = useState([]);
   const [infoModal, setInfoModal] = useState(false);
   const [infoType, setInfoType] = useState('');
+  const [recurringEditModal, setRecurringEditModal] =  useState(false);
+  const THISEVENT = 0
+  const FUTUREEVENT = 1
+  const ALLEVENT = 2
+
+  const recurringEditList = [
+    {text: 'This event Only', value: THISEVENT},
+    {
+      text: 'This and all following events',
+      value: FUTUREEVENT,
+    },
+    {text: 'All events', value: ALLEVENT},
+  ];
 
   let titleValue = 'Game';
   let description = 'Game With';
@@ -170,23 +185,9 @@ export default function EventScreen({navigation, route}) {
 
   useEffect(() => {
     if (isFocused) {
-      setloading(true);
-      getEventById(
-        authContext.entity.role === 'user' ? 'users' : 'groups',
-        authContext.entity.uid || authContext.entity.auth.user_id,
-        eventData.cal_id,
-        authContext,
-      )
-        .then((response) => {
-          setloading(false);
-          setEventData(response.payload);
-        })
-        .catch((e) => {
-          setloading(false);
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
-        });
+      if(route?.params?.event) {
+        setEventData(route?.params?.event);
+      }
     }
   }, [isFocused, route?.params?.comeFrom]);
 
@@ -380,493 +381,576 @@ export default function EventScreen({navigation, route}) {
     setInfoModal(true);
   }
 
-  return (
-    <SafeAreaView style={styles.mainContainerStyle}>
-      {/* Modal Style 3 */}
-      <Modal
-        isVisible={infoModal}
-        backdropColor="black"
-        style={{margin: 0, justifyContent: 'flex-end'}}
-        hasBackdrop
-        onBackdropPress={() => {
-          setInfoModal(false);
-        }}
-        backdropOpacity={0}>
-        <SafeAreaView style={styles.modalMainViewStyle}>
-          <View style={{padding: 20}}>
-            <View style={styles.sepratorStyle}/>
-            {
-            infoType === 'attendee' ? (
-              <View>
-                <Text style={styles.titleText}>{strings.numberOfAttend}</Text>
-                <Text style={styles.contentText}>{attendyText}</Text>
-              </View>
-            ):(
-              <View>
-                <Text style={styles.titleText}>{strings.eventFeeTitle}</Text>
-                <Text style={styles.contentText}>{feeText}</Text>
-              </View>
-            )}
-          </View>
-        </SafeAreaView>
-      </Modal>
-      {/* Modal Style 3 */}
-      <ActivityLoader visible={loading} />
-      <View style={styles.sperateLine} />
-      <ScrollView 
-      stickyHeaderIndices={[5]}
-      >
-        <EventBackgroundPhoto
-          isEdit={!!route?.params?.data?.background_thumbnail}
-          isPreview={true}
-          isImage={!!route?.params?.data?.background_thumbnail}
-          imageURL={
-            route?.params?.data?.background_thumbnail
-              ? {uri: route?.params?.data?.background_thumbnail}
-              : images.backgroudPlaceholder
-          }
-        />
 
-        <Text style={styles.eventTitleStyle}>
-          {titleValue}
-        </Text>
-        <Text style={styles.sportTitleStyle}>
-          {' '}
-          {eventData?.selected_sport && eventData?.selected_sport?.sport_name}
-        </Text>
+  const handleDeleteEvent = (recurringOption = '') => {
+    const data = {
+      recurring_modification_type : recurringOption,
+      start_datetime : eventData.start_datetime,
+      end_datetime: eventData.end_datetime
+    };
 
-        <EventTimeItem
-          from={strings.from}
-          fromTime={moment(startTime).format('MMM DD, YYYY hh:mm a')}
-          to={strings.to}
-          toTime={moment(endTime).format('MMM DD, YYYY hh:mm a')}
-          repeat={strings.repeat}
-          repeatTime={repeatString}
-          location={eventData?.location?.location_name}
-        />
+    setloading(true);
+    const entity = authContext.entity;
+    const uid = entity.uid || entity.auth.user_id;
+    const entityRole =
+    entity.role === Verbs.entityTypeUser ? 'users' : 'groups';
+    deleteEvent(entityRole, uid, eventData.cal_id, authContext, data)
+    .then(() => {
+      setTimeout(() => {
+        setloading(false);
+        navigation.navigate('ScheduleScreen');
+      }, 1000);
+    })
+    .catch((e) => {
+      setloading(false);
+      Alert.alert('', e.messages);
+    });
+  }
 
-        {/* Join and Invite button wrapper */}
-        <View
-        style={{
-          flex: 1,
-          backgroundColor: colors.whiteColor,
-          zIndex: 1000,
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          padding: 15,
+
+  const renderDeleteRecurringOptions = ({item}) => (
+    <View
+      style={{
+        flexDirection: 'row',
+        marginVertical: 10,
+        justifyContent: 'center',
+        marginLeft: 15,
+        marginRight: 15,
+    }}>
+      <View>
+        <Text style={styles.filterTitle} onPress={() => {
+          setRecurringEditModal(false)
+          setTimeout(() => {
+            handleDeleteEvent(item.value)
+          }, 1000);
         }}>
-        {
-        checkIsGoing()  && (
-          <TCProfileButton
-            title={
-              eventData?.going?.filter(
-                (entity) => entity === authContext.entity.uid,
-              ).length > 0
-                ? 'Going'
-                : 'Join'
+          {item.text}
+        </Text>
+      </View>
+    </View>
+  );
+
+  return (
+    <>
+      <Modal
+        isVisible={recurringEditModal}
+        backdropColor="black"
+        onBackdropPress={() => setRecurringEditModal(false)}
+        onRequestClose={() => setRecurringEditModal(false)}
+        animationInTiming={300}
+        animationOutTiming={800}
+        backdropTransitionInTiming={10}
+        backdropTransitionOutTiming={10}
+        style={{
+          margin: 0,
+        }}>
+          <View
+            style={{
+              width: '100%',
+              height: Dimensions.get('window').height / 4,
+              backgroundColor: 'white',
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              borderTopLeftRadius: 10,
+              borderTopRightRadius: 10,
+              shadowColor: '#000',
+              shadowOffset: {width: 0, height: 1},
+              shadowOpacity: 0.5,
+              shadowRadius: 5,
+              elevation: 15,
+            }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                paddingHorizontal: 15,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+              <Text
+                style={{
+                  alignSelf: 'center',
+                  marginVertical: 10,
+                  fontSize: 16,
+                  fontFamily: fonts.RRegular,
+                }}>{strings.deleteRecurringEvent}</Text>
+            </View>
+            <TCThinDivider width="92%" />
+            <FlatList
+              ItemSeparatorComponent={() => <TCThinDivider width="92%" />}
+              showsVerticalScrollIndicator={false}
+              data={
+                recurringEditList
+              }
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={renderDeleteRecurringOptions}
+            />
+          </View>
+      </Modal>
+      <SafeAreaView style={styles.mainContainerStyle}>
+        {/* Modal Style 3 */}
+        <Modal
+          isVisible={infoModal}
+          backdropColor="black"
+          style={{margin: 0, justifyContent: 'flex-end'}}
+          hasBackdrop
+          onBackdropPress={() => {
+            setInfoModal(false);
+          }}
+          backdropOpacity={0}>
+          <SafeAreaView style={styles.modalMainViewStyle}>
+            <View style={{padding: 20}}>
+              <View style={styles.sepratorStyle}/>
+              {
+              infoType === 'attendee' ? (
+                <View>
+                  <Text style={styles.titleText}>{strings.numberOfAttend}</Text>
+                  <Text style={styles.contentText}>{attendyText}</Text>
+                </View>
+              ):(
+                <View>
+                  <Text style={styles.titleText}>{strings.eventFeeTitle}</Text>
+                  <Text style={styles.contentText}>{feeText}</Text>
+                </View>
+              )}
+            </View>
+          </SafeAreaView>
+        </Modal>
+        {/* Modal Style 3 */}
+        <ActivityLoader visible={loading} />
+        <View style={styles.sperateLine} />
+        <ScrollView 
+        stickyHeaderIndices={[5]}
+        >
+          <EventBackgroundPhoto
+            isEdit={!!eventData?.background_thumbnail}
+            isPreview={true}
+            isImage={!!eventData?.background_thumbnail}
+            imageURL={
+              eventData?.background_thumbnail
+                ? {uri: eventData?.background_thumbnail}
+                : images.backgroudPlaceholder
             }
-            style={
-              eventData?.going?.filter(
-                (entity) => entity === authContext.entity.uid,
-              ).length > 0 ?
-              [styles.firstButtonStyle,{width: checkIsInvite() ? '48%' : '100%'},] 
-              :
-              [styles.firstButtonStyle,{width: checkIsInvite() ? '48%' : '100%', backgroundColor : colors.themeColor}] 
-            }
-            showArrow={false}
-            imageStyle={styles.checkMarkStyle}
-            textStyle={
-              eventData?.going?.filter(
-                (entity) => entity === authContext.entity.uid,
-              ).length > 0
-                ? [styles.attendTextStyle, {color: colors.lightBlackColor}]
-                : [styles.attendTextStyle, {color: colors.whiteColor}]
-            }
-            onPressProfile={() => {
-              if (
+          />
+
+          <Text style={styles.eventTitleStyle}>
+            {titleValue}
+          </Text>
+          <Text style={styles.sportTitleStyle}>
+            {' '}
+            {eventData?.selected_sport && eventData?.selected_sport?.sport_name}
+          </Text>
+
+          <EventTimeItem
+            from={strings.from}
+            fromTime={moment(startTime).format('MMM DD, YYYY hh:mm a')}
+            to={strings.to}
+            toTime={moment(endTime).format('MMM DD, YYYY hh:mm a')}
+            repeat={strings.repeat}
+            repeatTime={repeatString}
+            location={eventData?.location?.location_name}
+          />
+
+          {/* Join and Invite button wrapper */}
+          <View
+          style={{
+            flex: 1,
+            backgroundColor: colors.whiteColor,
+            zIndex: 1000,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            padding: 15,
+          }}>
+          {
+          checkIsGoing()  && (
+            <TCProfileButton
+              title={
                 eventData?.going?.filter(
                   (entity) => entity === authContext.entity.uid,
                 ).length > 0
-              ) {
-                console.log('its going');
-              } else {
-                attendAPICall();
+                  ? 'Going'
+                  : 'Join'
               }
-            }}
-          />
-        )}
-
-        {checkIsInvite()  && (
-          <TCProfileButton
-            title={'Invite'}
-            style={[styles.firstButtonStyle, {width: checkIsGoing() ? '48%' : '100%'}]}
-            showArrow={false}
-            imageStyle={styles.checkMarkStyle}
-            textStyle={styles.inviteTextStyle}
-            onPressProfile={() =>
-              navigation.navigate('InviteToEventScreen', {
-                eventId: eventData.cal_id,
-              })
-            }
-          />
-        )}
-        </View>
-
-        {/* {!blocked ? (
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              marginLeft: 15,
-              marginTop: 5,
-            }}>
-            <Image
-              source={images.availableChallenge}
-              style={styles.availableImageStyle}
-            />
-            <Text style={styles.availableTextStyle}>{strings.available}</Text>
-          </View>
-        ) : (
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              marginLeft: 15,
-              marginTop: 5,
-            }}>
-            <Image
-              source={images.blockedChallenge}
-              style={styles.availableImageStyle}
-            />
-            <Text style={styles.blockTextStyle}>
-              {strings.blockedForChallenge}
-            </Text>
-          </View>
-        )} */}
-
-
-        <View style={{ marginVertical: 30, backgroundColor: colors.whiteColor}}> 
-          <View 
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-evenly',
-            width: '100%'
-          }}>
-            <View
-              style={{
-                borderBottomWidth : 3, 
-                borderColor: activeTab === 'info' ? colors.themeColor : colors.lightBlackColor, 
-                width: '50%',
-            }}
-            > 
-              <TouchableOpacity onPress={() => setActiveTab('info')}>
-                <Text 
-                style={{
-                  textAlign: 'center', 
-                  fontSize: 16, 
-                  lineHeight: 24,
-                  fontWeight: activeTab === 'info' ? 'bold' : '',
-                  color: activeTab === 'info' ? colors.themeColor : colors.lightBlackColor,
-                  paddingVertical: 10
-                }}>Info</Text>
-              </TouchableOpacity>
-            </View>
-            <View
-            style={{
-              borderBottomWidth : 3, 
-              borderColor: activeTab === 'post' ? colors.themeColor : colors.lightBlackColor,
-              width: '50%'
-            }}
-            >
-              <TouchableOpacity onPress={() => setActiveTab('post')}>
-                <Text 
-                style={{
-                  textAlign: 'center', 
-                  fontSize: 16,
-                  lineHeight: 24,
-                  fontWeight: activeTab === 'post' ? 'bold' : '',
-                  color: activeTab === 'post' ? colors.themeColor : colors.lightBlackColor,
-                  paddingVertical: 10
-                }}>Post</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-
-        {
-        activeTab === 'info' ? (
-        <>
-          <EventItemRender title={strings.description}>
-            <Text style={styles.textValueStyle}>
-              {description} {description2}
-            </Text>
-          </EventItemRender>
-
-          <TCThinDivider marginTop={10} />
-
-          <View style={styles.containerStyle}>
-            <Text style={styles.headerTextStyle}>{strings.organizerTitle}</Text>
-            {organizer && (
-            <TCProfileView
-              type="medium"
-              name={organizer.group_name ?? organizer.full_name}
-              location={`${organizer.city}, ${organizer.state_abbr ? organizer.state_abbr:''}${organizer.state_abbr ? ',':''} ${organizer.country}`}
-              image={
-                organizer.thumbnail ? {uri: organizer.thumbnail} : images.teamPH
+              style={
+                eventData?.going?.filter(
+                  (entity) => entity === authContext.entity.uid,
+                ).length > 0 ?
+                [styles.firstButtonStyle,{width: checkIsInvite() ? '48%' : '100%'},] 
+                :
+                [styles.firstButtonStyle,{width: checkIsInvite() ? '48%' : '100%', backgroundColor : colors.themeColor}] 
               }
-              alignSelf={'flex-start'}
-              marginTop={10}
-            />)}
-          </View>
-
-          <TCThinDivider marginTop={10} />
-
-          {eventData?.going?.length > 0 && (
-          <View style={styles.containerStyle}>
-            <Text
-              style={styles.headerTextStyle}
-              onPress={() => {
-                navigation.navigate('GoingListScreen', {
-                  showRemove: authContext.entity.uid === organizer.user_id,
-                  going_ids: eventData?.going ?? [],
-                  eventData,
-                });
-              }}>{`${strings.goingTitle} (${eventData?.going?.length})`}</Text>
-            <FlatList
-              data={going}
-              horizontal
-              ItemSeparatorComponent={() => (
-                <View style={{width: 10, height: 35}} />
-              )}
-              renderItem={renderGoingView}
-              keyExtractor={(item, index) => index.toString()}
-              style={{padding: 3}}
+              showArrow={false}
+              imageStyle={styles.checkMarkStyle}
+              textStyle={
+                eventData?.going?.filter(
+                  (entity) => entity === authContext.entity.uid,
+                ).length > 0
+                  ? [styles.attendTextStyle, {color: colors.lightBlackColor}]
+                  : [styles.attendTextStyle, {color: colors.whiteColor}]
+              }
+              onPressProfile={() => {
+                if (
+                  eventData?.going?.filter(
+                    (entity) => entity === authContext.entity.uid,
+                  ).length > 0
+                ) {
+                  console.log('its going');
+                } else {
+                  attendAPICall();
+                }
+              }}
             />
-            <TCThinDivider marginTop={10} />
-          </View>
           )}
 
-          <EventItemRender title={strings.place}>
-            <Text style={[styles.textValueStyle, {fontFamily: fonts.RBold}]}>
-              {eventData?.location?.venue_name}
-            </Text>
-            <Text style={styles.textValueStyle}>
-              {eventData?.location?.location_name}
-            </Text>
-            <EventMapView
-              region={{
-                latitude: eventData?.location?.latitude ?? Number(gameDataLati),
-                longitude:
-                  eventData?.location?.longitude ?? Number(gameDataLongi),
-                latitudeDelta: 0.0922,
-                longitudeDelta: 0.0421,
-              }}
-              coordinate={{
-                latitude: eventData?.location?.latitude ?? Number(gameDataLati),
-                longitude:
-                  eventData?.location?.longitude ?? Number(gameDataLongi),
-              }}
+          {checkIsInvite()  && (
+            <TCProfileButton
+              title={'Invite'}
+              style={[styles.firstButtonStyle, {width: checkIsGoing() ? '48%' : '100%'}]}
+              showArrow={false}
+              imageStyle={styles.checkMarkStyle}
+              textStyle={styles.inviteTextStyle}
+              onPressProfile={() =>
+                navigation.navigate('InviteToEventScreen', {
+                  eventId: eventData.cal_id,
+                })
+              }
             />
-            <Text style={[styles.textValueStyle, {marginTop: 10}]}>
-              {eventData?.location?.venue_detail}
-            </Text>
-          </EventItemRender>
+          )}
+          </View>
 
-          <View style={styles.sepratorViewStyle} />
+          {/* {!blocked ? (
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginLeft: 15,
+                marginTop: 5,
+              }}>
+              <Image
+                source={images.availableChallenge}
+                style={styles.availableImageStyle}
+              />
+              <Text style={styles.availableTextStyle}>{strings.available}</Text>
+            </View>
+          ) : (
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginLeft: 15,
+                marginTop: 5,
+              }}>
+              <Image
+                source={images.blockedChallenge}
+                style={styles.availableImageStyle}
+              />
+              <Text style={styles.blockTextStyle}>
+                {strings.blockedForChallenge}
+              </Text>
+            </View>
+          )} */}
 
-          <EventItemRender title={strings.timeText}>
-            <View>
-              <View style={{flexDirection: 'row', justifyContent: 'space-between' , marginBottom: 10}}>
-                <Text style={styles.textValueStyle}>
-                  Start
-                </Text>
-                <Text style={styles.textValueStyle}>
-                {`${moment(startTime).format(
-                  'MMM DD YYYY'
-                )}`}  &nbsp; &nbsp; {`${moment(startTime).format(
-                  'hh:mm a'
-                )}`}
-                </Text>
+
+          <View style={{ marginVertical: 30, backgroundColor: colors.whiteColor}}> 
+            <View 
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-evenly',
+              width: '100%'
+            }}>
+              <View
+                style={{
+                  borderBottomWidth : 3, 
+                  borderColor: activeTab === 'info' ? colors.themeColor : colors.lightBlackColor, 
+                  width: '50%',
+              }}
+              > 
+                <TouchableOpacity onPress={() => setActiveTab('info')}>
+                  <Text 
+                  style={{
+                    textAlign: 'center', 
+                    fontSize: 16, 
+                    lineHeight: 24,
+                    fontWeight: activeTab === 'info' ? 'bold' : '',
+                    color: activeTab === 'info' ? colors.themeColor : colors.lightBlackColor,
+                    paddingVertical: 10
+                  }}>Info</Text>
+                </TouchableOpacity>
               </View>
-              <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                <Text style={styles.textValueStyle}>
-                  End
-                </Text>
-                <Text style={styles.textValueStyle}>
-                {`${moment(endTime).format(
-                  'MMM DD YYYY'
-                )}`}  &nbsp; &nbsp; {`${moment(endTime).format(
-                  'hh:mm a'
-                )}`}
-                </Text>
+              <View
+              style={{
+                borderBottomWidth : 3, 
+                borderColor: activeTab === 'post' ? colors.themeColor : colors.lightBlackColor,
+                width: '50%'
+              }}
+              >
+                <TouchableOpacity onPress={() => setActiveTab('post')}>
+                  <Text 
+                  style={{
+                    textAlign: 'center', 
+                    fontSize: 16,
+                    lineHeight: 24,
+                    fontWeight: activeTab === 'post' ? 'bold' : '',
+                    color: activeTab === 'post' ? colors.themeColor : colors.lightBlackColor,
+                    paddingVertical: 10
+                  }}>Post</Text>
+                </TouchableOpacity>
               </View>
             </View>
+          </View>
+
+          {
+          activeTab === 'info' ? (
+          <>
+            <EventItemRender title={strings.description}>
+              <Text style={styles.textValueStyle}>
+                {description} {description2}
+              </Text>
+            </EventItemRender>
+
+            <TCThinDivider marginTop={10} />
+
+            <View style={styles.containerStyle}>
+              <Text style={styles.headerTextStyle}>{strings.organizerTitle}</Text>
+              {organizer && (
+              <TCProfileView
+                type="medium"
+                name={organizer.group_name ?? organizer.full_name}
+                location={`${organizer.city}, ${organizer.state_abbr ? organizer.state_abbr:''}${organizer.state_abbr ? ',':''} ${organizer.country}`}
+                image={
+                  organizer.thumbnail ? {uri: organizer.thumbnail} : images.teamPH
+                }
+                alignSelf={'flex-start'}
+                marginTop={10}
+              />)}
+            </View>
+
+            <TCThinDivider marginTop={10} />
+
+            {eventData?.going?.length > 0 && (
+            <View style={styles.containerStyle}>
+              <Text
+                style={styles.headerTextStyle}
+                onPress={() => {
+                  navigation.navigate('GoingListScreen', {
+                    showRemove: authContext.entity.uid === organizer.user_id,
+                    going_ids: eventData?.going ?? [],
+                    eventData,
+                  });
+                }}>{`${strings.goingTitle} (${eventData?.going?.length})`}</Text>
+              <FlatList
+                data={going}
+                horizontal
+                ItemSeparatorComponent={() => (
+                  <View style={{width: 10, height: 35}} />
+                )}
+                renderItem={renderGoingView}
+                keyExtractor={(item, index) => index.toString()}
+                style={{padding: 3}}
+              />
+              <TCThinDivider marginTop={10} />
+            </View>
+            )}
+
+            <EventItemRender title={strings.place}>
+              <Text style={[styles.textValueStyle, {fontFamily: fonts.RBold}]}>
+                {eventData?.location?.venue_name}
+              </Text>
+              <Text style={styles.textValueStyle}>
+                {eventData?.location?.location_name}
+              </Text>
+              <EventMapView
+                region={{
+                  latitude: eventData?.location?.latitude ?? Number(gameDataLati),
+                  longitude:
+                    eventData?.location?.longitude ?? Number(gameDataLongi),
+                  latitudeDelta: 0.0922,
+                  longitudeDelta: 0.0421,
+                }}
+                coordinate={{
+                  latitude: eventData?.location?.latitude ?? Number(gameDataLati),
+                  longitude:
+                    eventData?.location?.longitude ?? Number(gameDataLongi),
+                }}
+              />
+              <Text style={[styles.textValueStyle, {marginTop: 10}]}>
+                {eventData?.location?.venue_detail}
+              </Text>
+            </EventItemRender>
+
+            <View style={styles.sepratorViewStyle} />
+
+            <EventItemRender title={strings.timeText}>
+              <View>
+                <View style={{flexDirection: 'row', justifyContent: 'space-between' , marginBottom: 10}}>
+                  <Text style={styles.textValueStyle}>
+                    Start
+                  </Text>
+                  <Text style={styles.textValueStyle}>
+                  {`${moment(startTime).format(
+                    'MMM DD YYYY'
+                  )}`}  &nbsp; &nbsp; {`${moment(startTime).format(
+                    'hh:mm a'
+                  )}`}
+                  </Text>
+                </View>
+                <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                  <Text style={styles.textValueStyle}>
+                    End
+                  </Text>
+                  <Text style={styles.textValueStyle}>
+                  {`${moment(endTime).format(
+                    'MMM DD YYYY'
+                  )}`}  &nbsp; &nbsp; {`${moment(endTime).format(
+                    'hh:mm a'
+                  )}`}
+                  </Text>
+                </View>
+              </View>
+
+              {
+              isOrganizer && (
+              <>
+              <TCThinDivider marginTop={10}  marginBottom={10} width='100%'  />
+              <View >
+                <View style={{flexDirection: 'row', justifyContent: 'space-between' , marginBottom: 10}}>
+                  <Text style={styles.textValueStyle}>
+                    Repeat
+                  </Text>
+                  <Text style={[styles.textValueStyle, { textAlign: 'right'}]}>
+                    {repeatString}
+                  </Text>
+                </View>
+              </View>
+              {
+              !eventData?.blocked ? (
+              <View style={{flexDirection:'row', justifyContent: 'flex-end', alignContent: 'center', marginTop: 10}}>
+                <Image source={images.roundTick} style={{width: 15, height: 15}}/> 
+                <Text style={{color: '#00C168'}}>&nbsp;&nbsp; Available For Challenge</Text>
+              </View>
+              ):(
+              <View style={{flexDirection:'row', justifyContent: 'flex-end', alignContent: 'center', marginTop: 10}}>
+                <Image source={images.roundCross} style={{width: 15, height: 15}}/> 
+                <Text style={{color: '#616161'}}>&nbsp;&nbsp; Blocked For Challenge</Text>
+              </View>
+              )}
+              </>
+              )}
+            </EventItemRender>
 
             {
             isOrganizer && (
             <>
-            <TCThinDivider marginTop={10}  marginBottom={10} width='100%'  />
-            <View >
-              <View style={{flexDirection: 'row', justifyContent: 'space-between' , marginBottom: 10}}>
-                <Text style={styles.textValueStyle}>
-                  Repeat
-                </Text>
-                <Text style={[styles.textValueStyle, { textAlign: 'right'}]}>
-                  {repeatString}
-                </Text>
-              </View>
-            </View>
-            {
-            !eventData?.blocked ? (
-            <View style={{flexDirection:'row', justifyContent: 'flex-end', alignContent: 'center', marginTop: 10}}>
-              <Image source={images.roundTick} style={{width: 15, height: 15}}/> 
-              <Text style={{color: '#00C168'}}>&nbsp;&nbsp; Available For Challenge</Text>
-            </View>
-            ):(
-            <View style={{flexDirection:'row', justifyContent: 'flex-end', alignContent: 'center', marginTop: 10}}>
-              <Image source={images.roundCross} style={{width: 15, height: 15}}/> 
-              <Text style={{color: '#616161'}}>&nbsp;&nbsp; Blocked For Challenge</Text>
-            </View>
-            )}
+            <View style={styles.sepratorViewStyle} />
+            <EventItemRender title={strings.whoCanJoin}>
+              <Text style={styles.textValueStyle}>
+                {eventData?.who_can_join?.text}
+              </Text>
+            </EventItemRender>
             </>
             )}
-          </EventItemRender>
 
-          {
-          isOrganizer && (
-          <>
-          <View style={styles.sepratorViewStyle} />
-          <EventItemRender title={strings.whoCanJoin}>
-            <Text style={styles.textValueStyle}>
-              {eventData?.who_can_join?.text}
-            </Text>
-          </EventItemRender>
-          </>
-          )}
-
-          <View style={styles.sepratorViewStyle} />
-          <EventItemRender title={strings.numberOfAttend} icon={images.infoIcon} clickInfoIcon={clickInfoIcon} type={'attendee'}>
-            <Text style={styles.textValueStyle}>
-              {format(
-                strings.minMaxText_dy,
-                eventData?.min_attendees,
-                eventData?.max_attendees,
-              )}
-            </Text>
-          </EventItemRender>
-
-          <View style={styles.sepratorViewStyle} />
-
-          <EventItemRender title={strings.eventFeeTitle} icon={images.infoIcon} clickInfoIcon={clickInfoIcon} type={'fee'}>
-            <Text style={styles.textValueStyle}>
-              {`${parseFloat(eventData?.event_fee?.value).toFixed(2)} ${
-                eventData?.event_fee?.currency_type
-              }`}
-            </Text>
-          </EventItemRender>
-
-          <View style={styles.sepratorViewStyle} />
-          <EventItemRender title={strings.refundPolicyTitle}>
-            <Text style={{fontSize: 14, fontFamily: fonts.RBold, marginTop: 15}}>
-              {'Primary Refund Policy'}
-            </Text>
-            <Text style={[styles.subTitleText, {marginTop: 10}]}>
-              Attendees must be refunded if the event is canceled or rescheduled.
-              <Text
-                style={{
-                  fontSize: 12,
-                  fontFamily: fonts.RRegular,
-                  textDecorationLine: 'underline',
-                }}>
-                {'\n'}Read payment policy for more information.
+            <View style={styles.sepratorViewStyle} />
+            <EventItemRender title={strings.numberOfAttend} icon={images.infoIcon} clickInfoIcon={clickInfoIcon} type={'attendee'}>
+              <Text style={styles.textValueStyle}>
+                {format(
+                  strings.minMaxText_dy,
+                  eventData?.min_attendees,
+                  eventData?.max_attendees,
+                )}
               </Text>
-            </Text>
-            <Text style={{fontSize: 14, fontFamily: fonts.RBold, marginTop: 15}}>
-              {strings.additionalRefundPolicy}
-            </Text>
-            <Text style={styles.textValueStyle}>{eventData?.refund_policy}</Text>
-          </EventItemRender>
+            </EventItemRender>
 
-          {
-          isOrganizer && (
-          <>
-          <View style={styles.sepratorViewStyle} />
-          <EventItemRender title={strings.whereEventPosted}>
-            <Text style={styles.textValueStyle}>
-              {eventData?.event_posted_at?.text}
-            </Text>
-          </EventItemRender>
+            <View style={styles.sepratorViewStyle} />
 
-          <View style={styles.sepratorViewStyle} />
-          <EventItemRender title={strings.whoCanSee}>
-            <Text style={styles.textValueStyle}>
-              {eventData?.who_can_see?.text}
-            </Text>
-          </EventItemRender>
+            <EventItemRender title={strings.eventFeeTitle} icon={images.infoIcon} clickInfoIcon={clickInfoIcon} type={'fee'}>
+              <Text style={styles.textValueStyle}>
+                {`${parseFloat(eventData?.event_fee?.value).toFixed(2)} ${
+                  eventData?.event_fee?.currency_type
+                }`}
+              </Text>
+            </EventItemRender>
+
+            <View style={styles.sepratorViewStyle} />
+            <EventItemRender title={strings.refundPolicyTitle}>
+              <Text style={{fontSize: 14, fontFamily: fonts.RBold, marginTop: 15}}>
+                {'Primary Refund Policy'}
+              </Text>
+              <Text style={[styles.subTitleText, {marginTop: 10}]}>
+                Attendees must be refunded if the event is canceled or rescheduled.
+                <Text
+                  style={{
+                    fontSize: 12,
+                    fontFamily: fonts.RRegular,
+                    textDecorationLine: 'underline',
+                  }}>
+                  {'\n'}Read payment policy for more information.
+                </Text>
+              </Text>
+              <Text style={{fontSize: 14, fontFamily: fonts.RBold, marginTop: 15}}>
+                {strings.additionalRefundPolicy}
+              </Text>
+              <Text style={styles.textValueStyle}>{eventData?.refund_policy}</Text>
+            </EventItemRender>
+
+            {
+            isOrganizer && (
+            <>
+              <View style={styles.sepratorViewStyle} />
+              <EventItemRender title={strings.whereEventPosted}>
+                <Text style={styles.textValueStyle}>
+                  {eventData?.event_posted_at?.text}
+                </Text>
+              </EventItemRender>
+
+              <View style={styles.sepratorViewStyle} />
+              <EventItemRender title={strings.whoCanSee}>
+                <Text style={styles.textValueStyle}>
+                  {eventData?.who_can_see?.text}
+                </Text>
+              </EventItemRender>
+            </>
+            )}
+
+          <View marginBottom={70} />
           </>
-          )}
+          ):null}
+        </ScrollView>
 
-        <View marginBottom={70} />
-        </>
-        ):null}
-      </ScrollView>
+      
 
-     
-
-      <ActionSheet
-        ref={actionSheet}
-        options={['Edit', 'Delete', strings.cancel]}
-        cancelButtonIndex={2}
-        destructiveButtonIndex={1}
-        onPress={(index) => {
-          if (index === 0) {
-            // editactionsheet.current.show();
-            if (route && route.params && eventData) {
-              navigation.navigate('EditEventScreen', {
-                data: eventData,
-                gameData: route.params.gameData,
-              });
+        <ActionSheet
+          ref={actionSheet}
+          options={[strings.edit, strings.delete, strings.cancel]}
+          cancelButtonIndex={2}
+          destructiveButtonIndex={1}
+          onPress={(index) => {
+            if (index === 0) {
+              // editactionsheet.current.show();
+              if (route && route.params && eventData) {
+                navigation.navigate('EditEventScreen', {
+                  data: eventData,
+                  gameData: route.params.gameData,
+                });
+              }
+            } else if (index === 1) {
+              if(eventData.rrule) {
+                setRecurringEditModal(true);
+              } else {
+                handleDeleteEvent();
+              }
             }
-          } else if (index === 1) {
-            Alert.alert(
-              strings.deleteThisEventText,
-              '',
-              [
-                {
-                  text: strings.delete,
-                  style: 'destructive',
-                  onPress: async () => {
-                    setloading(true);
-                    const entity = authContext.entity;
-                    const uid = entity.uid || entity.auth.user_id;
-                    const entityRole =
-                      entity.role === Verbs.entityTypeUser ? 'users' : 'groups';
-                    deleteEvent(entityRole, uid, eventData.cal_id, authContext)
-                      .then(() => navigation.goBack())
-                      .catch((e) => {
-                        setloading(false);
-                        Alert.alert('', e.messages);
-                      });
-                  },
-                },
-                {
-                  text: strings.cancel,
-                  style: 'cancel',
-                },
-              ],
-              {cancelable: false},
-            );
-          }
-        }}
-      />
-      <ActionSheet
-        ref={userActionSheet}
-        options={[reportText, blockEventOrganiser, strings.cancel]}
-        cancelButtonIndex={2}
-        // destructiveButtonIndex={1}
-        onPress={() => {}}
-      />
-    </SafeAreaView>
+          }}
+        />
+        <ActionSheet
+          ref={userActionSheet}
+          options={[reportText, blockEventOrganiser, strings.cancel]}
+          cancelButtonIndex={2}
+          // destructiveButtonIndex={1}
+          onPress={() => {}}
+        />
+      </SafeAreaView>
+    </>
   );
 }
 
@@ -978,5 +1062,10 @@ const styles = StyleSheet.create({
     color: colors.blackColor,
     fontSize: 16,
     lineHeight: 24,
-  }
+  },
+  filterTitle: {
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    color: '#0093FF',
+  },
 });

@@ -30,7 +30,7 @@ import {
 } from 'react-native-responsive-screen';
 
 import {RRule} from 'rrule';
-
+import _ from 'lodash';
 import Modal from 'react-native-modal';
 import ActionSheet from 'react-native-actionsheet';
 import {useIsFocused} from '@react-navigation/native';
@@ -41,12 +41,10 @@ import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors';
 import EventScheduleScreen from './EventScheduleScreen';
 import fonts from '../../../Constants/Fonts';
-
 import AuthContext from '../../../auth/context';
 import * as RefereeUtils from '../../referee/RefereeUtility';
 import * as ScorekeeperUtils from '../../scorekeeper/ScorekeeperUtility';
 import * as Utils from '../../challenge/ChallengeUtility';
-import {getEventById} from '../../../api/Schedule';
 import {strings} from '../../../../Localization/translation';
 import {
   getRefereeReservationDetails,
@@ -201,7 +199,13 @@ export default function ScheduleScreen({navigation, route}) {
     const rule = new RRule(ruleObj);
     const duration = event.end_datetime - event.start_datetime;
     let occr = rule.all();
+    if (event.exclusion_dates) {
+      _(occr).remove((date) => 
+        event.exclusion_dates.includes(Math.round(new Date(date) / 1000))
+      )  
+    }
     occr = occr.map((RRItem) => {
+      console.log('duration', duration)
       const newEvent = {...event};
       newEvent.start_datetime = Utility.getTCDate(RRItem);
       newEvent.end_datetime = newEvent.start_datetime + duration;
@@ -281,7 +285,6 @@ export default function ScheduleScreen({navigation, route}) {
               sport: obj.sport,
             }));
             const data = Utility.uniqueArray(res, 'sport');
-
             setSports([{sport: 'All'}, ...data, {sport: 'Others'}]);
           }
         }
@@ -334,7 +337,6 @@ export default function ScheduleScreen({navigation, route}) {
     );
 
   const eventEditDeleteAction = useRef();
-
 
   const refereeReservModal = () => {
     setIsRefereeModal(!isRefereeModal);
@@ -447,19 +449,16 @@ export default function ScheduleScreen({navigation, route}) {
 
   useEffect(() => {
     if (isFocused) {
-      if(route?.params?.event) {
-        getEventsAndSlotsList(route?.params?.event);
-      }else{
-        getEventsAndSlotsList();
-      }
+      // if(route?.params?.event) {
+      //   getEventsAndSlotsList();
+      //   delete route?.params?.event;
+      // }else{
+      //   getEventsAndSlotsList();
+      // }
+      getEventsAndSlotsList();
     }
   }, [isFocused]);
 
-
-
-  const onAddPlusPress = useCallback(() => {
-    plusActionSheet.current.show();
-  }, []);
 
 
 
@@ -503,7 +502,6 @@ export default function ScheduleScreen({navigation, route}) {
             }
             return false;
           });
-
           eventsCal = response.filter((obj) => {     
             if (obj.cal_type === 'event') {
               if (obj?.expiry_datetime) {
@@ -520,7 +518,6 @@ export default function ScheduleScreen({navigation, route}) {
         }
 
         setAllSlots(resCalenders);
-        
         eventsCal.forEach((item) => {
           if (item?.rrule) {
             let rEvents = getEventOccuranceFromRule(item);
@@ -921,15 +918,13 @@ export default function ScheduleScreen({navigation, route}) {
                 alignItems: 'center',
                 justifyContent: 'space-between',
               }}>
-              <TouchableOpacity onPress={onAddPlusPress}>
+              <TouchableOpacity onPress={() => {
+                navigation.navigate('CreateEventScreen', {
+                  comeName: 'ScheduleScreen',
+                });
+              }}>
                 <Image source={images.addEvent} style={styles.headerRightImg} />
               </TouchableOpacity>
-              {/* <TouchableOpacity onPress={onThreeDotPress}>
-                <Image
-                  source={images.threeDotIcon}
-                  style={styles.headerRight3DotImg}
-                />
-              </TouchableOpacity> */}
             </View>
           }
         />
@@ -1077,42 +1072,28 @@ export default function ScheduleScreen({navigation, route}) {
               }}
               onItemPress={async (item) => {
                  // setIndigator(true);
-                const entity = authContext.entity;
                 if (item?.game_id) {
                   if (item?.game?.sport) {
                     const gameHome = getGameHomeScreen(
                       item.game.sport.replace(' ', '_'),
                     );
                     setIndigator(false);
-
                     navigation.navigate(gameHome, {
                       gameId: item?.game_id,
                     });
                   }
                 } else {
-                  getEventById(
-                    entity.role === Verbs.entityTypeUser ? 'users' : 'groups',
-                    entity.uid || entity.auth.user_id,
-                    item.cal_id,
-                    authContext,
-                  )
-                    .then((response) => {
-                      setIndigator(false);
-                      navigation.navigate('EventScreen', {
-                        data: response.payload,
-                        gameData: item,
-                      });
-                    })
-                    .catch(() => {
-                      setIndigator(false);
-                    });
+                  setIndigator(false);
+                  navigation.navigate('EventScreen', {
+                    data: item,
+                    gameData: item,
+                  });
                 }
               }}
               entity={authContext.entity}
             />
             </>
           )}
-
 
           {scheduleIndexCounter === 1 && (
               <AvailibilityScheduleScreen

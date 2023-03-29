@@ -155,7 +155,6 @@ export default function  EventScheduleScreen({
           }
           renderItem={({item}) => {
             if (item.cal_type === 'event') {
-              
               if (item?.game_id && item?.game) {
                 return (
                   <TCEventView
