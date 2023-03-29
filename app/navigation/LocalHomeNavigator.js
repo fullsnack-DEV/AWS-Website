@@ -2838,34 +2838,12 @@ const LocalHomeNavigator = () => (
     <Stack.Screen
       name="SportActivitiesScreen"
       component={SportActivitiesScreen}
-      options={{
-        title: 'Sports Activities',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
+      options={{headerShown: false}}
     />
     <Stack.Screen
       name="SportActivityTagScreen"
       component={SportActivityTagScreen}
-      options={{
-        title: 'Order',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
+      options={{headerShown: false}}
     />
 
     <Stack.Screen
@@ -2905,18 +2883,7 @@ const LocalHomeNavigator = () => (
     <Stack.Screen
       name="SportHideUnhideScreen"
       component={SportHideUnhideScreen}
-      options={{
-        title: 'Hide & Unhide',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
+      options={{headerShown: false}}
     />
     <Stack.Screen
       name="RefereeReservationSetting"

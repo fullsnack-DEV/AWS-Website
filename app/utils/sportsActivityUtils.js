@@ -281,16 +281,16 @@ const getSportName = (sport = '', sportType = '', sportList = []) => {
 const getCardBorderColor = (entityType) => {
   switch (entityType) {
     case Verbs.entityTypePlayer:
-      return [colors.yellowColor, colors.orangeGradientColor];
+      return colors.orangeColorCard;
 
     case Verbs.entityTypeReferee:
-      return [colors.darkThemeColor, colors.darkThemeColor];
+      return colors.darkThemeColor;
 
     case Verbs.entityTypeScorekeeper:
-      return [colors.blueGradiantEnd, colors.blueGradiantStart];
+      return colors.blueColorCard;
 
     default:
-      return [];
+      return colors.userPostTimeColor;
   }
 };
 

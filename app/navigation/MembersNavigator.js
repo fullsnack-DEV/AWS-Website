@@ -1766,18 +1766,12 @@ const MembersNavigator = () => (
     <Stack.Screen
       name="SportActivitiesScreen"
       component={SportActivitiesScreen}
-      options={{
-        title: 'Sports Activities',
-        headerTintColor: colors.blackColor,
-      }}
+      options={{headerShown: false}}
     />
     <Stack.Screen
       name="SportActivityTagScreen"
       component={SportActivityTagScreen}
-      options={{
-        title: 'Order',
-        headerTintColor: colors.blackColor,
-      }}
+      options={{headerShown: false}}
     />
     <Stack.Screen
       name="ChangeSportsOrderScreen"
@@ -1798,10 +1792,7 @@ const MembersNavigator = () => (
     <Stack.Screen
       name="SportHideUnhideScreen"
       component={SportHideUnhideScreen}
-      options={{
-        title: 'Hide & Unhide',
-        headerTintColor: colors.blackColor,
-      }}
+      options={{headerShown: false}}
     />
     <Stack.Screen
       name="RefereeReservationSetting"

@@ -1,113 +1,124 @@
-/* eslint-disable no-empty */
-/* eslint-disable no-unsafe-optional-chaining */
-import React, {
-  useContext,
-  useCallback,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {
-  View,
   StyleSheet,
+  Alert,
+  SafeAreaView,
+  View,
   Text,
   Image,
+  Pressable,
   TouchableOpacity,
-  Alert,
-  FlatList,
 } from 'react-native';
-
-import ActionSheet from 'react-native-actionsheet';
-import {widthPercentageToDP} from 'react-native-responsive-screen';
-import * as Utility from '../../utils';
+import DraggableFlatList from 'react-native-draggable-flatlist';
+import ToggleSwitch from 'toggle-switch-react-native';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import AuthContext from '../../auth/context';
-import colors from '../../Constants/Colors';
-import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
-import TCThinDivider from '../../components/TCThinDivider';
-import UserInfoAddRole from '../../components/Home/User/UserInfoAddRole';
 import {patchPlayer} from '../../api/Users';
 import {strings} from '../../../Localization/translation';
-import Verbs from '../../Constants/Verbs';
-import TCFlatlist from '../../components/TCFlatlist';
+import ScreenHeader from '../../components/ScreenHeader';
+import colors from '../../Constants/Colors';
+import fonts from '../../Constants/Fonts';
+import {getStorage, setAuthContextData} from '../../utils';
+import {getSportDetails} from '../../utils/sportsActivityUtils';
+import {SportActivityOrder} from '../../Constants/GeneralConstants';
 
-let image_url = '';
-
-export default function SportActivityTagScreen({navigation}) {
-  const actionSheet = useRef();
-  const authContext = useContext(AuthContext);
+const Options = [
+  {id: 1, label: strings.latestDoneActivity},
+  {id: 2, label: strings.displayInFixOrder},
+];
+const Categories = [
+  strings.playingTitleText,
+  strings.refereeingTitleText,
+  strings.scorekeepingTitleText,
+];
+const SportActivityTagScreen = ({navigation}) => {
+  const [imageBaseUrl, setImageBaseUrl] = useState('');
   const [loading, setloading] = useState(false);
+  const [selectedOption, setSelectedOption] = useState(0);
+  const [isClassifyByCategory, setIsCalssifyByCategory] = useState(false);
+  const [sportList, setSportList] = useState([]);
+  const [categoryOrder, setCategoryOrder] = useState(Categories);
 
-  const [selectedRadio, setSelectedRadio] = useState(
-    authContext.entity.obj.sport_setting?.selectedOpetion || 0,
-  );
-  const [selectedCheck, setSelectedCheck] = useState(
-    authContext.entity.obj?.sport_setting?.isChecked || false,
-  );
-  // eslint-disable-next-line no-unused-vars
-  const [entitySource, setEntitySource] = useState(
-    authContext?.entity?.obj?.sport_setting?.entity_order || [
-      Verbs.entityTypePlayer,
-      Verbs.entityTypeReferee,
-      Verbs.entityTypeScorekeeper,
-    ],
-  );
-  const [activityList, setActivityList] = useState(
-    authContext?.entity?.obj?.sport_setting?.activity_order || [
-      ...(authContext?.entity?.obj?.registered_sports?.filter(
-        (obj) => obj.is_active,
-      ) || []),
-      ...(authContext?.entity?.obj?.referee_data?.filter(
-        (obj) => obj.is_active,
-      ) || []),
-      ...(authContext?.entity?.obj?.scorekeeper_data?.filter(
-        (obj) => obj.is_active,
-      ) || []),
-    ],
-  );
+  const authContext = useContext(AuthContext);
 
-  image_url = global.sport_icon_baseurl;
-
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <Text
-          onPress={() => onSavePress()}
-          style={{
-            fontSize: 16,
-            fontFamily: fonts.RLight,
-            color: colors.lightBlackColor,
-            marginRight: 15,
-          }}>
-          {strings.save}
-        </Text>
-      ),
+  useEffect(() => {
+    getStorage('appSetting').then((setting) => {
+      setImageBaseUrl(setting.base_url_sporticon);
     });
-  }, [navigation, selectedCheck, selectedRadio, activityList, entitySource]);
+  });
 
-  const keyExtractor = useCallback((item, index) => index.toString(), []);
+  const getSportSettings = useCallback(() => {
+    const entity = authContext.entity.obj;
+    const list = [
+      ...(entity.registered_sports ?? []),
+      ...(entity.referee_data ?? []),
+      ...(entity.scorekeeper_data ?? []),
+    ];
+    if (entity.sport_setting?.orderType) {
+      setSelectedOption(entity.sport_setting.orderType);
+      const order = SportActivityOrder[entity.sport_setting.orderType];
+
+      if (order === strings.latestDoneActivity) {
+        setIsCalssifyByCategory(entity.sport_setting?.isClassifyByCategory);
+        setCategoryOrder(entity.sport_setting?.categoryOrder ?? []);
+        const newList = list.filter(
+          (obj) =>
+            obj.sport && (obj.is_active === true || !('is_active' in obj)),
+        );
+        setSportList(newList);
+      }
+
+      if (order === strings.displayInFixOrder) {
+        setIsCalssifyByCategory(false);
+        setSportList(entity.sport_setting.sportOrder);
+      }
+    } else {
+      setSportList(list);
+    }
+  }, [authContext]);
+
+  useEffect(() => {
+    getSportSettings();
+  }, [getSportSettings]);
+
+  const getIcon = (option) => {
+    switch (option) {
+      case strings.playingTitleText:
+        return images.accountMySports;
+
+      case strings.refereeingTitleText:
+        return images.accountMyRefereeing;
+
+      case strings.scorekeepingTitleText:
+        return images.accountMyScoreKeeping;
+
+      default:
+        return images.accountMySports;
+    }
+  };
+
   const onSavePress = () => {
     setloading(true);
     const userObj = {
-      ...authContext?.entity?.obj,
+      ...authContext.entity.obj,
       sport_setting: {
-        entity_order: entitySource,
-        selectedOpetion: selectedRadio,
-        isChecked: selectedCheck,
-        activity_order: activityList,
+        // entity_order: entitySource,
+        // selectedOpetion: selectedRadio,
+        // isChecked: selectedCheck,
+        // activity_order: activityList,
+        orderType: selectedOption,
+        isClassifyByCategory,
+        categoryOrder,
+        sportOrder: sportList,
       },
     };
+    console.log('userObj==>', JSON.stringify(userObj));
 
     patchPlayer(userObj, authContext)
       .then(async (res) => {
         setloading(false);
-        const entity = authContext.entity;
-        entity.auth.user = res.payload;
-        entity.obj = res.payload;
-        authContext.setEntity({...entity});
-        await Utility.setStorage('authContextUser', res.payload);
-        await Utility.setStorage('authContextEntity', {...entity});
+        await setAuthContextData(res.payload, authContext);
         navigation.goBack();
       })
       .catch((error) => {
@@ -115,313 +126,217 @@ export default function SportActivityTagScreen({navigation}) {
       })
       .finally(() => setloading(false));
   };
-  const renderSportsView = useCallback(
-    ({item, drag}) =>
-      item.sport !== Verbs.allVerb && (
-        <View style={styles.sportsBackgroundView}>
-          <View style={{flexDirection: 'row'}}>
+
+  return (
+    <SafeAreaView style={{flex: 1}}>
+      <ActivityLoader visible={loading} />
+      <ScreenHeader
+        title={strings.editOrder}
+        leftIcon={images.backArrow}
+        leftIconPress={() => navigation.goBack()}
+        isRightIconText
+        rightButtonText={strings.save}
+        onRightButtonPress={onSavePress}
+        containerStyle={styles.headerRow}
+        loading={loading}
+      />
+      <View style={{paddingTop: 20, paddingHorizontal: 15}}>
+        <Pressable
+          style={[styles.row, {marginBottom: 15}]}
+          onPress={() => {
+            setSelectedOption(Options[0].id);
+          }}>
+          <View>
+            <Text style={styles.label}>{Options[0].label}</Text>
+          </View>
+          <View style={styles.radioContainer}>
             <Image
               source={
-                (item === Verbs.entityTypePlayer && images.playerIcon) ||
-                (item === Verbs.entityTypeScorekeeper &&
-                  images.scorekeeperIcon) ||
-                (item === Verbs.entityTypeReferee && images.refereeIcon)
+                selectedOption === Options[0].id
+                  ? images.radioSelectYellow
+                  : images.radioUnselect
               }
-              style={styles.sportsIcon}
+              style={styles.image}
             />
-            <Text style={styles.sportNameTitle}>{item}</Text>
           </View>
-          <TouchableOpacity onLongPress={drag} style={{alignSelf: 'center'}}>
-            <Image source={images.moveIcon} style={styles.moveIconStyle} />
-          </TouchableOpacity>
-        </View>
-      ),
-    [],
-  );
+        </Pressable>
 
-  const renderSportsActivityView = useCallback(
-    ({item, drag}) =>
-      item.sport !== Verbs.allVerb && (
-        <View style={styles.sportsBackgroundView}>
-          <View style={{flexDirection: 'row'}}>
-            <Image
-              source={{
-                uri: `${image_url}${Utility.getSportImage(
-                  item.sport,
-                  item.type,
-                  authContext,
-                )}`,
+        {selectedOption === 1 ? (
+          <View style={styles.container}>
+            <View style={[styles.row, {marginBottom: 25}]}>
+              <View>
+                <Text style={[styles.label, {fontFamily: fonts.RRegular}]}>
+                  {strings.classifyByCategories}
+                </Text>
+              </View>
+
+              <ToggleSwitch
+                isOn={isClassifyByCategory}
+                onToggle={() => setIsCalssifyByCategory(!isClassifyByCategory)}
+                onColor={colors.greenColorCard}
+                offColor={colors.userPostTimeColor}
+              />
+            </View>
+
+            <DraggableFlatList
+              data={categoryOrder}
+              onDragEnd={({data}) => {
+                setCategoryOrder([...data]);
               }}
-              style={styles.sportsIcon}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({item, drag, isActive}) => (
+                <View
+                  style={[
+                    styles.card,
+                    styles.row,
+                    {marginBottom: 15},
+                    isClassifyByCategory ? {opacity: 1} : {opacity: 0.5},
+                  ]}>
+                  <View style={[styles.row, {justifyContent: 'center'}]}>
+                    <View style={styles.sportIcon}>
+                      <Image source={getIcon(item)} style={styles.image} />
+                    </View>
+                    <Text style={styles.label}>{item}</Text>
+                  </View>
+                  <TouchableOpacity
+                    style={{width: 15, height: 13}}
+                    onLongPress={drag}
+                    disabled={isActive}>
+                    <Image source={images.moveIcon} style={styles.image} />
+                  </TouchableOpacity>
+                </View>
+              )}
+              bounces={false}
+              showsVerticalScrollIndicator={false}
             />
-            <Text style={styles.sportNameTitle}>{`${Utility.getSportName(
-              item,
-              authContext,
-            )} (${
-              item?.type?.charAt(0).toUpperCase() + item?.type?.slice(1)
-            })`}</Text>
           </View>
-          <TouchableOpacity onLongPress={drag} style={{alignSelf: 'center'}}>
-            <Image source={images.moveIcon} style={styles.moveIconStyle} />
-          </TouchableOpacity>
-        </View>
-      ),
-    [],
-  );
-  return (
-    <>
-      <ActivityLoader visible={loading} />
+        ) : null}
 
-      <View>
-        <Text style={styles.listTitle}>{strings.preview}</Text>
-        <FlatList
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-          showsVerticalScrollIndicator={false}
-          data={activityList?.filter((obj) => obj?.is_active)}
-          keyExtractor={keyExtractor}
-          renderItem={({item}) => (
-            <UserInfoAddRole
-              title={Utility.getSportName(item, authContext)}
-              thumbURL={
-                item?.type
-                  ? {
-                      uri: `${image_url}${Utility.getSportImage(
-                        item.sport,
-                        item.type,
-                        authContext,
-                      )}`,
-                    }
-                  : images.addRole
+        <Pressable
+          style={[styles.row, {marginBottom: 30}]}
+          onPress={() => {
+            setSelectedOption(Options[1].id);
+          }}>
+          <View>
+            <Text style={styles.label}>{Options[1].label}</Text>
+          </View>
+          <View style={styles.radioContainer}>
+            <Image
+              source={
+                selectedOption === Options[1].id
+                  ? images.radioSelectYellow
+                  : images.radioUnselect
               }
+              style={styles.image}
             />
-          )}
-          style={{margin: 15}}
-        />
-        <TCThinDivider width={'100%'} marginBottom={15} />
+          </View>
+        </Pressable>
+
+        {selectedOption === 2 ? (
+          <DraggableFlatList
+            data={sportList}
+            onDragEnd={({data}) => {
+              setSportList([...data]);
+            }}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({item, drag, isActive}) => {
+              const sport = getSportDetails(
+                item.sport,
+                item?.sport_type,
+                authContext.sports,
+                item.type,
+              );
+              return item.is_active || !('is_active' in item) ? (
+                <View style={[styles.card, styles.row, {marginBottom: 15}]}>
+                  <View style={[styles.row, {justifyContent: 'center'}]}>
+                    <View style={styles.sportIcon}>
+                      <Image
+                        source={
+                          sport?.sport_image
+                            ? {uri: `${imageBaseUrl}${sport.sport_image}`}
+                            : images.accountMySports
+                        }
+                        style={styles.image}
+                      />
+                    </View>
+                    <Text style={styles.label}>
+                      {sport.sport_name}{' '}
+                      <Text
+                        style={[
+                          styles.label,
+                          {fontSize: 14, fontFamily: fonts.RRegular},
+                        ]}>{`(${item.type})`}</Text>{' '}
+                    </Text>
+                  </View>
+                  <TouchableOpacity
+                    style={{width: 15, height: 13}}
+                    onLongPress={drag}
+                    disabled={isActive}>
+                    <Image source={images.moveIcon} style={styles.image} />
+                  </TouchableOpacity>
+                </View>
+              ) : null;
+            }}
+            bounces={false}
+            showsVerticalScrollIndicator={false}
+          />
+        ) : null}
       </View>
-
-      <TouchableOpacity
-        style={styles.radioView}
-        onPress={() => {
-          setSelectedRadio(0);
-        }}>
-        <Text style={styles.radioTitle}>{strings.latestDoneActivity}</Text>
-        <Image
-          source={
-            selectedRadio === 0
-              ? images.radioSelectYellow
-              : images.radioUnselect
-          }
-          style={styles.radioImage}
-        />
-      </TouchableOpacity>
-
-      {selectedRadio === 0 && (
-        <View>
-          <TouchableOpacity
-            style={styles.checkView}
-            onPress={() => {
-              setSelectedCheck(!selectedCheck);
-            }}>
-            <Image
-              source={selectedCheck ? images.orangeCheckBox : images.uncheckBox}
-              style={styles.checkImage}
-            />
-            <Text style={styles.radioTitle}>
-              {strings.classifySportActivity}
-            </Text>
-          </TouchableOpacity>
-
-          <View
-            pointerEvents={selectedCheck ? 'auto' : 'none'}
-            style={{
-              opacity: selectedCheck ? 1 : 0.4,
-            }}>
-            <FlatList
-              showsHorizontalScrollIndicator={false}
-              data={entitySource}
-              keyExtractor={keyExtractor}
-              renderItem={renderSportsView}
-              style={{
-                width: '100%',
-                alignContent: 'center',
-                marginBottom: 15,
-                paddingVertical: 15,
-                opacity: selectedCheck ? 1 : 0.4,
-              }}
-              onMoveEnd={(data) => {
-                let list = [];
-                setEntitySource(data);
-                data.forEach((element) => {
-                  if (element === Verbs.entityTypePlayer) {
-                    list = [
-                      ...list,
-                      ...(authContext?.entity?.obj?.registered_sports ?? []),
-                    ];
-                  }
-                  if (element === Verbs.entityTypeReferee) {
-                    list = [
-                      ...list,
-                      ...(authContext?.entity?.obj?.referee_data ?? []),
-                    ];
-                  }
-                  if (element === Verbs.entityTypeScorekeeper) {
-                    list = [
-                      ...list,
-                      ...(authContext?.entity?.obj?.scorekeeper_data ?? []),
-                    ];
-                  }
-                });
-                setActivityList([...list]);
-              }}
-            />
-          </View>
-        </View>
-      )}
-      <TouchableOpacity
-        style={styles.radioView}
-        onPress={() => {
-          setSelectedRadio(1);
-        }}>
-        <Text style={styles.radioTitle}>{strings.displayInFixOrder}</Text>
-        <Image
-          source={
-            selectedRadio === 1
-              ? images.radioSelectYellow
-              : images.radioUnselect
-          }
-          style={styles.radioImage}
-        />
-      </TouchableOpacity>
-      {selectedRadio === 1 && (
-        //   <FlatList
-        //     data={activityList.filter(
-        //       (obj) => obj?.type && obj?.is_active === true,
-        //     )}
-        //     keyExtractor={keyExtractor}
-        //     renderItem={renderSportsActivityView}
-        //     dragHitSlop={{
-        //       top: 15,
-        //       bottom: 15,
-        //       left: 15,
-        //       right: 15,
-        //     }}
-        //     onMoveEnd={(data) => {
-        //       setActivityList([...data]);
-        //     }}
-        //   />
-        <TCFlatlist
-          data={activityList.filter(
-            (obj) => obj?.type && obj?.is_active === true,
-          )}
-          renderItem={renderSportsActivityView}
-          keyExtractor={keyExtractor}
-        />
-      )}
-
-      <ActionSheet
-        ref={actionSheet}
-        options={[
-          strings.addSportActivity,
-          strings.sportActivityTagOrder,
-          strings.listUnlist,
-          strings.cancel,
-        ]}
-        cancelButtonIndex={3}
-        onPress={(index) => {
-          if (index === 0) {
-          } else if (index === 1) {
-          } else if (index === 2) {
-            navigation.navigate('SportActivityScreen');
-          } else if (index === 3) {
-          }
-        }}
-      />
-    </>
+    </SafeAreaView>
   );
-}
+};
 const styles = StyleSheet.create({
-  listTitle: {
-    fontFamily: fonts.RRegular,
-    fontSize: 20,
-    color: colors.lightBlackColor,
-    marginTop: 15,
-    marginLeft: 15,
-    marginBottom: 15,
+  headerRow: {
+    paddingLeft: 10,
+    paddingTop: 6,
+    paddingRight: 17,
+    paddingBottom: 14,
   },
-  radioTitle: {
-    flex: 1,
-    fontFamily: fonts.RRegular,
-    fontSize: 16,
-    color: colors.lightBlackColor,
-  },
-
-  radioImage: {
-    marginLeft: 15,
-    height: 22,
-    width: 22,
-    resizeMode: 'contain',
-    alignSelf: 'center',
-  },
-  checkImage: {
-    marginRight: 15,
-    height: 22,
-    width: 22,
-    resizeMode: 'contain',
-    alignSelf: 'center',
-  },
-  radioView: {
-    margin: 15,
+  row: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  checkView: {
-    flex: 1,
-    margin: 15,
-    flexDirection: 'row',
-    alignItems: 'center',
-    // justifyContent: 'space-between',
-  },
-
-  sportsIcon: {
-    resizeMode: 'cover',
-    height: 40,
-    width: 40,
-    alignSelf: 'center',
-    marginLeft: 15,
-    marginRight: 15,
-  },
-  moveIconStyle: {
-    resizeMode: 'cover',
-    height: 13,
-    width: 15,
-    alignSelf: 'center',
-    marginRight: 15,
-  },
-  sportNameTitle: {
+  label: {
     fontSize: 16,
-    fontFamily: fonts.RRegular,
+    lineHeight: 24,
     color: colors.lightBlackColor,
-    alignSelf: 'center',
-    // margin: 15,
+    fontFamily: fonts.RMedium,
   },
-
-  sportsBackgroundView: {
-    alignSelf: 'center',
+  radioContainer: {
+    width: 22,
+    height: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'contain',
+  },
+  card: {
+    paddingLeft: 5,
+    paddingRight: 15,
     backgroundColor: colors.whiteColor,
-    borderRadius: 8,
-    elevation: 5,
-    flexDirection: 'row',
+    borderRadius: 5,
+    shadowColor: colors.blackColor,
+    shadowOffset: {
+      width: 2,
+      height: 3,
+    },
+    shadowOpacity: 0.16,
+  },
+  sportIcon: {
+    width: 40,
     height: 40,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 5},
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    width: widthPercentageToDP('86%'),
-    // alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  container: {
+    paddingHorizontal: 20,
+    marginTop: 10,
+    marginBottom: 50,
   },
 });
+
+export default SportActivityTagScreen;

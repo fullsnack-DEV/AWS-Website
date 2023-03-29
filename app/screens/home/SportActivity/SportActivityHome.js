@@ -271,6 +271,7 @@ const SportActivityHome = ({navigation, route}) => {
             sportType: sportObj?.sport_type,
             uid: route.params.uid,
             entityType,
+            backScreen: 'AccountScreen',
           },
         });
         break;

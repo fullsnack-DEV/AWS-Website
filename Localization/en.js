@@ -2049,7 +2049,7 @@ export default {
     'en_Classfy sports activites by categoires and display the categories in the order below.',
   laterDoneActivity: 'en_Display the later-done sports activity first',
   latestDoneActivity: 'en_Display most recent sports activity first',
-
+  classifyByCategories: 'en_Classify by categories',
   levelsCount: 'en_LV 13',
 
   andMore: 'en_{0} and {1} more`',
@@ -2531,6 +2531,11 @@ export default {
     'en_These settings will be applied only to incoming challenges that you will receive.',
   reservationScreenBottomText:
     'en_These settings will be applied only to incoming {0} reservation requests that you will receive.',
+
+  hiddenText: 'en_Hidden',
+  hideUnhideDescription:
+    'en_If you hide a sport activity, other users or groups will not see its activity card on your profile and also will not see the sports activity in your sports activity list. However, they will still be able to access and see the contents of the sports activity page when searched.',
+
 
   overlappingAvailability: 'en_An available time slot and blocked time slot cannot include an overlapped time period at the same time.',
   timezoneAvailability: 'en_Date and time displayed in the app will follow the date and time settings of the device',

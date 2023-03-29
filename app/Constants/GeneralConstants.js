@@ -37,5 +37,10 @@ export const ReviewRole = {
   Other: 'OTHERS',
 };
 
+export const SportActivityOrder = {
+  1: strings.latestDoneActivity,
+  2: strings.displayInFixOrder,
+};
+
 export default EntityStatus;
 export {privacySettingEnum, privacyKey};
