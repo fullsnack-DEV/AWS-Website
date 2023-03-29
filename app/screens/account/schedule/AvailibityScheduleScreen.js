@@ -11,14 +11,16 @@ import {
 } from 'react-native';
 import Modal from 'react-native-modal';
 import moment from 'moment';
-// eslint-disable-next-line import/no-unresolved
+import _ from 'lodash';
 import CalendarPicker from 'react-native-calendar-picker';
+import { getJSDate } from '../../../utils';
+// eslint-disable-next-line import/no-unresolved
 import BlockSlotView from '../../../components/Schedule/BlockSlotView';
 import images from '../../../Constants/ImagePath';
 import WeeklyCalender from './CustomWeeklyCalender';
 import AuthContext from '../../../auth/context';
-import {editSlots, deleteEvent} from '../../../api/Schedule';
-import Verbs from '../../../Constants/Verbs';
+// import {editSlots} from '../../../api/Schedule';
+// import Verbs from '../../../Constants/Verbs';
 import colors from '../../../Constants/Colors';
 import ChallengeAvailability from './ChallengeAvailability';
 import * as Utility from '../../../utils/index';
@@ -31,8 +33,9 @@ export default function AvailibilityScheduleScreen({
   onDayPress,
   userData = {},
 }) {
+
   const [weeklyCalender, setWeeklyCalender] = useState(false);
-  const [loading, setLoading] = useState(false);
+   const [loading, setLoading] = useState(false);
   const [allData, setAllData] = useState(allSlots);
   const [slots, setSlots] = useState([]);
   const [slotList, setSlotList] = useState([]);
@@ -40,22 +43,27 @@ export default function AvailibilityScheduleScreen({
   const [availableSlots, setAvailableSlots] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [editableSlots, setEditableSlots] = useState([]);
-  const [editableSlotsType, setEditableSlotsType] = useState(true);
+  const [listView, setListView] = useState(true);
+  const [listViewData, setListViewData] = useState([]);
   const [visibleAvailabilityModal, setVisibleAvailabilityModal] =
     useState(false);
 
   const authContext = useContext(AuthContext);
   const entity = authContext.entity;
   const uid = entity.uid || entity.auth.user_id;
-  const entityRole = entity.role === Verbs.entityTypeUser ? 'users' : 'groups';
+  // const entityRole = entity.role === Verbs.entityTypeUser ? 'users' : 'groups';
+
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
   useEffect(() => {
     setAllData(allSlots);
+    setWeeklyCalender(false)
+    setLoading(false)
   }, []);
 
   useEffect(() => {
     prepareSlotArray(selectedDate);
-
+    prepareSlotListArray();
     const blocked = [];
     allSlots.forEach((obj) => {
       if (obj.allDay) {
@@ -65,25 +73,13 @@ export default function AvailibilityScheduleScreen({
     setBlockedDaySlots(blocked);
   }, [allData, selectedDate]);
 
+
+
   useEffect(() => {
     setSlotList(slots);
-    const tempAvailableSlots = [];
-    const tempBlockedSlots = [];
-    slots.forEach((item) => {
-      if (!item.blocked) {
-        tempAvailableSlots.push(item);
-      } else {
-        tempBlockedSlots.push(item);
-      }
-    });
-    if (tempAvailableSlots.length === 0) {
-      setEditableSlotsType(false);
-      setEditableSlots(tempBlockedSlots);
-    } else {
-      setEditableSlotsType(true);
-      setEditableSlots(tempAvailableSlots);
-    }
+    setEditableSlots(slots);
   }, [slots]);
+
 
   const prepareSlotArray = (dateObj = {}, newItem = {}) => {
     const start = new Date(dateObj);
@@ -120,6 +116,40 @@ export default function AvailibilityScheduleScreen({
     setAvailableSlots(allAvailableSlots);
   };
 
+
+  const prepareSlotListArray = () => {
+    const temp = [];
+    const tempSlot = [...allData];
+  
+    for (const blockedSlot of tempSlot) {
+      if (blockedSlot.blocked === true) {
+        temp.push(blockedSlot);
+      }
+    }
+    
+    if(temp.length > 0) {
+      const result = _(temp).groupBy((value) => 
+      moment(getJSDate(value.start_datetime)).format('MMM DD, YYYY')).value();
+      const filData = [];
+      for (const property in result) {
+        if(result[property]) {
+          let tempVal = {};
+          const value = result[property];
+          const start = getJSDate(result[property][0]?.start_datetime);
+          start.setHours(0, 0, 0, 0);
+          tempVal = {
+            title: property,
+            time: result[property].length > 0 ? result[property][0]?.start_datetime : '',
+            data: result[property].length > 0 ? createCalenderTimeSlots(Utility.getTCDate(start), 24, value) : [],
+          };
+          filData.push(tempVal);
+        }
+      }
+      setListViewData(filData);
+    }
+  }
+
+
   const getAvailableSlots = (timeSlots, dateObj) => {
     const availableTempSlots = [];
     timeSlots.forEach((item) => {
@@ -146,9 +176,10 @@ export default function AvailibilityScheduleScreen({
 
       formattedAvailableSLots.push(tempSlot);
     });
-
+    
     return formattedAvailableSLots;
   };
+
 
   const addToSlotData = (data) => {
     const tempData = [...allData];
@@ -176,30 +207,6 @@ export default function AvailibilityScheduleScreen({
     setAllData(tempData);
   };
 
-  const deleteFromSlotData = (data) => {
-    const tempData = [...allData];
-    data.forEach((item1) => {
-      allData.forEach((item2, key) => {
-        if (
-          item1.start_datetime > item2.start_datetime &&
-          item1.start_datetime < item2.end_datetime
-        ) {
-          tempData[key].end_datetime = item1.start_datetime;
-        } else if (
-          item1.end_datetime > item2.start_datetime &&
-          item1.end_datetime < item2.end_datetime
-        ) {
-          tempData[key].start_datetime = item1.end_datetime;
-        } else if (
-          item1.start_datetime <= item2.start_datetime &&
-          item1.end_datetime >= item2.end_datetime
-        ) {
-          tempData.splice(key, 1);
-        }
-      });
-    });
-    setAllData(tempData);
-  };
 
   const createCalenderTimeSlots = (startTime, hours, mslots) => {
     const tSlots = [];
@@ -266,49 +273,18 @@ export default function AvailibilityScheduleScreen({
     return tSlots;
   };
 
-  const deleteSlot = async (obj) => {
-    setLoading(true);
-    const cal_id = obj.cal_id;
-    await deleteFromSlotList(cal_id);
-    deleteEvent(entityRole, uid, cal_id, authContext)
-      .then(() => {
-        setTimeout(() => {
-          setLoading(false);
-          onDayPress(selectedDate);
-        }, 5000);
-      })
-      .catch((error) => {
-        setLoading(false);
-        console.log('Error ::--', error);
-      });
-  };
 
-  const deleteFromSlotList = (cal_id) => {
+  const deleteFromSlotData = async (delArr) => {
     const tempSlot = [...allSlots];
-    const index = tempSlot.findIndex((item) => item.cal_id === cal_id);
-    allSlots.splice(index, 1);
+    delArr.forEach((cal_id) => {
+      const index = tempSlot.findIndex((item) => item.cal_id === cal_id);
+      allSlots.splice(index, 1);
+    })
+    
     setAllData([...allSlots]);
   };
 
-  const createSlot = async (obj) => {
-    console.log('UID', uid);
-    setLoading(true);
-    const tempObj = {...obj};
-    tempObj.blocked = true;
-    const newObj = tempObj;
-    const filterData = [newObj];
-    editSlots(entityRole, uid, filterData, authContext)
-      .then(async (result) => {
-        prepareSlotArray(selectedDate, result.payload[0]);
-        setTimeout(() => {
-          setLoading(false);
-        }, 5000);
-      })
-      .catch((error) => {
-        setLoading(false);
-        console.log('Error ::--', error);
-      });
-  };
+
 
   const datesBlacklistFunc = (startDate, endDate) => {
     const start = new Date(startDate);
@@ -322,6 +298,7 @@ export default function AvailibilityScheduleScreen({
 
     return dates;
   };
+
 
   const LeftArrow = () => (
     <>
@@ -339,6 +316,7 @@ export default function AvailibilityScheduleScreen({
       </View>
     </>
   );
+
 
   const RightArrow = () => (
     <>
@@ -424,196 +402,272 @@ export default function AvailibilityScheduleScreen({
 
   return (
     <>
-      <ScrollView style={{backgroundColor: '#fff'}}>
-        <ActivityLoader visible={loading} />
+      {
+      listView && (
+      <View style={{padding: 20}}> 
         <View
           style={{
-            marginBottom: 10,
+            width: 100,
+            height: 30,
+            backgroundColor: '#f5f5f5',
+            borderRadius: 5,
+            marginTop: 7,
+            justifyContent: 'flex-end',
+            alignSelf: 'flex-end'
           }}>
-          <View
-            style={{
-              marginTop: 10,
-              paddingTop: 10,
-              position: 'relative',
-            }}>
-            <View
-              style={{
-                width: 75,
-                height: 30,
-                backgroundColor: '#f5f5f5',
-                borderRadius: 5,
-                position: 'absolute',
-                right: 10,
-                top: 12,
-                zIndex: 9999,
-              }}>
-              <TouchableOpacity
-                onPress={() => setWeeklyCalender(!weeklyCalender)}>
-                <Image
-                  source={images.toggleCal}
-                  style={{width: 65, height: 30, marginLeft: 5}}
-                />
-              </TouchableOpacity>
-            </View>
-            {weeklyCalender ? (
-              <WeeklyCalender
-                blockedDaySlots={blockedDaySlots}
-                colors={colors}
-                onDayPress={onDayPress}
-                selectedDate={selectedDate}
-                setSelectedDate={setSelectedDate}
-              />
-            ) : (
-              <CalendarPicker
-                headerWrapperStyle={{
-                  width: '100%',
-                  flexDirection: 'row',
-                  justifyContent: 'flex-start',
-                  alignContent: 'center',
-                  alignItems: 'center',
-                  paddingLeft: 15,
-                }}
-                monthYearHeaderWrapperStyle={{
-                  backgroundColor: '#fff',
-                }}
-                previousComponent={<LeftArrow />}
-                nextComponent={<RightArrow />}
-                dayShape="square"
-                dayLabelsWrapper={{
-                  borderTopColor: colors.whiteColor,
-                  borderBottomColor: colors.whiteColor,
-                  shadowOpacity: 0,
-                  color: colors.whiteColor,
-                }}
-                onDateChange={(date) => {
-                  setSelectedDate(date);
-                  onDayPress(date);
-                }}
-                disabledDates={datesBlacklistFunc(
-                  new Date().setFullYear(new Date().getFullYear() - 25),
-                  new Date().setDate(new Date().getDate() - 1),
-                )}
-                selectedDayStyle={{
-                  backgroundColor: colors.themeColor,
-                  color: '#fff',
-                }}
-                initialDate={new Date(selectedDate)}
-                customDatesStyles={customDatesStyles}
-                todayTextStyle={{
-                  color:
-                    moment(new Date()).format('YYYY-MM-DD') ===
-                    moment(new Date(selectedDate)).format('YYYY-MM-DD')
-                      ? colors.whiteColor
-                      : colors.themeColor,
-                }}
-                selectedDayTextColor="white"
-              />
-            )}
-          </View>
-        </View>
-
-        <View
-          style={{
-            borderBottomColor: '#eee',
-            borderBottomWidth: StyleSheet.hairlineWidth,
-          }}
-        />
-
-        {/* Availibility bottom view */}
-        <View>
-          <Text
-            style={{
-              textAlign: 'center',
-              fontSize: 16,
-              fontFamily: fonts.RRegular,
-              color: colors.lightBlackColor,
-              margin: 15,
-            }}>
-            {strings.availableTimeForChallenge}
-          </Text>
-          <View
-            style={{
-              position: 'relative',
-              width: '100%',
-              paddingHorizontal: '8%',
-            }}>
-            <View
-              style={{justifyContent: 'space-between', flexDirection: 'row'}}>
-              <Text style={{color: colors.darkGrey}}>0</Text>
-              <Text style={{marginLeft: 5, color: colors.darkGrey}}>6</Text>
-              <Text style={{marginLeft: 5, color: colors.darkGrey}}>12</Text>
-              <Text style={{marginLeft: 5, color: colors.darkGrey}}>18</Text>
-              <Text style={{color: colors.darkGrey}}>24</Text>
-            </View>
-            <View
-              style={{
-                width: '100%',
-                height: 20,
-                marginVertical: 10,
-                borderRadius: 2,
-                borderColor: colors.lightGrey,
-                borderWidth: 1,
-                backgroundColor: colors.lightGrey,
-              }}
+          <TouchableOpacity
+            onPress={() => setListView(!listView)}>
+            <Image
+              source={images.toggleCal}
+              style={{width: 80, height: 30, alignSelf: 'center'}}
             />
-            {availableSlots.map((item) => (
-              <>
+          </TouchableOpacity>
+        </View>
+      </View>
+      )}
+      <ScrollView style={{backgroundColor: colors.whiteColor}}>
+        <ActivityLoader visible={loading} />
+        {
+        listView  ? (
+          <View>
+            <View>
+              {
+              listViewData.map((list, listKey) => (
+                <View key={listKey} style={{marginBottom: 10}}>
+                  <View 
+                  style={{
+                    flexDirection: 'row', 
+                    justifyContent: 'space-between', 
+                    paddingHorizontal: 20,
+                     paddingVertical: 10
+                  }}>
+                    <Text style={{fontSize: 20}}>
+                      {days[getJSDate(list.time).getDay()]},  {list.title}
+                    </Text>
+                    <TouchableOpacity
+                      onPress={async() =>  { 
+                        await prepareSlotArray(getJSDate(list.time))
+                        await setVisibleAvailabilityModal(true)
+                      }}>
+                      <Image
+                        source={images.editProfilePencil}
+                        style={{width: 15, height: 18, marginLeft: 5}}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                  {
+                  list.data.map((item, key) => (
+                    <BlockSlotView
+                      key={key}
+                      item={item}
+                      startDate={item.start_datetime}
+                      endDate={item.end_datetime}
+                      allDay={item.allDay === true}
+                      index={key}
+                      slots={slotList}
+                      strings={strings}
+                      userData={userData}
+                      uid={uid}
+                      addToSlotData={addToSlotData}
+                      deleteFromSlotData={deleteFromSlotData}
+                    />
+                  ))}
+                </View>
+              ))}
+            </View>
+          </View>
+        ):(
+          <View>
+              <View
+                style={{
+                  marginBottom: 10,
+                }}>
                 <View
                   style={{
-                    width: `${item.width}%`,
-                    height: 20,
-                    marginVertical: 10,
-                    borderRadius: 2,
-                    backgroundColor: colors.availabilityBarColor,
-                    position: 'absolute',
-                    left: `${item.marginLeft + 9.5}%`,
-                    top: 17,
-                  }}
-                />
-              </>
-            ))}
-          </View>
-          <ScrollView>
-            {slotList.map((item, key) => (
-              <BlockSlotView
-                key={key}
-                item={item}
-                startDate={item.start_datetime}
-                endDate={item.end_datetime}
-                allDay={item.allDay === true}
-                index={key}
-                slots={slotList}
-                strings={strings}
-                deleteSlot={deleteSlot}
-                createSlot={createSlot}
-                userData={userData}
-                uid={uid}
-              />
-            ))}
-          </ScrollView>
-        </View>
+                    marginTop: 10,
+                    paddingTop: 10,
+                    position: 'relative',
+                  }}>
+                  <View
+                    style={{
+                      width: 75,
+                      height: 30,
+                      backgroundColor: '#f5f5f5',
+                      borderRadius: 5,
+                      position: 'absolute',
+                      right: 25,
+                      top: 12,
+                      zIndex: 9999,
+                    }}>
+                    <TouchableOpacity
+                      onPress={() => setListView(!listView)}>
+                      <Image
+                        source={images.toggleList}
+                        style={{width: 65, height: 30, marginLeft: 5}}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                  {weeklyCalender ? (
+                    <WeeklyCalender
+                      blockedDaySlots={blockedDaySlots}
+                      colors={colors}
+                      onDayPress={onDayPress}
+                      selectedDate={selectedDate}
+                      setSelectedDate={setSelectedDate}
+                    />
+                  ) : (
+                    <CalendarPicker
+                      headerWrapperStyle={{
+                        width: '100%',
+                        flexDirection: 'row',
+                        justifyContent: 'flex-start',
+                        alignContent: 'center',
+                        alignItems: 'center',
+                        paddingLeft: 15,
+                      }}
+                      monthYearHeaderWrapperStyle={{
+                        backgroundColor: '#fff',
+                      }}
+                      previousComponent={<LeftArrow />}
+                      nextComponent={<RightArrow />}
+                      dayShape="square"
+                      dayLabelsWrapper={{
+                        borderTopColor: colors.whiteColor,
+                        borderBottomColor: colors.whiteColor,
+                        shadowOpacity: 0,
+                        color: colors.whiteColor,
+                      }}
+                      onDateChange={(date) => {
+                        setSelectedDate(date);
+                        onDayPress(date);
+                      }}
+                      disabledDates={datesBlacklistFunc(
+                        new Date().setFullYear(new Date().getFullYear() - 25),
+                        new Date().setDate(new Date().getDate() - 1),
+                      )}
+                      selectedDayStyle={{
+                        backgroundColor: colors.themeColor,
+                        color: '#fff',
+                      }}
+                      initialDate={new Date(selectedDate)}
+                      customDatesStyles={customDatesStyles}
+                      todayTextStyle={{
+                        color:
+                          moment(new Date()).format('YYYY-MM-DD') ===
+                          moment(new Date(selectedDate)).format('YYYY-MM-DD')
+                            ? colors.whiteColor
+                            : colors.themeColor,
+                      }}
+                      selectedDayTextColor="white"
+                    />
+                  )}
+                </View>
+              </View>
 
-        {(Object.entries(userData).length > 0 && userData.user_id === uid) ||
-        Object.entries(userData).length === 0 ? (
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'center',
-              marginTop: 10,
-              marginBottom: 40,
-            }}>
-            <TouchableOpacity onPress={() => setVisibleAvailabilityModal(true)}>
-              <Text
+              <View
                 style={{
-                  textDecorationLine: 'underline',
-                  textDecorationStyle: 'solid',
-                  textDecorationColor: '#000',
+                  borderBottomColor: '#eee',
+                  borderBottomWidth: StyleSheet.hairlineWidth,
+                }}
+              />
+
+              {/* Availibility bottom view */}
+              <View>
+                <Text
+                  style={{
+                    textAlign: 'center',
+                    fontSize: 16,
+                    fontFamily: fonts.RRegular,
+                    color: colors.lightBlackColor,
+                    margin: 15,
+                  }}>
+                  {strings.availableTimeForChallenge}
+                </Text>
+                <View
+                  style={{
+                    position: 'relative',
+                    width: '100%',
+                    paddingHorizontal: 20,
+                  }}>
+                  <View
+                    style={{justifyContent: 'space-between', flexDirection: 'row'}}>
+                    <Text style={{color: colors.darkGrey}}>0</Text>
+                    <Text style={{marginLeft: 5, color: colors.darkGrey}}>6</Text>
+                    <Text style={{marginLeft: 5, color: colors.darkGrey}}>12</Text>
+                    <Text style={{marginLeft: 5, color: colors.darkGrey}}>18</Text>
+                    <Text style={{color: colors.darkGrey}}>24</Text>
+                  </View>
+                  <View
+                    style={{
+                      width: '100%',
+                      height: 20,
+                      marginVertical: 10,
+                      borderRadius: 2,
+                      borderColor: colors.lightGrey,
+                      borderWidth: 1,
+                      backgroundColor: colors.lightGrey,
+                    }}
+                  />
+                  {availableSlots.map((item) => (
+                    <>
+                      <View
+                        style={{
+                          width: `${item.width}%`,
+                          height: 20,
+                          marginVertical: 10,
+                          borderRadius: 2,
+                          backgroundColor: colors.availabilityBarColor,
+                          position: 'absolute',
+                          left: `${item.marginLeft + 6}%`,
+                          top: 17,
+                        }}
+                      />
+                    </>
+                  ))}
+                </View>
+                <ScrollView>
+                  {slotList.map((item, key) => (
+                    <BlockSlotView
+                      key={key}
+                      item={item}
+                      startDate={item.start_datetime}
+                      endDate={item.end_datetime}
+                      allDay={item.allDay === true}
+                      index={key}
+                      slots={slotList}
+                      strings={strings}
+                      userData={userData}
+                      uid={uid}
+                      addToSlotData={addToSlotData}
+                      deleteFromSlotData={deleteFromSlotData}
+                    />
+                  ))}
+                </ScrollView>
+              </View>
+
+              {(Object.entries(userData).length > 0 && userData.user_id === uid) ||
+              Object.entries(userData).length === 0 ? (
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    marginTop: 10,
+                    marginBottom: 40,
                 }}>
-                Edit Availability
-              </Text>
-            </TouchableOpacity>
+                  <TouchableOpacity onPress={() => setVisibleAvailabilityModal(true)}>
+                    <Text
+                      style={{
+                        textDecorationLine: 'underline',
+                        textDecorationStyle: 'solid',
+                        textDecorationColor: '#000',
+                      }}>
+                      {strings.editAvailability}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              ) : null}
           </View>
-        ) : null}
+        )}
       </ScrollView>
 
       {/*  Availability modal */}
@@ -630,9 +684,8 @@ export default function AvailibilityScheduleScreen({
           <ChallengeAvailability
             setVisibleAvailabilityModal={setVisibleAvailabilityModal}
             slots={editableSlots}
-            slotType={editableSlotsType}
-            setEditableSlotsType={setEditableSlotsType}
             addToSlotData={addToSlotData}
+            showAddMore={true}
             deleteFromSlotData={deleteFromSlotData}
           />
         </SafeAreaView>

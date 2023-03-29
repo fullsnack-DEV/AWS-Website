@@ -2530,4 +2530,10 @@ export default {
     'en_These settings will be applied only to incoming challenges that you will receive.',
   reservationScreenBottomText:
     'en_These settings will be applied only to incoming {0} reservation requests that you will receive.',
+
+  overlappingAvailability: 'en_An available time slot and blocked time slot cannot include an overlapped time period at the same time.',
+  timezoneAvailability: 'en_Date and time displayed in the app will follow the date and time settings of the device',
+  eventPostCreate: 'en_Display the event on Posts as soon as the event is created.',
+  whoCanInvite: 'en_WHO CAN INVITE',
+  editAvailability: 'en_Edit Availability',
 };

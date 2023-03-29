@@ -449,10 +449,8 @@ export default function ScheduleScreen({navigation, route}) {
     if (isFocused) {
       if(route?.params?.event) {
         getEventsAndSlotsList(route?.params?.event);
-        onDayPress()
       }else{
         getEventsAndSlotsList();
-        onDayPress()
       }
     }
   }, [isFocused]);
@@ -520,8 +518,9 @@ export default function ScheduleScreen({navigation, route}) {
           });
         
         }
-        setAllSlots(resCalenders);
 
+        setAllSlots(resCalenders);
+        
         eventsCal.forEach((item) => {
           if (item?.rrule) {
             let rEvents = getEventOccuranceFromRule(item);

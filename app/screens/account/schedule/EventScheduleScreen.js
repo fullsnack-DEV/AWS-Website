@@ -34,19 +34,7 @@ export default function  EventScheduleScreen({
       (obj) => (obj.game_id && obj.game) || obj.title,
     );
 
-
     // Future or past event we commented now only supported future event
-    // if (filterOptions.time === 0) {
-    //   events = events.filter(
-    //     (x) =>
-    //       x.end_datetime > getTCDate(new Date()),
-    //   );
-    // } else {
-    //   events = events.filter(
-    //     (x) =>
-    //       x.end_datetime < getTCDate(new Date()),
-    //   );
-    // }
 
     if (
       [
