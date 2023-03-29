@@ -6,12 +6,12 @@ import {
   ScrollView,
   TouchableOpacity,
   StyleSheet,
-  SafeAreaView,
+  // SafeAreaView,
   Dimensions,
 } from 'react-native';
 import Modal from 'react-native-modal';
 import moment from 'moment';
-import _ from 'lodash';
+// import _ from 'lodash';
 import CalendarPicker from 'react-native-calendar-picker';
 import { getJSDate } from '../../../utils';
 // eslint-disable-next-line import/no-unresolved
@@ -84,6 +84,7 @@ export default function AvailibilityScheduleScreen({
   }, [slots]);
 
 
+
   const prepareSlotArray = (dateObj = {}, newItem = {}) => {
     const start = new Date(dateObj);
     start.setHours(0, 0, 0, 0);
@@ -123,33 +124,80 @@ export default function AvailibilityScheduleScreen({
   const prepareSlotListArray = () => {
     const temp = [];
     const tempSlot = [...allData];
-  
+    const monthData = [];
+    const today = moment();
+    const day   = today.clone();
+
+    while (day.isSame(today, 'month')) {
+      const startDate = new Date(day.clone());
+      startDate.setHours(0, 0, 0, 0);
+      const startSlotTime = Utility.getTCDate(startDate);
+      const lastSlotTime = startSlotTime + 24 * 60 * 60;
+
+      const slot = {};
+      slot.start_datetime = startSlotTime;
+      slot.end_datetime   = lastSlotTime;
+      slot.blocked        = false;
+      monthData.push(slot);
+
+      day.add(1, 'day');
+    }
+
     for (const blockedSlot of tempSlot) {
       if (blockedSlot.blocked === true) {
         temp.push(blockedSlot);
       }
     }
-    
-    if(temp.length > 0) {
-      const result = _(temp).groupBy((value) => 
-      moment(getJSDate(value.start_datetime)).format('MMM DD, YYYY')).value();
-      const filData = [];
-      for (const property in result) {
-        if(result[property]) {
-          let tempVal = {};
-          const value = result[property];
-          const start = getJSDate(result[property][0]?.start_datetime);
-          start.setHours(0, 0, 0, 0);
-          tempVal = {
-            title: property,
-            time: result[property].length > 0 ? result[property][0]?.start_datetime : '',
-            data: result[property].length > 0 ? createCalenderTimeSlots(Utility.getTCDate(start), 24, value) : [],
-          };
-          filData.push(tempVal);
+
+    const monthlyData = [];
+    const blockedSlots = temp.sort(
+      (a, b) => new Date(a.start_datetime) - new Date(b.start_datetime),
+    );
+    monthData.forEach((item, key) => {
+      monthlyData[key] = [item];
+      blockedSlots.forEach((tempItem) => {
+        const data = {...tempItem};
+        const blockedStart = getJSDate(tempItem?.start_datetime);
+        blockedStart.setHours(0, 0, 0, 0);
+        const blockedSlotStartTime = Utility.getTCDate(blockedStart);
+        if(blockedSlotStartTime === item.start_datetime) {
+          if(monthlyData[key][0]?.blocked) {
+            monthlyData[key].push(data);
+          }else{
+            monthlyData[key] = [data];
+          }
         }
+      });
+    });
+
+    const filData = [];
+    const nextDateTime = getJSDate(Utility.getTCDate(new Date()) + 24 * 60 * 60);
+    nextDateTime.setHours(0, 0, 0, 0);
+    monthlyData.forEach((item) => {
+      let tempVal = {};
+      const start = getJSDate(item[0]?.start_datetime);
+      start.setHours(0, 0, 0, 0);
+
+      const currentDateTime = new Date();
+      currentDateTime.setHours(0, 0, 0, 0);
+
+      let title = `${days[getJSDate(item[0]?.start_datetime).getDay()]} ,  ${moment(getJSDate(item[0]?.start_datetime)).format('MMM DD')}`;
+      if(start.getTime() === currentDateTime.getTime()) {
+        title = 'Today'
       }
-      setListViewData(filData);
-    }
+
+      if(start.getTime() === nextDateTime.getTime()) {
+        title = 'Tomorrow'
+      }
+      
+      tempVal = {
+        title,
+        time: item[0]?.start_datetime,
+        data: item.length === 1 && !item[0].blocked  ? item : createCalenderTimeSlots(Utility.getTCDate(start), 24, item),
+      };
+      filData.push(tempVal);
+    });
+    setListViewData(filData);
   }
 
 
@@ -172,7 +220,7 @@ export default function AvailibilityScheduleScreen({
       const gap = Math.ceil(
         (item.start_datetime - Utility.getTCDate(start)) / 60,
       );
-      const gapPercent = Math.ceil((gap / 1440) * 100);
+      const gapPercent = Math.floor((gap / 1440) * 100);
 
       tempSlot.width = minutePercent;
       tempSlot.marginLeft = gapPercent;
@@ -187,25 +235,22 @@ export default function AvailibilityScheduleScreen({
   const addToSlotData = (data) => {
     const tempData = [...allData];
     data.forEach((item1) => {
-      let matched = false;
       allData.forEach((item2, key) => {
         if (
           item1.start_datetime <= item2.end_datetime &&
           item1.end_datetime > item2.end_datetime
         ) {
           tempData[key].end_datetime = item1.end_datetime;
-          matched = true;
         } else if (
           item1.end_datetime >= item2.start_datetime &&
           item1.start_datetime < item2.end_datetime
         ) {
           tempData[key].start_datetime = item1.start_datetime;
-          matched = true;
         }
       });
-      if (!matched) {
-        tempData.push(item1);
-      }
+      
+      tempData.push(item1);
+
     });
     setAllData(tempData);
   };
@@ -283,10 +328,31 @@ export default function AvailibilityScheduleScreen({
       const index = tempSlot.findIndex((item) => item.cal_id === cal_id);
       allSlots.splice(index, 1);
     })
-    
+    console.log('After Delete', allSlots)
     setAllData([...allSlots]);
+    return allSlots;
   };
 
+
+  const deleteOrCreateSlotData = async (payload) => {
+
+    const tempSlot = [...allSlots];
+
+    if(payload.deleteSlotsIds) {
+      payload.deleteSlotsIds.forEach((cal_id) => {
+        const index = allSlots.findIndex((item) => item.cal_id === cal_id);
+        tempSlot.splice(index, 1);
+      });
+    }
+
+    if(payload.newSlots) {
+      payload.newSlots.forEach((item) => {
+        tempSlot.push(item);
+      });
+    }
+    console.log('After Delete', tempSlot)
+    setAllData(tempSlot);
+  };
 
 
   const datesBlacklistFunc = (startDate, endDate) => {
@@ -345,6 +411,7 @@ export default function AvailibilityScheduleScreen({
     let backgroundColorWrapper;
     let background_color;
     let text_color;
+    let fontWeightVal = '400'
 
     if (
       moment(selectedDate).format('YYYY-MM-DD') ===
@@ -353,6 +420,7 @@ export default function AvailibilityScheduleScreen({
       backgroundColorWrapper = colors.themeColor;
       background_color = colors.themeColor;
       text_color = colors.whiteColor;
+      fontWeightVal = '700'
     } else if (
       blockedDaySlots.includes(moment(day.clone()).format('YYYY-MM-DD'))
     ) {
@@ -375,7 +443,7 @@ export default function AvailibilityScheduleScreen({
       text_color = colors.themeColor;
     } else {
       background_color = colors.whiteColor;
-      text_color = colors.availabilityBarColor;
+      text_color = colors.greenGradientStart;
     }
 
     customDatesStyles.push({
@@ -397,6 +465,7 @@ export default function AvailibilityScheduleScreen({
       },
       textStyle: {
         color: text_color,
+        fontWeight: fontWeightVal
       },
     });
 
@@ -412,7 +481,7 @@ export default function AvailibilityScheduleScreen({
           style={{
             width: 100,
             height: 30,
-            backgroundColor: '#f5f5f5',
+            backgroundColor: colors.grayBackgroundColor,
             borderRadius: 5,
             marginTop: 7,
             justifyContent: 'flex-end',
@@ -442,10 +511,10 @@ export default function AvailibilityScheduleScreen({
                     flexDirection: 'row', 
                     justifyContent: 'space-between', 
                     paddingHorizontal: 20,
-                     paddingVertical: 10
+                    paddingVertical: 10
                   }}>
-                    <Text style={{fontSize: 20}}>
-                      {days[getJSDate(list.time).getDay()]},  {list.title}
+                    <Text style={{fontSize: 20, fontWeight: '700'}}>
+                      {list.title.toUpperCase()}
                     </Text>
                     <TouchableOpacity
                       onPress={async() =>  { 
@@ -467,12 +536,13 @@ export default function AvailibilityScheduleScreen({
                       endDate={item.end_datetime}
                       allDay={item.allDay === true}
                       index={key}
-                      slots={slotList}
+                      slots={list.data}
                       strings={strings}
                       userData={userData}
                       uid={uid}
                       addToSlotData={addToSlotData}
                       deleteFromSlotData={deleteFromSlotData}
+                      deleteOrCreateSlotData={deleteOrCreateSlotData}
                     />
                   ))}
                 </View>
@@ -484,6 +554,7 @@ export default function AvailibilityScheduleScreen({
               <View
                 style={{
                   marginBottom: 10,
+
                 }}>
                 <View
                   style={{
@@ -566,16 +637,25 @@ export default function AvailibilityScheduleScreen({
                   )}
                 </View>
               </View>
-
-              <View
-                style={{
-                  borderBottomColor: '#eee',
-                  borderBottomWidth: StyleSheet.hairlineWidth,
-                }}
-              />
-
+              
+              <View style={{ overflow: 'hidden', paddingBottom: 5 }}>
+                <View
+                  style={styles.calenderBorder}
+                />
+                <TouchableOpacity 
+                style={styles.toggleStyle}
+                onPress = {() => setWeeklyCalender(!weeklyCalender)}
+                >
+                   <Image
+                      source={images.calenderToggle}
+                      style={{width: 20, height: 12, alignSelf: 'center', marginTop: 10}}
+                    />
+                </TouchableOpacity>
+              </View>
+              
+              
               {/* Availibility bottom view */}
-              <View>
+              <View style={{padding: 32}}>
                 <Text
                   style={{
                     textAlign: 'center',
@@ -589,17 +669,52 @@ export default function AvailibilityScheduleScreen({
                 <View
                   style={{
                     position: 'relative',
-                    width: '100%',
-                    paddingHorizontal: 20,
+                    width: '90%',
+                    alignSelf: 'center'
                   }}>
                   <View
                     style={{justifyContent: 'space-between', flexDirection: 'row'}}>
                     <Text style={{color: colors.darkGrey}}>0</Text>
-                    <Text style={{marginLeft: 5, color: colors.darkGrey}}>6</Text>
+                    <Text style={{marginLeft: 5, color: colors.darkGrey}}>
+                      6
+                    </Text>
                     <Text style={{marginLeft: 5, color: colors.darkGrey}}>12</Text>
                     <Text style={{marginLeft: 5, color: colors.darkGrey}}>18</Text>
                     <Text style={{color: colors.darkGrey}}>24</Text>
                   </View>
+                  <View 
+                  style={{
+                    position: 'absolute',
+                    left: '24%',
+                    top: 27,
+                    zIndex: 999999,
+                    height: 20,
+                    borderWidth: 1,
+                    borderColor: colors.whiteColor
+                  }}
+                  />
+                  <View 
+                  style={{
+                    position: 'absolute',
+                    left: '49%',
+                    top: 27,
+                    zIndex: 999999,
+                    height: 20,
+                    borderWidth: 1,
+                    borderColor: colors.whiteColor
+                  }}
+                  />
+                  <View 
+                  style={{
+                    position: 'absolute',
+                    left: '74%',
+                    top: 27,
+                    zIndex: 999999,
+                    height: 20,
+                    borderWidth: 1,
+                    borderColor: colors.whiteColor
+                  }}
+                  />
                   <View
                     style={{
                       width: '100%',
@@ -621,7 +736,7 @@ export default function AvailibilityScheduleScreen({
                           borderRadius: 2,
                           backgroundColor: colors.availabilityBarColor,
                           position: 'absolute',
-                          left: `${item.marginLeft + 6}%`,
+                          left: `${item.marginLeft + 0}%`,
                           top: 17,
                         }}
                       />
@@ -643,6 +758,7 @@ export default function AvailibilityScheduleScreen({
                       uid={uid}
                       addToSlotData={addToSlotData}
                       deleteFromSlotData={deleteFromSlotData}
+                      deleteOrCreateSlotData={deleteOrCreateSlotData}
                     />
                   ))}
                 </ScrollView>
@@ -662,7 +778,7 @@ export default function AvailibilityScheduleScreen({
                       style={{
                         textDecorationLine: 'underline',
                         textDecorationStyle: 'solid',
-                        textDecorationColor: '#000',
+                        textDecorationColor: colors.darkGrayColor,
                       }}>
                       {strings.editAvailability}
                     </Text>
@@ -683,15 +799,16 @@ export default function AvailibilityScheduleScreen({
           setVisibleAvailabilityModal(false);
         }}
         backdropOpacity={0}>
-        <SafeAreaView style={styles.modalMainViewStyle}>
+        <View style={styles.modalMainViewStyle}>
           <ChallengeAvailability
             setVisibleAvailabilityModal={setVisibleAvailabilityModal}
             slots={editableSlots}
             addToSlotData={addToSlotData}
             showAddMore={true}
             deleteFromSlotData={deleteFromSlotData}
+            deleteOrCreateSlotData={deleteOrCreateSlotData}
           />
-        </SafeAreaView>
+        </View>
       </Modal>
     </>
   );
@@ -709,4 +826,29 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
     height: Dimensions.get('window').height - 50,
   },
+  toggleStyle : {
+    width: 80, 
+    height: 35,
+    backgroundColor: colors.whiteColor,
+    shadowColor: colors.darkGrayColor,
+    shadowOffset: { width: -2, height: 4},
+    shadowOpacity:  0.2,
+    shadowRadius: 3,
+    elevation: 5,
+    alignSelf: 'center',
+    marginTop: -5,
+    zIndex: 9999999,
+    borderRadius: 5
+  },
+  calenderBorder: {
+    backgroundColor: colors.whiteColor,
+    height: 10,
+    width: '100%',
+    shadowColor: colors.darkGrayColor,
+    shadowOffset: { width: -2, height: 4 },
+    shadowOpacity:  0.2,
+    shadowRadius: 3,
+    elevation: 5,
+    zIndex: 99999
+  }
 });

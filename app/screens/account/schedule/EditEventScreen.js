@@ -100,6 +100,9 @@ export default function EditEventScreen({navigation, route}) {
     eventData.refund_policy ?? '',
   );
   const [toggle] = useState(eventData.allDay);
+  const eventOldStartDateTime = eventData.start_datetime;
+  const eventOldEndDateTime = eventData.end_datetime;
+  const eventOldUntilDateTime = eventData.untilDate;
   const [eventStartDateTime, setEventStartdateTime] = useState(getJSDate(eventData.start_datetime));
   const [eventEndDateTime, setEventEnddateTime] = useState(getJSDate(eventData.end_datetime));
   const [eventUntilDateTime, setEventUntildateTime] = useState(getJSDate(eventData.untilDate));
@@ -666,7 +669,7 @@ export default function EditEventScreen({navigation, route}) {
     .catch((e) => {
       setloading(false);
       console.log('Error ::--', e);
-      Alert.alert('', e.messages);
+      Alert.alert(e.messages);
     });
     return true;
   };
@@ -683,11 +686,6 @@ export default function EditEventScreen({navigation, route}) {
         background_thumbnail: eventData.background_thumbnail,
         background_full_image: eventData.background_full_image,
         allDay: toggle,
-        start_datetime: getTCDate(eventStartDateTime),
-        new_start_datetime : getTCDate(eventStartDateTime),
-        new_untilDate: eventData.untilDate,
-        end_datetime: getTCDate(eventEndDateTime),
-        new_end_datetime: getTCDate(eventEndDateTime),
         is_recurring: selectWeekMonth !== Verbs.eventRecurringEnum.Never,
         repeat: selectWeekMonth,
         blocked: is_Blocked,
@@ -746,6 +744,14 @@ export default function EditEventScreen({navigation, route}) {
           data.who_can_join.group_ids = [authContext.entity.uid];
         }
       }
+
+      data.start_datetime     =  eventOldStartDateTime;
+      data.new_start_datetime =  getTCDate(eventStartDateTime);
+      data.end_datetime       =  eventOldEndDateTime;
+      data.new_end_datetime   =  getTCDate(eventEndDateTime);
+      data.untilDate          =  eventOldUntilDateTime;
+      data.new_untilDate      =  eventData.untilDate;
+
 
       if (backgroundImageChanged) {
         const imageArray = [];
