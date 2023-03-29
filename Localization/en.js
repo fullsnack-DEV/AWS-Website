@@ -2535,5 +2535,5 @@ export default {
   timezoneAvailability: 'en_Date and time displayed in the app will follow the date and time settings of the device',
   eventPostCreate: 'en_Display the event on Posts as soon as the event is created.',
   whoCanInvite: 'en_WHO CAN INVITE',
-  editAvailability: 'en_Edit Availability'
+  editAvailability: 'en_Edit Availability',
 };

@@ -425,7 +425,7 @@ export default function AvailibilityScheduleScreen({
         </View>
       </View>
       )}
-      <ScrollView style={{backgroundColor: '#fff'}}>
+      <ScrollView style={{backgroundColor: colors.whiteColor}}>
         <ActivityLoader visible={loading} />
         {
         listView  ? (
@@ -587,7 +587,7 @@ export default function AvailibilityScheduleScreen({
                   style={{
                     position: 'relative',
                     width: '100%',
-                    paddingHorizontal: '8%',
+                    paddingHorizontal: 20,
                   }}>
                   <View
                     style={{justifyContent: 'space-between', flexDirection: 'row'}}>
@@ -618,7 +618,7 @@ export default function AvailibilityScheduleScreen({
                           borderRadius: 2,
                           backgroundColor: colors.availabilityBarColor,
                           position: 'absolute',
-                          left: `${item.marginLeft + 9.5}%`,
+                          left: `${item.marginLeft + 6}%`,
                           top: 17,
                         }}
                       />

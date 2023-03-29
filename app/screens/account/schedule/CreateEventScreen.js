@@ -116,6 +116,10 @@ export default function CreateEventScreen({navigation, route}) {
   const posted = 'posted';
   const invite = 'invite';
 
+  const indexOne = 0;
+  const indexTwo = 1;
+  const indexThree = 2;
+
   const [whoOption, setWhoOption] = useState();
   const [whoCanJoinOption, setWhoCanJoinOption] = useState({
     text: strings.everyoneRadio,
@@ -1179,7 +1183,7 @@ export default function CreateEventScreen({navigation, route}) {
               <Text style={styles.headerTextStyle}>{strings.whoCanSee}</Text>
               <TouchableOpacity
                 onPress={() => {
-                  setWhoOption('see');
+                  setWhoOption(see);
                   setVisibleWhoModal(true);
                 }}>
                 <View style={styles.dropContainer}>
@@ -1193,7 +1197,7 @@ export default function CreateEventScreen({navigation, route}) {
                 </View>
               </TouchableOpacity>
             </View>
-            {whoCanSeeOption.value === 2 &&
+            {whoCanSeeOption.value === indexThree &&
               authContext.entity.role === Verbs.entityTypeUser && (
                 <View>
                   <View style={styles.allStyle}>
@@ -1234,7 +1238,7 @@ export default function CreateEventScreen({navigation, route}) {
               <Text style={styles.headerTextStyle}>{strings.whoCanJoin}</Text>
               <TouchableOpacity
                 onPress={() => {
-                  setWhoOption('join');
+                  setWhoOption(join);
                   setVisibleWhoModal(true);
                 }}>
                 <View style={styles.dropContainer}>
@@ -1344,7 +1348,7 @@ export default function CreateEventScreen({navigation, route}) {
                 <TouchableOpacity
                   style={styles.checkboxPost}
                   onPress={() => {
-                    if(eventPosted.value === 1) {
+                    if(eventPosted.value === indexTwo) {
                       setEventPosted({value: 0, text: strings.scheduleOnlyText})
                     }else{
                       setEventPosted({value: 1, text: strings.scheduleAndPostText})
@@ -1564,10 +1568,10 @@ export default function CreateEventScreen({navigation, route}) {
             showsVerticalScrollIndicator={false}
             data={
               ['user', 'player'].includes(authContext.entity.role)
-                ? whoOption === 'join'
+                ? whoOption === join
                   ? whoCanJoinUser
                   : whoCanSeeUser
-                : whoOption === 'join'
+                : whoOption === join
                 ? whoCanJoinGroup
                 : whoCanSeeGroup
             }
@@ -1665,7 +1669,7 @@ export default function CreateEventScreen({navigation, route}) {
         options={[strings.camera, strings.album, strings.cancelTitle]}
         cancelButtonIndex={2}
         onPress={(index) => {
-          if (index === 0) {
+          if (index === indexOne) {
             openCamera();
           } else if (index === 1) {
             openImagePicker(750, 348);

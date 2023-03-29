@@ -779,6 +779,7 @@ const styles = StyleSheet.create({
     width: wp('96%'),
     alignSelf: 'center',
     padding: wp('1.5%'),
+    marginHorizontal: 20
   },
   headerTextStyle: {
     fontSize: 16,
