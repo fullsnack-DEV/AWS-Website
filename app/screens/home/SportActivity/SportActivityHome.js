@@ -454,6 +454,14 @@ const SportActivityHome = ({navigation, route}) => {
         level={sportObj?.level}
         loading={isFectchingUser}
         entityType={entityType}
+        onPressUser={() => {
+          navigation.navigate('HomeScreen', {
+            uid: userData.user_id,
+            role: userData.entity_type,
+            backButtonVisible: true,
+            menuBtnVisible: false,
+          });
+        }}
       />
 
       <ChallengeButton

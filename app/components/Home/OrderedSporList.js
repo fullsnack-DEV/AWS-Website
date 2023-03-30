@@ -373,7 +373,7 @@ const OrderedSporList = ({
             (obj) =>
               obj.sport &&
               (obj.is_active === true || !('is_active' in obj)) &&
-              (obj.is_hide === true || !('is_hide' in obj)),
+              (!obj.is_hide || !('is_hide' in obj)),
           );
         }
         list = [...list, ...newList];
@@ -398,27 +398,34 @@ const OrderedSporList = ({
     }
 
     let updatedList = [];
+
     if (list.length < 1) {
-      updatedList = [
-        ...list,
-        {sport_name: strings.addrole, item_type: EntityStatus.addNew},
-      ];
+      updatedList = isAdmin
+        ? [
+            ...list,
+            {sport_name: strings.addrole, item_type: EntityStatus.addNew},
+          ]
+        : [...list];
     } else if (list.length > 10) {
-      updatedList = [
-        ...list.slice(0, 10),
-        {
-          sport_name: strings.more,
-          item_type: EntityStatus.moreActivity,
-        },
-      ];
+      updatedList = isAdmin
+        ? [
+            ...list.slice(0, 10),
+            {
+              sport_name: strings.more,
+              item_type: EntityStatus.moreActivity,
+            },
+          ]
+        : [...list.slice(0, 10)];
     } else {
-      updatedList = [
-        ...list,
-        {
-          sport_name: strings.more,
-          item_type: EntityStatus.moreActivity,
-        },
-      ];
+      updatedList = isAdmin
+        ? [
+            ...list,
+            {
+              sport_name: strings.more,
+              item_type: EntityStatus.moreActivity,
+            },
+          ]
+        : [...list];
     }
 
     return (

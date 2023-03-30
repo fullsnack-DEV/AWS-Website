@@ -21,9 +21,9 @@ export default function SportHideUnhideScreen({navigation}) {
   const onSavePress = () => {
     const user = authContext.entity.obj;
     setloading(true);
-    let registeredSports = [];
-    let refereeSports = [];
-    let scorekeeperSports = [];
+    let registeredSports = [...user.registered_sports];
+    let refereeSports = [...user.referee_data];
+    let scorekeeperSports = [...user.scorekeeper_data];
 
     updatedSportList.forEach((item) => {
       if (item.type === Verbs.entityTypePlayer) {

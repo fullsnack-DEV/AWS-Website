@@ -4706,6 +4706,13 @@ const HomeScreen = ({navigation, route}) => {
           isVisible={showSportsModal}
           closeModal={() => {
             setShowSportsModal(false);
+            navigation.navigate('SportActivityHome', {
+              sport: sportObject?.sport,
+              sportType: sportObject?.sport_type,
+              uid: route.params.uid,
+              selectedTab: strings.infoTitle,
+              entityType,
+            });
           }}
           isAdmin={isAdmin}
           userData={currentUserData}

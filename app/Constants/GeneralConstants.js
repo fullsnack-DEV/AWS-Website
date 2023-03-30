@@ -42,5 +42,17 @@ export const SportActivityOrder = {
   2: strings.displayInFixOrder,
 };
 
+export const ModalTypes = {
+  default: 'default',
+  style1: 'style1',
+  style2: 'style2',
+  style3: 'style3',
+  style4: 'style4',
+  style5: 'style5',
+  style6: 'style6',
+  style7: 'style7',
+  style8: 'style8',
+};
+
 export default EntityStatus;
 export {privacySettingEnum, privacyKey};

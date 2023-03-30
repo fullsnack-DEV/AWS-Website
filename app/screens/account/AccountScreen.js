@@ -487,37 +487,50 @@ export default function AccountScreen({navigation, route}) {
   const handleSectionMemberClick = useCallback(
     (rowObj) => {
       const option = rowObj.option;
-
       if (authContext.entity.role !== Verbs.entityTypeUser) {
         setIsRulesModalVisible(
           option === strings.createTeamText ||
             option === strings.createClubText,
         );
-
-        if (option === strings.createTeamText) {
+      }
+      switch (option) {
+        case strings.createTeamText:
           setCreateEntity(Verbs.entityTypeTeam);
-        } else if (option === strings.createClubText) {
+          break;
+
+        case strings.createClubText:
           setCreateEntity(Verbs.entityTypeClub);
-        } else {
-          navigation.navigate(
-            rowObj.navigateTo.screenName,
-            rowObj.navigateTo.data,
-          );
-        }
-      } else {
-        if (option == strings.addSportsTitle) {
+          break;
+
+        case strings.addSportsTitle:
           setNavigationOptions({
             screenName: rowObj.navigateTo.screenName,
             data: rowObj.navigateTo.data,
           });
           setSelectedMenuOptionType(rowObj.menuOptionType);
           setVisibleSportsModal(true);
-        } else {
-          navigation.navigate(
-            rowObj.navigateTo.screenName,
-            rowObj.navigateTo.data,
-          );
-        }
+          break;
+
+        default:
+          if (
+            authContext.entity.role === Verbs.entityTypeUser &&
+            rowObj.sport
+          ) {
+            navigation.navigate('SportActivityHome', {
+              sport: rowObj.sport.sport,
+              sportType: rowObj.sport.sport_type ?? '',
+              uid: authContext.entity.obj.user_id,
+              selectedTab: strings.infoTitle,
+              entityType: rowObj.sport.type,
+              backScreen: 'AccountScreen',
+            });
+          } else {
+            navigation.navigate(
+              rowObj.navigateTo.screenName,
+              rowObj.navigateTo.data,
+            );
+          }
+          break;
       }
     },
     [authContext.entity, navigation],
@@ -544,26 +557,17 @@ export default function AccountScreen({navigation, route}) {
         <AccountMenuRow
           item={rowItem}
           isAccountDeactivated={isAccountDeactivated}
-          onPressSetting={() => handleSectionMemberClick(rowItem)}
+          onPressSetting={() => {
+            navigation.navigate(
+              rowItem.navigateTo.screenName,
+              rowItem.navigateTo.data,
+            );
+          }}
           onPressCancelRequest={() =>
             onCancelTeamRequest('cancel', rowItem?.option?.request_id)
           }
           onPressSport={() => {
-            if (
-              rowItem.option?.entity_type === Verbs.entityTypeTeam ||
-              rowItem.option?.entity_type === Verbs.entityTypeClub
-            ) {
-              return;
-            } else {
-              navigation.navigate('SportActivityHome', {
-                sport: rowItem.sport.sport,
-                sportType: rowItem.sport.sport_type ?? '',
-                uid: authContext.entity.obj.user_id,
-                selectedTab: strings.infoTitle,
-                entityType: rowItem.sport.type,
-                backScreen: 'AccountScreen',
-              });
-            }
+            handleSectionMemberClick(rowItem);
           }}
         />
       ) : null,
