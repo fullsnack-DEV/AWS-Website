@@ -13,11 +13,6 @@ const styles = StyleSheet.create({
     height: Dimensions.get('window').height - 50,
     borderTopRightRadius: 20,
     borderTopLeftRadius: 20,
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 5,
-    elevation: 15,
   },
   headerRow: {
     paddingTop: 15,

@@ -2526,6 +2526,33 @@ export default {
   lookingForClubOption: 'en_Looking for club!',
   lookingForBottomText:
     'en_If you select “Yes, display it.”, your profile may be displayed on the “{0}” section in Local Home. ',
+
+  clubIsCreated: 'en_{0} \n has been created',
+
+  clubIsCreatedSub:
+    'en_ Your account has been switched to the account of the club.',
+  teamCreatedSub:
+    'en_ Your account has been switched to the account of the team.',
+  pleaseFillTeanName: 'en_Please fill in team name.',
+  pleaseFillHomeCity: 'en_Please fill in home city.',
+  pleaseFillPlayerGender: 'en_Please fill in player’s genders.',
+  pleaseSelectLanguage: 'en_Please Select the Langauage',
+  incomingChallengeSettingsTitleTeam:
+    'en_Please review your team’s incoming challenge settings. These settings are only applicable to the match reservation when your team is the match host. When your team is the Challenger, the opponent’s incoming challenge settings Will be applied.',
+  createTeamModalTitle: 'en_What sport does the new team will play?',
+  congratsTeamCreated:
+    'en_Congratulations! Vancouver Whitecaps FC has been created.',
+  congratesSubTitle: 'en_Your account has been switched to {0}.  ',
+  whoDoYouwantToCreateTeamWith:
+    'en_Who do you want to create the new team with?',
+  congratulationsTitle: 'en_Congratulations!',
+  hasBeenCreated: ' en_has been created.',
+  jerseyValidation: 'en_Jersey Number is not valid!',
+  clubModalTitle: 'en_Which sports does the new club will be involved in?',
+  clubModalSubTitle:
+    'en_The multiple sports of teams can be a member of a club. You can edit the sports of the club now or later.',
+  createTeamUnderYourClub: 'en_Create A Team Under Your CLub ',
+
   scorekeptMatches: 'en_Scorekept Matches',
   challengeScreenBottomText:
     'en_These settings will be applied only to incoming challenges that you will receive.',
@@ -2536,13 +2563,15 @@ export default {
   hideUnhideDescription:
     'en_If you hide a sport activity, other users or groups will not see its activity card on your profile and also will not see the sports activity in your sports activity list. However, they will still be able to access and see the contents of the sports activity page when searched.',
 
-
-  overlappingAvailability: 'en_An available time slot and blocked time slot cannot include an overlapped time period at the same time.',
-  timezoneAvailability: 'en_Date and time displayed in the app will follow the date and time settings of the device',
-  eventPostCreate: 'en_Display the event on Posts as soon as the event is created.',
+  overlappingAvailability:
+    'en_An available time slot and blocked time slot cannot include an overlapped time period at the same time.',
+  timezoneAvailability:
+    'en_Date and time displayed in the app will follow the date and time settings of the device',
+  eventPostCreate:
+    'en_Display the event on Posts as soon as the event is created.',
   whoCanInvite: 'en_WHO CAN INVITE',
   editAvailability: 'en_Edit Availability',
 
   updateRecurringEvent: 'en_Update recurring event',
-  deleteRecurringEvent: 'en_Delete recurring event'
+  deleteRecurringEvent: 'en_Delete recurring event',
 };

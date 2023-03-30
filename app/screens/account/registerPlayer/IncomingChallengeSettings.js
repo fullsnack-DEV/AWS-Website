@@ -4,14 +4,15 @@ import React, {useState, useEffect, useContext} from 'react';
 import {
   View,
   Text,
-  Image,
   FlatList,
   TouchableOpacity,
   Alert,
   SafeAreaView,
+  Animated,
+  StyleSheet,
   Pressable,
-  ActivityIndicator,
-  Platform,
+  Image,
+  Dimensions,
 } from 'react-native';
 
 import AuthContext from '../../../auth/context';
@@ -19,6 +20,7 @@ import images from '../../../Constants/ImagePath';
 import {strings} from '../../../../Localization/translation';
 import Verbs from '../../../Constants/Verbs';
 import {patchPlayer} from '../../../api/Users';
+import LinearGradient from 'react-native-linear-gradient';
 import * as Utility from '../../../utils';
 import TCFormProgress from '../../../components/TCFormProgress';
 import styles from './IncomingChallengeSettingsStyles';
@@ -29,6 +31,12 @@ import WrapperModal from '../../../components/IncomingChallengeSettingsModals/Wr
 import DataSource from '../../../Constants/DataSource';
 import HostChallengerInfoModal from './modals/HostChallengerInfoModal';
 import ScreenHeader from '../../../components/ScreenHeader';
+import uploadImages from '../../../utils/imageAction';
+
+import fonts from '../../../Constants/Fonts';
+import ActivityLoader from '../../../components/loader/ActivityLoader';
+import {createGroup} from '../../../api/Groups';
+import colors from '../../../Constants/Colors';
 
 export default function IncomingChallengeSettings({navigation, route}) {
   const [settingObject, setSettingObject] = useState({});
@@ -38,11 +46,25 @@ export default function IncomingChallengeSettings({navigation, route}) {
   const [showMatchFeeReminderModal, setShowMatchFeeReminderModal] =
     useState(false);
   const [isAlreadyWarned, setIsAlreadyWarned] = useState(false);
-  const {playerData, sportName, sportType, sport, settingType} = route.params;
+  const [showSwitchScreen, setShowSwitchScreen] = useState(false);
+  const animProgress = React.useState(new Animated.Value(0))[0];
+
+  const {
+    playerData,
+    sportName,
+    sportType,
+    sport,
+    settingType,
+    fromCreateTeam,
+    groupData,
+    thumbnail,
+    backgroundThumbnail,
+  } = route.params;
   const [playerObject] = useState(playerData);
   const [showModal, setShowModal] = useState(false);
   const [modalObj, setModalObj] = useState({});
   const [showHostChallengerModal, setShowHosChallengerModal] = useState(false);
+  const entity = authContext.entity;
   const challengeSettingMenu = [
     {key: strings.sport},
     {key: strings.availability},
@@ -144,6 +166,121 @@ export default function IncomingChallengeSettings({navigation, route}) {
     }
   };
 
+  const onCreateTeam = () => {
+    onANimate(20);
+
+    if (settingObject.game_fee?.fee === 0 && !isAlreadyWarned) {
+      setShowMatchFeeReminderModal(true);
+      setIsAlreadyWarned(true);
+    } else {
+      setShowSwitchScreen(true);
+
+      settingObject.sport = sport;
+      settingObject.sport_type = sportType;
+      groupData.setting = settingObject;
+
+      const bodyParams = {
+        ...groupData,
+        entity_type: Verbs.entityTypeTeam,
+      };
+
+      if (thumbnail) {
+        bodyParams.thumbnail = thumbnail;
+      }
+      if (backgroundThumbnail) {
+        bodyParams.background_thumbnail = backgroundThumbnail;
+      }
+
+      if (bodyParams?.thumbnail || bodyParams?.background_thumbnail) {
+        const imageArray = [];
+        if (bodyParams?.thumbnail) {
+          imageArray.push({path: bodyParams?.thumbnail});
+        }
+        if (bodyParams?.background_thumbnail) {
+          imageArray.push({path: bodyParams?.background_thumbnail});
+        }
+
+        uploadImages(imageArray, authContext)
+          .then((responses) => {
+            const attachments = responses.map((item) => ({
+              type: 'image',
+              url: item.fullImage,
+              thumbnail: item.thumbnail,
+            }));
+            if (bodyParams?.thumbnail) {
+              bodyParams.thumbnail = attachments[0].thumbnail;
+              bodyParams.full_image = attachments[0].url;
+            }
+
+            if (bodyParams?.background_thumbnail) {
+              let bgInfo = attachments[0];
+              if (attachments.length > 1) {
+                bgInfo = attachments[1];
+              }
+              bodyParams.background_thumbnail = bgInfo.thumbnail;
+              bodyParams.background_full_image = bgInfo.url;
+            }
+            setTimeout(() => {
+              onANimate(50);
+            }, 30);
+
+            createGroup(bodyParams, entity.uid, entity.obj.role, authContext)
+              .then((response) => {
+                setloading(false);
+                setShowSwitchScreen(true);
+
+                navigation.navigate('HomeScreen', {
+                  uid: response.payload.group_id,
+                  role: response.payload.entity_type,
+                  backButtonVisible: true,
+                  menuBtnVisible: false,
+                  isEntityCreated: true,
+                  groupName: response.payload.group_name,
+                  entityObj: response.payload,
+                });
+              })
+              .catch((e) => {
+                setloading(false);
+                setShowSwitchScreen(false);
+                setTimeout(() => {
+                  Alert.alert(strings.alertmessagetitle, e.message);
+                }, 10);
+              });
+          })
+          .catch((e) => {
+            setShowSwitchScreen(false);
+            setTimeout(() => {
+              Alert.alert(strings.appName, e.messages);
+            }, 0.1);
+          });
+      } else {
+        onANimate(100);
+        createGroup(bodyParams, entity.uid, entity.obj.role, authContext)
+          .then((response) => {
+            setloading(false);
+            setShowSwitchScreen(true);
+
+            navigation.navigate('HomeScreen', {
+              uid: response.payload.group_id,
+              role: response.payload.entity_type,
+              backButtonVisible: true,
+              menuBtnVisible: false,
+              isEntityCreated: true,
+              groupName: response.payload.group_name,
+              entityObj: response.payload,
+            });
+          })
+          .catch((e) => {
+            setloading(false);
+            setShowSwitchScreen(false);
+            setTimeout(() => {
+              Alert.alert(strings.alertmessagetitle, e.message);
+            }, 10);
+          });
+      }
+    }
+  };
+
   const onSave = () => {
     if (settingObject.game_fee?.fee === 0 && !isAlreadyWarned) {
       setShowMatchFeeReminderModal(true);
@@ -194,10 +331,162 @@ export default function IncomingChallengeSettings({navigation, route}) {
     }
   };
 
+  const onANimate = (val) => {
+    Animated.timing(animProgress, {
+      useNativeDriver: false,
+      toValue: val,
+      duration: 600,
+    }).start();
+  };
+
+  const animWidthPrecent = animProgress.interpolate({
+    inputRange: [0, 50, 100],
+    outputRange: ['0%', '50%', '100%'],
+  });
+
+  const placeHolder = images.teamPlaceholderSmall;
+
   return (
     <SafeAreaView style={styles.parent}>
+      {showSwitchScreen && (
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: colors.whiteColor,
+
+            justifyContent: 'center',
+            alignItems: 'center',
+            ...StyleSheet.absoluteFillObject,
+
+            zIndex: 1000,
+          }}>
+          <ActivityLoader visible={false} />
+          <Pressable
+            style={{
+              marginBottom: 89,
+              position: 'absolute',
+              marginTop: 300,
+            }}
+            onPress={() => onANimate(56)}>
+            <View
+              style={{
+                alignItems: 'center',
+                justifyContent: 'center',
+
+                borderRadius: 100,
+                alignSelf: 'center',
+                width: 60,
+                height: 60,
+                borderWidth: 1,
+                borderColor: '#DDDDDD',
+              }}>
+              <View>
+                <Image
+                  source={images.teamPatch}
+                  style={{
+                    height: 15,
+                    width: 15,
+                    resizeMode: 'cover',
+                    position: 'absolute',
+                    left: 10,
+                    top: 45,
+                  }}
+                />
+              </View>
+              <Image
+                source={placeHolder}
+                style={{
+                  height: 50,
+                  width: 50,
+
+                  borderRadius: 25,
+                  resizeMode: 'contain',
+                  alignSelf: 'center',
+                  marginTop: 5,
+                }}
+              />
+              <View
+                style={{
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  alignSelf: 'center',
+                  position: 'absolute',
+                  top: 0,
+                  bottom: 0,
+                  right: 0,
+                  left: 0,
+                }}>
+                <Text
+                  style={{
+                    marginTop: -5,
+                    textAlign: 'center',
+                    color: colors.whiteColor,
+                    fontFamily: fonts.RBold,
+                    fontSize: 16,
+                  }}>
+                  {groupData.group_name.charAt(0)}
+                </Text>
+              </View>
+            </View>
+            <View
+              style={{
+                marginTop: 15,
+              }}>
+              <Text
+                style={{
+                  lineHeight: 24,
+                  fontFamily: fonts.RMedium,
+                  fontSize: 16,
+                  textAlign: 'center',
+                }}>
+                Switching to
+              </Text>
+              <Text
+                style={{
+                  lineHeight: 24,
+                  fontFamily: fonts.RBold,
+                  fontSize: 16,
+                  textAlign: 'center',
+                }}>
+                {groupData.group_name}
+              </Text>
+            </View>
+          </Pressable>
+
+          <Animated.View
+            style={{
+              width: 135,
+              height: 5,
+              backgroundColor: '#F2F2F2',
+              borderRadius: 20,
+
+              marginTop: Dimensions.get('screen').height * 0.8,
+            }}>
+            <Animated.View
+              style={{
+                width: '100%',
+                height: 5,
+
+                width: animWidthPrecent,
+              }}>
+              <LinearGradient
+                style={{width: '100%', height: 5}}
+                colors={['rgba(255, 138, 1, 0.6)', 'rgba(255, 88, 0, 0.6) ']}
+                start={{x: 0, y: 0.5}}
+                end={{x: 1, y: 0.5}}
+              />
+            </Animated.View>
+          </Animated.View>
+
+          {/* PRogree Bar */}
+        </View>
+      )}
       <ScreenHeader
-        title={strings.registerAsPlayerTitle}
+        title={
+          fromCreateTeam
+            ? strings.createTeamText
+            : strings.registerAsPlayerTitle
+        }
         leftIcon={images.backArrow}
         leftIconPress={() => {
           navigation.goBack();
@@ -205,7 +494,11 @@ export default function IncomingChallengeSettings({navigation, route}) {
         isRightIconText
         rightButtonText={strings.done}
         onRightButtonPress={() => {
-          onSave();
+          if (fromCreateTeam) {
+            onCreateTeam();
+          } else {
+            onSave();
+          }
         }}
         loading={loading}
         containerStyle={{
@@ -230,7 +523,9 @@ export default function IncomingChallengeSettings({navigation, route}) {
                   {strings.incomingChallengeSettingsTitle}
                 </Text>
                 <Text style={styles.info}>
-                  {strings.incomingChallengeSettingsInfo}
+                  {fromCreateTeam
+                    ? strings.incomingChallengeSettingsTitleTeam
+                    : strings.incomingChallengeSettingsInfo}
                 </Text>
 
                 <TouchableOpacity
@@ -368,7 +663,11 @@ export default function IncomingChallengeSettings({navigation, route}) {
         }}
         onContinue={() => {
           setShowMatchFeeReminderModal(false);
-          onSave();
+          if (fromCreateTeam) {
+            onCreateTeam();
+          } else {
+            onSave();
+          }
         }}
       />
 

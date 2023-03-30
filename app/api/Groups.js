@@ -247,3 +247,11 @@ export const cancelGroupInvite = (params, authContext) =>
     authContext,
     data: params,
   });
+
+export const groupValidate = (params, authContext) =>
+  makeAPIRequest({
+    method: 'post',
+    url: `${Config.BASE_URL}/groups/request/validate`,
+    authContext,
+    data: params,
+  });

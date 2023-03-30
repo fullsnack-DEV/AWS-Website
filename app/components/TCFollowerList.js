@@ -48,6 +48,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+
     // width: 200,
   },
   profileView: {
@@ -57,15 +58,11 @@ const styles = StyleSheet.create({
     borderRadius: 88,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: colors.grayColor,
-    shadowOffset: {width: 0, height: 3},
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
-    elevation: 3,
   },
   topTextContainer: {
     marginLeft: 10,
     alignSelf: 'center',
+    marginTop: 5,
   },
   nameText: {
     fontSize: 20,

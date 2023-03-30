@@ -1,4 +1,5 @@
 /* eslint-disable  no-unused-vars */
+/* eslint-disable  no-else-return */
 
 import React, {useState, useEffect, useLayoutEffect, useContext} from 'react';
 import {
@@ -79,7 +80,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
   const [postalCode, setPostalCode] = useState('');
 
   const [setting, setSetting] = useState();
-  const [location, setLocation] = useState();
+  const [location, setLocation] = useState('');
   const [city, setCity] = useState();
   const [state, setState] = useState();
   const [country, setCountry] = useState();
@@ -204,12 +205,32 @@ export default function RequestBasicInfoScreen({navigation, route}) {
 
   // Form Validation
   const checkValidation = () => {
+    if (setting.address && location === '') {
+      //   Alert.alert('in address');
+      //   console.log(memberInfo, 'street address');
+      Alert.alert('Towns Cup', 'Please enter all location parameter.');
+      return false;
+    }
+
+    if (setting?.weight && memberInfo.weight !== null) {
+      if (!memberInfo.weight?.weight_type) {
+        Alert.alert('Towns Cup', 'Please select weight measurement');
+        return false;
+      } else if (
+        memberInfo.weight.weight <= 0 ||
+        memberInfo.weight.weight >= 1000 ||
+        memberInfo.weight.weight === undefined
+      ) {
+        Alert.alert('Towns Cup', 'Please enter valid weight.');
+        return false;
+      }
+    }
+
     if (setting?.height && memberInfo.height !== null) {
       if (!memberInfo.height?.height_type) {
         Alert.alert('Towns Cup', 'Please select height measurement');
         return false;
-      }
-      if (
+      } else if (
         memberInfo.height.height <= 0 ||
         memberInfo.height.height >= 1000 ||
         memberInfo.height.height === undefined
@@ -218,19 +239,9 @@ export default function RequestBasicInfoScreen({navigation, route}) {
         return false;
       }
     }
-    if (setting?.weight && memberInfo.weight) {
-      if (!memberInfo.weight.weight_type) {
-        Alert.alert('Towns Cup', 'Please select weight measurement');
-        return false;
-      }
-      if (memberInfo.weight.weight <= 0 || memberInfo.weight.weight >= 1000) {
-        Alert.alert('Towns Cup', 'Please enter valid weight.');
-        return false;
-      }
-    }
 
     if (setting.phone) {
-      if (memberInfo?.phone_numbers?.length <= 0) {
+      if (memberInfo?.phone_numbers?.length == null) {
         Alert.alert('Towns Cup', 'Please enter phone number.');
         return false;
       }
@@ -242,15 +253,6 @@ export default function RequestBasicInfoScreen({navigation, route}) {
         Alert.alert('Towns Cup', 'Please fill all phone number parameter.');
         return false;
       }
-    }
-    if (
-      setting.address &&
-      !location &&
-      memberInfo?.street_address === '' &&
-      memberInfo?.postal_code === ''
-    ) {
-      Alert.alert('Towns Cup', 'Please enter all location parameter.');
-      return false;
     }
     return true;
   };
@@ -537,13 +539,13 @@ export default function RequestBasicInfoScreen({navigation, route}) {
     [city, state, country, location, postalCode].filter((w) => w).join(', ');
 
   const onSelectAddress = (_location) => {
-    console.log(_location, ' _location on manual press');
-
     setCity(_location.city);
     setState(_location.state);
     setCountry(_location.country);
     setPostalCode(_location.postalCode);
     setLocation(_location.formattedAddress);
+
+    memberInfo.street_address = _location.formattedAddress;
   };
 
   const setCityandPostal = (street, code) => {

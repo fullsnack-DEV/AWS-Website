@@ -9,6 +9,8 @@
 /* eslint-disable no-console */
 /* eslint-disable react-native/no-raw-text */
 /* eslint-disable no-nested-ternary */
+/* eslint-disable no-unneeded-ternary */
+
 import React, {
   useEffect,
   useRef,
@@ -73,6 +75,7 @@ import {
   // patchRegisterRefereeDetails,
   patchRegisterScorekeeperDetails,
   userActivate,
+  sendInvitationInGroup,
 } from '../../api/Users';
 import {createPost, createReaction} from '../../api/NewsFeeds';
 import {
@@ -162,6 +165,8 @@ import {
 } from '../../utils/constant';
 import Verbs from '../../Constants/Verbs';
 import SportActivityModal from './SportActivity/SportActivityModal';
+import CongratulationsModal from '../account/registerPlayer/modals/CongratulationsModal';
+
 // import { getSetting } from '../challenge/manageChallenge/settingUtility';
 let entityObject = {};
 
@@ -301,6 +306,7 @@ const HomeScreen = ({navigation, route}) => {
   const actionSheet = useRef();
   const [actionSheetTitle, setActionSheetTitle] = useState('');
   const cancelReqActionSheet = useRef();
+  const [congratulationsModal, setCongratulationsModal] = useState(false);
   const [actionObject] = useState({
     activity_id: '',
     entity_type: '',
@@ -343,9 +349,7 @@ const HomeScreen = ({navigation, route}) => {
   useEffect(() => {
     if (route?.params?.isEntityCreated) {
       onSwitchProfile(route?.params?.entityObj);
-      setTimeout(() => {
-        confirmationRef.current.open();
-      }, 1000);
+      setCongratulationsModal(true);
     }
   }, [route?.params?.entityObj, route?.params?.isEntityCreated]);
 
@@ -3127,7 +3131,7 @@ const HomeScreen = ({navigation, route}) => {
         onConnectionButtonPress={onConnectionButtonPress}
       />
     ),
-    [currentUserData, onConnectionButtonPress, navigation],
+    [currentUserData, onConnectionButtonPress],
   );
 
   const renderHeaderBackgroundUserProfile = useMemo(
@@ -3226,6 +3230,34 @@ const HomeScreen = ({navigation, route}) => {
       renderHeaderUserHomeTopSection,
     ],
   );
+
+  const sendInvitation = (userids) => {
+    setloading(true);
+    const entity = authContext.entity;
+    const obj = {
+      entity_type: entity.role,
+      userIds: userids,
+      uid: entity.uid,
+    };
+
+    sendInvitationInGroup(obj, authContext)
+      .then(() => {
+        setTimeout(() => {
+          Utility.showAlert(
+            strings.invitationSent,
+
+            () => {
+              console.log('ok');
+            },
+          );
+        }, 10);
+      })
+      .catch((e) => {
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
 
   const renderHomeTabs = useCallback(
     ({item, index}) => (
@@ -3819,6 +3851,29 @@ const HomeScreen = ({navigation, route}) => {
     switchProfile(item)
       .then((currentEntity) => {
         switchQBAccount(item, currentEntity);
+
+        // show congrats modal when team is created according to new flow
+
+        // show alert when club is created
+
+        // if (authContext.entity.role === Verbs.entityTypeClub) {
+
+        //   Alert.alert(
+        //     format(route?.params?.groupName),
+        //     strings.clubIsCreated,
+        //     authContext.entity.role === Verbs.entityTypeClub
+        //       ? strings.clubIsCreatedSub
+        //       : strings.teamCreatedSub,
+
+        //     [
+        //       {
+        //         text: 'OK',
+        //         onPress: () => console.log('pressed'),
+        //       },
+        //     ],
+        //     {cancelable: false},
+        //   );
+        // }
       })
       .catch((e) => {
         setTimeout(() => {
@@ -4498,7 +4553,6 @@ const HomeScreen = ({navigation, route}) => {
             }
           }}
         />
-
         <ActionSheet
           ref={manageChallengeActionSheet}
           // options={[
@@ -4701,7 +4755,6 @@ const HomeScreen = ({navigation, route}) => {
             />
           )}
         </View>
-
         <SportActivityModal
           isVisible={showSportsModal}
           closeModal={() => {
@@ -4786,7 +4839,6 @@ const HomeScreen = ({navigation, route}) => {
             playsInModalVisible,
           ],
         )} */}
-
         {/* Referee In Modal */}
         {/* {refereesInModalVisible && (
           <Modal
@@ -4860,7 +4912,6 @@ const HomeScreen = ({navigation, route}) => {
                 />
               </SafeAreaView>
             </View> */}
-
         {/* Review Detail View */}
         {/* {reviewDetailModalVisible && (
               <Modal
@@ -4951,7 +5002,6 @@ const HomeScreen = ({navigation, route}) => {
         {/* </SafeAreaView>
               </Modal>
             )}  */}
-
         {/* Review Detail View */}
         {/* {refereeInfoModalVisible && (
               <Modal
@@ -5057,7 +5107,6 @@ const HomeScreen = ({navigation, route}) => {
                 </SafeAreaView>
               </Modal>
             )} */}
-
         {/* {refereeMatchModalVisible && (
               <Modal
                 isVisible={refereeMatchModalVisible}
@@ -5156,7 +5205,6 @@ const HomeScreen = ({navigation, route}) => {
                 </SafeAreaView>
               </Modal>
             )} */}
-
         {/* {reviewsModalVisible && (
               <Modal
                 isVisible={reviewsModalVisible}
@@ -5320,7 +5368,6 @@ const HomeScreen = ({navigation, route}) => {
             )} */}
         {/* </Modal>
         )} */}
-
         {/* Scorekeeper model */}
         {scorekeeperInModalVisible && (
           <Modal
@@ -5865,7 +5912,6 @@ const HomeScreen = ({navigation, route}) => {
             )}
           </Modal>
         )}
-
         {/* Entity create modal */}
         <Portal>
           <Modalize
@@ -5932,7 +5978,7 @@ const HomeScreen = ({navigation, route}) => {
                     alignItems: 'center',
                   }}>
                   <Text style={[styles.foundText, {fontFamily: fonts.RBold}]}>
-                    {`${route?.params?.groupName}`}
+                    {`${route?.params?.groupName}  `}
                   </Text>
                   <View
                     style={{
@@ -6019,9 +6065,7 @@ const HomeScreen = ({navigation, route}) => {
             flatListProps={flatListRefereeProps}
           />
         </Portal>
-
         {/* Scorekeeper offer */}
-
         <Portal>
           <Modalize
             visible={scorekeeperOfferModalVisible}
@@ -6130,7 +6174,6 @@ const HomeScreen = ({navigation, route}) => {
           </View>
         </Modal>
         {/* Entity create modal */}
-
         {/* Create Challenge modal */}
         <Modal
           onBackdropPress={() => setChallengePopup(false)}
@@ -6385,7 +6428,6 @@ const HomeScreen = ({navigation, route}) => {
           </View>
         </Modal>
         {/* Create Challenge modal */}
-
         {/* Sports list  modal */}
         <Modal
           isVisible={visibleSportsModal}
@@ -6457,12 +6499,75 @@ const HomeScreen = ({navigation, route}) => {
             />
           </View>
         </Modal>
-
         {!createEventModal && currentTab === 3 && (
           <CreateEventButton
             source={images.plus}
             onPress={() => setCreateEventModal(true)}
           />
+        )}
+        {authContext.entity.role === Verbs.entityTypeTeam ||
+        authContext.entity.role === Verbs.entityTypeClub ? (
+          <>
+            <CongratulationsModal
+              isVisible={congratulationsModal}
+              settingsObj={settingObject}
+              title={route?.params?.entityObj?.group_name}
+              subtitle={format(
+                strings.congratesSubTitle,
+                route?.params?.entityObj?.group_name,
+              )}
+              fromCreateTeam={
+                authContext.entity.role === Verbs.entityTypeTeam ? true : false
+              }
+              fromCreateClub={
+                authContext.entity.role === Verbs.entityTypeClub ? true : false
+              }
+              closeModal={() => {
+                setCongratulationsModal(false);
+              }}
+              sportName={
+                authContext.entity.role === Verbs.entityTypeTeam
+                  ? route?.params?.entityObj?.setting.sport
+                  : route?.params?.entityObj?.sports[0].sport
+              }
+              sport={
+                authContext.entity.role === Verbs.entityTypeTeam
+                  ? route?.params.entityObj?.setting.sport
+                  : route?.params?.entityObj?.sports[0].sport
+              }
+              sportType={
+                authContext.entity.role === Verbs.entityTypeTeam
+                  ? Verbs.sportTypeTeam
+                  : Verbs.sportTypeSingle
+              }
+              searchTeam={(filters) => {
+                navigation.navigate('LookingForChallengeScreen', {
+                  filters: {
+                    ...filters,
+                    groupTeam: strings.teamstitle,
+                  },
+                });
+              }}
+              searchPlayer={() => {
+                setCongratulationsModal(false);
+                navigation.navigate('InviteMembersBySearchScreen');
+              }}
+              goToSportActivityHome={() => {
+                setCongratulationsModal(false);
+                if (authContext.entity.role === Verbs.entityTypeTeam) {
+                  navigation.navigate('InviteMembersBySearchScreen');
+                }
+              }}
+              onInviteClick={(item) => {
+                const userIds = [];
+                userIds.push(item.user_id);
+
+                sendInvitation(userIds);
+              }}
+            />
+          </>
+        ) : (
+          <></>
         )}
 
         {renderImageProgress}

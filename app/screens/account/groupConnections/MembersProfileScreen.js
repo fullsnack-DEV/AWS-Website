@@ -27,8 +27,10 @@ import {
   Pressable,
   Platform,
   Animated,
+  Dimensions,
 } from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
+import LinearGradient from 'react-native-linear-gradient';
 import {format} from 'react-string-format';
 import Modal from 'react-native-modal';
 import ActionSheet from 'react-native-actionsheet';
@@ -93,10 +95,12 @@ export default function MembersProfileScreen({navigation, route}) {
     useState(false);
   const [showAdminPrivillege, setShowAdminPrivillege] = useState(false);
   const [positions, setPositions] = useState();
+  const [hideAdminPrev, setHideAdinPrev] = useState();
   const [setting, setSetting] = useState({
     is_member: true,
     is_admin: memberDetail?.is_admin,
   });
+  const [textInputHeight, setTextInputHeight] = useState(100);
   const [showSwitchScreen, setShowSwitchScreen] = useState(false);
 
   entity = authContext.entity;
@@ -160,6 +164,7 @@ export default function MembersProfileScreen({navigation, route}) {
     loading,
     whoSeeID,
     from,
+    showSwitchScreen,
   ]);
 
   const editTeamProfile = useCallback(() => {
@@ -184,6 +189,19 @@ export default function MembersProfileScreen({navigation, route}) {
     }
     if (groupMemberDetail.status) {
       bodyParams.status = groupMemberDetail.status;
+    }
+    if (groupMemberDetail.is_admin === false) {
+      const adminCount = members?.filter((item) => item.is_admin === true);
+      const toaccount = true;
+      if (
+        members.length === 1 &&
+        adminCount.length === 1 &&
+        memberID === authContext.entity.auth.user_id
+      ) {
+        setShowAdminPrivillege(false);
+        onDeleteMemberProfile(switchUser.uid, memberDetail.user_id, toaccount);
+      }
+      return;
     }
 
     bodyParams.is_admin = groupMemberDetail.is_admin;
@@ -217,7 +235,7 @@ export default function MembersProfileScreen({navigation, route}) {
 
   const renderPosition = ({item, index}) => (
     <TCTextField
-      value={item.position}
+      value={item}
       onChangeText={(text) => {
         const tempPosition = [...positions];
         tempPosition[index] = text;
@@ -258,6 +276,14 @@ export default function MembersProfileScreen({navigation, route}) {
   useEffect(() => {
     if (memberDetail?.connected) {
       setEditProfile(false);
+    }
+    const adminCount = members?.filter((item) => item.is_admin === true);
+    if (
+      memberID === authContext.entity.auth.user_id &&
+      members.length > 1 &&
+      adminCount?.length === 1
+    ) {
+      setHideAdinPrev(true);
     }
   });
 
@@ -344,11 +370,11 @@ export default function MembersProfileScreen({navigation, route}) {
         format(strings.lastmember, authContext.entity.role),
         [
           {
-            text: 'Cancel',
+            text: strings.cancel,
             onPress: () => console.log('PRessed'),
           },
           {
-            text: 'Remove',
+            text: strings.remove,
             onPress: () => {
               const toaccount = true;
 
@@ -403,7 +429,7 @@ export default function MembersProfileScreen({navigation, route}) {
 
         [
           {
-            text: 'OK',
+            text: strings.OkText,
             onPress: () => console.log('PRessed'),
           },
         ],
@@ -445,7 +471,7 @@ export default function MembersProfileScreen({navigation, route}) {
       Animated.timing(animProgress, {
         useNativeDriver: false,
         toValue: 100,
-        duration: 600,
+        duration: 200,
       }).start();
     } else {
       setloading(true);
@@ -455,7 +481,7 @@ export default function MembersProfileScreen({navigation, route}) {
       .then((response) => {
         setloading(false);
         setShowSwitchScreen(false);
-        console.log(response, 'from back');
+
         const validator = 102;
 
         if (toaccount) {
@@ -473,7 +499,7 @@ export default function MembersProfileScreen({navigation, route}) {
             strings.childMemberError,
             [
               {
-                text: 'OK',
+                text: strings.OkText,
                 onPress: () => console.log('PRessed'),
               },
             ],
@@ -568,6 +594,20 @@ export default function MembersProfileScreen({navigation, route}) {
     setloading(true);
     const bodyParams = {...memberDetail, ...setting};
 
+    if (setting.is_admin === false) {
+      const adminCount = members?.filter((item) => item.is_admin === true);
+      const toaccount = true;
+      if (
+        members.length === 1 &&
+        adminCount.length === 1 &&
+        memberID === authContext.entity.auth.user_id
+      ) {
+        setShowAdminPrivillege(false);
+        onDeleteMemberProfile(switchUser.uid, memberDetail.user_id, toaccount);
+      }
+      return;
+    }
+
     patchMember(
       entity?.obj?.group_id,
       memberDetail.user_id,
@@ -629,7 +669,13 @@ export default function MembersProfileScreen({navigation, route}) {
           <View style={{paddingTop: 20, height: '100%'}}>
             <TouchableOpacity
               hitSlop={getHitSlop(15)}
-              onPress={() => editTeamProfile()}>
+              onPress={() => {
+                if (Number.isNaN(groupMemberDetail.jersey_number)) {
+                  Alert.alert(strings.jerseyValidation);
+                } else {
+                  editTeamProfile();
+                }
+              }}>
               <Text
                 style={{
                   fontFamily: fonts.RMedium,
@@ -652,12 +698,22 @@ export default function MembersProfileScreen({navigation, route}) {
             </Text>
 
             <View
-              pointerEvents={memberDetail?.connected ? 'auto' : 'none'}
+              pointerEvents={
+                memberDetail?.connected
+                  ? hideAdminPrev
+                    ? 'none'
+                    : 'auto'
+                  : 'none'
+              }
               style={[
                 styles.checkBoxContainer,
                 {
                   marginBottom: 35,
-                  opacity: memberDetail?.connected ? 1 : 0.3,
+                  opacity: memberDetail?.connected
+                    ? hideAdminPrev
+                      ? 0.3
+                      : 1
+                    : 0.3,
                 },
               ]}>
               <Text style={styles.checkBoxItemText}>{strings.admin}</Text>
@@ -1038,18 +1094,23 @@ export default function MembersProfileScreen({navigation, route}) {
         <View style={locationModalStyles.separatorLine} />
         <View
           style={{
-            height: 100,
             marginTop: 17,
+            height: textInputHeight,
           }}>
           <TCTextField
             value={memberInfo.note}
-            height={100}
+            height={textInputHeight}
             multiline={true}
             onChangeText={(text) => setMemberInfo({...memberInfo, note: text})}
             placeholder={strings.writeNotesPlaceholder}
             keyboardType={'default'}
             style={{
               backgroundColor: colors.grayBackgroundColor,
+            }}
+            onContentSizeChange={(e) => {
+              if (e.nativeEvent.contentSize.height < 300) {
+                setTextInputHeight(e.nativeEvent.contentSize.height + 60);
+              }
             }}
           />
         </View>
@@ -1177,7 +1238,14 @@ export default function MembersProfileScreen({navigation, route}) {
             ]}>
             {strings.editAdminPrivillege}
           </Text>
-          <Pressable onPress={() => onEditAdminPrivPress()}>
+          <Pressable
+            onPress={() => {
+              if (hideAdminPrev) {
+                setShowAdminPrivillege(false);
+              } else {
+                onEditAdminPrivPress();
+              }
+            }}>
             <Text
               style={{
                 fontSize: 16,
@@ -1191,7 +1259,12 @@ export default function MembersProfileScreen({navigation, route}) {
         </View>
         <ActivityLoader visible={loading} />
         <View style={locationModalStyles.separatorLine} />
-        <View style={styles.checkBoxContainerPrv}>
+        <View
+          style={[
+            styles.checkBoxContainerPrv,
+            {opacity: hideAdminPrev ? 0.6 : 1},
+          ]}
+          pointerEvents={hideAdminPrev ? 'none' : 'auto'}>
           <Text style={styles.checkBoxItemText}>
             {format(
               strings.adminText_dy,
@@ -1204,12 +1277,13 @@ export default function MembersProfileScreen({navigation, route}) {
               if (admin_setting) {
                 setSetting({
                   ...setting,
-                  is_member: true,
+                  is_member: false,
                   is_admin: admin_setting,
                 });
               } else {
                 setSetting({
                   ...setting,
+                  is_member: false,
                   is_admin: false,
                 });
               }
@@ -1233,14 +1307,7 @@ export default function MembersProfileScreen({navigation, route}) {
     outputRange: ['0%', '50%', '100%'],
   });
 
-  let placeHolder = images.teamSqure;
-  if (authContext.entity.role === Verbs.entityTypeClub) {
-    placeHolder = images.clubPlaceholderSmall;
-  } else if (authContext.entity.role === Verbs.entityTypeTeam) {
-    placeHolder = images.teamPlaceholderSmall;
-  } else {
-    placeHolder = images.profilePlaceHolder;
-  }
+  const placeHolder = images.profilePlaceHolder;
 
   return (
     <SafeAreaView>
@@ -1248,25 +1315,22 @@ export default function MembersProfileScreen({navigation, route}) {
         <View
           style={{
             flex: 1,
-            backgroundColor: colors.lightGrey,
+            backgroundColor: colors.whiteColor,
+
             justifyContent: 'center',
             alignItems: 'center',
             ...StyleSheet.absoluteFillObject,
-            zIndex: 10,
+
+            zIndex: 1000,
           }}>
-          <View
+          <ActivityLoader visible={false} />
+          <TouchableOpacity
             style={{
-              flex: 1,
-              backgroundColor: colors.lightGrey,
-              opacity: 0.8,
-              justifyContent: 'center',
-              alignItems: 'center',
-              ...StyleSheet.absoluteFillObject,
+              marginBottom: 89,
+              position: 'absolute',
               marginTop: 300,
-              zIndex: 1000,
             }}>
-            <ActivityLoader visible={false} />
-            <View style={styles.profileImageContainer}>
+            <View>
               <Image
                 source={
                   authContext.user?.thumbnail || ''
@@ -1299,21 +1363,33 @@ export default function MembersProfileScreen({navigation, route}) {
                 {authContext.user?.full_name}
               </Text>
             </View>
+          </TouchableOpacity>
 
-            <View
-              style={{
-                width: 135,
-                height: 5,
-                backgroundColor: '#F2F2F2',
-                borderRadius: 20,
+          <Animated.View
+            style={{
+              width: 135,
+              height: 5,
+              backgroundColor: '#F2F2F2',
+              borderRadius: 20,
 
-                marginTop: 279,
-              }}>
-              <Animated.View
-                style={[styles.progressBar, {width: animWidthPrecent}]}
+              marginTop: Dimensions.get('screen').height * 0.8,
+            }}>
+            <Animated.View
+              style={[
+                styles.progressBar,
+                {
+                  width: animWidthPrecent,
+                },
+              ]}>
+              <LinearGradient
+                style={styles.progressBar}
+                colors={['rgba(255, 187, 1, 0.6)', 'rgba(255, 138, 1, 0.6) ']}
+                start={{x: 0, y: 0.5}}
+                end={{x: 1, y: 0.5}}
               />
-            </View>
-          </View>
+            </Animated.View>
+          </Animated.View>
+
           {/* PRogree Bar */}
         </View>
       )}
@@ -1950,19 +2026,7 @@ const styles = StyleSheet.create({
     marginTop: 35,
     paddingHorizontal: 15,
   },
-  profileImageContainer: {
-    height: 55,
-    width: 55,
-    backgroundColor: colors.whiteColor,
-    borderRadius: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: colors.blackColor,
-    shadowOffset: {height: 1.5, width: 0},
-    shadowRadius: 3,
-    shadowOpacity: 0.16,
-    elevation: 3,
-  },
+
   profileImg: {
     height: 60,
     width: 60,
@@ -1974,6 +2038,5 @@ const styles = StyleSheet.create({
   progressBar: {
     width: '100%',
     height: 5,
-    backgroundColor: colors.orangeGradientColor,
   },
 });
