@@ -2537,9 +2537,15 @@ export default {
     'en_Please review your team’s incoming challenge settings. These settings are only applicable to the match reservation when your team is the match host. When your team is the Challenger, the opponent’s incoming challenge settings Will be applied.',
   createTeamModalTitle: 'en_What sport does the new team will play?',
   congratsTeamCreated:
-    'en_Congratulations! \nVancouver Whitecaps FC has been created.',
-  congratesSubTitle:
-    'en_Your account has been switched to VancouverWhitecaps FC.  ',
+    'en_Congratulations! Vancouver Whitecaps FC has been created.',
+  congratesSubTitle: 'en_Your account has been switched to {0}.  ',
   whoDoYouwantToCreateTeamWith:
-    'en_Who do you want to create the newteam with?',
+    'en_Who do you want to create the new team with?',
+  congratulationsTitle: 'en_Congratulations!',
+  hasBeenCreated: ' en_has been created.',
+  jerseyValidation: 'en_Jersey Number is not valid!',
+  clubModalTitle: 'en_Which sports does the new club will be involved in?',
+  clubModalSubTitle:
+    'en_The multiple sports of teams can be a member of a club. You can edit the sports of the club now or later.',
+  createTeamUnderYourClub: 'en_Create A Team Under Your CLub ',
 };

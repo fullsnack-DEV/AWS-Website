@@ -159,16 +159,18 @@ export default function InviteMembersBySearchScreen({navigation}) {
       return obj;
     });
     setSelectedList(selectedPlayers);
-    console.log('Selected Item:', selectedPlayers);
   };
 
   const renderPlayer = ({item, index}) => (
     <ProfileCheckView
       playerDetail={item}
       isChecked={item.isChecked}
-      onPress={() => selectPlayer({item, index})}
+      onPress={() => {
+        selectPlayer({item, index});
+      }}
     />
   );
+
   const handleTagPress = ({index}) => {
     players[index].isChecked = false;
     setPlayers([...players]);

@@ -91,8 +91,8 @@ const styles = StyleSheet.create({
 
   closeButton: {
     alignSelf: 'center',
-    width: 20,
-    height: 20,
+    width: 13,
+    height: 13,
     marginLeft: 5,
     resizeMode: 'contain',
   },

@@ -74,6 +74,9 @@ import {
   getExcludedSportsList,
   getTitleForRegister,
 } from '../../utils/sportsActivityUtils';
+import MemberListModal from '../../components/MemberListModal/MemberListModal';
+import {getUserIndex} from '../../api/elasticSearch';
+import SportListMultiModal from '../../components/SportListMultiModal/SportListMultiModal';
 
 // FIXME: fix all warning in useCallBack()
 export default function AccountScreen({navigation, route}) {
@@ -90,6 +93,8 @@ export default function AccountScreen({navigation, route}) {
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
   const [visibleSportsModalForTeam, setVisibleSportsModalForTeam] =
     useState(false);
+  const [visibleSportsModalForClub, setVisibleSportsModalForClub] =
+    useState(false);
   const [teamList, setTeamList] = useState([]);
   const [clubList, setClubList] = useState([]);
   const [accountMenu, setAccountMenu] = useState([]);
@@ -103,8 +108,11 @@ export default function AccountScreen({navigation, route}) {
   const [selectedMenuOptionType, setSelectedMenuOptionType] = useState(
     Verbs.entityTypePlayer,
   );
-
+  const [memberListModal, setMemberListModal] = useState(false);
   const navigations = useNavigation();
+  const [players, setPlayers] = useState([]);
+  const [pageFrom, setPageFrom] = useState(0);
+  const [pageSize] = useState(10);
 
   useEffect(() => {
     if (route.params?.switchToUser === 'fromMember') {
@@ -143,8 +151,14 @@ export default function AccountScreen({navigation, route}) {
       Utility.getStorage('appSetting').then((setting) => {
         setImageBaseUrl(setting.base_url_sporticon);
       });
+
+      // getUsers();
     }
   }, [isFocused]);
+
+  useEffect(() => {
+    getUsers();
+  }, []);
 
   useEffect(() => {
     const sportArr = getExcludedSportsList(authContext, selectedMenuOptionType);
@@ -492,11 +506,19 @@ export default function AccountScreen({navigation, route}) {
         } else if (option === strings.createTeamText) {
           setVisibleSportsModalForTeam(true);
 
-          setSelectedMenuOptionType(rowObj.menuOptionType);
+          setSelectedMenuOptionType(Verbs.entityTypeTeam);
           setNavigationOptions({
             screenName: rowObj.navigateTo.screenName,
             data: rowObj.navigateTo.data,
           });
+        } else if (option === strings.createClubText) {
+          setVisibleSportsModalForClub(true);
+
+          setNavigationOptions({
+            screenName: rowObj.navigateTo.screenName,
+            data: rowObj.navigateTo.data,
+          });
+          setSelectedMenuOptionType(rowObj.menuOptionType);
         } else {
           navigation.navigate(
             rowObj.navigateTo.screenName,
@@ -632,6 +654,47 @@ export default function AccountScreen({navigation, route}) {
 
     setSports(list);
   }, [authContext]);
+
+  const getUsers = useCallback(
+    (filterPlayer) => {
+      const membersQuery = {
+        size: pageSize,
+        from: pageFrom,
+        query: {
+          bool: {
+            must: [],
+          },
+        },
+      };
+      if (filterPlayer?.searchText?.length > 0) {
+        membersQuery.query.bool.must.push({
+          query_string: {
+            query: `*${filterPlayer?.searchText}*`,
+            fields: ['full_name'],
+          },
+        });
+      }
+      getUserIndex(membersQuery)
+        .then((response) => {
+          setLoading(false);
+          if (response.length > 0) {
+            const result = response.map((obj) => {
+              // eslint-disable-next-line no-param-reassign
+              obj.isChecked = false;
+              return obj;
+            });
+            setPlayers([...players, ...result]);
+            setPageFrom(pageFrom + pageSize);
+            stopFetchMore = true;
+          }
+        })
+        .catch((error) => {
+          setLoading(false);
+          Alert.alert(error);
+        });
+    },
+    [pageFrom, pageSize, players],
+  );
 
   return (
     <SafeAreaView style={styles.mainContainer} testID="account-screen">
@@ -1242,10 +1305,43 @@ export default function AccountScreen({navigation, route}) {
         title={strings.createTeamText}
         sportsList={sportsData}
         onNext={(sport) => {
-          console.log(sport, 'From sport');
-          setVisibleSportsModalForTeam(false);
-          navigation.navigate(navigationOptions.screenName, sport);
+          if (
+            sport.sport_type === Verbs.doubleSport &&
+            authContext?.entity?.role ===
+              (Verbs.entityTypeUser || Verbs.entityTypePlayer)
+          ) {
+            setVisibleSportsModalForTeam(false);
+
+            setTimeout(() => {
+              setMemberListModal(true);
+            }, 10);
+          } else {
+            setVisibleSportsModalForTeam(false);
+            navigation.navigate(navigationOptions.screenName, sport);
+          }
         }}
+      />
+
+      <SportListMultiModal
+        isVisible={visibleSportsModalForClub}
+        closeList={() => setVisibleSportsModalForClub(false)}
+        title={strings.createClubText}
+        sportsList={sportsData}
+        onNext={(sports) => {
+          setVisibleSportsModalForClub(false);
+          navigation.navigate(navigationOptions.screenName, sports);
+        }}
+      />
+
+      <MemberListModal
+        isVisible={memberListModal}
+        title={strings.createTeamText}
+        closeList={() => setMemberListModal(false)}
+        onNext={() => {
+          console.log('pressed');
+        }}
+        onItemPress={() => Alert.alert('pressed')}
+        sportsList={players}
       />
     </SafeAreaView>
   );

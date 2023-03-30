@@ -9,6 +9,8 @@
 /* eslint-disable no-console */
 /* eslint-disable react-native/no-raw-text */
 /* eslint-disable no-nested-ternary */
+/* eslint-disable no-unneeded-ternary */
+
 import React, {
   useEffect,
   useRef,
@@ -73,6 +75,7 @@ import {
   // patchRegisterRefereeDetails,
   patchRegisterScorekeeperDetails,
   userActivate,
+  sendInvitationInGroup,
 } from '../../api/Users';
 import {createPost, createReaction} from '../../api/NewsFeeds';
 import {
@@ -163,6 +166,7 @@ import {
 import Verbs from '../../Constants/Verbs';
 import SportActivityModal from './SportActivity/SportActivityModal';
 import CongratulationsModal from '../account/registerPlayer/modals/CongratulationsModal';
+
 // import { getSetting } from '../challenge/manageChallenge/settingUtility';
 let entityObject = {};
 
@@ -344,8 +348,6 @@ const HomeScreen = ({navigation, route}) => {
 
   useEffect(() => {
     if (route?.params?.isEntityCreated) {
-      console.log(route?.params?.entityObj, 'from entity');
-
       onSwitchProfile(route?.params?.entityObj);
       setCongratulationsModal(true);
 
@@ -3218,6 +3220,34 @@ const HomeScreen = ({navigation, route}) => {
     ],
   );
 
+  const sendInvitation = (userids) => {
+    setloading(true);
+    const entity = authContext.entity;
+    const obj = {
+      entity_type: entity.role,
+      userIds: userids,
+      uid: entity.uid,
+    };
+
+    sendInvitationInGroup(obj, authContext)
+      .then(() => {
+        setTimeout(() => {
+          Utility.showAlert(
+            strings.invitationSent,
+
+            () => {
+              console.log('ok');
+            },
+          );
+        }, 10);
+      })
+      .catch((e) => {
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
+
   const renderHomeTabs = useCallback(
     ({item, index}) => (
       <TouchableOpacity
@@ -3815,23 +3845,24 @@ const HomeScreen = ({navigation, route}) => {
 
         // show alert when club is created
 
-        if (authContext.entity.role === Verbs.entityTypeClub) {
-          Alert.alert(
-            format(route?.params?.groupName),
-            strings.clubIsCreated,
-            authContext.entity.role === Verbs.entityTypeClub
-              ? strings.clubIsCreatedSub
-              : strings.teamCreatedSub,
+        // if (authContext.entity.role === Verbs.entityTypeClub) {
 
-            [
-              {
-                text: 'OK',
-                onPress: () => console.log('pressed'),
-              },
-            ],
-            {cancelable: false},
-          );
-        }
+        //   Alert.alert(
+        //     format(route?.params?.groupName),
+        //     strings.clubIsCreated,
+        //     authContext.entity.role === Verbs.entityTypeClub
+        //       ? strings.clubIsCreatedSub
+        //       : strings.teamCreatedSub,
+
+        //     [
+        //       {
+        //         text: 'OK',
+        //         onPress: () => console.log('pressed'),
+        //       },
+        //     ],
+        //     {cancelable: false},
+        //   );
+        // }
       })
       .catch((e) => {
         setTimeout(() => {
@@ -6453,93 +6484,69 @@ const HomeScreen = ({navigation, route}) => {
             onPress={() => setCreateEventModal(true)}
           />
         )}
-        {authContext.entity.role === Verbs.entityTypeTeam && (
-          <CongratulationsModal
-            isVisible={congratulationsModal}
-            settingsObj={settingObject}
-            title={strings.congratsTeamCreated}
-            subtitle={strings.congratesSubTitle}
-            fromCreateTeam={true}
-            closeModal={() => {
-              setCongratulationsModal(false);
-              // navigation.navigate('AccountScreen', {
-              //   createdSportName: sportName,
-              //   // eslint-disable-next-line
-              //   sportType: sportType,
-              // });
-            }}
-            sportName={route.params.entityObj?.setting.sport}
-            sport={route.params.entityObj?.setting.sport}
-            sportType={
-              route.params.entityObj?.setting.sport_type ===
-              route.params.entityObj?.setting.sport
-                ? 'team'
-                : route.params.entityObj?.setting.sport_type
-            }
-            // onChanllenge={(type, payload) => {
-            //   const obj = {
-            //     setting: payload.setting,
-            //     sportName: payload.sport,
-            //     sportType: payload.sport_type,
-            //     groupObj: payload.groupObj,
-            //   };
-            //   if (type === strings.challenge) {
-            //     navigation.navigate('ChallengeScreen', {
-            //       ...obj,
-            //     });
-            //   }
+        {authContext.entity.role === Verbs.entityTypeTeam ||
+        authContext.entity.role === Verbs.entityTypeClub ? (
+          <>
+            <CongratulationsModal
+              isVisible={congratulationsModal}
+              settingsObj={settingObject}
+              title={route?.params?.entityObj?.group_name}
+              subtitle={format(
+                strings.congratesSubTitle,
+                route?.params?.entityObj?.group_name,
+              )}
+              fromCreateTeam={
+                authContext.entity.role === Verbs.entityTypeTeam ? true : false
+              }
+              fromCreateClub={
+                authContext.entity.role === Verbs.entityTypeClub ? true : false
+              }
+              closeModal={() => {
+                setCongratulationsModal(false);
+              }}
+              sportName={
+                authContext.entity.role === Verbs.entityTypeTeam
+                  ? route?.params?.entityObj?.setting.sport
+                  : route?.params?.entityObj?.sports[0].sport
+              }
+              sport={
+                authContext.entity.role === Verbs.entityTypeTeam
+                  ? route?.params.entityObj?.setting.sport
+                  : route?.params?.entityObj?.sports[0].sport
+              }
+              sportType={
+                authContext.entity.role === Verbs.entityTypeTeam
+                  ? Verbs.sportTypeTeam
+                  : Verbs.sportTypeSingle
+              }
+              searchTeam={(filters) => {
+                navigation.navigate('LookingForChallengeScreen', {
+                  filters: {
+                    ...filters,
+                    groupTeam: strings.teamstitle,
+                  },
+                });
+              }}
+              searchPlayer={() => {
+                setCongratulationsModal(false);
+                navigation.navigate('InviteMembersBySearchScreen');
+              }}
+              goToSportActivityHome={() => {
+                setCongratulationsModal(false);
+                if (authContext.entity.role === Verbs.entityTypeTeam) {
+                  navigation.navigate('InviteMembersBySearchScreen');
+                }
+              }}
+              onInviteClick={(item) => {
+                const userIds = [];
+                userIds.push(item.user_id);
 
-            //   if (type === strings.inviteToChallenge) {
-            //     navigation.navigate('InviteChallengeScreen', {
-            //       ...obj,
-            //     });
-            //   }
-            // }}
-            // searchPlayer={(filters) => {
-            //   if (filters.sport_type === Verbs.sportTypeSingle) {
-            //     navigation.navigate('LookingForChallengeScreen', {
-            //       filters,
-            //     });
-            //   }
-            //   if (filters.sport_type === Verbs.sportTypeDouble) {
-            //     //
-            //   }
-            // }}
-            // onUserClick={(userData) => {
-            //   if (!userData) return;
-            //   navigation.navigate('HomeScreen', {
-            //     uid:
-            //       userData.entity_type === Verbs.entityTypePlayer ||
-            //       userData.entity_type === Verbs.entityTypeUser
-            //         ? userData.user_id
-            //         : userData.group_id,
-            //     role: ['user', 'player']?.includes(userData.entity_type)
-            //       ? 'user'
-            //       : userData.entity_type,
-            //     backButtonVisible: true,
-            //     menuBtnVisible: false,
-            //   });
-            // }}
-            searchTeam={(filters) => {
-              navigation.navigate('LookingForChallengeScreen', {
-                filters: {
-                  ...filters,
-                  groupTeam: strings.teamstitle,
-                },
-              });
-            }}
-            // joinTeam={() => {
-            //   // navigation.navigate('LookingTeamScreen', {
-            //   //   filters,
-            //   // });
-            // }}
-            // createTeam={() => {
-            //   navigation.navigate('CreateTeamForm1');
-            // }}
-            goToSportActivityHome={() => {
-              setCongratulationsModal(false);
-            }}
-          />
+                sendInvitation(userIds);
+              }}
+            />
+          </>
+        ) : (
+          <></>
         )}
 
         {renderImageProgress}

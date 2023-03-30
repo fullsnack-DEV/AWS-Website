@@ -1,6 +1,7 @@
 /* eslint-disable array-callback-return */
 /* eslint-disable no-param-reassign */
 /* eslint-disable default-case */
+/* eslint-disable no-unneeded-ternary */
 import React, {
   useState,
   useEffect,
@@ -16,7 +17,6 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
-  FlatList,
   TouchableWithoutFeedback,
   Dimensions,
   Platform,
@@ -26,7 +26,7 @@ import {
   Pressable,
 } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
-import Modal from 'react-native-modal';
+
 import ActionSheet from 'react-native-actionsheet';
 import {check, PERMISSIONS, RESULTS, request} from 'react-native-permissions';
 
@@ -39,10 +39,9 @@ import colors from '../../../../Constants/Colors';
 import fonts from '../../../../Constants/Fonts';
 
 import TCLabel from '../../../../components/TCLabel';
-import TCThinDivider from '../../../../components/TCThinDivider';
+
 import {
   deleteConfirmation,
-  getHitSlop,
   getSportName,
   showAlertWithoutTitle,
 } from '../../../../utils';
@@ -57,7 +56,7 @@ import {createGroup} from '../../../../api/Groups';
 import uploadImages from '../../../../utils/imageAction';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 
-export default function CreateClubForm1({navigation}) {
+export default function CreateClubForm1({navigation, route}) {
   const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
   const [loading, setloading] = useState(false);
@@ -66,10 +65,9 @@ export default function CreateClubForm1({navigation}) {
   const [city, setCity] = useState('');
   const [state, setState] = useState('');
   const [country, setCountry] = useState('');
-  const [sportList, setSportList] = useState([]);
-  const [visibleSportsModal, setVisibleSportsModal] = useState(false);
+
   const [visibleLocationModal, setVisibleLocationModal] = useState(false);
-  const [selectedSports, setSelectedSports] = useState([]);
+  const [selectedSports] = useState(route.params);
   const [sportsName, setSportsName] = useState('');
   const [description, setDescription] = useState('');
   const [currentImageSelection, setCurrentImageSelection] = useState(0);
@@ -84,41 +82,9 @@ export default function CreateClubForm1({navigation}) {
   const animProgress = React.useState(new Animated.Value(0))[0];
 
   useEffect(() => {
-    getSports();
-  }, [isFocused]);
-
-  const getSports = () => {
-    let sportArr = [];
-
-    authContext.sports.map((item) => {
-      sportArr = [...sportArr, ...item.format];
-      return null;
-    });
-
-    console.log(sportArr, 'array');
-
-    const arr = [];
-    for (const tempData of sportArr) {
-      const obj = {};
-      obj.entity_type = tempData.entity_type;
-      obj.sport = tempData.sport;
-      obj.sport_type = tempData.sport_type;
-      obj.isChecked = false;
-      arr.push(obj);
-    }
-
-    setSportList(arr);
-  };
-
-  // useEffect(() => {
-  //   const sportArr = getExcludedSportsList(authContext, selectedMenuOptionType);
-  //   setSportList([...sportArr]);
-  // }, [authContext, selectedMenuOptionType]);
-
-  useEffect(() => {
     let sportText = '';
-    if (selectedSports.length > 0) {
-      selectedSports.map((sportItem, index) => {
+    if (selectedSports?.length > 0) {
+      selectedSports?.map((sportItem, index) => {
         sportText =
           sportText +
           (index ? ', ' : '') +
@@ -127,44 +93,7 @@ export default function CreateClubForm1({navigation}) {
       });
       setSportsName(sportText);
     }
-  }, [authContext, selectedSports, visibleSportsModal]);
-
-  const isIconCheckedOrNot = ({item, index}) => {
-    sportList[index].isChecked = !item.isChecked;
-    setSportList([...sportList]);
-  };
-
-  const renderSports = ({item, index}) => (
-    <TouchableWithoutFeedback
-      style={styles.listItem}
-      onPress={() => {
-        isIconCheckedOrNot({item, index});
-      }}>
-      <View
-        style={{
-          alignItems: 'center',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          paddingHorizontal: 40,
-          paddingVertical: 20,
-        }}>
-        <Text style={styles.languageList}>
-          {getSportName(item, authContext)}
-        </Text>
-        <View style={styles.checkbox}>
-          {sportList[index].isChecked ? (
-            <Image source={images.orangeCheckBox} style={styles.checkboxImg} />
-          ) : (
-            <Image source={images.uncheckWhite} style={styles.checkboxImg} />
-          )}
-        </View>
-      </View>
-    </TouchableWithoutFeedback>
-  );
-
-  const toggleModal = () => {
-    setVisibleSportsModal(!visibleSportsModal);
-  };
+  }, [isFocused]);
 
   const checkClubValidations = useCallback(() => {
     if (clubName === '') {
@@ -175,17 +104,21 @@ export default function CreateClubForm1({navigation}) {
       showAlertWithoutTitle(strings.homeCityCannotBlack);
       return false;
     }
-    if (sportList.length < 0) {
-      showAlertWithoutTitle('sport list');
-      return false;
-    }
 
     return true;
-  }, [clubName, location, sportList, description]);
+  }, [clubName, location, description]);
+
+  const onANimate = (val) => {
+    Animated.timing(animProgress, {
+      useNativeDriver: false,
+      toValue: val,
+      duration: 800,
+    }).start();
+  };
 
   const onNextPressed = async () => {
-    setShowSwitchScreen(true);
     onANimate(20);
+    setShowSwitchScreen(true);
 
     const newArray = selectedSports.map((obj) => {
       delete obj.isChecked;
@@ -204,8 +137,6 @@ export default function CreateClubForm1({navigation}) {
       entity_type: Verbs.entityTypeClub,
     };
 
-    console.log(sportsName, 'From sport');
-
     if (thumbnail) {
       bodyParams.thumbnail = thumbnail;
     }
@@ -213,7 +144,6 @@ export default function CreateClubForm1({navigation}) {
       bodyParams.background_thumbnail = backgroundThumbnail;
     }
 
-    console.log('bodyPARAMS:: ', bodyParams);
     const entity = authContext.entity;
 
     if (bodyParams?.thumbnail || bodyParams?.background_thumbnail) {
@@ -252,6 +182,7 @@ export default function CreateClubForm1({navigation}) {
             authContext,
           )
             .then((response) => {
+              onANimate(100);
               setloading(false);
 
               navigation.push('HomeScreen', {
@@ -314,14 +245,6 @@ export default function CreateClubForm1({navigation}) {
     }
   };
 
-  const onANimate = (val) => {
-    Animated.timing(animProgress, {
-      useNativeDriver: false,
-      toValue: val,
-      duration: 800,
-    }).start();
-  };
-
   const handleSetLocationOptions = (locations) => {
     setCity(locations.city);
     setState(locations.state);
@@ -357,6 +280,7 @@ export default function CreateClubForm1({navigation}) {
 
   useLayoutEffect(() => {
     navigation.setOptions({
+      headerShown: showSwitchScreen ? false : true,
       headerRight: () => (
         <TouchableOpacity>
           <Text
@@ -367,11 +291,10 @@ export default function CreateClubForm1({navigation}) {
             }}
             onPress={() => {
               if (checkClubValidations()) {
-                // Alert.alert('Pressed');
                 onNextPressed();
               }
             }}>
-            {strings.next}
+            {strings.done}
           </Text>
         </TouchableOpacity>
       ),
@@ -385,14 +308,7 @@ export default function CreateClubForm1({navigation}) {
         </TouchableWithoutFeedback>
       ),
     });
-  }, [
-    clubName,
-    description,
-    location,
-    sportList,
-    sportsName,
-    visibleSportsModal,
-  ]);
+  }, [clubName, description, location, sportsName, showSwitchScreen]);
 
   // for next press
 
@@ -507,84 +423,80 @@ export default function CreateClubForm1({navigation}) {
           style={{
             flex: 1,
             backgroundColor: colors.whiteColor,
+
             justifyContent: 'center',
             alignItems: 'center',
             ...StyleSheet.absoluteFillObject,
-            zIndex: 10,
-          }}>
-          <View
-            style={{
-              flex: 1,
-              backgroundColor: colors.whiteColor,
-              opacity: 0.8,
-              justifyContent: 'center',
-              alignItems: 'center',
-              ...StyleSheet.absoluteFillObject,
-              marginTop: 300,
-              zIndex: 1000,
-            }}>
-            <ActivityLoader visible={false} />
-            <Pressable
-              style={styles.profileImageContainer}
-              onPress={() => onANimate(56)}>
-              <View
-                style={{
-                  alignItems: 'center',
-                  justifyContent: 'center',
 
-                  borderRadius: 100,
-                  alignSelf: 'center',
-                  width: 60,
-                  height: 60,
-                  borderWidth: 1,
-                  borderColor: '#DDDDDD',
-                }}>
-                <View>
-                  <Image
-                    source={images.clubPatch}
-                    style={{
-                      height: 15,
-                      width: 15,
-                      resizeMode: 'cover',
-                      position: 'absolute',
-                      left: 10,
-                      top: 45,
-                    }}
-                  />
-                </View>
+            zIndex: 1000,
+          }}>
+          <ActivityLoader visible={false} />
+          <Pressable
+            style={{
+              marginBottom: 89,
+              position: 'absolute',
+              marginTop: 300,
+            }}>
+            <View
+              style={{
+                alignItems: 'center',
+                justifyContent: 'center',
+
+                borderRadius: 100,
+                alignSelf: 'center',
+                width: 60,
+                height: 60,
+                borderWidth: 1,
+                borderColor: '#DDDDDD',
+              }}>
+              <View>
                 <Image
-                  source={placeHolder}
+                  source={images.clubPatch}
                   style={{
-                    ...styles.profileImg,
-                    resizeMode: 'contain',
-                    alignSelf: 'center',
-                    marginTop: 5,
+                    height: 15,
+                    width: 15,
+                    resizeMode: 'cover',
+                    position: 'absolute',
+                    left: 10,
+                    top: 45,
                   }}
                 />
-                <View
-                  style={{
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    alignSelf: 'center',
-                    position: 'absolute',
-                    top: 0,
-                    bottom: 0,
-                    right: 0,
-                    left: 0,
-                  }}>
-                  <Text
-                    style={{
-                      marginTop: -5,
-                      textAlign: 'center',
-                      color: colors.whiteColor,
-                      fontFamily: fonts.RBold,
-                      fontSize: 16,
-                    }}>
-                    {clubName.charAt(0)}
-                  </Text>
-                </View>
               </View>
-            </Pressable>
+              <Image
+                source={placeHolder}
+                style={{
+                  height: 50,
+                  width: 50,
+
+                  borderRadius: 25,
+                  resizeMode: 'contain',
+                  alignSelf: 'center',
+                  marginTop: 5,
+                }}
+              />
+              <View
+                style={{
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  alignSelf: 'center',
+                  position: 'absolute',
+                  top: 0,
+                  bottom: 0,
+                  right: 0,
+                  left: 0,
+                }}>
+                <Text
+                  style={{
+                    marginTop: -5,
+                    textAlign: 'center',
+                    color: colors.whiteColor,
+                    fontFamily: fonts.RBold,
+                    fontSize: 16,
+                  }}>
+                  {clubName.charAt(0)}
+                </Text>
+              </View>
+            </View>
             <View
               style={{
                 marginTop: 15,
@@ -608,36 +520,35 @@ export default function CreateClubForm1({navigation}) {
                 {clubName}
               </Text>
             </View>
+          </Pressable>
 
+          <Animated.View
+            style={{
+              width: 135,
+              height: 5,
+              backgroundColor: '#F2F2F2',
+              borderRadius: 20,
+              marginTop: Dimensions.get('screen').height * 0.8,
+            }}>
             <Animated.View
-              style={{
-                width: 135,
-                height: 5,
-                backgroundColor: '#F2F2F2',
-                borderRadius: 20,
-
-                marginTop: 279,
-              }}>
-              <Animated.View
-                style={[
-                  styles.progressBar,
-                  {
-                    width: animWidthPrecent,
-                  },
-                ]}>
-                <LinearGradient
-                  style={styles.progressBar}
-                  colors={['rgba(170, 216, 64, 0.6)', 'rgba(0, 193, 104, 0.6)']}
-                  start={{x: 0, y: 0.5}}
-                  end={{x: 1, y: 0.5}}></LinearGradient>
-              </Animated.View>
+              style={[
+                styles.progressBar,
+                {
+                  width: animWidthPrecent,
+                },
+              ]}>
+              <LinearGradient
+                style={styles.progressBar}
+                colors={['rgba(170, 216, 64, 0.6)', 'rgba(0, 193, 104, 0.6)']}
+                start={{x: 0, y: 0.5}}
+                end={{x: 1, y: 0.5}}
+              />
             </Animated.View>
-          </View>
+          </Animated.View>
+
           {/* PRogree Bar */}
         </View>
       )}
-
-      {/* <TCFormProgress totalSteps={3} curruentStep={2} /> */}
 
       <ScrollView style={styles.mainContainer}>
         <ActivityLoader visible={loading} />
@@ -727,7 +638,7 @@ export default function CreateClubForm1({navigation}) {
               style={{marginTop: 0}}
               required={true}
             />
-            <TouchableOpacity style={styles.languageView} onPress={toggleModal}>
+            <TouchableOpacity style={styles.languageView}>
               <Text
                 style={
                   sportsName
@@ -765,19 +676,8 @@ export default function CreateClubForm1({navigation}) {
           </View>
         </View>
 
-        {/* <View style={{marginLeft: 15}}>
-          <Text style={styles.smallTxt}>{strings.createClubNotes}</Text>
-        </View> */}
-
         <View style={{flex: 1}} />
       </ScrollView>
-
-      {/* <TCGradientButton
-        isDisabled={clubName === '' || location === '' || sportsName === ''}
-        title={strings.nextTitle}
-        style={{marginBottom: 30}}
-        onPress={onNextPressed}
-      /> */}
 
       <ActionSheet
         ref={actionSheet}
@@ -826,100 +726,7 @@ export default function CreateClubForm1({navigation}) {
           }
         }}
       />
-      {/* 
-      <SportsListModal
-        isVisible={visibleSportsModal}
-        closeList={() => setVisibleSportsModal(false)}
-        title={strings.sport}
-        sportsList={sportList}
-      /> */}
 
-      <Modal
-        isVisible={visibleSportsModal}
-        onBackdropPress={() => setVisibleSportsModal(false)}
-        onRequestClose={() => setVisibleSportsModal(false)}
-        animationInTiming={300}
-        animationOutTiming={800}
-        backdropTransitionInTiming={300}
-        backdropTransitionOutTiming={800}
-        style={{
-          margin: 0,
-        }}>
-        <View
-          style={{
-            width: '100%',
-            height: Dimensions.get('window').height / 1.07,
-            backgroundColor: 'white',
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            borderTopLeftRadius: 30,
-            borderTopRightRadius: 30,
-            shadowColor: '#000',
-            shadowOffset: {width: 0, height: 1},
-            shadowOpacity: 0.5,
-            shadowRadius: 5,
-            elevation: 15,
-          }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              // paddingHorizontal: 15,
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}>
-            <TouchableOpacity
-              hitSlop={getHitSlop(15)}
-              style={[styles.closeButton, {marginTop: 20, marginBottom: 10}]}
-              onPress={() => setVisibleSportsModal(false)}>
-              <Image source={images.cancelImage} style={styles.closeButton} />
-            </TouchableOpacity>
-            <Text
-              style={{
-                alignSelf: 'center',
-                //  marginVertical: 20,
-                fontSize: 16,
-                fontFamily: fonts.RBold,
-                color: colors.lightBlackColor,
-                textAlign: 'center',
-                marginTop: 20,
-                marginLeft: 20,
-                marginBottom: 14,
-              }}>
-              Sports
-            </Text>
-            <TouchableOpacity
-              onPress={() => {
-                const filterChecked = sportList.filter((obj) => obj.isChecked);
-                setSelectedSports(filterChecked);
-                toggleModal();
-              }}>
-              <Text
-                style={{
-                  alignSelf: 'center',
-
-                  fontSize: 16,
-                  fontFamily: fonts.RMedium,
-
-                  marginRight: 17,
-                  marginTop: 20,
-                  marginBottom: 10,
-                }}>
-                {strings.apply}
-              </Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.separatorLine} />
-          <FlatList
-            style={{marginTop: 5}}
-            showsVerticalScrollIndicator={false}
-            ItemSeparatorComponent={() => <TCThinDivider />}
-            data={sportList}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={renderSports}
-          />
-        </View>
-      </Modal>
       {/* locationModal */}
 
       <LocationModal

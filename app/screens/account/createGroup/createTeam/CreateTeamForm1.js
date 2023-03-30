@@ -18,6 +18,7 @@ import {
   SafeAreaView,
   TouchableWithoutFeedback,
   Platform,
+  Pressable,
 } from 'react-native';
 
 import {useIsFocused} from '@react-navigation/native';
@@ -36,7 +37,7 @@ import colors from '../../../../Constants/Colors';
 import TCLabel from '../../../../components/TCLabel';
 import TCFormProgress from '../../../../components/TCFormProgress';
 import TCThinDivider from '../../../../components/TCThinDivider';
-import TCFollowerList from '../../../../components/TCFollowerList';
+
 import {
   deleteConfirmation,
   getHitSlop,
@@ -54,8 +55,6 @@ export default function CreateTeamForm1({navigation, route}) {
   const authContext = useContext(AuthContext);
   const [sportsSelection, setSportsSelection] = useState();
 
-  const [followersData, setFollowersData] = useState();
-  const [parentGroupID, setParentGroupID] = useState();
   const [teamName, setTeamName] = useState('');
   const [homeCity, setHomeCity] = useState('');
   const [city, setCity] = useState('jjl');
@@ -67,17 +66,17 @@ export default function CreateTeamForm1({navigation, route}) {
   const [thumbnail, setThumbnail] = useState();
   const [backgroundThumbnail, setBackgroundThumbnail] = useState();
   const [gender, setGender] = useState('');
-  const [minAge, setMinAge] = useState(0);
-  const [maxAge, setMaxAge] = useState(0);
+  const [minAge, setMinAge] = useState(1);
+  const [maxAge, setMaxAge] = useState('99+');
   const [minAgeValue, setMinAgeValue] = React.useState([]);
   const [maxAgeValue, setMaxAgeValue] = React.useState([]);
   const [gendersSelection, setGendersSelection] = useState();
-  const [followersSelection, setFollowersSelection] = useState();
+
   const [follower, setFollower] = useState();
 
   const [selectedLanguages, setSelectedLanguages] = useState([]);
   const [visibleGendersModal, setVisibleGendersModal] = useState(false);
-  const [visibleFollowersModal, setVisibleFollowersModal] = useState(false);
+
   const [languages, setLanguages] = useState([]);
   const [getGender, setGetGender] = useState();
   const [isModalVisible, setModalVisible] = useState(false);
@@ -85,7 +84,6 @@ export default function CreateTeamForm1({navigation, route}) {
   const [languagesName, setLanguagesName] = useState('');
   const [description, setDescription] = useState('');
   const [selectedSport, SetSelectedSport] = useState(route?.params);
-  const [selectedPlayer, setSelectedPlayer] = useState();
 
   const actionSheet = useRef();
   const actionSheetWithDelete = useRef();
@@ -102,13 +100,13 @@ export default function CreateTeamForm1({navigation, route}) {
             }}
             onPress={() => {
               if (checkTeamValidations()) {
-                // if (parentGroupID) {
-                //   const tempIds = [];
-                //   tempIds.push(parentGroupID);
-                //   obj.parent_groups = tempIds;
-                // }
+                //   // if (parentGroupID) {
+                //   //   const tempIds = [];
+                //   //   tempIds.push(parentGroupID);
+                //   //   obj.parent_groups = tempIds;
+                //   // }
 
-                console.log(parentGroupID, selectedPlayer);
+                //   console.log(parentGroupID, selectedPlayer);
 
                 onNextPress();
               }
@@ -139,13 +137,13 @@ export default function CreateTeamForm1({navigation, route}) {
           (Verbs.entityTypeUser || Verbs.entityTypePlayer)
       ) {
         getSportFollowers();
-        setVisibleFollowersModal(true);
+        setFollower('follow');
       }
 
       setSportsSelection(route?.params.sport_name);
-      if (route?.params?.clubObject) {
-        setParentGroupID(route.params?.clubObject.group_id);
-      }
+      // if (route?.params?.clubObject) {
+      //   setParentGroupID(route.params?.clubObject.group_id);
+      // }
     }
   }, [isFocused]);
 
@@ -173,24 +171,34 @@ export default function CreateTeamForm1({navigation, route}) {
     if (isFocused) {
       const minAgeArray = [];
       let maxAgeArray = [];
-      for (let i = 1; i <= 120; i++) {
+      for (let i = 1; i <= 99; i++) {
         const dataSource = {
           label: `${i}`,
           value: i,
         };
         minAgeArray.push(dataSource);
       }
-      for (let i = minAge; i <= 120; i++) {
+      for (let i = minAge; i <= 99; i++) {
         const dataSource = {
           label: `${i}`,
           value: i,
         };
+
         maxAgeArray.push(dataSource);
       }
       if (minAge === 0) {
         maxAgeArray = [];
         setMaxAge(maxAgeArray);
       }
+      maxAgeArray.push({
+        label: ' 99+',
+        value: '99+',
+      });
+
+      minAgeArray.push({
+        label: ' 99+',
+        value: '99+',
+      });
       setMinAgeValue(minAgeArray);
       setMaxAgeValue(maxAgeArray);
     }
@@ -202,9 +210,7 @@ export default function CreateTeamForm1({navigation, route}) {
       selectedSport.sport_type,
       authContext,
     )
-      .then((res) => {
-        setFollowersData(res?.payload);
-      })
+      .then(() => {})
       .catch((e) => {
         Alert.alert(strings.alertmessagetitle, e.message);
       });
@@ -215,52 +221,6 @@ export default function CreateTeamForm1({navigation, route}) {
     setLanguages([...languages]);
   };
 
-  const onSelectPlayerNextclick = () => {
-    setSelectedPlayer(follower);
-    setVisibleFollowersModal(false);
-  };
-
-  const renderFollowers = ({item}) => (
-    <TouchableWithoutFeedback
-      style={styles.listItem}
-      onPress={() => {
-        setFollowersSelection(item.user_id);
-
-        setFollower(item);
-      }}>
-      <View
-        style={{
-          // padding: 20,
-          paddingVertical: 15,
-          alignItems: 'center',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          // backgroundColor: 'red',
-          marginLeft: 20,
-          marginRight: 30,
-        }}>
-        <TCFollowerList
-          type={'medium'}
-          name={item.full_name}
-          location={item.city}
-          image={
-            item?.thumbnail ? {uri: item?.thumbnail} : images.profilePlaceHolder
-          }
-        />
-        <View style={styles.checkbox}>
-          {followersSelection === item.user_id ? (
-            <Image
-              source={images.radioCheckYellow}
-              style={styles.checkboxImg}
-            />
-          ) : (
-            <Image source={images.radioUnselect} style={styles.checkboxImg} />
-          )}
-        </View>
-      </View>
-    </TouchableWithoutFeedback>
-  );
-
   const renderLanguage = ({item, index}) => (
     <TouchableWithoutFeedback
       style={styles.listItem}
@@ -269,7 +229,8 @@ export default function CreateTeamForm1({navigation, route}) {
       }}>
       <View
         style={{
-          padding: 20,
+          paddingHorizontal: 40,
+          paddingVertical: 20,
           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'space-between',
@@ -537,9 +498,8 @@ export default function CreateTeamForm1({navigation, route}) {
   };
 
   const onNextPress = () => {
-    // navgaite with all the paramss
-    navigation.navigate('CreateTeamForm2', {
-      teamData: {
+    navigation.navigate('IncomingChallengeSettings', {
+      groupData: {
         gender: gender.toLowerCase(),
         language: selectedLanguages,
         descriptions: description,
@@ -560,6 +520,7 @@ export default function CreateTeamForm1({navigation, route}) {
       settingType: selectedSport.default_setting?.default_setting_key,
       thumbnail,
       backgroundThumbnail,
+      fromCreateTeam: true,
     });
   };
 
@@ -777,9 +738,13 @@ export default function CreateTeamForm1({navigation, route}) {
             items={minAgeValue}
             onValueChange={(value) => {
               setMinAge(value);
+              setMaxAge(0);
             }}
             useNativeAndroidPickerStyle={false}
             style={{
+              placeholder: {
+                color: colors.blackColor,
+              },
               iconContainer: {
                 top: 0,
                 right: 0,
@@ -828,52 +793,56 @@ export default function CreateTeamForm1({navigation, route}) {
             }}>
             -
           </Text>
+          <Pressable>
+            <RNPickerSelect
+              testID="max-age-picker"
+              placeholder={{
+                label: strings.maxPlaceholder,
+                value: 0,
+              }}
+              items={maxAgeValue}
+              onValueChange={(value) => {
+                setMaxAge(value);
+              }}
+              useNativeAndroidPickerStyle={false}
+              style={{
+                placeholder: {
+                  color: colors.blackColor,
+                },
+                inputIOS: {
+                  height: 40,
 
-          <RNPickerSelect
-            testID="max-age-picker"
-            placeholder={{
-              label: strings.maxPlaceholder,
-              value: 0,
-            }}
-            items={maxAgeValue}
-            onValueChange={(value) => {
-              setMaxAge(value);
-            }}
-            useNativeAndroidPickerStyle={false}
-            style={{
-              inputIOS: {
-                height: 40,
+                  fontSize: wp('3.5%'),
+                  textAlign: 'center',
+                  paddingVertical: 12,
+                  paddingHorizontal: 15,
+                  width: wp('40%'),
+                  color: 'black',
 
-                fontSize: wp('3.5%'),
-                textAlign: 'center',
-                paddingVertical: 12,
-                paddingHorizontal: 15,
-                width: wp('40%'),
-                color: 'black',
+                  backgroundColor: colors.lightGrey,
 
-                backgroundColor: colors.lightGrey,
-
-                borderRadius: 5,
-              },
-              inputAndroid: {
-                height: 40,
-                textAlign: 'center',
-                fontSize: wp('4%'),
-                paddingVertical: 12,
-                paddingHorizontal: 15,
-                width: wp('40%'),
-                color: 'black',
-                backgroundColor: colors.lightGrey,
-              },
-            }}
-            value={maxAge}
-            Icon={() => (
-              <Image
-                source={images.dropDownArrow}
-                style={styles.miniDownArrow}
-              />
-            )}
-          />
+                  borderRadius: 5,
+                },
+                inputAndroid: {
+                  height: 40,
+                  textAlign: 'center',
+                  fontSize: wp('4%'),
+                  paddingVertical: 12,
+                  paddingHorizontal: 15,
+                  width: wp('40%'),
+                  color: 'black',
+                  backgroundColor: colors.lightGrey,
+                },
+              }}
+              value={maxAge}
+              Icon={() => (
+                <Image
+                  source={images.dropDownArrow}
+                  style={styles.miniDownArrow}
+                />
+              )}
+            />
+          </Pressable>
         </View>
 
         {/* languges */}
@@ -913,329 +882,244 @@ export default function CreateTeamForm1({navigation, route}) {
         />
 
         <View style={{flex: 1}} />
-      </ScrollView>
-      {/* next button */}
-      <SafeAreaView>
-        {/* <TCGradientButton
+
+        {/* next button */}
+        <SafeAreaView>
+          {/* <TCGradientButton
           // isDisabled={!sportsSelection || teamName === '' || homeCity === ''}
           title={strings.nextTitle}
           style={{marginBottom: 5}}
           onPress={nextOnPress}
         /> */}
-      </SafeAreaView>
+        </SafeAreaView>
 
-      {/* location modal */}
+        {/* location modal */}
 
-      <LocationModal
-        visibleLocationModal={visibleLocationModal}
-        title={strings.homeCityTitleText}
-        setVisibleLocationModalhandler={() => setVisibleLocationModal(false)}
-        onLocationSelect={handleSetLocationOptions}
-        placeholder={strings.searchByCity}
-      />
+        <LocationModal
+          visibleLocationModal={visibleLocationModal}
+          title={strings.homeCityTitleText}
+          setVisibleLocationModalhandler={() => setVisibleLocationModal(false)}
+          onLocationSelect={handleSetLocationOptions}
+          placeholder={strings.searchByCity}
+        />
 
-      {/* gender Modal */}
-      <Modal
-        isVisible={visibleGendersModal}
-        onBackdropPress={() => setVisibleGendersModal(false)}
-        onRequestClose={() => setVisibleGendersModal(false)}
-        animationInTiming={300}
-        animationOutTiming={800}
-        backdropTransitionInTiming={300}
-        backdropTransitionOutTiming={800}
-        style={{
-          margin: 0,
-        }}>
-        <View
+        {/* gender Modal */}
+        <Modal
+          isVisible={visibleGendersModal}
+          onBackdropPress={() => setVisibleGendersModal(false)}
+          onRequestClose={() => setVisibleGendersModal(false)}
+          animationInTiming={300}
+          animationOutTiming={800}
+          backdropTransitionInTiming={300}
+          backdropTransitionOutTiming={800}
           style={{
-            width: '100%',
-            height: Dimensions.get('window').height / 1.065,
-            backgroundColor: 'white',
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            borderTopLeftRadius: 30,
-            borderTopRightRadius: 30,
-            shadowColor: '#000',
-            shadowOffset: {width: 0, height: 1},
-            shadowOpacity: 0.5,
-            shadowRadius: 5,
-            elevation: 15,
+            margin: 0,
           }}>
           <View
             style={{
-              flexDirection: 'row',
-              paddingHorizontal: 15,
-              justifyContent: 'space-between',
-              alignItems: 'center',
+              width: '100%',
+              height: Dimensions.get('window').height / 1.065,
+              backgroundColor: 'white',
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              borderTopLeftRadius: 30,
+              borderTopRightRadius: 30,
+              shadowColor: '#000',
+              shadowOffset: {width: 0, height: 1},
+              shadowOpacity: 0.5,
+              shadowRadius: 5,
+              elevation: 15,
             }}>
-            <TouchableOpacity
-              hitSlop={getHitSlop(15)}
-              style={styles.closeButton}
-              onPress={() => setVisibleGendersModal(false)}>
-              <Image
-                source={images.cancelImage}
-                style={[styles.closeButton, {marginTop: 6}]}
-              />
-            </TouchableOpacity>
-            <Text
+            <View
               style={{
-                alignSelf: 'center',
-                marginVertical: 20,
-                fontSize: 16,
-                fontFamily: fonts.RBold,
-                color: colors.lightBlackColor,
-                marginLeft: 25,
-                marginBottom: 12,
+                flexDirection: 'row',
+                paddingHorizontal: 15,
+                justifyContent: 'space-between',
+                alignItems: 'center',
               }}>
-              {strings.playersGenderText}
-            </Text>
-            <TouchableOpacity onPress={onApplyPress}>
+              <TouchableOpacity
+                hitSlop={getHitSlop(15)}
+                style={styles.closeButton}
+                onPress={() => setVisibleGendersModal(false)}>
+                <Image
+                  source={images.cancelImage}
+                  style={[styles.closeButton, {marginTop: 6}]}
+                />
+              </TouchableOpacity>
               <Text
                 style={{
                   alignSelf: 'center',
                   marginVertical: 20,
                   fontSize: 16,
-                  fontFamily: fonts.RMedium,
-                  lineHeight: 24,
+                  fontFamily: fonts.RBold,
+                  color: colors.lightBlackColor,
+                  marginLeft: 25,
                   marginBottom: 12,
                 }}>
-                {strings.apply}
+                {strings.playersGenderText}
               </Text>
-            </TouchableOpacity>
+              <TouchableOpacity onPress={onApplyPress}>
+                <Text
+                  style={{
+                    alignSelf: 'center',
+                    marginVertical: 20,
+                    fontSize: 16,
+                    fontFamily: fonts.RMedium,
+                    lineHeight: 24,
+                    marginBottom: 12,
+                  }}>
+                  {strings.apply}
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.separatorLine} />
+            <FlatList
+              ItemSeparatorComponent={() => <TCThinDivider />}
+              data={groupMemberGenderItems}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={renderGenders}
+            />
           </View>
-          <View style={styles.separatorLine} />
-          <FlatList
-            ItemSeparatorComponent={() => <TCThinDivider />}
-            data={groupMemberGenderItems}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={renderGenders}
-          />
-        </View>
-      </Modal>
+        </Modal>
 
-      <Modal
-        isVisible={isModalVisible}
-        onBackdropPress={() => setModalVisible(false)}
-        onRequestClose={() => setModalVisible(false)}
-        animationInTiming={300}
-        animationOutTiming={800}
-        backdropTransitionInTiming={300}
-        backdropTransitionOutTiming={800}
-        style={{
-          margin: 0,
-        }}>
-        <View
+        <Modal
+          isVisible={isModalVisible}
+          onBackdropPress={() => setModalVisible(false)}
+          onRequestClose={() => setModalVisible(false)}
+          animationInTiming={300}
+          animationOutTiming={800}
+          backdropTransitionInTiming={300}
+          backdropTransitionOutTiming={800}
           style={{
-            width: '100%',
-            height: Dimensions.get('window').height / 1.065,
-            backgroundColor: 'white',
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            borderTopLeftRadius: 30,
-            borderTopRightRadius: 30,
-            shadowColor: '#000',
-            shadowOffset: {width: 0, height: 1},
-            shadowOpacity: 0.5,
-            shadowRadius: 5,
-            elevation: 15,
+            margin: 0,
           }}>
           <View
             style={{
-              flexDirection: 'row',
-              paddingHorizontal: 15,
-              justifyContent: 'space-between',
-              alignItems: 'center',
+              width: '100%',
+              height: Dimensions.get('window').height / 1.065,
+              backgroundColor: 'white',
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              borderTopLeftRadius: 30,
+              borderTopRightRadius: 30,
+              shadowColor: '#000',
+              shadowOffset: {width: 0, height: 1},
+              shadowOpacity: 0.5,
+              shadowRadius: 5,
+              elevation: 15,
             }}>
-            <TouchableOpacity
-              hitSlop={getHitSlop(15)}
-              style={styles.closeButton}
-              onPress={() => setModalVisible(false)}>
-              <Image source={images.cancelImage} style={styles.closeButton} />
-            </TouchableOpacity>
-            <Text
+            <View
               style={{
-                alignSelf: 'center',
-                marginVertical: 20,
-                fontSize: 16,
-                fontFamily: fonts.RBold,
-                color: colors.lightBlackColor,
-                marginLeft: 25,
+                flexDirection: 'row',
+                paddingHorizontal: 15,
+                justifyContent: 'space-between',
+                alignItems: 'center',
               }}>
-              {strings.languages}
-            </Text>
-            <TouchableOpacity
-              onPress={() => {
-                for (const temp of languages) {
-                  if (temp.isChecked) {
-                    selectedLanguage.push(temp.language);
+              <TouchableOpacity
+                hitSlop={getHitSlop(15)}
+                style={styles.closeButton}
+                onPress={() => setModalVisible(false)}>
+                <Image
+                  source={images.cancelImage}
+                  style={[styles.closeButton, {marginTop: 6}]}
+                />
+              </TouchableOpacity>
+              <Text
+                style={{
+                  alignSelf: 'center',
+                  marginVertical: 20,
+                  fontSize: 16,
+                  fontFamily: fonts.RBold,
+                  color: colors.lightBlackColor,
+                  marginLeft: 25,
+                  marginBottom: 12,
+                }}>
+                {strings.languages}
+              </Text>
+              <TouchableOpacity
+                onPress={() => {
+                  for (const temp of languages) {
+                    if (temp.isChecked) {
+                      selectedLanguage.push(temp.language);
+                    }
                   }
-                }
-                setSelectedLanguages(selectedLanguage);
-                toggleModal();
-              }}>
-              <Text
-                style={{
-                  alignSelf: 'center',
-                  marginVertical: 20,
-                  fontSize: 16,
-                  fontFamily: fonts.RMedium,
-                  lineHeight: 24,
+                  setSelectedLanguages(selectedLanguage);
+                  toggleModal();
                 }}>
-                {strings.apply}
-              </Text>
-            </TouchableOpacity>
+                <Text
+                  style={{
+                    alignSelf: 'center',
+                    marginVertical: 20,
+                    fontSize: 16,
+                    fontFamily: fonts.RMedium,
+                    lineHeight: 24,
+                    marginBottom: 12,
+                  }}>
+                  {strings.apply}
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.separatorLine} />
+            <FlatList
+              ItemSeparatorComponent={() => <TCThinDivider />}
+              data={languages}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={renderLanguage}
+            />
           </View>
-          <View style={styles.separatorLine} />
-          <FlatList
-            ItemSeparatorComponent={() => <TCThinDivider />}
-            data={languages}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={renderLanguage}
-          />
-        </View>
-      </Modal>
-      {/* language modal */}
+        </Modal>
+        {/* language modal */}
 
-      <ActionSheet
-        ref={actionSheet}
-        // title={'News Feed Post'}
-        options={[strings.camera, strings.album, strings.cancelTitle]}
-        cancelButtonIndex={2}
-        onPress={(index) => {
-          if (index === 0) {
-            openCamera();
-          } else if (index === 1) {
-            if (currentImageSelection) {
-              openImagePicker();
-            } else {
-              openImagePicker(750, 348);
+        <ActionSheet
+          ref={actionSheet}
+          // title={'News Feed Post'}
+          options={[strings.camera, strings.album, strings.cancelTitle]}
+          cancelButtonIndex={2}
+          onPress={(index) => {
+            if (index === 0) {
+              openCamera();
+            } else if (index === 1) {
+              if (currentImageSelection) {
+                openImagePicker();
+              } else {
+                openImagePicker(750, 348);
+              }
             }
-          }
-        }}
-      />
+          }}
+        />
 
-      <ActionSheet
-        ref={actionSheetWithDelete}
-        // title={'News Feed Post'}
-        options={[
-          strings.camera,
-          strings.album,
-          strings.deleteTitle,
-          strings.cancelTitle,
-        ]}
-        cancelButtonIndex={3}
-        destructiveButtonIndex={2}
-        onPress={(index) => {
-          if (index === 0) {
-            openCamera();
-          } else if (index === 1) {
-            if (currentImageSelection) {
-              openImagePicker();
-            } else {
-              openImagePicker(750, 348);
+        <ActionSheet
+          ref={actionSheetWithDelete}
+          // title={'News Feed Post'}
+          options={[
+            strings.camera,
+            strings.album,
+            strings.deleteTitle,
+            strings.cancelTitle,
+          ]}
+          cancelButtonIndex={3}
+          destructiveButtonIndex={2}
+          onPress={(index) => {
+            if (index === 0) {
+              openCamera();
+            } else if (index === 1) {
+              if (currentImageSelection) {
+                openImagePicker();
+              } else {
+                openImagePicker(750, 348);
+              }
+            } else if (index === 2) {
+              deleteConfirmation(
+                strings.appName,
+                strings.deleteConfirmationText,
+                () => deleteImage(),
+              );
             }
-          } else if (index === 2) {
-            deleteConfirmation(
-              strings.appName,
-              strings.deleteConfirmationText,
-              () => deleteImage(),
-            );
-          }
-        }}
-      />
-
-      <Modal
-        isVisible={visibleFollowersModal}
-        onBackdropPress={() => setVisibleFollowersModal(false)}
-        onRequestClose={() => setVisibleFollowersModal(false)}
-        animationInTiming={300}
-        animationOutTiming={800}
-        backdropTransitionInTiming={300}
-        backdropTransitionOutTiming={800}
-        style={{
-          margin: 0,
-        }}>
-        <View
-          style={{
-            width: '100%',
-            height: Dimensions.get('window').height / 1.059,
-            backgroundColor: 'white',
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            borderTopLeftRadius: 30,
-            borderTopRightRadius: 30,
-            shadowColor: '#000',
-            shadowOffset: {width: 0, height: 1},
-            shadowOpacity: 0.5,
-            shadowRadius: 5,
-            elevation: 15,
-          }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              paddingHorizontal: 15,
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}>
-            <TouchableOpacity
-              hitSlop={getHitSlop(15)}
-              style={styles.closeButton}
-              onPress={() => navigation.goBack()}>
-              <Image source={images.backArrow} style={styles.closeButton} />
-            </TouchableOpacity>
-            <Text
-              style={{
-                alignSelf: 'center',
-                marginVertical: 20,
-                fontSize: 16,
-                fontFamily: fonts.RBold,
-                color: colors.lightBlackColor,
-                marginLeft: 25,
-              }}>
-              {strings.createTeamText}
-            </Text>
-            <TouchableOpacity onPress={() => onSelectPlayerNextclick()}>
-              <Text
-                style={{
-                  alignSelf: 'center',
-                  marginVertical: 20,
-                  fontSize: 16,
-                  fontFamily: fonts.RMedium,
-                  color:
-                    follower === ''
-                      ? colors.userPostTimeColor
-                      : colors.blackColor,
-                }}>
-                {strings.next}
-              </Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.separatorLine} />
-
-          <Text
-            style={{
-              lineHeight: 24,
-              fontSize: 20,
-              fontFamily: fonts.RMedium,
-              marginLeft: 30,
-              marginRight: 33,
-              marginTop: 24,
-              marginBottom: 15,
-            }}>
-            {strings.whoDoYouwantToCreateTeamWith}
-          </Text>
-
-          <FlatList
-            ItemSeparatorComponent={() => <TCThinDivider />}
-            data={followersData}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={renderFollowers}
-          />
-        </View>
-      </Modal>
+          }}
+        />
+      </ScrollView>
     </>
   );
 }

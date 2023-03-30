@@ -12,6 +12,7 @@ import {
   Alert,
   Animated,
   Pressable,
+  Dimensions,
 } from 'react-native';
 
 import LinearGradient from 'react-native-linear-gradient';
@@ -195,7 +196,6 @@ export default function CreateTeamForm2({navigation, route}) {
       if (backgroundThumbnail) {
         bodyParams.background_thumbnail = backgroundThumbnail;
       }
-      console.log('bodyPARAMS:: ', bodyParams);
 
       if (bodyParams?.thumbnail || bodyParams?.background_thumbnail) {
         const imageArray = [];
@@ -226,7 +226,10 @@ export default function CreateTeamForm2({navigation, route}) {
               bodyParams.background_thumbnail = bgInfo.thumbnail;
               bodyParams.background_full_image = bgInfo.url;
             }
-            onANimate(100);
+            setTimeout(() => {
+              onANimate(50);
+            }, 30);
+
             createGroup(bodyParams, entity.uid, entity.obj.role, authContext)
               .then((response) => {
                 setloading(false);
@@ -347,87 +350,81 @@ export default function CreateTeamForm2({navigation, route}) {
           style={{
             flex: 1,
             backgroundColor: colors.whiteColor,
+
             justifyContent: 'center',
             alignItems: 'center',
             ...StyleSheet.absoluteFillObject,
-            zIndex: 10,
+
+            zIndex: 1000,
           }}>
-          <View
+          <ActivityLoader visible={false} />
+          <Pressable
             style={{
-              flex: 1,
-              backgroundColor: colors.whiteColor,
-              opacity: 0.8,
-              justifyContent: 'center',
-              alignItems: 'center',
-              ...StyleSheet.absoluteFillObject,
+              marginBottom: 89,
+              position: 'absolute',
               marginTop: 300,
-              zIndex: 1000,
-            }}>
-            <ActivityLoader visible={false} />
-            <Pressable
-              style={styles.profileImageContainer}
-              onPress={() => onANimate(56)}>
-              <View
-                style={{
-                  alignItems: 'center',
-                  justifyContent: 'center',
+            }}
+            onPress={() => onANimate(56)}>
+            <View
+              style={{
+                alignItems: 'center',
+                justifyContent: 'center',
 
-                  borderRadius: 100,
-                  alignSelf: 'center',
-                  width: 60,
-                  height: 60,
-                  borderWidth: 1,
-                  borderColor: '#DDDDDD',
-                }}>
-                <View>
-                  <Image
-                    source={images.teamPatch}
-                    style={{
-                      height: 15,
-                      width: 15,
-                      resizeMode: 'cover',
-                      position: 'absolute',
-                      left: 10,
-                      top: 45,
-                    }}
-                  />
-                </View>
+                borderRadius: 100,
+                alignSelf: 'center',
+                width: 60,
+                height: 60,
+                borderWidth: 1,
+                borderColor: '#DDDDDD',
+              }}>
+              <View>
                 <Image
-                  source={placeHolder}
+                  source={images.teamPatch}
                   style={{
-                    height: 50,
-                    width: 50,
-
-                    borderRadius: 25,
-                    resizeMode: 'contain',
-                    alignSelf: 'center',
-                    marginTop: 5,
+                    height: 15,
+                    width: 15,
+                    resizeMode: 'cover',
+                    position: 'absolute',
+                    left: 10,
+                    top: 45,
                   }}
                 />
-                <View
-                  style={{
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    alignSelf: 'center',
-                    position: 'absolute',
-                    top: 0,
-                    bottom: 0,
-                    right: 0,
-                    left: 0,
-                  }}>
-                  <Text
-                    style={{
-                      marginTop: -5,
-                      textAlign: 'center',
-                      color: colors.whiteColor,
-                      fontFamily: fonts.RBold,
-                      fontSize: 16,
-                    }}>
-                    {teamData.group_name.charAt(0)}
-                  </Text>
-                </View>
               </View>
-            </Pressable>
+              <Image
+                source={placeHolder}
+                style={{
+                  height: 50,
+                  width: 50,
+
+                  borderRadius: 25,
+                  resizeMode: 'contain',
+                  alignSelf: 'center',
+                  marginTop: 5,
+                }}
+              />
+              <View
+                style={{
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  alignSelf: 'center',
+                  position: 'absolute',
+                  top: 0,
+                  bottom: 0,
+                  right: 0,
+                  left: 0,
+                }}>
+                <Text
+                  style={{
+                    marginTop: -5,
+                    textAlign: 'center',
+                    color: colors.whiteColor,
+                    fontFamily: fonts.RBold,
+                    fontSize: 16,
+                  }}>
+                  {teamData.group_name.charAt(0)}
+                </Text>
+              </View>
+            </View>
             <View
               style={{
                 marginTop: 15,
@@ -451,31 +448,33 @@ export default function CreateTeamForm2({navigation, route}) {
                 {teamData.group_name}
               </Text>
             </View>
+          </Pressable>
 
+          <Animated.View
+            style={{
+              width: 135,
+              height: 5,
+              backgroundColor: '#F2F2F2',
+              borderRadius: 20,
+
+              marginTop: Dimensions.get('screen').height * 0.7,
+            }}>
             <Animated.View
-              style={{
-                width: 135,
-                height: 5,
-                backgroundColor: '#F2F2F2',
-                borderRadius: 20,
-
-                marginTop: 279,
-              }}>
-              <Animated.View
-                style={[
-                  styles.progressBar,
-                  {
-                    width: animWidthPrecent,
-                  },
-                ]}>
-                <LinearGradient
-                  style={styles.progressBar}
-                  colors={['rgba(170, 216, 64, 0.6)', 'rgba(0, 193, 104, 0.6)']}
-                  start={{x: 0, y: 0.5}}
-                  end={{x: 1, y: 0.5}}></LinearGradient>
-              </Animated.View>
+              style={[
+                styles.progressBar,
+                {
+                  width: animWidthPrecent,
+                },
+              ]}>
+              <LinearGradient
+                style={styles.progressBar}
+                colors={['rgba(255, 138, 1, 0.6)', 'rgba(255, 88, 0, 0.6) ']}
+                start={{x: 0, y: 0.5}}
+                end={{x: 1, y: 0.5}}
+              />
             </Animated.View>
-          </View>
+          </Animated.View>
+
           {/* PRogree Bar */}
         </View>
       )}

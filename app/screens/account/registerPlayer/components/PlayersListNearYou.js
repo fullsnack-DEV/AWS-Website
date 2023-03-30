@@ -19,10 +19,13 @@ import ListShimmer from './ListShimmer';
 const PlayersListNearYou = ({
   sportType,
   list = [],
+  fromCreateClub = false,
+
   onChanllenge = () => {},
   searchPlayer = () => {},
   onUserClick = () => {},
   onChoose = () => {},
+  onInviteClick = () => {},
   loading = false,
 }) => {
   const renderPlayerCard = ({item}) => (
@@ -54,7 +57,7 @@ const PlayersListNearYou = ({
             {displayLocation(item)}
           </Text>
         </TouchableOpacity>
-        {sportType === Verbs.sportTypeSingle ? (
+        {sportType === Verbs.sportTypeSingle && !fromCreateClub ? (
           <TouchableOpacity
             style={styles.buttonContainer}
             onPress={() => onChanllenge(item)}>
@@ -73,6 +76,16 @@ const PlayersListNearYou = ({
             </Text>
           </TouchableOpacity>
         ) : null}
+
+        {fromCreateClub && sportType === Verbs.sportTypeSingle ? (
+          <TouchableOpacity
+            style={[styles.buttonContainer, {width: 75}]}
+            onPress={() => onInviteClick(item)}>
+            <Text style={styles.buttonText}>{strings.invite}</Text>
+          </TouchableOpacity>
+        ) : (
+          <></>
+        )}
       </View>
       <View style={styles.dividor} />
     </>

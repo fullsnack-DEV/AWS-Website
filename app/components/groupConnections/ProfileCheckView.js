@@ -1,7 +1,8 @@
 /* eslint-disable consistent-return */
 /* eslint-disable no-empty */
+/* eslint-disable no-else-return */
 
-import React from 'react';
+import React, {useContext} from 'react';
 import {
   Text,
   View,
@@ -12,12 +13,15 @@ import {
 } from 'react-native';
 
 import LinearGradient from 'react-native-linear-gradient';
+import AuthContext from '../../auth/context';
 
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
+import Verbs from '../../Constants/Verbs';
 
 export default function ProfileCheckView({isChecked, onPress, playerDetail}) {
+  const authContext = useContext(AuthContext);
   const RenderSportDetail = () => {
     const sportname = playerDetail.registered_sports?.[0].sport;
     const numOfSports = playerDetail.registered_sports?.length - 1;
@@ -30,6 +34,22 @@ export default function ProfileCheckView({isChecked, onPress, playerDetail}) {
       return `${capitalizeLetter}`;
     }
     return `${capitalizeLetter} and ${numOfSports} more`;
+  };
+
+  const checkPrivacy = () => {
+    if (
+      authContext.entity.role === Verbs.entityTypeClub &&
+      playerDetail.who_can_invite_for_club === 0
+    ) {
+      return false;
+    } else if (
+      authContext.entity.role === Verbs.entityTypeTeam &&
+      playerDetail.who_can_invite_for_team === 0
+    ) {
+      return false;
+    } else {
+      return true;
+    }
   };
 
   return (
@@ -83,8 +103,17 @@ export default function ProfileCheckView({isChecked, onPress, playerDetail}) {
         </TouchableWithoutFeedback>
       ) : (
         <TouchableWithoutFeedback onPress={onPress}>
-          <View style={styles.topViewContainer}>
-            <View style={{flexDirection: 'row'}}>
+          <View
+            style={[
+              styles.topViewContainer,
+
+              {opacity: checkPrivacy() ? 1 : 0.4},
+            ]}
+            pointerEvents={checkPrivacy() ? 'auto' : 'none'}>
+            <View
+              style={{
+                flexDirection: 'row',
+              }}>
               <Image
                 source={
                   playerDetail.thumbnail
