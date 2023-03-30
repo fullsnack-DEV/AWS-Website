@@ -84,7 +84,7 @@ export default function IncomingChallengeSettings({navigation, route}) {
     }
   }, [route.params.settingObj]);
 
-  const handleOpetions = (option) => {
+  const handleOptions = (option) => {
     if (settingObject) {
       switch (option) {
         case strings.availability:
@@ -543,7 +543,7 @@ export default function IncomingChallengeSettings({navigation, route}) {
             <SettingsMenuItem
               sportName={sportName}
               item={item}
-              handleOpetions={handleOpetions}
+              handleOptions={handleOptions}
               settingObject={settingObject}
             />
           )}
@@ -560,11 +560,15 @@ export default function IncomingChallengeSettings({navigation, route}) {
         settingsObj={settingObject}
         closeModal={() => {
           setCongratulationsModal(false);
-          navigation.navigate('AccountScreen', {
-            createdSportName: sportName,
-            // eslint-disable-next-line
-            sportType: sportType,
-          });
+          if (route.params?.comeFrom) {
+            navigation.navigate(route.params.comeFrom);
+          } else {
+            navigation.navigate('AccountScreen', {
+              createdSportName: sportName,
+              // eslint-disable-next-line
+              sportType: sportType,
+            });
+          }
         }}
         sportName={sportName}
         sport={sport}
@@ -655,7 +659,7 @@ export default function IncomingChallengeSettings({navigation, route}) {
         isVisible={showMatchFeeReminderModal}
         onAddMatchFee={() => {
           setShowMatchFeeReminderModal(false);
-          handleOpetions(strings.gameFee);
+          handleOptions(strings.gameFee);
         }}
         onContinue={() => {
           setShowMatchFeeReminderModal(false);

@@ -121,7 +121,14 @@ const SportActivityHome = ({navigation, route}) => {
 
   useEffect(() => {
     if (selectedTab) {
-      setActiveTab(selectedTab);
+      if (
+        selectedTab === strings.refereedMatchesTitle ||
+        selectedTab === strings.scorekeptMatches
+      ) {
+        setActiveTab(strings.matchesTitleText);
+      } else {
+        setActiveTab(selectedTab);
+      }
     } else {
       setActiveTab(strings.infoTitle);
     }
@@ -264,6 +271,7 @@ const SportActivityHome = ({navigation, route}) => {
             sportType: sportObj?.sport_type,
             uid: route.params.uid,
             entityType,
+            backScreen: 'AccountScreen',
           },
         });
         break;
@@ -327,7 +335,6 @@ const SportActivityHome = ({navigation, route}) => {
         );
 
       case strings.scoreboard:
-      case strings.refereedMatchesTitle:
       case strings.matchesTitleText:
         return (
           <ScoreboardContentScreen
@@ -447,6 +454,14 @@ const SportActivityHome = ({navigation, route}) => {
         level={sportObj?.level}
         loading={isFectchingUser}
         entityType={entityType}
+        onPressUser={() => {
+          navigation.navigate('HomeScreen', {
+            uid: userData.user_id,
+            role: userData.entity_type,
+            backButtonVisible: true,
+            menuBtnVisible: false,
+          });
+        }}
       />
 
       <ChallengeButton
@@ -495,7 +510,7 @@ const SportActivityHome = ({navigation, route}) => {
       <SportActivityTabBar
         // sport={sportObj?.sport}
         sportType={sportObj?.sport_type}
-        activeTab={selectedTab || strings.infoTitle}
+        activeTab={activeTab || strings.infoTitle}
         onTabChange={(tab) => setActiveTab(tab)}
         entityType={entityType}
       />

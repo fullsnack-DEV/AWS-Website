@@ -25,6 +25,7 @@ import {
 import ActivityLoader from './app/components/loader/ActivityLoader';
 import {removeFBToken} from './app/api/Users';
 import LoneStackNavigator from './app/navigation/LoneStackNavigator';
+import {getSportsList} from './app/api/Games';
 
 const Stack = createStackNavigator();
 
@@ -147,6 +148,18 @@ export default function NavigationMainContainer() {
 
   useEffect(() => {
     checkToken();
+  }, []);
+
+  const fetchSportList = useCallback(() => {
+    getSportsList(authContext).then((res) => {
+      authContext.setSports(res.payload);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (authContext?.entity?.isLoggedIn) {
+      fetchSportList();
+    }
   }, []);
 
   return (

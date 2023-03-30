@@ -21,7 +21,6 @@ import {
 } from 'react-native-responsive-screen';
 import AuthContext from '../../../auth/context';
 import Header from '../../../components/Home/Header';
-import EventItemRender from '../../../components/Schedule/EventItemRender';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
@@ -31,6 +30,7 @@ import ActivityLoader from '../../../components/loader/ActivityLoader';
 import {editSlots} from '../../../api/Schedule';
 import DateTimePickerView from '../../../components/Schedule/DateTimePickerModal';
 import BlockAvailableTabView from '../../../components/Schedule/BlockAvailableTabView';
+import AvailabilityTypeTabView from '../../../components/Schedule/AvailabilityTypeTabView';
 import EventTimeSelectItem from '../../../components/Schedule/EventTimeSelectItem';
 import EventMonthlySelection from '../../../components/Schedule/EventMonthlySelection';
 import Verbs from '../../../Constants/Verbs';
@@ -47,13 +47,15 @@ import {
 export default function ChallengeAvailability({
   setVisibleAvailabilityModal, 
   slots, 
-  slotType, 
-  setEditableSlotsType, 
   addToSlotData,
-  deleteFromSlotData}) {
+  showAddMore = false,
+  setHeightRange,
+  deleteFromSlotData
+}) {
 
   const authContext = useContext(AuthContext);
-  const [challengeAvailable, setChallengeAvailable] = useState([
+  const [challengeAvailable, setChallengeAvailable] = useState([]);
+  const [oneTimeAvailability, setOneTimeAvailability] = useState([
     {
       id: 0,
       isBlock: true,
@@ -63,12 +65,24 @@ export default function ChallengeAvailability({
       is_recurring: false,
     },
   ]);
+  const [recurringAvailability, setRecurringAvailability] = useState([
+    {
+      id: 0,
+      isBlock: true,
+      allDay: false,
+      start_datetime: getRoundedDate(5),
+      end_datetime: moment(getRoundedDate(5)).add(5, 'm').toDate(),
+      is_recurring: true,
+    },
+  ]);
 
   const [loading, setLoading] = useState(false);
   const [untilDateVisible, setUntilDateVisible] = useState(false);
   const [startDateVisible, setStartDateVisible] = useState(false);
   const [endDateVisible, setEndDateVisible] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [oneTime, setOneTime] = useState(true);
+  const [overlappedItems, setOverlappedItems] = useState([]);
 
 
   useEffect(() => {
@@ -77,7 +91,7 @@ export default function ChallengeAvailability({
       slots.forEach((item , index) => {
           const temp = {
             id : index,
-            isBlock : !item.blocked,
+            isBlock : item.blocked,
             allDay: false,
             start_datetime : getJSDate(item.start_datetime),
             end_datetime : getJSDate(item.end_datetime),
@@ -85,7 +99,8 @@ export default function ChallengeAvailability({
           }
           editableSlots.push(temp);
       });
-      setChallengeAvailable(editableSlots)
+      setOneTimeAvailability(editableSlots);
+      setChallengeAvailable(editableSlots);
     }
   },[]);
 
@@ -166,6 +181,7 @@ export default function ChallengeAvailability({
     setEndDateVisible(!endDateVisible);
   }
 
+
   const onUntilDateChange = (date, index) => {
     const tempChallenge = challengeAvailable;
     tempChallenge[index].untilDate = tempChallenge[index]
@@ -181,6 +197,35 @@ export default function ChallengeAvailability({
       : date;
     setUntilDateVisible(!untilDateVisible);
     setChallengeAvailable([...tempChallenge]);
+  }
+
+
+  const checkSlotsOverlapping = () => {
+    let overLappedValues = [];
+    let is_overLapped = false;
+    challengeAvailable.forEach((item , index) => {
+      challengeAvailable.forEach((value , key) => {
+        if(index !== key) {
+          if(item.isBlock !== value.isBlock) {
+            if(getTCDate(item.start_datetime) > getTCDate(value.start_datetime) && 
+            getTCDate(item.start_datetime) < getTCDate(value.end_datetime)) {
+              overLappedValues.push(index);
+              overLappedValues.push(key);
+              is_overLapped = true;
+            }
+            if(getTCDate(item.end_datetime) > getTCDate(value.start_datetime) && 
+            getTCDate(item.end_datetime) < getTCDate(value.end_datetime)) {
+              overLappedValues.push(index);
+              overLappedValues.push(key);
+              is_overLapped = true;
+            }
+          }
+        }
+      });
+    });
+    overLappedValues = overLappedValues.filter((item,index) => overLappedValues.indexOf(item) === index);
+    setOverlappedItems(overLappedValues);
+    return is_overLapped;
   }
 
 
@@ -226,6 +271,13 @@ export default function ChallengeAvailability({
           <TouchableOpacity
             style={{padding: 2}}
             onPress={() => {
+              if(oneTime) {
+                const res = checkSlotsOverlapping();
+                if(res) {
+                  Alert.alert(strings.overlappingAvailability);
+                  return false;
+                }
+              }
               setLoading(true);
               const entity = authContext.entity;
               const uid = entity.uid || entity.auth.user_id;
@@ -271,15 +323,15 @@ export default function ChallengeAvailability({
                 filterData.push(obj);
               });
 
-           
               editSlots(entityRole, uid, filterData, authContext)
-              .then(() => {
+              .then((response) => {
                 setTimeout(() => {
                   if(addToSlotData && deleteFromSlotData) {
-                    if(slotType) {
-                      addToSlotData(filterData)
-                    }else{
-                      deleteFromSlotData(filterData)
+                    if(response.payload.newSlots.length > 0) {
+                      addToSlotData(response.payload.newSlots);
+                    }
+                    if(response.payload.deleteSlotsIds.length > 0){
+                      deleteFromSlotData(response.payload.deleteSlotsIds)
                     }
                   }
                   setLoading(false);
@@ -290,21 +342,77 @@ export default function ChallengeAvailability({
                 setLoading(false);
                 console.log('Error ::--', error);
               });
+              return true;
             }}>
+
             <Text>{strings.done}</Text>
           </TouchableOpacity>
         }
       />
       <View style={styles.sperateLine} />
       <View>
-        <ScrollView bounces={false} style={{height : '85%'}}>
+        <ScrollView bounces={false} >
           <SafeAreaView>
-            <EventItemRender title={strings.editChallengeTitle}>
+            <View style={styles.containerStyle}>
+              <View style={{flexDirection: 'row', justifyContent: 'flex-start'}}>
+                <Text style={styles.headerTextStyle}>
+                  {strings.editChallengeTitle}{' '}
+                </Text>
+              </View>
+              <AvailabilityTypeTabView
+                oneTime={oneTime}
+                firstTabTitle='One-time'
+                secondTabTitle='Recurring'
+                onFirstTabPress={() => {
+                  setOneTime(true);
+                  setRecurringAvailability(challengeAvailable);
+                  setChallengeAvailable(oneTimeAvailability);
+                  if(setHeightRange) {
+                    setHeightRange(0.6)
+                  }
+                }}
+                onSecondTabPress={() => {
+                  setOneTime(false); 
+                  setOneTimeAvailability(challengeAvailable);
+                  setChallengeAvailable(recurringAvailability);
+                  if(setHeightRange) {
+                    setHeightRange(0.7)
+                  }
+                }}
+                style={styles.availabilityTabViewStyle}
+                activeEventPricacy={styles.activeEventPricacy}
+                inactiveEventPricacy={styles.inactiveEventPricacy}
+                activeEventPrivacyText={styles.activeEventPrivacyText}
+                inactiveEventPrivacyText={styles.activeEventPrivacyText}
+              />
+              <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
+                <Text>
+                  {strings.timezone} &nbsp;
+                </Text>
+                <TouchableOpacity 
+                  onPress={() => {Alert.alert(strings.timezoneAvailability)}}>
+                    <Text
+                    style={{
+                      textDecorationLine: 'underline',
+                      textDecorationStyle: 'solid',
+                      textDecorationColor: '#000'
+                    }} 
+                    >{strings.vancouver}</Text>
+                </TouchableOpacity>
+              </View>
               <FlatList
                 data={challengeAvailable}
                 showsHorizontalScrollIndicator={false}
-                renderItem={({item: data, index}) => (
-                  <View style={{marginTop: 10, backgroundColor: '#F5F5F5', padding: 10}}>
+                renderItem={({item: data, index}) => {
+                  const background = challengeAvailable[index].isBlock ? colors.grayBackgroundColor : colors.availabilitySlotsBackground;
+                  return (
+                  <View style={{
+                    marginTop: 10, 
+                    padding: 10, 
+                    backgroundColor: background,
+                    borderWidth: 1,
+                    borderColor: overlappedItems.includes(index) ? colors.redColor : background
+                  }}>
                     <View style={styles.toggleViewStyle}>
                       <View style={{flexDirection: 'row'}}>
                         <TouchableOpacity
@@ -327,6 +435,26 @@ export default function ChallengeAvailability({
                         </TouchableOpacity>
                         <Text style={styles.allDayText}>{strings.allDay}</Text>
                       </View>
+                      <BlockAvailableTabView
+                        blocked={challengeAvailable[index].isBlock}
+                        firstTabTitle={strings.block}
+                        secondTabTitle={strings.setAvailable}
+                        onFirstTabPress={() => {
+                          const tempChallenge = [...challengeAvailable];
+                          tempChallenge[index].isBlock = true;
+                          setChallengeAvailable(tempChallenge);
+                        }}
+                        onSecondTabPress={() => {
+                          const tempChallenge = [...challengeAvailable];
+                          tempChallenge[index].isBlock = false;
+                          setChallengeAvailable(tempChallenge);
+                        }}
+                        style={styles.blockStyle}
+                        activeEventPricacy={styles.activeEventPricacy}
+                        inactiveEventPricacy={styles.inactiveEventPricacy}
+                        activeEventPrivacyText={styles.activeEventPrivacyText}
+                        inactiveEventPrivacyText={styles.activeEventPrivacyText}
+                      />
                       <TouchableOpacity
                         onPress={() => {
                           deleteItemById(data.id);
@@ -335,7 +463,7 @@ export default function ChallengeAvailability({
                             source={
                               images.crossSingle
                             }
-                            style={styles.checkboxImg}
+                            style={styles.crossImg}
                             resizeMode={'contain'}
                           />
                       </TouchableOpacity>
@@ -344,7 +472,7 @@ export default function ChallengeAvailability({
                       title={strings.starts}
                       toggle={!challengeAvailable[index].allDay}
                       headerTextStyle={{paddingLeft: 0}}
-                      style={{backgroundColor: '#FFF', width: wp('88%')}}
+                      style={{backgroundColor: colors.whiteColor, width: wp('88%')}}
                       date={
                         challengeAvailable[index].start_datetime
                           ? moment(
@@ -365,7 +493,7 @@ export default function ChallengeAvailability({
                       }}
                     />
                     <EventTimeSelectItem
-                      style={{backgroundColor: '#FFF', width: wp('88%')}}
+                      style={{backgroundColor: colors.whiteColor, width: wp('88%')}}
                       title={strings.ends}
                       toggle={!challengeAvailable[index].allDay}
                       headerTextStyle={{paddingLeft: 0}}
@@ -391,8 +519,10 @@ export default function ChallengeAvailability({
                       }
                     />
 
+                    {
+                    !oneTime && (
                     <EventMonthlySelection
-                      containerStyle={{backgroundColor: '#FFF', width: wp('88%')}}
+                      containerStyle={{backgroundColor: colors.whiteColor, width: wp('88%')}}
                       title={strings.repeat}
                       dataSource={[
                         {label: strings.daily, value: Verbs.eventRecurringEnum.Daily},
@@ -435,8 +565,10 @@ export default function ChallengeAvailability({
                         setChallengeAvailable(tempChallenge);
                       }}
                     />
-                    {challengeAvailable[index].is_recurring === true && (
+                    )} 
+                    {challengeAvailable[index].is_recurring === true  && (
                       <EventTimeSelectItem
+                        style={{backgroundColor: colors.whiteColor, width: wp('88%')}}
                         title={strings.until}
                         toggle={!challengeAvailable[index].allDay}
                         date={
@@ -519,8 +651,9 @@ export default function ChallengeAvailability({
                       date={challengeAvailable[currentIndex].untilDate}
                     />
                   </View>
-                )}
+                )}}
                 ListFooterComponent={() => (
+                  oneTime && showAddMore ?  (                 
                   <AddTimeItem
                     addTimeText={strings.addTime}
                     source={images.plus}
@@ -536,15 +669,16 @@ export default function ChallengeAvailability({
                       setChallengeAvailable([...challengeAvailable, obj]);
                     }}
                   />
+                  ): (<></>)
                 )}
                 ListFooterComponentStyle={{marginTop: 20}}
                 ItemSeparatorComponent={() => <View style={{height: wp('3%')}} />}
                 keyExtractor={(itemValue, index) => index.toString()}
               />
-            </EventItemRender>
+            </View>
           </SafeAreaView>
         </ScrollView>
-        <BlockAvailableTabView
+        {/* <BlockAvailableTabView
           blocked={slotType}
           firstTabTitle={strings.block}
           secondTabTitle={strings.setAvailable}
@@ -565,7 +699,7 @@ export default function ChallengeAvailability({
           inactiveEventPricacy={styles.inactiveEventPricacy}
           activeEventPrivacyText={styles.activeEventPrivacyText}
           inactiveEventPrivacyText={styles.activeEventPrivacyText}
-        />
+        /> */}
       </View>
     </View>
   );
@@ -595,14 +729,21 @@ const styles = StyleSheet.create({
   },
 
   blockStyle: {
-    width: wp('92%'),
+    width: wp('50%'),
+    marginVertical: 0,
+    borderRadius: 8
+  },
+  availabilityTabViewStyle:{
+    width: wp('94%'),
     marginVertical: 0,
     borderRadius: 8,
-    marginTop: 30
+    marginBottom: 20,
+    marginTop: 20
   },
   activeEventPricacy: {
-    paddingVertical: 8,
+    paddingVertical: 4,
     borderRadius: 6,
+    backgroundColor: colors.grayBackgroundColor
   },
   inactiveEventPricacy: {
     paddingVertical: 2,
@@ -626,8 +767,24 @@ const styles = StyleSheet.create({
     width: wp('4.5%'),
     height: wp('4.5%'),
   },
+  crossImg: {
+    width: wp('3.5%'),
+    height: wp('3.5%'),
+  },
   checkbox: {
     alignSelf: 'center',
     right: wp(0),
+  },
+  containerStyle: {
+    width: wp('96%'),
+    alignSelf: 'center',
+    padding: wp('1.5%'),
+    marginHorizontal: 20
+  },
+  headerTextStyle: {
+    fontSize: 16,
+    fontFamily: fonts.RBold,
+    marginVertical: 3,
+    color: colors.lightBlackColor,
   },
 });

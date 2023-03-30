@@ -119,6 +119,7 @@ const RegisterPlayer = ({navigation, route}) => {
           sport: selectedSport.sport,
           settingObj: selectedSport.default_setting ?? {},
           settingType: selectedSport.default_setting?.default_setting_key,
+          comeFrom: route.params?.comeFrom ?? '',
         });
       } else {
         setLoading(true);
@@ -145,7 +146,11 @@ const RegisterPlayer = ({navigation, route}) => {
         title={strings.registerAsPlayerTitle}
         leftIcon={images.backArrow}
         leftIconPress={() => {
-          navigation.navigate('AccountScreen');
+          if (route.params?.comeFrom) {
+            navigation.navigate(route.params.comeFrom);
+          } else {
+            navigation.navigate('AccountScreen');
+          }
         }}
         isRightIconText
         rightButtonText={
@@ -245,11 +250,15 @@ const RegisterPlayer = ({navigation, route}) => {
         settingsObj={selectedSport?.default_setting}
         closeModal={() => {
           setShowCongratulationsModal(true);
-          navigation.navigate('AccountScreen', {
-            createdSportName: selectedSport?.sport_name,
-            // eslint-disable-next-line
-            sportType: selectedSport?.sport_type,
-          });
+          if (route.params?.comeFrom) {
+            navigation.navigate(route.params.comeFrom);
+          } else {
+            navigation.navigate('AccountScreen', {
+              createdSportName: selectedSport?.sport_name,
+              // eslint-disable-next-line
+              sportType: selectedSport?.sport_type,
+            });
+          }
         }}
         sportName={selectedSport?.sport_name}
         sport={selectedSport?.sport}

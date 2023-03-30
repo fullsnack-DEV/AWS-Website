@@ -478,32 +478,15 @@ export default function AccountScreen({navigation, route}) {
   const handleSectionMemberClick = useCallback(
     (rowObj) => {
       const option = rowObj.option;
-
       if (authContext.entity.role !== Verbs.entityTypeUser) {
         setIsRulesModalVisible(
           option === strings.createTeamText ||
             option === strings.createClubText,
         );
-
-        if (option === strings.createTeamText) {
-          setCreateEntity(Verbs.entityTypeTeam);
-        } else if (option === strings.createClubText) {
-          setCreateEntity(Verbs.entityTypeClub);
-        } else {
-          navigation.navigate(
-            rowObj.navigateTo.screenName,
-            rowObj.navigateTo.data,
-          );
-        }
-      } else {
-        if (option == strings.addSportsTitle) {
-          setNavigationOptions({
-            screenName: rowObj.navigateTo.screenName,
-            data: rowObj.navigateTo.data,
-          });
-          setSelectedMenuOptionType(rowObj.menuOptionType);
-          setVisibleSportsModal(true);
-        } else if (option === strings.createTeamText) {
+      }
+      switch (option) {
+        case strings.createTeamText:
+          // setCreateEntity(Verbs.entityTypeTeam); 
           setVisibleSportsModalForTeam(true);
 
           setSelectedMenuOptionType(Verbs.entityTypeTeam);
@@ -511,20 +494,50 @@ export default function AccountScreen({navigation, route}) {
             screenName: rowObj.navigateTo.screenName,
             data: rowObj.navigateTo.data,
           });
-        } else if (option === strings.createClubText) {
-          setVisibleSportsModalForClub(true);
+          break;
+
+        case strings.createClubText:
+         // setCreateEntity(Verbs.entityTypeClub);
+               setVisibleSportsModalForClub(true);
 
           setNavigationOptions({
             screenName: rowObj.navigateTo.screenName,
             data: rowObj.navigateTo.data,
           });
           setSelectedMenuOptionType(rowObj.menuOptionType);
-        } else {
-          navigation.navigate(
-            rowObj.navigateTo.screenName,
-            rowObj.navigateTo.data,
-          );
-        }
+          break;
+
+        case strings.addSportsTitle:
+          setNavigationOptions({
+            screenName: rowObj.navigateTo.screenName,
+            data: rowObj.navigateTo.data,
+          });
+          setSelectedMenuOptionType(rowObj.menuOptionType);
+          setVisibleSportsModal(true);
+
+          break;
+
+        default:
+          if (
+            authContext.entity.role === Verbs.entityTypeUser &&
+            rowObj.sport
+          ) {
+            navigation.navigate('SportActivityHome', {
+              sport: rowObj.sport.sport,
+              sportType: rowObj.sport.sport_type ?? '',
+              uid: authContext.entity.obj.user_id,
+              selectedTab: strings.infoTitle,
+              entityType: rowObj.sport.type,
+              backScreen: 'AccountScreen',
+            });
+          } else {
+            navigation.navigate(
+              rowObj.navigateTo.screenName,
+              rowObj.navigateTo.data,
+            );
+          }
+          break;
+
       }
     },
     [authContext.entity, navigation],
@@ -551,13 +564,21 @@ export default function AccountScreen({navigation, route}) {
         <AccountMenuRow
           item={rowItem}
           isAccountDeactivated={isAccountDeactivated}
-          onPress={() => handleSectionMemberClick(rowItem)}
+          onPressSetting={() => {
+            navigation.navigate(
+              rowItem.navigateTo.screenName,
+              rowItem.navigateTo.data,
+            );
+          }}
           onPressCancelRequest={() =>
             onCancelTeamRequest('cancel', rowItem?.option?.request_id)
           }
+          onPressSport={() => {
+            handleSectionMemberClick(rowItem);
+          }}
         />
       ) : null,
-    [handleSectionMemberClick, isAccountDeactivated],
+    [handleSectionMemberClick, isAccountDeactivated, authContext],
   );
 
   let placeHolder = images.teamSqure;

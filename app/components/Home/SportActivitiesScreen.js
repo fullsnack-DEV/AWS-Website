@@ -1,68 +1,38 @@
-/* eslint-disable react/jsx-key */
-/* eslint-disable no-unsafe-optional-chaining */
-/* eslint-disable array-callback-return */
-import React, {
-  useContext,
-  useCallback,
-  useLayoutEffect,
-  useRef,
-  useState,
-  useEffect,
-} from 'react';
+import React, {useContext, useState, useEffect} from 'react';
 import {
   View,
   StyleSheet,
-  Text,
-  Image,
-  ScrollView,
-  TouchableOpacity,
   Alert,
+  SafeAreaView,
+  ActivityIndicator,
 } from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
-import LinearGradient from 'react-native-linear-gradient';
-import ActionSheet from 'react-native-actionsheet';
-import FastImage from 'react-native-fast-image';
 import * as Utility from '../../utils';
 import AuthContext from '../../auth/context';
-import colors from '../../Constants/Colors';
-import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 import {getUserDetails} from '../../api/Users';
 import {strings} from '../../../Localization/translation';
-import ActivityLoader from '../loader/ActivityLoader';
-import TCProfileButton from '../TCProfileButton';
 import Verbs from '../../Constants/Verbs';
 
-let image_url = '';
+import SportActivityModal from '../../screens/home/SportActivity/SportActivityModal';
+import OrderedSporList from './OrderedSporList';
+import BottomSheet from '../modals/BottomSheet';
+import ScreenHeader from '../ScreenHeader';
 
-export default function SportActivitiesScreen({navigation}) {
-  const actionSheet = useRef();
-  const addRoleActionSheet = useRef();
+const SportActivitiesScreen = ({navigation, route}) => {
+  const [loading, setloading] = useState(true);
+  const [userObject, setUserObject] = useState();
+  const [selectedSport, setSelectedSport] = useState({});
+  const [selectedEntity, setSelectedEntity] = useState(Verbs.entityTypePlayer);
+
+  const [showMoreOptions, setShowMoreOptions] = useState(false);
+  const [showSportsModal, setShowSportsModal] = useState(false);
+
+  const {isAdmin, currentUserData} = route.params;
+  const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
 
-  const [loading, setloading] = useState(false);
-  const [userObject, setUserObject] = useState();
-
-  const authContext = useContext(AuthContext);
-  console.log('authContext', authContext.entity.obj);
-
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <TouchableOpacity
-          onPress={() => actionSheet.current.show()}
-          hitSlop={Utility.getHitSlop(15)}>
-          <Image
-            source={images.vertical3Dot}
-            style={styles.navigationRightItem}
-          />
-        </TouchableOpacity>
-      ),
-    });
-  }, [navigation]);
-
   useEffect(() => {
-    image_url = global.sport_icon_baseurl;
     if (isFocused) {
       setloading(true);
       getUserDetails(authContext?.entity?.uid, authContext)
@@ -79,293 +49,138 @@ export default function SportActivitiesScreen({navigation}) {
     }
   }, [authContext, isFocused]);
 
-  const sportsView = useCallback(({item}) => {
-    console.log(
-      'image_url:',
-      image_url,
-      Utility.getSportImage(item.sport, item.type, authContext),
-    );
-    return (
-      <View style={styles.sportView}>
-        <LinearGradient
-          colors={
-            (item?.type === Verbs.entityTypePlayer && [
-              colors.yellowColor,
-              colors.orangeGradientColor,
-            ]) ||
-            (item?.type === Verbs.entityTypeReferee && [
-              colors.yellowColor,
-              colors.darkThemeColor,
-            ]) ||
-            (item?.type === Verbs.entityTypeScorekeeper && [
-              colors.blueGradiantEnd,
-              colors.blueGradiantStart,
-            ])
-          }
-          style={styles.backgroundView}></LinearGradient>
-        <View style={styles.innerViewContainer}>
-          <View style={styles.viewContainer}>
-            <FastImage
-              source={{
-                uri: `${image_url}${Utility.getSportImage(
-                  item.sport,
-                  item.type,
-                  authContext,
-                )}`,
-              }}
-              style={styles.sportIcon}
-              resizeMode={'cover'}
-            />
-            <View>
-              <Text style={styles.sportName}>
-                {Utility.getSportName(item, authContext)}
-              </Text>
-              <Text style={styles.matchCount}>0 match</Text>
-            </View>
-          </View>
-        </View>
-      </View>
-    );
-  }, []);
-
-  const refereeSportsView = useCallback(
-    ({item}) => (
-      <View style={styles.sportView}>
-        <LinearGradient
-          colors={[colors.darkThemeColor, colors.darkThemeColor]}
-          style={styles.backgroundView}></LinearGradient>
-        <View style={styles.innerViewContainer}>
-          <View style={styles.viewContainer}>
-            <Image
-              source={{
-                uri: `${image_url}${Utility.getSportImage(
-                  item.sport,
-                  item.type,
-                  authContext,
-                )}`,
-              }}
-              style={styles.sportIcon}
-            />
-            <View>
-              <Text style={styles.sportName}>
-                {Utility.getSportName(item, authContext)}
-              </Text>
-              <Text style={styles.matchCount}>0 match</Text>
-            </View>
-          </View>
-        </View>
-      </View>
-    ),
-    [],
-  );
-
-  const scorekeeperSportsView = useCallback(
-    ({item}) => (
-      <View style={styles.sportView}>
-        <LinearGradient
-          colors={[colors.blueGradiantEnd, colors.blueGradiantStart]}
-          style={styles.backgroundView}></LinearGradient>
-        <View style={styles.innerViewContainer}>
-          <View style={styles.viewContainer}>
-            <Image
-              source={{
-                uri: `${image_url}${Utility.getSportImage(
-                  item.sport,
-                  item.type,
-                  authContext,
-                )}`,
-              }}
-              style={styles.sportIcon}
-            />
-            <View>
-              <Text style={styles.sportName}>
-                {Utility.getSportName(item, authContext)}
-              </Text>
-              <Text style={styles.matchCount}>0 match</Text>
-            </View>
-          </View>
-        </View>
-      </View>
-    ),
-    [],
-  );
-
   return (
-    <>
-      {!loading && (
-        <ScrollView>
-          <ActivityLoader visible={loading} />
-          <View>
-            {userObject?.registered_sports?.filter(
-              (obj) =>
-                obj.type === Verbs.entityTypePlayer && obj.is_active === true,
-            )?.length > 0 && (
-              <View style={styles.listContainer}>
-                <Text style={styles.listTitle}>Playing</Text>
-                {userObject?.registered_sports
-                  ?.filter(
-                    (obj) =>
-                      obj.type === Verbs.entityTypePlayer &&
-                      obj.is_active === true,
-                  )
-                  .sort((a, b) => a.sport.localeCompare(b.sport))
-                  .map((item) => sportsView({item}))}
-              </View>
-            )}
-
-            {userObject?.referee_data?.filter(
-              (obj) =>
-                obj.type === Verbs.entityTypeReferee && obj.is_active === true,
-            )?.length > 0 && (
-              <View style={styles.listContainer}>
-                <Text style={styles.listTitle}>Refereeing</Text>
-                {userObject?.referee_data
-                  ?.filter(
-                    (obj) =>
-                      obj.type === Verbs.entityTypeReferee &&
-                      obj.is_active === true,
-                  )
-                  .sort((a, b) => a.sport.localeCompare(b.sport))
-                  .map((item) => refereeSportsView({item}))}
-              </View>
-            )}
-
-            {userObject?.scorekeeper_data?.filter(
-              (obj) =>
-                obj.type === Verbs.entityTypeScorekeeper &&
-                obj.is_active === true,
-            )?.length > 0 && (
-              <View style={styles.listContainer}>
-                <Text style={styles.listTitle}>Scorekeeping</Text>
-                {userObject?.scorekeeper_data
-                  ?.filter(
-                    (obj) =>
-                      obj.type === Verbs.entityTypeScorekeeper &&
-                      obj.is_active === true,
-                  )
-                  .sort((a, b) => a.sport.localeCompare(b.sport))
-                  .map((item) => scorekeeperSportsView({item}))}
-              </View>
-            )}
-          </View>
-
-          <TCProfileButton
-            title={strings.addSportsActivity}
-            onPressProfile={() => {
-              addRoleActionSheet.current.show();
-            }}
-            showArrow={false}
-            style={{marginBottom: 50, width: 180, alignSelf: 'center'}}
-          />
-        </ScrollView>
+    <SafeAreaView style={styles.parent}>
+      {isAdmin ? (
+        <ScreenHeader
+          title={strings.sportActivity}
+          leftIcon={images.backArrow}
+          leftIconPress={() => navigation.goBack()}
+          rightIcon2={images.chat3Dot}
+          rightIcon2Press={() => setShowMoreOptions(true)}
+          containerStyle={styles.headerRow}
+        />
+      ) : (
+        <ScreenHeader
+          title={strings.sportActivity}
+          leftIcon={images.backArrow}
+          leftIconPress={() => navigation.goBack()}
+          containerStyle={styles.headerRow}
+        />
       )}
 
-      <ActionSheet
-        ref={actionSheet}
-        options={[strings.editOrder, strings.hideUnhide, strings.cancel]}
-        cancelButtonIndex={2}
-        onPress={(index) => {
-          if (index === 0) {
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size={'large'} />
+        </View>
+      ) : (
+        <OrderedSporList
+          user={userObject}
+          onCardPress={(sport, entityType) => {
+            setSelectedSport(sport);
+            setSelectedEntity(entityType);
+            setShowSportsModal(true);
+          }}
+          showAddActivityButton
+          onSelect={(option) => {
+            if (option === strings.addPlaying) {
+              navigation.navigate('RegisterPlayer', {
+                comeFrom: 'SportActivityScreen',
+              });
+            } else if (option === strings.addRefereeing) {
+              navigation.navigate('RegisterReferee');
+            } else if (option === strings.addScorekeeping) {
+              navigation.navigate('RegisterScorekeeper');
+            }
+          }}
+        />
+      )}
+
+      <SportActivityModal
+        isVisible={showSportsModal}
+        closeModal={() => {
+          setShowSportsModal(false);
+        }}
+        isAdmin={isAdmin}
+        userData={currentUserData}
+        sport={selectedSport?.sport}
+        sportObj={selectedSport}
+        sportName={Utility.getSportName(selectedSport, authContext)}
+        // onSeeAll={handleSectionClick}
+        handleChallengeClick={() => {
+          navigation.navigate('InviteChallengeScreen', {
+            setting: selectedSport?.setting,
+            sportName: selectedSport?.sport,
+            sportType: selectedSport?.sport_type,
+            groupObj: currentUserData,
+          });
+        }}
+        onMessageClick={() => {
+          navigation.push('MessageChat', {
+            screen: 'MessageChat',
+            params: {userId: currentUserData?.user_id},
+          });
+        }}
+        entityType={selectedEntity}
+        continueToChallenge={() => {
+          setShowSportsModal(false);
+          navigation.navigate('ChallengeScreen', {
+            setting: selectedSport?.setting ?? {},
+            sportName: selectedSport?.sport,
+            sportType: selectedSport?.sport_type,
+            groupObj: currentUserData,
+          });
+        }}
+        bookReferee={() => {
+          navigation.navigate('RefereeBookingDateAndTime', {
+            settingObj: selectedSport?.setting ?? {},
+            userData: currentUserData,
+            showMatches: true,
+            sportName: selectedSport?.sport,
+          });
+        }}
+        bookScoreKeeper={() => {
+          navigation.navigate('ScorekeeperBookingDateAndTime', {
+            settingObj: selectedSport?.setting ?? {},
+            userData: currentUserData,
+            showMatches: true,
+            sportName: selectedSport?.sport,
+          });
+        }}
+      />
+
+      <BottomSheet
+        isVisible={showMoreOptions}
+        closeModal={() => setShowMoreOptions(false)}
+        optionList={[strings.editOrder, strings.hideUnhide]}
+        onSelect={(option) => {
+          setShowMoreOptions(false);
+          if (option === strings.editOrder) {
             navigation.navigate('SportActivityTagScreen');
           }
-          if (index === 1) {
+          if (option === strings.hideUnhide) {
             navigation.navigate('SportHideUnhideScreen');
           }
         }}
       />
-
-      <ActionSheet
-        ref={addRoleActionSheet}
-        options={[
-          strings.addPlaying,
-          strings.addRefereeing,
-          strings.addScorekeeping,
-          strings.cancel,
-        ]}
-        cancelButtonIndex={3}
-        onPress={(index) => {
-          if (index === 0) {
-            // Add Playing
-            navigation.navigate('RegisterPlayer', {
-              comeFrom: 'SportActivityScreen',
-            });
-          } else if (index === 1) {
-            // Add Refereeing
-            navigation.navigate('RegisterReferee');
-          } else if (index === 2) {
-            // Add Scorekeeper
-            navigation.navigate('RegisterScorekeeper');
-          }
-        }}
-      />
-    </>
+    </SafeAreaView>
   );
-}
+};
+
 const styles = StyleSheet.create({
-  listTitle: {
-    fontFamily: fonts.RRegular,
-    fontSize: 20,
-    color: colors.lightBlackColor,
-    marginBottom: 15,
-  },
-  listContainer: {
-    margin: 15,
-  },
-  sportView: {
-    flexDirection: 'row',
-    height: 50,
-    borderRadius: 8,
-    backgroundColor: colors.whiteColor,
-    shadowColor: colors.googleColor,
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    shadowRadius: 3,
-    shadowOpacity: 0.2,
-    elevation: 5,
-    marginBottom: 20,
-  },
-  backgroundView: {
-    borderTopLeftRadius: 8,
-    borderBottomLeftRadius: 8,
-    height: 50,
-    width: 8,
-  },
-
-  innerViewContainer: {
+  parent: {
     flex: 1,
-    flexDirection: 'row',
-    marginRight: 15,
+  },
+  headerRow: {
+    paddingHorizontal: 10,
+    paddingTop: 6,
+    paddingBottom: 14,
+  },
+  loadingContainer: {
+    flex: 1,
     alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  sportName: {
-    fontFamily: fonts.RMedium,
-    fontSize: 16,
-    color: colors.lightBlackColor,
-  },
-  matchCount: {
-    fontFamily: fonts.RLight,
-    fontSize: 12,
-    color: colors.lightBlackColor,
-  },
-  sportIcon: {
-    height: 24,
-    width: 24,
-    marginLeft: 15,
-    marginRight: 15,
-  },
-  viewContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-
-  navigationRightItem: {
-    height: 15,
-    marginRight: 15,
-    resizeMode: 'contain',
-    tintColor: colors.blackColor,
-    width: 15,
+    justifyContent: 'center',
   },
 });
+
+export default SportActivitiesScreen;

@@ -6,6 +6,7 @@ import {
   getGameScoreboardEvents,
   getGameStatsData,
   getRefereedMatch,
+  getScorekeeperMatch,
 } from '../../../api/Games';
 import AuthContext from '../../../auth/context';
 
@@ -137,6 +138,19 @@ const SportActivityModal = ({
       });
   }, [userData, sport, authContext]);
 
+  const getScorekeeperMatchList = useCallback(() => {
+    setIsFetchingMatchList(true);
+    getScorekeeperMatch(userData?.user_id, sport, authContext)
+      .then((res) => {
+        setMatchList(res.payload);
+        setIsFetchingMatchList(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setIsFetchingMatchList(false);
+      });
+  }, [userData, sport, authContext]);
+
   useEffect(() => {
     if (isVisible) {
       getAvailability();
@@ -147,6 +161,9 @@ const SportActivityModal = ({
       if (entityType === Verbs.entityTypeReferee) {
         getRefereeMatchList();
       }
+      if (entityType === Verbs.entityTypeScorekeeper) {
+        getScorekeeperMatchList();
+      }
     }
   }, [
     isVisible,
@@ -155,6 +172,7 @@ const SportActivityModal = ({
     loadStatsData,
     getRefereeMatchList,
     entityType,
+    getScorekeeperMatchList,
   ]);
 
   useEffect(() => {
@@ -233,7 +251,8 @@ const SportActivityModal = ({
                 bookScoreKeeper={bookScoreKeeper}
               />
 
-              {sportObj?.sport_type === Verbs.singleSport ? (
+              {sportObj?.sport_type === Verbs.singleSport ||
+              entityType !== Verbs.entityTypePlayer ? (
                 <AvailabilitySection
                   list={availabilityList}
                   loading={fetchingAvailability}
@@ -266,7 +285,8 @@ const SportActivityModal = ({
                 />
               ) : null}
 
-              {sportObj?.sport_type === Verbs.singleSport ? (
+              {sportObj?.sport_type === Verbs.singleSport ||
+              entityType !== Verbs.entityTypePlayer ? (
                 <ReviewSection
                   onSeeAll={() => onSeeAll(strings.reviews)}
                   ratings={

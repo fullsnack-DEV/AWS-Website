@@ -2,29 +2,46 @@ import images from '../../Constants/ImagePath';
 import {strings} from '../../../Localization/translation';
 // import {getSportIcon} from '../../utils/index';
 import Verbs from '../../Constants/Verbs';
-import {getSportName} from '../../utils';
-import {getEntitySportList} from '../../utils/sportsActivityUtils';
+import {
+  getEntitySportList,
+  getSportDetails,
+} from '../../utils/sportsActivityUtils';
 // TODO: Move this file to right place. Improve this methods
 
 // TODO: call utility.getSportName() to fetch correct sports title
 // TODO: apply isAccountDeactivated logic to not display add sports button
-const prepareSportsSubMenuOfUser = (sports, baseUrl, authContext) => {
+const prepareSportsSubMenuOfUser = (
+  sports,
+  baseUrl,
+  authContext,
+  entityType,
+) => {
   let updatedList = [];
   if (sports) {
-    updatedList = sports.map((item) => ({
-      option: getSportName(item, authContext),
-      icon: item?.sport_image
-        ? `${baseUrl}${item.sport_image}`
-        : images.accountMyScoreKeeping,
-      iconRight: images.settingSport,
-      navigateTo: {
-        screenName: 'SportAccountSettingScreen',
-        data: {
-          type: item.type,
-          sport: item,
+    updatedList = sports.map((item) => {
+      const sportDetails = getSportDetails(
+        item.sport,
+        item.sport_type,
+        authContext.sports,
+        entityType,
+      );
+
+      return {
+        option: sportDetails?.sport_name,
+        icon: sportDetails?.sport_image
+          ? `${baseUrl}${sportDetails?.sport_image}`
+          : images.accountMyScoreKeeping,
+        iconRight: images.settingSport,
+        navigateTo: {
+          screenName: 'SportAccountSettingScreen',
+          data: {
+            type: entityType,
+            sport: item,
+          },
         },
-      },
-    }));
+        sport: item,
+      };
+    });
   }
   return updatedList;
 };
@@ -116,6 +133,7 @@ export const prepareUserMenu = (authContext, teams, clubs, baseUrl) => {
           getEntitySportList(authContext.entity.obj, Verbs.entityTypePlayer),
           baseUrl,
           authContext,
+          Verbs.entityTypePlayer,
         ),
         {
           option: strings.addSportsTitle,
@@ -135,6 +153,7 @@ export const prepareUserMenu = (authContext, teams, clubs, baseUrl) => {
           getEntitySportList(authContext.entity.obj, Verbs.entityTypeReferee),
           baseUrl,
           authContext,
+          Verbs.entityTypeReferee,
         ),
         {
           option: strings.addSportsTitle,
@@ -158,6 +177,7 @@ export const prepareUserMenu = (authContext, teams, clubs, baseUrl) => {
           ),
           baseUrl,
           authContext,
+          Verbs.entityTypeScorekeeper,
         ),
         {
           option: strings.addSportsTitle,

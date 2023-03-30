@@ -35,10 +35,12 @@ export const deleteEvent = async (
   entity_id,
   eventID,
   authContext,
+  data = {}
 ) =>
   makeAPIRequest({
     method: 'delete',
     url: `${Config.BASE_URL}/${entity_type}/${entity_id}/events/${eventID}`,
+    data,
     authContext,
   });
 

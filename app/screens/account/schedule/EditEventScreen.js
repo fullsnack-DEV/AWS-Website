@@ -84,6 +84,7 @@ export default function EditEventScreen({navigation, route}) {
 
   const authContext = useContext(AuthContext);
   const [eventData] = useState(route?.params?.data);
+
   const [eventTitle, setEventTitle] = useState(eventData.title);
   const [eventDescription, setEventDescription] = useState(
     eventData.descriptions,
@@ -114,15 +115,17 @@ export default function EditEventScreen({navigation, route}) {
   const [selectedSport, setSelectedSport] = useState(eventData?.selected_sport);
   const [recurringEditModal, setRecurringEditModal] =  useState(false);
   const [visibleLocationModal, setVisibleLocationModal] = useState(false);
-
+  const THISEVENT = 0
+  const FUTUREEVENT = 1
+  const ALLEVENT = 2
 
   const recurringEditList = [
-    {text: 'This event Only', value: 0},
+    {text: 'This event Only', value: THISEVENT},
     {
       text: 'This and all following events',
-      value: 1,
+      value: FUTUREEVENT,
     },
-    {text: 'All events', value: 2},
+    {text: 'All events', value: ALLEVENT},
   ];
   const [whoOption, setWhoOption] = useState();
   const [whoCanJoinOption, setWhoCanJoinOption] = useState({
@@ -643,7 +646,6 @@ export default function EditEventScreen({navigation, route}) {
     if(rule){
       data.untilDate = getTCDate(eventUntilDateTime);
       data.rrule = rule
-
       if(recurrringOption === '') {
         setRecurringEditModal(true);
         setloading(false);
@@ -656,7 +658,10 @@ export default function EditEventScreen({navigation, route}) {
     .then((response) => {
       console.log('Response :-', response);
       setloading(false);
-      navigation.goBack()
+      // navigation.goBack()
+      navigation.navigate('EventScreen' , {
+        event : data
+      });
     })
     .catch((e) => {
       setloading(false);
@@ -679,7 +684,10 @@ export default function EditEventScreen({navigation, route}) {
         background_full_image: eventData.background_full_image,
         allDay: toggle,
         start_datetime: getTCDate(eventStartDateTime),
+        new_start_datetime : getTCDate(eventStartDateTime),
+        new_untilDate: eventData.untilDate,
         end_datetime: getTCDate(eventEndDateTime),
+        new_end_datetime: getTCDate(eventEndDateTime),
         is_recurring: selectWeekMonth !== Verbs.eventRecurringEnum.Never,
         repeat: selectWeekMonth,
         blocked: is_Blocked,
@@ -845,7 +853,7 @@ export default function EditEventScreen({navigation, route}) {
                 marginVertical: 10,
                 fontSize: 16,
                 fontFamily: fonts.RRegular,
-              }}>Update recurring event</Text>
+              }}>{strings.updateRecurringEvent}</Text>
           </View>
           <TCThinDivider width="92%" />
           <FlatList

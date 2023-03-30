@@ -217,12 +217,14 @@ const NewsFeedPostItems = memo(
       ],
     );
 
+
     const onNewsFeedLikePress = useCallback(() => {
       if (like) setLikeCount((likeCnt) => likeCnt - 1);
       else setLikeCount((likeCnt) => likeCnt + 1);
       setLike((isLIKE) => !isLIKE);
       onLikePress();
     }, [like, onLikePress]);
+
 
     const rePostCall = useCallback(() => {
       const temp = {
@@ -338,6 +340,7 @@ const NewsFeedPostItems = memo(
       ],
     );
 
+
     const renderURLPreview = useMemo(() => {
       const obj =
         typeof item?.object === 'string'
@@ -345,6 +348,7 @@ const NewsFeedPostItems = memo(
           : item?.object;
       return <CustomURLPreview text={obj?.text} />;
     }, [item?.object]);
+
 
     const renderDescription = useMemo(
       () => (
@@ -399,15 +403,18 @@ const NewsFeedPostItems = memo(
         renderProfileInfo,
       ],
     );
+      
+    
     const onWriteCommentPress = useCallback(() => {
       setShowCommentModal(true);
     }, []);
 
+    
     const renderPost = useMemo(() => {
       const myData = myItem?.post_type === 'repost' ? myItem?.activity : item;
       return (
         <View>
-          <View style={{flexDirection: 'row', flex: 1}}>
+          <View style={{flexDirection: 'row'}}>
             {myItem?.post_type === 'repost' && (
               <View
                 style={{
@@ -467,7 +474,9 @@ const NewsFeedPostItems = memo(
               </View>
               <View style={{flex: 1}}>
                 {attachedImages && attachedImages?.length === 1 ? (
-                  <>{RenderSinglePostItems(attachedImages?.[0])}</>
+                  <View>
+                    {RenderSinglePostItems(attachedImages?.[0])}
+                  </View>
                 ) : (
                   <Carousel
                     onSnapToItem={setChildIndex}
@@ -479,10 +488,11 @@ const NewsFeedPostItems = memo(
                     itemWidth={wp(94)}
                   />
                 )}
+                <View style={{padding: 10}}>
                 {renderURLPreview}
                 {renderDescription}
+                </View>
               </View>
-              <View style={{marginTop: 10, marginLeft: 10}} />
             </View>
           </View>
           <View style={styles.commentShareLikeView}>
@@ -490,16 +500,35 @@ const NewsFeedPostItems = memo(
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-
                 flex: 1,
-              }}>
+              }}
+            >
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  flex: 0.5,
+                }}
+              >
+                <TouchableOpacity
+                  onPress={onNewsFeedLikePress}
+                  style={styles.imageTouchStyle}>
+                  <Image
+                    style={[styles.commentImage, {marginLeft: 5}]}
+                    source={like ? images.likeImage : images.unlikeImage}
+                    resizeMode={'cover'}
+                  />
+                </TouchableOpacity>
+              </View>
+
               <TouchableOpacity
                 onPress={onWriteCommentPress}
                 style={{
                   flexDirection: 'row',
                   marginRight: 25,
                   flex: 0.5,
-                }}>
+                }}
+              >
                 <View style={styles.imageTouchStyle}>
                   <Image
                     style={styles.commentImage}
@@ -507,63 +536,89 @@ const NewsFeedPostItems = memo(
                     resizeMode={'contain'}
                   />
                 </View>
-                <Text style={styles.commentlengthStyle}>
-                  {commentCount > 0 ? commentCount : ''}
-                </Text>
               </TouchableOpacity>
+            </View>
 
+            <View
+            style={{
+              flex: 1,
+              flexDirection: 'row',
+              justifyContent: 'flex-end',
+              alignItems: 'center',
+              marginLeft: 20,
+            }}
+            >
+              <TouchableOpacity
+                onPress={() => shareActionSheet.current.show()}
+                style={styles.imageTouchStyle}>
+                <Image
+                  style={styles.commentImage}
+                  source={images.shareImage}
+                  resizeMode={'contain'}
+                />
+              </TouchableOpacity>
+              <Text style={styles.commentlengthStyle}>{''}</Text>
+            </View>
+          </View>
+
+          <View style={{paddingHorizontal: 20}}>
+            <View 
+            style={{
+              height: 2, 
+              width: '100%', 
+              backgroundColor: '#F2F2F2',
+              marginBottom: 15
+            }}/>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                flex: 0.5,
+              }}
+            >
               <View
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
+                  justifyContent: 'flex-start',
                   flex: 0.5,
-                }}>
-                <TouchableOpacity
-                  onPress={() => shareActionSheet.current.show()}
-                  style={styles.imageTouchStyle}>
-                  <Image
-                    style={styles.commentImage}
-                    source={images.shareImage}
-                    resizeMode={'contain'}
-                  />
+                }}
+              >
+                <TouchableOpacity 
+                  onPress={() => setShowLikeModal(true)} 
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'flex-start',
+                    flex: 0.5,
+                  }}
+                >
+                  <Text>{likeCount <= 0 ? 0 : likeCount }</Text>
+                  <Text> &nbsp; Likes</Text>
                 </TouchableOpacity>
-                <Text style={styles.commentlengthStyle}>{''}</Text>
-              </View>
-            </View>
-
-            <View
-              style={{
-                flex: 1,
-                flexDirection: 'row',
-                justifyContent: 'flex-end',
-                alignItems: 'center',
-                marginLeft: 20,
-              }}>
-              <TouchableOpacity
-                style={{marginRight: 5}}
-                onPress={() => {
-                  setShowLikeModal(true);
-                }}>
-                <Text
-                  style={[
-                    styles.commentlengthStyle,
-                    {
-                      color:
-                        like === true ? '#FF8A01' : colors.reactionCountColor,
-                    },
-                  ]}>
-                  {likeCount <= 0 ? '' : likeCount}
+                <Text> 
+                  &nbsp;
+                  &nbsp;
+                  | 
+                  &nbsp;
+                  &nbsp;
                 </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={onNewsFeedLikePress}
-                style={styles.imageTouchStyle}>
-                <Image
-                  style={styles.commentImage}
-                  source={like ? images.likeImage : images.unlikeImage}
-                  resizeMode={'cover'}
-                />
-              </TouchableOpacity>
+                <TouchableOpacity
+                onPress={onWriteCommentPress}
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'flex-start',
+                  flex: 0.5,
+                }}
+                >
+                  <Text>{commentCount <= 0 ? 0 : commentCount} </Text>
+                  <Text>&nbsp; Comments</Text> 
+                </TouchableOpacity>
+              </View>
+              <Text>
+                1 &nbsp; Reposts
+              </Text>
             </View>
           </View>
         </View>
@@ -650,7 +705,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginLeft: 15,
     marginRight: 15,
-    marginTop: 5,
+    marginTop: 15,
+    marginBottom: 15
   },
   commentlengthStyle: {
     marginLeft: 5,
