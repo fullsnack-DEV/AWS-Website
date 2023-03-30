@@ -141,6 +141,7 @@ const colors = {
 
   availabilitySlotsBackground: '#ECF6EE',
   modalBackgroundColor: 'rgba(0,0,0,0.7)',
-
+  createClubGradientfrom: 'rgba(170, 216, 64, 0.6)',
+  createClubGradientto: 'rgba(0, 193, 104, 0.6)',
 };
 export default colors;

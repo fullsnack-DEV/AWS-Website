@@ -350,10 +350,6 @@ const HomeScreen = ({navigation, route}) => {
     if (route?.params?.isEntityCreated) {
       onSwitchProfile(route?.params?.entityObj);
       setCongratulationsModal(true);
-
-      // setTimeout(() => {
-      //   confirmationRef.current.open();
-      // }, 1000);
     }
   }, [route?.params?.entityObj, route?.params?.isEntityCreated]);
 

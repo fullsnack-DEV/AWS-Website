@@ -83,9 +83,7 @@ const PlayersListNearYou = ({
             onPress={() => onInviteClick(item)}>
             <Text style={styles.buttonText}>{strings.invite}</Text>
           </TouchableOpacity>
-        ) : (
-          <></>
-        )}
+        ) : null}
       </View>
       <View style={styles.dividor} />
     </>

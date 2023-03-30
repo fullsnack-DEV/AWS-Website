@@ -370,9 +370,7 @@ const CongratulationsModal = ({
                 ]}>
                 {subtitle}
               </Text>
-            ) : (
-              <></>
-            )}
+            ) : null}
           </View>
 
           {fromCreateTeam || fromCreateClub ? (

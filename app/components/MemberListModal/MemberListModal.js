@@ -33,16 +33,6 @@ const MemberListModal = ({
   const [follower, setFollower] = useState();
 
   const [followersSelection, setFollowersSelection] = useState();
-  //   useEffect(() => {
-  //     setSelectedSport(sport);
-  //   }, [sport]);
-
-  // const validateUser = () => {
-  // Validate Here
-  // groupValidate().then((response) => {
-  // console.log(response);
-  //   });
-  // };
 
   const renderFollowers = ({item}) => (
     <TouchableWithoutFeedback
@@ -69,7 +59,7 @@ const MemberListModal = ({
           name={item.full_name}
           location={item.city}
           image={
-            item?.thumbnail ? {uri: item?.thumbnail} : images.profilePlaceHolder
+            item?.thumbnail ? {uri: item.thumbnail} : images.profilePlaceHolder
           }
         />
         <View style={styles.checkbox}>
@@ -136,7 +126,7 @@ export default MemberListModal;
 const styles = StyleSheet.create({
   parent: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.6)',
+    backgroundColor: colors.modalBackgroundColor,
     justifyContent: 'flex-end',
   },
   card: {
@@ -144,7 +134,7 @@ const styles = StyleSheet.create({
     height: Dimensions.get('window').height - 50,
     borderTopRightRadius: 20,
     borderTopLeftRadius: 20,
-    shadowColor: '#000',
+    shadowColor: colors.shadowColor,
     shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 5,

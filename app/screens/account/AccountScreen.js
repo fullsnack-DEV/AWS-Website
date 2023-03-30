@@ -486,19 +486,20 @@ export default function AccountScreen({navigation, route}) {
       }
       switch (option) {
         case strings.createTeamText:
-          // setCreateEntity(Verbs.entityTypeTeam); 
+          setCreateEntity(Verbs.entityTypeTeam);
           setVisibleSportsModalForTeam(true);
-
-          setSelectedMenuOptionType(Verbs.entityTypeTeam);
           setNavigationOptions({
             screenName: rowObj.navigateTo.screenName,
             data: rowObj.navigateTo.data,
           });
+
+          setSelectedMenuOptionType(Verbs.entityTypeTeam);
+
           break;
 
         case strings.createClubText:
-         // setCreateEntity(Verbs.entityTypeClub);
-               setVisibleSportsModalForClub(true);
+          setCreateEntity(Verbs.entityTypeClub);
+          setVisibleSportsModalForClub(true);
 
           setNavigationOptions({
             screenName: rowObj.navigateTo.screenName,
@@ -537,7 +538,6 @@ export default function AccountScreen({navigation, route}) {
             );
           }
           break;
-
       }
     },
     [authContext.entity, navigation],
@@ -1361,7 +1361,7 @@ export default function AccountScreen({navigation, route}) {
         onNext={() => {
           console.log('pressed');
         }}
-        onItemPress={() => Alert.alert('pressed')}
+        onItemPress={() => console.log('in development')}
         sportsList={players}
       />
     </SafeAreaView>

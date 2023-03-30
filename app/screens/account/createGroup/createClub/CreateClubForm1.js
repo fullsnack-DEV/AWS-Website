@@ -539,7 +539,10 @@ export default function CreateClubForm1({navigation, route}) {
               ]}>
               <LinearGradient
                 style={styles.progressBar}
-                colors={['rgba(170, 216, 64, 0.6)', 'rgba(0, 193, 104, 0.6)']}
+                colors={[
+                  colors.createClubGradientfrom,
+                  colors.createClubGradientto,
+                ]}
                 start={{x: 0, y: 0.5}}
                 end={{x: 1, y: 0.5}}
               />
