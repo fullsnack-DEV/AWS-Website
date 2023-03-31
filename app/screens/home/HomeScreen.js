@@ -164,7 +164,6 @@ import {
   ErrorCodes,
 } from '../../utils/constant';
 import Verbs from '../../Constants/Verbs';
-import SportActivityModal from './SportActivity/SportActivityModal';
 import CongratulationsModal from '../account/registerPlayer/modals/CongratulationsModal';
 
 // import { getSetting } from '../challenge/manageChallenge/settingUtility';
@@ -314,9 +313,6 @@ const HomeScreen = ({navigation, route}) => {
     invited_id: '',
     action: '',
   });
-  const [showSportsModal, setShowSportsModal] = useState(false);
-  const [entityType, setEntityType] = useState(false);
-  const [sportObject, setSportObject] = useState({});
 
   useEffect(() => {
     setTimeout(() => {
@@ -477,8 +473,6 @@ const HomeScreen = ({navigation, route}) => {
       navigation.push(navigateScreen, params);
     }
     if (route?.params?.locationName) {
-      setShowSportsModal(true);
-      setEntityType(Verbs.entityTypePlayer);
       setSearchLocation(route.params.locationName);
     }
   }, [route?.params]);
@@ -1606,9 +1600,14 @@ const HomeScreen = ({navigation, route}) => {
             (scorekeeperItem) =>
               scorekeeperItem.sport === scorekeeperInObject.sport,
           );
-          setSportObject(scorekeeperSport);
-          setShowSportsModal(!showSportsModal);
-          setEntityType(Verbs.entityTypeScorekeeper);
+
+          navigation.navigate('SportActivityHome', {
+            sport: scorekeeperSport?.sport,
+            sportType: scorekeeperSport?.sport_type,
+            uid: route.params?.uid ?? authContext.uid,
+            entityType: Verbs.entityTypeScorekeeper,
+            showPreview: true,
+          });
         }
 
         const entity = authContext.entity;
@@ -1728,9 +1727,14 @@ const HomeScreen = ({navigation, route}) => {
           const refereeSport = (currentUserData.referee_data ?? []).find(
             (refereeItem) => refereeItem.sport === refereeInObject.sport,
           );
-          setSportObject(refereeSport);
-          setShowSportsModal(!showSportsModal);
-          setEntityType(Verbs.entityTypeReferee);
+
+          navigation.navigate('SportActivityHome', {
+            sport: refereeSport?.sport,
+            sportType: refereeSport?.sport_type,
+            uid: route.params?.uid ?? authContext.uid,
+            entityType: Verbs.entityTypeReferee,
+            showPreview: true,
+          });
         }
         if (currentUserData) {
           const refereeSport = currentUserData.referee_data.filter(
@@ -1847,9 +1851,9 @@ const HomeScreen = ({navigation, route}) => {
   const onMoreRolePress = useCallback(() => {
     navigation.navigate('SportActivitiesScreen', {
       isAdmin,
-      currentUserData,
+      uid: route.params?.uid ?? authContext.uid,
     });
-  }, [currentUserData, isAdmin]);
+  }, [authContext.uid, route.params?.uid, isAdmin]);
 
   const refereeFound = useCallback(
     (data) =>
@@ -1952,9 +1956,14 @@ const HomeScreen = ({navigation, route}) => {
 
         setTimeout(() => {
           setCurrentPlayInObject({...playInObject});
-          setSportObject({...playInObject});
-          setShowSportsModal(!showSportsModal);
-          setEntityType(Verbs.entityTypePlayer);
+
+          navigation.navigate('SportActivityHome', {
+            sport: playInObject?.sport,
+            sportType: playInObject?.sport_type,
+            uid: route.params?.uid ?? authContext.uid,
+            entityType: Verbs.entityTypePlayer,
+            showPreview: true,
+          });
         }, 10);
 
         getSettingOfBoth(playInObject);
@@ -2231,7 +2240,6 @@ const HomeScreen = ({navigation, route}) => {
               navigation={navigation}
               onItemPress={() => {
                 setScorekeeperInModalVisible(false);
-                setShowSportsModal(false);
               }}
             />
           )}
@@ -2579,7 +2587,6 @@ const HomeScreen = ({navigation, route}) => {
         navigation={navigation}
         onItemPress={() => {
           // setRefereeMatchModalVisible(false);
-          setShowSportsModal(false);
         }}
       />
     </View>
@@ -4397,17 +4404,6 @@ const HomeScreen = ({navigation, route}) => {
       });
   };
 
-  const handleSectionClick = (section) => {
-    setShowSportsModal(false);
-    navigation.navigate('SportActivityHome', {
-      sport: sportObject?.sport,
-      sportType: sportObject?.sport_type,
-      uid: route.params.uid,
-      selectedTab: section,
-      entityType,
-    });
-  };
-
   const onAccept = (requestId) => {
     setloading(true);
     acceptRequest({}, requestId, authContext)
@@ -4593,7 +4589,7 @@ const HomeScreen = ({navigation, route}) => {
               if (authContext.entity.role === Verbs.entityTypeUser) {
                 navigation.navigate('SportActivitiesScreen', {
                   isAdmin,
-                  currentUserData,
+                  uid: route.params?.uid ?? authContext.uid,
                 });
               }
             }
@@ -4755,65 +4751,7 @@ const HomeScreen = ({navigation, route}) => {
             />
           )}
         </View>
-        <SportActivityModal
-          isVisible={showSportsModal}
-          closeModal={() => {
-            setShowSportsModal(false);
-            navigation.navigate('SportActivityHome', {
-              sport: sportObject?.sport,
-              sportType: sportObject?.sport_type,
-              uid: route.params.uid,
-              selectedTab: strings.infoTitle,
-              entityType,
-            });
-          }}
-          isAdmin={isAdmin}
-          userData={currentUserData}
-          sport={sportObject?.sport}
-          sportObj={sportObject}
-          sportName={Utility.getSportName(sportObject, authContext)}
-          onSeeAll={handleSectionClick}
-          handleChallengeClick={() => {
-            navigation.navigate('InviteChallengeScreen', {
-              setting: currentPlayInObject?.setting,
-              sportName: currentPlayInObject?.sport,
-              sportType: currentPlayInObject?.sport_type,
-              groupObj: currentUserData,
-            });
-          }}
-          onMessageClick={() => {
-            navigation.push('MessageChat', {
-              screen: 'MessageChat',
-              params: {userId: currentUserData?.user_id},
-            });
-          }}
-          entityType={entityType}
-          continueToChallenge={() => {
-            setShowSportsModal(false);
-            navigation.navigate('ChallengeScreen', {
-              setting: sportObject?.setting ?? {},
-              sportName: sportObject?.sport,
-              sportType: sportObject?.sport_type,
-              groupObj: currentUserData,
-            });
-          }}
-          bookReferee={() => {
-            navigation.navigate('RefereeBookingDateAndTime', {
-              settingObj: sportObject?.setting ?? {},
-              userData: currentUserData,
-              showMatches: true,
-              sportName,
-            });
-          }}
-          bookScoreKeeper={() => {
-            navigation.navigate('ScorekeeperBookingDateAndTime', {
-              settingObj: sportObject?.setting ?? {},
-              userData: currentUserData,
-              showMatches: true,
-              sportName,
-            });
-          }}
-        />
+
         {/* {useMemo(
           () =>
             playsInModalVisible && (
@@ -5741,7 +5679,7 @@ const HomeScreen = ({navigation, route}) => {
                       showEventNumbers={true}
                       navigation={navigation}
                       onItemPress={() => {
-                        setShowSportsModal(false);
+                        //
                       }}
                     />
                   )}

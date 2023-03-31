@@ -14,5 +14,4 @@ export const strings = new LocalizedStrings({
   th: thai,
 });
 
-console.log('Device language', RNLocalize.getLocales()[0].languageCode);
 strings.setLanguage(RNLocalize.getLocales()[0].languageCode);

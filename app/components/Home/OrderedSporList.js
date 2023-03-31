@@ -257,7 +257,7 @@ const OrderedSporList = ({
 
           {showToggleButton ? (
             <ToggleSwitch
-              isOn={isHide}
+              isOn={!isHide}
               onToggle={() => {
                 handleToggle(item);
               }}

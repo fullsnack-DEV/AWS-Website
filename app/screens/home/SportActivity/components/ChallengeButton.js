@@ -19,6 +19,7 @@ const ChallengeButton = ({
   entityType = Verbs.entityTypePlayer,
   bookReferee = () => {},
   bookScoreKeeper = () => {},
+  isActiveSportActivity = false,
 }) => {
   const [showModal, setShowModal] = useState(false);
 
@@ -70,7 +71,7 @@ const ChallengeButton = ({
     </>
   );
 
-  return !isAdmin && isAvailable ? (
+  return !isAdmin && isAvailable && isActiveSportActivity ? (
     <View style={[styles.parent, containerStyle]}>
       <TouchableOpacity
         style={styles.buttonContainer}

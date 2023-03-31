@@ -144,11 +144,26 @@ const getSportList = (sportList, role = Verbs.entityTypePlayer) => {
 const getEntitySportList = (user = {}, role = Verbs.entityTypePlayer) => {
   let sportList = [];
   if (role === Verbs.entityTypePlayer) {
-    sportList = user.registered_sports ?? [];
+    sportList =
+      user.registered_sports?.length > 0
+        ? user.registered_sports.filter(
+            (item) => item.is_active || !('is_active' in item),
+          )
+        : [];
   } else if (role === Verbs.entityTypeReferee) {
-    sportList = user.referee_data ?? [];
+    sportList =
+      user.referee_data?.length > 0
+        ? user.referee_data.filter(
+            (item) => item.is_active || !('is_active' in item),
+          )
+        : [];
   } else if (role === Verbs.entityTypeScorekeeper) {
-    sportList = user.scorekeeper_data ?? [];
+    sportList =
+      user.scorekeeper_data?.length > 0
+        ? user.scorekeeper_data.filter(
+            (item) => item.is_active || !('is_active' in item),
+          )
+        : [];
   }
 
   return [...sportList];

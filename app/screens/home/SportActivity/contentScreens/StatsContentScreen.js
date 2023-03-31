@@ -52,6 +52,7 @@ const StatsContentScreen = ({sportType = '', sport, authContext, userId}) => {
   );
   const [showOptionModal, setOptionModal] = useState(false);
   const [dmRate, setDMRate] = useState({});
+  const [stats, setStats] = useState(val);
 
   const isFocused = useIsFocused();
 
@@ -84,27 +85,49 @@ const StatsContentScreen = ({sportType = '', sport, authContext, userId}) => {
       getGameStatsData(userId, chartParameter, authContext)
         .then((res) => {
           const list = res.payload.filter((item) => item.sport_name === sport);
-          const obj = {...defaultStats};
-          list.forEach((item) => {
-            let totalMatches = 0;
-            let totalWins = 0;
-            let totalLosses = 0;
-            let totalDraws = 0;
-            Object.keys(defaultStats).forEach((ele) => {
-              totalMatches += item.stats[ele].total_games;
-              totalWins += item.stats[ele].winner;
-              totalLosses += item.stats[ele].looser;
-              totalDraws += item.stats[ele].draw;
-              obj[ele] = {
+
+          if (sportType === Verbs.singleSport) {
+            const obj = {...defaultStats};
+            list.forEach((item) => {
+              let totalMatches = 0;
+              let totalWins = 0;
+              let totalLosses = 0;
+              let totalDraws = 0;
+              Object.keys(defaultStats).forEach((ele) => {
+                totalMatches += item.stats[ele].total_games;
+                totalWins += item.stats[ele].winner;
+                totalLosses += item.stats[ele].looser;
+                totalDraws += item.stats[ele].draw;
+                obj[ele] = {
+                  totalMatches,
+                  totalWins,
+                  totalLosses,
+                  totalDraws,
+                };
+              });
+            });
+
+            setStatsObject(obj);
+          } else {
+            let stat = {...val};
+            list.forEach((item) => {
+              let totalMatches = 0;
+              let totalWins = 0;
+              let totalLosses = 0;
+              let totalDraws = 0;
+              totalMatches += item.stats.all.total_games;
+              totalWins += item.stats.all.winner;
+              totalLosses += item.stats.all.looser;
+              totalDraws += item.stats.all.draw;
+              stat = {
                 totalMatches,
                 totalWins,
                 totalLosses,
                 totalDraws,
               };
             });
-          });
-
-          setStatsObject(obj);
+            setStats(stat);
+          }
           setLoading(false);
         })
         .catch((err) => {
@@ -112,7 +135,7 @@ const StatsContentScreen = ({sportType = '', sport, authContext, userId}) => {
           setLoading(false);
         });
     },
-    [authContext, sport, userId, getPayload],
+    [authContext, sport, userId, getPayload, sportType],
   );
 
   const getRDMData = useCallback(
@@ -182,28 +205,42 @@ const StatsContentScreen = ({sportType = '', sport, authContext, userId}) => {
             />
           </TouchableOpacity>
         </View>
-        {Object.keys(statsObject).map((item, index) => (
-          <View style={{marginTop: 20}} key={index}>
-            {sportType === Verbs.singleSport ? (
-              <Text style={styles.label}>
-                {getGraphTitle(item)} {statsObject[item].totalMatches}
-              </Text>
-            ) : (
-              <Text style={styles.label}>
-                {format(strings.playedMatches, statsObject.totalMatches)}
-              </Text>
-            )}
 
+        {sportType === Verbs.singleSport ? (
+          Object.keys(statsObject).map((item, index) => (
+            <View style={{marginTop: 20}} key={index}>
+              {sportType === Verbs.singleSport ? (
+                <Text style={styles.label}>
+                  {getGraphTitle(item)} {statsObject[item].totalMatches}
+                </Text>
+              ) : (
+                <Text style={styles.label}>
+                  {format(strings.playedMatches, statsObject.totalMatches)}
+                </Text>
+              )}
+
+              <StatsGraph
+                total={statsObject[item].totalMatches}
+                wins={statsObject[item].totalWins}
+                losses={statsObject[item].totalLosses}
+                draws={statsObject[item].totalDraws}
+                showTotalMatches={false}
+                containerStyle={{alignItems: 'center'}}
+              />
+            </View>
+          ))
+        ) : (
+          <View style={{marginTop: 20}}>
             <StatsGraph
-              total={statsObject[item].totalMatches}
-              wins={statsObject[item].totalWins}
-              losses={statsObject[item].totalLosses}
-              draws={statsObject[item].totalDraws}
+              total={stats.totalMatches}
+              wins={stats.totalWins}
+              losses={stats.totalLosses}
+              draws={stats.totalDraws}
               showTotalMatches={false}
               containerStyle={{alignItems: 'center'}}
             />
           </View>
-        ))}
+        )}
       </View>
       {sportType === Verbs.singleSport ? (
         <>

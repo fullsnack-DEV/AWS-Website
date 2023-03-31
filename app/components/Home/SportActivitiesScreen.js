@@ -7,14 +7,11 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
-import * as Utility from '../../utils';
 import AuthContext from '../../auth/context';
 import images from '../../Constants/ImagePath';
 import {getUserDetails} from '../../api/Users';
 import {strings} from '../../../Localization/translation';
-import Verbs from '../../Constants/Verbs';
 
-import SportActivityModal from '../../screens/home/SportActivity/SportActivityModal';
 import OrderedSporList from './OrderedSporList';
 import BottomSheet from '../modals/BottomSheet';
 import ScreenHeader from '../ScreenHeader';
@@ -22,13 +19,10 @@ import ScreenHeader from '../ScreenHeader';
 const SportActivitiesScreen = ({navigation, route}) => {
   const [loading, setloading] = useState(true);
   const [userObject, setUserObject] = useState();
-  const [selectedSport, setSelectedSport] = useState({});
-  const [selectedEntity, setSelectedEntity] = useState(Verbs.entityTypePlayer);
 
   const [showMoreOptions, setShowMoreOptions] = useState(false);
-  const [showSportsModal, setShowSportsModal] = useState(false);
 
-  const {isAdmin, currentUserData} = route.params;
+  const {isAdmin, uid} = route.params;
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
 
@@ -77,9 +71,13 @@ const SportActivitiesScreen = ({navigation, route}) => {
         <OrderedSporList
           user={userObject}
           onCardPress={(sport, entityType) => {
-            setSelectedSport(sport);
-            setSelectedEntity(entityType);
-            setShowSportsModal(true);
+            navigation.navigate('SportActivityHome', {
+              sport: sport?.sport,
+              sportType: sport?.sport_type,
+              uid,
+              entityType,
+              showPreview: true,
+            });
           }}
           showAddActivityButton
           onSelect={(option) => {
@@ -95,59 +93,6 @@ const SportActivitiesScreen = ({navigation, route}) => {
           }}
         />
       )}
-
-      <SportActivityModal
-        isVisible={showSportsModal}
-        closeModal={() => {
-          setShowSportsModal(false);
-        }}
-        isAdmin={isAdmin}
-        userData={currentUserData}
-        sport={selectedSport?.sport}
-        sportObj={selectedSport}
-        sportName={Utility.getSportName(selectedSport, authContext)}
-        // onSeeAll={handleSectionClick}
-        handleChallengeClick={() => {
-          navigation.navigate('InviteChallengeScreen', {
-            setting: selectedSport?.setting,
-            sportName: selectedSport?.sport,
-            sportType: selectedSport?.sport_type,
-            groupObj: currentUserData,
-          });
-        }}
-        onMessageClick={() => {
-          navigation.push('MessageChat', {
-            screen: 'MessageChat',
-            params: {userId: currentUserData?.user_id},
-          });
-        }}
-        entityType={selectedEntity}
-        continueToChallenge={() => {
-          setShowSportsModal(false);
-          navigation.navigate('ChallengeScreen', {
-            setting: selectedSport?.setting ?? {},
-            sportName: selectedSport?.sport,
-            sportType: selectedSport?.sport_type,
-            groupObj: currentUserData,
-          });
-        }}
-        bookReferee={() => {
-          navigation.navigate('RefereeBookingDateAndTime', {
-            settingObj: selectedSport?.setting ?? {},
-            userData: currentUserData,
-            showMatches: true,
-            sportName: selectedSport?.sport,
-          });
-        }}
-        bookScoreKeeper={() => {
-          navigation.navigate('ScorekeeperBookingDateAndTime', {
-            settingObj: selectedSport?.setting ?? {},
-            userData: currentUserData,
-            showMatches: true,
-            sportName: selectedSport?.sport,
-          });
-        }}
-      />
 
       <BottomSheet
         isVisible={showMoreOptions}
