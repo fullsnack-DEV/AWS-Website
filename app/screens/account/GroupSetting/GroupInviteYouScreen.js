@@ -1,18 +1,14 @@
-/* eslint-disable no-bitwise */
 import React, {useState, useLayoutEffect, useContext} from 'react';
 import {
   StyleSheet,
   View,
   Image,
-  ScrollView,
-  TouchableWithoutFeedback,
   FlatList,
   Text,
   Alert,
+  SafeAreaView,
+  Pressable,
 } from 'react-native';
-import {format} from 'react-string-format';
-
-import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import AuthContext from '../../../auth/context';
 import images from '../../../Constants/ImagePath';
 import * as Utility from '../../../utils';
@@ -22,79 +18,59 @@ import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
 import {strings} from '../../../../Localization/translation';
 import {patchPlayer} from '../../../api/Users';
+import ScreenHeader from '../../../components/ScreenHeader';
 
 export default function GroupInviteYouScreen({navigation, route}) {
-  const [comeFrom] = useState(route?.params?.comeFrom);
+  const {groupInviteYou, type, comeFrom, routeParams} = route.params;
   const authContext = useContext(AuthContext);
+
   const [loading, setloading] = useState(false);
+  const [value, setValue] = useState(groupInviteYou);
   const groupInviteOpetions = [
     {
       key: strings.yes,
-      id: 0,
+      id: 1,
     },
     {
       key: strings.no,
-      id: 1,
+      id: 0,
     },
   ];
-
-  const [groupInviteYou, setGroupInviteYou] = useState(
-    (route?.params?.groupInviteYou === 1 && {
-      key: strings.yes,
+  const doublesInviteOptions = [
+    {
+      key: strings.everyoneTitleText,
+      id: 1,
+    },
+    {
+      key: strings.myFollowing,
+      id: 2,
+    },
+    {
+      key: strings.none,
       id: 0,
-    }) ||
-      (route?.params?.groupInviteYou === 0 && {
-        key: strings.no,
-        id: 1,
-      }),
-  );
-
+    },
+  ];
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: () => (
-        <Text style={styles.headerTitle}>{`Can ${Utility.capitalize(
-          route?.params?.type,
-        )} Invite You`}</Text>
-      ),
-      headerRight: () => (
-        <Text
-          style={styles.saveButtonStyle}
-          onPress={() => {
-            if (
-              authContext.entity.role === 'user' ||
-              authContext.entity.role === 'player'
-            ) {
-              saveUser();
-            }
-          }}>
-          Save
-        </Text>
-      ),
+      headerShown: false,
     });
-  }, [
-    comeFrom,
-    navigation,
-    groupInviteYou,
-    route?.params?.type,
-    authContext.entity.role,
-  ]);
+  }, [navigation]);
 
   const saveUser = () => {
-    const bodyParams = {};
+    const bodyParams = {...authContext.entity.obj};
 
-    if (groupInviteYou.key === groupInviteOpetions[0].key) {
-      if (route?.params?.type === 'team') {
-        bodyParams.who_can_invite_for_team = 1;
-      } else {
-        bodyParams.who_can_invite_for_club = 1;
-      }
+    if (type === strings.inviteToDoubleTeamTitle) {
+      bodyParams.who_can_invite_for_doubles_team = value;
     }
-    if (groupInviteYou.key === groupInviteOpetions[1].key) {
-      if (route?.params?.type === 'team') {
-        bodyParams.who_can_invite_for_team = 0;
-      } else {
-        bodyParams.who_can_invite_for_club = 0;
-      }
+    if (type === strings.canTeamInviteYou) {
+      bodyParams.who_can_invite_for_team = value;
+    }
+    if (type === strings.canClubInviteYou) {
+      bodyParams.who_can_invite_for_club = value;
+    }
+
+    if (type === strings.canPeopleInviteYouText) {
+      bodyParams.invite_me_event = value;
     }
 
     setloading(true);
@@ -102,21 +78,9 @@ export default function GroupInviteYouScreen({navigation, route}) {
       .then(async (response) => {
         if (response.status === true) {
           setloading(false);
-          const entity = authContext.entity;
-          console.log('Register player response IS:: ', response.payload);
-          entity.auth.user = response.payload;
-          entity.obj = response.payload;
-          authContext.setEntity({...entity});
-          authContext.setUser(response.payload);
-          await Utility.setStorage('authContextUser', response.payload);
-          await Utility.setStorage('authContextEntity', {...entity});
-
+          await Utility.setAuthContextData(response.payload, authContext);
           navigation.navigate(comeFrom, {
-            type: route?.params?.type,
-            groupInviteYou:
-              route?.params?.type === 'team'
-                ? response?.payload?.who_can_invite_for_team
-                : response?.payload?.who_can_invite_for_club,
+            ...routeParams,
           });
         } else {
           Alert.alert(strings.appName, response.messages);
@@ -131,101 +95,92 @@ export default function GroupInviteYouScreen({navigation, route}) {
       });
   };
 
+  const getTitle = (option) => {
+    switch (option) {
+      case strings.inviteToDoubleTeamTitle:
+        return strings.whoCanInviteYouToDoubleTeam;
+
+      case strings.canTeamInviteYou:
+        return strings.canTeamInviteYouToJoinTeam;
+
+      case strings.canClubInviteYou:
+        return strings.canClubInviteYouToJoinClub;
+
+      case strings.canPeopleInviteYouText:
+        return strings.canPeopleInviteYouText;
+
+      default:
+        return strings.whoCanInviteYouToDoubleTeam;
+    }
+  };
+
   const renderWhocanJoinOption = ({item}) => (
-    <TouchableWithoutFeedback
+    <Pressable
       onPress={() => {
-        setGroupInviteYou(item);
-      }}>
-      <View style={styles.radioItem}>
-        <Text style={styles.languageList}>{item.key}</Text>
-        <View style={styles.checkbox}>
-          {groupInviteYou?.key === item?.key ? (
-            <Image
-              source={images.radioCheckYellow}
-              style={styles.checkboxImg}
-            />
-          ) : (
-            <Image source={images.radioUnselect} style={styles.checkboxImg} />
-          )}
-        </View>
+        setValue(item.id);
+      }}
+      style={styles.listItem}>
+      <Text style={styles.listText}>{item.key}</Text>
+      <View>
+        {value === item.id ? (
+          <Image source={images.radioCheckYellow} style={styles.checkboxImg} />
+        ) : (
+          <Image source={images.radioUnselect} style={styles.checkboxImg} />
+        )}
       </View>
-    </TouchableWithoutFeedback>
+    </Pressable>
   );
 
   return (
-    <ScrollView
-      style={styles.mainContainer}
-      showsVerticalScrollIndicator={false}>
-      <ActivityLoader visible={loading} />
-      <Text style={styles.opetionsTitle}>
-        {format(
-          strings.canInviteYouToJoinText,
-          route?.params?.type,
-          route?.params?.type,
-        )}
-      </Text>
-      <FlatList
-        data={groupInviteOpetions}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={renderWhocanJoinOption}
+    <SafeAreaView style={{flex: 1}}>
+      <ScreenHeader
+        title={
+          type === strings.canPeopleInviteYouText
+            ? strings.toWhatEventPeopleInviteText
+            : type
+        }
+        leftIcon={images.backArrow}
+        leftIconPress={() => navigation.goBack()}
+        containerStyle={styles.headerRow}
+        isRightIconText
+        rightButtonText={strings.save}
+        onRightButtonPress={() => saveUser()}
+        labelStyle={{marginLeft: 29, marginRight: 14}}
       />
-    </ScrollView>
+      <ActivityLoader visible={loading} />
+      <View style={{paddingHorizontal: 15, paddingTop: 25}}>
+        <Text style={styles.opetionsTitle}>{getTitle(type)}</Text>
+        <FlatList
+          data={
+            type === strings.inviteToDoubleTeamTitle
+              ? doublesInviteOptions
+              : groupInviteOpetions
+          }
+          keyExtractor={(item) => item.key}
+          renderItem={renderWhocanJoinOption}
+        />
+      </View>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
-  // eslint-disable-next-line react-native/no-unused-styles
-  inputAndroid: {
-    alignSelf: 'center',
-    backgroundColor: colors.offwhite,
-    borderRadius: 5,
-    color: 'black',
-    elevation: 3,
-    fontSize: wp('4%'),
-    height: 40,
-
-    marginTop: 12,
-    paddingHorizontal: 15,
-    paddingRight: 30,
-
-    paddingVertical: 12,
-
-    width: wp('92%'),
-  },
-  // eslint-disable-next-line react-native/no-unused-styles
-  inputIOS: {
-    alignSelf: 'center',
-    backgroundColor: colors.offwhite,
-    borderRadius: 5,
-    color: 'black',
-    elevation: 3,
-    fontSize: wp('3.5%'),
-    height: 40,
-
-    marginTop: 12,
-    paddingHorizontal: 15,
-    paddingRight: 30,
-
-    paddingVertical: 12,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
-    width: wp('92%'),
-  },
-  mainContainer: {
-    flex: 1,
+  headerRow: {
+    paddingHorizontal: 10,
+    paddingTop: 6,
+    paddingBottom: 14,
   },
   opetionsTitle: {
+    fontSize: 20,
+    lineHeight: 30,
     color: colors.lightBlackColor,
-    fontFamily: fonts.RRegular,
-    fontSize: 16,
-    margin: 15,
+    fontFamily: fonts.RMedium,
+    marginBottom: 23,
   },
-  languageList: {
-    width: '90%',
+  listText: {
+    fontSize: 16,
+    lineHeight: 24,
     color: colors.lightBlackColor,
     fontFamily: fonts.RRegular,
-    fontSize: 16,
   },
   checkboxImg: {
     width: 22,
@@ -233,23 +188,11 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     alignSelf: 'center',
   },
-  checkbox: {},
-  radioItem: {
-    paddingLeft: 25,
-    paddingTop: 15,
-    paddingRight: 25,
-    alignItems: 'center',
+  listItem: {
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
-  },
-  saveButtonStyle: {
-    fontFamily: fonts.RMedium,
-    fontSize: 16,
-    marginRight: 10,
-  },
-  headerTitle: {
-    fontFamily: fonts.RBold,
-    fontSize: 16,
-    color: colors.lightBlackColor,
+    marginBottom: 15,
+    paddingHorizontal: 10,
   },
 });

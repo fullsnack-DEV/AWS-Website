@@ -1,184 +1,170 @@
-/* eslint-disable no-unsafe-optional-chaining */
-/* eslint-disable array-callback-return */
-import React, {useContext, useCallback, useEffect, useState} from 'react';
+import React, {useContext, useState, useLayoutEffect} from 'react';
 import {
   View,
   StyleSheet,
   FlatList,
   Text,
   Image,
-  ScrollView,
-  TouchableWithoutFeedback,
-  Alert,
+  SafeAreaView,
+  Pressable,
 } from 'react-native';
-
-import {useIsFocused} from '@react-navigation/native';
-import * as Utility from '../../utils';
 import AuthContext from '../../auth/context';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
-
-import TCThinDivider from '../../components/TCThinDivider';
-import {getUserDetails} from '../../api/Users';
-import ActivityLoader from '../../components/loader/ActivityLoader';
 import {strings} from '../../../Localization/translation';
 import Verbs from '../../Constants/Verbs';
+import ScreenHeader from '../../components/ScreenHeader';
+import {
+  getEntitySportList,
+  getSportDetails,
+} from '../../utils/sportsActivityUtils';
+
+const Options = [
+  strings.playingTitleText,
+  strings.refereeingTitleText,
+  strings.scorekeepingTitleText,
+];
 
 export default function SportActivityScreen({navigation}) {
-  const isFocused = useIsFocused();
-
   const authContext = useContext(AuthContext);
-  const [loading, setloading] = useState(false);
-  const [userObject, setUserObject] = useState();
+  const [userObject] = useState(authContext.entity.obj);
 
-  useEffect(() => {
-    if (isFocused) {
-      setloading(true);
-      getUserDetails(authContext?.entity?.uid, authContext)
-        .then((response) => {
-          setloading(false);
-          setUserObject(response.payload);
-        })
-        .catch((e) => {
-          setloading(false);
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
-        });
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerShown: false,
+    });
+  }, [navigation]);
+
+  const getEntityType = (option) => {
+    switch (option) {
+      case strings.playingTitleText:
+        return Verbs.entityTypePlayer;
+
+      case strings.refereeingTitleText:
+        return Verbs.entityTypeReferee;
+
+      case strings.scorekeepingTitleText:
+        return Verbs.entityTypeScorekeeper;
+
+      default:
+        return Verbs.entityTypePlayer;
     }
-  }, [authContext, isFocused]);
+  };
 
-  const keyExtractor = useCallback((item, index) => index.toString(), []);
-
-  const renderSports = (item = {}, entityType = Verbs.entityTypePlayer) => (
-    <View>
-      <TouchableWithoutFeedback
-        style={styles.listContainer}
-        onPress={() => {
-          // navigation.navigate('ActivitySettingScreen', {
-          //   sport: item,
-          //   entityType,
-          // });
-          navigation.navigate('SportAccountSettingScreen', {
-            type: entityType,
-            sport: item,
-          });
-        }}>
-        <View style={{flexDirection: 'row'}}>
-          <Text style={styles.listItems}>
-            {Utility.getSportName(item, authContext)}
-          </Text>
+  const renderSports = (item = {}, entityType = Verbs.entityTypePlayer) => {
+    const sport = getSportDetails(
+      item.sport,
+      item.sport_type,
+      authContext.sports,
+      entityType,
+    );
+    return (
+      <>
+        <Pressable
+          style={styles.listContainer}
+          onPress={() => {
+            navigation.navigate('SportAccountSettingScreen', {
+              type: entityType,
+              sport: item,
+            });
+          }}>
+          <View>
+            <Text style={styles.label}>{sport.sport_name}</Text>
+          </View>
           <Image source={images.nextArrow} style={styles.nextArrow} />
-        </View>
-      </TouchableWithoutFeedback>
-      <TCThinDivider width="95%" />
-    </View>
-  );
+        </Pressable>
+        <View style={styles.separator} />
+      </>
+    );
+  };
 
   return (
-    <ScrollView>
-      <ActivityLoader visible={loading} />
-      {userObject?.registered_sports?.length > 0 && (
-        <View style={styles.listContainer}>
-          <Text style={styles.listTitle}>Playing</Text>
-          <FlatList
-            showsHorizontalScrollIndicator={false}
-            data={userObject?.registered_sports
-              ?.filter((obj) => obj.is_active)
-              .sort((a, b) => a.sport.localeCompare(b.sport))}
-            keyExtractor={keyExtractor}
-            renderItem={({item}) => renderSports(item, Verbs.entityTypePlayer)}
-          />
-        </View>
-      )}
+    <SafeAreaView style={{flex: 1}}>
+      <ScreenHeader
+        title={strings.sportActivity}
+        leftIcon={images.backArrow}
+        leftIconPress={() => navigation.goBack()}
+        containerStyle={styles.headerRow}
+      />
 
-      {userObject?.referee_data?.length > 0 && (
-        <View style={styles.listContainer}>
-          <Text style={styles.listTitle}>Refereeing</Text>
-          <FlatList
-            showsHorizontalScrollIndicator={false}
-            data={userObject?.referee_data
-              ?.filter((obj) => obj.is_active)
-              .sort((a, b) => a.sport.localeCompare(b.sport))}
-            keyExtractor={keyExtractor}
-            renderItem={({item}) => renderSports(item, Verbs.entityTypeReferee)}
-          />
-        </View>
-      )}
-
-      {userObject?.scorekeeper_data?.length > 0 && (
-        <View style={styles.listContainer}>
-          <Text style={styles.listTitle}>Scorekeepering</Text>
-          <FlatList
-            showsHorizontalScrollIndicator={false}
-            data={userObject?.scorekeeper_data
-              ?.filter((obj) => obj.is_active)
-              .sort((a, b) => a.sport.localeCompare(b.sport))}
-            keyExtractor={keyExtractor}
-            renderItem={({item}) =>
-              renderSports(item, Verbs.entityTypeScorekeeper)
-            }
-          />
-        </View>
-      )}
-
-      <View style={styles.listDeactivateContainer}>
-        <TouchableWithoutFeedback
-          onPress={() => {
-            navigation.navigate('DeactivatedSportsListScreen');
-          }}>
-          <View style={{flexDirection: 'row'}}>
-            <Text style={styles.listItemsTitle}>
-              {strings.deactivatedSportsActivities}
-            </Text>
-            <Image source={images.nextArrow} style={styles.nextArrow} />
-          </View>
-        </TouchableWithoutFeedback>
+      <View style={{paddingTop: 25}}>
+        <FlatList
+          data={Options}
+          keyExtractor={(item) => item}
+          renderItem={({item}) => {
+            const list = getEntitySportList(
+              userObject,
+              getEntityType(item),
+            ).filter(
+              (obj) =>
+                obj.sport && (obj.is_active === true || !('is_active' in obj)),
+            );
+            return (
+              <View style={{marginBottom: 35}}>
+                <Text style={styles.title}>{item.toUpperCase()}</Text>
+                {list
+                  .sort((a, b) => a.sport.localeCompare(b.sport))
+                  .map((ele) => renderSports(ele, getEntityType(item)))}
+              </View>
+            );
+          }}
+          ListFooterComponent={() => (
+            <Pressable
+              style={styles.listContainer}
+              onPress={() => {
+                navigation.navigate('DeactivatedSportsListScreen');
+              }}>
+              <View>
+                <Text style={[styles.label, {fontFamily: fonts.RBold}]}>
+                  {strings.deactivatedSportsActivities.toUpperCase()}
+                </Text>
+              </View>
+              <Image source={images.nextArrow} style={styles.nextArrow} />
+            </Pressable>
+          )}
+        />
       </View>
-    </ScrollView>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
-  listTitle: {
-    fontFamily: fonts.RMedium,
+  headerRow: {
+    paddingHorizontal: 10,
+    paddingTop: 6,
+    paddingBottom: 14,
+  },
+  title: {
     fontSize: 16,
-    color: colors.blackColor,
-    marginBottom: 15,
+    lineHeight: 24,
+    fontFamily: fonts.RBold,
+    color: colors.lightBlackColor,
+    marginLeft: 25,
+    marginBottom: 25,
+  },
+  separator: {
+    height: 1,
+    backgroundColor: colors.grayBackgroundColor,
+    marginTop: 15,
+    marginBottom: 18,
+    marginHorizontal: 15,
   },
   listContainer: {
-    margin: 15,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginHorizontal: 30,
   },
-  listDeactivateContainer: {
-    marginRight: 15,
-  },
-
-  listItems: {
-    flex: 1,
-    padding: 20,
-    paddingLeft: 15,
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    color: colors.blackColor,
-    alignSelf: 'center',
-  },
-  listItemsTitle: {
-    flex: 1,
-    padding: 20,
-    paddingLeft: 15,
-    fontSize: 16,
-    fontFamily: fonts.RMedium,
-    color: colors.blackColor,
-    alignSelf: 'center',
-  },
-
   nextArrow: {
-    alignSelf: 'center',
-    flex: 0.1,
+    width: 15,
     height: 15,
-    marginRight: 10,
     resizeMode: 'contain',
     tintColor: colors.lightBlackColor,
-    width: 15,
+  },
+  label: {
+    fontSize: 16,
+    lineHeight: 24,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
   },
 });

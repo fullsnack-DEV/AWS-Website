@@ -195,6 +195,7 @@ import SportActivityHome from '../screens/home/SportActivity/SportActivityHome';
 import EditWrapperScreen from '../screens/home/SportActivity/EditWrapperScreen';
 import ReviewDetailsScreen from '../screens/home/SportActivity/ReviewDetailsScreen';
 import IncomingReservationSettings from '../screens/account/registerReferee/IncomingReservationSettings';
+import TimeZoneScreen from '../screens/account/userSettingPrivacy/TimeZoneScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -1102,7 +1103,11 @@ const ScheduleNavigator = () => (
         },
       }}
     />
-
+    <Stack.Screen
+      name="TimeZoneScreen"
+      component={TimeZoneScreen}
+      options={{headerShown: false}}
+    />
     <Stack.Screen
       name="ChangePasswordScreen"
       component={ChangePasswordScreen}

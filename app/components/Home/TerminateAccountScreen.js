@@ -16,6 +16,7 @@ import TCGradientButton from '../TCGradientButton';
 import {userTerminate} from '../../api/Users';
 import {getGroups, groupTerminate} from '../../api/Groups';
 import {getQBAccountType, QBupdateUser} from '../../utils/QuickBlox';
+import {setAuthContextData} from '../../utils';
 
 export default function TerminateAccountScreen({navigation, route}) {
   const [sportObj] = useState(route?.params?.sport);
@@ -61,8 +62,9 @@ export default function TerminateAccountScreen({navigation, route}) {
     setloading(true);
 
     userTerminate(authContext)
-      .then((response) => {
-        console.log('terminate user ', response);
+      .then(async (response) => {
+        await setAuthContextData(response.payload, authContext);
+
         const QBAccountType = getQBAccountType(response?.payload?.entity_type);
         QBupdateUser(
           response?.payload?.user_id,
@@ -92,8 +94,8 @@ export default function TerminateAccountScreen({navigation, route}) {
   const terminateGroup = () => {
     setloading(true);
     groupTerminate(authContext)
-      .then((response) => {
-        console.log('terminate group ', response);
+      .then(async (response) => {
+        await setAuthContextData(response.payload, authContext);
         const QBaccountType = getQBAccountType(response?.payload?.entity_type);
         QBupdateUser(
           response?.payload?.user_id,

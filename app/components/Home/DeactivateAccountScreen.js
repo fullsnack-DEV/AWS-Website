@@ -16,6 +16,7 @@ import TCGradientButton from '../TCGradientButton';
 import {userActivate, userDeactivate} from '../../api/Users';
 import {getGroups} from '../../api/Groups';
 import {getQBAccountType, QBupdateUser} from '../../utils/QuickBlox';
+import {setAuthContextData} from '../../utils';
 
 export default function DeactivateAccountScreen({navigation, route}) {
   const [sportObj] = useState(route?.params?.sport);
@@ -59,8 +60,8 @@ export default function DeactivateAccountScreen({navigation, route}) {
   const deactivateAccount = () => {
     setloading(true);
     userDeactivate(authContext)
-      .then((response) => {
-        console.log('deactivate account ', response);
+      .then(async (response) => {
+        await setAuthContextData(response.payload, authContext);
 
         const accountType = getQBAccountType(response?.payload?.entity_type);
         QBupdateUser(
@@ -90,8 +91,8 @@ export default function DeactivateAccountScreen({navigation, route}) {
   const activateAccount = () => {
     setloading(true);
     userActivate(authContext)
-      .then((response) => {
-        console.log('activate account ', response);
+      .then(async (response) => {
+        await setAuthContextData(response.payload, authContext);
 
         const accountType = getQBAccountType(response?.payload?.entity_type);
         QBupdateUser(

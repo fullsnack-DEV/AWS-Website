@@ -272,6 +272,7 @@ import PrivacySettingsScreen from '../screens/home/SportActivity/PrivacySettings
 import ReviewDetailsScreen from '../screens/home/SportActivity/ReviewDetailsScreen';
 import ReplyScreen from '../screens/home/SportActivity/contentScreens/ReplyScreen';
 import IncomingReservationSettings from '../screens/account/registerReferee/IncomingReservationSettings';
+import TimeZoneScreen from '../screens/account/userSettingPrivacy/TimeZoneScreen';
 
 // Scorekeeper Review Screen
 
@@ -3817,6 +3818,11 @@ const AccountNavigator = () => (
           borderBottomWidth: 0.3,
         },
       }}
+    />
+    <Stack.Screen
+      name="TimeZoneScreen"
+      component={TimeZoneScreen}
+      options={{headerShown: false}}
     />
   </Stack.Navigator>
 );

@@ -4370,10 +4370,7 @@ const HomeScreen = ({navigation, route}) => {
       .then(async (response) => {
         setIsAccountDeactivated(false);
         setloading(false);
-        const entity = authContext.entity;
-        entity.obj = response.payload;
-        authContext.setEntity({...entity});
-        await Utility.setStorage('authContextEntity', {...entity});
+        await Utility.setAuthContextData(response.payload, authContext);
       })
       .catch((e) => {
         setloading(false);
@@ -4388,12 +4385,7 @@ const HomeScreen = ({navigation, route}) => {
     userActivate(authContext)
       .then(async (response) => {
         setloading(false);
-        const entity = authContext.entity;
-        entity.auth.user = response.payload;
-        entity.obj = response.payload;
-        authContext.setEntity({...entity});
-        await Utility.setStorage('authContextUser', response.payload);
-        await Utility.setStorage('authContextEntity', {...entity});
+        await Utility.setAuthContextData(response.payload, authContext);
         navigation.pop(2);
       })
       .catch((e) => {

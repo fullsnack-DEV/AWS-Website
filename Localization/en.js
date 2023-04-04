@@ -89,7 +89,7 @@ export default {
   yes: 'en_Yes',
   no: 'en_No',
   passwordText: 'en_Password (at least 6 characters)',
-  passwordWarningMessage: 'en_Password should be atleast 6 characters.',
+  passwordWarningMessage: 'en_Password should be atleast 8 characters.',
   confirmPasswordText: 'en_Confirm Password',
   // Password message
   passwordCanNotBlank: 'en_Password cannot be blank.',
@@ -414,7 +414,7 @@ export default {
   oldPassword: 'en_Current Password',
   newPassword: 'en_New Password',
   confirmPassword: 'en_Confirm Password',
-  atLeastText: 'en_(At least 6 characters)',
+  atLeastText: 'en_(at least 8 characters)',
 
   // reservation
 
@@ -2574,4 +2574,17 @@ export default {
 
   updateRecurringEvent: 'en_Update recurring event',
   deleteRecurringEvent: 'en_Delete recurring event',
+  emailText: 'en_E-MAIL',
+  whatIsYourSlogan: 'en_What is your slogan?',
+  teamText: 'en_Team',
+  clubText: 'en_Club',
+  inviteToDoubleTeamTitle: 'en_Who Can Invite You To Create Double team',
+  canTeamInviteYou: 'en_Can Team Invite You',
+  canClubInviteYou: 'en_Can Club Invite You',
+  whoCanInviteYouToDoubleTeam: 'en_Who can invite you to create Double team?',
+  canTeamInviteYouToJoinTeam: 'en_Can a team invite you to join the team?',
+  canClubInviteYouToJoinClub: 'en_Can a club invite you to join the club?',
+  myFollowing: 'en_My Following',
+  timeZoneDescription:
+    'en_Date and time displayed in the app will follow the date and time settings of the device.',
 };

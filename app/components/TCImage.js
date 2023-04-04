@@ -28,10 +28,3 @@ export default function TCImage({
     </View>
   );
 }
-
-// const styles = StyleSheet.create({
-//   containerStyle: {
-//     height: 50,
-//     width: 50,
-//   },
-// });

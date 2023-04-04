@@ -218,6 +218,7 @@ import TrashScreen from '../screens/notificationsScreen/TrashScreen';
 import LanguageSettingScreen from '../screens/account/userSettingPrivacy/LanguageSettingScreen';
 import RequestMultipleBasicInfoScreen from '../screens/account/groupConnections/RequestMultipleBasicInfoScreen';
 import IncomingReservationSettings from '../screens/account/registerReferee/IncomingReservationSettings';
+import TimeZoneScreen from '../screens/account/userSettingPrivacy/TimeZoneScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -1168,7 +1169,11 @@ const MembersNavigator = () => (
         headerTintColor: colors.blackColor,
       }}
     />
-
+    <Stack.Screen
+      name="TimeZoneScreen"
+      component={TimeZoneScreen}
+      options={{headerShown: false}}
+    />
     <Stack.Screen
       name="ChangePasswordScreen"
       component={ChangePasswordScreen}

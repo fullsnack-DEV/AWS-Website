@@ -54,5 +54,11 @@ export const ModalTypes = {
   style8: 'style8',
 };
 
+export const doublesInviteOptions = {
+  0: strings.none,
+  1: strings.everyoneTitleText,
+  2: strings.myFollowing,
+};
+
 export default EntityStatus;
 export {privacySettingEnum, privacyKey};

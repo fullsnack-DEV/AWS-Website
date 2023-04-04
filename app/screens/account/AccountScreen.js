@@ -603,9 +603,9 @@ export default function AccountScreen({navigation, route}) {
   const unPauseGroup = () => {
     setLoading(true);
     groupUnpaused(authContext)
-      .then((response) => {
+      .then(async (response) => {
         setIsAccountDeactivated(false);
-
+        await Utility.setAuthContextData(response.payload, authContext);
         const accountType = getQBAccountType(response?.payload?.entity_type);
         QBupdateUser(
           response?.payload?.user_id,
