@@ -2603,5 +2603,8 @@ export default {
   eventFilterTimeList1Week: 'en_1 Week',
   eventFilterTimeList1Month: 'en_1 Month',
   eventFilterTimeList3Month: 'en_3 Months',
-  eventFilterResetText: 'en_Reset'
+  eventFilterResetText: 'en_Reset',
+
+  todayTitleText: 'en_Today',
+  tomorrowTitleText: 'en_Tomorrow'
 };

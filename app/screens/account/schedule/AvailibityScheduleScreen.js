@@ -183,11 +183,11 @@ export default function AvailibilityScheduleScreen({
 
       let title = `${days[getJSDate(item[0]?.start_datetime).getDay()]} ,  ${moment(getJSDate(item[0]?.start_datetime)).format('MMM DD')}`;
       if(start.getTime() === currentDateTime.getTime()) {
-        title = 'Today'
+        title = strings.todayTitleText
       }
 
       if(start.getTime() === nextDateTime.getTime()) {
-        title = 'Tomorrow'
+        title = strings.tomorrowTitleText
       }
       
       tempVal = {
@@ -328,7 +328,6 @@ export default function AvailibilityScheduleScreen({
       const index = tempSlot.findIndex((item) => item.cal_id === cal_id);
       allSlots.splice(index, 1);
     })
-    console.log('After Delete', allSlots)
     setAllData([...allSlots]);
     return allSlots;
   };
@@ -350,7 +349,6 @@ export default function AvailibilityScheduleScreen({
         tempSlot.push(item);
       });
     }
-    console.log('After Delete', tempSlot)
     setAllData(tempSlot);
   };
 
