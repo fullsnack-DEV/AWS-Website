@@ -17,6 +17,7 @@ import Verbs from '../Constants/Verbs';
 function TCPlayerView({
   onPress,
   showStar = false,
+  showLevel = false,
   data,
   showSport = false,
   subTab,
@@ -32,9 +33,33 @@ function TCPlayerView({
   let isInviteButtonShow = false;
 
   const filterSport = () => {
-    if (sportFilter.sport !== strings.all) {
+    // Case - With Filter
+    if (sportFilter.sport !== strings.allSport) {
       sports = sports.filter((value) => {
-        if (value.sport === sportFilter.sport) {
+        if (subTab === strings.playerTitle) {
+          if (
+            value.sport_name === sportFilter.sport_name &&
+            value.is_active === true
+          ) {
+            return value;
+          }
+          return false;
+        }
+        if (
+          subTab === strings.refereesTitle ||
+          subTab === strings.scorekeeperTitle
+        ) {
+          if (value.sport === sportFilter.sport && value.is_active === true) {
+            return value;
+          }
+          return false;
+        }
+        return false;
+      });
+    } else {
+      // Case without filter
+      sports = sports.filter((value) => {
+        if (value.is_active === true) {
           return value;
         }
         return false;
@@ -46,8 +71,8 @@ function TCPlayerView({
     filterSport();
     if (
       sports.length === 1 &&
-      sports[0].sport_type === 'single' &&
-      sports[0].setting?.availibility === 'On' &&
+      sports[0].sport_type === Verbs.singleSport &&
+      sports[0].setting?.availibility === Verbs.on &&
       authContext.entity.role === Verbs.entityTypeUser &&
       authContext.entity.role !== Verbs.entityTypeTeam &&
       authContext.entity.role !== Verbs.entityTypeClub &&
@@ -66,18 +91,18 @@ function TCPlayerView({
     if (
       authContext.entity.role === Verbs.entityTypeUser &&
       sports.length === 1 &&
-      sports[0].setting?.referee_availibility === 'On' &&
+      sports[0].setting?.referee_availibility === Verbs.on &&
       authContext.entity.uid !== data.user_id &&
       authContext.entity.obj.registered_sports?.some(
         (sport) => sport.sport === sports[0].sport,
       ) &&
-      sports[0].sport_type === 'single'
+      sports[0].sport_type === Verbs.singleSport
     ) {
       isBookButtonShow = true;
     } else if (
       authContext.entity.role === Verbs.entityTypeTeam &&
       sports.length === 1 &&
-      sports[0].setting?.referee_availibility === 'On' &&
+      sports[0].setting?.referee_availibility === Verbs.on &&
       authContext.entity.uid !== data.user_id &&
       authContext.entity?.obj.sport === sports[0].sport
     ) {
@@ -92,18 +117,18 @@ function TCPlayerView({
     if (
       authContext.entity.role === Verbs.entityTypeUser &&
       sports.length === 1 &&
-      sports[0].setting?.scorekeeper_availibility === 'On' &&
+      sports[0].setting?.scorekeeper_availibility === Verbs.on &&
       authContext.entity.uid !== data.user_id &&
       authContext.entity.obj.registered_sports?.some(
         (sport) => sport.sport === sports[0].sport,
       ) &&
-      sports[0].sport_type === 'single'
+      sports[0].sport_type === Verbs.singleSport
     ) {
       isBookButtonShow = true;
     } else if (
       authContext.entity.role === Verbs.entityTypeTeam &&
       sports.length === 1 &&
-      sports[0].setting?.scorekeeper_availibility === 'On' &&
+      sports[0].setting?.scorekeeper_availibility === Verbs.on &&
       authContext.entity.uid !== data.user_id &&
       authContext.entity?.obj.sport === sports[0].sport
     ) {
@@ -129,13 +154,14 @@ function TCPlayerView({
           {showSport ? (
             <Text style={styles.locationText} numberOfLines={1}>
               {data?.city} ·{' '}
-              {sports
-                .map(
-                  (value) =>
-                    value.sport?.charAt(0).toUpperCase() +
-                    value.sport?.slice(1),
-                )
-                .join(', ')}
+              {sports.length === 1 &&
+                sports[0].sport_name?.charAt(0).toUpperCase() +
+                  sports[0].sport_name?.slice(1)}
+              {sports.length > 1 &&
+                `${
+                  sports[0].sport_name.charAt(0).toUpperCase() +
+                  sports[0].sport_name.slice(1)
+                } & ${sports.length - 1} ${strings.moreText}`}
             </Text>
           ) : (
             <Text style={styles.locationText} numberOfLines={1}>
@@ -151,6 +177,19 @@ function TCPlayerView({
               {/* <Image source={images.orangeStar} style={styles.starImage} /> */}
               <Text style={styles.starPoints} numberOfLines={2}>
                 {'★ 5.0'} · {sports[0]?.setting?.game_fee?.fee}{' '}
+                {sports[0]?.setting?.game_fee?.currency_type}
+              </Text>
+            </View>
+          )}
+          {showLevel && (
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}>
+              {/* <Image source={images.orangeStar} style={styles.starImage} /> */}
+              <Text style={styles.starPoints} numberOfLines={2}>
+                {'Lv.13'} · {sports[0]?.setting?.game_fee?.fee}{' '}
                 {sports[0]?.setting?.game_fee?.currency_type}
               </Text>
             </View>

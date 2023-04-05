@@ -19,9 +19,11 @@ function TCTagsFilter({dataSource, onTagCancelPress, filter, authContext}) {
     <>
       {Object.values(item)[0] !== strings.allType &&
         Object.values(item)[0] !== strings.worldTitleText &&
+        Object.values(item)[0] !== strings.allSport &&
         Object.keys(item)[0] !== 'entityID' &&
         Object.keys(item)[0] !== 'searchText' &&
         Object.keys(item)[0] !== 'sport_type' &&
+        Object.keys(item)[0] !== 'sport_name' &&
         Object.keys(item)[0] !== 'locationType' &&
         Object.keys(item)[0] !== 'sportType' && (
           <View
@@ -32,7 +34,7 @@ function TCTagsFilter({dataSource, onTagCancelPress, filter, authContext}) {
                 ? getSportName(filter, authContext)
                 : Object.values(item)}
             </Text>
-            <Image source={images.tagDivider} style={styles.dividerImage} />
+            {/* <Image source={images.tagDivider} style={styles.dividerImage} /> */}
             <TouchableOpacity
               style={styles.closeButton}
               onPress={() => onTagCancelPress({item, index})}>
@@ -64,7 +66,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     marginRight: 5,
     marginLeft: 5,
-    backgroundColor: colors.offwhite,
+    backgroundColor: colors.lightGrayBackground,
     borderRadius: 5,
     shadowColor: colors.blackColor,
     shadowOffset: {width: 0, height: 1},
@@ -82,18 +84,18 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     marginRight: 7,
   },
-  dividerImage: {
-    alignSelf: 'center',
-    width: 1,
-    height: 25,
-    resizeMode: 'contain',
-    marginLeft: 5,
-    marginRight: 5,
-  },
+  // dividerImage: {
+  //   alignSelf: 'center',
+  //   width: 1,
+  //   height: 25,
+  //   resizeMode: 'contain',
+  //   marginLeft: 5,
+  //   marginRight: 5,
+  // },
   tagListStyle: {
-    marginLeft: 20,
-    marginTop: 20,
-    marginBottom: 10,
+    marginLeft: 15,
+    marginTop: 10,
+    marginBottom: 0,
   },
   tagTitleText: {
     alignSelf: 'center',
@@ -101,6 +103,7 @@ const styles = StyleSheet.create({
     marginRight: 5,
     fontFamily: fonts.RRegular,
     fontSize: 12,
+    color: '#000000',
   },
 });
 

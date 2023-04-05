@@ -22,11 +22,26 @@ function TCTeamSearchView({
   authContext,
   onPressChallengeButton,
   onPressJoinButton,
+  sportFilter,
 }) {
   let teamIcon = '';
   let teamImagePH = '';
   let isChallengeButtonShow = false;
   let isJoinButton = false;
+  let sports = [];
+
+  const filterSport = () => {
+    // Case - With Filter
+    if (sportFilter.sport !== strings.allSport) {
+      sports = sports.filter((value) => {
+        if (value.sport_name === sportFilter.sport_name) {
+          return value;
+        }
+        return false;
+      });
+    }
+  };
+
   if (data.entity_type === Verbs.entityTypeTeam) {
     teamIcon = images.newTeamIcon;
     teamImagePH = images.teamBcgPlaceholder;
@@ -34,13 +49,15 @@ function TCTeamSearchView({
       isJoinButton = true;
     } else if (
       authContext.entity.role === Verbs.entityTypeTeam &&
-      data.setting?.availibility === 'On' &&
+      data.setting?.availibility === Verbs.on &&
       authContext.entity.obj.sport === data.sport &&
       authContext.entity.uid !== data.group_id
     ) {
       isChallengeButtonShow = true;
     }
   } else if (data.entity_type === Verbs.entityTypeClub) {
+    data.sports.map((value) => sports.push(value));
+    filterSport();
     teamIcon = images.newClubIcon;
     teamImagePH = images.clubBcgPlaceholder;
     if (authContext.entity.role === Verbs.entityTypeUser) {
@@ -87,21 +104,22 @@ function TCTeamSearchView({
           {isClub ? (
             <Text style={styles.locationText} numberOfLines={1}>
               {data.city} ·{' '}
-              {data.sports
-                .map(
-                  (value) =>
-                    value.sport?.charAt(0).toUpperCase() +
-                    value.sport?.slice(1),
-                )
-                .join(',')}
+              {sports.length === 1 &&
+                sports[0].sport_name?.charAt(0).toUpperCase() +
+                  sports[0].sport_name?.slice(1)}
+              {sports.length > 1 &&
+                `${
+                  sports[0].sport_name?.charAt(0).toUpperCase() +
+                  sports[0].sport_name?.slice(1)
+                } & ${sports.length - 1} ${strings.moreText}`}
             </Text>
           ) : (
             <Text style={styles.locationText} numberOfLines={1}>
               {data.city} ·{' '}
-              {data.sport?.charAt(0).toUpperCase() + data.sport?.slice(1)}
+              {data.sport_name?.charAt(0).toUpperCase() +
+                data.sport_name?.slice(1)}
             </Text>
           )}
-
           {showStar && (
             <Text style={styles.starPoints} numberOfLines={1}>
               LV {data.point}

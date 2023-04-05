@@ -1087,7 +1087,7 @@ export default {
   teamsTitleText: 'en_Teams',
   clubsTitleText: 'en_Clubs',
   leaguesTitleText: 'en_Leagues',
-  worldTitleText: 'en_world',
+  worldTitleText: 'en_World',
   world: 'en_World',
   completedTitleText: 'en_Completed',
   upcomingTitleText: 'en_Upcoming',
@@ -2554,6 +2554,7 @@ export default {
   createTeamUnderYourClub: 'en_Create A Team Under Your CLub ',
 
   scorekeptMatches: 'en_Scorekept Matches',
+  allSport: 'en_All Sports',
   challengeScreenBottomText:
     'en_These settings will be applied only to incoming challenges that you will receive.',
   reservationScreenBottomText:
