@@ -1208,6 +1208,18 @@ export default function LocalHomeScreen({navigation, route}) {
       return 3;
     }
   };
+  const getSortDataForNextScreen = () => {
+    const data = {
+      sport: filters.sport === strings.all ? strings.allSport : filters.sport,
+      sport_type:
+        filters.sport_type === strings.all
+          ? strings.allSport
+          : filters.sport_type,
+      sport_name: Utility.getSportName(filters, authContext),
+      location,
+    };
+    return data;
+  };
   return (
     <View style={{flex: 1}}>
       <ActivityLoader visible={loading} />
@@ -1494,11 +1506,7 @@ export default function LocalHomeScreen({navigation, route}) {
                 showArrow={true}
                 viewStyle={{marginTop: 20, marginBottom: 15}}
                 onPress={() => {
-                  const data = {
-                    sport: filters.sport,
-                    sport_type: filters.sport_type,
-                    location,
-                  };
+                  const data = getSortDataForNextScreen();
                   const option = getLocationOption();
                   navigation.navigate('RefereesListScreen', {
                     filters: data,
@@ -1530,11 +1538,7 @@ export default function LocalHomeScreen({navigation, route}) {
                 showArrow={true}
                 viewStyle={{marginTop: 20, marginBottom: 15}}
                 onPress={() => {
-                  const data = {
-                    sport: filters.sport,
-                    sport_type: filters.sport_type,
-                    location,
-                  };
+                  const data = getSortDataForNextScreen();
                   const option = getLocationOption();
                   navigation.navigate('ScorekeeperListScreen', {
                     filters: data,
@@ -1566,9 +1570,10 @@ export default function LocalHomeScreen({navigation, route}) {
                 showArrow={true}
                 viewStyle={{marginTop: 20, marginBottom: 15}}
                 onPress={() => {
+                  const data = getSortDataForNextScreen();
                   navigation.navigate('RecruitingPlayerScreen', {
                     filters: {
-                      ...filters,
+                      ...data,
                       groupTeam: strings.teamstitle,
                       groupClub: strings.clubstitle,
                       groupLeague: strings.leaguesTitle,
@@ -1603,11 +1608,7 @@ export default function LocalHomeScreen({navigation, route}) {
                 showArrow={true}
                 viewStyle={{marginTop: 20, marginBottom: 15}}
                 onPress={() => {
-                  const data = {
-                    sport: filters.sport,
-                    sport_type: filters.sport_type,
-                    location,
-                  };
+                  const data = getSortDataForNextScreen();
                   const option = getLocationOption();
                   navigation.navigate('LookingTeamScreen', {
                     filters: data,

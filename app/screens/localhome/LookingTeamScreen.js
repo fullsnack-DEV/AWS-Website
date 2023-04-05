@@ -23,7 +23,6 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import LinearGradient from 'react-native-linear-gradient';
 import {format} from 'react-string-format';
 import AuthContext from '../../auth/context';
-import LocationContext from '../../context/LocationContext';
 import * as Utility from '../../utils';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
@@ -41,6 +40,7 @@ import LocationModal from '../../components/LocationModal/LocationModal';
 import TCPlayerView from '../../components/TCPlayerView';
 import {inviteUser} from '../../api/Users';
 import Verbs from '../../Constants/Verbs';
+import {getSportList} from '../../utils/sportsActivityUtils';
 
 let stopFetchMore = true;
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
@@ -48,22 +48,10 @@ const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
 export default function LookingTeamScreen({navigation, route}) {
   const [loading, setloading] = useState(false);
   const authContext = useContext(AuthContext);
-  const locationContext = useContext(LocationContext);
   const [filters, setFilters] = useState(route?.params?.filters);
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
   const [settingPopup, setSettingPopup] = useState(false);
   const [visibleLocationModal, setVisibleLocationModal] = useState(false);
-  /* eslint-disable */
-  // const [locationFilterOpetion, setLocationFilterOpetion] = useState(
-  //   locationContext?.selectedLocation.toUpperCase() ===
-  //     /* eslint-disable */
-  //     authContext.entity.obj?.city?.toUpperCase()
-  //     ? 1
-  //     : locationContext?.selectedLocation === strings.worldTitleText
-  //     ? 0
-  //     : 2,
-  // );
-
   const [sports, setSports] = useState([]);
 
   const [lookingEntity, setLookingEntity] = useState([]);
@@ -74,6 +62,7 @@ export default function LookingTeamScreen({navigation, route}) {
   const [selectedSport, setSelectedSport] = useState({
     sport: route.params?.filters?.sport,
     sport_type: route?.params?.filters?.sport_type,
+    sport_name: route?.params?.filters?.sport_name,
   });
   const [location, setLocation] = useState(
     route?.params?.filters?.location ?? route.params?.locationText,
@@ -85,7 +74,7 @@ export default function LookingTeamScreen({navigation, route}) {
     route.params.locationOption,
   );
   const [isSearchPlaceholder, setIsSearchPlaceholder] = useState(
-    locationFilterOpetion === 3 ? false : true,
+    locationFilterOpetion !== 3,
   );
   const [selectedLocation, setSelectedLocation] = useState(
     route.params?.filters?.location,
@@ -98,6 +87,7 @@ export default function LookingTeamScreen({navigation, route}) {
   const [myGroupDetail] = useState(
     authContext.entity.role === Verbs.entityTypeTeam && authContext.entity.obj,
   );
+
   useEffect(() => {
     if (settingPopup) {
       setLastSelection(locationFilterOpetion);
@@ -115,21 +105,17 @@ export default function LookingTeamScreen({navigation, route}) {
   }, [route.params?.locationText]);
 
   useEffect(() => {
-    const list = [
+    const defaultSport = [
       {
-        label: strings.allType,
-        value: strings.allType,
+        sport: strings.allSport,
+        sport_name: strings.allSport,
+        sport_type: strings.allSport,
       },
     ];
-    authContext.sports.map((obj) => {
-      const dataSource = {
-        label: Utility.getSportName(obj, authContext),
-        value: Utility.getSportName(obj, authContext),
-      };
-      list.push(dataSource);
-    });
-
-    setSports(list);
+    setSports([
+      ...defaultSport,
+      ...getSportList(authContext.sports, Verbs.entityTypeReferee),
+    ]);
   }, [authContext]);
 
   const getLookingEntity = useCallback(
@@ -170,7 +156,7 @@ export default function LookingTeamScreen({navigation, route}) {
           },
         });
       }
-      if (filerLookingEntity?.sport !== strings.allType) {
+      if (filerLookingEntity?.sport !== strings.allSport) {
         lookingQuery.query.bool.must[0].nested.query.bool.must.push({
           term: {
             'registered_sports.sport_name.keyword': {
@@ -236,7 +222,7 @@ export default function LookingTeamScreen({navigation, route}) {
         <TCPlayerView
           data={item}
           authContext={authContext}
-          showStar={filters.sport !== strings.all && true}
+          showStar={filters.sport !== strings.allSport && true}
           showSport={true}
           subTab={strings.playerTitle}
           sportFilter={filters}
@@ -286,11 +272,12 @@ export default function LookingTeamScreen({navigation, route}) {
     Object.keys(tempFilter).forEach((key) => {
       if (key === Object.keys(item)[0]) {
         if (Object.keys(item)[0] === 'sport') {
-          tempFilter.sport = strings.allType;
+          tempFilter.sport = strings.allSport;
           delete tempFilter.lookingEntityFee;
           setSelectedSport({
-            sport: strings.allType,
-            sport_type: strings.allType,
+            sport: strings.allSport,
+            sport_type: strings.allSport,
+            sport_name: strings.allSport,
           });
         }
         if (Object.keys(item)[0] === 'location') {
@@ -302,7 +289,6 @@ export default function LookingTeamScreen({navigation, route}) {
         // delete tempFilter[key];
       }
     });
-    console.log('Temp filter', tempFilter);
     setFilters({...tempFilter});
     // applyFilter();
     setTimeout(() => {
@@ -355,27 +341,23 @@ export default function LookingTeamScreen({navigation, route}) {
   const onPressReset = () => {
     setFilters({
       location: strings.worldTitleText,
-      sport: strings.allType,
-      sport_type: strings.allType,
+      sport: strings.allSport,
+      sport_type: strings.allSport,
     });
     setSelectedSport({
-      sport: strings.allType,
-      sport_type: strings.allType,
+      sport: strings.allSport,
+      sport_type: strings.allSport,
+      sport_name: strings.allSport,
     });
-    setLocationFilterOpetion(
-      locationContext?.selectedLocation.toUpperCase() ===
-        /* eslint-disable */
-        authContext.entity.obj?.city?.toUpperCase()
-        ? 1
-        : locationContext?.selectedLocation === strings.worldTitleText
-        ? 0
-        : 2,
-    );
+    setIsSearchPlaceholder(true);
+    setSelectedLocation(location);
   };
 
   useEffect(() => {
     const tempFilter = {...filters};
     tempFilter.sport = selectedSport.sport;
+    tempFilter.sport_type = selectedSport?.sport_type;
+    tempFilter.sport_name = selectedSport?.sport_name;
     tempFilter.location = location;
     setFilters({
       ...tempFilter,
@@ -393,15 +375,17 @@ export default function LookingTeamScreen({navigation, route}) {
     <Pressable
       style={styles.listItem}
       onPress={() => {
-        if (item.value === strings.allType) {
+        if (item.sport === strings.allSport) {
           setSelectedSport({
-            sport: strings.allType,
-            sport_type: strings.allType,
+            sport: strings.allSport,
+            sport_type: strings.allSport,
+            sport_name: strings.allSport,
           });
         } else {
-          setSelectedSport(
-            Utility.getSportObjectByName(item.value, authContext),
-          );
+          // setSelectedSport(
+          //   Utility.getSportObjectByName(item.value, authContext),
+          // );
+          setSelectedSport(item);
         }
         setVisibleSportsModal(false);
       }}>
@@ -413,9 +397,9 @@ export default function LookingTeamScreen({navigation, route}) {
           flexDirection: 'row',
           justifyContent: 'space-between',
         }}>
-        <Text style={styles.languageList}>{item.value}</Text>
+        <Text style={styles.languageList}>{item.sport_name}</Text>
         <View style={styles.checkbox}>
-          {selectedSport?.sport.toLowerCase() === item.value.toLowerCase() ? (
+          {selectedSport?.sport.toLowerCase() === item.sport.toLowerCase() ? (
             <Image
               source={images.radioCheckYellow}
               style={styles.checkboxImg}
@@ -438,13 +422,14 @@ export default function LookingTeamScreen({navigation, route}) {
     </View>
   );
 
-  const handleSetLocationOptions = (location) => {
-    if (location.hasOwnProperty('address')) {
+  const handleSetLocationOptions = (locationObj) => {
+    // eslint-disable-next-line no-prototype-builtins
+    if (locationObj.hasOwnProperty('address')) {
       // setLocation(location?.formattedAddress);
-      setSelectedLocation(location?.formattedAddress);
+      setSelectedLocation(locationObj?.formattedAddress);
     } else {
       // setLocation(location?.city);
-      setSelectedLocation(location?.city);
+      setSelectedLocation(locationObj?.city);
     }
   };
   const groupInviteUser = async (dataObj) => {
@@ -550,6 +535,13 @@ export default function LookingTeamScreen({navigation, route}) {
                   onPress={() => {
                     setLocationFilterOpetion(lastSelection);
                     setSettingPopup(false);
+                    if (lastSelection !== locationType.SEARCH_CITY) {
+                      setIsSearchPlaceholder(true);
+                      setSelectedLocation('');
+                    } else {
+                      setIsSearchPlaceholder(false);
+                      setSelectedLocation(location);
+                    }
                   }}
                   style={styles.cancelText}>
                   {strings.cancel}
@@ -561,6 +553,7 @@ export default function LookingTeamScreen({navigation, route}) {
                     const tempFilter = {...filters};
                     tempFilter.sport = selectedSport.sport;
                     tempFilter.sport_type = selectedSport?.sport_type;
+                    tempFilter.sport_name = selectedSport?.sport_name;
                     // setTimeout(() => {
                     if (locationFilterOpetion === 0) {
                       setLocation(strings.worldTitleText);
@@ -583,6 +576,7 @@ export default function LookingTeamScreen({navigation, route}) {
                     // });
                     filters.sport = tempFilter.sport;
                     filters.sport_type = tempFilter.sport_type;
+                    filters.sport_name = tempFilter.sport_name;
                     filters.location = tempFilter.location;
                     setPageFrom(0);
                     setLookingEntity([]);
@@ -613,6 +607,7 @@ export default function LookingTeamScreen({navigation, route}) {
                           setLocationFilterOpetion(
                             locationType.CURRENT_LOCATION,
                           );
+                          setIsSearchPlaceholder(true);
                         }}>
                         <Image
                           source={
@@ -636,6 +631,7 @@ export default function LookingTeamScreen({navigation, route}) {
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(locationType.HOME_CITY);
+                          setIsSearchPlaceholder(true);
                         }}>
                         <Image
                           source={
@@ -657,6 +653,7 @@ export default function LookingTeamScreen({navigation, route}) {
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(locationType.WORLD);
+                          setIsSearchPlaceholder(true);
                         }}>
                         <Image
                           source={
@@ -671,7 +668,6 @@ export default function LookingTeamScreen({navigation, route}) {
                     <TouchableWithoutFeedback
                       onPress={() => {
                         setLocationFilterOpetion(locationType.SEARCH_CITY);
-
                         setVisibleLocationModal(true);
                       }}>
                       <View
@@ -681,9 +677,9 @@ export default function LookingTeamScreen({navigation, route}) {
                         }}>
                         <View style={styles.searchCityContainer}>
                           <Text style={styles.searchCityText}>
-                            {route?.params?.locationText ||
-                              location ||
-                              strings.searchCityText}
+                            {isSearchPlaceholder === true
+                              ? strings.searchCityText
+                              : selectedLocation}
                           </Text>
                         </View>
                         <View
@@ -735,7 +731,7 @@ export default function LookingTeamScreen({navigation, route}) {
                             }}>
                             <View>
                               <Text style={styles.searchCityText}>
-                                {selectedSport?.sport_name ?? strings.allType}
+                                {selectedSport?.sport_name ?? strings.allSport}
                               </Text>
                             </View>
                             <View
@@ -1446,13 +1442,7 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     alignSelf: 'center',
   },
-  closeButton: {
-    alignSelf: 'center',
-    width: 15,
-    height: 15,
-    marginLeft: 5,
-    resizeMode: 'contain',
-  },
+
   handleStyle: {
     marginVertical: 15,
     alignSelf: 'center',

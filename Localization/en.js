@@ -1086,7 +1086,7 @@ export default {
   teamsTitleText: 'en_Teams',
   clubsTitleText: 'en_Clubs',
   leaguesTitleText: 'en_Leagues',
-  worldTitleText: 'en_world',
+  worldTitleText: 'en_World',
   world: 'en_World',
   completedTitleText: 'en_Completed',
   upcomingTitleText: 'en_Upcoming',
@@ -2524,4 +2524,5 @@ export default {
   lookingForBottomText:
     'en_If you select “Yes, display it.”, your profile may be displayed on the “{0}” section in Local Home. ',
   scorekeptMatches: 'en_Scorekept Matches',
+  allSport: 'en_All Sports',
 };

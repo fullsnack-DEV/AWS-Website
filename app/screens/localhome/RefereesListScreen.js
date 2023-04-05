@@ -33,10 +33,11 @@ import {getUserIndex} from '../../api/elasticSearch';
 import TCTagsFilter from '../../components/TCTagsFilter';
 import {getGeocoordinatesWithPlaceName} from '../../utils/location';
 import ActivityLoader from '../../components/loader/ActivityLoader';
-import LocationContext from '../../context/LocationContext';
 import {locationType} from '../../utils/constant';
 import LocationModal from '../../components/LocationModal/LocationModal';
 import TCPlayerView from '../../components/TCPlayerView';
+import {getSportList} from '../../utils/sportsActivityUtils';
+import Verbs from '../../Constants/Verbs';
 
 let stopFetchMore = true;
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
@@ -44,21 +45,9 @@ const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
 export default function RefereesListScreen({navigation, route}) {
   const [loading, setloading] = useState(false);
   const authContext = useContext(AuthContext);
-  const locationContext = useContext(LocationContext);
   const [filters, setFilters] = useState(route?.params?.filters);
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
   const [settingPopup, setSettingPopup] = useState(false);
-  /* eslint-disable */
-  // const [locationFilterOpetion, setLocationFilterOpetion] = useState(
-  //   locationContext?.selectedLocation.toUpperCase() ===
-  //     /* eslint-disable */
-  //     authContext.entity.obj?.city?.toUpperCase()
-  //     ? 1
-  //     : locationContext?.selectedLocation === strings.worldTitleText
-  //     ? 0
-  //     : 2,
-  // );
-
   const [locationFilterOpetion, setLocationFilterOpetion] = useState(
     route.params.locationOption,
   );
@@ -73,11 +62,17 @@ export default function RefereesListScreen({navigation, route}) {
   const [selectedSport, setSelectedSport] = useState({
     sport: route.params?.filters?.sport,
     sport_type: route.params?.filters?.sport_type,
+    sport_name: route.params?.filters?.sport_name,
   });
   const [location, setLocation] = useState(route.params?.filters?.location);
   const [lastSelection, setLastSelection] = useState(0);
   const [visibleLocationModal, setVisibleLocationModal] = useState(false);
-
+  const [isSearchPlaceholder, setIsSearchPlaceholder] = useState(
+    locationFilterOpetion !== 3,
+  );
+  const [selectedLocation, setSelectedLocation] = useState(
+    route.params?.filters?.location,
+  );
   useEffect(() => {
     if (settingPopup) {
       setLastSelection(locationFilterOpetion);
@@ -94,27 +89,119 @@ export default function RefereesListScreen({navigation, route}) {
   }, [route.params?.locationText]);
 
   useEffect(() => {
-    const list = [
+    const defaultSport = [
       {
-        label: strings.all,
-        value: strings.allType,
+        sport: strings.allSport,
+        sport_name: strings.allSport,
+        sport_type: strings.allSport,
       },
     ];
 
-    authContext.sports.map((obj) => {
-      const dataSource = {
-        label: Utility.getSportName(obj, authContext),
-        value: Utility.getSportName(obj, authContext),
-      };
-      list.push(dataSource);
-    });
-
-    setSports(list);
+    setSports([
+      ...defaultSport,
+      ...getSportList(authContext.sports, Verbs.entityTypeReferee),
+    ]);
   }, [authContext]);
+  const modifiedRefereeElasticSearchResult = (response) => {
+    const modifiedData = [];
+    for (const item of response) {
+      const refereeSports = item.referee_data.map((obj) => ({
+        ...obj,
+        sport_name: Utility.getSportName(obj, authContext),
+      }));
+      item.referee_data = refereeSports;
+      modifiedData.push(item);
+    }
+    return modifiedData;
+  };
+  // const getReferees = useCallback(
+  //   (filerReferee) => {
+  //     // Referee query
+  //     const refereeQuery = {
+  //       size: pageSize,
+  //       from: pageFrom,
+  //       query: {
+  //         bool: {
+  //           must: [
+  //             {
+  //               nested: {
+  //                 path: 'referee_data',
+  //                 query: {
+  //                   bool: {must: [{term: {'referee_data.is_published': true}}]},
+  //                 },
+  //               },
+  //             },
+  //           ],
+  //         },
+  //       },
+  //     };
+
+  //     if (filerReferee.location !== strings.worldTitleText) {
+  //       refereeQuery.query.bool.must.push({
+  //         multi_match: {
+  //           query: `${filerReferee.location.toLowerCase()}`,
+  //           fields: ['city', 'country', 'state'],
+  //         },
+  //       });
+  //     }
+  //     console.log('filerReferee ===>', filerReferee);
+  //     if (filerReferee.sport !== strings.allSport) {
+  //       refereeQuery.query.bool.must[0].nested.query.bool.must.push({
+  //         term: {
+  //           'referee_data.sport.keyword': {
+  //             value: filerReferee?.sport,
+  //           },
+  //         },
+  //       });
+  //     }
+
+  //     if (filerReferee.refereeFee) {
+  //       refereeQuery.query.bool.must[0].nested.query.bool.must.push({
+  //         range: {
+  //           'referee_data.setting.game_fee.fee': {
+  //             gte: Number(filerReferee.refereeFee.split('-')[0]),
+  //             lte: Number(filerReferee.refereeFee.split('-')[1]),
+  //           },
+  //         },
+  //       });
+  //     }
+  //     if (filerReferee?.searchText?.length > 0) {
+  //       refereeQuery.query.bool.must[0].nested.query.bool.must.push({
+  //         query_string: {
+  //           query: `*${filerReferee?.searchText}*`,
+  //           fields: ['full_name'],
+  //         },
+  //       });
+  //     }
+
+  //     console.log('refereeQuery:=>', JSON.stringify(refereeQuery));
+
+  //     // Referee query
+
+  //     getUserIndex(refereeQuery)
+  //       .then((res) => {
+  //         if (res.length > 0) {
+  //           const modifiedResult = modifiedRefereeElasticSearchResult(
+  //             res,
+  //             authContext,
+  //           );
+  //           console.log('res ==>', modifiedResult);
+  //           setReferees([...referees, ...modifiedResult]);
+  //           setPageFrom(pageFrom + pageSize);
+  //           stopFetchMore = true;
+  //         }
+  //       })
+  //       .catch((e) => {
+  //         setTimeout(() => {
+  //           Alert.alert(strings.alertmessagetitle, e.message);
+  //         }, 10);
+  //       });
+  //   },
+  //   [filters?.searchText, pageFrom, pageSize, referees],
+  // );
 
   const getReferees = useCallback(
     (filerReferee) => {
-      // Referee query
       const refereeQuery = {
         size: pageSize,
         from: pageFrom,
@@ -125,34 +212,42 @@ export default function RefereesListScreen({navigation, route}) {
                 nested: {
                   path: 'referee_data',
                   query: {
-                    bool: {must: [{term: {'referee_data.is_published': true}}]},
+                    bool: {
+                      must: [
+                        {
+                          term: {
+                            'referee_data.is_published': true,
+                          },
+                        },
+                      ],
+                    },
                   },
                 },
               },
+              {match: {entity_type: 'player'}},
+              // {term: {is_deactivate: false}},
             ],
           },
         },
       };
 
+      // Location filter
       if (filerReferee.location !== strings.worldTitleText) {
         refereeQuery.query.bool.must.push({
           multi_match: {
-            query: `${filerReferee.location.toLowerCase()}`,
-            fields: ['city', 'country', 'state'],
+            query: `${filerReferee.location}`,
+            fields: ['city', 'country', 'state', 'state_abbr'],
           },
         });
       }
-
-      if (filerReferee.sport !== strings.allType) {
+      // Sport Filter
+      if (filerReferee.sport !== strings.allSport) {
         refereeQuery.query.bool.must[0].nested.query.bool.must.push({
           term: {
-            'referee_data.sport.keyword': {
-              value: filerReferee?.sport,
-            },
+            'referee_data.sport.keyword': `${filerReferee.sport.toLowerCase()}`,
           },
         });
       }
-
       if (filerReferee.refereeFee) {
         refereeQuery.query.bool.must[0].nested.query.bool.must.push({
           range: {
@@ -163,23 +258,92 @@ export default function RefereesListScreen({navigation, route}) {
           },
         });
       }
-      if (filerReferee?.searchText?.length > 0) {
-        refereeQuery.query.bool.must[0].nested.query.bool.must.push({
-          query_string: {
-            query: `*${filerReferee?.searchText}*`,
-            fields: ['full_name'],
-          },
-        });
+
+      // Search filter
+      if (filerReferee.searchText) {
+        // No filter case
+        if (
+          filerReferee.sport === strings.allSport &&
+          filerReferee.location === strings.worldTitleText
+        ) {
+          refereeQuery.query.bool.must.push({
+            bool: {
+              should: [
+                {
+                  query_string: {
+                    query: `*${filerReferee.searchText.toLowerCase()}*`,
+                    fields: [
+                      'full_name',
+                      'city',
+                      'country',
+                      'state',
+                      'state_abbr',
+                    ],
+                  },
+                },
+                {
+                  nested: {
+                    path: 'referee_data',
+                    query: {
+                      term: {
+                        'referee_data.sport.keyword': `${filerReferee.searchText.toLowerCase()}`,
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+          });
+        }
+        // Sport filter case
+        else if (filerReferee.sport === strings.allSport) {
+          refereeQuery.query.bool.must.push({
+            bool: {
+              should: [
+                {
+                  query_string: {
+                    query: `*${filerReferee.searchText.toLowerCase()}*`,
+                    fields: ['full_name'],
+                  },
+                },
+                {
+                  nested: {
+                    path: 'referee_data',
+                    query: {
+                      term: {
+                        'referee_data.sport.keyword': `${filerReferee.searchText.toLowerCase()}`,
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+          });
+        } // location filter case
+        else if (filerReferee.location === strings.worldTitleText) {
+          refereeQuery.query.bool.must.push({
+            query_string: {
+              query: `*${filerReferee.searchText.toLowerCase()}*`,
+              fields: ['full_name', 'city', 'country', 'state', 'state_abbr'],
+            },
+          });
+        } else {
+          // default case
+          refereeQuery.query.bool.must.push({
+            query_string: {
+              query: `*${filerReferee.searchText.toLowerCase()}*`,
+              fields: ['full_name'],
+            },
+          });
+        }
       }
-
-      console.log('refereeQuery:=>', JSON.stringify(refereeQuery));
-
-      // Referee query
-
+      console.log('refereeQuery==>', JSON.stringify(refereeQuery));
       getUserIndex(refereeQuery)
         .then((res) => {
           if (res.length > 0) {
-            setReferees([...referees, ...res]);
+            const modifiedResult = modifiedRefereeElasticSearchResult(res);
+            const fetchedData = [...referees, ...modifiedResult];
+            setReferees(fetchedData);
             setPageFrom(pageFrom + pageSize);
             stopFetchMore = true;
           }
@@ -221,7 +385,7 @@ export default function RefereesListScreen({navigation, route}) {
           data={item}
           authContext={authContext}
           subTab={strings.refereesTitle}
-          showStar={filters.sport !== strings.all && true}
+          showStar={filters.sport !== strings.allSport && true}
           showSport={true}
           sportFilter={filters}
           onPress={() => {
@@ -290,17 +454,21 @@ export default function RefereesListScreen({navigation, route}) {
     Object.keys(tempFilter).forEach((key) => {
       if (key === Object.keys(item)[0]) {
         if (Object.keys(item)[0] === 'sport') {
-          tempFilter.sport = strings.allType;
+          tempFilter.sport = strings.allSport;
+
           delete tempFilter.refereeFee;
           setSelectedSport({
-            sport: strings.allType,
-            sport_type: strings.allType,
+            sport: strings.allSport,
+            sport_name: strings.allSport,
+            sport_type: strings.allSport,
           });
           setMinFee(0);
           setMaxFee(0);
         }
         if (Object.keys(item)[0] === 'location') {
           tempFilter.location = strings.worldTitleText;
+          setIsSearchPlaceholder(true);
+          setLocationFilterOpetion(0);
         }
         if (Object.keys(item)[0] === 'refereeFee') {
           delete tempFilter.refereeFee;
@@ -309,7 +477,6 @@ export default function RefereesListScreen({navigation, route}) {
         // delete tempFilter[key];
       }
     });
-    console.log('Temp filter', tempFilter);
     setFilters({...tempFilter});
     // applyFilter();
     setTimeout(() => {
@@ -382,22 +549,18 @@ export default function RefereesListScreen({navigation, route}) {
   const onPressReset = () => {
     setFilters({
       location: strings.worldTitleText,
-      sport: strings.allType,
-      sport_type: strings.allType,
+      sport: strings.allSport,
+      sport_name: strings.allSport,
+      sport_type: strings.allSport,
     });
     setSelectedSport({
-      sport: strings.allType,
-      sport_type: strings.allType,
+      sport: strings.allSport,
+      sport_name: strings.allSport,
+      sport_type: strings.allSport,
     });
-    setLocationFilterOpetion(
-      locationContext?.selectedLocation.toUpperCase() ===
-        /* eslint-disable */
-        authContext.entity.obj?.city?.toUpperCase()
-        ? 1
-        : locationContext?.selectedLocation === strings.worldTitleText
-        ? 0
-        : 2,
-    );
+    setIsSearchPlaceholder(true);
+    setSelectedLocation(location);
+
     setMinFee(0);
     setMaxFee(0);
   };
@@ -405,6 +568,9 @@ export default function RefereesListScreen({navigation, route}) {
   useEffect(() => {
     const tempFilter = {...filters};
     tempFilter.sport = selectedSport?.sport;
+    tempFilter.sport_type = selectedSport?.sport_type;
+    tempFilter.sport_name = selectedSport?.sport_name;
+
     tempFilter.location = location;
     setFilters({
       ...tempFilter,
@@ -418,15 +584,17 @@ export default function RefereesListScreen({navigation, route}) {
     <Pressable
       style={styles.listItem}
       onPress={() => {
-        if (item.value === strings.allType) {
+        if (item.sport === strings.allSport) {
           setSelectedSport({
-            sport: strings.allType,
-            sport_type: strings.allType,
+            sport: strings.allSport,
+            sport_name: strings.allSport,
+            sport_type: strings.allSport,
           });
         } else {
-          setSelectedSport(
-            Utility.getSportObjectByName(item.value, authContext),
-          );
+          // setSelectedSport(
+          //   Utility.getSportObjectByName(item.value, authContext),
+          // );
+          setSelectedSport(item);
         }
         setVisibleSportsModal(false);
       }}>
@@ -438,9 +606,9 @@ export default function RefereesListScreen({navigation, route}) {
           flexDirection: 'row',
           justifyContent: 'space-between',
         }}>
-        <Text style={styles.languageList}>{item.value}</Text>
+        <Text style={styles.languageList}>{item.sport_name}</Text>
         <View style={styles.checkbox}>
-          {selectedSport?.sport.toLowerCase() === item.value.toLowerCase() ? (
+          {selectedSport?.sport.toLowerCase() === item.sport.toLowerCase() ? (
             <Image
               source={images.radioCheckYellow}
               style={styles.checkboxImg}
@@ -464,11 +632,13 @@ export default function RefereesListScreen({navigation, route}) {
     </View>
   );
 
-  const handleSetLocationOptions = (location) => {
-    if (location.hasOwnProperty('address')) {
-      setLocation(location?.formattedAddress);
+  const handleSetLocationOptions = (location1) => {
+    setIsSearchPlaceholder(false);
+    // eslint-disable-next-line no-prototype-builtins
+    if (location1.hasOwnProperty('address')) {
+      setSelectedLocation(location1?.formattedAddress);
     } else {
-      setLocation(location?.city);
+      setSelectedLocation(location1?.city);
     }
   };
 
@@ -517,7 +687,10 @@ export default function RefereesListScreen({navigation, route}) {
         ItemSeparatorComponent={renderSeparator}
         keyExtractor={keyExtractor}
         renderItem={renderRefereesScorekeeperListView}
-        style={styles.listStyle}
+        style={[
+          styles.listStyle,
+          {height: filters.sport !== strings.allSport ? 91 : 70},
+        ]}
         // contentContainerStyle={{ paddingBottom: 1 }}
         onScroll={onScrollHandler}
         onEndReachedThreshold={0.01}
@@ -530,10 +703,8 @@ export default function RefereesListScreen({navigation, route}) {
 
       <Modal
         onBackdropPress={() => {
-          {
-            setLocationFilterOpetion(lastSelection);
-            setSettingPopup(false);
-          }
+          setLocationFilterOpetion(lastSelection);
+          setSettingPopup(false);
         }}
         style={{
           margin: 0,
@@ -556,9 +727,14 @@ export default function RefereesListScreen({navigation, route}) {
               <View style={styles.viewsContainer}>
                 <Text
                   onPress={() => {
-                    {
-                      setLocationFilterOpetion(lastSelection);
-                      setSettingPopup(false);
+                    setLocationFilterOpetion(lastSelection);
+                    setSettingPopup(false);
+                    if (lastSelection !== locationType.SEARCH_CITY) {
+                      setIsSearchPlaceholder(true);
+                      setSelectedLocation('');
+                    } else {
+                      setIsSearchPlaceholder(false);
+                      setSelectedLocation(location);
                     }
                   }}
                   style={styles.cancelText}>
@@ -574,6 +750,7 @@ export default function RefereesListScreen({navigation, route}) {
                       const tempFilter = {...filters};
                       tempFilter.sport = selectedSport.sport;
                       tempFilter.sport_type = selectedSport.sport_type;
+                      tempFilter.sport_name = selectedSport.sport_name;
 
                       if (locationFilterOpetion === 0) {
                         setLocation(strings.worldTitleText);
@@ -589,18 +766,16 @@ export default function RefereesListScreen({navigation, route}) {
                       } else if (locationFilterOpetion === 2) {
                         getLocation();
                         tempFilter.location = location;
+                      } else if (locationFilterOpetion === 3) {
+                        setLocation(selectedLocation);
                       }
                       if (minFee && maxFee) {
                         tempFilter.refereeFee = `${minFee}-${maxFee}`;
                         filters.refereeFee = tempFilter.refereeFee;
                       }
-                      // setTimeout(() => {
-                      //   setFilters({
-                      //     ...tempFilter,
-                      //   });
-                      // }, 1000);
                       filters.sport = tempFilter.sport;
                       filters.sport_type = tempFilter.sport_type;
+                      filters.sport_name = tempFilter.sport_name;
                       filters.location = tempFilter.location;
                       setPageFrom(0);
                       setReferees([]);
@@ -633,6 +808,7 @@ export default function RefereesListScreen({navigation, route}) {
                           setLocationFilterOpetion(
                             locationType.CURRENT_LOCATION,
                           );
+                          setIsSearchPlaceholder(true);
                         }}>
                         <Image
                           source={
@@ -657,6 +833,7 @@ export default function RefereesListScreen({navigation, route}) {
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(locationType.HOME_CITY);
+                          setIsSearchPlaceholder(true);
                         }}>
                         <Image
                           source={
@@ -679,6 +856,7 @@ export default function RefereesListScreen({navigation, route}) {
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(locationType.WORLD);
+                          setIsSearchPlaceholder(true);
                         }}>
                         <Image
                           source={
@@ -694,7 +872,6 @@ export default function RefereesListScreen({navigation, route}) {
                     <TouchableWithoutFeedback
                       onPress={() => {
                         setLocationFilterOpetion(locationType.SEARCH_CITY);
-
                         setVisibleLocationModal(true);
                       }}>
                       <View
@@ -704,9 +881,9 @@ export default function RefereesListScreen({navigation, route}) {
                         }}>
                         <View style={styles.searchCityContainer}>
                           <Text style={styles.searchCityText}>
-                            {route?.params?.locationText ||
-                              location ||
-                              strings.searchCityText}
+                            {isSearchPlaceholder === true
+                              ? strings.searchCityText
+                              : selectedLocation}
                           </Text>
                         </View>
                         <View
@@ -758,7 +935,7 @@ export default function RefereesListScreen({navigation, route}) {
                             }}>
                             <View>
                               <Text style={styles.searchCityText}>
-                                {selectedSport?.sport_name ?? strings.allType}
+                                {selectedSport?.sport_name ?? strings.allSport}
                               </Text>
                             </View>
                             <View
@@ -920,7 +1097,7 @@ export default function RefereesListScreen({navigation, route}) {
           </View> */}
               {/* Rate View */}
 
-              {selectedSport?.sport !== strings.allType && (
+              {selectedSport?.sport !== strings.allSport && (
                 <View
                   style={{
                     flexDirection: 'column',
@@ -1276,13 +1453,7 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     alignSelf: 'center',
   },
-  closeButton: {
-    alignSelf: 'center',
-    width: 15,
-    height: 15,
-    marginLeft: 5,
-    resizeMode: 'contain',
-  },
+
   handleStyle: {
     marginVertical: 15,
     alignSelf: 'center',

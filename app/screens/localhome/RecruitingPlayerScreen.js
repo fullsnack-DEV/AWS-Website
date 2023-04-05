@@ -31,7 +31,6 @@ import ActionSheet from 'react-native-actionsheet';
 import LinearGradient from 'react-native-linear-gradient';
 import {format} from 'react-string-format';
 import AuthContext from '../../auth/context';
-import LocationContext from '../../context/LocationContext';
 import * as Utility from '../../utils';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
@@ -51,28 +50,20 @@ import LocationModal from '../../components/LocationModal/LocationModal';
 import TCTeamSearchView from '../../components/TCTeamSearchView';
 import {joinTeam} from '../../api/Groups';
 import {acceptRequest, declineRequest} from '../../api/Notificaitons';
+import {getSportList} from '../../utils/sportsActivityUtils';
 
 let stopFetchMore = true;
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
 
 export default function RecruitingPlayerScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
-  const locationContext = useContext(LocationContext);
   const [filters, setFilters] = useState(route.params?.filters);
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
   const [visibleLocationModal, setVisibleLocationModal] = useState(false);
   const [settingPopup, setSettingPopup] = useState(false);
-  /* eslint-disable */
   const [locationFilterOpetion, setLocationFilterOpetion] = useState(
-    locationContext?.selectedLocation.toUpperCase() ===
-      /* eslint-disable */
-      authContext.entity.obj?.city?.toUpperCase()
-      ? 1
-      : locationContext?.selectedLocation === strings.worldTitleText
-      ? 0
-      : 2,
+    route.params.locationOption,
   );
-
   const [sports, setSports] = useState([]);
 
   const [recruitingPlayer, setRecruitingPlayer] = useState([]);
@@ -82,11 +73,6 @@ export default function RecruitingPlayerScreen({navigation, route}) {
   const [loadMore, setLoadMore] = useState(false);
   const [groups, setGroups] = useState(groupsType);
   const [loading, setloading] = useState(false);
-
-  const [selectedSport, setSelectedSport] = useState({
-    sport: route.params?.filters?.sport,
-    sport_type: route.params?.filters?.sport_type,
-  });
   const [location, setLocation] = useState(
     route.params?.filters?.location ?? route.params?.locationText,
   );
@@ -103,6 +89,17 @@ export default function RecruitingPlayerScreen({navigation, route}) {
   const [mySettingObject] = useState(authContext.entity.obj.setting);
   const [myGroupDetail] = useState(
     authContext.entity.role === Verbs.entityTypeTeam && authContext.entity.obj,
+  );
+  const [isSearchPlaceholder, setIsSearchPlaceholder] = useState(
+    locationFilterOpetion !== 3,
+  );
+  const [selectedSport, setSelectedSport] = useState({
+    sport: route.params?.filters?.sport,
+    sport_type: route.params?.filters?.sport_type,
+    sport_name: route.params?.filters?.sport_name,
+  });
+  const [selectedLocation, setSelectedLocation] = useState(
+    route.params?.filters?.location,
   );
   useEffect(() => {
     if (settingPopup) {
@@ -129,29 +126,38 @@ export default function RecruitingPlayerScreen({navigation, route}) {
   }, [route.params?.locationText]);
 
   useEffect(() => {
-    const list = [
+    const defaultSport = [
       {
-        label: strings.allType,
-        value: strings.allType,
+        sport: strings.allSport,
+        sport_name: strings.allSport,
+        sport_type: strings.allSport,
       },
     ];
-    let sportArr = [];
-
-    authContext.sports.map((item) => {
-      sportArr = [...sportArr, ...item.format];
-      return null;
-    });
-    sportArr.map((obj) => {
-      const dataSource = {
-        label: Utility.getSportName(obj, authContext),
-        value: Utility.getSportName(obj, authContext),
-      };
-      list.push(dataSource);
-    });
-
-    setSports(list);
+    setSports([
+      ...defaultSport,
+      ...getSportList(authContext.sports, Verbs.entityTypeReferee),
+    ]);
   }, [authContext]);
 
+  const modifiedClubAndTeamElasticSearchResult = (response) => {
+    const modifiedData = [];
+    for (const item of response) {
+      if (item.entity_type === Verbs.entityTypeTeam) {
+        modifiedData.push({
+          ...item,
+          sport_name: Utility.getSportName(item, authContext),
+        });
+      } else if (item.entity_type === Verbs.entityTypeClub) {
+        const clubSports = item.sports.map((obj) => ({
+          ...obj,
+          sport_name: Utility.getSportName(obj, authContext),
+        }));
+        item.sports = clubSports;
+        modifiedData.push(item);
+      }
+    }
+    return modifiedData;
+  };
   const getRecruitingPlayer = useCallback(
     (filerdata) => {
       const recruitingPlayersQuery = {
@@ -172,7 +178,7 @@ export default function RecruitingPlayerScreen({navigation, route}) {
           },
         });
       }
-      if (filerdata.sport !== strings.allType) {
+      if (filerdata.sport !== strings.allSport) {
         recruitingPlayersQuery.query.bool.must.push({
           term: {
             'sport.keyword': {
@@ -215,12 +221,18 @@ export default function RecruitingPlayerScreen({navigation, route}) {
           },
         });
       }
+      console.log(
+        'Recuriting query==>',
+        JSON.stringify(recruitingPlayersQuery),
+      );
 
       // Looking Challengee query
       getEntityIndex(recruitingPlayersQuery)
         .then((entity) => {
           if (entity.length > 0) {
-            setRecruitingPlayer([...recruitingPlayer, ...entity]);
+            const modifiedResult =
+              modifiedClubAndTeamElasticSearchResult(entity);
+            setRecruitingPlayer([...recruitingPlayer, ...modifiedResult]);
             setPageFrom(pageFrom + pageSize);
             stopFetchMore = true;
           }
@@ -261,7 +273,7 @@ export default function RecruitingPlayerScreen({navigation, route}) {
           showStar={item.entity_type === Verbs.entityTypeTeam}
           sportFilter={
             (item.entity_type === Verbs.entityTypeTeam && filters) ||
-            (item.entity_type == Verbs.entityTypeClub && filters)
+            (item.entity_type === Verbs.entityTypeClub && filters)
           }
           onPress={() => {
             navigation.navigate('HomeScreen', {
@@ -308,15 +320,18 @@ export default function RecruitingPlayerScreen({navigation, route}) {
     Object.keys(tempFilter).forEach((key) => {
       if (key === Object.keys(item)[0]) {
         if (Object.keys(item)[0] === Verbs.sportType) {
-          tempFilter.sport = strings.allType;
+          tempFilter.sport = strings.allSport;
           delete tempFilter.gameFee;
           setSelectedSport({
-            sport: strings.allType,
-            sport_type: strings.allType,
+            sport: strings.allSport,
+            sport_type: strings.allSport,
+            sport_name: strings.allSport,
           });
         }
         if (Object.keys(item)[0] === Verbs.locationType) {
           tempFilter.location = strings.worldTitleText;
+          setIsSearchPlaceholder(true);
+          setLocationFilterOpetion(0);
         }
 
         if (Object.keys(item)[0] === 'groupTeam') {
@@ -399,22 +414,25 @@ export default function RecruitingPlayerScreen({navigation, route}) {
   const onPressReset = () => {
     setFilters({
       location: strings.worldTitleText,
-      sport: strings.allType,
-      sport_type: strings.allType,
+      sport: strings.allSport,
+      sport_type: strings.allSport,
     });
     setSelectedSport({
-      sport: strings.allType,
-      sport_type: strings.allType,
+      sport: strings.allSport,
+      sport_type: strings.allSport,
+      sport_name: strings.allSport,
     });
-    setLocationFilterOpetion(
-      locationContext?.selectedLocation.toUpperCase() ===
-        /* eslint-disable */
-        authContext.entity.obj?.city?.toUpperCase()
-        ? 1
-        : locationContext?.selectedLocation === strings.worldTitleText
-        ? 0
-        : 2,
-    );
+    setIsSearchPlaceholder(true);
+    setSelectedLocation(location);
+    // setLocationFilterOpetion(
+    //   locationContext?.selectedLocation.toUpperCase() ===
+    //     /* eslint-disable */
+    //     authContext.entity.obj?.city?.toUpperCase()
+    //     ? 1
+    //     : locationContext?.selectedLocation === strings.worldTitleText
+    //     ? 0
+    //     : 2,
+    // );
   };
   const isIconCheckedOrNot = useCallback(
     ({item, index}) => {
@@ -431,6 +449,7 @@ export default function RecruitingPlayerScreen({navigation, route}) {
   useEffect(() => {
     const tempFilter = {...filters};
     tempFilter.sport = selectedSport?.sport;
+    tempFilter.sport_name = selectedSport?.sport_name;
     tempFilter.location = location;
     setFilters({
       ...tempFilter,
@@ -476,15 +495,17 @@ export default function RecruitingPlayerScreen({navigation, route}) {
     <Pressable
       style={styles.listItem}
       onPress={() => {
-        if (item.value === strings.allType) {
+        if (item.sport === strings.allSport) {
           setSelectedSport({
-            sport: strings.allType,
-            sport_type: strings.allType,
+            sport: strings.allSport,
+            sport_type: strings.allSport,
+            sport_name: strings.allSport,
           });
         } else {
-          setSelectedSport(
-            Utility.getSportObjectByName(item.value, authContext),
-          );
+          // setSelectedSport(
+          //   Utility.getSportObjectByName(item.value, authContext),
+          // );
+          setSelectedSport(item);
         }
         setVisibleSportsModal(false);
       }}>
@@ -496,9 +517,9 @@ export default function RecruitingPlayerScreen({navigation, route}) {
           flexDirection: 'row',
           justifyContent: 'space-between',
         }}>
-        <Text style={styles.languageList}>{item.value}</Text>
+        <Text style={styles.languageList}>{item.sport_name}</Text>
         <View style={styles.checkbox}>
-          {selectedSport?.sport.toLowerCase() === item.value.toLowerCase() ? (
+          {selectedSport?.sport.toLowerCase() === item.sport.toLowerCase() ? (
             <Image
               source={images.radioCheckYellow}
               style={styles.checkboxImg}
@@ -522,16 +543,19 @@ export default function RecruitingPlayerScreen({navigation, route}) {
     </View>
   );
 
-  const handleSetLocationOptions = (location) => {
-    if (location.hasOwnProperty('address')) {
-      setLocation(location?.formattedAddress);
+  const handleSetLocationOptions = (locationObj) => {
+    setIsSearchPlaceholder(false);
+    // eslint-disable-next-line no-prototype-builtins
+    if (locationObj.hasOwnProperty('address')) {
+      // setLocation(location?.formattedAddress);
+      setSelectedLocation(locationObj?.formattedAddress);
     } else {
-      setLocation(location?.city);
+      // setLocation(location?.city);
+      setSelectedLocation(locationObj?.city);
     }
   };
 
   const userJoinGroup = (groupId) => {
-    console.log('group id', groupId);
     setloading(true);
     const params = {};
     joinTeam(params, groupId, authContext)
@@ -748,9 +772,14 @@ export default function RecruitingPlayerScreen({navigation, route}) {
               <View style={styles.viewsContainer}>
                 <Text
                   onPress={() => {
-                    {
-                      setLocationFilterOpetion(lastSelection);
-                      setSettingPopup(false);
+                    setLocationFilterOpetion(lastSelection);
+                    setSettingPopup(false);
+                    if (lastSelection !== locationType.SEARCH_CITY) {
+                      setIsSearchPlaceholder(true);
+                      setSelectedLocation('');
+                    } else {
+                      setIsSearchPlaceholder(false);
+                      setSelectedLocation(location);
                     }
                   }}
                   style={styles.cancelText}>
@@ -763,6 +792,7 @@ export default function RecruitingPlayerScreen({navigation, route}) {
                     const tempFilter = {...filters};
                     tempFilter.sport = selectedSport.sport;
                     tempFilter.sport_type = selectedSport.sport_type;
+                    tempFilter.sport_name = selectedSport.sport_name;
                     if (locationFilterOpetion === 0) {
                       setLocation(strings.worldTitleText);
                       tempFilter.location = location;
@@ -841,6 +871,7 @@ export default function RecruitingPlayerScreen({navigation, route}) {
                           setLocationFilterOpetion(
                             locationType.CURRENT_LOCATION,
                           );
+                          setIsSearchPlaceholder(true);
                         }}>
                         <Image
                           source={
@@ -864,6 +895,7 @@ export default function RecruitingPlayerScreen({navigation, route}) {
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(locationType.HOME_CITY);
+                          setIsSearchPlaceholder(true);
                         }}>
                         <Image
                           source={
@@ -886,6 +918,7 @@ export default function RecruitingPlayerScreen({navigation, route}) {
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(locationType.WORLD);
+                          setIsSearchPlaceholder(true);
                         }}>
                         <Image
                           source={
@@ -900,7 +933,6 @@ export default function RecruitingPlayerScreen({navigation, route}) {
                     <TouchableWithoutFeedback
                       onPress={() => {
                         setLocationFilterOpetion(locationType.SEARCH_CITY);
-
                         setVisibleLocationModal(true);
                       }}>
                       <View
@@ -910,9 +942,9 @@ export default function RecruitingPlayerScreen({navigation, route}) {
                         }}>
                         <View style={styles.searchCityContainer}>
                           <Text style={styles.searchCityText}>
-                            {route?.params?.locationText ||
-                              location ||
-                              strings.searchCityText}
+                            {isSearchPlaceholder === true
+                              ? strings.searchCityText
+                              : selectedLocation}
                           </Text>
                         </View>
                         <View
@@ -964,7 +996,7 @@ export default function RecruitingPlayerScreen({navigation, route}) {
                             }}>
                             <View>
                               <Text style={styles.searchCityText}>
-                                {selectedSport?.sport_name ?? strings.allType}
+                                {selectedSport?.sport_name ?? strings.allSport}
                               </Text>
                             </View>
                             <View
@@ -1553,30 +1585,19 @@ const styles = StyleSheet.create({
     margin: widthPercentageToDP('4%'),
     textAlignVertical: 'center',
   },
-  listItem: {
-    // flexDirection: 'row',
-    // marginLeft: widthPercentageToDP('10%'),
-    // width: widthPercentageToDP('80%'),
-  },
 
   languageList: {
     color: colors.lightBlackColor,
     fontFamily: fonts.RRegular,
     fontSize: widthPercentageToDP('4%'),
   },
-  checkboxImg: {
-    width: 22,
-    height: 22,
-    resizeMode: 'contain',
-    alignSelf: 'center',
-  },
-  closeButton: {
-    alignSelf: 'center',
-    width: 15,
-    height: 15,
-    marginLeft: 5,
-    resizeMode: 'contain',
-  },
+  // checkboxImg: {
+  //   width: 22,
+  //   height: 22,
+  //   resizeMode: 'contain',
+  //   alignSelf: 'center',
+  // },
+
   handleStyle: {
     marginVertical: 15,
     alignSelf: 'center',
