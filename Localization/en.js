@@ -30,7 +30,7 @@ export default {
   until: 'en_Until',
   weekly: 'en_Weekly',
   addTime: 'en_Add time',
-  setAvailable: 'en_Set available',
+  setAvailable: 'en_Available',
   block: 'en_Block',
   thisEvent: 'en_This event',
   assistRefereeTitle: 'en_Assistant Referee',
@@ -1403,7 +1403,7 @@ export default {
 
   areYouSureQuitEditChallengeAvailibilityText:
     'en_Are you sure you want to quit to edit challenge availibility?',
-  editChallengeAvailibility: 'en_Edit Challenge Availability',
+  editChallengeAvailibility: 'en_Edit Availability',
 
   choosedateText: 'en_Choose a date',
   chooseDateTimeText: 'en_Choose a date & time',
@@ -1419,7 +1419,7 @@ export default {
   reactivate: 'en_Reactivate',
   events: 'en_Events',
   availability: 'en_Availability',
-  availableTimeForChallenge: 'en_Available time For challenge',
+  availableTimeForChallenge: 'en_Available time for challenge',
   defaultColor: 'en_Default Color',
   groupEventDisplay: 'en_Group Events Display',
   viewPrivacyText: 'en_View Privacy',
@@ -1432,7 +1432,7 @@ export default {
     'en_No scorekeepers invited or booked by you for this game',
 
   createEvent: 'en_Create Event',
-  editChallengeAvailibilityText: 'en_Edit Challenge Availibility',
+  editChallengeAvailibilityText: 'en_Edit Availibility',
 
   lookingForClubText: 'en_Looking For Club',
   lookingForTeamText: 'en_Looking For Team',
@@ -2588,4 +2588,24 @@ export default {
   myFollowing: 'en_My Following',
   timeZoneDescription:
     'en_Date and time displayed in the app will follow the date and time settings of the device.',
+
+
+  eventFilterOrganiserTitle : 'en_Organiser',
+  eventFilterSportTitle : 'en_Sport',
+  eventFilterNoneTitle: 'en_None',
+  eventFilterRsvpText: 'en_RSVP',
+  eventFilterRsvpAll: 'en_All',
+  eventFilterRsvpGoing: 'en_Going',
+  eventFilterRsvpMaybe: 'en_Maybe',
+  eventFilterRsvpNotGoing: 'en_Not Going',
+  eventFilterTimeFuture: 'en_Future',
+  eventFilterTimePast: 'en_Past',
+  eventFilterTimeListAny : 'en_Any Time',
+  eventFilterTimeList1Week: 'en_1 Week',
+  eventFilterTimeList1Month: 'en_1 Month',
+  eventFilterTimeList3Month: 'en_3 Months',
+  eventFilterResetText: 'en_Reset',
+
+  todayTitleText: 'en_Today',
+  tomorrowTitleText: 'en_Tomorrow'
 };

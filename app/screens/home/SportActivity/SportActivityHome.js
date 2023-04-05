@@ -61,6 +61,27 @@ const SportActivityHome = ({navigation, route}) => {
       getUserDetails(userId, authContext)
         .then((res1) => {
           const userDetails = res1.payload;
+          // if (!userDetails.games) {
+          //   userDetails.games = [];
+          // }
+
+          // if (!userDetails.referee_data) {
+          //   userDetails.referee_data = [];
+          // }
+
+          // let count = 0;
+          // count =
+          //   userDetails.games &&
+          //   userDetails.games.length + userDetails.referee_data.length;
+
+          // if (count < 5) {
+          //   const userRoles = [
+          //     ...userDetails.games,
+          //     ...userDetails.referee_data,
+          //   ];
+          //   userDetails.roles = userRoles;
+          // }
+
 
           const groupQuery = {
             query: {
