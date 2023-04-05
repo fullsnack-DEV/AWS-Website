@@ -218,6 +218,7 @@ import TrashScreen from '../screens/notificationsScreen/TrashScreen';
 import LanguageSettingScreen from '../screens/account/userSettingPrivacy/LanguageSettingScreen';
 import RequestMultipleBasicInfoScreen from '../screens/account/groupConnections/RequestMultipleBasicInfoScreen';
 import IncomingReservationSettings from '../screens/account/registerReferee/IncomingReservationSettings';
+import TimeZoneScreen from '../screens/account/userSettingPrivacy/TimeZoneScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -1168,7 +1169,11 @@ const MembersNavigator = () => (
         headerTintColor: colors.blackColor,
       }}
     />
-
+    <Stack.Screen
+      name="TimeZoneScreen"
+      component={TimeZoneScreen}
+      options={{headerShown: false}}
+    />
     <Stack.Screen
       name="ChangePasswordScreen"
       component={ChangePasswordScreen}
@@ -1736,10 +1741,7 @@ const MembersNavigator = () => (
     <Stack.Screen
       name="ManageChallengeScreen"
       component={ManageChallengeScreen}
-      options={{
-        title: 'Manage Challenge',
-        headerTintColor: colors.blackColor,
-      }}
+      options={{headerShown: false}}
     />
 
     <Stack.Screen
@@ -1769,18 +1771,12 @@ const MembersNavigator = () => (
     <Stack.Screen
       name="SportActivitiesScreen"
       component={SportActivitiesScreen}
-      options={{
-        title: 'Sports Activities',
-        headerTintColor: colors.blackColor,
-      }}
+      options={{headerShown: false}}
     />
     <Stack.Screen
       name="SportActivityTagScreen"
       component={SportActivityTagScreen}
-      options={{
-        title: 'Order',
-        headerTintColor: colors.blackColor,
-      }}
+      options={{headerShown: false}}
     />
     <Stack.Screen
       name="ChangeSportsOrderScreen"
@@ -1801,10 +1797,7 @@ const MembersNavigator = () => (
     <Stack.Screen
       name="SportHideUnhideScreen"
       component={SportHideUnhideScreen}
-      options={{
-        title: 'Hide & Unhide',
-        headerTintColor: colors.blackColor,
-      }}
+      options={{headerShown: false}}
     />
     <Stack.Screen
       name="RefereeReservationSetting"

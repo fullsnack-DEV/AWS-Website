@@ -880,9 +880,18 @@ export default function RefereesListScreen({navigation, route}) {
                           justifyContent: 'space-between',
                         }}>
                         <View style={styles.searchCityContainer}>
-                          <Text style={styles.searchCityText}>
+                          <Text
+                            style={[
+                              styles.searchCityText,
+                              {
+                                color:
+                                  isSearchPlaceholder === true
+                                    ? colors.placeHolderColor
+                                    : colors.lightBlackColor,
+                              },
+                            ]}>
                             {isSearchPlaceholder === true
-                              ? strings.searchCityText
+                              ? strings.searchTitle
                               : selectedLocation}
                           </Text>
                         </View>
@@ -1433,7 +1442,7 @@ const styles = StyleSheet.create({
   searchCityText: {
     fontFamily: fonts.RRegular,
     fontSize: 16,
-    color: colors.lightBlackColor,
+    color: colors.placeHolderColor,
   },
   searchTxt: {
     marginLeft: 15,

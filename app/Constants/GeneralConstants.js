@@ -37,5 +37,28 @@ export const ReviewRole = {
   Other: 'OTHERS',
 };
 
+export const SportActivityOrder = {
+  1: strings.latestDoneActivity,
+  2: strings.displayInFixOrder,
+};
+
+export const ModalTypes = {
+  default: 'default',
+  style1: 'style1',
+  style2: 'style2',
+  style3: 'style3',
+  style4: 'style4',
+  style5: 'style5',
+  style6: 'style6',
+  style7: 'style7',
+  style8: 'style8',
+};
+
+export const doublesInviteOptions = {
+  0: strings.none,
+  1: strings.everyoneTitleText,
+  2: strings.myFollowing,
+};
+
 export default EntityStatus;
 export {privacySettingEnum, privacyKey};

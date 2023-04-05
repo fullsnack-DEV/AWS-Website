@@ -479,6 +479,7 @@ const images = {
   refreshIcon: require('../assets/images/refreshIcon.png'),
   noScoreboardImage: require('../assets/images/noScoreboardImage.png'),
   lookingForImg: require('../assets/images/lookingForImg.png'),
+  toggleList:  require('../assets/images/toggle_list.png'),
 };
 
 export default images;

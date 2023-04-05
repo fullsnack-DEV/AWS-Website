@@ -423,6 +423,8 @@ export default function LookingTeamScreen({navigation, route}) {
   );
 
   const handleSetLocationOptions = (locationObj) => {
+    setIsSearchPlaceholder(false);
+
     // eslint-disable-next-line no-prototype-builtins
     if (locationObj.hasOwnProperty('address')) {
       // setLocation(location?.formattedAddress);
@@ -676,9 +678,23 @@ export default function LookingTeamScreen({navigation, route}) {
                           justifyContent: 'space-between',
                         }}>
                         <View style={styles.searchCityContainer}>
-                          <Text style={styles.searchCityText}>
+                          {/* <Text style={styles.searchCityText}>
                             {isSearchPlaceholder === true
                               ? strings.searchCityText
+                              : selectedLocation}
+                          </Text> */}
+                          <Text
+                            style={[
+                              styles.searchCityText,
+                              {
+                                color:
+                                  isSearchPlaceholder === true
+                                    ? colors.placeHolderColor
+                                    : colors.lightBlackColor,
+                              },
+                            ]}>
+                            {isSearchPlaceholder === true
+                              ? strings.searchTitle
                               : selectedLocation}
                           </Text>
                         </View>

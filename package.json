@@ -88,6 +88,7 @@
     "react-native-device-info": "^8.7.1",
     "react-native-dotenv": "^3.3.1",
     "react-native-drag-flatlist": "^1.0.2",
+    "react-native-draggable-flatlist": "^4.0.1",
     "react-native-elements": "^3.4.2",
     "react-native-expandable-section-flatlist": "^1.2.2",
     "react-native-fast-image": "^8.5.11",

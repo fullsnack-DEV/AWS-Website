@@ -213,6 +213,7 @@ import SportActivityHome from '../screens/home/SportActivity/SportActivityHome';
 import EditWrapperScreen from '../screens/home/SportActivity/EditWrapperScreen';
 import ReviewDetailsScreen from '../screens/home/SportActivity/ReviewDetailsScreen';
 import IncomingReservationSettings from '../screens/account/registerReferee/IncomingReservationSettings';
+import TimeZoneScreen from '../screens/account/userSettingPrivacy/TimeZoneScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -2246,6 +2247,11 @@ const HomeNavigator = () => (
       }}
     />
     <Stack.Screen
+      name="TimeZoneScreen"
+      component={TimeZoneScreen}
+      options={{headerShown: false}}
+    />
+    <Stack.Screen
       name="ReviewPlayerList"
       component={ReviewPlayerList}
       options={{
@@ -2513,18 +2519,7 @@ const HomeNavigator = () => (
     <Stack.Screen
       name="ManageChallengeScreen"
       component={ManageChallengeScreen}
-      options={{
-        title: 'Manage Challenge',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
+      options={{headerShown: false}}
     />
 
     <Stack.Screen
@@ -2578,34 +2573,12 @@ const HomeNavigator = () => (
     <Stack.Screen
       name="SportActivitiesScreen"
       component={SportActivitiesScreen}
-      options={{
-        title: 'Sports Activities',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
+      options={{headerShown: false}}
     />
     <Stack.Screen
       name="SportActivityTagScreen"
       component={SportActivityTagScreen}
-      options={{
-        title: 'Order',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
+      options={{headerShown: false}}
     />
     <Stack.Screen
       name="ChangeSportsOrderScreen"
@@ -2642,18 +2615,7 @@ const HomeNavigator = () => (
     <Stack.Screen
       name="SportHideUnhideScreen"
       component={SportHideUnhideScreen}
-      options={{
-        title: 'Hide & Unhide',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
+      options={{headerShown: false}}
     />
     <Stack.Screen
       name="RefereeReservationSetting"

@@ -101,14 +101,11 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
       ],
     );
     setMemberInfo(route.params.memberInfo);
-    console.log(route.params.memberInfo, 'from route');
 
     setCity(route.params.memberInfo?.city);
     setCountry(route.params.memberInfo?.coutry);
     setState(route.params.memberInfo?.state);
     setLocation(route.params.memberInfo?.street_address);
-
-    console.log(route.params.memberInfo.street_address, 'from route');
 
     getAuthEntity();
   }, []);
@@ -200,6 +197,13 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
       }
     }
     if (memberInfo.weight) {
+      if (
+        memberInfo.weight.weight_type === undefined &&
+        memberInfo.weight !== ''
+      ) {
+        memberInfo.weight.weight_type = 'lb';
+      }
+
       if (!memberInfo.weight.weight_type) {
         Alert.alert(strings.appName, strings.weightValidation);
         return false;

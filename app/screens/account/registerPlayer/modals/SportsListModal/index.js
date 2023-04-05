@@ -39,6 +39,12 @@ const SportsListModal = ({
           description: strings.scoreKeeperQuestionDescription,
         };
 
+      case strings.createTeamText:
+        return {
+          question: strings.createTeamModalTitle,
+          description: '',
+        };
+
       default:
         return {
           question: '',

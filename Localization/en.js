@@ -89,7 +89,7 @@ export default {
   yes: 'en_Yes',
   no: 'en_No',
   passwordText: 'en_Password (at least 6 characters)',
-  passwordWarningMessage: 'en_Password should be atleast 6 characters.',
+  passwordWarningMessage: 'en_Password should be atleast 8 characters.',
   confirmPasswordText: 'en_Confirm Password',
   // Password message
   passwordCanNotBlank: 'en_Password cannot be blank.',
@@ -414,7 +414,7 @@ export default {
   oldPassword: 'en_Current Password',
   newPassword: 'en_New Password',
   confirmPassword: 'en_Confirm Password',
-  atLeastText: 'en_(At least 6 characters)',
+  atLeastText: 'en_(at least 8 characters)',
 
   // reservation
 
@@ -819,13 +819,13 @@ export default {
 
   manageChallengeShhetItem: 'en_Manage Challenge',
   challengeSettingTitle:
-    'en_These challenge settings will be applied when a team challenges your team. When your team challenges another team, the team’s challenge setting will be applied for the challenge.',
+    'en_These settings are only applicable to the match reservation when you are the match host. When you are the challenger, the opponent’s incoming challenge settings will be applied.',
 
   challengeSettingNotes:
     'en_In order to activate the “challenge” button and receive a challenge (game Reservation request), please fill in and save all the lists below.',
 
   refereeSettingHeading:
-    'en_These referee reservation settings will be applied when you receive a referee reservation request.',
+    'en_Please complete the incoming referee reservation settings in order to receive a reservation request.',
   refereeSettingNotes:
     'en_In order to activate the "book referee" button and receive a referee reservation request, please fill in and save all the lists above.',
   gameTyleTitle: 'en_Choose a game type.',
@@ -835,7 +835,7 @@ export default {
     'en_The game result has no effect on TC points and TC level of the challenger and you.',
 
   scorekeeperSettingHeading:
-    'en_These scorekeeper reservation settings will be applied when you receive a scorekeeper reservation request.',
+    'en_Please complete the incoming scorekeeper reservation settings in order to receive a reservation request.',
   scorekeeperSettingNotes:
     'en_In order to activate the "book scorekeeper" button and receive a scorekeeper reservation request, please fill in and save all the lists above.',
 
@@ -1080,6 +1080,7 @@ export default {
   withInText: 'en_Within',
   ofText: 'en_of',
   generalText: 'en_General',
+  userTitleText: 'en_users',
   peopleTitleText: 'en_People',
   groupsTitleText: 'en_Groups',
   postsTitleText: 'en_Posts',
@@ -1731,7 +1732,9 @@ export default {
 
   youSetting: 'en_You: {0}',
   nReferees: 'en_{0} Referees',
-  nScorekeeper: 'en_{0} Scorekeepers',
+  nScorekeepers: 'en_{0} Scorekeepers',
+  nRefereeText: 'en_{0} Referee',
+  nScorekeeperText: 'en_{0} Scorekeeper',
   incomplete: 'en_incomplete',
   fillAllFields: 'en_Please fill all fields.',
   venuesN: 'en_Venue {0}',
@@ -2046,7 +2049,7 @@ export default {
     'en_Classfy sports activites by categoires and display the categories in the order below.',
   laterDoneActivity: 'en_Display the later-done sports activity first',
   latestDoneActivity: 'en_Display most recent sports activity first',
-
+  classifyByCategories: 'en_Classify by categories',
   levelsCount: 'en_LV 13',
 
   andMore: 'en_{0} and {1} more`',
@@ -2523,6 +2526,66 @@ export default {
   lookingForClubOption: 'en_Looking for club!',
   lookingForBottomText:
     'en_If you select “Yes, display it.”, your profile may be displayed on the “{0}” section in Local Home. ',
+
+  clubIsCreated: 'en_{0} \n has been created',
+
+  clubIsCreatedSub:
+    'en_ Your account has been switched to the account of the club.',
+  teamCreatedSub:
+    'en_ Your account has been switched to the account of the team.',
+  pleaseFillTeanName: 'en_Please fill in team name.',
+  pleaseFillHomeCity: 'en_Please fill in home city.',
+  pleaseFillPlayerGender: 'en_Please fill in player’s genders.',
+  pleaseSelectLanguage: 'en_Please Select the Langauage',
+  incomingChallengeSettingsTitleTeam:
+    'en_Please review your team’s incoming challenge settings. These settings are only applicable to the match reservation when your team is the match host. When your team is the Challenger, the opponent’s incoming challenge settings Will be applied.',
+  createTeamModalTitle: 'en_What sport does the new team will play?',
+  congratsTeamCreated:
+    'en_Congratulations! Vancouver Whitecaps FC has been created.',
+  congratesSubTitle: 'en_Your account has been switched to {0}.  ',
+  whoDoYouwantToCreateTeamWith:
+    'en_Who do you want to create the new team with?',
+  congratulationsTitle: 'en_Congratulations!',
+  hasBeenCreated: ' en_has been created.',
+  jerseyValidation: 'en_Jersey Number is not valid!',
+  clubModalTitle: 'en_Which sports does the new club will be involved in?',
+  clubModalSubTitle:
+    'en_The multiple sports of teams can be a member of a club. You can edit the sports of the club now or later.',
+  createTeamUnderYourClub: 'en_Create A Team Under Your CLub ',
+
   scorekeptMatches: 'en_Scorekept Matches',
   allSport: 'en_All Sports',
+  challengeScreenBottomText:
+    'en_These settings will be applied only to incoming challenges that you will receive.',
+  reservationScreenBottomText:
+    'en_These settings will be applied only to incoming {0} reservation requests that you will receive.',
+
+  hiddenText: 'en_Hidden',
+  hideUnhideDescription:
+    'en_If you hide a sport activity, other users or groups will not see its activity card on your profile and also will not see the sports activity in your sports activity list. However, they will still be able to access and see the contents of the sports activity page when searched.',
+
+  overlappingAvailability:
+    'en_An available time slot and blocked time slot cannot include an overlapped time period at the same time.',
+  timezoneAvailability:
+    'en_Date and time displayed in the app will follow the date and time settings of the device',
+  eventPostCreate:
+    'en_Display the event on Posts as soon as the event is created.',
+  whoCanInvite: 'en_WHO CAN INVITE',
+  editAvailability: 'en_Edit Availability',
+
+  updateRecurringEvent: 'en_Update recurring event',
+  deleteRecurringEvent: 'en_Delete recurring event',
+  emailText: 'en_E-MAIL',
+  whatIsYourSlogan: 'en_What is your slogan?',
+  teamText: 'en_Team',
+  clubText: 'en_Club',
+  inviteToDoubleTeamTitle: 'en_Who Can Invite You To Create Double team',
+  canTeamInviteYou: 'en_Can Team Invite You',
+  canClubInviteYou: 'en_Can Club Invite You',
+  whoCanInviteYouToDoubleTeam: 'en_Who can invite you to create Double team?',
+  canTeamInviteYouToJoinTeam: 'en_Can a team invite you to join the team?',
+  canClubInviteYouToJoinClub: 'en_Can a club invite you to join the club?',
+  myFollowing: 'en_My Following',
+  timeZoneDescription:
+    'en_Date and time displayed in the app will follow the date and time settings of the device.',
 };

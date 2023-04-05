@@ -1,6 +1,13 @@
 // @flow
 import React from 'react';
-import {View, StyleSheet, Text, Image, TouchableOpacity} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Text,
+  Image,
+  TouchableOpacity,
+  Pressable,
+} from 'react-native';
 import {strings} from '../../../../../Localization/translation';
 import LevelBars from '../../../../components/LevelBars';
 import {ShimmerView} from '../../../../components/shimmer/commonComponents/ShimmerCommonComponents';
@@ -23,6 +30,7 @@ const UserInfo = ({
   entityType = Verbs.entityTypePlayer,
   description = '',
   sportType = '',
+  onPressUser = () => {},
 }) => {
   const getLookingForContainer = () => {
     if (isLookingForClub && entityType === Verbs.entityTypePlayer) {
@@ -60,7 +68,7 @@ const UserInfo = ({
     </View>
   ) : (
     <View style={[styles.parent, containerStyle]}>
-      <View style={styles.row}>
+      <Pressable style={styles.row} onPress={onPressUser}>
         <View style={styles.imageContainer}>
           <Image
             source={
@@ -95,7 +103,7 @@ const UserInfo = ({
             <Image source={images.tab_message} style={styles.image} />
           </TouchableOpacity>
         ) : null}
-      </View>
+      </Pressable>
       {screenType !== Verbs.screenTypeMainScreen ? (
         <Text style={styles.description} numberOfLines={3}>
           {description}{' '}

@@ -24,6 +24,10 @@ import TeamsListNearYou from '../components/TeamsListNearYou';
 
 const CongratulationsModal = ({
   isVisible,
+  title = strings.congratsModalTitle,
+  subtitle = '',
+  fromCreateTeam = false,
+  fromCreateClub = false,
   closeModal = () => {},
   sportName,
   sportType,
@@ -35,6 +39,7 @@ const CongratulationsModal = ({
   searchTeam = () => {},
   createTeam = () => {},
   goToSportActivityHome = () => {},
+  onInviteClick = () => {},
   settingsObj = {},
 }) => {
   const [playerList, setPlayersList] = useState([]);
@@ -215,7 +220,13 @@ const CongratulationsModal = ({
     } else {
       getTeamsData();
     }
-  }, [getPlayerListNearYou, sportType, getTeamsData, isFocused]);
+  }, [
+    getPlayerListNearYou,
+    sportType,
+    getTeamsData,
+    isFocused,
+    fromCreateClub,
+  ]);
 
   const renderList = (type) => {
     if (type === Verbs.sportTypeSingle || type === Verbs.sportTypeDouble) {
@@ -224,6 +235,9 @@ const CongratulationsModal = ({
           list={playerList}
           sportType={sportType}
           loading={loading}
+          fromCreateTeam={fromCreateTeam}
+          fromCreateClub={fromCreateClub}
+          onInviteClick={onInviteClick}
           onChanllenge={(user) => {
             setShowChallengeModal(true);
             setSelectedUser(user);
@@ -248,6 +262,8 @@ const CongratulationsModal = ({
       <TeamsListNearYou
         list={teamsList}
         loading={loading}
+        fromCreateTeam={fromCreateTeam}
+        fromCreateClub={fromCreateClub}
         searchTeam={() => {
           closeModal();
           searchTeam({
@@ -267,6 +283,10 @@ const CongratulationsModal = ({
         onUserClick={(item) => {
           closeModal();
           onUserClick(item);
+        }}
+        onChanllenge={(user) => {
+          setShowChallengeModal(true);
+          setSelectedUser(user);
         }}
       />
     );
@@ -309,24 +329,83 @@ const CongratulationsModal = ({
               <Image source={images.crossImage} style={styles.image} />
             </Pressable>
           </View>
-          <View style={{marginHorizontal: 35, marginTop: 70, marginBottom: 25}}>
-            <Text style={styles.congratsText}>
-              {strings.congratsModalTitle}
-              <Text style={styles.congratsSportText}>{sportName}.</Text>
-            </Text>
-          </View>
-          <Pressable
-            style={styles.buttonContainer}
-            onPress={() => {
-              goToSportActivityHome({sport, sportType});
-            }}>
-            <Text style={styles.buttonText}>
-              {strings.goToSportActivityHomeText}
-            </Text>
-          </Pressable>
+          <View
+            style={
+              fromCreateTeam || fromCreateClub
+                ? styles.titleContainerForTeam
+                : styles.titleTextContainer
+            }>
+            {fromCreateTeam || fromCreateClub ? (
+              <Text
+                style={[
+                  styles.congratsText,
+                  {
+                    alignSelf:
+                      fromCreateTeam || fromCreateClub
+                        ? 'flex-start'
+                        : 'center',
+                  },
+                ]}>
+                <Text>
+                  {strings.congratulationsTitle}
+                  <Text style={{color: colors.orangeColor}}>
+                    {''} {title}
+                  </Text>
+                </Text>
 
-          <Text style={styles.description}>{getModalInfo(sportType)}</Text>
+                {strings.hasBeenCreated}
+              </Text>
+            ) : (
+              <Text style={styles.congratsText}>
+                {title}
+                <Text style={styles.congratsSportText}>{sportName}.</Text>
+              </Text>
+            )}
+
+            {fromCreateTeam || fromCreateClub ? (
+              <Text
+                style={[
+                  styles.description,
+                  {marginHorizontal: 0, marginRight: 35},
+                ]}>
+                {subtitle}
+              </Text>
+            ) : null}
+          </View>
+
+          {fromCreateTeam || fromCreateClub ? (
+            <>
+              <Pressable
+                style={styles.buttonContainer}
+                onPress={() => {
+                  goToSportActivityHome();
+                }}>
+                <Text style={[styles.buttonText, {textTransform: 'uppercase'}]}>
+                  {fromCreateTeam
+                    ? strings.inviteMemberText
+                    : strings.createTeamUnderYourClub}
+                </Text>
+              </Pressable>
+            </>
+          ) : (
+            <Pressable
+              style={styles.buttonContainer}
+              onPress={() => {
+                goToSportActivityHome({sport, sportType});
+              }}>
+              <Text style={styles.buttonText}>
+                {strings.goToSportActivityHomeText}
+              </Text>
+            </Pressable>
+          )}
+
+          {!fromCreateTeam || !fromCreateClub ? (
+            <></>
+          ) : (
+            <Text style={styles.description}>{getModalInfo(sportType)}</Text>
+          )}
           <View style={styles.dividor} />
+
           <View style={{paddingHorizontal: 25, flex: 1, paddingTop: 7}}>
             {renderList(sportType)}
           </View>
@@ -385,13 +464,23 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 15,
   },
+  titleTextContainer: {
+    marginHorizontal: 35,
+    marginTop: 70,
+    marginBottom: 25,
+  },
+  titleContainerForTeam: {
+    marginLeft: 35,
+    marginRight: 24,
+    marginTop: 70,
+    marginBottom: 25,
+  },
   image: {
     width: '100%',
     height: '100%',
     resizeMode: 'contain',
   },
   congratsText: {
-    alignSelf: 'center',
     color: colors.lightBlackColor,
     fontFamily: fonts.RBold,
     fontSize: 25,
@@ -428,6 +517,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     marginHorizontal: 25,
   },
+
   dividor: {
     height: 1,
     marginVertical: 25,

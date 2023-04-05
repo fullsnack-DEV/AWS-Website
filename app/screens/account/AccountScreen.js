@@ -74,6 +74,9 @@ import {
   getExcludedSportsList,
   getTitleForRegister,
 } from '../../utils/sportsActivityUtils';
+import MemberListModal from '../../components/MemberListModal/MemberListModal';
+import {getUserIndex} from '../../api/elasticSearch';
+import SportListMultiModal from '../../components/SportListMultiModal/SportListMultiModal';
 
 // FIXME: fix all warning in useCallBack()
 export default function AccountScreen({navigation, route}) {
@@ -88,7 +91,10 @@ export default function AccountScreen({navigation, route}) {
   const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
   const [pointEvent, setPointEvent] = useState('auto');
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
-
+  const [visibleSportsModalForTeam, setVisibleSportsModalForTeam] =
+    useState(false);
+  const [visibleSportsModalForClub, setVisibleSportsModalForClub] =
+    useState(false);
   const [teamList, setTeamList] = useState([]);
   const [clubList, setClubList] = useState([]);
   const [accountMenu, setAccountMenu] = useState([]);
@@ -102,8 +108,11 @@ export default function AccountScreen({navigation, route}) {
   const [selectedMenuOptionType, setSelectedMenuOptionType] = useState(
     Verbs.entityTypePlayer,
   );
-
+  const [memberListModal, setMemberListModal] = useState(false);
   const navigations = useNavigation();
+  const [players, setPlayers] = useState([]);
+  const [pageFrom, setPageFrom] = useState(0);
+  const [pageSize] = useState(10);
 
   useEffect(() => {
     if (route.params?.switchToUser === 'fromMember') {
@@ -142,37 +151,19 @@ export default function AccountScreen({navigation, route}) {
       Utility.getStorage('appSetting').then((setting) => {
         setImageBaseUrl(setting.base_url_sporticon);
       });
+
+      // getUsers();
     }
   }, [isFocused]);
+
+  useEffect(() => {
+    getUsers();
+  }, []);
 
   useEffect(() => {
     const sportArr = getExcludedSportsList(authContext, selectedMenuOptionType);
     setSportsData([...sportArr]);
   }, [authContext, selectedMenuOptionType]);
-
-  // useEffect(() => {
-  //   const {switchToUser} = route?.params || '';
-
-  //   if (switchToUser === 'fromMember') {
-  //     const TimeOut = setTimeout(() => {
-  //       Alert.alert(
-  //         strings.adminremoved,
-  //         '',
-  //         [
-  //           {
-  //             text: 'OK',
-  //             onPress: () => {
-  //               navigation.setParams({switchToUser: 'lkl'});
-  //             },
-  //           },
-  //         ],
-  //         {cancelable: false},
-  //       );
-  //     }, 2000);
-
-  //     clearTimeout(TimeOut);
-  //   }
-  // }, [route?.params, isFocused]);
 
   const [navigationOptions, setNavigationOptions] = useState({});
 
@@ -487,37 +478,66 @@ export default function AccountScreen({navigation, route}) {
   const handleSectionMemberClick = useCallback(
     (rowObj) => {
       const option = rowObj.option;
-
       if (authContext.entity.role !== Verbs.entityTypeUser) {
         setIsRulesModalVisible(
           option === strings.createTeamText ||
             option === strings.createClubText,
         );
-
-        if (option === strings.createTeamText) {
+      }
+      switch (option) {
+        case strings.createTeamText:
           setCreateEntity(Verbs.entityTypeTeam);
-        } else if (option === strings.createClubText) {
+          setVisibleSportsModalForTeam(true);
+          setNavigationOptions({
+            screenName: rowObj.navigateTo.screenName,
+            data: rowObj.navigateTo.data,
+          });
+
+          setSelectedMenuOptionType(Verbs.entityTypeTeam);
+
+          break;
+
+        case strings.createClubText:
           setCreateEntity(Verbs.entityTypeClub);
-        } else {
-          navigation.navigate(
-            rowObj.navigateTo.screenName,
-            rowObj.navigateTo.data,
-          );
-        }
-      } else {
-        if (option == strings.addSportsTitle) {
+          setVisibleSportsModalForClub(true);
+
+          setNavigationOptions({
+            screenName: rowObj.navigateTo.screenName,
+            data: rowObj.navigateTo.data,
+          });
+          setSelectedMenuOptionType(rowObj.menuOptionType);
+          break;
+
+        case strings.addSportsTitle:
           setNavigationOptions({
             screenName: rowObj.navigateTo.screenName,
             data: rowObj.navigateTo.data,
           });
           setSelectedMenuOptionType(rowObj.menuOptionType);
           setVisibleSportsModal(true);
-        } else {
-          navigation.navigate(
-            rowObj.navigateTo.screenName,
-            rowObj.navigateTo.data,
-          );
-        }
+
+          break;
+
+        default:
+          if (
+            authContext.entity.role === Verbs.entityTypeUser &&
+            rowObj.sport
+          ) {
+            navigation.navigate('SportActivityHome', {
+              sport: rowObj.sport.sport,
+              sportType: rowObj.sport.sport_type ?? '',
+              uid: authContext.entity.obj.user_id,
+              selectedTab: strings.infoTitle,
+              entityType: rowObj.sport.type,
+              backScreen: 'AccountScreen',
+            });
+          } else {
+            navigation.navigate(
+              rowObj.navigateTo.screenName,
+              rowObj.navigateTo.data,
+            );
+          }
+          break;
       }
     },
     [authContext.entity, navigation],
@@ -544,13 +564,21 @@ export default function AccountScreen({navigation, route}) {
         <AccountMenuRow
           item={rowItem}
           isAccountDeactivated={isAccountDeactivated}
-          onPress={() => handleSectionMemberClick(rowItem)}
+          onPressSetting={() => {
+            navigation.navigate(
+              rowItem.navigateTo.screenName,
+              rowItem.navigateTo.data,
+            );
+          }}
           onPressCancelRequest={() =>
             onCancelTeamRequest('cancel', rowItem?.option?.request_id)
           }
+          onPressSport={() => {
+            handleSectionMemberClick(rowItem);
+          }}
         />
       ) : null,
-    [handleSectionMemberClick, isAccountDeactivated],
+    [handleSectionMemberClick, isAccountDeactivated, authContext],
   );
 
   let placeHolder = images.teamSqure;
@@ -575,9 +603,9 @@ export default function AccountScreen({navigation, route}) {
   const unPauseGroup = () => {
     setLoading(true);
     groupUnpaused(authContext)
-      .then((response) => {
+      .then(async (response) => {
         setIsAccountDeactivated(false);
-
+        await Utility.setAuthContextData(response.payload, authContext);
         const accountType = getQBAccountType(response?.payload?.entity_type);
         QBupdateUser(
           response?.payload?.user_id,
@@ -647,6 +675,47 @@ export default function AccountScreen({navigation, route}) {
 
     setSports(list);
   }, [authContext]);
+
+  const getUsers = useCallback(
+    (filterPlayer) => {
+      const membersQuery = {
+        size: pageSize,
+        from: pageFrom,
+        query: {
+          bool: {
+            must: [],
+          },
+        },
+      };
+      if (filterPlayer?.searchText?.length > 0) {
+        membersQuery.query.bool.must.push({
+          query_string: {
+            query: `*${filterPlayer?.searchText}*`,
+            fields: ['full_name'],
+          },
+        });
+      }
+      getUserIndex(membersQuery)
+        .then((response) => {
+          setLoading(false);
+          if (response.length > 0) {
+            const result = response.map((obj) => {
+              // eslint-disable-next-line no-param-reassign
+              obj.isChecked = false;
+              return obj;
+            });
+            setPlayers([...players, ...result]);
+            setPageFrom(pageFrom + pageSize);
+            stopFetchMore = true;
+          }
+        })
+        .catch((error) => {
+          setLoading(false);
+          Alert.alert(error);
+        });
+    },
+    [pageFrom, pageSize, players],
+  );
 
   return (
     <SafeAreaView style={styles.mainContainer} testID="account-screen">
@@ -1249,6 +1318,51 @@ export default function AccountScreen({navigation, route}) {
           setVisibleSportsModal(false);
           navigation.navigate(navigationOptions.screenName, sport);
         }}
+      />
+
+      <SportsListModal
+        isVisible={visibleSportsModalForTeam}
+        closeList={() => setVisibleSportsModalForTeam(false)}
+        title={strings.createTeamText}
+        sportsList={sportsData}
+        onNext={(sport) => {
+          if (
+            sport.sport_type === Verbs.doubleSport &&
+            authContext?.entity?.role ===
+              (Verbs.entityTypeUser || Verbs.entityTypePlayer)
+          ) {
+            setVisibleSportsModalForTeam(false);
+
+            setTimeout(() => {
+              setMemberListModal(true);
+            }, 10);
+          } else {
+            setVisibleSportsModalForTeam(false);
+            navigation.navigate(navigationOptions.screenName, sport);
+          }
+        }}
+      />
+
+      <SportListMultiModal
+        isVisible={visibleSportsModalForClub}
+        closeList={() => setVisibleSportsModalForClub(false)}
+        title={strings.createClubText}
+        sportsList={sportsData}
+        onNext={(sports) => {
+          setVisibleSportsModalForClub(false);
+          navigation.navigate(navigationOptions.screenName, sports);
+        }}
+      />
+
+      <MemberListModal
+        isVisible={memberListModal}
+        title={strings.createTeamText}
+        closeList={() => setMemberListModal(false)}
+        onNext={() => {
+          console.log('pressed');
+        }}
+        onItemPress={() => console.log('in development')}
+        sportsList={players}
       />
     </SafeAreaView>
   );

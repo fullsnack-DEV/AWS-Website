@@ -21,6 +21,8 @@ const TeamsListNearYou = ({
   searchTeam = () => {},
   createTeam = () => {},
   onUserClick = () => {},
+  onChanllenge = () => {},
+  fromCreateTeam = false,
   loading = false,
 }) => {
   const renderTeam = ({item}) =>
@@ -48,7 +50,11 @@ const TeamsListNearYou = ({
             </View>
           </TouchableOpacity>
           <TouchableOpacity
-            style={{flex: 1, alignItems: 'flex-start', marginHorizontal: 10}}
+            style={{
+              flex: 1,
+              alignItems: 'flex-start',
+              marginHorizontal: 10,
+            }}
             onPress={() => {
               onUserClick(item);
             }}>
@@ -60,9 +66,20 @@ const TeamsListNearYou = ({
               {displayLocation(item)}
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.buttonContainer} onPress={joinTeam}>
-            <Text style={styles.buttonText}>{strings.join}</Text>
-          </TouchableOpacity>
+
+          {fromCreateTeam ? (
+            <TouchableOpacity
+              style={styles.buttonContainerChallenge}
+              onPress={onChanllenge}>
+              <Text style={styles.buttonTextChallenge}>
+                {strings.challenge}
+              </Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity style={styles.buttonContainer} onPress={joinTeam}>
+              <Text style={styles.buttonText}>{strings.join}</Text>
+            </TouchableOpacity>
+          )}
         </View>
         <View style={styles.dividor} />
       </>
@@ -182,10 +199,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  buttonContainerChallenge: {
+    paddingVertical: 5,
+    // paddingHorizontal: 25,
+    width: 80,
+    backgroundColor: colors.orangeColor,
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   buttonText: {
     fontSize: 12,
     lineHeight: 18,
     color: colors.themeColor,
+    fontFamily: fonts.RBold,
+  },
+  buttonTextChallenge: {
+    fontSize: 12,
+    lineHeight: 18,
+    color: colors.whiteColor,
     fontFamily: fonts.RBold,
   },
   dividor: {

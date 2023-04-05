@@ -1,220 +1,195 @@
-/* eslint-disable no-nested-ternary */
-/* eslint-disable consistent-return */
-import React, {
-  useContext,
-  useLayoutEffect,
-  useState,
-  useEffect,
-  useCallback,
-} from 'react';
+import React, {useContext, useLayoutEffect, useState, useEffect} from 'react';
 import {
   StyleSheet,
   View,
   Text,
   Image,
   FlatList,
-  TouchableWithoutFeedback,
-  ScrollView,
   SafeAreaView,
+  Pressable,
 } from 'react-native';
-
-import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import {useIsFocused} from '@react-navigation/native';
-import {format} from 'react-string-format';
 import AuthContext from '../../../auth/context';
 import images from '../../../Constants/ImagePath';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
 import {strings} from '../../../../Localization/translation';
 import Verbs from '../../../Constants/Verbs';
+import ScreenHeader from '../../../components/ScreenHeader';
+import {doublesInviteOptions} from '../../../Constants/GeneralConstants';
 
 export default function GroupInviteSettingPrivacyScreen({navigation, route}) {
-  const isFocused = useIsFocused();
-
-  const authContext = useContext(AuthContext);
-
   const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
   const [pointEvent, setPointEvent] = useState('auto');
-  const [groupInviteYouSetting] = useState([
-    {
-      key: format(
-        strings.canInviteYouText,
-        route?.params?.type.charAt(0).toUpperCase() +
-          route?.params?.type.slice(1),
-      ),
-      id: 0,
-    },
-  ]);
-  const [groupInviteYou, setGroupInviteYou] = useState(
-    route?.params?.groupInviteYou
-      ? route?.params?.groupInviteYou
-      : route?.params?.type === Verbs.entityTypeTeam
-      ? authContext.entity?.obj?.who_can_invite_for_team
-      : authContext.entity?.obj?.who_can_invite_for_club,
-  );
+  const [settingOptions, setSettingOptions] = useState([]);
+
+  const {type} = route.params;
+  const isFocused = useIsFocused();
+  const authContext = useContext(AuthContext);
+
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: () => (
-        <Text style={styles.headerTitle}>
-          {route?.params?.type.charAt(0).toUpperCase() +
-            route?.params?.type.slice(1)}
-        </Text>
-      ),
+      headerShown: false,
     });
   }, [navigation]);
 
   useEffect(() => {
-    if (isFocused) {
-      setGroupInviteYou(
-        route?.params?.groupInviteYou
-          ? route?.params?.groupInviteYou
-          : route?.params?.type === 'team'
-          ? authContext.entity?.obj?.who_can_invite_for_team
-          : authContext.entity?.obj?.who_can_invite_for_club,
-      );
+    if (
+      isFocused &&
+      (authContext.entity.obj?.is_pause === true ||
+        authContext.entity.obj?.is_deactivate === true)
+    ) {
+      setIsAccountDeactivated(true);
+      setPointEvent('none');
     }
-  }, [
-    authContext.entity?.obj?.who_can_invite_for_club,
-    authContext.entity?.obj?.who_can_invite_for_team,
-    isFocused,
-    route?.params?.groupInviteYou,
-    route?.params?.type,
-  ]);
+  }, [authContext.entity?.obj, isFocused]);
 
-  const handleOpetions = async (opetions) => {
-    if (opetions === groupInviteYouSetting[0].key) {
-      navigation.navigate('GroupInviteYouScreen', {
-        groupInviteYou,
-        type: route?.params?.type,
-        comeFrom: 'GroupInviteSettingPrivacyScreen',
-      });
+  useEffect(() => {
+    let options = [];
+    if (type === Verbs.entityTypeTeam) {
+      options = [strings.inviteToDoubleTeamTitle, strings.canTeamInviteYou];
+    } else if (type === Verbs.entityTypeClub) {
+      options = [strings.canClubInviteYou];
+    } else if (type === Verbs.eventVerb) {
+      options = [strings.canPeopleInviteYouText];
+    }
+    setSettingOptions(options);
+  }, [type]);
+
+  const getSettingValue = (option) => {
+    const entity = authContext.entity.obj;
+    switch (option) {
+      case strings.inviteToDoubleTeamTitle:
+        return entity.who_can_invite_for_doubles_team ?? 1;
+
+      case strings.canTeamInviteYou:
+        return entity.who_can_invite_for_team ?? 1;
+
+      case strings.canClubInviteYou:
+        return entity.who_can_invite_for_club ?? 1;
+
+      case strings.canPeopleInviteYouText:
+        return entity.invite_me_event ?? 1;
+
+      default:
+        return 0;
     }
   };
 
-  useEffect(() => {
-    setIsAccountDeactivated(false);
-    setPointEvent('auto');
-    if (isFocused) {
-      console.log('its called....', authContext.entity.role);
-      if (authContext?.entity?.obj?.is_pause === true) {
-        setIsAccountDeactivated(true);
-        setPointEvent('none');
-      }
-      if (authContext?.entity?.obj?.is_deactivate === true) {
-        setIsAccountDeactivated(true);
-        setPointEvent('none');
-      }
-    }
-  }, [
-    authContext.entity?.obj.entity_type,
-    authContext.entity?.obj?.is_deactivate,
-    authContext.entity?.obj?.is_pause,
-    authContext.entity.role,
-    isFocused,
-    pointEvent,
-  ]);
-
-  const getSettingValue = useCallback(
-    (item) => {
-      console.log('item.key', item);
-
-      if (item === groupInviteYouSetting[0].key) {
-        if (groupInviteYou === 1) {
-          return strings.yes;
-        }
-        if (groupInviteYou === 0) {
-          return strings.no;
-        }
-      }
-    },
-    [groupInviteYouSetting, groupInviteYou],
-  );
-
   const renderMenu = ({item, index}) => (
-    <TouchableWithoutFeedback
-      style={styles.listContainer}
-      onPress={() => {
-        handleOpetions(item.key);
-      }}>
-      <View
-        style={{
-          flexDirection: 'row',
-          opacity: isAccountDeactivated && index <= 1 ? 0.5 : 1,
-        }}
-        pointerEvents={
-          isAccountDeactivated && index <= 1 ? pointEvent : 'auto'
-        }>
-        <Text style={styles.listItems}>{item.key}</Text>
-        {item.key === groupInviteYouSetting[0].key && (
-          <Text style={styles.currencyTypeStyle}>
-            {getSettingValue(item.key)}
-          </Text>
-        )}
-        <Image source={images.nextArrow} style={styles.nextArrow} />
-      </View>
-    </TouchableWithoutFeedback>
+    <>
+      <Pressable
+        style={[
+          styles.listContainer,
+          {opacity: isAccountDeactivated && index <= 1 ? 0.5 : 1},
+        ]}
+        pointerEvents={isAccountDeactivated && index <= 1 ? pointEvent : 'auto'}
+        disabled={isAccountDeactivated}
+        onPress={() => {
+          navigation.navigate('GroupInviteYouScreen', {
+            groupInviteYou: getSettingValue(item),
+            type: item,
+            comeFrom: 'GroupInviteSettingPrivacyScreen',
+            routeParams: {
+              type,
+            },
+          });
+        }}>
+        <View style={{flex: 1}}>
+          <Text style={styles.label}>{item}</Text>
+        </View>
+        <View style={styles.row}>
+          <View>
+            {item === strings.inviteToDoubleTeamTitle ? (
+              <Text style={styles.currencyTypeStyle}>
+                {doublesInviteOptions[getSettingValue(item)]}
+              </Text>
+            ) : (
+              <Text style={styles.currencyTypeStyle}>
+                {getSettingValue(item) === 1 ? strings.yes : strings.no}
+              </Text>
+            )}
+          </View>
+          <Image source={images.nextArrow} style={styles.nextArrow} />
+        </View>
+      </Pressable>
+      <View style={styles.separatorLine} />
+    </>
   );
+
+  const getTitle = () => {
+    if (type === Verbs.entityTypeTeam) {
+      return strings.teamText;
+    }
+
+    if (type === Verbs.entityTypeClub) {
+      return strings.clubText;
+    }
+
+    if (type === Verbs.eventVerb) {
+      return strings.event;
+    }
+    return '';
+  };
+
   return (
     <SafeAreaView style={{flex: 1}}>
-      <ScrollView style={styles.mainContainer}>
+      <ScreenHeader
+        title={getTitle()}
+        leftIcon={images.backArrow}
+        leftIconPress={() => navigation.goBack()}
+        containerStyle={styles.headerRow}
+      />
+      <View style={{paddingTop: 25}}>
         <FlatList
-          data={groupInviteYouSetting}
-          keyExtractor={(index) => index.toString()}
+          data={settingOptions}
+          keyExtractor={(item) => item}
           renderItem={renderMenu}
-          ItemSeparatorComponent={() => (
-            <View style={styles.separatorLine}></View>
-          )}
+          showsVerticalScrollIndicator={false}
+          bounces={false}
         />
-        <View style={styles.separatorLine}></View>
-      </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
-  listContainer: {
-    flex: 1,
-    flexDirection: 'row',
+  headerRow: {
+    paddingHorizontal: 10,
+    paddingTop: 6,
+    paddingBottom: 14,
   },
-  listItems: {
-    flex: 1,
-    padding: 20,
-    paddingLeft: 15,
+  label: {
     fontSize: 16,
+    lineHeight: 24,
+    color: colors.lightBlackColor,
     fontFamily: fonts.RRegular,
-    color: colors.blackColor,
-    alignSelf: 'center',
   },
-
-  mainContainer: {
-    flex: 1,
-    flexDirection: 'column',
+  listContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    paddingHorizontal: 25,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   nextArrow: {
-    alignSelf: 'center',
-    flex: 0.1,
+    width: 15,
     height: 15,
-    marginRight: 10,
     resizeMode: 'contain',
     tintColor: colors.lightBlackColor,
-    width: 15,
   },
   separatorLine: {
-    alignSelf: 'center',
-    backgroundColor: colors.lightgrayColor,
-    height: 0.5,
-    width: wp('90%'),
+    height: 1,
+    backgroundColor: colors.grayBackgroundColor,
+    margin: 15,
   },
 
-  headerTitle: {
-    fontFamily: fonts.RBold,
-    fontSize: 16,
-    color: colors.lightBlackColor,
-  },
   currencyTypeStyle: {
     marginRight: 10,
     fontSize: 16,
     fontFamily: fonts.RRegular,
     color: colors.greeColor,
-    alignSelf: 'center',
   },
 });

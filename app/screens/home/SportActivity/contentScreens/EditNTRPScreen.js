@@ -15,46 +15,20 @@ import colors from '../../../../Constants/Colors';
 import fonts from '../../../../Constants/Fonts';
 import images from '../../../../Constants/ImagePath';
 
-const EditNTRPScreen = ({
-  sportsList = [],
-  sport = '',
-  sportType = '',
-  setData = () => {},
-}) => {
+const EditNTRPScreen = ({ntrp = '', setData = () => {}}) => {
   const [list, setList] = useState([]);
-  const [selectedSport, setSelectedSport] = useState({});
   const [showModal, setShowModal] = useState(false);
-
   const isFocused = useIsFocused();
 
   useEffect(() => {
-    if (isFocused && sportsList.length > 0) {
-      const obj = sportsList.find(
-        (item) => item.sport === sport && item.sport_type === sportType,
-      );
-      setSelectedSport(obj);
-
+    if (isFocused) {
       const arr = [];
       for (let index = 1; index <= 7; index += 0.5) {
         arr.push(`${parseFloat(index).toFixed(1)}`);
       }
       setList(arr);
     }
-  }, [isFocused, sportsList, sport, sportType]);
-
-  const handleSelect = (value) => {
-    const newList = sportsList.map((ele) => {
-      if (ele.sport === sport && ele.sport_type === sportType) {
-        return {
-          ...ele,
-          ntrp: value,
-        };
-      }
-      return {...ele};
-    });
-    setData(newList);
-    setShowModal(false);
-  };
+  }, [isFocused]);
 
   return (
     <View style={styles.parent}>
@@ -63,7 +37,7 @@ const EditNTRPScreen = ({
         onPress={() => setShowModal(true)}>
         <View />
         <View>
-          <Text style={styles.label}>{selectedSport?.ntrp ?? '1.0'}</Text>
+          <Text style={styles.label}>{ntrp}</Text>
         </View>
         <View style={styles.buttonContainer}>
           <Image source={images.dropDownArrow} style={styles.image} />
@@ -81,10 +55,13 @@ const EditNTRPScreen = ({
                 <>
                   <Pressable
                     style={styles.row}
-                    onPress={() => handleSelect(item)}>
+                    onPress={() => {
+                      setData(item);
+                      setShowModal(false);
+                    }}>
                     <Text style={styles.label}>{item}</Text>
                     <View style={styles.listIconContainer}>
-                      {selectedSport?.ntrp === item ? (
+                      {ntrp === item ? (
                         <Image
                           source={images.radioCheckYellow}
                           style={styles.image}

@@ -249,6 +249,9 @@ const SportActivityModal = ({
                 continueToChallenge={continueToChallenge}
                 bookReferee={bookReferee}
                 bookScoreKeeper={bookScoreKeeper}
+                isActiveSportActivity={
+                  sportObj?.is_active || !('is_active' in sportObj)
+                }
               />
 
               {sportObj?.sport_type === Verbs.singleSport ||

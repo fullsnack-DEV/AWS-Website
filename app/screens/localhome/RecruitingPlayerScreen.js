@@ -941,9 +941,23 @@ export default function RecruitingPlayerScreen({navigation, route}) {
                           justifyContent: 'space-between',
                         }}>
                         <View style={styles.searchCityContainer}>
-                          <Text style={styles.searchCityText}>
+                          {/* <Text style={styles.searchCityText}>
                             {isSearchPlaceholder === true
                               ? strings.searchCityText
+                              : selectedLocation}
+                          </Text> */}
+                          <Text
+                            style={[
+                              styles.searchCityText,
+                              {
+                                color:
+                                  isSearchPlaceholder === true
+                                    ? colors.placeHolderColor
+                                    : colors.lightBlackColor,
+                              },
+                            ]}>
+                            {isSearchPlaceholder === true
+                              ? strings.searchTitle
                               : selectedLocation}
                           </Text>
                         </View>

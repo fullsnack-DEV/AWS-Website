@@ -1,171 +1,260 @@
 /* eslint-disable no-nested-ternary */
-import React, {useState, useEffect, useContext, useCallback} from 'react';
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  useCallback,
+  useLayoutEffect,
+} from 'react';
 import {
   StyleSheet,
   View,
   Text,
   Image,
   FlatList,
-  TouchableWithoutFeedback,
-  ScrollView,
   TouchableOpacity,
+  Dimensions,
+  Pressable,
+  Alert,
+  SafeAreaView,
+  ActivityIndicator,
 } from 'react-native';
-
-import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
-import LinearGradient from 'react-native-linear-gradient';
+import {useIsFocused} from '@react-navigation/native';
+import {format} from 'react-string-format';
 import AuthContext from '../../../auth/context';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 import {strings} from '../../../../Localization/translation';
+import {getTCDate, setAuthContextData} from '../../../utils';
+import {patchRegisterRefereeDetails} from '../../../api/Users';
+import {
+  getEntitySport,
+  getSportDefaultSettings,
+  getSportDetails,
+} from '../../../utils/sportsActivityUtils';
+import Verbs from '../../../Constants/Verbs';
+import WrapperModal from '../../../components/IncomingChallengeSettingsModals/WrapperModal';
 
+const layout = Dimensions.get('window');
 export default function ScorekeeperReservationSetting({navigation, route}) {
-  const [settingObject, setSettingObject] = useState();
-  const [showBottomNotes, setShowBottomNotes] = useState(true);
+  const [settingObject, setSettingObject] = useState({});
+  const [showModal, setShowModal] = useState(false);
+  const [modalObj, setModalObj] = useState({});
+  const [sportObj, setSportObj] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [sportName] = useState(route.params.sportName);
+
+  const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
 
-  const [sportName] = useState(route?.params?.sportName);
-  const getSettings = useCallback(() => {
-    setSettingObject(
-      (authContext?.entity?.obj?.scorekeeper_data ?? []).filter(
-        (obj) => obj.sport === sportName,
-      )?.[0]?.setting,
-    );
-  }, [authContext, sportName]);
+  const getSettings = useCallback(
+    (user) => {
+      const sport = getEntitySport({
+        user,
+        role: Verbs.entityTypeScorekeeper,
+        sportType: '',
+        sport: sportName,
+      });
+
+      if (sport?.setting) {
+        setSettingObject(sport.setting);
+      } else {
+        const setting = getSportDefaultSettings(sportName, authContext.sports);
+        setSettingObject(setting);
+      }
+    },
+    [sportName, authContext.sports],
+  );
 
   useEffect(() => {
-    if (route?.params?.settingObj) {
-      setSettingObject(route?.params?.settingObj);
-    } else {
-      getSettings();
+    if (isFocused) {
+      getSettings(authContext.entity.obj);
     }
-  }, [authContext, getSettings, route?.params?.settingObj, sportName]);
+  }, [
+    authContext,
+    getSettings,
+    isFocused,
+    route?.params?.settingObj,
+    sportName,
+  ]);
+
+  useEffect(() => {
+    const sportDetails = getSportDetails(
+      sportName,
+      '',
+      authContext.sports,
+      Verbs.entityTypeScorekeeper,
+    );
+    setSportObj(sportDetails);
+  }, [authContext.sports, sportName]);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerShown: false,
+    });
+  }, [navigation]);
 
   const challengeSettingMenu = [
-    {key: strings.availability, id: 1},
-    {key: strings.scorekeeperFee, id: 2},
-    {key: strings.refundpolicy, id: 3},
-    {key: strings.availableAreaText, id: 4},
+    {key: strings.availability},
+    {key: strings.refereeFee},
+    {key: strings.refundPolicy},
+    {key: strings.servicableAreas},
   ];
-  const handleOpetions = async (opetions) => {
-    if (opetions === strings.availability) {
-      if (settingObject) {
-        navigation.navigate('AvailibilityScorekeeper', {
-          settingObj: settingObject,
-          comeFrom: 'ScorekeeperReservationSetting',
-          sportName,
-        });
-      } else {
-        navigation.navigate('AvailibilityScorekeeper', {
-          comeFrom: 'ScorekeeperReservationSetting',
-          sportName,
-        });
-      }
-    } else if (opetions === strings.scorekeeperFee) {
-      if (settingObject) {
-        navigation.navigate('ScorekeeperFee', {
-          settingObj: settingObject,
-          comeFrom: 'ScorekeeperReservationSetting',
-          sportName,
-        });
-      } else {
-        navigation.navigate('ScorekeeperFee', {
-          comeFrom: 'ScorekeeperReservationSetting',
-          sportName,
-        });
-      }
-    } else if (opetions === strings.refundpolicy) {
-      if (settingObject) {
-        navigation.navigate('RefundPolicyScorekeeper', {
-          settingObj: settingObject,
-          comeFrom: 'ScorekeeperReservationSetting',
-          sportName,
-        });
-      } else {
-        navigation.navigate('RefundPolicyScorekeeper', {
-          comeFrom: 'ScorekeeperReservationSetting',
-          sportName,
-        });
-      }
-    } else if (opetions === strings.availableAreaText) {
-      console.log(settingObject);
-      if (settingObject) {
-        navigation.navigate('AvailableAreaScorekeeper', {
-          settingObj: settingObject,
-          comeFrom: 'ScorekeeperReservationSetting',
-          sportName,
-        });
-      } else {
-        navigation.navigate('AvailableAreaScorekeeper', {
-          comeFrom: 'ScorekeeperReservationSetting',
-          sportName,
-        });
-      }
-    }
-  };
+
   const getSettingValue = (item) => {
-    if (item.key === strings.availability) {
-      if (settingObject?.scorekeeper_availibility) {
-        return settingObject?.scorekeeper_availibility;
-      }
-    }
+    if (settingObject) {
+      switch (item) {
+        case strings.availability:
+          return settingObject.referee_availibility ?? Verbs.on;
 
-    if (item.key === strings.scorekeeperFee) {
-      if (settingObject?.game_fee) {
-        return `${settingObject?.game_fee?.fee} ${settingObject?.game_fee?.currency_type}`;
-      }
-    }
-    if (item.key === strings.refundpolicy) {
-      if (settingObject?.refund_policy) {
-        return settingObject?.refund_policy;
-      }
-    }
+        case strings.refereeFee:
+          return `${settingObject.game_fee?.fee || 0} ${
+            settingObject?.game_fee?.currency_type || Verbs.cad
+          }`;
 
-    if (item.key === strings.availableAreaText) {
-      if (settingObject?.available_area) {
-        return strings.completedTitleText;
+        case strings.refundPolicy:
+          return settingObject.refund_policy;
+
+        case strings.servicableAreas:
+          if (settingObject?.available_area) {
+            return strings.completedTitleText;
+          }
+          return null;
+
+        default:
+          return null;
       }
     }
-
-    return strings.incomplete;
+    return null;
   };
+
+  const handleEditOption = (section) => {
+    switch (section) {
+      case strings.availability:
+        setModalObj({
+          title: section,
+          settingsObj: settingObject,
+          sportName,
+        });
+        setShowModal(true);
+        break;
+
+      case strings.refundPolicy:
+      case strings.refereeFee:
+        setModalObj({
+          title: section,
+          settingsObj: settingObject,
+        });
+        setShowModal(true);
+        break;
+
+      case strings.servicableAreas:
+        break;
+
+      default:
+        break;
+    }
+  };
+
+  const onSave = (settings) => {
+    setLoading(true);
+    const updatedSettings = {...settingObject, ...settings};
+    const updatedData = authContext.entity.obj.scorekeeper_data.map((item) => {
+      if (item.sport === sportName) {
+        return {
+          ...item,
+          setting: {
+            ...updatedSettings,
+          },
+          created_at: getTCDate(new Date()),
+        };
+      }
+      return item;
+    });
+
+    const body = {
+      ...authContext.entity.obj,
+      scorekeeper_data: updatedData,
+    };
+
+    patchRegisterRefereeDetails(body, authContext)
+      .then(async (response) => {
+        if (response.status === true) {
+          getSettings(response.payload);
+          await setAuthContextData(response.payload, authContext);
+        } else {
+          Alert.alert(strings.appName, response.messages);
+        }
+        setLoading(false);
+      })
+      .catch((e) => {
+        Alert.alert(strings.alertmessagetitle, e.message);
+        setLoading(false);
+      })
+      .finally(() => setLoading(false));
+  };
+
   const renderMenu = ({item}) => (
-    <TouchableWithoutFeedback
-      style={styles.listContainer}
-      onPress={() => {
-        handleOpetions(item.key);
-      }}>
-      <View style={{flexDirection: 'row'}}>
-        <Text style={styles.listItems}>{item.key}</Text>
+    <>
+      <Pressable
+        style={[styles.row, styles.menuItem]}
+        onPress={() => {
+          handleEditOption(item.key);
+        }}>
+        <View style={{flex: 1}}>
+          <Text style={styles.label}>{item.key}</Text>
+        </View>
+        <View style={[styles.row, {flex: 1}]}>
+          <View style={{flex: 1, alignItems: 'flex-end'}}>
+            <Text
+              style={[
+                styles.label,
+                getSettingValue(item.key)
+                  ? {color: colors.greenColorCard}
+                  : {color: colors.redColor},
+              ]}
+              numberOfLines={1}>
+              {getSettingValue(item.key) ?? strings.incomplete}
+            </Text>
+          </View>
 
-        {getSettingValue(item) === strings.incomplete ? (
-          <Text style={styles.incompleteStyle}>
-            {/* {getSettingValue(item)} */}
-            {strings.incomplete}
-          </Text>
-        ) : (
-          <Text style={styles.completeStyle}>
-            {getSettingValue(item)}
-            {/* {`$${gameFee?.fee} ${gameFee?.currency_type}`} */}
-          </Text>
-        )}
+          <Image source={images.nextArrow} style={styles.nextArrow} />
+        </View>
+      </Pressable>
 
-        <Image source={images.nextArrow} style={styles.nextArrow} />
-      </View>
-    </TouchableWithoutFeedback>
+      <View style={styles.separatorLine} />
+    </>
   );
 
   return (
-    <>
-      <ScrollView style={styles.mainContainer}>
-        <View
-          style={{padding: 15, backgroundColor: colors.grayBackgroundColor}}>
-          <Text
-            style={{
-              fontSize: 14,
-              fontFamily: fonts.RRegular,
-              color: colors.lightBlackColor,
+    <SafeAreaView style={{flex: 1, justifyContent: 'space-between'}}>
+      <View>
+        <View style={styles.headerRow}>
+          <TouchableOpacity
+            style={styles.backIcon}
+            onPress={() => {
+              navigation.goBack();
             }}>
+            <Image source={images.backArrow} style={styles.image} />
+          </TouchableOpacity>
+          <View style={{flex: 1, alignItems: 'center'}}>
+            <Text style={styles.headerTitle}>
+              {strings.incomingChallengeSettingsTitle}
+            </Text>
+            <Text style={styles.headerText}>
+              {strings.scorekeeper} · {sportObj.sport_name}
+            </Text>
+          </View>
+          <View style={styles.backIcon} />
+        </View>
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size={'large'} color={colors.whiteColor} />
+          </View>
+        ) : null}
+        <View style={styles.greyContainer}>
+          <Text style={styles.greyContainerText}>
             {strings.scorekeeperSettingHeading}
           </Text>
         </View>
@@ -173,94 +262,113 @@ export default function ScorekeeperReservationSetting({navigation, route}) {
           data={challengeSettingMenu}
           keyExtractor={(index) => index.toString()}
           renderItem={renderMenu}
-          ItemSeparatorComponent={() => (
-            <View style={styles.separatorLine}></View>
-          )}
+          contentContainerStyle={{paddingHorizontal: 15}}
         />
-        <View style={styles.separatorLine}></View>
-      </ScrollView>
-      {showBottomNotes && (
-        <LinearGradient
-          colors={[colors.yellowColor, colors.orangeGradientColor]}
-          style={styles.challengeNotesView}>
-          <Text
-            style={{
-              color: colors.whiteColor,
-              fontFamily: fonts.RBold,
-              fontSize: 14,
-              width: '88%',
-            }}>
-            {strings.scorekeeperSettingNotes}
-          </Text>
-          <TouchableOpacity onPress={() => setShowBottomNotes(false)}>
-            <Image
-              source={images.cancelWhite}
-              style={{
-                height: 10,
-                width: 10,
-                resizeMode: 'contain',
-                tintColor: colors.whiteColor,
-              }}
-            />
-          </TouchableOpacity>
-        </LinearGradient>
-      )}
-    </>
+      </View>
+      <View style={{paddingHorizontal: 15, paddingBottom: 6}}>
+        <Text style={styles.label}>
+          {format(
+            strings.reservationScreenBottomText,
+            strings.scorekeeper.toLowerCase(),
+          )}
+        </Text>
+      </View>
+
+      <WrapperModal
+        isVisible={showModal}
+        closeModal={() => {
+          setShowModal(false);
+        }}
+        {...modalObj}
+        onSave={(settings) => {
+          setShowModal(false);
+          onSave(settings);
+        }}
+        entityType={Verbs.entityTypeScorekeeper}
+      />
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
-  listContainer: {
-    flex: 1,
+  greyContainer: {
+    paddingHorizontal: 15,
+    paddingTop: 10,
+    paddingBottom: 15,
+    backgroundColor: colors.textFieldBackground,
+    margin: 15,
+    borderRadius: 5,
+    marginBottom: 25,
+  },
+  greyContainerText: {
+    fontSize: 16,
+    lineHeight: 24,
+    fontFamily: fonts.RBold,
+    color: colors.lightBlackColor,
+  },
+
+  label: {
+    fontSize: 16,
+    lineHeight: 24,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
+  },
+  row: {
     flexDirection: 'row',
+    alignItems: 'center',
   },
-  listItems: {
-    flex: 1,
-    padding: 20,
-    paddingLeft: 15,
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    color: colors.blackColor,
-    alignSelf: 'center',
-  },
-  incompleteStyle: {
-    marginRight: 10,
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    color: colors.redColor,
-    alignSelf: 'center',
-  },
-  completeStyle: {
-    marginRight: 10,
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    color: colors.completeTextColor,
-    alignSelf: 'center',
-  },
-  mainContainer: {
-    flex: 1,
-    flexDirection: 'column',
+  menuItem: {
+    justifyContent: 'space-between',
+    paddingHorizontal: 10,
   },
   nextArrow: {
-    alignSelf: 'center',
-    flex: 0.1,
-    height: 15,
-    marginRight: 10,
-    resizeMode: 'contain',
-    tintColor: colors.grayColor,
-    width: 15,
+    width: 8,
+    height: 14,
+    marginLeft: 15,
   },
   separatorLine: {
-    alignSelf: 'center',
-    backgroundColor: colors.lightgrayColor,
-    height: 0.5,
-    width: wp('90%'),
+    backgroundColor: colors.grayBackgroundColor,
+    height: 1,
+    marginVertical: 15,
   },
-  challengeNotesView: {
-    padding: 15,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+  backIcon: {
+    width: 25,
+    height: 25,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'contain',
+  },
+  headerRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingBottom: 40,
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingBottom: 6,
+    paddingTop: 3,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.writePostSepratorColor,
+  },
+  headerTitle: {
+    fontSize: 16,
+    lineHeight: 16,
+    fontFamily: fonts.RBold,
+    color: colors.lightBlackColor,
+  },
+  headerText: {
+    fontSize: 12,
+    lineHeight: 18,
+    fontFamily: fonts.RMedium,
+    color: colors.lightBlackColor,
+  },
+  loadingContainer: {
+    width: layout.width,
+    height: layout.height,
+    position: 'absolute',
+    zIndex: 99,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,0.7)',
   },
 });

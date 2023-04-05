@@ -13,8 +13,8 @@ export default function BlockAvailableTabView({
   onSecondTabPress,
   blocked,
   style,
-  startGradientColor = colors.grayBackgroundColor,
-  endGradientColor = colors.grayBackgroundColor,
+  startGradientColor = colors.whiteColor,
+  endGradientColor = colors.whiteColor,
   firstTabTitle,
   secondTabTitle,
   activeEventPricacy,
@@ -59,7 +59,7 @@ export default function BlockAvailableTabView({
               ? [styles.activeEventPrivacyText, activeEventPrivacyText]
               : [styles.inactiveEventPrivacyText, inactiveEventPrivacyText]
           }>
-          {secondTabTitle}
+          {secondTabTitle} 
         </Text>
       </TouchableOpacity>
     </LinearGradient>
@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     borderRadius: wp('1.5%'),
     paddingHorizontal: wp('1%'),
-    paddingVertical: wp('1%'),
+    paddingVertical: wp('0.5%'),
     marginVertical: 10,
     width: wp('94%'),
     alignSelf: 'center',
@@ -79,28 +79,27 @@ const styles = StyleSheet.create({
   },
   activeEventPricacy: {
     flex: 1,
-    backgroundColor: colors.whiteColor,
-
+    // backgroundColor: colors.grayBackgroundColor,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: wp('1.5%'),
   },
   inactiveEventPricacy: {
     flex: 1,
-    paddingVertical: hp('0.8'),
+    paddingVertical: hp('0.5'),
     alignItems: 'center',
   },
   activeEventPrivacyText: {
     color: colors.greeColor,
     fontFamily: fonts.RBold,
     letterSpacing: 0.5,
-    fontSize: 16,
+    fontSize: 12,
   },
   inactiveEventPrivacyText: {
     color: colors.grayColor,
     fontFamily: fonts.RBold,
     letterSpacing: 0.5,
-    fontSize: 16,
+    fontSize: 12,
     paddingVertical: hp('0.8'),
   },
 });

@@ -13,7 +13,7 @@ const SettingsMenuItem = ({
   item,
   settingObject,
   sportName,
-  handleOpetions = () => {},
+  handleOptions = () => {},
 }) => {
   const getSettingValue = (key) => {
     if (settingObject) {
@@ -119,7 +119,7 @@ const SettingsMenuItem = ({
 
             <TouchableOpacity
               onPress={() => {
-                handleOpetions(item.key);
+                handleOptions(item.key);
               }}>
               <Text style={styles.completeStyle}>
                 {item.key === strings.venue &&

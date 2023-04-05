@@ -144,11 +144,26 @@ const getSportList = (sportList, role = Verbs.entityTypePlayer) => {
 const getEntitySportList = (user = {}, role = Verbs.entityTypePlayer) => {
   let sportList = [];
   if (role === Verbs.entityTypePlayer) {
-    sportList = user.registered_sports ?? [];
+    sportList =
+      user.registered_sports?.length > 0
+        ? user.registered_sports.filter(
+            (item) => item.is_active || !('is_active' in item),
+          )
+        : [];
   } else if (role === Verbs.entityTypeReferee) {
-    sportList = user.referee_data ?? [];
+    sportList =
+      user.referee_data?.length > 0
+        ? user.referee_data.filter(
+            (item) => item.is_active || !('is_active' in item),
+          )
+        : [];
   } else if (role === Verbs.entityTypeScorekeeper) {
-    sportList = user.scorekeeper_data ?? [];
+    sportList =
+      user.scorekeeper_data?.length > 0
+        ? user.scorekeeper_data.filter(
+            (item) => item.is_active || !('is_active' in item),
+          )
+        : [];
   }
 
   return [...sportList];
@@ -193,6 +208,14 @@ const getExcludedSportsList = (authContext, role = Verbs.entityTypePlayer) => {
     }
   });
   return newData;
+};
+
+const getSportDefaultSettings = (sport = '', sportList = []) => {
+  if (sport) {
+    const sportObj = sportList.find((item) => item.sport === sport);
+    return sportObj?.default_setting ?? {};
+  }
+  return {};
 };
 
 const getSportDetails = (
@@ -273,16 +296,16 @@ const getSportName = (sport = '', sportType = '', sportList = []) => {
 const getCardBorderColor = (entityType) => {
   switch (entityType) {
     case Verbs.entityTypePlayer:
-      return [colors.yellowColor, colors.orangeGradientColor];
+      return colors.orangeColorCard;
 
     case Verbs.entityTypeReferee:
-      return [colors.darkThemeColor, colors.darkThemeColor];
+      return colors.darkThemeColor;
 
     case Verbs.entityTypeScorekeeper:
-      return [colors.blueGradiantEnd, colors.blueGradiantStart];
+      return colors.blueColorCard;
 
     default:
-      return [];
+      return colors.userPostTimeColor;
   }
 };
 
@@ -299,4 +322,5 @@ export {
   getSportDetails,
   getSportName,
   getCardBorderColor,
+  getSportDefaultSettings,
 };

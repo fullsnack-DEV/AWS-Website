@@ -117,6 +117,14 @@ const Verbs = {
   homeText: 'home',
   awayText: 'away',
 
+  REQUESTALREADYEXIST: 101,
+  PLAYERLEAVED: 102,
+  GROUPTERMINATION: 103,
+  RESENDREQUEST: 'resendrequest',
+  ACCEPTDECLINE: 'acceptdecline',
+
+  setText: 'Set',
+
 };
 
 export default Verbs;
