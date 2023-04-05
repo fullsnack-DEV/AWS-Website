@@ -1,6 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import React , {useRef, useState} from 'react';
-import {StyleSheet, View, Text, TouchableOpacity, SafeAreaView, Dimensions} from 'react-native';
+import {StyleSheet, View, Text, TouchableOpacity, Dimensions} from 'react-native';
 import moment from 'moment';
 import LinearGradient from 'react-native-linear-gradient';
 import Modal from 'react-native-modal';
@@ -23,16 +23,17 @@ export default function BlockSlotView({
   userData,
   uid,
   addToSlotData,
-  deleteFromSlotData
+  deleteFromSlotData,
+  deleteOrCreateSlotData
 }) {
 
 
   const CurrentItem = useRef();
   const [visibleAvailabilityModal, setVisibleAvailabilityModal] =
   useState(false);
-  const [heightRange, setHeightRange] = useState(0.6);
+  const [heightRange, setHeightRange] = useState(0.5);
   const getTimeFormat = (dateValue) =>
-  moment(Utility.getJSDate(dateValue)).format('h:mma');
+  moment(Utility.getJSDate(dateValue)).format('h:mm a');
 
 
   
@@ -88,12 +89,17 @@ export default function BlockSlotView({
               alignItems: 'center',
               justifyContent: 'center',
               elevation: 1,
+              flexDirection: 'row'
             }}>
             <Text style={styles.blockFieldValue} numberOfLines={3}>
               {allDay
                 ? strings.allDay
                 : `${getTimeFormat(startDate)} - ${getTimeFormat(endDate)}`}
             </Text>
+            {
+              (slots.length - 1) === index && (
+              <Text style={[styles.blockFieldValue, {fontSize: 10, marginTop: -2}]}> +1day</Text>
+            )}
           </View>
         </TouchableOpacity>
       ) : (
@@ -111,7 +117,7 @@ export default function BlockSlotView({
             style={{
               marginTop: 8,
               marginBottom: 8,
-              backgroundColor: '#F2F2F2',
+              backgroundColor: colors.availabilitySlotsBackground,
               height: 40,
               width: '90%',
               alignSelf: 'center',
@@ -128,7 +134,7 @@ export default function BlockSlotView({
             </Text>
             {
               (slots.length - 1) === index && (
-              <Text style={[styles.fieldValue, {fontSize: 10, marginTop: -2}]}>+1day</Text>
+              <Text style={[styles.fieldValue, {fontSize: 10, marginTop: -2}]}> +1day</Text>
             )}
           </View>
         </TouchableOpacity>
@@ -144,15 +150,17 @@ export default function BlockSlotView({
           setVisibleAvailabilityModal(false);
         }}
         backdropOpacity={0}>
-        <SafeAreaView style={[styles.modalMainViewStyle, {height: Dimensions.get('window').height * heightRange}]}>
+        <View style={[styles.modalMainViewStyle, {height: Dimensions.get('window').height * heightRange}]}>
           <ChallengeAvailability
             setVisibleAvailabilityModal={setVisibleAvailabilityModal}
             slots={[CurrentItem?.current?.value]}
             addToSlotData={addToSlotData}
             deleteFromSlotData={deleteFromSlotData}
             setHeightRange={setHeightRange}
+            deleteOrCreateSlotData={deleteOrCreateSlotData}
+            slotLevel={true}
           />
-        </SafeAreaView>
+        </View>
       </Modal>
     </>
   );
@@ -168,7 +176,7 @@ const styles = StyleSheet.create({
   },
   blockFieldValue: {
     fontSize: 16,
-    color: colors.linesepratorColor,
+    color: colors.darkGrayColor,
     fontFamily: fonts.RMedium,
     textAlign: 'center',
   },

@@ -480,6 +480,8 @@ const images = {
   noScoreboardImage: require('../assets/images/noScoreboardImage.png'),
   lookingForImg: require('../assets/images/lookingForImg.png'),
   toggleList:  require('../assets/images/toggle_list.png'),
+
+  calenderToggle: require('../assets/images/upper-arrow.png'),
 };
 
 export default images;

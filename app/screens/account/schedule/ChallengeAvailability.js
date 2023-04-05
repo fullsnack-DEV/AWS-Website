@@ -50,7 +50,9 @@ export default function ChallengeAvailability({
   addToSlotData,
   showAddMore = false,
   setHeightRange,
-  deleteFromSlotData
+  deleteFromSlotData,
+  deleteOrCreateSlotData,
+  slotLevel=false
 }) {
 
   const authContext = useContext(AuthContext);
@@ -101,6 +103,10 @@ export default function ChallengeAvailability({
       });
       setOneTimeAvailability(editableSlots);
       setChallengeAvailable(editableSlots);
+    }
+
+    if(slotLevel) {
+      setOneTime(false)
     }
   },[]);
 
@@ -327,12 +333,7 @@ export default function ChallengeAvailability({
               .then((response) => {
                 setTimeout(() => {
                   if(addToSlotData && deleteFromSlotData) {
-                    if(response.payload.newSlots.length > 0) {
-                      addToSlotData(response.payload.newSlots);
-                    }
-                    if(response.payload.deleteSlotsIds.length > 0){
-                      deleteFromSlotData(response.payload.deleteSlotsIds)
-                    }
+                    deleteOrCreateSlotData(response.payload)
                   }
                   setLoading(false);
                   setVisibleAvailabilityModal(false);
@@ -345,7 +346,7 @@ export default function ChallengeAvailability({
               return true;
             }}>
 
-            <Text>{strings.done}</Text>
+            <Text>{strings.save}</Text>
           </TouchableOpacity>
         }
       />
@@ -353,12 +354,16 @@ export default function ChallengeAvailability({
       <View>
         <ScrollView bounces={false} >
           <SafeAreaView>
-            <View style={styles.containerStyle}>
+            <View style={[styles.containerStyle ,  {paddingTop: 20}]}>
+              {
+              !slotLevel && (
+              <>
               <View style={{flexDirection: 'row', justifyContent: 'flex-start'}}>
                 <Text style={styles.headerTextStyle}>
                   {strings.editChallengeTitle}{' '}
                 </Text>
               </View>
+
               <AvailabilityTypeTabView
                 oneTime={oneTime}
                 firstTabTitle='One-time'
@@ -385,7 +390,9 @@ export default function ChallengeAvailability({
                 activeEventPrivacyText={styles.activeEventPrivacyText}
                 inactiveEventPrivacyText={styles.activeEventPrivacyText}
               />
-              <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
+              </>
+              )}
+              <View style={{flexDirection: 'row', justifyContent: 'flex-end' , marginBottom: 5}}>
                 <Text>
                   {strings.timezone} &nbsp;
                 </Text>
@@ -564,6 +571,7 @@ export default function ChallengeAvailability({
                         tempChallenge[index].repeat = value;
                         setChallengeAvailable(tempChallenge);
                       }}
+                      fontColor = {challengeAvailable[index].isBlock ? colors.darkGrayColor : colors.availabilitySlotsBackground}
                     />
                     )} 
                     {challengeAvailable[index].is_recurring === true  && (
@@ -729,7 +737,7 @@ const styles = StyleSheet.create({
   },
 
   blockStyle: {
-    width: wp('50%'),
+    width: wp('45%'),
     marginVertical: 0,
     borderRadius: 8
   },
@@ -745,9 +753,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     backgroundColor: colors.grayBackgroundColor
   },
-  inactiveEventPricacy: {
-    paddingVertical: 2,
-  },
+  
   activeEventPrivacyText: {
     fontSize: 12,
   },

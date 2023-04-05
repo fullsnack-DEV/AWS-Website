@@ -54,7 +54,7 @@ import Header from '../../../components/Home/Header';
 import RefereeReservationItem from '../../../components/Schedule/RefereeReservationItem';
 import {getGameHomeScreen} from '../../../utils/gameUtils';
 import ScorekeeperReservationItem from '../../../components/Schedule/ScorekeeperReservationItem';
-import {getHitSlop, getSportName} from '../../../utils';
+import {getHitSlop, /* getSportName */} from '../../../utils';
 import * as Utility from '../../../utils/index';
 // import BlockSlotView from '../../../components/Schedule/BlockSlotView';
 import {getGameIndex} from '../../../api/elasticSearch';
@@ -74,17 +74,17 @@ import ChallengeAvailability from './ChallengeAvailability';
 export default function ScheduleScreen({navigation, route}) {
   let authContext = useContext(AuthContext);
   const refContainer = useRef();
-  const sortFilterData = ['Organizer', 'Sport', 'None'];
-  const sortFilterDataClub = ['Organizer', 'Sport', 'None'];
-  const rsvpFilterOptions = ['All', 'Going', 'Maybe', 'Not Going'];
-  const timeFilterData = ['Future', 'Past'];
+  const sortFilterData = [strings.eventFilterOrganiserTitle, strings.eventFilterSportTitle, strings.eventFilterNoneTitle];
+  const sortFilterDataClub = [strings.eventFilterSportTitle, strings.eventFilterNoneTitle];
+  const rsvpFilterOptions = [strings.eventFilterRsvpAll, strings.eventFilterRsvpGoing, strings.eventFilterRsvpMaybe, strings.eventFilterRsvpNotGoing];
+  const timeFilterData = [strings.eventFilterTimeFuture, strings.eventFilterTimePast];
   const timeSelectionList = [
-    {text: 'Any Time', value: 0},
-    {text: '1 Week', value: 7},
-    {text: '1 Month', value: 30},
-    {text: '3 Month', value: 90},
+    {text: strings.eventFilterTimeListAny, value: Verbs.EVENT_FILTER_TIME_ANY},
+    {text: strings.eventFilterTimeList1Week, value: Verbs.EVENT_FILTER_TIME_ONE_WEEK},
+    {text: strings.eventFilterTimeList1Month, value: Verbs.EVENT_FILTER_TIME_ONE_MONTH},
+    {text: strings.eventFilterTimeList3Month, value: Verbs.EVENT_FILTER_TIME_THREE_MONTH},
   ];
-  const [timeSelectionOption, setTimeSelectionOption] = useState({text: 'Any Time', value: 0},);
+  const [timeSelectionOption, setTimeSelectionOption] = useState({text: strings.eventFilterTimeListAny, value: Verbs.EVENT_FILTER_TIME_ANY},);
   const [timeSelectionModal, setTimeSelectionModal] = useState(false);
 
   const [sports, setSports] = useState([]);
@@ -205,7 +205,6 @@ export default function ScheduleScreen({navigation, route}) {
       )  
     }
     occr = occr.map((RRItem) => {
-      console.log('duration', duration)
       const newEvent = {...event};
       newEvent.start_datetime = Utility.getTCDate(RRItem);
       newEvent.end_datetime = newEvent.start_datetime + duration;
@@ -449,13 +448,12 @@ export default function ScheduleScreen({navigation, route}) {
 
   useEffect(() => {
     if (isFocused) {
-      // if(route?.params?.event) {
-      //   getEventsAndSlotsList();
-      //   delete route?.params?.event;
-      // }else{
-      //   getEventsAndSlotsList();
-      // }
-      getEventsAndSlotsList();
+      if(route?.params?.event) {
+        getEventsAndSlotsList(route?.params?.event);
+        delete route?.params?.event;
+      }else{
+        getEventsAndSlotsList();
+      }
     }
   }, [isFocused]);
 
@@ -492,10 +490,15 @@ export default function ScheduleScreen({navigation, route}) {
         let resCalenders = [];
         let eventsCal = [];
         if (response) {
-          if(data) {
+          let hasRecord = false;
+          response.forEach((item) => {
+            if(item.cal_id === data.cal_id) {
+              hasRecord = true;
+            }
+          })
+          if(data && !hasRecord) {
             response = [...response, data];
           }
-
           resCalenders = response.filter((obj) => {     
             if (obj.cal_type === 'blocked') {
               return obj;
@@ -658,30 +661,30 @@ export default function ScheduleScreen({navigation, route}) {
     [selectedOptions.title, sortFilterOption],
   );
 
-  const optionsListView = useCallback(
-    ({item, index}) => (
-      <Text
-        style={makeOpetionsSelected(item)}
-        onPress={() => {
-          refContainer.current.scrollToIndex({
-            animated: true,
-            index,
-            viewPosition: 0.8,
-          });
-          setSelectedOptions({
-            option: sortFilterOption,
-            title: item,
-          });
-        }}>
-        {item?.sport
-          ? item?.sport === 'All'
-            ? 'All'
-            : getSportName(item, authContext)
-          : item}
-      </Text>
-    ),
-    [authContext, makeOpetionsSelected, sortFilterOption],
-  );
+  // const optionsListView = useCallback(
+  //   ({item, index}) => (
+  //     <Text
+  //       style={makeOpetionsSelected(item)}
+  //       onPress={() => {
+  //         refContainer.current.scrollToIndex({
+  //           animated: true,
+  //           index,
+  //           viewPosition: 0.8,
+  //         });
+  //         setSelectedOptions({
+  //           option: sortFilterOption,
+  //           title: item,
+  //         });
+  //       }}>
+  //       {item?.sport
+  //         ? item?.sport === 'All'
+  //           ? 'All'
+  //           : getSportName(item, authContext)
+  //         : item}
+  //     </Text>
+  //   ),
+  //   [authContext, makeOpetionsSelected, sortFilterOption],
+  // );
 
   const sportOptionsListView = useCallback(
     ({item, index}) => (
@@ -1053,8 +1056,7 @@ export default function ScheduleScreen({navigation, route}) {
                   keyExtractor={keyExtractor}
                   renderItem={
                     (filterSetting.sort === 0 && organizerListView) ||
-                    (filterSetting.sort === 1 && sportOptionsListView) ||
-                    (filterSetting.sort === 2 && optionsListView)
+                    (filterSetting.sort === 1 && sportOptionsListView) 
                   }
                 />
               </View>
@@ -1315,20 +1317,22 @@ export default function ScheduleScreen({navigation, route}) {
                         style={{marginTop: 15}}
                       />
                     </View>
-
+                    {
+                    ![Verbs.entityTypeClub].includes(authContext.entity.role) && (
+                    <>
                     <TCThinDivider width={'92%'} marginBottom={15} />
                     <View>
-                      <Text style={styles.titleText}>RSVP</Text>
+                      <Text style={styles.titleText}>{strings.eventFilterRsvpText}</Text>
                       <FlatList
                         data={
-                          [Verbs.entityTypeClub].includes(authContext.entity.role)
-                            ? rsvpFilterOptions
-                            : rsvpFilterOptions
+                          rsvpFilterOptions
                         }
                         renderItem={renderRsvpFilterOpetions}
                         style={{marginTop: 15}}
                       />
                     </View>
+                    </>
+                    )}
                   </View>
                 )}
                 <TCThinDivider width={'92%'} marginBottom={15} />
@@ -1372,7 +1376,7 @@ export default function ScheduleScreen({navigation, route}) {
                     borderRadius: 5,
                     marginTop: 20
                   }}>
-                    <Text>Reset</Text>
+                    <Text>{strings.eventFilterResetText}</Text>
                   </View>
                 </TouchableOpacity>
                 </>

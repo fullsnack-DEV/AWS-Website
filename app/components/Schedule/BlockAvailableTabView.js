@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
   },
   inactiveEventPricacy: {
     flex: 1,
-    paddingVertical: hp('0.5'),
+    paddingVertical: hp('0.5%'),
     alignItems: 'center',
   },
   activeEventPrivacyText: {
@@ -100,6 +100,5 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
     letterSpacing: 0.5,
     fontSize: 12,
-    paddingVertical: hp('0.8'),
   },
 });
