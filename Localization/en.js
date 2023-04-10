@@ -2589,9 +2589,8 @@ export default {
   timeZoneDescription:
     'en_Date and time displayed in the app will follow the date and time settings of the device.',
 
-
-  eventFilterOrganiserTitle : 'en_Organiser',
-  eventFilterSportTitle : 'en_Sport',
+  eventFilterOrganiserTitle: 'en_Organiser',
+  eventFilterSportTitle: 'en_Sport',
   eventFilterNoneTitle: 'en_None',
   eventFilterRsvpText: 'en_RSVP',
   eventFilterRsvpAll: 'en_All',
@@ -2600,12 +2599,23 @@ export default {
   eventFilterRsvpNotGoing: 'en_Not Going',
   eventFilterTimeFuture: 'en_Future',
   eventFilterTimePast: 'en_Past',
-  eventFilterTimeListAny : 'en_Any Time',
+  eventFilterTimeListAny: 'en_Any Time',
   eventFilterTimeList1Week: 'en_1 Week',
   eventFilterTimeList1Month: 'en_1 Month',
   eventFilterTimeList3Month: 'en_3 Months',
   eventFilterResetText: 'en_Reset',
 
   todayTitleText: 'en_Today',
-  tomorrowTitleText: 'en_Tomorrow'
+  tomorrowTitleText: 'en_Tomorrow',
+
+  filterAntTime: 'en_Anytime',
+  filterToday: 'en_Today',
+  filterYesterday: 'en_Yesterday',
+  filterLast7Day: 'en_Last 7 days',
+  filterThisMonth: 'en_This month',
+  filterLastMonth: 'en_Last month',
+  filterPickaDate: 'en_Pick a date...',
+  filterRandom: 'en_Random',
+  filterLowtoHighRefereeFee: 'en_Low to High Referee Fee',
+  filterHightoLowRefereeFee: 'High to Low Referee Fee',
 };
