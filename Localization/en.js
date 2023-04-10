@@ -2588,7 +2588,16 @@ export default {
   myFollowing: 'en_My Following',
   timeZoneDescription:
     'en_Date and time displayed in the app will follow the date and time settings of the device.',
-
+  inviteSent: 'en_Invite Sent',
+  unfollowText: 'en_Unfollow',
+  cancelMembershipInvitation: 'en_Cancel Membership Invitation',
+  requestPendingText: 'en_Request pending',
+  acceptInvitateRequest: 'en_Accept Membership Request',
+  declineMemberRequest: 'en_Decline Membership Request',
+  removeMemberFromTeamText: 'en_Remove Member From Team',
+  newTeamText: 'en_New Team',
+  invitePending: 'en_Invite Pending',
+  leaveTeamFromClub: 'en_Leave This Team  From Club',
   eventFilterOrganiserTitle: 'en_Organiser',
   eventFilterSportTitle: 'en_Sport',
   eventFilterNoneTitle: 'en_None',

@@ -141,7 +141,7 @@ const colors = {
   placeHolderColor: '#999999',
 
   availabilitySlotsBackground: '#ECF6EE',
-  modalBackgroundColor: 'rgba(0,0,0,0.7)',
+  modalBackgroundColor: 'rgba(0,0,0,0.5)',
   createClubGradientfrom: 'rgba(170, 216, 64, 0.6)',
   createClubGradientto: 'rgba(0, 193, 104, 0.6)',
 };

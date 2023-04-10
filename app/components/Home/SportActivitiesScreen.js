@@ -29,7 +29,7 @@ const SportActivitiesScreen = ({navigation, route}) => {
   useEffect(() => {
     if (isFocused) {
       setloading(true);
-      getUserDetails(authContext?.entity?.uid, authContext)
+      getUserDetails(uid, authContext)
         .then((response) => {
           setloading(false);
           setUserObject(response.payload);
@@ -41,7 +41,7 @@ const SportActivitiesScreen = ({navigation, route}) => {
           }, 10);
         });
     }
-  }, [authContext, isFocused]);
+  }, [authContext, isFocused, uid]);
 
   return (
     <SafeAreaView style={styles.parent}>
@@ -80,6 +80,7 @@ const SportActivitiesScreen = ({navigation, route}) => {
             });
           }}
           showAddActivityButton
+          isAdmin={isAdmin}
           onSelect={(option) => {
             if (option === strings.addPlaying) {
               navigation.navigate('RegisterPlayer', {

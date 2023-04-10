@@ -1,5 +1,3 @@
-/* eslint-disable no-unsafe-optional-chaining */
-/* eslint-disable no-unused-vars */
 import React, {
   memo,
   useCallback,
@@ -8,7 +6,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import {Alert, View, StyleSheet} from 'react-native';
+import {Alert, View} from 'react-native';
 import _ from 'lodash';
 import {
   createPost,
@@ -24,7 +22,6 @@ import ActivityLoader from '../../components/loader/ActivityLoader';
 import {getGallery} from '../../api/Users';
 import WritePost from '../../components/newsFeed/WritePost';
 import {strings} from '../../../Localization/translation';
-import colors from '../../Constants/Colors';
 import {ImageUploadContext} from '../../context/ImageUploadContext';
 import Verbs from '../../Constants/Verbs';
 
@@ -53,13 +50,13 @@ const HomeFeed = ({
   useEffect(() => {
     let entityType = 'users';
     if (
-      currentUserData.entity_type === 'user' ||
-      currentUserData.entity_type === 'player'
+      currentUserData.entity_type === Verbs.entityTypeUser ||
+      currentUserData.entity_type === Verbs.entityTypePlayer
     ) {
       entityType = 'users';
     } else if (
-      currentUserData.entity_type === 'team' ||
-      currentUserData.entity_type === 'club'
+      currentUserData.entity_type === Verbs.entityTypeTeam ||
+      currentUserData.entity_type === Verbs.entityTypeClub
     ) {
       entityType = 'groups';
     }
@@ -82,7 +79,7 @@ const HomeFeed = ({
       else if (!isNextDataLoading && postData?.length <= totalUserPostCount)
         setIsNextDataLoading(true);
     }
-  }, [postData, totalUserPostCount]);
+  }, [postData, totalUserPostCount, isNextDataLoading]);
 
   const updatePostAfterUpload = useCallback(
     (dataParams) => {
@@ -158,13 +155,14 @@ const HomeFeed = ({
       const params = {
         activity_id: item.id,
       };
+      const entityType = authContext.entity.obj.entity_type;
       if (
-        ['team', 'club', 'league'].includes(
-          authContext?.entity?.obj?.entity_type,
-        )
+        entityType === Verbs.entityTypeTeam ||
+        entityType === Verbs.entityTypeClub ||
+        entityType === Verbs.entityTypeLeague
       ) {
-        params.entity_type = authContext?.entity?.obj?.entity_type;
-        params.entity_id = authContext?.entity?.uid;
+        params.entity_type = authContext.entity.obj.entity_type;
+        params.entity_id = authContext.entity.uid;
       }
       deletePost(params, authContext)
         .then((response) => {
@@ -268,15 +266,15 @@ const HomeFeed = ({
       const entityID = currentUserData?.group_id ?? currentUserData?.user_id;
       if (entityID !== authContext.entity.uid) {
         if (
-          currentUserData?.entity_type === 'team' ||
-          currentUserData?.entity_type === 'club'
+          currentUserData?.entity_type === Verbs.entityTypeTeam ||
+          currentUserData?.entity_type === Verbs.entityTypeClub
         ) {
           dataParams.group_id = currentUserData?.group_id;
           dataParams.feed_type = currentUserData?.entity_type;
         }
         if (
-          currentUserData?.entity_type === 'user' ||
-          currentUserData?.entity_type === 'player'
+          currentUserData?.entity_type === Verbs.entityTypeUser ||
+          currentUserData?.entity_type === Verbs.entityTypePlayer
         ) {
           dataParams.user_id = currentUserData?.user_id;
         }
@@ -344,20 +342,17 @@ const HomeFeed = ({
 
   const StickyHeaderComponent = useMemo(
     () => (
-      <View style={{}}>
-        <WritePost
-          navigation={navigation}
-          postDataItem={currentUserData}
-          onWritePostPress={() => {
-            navigation.navigate('WritePostScreen', {
-              postData: currentUserData,
-              onPressDone,
-              selectedImageList: [],
-            });
-          }}
-        />
-        <View style={styles.sepratorView} />
-      </View>
+      <WritePost
+        navigation={navigation}
+        postDataItem={currentUserData}
+        onWritePostPress={() => {
+          navigation.navigate('WritePostScreen', {
+            postData: currentUserData,
+            onPressDone,
+            selectedImageList: [],
+          });
+        }}
+      />
     ),
     [currentUserData, navigation, onPressDone],
   );
@@ -366,7 +361,9 @@ const HomeFeed = ({
     () => (
       <>
         {homeFeedHeaderComponent()}
-        {isAdmin || !['user', 'player'].includes(currentUserData?.entity_type)
+        {isAdmin ||
+        currentUserData?.entity_type !== Verbs.entityTypeUser ||
+        currentUserData?.entity_type !== Verbs.entityTypePlayer
           ? StickyHeaderComponent
           : null}
       </>
@@ -391,7 +388,6 @@ const HomeFeed = ({
 
   return (
     <View style={{flex: 1}}>
-      <View style={styles.sepratorView} />
       <ActivityLoader visible={fullScreenLoading} />
       <NewsFeedList
         showEnptyDataText={currentTab === 0}
@@ -417,10 +413,4 @@ const HomeFeed = ({
   );
 };
 
-const styles = StyleSheet.create({
-  sepratorView: {
-    height: 1,
-    backgroundColor: colors.grayBackgroundColor,
-  },
-});
 export default memo(HomeFeed);
