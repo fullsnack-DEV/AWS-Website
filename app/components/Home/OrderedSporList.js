@@ -22,6 +22,7 @@ import Verbs from '../../Constants/Verbs';
 import {getStorage} from '../../utils';
 import {
   getCardBorderColor,
+  getEntitySport,
   getEntitySportList,
   getSportDetails,
 } from '../../utils/sportsActivityUtils';
@@ -183,7 +184,21 @@ const OrderedSporList = ({
       authContext.sports,
       entityType,
     );
+    const isAvailable =
+      item.setting.availibility ||
+      item.setting.referee_availibility ||
+      item.setting.scorekeeper_availibility;
 
+    let isUserWithSameSport = false;
+    const userSport = getEntitySport({
+      user: authContext.entity.obj,
+      role: item.type,
+      sport: item.sport,
+      sportType: item?.sport_type,
+    });
+    if (userSport?.sport) {
+      isUserWithSameSport = true;
+    }
     const obj = toggledList.find(
       (ele) =>
         ele?.sport && sport.sport === ele.sport && entityType === ele.type,
@@ -257,13 +272,25 @@ const OrderedSporList = ({
 
           {showToggleButton ? (
             <ToggleSwitch
-              isOn={isHide}
+              isOn={!isHide}
               onToggle={() => {
                 handleToggle(item);
               }}
               onColor={colors.greenColorCard}
               offColor={colors.userPostTimeColor}
             />
+          ) : null}
+          {!isAdmin &&
+          isAvailable &&
+          isUserWithSameSport &&
+          authContext.entity.role !== Verbs.entityTypeClub ? (
+            <Pressable style={styles.button}>
+              <Text style={styles.btnText}>
+                {entityType === Verbs.entityTypePlayer
+                  ? strings.challenge.toUpperCase()
+                  : strings.book.toUpperCase()}
+              </Text>
+            </Pressable>
           ) : null}
         </View>
       </Pressable>
@@ -308,7 +335,7 @@ const OrderedSporList = ({
               }}
               showsVerticalScrollIndicator={false}
               ListFooterComponent={() => {
-                if (showAddActivityButton) {
+                if (showAddActivityButton && isAdmin) {
                   return (
                     <TouchableOpacity
                       style={styles.buttonContainer}
@@ -461,7 +488,7 @@ const OrderedSporList = ({
 
 const styles = StyleSheet.create({
   parent: {
-    flex: 1,
+    // flex: 1,
   },
   row: {
     flexDirection: 'row',
@@ -569,6 +596,17 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
     textAlign: 'center',
+  },
+  button: {
+    paddingHorizontal: 9,
+    paddingVertical: 7,
+    backgroundColor: colors.tabFontColor,
+    borderRadius: 5,
+  },
+  btnText: {
+    fontSize: 12,
+    fontFamily: fonts.RBold,
+    color: colors.whiteColor,
   },
 });
 export default OrderedSporList;

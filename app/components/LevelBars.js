@@ -5,7 +5,7 @@ import colors from '../Constants/Colors';
 
 const MAX_LEVEL = 15;
 
-const LevelBars = ({level = 0}) => {
+const LevelBars = ({level = 0, containerStyle = {}}) => {
   const [list, setList] = useState([]);
 
   useEffect(() => {
@@ -21,7 +21,8 @@ const LevelBars = ({level = 0}) => {
   }, [level]);
 
   return (
-    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+    <View
+      style={[{flexDirection: 'row', alignItems: 'center'}, containerStyle]}>
       {list.map((item, index) => (
         <View
           style={[

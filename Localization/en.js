@@ -30,7 +30,7 @@ export default {
   until: 'en_Until',
   weekly: 'en_Weekly',
   addTime: 'en_Add time',
-  setAvailable: 'en_Set available',
+  setAvailable: 'en_Available',
   block: 'en_Block',
   thisEvent: 'en_This event',
   assistRefereeTitle: 'en_Assistant Referee',
@@ -89,7 +89,7 @@ export default {
   yes: 'en_Yes',
   no: 'en_No',
   passwordText: 'en_Password (at least 6 characters)',
-  passwordWarningMessage: 'en_Password should be atleast 6 characters.',
+  passwordWarningMessage: 'en_Password should be atleast 8 characters.',
   confirmPasswordText: 'en_Confirm Password',
   // Password message
   passwordCanNotBlank: 'en_Password cannot be blank.',
@@ -414,7 +414,7 @@ export default {
   oldPassword: 'en_Current Password',
   newPassword: 'en_New Password',
   confirmPassword: 'en_Confirm Password',
-  atLeastText: 'en_(At least 6 characters)',
+  atLeastText: 'en_(at least 8 characters)',
 
   // reservation
 
@@ -1087,7 +1087,7 @@ export default {
   teamsTitleText: 'en_Teams',
   clubsTitleText: 'en_Clubs',
   leaguesTitleText: 'en_Leagues',
-  worldTitleText: 'en_world',
+  worldTitleText: 'en_World',
   world: 'en_World',
   completedTitleText: 'en_Completed',
   upcomingTitleText: 'en_Upcoming',
@@ -1403,7 +1403,7 @@ export default {
 
   areYouSureQuitEditChallengeAvailibilityText:
     'en_Are you sure you want to quit to edit challenge availibility?',
-  editChallengeAvailibility: 'en_Edit Challenge Availability',
+  editChallengeAvailibility: 'en_Edit Availability',
 
   choosedateText: 'en_Choose a date',
   chooseDateTimeText: 'en_Choose a date & time',
@@ -1419,7 +1419,7 @@ export default {
   reactivate: 'en_Reactivate',
   events: 'en_Events',
   availability: 'en_Availability',
-  availableTimeForChallenge: 'en_Available time For challenge',
+  availableTimeForChallenge: 'en_Available time for challenge',
   defaultColor: 'en_Default Color',
   groupEventDisplay: 'en_Group Events Display',
   viewPrivacyText: 'en_View Privacy',
@@ -1432,7 +1432,7 @@ export default {
     'en_No scorekeepers invited or booked by you for this game',
 
   createEvent: 'en_Create Event',
-  editChallengeAvailibilityText: 'en_Edit Challenge Availibility',
+  editChallengeAvailibilityText: 'en_Edit Availibility',
 
   lookingForClubText: 'en_Looking For Club',
   lookingForTeamText: 'en_Looking For Team',
@@ -2554,6 +2554,7 @@ export default {
   createTeamUnderYourClub: 'en_Create A Team Under Your CLub ',
 
   scorekeptMatches: 'en_Scorekept Matches',
+  allSport: 'en_All Sports',
   challengeScreenBottomText:
     'en_These settings will be applied only to incoming challenges that you will receive.',
   reservationScreenBottomText:
@@ -2617,4 +2618,56 @@ export default {
   responseToRequesttxt3:
     'en_{0} and you will be the initial admins of the team, but you can add more admins of the team later.',
   fillInClubName: 'en_Please fill in the club name',
+  emailText: 'en_E-MAIL',
+  whatIsYourSlogan: 'en_What is your slogan?',
+  teamText: 'en_Team',
+  clubText: 'en_Club',
+  inviteToDoubleTeamTitle: 'en_Who Can Invite You To Create Double team',
+  canTeamInviteYou: 'en_Can Team Invite You',
+  canClubInviteYou: 'en_Can Club Invite You',
+  whoCanInviteYouToDoubleTeam: 'en_Who can invite you to create Double team?',
+  canTeamInviteYouToJoinTeam: 'en_Can a team invite you to join the team?',
+  canClubInviteYouToJoinClub: 'en_Can a club invite you to join the club?',
+  myFollowing: 'en_My Following',
+  timeZoneDescription:
+    'en_Date and time displayed in the app will follow the date and time settings of the device.',
+  inviteSent: 'en_Invite Sent',
+  unfollowText: 'en_Unfollow',
+  cancelMembershipInvitation: 'en_Cancel Membership Invitation',
+  requestPendingText: 'en_Request pending',
+  acceptInvitateRequest: 'en_Accept Membership Request',
+  declineMemberRequest: 'en_Decline Membership Request',
+  removeMemberFromTeamText: 'en_Remove Member From Team',
+  newTeamText: 'en_New Team',
+  invitePending: 'en_Invite Pending',
+  leaveTeamFromClub: 'en_Leave This Team  From Club',
+  eventFilterOrganiserTitle: 'en_Organiser',
+  eventFilterSportTitle: 'en_Sport',
+  eventFilterNoneTitle: 'en_None',
+  eventFilterRsvpText: 'en_RSVP',
+  eventFilterRsvpAll: 'en_All',
+  eventFilterRsvpGoing: 'en_Going',
+  eventFilterRsvpMaybe: 'en_Maybe',
+  eventFilterRsvpNotGoing: 'en_Not Going',
+  eventFilterTimeFuture: 'en_Future',
+  eventFilterTimePast: 'en_Past',
+  eventFilterTimeListAny: 'en_Any Time',
+  eventFilterTimeList1Week: 'en_1 Week',
+  eventFilterTimeList1Month: 'en_1 Month',
+  eventFilterTimeList3Month: 'en_3 Months',
+  eventFilterResetText: 'en_Reset',
+
+  todayTitleText: 'en_Today',
+  tomorrowTitleText: 'en_Tomorrow',
+
+  filterAntTime: 'en_Anytime',
+  filterToday: 'en_Today',
+  filterYesterday: 'en_Yesterday',
+  filterLast7Day: 'en_Last 7 days',
+  filterThisMonth: 'en_This month',
+  filterLastMonth: 'en_Last month',
+  filterPickaDate: 'en_Pick a date...',
+  filterRandom: 'en_Random',
+  filterLowtoHighRefereeFee: 'en_Low to High Referee Fee',
+  filterHightoLowRefereeFee: 'High to Low Referee Fee',
 };

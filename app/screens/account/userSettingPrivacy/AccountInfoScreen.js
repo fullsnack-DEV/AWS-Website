@@ -1,7 +1,6 @@
-/* eslint-disable default-case */
 import React, {
   useState,
-  useEffect,
+  // useEffect,
   useLayoutEffect,
   useContext,
   useCallback,
@@ -10,16 +9,16 @@ import {
   StyleSheet,
   View,
   Text,
-  Image,
   TouchableOpacity,
   SafeAreaView,
   Alert,
+  TextInput,
+  Platform,
 } from 'react-native';
 
 import firebase from '@react-native-firebase/app';
 
-import {useIsFocused} from '@react-navigation/native';
-import TCTextField from '../../../components/TCTextField';
+// import {useIsFocused} from '@react-navigation/native';
 import {QBLogout} from '../../../utils/QuickBlox';
 import AuthContext from '../../../auth/context';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
@@ -27,20 +26,16 @@ import images from '../../../Constants/ImagePath';
 import {strings} from '../../../../Localization/translation';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
-import TCLabel from '../../../components/TCLabel';
-import Header from '../../../components/Home/Header';
-import TCKeyboardView from '../../../components/TCKeyboardView';
-import {clearStorage, widthPercentageToDP} from '../../../utils';
+import {clearStorage} from '../../../utils';
 import {updateUserProfile} from '../../../api/Users';
-import TCProfileButton from '../../../components/TCProfileButton';
-// eslint-disable-next-line no-unused-vars
-export default function AccountInfoScreen({navigation, route}) {
-  const authContext = useContext(AuthContext);
-  const isFocused = useIsFocused();
+import ScreenHeader from '../../../components/ScreenHeader';
 
-  // For activity indigator
+export default function AccountInfoScreen({navigation}) {
   const [loading, setloading] = useState(false);
   const [showEmailBox, setShowEmailBox] = useState(false);
+
+  const authContext = useContext(AuthContext);
+  // const isFocused = useIsFocused();
 
   const [userInfo, setUserInfo] = useState(authContext.entity.obj);
   const [oldPassword, setOldPassword] = useState('');
@@ -51,27 +46,31 @@ export default function AccountInfoScreen({navigation, route}) {
     });
   }, [navigation, userInfo]);
 
-  useEffect(() => {
-    // call the checkUserIsRegistratedOrNotWithFirebase for checking if this signup from email or social media, check this functionality is comment after this function
-  }, [isFocused]);
+  // useEffect(() => {
+  //   const user = authContext.entity.obj;
+  //   if (isFocused && user?.email) {
+  //     checkUserIsRegistratedOrNotWithFirebase(user.email);
+  //   }
+  // }, [isFocused, authContext]);
 
-  // const checkUserIsRegistratedOrNotWithFirebase = (email) =>
-  //   new Promise((resolve, reject) => {
-  //     firebase
-  //       .auth()
-  //       .fetchSignInMethodsForEmail(email)
-  //       .then((isAccountThereInFirebase) => {
-  //         if (isAccountThereInFirebase?.length > 0) {
-  //           resolve(isAccountThereInFirebase);
-  //         } else {
-  //           resolve(false);
-  //         }
-  //       })
-  //       .catch((error) => {
-  //         reject(error);
-  //         console.log(error);
-  //       });
-  //   });
+  // const checkUserIsRegistratedOrNotWithFirebase = (email) => {
+  //   console.log({email});
+  //   firebase
+  //     .auth()
+  //     .fetchSignInMethodsForEmail(email)
+  //     .then((res) => {
+  //       console.log({res});
+  //       // if (isAccountThereInFirebase?.length > 0) {
+  //       //   // resolve(isAccountThereInFirebase);
+  //       // } else {
+  //       //   // resolve(false);
+  //       // }
+  //     })
+  //     .catch((error) => {
+  //       // reject(error);
+  //       console.log(error);
+  //     });
+  // };
 
   const checkValidation = () => {
     if (userInfo.email === '') {
@@ -163,140 +162,119 @@ export default function AccountInfoScreen({navigation, route}) {
 
   return (
     <SafeAreaView style={{flex: 1}}>
-      <Header
-        leftComponent={
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Image source={images.backArrow} style={styles.backImageStyle} />
-          </TouchableOpacity>
-        }
-        centerComponent={
-          <Text
-            style={{
-              fontSize: 16,
-              color: colors.lightBlackColor,
-              textAlign: 'center',
-              fontFamily: fonts.RBold,
-            }}>
-            {strings.accountInfo}
-          </Text>
-        }
-        rightComponent={
-          showEmailBox ? (
+      <ScreenHeader
+        leftIcon={images.backArrow}
+        leftIconPress={() => navigation.goBack()}
+        title={strings.accountInfo}
+        containerStyle={styles.headerRow}
+        isRightIconText={showEmailBox}
+        rightButtonText={strings.update}
+        onRightButtonPress={onSavePress}
+      />
+      <ActivityLoader visible={loading} />
+      <View style={{paddingTop: 31, paddingHorizontal: 15}}>
+        <Text style={styles.inputLabel}>{strings.emailText}</Text>
+        <View style={styles.row}>
+          <View>
             <Text
-              style={styles.headerRightButton}
-              numberOfLines={1}
-              onPress={() => {
-                onSavePress();
-              }}>
-              {strings.update}
+              style={[
+                styles.inputLabel,
+                {marginBottom: 0, fontFamily: fonts.RRegular},
+              ]}>
+              {userInfo.email}
             </Text>
-          ) : (
-            <View />
-          )
-        }
-      />
-      <View
-        style={{
-          width: '100%',
-          height: 0.5,
-          backgroundColor: colors.writePostSepratorColor,
-        }}
-      />
-      <TCKeyboardView>
-        <ActivityLoader visible={loading} />
-        <TCLabel title={strings.email} />
-        <View style={styles.emailTextContainer}>
-          <Text style={styles.emailText}>{userInfo.email}</Text>
-          <TCProfileButton
-            title={strings.editEmail}
-            onPressProfile={() => setShowEmailBox(!showEmailBox)}
-            showArrow={false}
-          />
+          </View>
+          <TouchableOpacity
+            style={styles.buttonContainer}
+            onPress={() => setShowEmailBox(true)}>
+            <Text style={styles.buttonText}>{strings.editEmail}</Text>
+          </TouchableOpacity>
         </View>
 
         {showEmailBox && (
-          <View>
-            <TCTextField
+          <>
+            <TextInput
               style={styles.textFieldStyle}
               placeholder={strings.emailPlaceHolder}
-              placeholderTextColor={colors.darkYellowColor}
-              autoCapitalize="none"
               keyboardType="email-address"
               onChangeText={(text) => setUserInfo({...userInfo, email: text})}
               value={userInfo.email}
             />
 
-            <TCTextField
-              style={styles.textFieldStyle}
+            <TextInput
+              style={[styles.textFieldStyle, {marginBottom: 35}]}
               placeholder={strings.passwordPlaceHolder}
-              // placeholderTextColor={colors.darkYellowColor}
-              autoCapitalize="none"
-              secureText={true}
+              secureTextEntry
               onChangeText={(text) => setOldPassword(text)}
               value={oldPassword}
-              textStyle={{color: colors.lightBlackColor}}
             />
-          </View>
+          </>
         )}
+
         <TouchableOpacity
+          style={{alignSelf: 'baseline'}}
           onPress={() => {
             navigation.navigate('ChangePasswordScreen');
           }}>
-          <TCLabel
-            style={{
-              fontFamily: fonts.RRegular,
-              fontSize: 16,
-              textDecorationLine: 'underline',
-            }}
-            title={strings.changePassword}></TCLabel>
+          <Text style={styles.textButton}>{strings.changePassword}</Text>
         </TouchableOpacity>
-      </TCKeyboardView>
+      </View>
     </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
-  backImageStyle: {
-    height: 20,
-    width: 10,
-    tintColor: colors.lightBlackColor,
-    resizeMode: 'contain',
+  headerRow: {
+    paddingHorizontal: 10,
+    paddingTop: 8,
+    paddingBottom: 12,
   },
-  //   textFieldStyle: {
-  //     marginTop: 15,
-  //     width: wp('92%'),
-  //     backgroundColor: 'rgba(255,255,255,0.9)',
-  //     shadowColor: colors.googleColor,
-  //     shadowOffset: {width: 0, height: 3},
-  //     shadowOpacity: 0.3,
-  //     shadowRadius: 4,
-  //   },
-  headerRightButton: {
-    fontFamily: fonts.RRegular,
+  inputLabel: {
     fontSize: 16,
-    width: 100,
-    textAlign: 'right',
-  },
-  emailText: {
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
+    lineHeight: 19,
     color: colors.lightBlackColor,
-    marginTop: 15,
-    marginBottom: 15,
+    fontFamily: fonts.RBold,
+    marginBottom: 10,
   },
-  emailTextContainer: {
+  row: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginLeft: 15,
-    marginRight: 15,
+    marginBottom: 35,
+  },
+  buttonContainer: {
+    paddingHorizontal: 11,
+    paddingVertical: 6,
+    backgroundColor: colors.whiteColor,
+    shadowColor: colors.blackColor,
+    shadowOffset: {
+      width: 2,
+      height: 3,
+    },
+    shadowOpacity: 0.16,
+    shadowRadius: 3,
+    borderRadius: 5,
+    elevation: 5,
+  },
+  buttonText: {
+    fontSize: 12,
+    lineHeight: 15,
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RBold,
   },
   textFieldStyle: {
-    marginTop: 15,
-    width: widthPercentageToDP('92%'),
-    backgroundColor: 'rgba(255,255,255,0.9)',
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 3},
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
+    backgroundColor: colors.textFieldBackground,
+    paddingVertical: Platform.OS === 'android' ? 5 : 12,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+    marginBottom: 15,
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+  },
+  textButton: {
+    fontSize: 16,
+    lineHeight: 26,
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RRegular,
+    textDecorationLine: 'underline',
   },
 });

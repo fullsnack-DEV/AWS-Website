@@ -69,12 +69,14 @@ const EditWrapperScreen = ({navigation, route}) => {
       case strings.ntrpTitle:
         return (
           <EditNTRPScreen
-            sportsList={userData.registered_sports ?? []}
-            setData={(data) => {
-              setUserData({...userData, registered_sports: [...data]});
+            ntrp={updatedSportObj.ntrp ?? ''}
+            setData={(val) => {
+              const obj = {
+                ...updatedSportObj,
+                ntrp: val,
+              };
+              setUpdatedSportObj(obj);
             }}
-            sport={sportObj?.sport}
-            sportType={sportObj?.sport_type}
           />
         );
 
@@ -123,6 +125,7 @@ const EditWrapperScreen = ({navigation, route}) => {
     patchPlayer(data, authContext)
       .then(async (res) => {
         setLoading(false);
+        console.log({res});
         await setAuthContextData(res.payload, authContext);
         navigation.navigate('SportActivityHome', {
           sport: sportObj?.sport,

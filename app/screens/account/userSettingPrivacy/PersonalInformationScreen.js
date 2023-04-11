@@ -1,15 +1,8 @@
 /* eslint-disable default-case */
-import React, {
-  useState,
-  useEffect,
-  useLayoutEffect,
-  useContext,
-  useRef,
-} from 'react';
+import React, {useState, useEffect, useLayoutEffect, useContext} from 'react';
 import {
   StyleSheet,
   View,
-  Text,
   Image,
   TextInput,
   TouchableOpacity,
@@ -19,9 +12,7 @@ import {
 } from 'react-native';
 
 import ImagePicker from 'react-native-image-crop-picker';
-import ActionSheet from 'react-native-actionsheet';
 import {useIsFocused} from '@react-navigation/native';
-import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import {check, PERMISSIONS, RESULTS, request} from 'react-native-permissions';
 import {updateUserProfile} from '../../../api/Users';
 import AuthContext from '../../../auth/context';
@@ -32,100 +23,57 @@ import * as Utility from '../../../utils/index';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import TCLabel from '../../../components/TCLabel';
-import Header from '../../../components/Home/Header';
 import TCKeyboardView from '../../../components/TCKeyboardView';
-import {languageList} from '../../../utils';
 import TCTextField from '../../../components/TCTextField';
-import TCImage from '../../../components/TCImage';
 import uploadImages from '../../../utils/imageAction';
 import {getQBAccountType, QBupdateUser} from '../../../utils/QuickBlox';
 import LocationModal from '../../../components/LocationModal/LocationModal';
+import ScreenHeader from '../../../components/ScreenHeader';
+import BottomSheet from '../../../components/modals/BottomSheet';
 
 export default function PersonalInformationScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
-  const actionSheet = useRef();
   const isFocused = useIsFocused();
 
-  const actionSheetWithDelete = useRef();
-  /* For activity indigator */
+  const [profileOptions, setProfileOptions] = useState([
+    strings.camera,
+    strings.album,
+  ]);
+  const [showProfileOptions, setShowProfileOptions] = useState(false);
   const [loading, setloading] = useState(false);
   const [userInfo, setUserInfo] = useState(authContext.entity.obj);
   const [profileImageChanged, setProfileImageChanged] = useState(false);
-  const [city, setCity] = useState(
-    route?.params?.city ? route.params.city : authContext.entity?.obj?.city,
-  );
 
-  const [state, setState] = useState(
-    route?.params?.state_abbr
-      ? route.params.state_abbr
-      : authContext.entity?.obj?.state_abbr,
-  );
-  const [country, setCountry] = useState(
-    route?.params?.country
-      ? route.params.country
-      : authContext.entity?.obj?.country,
-  );
-
-  const [phoneNumbers] = useState(
-    authContext.entity.obj.phone_numbers || [
-      {
-        id: 0,
-        phone_number: '',
-        country_code: '',
-      },
-    ],
-  );
-
-  const [languageData] = useState(languageList);
-  const [languages, setLanguages] = useState(
-    authContext?.entity?.obj?.language,
-  );
   const [locationPopup, setLocationPopup] = useState();
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: false,
     });
-  }, [navigation, languages, phoneNumbers, userInfo, city, state, country]);
+  }, [navigation]);
 
   useEffect(() => {
     if (isFocused) {
+      const obj = {...authContext.entity.obj};
       if (
-        route?.params?.city &&
-        route?.params?.state_abbr &&
-        route?.params?.country
+        route.params?.city &&
+        route.params?.state_abbr &&
+        route.params?.country
       ) {
-        setCity(route?.params?.city);
-        setState(route?.params?.state_abbr);
-        setCountry(route?.params?.country);
+        obj.city = route.params.city;
+        obj.state_abbr = route.params.state;
+        obj.country = route.params.country;
       }
+      setUserInfo(obj);
     }
-  }, [
-    isFocused,
-    route?.params?.city,
-    route?.params?.country,
-    route?.params?.state_abbr,
-  ]);
-
-  useEffect(() => {
-    const arr = [];
-    for (const temp of languageData) {
-      if (userInfo.language) {
-        if (userInfo.language.includes(temp.language)) {
-          temp.isChecked = true;
-        } else {
-          temp.isChecked = false;
-        }
-        arr.push(temp);
-      }
-    }
-    setLanguages(arr);
-  }, [userInfo.language]);
+  }, [isFocused, route.params, authContext]);
 
   const handleSetLocationOptions = (location) => {
-    setCity(location.city);
-    setState(location.state);
-    setCountry(location.country);
+    const obj = {...userInfo};
+    obj.city = location.city;
+    obj.state_abbr = location.state;
+    obj.country = location.country;
+    setUserInfo(obj);
   };
 
   // Form Validation
@@ -183,25 +131,7 @@ export default function PersonalInformationScreen({navigation, route}) {
     if (checkValidation()) {
       setloading(true);
       const bodyParams = {...userInfo};
-      bodyParams.first_name = userInfo.first_name;
-      bodyParams.last_name = userInfo.last_name;
       bodyParams.full_name = `${userInfo.first_name} ${userInfo.last_name}`;
-
-      bodyParams.city = city;
-      bodyParams.state_abbr = state;
-      bodyParams.country = country;
-
-      bodyParams.description = userInfo.description;
-      bodyParams.height = userInfo.height;
-      bodyParams.weight = userInfo.weight;
-
-      if (userInfo.language) {
-        bodyParams.language = userInfo.language;
-      }
-      if (phoneNumbers) {
-        bodyParams.phone_numbers = userInfo.phone_numbers;
-      }
-
       if (profileImageChanged) {
         const imageArray = [];
         imageArray.push({path: userInfo.thumbnail});
@@ -231,8 +161,6 @@ export default function PersonalInformationScreen({navigation, route}) {
             setloading(false);
           });
       } else {
-        // bodyParams.full_image = '';
-        // bodyParams.thumbnail = '';
         updateUser(bodyParams);
       }
     }
@@ -240,8 +168,10 @@ export default function PersonalInformationScreen({navigation, route}) {
 
   const updateUser = (params) => {
     setloading(true);
+
     updateUserProfile(params, authContext)
-      .then((response) => {
+      .then(async (response) => {
+        await Utility.setAuthContextData(response.payload, authContext);
         const accountType = getQBAccountType(response?.payload?.entity_type);
         QBupdateUser(
           response?.payload?.user_id,
@@ -252,7 +182,6 @@ export default function PersonalInformationScreen({navigation, route}) {
         )
           .then(() => {
             setloading(false);
-
             navigation.goBack();
           })
           .catch((error) => {
@@ -270,13 +199,10 @@ export default function PersonalInformationScreen({navigation, route}) {
   };
 
   const onProfileImageClicked = () => {
-    setTimeout(() => {
-      if (userInfo?.thumbnail) {
-        actionSheetWithDelete.current.show();
-      } else {
-        actionSheet.current.show();
-      }
-    }, 0.1);
+    if (userInfo?.thumbnail) {
+      setProfileOptions([...profileOptions, strings.deleteTitle]);
+    }
+    setShowProfileOptions(true);
   };
 
   const openImagePicker = (width = 400, height = 400) => {
@@ -292,6 +218,7 @@ export default function PersonalInformationScreen({navigation, route}) {
 
       setUserInfo({...userInfo, thumbnail: data.path});
       setProfileImageChanged(true);
+      setShowProfileOptions(false);
     });
   };
 
@@ -328,7 +255,6 @@ export default function PersonalInformationScreen({navigation, route}) {
             });
             break;
           case RESULTS.LIMITED:
-            console.log(strings.permissionLimitedText);
             break;
           case RESULTS.GRANTED:
             {
@@ -350,9 +276,9 @@ export default function PersonalInformationScreen({navigation, route}) {
             }
             break;
           case RESULTS.BLOCKED:
-            console.log(strings.permissionDenitedText);
             break;
         }
+        setShowProfileOptions(false);
       })
       .catch((error) => {
         Alert.alert(error);
@@ -362,123 +288,97 @@ export default function PersonalInformationScreen({navigation, route}) {
   const deleteImage = () => {
     setUserInfo({...userInfo, thumbnail: '', full_image: ''});
     setProfileImageChanged(false);
+    setShowProfileOptions(false);
   };
 
   return (
     <SafeAreaView style={{flex: 1}}>
-      <Header
-        leftComponent={
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Image source={images.backArrow} style={styles.backImageStyle} />
-          </TouchableOpacity>
+      <ScreenHeader
+        title={
+          route.params?.isEditProfile
+            ? strings.editprofiletitle
+            : strings.profile
         }
-        centerComponent={
-          <Text
-            style={{
-              fontSize: 16,
-              color: colors.lightBlackColor,
-              textAlign: 'center',
-              fontFamily: fonts.RBold,
-            }}>
-            {route?.params?.isEditProfile
-              ? strings.editprofiletitle
-              : strings.profile}
-          </Text>
-        }
-        rightComponent={
-          <Text
-            style={styles.headerRightButton}
-            numberOfLines={1}
-            onPress={() => {
-              // if (!editMode) changeEditMode();
-              // else
-              onSavePress();
-            }}>
-            {strings.update}
-          </Text>
-        }
-      />
-      <View
-        style={{
-          width: '100%',
-          height: 0.5,
-          backgroundColor: colors.writePostSepratorColor,
+        leftIcon={images.backArrow}
+        leftIconPress={() => navigation.goBack()}
+        isRightIconText
+        rightButtonText={strings.update}
+        onRightButtonPress={() => {
+          onSavePress();
         }}
+        containerStyle={styles.headerRow}
       />
+
       <TCKeyboardView>
         <ActivityLoader visible={loading} />
 
-        <View style={{flex: 1}}>
-          <TCImage
-            imageStyle={[styles.profileImageStyle, {marginTop: 10}]}
-            source={
-              userInfo.thumbnail
-                ? {uri: userInfo.thumbnail}
-                : images.profilePlaceHolder
-            }
-            defaultSource={images.profilePlaceHolder}
-          />
-
-          <TouchableOpacity
-            style={styles.profileCameraButtonStyle}
-            onPress={() => onProfileImageClicked()}>
+        <View style={styles.container}>
+          <View style={styles.profileImageStyle}>
             <Image
-              style={styles.profileImageButtonStyle}
-              source={images.certificateUpload}
+              source={
+                userInfo?.thumbnail
+                  ? {uri: userInfo.thumbnail}
+                  : images.profilePlaceHolder
+              }
+              style={styles.image}
             />
-          </TouchableOpacity>
-        </View>
-        <TCLabel title={strings.nameText} required={true} />
-        <View style={{marginHorizontal: 15, flexDirection: 'row'}}>
-          <TextInput
-            placeholder={strings.fnameText}
-            style={{
-              ...styles.matchFeeTxt,
-              flex: 1,
-              marginRight: 5,
-              backgroundColor: colors.textFieldBackground,
-            }}
-            onChangeText={(text) => {
-              setUserInfo({...userInfo, first_name: text});
-            }}
-            value={userInfo.first_name}
+            <TouchableOpacity
+              style={styles.profileCameraButtonStyle}
+              onPress={() => onProfileImageClicked()}>
+              <Image
+                style={styles.profileImageButtonStyle}
+                source={images.certificateUpload}
+              />
+            </TouchableOpacity>
+          </View>
+          <TCLabel
+            title={strings.nameText.toUpperCase()}
+            required={true}
+            style={styles.inputLabel}
           />
-          <TextInput
-            placeholder={strings.lnameText}
-            style={{
-              ...styles.matchFeeTxt,
-              flex: 1,
-              marginLeft: 5,
-              backgroundColor: colors.textFieldBackground,
-            }}
-            onChangeText={(text) => {
-              setUserInfo({...userInfo, last_name: text});
-            }}
-            value={userInfo.last_name}
-          />
-        </View>
+          <View style={styles.row}>
+            <TextInput
+              placeholder={strings.fnameText}
+              style={[styles.inputField, {marginRight: 7}]}
+              onChangeText={(text) => {
+                setUserInfo({...userInfo, first_name: text});
+              }}
+              value={userInfo.first_name}
+            />
+            <TextInput
+              placeholder={strings.lnameText}
+              style={[styles.inputField, {marginLeft: 8}]}
+              onChangeText={(text) => {
+                setUserInfo({...userInfo, last_name: text});
+              }}
+              value={userInfo.last_name}
+            />
+          </View>
 
-        <View style={styles.fieldView}>
-          <TCLabel title={strings.currentCity} required={true} />
+          <TCLabel
+            title={strings.currentCity.toUpperCase()}
+            required={true}
+            style={styles.inputLabel}
+          />
 
           <TouchableOpacity onPress={() => setLocationPopup(true)}>
             <TextInput
               placeholder={strings.searchCityPlaceholder}
-              style={{
-                ...styles.matchFeeTxt,
-                backgroundColor: colors.textFieldBackground,
-              }}
-              value={[city, state, country].filter((v) => v).join(', ')}
+              style={styles.inputField}
+              value={[userInfo.city, userInfo.state, userInfo.country]
+                .filter((v) => v)
+                .join(', ')}
               editable={false}
               pointerEvents="none"
             />
           </TouchableOpacity>
-        </View>
 
-        <View>
-          <TCLabel title={strings.slogan} style={{bottom: 5}} />
+          <TCLabel
+            title={strings.slogan.toUpperCase()}
+            style={styles.inputLabel}
+          />
           <TCTextField
-            placeholder={strings.slogan}
+            placeholder={strings.whatIsYourSlogan}
             onChangeText={(text) =>
               setUserInfo({...userInfo, description: text})
             }
@@ -486,12 +386,10 @@ export default function PersonalInformationScreen({navigation, route}) {
             maxLength={150}
             value={userInfo.description}
             height={120}
-            style={{backgroundColor: colors.textFieldBackground}}
+            style={{backgroundColor: colors.textFieldBackground, marginLeft: 0}}
           />
         </View>
       </TCKeyboardView>
-
-      {/* import location modal here and give them props */}
 
       <LocationModal
         visibleLocationModal={locationPopup}
@@ -501,36 +399,16 @@ export default function PersonalInformationScreen({navigation, route}) {
         placeholder={strings.searchByCity}
       />
 
-      <ActionSheet
-        ref={actionSheet}
-        // title={'News Feed Post'}
-        options={[strings.camera, strings.album, strings.cancelTitle]}
-        cancelButtonIndex={2}
-        onPress={(index) => {
-          if (index === 0) {
+      <BottomSheet
+        optionList={profileOptions}
+        isVisible={showProfileOptions}
+        closeModal={() => setShowProfileOptions(false)}
+        onSelect={(option) => {
+          if (option === strings.camera) {
             openCamera();
-          } else if (index === 1) {
+          } else if (option === strings.album) {
             openImagePicker();
-          }
-        }}
-      />
-      <ActionSheet
-        ref={actionSheetWithDelete}
-        // title={'News Feed Post'}
-        options={[
-          strings.camera,
-          strings.album,
-          strings.deleteTitle,
-          strings.cancelTitle,
-        ]}
-        cancelButtonIndex={3}
-        destructiveButtonIndex={2}
-        onPress={(index) => {
-          if (index === 0) {
-            openCamera();
-          } else if (index === 1) {
-            openImagePicker();
-          } else if (index === 2) {
+          } else if (option === strings.deleteTitle) {
             Utility.deleteConfirmation(
               strings.appName,
               strings.deleteConfirmationText,
@@ -543,55 +421,68 @@ export default function PersonalInformationScreen({navigation, route}) {
   );
 }
 const styles = StyleSheet.create({
-  backImageStyle: {
-    height: 20,
-    width: 10,
-    tintColor: colors.lightBlackColor,
-    resizeMode: 'contain',
+  headerRow: {
+    paddingLeft: 10,
+    paddingTop: 8,
+    paddingRight: 18,
+    paddingBottom: 12,
   },
-
-  fieldView: {
-    marginBottom: 2,
+  container: {
+    flex: 1,
+    paddingHorizontal: 15,
+    paddingTop: 22,
   },
-
-  headerRightButton: {
-    fontFamily: fonts.RRegular,
-    fontSize: 16,
-    width: 100,
-    textAlign: 'right',
-  },
-
-  matchFeeTxt: {
-    alignSelf: 'center',
-    backgroundColor: colors.offwhite,
-    borderRadius: 5,
-    color: colors.lightBlackColor,
-    fontSize: 16,
-    marginTop: 12,
-    paddingHorizontal: 10,
-    paddingRight: 30,
-    paddingVertical: 12,
-    width: wp('92%'),
-  },
-
   profileImageStyle: {
-    height: 71,
-    width: 71,
-    marginTop: -36,
-    borderRadius: 35.5,
-    borderWidth: 2,
+    height: 60,
+    width: 60,
+    borderRadius: 30,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.thinDividerColor,
     alignSelf: 'center',
-    borderColor: colors.whiteColor,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 22,
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'contain',
+    borderRadius: 30,
+  },
+  inputLabel: {
+    fontSize: 16,
+    lineHeight: 24,
+    fontFamily: fonts.RBold,
+    color: colors.lightBlackColor,
+    marginTop: 0,
+    marginLeft: 0,
+    marginBottom: 10,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  inputField: {
+    backgroundColor: colors.textFieldBackground,
+    paddingVertical: Platform.OS === 'android' ? 5 : 12,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+    marginBottom: 35,
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    flex: 1,
   },
   profileCameraButtonStyle: {
-    height: 22,
-    width: 22,
-    marginTop: -22,
-    marginLeft: 48,
-    alignSelf: 'center',
+    height: 25,
+    width: 25,
+    position: 'absolute',
+    bottom: -5,
+    right: -5,
   },
   profileImageButtonStyle: {
     height: 22,
     width: 22,
+    resizeMode: 'contain',
   },
 });

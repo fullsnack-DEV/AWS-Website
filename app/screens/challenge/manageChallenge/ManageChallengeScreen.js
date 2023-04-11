@@ -362,7 +362,8 @@ export default function ManageChallengeScreen({navigation, route}) {
         renderItem={renderMenu}
         showsVerticalScrollIndicator={false}
         ListFooterComponent={() => (
-          <View style={{marginTop: 25, marginBottom: 15}}>
+          <View
+            style={{marginTop: 25, marginBottom: 15, paddingHorizontal: 15}}>
             <Text style={styles.label}>
               {strings.challengeScreenBottomText}
             </Text>

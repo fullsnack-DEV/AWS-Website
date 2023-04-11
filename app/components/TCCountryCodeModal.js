@@ -28,18 +28,26 @@ const TCCountryCodeModal = ({
 }) => {
   const [countryList, setCountryList] = useState(countryCodeList);
   const renderCountryCode = ({item}) => (
-    <Pressable onPress={() => countryCodeObj(item)}>
-      <View>
-        <Text
-          style={
-            styles.cityList
-          }>{`${item.country} (${item.iso} +${item.code})`}</Text>
-        <TCThinDivider
-          width={'100%'}
-          backgroundColor={colors.grayBackgroundColor}
-        />
-      </View>
-    </Pressable>
+    <>
+      <Pressable
+        onPress={() => countryCodeObj(item)}
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}>
+        <View>
+          <Text style={styles.cityList}>{item.country}</Text>
+        </View>
+        <View style={{alignItems: 'flex-end'}}>
+          <Text style={styles.cityList}>+{item.code}</Text>
+        </View>
+      </Pressable>
+      <TCThinDivider
+        width={'100%'}
+        backgroundColor={colors.grayBackgroundColor}
+      />
+    </>
   );
 
   const searchCode = (text) => {
@@ -173,7 +181,7 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     fontFamily: fonts.RRegular,
     // paddingLeft: wp('1%'),
-    width: widthPercentageToDP('70%'),
+    // width: widthPercentageToDP('70%'),
     // margin: wp('4%'),
     marginBottom: widthPercentageToDP('4%'),
     marginRight: widthPercentageToDP('4%'),

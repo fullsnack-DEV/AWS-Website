@@ -15,6 +15,7 @@ import {strings} from '../../../Localization/translation';
 import TCGradientButton from '../TCGradientButton';
 import {groupPaused, groupUnpaused} from '../../api/Groups';
 import {getQBAccountType, QBupdateUser} from '../../utils/QuickBlox';
+import {setAuthContextData} from '../../utils';
 
 export default function PauseGroupScreen({navigation, route}) {
   const [sportObj] = useState(route?.params?.sport);
@@ -36,8 +37,8 @@ export default function PauseGroupScreen({navigation, route}) {
   const pauseGroup = () => {
     setloading(true);
     groupPaused(authContext)
-      .then((response) => {
-        console.log('deactivate account ', response);
+      .then(async (response) => {
+        await setAuthContextData(response.payload, authContext);
 
         const accountType = getQBAccountType(response?.payload?.entity_type);
         QBupdateUser(

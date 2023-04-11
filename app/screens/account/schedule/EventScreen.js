@@ -55,7 +55,6 @@ import {
  import{getGroupMembers} from '../../../api/Groups';
 
 export default function EventScreen({navigation, route}) { 
-  console.log('DATA', route?.params?.data)
   const actionSheet = useRef();
   const userActionSheet = useRef();
   const isFocused = useIsFocused();
@@ -183,6 +182,7 @@ export default function EventScreen({navigation, route}) {
     });
   }, [navigation, isOrganizer]);
 
+
   useEffect(() => {
     if (isFocused) {
       if(route?.params?.event) {
@@ -190,6 +190,7 @@ export default function EventScreen({navigation, route}) {
       }
     }
   }, [isFocused, route?.params?.comeFrom]);
+  
 
   useEffect(() => {
     const goingData = eventData.going ?? [];
@@ -353,9 +354,13 @@ export default function EventScreen({navigation, route}) {
 
   const attendAPICall = () => {
     setloading(true);
-    attendEvent(eventData.cal_id, authContext)
+    const data = {
+      start_datetime: eventData.start_datetime,
+      end_datetime: eventData.end_datetime
+    }
+    attendEvent(eventData.cal_id, data, authContext)
       .then((response) => {
-        setEventData(response?.payload);
+        setEventData(response?.payload[0]);
         setloading(false);
       })
       .catch((e) => {
@@ -612,6 +617,8 @@ export default function EventScreen({navigation, route}) {
               onPressProfile={() =>
                 navigation.navigate('InviteToEventScreen', {
                   eventId: eventData.cal_id,
+                  start_datetime: eventData.start_datetime,
+                  end_datetime: eventData.end_datetime
                 })
               }
             />

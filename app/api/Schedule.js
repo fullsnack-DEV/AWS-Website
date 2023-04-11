@@ -80,11 +80,11 @@ export const inviteToEvent = async (event_id, params, authContext) =>
     authContext,
   });
 
-export const attendEvent = async (event_id, authContext) =>
+export const attendEvent = async (event_id, params, authContext) =>
   makeAPIRequest({
     method: 'post',
     url: `${Config.BASE_URL}events/${event_id}/attend`,
-    data: {},
+    data: params,
     authContext,
   });
 

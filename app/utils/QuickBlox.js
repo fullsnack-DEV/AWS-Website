@@ -27,8 +27,6 @@ export const getQBSetting = async () => {
       setting_token: '3c5a5976-4831-41b3-a0cb-1aeb9d2e2c1c',
     },
   }).then(async (response) => {
-    console.log('setting response:=>', response);
-
     if (!response.data.status) {
       QB.settings
         .init({
@@ -38,8 +36,6 @@ export const getQBSetting = async () => {
           accountKey: response.data.payload.app.quickblox.accountKey,
         })
         .then(() => {
-          console.log('QB init done..');
-
           QB.settings.enableAutoReconnect({enable: true});
         })
         .catch((e) => {
@@ -63,7 +59,6 @@ export const getQBSetting = async () => {
           accountKey: response.data.payload.app.quickblox.accountKey,
         })
         .then(() => {
-          console.log('QB init done..');
           QB.settings.enableAutoReconnect({enable: true});
         })
         .catch((e) => {
@@ -197,7 +192,7 @@ export const QBcreateUser = (uniqueID, customData, userAccountType) => {
     under_terminate,
   };
   custData.full_name = pureName;
-  console.log('create user call');
+
   return QB.users.create({
     fullName,
     login: uniqueID.trim(),
@@ -318,7 +313,6 @@ export const QBgetDialogs = async (request = {}) => {
         limit: DIALOG_LIST_LIMIT,
         ...params,
       });
-      console.log('QB get dialog', response);
 
       return {...response, append};
     } catch (e) {
@@ -430,7 +424,6 @@ export const QBupdateDialogNameAndPhoto = (
       const qbObj = authContext?.entity?.QB;
       const url = `${QUICKBLOX_BASE_URL}/chat/Dialog/${dialogId}.json`;
 
-      console.log('URL::=>', url);
       return qbApiCall({
         url,
         method: 'PUT',
@@ -483,8 +476,7 @@ export const QBDeleteMessage = async (messageId, authContext) => {
   return QBChatConnected().then((connected) => {
     if (connected) {
       const url = `${QUICKBLOX_BASE_URL}/chat/Message/${messageId},${messageId}.json`;
-      console.log('QB Url Delete:-', url);
-      console.log('QB Token:-', qbObj?.token);
+
       return fetch(url, {
         method: 'DELETE',
         headers: {
@@ -597,18 +589,15 @@ export const QBconnectAndSubscribe = async (entity) => {
     if (!connected) {
       return QB.chat
         .connect(connectParams)
-        .then(async () => {
-          console.log('QB connected successfully');
-          return true;
-        })
+        .then(async () => true)
         .catch((error) => {
           console.log(error.message);
           return {error: error.message};
         });
     }
-    console.log('QB already connected');
+
     return true;
   }
-  console.log('Something went wrong');
+
   return {error: 'Something Went wrong'};
 };

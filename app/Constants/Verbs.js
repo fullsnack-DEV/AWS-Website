@@ -124,6 +124,11 @@ const Verbs = {
   ACCEPTDECLINE: 'acceptdecline',
 
   setText: 'Set',
+
+  EVENT_FILTER_TIME_ANY: 0,
+  EVENT_FILTER_TIME_ONE_WEEK: 7,
+  EVENT_FILTER_TIME_ONE_MONTH: 30,
+  EVENT_FILTER_TIME_THREE_MONTH: 90,
 };
 
 export default Verbs;

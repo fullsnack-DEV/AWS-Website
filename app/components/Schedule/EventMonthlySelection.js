@@ -8,13 +8,14 @@ import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 import Verbs from '../../Constants/Verbs';
 
+
 export default function EventMonthlySelection({
   dataSource,
   placeholder,
   value,
   onValueChange,
   containerStyle,
-  title,
+  title
 }) {
   return (
     <View style={[styles.containerStyle, containerStyle]}>
@@ -64,7 +65,6 @@ const styles = StyleSheet.create({
   inputAndroid: {
     alignSelf: 'center',
     borderRadius: 5,
-    color: colors.lightBlackColor,
     elevation: 3,
     fontSize: 16,
     fontFamily: fonts.RRegular,
@@ -80,7 +80,6 @@ const styles = StyleSheet.create({
   },
   inputIOS: {
     alignSelf: 'center',
-    color: colors.lightBlackColor,
     fontSize: 16,
     fontFamily: fonts.RRegular,
     height: 30,

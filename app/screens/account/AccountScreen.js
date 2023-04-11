@@ -338,6 +338,7 @@ export default function AccountScreen({navigation, route}) {
           setTeamList([...res1.payload, ...res2.payload]);
         });
       }
+      setLoading(false);
     },
     [authContext],
   );
@@ -346,8 +347,10 @@ export default function AccountScreen({navigation, route}) {
     getJoinedGroups(Verbs.entityTypeClub, authContext)
       .then((response) => {
         setClubList(response.payload);
+        setLoading(false);
       })
       .catch((e) => {
+        setLoading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
@@ -961,9 +964,9 @@ export default function AccountScreen({navigation, route}) {
   const unPauseGroup = () => {
     setLoading(true);
     groupUnpaused(authContext)
-      .then((response) => {
+      .then(async (response) => {
         setIsAccountDeactivated(false);
-
+        await Utility.setAuthContextData(response.payload, authContext);
         const accountType = getQBAccountType(response?.payload?.entity_type);
         QBupdateUser(
           response?.payload?.user_id,

@@ -27,6 +27,7 @@ const ScreenHeader = ({
   rightIcon1Press = () => {},
   rightIcon2Press = () => {},
   containerStyle = {},
+  labelStyle = {},
 }) => (
   <View style={[styles.headerRow, containerStyle]}>
     {leftIcon ? (
@@ -50,7 +51,9 @@ const ScreenHeader = ({
         )
       )}
 
-      <Text style={styles.headerTitle}>{title}</Text>
+      <Text style={[styles.headerTitle, labelStyle]} numberOfLines={1}>
+        {title}
+      </Text>
     </View>
 
     {isRightIconText ? (
