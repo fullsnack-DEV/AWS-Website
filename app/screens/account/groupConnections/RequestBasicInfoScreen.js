@@ -1,5 +1,6 @@
 /* eslint-disable  no-unused-vars */
 /* eslint-disable  no-else-return */
+/* eslint-disable  no-unneeded-ternary */
 
 import React, {useState, useEffect, useLayoutEffect, useContext} from 'react';
 import {
