@@ -24,8 +24,7 @@ import {
 } from '@react-navigation/native';
 
 import ActionSheet from '@alessiocancian/react-native-actionsheet';
-// import Modal from 'react-native-modal';
-// import LinearGradient from 'react-native-linear-gradient';
+
 import AuthContext from '../../../auth/context';
 import TCSearchBox from '../../../components/TCSearchBox';
 import TCNoDataView from '../../../components/TCNoDataView';
@@ -39,8 +38,7 @@ import ActivityLoader from '../../../components/loader/ActivityLoader';
 
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors';
-// import fonts from '../../../Constants/Fonts'
-// import TCThinDivider from '../../../components/TCThinDivider';
+
 import {strings} from '../../../../Localization/translation';
 
 import fonts from '../../../Constants/Fonts';
@@ -583,7 +581,10 @@ export default function GroupMembersScreen({navigation, route}) {
               <View style={styles.topTextContainer}>
                 <TouchableOpacity
                   disabled={!data.connected}
-                  style={{flexDirection: 'row', alignItems: 'center'}}
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                  }}
                   onPress={() => onPressProfilePhotoAndTitle(data)}>
                   <Text style={styles.nameText} numberOfLines={1}>
                     {data.first_name} {data.last_name}
@@ -621,7 +622,7 @@ export default function GroupMembersScreen({navigation, route}) {
                       }}
                     />
                   )}
-                  {data?.is_member && (
+                  {data?.is_player && (
                     <TCUserRoleBadge
                       title={strings.player}
                       titleColor={colors.playerBadgeColor}

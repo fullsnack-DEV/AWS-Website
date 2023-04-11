@@ -1,9 +1,8 @@
 // @flow
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   FlatList,
   Image,
-  Modal,
   Pressable,
   Text,
   View,
@@ -11,6 +10,8 @@ import {
   Dimensions,
   TouchableWithoutFeedback,
 } from 'react-native';
+
+import Modal from 'react-native-modal';
 
 import images from '../../Constants/ImagePath';
 
@@ -20,6 +21,8 @@ import fonts from '../../Constants/Fonts';
 
 import TCFollowerList from '../TCFollowerList';
 import TCThinDivider from '../TCThinDivider';
+import ActivityLoader from '../loader/ActivityLoader';
+import CustomIosAlert from '../CustomIosAlert';
 
 const MemberListModal = ({
   isVisible,
@@ -29,16 +32,25 @@ const MemberListModal = ({
   onItemPress = () => {},
   sport = null,
   title = '',
+  loading = false,
+  visibleAlert = false,
+  onGoBack = () => {},
+  titleAlert = '',
+  onCancetTerminationPress = () => {},
 }) => {
   const [follower, setFollower] = useState();
 
   const [followersSelection, setFollowersSelection] = useState();
 
+  useEffect(() => {
+    setFollowersSelection('');
+  }, [isVisible]);
+
   const renderFollowers = ({item}) => (
     <TouchableWithoutFeedback
       style={styles.listItem}
       onPress={() => {
-        onItemPress();
+        onItemPress(item);
         setFollowersSelection(item.user_id);
 
         setFollower(item);
@@ -62,6 +74,7 @@ const MemberListModal = ({
             item?.thumbnail ? {uri: item.thumbnail} : images.profilePlaceHolder
           }
         />
+
         <View style={styles.checkbox}>
           {followersSelection === item.user_id ? (
             <Image
@@ -77,43 +90,58 @@ const MemberListModal = ({
   );
 
   return (
-    <Modal visible={isVisible} transparent animationType="slide">
-      <View style={styles.parent}>
-        <View style={styles.card}>
-          <View style={styles.headerRow}>
-            <View style={{flex: 1}}>
-              <Pressable style={{width: 26, height: 26}} onPress={closeList}>
-                <Image source={images.crossImage} style={styles.image} />
-              </Pressable>
-            </View>
-            <View style={styles.headerTitleContainer}>
-              <Text style={styles.headerTitle}>
-                {sport?.sport ? strings.sportTextTitle : title}
-              </Text>
-            </View>
-            <Pressable
-              style={styles.buttonContainer}
-              onPress={() => {
-                onNext(follower);
-              }}>
-              <Text style={styles.buttonText}>
-                {sport?.sport ? strings.apply : strings.next}
-              </Text>
+    <Modal
+      isVisible={isVisible}
+      transparent
+      animationInTiming={300}
+      animationOutTiming={800}
+      backdropTransitionInTiming={300}
+      backdropTransitionOutTiming={800}
+      animationType="slide"
+      style={{
+        margin: 0,
+      }}>
+      <CustomIosAlert
+        visibleAlert={visibleAlert}
+        onGoBack={onGoBack}
+        alertTitle={titleAlert}
+        onCancetTerminationPress={onCancetTerminationPress}
+      />
+      <ActivityLoader visible={loading} />
+      <View style={styles.card}>
+        <View style={styles.headerRow}>
+          <View style={{flex: 1}}>
+            <Pressable style={{width: 26, height: 26}} onPress={closeList}>
+              <Image source={images.crossImage} style={styles.image} />
             </Pressable>
           </View>
-          <View style={styles.divider} />
-          <View style={styles.container}>
-            <Text style={styles.title}>
-              {strings.whoDoYouwantToCreateTeamWith}
+          <View style={styles.headerTitleContainer}>
+            <Text style={styles.headerTitle}>
+              {sport?.sport ? strings.sportTextTitle : title}
             </Text>
-            <View>
-              <FlatList
-                ItemSeparatorComponent={() => <TCThinDivider />}
-                data={sportsList}
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={renderFollowers}
-              />
-            </View>
+          </View>
+          <Pressable
+            style={styles.buttonContainer}
+            onPress={() => {
+              onNext(follower);
+            }}>
+            <Text style={styles.buttonText}>
+              {sport?.sport ? strings.apply : strings.next}
+            </Text>
+          </Pressable>
+        </View>
+        <View style={styles.divider} />
+        <View style={styles.container}>
+          <Text style={styles.title}>
+            {strings.whoDoYouwantToCreateTeamWith}
+          </Text>
+          <View>
+            <FlatList
+              ItemSeparatorComponent={() => <TCThinDivider />}
+              data={sportsList}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={renderFollowers}
+            />
           </View>
         </View>
       </View>
@@ -124,21 +152,16 @@ const MemberListModal = ({
 export default MemberListModal;
 
 const styles = StyleSheet.create({
-  parent: {
-    flex: 1,
-    backgroundColor: colors.modalBackgroundColor,
-    justifyContent: 'flex-end',
-  },
   card: {
-    backgroundColor: colors.whiteColor,
-    height: Dimensions.get('window').height - 50,
-    borderTopRightRadius: 20,
-    borderTopLeftRadius: 20,
-    shadowColor: colors.shadowColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 5,
-    elevation: 15,
+    width: '100%',
+    height: Dimensions.get('window').height / 1.07,
+    backgroundColor: 'white',
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    shadowColor: '#000',
   },
   headerRow: {
     paddingTop: 15,

@@ -124,7 +124,6 @@ const Verbs = {
   ACCEPTDECLINE: 'acceptdecline',
 
   setText: 'Set',
-
 };
 
 export default Verbs;

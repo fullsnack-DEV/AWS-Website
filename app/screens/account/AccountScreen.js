@@ -19,6 +19,8 @@ import {
   StyleSheet,
   TouchableOpacity,
   Dimensions,
+  Platform,
+  Pressable,
 } from 'react-native';
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import Modal from 'react-native-modal';
@@ -36,9 +38,12 @@ import AuthContext from '../../auth/context';
 import {
   getJoinedGroups,
   getTeamsOfClub,
-  getGroupRequest,
+  actionOnGroupRequest,
   getTeamPendingRequest,
   groupUnpaused,
+  groupValidate,
+  joinTeam,
+  getGroupDetails,
 } from '../../api/Groups';
 
 import {getUnreadCount} from '../../api/Notificaitons';
@@ -56,7 +61,7 @@ import {
 } from '../../utils/QuickBlox';
 
 import Header from '../../components/Home/Header';
-import TCGradientButton from '../../components/TCGradientButton';
+
 import {
   prepareUserMenu,
   prepareTeamMenu,
@@ -108,11 +113,18 @@ export default function AccountScreen({navigation, route}) {
   const [selectedMenuOptionType, setSelectedMenuOptionType] = useState(
     Verbs.entityTypePlayer,
   );
+  const [doubleSport, setDoubleSport] = useState();
   const [memberListModal, setMemberListModal] = useState(false);
   const navigations = useNavigation();
   const [players, setPlayers] = useState([]);
   const [pageFrom, setPageFrom] = useState(0);
-  const [pageSize] = useState(10);
+  const [pageSize] = useState(200);
+  const [doubleExist, setDoubleExist] = useState(true);
+  const [Visiblealert, setVisibleAlert] = useState(false);
+  const [CustomeAlertTitle, setCustomeAlertTitle] = useState();
+  const [grpIdforTermination, setGrpIdForTermination] = useState();
+  const [onlyteamSport, setOnlyTeamSport] = useState();
+  const [showOnlyTeamSport, setShowOnlyTeamSport] = useState();
 
   useEffect(() => {
     if (route.params?.switchToUser === 'fromMember') {
@@ -132,8 +144,13 @@ export default function AccountScreen({navigation, route}) {
         },
       });
       Alert.alert(
-        format(strings.adminremoved, route.params?.grpname.obj.group_name),
-        '',
+        Platform.OS === 'android'
+          ? ''
+          : format(strings.adminremoved, route.params?.grpname?.obj.group_name),
+        Platform.OS === 'android'
+          ? format(strings.adminremoved, route.params?.grpname?.obj.group_name)
+          : '',
+
         [
           {
             text: 'OK',
@@ -162,8 +179,22 @@ export default function AccountScreen({navigation, route}) {
 
   useEffect(() => {
     const sportArr = getExcludedSportsList(authContext, selectedMenuOptionType);
+
+    //sorting the list alphabetically
+    sportArr.sort((a, b) =>
+      a.sport_name.normalize().localeCompare(b.sport_name.normalize()),
+    );
+
     setSportsData([...sportArr]);
-  }, [authContext, selectedMenuOptionType]);
+
+    let OnlyTeamSport = sportsData.filter(
+      (item) => item.sport === item.sport_type,
+    );
+
+    setOnlyTeamSport(OnlyTeamSport);
+
+    // get only team sport
+  }, [authContext, selectedMenuOptionType, showOnlyTeamSport]);
 
   const [navigationOptions, setNavigationOptions] = useState({});
 
@@ -323,16 +354,40 @@ export default function AccountScreen({navigation, route}) {
       });
   }, [authContext, clubList]);
 
-  const onCancelTeamRequest = (type, requestID) => {
+  const actionOnTeamRequest = (type, requestID) => {
     setLoading(true);
-    getGroupRequest(type, requestID, authContext)
+    actionOnGroupRequest(type, requestID, authContext)
       .then((response) => {
         setLoading(false);
-        getTeamsList(authContext.entity);
-        if (response.status) {
+
+        // check type
+
+        if (type === 'cancel') {
+          getTeamsList(authContext.entity);
           Alert.alert(strings.teamRequestCancelledText);
-        } else {
-          Alert.alert(strings.somethingWrongWithRequestText);
+        } else if (type === 'accept') {
+          setMemberListModal(false);
+          navigation.push('HomeScreen', {
+            uid: response.payload.group_id,
+            role: response.payload.entity_type,
+            backButtonVisible: false,
+            menuBtnVisible: false,
+            isEntityCreated: true,
+            groupName: response.payload.group_name,
+            entityObj: response.payload,
+          });
+        } else if (type === 'decline') {
+          Alert.alert(
+            strings.requestWasDeclined,
+            '',
+            [
+              {
+                text: strings.OkText,
+                onPress: () => navigation.goBack(),
+              },
+            ],
+            {cancelable: false},
+          );
         }
 
         // }
@@ -478,22 +533,27 @@ export default function AccountScreen({navigation, route}) {
   const handleSectionMemberClick = useCallback(
     (rowObj) => {
       const option = rowObj.option;
-      if (authContext.entity.role !== Verbs.entityTypeUser) {
-        setIsRulesModalVisible(
-          option === strings.createTeamText ||
-            option === strings.createClubText,
-        );
-      }
+
       switch (option) {
         case strings.createTeamText:
-          setCreateEntity(Verbs.entityTypeTeam);
-          setVisibleSportsModalForTeam(true);
-          setNavigationOptions({
-            screenName: rowObj.navigateTo.screenName,
-            data: rowObj.navigateTo.data,
-          });
+          if (authContext.entity.role !== Verbs.entityTypeUser) {
+            setCreateEntity(Verbs.entityTypeTeam);
+            setIsRulesModalVisible(true);
 
-          setSelectedMenuOptionType(Verbs.entityTypeTeam);
+            setNavigationOptions({
+              screenName: rowObj?.navigateTo?.screenName,
+              data: rowObj?.navigateTo?.data,
+            });
+          } else {
+            setCreateEntity(Verbs.entityTypeTeam);
+            setVisibleSportsModalForTeam(true);
+            setNavigationOptions({
+              screenName: rowObj?.navigateTo?.screenName,
+              data: rowObj?.navigateTo?.data,
+            });
+
+            setSelectedMenuOptionType(Verbs.entityTypeTeam);
+          }
 
           break;
 
@@ -558,6 +618,309 @@ export default function AccountScreen({navigation, route}) {
     />
   );
 
+  const onJoinTeamPress = (grp_id) => {
+    setLoading(true);
+    const params = {};
+
+    joinTeam(params, grp_id, authContext)
+      .then(() => {
+        setLoading(false);
+
+        setMemberListModal(false);
+        getGroupDetails(grp_id, authContext)
+          .then((response) => {
+            setLoading(false);
+
+            navigation.push('HomeScreen', {
+              uid: response.payload.group_id,
+              role: response.payload.entity_type,
+              backButtonVisible: false,
+              menuBtnVisible: false,
+              isEntityCreated: true,
+
+              groupName: response.payload.group_name,
+              entityObj: response.payload,
+              userJoinTeam: true,
+            });
+          })
+          .catch((e) => {
+            setLoading(false);
+            Alert.alert(
+              e.message,
+              '',
+              [
+                {
+                  text: strings.OkText,
+                  onPress: () => console.log('PRessed'),
+                },
+              ],
+              {cancelable: false},
+            );
+          });
+      })
+      .catch((e) => {
+        setLoading(false);
+        Alert.alert(
+          e.message,
+          '',
+          [
+            {
+              text: strings.OkText,
+              onPress: () => console.log('PRessed'),
+            },
+          ],
+          {cancelable: false},
+        );
+      });
+  };
+
+  const onCancelTermination = (authContext, group_id) => {
+    const caller_id = group_id;
+    const caller = Verbs.entityTypeTeam;
+
+    const headers = [caller_id, caller];
+
+    groupUnpaused(authContext, headers)
+      .then(() => {})
+      .catch((e) => {
+        Alert.alert(
+          e.message,
+          '',
+          [
+            {
+              text: strings.OkText,
+              onPress: () => console.log('PRessed'),
+            },
+          ],
+          {cancelable: false},
+        );
+      });
+  };
+
+  const onResendRequest = (player1, player2, sport, sport_type, request_id) => {
+    const obj = {
+      player1,
+      player2,
+      sport,
+      sport_type,
+      entity_type: Verbs.entityTypeTeam,
+      request_id: request_id,
+    };
+    setLoading(true);
+
+    groupValidate(obj, authContext)
+      .then(() => {
+        setLoading(false);
+
+        Alert.alert(
+          Platform.OS === 'android' ? '' : strings.requestSent,
+          Platform.OS === 'android' ? strings.requestSent : '',
+
+          [
+            {
+              text: strings.OkText,
+              onPress: () => setMemberListModal(false),
+            },
+          ],
+          {cancelable: false},
+        );
+      })
+      .catch((e) => {
+        setLoading(false);
+        Alert.alert(
+          Platform.OS === 'android' ? '' : e.message,
+          Platform.OS === 'android' ? e.message : '',
+
+          [
+            {
+              text: strings.OkText,
+              onPress: () => console.log('PRessed'),
+            },
+          ],
+          {cancelable: false},
+        );
+      });
+  };
+
+  const validateIfDoubleExist = (p1, p2, _sport) => {
+    const obj = {
+      player1: p1,
+      player2: p2,
+      sport: _sport.sport,
+      sport_type: _sport.sport_type,
+      entity_type: Verbs.entityTypeTeam,
+    };
+
+    setLoading(true);
+    groupValidate(obj, authContext)
+      .then((response) => {
+        if (typeof response.payload == 'boolean' && response.payload) {
+          setDoubleExist(false);
+          setLoading(false);
+        } else if (
+          response.payload.error_code === Verbs.REQUESTALREADYEXIST &&
+          response.payload.hasOwnProperty('action')
+        ) {
+          setLoading(false);
+
+          const {player1, player2, sport, sport_type, request_id} =
+            response.payload.data;
+
+          // show custom Alert
+
+          Alert.alert(
+            Platform.OS === 'android' ? '' : response.payload.user_message,
+            Platform.OS === 'android' ? response.payload.user_message : '',
+
+            [
+              {
+                text: strings.goBack,
+                onPress: () => console.log('PRessed'),
+              },
+              {
+                text: strings.resendRequest,
+                onPress: () =>
+                  onResendRequest(
+                    player1,
+                    player2,
+                    sport,
+                    sport_type,
+                    request_id,
+                  ),
+              },
+            ],
+            {cancelable: false},
+          );
+        } else if (response.payload.error_code === Verbs.REQUESTALREADYEXIST) {
+          setLoading(false);
+
+          // show custom Alert
+          Alert.alert(
+            Platform.OS === 'android' ? '' : response.payload.user_message,
+            Platform.OS === 'android' ? response.payload.user_message : '',
+            [
+              {
+                text: strings.acceptRequet,
+                onPress: () =>
+                  actionOnTeamRequest(
+                    'accept',
+                    response.payload.data.request_id,
+                    authContext,
+                  ),
+              },
+              {
+                text: strings.declineRequest,
+                onPress: () =>
+                  actionOnTeamRequest(
+                    'decline',
+                    response.payload.data.request_id,
+                  ),
+              },
+              {
+                text: strings.cancel,
+                onPress: () => console.log('PRessed'),
+              },
+            ],
+            {cancelable: false},
+          );
+        } else if (response.payload.error_code === Verbs.GROUPTERMINATION) {
+          setLoading(false);
+          setCustomeAlertTitle(response.payload.user_message);
+
+          setGrpIdForTermination(response.payload.data.group_id);
+          setVisibleAlert(true);
+        } else if (
+          response.payload?.data.player_leaved === true &&
+          response.payload.error_code === 102
+        ) {
+          setLoading(false);
+          Alert.alert(
+            Platform.OS === 'android' ? '' : response.payload.user_message,
+            Platform.OS === 'android' ? response.payload.user_message : '',
+            [
+              {
+                text: strings.cancel,
+                onPress: () => console.log('PRessed'),
+                style: 'destructive',
+              },
+              {
+                text: 'Rejoin',
+                onPress: () => onJoinTeamPress(response.payload?.data.group_id),
+              },
+            ],
+            {cancelable: false},
+          );
+        }
+      })
+      .catch((e) => {
+        Alert.alert(
+          Platform.OS === 'android' ? '' : e.message,
+          Platform.OS === 'android' ? e.message : '',
+
+          [
+            {
+              text: strings.OkText,
+              onPress: () => console.log('PRessed'),
+            },
+          ],
+          {cancelable: false},
+        );
+
+        setLoading(false);
+      });
+  };
+
+  const onWithdrawRequest = (rowItem) => {
+    Alert.alert(
+      strings.areYouSureTouWantToWithdrawRequest,
+      '',
+      [
+        {
+          text: strings.cancel,
+          onPress: () => console.log('PRessed'),
+        },
+        {
+          text: strings.withDrawRequest,
+          onPress: () =>
+            actionOnTeamRequest('cancel', rowItem?.option?.request_id),
+        },
+      ],
+
+      {cancelable: true},
+    );
+  };
+
+  const onCancelRequest = (rowItem) => {
+    Alert.alert(
+      Platform.OS === 'android' ? '' : strings.teamWillbeCreatedAcceptRequest,
+      Platform.OS === 'android' ? strings.teamWillbeCreatedAcceptRequest : '',
+      [
+        {
+          text: strings.resendRequest,
+          onPress: () =>
+            onResendRequest(
+              rowItem.option.player1,
+              rowItem.option.player2,
+              rowItem.option.sport,
+              rowItem.option.sport_type,
+              rowItem.option.request_id,
+            ),
+        },
+        {
+          text: strings.withDrawRequest,
+          onPress: () => onWithdrawRequest(rowItem),
+        },
+        {
+          text: strings.cancel,
+          onPress: () => console.log('PRessed'),
+          style: 'destructive',
+        },
+      ],
+
+      {cancelable: true},
+    );
+  };
+
   const renderAccountMenuRows = useCallback(
     (rowItem) =>
       rowItem.option ? (
@@ -570,9 +933,7 @@ export default function AccountScreen({navigation, route}) {
               rowItem.navigateTo.data,
             );
           }}
-          onPressCancelRequest={() =>
-            onCancelTeamRequest('cancel', rowItem?.option?.request_id)
-          }
+          onPressCancelRequest={() => onCancelRequest(rowItem)}
           onPressSport={() => {
             handleSectionMemberClick(rowItem);
           }}
@@ -592,12 +953,9 @@ export default function AccountScreen({navigation, route}) {
 
   const onNextPressOnRuleModal = () => {
     setIsRulesModalVisible(false);
-    if (createEntity === Verbs.entityTypeTeam) {
-      navigation.navigate('CreateTeamForm1', {clubObject: group});
-    }
-    if (createEntity === Verbs.entityTypeClub) {
-      navigation.navigate('CreateClubForm1');
-    }
+    setShowOnlyTeamSport(true);
+
+    setTimeout(() => setVisibleSportsModalForTeam(true), 1000);
   };
 
   const unPauseGroup = () => {
@@ -676,46 +1034,80 @@ export default function AccountScreen({navigation, route}) {
     setSports(list);
   }, [authContext]);
 
-  const getUsers = useCallback(
-    (filterPlayer) => {
-      const membersQuery = {
-        size: pageSize,
-        from: pageFrom,
-        query: {
-          bool: {
-            must: [],
+  const getUsers = () => {
+    const generalsQuery = {
+      size: 100,
+      query: {
+        bool: {
+          must: [
+            {
+              bool: {
+                should: [{match: {entity_type: 'player'}}],
+              },
+            },
+            {
+              bool: {
+                should: [],
+              },
+            },
+          ],
+        },
+      },
+    };
+
+    if (authContext.entity.auth.user?.city) {
+      generalsQuery.query.bool.must[1].bool.should.push({
+        match: {
+          city: {query: authContext.entity.auth.user.city, boost: 4},
+        },
+      });
+    }
+
+    if (authContext.entity.auth.user?.state) {
+      generalsQuery.query.bool.must[1].bool.should.push({
+        match: {
+          state_abbr: {
+            query: authContext.entity.auth.user.state,
+            boost: 3,
           },
         },
-      };
-      if (filterPlayer?.searchText?.length > 0) {
-        membersQuery.query.bool.must.push({
-          query_string: {
-            query: `*${filterPlayer?.searchText}*`,
-            fields: ['full_name'],
+      });
+    }
+
+    if (authContext.entity.auth.user?.country) {
+      generalsQuery.query.bool.must[1].bool.should.push({
+        match: {
+          country: {
+            query: authContext.entity.auth.user?.country,
+            boost: 2,
           },
-        });
-      }
-      getUserIndex(membersQuery)
-        .then((response) => {
-          setLoading(false);
-          if (response.length > 0) {
-            const result = response.map((obj) => {
-              // eslint-disable-next-line no-param-reassign
-              obj.isChecked = false;
-              return obj;
-            });
-            setPlayers([...players, ...result]);
-            setPageFrom(pageFrom + pageSize);
-            stopFetchMore = true;
-          }
-        })
-        .catch((error) => {
-          setLoading(false);
-          Alert.alert(error);
-        });
-    },
-    [pageFrom, pageSize, players],
-  );
+        },
+      });
+    }
+
+    getUserIndex(generalsQuery)
+      .then((response) => {
+        setLoading(false);
+        if (response.length > 0) {
+          const result = response.map((obj) => {
+            // eslint-disable-next-line no-param-reassign
+            obj.isChecked = false;
+            return obj;
+          });
+
+          const filteredResult = result.filter(
+            (e) => e.user_id !== authContext.entity.auth.user.user_id,
+          );
+
+          setPlayers([...filteredResult]);
+          setPageFrom(pageFrom + pageSize);
+        }
+      })
+      .catch((error) => {
+        setLoading(false);
+        Alert.alert(error.message);
+      });
+  };
 
   return (
     <SafeAreaView style={styles.mainContainer} testID="account-screen">
@@ -1266,6 +1658,8 @@ export default function AccountScreen({navigation, route}) {
         </TouchableWithoutFeedback>
       </ScrollView>
 
+      {/* ios Alert Custom */}
+
       {/* Rules notes modal */}
 
       <Modal
@@ -1279,34 +1673,83 @@ export default function AccountScreen({navigation, route}) {
         style={{
           margin: 0,
         }}>
-        <SafeAreaView style={styles.modalViewContainer}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalTitle}>
-              {createEntity === Verbs.entityTypeClub
-                ? strings.createClubText
-                : strings.createTeamText}
-            </Text>
-          </View>
-          <View style={styles.separatorLine} />
-          <View style={{flex: 1}}>
-            <Text style={[styles.rulesText, {margin: 15}]}>
-              {strings.teamCreateClubsText}
-            </Text>
-            <Text style={[styles.rulesText, {marginLeft: 15}]}>
-              {strings.yourTeamWillBelogText}
-            </Text>
-            <Text style={[styles.rulesText, {marginLeft: 15}]}>
-              {strings.teamCanLeaveClubText}
-            </Text>
-            <Text style={[styles.rulesText, {marginLeft: 15}]}>
-              {strings.adminOfTeamWillClubAdminText}
-            </Text>
-          </View>
-          <TCGradientButton
-            title={strings.nextTitle}
-            onPress={onNextPressOnRuleModal}
+        <View style={styles.modalViewContainer}>
+          <View
+            style={{
+              width: 40,
+              height: 5,
+              alignSelf: 'center',
+              borderRadius: 5,
+              backgroundColor: colors.graySeparater,
+              marginTop: 10,
+            }}
           />
-        </SafeAreaView>
+          <View style={styles.modalView}>
+            <Text style={styles.modalTitle}>{strings.createTeamText}</Text>
+          </View>
+          <View
+            style={{
+              marginLeft: 20,
+              marginTop: 25,
+              //  marginBottom: 15,
+            }}>
+            <Text style={styles.rulesText}>{strings.teamCreateClubsText}</Text>
+          </View>
+
+          <View
+            style={{
+              marginLeft: 25,
+              //  marginBottom: 35,
+              marginRight: 27,
+            }}>
+            <View style={styles.rulesTitleContainer}>
+              <View style={styles.rulesDots} />
+              <Text style={[styles.rulesText]}>
+                {strings.yourTeamWillBelogText}
+              </Text>
+            </View>
+            <View style={styles.rulesTitleContainer}>
+              <View style={styles.rulesDots} />
+              <Text style={[styles.rulesText]}>
+                {strings.teamCanLeaveClubText}
+              </Text>
+            </View>
+
+            <View style={styles.rulesTitleContainer}>
+              <View
+                style={[
+                  styles.rulesDots,
+                  {marginTop: 10, alignSelf: 'flex-start'},
+                ]}
+              />
+              <Text style={[styles.rulesText]}>
+                {strings.adminOfTeamWillClubAdminText}
+              </Text>
+            </View>
+          </View>
+          <Pressable
+            onPress={onNextPressOnRuleModal}
+            style={{
+              width: 345,
+              height: 40,
+              borderRadius: 22,
+              backgroundColor: colors.reservationAmountColor,
+              justifyContent: 'center',
+              alignItems: 'center',
+              alignSelf: 'center',
+              marginTop: 35,
+            }}>
+            <Text
+              style={{
+                fontSize: 16,
+                fontFamily: fonts.RBold,
+                lineHeight: 24,
+                color: colors.whiteColor,
+              }}>
+              {strings.nextTitle}
+            </Text>
+          </Pressable>
+        </View>
       </Modal>
 
       <SportsListModal
@@ -1324,7 +1767,7 @@ export default function AccountScreen({navigation, route}) {
         isVisible={visibleSportsModalForTeam}
         closeList={() => setVisibleSportsModalForTeam(false)}
         title={strings.createTeamText}
-        sportsList={sportsData}
+        sportsList={showOnlyTeamSport ? onlyteamSport : sportsData}
         onNext={(sport) => {
           if (
             sport.sport_type === Verbs.doubleSport &&
@@ -1332,10 +1775,17 @@ export default function AccountScreen({navigation, route}) {
               (Verbs.entityTypeUser || Verbs.entityTypePlayer)
           ) {
             setVisibleSportsModalForTeam(false);
-
+            setDoubleSport(sport);
             setTimeout(() => {
               setMemberListModal(true);
             }, 10);
+          } else if (authContext.entity.role !== Verbs.entityTypeUser) {
+            setVisibleSportsModalForTeam(false);
+            // also have to pass the club id to it
+
+            sport.grp_id = authContext.entity.obj.group_id;
+
+            navigation.navigate('CreateTeamForm1', sport);
           } else {
             setVisibleSportsModalForTeam(false);
             navigation.navigate(navigationOptions.screenName, sport);
@@ -1343,6 +1793,7 @@ export default function AccountScreen({navigation, route}) {
         }}
       />
 
+      {/* sport, group */}
       <SportListMultiModal
         isVisible={visibleSportsModalForClub}
         closeList={() => setVisibleSportsModalForClub(false)}
@@ -1350,6 +1801,7 @@ export default function AccountScreen({navigation, route}) {
         sportsList={sportsData}
         onNext={(sports) => {
           setVisibleSportsModalForClub(false);
+
           navigation.navigate(navigationOptions.screenName, sports);
         }}
       />
@@ -1357,11 +1809,32 @@ export default function AccountScreen({navigation, route}) {
       <MemberListModal
         isVisible={memberListModal}
         title={strings.createTeamText}
+        loading={loading}
         closeList={() => setMemberListModal(false)}
-        onNext={() => {
-          console.log('pressed');
+        onNext={(doublePlayer) => {
+          if (!doubleExist) {
+            setMemberListModal(false);
+            navigation.navigate(navigationOptions.screenName, {
+              sports: doubleSport,
+              double_Player: doublePlayer,
+              showDouble: true,
+            });
+          }
         }}
-        onItemPress={() => console.log('in development')}
+        onGoBack={() => setVisibleAlert(false)}
+        titleAlert={CustomeAlertTitle}
+        visibleAlert={Visiblealert}
+        onCancetTerminationPress={() =>
+          onCancelTermination(authContext, grpIdforTermination)
+        }
+        onItemPress={(item) => {
+          validateIfDoubleExist(
+            authContext.entity.auth.user.user_id,
+            item.user_id,
+            doubleSport,
+            authContext,
+          );
+        }}
         sportsList={players}
       />
     </SafeAreaView>
@@ -1531,9 +2004,12 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     fontSize: 16,
     color: colors.lightBlackColor,
+    lineHeight: 24,
+    marginBottom: 10,
+    textAlignVertical: 'center',
   },
   modalViewContainer: {
-    height: Dimensions.get('window').height / 1.7,
+    height: Dimensions.get('window').height / 2.3,
     backgroundColor: 'white',
     position: 'absolute',
     bottom: 0,
@@ -1555,15 +2031,29 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     alignSelf: 'center',
-    marginVertical: 20,
-    fontSize: 16,
+    //marginVertical: 20,
+    fontSize: 20,
     fontFamily: fonts.RBold,
     color: colors.lightBlackColor,
+    marginTop: 25,
   },
   locationText: {
     fontSize: 16,
     fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
     marginLeft: 10,
+  },
+  rulesTitleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  rulesDots: {
+    height: 5,
+    width: 5,
+    borderRadius: 100,
+    backgroundColor: colors.blackColor,
+    marginRight: 5,
+    alignSelf: 'center',
+    marginTop: -7,
   },
 });

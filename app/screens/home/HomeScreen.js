@@ -216,6 +216,7 @@ const HomeScreen = ({navigation, route}) => {
   const [myGroupDetail] = useState(
     authContext.entity.role === Verbs.entityTypeTeam && authContext.entity.obj,
   );
+  const [listLoading, setListLoading] = useState(false);
 
   const [loading, setloading] = useState(false);
   const [userID, setUserID] = useState('');
@@ -349,7 +350,22 @@ const HomeScreen = ({navigation, route}) => {
   useEffect(() => {
     if (route?.params?.isEntityCreated) {
       onSwitchProfile(route?.params?.entityObj);
+
       setCongratulationsModal(true);
+    }
+
+    if (route?.params?.userJoinTeam) {
+      Alert.alert(
+        format(strings.userJoinTeam, route?.params?.entityObj.group_name),
+        '',
+        [
+          {
+            text: strings.OkText,
+            onPress: () => console.log('PRessed'),
+          },
+        ],
+        {cancelable: false},
+      );
     }
   }, [route?.params?.entityObj, route?.params?.isEntityCreated]);
 
@@ -3232,7 +3248,7 @@ const HomeScreen = ({navigation, route}) => {
   );
 
   const sendInvitation = (userids) => {
-    setloading(true);
+    setListLoading(true);
     const entity = authContext.entity;
     const obj = {
       entity_type: entity.role,
@@ -3242,6 +3258,7 @@ const HomeScreen = ({navigation, route}) => {
 
     sendInvitationInGroup(obj, authContext)
       .then(() => {
+        setListLoading(false);
         setTimeout(() => {
           Utility.showAlert(
             strings.invitationSent,
@@ -3253,6 +3270,7 @@ const HomeScreen = ({navigation, route}) => {
         }, 10);
       })
       .catch((e) => {
+        setListLoading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
@@ -3851,29 +3869,6 @@ const HomeScreen = ({navigation, route}) => {
     switchProfile(item)
       .then((currentEntity) => {
         switchQBAccount(item, currentEntity);
-
-        // show congrats modal when team is created according to new flow
-
-        // show alert when club is created
-
-        // if (authContext.entity.role === Verbs.entityTypeClub) {
-
-        //   Alert.alert(
-        //     format(route?.params?.groupName),
-        //     strings.clubIsCreated,
-        //     authContext.entity.role === Verbs.entityTypeClub
-        //       ? strings.clubIsCreatedSub
-        //       : strings.teamCreatedSub,
-
-        //     [
-        //       {
-        //         text: 'OK',
-        //         onPress: () => console.log('pressed'),
-        //       },
-        //     ],
-        //     {cancelable: false},
-        //   );
-        // }
       })
       .catch((e) => {
         setTimeout(() => {
@@ -6511,6 +6506,7 @@ const HomeScreen = ({navigation, route}) => {
             <CongratulationsModal
               isVisible={congratulationsModal}
               settingsObj={settingObject}
+              listloading={listLoading}
               title={route?.params?.entityObj?.group_name}
               subtitle={format(
                 strings.congratesSubTitle,
@@ -6527,13 +6523,13 @@ const HomeScreen = ({navigation, route}) => {
               }}
               sportName={
                 authContext.entity.role === Verbs.entityTypeTeam
-                  ? route?.params?.entityObj?.setting.sport
-                  : route?.params?.entityObj?.sports[0].sport
+                  ? route.params.entityObj?.setting?.sport
+                  : route.params.entityObj?.sports?.[0]?.sport
               }
               sport={
                 authContext.entity.role === Verbs.entityTypeTeam
-                  ? route?.params.entityObj?.setting.sport
-                  : route?.params?.entityObj?.sports[0].sport
+                  ? route.params.entityObj?.setting?.sport
+                  : route.params.entityObj?.sports?.[0]?.sport
               }
               sportType={
                 authContext.entity.role === Verbs.entityTypeTeam

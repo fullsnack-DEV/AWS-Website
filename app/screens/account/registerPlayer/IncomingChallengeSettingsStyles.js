@@ -1,4 +1,5 @@
 import {StyleSheet} from 'react-native';
+import {widthPercentageToDP} from 'react-native-responsive-screen';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 
@@ -122,6 +123,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 14,
+  },
+  separatorLine: {
+    alignSelf: 'center',
+    backgroundColor: colors.grayColor,
+    height: 0.5,
+    width: widthPercentageToDP('100%'),
+  },
+
+  closeButton: {
+    alignSelf: 'center',
+    width: 13,
+    height: 13,
+    marginLeft: 20,
+    resizeMode: 'contain',
   },
 });
 

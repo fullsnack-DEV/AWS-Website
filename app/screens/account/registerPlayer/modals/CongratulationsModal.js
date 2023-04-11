@@ -26,6 +26,7 @@ const CongratulationsModal = ({
   isVisible,
   title = strings.congratsModalTitle,
   subtitle = '',
+
   fromCreateTeam = false,
   fromCreateClub = false,
   closeModal = () => {},
@@ -40,6 +41,7 @@ const CongratulationsModal = ({
   createTeam = () => {},
   goToSportActivityHome = () => {},
   onInviteClick = () => {},
+  listloading = false,
   settingsObj = {},
 }) => {
   const [playerList, setPlayersList] = useState([]);
@@ -235,6 +237,7 @@ const CongratulationsModal = ({
           list={playerList}
           sportType={sportType}
           loading={loading}
+          listloading={listloading}
           fromCreateTeam={fromCreateTeam}
           fromCreateClub={fromCreateClub}
           onInviteClick={onInviteClick}

@@ -35,8 +35,12 @@ import uploadImages from '../../../utils/imageAction';
 
 import fonts from '../../../Constants/Fonts';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
-import {createGroup} from '../../../api/Groups';
+import {createGroup, createGroupRequest} from '../../../api/Groups';
 import colors from '../../../Constants/Colors';
+
+import Modal from 'react-native-modal';
+
+import SendRequestModal from '../../../components/SendRequestModal/SendRequestModal';
 
 export default function IncomingChallengeSettings({navigation, route}) {
   const [settingObject, setSettingObject] = useState({});
@@ -48,6 +52,7 @@ export default function IncomingChallengeSettings({navigation, route}) {
   const [isAlreadyWarned, setIsAlreadyWarned] = useState(false);
   const [showSwitchScreen, setShowSwitchScreen] = useState(false);
   const animProgress = React.useState(new Animated.Value(0))[0];
+  const [visibleRequestModal, setVisibleRequestModal] = useState(false);
 
   const {
     playerData,
@@ -59,6 +64,7 @@ export default function IncomingChallengeSettings({navigation, route}) {
     groupData,
     thumbnail,
     backgroundThumbnail,
+    show_Double,
   } = route.params;
   const [playerObject] = useState(playerData);
   const [showModal, setShowModal] = useState(false);
@@ -83,6 +89,224 @@ export default function IncomingChallengeSettings({navigation, route}) {
       setSettingObject({...settingObject, ...route.params.settingObj});
     }
   }, [route.params.settingObj]);
+
+  const RequestModal = () => {
+    return (
+      <Modal
+        isVisible={visibleRequestModal}
+        onBackdropPress={() => setVisibleRequestModal(false)}
+        onRequestClose={() => setVisibleRequestModal(false)}
+        animationInTiming={300}
+        animationOutTiming={800}
+        backdropTransitionInTiming={300}
+        backdropTransitionOutTiming={800}
+        style={{
+          margin: 0,
+        }}>
+        <ActivityLoader visible={loading} />
+        <View
+          style={{
+            width: '100%',
+            height: Dimensions.get('window').height / 1.07,
+            backgroundColor: 'white',
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            borderTopLeftRadius: 30,
+            borderTopRightRadius: 30,
+            shadowColor: '#000',
+          }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              // paddingHorizontal: 15,
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}>
+            <TouchableOpacity
+              hitSlop={Utility.getHitSlop(15)}
+              style={[
+                styles.closeButton,
+                {marginTop: 20, marginBottom: 10},
+              ]}></TouchableOpacity>
+            <Text
+              style={{
+                alignSelf: 'center',
+                //  marginVertical: 20,
+                fontSize: 16,
+                fontFamily: fonts.RBold,
+                color: colors.lightBlackColor,
+                textAlign: 'center',
+                marginTop: 20,
+                marginLeft: 20,
+                marginBottom: 14,
+              }}>
+              {strings.sendrequestToCreateTeam}
+            </Text>
+            <TouchableOpacity
+              hitSlop={Utility.getHitSlop(15)}
+              style={[
+                styles.closeButton,
+                {marginTop: 20, marginBottom: 10, marginRight: 28},
+              ]}
+              onPress={() => setVisibleRequestModal(false)}>
+              <Image source={images.cancelImage} style={styles.closeButton} />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.separatorLine} />
+          <View>
+            <Pressable>
+              <View
+                style={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginTop: 80,
+                  borderRadius: 100,
+                  alignSelf: 'center',
+                  width: 60,
+                  height: 60,
+                  borderWidth: 1,
+                  borderColor: colors.greyBorderColor,
+                }}>
+                <View>
+                  <Image
+                    source={images.teamPatch}
+                    style={{
+                      height: 15,
+                      width: 15,
+                      resizeMode: 'cover',
+                      position: 'absolute',
+                      left: 10,
+                      top: 45,
+                    }}
+                  />
+                </View>
+                <Image
+                  source={placeHolder}
+                  style={{
+                    height: 50,
+                    width: 50,
+
+                    borderRadius: 25,
+                    resizeMode: 'contain',
+                    alignSelf: 'center',
+                    marginTop: 5,
+                  }}
+                />
+                <View
+                  style={{
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    alignSelf: 'center',
+                    position: 'absolute',
+                    top: 0,
+                    bottom: 0,
+                    right: 0,
+                    left: 0,
+                  }}>
+                  <Text
+                    style={{
+                      marginTop: -5,
+                      textAlign: 'center',
+                      color: colors.whiteColor,
+                      fontFamily: fonts.RBold,
+                      fontSize: 16,
+                    }}>
+                    {groupData.group_name.charAt(0)}
+                  </Text>
+                </View>
+              </View>
+              <View
+                style={{
+                  marginTop: 15,
+                  marginBottom: 60,
+                }}>
+                <Text
+                  style={{
+                    lineHeight: 37,
+                    fontFamily: fonts.RBold,
+                    fontSize: 25,
+                    textAlign: 'center',
+                  }}>
+                  {groupData.group_name}
+                </Text>
+              </View>
+            </Pressable>
+          </View>
+          <View>
+            <View
+              style={{
+                // marginTop: 272,
+                marginLeft: 31,
+                marginRight: 12,
+              }}>
+              <Text
+                style={{
+                  lineHeight: 24,
+                  fontSize: 16,
+                  fontFamily: fonts.RRegular,
+                  color: '#333333',
+                }}>
+                {strings.sendRequesttxt1}
+              </Text>
+              <Text
+                style={{
+                  lineHeight: 24,
+                  fontSize: 16,
+                  fontFamily: fonts.RRegular,
+                  color: '#333333',
+                  marginTop: 25,
+                }}>
+                {strings.sendRequesttxt2}
+              </Text>
+              <Text
+                style={{
+                  lineHeight: 24,
+                  fontSize: 16,
+                  fontFamily: fonts.RRegular,
+                  color: '#333333',
+                  marginTop: 25,
+                }}>
+                {strings.sendRequesttxt3}
+              </Text>
+            </View>
+          </View>
+
+          <View
+            style={{
+              width: '100%',
+              marginTop: 75,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <TouchableOpacity
+              onPress={() => {
+                onCreateTeam();
+              }}
+              style={{
+                width: 345,
+                marginBottom: 15,
+                backgroundColor: colors.reservationAmountColor,
+                borderRadius: 25,
+                height: 40,
+                justifyContent: 'center',
+                alignItems: 'center',
+                alignSelf: 'center',
+              }}>
+              <Text
+                style={{
+                  fontSize: 16,
+                  color: colors.whiteColor,
+                  fontFamily: fonts.RBold,
+                }}>
+                {strings.sendRequestBtnTxt}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    );
+  };
 
   const handleOptions = (option) => {
     if (settingObject) {
@@ -166,16 +390,32 @@ export default function IncomingChallengeSettings({navigation, route}) {
     }
   };
 
+  const onCreateDoubleTeamPress = () => {
+    if (settingObject.game_fee?.fee === 0 && !isAlreadyWarned) {
+      setShowMatchFeeReminderModal(true);
+      setVisibleRequestModal(false);
+      setIsAlreadyWarned(true);
+    } else {
+      onCreateTeam();
+    }
+  };
+
   const onCreateTeam = () => {
     onANimate(20);
 
     if (settingObject.game_fee?.fee === 0 && !isAlreadyWarned) {
       setShowMatchFeeReminderModal(true);
+      setVisibleRequestModal(false);
       setIsAlreadyWarned(true);
     } else {
-      setShowSwitchScreen(true);
+      if (show_Double) {
+        setloading(true);
+      } else {
+        setShowSwitchScreen(true);
+      }
 
       settingObject.sport = sport;
+      delete settingObject.entity_type;
       settingObject.sport_type = sportType;
       groupData.setting = settingObject;
 
@@ -224,28 +464,52 @@ export default function IncomingChallengeSettings({navigation, route}) {
               onANimate(50);
             }, 30);
 
-            createGroup(bodyParams, entity.uid, entity.obj.role, authContext)
-              .then((response) => {
-                setloading(false);
-                setShowSwitchScreen(true);
-
-                navigation.navigate('HomeScreen', {
-                  uid: response.payload.group_id,
-                  role: response.payload.entity_type,
-                  backButtonVisible: true,
-                  menuBtnVisible: false,
-                  isEntityCreated: true,
-                  groupName: response.payload.group_name,
-                  entityObj: response.payload,
+            if (show_Double) {
+              createGroupRequest(bodyParams, authContext)
+                .then((response) => {
+                  setloading(false);
+                  Alert.alert(
+                    strings.requestSent,
+                    '',
+                    [
+                      {
+                        text: strings.okTitleText,
+                        onPress: () => navigation.navigate('AccountScreen'),
+                      },
+                    ],
+                    {cancelable: false},
+                  );
+                })
+                .catch((e) => {
+                  setShowSwitchScreen(false);
+                  setTimeout(() => {
+                    Alert.alert(strings.appName, e.messages);
+                  }, 0.1);
                 });
-              })
-              .catch((e) => {
-                setloading(false);
-                setShowSwitchScreen(false);
-                setTimeout(() => {
-                  Alert.alert(strings.alertmessagetitle, e.message);
-                }, 10);
-              });
+            } else {
+              createGroup(bodyParams, entity.uid, entity.obj.role, authContext)
+                .then((response) => {
+                  setloading(false);
+                  setShowSwitchScreen(true);
+
+                  navigation.navigate('HomeScreen', {
+                    uid: response.payload.group_id,
+                    role: response.payload.entity_type,
+                    backButtonVisible: true,
+                    menuBtnVisible: false,
+                    isEntityCreated: true,
+                    groupName: response.payload.group_name,
+                    entityObj: response.payload,
+                  });
+                })
+                .catch((e) => {
+                  setloading(false);
+                  setShowSwitchScreen(false);
+                  setTimeout(() => {
+                    Alert.alert(strings.alertmessagetitle, e.message);
+                  }, 10);
+                });
+            }
           })
           .catch((e) => {
             setShowSwitchScreen(false);
@@ -255,28 +519,54 @@ export default function IncomingChallengeSettings({navigation, route}) {
           });
       } else {
         onANimate(100);
-        createGroup(bodyParams, entity.uid, entity.obj.role, authContext)
-          .then((response) => {
-            setloading(false);
-            setShowSwitchScreen(true);
 
-            navigation.navigate('HomeScreen', {
-              uid: response.payload.group_id,
-              role: response.payload.entity_type,
-              backButtonVisible: true,
-              menuBtnVisible: false,
-              isEntityCreated: true,
-              groupName: response.payload.group_name,
-              entityObj: response.payload,
+        if (show_Double) {
+          createGroupRequest(bodyParams, authContext)
+            .then(() => {
+              setloading(false);
+
+              Alert.alert(
+                strings.requestSent,
+                '',
+                [
+                  {
+                    text: strings.okTitleText,
+                    onPress: () => navigation.navigate('AccountScreen'),
+                  },
+                ],
+                {cancelable: false},
+              );
+            })
+            .catch((e) => {
+              setShowSwitchScreen(false);
+              setTimeout(() => {
+                Alert.alert(strings.appName, e.messages);
+              }, 0.1);
             });
-          })
-          .catch((e) => {
-            setloading(false);
-            setShowSwitchScreen(false);
-            setTimeout(() => {
-              Alert.alert(strings.alertmessagetitle, e.message);
-            }, 10);
-          });
+        } else {
+          createGroup(bodyParams, entity.uid, entity.obj.role, authContext)
+            .then((response) => {
+              setloading(false);
+              setShowSwitchScreen(true);
+
+              navigation.navigate('HomeScreen', {
+                uid: response.payload.group_id,
+                role: response.payload.entity_type,
+                backButtonVisible: true,
+                menuBtnVisible: false,
+                isEntityCreated: true,
+                groupName: response.payload.group_name,
+                entityObj: response.payload,
+              });
+            })
+            .catch((e) => {
+              setloading(false);
+              setShowSwitchScreen(false);
+              setTimeout(() => {
+                Alert.alert(strings.alertmessagetitle, e.message);
+              }, 10);
+            });
+        }
       }
     }
   };
@@ -481,6 +771,20 @@ export default function IncomingChallengeSettings({navigation, route}) {
           {/* PRogree Bar */}
         </View>
       )}
+      {/* {RequestModal()} */}
+
+      <SendRequestModal
+        onNextPress={() => onCreateDoubleTeamPress()}
+        visibleRequestModal={visibleRequestModal}
+        onClosePress={() => setVisibleRequestModal(false)}
+        groupData={groupData}
+        loading={loading}
+        textstring1={strings.sendRequesttxt1}
+        textstring2={strings.sendRequesttxt2}
+        textstring3={strings.sendRequesttxt3}
+        btntext={strings.sendRequestBtnTxt}
+      />
+
       <ScreenHeader
         title={
           fromCreateTeam
@@ -495,7 +799,11 @@ export default function IncomingChallengeSettings({navigation, route}) {
         rightButtonText={strings.done}
         onRightButtonPress={() => {
           if (fromCreateTeam) {
-            onCreateTeam();
+            if (show_Double) {
+              onCreateDoubleTeamPress();
+            } else {
+              onCreateTeam();
+            }
           } else {
             onSave();
           }
@@ -545,6 +853,7 @@ export default function IncomingChallengeSettings({navigation, route}) {
               item={item}
               handleOptions={handleOptions}
               settingObject={settingObject}
+              o
             />
           )}
         />
@@ -664,7 +973,11 @@ export default function IncomingChallengeSettings({navigation, route}) {
         onContinue={() => {
           setShowMatchFeeReminderModal(false);
           if (fromCreateTeam) {
-            onCreateTeam();
+            if (show_Double) {
+              setVisibleRequestModal(true);
+            } else {
+              onCreateTeam();
+            }
           } else {
             onSave();
           }

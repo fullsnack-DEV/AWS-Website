@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.lightGrey,
     borderRadius: 5,
     color: 'black',
-    elevation: 3,
+
     flexDirection: 'row',
     fontSize: 16,
     fontFamily: fonts.RRegular,

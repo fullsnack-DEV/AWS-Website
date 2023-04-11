@@ -80,7 +80,7 @@ export default function PersonalInformationScreen({navigation, route}) {
   const [languages, setLanguages] = useState(
     authContext?.entity?.obj?.language,
   );
-  const [locationPopup, setLocationPopup] = useState(false);
+  const [locationPopup, setLocationPopup] = useState();
 
   useLayoutEffect(() => {
     navigation.setOptions({

@@ -205,9 +205,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
 
   // Form Validation
   const checkValidation = () => {
-    if (setting.address && location === '') {
-      //   Alert.alert('in address');
-      //   console.log(memberInfo, 'street address');
+    if (setting.address && location === undefined) {
       Alert.alert('Towns Cup', 'Please enter all location parameter.');
       return false;
     }
@@ -265,6 +263,9 @@ export default function RequestBasicInfoScreen({navigation, route}) {
     if (setting?.height === true) {
       bodyParams.height = memberInfo?.height;
     }
+    if (setting?.birthday === true) {
+      bodyParams.birthday = moment(memberInfo.birthday).format('MMM DD, YYYY');
+    }
 
     if (setting?.weight === true) {
       bodyParams.weight = memberInfo?.weight;
@@ -284,10 +285,10 @@ export default function RequestBasicInfoScreen({navigation, route}) {
     }
     if (setting?.address === true) {
       bodyParams.street_address = memberInfo?.street_address;
-      bodyParams.city = memberInfo?.city;
-      bodyParams.state_abbr = memberInfo?.state_abbr;
-      bodyParams.country = memberInfo?.country;
-      bodyParams.postal_code = memberInfo?.postal_code;
+      bodyParams.city = city;
+      bodyParams.state_abbr = state;
+      bodyParams.country = country;
+      bodyParams.postal_code = postalCode;
     }
 
     approveBasicInfoRequest(
@@ -363,6 +364,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
   const heightView = () => (
     <View>
       <View
+        pointerEvents={setting?.height ? 'auto' : 'none'}
         style={{
           flexDirection: 'row',
           align: 'center',
@@ -371,6 +373,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
           justifyContent: 'space-between',
           marginTop: 10,
           marginBottom: 25,
+          opacity: setting?.height ? 1 : 0.5,
         }}>
         <View style={{...styles.halfMatchFeeView}}>
           <TextInput
@@ -449,6 +452,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
   const weightView = () => (
     <View>
       <View
+        pointerEvents={setting?.weight ? 'auto' : 'none'}
         style={{
           flexDirection: 'row',
           align: 'center',
@@ -457,6 +461,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
           justifyContent: 'space-between',
           marginTop: 10,
           marginBottom: 27,
+          opacity: setting?.weight ? 1 : 0.5,
         }}>
         <View style={{...styles.halfMatchFeeView}}>
           <TextInput
@@ -536,7 +541,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
     [location, city, state, country, postalCode].filter((v) => v).join(', ');
 
   const addressManualString = () =>
-    [city, state, country, location, postalCode].filter((w) => w).join(', ');
+    [location, city, state, country, postalCode].filter((w) => w).join(', ');
 
   const onSelectAddress = (_location) => {
     setCity(_location.city);
@@ -549,8 +554,11 @@ export default function RequestBasicInfoScreen({navigation, route}) {
   };
 
   const setCityandPostal = (street, code) => {
-    setCity(street);
+    // setCity(street);
     setPostalCode(code);
+    setLocation(street);
+
+    memberInfo.street_address = `${street} ${city} ${state} ${country} ${code} `;
   };
 
   return (
@@ -718,17 +726,24 @@ export default function RequestBasicInfoScreen({navigation, route}) {
           </TouchableOpacity>
           <Text style={styles.checkBoxText}>{strings.email}</Text>
         </View>
-        <TCTextField
-          value={memberInfo.email}
+        <View
           style={{
-            marginTop: 12,
-            marginBottom: 27,
+            opacity: setting?.email ? 1 : 0.5,
           }}
-          onChangeText={(text) => setMemberInfo({...memberInfo, email: text})}
-          autoCapitalize="none"
-          autoCorrect={false}
-          placeholder={strings.email}
-        />
+          pointerEvents={setting?.email ? 'auto' : 'none'}>
+          <TCTextField
+            value={memberInfo.email}
+            style={{
+              marginTop: 12,
+              marginBottom: 27,
+            }}
+            onChangeText={(text) => setMemberInfo({...memberInfo, email: text})}
+            autoCapitalize="none"
+            autoCorrect={false}
+            placeholder={strings.email}
+          />
+        </View>
+
         <View>
           <View style={styles.checkBoxContainer}>
             <TouchableOpacity
@@ -747,27 +762,33 @@ export default function RequestBasicInfoScreen({navigation, route}) {
             </TouchableOpacity>
             <Text style={styles.checkBoxText}>{strings.phone}</Text>
           </View>
-          <FlatList
+          <View
+            pointerEvents={setting?.phone ? 'auto' : 'none'}
             style={{
-              marginTop: 10,
-            }}
-            data={phoneNumber}
-            renderItem={renderPhoneNumber}
-            keyExtractor={(item, index) => index.toString()}
+              opacity: setting?.phone ? 1 : 0.5,
+            }}>
+            <FlatList
+              style={{
+                marginTop: 10,
+              }}
+              data={phoneNumber}
+              renderItem={renderPhoneNumber}
+              keyExtractor={(item, index) => index.toString()}
+            />
+          </View>
+          <TCMessageButton
+            borderColor={colors.whiteColor}
+            color={colors.lightBlackColor}
+            title={strings.addPhone}
+            backgroundColor={colors.lightGrey}
+            paddingVertical={5}
+            width={120}
+            alignSelf="center"
+            marginTop={20}
+            marginBottom={25}
+            onPress={() => addPhoneNumber()}
           />
         </View>
-        <TCMessageButton
-          borderColor={colors.whiteColor}
-          color={colors.lightBlackColor}
-          title={strings.addPhone}
-          backgroundColor={colors.lightGrey}
-          paddingVertical={5}
-          width={120}
-          alignSelf="center"
-          marginTop={20}
-          marginBottom={25}
-          onPress={() => addPhoneNumber()}
-        />
         <View style={styles.checkBoxContainer}>
           <TouchableOpacity
             onPress={() => {
@@ -786,11 +807,19 @@ export default function RequestBasicInfoScreen({navigation, route}) {
           <Text style={styles.checkBoxText}>{strings.address}</Text>
         </View>
         <TouchableOpacity
+          disabled={setting?.address ? false : true}
+          style={{
+            opacity: setting?.address ? 1 : 0.5,
+          }}
           onPress={() => {
             setVisibleLocationModal(true);
           }}>
           <TCTextField
-            value={locationString() || addressManualString()}
+            value={
+              locationString() ||
+              addressManualString() ||
+              memberInfo?.street_address
+            }
             autoCapitalize="none"
             autoCorrect={false}
             placeholder={strings.streetAddress}
@@ -808,7 +837,9 @@ export default function RequestBasicInfoScreen({navigation, route}) {
           setVisibleAddressModalhandler={() => setVisibleLocationModal(false)}
           onAddressSelect={onSelectAddress}
           handleSetLocationOptions={onSelectAddress}
-          onDonePress={(street, code) => setCityandPostal(street, code)}
+          onDonePress={(street, code) => {
+            setCityandPostal(street, code);
+          }}
         />
 
         <View style={styles.checkBoxContainer}>

@@ -269,13 +269,13 @@ export const prepareTeamMenu = (authContext, teams, clubs) => {
       icon: images.accountMyClubs,
       member: [
         ...prepareGroupsSubMenu(clubs),
-        {
-          option: strings.createClubText,
-          icon: images.createClub,
-          navigateTo: {
-            screenName: 'CreateClubForm1',
-          },
-        },
+        // {
+        //   option: strings.createClubText,
+        //   icon: images.createClub,
+        //   navigateTo: {
+        //     screenName: 'CreateClubForm1',
+        //   },
+        // },
       ],
     },
     ...paymentMethodMenu(),

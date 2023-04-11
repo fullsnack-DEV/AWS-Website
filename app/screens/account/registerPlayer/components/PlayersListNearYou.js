@@ -27,6 +27,7 @@ const PlayersListNearYou = ({
   onChoose = () => {},
   onInviteClick = () => {},
   loading = false,
+  listloading = false,
 }) => {
   const renderPlayerCard = ({item}) => (
     <>
@@ -97,7 +98,7 @@ const PlayersListNearYou = ({
             ? strings.playersNearYouText
             : strings.partnersNearYouText}
         </Text>
-        {loading ? (
+        {loading || listloading ? (
           <ListShimmer />
         ) : (
           <FlatList

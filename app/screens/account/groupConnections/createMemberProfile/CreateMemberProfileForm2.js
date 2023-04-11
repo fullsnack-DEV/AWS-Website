@@ -55,7 +55,9 @@ export default function CreateMemberProfileForm2({navigation, route}) {
   const [birthday, setBirthday] = useState();
   const [showDate, setShowDate] = useState(false);
   const [postalCode, setPostalCode] = useState('');
-  const [minDateValue, setMinDateValue] = useState(new Date());
+  // const [minDateValue, setMinDateValue] = useState(new Date());
+  const [maxDateValue, setMaxDateValue] = useState(new Date());
+
   const [memberInfo, setMemberInfo] = useState({
     height: {
       height: 0,
@@ -94,8 +96,10 @@ export default function CreateMemberProfileForm2({navigation, route}) {
     const maxdate = new Date();
     mindate.setFullYear(mindate.getFullYear() - 13);
     maxdate.setFullYear(maxdate.getFullYear() - 123);
+    setMaxDateValue(new Date());
     // setDateValue(mindate);
-    setMinDateValue(mindate);
+    // setMinDateValue(mindate);
+    // setMaxDateValue(maxdate);
   }, []);
 
   useEffect(() => {
@@ -120,17 +124,6 @@ export default function CreateMemberProfileForm2({navigation, route}) {
   }, [isFocused]);
 
   const validation = useCallback(() => {
-    console.log(
-      {
-        city,
-        state,
-        country,
-        postalCode,
-        location,
-      },
-      'From Validation',
-    );
-
     if (
       !city?.length ||
       !state?.length ||
@@ -546,7 +539,7 @@ export default function CreateMemberProfileForm2({navigation, route}) {
             onDone={handleDonePress}
             onCancel={handleCancelPress}
             onHide={handleCancelPress}
-            minimumDate={minDateValue}
+            maximumDate={maxDateValue}
             mode={'date'}
           />
         </View>
