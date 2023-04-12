@@ -642,7 +642,7 @@ function NotificationsListScreen({navigation}) {
         getRequestDetail(groupId, authContext)
           .then((response) => {
             setloading(false);
-            console.log(response.payload, 'From oay');
+
             setGroupData(response.payload);
             setIsRulesModalVisible(true);
           })

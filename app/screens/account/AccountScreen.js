@@ -366,10 +366,10 @@ export default function AccountScreen({navigation, route}) {
 
         // check type
 
-        if (type === 'cancel') {
+        if (type === Verbs.cancelVerb) {
           getTeamsList(authContext.entity);
           Alert.alert(strings.teamRequestCancelledText);
-        } else if (type === 'accept') {
+        } else if (type === Verbs.acceptVerb) {
           setMemberListModal(false);
           navigation.push('HomeScreen', {
             uid: response.payload.group_id,
@@ -380,7 +380,7 @@ export default function AccountScreen({navigation, route}) {
             groupName: response.payload.group_name,
             entityObj: response.payload,
           });
-        } else if (type === 'decline') {
+        } else if (type === Verbs.declineVerb) {
           Alert.alert(
             strings.requestWasDeclined,
             '',
@@ -848,7 +848,7 @@ export default function AccountScreen({navigation, route}) {
                 style: 'destructive',
               },
               {
-                text: 'Rejoin',
+                text: strings.rejoin,
                 onPress: () => onJoinTeamPress(response.payload?.data.group_id),
               },
             ],
@@ -886,7 +886,7 @@ export default function AccountScreen({navigation, route}) {
         {
           text: strings.withDrawRequest,
           onPress: () =>
-            actionOnTeamRequest('cancel', rowItem?.option?.request_id),
+            actionOnTeamRequest(Verbs.cancelVerb, rowItem?.option?.request_id),
         },
       ],
 

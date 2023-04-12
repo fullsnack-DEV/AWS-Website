@@ -24,7 +24,7 @@ export default function BasicInfoScreen({navigation}) {
     if (isFocused) {
       if (isFocused) {
         setloading(true);
-        getUserDetails(authContext?.entity?.uid, authContext)
+        getUserDetails(authContext.entity?.uid, authContext)
           .then((response) => {
             setloading(false);
             setUserInfo(response.payload);

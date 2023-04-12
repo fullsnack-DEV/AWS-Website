@@ -1,5 +1,5 @@
 // @flow
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {
   FlatList,
   Image,
@@ -42,9 +42,9 @@ const MemberListModal = ({
 
   const [followersSelection, setFollowersSelection] = useState();
 
-  useEffect(() => {
+  if (isVisible) {
     setFollowersSelection('');
-  }, [isVisible]);
+  }
 
   const renderFollowers = ({item}) => (
     <TouchableWithoutFeedback
@@ -155,13 +155,13 @@ const styles = StyleSheet.create({
   card: {
     width: '100%',
     height: Dimensions.get('window').height / 1.07,
-    backgroundColor: 'white',
+    backgroundColor: colors.whiteColor,
     position: 'absolute',
     bottom: 0,
     left: 0,
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
-    shadowColor: '#000',
+    shadowColor: colors.blackColor,
   },
   headerRow: {
     paddingTop: 15,

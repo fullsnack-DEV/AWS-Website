@@ -52,7 +52,7 @@ export default function SendRequestModal({
             left: 0,
             borderTopLeftRadius: 30,
             borderTopRightRadius: 30,
-            shadowColor: '#000',
+            shadowColor: colors.blackColor,
           }}>
           <View
             style={{
@@ -63,10 +63,8 @@ export default function SendRequestModal({
             }}>
             <TouchableOpacity
               hitSlop={Utility.getHitSlop(15)}
-              style={[
-                styles.closeButton,
-                {marginTop: 20, marginBottom: 10},
-              ]}></TouchableOpacity>
+              style={[styles.closeButton, {marginTop: 20, marginBottom: 10}]}
+            />
             <Text
               style={{
                 alignSelf: 'center',
@@ -183,7 +181,7 @@ export default function SendRequestModal({
                   lineHeight: 24,
                   fontSize: 16,
                   fontFamily: fonts.RRegular,
-                  color: '#333333',
+                  color: colors.lightBlackColor,
                 }}>
                 {textstring1}
               </Text>
@@ -192,7 +190,7 @@ export default function SendRequestModal({
                   lineHeight: 24,
                   fontSize: 16,
                   fontFamily: fonts.RRegular,
-                  color: '#333333',
+                  color: colors.lightBlackColor,
                   marginTop: 25,
                 }}>
                 {textstring2}
@@ -202,7 +200,7 @@ export default function SendRequestModal({
                   lineHeight: 24,
                   fontSize: 16,
                   fontFamily: fonts.RRegular,
-                  color: '#333333',
+                  color: colors.lightBlackColor,
                   marginTop: 25,
                 }}>
                 {textstring3}
