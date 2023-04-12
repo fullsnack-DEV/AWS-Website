@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 
 import Modal from 'react-native-modal';
-
+import {useIsFocused} from '@react-navigation/native';
 import images from '../../Constants/ImagePath';
 
 import {strings} from '../../../Localization/translation';
@@ -23,7 +23,6 @@ import TCFollowerList from '../TCFollowerList';
 import TCThinDivider from '../TCThinDivider';
 import ActivityLoader from '../loader/ActivityLoader';
 import CustomIosAlert from '../CustomIosAlert';
-import {useIsFocused} from '@react-navigation/native';
 
 const MemberListModal = ({
   isVisible,

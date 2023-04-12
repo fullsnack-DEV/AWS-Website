@@ -1,4 +1,7 @@
 // @flow
+/* eslint-disable array-callback-return */
+/* eslint-disable no-param-reassign */
+
 import React, {useState, useEffect, useContext} from 'react';
 import {
   FlatList,
