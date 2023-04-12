@@ -124,7 +124,7 @@ export default function AccountScreen({navigation, route}) {
   const [CustomeAlertTitle, setCustomeAlertTitle] = useState();
   const [grpIdforTermination, setGrpIdForTermination] = useState();
   const [onlyteamSport, setOnlyTeamSport] = useState();
-  const [showOnlyTeamSport, setShowOnlyTeamSport] = useState();
+  const [showOnlyTeamSport, setShowOnlyTeamSport] = useState(false);
 
   useEffect(() => {
     if (route.params?.switchToUser === 'fromMember') {
@@ -165,6 +165,7 @@ export default function AccountScreen({navigation, route}) {
 
   useEffect(() => {
     if (isFocused) {
+      setShowOnlyTeamSport(false);
       Utility.getStorage('appSetting').then((setting) => {
         setImageBaseUrl(setting.base_url_sporticon);
       });

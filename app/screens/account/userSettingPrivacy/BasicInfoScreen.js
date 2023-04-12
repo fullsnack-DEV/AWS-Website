@@ -1,8 +1,9 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable default-case */
-import React, {useState, useLayoutEffect, useContext} from 'react';
+import React, {useState, useLayoutEffect, useContext, useEffect} from 'react';
 import {StyleSheet, Alert, SafeAreaView} from 'react-native';
-import {updateUserProfile} from '../../../api/Users';
+import {useIsFocused} from '@react-navigation/native';
+import {getUserDetails, updateUserProfile} from '../../../api/Users';
 import AuthContext from '../../../auth/context';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import images from '../../../Constants/ImagePath';
@@ -13,9 +14,30 @@ import ScreenHeader from '../../../components/ScreenHeader';
 import EditBasicInfoComponent from '../../../components/EditBasicInfoComponent';
 
 export default function BasicInfoScreen({navigation}) {
+  const isFocused = useIsFocused();
+
   const authContext = useContext(AuthContext);
   const [loading, setloading] = useState(false);
-  const [userInfo, setUserInfo] = useState(authContext.entity.obj);
+  const [userInfo, setUserInfo] = useState();
+
+  useEffect(() => {
+    if (isFocused) {
+      if (isFocused) {
+        setloading(true);
+        getUserDetails(authContext?.entity?.uid, authContext)
+          .then((response) => {
+            setloading(false);
+            setUserInfo(response.payload);
+          })
+          .catch((e) => {
+            setloading(false);
+            setTimeout(() => {
+              Alert.alert(strings.alertmessagetitle, e.message);
+            }, 10);
+          });
+      }
+    }
+  }, [authContext]);
 
   useLayoutEffect(() => {
     navigation.setOptions({

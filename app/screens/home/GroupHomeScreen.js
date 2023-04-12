@@ -52,9 +52,10 @@ const GroupHomeScreen = ({
   const mainFlatListRef = useRef();
 
   const renderImageProgress = useMemo(() => <ImageProgress />, []);
-  const handleMainRefOnScroll = Animated.event([
-    {nativeEvent: {contentOffset: {y: mainFlatListFromTop}}},
-  ]);
+  const handleMainRefOnScroll = Animated.event(
+    [{nativeEvent: {contentOffset: {y: mainFlatListFromTop}}}],
+    {useNativeDriver: false},
+  );
   // const [showBottomSheet, setShowBottomSheet] = useState(false);
   // const [options, setOptions] = useState([]);
 
@@ -119,7 +120,7 @@ const GroupHomeScreen = ({
         groupData={currentUserData}
         loggedInEntity={authContext.entity}
         isAdmin={isAdmin}
-        onPress={handleGroupActions}
+        onPress={() => handleGroupActions()}
       />
       <View style={styles.separator} />
       <PostsTabView

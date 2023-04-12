@@ -93,7 +93,7 @@ const TeamsListNearYou = ({
       ) : (
         <FlatList
           data={list}
-          keyExtractor={(item) => item.customer_id}
+          keyExtractor={(item, index) => `${item.customer_id}${index}`}
           renderItem={renderTeam}
           ListFooterComponent={() =>
             list.length > 0 ? (

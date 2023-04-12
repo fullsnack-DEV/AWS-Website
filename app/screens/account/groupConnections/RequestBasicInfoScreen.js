@@ -97,6 +97,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
   useEffect(() => {
     if (isFocused) {
       getMemberInfo();
+
       if (
         route?.params?.city &&
         route?.params?.state &&
@@ -207,6 +208,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
   // Form Validation
   const checkValidation = () => {
     if (setting.address && location === undefined) {
+      console.log(location, 'Frpm val');
       Alert.alert('Towns Cup', 'Please enter all location parameter.');
       return false;
     }
