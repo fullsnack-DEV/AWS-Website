@@ -194,7 +194,12 @@ export default function AccountScreen({navigation, route}) {
     setOnlyTeamSport(OnlyTeamSport);
 
     // get only team sport
-  }, [authContext, selectedMenuOptionType, showOnlyTeamSport]);
+  }, [
+    authContext,
+    selectedMenuOptionType,
+    showOnlyTeamSport,
+    visibleSportsModalForClub,
+  ]);
 
   const [navigationOptions, setNavigationOptions] = useState({});
 
@@ -514,12 +519,12 @@ export default function AccountScreen({navigation, route}) {
         case strings.createClubText:
           setCreateEntity(Verbs.entityTypeClub);
           setVisibleSportsModalForClub(true);
-
+          setSelectedMenuOptionType(Verbs.entityTypeClub);
           setNavigationOptions({
             screenName: rowObj.navigateTo.screenName,
             data: rowObj.navigateTo.data,
           });
-          setSelectedMenuOptionType(rowObj.menuOptionType);
+
           break;
 
         case strings.addSportsTitle:
@@ -1734,6 +1739,7 @@ export default function AccountScreen({navigation, route}) {
           ) {
             setVisibleSportsModalForTeam(false);
             setDoubleSport(sport);
+
             setTimeout(() => {
               setMemberListModal(true);
             }, 10);

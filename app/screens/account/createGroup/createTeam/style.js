@@ -267,7 +267,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-
+    alignSelf: 'center',
     // width: 200,
   },
   profileView: {

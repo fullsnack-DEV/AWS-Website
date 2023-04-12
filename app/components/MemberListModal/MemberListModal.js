@@ -1,5 +1,5 @@
 // @flow
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   FlatList,
   Image,
@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 
 import Modal from 'react-native-modal';
-
+import {useIsFocused} from '@react-navigation/native';
 import images from '../../Constants/ImagePath';
 
 import {strings} from '../../../Localization/translation';
@@ -41,10 +41,11 @@ const MemberListModal = ({
   const [follower, setFollower] = useState();
 
   const [followersSelection, setFollowersSelection] = useState();
+  const isFocused = useIsFocused();
 
-  if (isVisible) {
+  useEffect(() => {
     setFollowersSelection('');
-  }
+  }, [isFocused]);
 
   const renderFollowers = ({item}) => (
     <TouchableWithoutFeedback

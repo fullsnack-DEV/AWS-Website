@@ -670,9 +670,12 @@ export default function MembersProfileScreen({navigation, route}) {
             <TouchableOpacity
               hitSlop={getHitSlop(15)}
               onPress={() => {
+                console.log(groupMemberDetail.jersey_number, 'From num');
                 if (groupMemberDetail.jersey_number !== undefined) {
-                  if (!Number.isFinite(groupMemberDetail.jersey_number)) {
+                  if (/[^a-zA-Z]/.test(groupMemberDetail.jersey_number)) {
                     Alert.alert(strings.jerseyValidation);
+                  } else {
+                    editTeamProfile();
                   }
                 } else {
                   editTeamProfile();
