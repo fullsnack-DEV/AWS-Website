@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
 import {format} from 'react-string-format';
+import ReadMore from '@fawazahmed/react-native-read-more';
 import {strings} from '../../../../../Localization/translation';
 import EventMapView from '../../../../components/Schedule/EventMapView';
 import colors from '../../../../Constants/Colors';
@@ -94,12 +95,15 @@ const InfoContentScreen = ({
       case strings.bio:
         return (
           <>
-            <Text style={styles.label} numberOfLines={7}>
-              {sportObj.descriptions}{' '}
-              <TouchableOpacity style={{paddingTop: 4}}>
-                <Text style={styles.smallText}>{strings.moreText}</Text>
-              </TouchableOpacity>
-            </Text>
+            <ReadMore
+              style={styles.label}
+              numberOfLines={7}
+              seeMoreText={strings.moreText}
+              seeLessText={strings.lessText}
+              seeLessStyle={styles.moreTextStyle}
+              seeMoreStyle={styles.moreTextStyle}>
+              {sportObj.descriptions}
+            </ReadMore>
             {sportObj?.created_at ? (
               <Text style={[styles.smallText, {marginTop: 5}]}>
                 {format(
@@ -164,7 +168,7 @@ const InfoContentScreen = ({
             </View>
             <View style={{alignItems: 'flex-start'}}>
               <Text style={[styles.label, {textAlign: 'right'}]}>
-                {sportObj?.ntrp ?? 0}
+                {sportObj?.ntrp ?? '5.0'}
               </Text>
             </View>
           </View>

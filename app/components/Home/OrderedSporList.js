@@ -185,9 +185,9 @@ const OrderedSporList = ({
       entityType,
     );
     const isAvailable =
-      item.setting.availibility ||
-      item.setting.referee_availibility ||
-      item.setting.scorekeeper_availibility;
+      item.setting?.availibility ||
+      item.setting?.referee_availibility ||
+      item.setting?.scorekeeper_availibility;
 
     let isUserWithSameSport = false;
     const userSport = getEntitySport({

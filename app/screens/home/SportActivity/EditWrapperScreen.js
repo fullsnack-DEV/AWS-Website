@@ -69,7 +69,7 @@ const EditWrapperScreen = ({navigation, route}) => {
       case strings.ntrpTitle:
         return (
           <EditNTRPScreen
-            ntrp={updatedSportObj.ntrp ?? ''}
+            ntrp={updatedSportObj.ntrp ?? '5.0'}
             setData={(val) => {
               const obj = {
                 ...updatedSportObj,

@@ -82,7 +82,7 @@ import {
 import MemberListModal from '../../components/MemberListModal/MemberListModal';
 import {getUserIndex} from '../../api/elasticSearch';
 import SportListMultiModal from '../../components/SportListMultiModal/SportListMultiModal';
-import SendNewInvoiceModal from './Invoice/SendNewInvoiceModal'
+import SendNewInvoiceModal from './Invoice/SendNewInvoiceModal';
 
 // FIXME: fix all warning in useCallBack()
 export default function AccountScreen({navigation, route}) {
@@ -116,7 +116,7 @@ export default function AccountScreen({navigation, route}) {
   );
   const [doubleSport, setDoubleSport] = useState();
   const [memberListModal, setMemberListModal] = useState(false);
-  const [sendNewInvoice, SetSendNewInvoice] = useState(false)
+  const [sendNewInvoice, SetSendNewInvoice] = useState(false);
   const navigations = useNavigation();
   const [players, setPlayers] = useState([]);
   const [pageFrom, setPageFrom] = useState(0);
@@ -134,7 +134,6 @@ export default function AccountScreen({navigation, route}) {
 
       authContext.setEntity({...entityTobeUpdated});
 
-      switchQBAccount(authContext.user, entityTobeUpdated);
       navigations.setParams({
         switchToUser: '',
       });
@@ -171,8 +170,6 @@ export default function AccountScreen({navigation, route}) {
       Utility.getStorage('appSetting').then((setting) => {
         setImageBaseUrl(setting.base_url_sporticon);
       });
-
-      // getUsers();
     }
   }, [isFocused]);
 
@@ -290,7 +287,7 @@ export default function AccountScreen({navigation, route}) {
       menu = prepareUserMenu(authContext, teamList, clubList, imageBaseUrl);
     }
     setAccountMenu(menu);
-  }, [teamList, clubList, imageBaseUrl]);
+  }, [teamList, clubList, imageBaseUrl, authContext]);
 
   const getUnreadNotificationCount = useCallback(() => {
     getUnreadCount(authContext)
@@ -312,8 +309,10 @@ export default function AccountScreen({navigation, route}) {
               item.user_id !== authContext.entity.uid,
           ),
         );
+        setLoading(false);
       })
       .catch((e) => {
+        setLoading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
@@ -435,58 +434,9 @@ export default function AccountScreen({navigation, route}) {
           role: Verbs.entityTypeClub,
           obj: switchTo,
         };
-        setGroup(switchTo);
+        // setGroup(switchTo);
       }
       return currentEntity;
-    },
-    [authContext],
-  );
-
-  const switchQBAccount = useCallback(
-    (accountData, entity) => {
-      let currentEntity = entity;
-      const entityType = accountData?.entity_type;
-      const uid =
-        entityType === Verbs.entityTypePlayer ||
-        entityType === Verbs.entityTypeUser
-          ? 'user_id'
-          : 'group_id';
-      QBLogout()
-        .then(() => {
-          const {USER, CLUB, TEAM} = QB_ACCOUNT_TYPE;
-          let accountType = USER;
-          if (entityType === Verbs.entityTypeClub) {
-            accountType = CLUB;
-          } else if (entityType === Verbs.entityTypeTeam) {
-            accountType = TEAM;
-          }
-          QBlogin(
-            accountData[uid],
-            {
-              ...accountData,
-              full_name: accountData.group_name,
-            },
-            accountType,
-          ).then(async (res) => {
-            currentEntity = {
-              ...currentEntity,
-              QB: {...res.user, connected: true, token: res?.session?.token},
-            };
-            authContext.setEntity({...currentEntity});
-            await Utility.setStorage('authContextEntity', {
-              ...currentEntity,
-            });
-            QBconnectAndSubscribe(currentEntity).then(() => {
-              setTimeout(() => {
-                setLoading(false);
-              }, 10);
-            });
-          });
-        })
-        .catch((error) => {
-          console.log('QB Issue', error);
-          setLoading(false);
-        });
     },
     [authContext],
   );
@@ -498,8 +448,6 @@ export default function AccountScreen({navigation, route}) {
 
     authContext.setEntity({...currentEntity});
     Utility.setStorage('authContextEntity', {...currentEntity});
-
-    switchQBAccount(item, currentEntity);
   }, []);
 
   const onLogout = useCallback(async () => {
@@ -1849,10 +1797,9 @@ export default function AccountScreen({navigation, route}) {
       />
 
       <SendNewInvoiceModal
-        isVisible = {sendNewInvoice}
+        isVisible={sendNewInvoice}
         onClose={() => SetSendNewInvoice(false)}
       />
-
     </SafeAreaView>
   );
 }

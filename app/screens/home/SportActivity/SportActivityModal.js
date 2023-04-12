@@ -236,6 +236,7 @@ const SportActivityModal = ({
                 level={sportObj?.level}
                 entityType={entityType}
                 description={sportObj?.descriptions}
+                sportType={sportObj?.sport_type}
               />
               <ChallengeButton
                 isAdmin={isAdmin}

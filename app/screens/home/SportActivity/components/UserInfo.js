@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Pressable,
 } from 'react-native';
+import ReadMore from '@fawazahmed/react-native-read-more';
 import {strings} from '../../../../../Localization/translation';
 import LevelBars from '../../../../components/LevelBars';
 import {ShimmerView} from '../../../../components/shimmer/commonComponents/ShimmerCommonComponents';
@@ -105,12 +106,16 @@ const UserInfo = ({
         ) : null}
       </Pressable>
       {screenType !== Verbs.screenTypeMainScreen ? (
-        <Text style={styles.description} numberOfLines={3}>
-          {description}{' '}
-          <TouchableOpacity onPress={onMore}>
-            <Text style={styles.moreText}>{strings.moreText}</Text>
-          </TouchableOpacity>
-        </Text>
+        <ReadMore
+          style={styles.description}
+          numberOfLines={7}
+          seeMoreText={strings.moreText}
+          seeLessText={strings.lessText}
+          seeLessStyle={styles.moreText}
+          seeMoreStyle={styles.moreText}
+          onSeeMoreBlocked={onMore}>
+          {description}
+        </ReadMore>
       ) : null}
     </View>
   );
@@ -154,7 +159,7 @@ const styles = StyleSheet.create({
   },
   moreText: {
     fontSize: 12,
-    lineHeight: 18,
+    // lineHeight: 18,
     color: colors.userPostTimeColor,
     fontFamily: fonts.RRegular,
   },
