@@ -48,8 +48,8 @@ const AccountMenuRow = ({
     {item?.option?.request_id && (
       <TouchableWithoutFeedback onPress={onPressCancelRequest}>
         <View style={styles.buttonView}>
-          <Text style={styles.textStyle} numberOfLines={1}>
-            {strings.cancelRequestTitle}
+          <Text style={styles.textStyle}>
+            {strings.teamCreationRequestSend}
           </Text>
         </View>
       </TouchableWithoutFeedback>
@@ -104,11 +104,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 5,
     height: 25,
-    width: '30%',
+    width: 250,
     marginBottom: 5,
     marginLeft: 80,
     backgroundColor: colors.whiteColor,
-    paddingHorizontal: 5,
+
     shadowColor: colors.blackColor,
     shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.1,

@@ -201,7 +201,6 @@ export default function MembersProfileScreen({navigation, route}) {
         setShowAdminPrivillege(false);
         onDeleteMemberProfile(switchUser.uid, memberDetail.user_id, toaccount);
       }
-      return;
     }
 
     bodyParams.is_admin = groupMemberDetail.is_admin;
@@ -209,6 +208,7 @@ export default function MembersProfileScreen({navigation, route}) {
     bodyParams.is_member = groupMemberDetail.is_member;
     bodyParams.is_parent = groupMemberDetail.is_parent;
     bodyParams.is_others = groupMemberDetail.is_others;
+    bodyParams.is_player = groupMemberDetail.is_player;
 
     const body = {
       ...bodyParams,
@@ -670,8 +670,10 @@ export default function MembersProfileScreen({navigation, route}) {
             <TouchableOpacity
               hitSlop={getHitSlop(15)}
               onPress={() => {
-                if (Number.isNaN(groupMemberDetail.jersey_number)) {
-                  Alert.alert(strings.jerseyValidation);
+                if (groupMemberDetail.jersey_number !== undefined) {
+                  if (!Number.isFinite(groupMemberDetail.jersey_number)) {
+                    Alert.alert(strings.jerseyValidation);
+                  }
                 } else {
                   editTeamProfile();
                 }
@@ -744,12 +746,13 @@ export default function MembersProfileScreen({navigation, route}) {
                   onPress={() => {
                     setGroupMemberDetail({
                       ...groupMemberDetail,
-                      is_member: !groupMemberDetail.is_member,
+
+                      is_player: !groupMemberDetail.is_player,
                     });
                   }}>
                   <Image
                     source={
-                      groupMemberDetail.is_member
+                      groupMemberDetail.is_player
                         ? images.orangeCheckBox
                         : images.uncheckWhite
                     }
@@ -1707,6 +1710,7 @@ export default function MembersProfileScreen({navigation, route}) {
                         is_member: memberDetail?.is_member,
                         is_coach: memberDetail?.is_coach,
                         is_parent: memberDetail?.is_parent,
+                        is_player: memberDetail?.is_player,
                         note: memberDetail?.note,
                         user_id: memberDetail?.user_id,
                       },
@@ -1736,6 +1740,8 @@ export default function MembersProfileScreen({navigation, route}) {
                       ) {
                         item.status = [];
                       }
+
+                      item.is_player = memberDetail.is_player;
 
                       setGroupMemberDetail(item);
                       setPositions(item?.positions ?? [{}]);

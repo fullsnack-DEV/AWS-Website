@@ -40,6 +40,7 @@ const GroupMembership = ({
       is_admin: groupData.is_admin,
       is_member: groupData.is_member,
       is_coach: groupData.is_coach,
+      is_player: groupData.is_player,
       note: groupData.note,
       user_id: groupData.user_id,
     };
@@ -98,7 +99,7 @@ const GroupMembership = ({
                   }}
                 />
               )}
-              {groupData.is_member && (
+              {groupData.is_player && (
                 <TCUserRoleBadge
                   title={strings.player}
                   titleColor={colors.playerBadgeColor}

@@ -16,15 +16,13 @@ import {
   SectionList,
   Text,
   Alert,
-  ScrollView,
-  Dimensions,
   SafeAreaView,
   TouchableOpacity,
 } from 'react-native';
 import ActionSheet from 'react-native-actionsheet';
 import Moment from 'moment';
 import {useIsFocused} from '@react-navigation/native';
-import Modal from 'react-native-modal';
+import {format} from 'react-string-format';
 import PRNotificationDetailMessageItem from '../../components/notificationComponent/PRNotificationDetailMessageItem';
 import NotificationItem from '../../components/notificationComponent/NotificationItem';
 import PRNotificationInviteCell from '../../components/notificationComponent/PRNotificationInviteCell';
@@ -60,7 +58,7 @@ import {
 import {getUserDetails} from '../../api/Users';
 import {getGroupDetails} from '../../api/Groups';
 import NotificationListShimmer from '../../components/shimmer/account/NotificationListShimmer';
-import TCGradientButton from '../../components/TCGradientButton';
+
 import PRNotificationTeamInvite from '../../components/notificationComponent/PRNotificationTeamInvite';
 import PRNotificationDetailItem from '../../components/notificationComponent/PRNotificationDetailItem';
 import RefereeReservationStatus from '../../Constants/RefereeReservationStatus';
@@ -68,6 +66,7 @@ import ScorekeeperReservationStatus from '../../Constants/ScorekeeperReservation
 import {getEventById} from '../../api/Schedule';
 import TCInnerLoader from '../../components/TCInnerLoader';
 import errorCode from '../../Constants/errorCode';
+import SendRequestModal from '../../components/SendRequestModal/SendRequestModal';
 
 function NotificationsListScreen({navigation}) {
   const actionSheet = useRef();
@@ -643,6 +642,7 @@ function NotificationsListScreen({navigation}) {
         getRequestDetail(groupId, authContext)
           .then((response) => {
             setloading(false);
+
             setGroupData(response.payload);
             setIsRulesModalVisible(true);
           })
@@ -1131,6 +1131,26 @@ function NotificationsListScreen({navigation}) {
       <ActivityLoader visible={loading} />
       {/* eslint-disable-next-line no-nested-ternary */}
 
+      <SendRequestModal
+        visibleRequestModal={isRulesModalVisible}
+        onClosePress={() => setIsRulesModalVisible(false)}
+        onNextPress={() => onNextPressed()}
+        groupData={groupData}
+        textstring1={format(
+          strings.responseToRequesttxt1,
+          groupData?.player2?.full_name,
+        )}
+        textstring2={format(
+          strings.responseToRequesttxt2,
+          groupData?.player2?.full_name,
+        )}
+        textstring3={format(
+          strings.responseToRequesttxt3,
+          groupData?.player2?.full_name,
+        )}
+        btntext={strings.nextTitle}
+      />
+
       {!firstTimeLoading && mainNotificationsList?.length > 0 && (
         <SectionList
           style={{flex: 1}}
@@ -1196,7 +1216,7 @@ function NotificationsListScreen({navigation}) {
       />
 
       {/* Rules notes modal */}
-      <Modal
+      {/* <Modal
         isVisible={isRulesModalVisible}
         onBackdropPress={() => setIsRulesModalVisible(false)}
         onRequestClose={() => setIsRulesModalVisible(false)}
@@ -1265,7 +1285,7 @@ function NotificationsListScreen({navigation}) {
             onPress={onNextPressed}
           />
         </View>
-      </Modal>
+      </Modal> */}
     </SafeAreaView>
   );
 }

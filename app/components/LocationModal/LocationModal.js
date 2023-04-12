@@ -73,11 +73,11 @@ function LocationModal({
 
   /* for call from parent to call child function  */
 
-  useEffect(() => {
-    getGeoCoordinates();
-
-    return () => {};
-  }, []);
+  // useEffect(() => {
+  //   if (visibleLocationModal) {
+  //     getGeoCoordinates();
+  //   }
+  // }, [visibleLocationModal]);
 
   const handleNearByCityData = (data) => {
     setNearbyCities(data);
@@ -153,7 +153,7 @@ function LocationModal({
         );
         setNearbyCities(list);
         setLoading(false);
-        handleVisibleModal();
+        // handleVisibleModal();
       })
       .catch((e) => {
         setLoading(false);
@@ -303,6 +303,9 @@ function LocationModal({
     <View>
       <ActivityLoader visible={loading} />
       <Modal
+        // onModalWillShow={() => getGeoCoordinates()}
+        // onSwipeComplete={() => getGeoCoordinates()}
+        onModalShow={() => getGeoCoordinates()}
         isVisible={visibleLocationModal}
         onBackdropPress={() => handleVisibleModal()}
         onRequestClose={() => handleVisibleModal()}
@@ -310,6 +313,7 @@ function LocationModal({
         animationOutTiming={800}
         backdropTransitionInTiming={300}
         backdropTransitionOutTiming={800}
+        // onShow={() => getGeoCoordinates()}
         style={{
           margin: 0,
         }}>

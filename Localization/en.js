@@ -1141,7 +1141,7 @@ export default {
   addLanguageText: 'en_Add language',
   clubNameText: 'en_Club name',
   homeCityText: 'en_Home city',
-  describeText: 'en_Describe',
+  describeText: 'en_Description',
   player: 'en_Player',
   parent: 'en_Parent (Guardian)',
   coach: 'en_Coach',
@@ -1503,11 +1503,11 @@ export default {
 
   cancelRequestText: 'en_Cancel request',
   logOut: 'en_Log out',
-  teamCreateClubsText: 'en_When your team creates a club:',
-  yourTeamWillBelogText: 'en_\n• your team will belong to the club initially.',
-  teamCanLeaveClubText: 'en_\n• your team can leave the club anytime later.',
+  teamCreateClubsText: 'en_When your club creates a team:',
+  yourTeamWillBelogText: 'en_The team will belong to the club initially.',
+  teamCanLeaveClubText: 'en_The team can leave the club anytime later.',
   adminOfTeamWillClubAdminText:
-    'en_\n• the admins of your team will be the admins of the club initially.',
+    'en_The admins of your team will be the admins of the club initially.',
 
   account: 'en_Account',
   privacyText: 'en_Privacy',
@@ -2539,7 +2539,7 @@ export default {
   pleaseSelectLanguage: 'en_Please Select the Langauage',
   incomingChallengeSettingsTitleTeam:
     'en_Please review your team’s incoming challenge settings. These settings are only applicable to the match reservation when your team is the match host. When your team is the Challenger, the opponent’s incoming challenge settings Will be applied.',
-  createTeamModalTitle: 'en_What sport does the new team will play?',
+  createTeamModalTitle: 'en_What sport will the new team play?',
   congratsTeamCreated:
     'en_Congratulations! Vancouver Whitecaps FC has been created.',
   congratesSubTitle: 'en_Your account has been switched to {0}.  ',
@@ -2575,6 +2575,49 @@ export default {
 
   updateRecurringEvent: 'en_Update recurring event',
   deleteRecurringEvent: 'en_Delete recurring event',
+  alredyRequestSend: `en_You already sent a request to create a team with this player in {0}.`,
+  sentYouaRequest: `en_{0} sent you a request to create a team together. `,
+  respondToRequest: 'en_Respond to request',
+  areYouSureDeclineRequest: 'en_Are you sure you want to decline the request? ',
+  requestWasDeclined: 'en_The request Was alredy declined.',
+  thisRequestIsCancelled: 'en_This request was canceled.',
+  requestSendTo: 'en_Request sent to {0}',
+  teamWillGetCreated:
+    'en_The team will be created when {0} accepts your request to create a team together.',
+  teamCreationRequestSend: 'en_team-creating request Sent',
+  teamWillbeCreatedAcceptRequest:
+    'en_This team will be created when the team partner accepts your request.',
+  areYouSureTouWantToWithdrawRequest:
+    'en_Are you sure you want to withdraw the request to create the team?',
+  resendRequest: 'en_Resend Request',
+  declineRequest: 'en_Decline Request',
+  cancelTermination: 'en_Cancel Termination',
+  rejoin: 'en_Rejoin',
+  acceptRequet: 'en_Accept Request',
+  withDrawRequest: 'en_Withdraw Request',
+  goBack: 'en_Go Back',
+  cancelTerminateTxr: 'en_Cancel',
+  terminateText: 'en_Termination',
+  userJoinTeam:
+    'en_Great! You now rejoined to {0}. Your account has been switch to {0}',
+  playersAge: `en_PLAYER'S AGE `,
+  languageUsedBy: 'en_Languages used by the team',
+  sendRequesttxt1:
+    'en_The team will be created when the teampartner accept your request to create a team together.',
+  sendRequesttxt2:
+    'en_ You and your partner will be only the players in the team but you can allow other users to join your team as members, who may be parents, managers, supporters ect.',
+  sendRequesttxt3:
+    'en_ You and your partner will be the initial admins of the team, but you can add more admins of  the team later.',
+  sendRequestBtnTxt: 'en_SEND REQUEST',
+  requestSent: 'en_Request Sent',
+  sendrequestToCreateTeam: 'en_Send Request to Create Team',
+  responseToRequesttxt1:
+    'en_{0} sent you an request to create a team together. When you accept this request the team will be created ',
+  responseToRequesttxt2:
+    'en_{0} and you will be only the players in the team but you can allow other users to join your team as members, who may be parents, managers, supporters ect',
+  responseToRequesttxt3:
+    'en_{0} and you will be the initial admins of the team, but you can add more admins of the team later.',
+  fillInClubName: 'en_Please fill in the club name',
   emailText: 'en_E-MAIL',
   whatIsYourSlogan: 'en_What is your slogan?',
   teamText: 'en_Team',

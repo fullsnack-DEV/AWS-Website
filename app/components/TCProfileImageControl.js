@@ -15,6 +15,7 @@ function TCProfileImageControl({
   buttonImage = images.certificateUpload,
   bgImageStyle,
   profileImageStyle,
+  profileImageContainerStyle,
   bgImageButtonStyle,
   profileImageButtonStyle,
   showEditButtons = false,
@@ -30,8 +31,9 @@ function TCProfileImageControl({
           imageStyle={[styles.bgImageStyle, bgImageStyle]}
           source={bgImage}
           defaultSource={bgImagePlaceholder}
-          // resizeMode={'contain'}
+          resizeMode={'contain'}
         />
+
         {showEditButtons && (
           <TouchableOpacity
             style={[styles.bgCameraButtonStyle, bgImageContainerStyle]}
@@ -43,17 +45,24 @@ function TCProfileImageControl({
           </TouchableOpacity>
         )}
       </View>
-      <TCImage
-        imageStyle={[
-          styles.profileImageStyle,
-          profileImageStyle,
-
+      <View
+        style={[
+          styles.profileImageContainerStyle,
           {marginTop: showEditButtons ? -40 : -36},
-        ]}
-        source={profileImage || profileImagePlaceholder}
-        defaultSource={profileImagePlaceholder}
-        resizeMode={'cover'}
-      />
+          profileImageContainerStyle,
+        ]}>
+        <TCImage
+          imageStyle={[
+            styles.profileImageStyle,
+            profileImageStyle,
+
+            {marginTop: showEditButtons ? 0 : -36},
+          ]}
+          source={profileImage || profileImagePlaceholder}
+          defaultSource={profileImagePlaceholder}
+          resizeMode={'cover'}
+        />
+      </View>
       {showEditButtons && (
         <TouchableOpacity
           style={[styles.profileCameraButtonStyle, profileCameraButtonStyle]}
@@ -73,8 +82,6 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     height: 135,
-
-    // aspectRatio: 375 / 147,
   },
   bgImageStyle: {
     flex: 1,
@@ -86,8 +93,18 @@ const styles = StyleSheet.create({
     width: 60,
     marginTop: -36,
     borderRadius: 35.5,
-    borderWidth: 2,
     alignSelf: 'center',
+  },
+  profileImageContainerStyle: {
+    width: 60,
+    height: 60,
+    borderRadius: 100,
+    borderWidth: 1,
+    borderColor: colors.greyBorderColor,
+
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.whiteColor,
   },
   bgCameraButtonStyle: {
     height: 22,
@@ -97,8 +114,8 @@ const styles = StyleSheet.create({
     marginTop: -37,
   },
   bgImageButtonStyle: {
-    height: 22,
-    width: 22,
+    height: 30,
+    width: 30,
   },
   profileCameraButtonStyle: {
     height: 22,

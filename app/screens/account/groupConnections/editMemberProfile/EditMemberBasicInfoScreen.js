@@ -63,6 +63,8 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
   const [country, setCountry] = useState();
   const [visibleLocationModal, setVisibleLocationModal] = useState(false);
 
+  const [maxDateValue] = useState(new Date());
+
   const [phoneNumber, setPhoneNumber] = useState([
     {
       id: 0,
@@ -186,7 +188,15 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
       Alert.alert(strings.appName, strings.locationvalidation);
       return false;
     }
+
     if (memberInfo.height) {
+      if (
+        memberInfo.height.height_type === undefined &&
+        memberInfo.height !== ''
+      ) {
+        memberInfo.height.height_type = 'lb';
+      }
+
       if (!memberInfo.height.height_type) {
         Alert.alert(strings.appName, strings.heightValidation);
         return false;
@@ -196,6 +206,7 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
         return false;
       }
     }
+
     if (memberInfo.weight) {
       if (
         memberInfo.weight.weight_type === undefined &&
@@ -682,7 +693,7 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
             onCancel={handleCancelPress}
             onHide={handleCancelPress}
             // minimumDate={minDateValue}
-            // maximumDate={maxDateValue}
+            maximumDate={maxDateValue}
             mode={'date'}
           />
         </View>

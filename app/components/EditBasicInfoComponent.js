@@ -1,5 +1,5 @@
 // @flow
-import moment from 'moment';
+
 import React, {useState} from 'react';
 import {
   View,
@@ -15,7 +15,7 @@ import {strings} from '../../Localization/translation';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import images from '../Constants/ImagePath';
-import {getJSDate} from '../utils';
+
 import {heightMesurement, weightMesurement} from '../utils/constant';
 import AddressLocationModal from './AddressLocationModal/AddressLocationModal';
 import TCCountryCodeModal from './TCCountryCodeModal';
@@ -31,6 +31,7 @@ const EditBasicInfoComponent = ({
     country: 'Canada',
   });
   const [visibleAddressModal, setVisibleAddressModal] = useState(false);
+
   const handleLocation = (_location) => {
     const obj = {...userInfo};
     obj.state_full = _location.state_full;
@@ -140,9 +141,14 @@ const EditBasicInfoComponent = ({
         <Text
           style={[
             styles.titleText,
-            {fontFamily: fonts.RRegular, marginBottom: 0},
+            {
+              fontFamily: fonts.RRegular,
+              marginBottom: 0,
+              textTransform: 'capitalize',
+            },
           ]}>
-          {userInfo.gender.charAt(0).toUpperCase() + userInfo.gender.slice(1)}
+          {userInfo.gender}
+          {/* {userInfo.gender.charAt(0).toUpperCase() + userInfo.gender.slice(1)} */}
         </Text>
       </View>
 
@@ -155,7 +161,7 @@ const EditBasicInfoComponent = ({
             styles.titleText,
             {fontFamily: fonts.RRegular, marginBottom: 0},
           ]}>
-          {moment(getJSDate(userInfo?.birthday)).format('MMM DD,YYYY')}
+          {userInfo?.birthday}
         </Text>
       </View>
 
@@ -282,7 +288,7 @@ const EditBasicInfoComponent = ({
             placeholder={strings.streetAddress}
             pointerEvents="none"
             editable={false}
-            value={userInfo.formattedAddress}
+            value={userInfo.formattedAddress || userInfo.street_address}
             style={styles.inputField}
           />
         </Pressable>

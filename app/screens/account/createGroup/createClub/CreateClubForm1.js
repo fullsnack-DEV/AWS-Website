@@ -2,6 +2,7 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable default-case */
 /* eslint-disable no-unneeded-ternary */
+
 import React, {
   useState,
   useEffect,
@@ -97,7 +98,7 @@ export default function CreateClubForm1({navigation, route}) {
 
   const checkClubValidations = useCallback(() => {
     if (clubName === '') {
-      showAlertWithoutTitle('clubname');
+      showAlertWithoutTitle(strings.fillInClubName);
       return false;
     }
     if (location === '') {
@@ -558,10 +559,12 @@ export default function CreateClubForm1({navigation, route}) {
 
         <View>
           <TCProfileImageControl
-            profileImage={thumbnail ? {uri: thumbnail} : images.clubPlaceholder}
-            profileImagePlaceholder={images.clubPlaceholder}
+            profileImage={thumbnail ? {uri: thumbnail} : images.clubCover}
+            profileImagePlaceholder={images.clubCover}
             bgImage={
-              backgroundThumbnail ? {uri: backgroundThumbnail} : undefined
+              backgroundThumbnail
+                ? {uri: backgroundThumbnail}
+                : images.backgroundGrayPlceholder
             }
             onPressBGImage={() => onBGImageClicked()}
             onPressProfileImage={() => onProfileImageClicked()}
@@ -571,19 +574,9 @@ export default function CreateClubForm1({navigation, route}) {
               alignSelf: 'center',
             }}
             profileImageStyle={{
-              marginTop: 30,
-              alignSelf: 'flex-start',
-              marginLeft: 15,
-              borderWidth: 0,
-
-              borderRadius: 50,
-
-              alignItems: 'center',
-              height: 70,
-              padding: 0,
-              width: 70,
-              shadowColor: colors.whiteColor,
-              elevation: 0,
+              height: 40,
+              width: 40,
+              marginTop: 10,
             }}
             profileCameraButtonStyle={{
               alignSelf: 'flex-start',
@@ -596,6 +589,9 @@ export default function CreateClubForm1({navigation, route}) {
             }}
             profileImageButtonStyle={{
               alignSelf: 'center',
+            }}
+            profileImageContainerStyle={{
+              marginLeft: 15,
             }}
             showEditButtons
           />

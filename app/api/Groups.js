@@ -13,18 +13,15 @@ export const createGroup = (params, caller_id, caller, authContext) =>
   makeAPIRequest({
     method: 'post',
     url: `${Config.BASE_URL}groups`,
-    caller_id,
-    caller,
     data: params,
     authContext,
   });
 
-export const createGroupRequest = (params, caller_id, caller, authContext) =>
+export const createGroupRequest = (params, authContext) =>
   makeAPIRequest({
     method: 'post',
     url: `${Config.BASE_URL}groups/request`,
-    caller_id,
-    caller,
+
     data: params,
     authContext,
   });
@@ -43,7 +40,7 @@ export const getGroupName = (name, city, authContext) =>
     authContext,
   });
 
-export const getGroupRequest = (requestType, groupID, authContext) =>
+export const actionOnGroupRequest = (requestType, groupID, authContext) =>
   makeAPIRequest({
     method: 'post',
     url: `${Config.BASE_URL}/groups/request/${requestType}/${groupID}`,
@@ -227,11 +224,12 @@ export const groupPaused = (authContext) =>
     authContext,
   });
 
-export const groupUnpaused = (authContext) =>
+export const groupUnpaused = (authContext, headers) =>
   makeAPIRequest({
     method: 'delete',
     url: `${Config.BASE_URL}groups/pause`,
     authContext,
+    headers,
   });
 
 export const groupTerminate = (authContext) =>
@@ -252,6 +250,13 @@ export const groupValidate = (params, authContext) =>
   makeAPIRequest({
     method: 'post',
     url: `${Config.BASE_URL}/groups/request/validate`,
-    authContext,
     data: params,
+    authContext,
   });
+
+// export const getGroupMembersInfo = (groupID, memberID, authContext) =>
+// makeAPIRequest({
+//   method: 'get',
+//   url: `${Config.BASE_URL}groups/${groupID}/members/${memberID}`,
+//   authContext,
+// });
