@@ -15,14 +15,14 @@ function EventTimeItem({fromTime, location}) {
         source={images.eventClock}
         style={{width: 14, height: 14, marginRight: 10}}
         />
-        <Text style={styles.fromTimeTextStyle}>{fromTime}</Text>
+        <Text style={styles.fromTimeTextStyle}>{fromTime} </Text>
       </View>
       <View style={styles.timeValueStyle}>
         <Image
         source={images.eventMap}
         style={{width: 14, height: 18, marginRight: 10}}
         />
-        <Text style={styles.fromTimeTextStyle}>{location}</Text>
+        <Text style={styles.fromTimeTextStyle}>{location} </Text>
       </View>
       {/* <View style={styles.timeSepratorView} />
       <View style={styles.timeValueStyle}>

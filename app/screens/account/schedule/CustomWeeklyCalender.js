@@ -97,7 +97,7 @@ export default function WeeklyCalender({colors, onDayPress, blockedDaySlots, sel
         }else if(moment(selectedDate).format('YYYY-MM-DD') === item.customDate) {
             color = colors.themeColor;
         }else if(blockedDaySlots.includes(item.customDate)) {
-            color = colors.whiteColor;
+            color = colors.lightGrey;
         }else if(moment(new Date()).format('YYYY-MM-DD') === item.customDate){
             color = colors.whiteColor;
         }else{
@@ -115,11 +115,11 @@ export default function WeeklyCalender({colors, onDayPress, blockedDaySlots, sel
         }else if(moment(selectedDate).format('YYYY-MM-DD') === item.customDate) {
             color = colors.whiteColor;
         }else if(blockedDaySlots.includes(item.customDate)) {
-            color = colors.whiteColor;
+            color = colors.grayColor;
         }else if(moment(new Date()).format('YYYY-MM-DD') === item.customDate){
             color = colors.themeColor;
         }else{
-            color =  colors.availabilityBarColor;
+            color =  colors.greenGradientStart;
         }
 
         return color;

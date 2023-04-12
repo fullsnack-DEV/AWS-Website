@@ -149,11 +149,11 @@ export const shortMonthNames = [
 ];
 
 export const reservationOpetions = [
-  'All',
-  'Matches',
-  'Refeering',
-  'Scorekeepering',
-  'Others',
+  strings.all,
+  strings.playingTitleText,
+  strings.refeeringText,
+  strings.scorekeeperingText,
+  strings.othersText,
 ];
 
 export const mobileCountryCode = [

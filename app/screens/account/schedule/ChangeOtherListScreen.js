@@ -38,10 +38,19 @@ export default function ChangeOtherListScreen({navigation, route}) {
   const onDonePress = useCallback(() => {
     setLoading(true);
     if (addedGroups.length > 0) {
-      const params = {
-        ...userSetting,
-        schedule_group_filter: addedGroups,
-      };
+      let params;
+      if([Verbs.entityTypeClub].includes(authContext.entity.role)) {
+        params = {
+          ...userSetting,
+          club_schedule_group_filter: addedGroups,
+        };
+      }else{
+        params = {
+          ...userSetting,
+          schedule_group_filter: addedGroups,
+        };
+      }
+
       saveUserSettings(params, authContext)
         .then(async (response) => {
           console.log('After save setting', response);

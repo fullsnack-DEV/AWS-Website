@@ -1,5 +1,5 @@
-import React, {useContext} from 'react';
-import {StyleSheet, View, Text, TouchableWithoutFeedback, ImageBackground} from 'react-native';
+import React, {useContext, useEffect, useState} from 'react';
+import {StyleSheet, View, Text, TouchableWithoutFeedback, ImageBackground, Image} from 'react-native';
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import moment from 'moment';
 import images from '../../Constants/ImagePath';
@@ -12,13 +12,12 @@ import { strings } from '../../../Localization/translation';
 export default function TCEventCard({
   onPress,
   data,
-  // entity,
+  owners
 }) {
   const authContext = useContext(AuthContext);
-
   const isGame = !!(data?.game_id && data?.game);
-
   const startDate = getJSDate(data.start_datetime);
+  const [ownerDetails, setOwnerDetails] = useState({});
 
   const location =
     data?.location?.location_name ??
@@ -26,6 +25,14 @@ export default function TCEventCard({
     data?.game?.venue?.description ??
     '';
   const title = isGame ? getSportName(data.game, authContext) : data.title;
+
+  useEffect(() => {
+    owners.forEach(item => {
+      if(item.user_id === data?.created_by?.uid) {
+        setOwnerDetails(item);
+      }
+    });
+  });
 
   return (
     <TouchableWithoutFeedback onPress={onPress}>
@@ -38,7 +45,13 @@ export default function TCEventCard({
             : images.backgroudPlaceholder} 
           resizeMode="cover" 
           style={styles.eventImage}>
-              <View style={{height: 100}}/>
+               <Image
+                  source={
+                    images.threeDotIcon
+                  }
+                  style={{height: 20, width:4, alignSelf: 'flex-end', marginRight:15, marginTop:15}}
+                />
+              <View style={{height: 50}}/>
               <View style={styles.eventTitlewithDot}>
                 <Text
                   style={styles.eventTitle}
@@ -56,23 +69,37 @@ export default function TCEventCard({
                 <Text style={styles.eventTime}>{`${moment(startDate).format(
                   'h:mma'
                 )} `}</Text>
-               {data?.going?.length && (
-                <>
-                  <Text style={styles.eventTime}> | </Text>
-                  <Text numberOfLines={1} style={{...styles.eventTime, flex: 1}}>
-                    {' '}
-                    {data?.going?.length ?? 0}
-                    {strings.going}
-                  </Text>
-                </>
-                )}
-                
-                {location !== '' && (
-                  <Text style={styles.eventTime}> | </Text>
-                )}
-                <Text numberOfLines={1} style={{...styles.eventTime, flex: 1}}>
-                  {location !== '' && location}
+               
+                <Text style={styles.eventTime}> | </Text>
+                {/* <Text numberOfLines={1} style={{...styles.eventTime, flex: 1}}>
+                  {' '}
+                  {data?.going?.length ?? 0}
+                  {strings.going}
                 </Text>
+                {location !== '' && (
+                <Text style={styles.eventTime}> | </Text>
+                )} */}
+                {
+                location !== '' ? (
+                <Text numberOfLines={1} style={{...styles.eventTime, flex: 1}}>
+                  {location}
+                </Text>
+                ):(
+                  <Text style={{...styles.onlineText, flex: 1}}>
+                  { strings.onlineText }
+                </Text>
+                )}
+            </View>
+            <View style={styles.bottomView}>
+              <View style={styles.eventImageViewStyle}>
+                <Image
+                  source={
+                    ownerDetails?.thumbnail ? {uri: ownerDetails?.thumbnail} : images.profilePlaceHolder
+                  }
+                  style={{height: 25, width: 25, borderRadius: 70}}
+                />
+              </View>
+              <Text style={styles.ownerText}>{ownerDetails?.full_name}</Text>
             </View>
           </View>
       </View>
@@ -81,9 +108,7 @@ export default function TCEventCard({
 }
 
 const styles = StyleSheet.create({
-  eventImage:{
-    flex: 1
-  },
+ 
   imageBorder: { 
     borderTopLeftRadius: 10, 
     borderTopRightRadius: 10
@@ -116,6 +141,12 @@ const styles = StyleSheet.create({
     color: colors.darkBlackColor,
     fontFamily: fonts.RLight,
   },
+  ownerText: {
+    fontSize: 12,
+    color: colors.darkBlackColor,
+    fontFamily: fonts.RBold,
+    marginLeft: 10
+  },
   eventTitle: {
     fontSize: 16,
     fontFamily: fonts.RMedium,
@@ -132,4 +163,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: 10,
   },
+  onlineText:{
+    color: colors.themeColor,
+    fontWeight: '500'
+  }
 });

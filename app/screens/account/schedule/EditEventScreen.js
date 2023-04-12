@@ -877,7 +877,7 @@ export default function EditEventScreen({navigation, route}) {
       <View style={styles.sperateLine} />
       <TCKeyboardView>
         <ScrollView bounces={false} nestedScrollEnabled={true}>
-          <SafeAreaView>
+          <SafeAreaView style={{paddingHorizontal: 10, marginTop:10}}> 
             <EventBackgroundPhoto
               isEdit={!!backgroundThumbnail}
               isPreview={false}
@@ -952,6 +952,7 @@ export default function EditEventScreen({navigation, route}) {
 
             <EventItemRender 
             containerStyle={{position : 'relative', margin: 20}} 
+            headerTextStyle={{fontSize:16}}
             title={strings.place}
             >
               <EventVenueTogglebtn
@@ -1029,7 +1030,7 @@ export default function EditEventScreen({navigation, route}) {
             <EventItemRender
               title={strings.timeTitle}
               isRequired={true}
-              headerTextStyle={{marginBottom: 15}}>
+              headerTextStyle={{marginBottom: 15, fontSize:16}}>
               <EventTimeSelectItem
                 title={strings.starts}
                 toggle={!toggle}
@@ -1119,16 +1120,20 @@ export default function EditEventScreen({navigation, route}) {
               )} 
             </EventItemRender>
 
-            <EventItemRender containerStyle={{marginTop: -20, marginBottom: 20}} title={''}>
+            <EventItemRender containerStyle={{marginTop: -40, marginBottom: 10}} title={''}>
               <Text style={styles.availableSubHeader}>
                 {strings.availableSubTitle}
               </Text>
               <BlockAvailableTabView
                 blocked={is_Blocked}
-                firstTabTitle={'Blocked'}
-                secondTabTitle={'Available'}
+                firstTabTitle={strings.blocked}
+                secondTabTitle={strings.availableText}
                 onFirstTabPress={() => setIsBlocked(true)}
                 onSecondTabPress={() => setIsBlocked(false)}
+                startGradientColor={colors.grayBackgroundColor}
+                endGradientColor={colors.grayBackgroundColor}
+                activeEventPricacy={styles.activeEventPricacy}
+                inactiveEventPricacy={styles.inactiveEventPricacy}
               />
             </EventItemRender>
 
@@ -1136,7 +1141,7 @@ export default function EditEventScreen({navigation, route}) {
               <Text style={styles.headerTextStyle}>
                 {strings.eventFeeTitle}
               </Text>
-              <View style={styles.feeContainer}>
+              <View style={[styles.feeContainer, {marginTop:10}]}>
                 <TextInput
                   style={styles.eventFeeStyle}
                   onChangeText={(value) => setEventFee(value)}
@@ -1146,10 +1151,22 @@ export default function EditEventScreen({navigation, route}) {
                 />
                 <Text style={styles.currencyStyle}>{strings.defaultCurrency}</Text>
               </View>
+              <Text
+                  style={{
+                    fontSize: 14,
+                    fontFamily: fonts.RRegular,
+                    textDecorationLine: 'underline',
+                    textAlign:'right',
+                    paddingHorizontal:5,
+                    marginTop:5,
+                    color: colors.lightBlackColor
+                  }}>
+                  {strings.changeCurrency} 
+                </Text>
             </View>
 
 
-            <View style={styles.containerStyle}>
+            <View style={[styles.containerStyle, {marginTop:20}]}>
               <Text style={styles.headerTextStyle}>
                 {strings.refundPolicyTitle}
               </Text>
@@ -1162,14 +1179,14 @@ export default function EditEventScreen({navigation, route}) {
                 textAlignVertical={'center'}
                 placeholderTextColor={colors.userPostTimeColor}
               />
-              <Text style={[styles.subTitleText, {marginTop: 0}]}>
+              {/* <Text style={[styles.subTitleText, {marginTop: 0}]}>
                 Attendees must be refunded if the event is canceled or
                 rescheduled. Read payment policy for more information.
-              </Text>
+              </Text> */}
             </View>
 
 
-            <View style={styles.containerStyle}>
+            <View style={[styles.containerStyle,{marginTop:10}]}>
               <Text style={styles.headerTextStyle}>
                 {strings.numberOfAttend}
                 <Text style={styles.opetionalTextStyle}>{' opetional'}</Text>
@@ -1187,7 +1204,7 @@ export default function EditEventScreen({navigation, route}) {
             </View>
 
           
-            <View style={styles.containerStyle}>
+            <View style={[styles.containerStyle,{marginTop:20}]}>
               <Text style={styles.headerTextStyle}>{strings.whoCanJoin}</Text>
 
               <TouchableOpacity
@@ -1244,7 +1261,7 @@ export default function EditEventScreen({navigation, route}) {
             
 
 
-            <View style={styles.containerStyle}>
+            <View style={[styles.containerStyle, {marginTop:10}]}>
               <Text style={styles.headerTextStyle}>{strings.whereEventPosted}</Text>
               <TouchableOpacity
                 onPress={() => {
@@ -1265,7 +1282,7 @@ export default function EditEventScreen({navigation, route}) {
 
 
 
-            <View style={styles.containerStyle}>
+            <View style={[styles.containerStyle, {marginTop:10}]}>
               <Text style={styles.headerTextStyle}>WHO CAN INVITE</Text>
               <TouchableOpacity
                 onPress={() => {
@@ -1320,7 +1337,7 @@ export default function EditEventScreen({navigation, route}) {
             )}
 
 
-            <View style={styles.containerStyle}>
+            <View style={[styles.containerStyle, {marginTop:10}]}>
               <Text style={styles.headerTextStyle}>{strings.whoCanSee}</Text>
               <TouchableOpacity
                 onPress={() => {
@@ -1759,7 +1776,7 @@ const styles = StyleSheet.create({
     width: wp('96%'),
     alignSelf: 'center',
     padding: wp('1.5%'),
-    marginBottom: 30
+    // marginBottom: 10
   },
 
   headerTextStyle: {

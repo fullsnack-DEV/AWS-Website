@@ -25,7 +25,9 @@ const styles = StyleSheet.create({
     width: wp('92%'),
     height: hp('20%'),
     borderRadius: 5,
-    marginTop: 10,
+    marginTop: 15,
+    marginBottom:10
+   
   },
 });
 

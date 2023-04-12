@@ -18,7 +18,7 @@ function EventItemRender({
     <View style={[styles.containerStyle, containerStyle]}>
       <View style={{flexDirection: 'row', justifyContent: 'flex-start'}}>
         <Text style={[styles.headerTextStyle, headerTextStyle]}>
-          {title}{' '}
+          {title}{' '} 
           {isRequired && <Text style={{color: colors.darkThemeColor}}> *</Text>}
         </Text>
         {
@@ -41,10 +41,11 @@ const styles = StyleSheet.create({
     padding: wp('1.5%'),
   },
   headerTextStyle: {
-    fontSize: 16,
+    fontSize: 20,
     fontFamily: fonts.RBold,
-    marginVertical: 3,
-    color: colors.lightBlackColor,
+    // marginVertical: 3,
+    // color: colors.lightBlackColor,
+    marginBottom: 10
   },
 });
 

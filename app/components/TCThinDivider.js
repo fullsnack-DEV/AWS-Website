@@ -9,7 +9,7 @@ export default function TCThinDivider({height = 1, width = '90%', ...props}) {
 
 const styles = StyleSheet.create({
   bigDivider: {
-    backgroundColor: colors.grayBackgroundColor,
+    backgroundColor: colors.lightGrey,
 
     marginTop: 0,
     alignSelf: 'center',

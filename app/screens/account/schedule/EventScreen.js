@@ -280,6 +280,9 @@ export default function EventScreen({navigation, route}) {
 
 
   const checkIsGoing = () => {
+
+    console.log('Role', authContext.entity.role)
+
     if(!['user', 'player'].includes(authContext.entity.role)) {
       return false;
     }
@@ -369,6 +372,7 @@ export default function EventScreen({navigation, route}) {
       });
   };
 
+
   const renderGoingView = ({item}) => (
     <View style={styles.goingContainer}>
       <FastImage
@@ -380,7 +384,7 @@ export default function EventScreen({navigation, route}) {
     </View>
   );
 
-
+  
   const clickInfoIcon = (type) => {
     setInfoType(type);
     setInfoModal(true);
@@ -435,6 +439,8 @@ export default function EventScreen({navigation, route}) {
     </View>
   );
 
+
+
   return (
     <>
       <Modal
@@ -478,7 +484,7 @@ export default function EventScreen({navigation, route}) {
                   marginVertical: 10,
                   fontSize: 16,
                   fontFamily: fonts.RRegular,
-                }}>{strings.deleteRecurringEvent}</Text>
+                }}>{strings.deleteRecurringEvent} </Text>
             </View>
             <TCThinDivider width="92%" />
             <FlatList
@@ -526,7 +532,9 @@ export default function EventScreen({navigation, route}) {
         <View style={styles.sperateLine} />
         <ScrollView 
         stickyHeaderIndices={[5]}
+        // style={{paddingHorizontal:10}}
         >
+          <View style={styles.EventBackgroundPhoto}>
           <EventBackgroundPhoto
             isEdit={!!eventData?.background_thumbnail}
             isPreview={true}
@@ -536,14 +544,16 @@ export default function EventScreen({navigation, route}) {
                 ? {uri: eventData?.background_thumbnail}
                 : images.backgroudPlaceholder
             }
+    
           />
+          </View>
 
           <Text style={styles.eventTitleStyle}>
-            {titleValue}
+            {titleValue} 
           </Text>
           <Text style={styles.sportTitleStyle}>
-            {' '}
-            {eventData?.selected_sport && eventData?.selected_sport?.sport_name}
+            {' '} 
+            {eventData?.selected_sport && eventData?.selected_sport?.sport_name} 
           </Text>
 
           <EventTimeItem
@@ -606,8 +616,10 @@ export default function EventScreen({navigation, route}) {
               }}
             />
           )}
+         
 
           {checkIsInvite()  && (
+            
             <TCProfileButton
               title={'Invite'}
               style={[styles.firstButtonStyle, {width: checkIsGoing() ? '48%' : '100%'}]}
@@ -618,8 +630,9 @@ export default function EventScreen({navigation, route}) {
                 navigation.navigate('InviteToEventScreen', {
                   eventId: eventData.cal_id,
                   start_datetime: eventData.start_datetime,
-                  end_datetime: eventData.end_datetime
+                  end_datetime: eventData.end_datetime 
                 })
+           
               }
             />
           )}
@@ -658,7 +671,7 @@ export default function EventScreen({navigation, route}) {
           )} */}
 
 
-          <View style={{ marginVertical: 30, backgroundColor: colors.whiteColor}}> 
+          <View style={{ marginBottom: 20, backgroundColor: colors.whiteColor, marginTop:0}}> 
             <View 
             style={{
               flexDirection: 'row',
@@ -711,11 +724,11 @@ export default function EventScreen({navigation, route}) {
           <>
             <EventItemRender title={strings.description}>
               <Text style={styles.textValueStyle}>
-                {description} {description2}
+                {description} {description2} 
               </Text>
             </EventItemRender>
 
-            <TCThinDivider marginTop={10} />
+            <TCThinDivider marginTop={10} marginBottom={10} />
 
             <View style={styles.containerStyle}>
               <Text style={styles.headerTextStyle}>{strings.organizerTitle}</Text>
@@ -732,7 +745,7 @@ export default function EventScreen({navigation, route}) {
               />)}
             </View>
 
-            <TCThinDivider marginTop={10} />
+            <TCThinDivider marginTop={10} marginBottom={10} />
 
             {eventData?.going?.length > 0 && (
             <View style={styles.containerStyle}>
@@ -755,13 +768,14 @@ export default function EventScreen({navigation, route}) {
                 keyExtractor={(item, index) => index.toString()}
                 style={{padding: 3}}
               />
-              <TCThinDivider marginTop={10} />
+              <TCThinDivider marginTop={10} marginBottom={10} />
             </View>
             )}
 
-            <EventItemRender title={strings.place}>
+
+            <EventItemRender title={strings.place} >
               <Text style={[styles.textValueStyle, {fontFamily: fonts.RBold}]}>
-                {eventData?.location?.venue_name}
+                {eventData?.location?.venue_name} 
               </Text>
               <Text style={styles.textValueStyle}>
                 {eventData?.location?.location_name}
@@ -781,7 +795,7 @@ export default function EventScreen({navigation, route}) {
                 }}
               />
               <Text style={[styles.textValueStyle, {marginTop: 10}]}>
-                {eventData?.location?.venue_detail}
+                {eventData?.location?.venue_detail} 
               </Text>
             </EventItemRender>
 
@@ -851,7 +865,7 @@ export default function EventScreen({navigation, route}) {
             <View style={styles.sepratorViewStyle} />
             <EventItemRender title={strings.whoCanJoin}>
               <Text style={styles.textValueStyle}>
-                {eventData?.who_can_join?.text}
+                {eventData?.who_can_join?.text} 
               </Text>
             </EventItemRender>
             </>
@@ -968,6 +982,13 @@ const styles = StyleSheet.create({
   sperateLine: {
     borderColor: colors.writePostSepratorColor,
     borderWidth: 0.5,
+    marginBottom:10
+  },
+
+  EventBackgroundPhoto: {
+    display:'flex',
+    justifyContent:'center',
+    flexDirection:'row'
   },
 
   threeDotImageStyle: {
@@ -989,7 +1010,7 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
   },
   eventTitleStyle: {
-    fontSize: 20,
+    fontSize: 25,
     fontFamily: fonts.RBold,
     marginTop: 3,
     marginLeft: 15,
@@ -997,7 +1018,7 @@ const styles = StyleSheet.create({
   },
 
   sportTitleStyle: {
-    fontSize: 12,
+    fontSize: 16,
     marginLeft: 15,
     fontFamily: fonts.RRegular,
   },
@@ -1022,9 +1043,10 @@ const styles = StyleSheet.create({
     padding: wp('1.5%'),
   },
   headerTextStyle: {
-    fontSize: 16,
+    fontSize: 20,
     fontFamily: fonts.RBold,
-    marginVertical: 3,
+    // marginVertical: 10,
+    marginBottom:10
   },
   goingContainer: {
     height: 37,

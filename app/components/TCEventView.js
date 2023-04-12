@@ -114,7 +114,7 @@ export default function TCEventView({
           
           {description && (
           <Text style={styles.eventDescription} numberOfLines={2}>
-            {description}
+            {description} 
           </Text>
           )}
           <View style={styles.bottomView}>

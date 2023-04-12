@@ -10,7 +10,7 @@ import AuthContext from '../../../auth/context';
 import TCEventCard from '../../../components/Schedule/TCEventCard';
 import {strings} from '../../../../Localization/translation';
 import Verbs from '../../../Constants/Verbs';
-import { getJSDate } from '../../../utils';
+import { getJSDate, getTCDate } from '../../../utils';
 
 const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -23,7 +23,9 @@ export default function  EventScheduleScreen({
   screenUserId,
   filterOptions,
   selectedFilter,
+  owners
 }) {
+
   const authContext = useContext(AuthContext);
 
   const [filterData, setFilterData] = useState(null);
@@ -44,13 +46,13 @@ export default function  EventScheduleScreen({
       ].includes(authContext.entity.role)
     ) {
       if (
-        filterOptions.sort === 2 &&
+        filterOptions.sort === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? -1 : 0) &&
         [Verbs.entityTypePlayer, Verbs.entityTypeUser].includes(
           authContext.entity.role,
         )
       ) {
-        if (selectedFilter.title.sport !== 'All') {
-          if (selectedFilter.title === 'Matches') {
+        if (selectedFilter.title.sport !== strings.all) {
+          if (selectedFilter.title === strings.playingTitleText) {
             events = events.filter(
               (obj) =>
                 obj?.game &&
@@ -58,38 +60,38 @@ export default function  EventScheduleScreen({
                   obj?.game?.away_team?.user_id === authContext.entity.uid),
             );
           }
-          if (selectedFilter.title === 'Refeering') {
+          if (selectedFilter.title === strings.refeeringText) {
             events = events.filter(
               (obj) => obj?.game && obj?.referee_id === authContext.entity.uid,
             );
           }
-          if (selectedFilter.title === 'Scorekeepering') {
+          if (selectedFilter.title === strings.scorekeeperingText) {
             events = events.filter(
               (obj) =>
                 obj?.game && obj?.scorekeeper_id === authContext.entity.uid,
             );
           }
-          if (selectedFilter.title === 'Others') {
+          if (selectedFilter.title === strings.othersText) {
             events = events.filter((obj) => !obj.game);
           }
         }
-      } else if (filterOptions.sort === 1) {
-        if (selectedFilter.title.sport !== 'All') {
+      } else if (filterOptions.sort === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? 1 : 2)) {
+        if (selectedFilter.title.sport !== strings.all) {
           events = events.filter(
             (obj) => ((obj.game && obj.game.sport === selectedFilter.title.sport) || 
             (obj.selected_sport && obj.selected_sport.sport === selectedFilter.title.sport)),
           );
         }
-      } else if (filterOptions.sort === 0) {
-        if (selectedFilter.title.group_name !== 'All') {
-          if (selectedFilter.title.group_name === 'Me') {
+      } else if (filterOptions.sort === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? 0 : 1)) {
+        if (selectedFilter.title.group_name !== strings.all) {
+          if (selectedFilter.title.group_name === Verbs.me) {
             events = events.filter(
               (obj) =>
                 obj.created_by.uid === authContext.entity.uid ||
                 obj.game?.home_team?.user_id === authContext.entity.uid ||
                 obj.game?.away_team?.user_id === authContext.entity.uid,
             );
-          } else if (selectedFilter.title.group_name === 'Others') {
+          } else if (selectedFilter.title.group_name === strings.othersText) {
             events = events.filter(
               (obj) =>
                 obj.created_by.uid !== authContext.entity.uid &&
@@ -121,11 +123,30 @@ export default function  EventScheduleScreen({
         .value();
       
       const filData = [];
+      const nextDateTime = getJSDate(getTCDate(new Date()) + 24 * 60 * 60);
+      nextDateTime.setHours(0, 0, 0, 0);
       for (const property in result) {
         let temp = {};
         const value = result[property];
+
+        const start = getJSDate(result[property][0]?.start_datetime);
+        start.setHours(0, 0, 0, 0);
+
+        const currentDateTime = new Date();
+        currentDateTime.setHours(0, 0, 0, 0);
+
+        let title = `${days[getJSDate(result[property][0]?.start_datetime).getDay()]}, ${moment(getJSDate(result[property][0]?.start_datetime)).format('MMM DD')}`;
+
+        if(start.getTime() === currentDateTime.getTime()) {
+          title = strings.todayTitleText
+        }
+
+        if(start.getTime() === nextDateTime.getTime()) {
+          title = strings.tomorrowTitleText
+        }
+
         temp = {
-          title: property,
+          title,
           time: result[property].length > 0 ? result[property][0]?.start_datetime : '',
           data: result[property].length > 0 ? value : [],
         };
@@ -187,6 +208,7 @@ export default function  EventScheduleScreen({
                     item.game.referees.length > 0
                   }
                   entity={entity}
+                  owners={owners}
                 />
               );
             }
@@ -196,7 +218,7 @@ export default function  EventScheduleScreen({
             (section?.data || [])?.filter((obj) => obj.cal_type === 'event')
               .length > 0 && (
               <Text style={styles.sectionHeader}>
-                {days[getJSDate(section.time).getDay()]},  {section.title}
+                {section.title.toUpperCase()}
               </Text>
             )
           }

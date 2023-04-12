@@ -41,10 +41,13 @@ function PRNotificationTeamInvite({
             />
             <View style={styles.textContentStyle}>
               <View style={{flex: 0.7}}>
-                <Text style={styles.textContainerStyle}>
-                  <Text style={styles.boldTextStyle}>
-                    {`${dataDictionary.firstTitle} `}
+              <Text style={styles.boldTextStyle}>
+                    {`${dataDictionary.firstTitle}`}
                   </Text>
+                <Text style={styles.textContainerStyle}>
+                  {/* <Text style={styles.boldTextStyle}>
+                    {`${dataDictionary.firstTitle} `}
+                  </Text> */}
                   <Text>{`${dataDictionary.text} `}</Text>
                   {!isTrash && (
                     <Text style={styles.timeStyle}>
@@ -78,13 +81,15 @@ function PRNotificationTeamInvite({
                   accessibilityLabel={`${accessibilityLabel}`}
                   textStyle={
                     isTrash
-                      ? [styles.btnTextStyle, {color: colors.grayColor}]
+                      ? [styles.btnTextStyle, {color: colors.lightBlackColor}]
                       : styles.btnTextStyle
                   }
                   style={styles.acceptButtonInnerStyle}
                   title={strings.respond}
                   disabled={disabled}
                   onPress={onRespond}
+                  startGradientColor = {colors.textFieldBackground}
+                  endGradientColor = {colors.textFieldBackground}
                 />
               </View>
             </View>
@@ -104,10 +109,12 @@ const styles = StyleSheet.create({
     marginVertical: 15,
     marginRight: 15,
     flexDirection: 'row',
+    // backgroundColor:'red'
   },
   viewFirstStyle: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
+    alignItems:'center'
   },
   textContainerStyle: {
     fontFamily: fonts.RLight,
@@ -127,7 +134,8 @@ const styles = StyleSheet.create({
 
   viewSecondStyle: {
     flex: 0.3,
-    marginTop: 5,
+    // marginTop: 5,
+    justifyContent:'center'
   },
 
   acceptButtonInnerStyle: {
@@ -137,7 +145,7 @@ const styles = StyleSheet.create({
   btnTextStyle: {
     fontSize: 12,
     fontFamily: fonts.RBold,
-    color: colors.whiteColor,
+    color: colors.darkGrayColor,
     textAlign: 'center',
   },
 });

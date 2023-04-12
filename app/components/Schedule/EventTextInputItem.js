@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     width: wp('96%'),
     alignSelf: 'center',
     padding: wp('1.5%'),
-    marginBottom: 20,
+    marginBottom: 10,
   },
   headerTextStyle: {
     fontSize: 16,

@@ -30,7 +30,7 @@ import {
 } from 'react-native-responsive-screen';
 
 import {RRule} from 'rrule';
-import _ from 'lodash';
+// import _ from 'lodash';
 import Modal from 'react-native-modal';
 import ActionSheet from 'react-native-actionsheet';
 import {useIsFocused} from '@react-navigation/native';
@@ -54,13 +54,13 @@ import Header from '../../../components/Home/Header';
 import RefereeReservationItem from '../../../components/Schedule/RefereeReservationItem';
 import {getGameHomeScreen} from '../../../utils/gameUtils';
 import ScorekeeperReservationItem from '../../../components/Schedule/ScorekeeperReservationItem';
-import {getHitSlop, /* getSportName */} from '../../../utils';
+import {getHitSlop,   getRoundedDate, /* getSportName */} from '../../../utils';
 import * as Utility from '../../../utils/index';
 // import BlockSlotView from '../../../components/Schedule/BlockSlotView';
-import {getGameIndex} from '../../../api/elasticSearch';
+import {getGameIndex, getUserIndex} from '../../../api/elasticSearch';
 import TCAccountDeactivate from '../../../components/TCAccountDeactivate';
 import {getUserSettings, userActivate} from '../../../api/Users';
-import {getGroups, groupUnpaused} from '../../../api/Groups';
+import {getGroups, groupUnpaused, /* getTeamsOfClub */} from '../../../api/Groups';
 import {getQBAccountType, QBupdateUser} from '../../../utils/QuickBlox';
 import TCThinDivider from '../../../components/TCThinDivider';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
@@ -68,27 +68,56 @@ import {reservationOpetions} from '../../../utils/constant';
 import Verbs from '../../../Constants/Verbs';
 import AvailibilityScheduleScreen from './AvailibityScheduleScreen';
 import ChallengeAvailability from './ChallengeAvailability';
-
+import BottomSheet from '../../../components/modals/BottomSheet';
+import FilterTimeSelectItem from '../../../components/Filter/FilterTimeSelectItem';
+import DateTimePickerView from '../../../components/Schedule/DateTimePickerModal';
 
 
 export default function ScheduleScreen({navigation, route}) {
   let authContext = useContext(AuthContext);
   const refContainer = useRef();
-  const sortFilterData = [strings.eventFilterOrganiserTitle, strings.eventFilterSportTitle, strings.eventFilterNoneTitle];
-  const sortFilterDataClub = [strings.eventFilterSportTitle, strings.eventFilterNoneTitle];
+  const sortFilterData = [
+    ![Verbs.entityTypeClub].includes(
+      authContext.entity.role
+    ) ? strings.eventFilterRoleTitle : strings.eventFilterNoneTitle,
+    strings.eventFilterOrganiserTitle, 
+    strings.eventFilterSportTitle, 
+  ];
+  const sortFilterDataClub = [strings.eventFilterOrganiserTitle, strings.eventFilterSportTitle];
   const rsvpFilterOptions = [strings.eventFilterRsvpAll, strings.eventFilterRsvpGoing, strings.eventFilterRsvpMaybe, strings.eventFilterRsvpNotGoing];
   const timeFilterData = [strings.eventFilterTimeFuture, strings.eventFilterTimePast];
-  const timeSelectionList = [
-    {text: strings.eventFilterTimeListAny, value: Verbs.EVENT_FILTER_TIME_ANY},
-    {text: strings.eventFilterTimeList1Week, value: Verbs.EVENT_FILTER_TIME_ONE_WEEK},
-    {text: strings.eventFilterTimeList1Month, value: Verbs.EVENT_FILTER_TIME_ONE_MONTH},
-    {text: strings.eventFilterTimeList3Month, value: Verbs.EVENT_FILTER_TIME_THREE_MONTH},
+
+  const timeSelectionFutureList = [
+    strings.filterAntTime,
+    strings.filterToday,
+    strings.filterTomorrow,
+    strings.filterNext7Day,
+    strings.filterThisMonth,
+    strings.filterNextMonth,
+    strings.filterPickaDate
   ];
-  const [timeSelectionOption, setTimeSelectionOption] = useState({text: strings.eventFilterTimeListAny, value: Verbs.EVENT_FILTER_TIME_ANY},);
+
+  const timeSelectionPastList = [
+    strings.filterAntTime,
+    strings.filterToday,
+    strings.filterYesterday,
+    strings.filterLast7Day,
+    strings.filterThisMonth,
+    strings.filterLastMonth,
+    strings.filterPickaDate
+  ];
+  
+  const [startDateTime, setStartDateTime] = useState(new Date());
+  const [endDateTime, setEndDateTime] = useState(new Date());
+  const [startDateVisible, setStartDateVisible] = useState(false);
+  const [endDateVisible, setEndDateVisible] = useState(false);
+  const [timeSelectionOption, setTimeSelectionOption] = useState(strings.filterAntTime);
   const [timeSelectionModal, setTimeSelectionModal] = useState(false);
+  const [timeSelectionPicker, setTimeSelectionPicker] = useState(false);
 
   const [sports, setSports] = useState([]);
   const [organizerOptions, setOrganizerOptions] = useState([]);
+  const [owners, setOwners] = useState([]);
 
   if (route?.params?.isBackVisible) {
     authContext = {
@@ -126,7 +155,6 @@ export default function ScheduleScreen({navigation, route}) {
   const isFocused = useIsFocused();
 
   
-
   const [scheduleIndexCounter, setScheduleIndexCounter] = useState(0);
   const [eventData, setEventData] = useState([]);
   const [selectedEventItem, setSelectedEventItem] = useState(null);
@@ -135,13 +163,18 @@ export default function ScheduleScreen({navigation, route}) {
   const [isScorekeeperModal, setIsScorekeeperModal] = useState(false);
   const [refereeReservData, setRefereeReserveData] = useState([]);
   const [scorekeeperReservData, setScorekeeperReserveData] = useState([]);
-
   const [indigator, setIndigator] = useState(false);
+  const [hasGroup, setHasGroup] = useState(true);
+  const [hasSports, setHasSports] = useState(true);
+  const [isRefeering, setIsRefeering] = useState(true);
+  const [isScorekeeping, setIsScoreKeeping] = useState(true);
+  const [isSortbyOthers, setIsSortByOthers] = useState(true);
 
   const [selectedOptions, setSelectedOptions] = useState({
     option: 0,
-    title: 'All',
+    title: strings.all,
   });
+
   const [filterSetting, setFilterSetting] = useState({
     sort: 0,
     time: 0,
@@ -152,14 +185,9 @@ export default function ScheduleScreen({navigation, route}) {
   const [rsvpFilterOption, setRsvpFilterOption] = useState(0);
   const [filterPopup, setFilterPopup] = useState(false);
   const [editableSlotsType, setEditableSlotsType] = useState(false);
-
   const [allSlots, setAllSlots] = useState([]);
- 
-
   const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
   const [pointEvent, setPointEvent] = useState('auto');
-
-
   const [visibleAvailabilityModal, setVisibleAvailabilityModal] = useState(false);
 
   useEffect(() => {
@@ -175,6 +203,14 @@ export default function ScheduleScreen({navigation, route}) {
         setPointEvent('none');
       }
     }
+
+    if(!authContext?.entity?.obj?.referee_data) {
+      setIsRefeering(false)
+    }
+
+    if(!authContext?.entity?.obj?.scorekeeper_data) {
+      setIsScoreKeeping(false)
+    }
   }, [
     authContext.entity?.obj.entity_type,
     authContext.entity?.obj?.is_deactivate,
@@ -184,14 +220,18 @@ export default function ScheduleScreen({navigation, route}) {
     indigator
   ]);
 
-
   const fromGoBack = (flag) => {
     if (flag) {
       setFilterPopup(true);
     }
   };
 
-  
+  const handleCancelPress = () => {
+    setStartDateVisible(false);
+    setEndDateVisible(false);
+  };
+
+
   const getEventOccuranceFromRule = (event) => {
     const ruleObj = RRule.parseString(event.rrule);
     ruleObj.dtstart = Utility.getJSDate(event.start_datetime);
@@ -200,11 +240,13 @@ export default function ScheduleScreen({navigation, route}) {
     const duration = event.end_datetime - event.start_datetime;
     let occr = rule.all();
     if (event.exclusion_dates) {
-      _(occr).remove((date) => 
-        event.exclusion_dates.includes(Math.round(new Date(date) / 1000))
-      )  
+      // _.remove(occr, function (date) {
+      //   return event.exclusion_dates.includes(Utility.getTCDate(date))
+      // })
+      occr = occr.filter(date => !event.exclusion_dates.includes(Utility.getTCDate(date)));
     }
     occr = occr.map((RRItem) => {
+      // console.log('Item', Math.round(new Date(RRItem) / 1000))
       const newEvent = {...event};
       newEvent.start_datetime = Utility.getTCDate(RRItem);
       newEvent.end_datetime = newEvent.start_datetime + duration;
@@ -215,41 +257,109 @@ export default function ScheduleScreen({navigation, route}) {
   };
 
 
+  // Check user belong to any group 
+  const checkHasGroup = (data) =>{
+    if(data?.payload.length > 0) {
+      if(data?.payload?.teams.length === 0 && data?.payload?.clubs.length === 0) {
+        setHasGroup(false);
+      }
+    }else{
+      setHasGroup(false);
+    }
+  }
+
+  // Check user has any registered sports
+  const checkHasSports = () => {
+    if([Verbs.entityTypeClub].includes(authContext.entity.role)) {
+      const res = authContext?.entity?.obj?.sports.map((obj) => ({
+        sport: obj.sport,
+      }));
+      const data = Utility.uniqueArray(res, Verbs.sportType);
+      if(data.length === 0) {
+        setHasSports(false);
+      }
+    }else{
+      const sportsList = [
+        ...(authContext?.entity?.obj?.registered_sports?.filter(
+          (obj) => obj.is_active,
+        ) || []),
+        ...(authContext?.entity?.obj?.referee_data?.filter(
+          (obj) => obj.is_active,
+        ) || []),
+        ...(authContext?.entity?.obj?.scorekeeper_data?.filter(
+          (obj) => obj.is_active,
+        ) || []),
+      ];
+      const res = sportsList.map((obj) => ({
+        sport: obj.sport,
+      }));
+      const data = Utility.uniqueArray(res, Verbs.sportType);
+      if(data.length === 0) {
+        setHasSports(false);
+      }
+    }
+  }
+
+  
+
+  // Check any event assigned to others option.
   useEffect(() => {
-    // setloading(true);
+   const events = eventData.filter((obj) => !obj.game);
+   if(events.length === 0 ) {
+    setIsSortByOthers(false);
+   }else{
+    setIsSortByOthers(true);
+   }
+   
+  }, [eventData, isSortbyOthers]);
+
+
+
+  useEffect(() => {
+    checkHasSports(authContext);
     getUserSettings(authContext)
       .then((setting) => {
         if (setting?.payload?.user !== {}) {
+          const scheduleFilter = [Verbs.entityTypeClub].includes(authContext.entity.role) ? 
+          setting?.payload?.user?.club_schedule_group_filter : setting?.payload?.user?.schedule_group_filter
           if (
-            setting?.payload?.user?.schedule_group_filter &&
-            setting?.payload?.user?.schedule_group_filter?.length > 0
+            scheduleFilter &&
+            scheduleFilter?.length > 0
           ) {
             setOrganizerOptions([
-              {group_name: 'All', group_id: 0},
-              {group_name: 'Me', group_id: 1},
-              ...setting?.payload?.user?.schedule_group_filter,
-              {group_name: 'Others', group_id: 2},
+              {group_name: strings.all, group_id: 0},
+              {group_name: Verbs.me, group_id: 1},
+              ...scheduleFilter,
+              {group_name: strings.othersText, group_id: 2},
             ]);
           } else {
-            getGroups(authContext)
+              // getTeamsOfClub(authContext.entity.uid, authContext)
+              // .then(() => {
+              // })
+              // .catch((e) => {
+              //   setTimeout(() => {
+              //     Alert.alert(strings.alertmessagetitle, e.message);
+              //   }, 10);
+              // });
+              getGroups(authContext)
               .then((response) => {
+                checkHasGroup(response);
                 const {teams, clubs} = response.payload ?? [];
                 if (response.payload.length > 0) {
                   setOrganizerOptions([
-                    {group_name: 'All', group_id: 0},
-                    {group_name: 'Me', group_id: 1},
+                    {group_name: strings.all, group_id: 0},
+                    {group_name: Verbs.me, group_id: 1},
                     ...teams,
                     ...clubs,
-                    {group_name: 'Others', group_id: 2},
+                    {group_name: strings.othersText, group_id: 2},
                   ]);
                 } else {
                   setOrganizerOptions([
-                    {group_name: 'All', group_id: 0},
-                    {group_name: 'Me', group_id: 1},
-                    {group_name: 'Others', group_id: 2},
+                    {group_name: strings.all, group_id: 0},
+                    {group_name: Verbs.me, group_id: 1},
+                    {group_name: strings.othersText, group_id: 2},
                   ]);
                 }
-
                 setloading(false);
               })
               .catch((e) => {
@@ -258,14 +368,16 @@ export default function ScheduleScreen({navigation, route}) {
                 Alert.alert(strings.townsCupTitle, e.message);
               });
           }
+          const sportsFilter = [Verbs.entityTypeClub].includes(authContext.entity.role) ? 
+          setting?.payload?.user?.club_schedule_sport_filter : setting?.payload?.user?.schedule_sport_filter
           if (
-            setting?.payload?.user?.schedule_sport_filter &&
-            setting?.payload?.user?.schedule_sport_filter?.length > 0
+            sportsFilter &&
+            sportsFilter?.length > 0
           ) {
             setSports([
-              {sport: 'All'},
-              ...setting?.payload?.user?.schedule_sport_filter,
-              {sport: 'Others'},
+              {sport: strings.all},
+              ...sportsFilter,
+              {sport: strings.othersText},
             ]);
           } else {
             const sportsList = [
@@ -283,8 +395,8 @@ export default function ScheduleScreen({navigation, route}) {
             const res = sportsList.map((obj) => ({
               sport: obj.sport,
             }));
-            const data = Utility.uniqueArray(res, 'sport');
-            setSports([{sport: 'All'}, ...data, {sport: 'Others'}]);
+            const data = Utility.uniqueArray(res, Verbs.sportType);
+            setSports([{sport: strings.all}, ...data, {sport: strings.othersText}]);
           }
         }
         setloading(false);
@@ -319,24 +431,26 @@ export default function ScheduleScreen({navigation, route}) {
     );
   }, []);
 
-  
+
   useEffect(() => {
     if (selectedEventItem) {
       eventEditDeleteAction.current.show();
     }
   }, [selectedEventItem]);
 
+
   const refereeFound = (data) =>
     (data?.game?.referees || []).some(
       (e) => authContext.entity.uid === e.referee_id,
-    );
+  );
+
   const scorekeeperFound = (data) =>
     (data?.game?.scorekeepers || []).some(
       (e) => authContext.entity.uid === e.scorekeeper_id,
     );
 
-  const eventEditDeleteAction = useRef();
 
+  const eventEditDeleteAction = useRef();
   const refereeReservModal = () => {
     setIsRefereeModal(!isRefereeModal);
   };
@@ -361,7 +475,6 @@ export default function ScheduleScreen({navigation, route}) {
   };
 
 
-
   const goToChallengeDetail = (data) => {
     // if (data?.responsible_to_secure_venue) { //Write condition for soccer
     if (data?.challenge_id) {
@@ -378,7 +491,6 @@ export default function ScheduleScreen({navigation, route}) {
     }
     // }
   };
-
 
 
   const actionSheetOpetions = () => {
@@ -426,7 +538,6 @@ export default function ScheduleScreen({navigation, route}) {
   };
 
 
-
   const goToScorekeeperReservationDetail = (data) => {
     setloading(true);
     ScorekeeperUtils.getScorekeeperReservationDetail(
@@ -445,7 +556,6 @@ export default function ScheduleScreen({navigation, route}) {
   };
 
 
-
   useEffect(() => {
     if (isFocused) {
       if(route?.params?.event) {
@@ -458,15 +568,12 @@ export default function ScheduleScreen({navigation, route}) {
   }, [isFocused]);
 
 
-
-
   const onDayPress = async() => {
       await getEventsAndSlotsList();
   };
 
 
-
-  const getEventsAndSlotsList = useCallback(async(data = {} , timeSlot = 0, timeSelection = 0) => {
+  const getEventsAndSlotsList = useCallback(async(data = {} , timeSlot = 0) => {
     // setloading(true);
     const eventTimeTableData = [];
     let type = 'future';
@@ -474,8 +581,9 @@ export default function ScheduleScreen({navigation, route}) {
       type = 'past';
     }
 
-    let rangeTime = timeSelection;
-    if(timeSelection > 0){
+    let rangeTime = 0;
+
+    if(rangeTime > 0){
       const rangeDate = new Date()
       if(timeSlot === 1) {
         rangeDate.setDate(rangeDate.getDate() - timeSelection);
@@ -484,9 +592,36 @@ export default function ScheduleScreen({navigation, route}) {
       }
       rangeTime = Utility.getTCDate(rangeDate);
     }
-    
+
     Utility.getEventsSlots(authContext?.entity?.uid, Utility.getTCDate(new Date()), type, rangeTime)
       .then((response) => {
+
+        const allUserIds = []
+        response.forEach((item) =>  {
+          if(item.cal_type === 'event') {
+            allUserIds.push(item.created_by.uid);
+          }
+        });
+        const getUserDetailQuery = {
+          size: 1000,
+          from: 0,
+          query: {
+            terms: {
+              'user_id.keyword': allUserIds,
+            },
+          },
+        };
+
+        getUserIndex(getUserDetailQuery)
+        .then((res) => {
+          setOwners(res)
+        })
+        .catch((e) => {
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
+
         let resCalenders = [];
         let eventsCal = [];
         if (response) {
@@ -575,7 +710,6 @@ export default function ScheduleScreen({navigation, route}) {
   }, [authContext?.entity?.uid, configureEvents]);
 
 
-
   const unPauseGroup = () => {
     setloading(true);
     groupUnpaused(authContext)
@@ -632,11 +766,13 @@ export default function ScheduleScreen({navigation, route}) {
         }, 10);
       });
   };
+
+
   const keyExtractor = useCallback((item, index) => index.toString(), []);
 
   const makeOpetionsSelected = useCallback(
     (item) => {
-      if (sortFilterOption === 0) {
+      if (sortFilterOption === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? 0 : 1)) {
         if (
           selectedOptions.title.group_name === item.group_name ||
           selectedOptions.title === item.group_name
@@ -645,13 +781,13 @@ export default function ScheduleScreen({navigation, route}) {
         }
         return styles.sportName;
       }
-      if (sortFilterOption === 1) {
+      if (sortFilterOption === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? 1 : 2)) {
         if (selectedOptions.title.sport === item.sport) {
           return styles.sportSelectedName;
         }
         return styles.sportName;
       }
-      if (sortFilterOption === 2) {
+      if (sortFilterOption === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? -1 : 0)) {
         if (selectedOptions.title === item) {
           return styles.sportSelectedName;
         }
@@ -661,30 +797,47 @@ export default function ScheduleScreen({navigation, route}) {
     [selectedOptions.title, sortFilterOption],
   );
 
-  // const optionsListView = useCallback(
-  //   ({item, index}) => (
-  //     <Text
-  //       style={makeOpetionsSelected(item)}
-  //       onPress={() => {
-  //         refContainer.current.scrollToIndex({
-  //           animated: true,
-  //           index,
-  //           viewPosition: 0.8,
-  //         });
-  //         setSelectedOptions({
-  //           option: sortFilterOption,
-  //           title: item,
-  //         });
-  //       }}>
-  //       {item?.sport
-  //         ? item?.sport === 'All'
-  //           ? 'All'
-  //           : getSportName(item, authContext)
-  //         : item}
-  //     </Text>
-  //   ),
-  //   [authContext, makeOpetionsSelected, sortFilterOption],
-  // );
+  const optionsListView = useCallback(
+    ({item, index}) => {
+
+      if(item === strings.refeeringText && !isRefeering) {
+        return null;
+      }
+
+      if(item === strings.scorekeeperingText && !isScorekeeping) {
+        return null;
+      }
+
+      if(item === strings.othersText && 
+        eventData.length > 0 && 
+        !isSortbyOthers) {
+        return null;
+      }
+
+      return (
+        <Text
+          style={makeOpetionsSelected(item)}
+          onPress={() => {
+            refContainer.current.scrollToIndex({
+              animated: true,
+              index,
+              viewPosition: 0.8,
+            });
+            setSelectedOptions({
+              option: sortFilterOption,
+              title: item,
+            });
+          }}>
+          {item?.sport
+            ? item?.sport === strings.all
+              ? strings.all
+              : getSportName(item, authContext)
+            : item}
+        </Text>
+      )
+    },
+    [authContext, makeOpetionsSelected, sortFilterOption, isRefeering, isScorekeeping],
+  );
 
   const sportOptionsListView = useCallback(
     ({item, index}) => (
@@ -709,26 +862,36 @@ export default function ScheduleScreen({navigation, route}) {
 
   const organizerListView = useCallback(
     ({item, index}) => (
-      <Text
-        style={makeOpetionsSelected(item)}
-        onPress={() => {
-          refContainer.current.scrollToIndex({
-            animated: true,
-            index,
-            viewPosition: 0.5,
-          });
-          setSelectedOptions({
-            option: sortFilterOption,
-            title: item,
-          });
-        }}>
-        {item.group_name}
-      </Text>
+        <Text
+          style={makeOpetionsSelected(item)}
+          onPress={() => {
+            refContainer.current.scrollToIndex({
+              animated: true,
+              index,
+              viewPosition: 0.5,
+            });
+            setSelectedOptions({
+              option: sortFilterOption,
+              title: item,
+            });
+          }}>
+          {item.group_name}
+        </Text>
     ),
     [makeOpetionsSelected, selectedOptions.title, sortFilterOption],
   );
 
-  const renderSortFilterOpetions = ({index, item}) => (
+  const renderSortFilterOpetions = ({index, item}) => {
+
+    if(index === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? 1 : 2) && !hasSports) {
+      return null;
+    }
+
+    if(index === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? 0 : 1) && !hasGroup) {
+      return null;
+    }
+
+    return (
     <View
       style={{
         flexDirection: 'row',
@@ -739,11 +902,9 @@ export default function ScheduleScreen({navigation, route}) {
       }}>
       <View>
         <Text style={styles.filterTitle}>{item}</Text>
-        {index === 1 &&
-          sortFilterOption === index &&
-          [Verbs.entityTypeUser, Verbs.entityTypePlayer].includes(
-            authContext.entity.role,
-          ) && (
+        {index === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? 1 : 2) &&
+          sortFilterOption === index && 
+          (
             <Text
               style={styles.changeOrderStyle}
               onPress={() => {
@@ -755,11 +916,9 @@ export default function ScheduleScreen({navigation, route}) {
               Change order of sports
             </Text>
           )}
-        {index === 0 &&
+        {index === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? 0 : 1) &&
           sortFilterOption === index &&
-          [Verbs.entityTypeUser, Verbs.entityTypePlayer].includes(
-            authContext.entity.role,
-          ) && (
+          (
             <Text
               style={styles.changeOrderStyle}
               onPress={() => {
@@ -777,7 +936,7 @@ export default function ScheduleScreen({navigation, route}) {
           setSortFilterOpetion(index);
           setSelectedOptions({
             option: 0,
-            title: index === 1 ? {sport: 'All'} : 'All',
+            title: index === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? 1 : 2) ? {sport: strings.all} : strings.all,
           });
         }}>
         <Image
@@ -790,8 +949,8 @@ export default function ScheduleScreen({navigation, route}) {
         />
       </TouchableOpacity>
     </View>
-  );
-
+    )
+  };
 
   const renderRsvpFilterOpetions = ({index, item}) => (
     <View
@@ -846,62 +1005,6 @@ export default function ScheduleScreen({navigation, route}) {
   );
 
 
-  const renderTimeSelectionList = ({item}) => (
-    <TouchableOpacity
-      style={styles.listItem}
-      onPress={() => {
-        setTimeSelectionOption(item);
-        setTimeout(() => {
-          setTimeSelectionModal(false);
-        }, 300);
-      }}>
-      <View
-        style={{
-          padding: 20,
-          alignItems: 'center',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          marginRight: 15,
-        }}>
-        <Text style={styles.languageList}>{item.text}</Text>
-        <View style={styles.checkbox}>
-          {timeSelectionOption.value === item?.value ? (
-            <Image
-              source={images.radioCheckYellow}
-              style={styles.checkboxImg}
-            />
-          ) : (
-            <Image source={images.radioUnselect} style={styles.checkboxImg} />
-          )}
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
-
-
-  
-  const customDatesStyles = [];
-
-  for (const all of allSlots) {
-    if (all?.allDay === true && all?.blocked === true) {
-      customDatesStyles.push({
-        startDate: moment(Utility.getJSDate(all.start_datetime)),
-        dateNumberStyle: {
-          color: colors.userPostTimeColor,
-          fontSize: 18,
-          fontFamily: fonts.RRegular,
-          fontWeight: '400',
-        },
-        dateContainerStyle: {
-          backgroundColor: colors.offGrayColor,
-          borderRadius: 8,
-          width: 40,
-        },
-      });
-    }
-  }
-
-
   
   return (
     <View style={{flex: 1}}>
@@ -911,24 +1014,26 @@ export default function ScheduleScreen({navigation, route}) {
         pointerEvents={pointEvent}>
         <Header
           leftComponent={
-            <Text style={styles.eventTitleTextStyle}>{strings.schedule}</Text>
+            <Text style={styles.eventTitleTextStyle}>{strings.schedule} </Text>
           }
           showBackgroundColor={true}
           rightComponent={
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}>
-              <TouchableOpacity onPress={() => {
-                navigation.navigate('CreateEventScreen', {
-                  comeName: 'ScheduleScreen',
-                });
-              }}>
-                <Image source={images.addEvent} style={styles.headerRightImg} />
-              </TouchableOpacity>
-            </View>
+            scheduleIndexCounter === 0 && (
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}>
+                <TouchableOpacity onPress={() => {
+                  navigation.navigate('CreateEventScreen', {
+                    comeName: 'ScheduleScreen',
+                  });
+                }}>
+                  <Image source={images.addEvent} style={styles.headerRightImg} />
+                </TouchableOpacity>
+              </View>
+            )
           }
         />
         <View style={styles.separateLine} />
@@ -987,37 +1092,38 @@ export default function ScheduleScreen({navigation, route}) {
           <View
             style={{
               flexDirection: 'row',
-              // margin: 15,
               height: 45,
               justifyContent: 'space-between',
               alignItems: 'center',
-              marginRight: 15,
-              marginLeft: 15,
             }}>
             <View style={{flexDirection: 'row'}}>
-              <Text
-                style={
-                  scheduleIndexCounter === 0
-                    ? styles.activeButton
-                    : styles.inActiveButton
-                }
-                onPress={() => {
-                  setScheduleIndexCounter(0);
-                }}>
-                {strings.events}
-              </Text>
-              <Text
-                style={
-                  scheduleIndexCounter === 1
-                    ? styles.activeButton
-                    : styles.inActiveButton
-                }
-                onPress={() => {
-                  onDayPress(new Date())
-                  setScheduleIndexCounter(1);
-                }}>
-                {strings.availability}
-              </Text>
+              <View style={scheduleIndexCounter === 0 ? styles.activeWrapper : styles.inactiveWrapper}>
+                <Text
+                  style={
+                    scheduleIndexCounter === 0
+                      ? styles.activeButton
+                      : styles.inActiveButton
+                  }
+                  onPress={() => {
+                    setScheduleIndexCounter(0);
+                  }}>
+                  {strings.events} 
+                </Text>
+              </View>
+              <View style={scheduleIndexCounter === 1 ? styles.activeWrapper : styles.inactiveWrapper}>
+                <Text
+                  style={
+                    scheduleIndexCounter === 1
+                      ? styles.activeButton
+                      : styles.inActiveButton
+                  }
+                  onPress={() => {
+                    onDayPress(new Date())
+                    setScheduleIndexCounter(1);
+                  }}>
+                  {strings.availability}
+                </Text>
+              </View>
             </View>
             {
             scheduleIndexCounter === 0 && (
@@ -1027,7 +1133,7 @@ export default function ScheduleScreen({navigation, route}) {
                 }}>
                 <FastImage
                   source={images.localHomeFilter}
-                  style={{height: 25, width: 25}}
+                  style={{height: 25, width: 25, marginRight: 15}}
                   resizeMode={'contain'}
                 />
               </TouchableOpacity>
@@ -1049,18 +1155,22 @@ export default function ScheduleScreen({navigation, route}) {
                   horizontal={true}
                   showsHorizontalScrollIndicator={false}
                   data={
-                    (filterSetting.sort === 0 && organizerOptions) ||
-                    (filterSetting.sort === 1 && sports) ||
-                    (filterSetting.sort === 2 && reservationOpetions)
+                    (filterSetting.sort === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? 0 : 1) && organizerOptions) ||
+                    (filterSetting.sort === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? 1 : 2) && sports) ||
+                    (filterSetting.sort === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? -1 : 0) && reservationOpetions)
                   }
                   keyExtractor={keyExtractor}
                   renderItem={
-                    (filterSetting.sort === 0 && organizerListView) ||
-                    (filterSetting.sort === 1 && sportOptionsListView) 
+                    (filterSetting.sort === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? 0 : 1) && organizerListView) ||
+                    (filterSetting.sort === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? 1 : 2) && sportOptionsListView) ||
+                    (filterSetting.sort === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? -1 : 0) && ![Verbs.entityTypeClub].includes(
+                      authContext.entity.role
+                    ) && optionsListView)
                   }
                 />
               </View>
-            )}
+            )
+          }
           {eventData.length > 0 && scheduleIndexCounter === 0 && (
             <>
             <EventScheduleScreen
@@ -1093,6 +1203,7 @@ export default function ScheduleScreen({navigation, route}) {
                 }
               }}
               entity={authContext.entity}
+              owners={owners}
             />
             </>
           )}
@@ -1283,14 +1394,13 @@ export default function ScheduleScreen({navigation, route}) {
                 onPress={async() => {
                   setFilterPopup(false)
                   setIndigator(true)
-                  await getEventsAndSlotsList({}, timeFilterOpetion, timeSelectionOption.value);
+                  await getEventsAndSlotsList({}, timeFilterOpetion);
                   setFilterSetting({
                     ...filterSetting,
                     sort: sortFilterOption,
                     time: timeFilterOpetion,
                   });
                   setIndigator(false)
-                  
                 }}>
                 {strings.apply}
               </Text>
@@ -1351,7 +1461,7 @@ export default function ScheduleScreen({navigation, route}) {
                   }}>
                   <View style={styles.dropContainer}>
                     <Text style={styles.textInputDropStyle}>
-                      {timeSelectionOption.text}
+                      {timeSelectionOption}
                     </Text>
                     <Image
                       source={images.dropDownArrow}
@@ -1360,9 +1470,70 @@ export default function ScheduleScreen({navigation, route}) {
                   </View>
                 </TouchableOpacity>
 
+                {timeSelectionPicker && (
+                <>
+                <View style={styles.filterContainer}>
+                  <FilterTimeSelectItem
+                    title={strings.from}
+                    date={ moment(startDateTime).format('ll') }
+                    time={ moment(startDateTime).format('h:mm a')}
+                    onDatePress={() => {
+                      setStartDateVisible(true)
+                    }}
+                    onXCirclePress={() => setStartDateTime(new Date())}
+                  />
+                </View>
+                <View style={styles.filterContainer}>
+                  <FilterTimeSelectItem
+                    title={strings.to}
+                    date={ moment(endDateTime).format('ll') }
+                    time={ moment(endDateTime).format('h:mm a')}
+                    onDatePress={() => {
+                      setEndDateVisible(true)
+                    }}
+                    onXCirclePress={() => setEndDateTime(new Date())}
+                  />
+                </View>
+                </>
+                )}
+
+                <DateTimePickerView
+                  title={strings.chooseDateTimeText}
+                  visible={startDateVisible}
+                  onDone={(date) => {
+                    setStartDateTime(date)
+                    setStartDateVisible(false)
+                  }}
+                  onCancel={handleCancelPress}
+                  onHide={handleCancelPress}
+                  minimumDate={getRoundedDate(5)}
+                  mode={
+                    'datetime'
+                  }
+                  date={startDateTime}
+                  minutesGap={5}
+                />
+
+                <DateTimePickerView
+                  title={strings.chooseDateTimeText}
+                  visible={endDateVisible}
+                  onDone={(date) => {
+                    setEndDateTime(date)
+                    setEndDateVisible(false)
+                  }}
+                  onCancel={handleCancelPress}
+                  onHide={handleCancelPress}
+                  minimumDate={getRoundedDate(5)}
+                  mode={
+                    'datetime'
+                  }
+                  date={endDateTime}
+                  minutesGap={5}
+                />
+
                 <TouchableOpacity
                 onPress={() => {
-                  setSortFilterOpetion(2);
+                  setSortFilterOpetion(0);
                   setTimeFilterOpetion(0);
                   setRsvpFilterOption(0);
                 }}
@@ -1383,7 +1554,7 @@ export default function ScheduleScreen({navigation, route}) {
               </ScrollView>
             </View>
           </View>
-          <Modal
+          {/* <Modal
           isVisible={timeSelectionModal}
           backdropColor="black"
           onBackdropPress={() => setTimeSelectionModal(false)}
@@ -1456,8 +1627,23 @@ export default function ScheduleScreen({navigation, route}) {
               renderItem={renderTimeSelectionList}
             />
           </View>
-          </Modal>
+          </Modal> */}
+          <BottomSheet
+            optionList={timeFilterOpetion === 0 ? timeSelectionFutureList : timeSelectionPastList}
+            isVisible={timeSelectionModal}
+            closeModal={() => setTimeSelectionModal(false)}
+            onSelect={(option) => {
+              if(option === strings.filterPickaDate) {
+                setTimeSelectionPicker(true);
+              }else{
+                setTimeSelectionPicker(false);
+              }
+              setTimeSelectionModal(false)
+              setTimeSelectionOption(option)
+            }}
+          />
         </Modal>
+
 
         
         {/* Event Edit Delete */}
@@ -1647,6 +1833,19 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     alignItems: 'center',
   },
+  filterContainer: {
+    justifyContent: 'space-between',
+    flexDirection: 'column',
+    borderRadius: 5,
+    width: wp('94%'),
+    height: 40,
+    alignSelf: 'center',
+    backgroundColor: colors.textFieldBackground,
+    marginTop: 10,
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    marginBottom: 15,
+  },
   textInputDropStyle: {
     flex: 1,
     alignSelf: 'center',
@@ -1662,21 +1861,21 @@ const styles = StyleSheet.create({
     width: 15,
     right: 15,
   },
-  languageList: {
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RRegular,
-    fontSize: wp('4%'),
-  },
-  checkboxImg: {
-    width: wp('5.5%'),
-    resizeMode: 'contain',
-    alignSelf: 'center',
-  },
-  checkbox: {
-    alignSelf: 'center',
-    position: 'absolute',
-    right: wp(0),
-  },
+  // languageList: {
+  //   color: colors.lightBlackColor,
+  //   fontFamily: fonts.RRegular,
+  //   fontSize: wp('4%'),
+  // },
+  // checkboxImg: {
+  //   width: wp('5.5%'),
+  //   resizeMode: 'contain',
+  //   alignSelf: 'center',
+  // },
+  // checkbox: {
+  //   alignSelf: 'center',
+  //   position: 'absolute',
+  //   right: wp(0),
+  // },
 
   mainContainer: {
     flex: 1,
@@ -1714,16 +1913,24 @@ const styles = StyleSheet.create({
     backgroundColor: colors.writePostSepratorColor,
   },
   activeButton: {
-    marginRight: 20,
     fontSize: 16,
     fontFamily: fonts.RBlack,
     color: colors.darkYellowColor,
   },
+  activeWrapper:{
+    borderBottomColor: colors.darkYellowColor,
+    borderBottomWidth: 3,
+    paddingVertical: 10,
+    paddingHorizontal: 15
+  },
   inActiveButton: {
-    marginRight: 20,
     fontSize: 16,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
+  },
+  inactiveWrapper:{
+    paddingVertical: 10,
+    paddingHorizontal: 15
   },
   headerRightImg: {
     height: 25,
@@ -1733,16 +1940,15 @@ const styles = StyleSheet.create({
   },
 
   eventTitleTextStyle: {
-    width: 125,
-    textAlign: 'center',
+    width: 130,
+    textAlign: 'left',
     fontFamily: fonts.Roboto,
     fontWeight: '700',
     fontSize: 20,
     lineHeight: 18,
     paddingTop: 5,
     color: colors.lightBlackColor,
-    justifyContent: 'center',
-    alignItems: 'center',
+    marginLeft: 0
   },
 
   separateLine: {
@@ -1755,6 +1961,7 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.veryLightGray,
     borderBottomWidth: 0.5,
     alignItems: 'center',
+    paddingHorizontal: 5
   },
   sportName: {
     fontSize: 14,
@@ -1810,14 +2017,14 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     tintColor: colors.blackColor,
   },
-  closeButton: {
-    alignSelf: 'center',
-    width: 15,
-    height: 15,
-    marginLeft: 5,
-    resizeMode: 'contain',
-    tintColor: colors.blackColor,
-  },
+  // closeButton: {
+  //   alignSelf: 'center',
+  //   width: 15,
+  //   height: 15,
+  //   marginLeft: 5,
+  //   resizeMode: 'contain',
+  //   tintColor: colors.blackColor,
+  // },
   topHeaderContainer: {
     // backgroundColor: '#333',
     height: 40,

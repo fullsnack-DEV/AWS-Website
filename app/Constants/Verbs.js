@@ -27,6 +27,7 @@ const Verbs = {
   locationType: 'location',
   open: 'open',
   paid: 'paid',
+  me: 'Me',
   norefund: 'norefund',
   refundStatus: 'refund',
   allStatus: 'All',

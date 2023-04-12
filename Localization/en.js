@@ -1398,7 +1398,7 @@ export default {
   attendeesMustRefundedText:
     'en_Attendees must be refunded if the event is canceled or rescheduled.',
   readPaymentPolicyText: 'en_\nRead payment policy for more information.',
-  additionalRefundPolicy: 'en_Additional Refund Policy',
+  additionalRefundPolicy: 'en_Add Additional Refund Policy',
   addColor: 'en_Add color',
 
   areYouSureQuitEditChallengeAvailibilityText:
@@ -2644,6 +2644,7 @@ export default {
   eventFilterOrganiserTitle: 'en_Organiser',
   eventFilterSportTitle: 'en_Sport',
   eventFilterNoneTitle: 'en_None',
+  eventFilterRoleTitle: 'en_Role',
   eventFilterRsvpText: 'en_RSVP',
   eventFilterRsvpAll: 'en_All',
   eventFilterRsvpGoing: 'en_Going',
@@ -2662,12 +2663,21 @@ export default {
 
   filterAntTime: 'en_Anytime',
   filterToday: 'en_Today',
+  filterTomorrow: 'en_Tomorrow',
   filterYesterday: 'en_Yesterday',
   filterLast7Day: 'en_Last 7 days',
   filterThisMonth: 'en_This month',
   filterLastMonth: 'en_Last month',
+  filterNextMonth: 'en_Next month',
   filterPickaDate: 'en_Pick a date...',
   filterRandom: 'en_Random',
   filterLowtoHighRefereeFee: 'en_Low to High Referee Fee',
   filterHightoLowRefereeFee: 'High to Low Referee Fee',
+  filterNext7Day: 'en_Next 7 days',
+
+
+  refeeringText : 'Refeering',
+  scorekeeperingText : 'Scorekeepering',
+  onlineText : 'en_ONLINE'
+
 };

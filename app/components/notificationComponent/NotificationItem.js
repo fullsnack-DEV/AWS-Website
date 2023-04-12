@@ -22,6 +22,8 @@ function NotificationItem({
   entityType = 'user',
 }) {
   const [dataDictionary, setDataDictionary] = useState();
+  // console.log('DATA-->>', dataDictionary)
+
 
   useEffect(() => {
     parseNotification(data).then((response) => {

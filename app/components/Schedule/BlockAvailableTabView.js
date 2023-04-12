@@ -93,12 +93,12 @@ const styles = StyleSheet.create({
     color: colors.greeColor,
     fontFamily: fonts.RBold,
     letterSpacing: 0.5,
-    fontSize: 12,
+    fontSize: 14,
   },
   inactiveEventPrivacyText: {
     color: colors.grayColor,
     fontFamily: fonts.RBold,
     letterSpacing: 0.5,
-    fontSize: 12,
+    fontSize: 14,
   },
 });

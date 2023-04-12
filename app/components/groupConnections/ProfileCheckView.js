@@ -20,20 +20,30 @@ import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 import Verbs from '../../Constants/Verbs';
 
-export default function ProfileCheckView({isChecked, onPress, playerDetail}) {
+export default function ProfileCheckView({isChecked, onPress, playerDetail}) { 
+
   const authContext = useContext(AuthContext);
+
+
   const RenderSportDetail = () => {
+    
     const sportname = playerDetail.registered_sports?.[0].sport;
     const numOfSports = playerDetail.registered_sports?.length - 1;
+    const emptyString = '';
 
-    const capitalizeLetter =
-      sportname?.charAt(0).toUpperCase() + sportname?.slice(1);
+    // const capitalizeLetter = 
+    //   sportname?.charAt(0).toUpperCase() + sportname?.slice(1);
 
-    if (sportname === null || numOfSports === 'NaN') {
-    } else if (numOfSports === 0) {
-      return `${capitalizeLetter}`;
+    if(sportname === undefined || numOfSports.isNaN()){
+      return `${emptyString}`
     }
-    return `${capitalizeLetter} and ${numOfSports} more`;
+    //! This portion is returning the sports name.
+    // else if (numOfSports === 0){
+    //   return `${capitalizeLetter}`;
+    // }else{
+    //   return `${capitalizeLetter} and ${numOfSports} more`;
+    // }
+
   };
 
   const checkPrivacy = () => {
@@ -164,19 +174,21 @@ const styles = StyleSheet.create({
 
   topViewContainer: {
     flexDirection: 'row',
-    height: 60,
+    height: 50,
     width: '90%',
     alignSelf: 'center',
     justifyContent: 'space-between',
     paddingRight: 10,
     paddingLeft: 10,
-    marginBottom: 16,
-    marginTop: 13,
+    marginBottom: 12,
+    marginTop: 12,
     borderRadius: 10,
+    // backgroundColor:'red'
   },
 
   topTextContainer: {
     marginLeft: 10,
+    marginTop:15,
     alignSelf: 'center',
   },
 

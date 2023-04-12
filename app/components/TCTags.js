@@ -13,6 +13,7 @@ import fonts from '../Constants/Fonts';
 import images from '../Constants/ImagePath';
 
 export default function TCTags({dataSource, titleKey, onTagCancelPress}) {
+  
   const renderTags = ({item, index}) => (
     <>
       {item.isChecked && (
@@ -48,11 +49,11 @@ const styles = StyleSheet.create({
   textContainer: {
     flexDirection: 'row',
     height: 25,
-    marginBottom: 10,
+    marginBottom: 5,
     marginRight: 5,
     marginLeft: 5,
-    backgroundColor: colors.offwhite,
-    borderRadius: 13,
+    backgroundColor: colors.textFieldBackground,
+    borderRadius: 5,
     shadowColor: colors.blackColor,
     shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.16,
