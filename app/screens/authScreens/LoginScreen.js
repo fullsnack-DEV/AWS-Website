@@ -47,7 +47,7 @@ import {getAppSettingsWithoutAuth, updateFBToken} from '../../api/Users';
 import {getHitSlop} from '../../utils/index';
 
 const LoginScreen = ({navigation}) => {
-  const [email, setEmail] = useState('makani20@gmail.com');
+  const [email, setEmail] = useState('vineetpatidar@gmail.com');
   const [password, setPassword] = useState('123456');
   const [hidePassword, setHidePassword] = useState(true);
   const authContext = useContext(AuthContext);

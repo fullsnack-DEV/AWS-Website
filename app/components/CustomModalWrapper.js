@@ -19,6 +19,7 @@ const CustomModalWrapper = ({
   modalType = ModalTypes.default,
   headerBottomBorderColor = colors.grayBackgroundColor,
   children = null,
+  Top = 50
 }) => {
   const [showModal, setShowModal] = useState(false);
   const translateY = new Animated.Value(0);
@@ -37,7 +38,7 @@ const CustomModalWrapper = ({
     if (isVisible) {
       setTimeout(() => {
         setShowModal(true);
-      }, 800);
+      }, 200);
     }
   }, [isVisible]);
 
@@ -126,9 +127,7 @@ const CustomModalWrapper = ({
       <View
         style={[
           styles.parent,
-          modalType === ModalTypes.style6 || modalType === ModalTypes.style7
-            ? {paddingTop: 80}
-            : {},
+            {paddingTop: Top}
         ]}>
         {showModal && (
           <PanGestureHandler

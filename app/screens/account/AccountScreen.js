@@ -82,6 +82,7 @@ import {
 import MemberListModal from '../../components/MemberListModal/MemberListModal';
 import {getUserIndex} from '../../api/elasticSearch';
 import SportListMultiModal from '../../components/SportListMultiModal/SportListMultiModal';
+import SendNewInvoiceModal from './Invoice/SendNewInvoiceModal'
 
 // FIXME: fix all warning in useCallBack()
 export default function AccountScreen({navigation, route}) {
@@ -115,6 +116,7 @@ export default function AccountScreen({navigation, route}) {
   );
   const [doubleSport, setDoubleSport] = useState();
   const [memberListModal, setMemberListModal] = useState(false);
+  const [sendNewInvoice, SetSendNewInvoice] = useState(false)
   const navigations = useNavigation();
   const [players, setPlayers] = useState([]);
   const [pageFrom, setPageFrom] = useState(0);
@@ -580,6 +582,10 @@ export default function AccountScreen({navigation, route}) {
           setSelectedMenuOptionType(rowObj.menuOptionType);
           setVisibleSportsModal(true);
 
+          break;
+
+        case strings.sendnewinvoice:
+          SetSendNewInvoice(true);
           break;
 
         default:
@@ -1841,6 +1847,12 @@ export default function AccountScreen({navigation, route}) {
         }}
         sportsList={players}
       />
+
+      <SendNewInvoiceModal
+        isVisible = {sendNewInvoice}
+        onClose={() => SetSendNewInvoice(false)}
+      />
+
     </SafeAreaView>
   );
 }
