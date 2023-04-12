@@ -82,7 +82,7 @@ import {
 import MemberListModal from '../../components/MemberListModal/MemberListModal';
 import {getUserIndex} from '../../api/elasticSearch';
 import SportListMultiModal from '../../components/SportListMultiModal/SportListMultiModal';
-import SendNewInvoiceModal from './Invoice/SendNewInvoiceModal'
+import SendNewInvoiceModal from './Invoice/SendNewInvoiceModal';
 
 // FIXME: fix all warning in useCallBack()
 export default function AccountScreen({navigation, route}) {
@@ -116,7 +116,7 @@ export default function AccountScreen({navigation, route}) {
   );
   const [doubleSport, setDoubleSport] = useState();
   const [memberListModal, setMemberListModal] = useState(false);
-  const [sendNewInvoice, SetSendNewInvoice] = useState(false)
+  const [sendNewInvoice, SetSendNewInvoice] = useState(false);
   const navigations = useNavigation();
   const [players, setPlayers] = useState([]);
   const [pageFrom, setPageFrom] = useState(0);
@@ -197,7 +197,12 @@ export default function AccountScreen({navigation, route}) {
     setOnlyTeamSport(OnlyTeamSport);
 
     // get only team sport
-  }, [authContext, selectedMenuOptionType, showOnlyTeamSport]);
+  }, [
+    authContext,
+    selectedMenuOptionType,
+    showOnlyTeamSport,
+    visibleSportsModalForClub,
+  ]);
 
   const [navigationOptions, setNavigationOptions] = useState({});
 
@@ -566,12 +571,12 @@ export default function AccountScreen({navigation, route}) {
         case strings.createClubText:
           setCreateEntity(Verbs.entityTypeClub);
           setVisibleSportsModalForClub(true);
-
+          setSelectedMenuOptionType(Verbs.entityTypeClub);
           setNavigationOptions({
             screenName: rowObj.navigateTo.screenName,
             data: rowObj.navigateTo.data,
           });
-          setSelectedMenuOptionType(rowObj.menuOptionType);
+
           break;
 
         case strings.addSportsTitle:
@@ -1786,6 +1791,7 @@ export default function AccountScreen({navigation, route}) {
           ) {
             setVisibleSportsModalForTeam(false);
             setDoubleSport(sport);
+
             setTimeout(() => {
               setMemberListModal(true);
             }, 10);
@@ -1849,10 +1855,9 @@ export default function AccountScreen({navigation, route}) {
       />
 
       <SendNewInvoiceModal
-        isVisible = {sendNewInvoice}
+        isVisible={sendNewInvoice}
         onClose={() => SetSendNewInvoice(false)}
       />
-
     </SafeAreaView>
   );
 }

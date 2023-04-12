@@ -20,30 +20,24 @@ import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 import Verbs from '../../Constants/Verbs';
 
-export default function ProfileCheckView({isChecked, onPress, playerDetail}) { 
-
+export default function ProfileCheckView({isChecked, onPress, playerDetail}) {
   const authContext = useContext(AuthContext);
 
-
   const RenderSportDetail = () => {
-    
     const sportname = playerDetail.registered_sports?.[0].sport;
     const numOfSports = playerDetail.registered_sports?.length - 1;
     const emptyString = '';
 
-    // const capitalizeLetter = 
-    //   sportname?.charAt(0).toUpperCase() + sportname?.slice(1);
+    const capitalizeLetter =
+      sportname?.charAt(0).toUpperCase() + sportname?.slice(1);
 
-    if(sportname === undefined || numOfSports.isNaN()){
-      return `${emptyString}`
+    if (sportname === undefined || !numOfSports === 0) {
+      return `${emptyString}`;
+    } else if (numOfSports === 0) {
+      return `${capitalizeLetter}`;
+    } else {
+      return `${capitalizeLetter} and ${numOfSports} more`;
     }
-    //! This portion is returning the sports name.
-    // else if (numOfSports === 0){
-    //   return `${capitalizeLetter}`;
-    // }else{
-    //   return `${capitalizeLetter} and ${numOfSports} more`;
-    // }
-
   };
 
   const checkPrivacy = () => {
@@ -188,7 +182,7 @@ const styles = StyleSheet.create({
 
   topTextContainer: {
     marginLeft: 10,
-    marginTop:15,
+    marginTop: 15,
     alignSelf: 'center',
   },
 

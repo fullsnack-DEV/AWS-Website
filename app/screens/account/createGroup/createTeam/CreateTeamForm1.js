@@ -564,14 +564,15 @@ export default function CreateTeamForm1({navigation, route}) {
               <View
                 style={{
                   flexDirection: 'row',
-                  justifyContent: 'space-evenly',
+                  justifyContent: 'center',
                   alignItems: 'center',
                   alignSelf: 'center',
                   marginTop: 6,
-                  // paddingLeft: 50,
+
+                  marginLeft: 25,
+                  marginRight: 20,
                 }}>
-                <View
-                  style={[styles.topViewContainer, {flex: 2, marginRight: 20}]}>
+                <View style={[styles.topViewContainer, {flex: 0.6}]}>
                   <View style={styles.profileView}>
                     <Image
                       source={
@@ -583,7 +584,9 @@ export default function CreateTeamForm1({navigation, route}) {
                     />
                   </View>
                   <View style={styles.topTextContainer}>
-                    <Text style={styles.mediumNameText} numberOfLines={1}>
+                    <Text
+                      style={[styles.mediumNameText, {width: 115}]}
+                      numberOfLines={1}>
                       {doublePlayer?.full_name}
                     </Text>
 
@@ -605,7 +608,9 @@ export default function CreateTeamForm1({navigation, route}) {
                     />
                   </View>
                   <View style={styles.topTextContainer}>
-                    <Text style={styles.mediumNameText} numberOfLines={1}>
+                    <Text
+                      style={[styles.mediumNameText, {width: 115}]}
+                      numberOfLines={1}>
                       {authContext.entity.obj?.full_name}
                     </Text>
 

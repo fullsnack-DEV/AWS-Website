@@ -1,5 +1,5 @@
 // @flow
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   FlatList,
   Image,
@@ -23,6 +23,7 @@ import TCFollowerList from '../TCFollowerList';
 import TCThinDivider from '../TCThinDivider';
 import ActivityLoader from '../loader/ActivityLoader';
 import CustomIosAlert from '../CustomIosAlert';
+import {useIsFocused} from '@react-navigation/native';
 
 const MemberListModal = ({
   isVisible,
@@ -41,10 +42,11 @@ const MemberListModal = ({
   const [follower, setFollower] = useState();
 
   const [followersSelection, setFollowersSelection] = useState();
+  const isFocused = useIsFocused();
 
-  if (isVisible) {
+  useEffect(() => {
     setFollowersSelection('');
-  }
+  }, [isFocused]);
 
   const renderFollowers = ({item}) => (
     <TouchableWithoutFeedback
