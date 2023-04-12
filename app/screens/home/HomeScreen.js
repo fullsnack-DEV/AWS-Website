@@ -126,121 +126,34 @@ const HomeScreen = ({navigation, route}) => {
     [authContext, navigation],
   );
 
-  const fetchGroupDetails = useCallback((userId, role, admin) => {
-    setLoading(true);
-    const promises = [
-      getGroupDetails(userId, authContext, !admin),
-      getGroupMembers(userId, authContext),
-    ];
-    if (role === Verbs.entityTypeClub) {
-      promises.push(getTeamsOfClub(userId, authContext));
-    }
-    Promise.all(promises)
-      .then(([res1, res2, res3]) => {
-        setCurrentUserData(res1.payload);
+  const fetchGroupDetails = useCallback(
+    (userId, role, admin) => {
+      setLoading(true);
+      const promises = [
+        getGroupDetails(userId, authContext, !admin),
+        getGroupMembers(userId, authContext),
+      ];
+      if (role === Verbs.entityTypeClub) {
+        promises.push(getTeamsOfClub(userId, authContext));
+      }
+      Promise.all(promises)
+        .then(([res1, res2, res3]) => {
+          setCurrentUserData(res1.payload);
+          const groupDetails = {...res1.payload};
+          groupDetails.joined_members = res2.payload;
+          if (role === Verbs.entityTypeClub) {
+            groupDetails.joined_teams = res3.payload;
+          }
+          setCurrentUserData({...groupDetails});
 
-        const groupDetails = {...res1.payload};
-
-        // if (res1?.payload?.avg_review) {
-        //   let array = Object.keys(res1?.payload?.avg_review);
-        //   array = array.filter((e) => e !== 'total_avg');
-        //   const teamProperty = [];
-
-        //   for (let i = 0; i < array.length; i++) {
-        //     const obj = {
-        //       [array[i]]: res1?.payload?.avg_review[array[i]],
-        //     };
-        //     teamProperty.push(obj);
-        //   }
-
-        //   setAverageTeamReview(teamProperty);
-        // } else {
-        //   setAverageTeamReview();
-        // }
-        // groupDetails.joined_leagues = league_Data;
-        // groupDetails.history = history_Data;
-        groupDetails.joined_members = res2.payload;
-        if (role === Verbs.entityTypeClub) {
-          groupDetails.joined_teams = res3.payload;
-        }
-        // if (groupDetails.invite_request) {
-        //   createActionObject(
-        //     groupDetails.invite_request.entity_type,
-        //     uid,
-        //     groupDetails.invite_request.activity_id,
-        //     groupDetails.invite_request.invited_id,
-        //     groupDetails.invite_request.action,
-        //   );
-
-        //   if (
-        //     groupDetails.invite_request.entity_type === Verbs.entityTypeUser
-        //   ) {
-        //     groupDetails.joinBtnTitle = strings.joinRequested;
-        //   } else if (
-        //     groupDetails.invite_request.entity_type === Verbs.entityTypeClub ||
-        //     groupDetails.invite_request.entity_type === Verbs.entityTypeTeam
-        //   ) {
-        //     groupDetails.joinBtnTitle = strings.invited;
-        //   }
-        // } else {
-        //   groupDetails.joinBtnTitle = strings.join;
-        // }
-
-        setCurrentUserData({...groupDetails});
-
-        setLoading(false);
-      })
-      .catch(() => {
-        setLoading(false);
-      });
-  }, []);
-
-  // const getSettingOfBoth = (details) => {
-  //   settingUtils
-  //     .getSetting(
-  //       route?.params?.uid ?? authContext.entity.uid,
-  //       authContext.entity.role ===
-  //         (Verbs.entityTypeUser || Verbs.entityTypePlayer)
-  //         ? Verbs.entityTypeUser
-  //         : Verbs.entityTypeTeam,
-  //       details.sport,
-  //       authContext,
-  //       authContext.entity.role ===
-  //         (Verbs.entityTypeUser || Verbs.entityTypePlayer)
-  //         ? details.sport_type
-  //         : '',
-  //     )
-  //     .then((res3) => {
-  //       setSettingObject(res3);
-  //     })
-  //     .catch(() => {
-  //       // navigation.goBack();
-  //     });
-
-  //   settingUtils
-  //     .getSetting(
-  //       authContext?.entity?.uid,
-  //       authContext.entity.role ===
-  //         (Verbs.entityTypeUser || Verbs.entityTypePlayer)
-  //         ? Verbs.entityTypeUser
-  //         : Verbs.entityTypeTeam,
-  //       authContext.entity.role ===
-  //         (Verbs.entityTypeUser || Verbs.entityTypePlayer)
-  //         ? currentPlayInObject?.sport
-  //         : currentUserData?.sport,
-  //       authContext,
-  //       authContext.entity.role ===
-  //         (Verbs.entityTypeUser || Verbs.entityTypePlayer)
-  //         ? currentPlayInObject?.sport_type
-  //         : currentUserData?.sport_type,
-  //     )
-  //     .then((res4) => {
-  //       setMySettingObject(res4);
-  //     })
-  //     .catch(() => {
-  //       // navigation.goBack();
-  //     });
-  // };
+          setLoading(false);
+        })
+        .catch(() => {
+          setLoading(false);
+        });
+    },
+    [authContext],
+  );
 
   useEffect(() => {
     const loginEntity = authContext.entity;
@@ -260,9 +173,9 @@ const HomeScreen = ({navigation, route}) => {
     if (role === Verbs.entityTypeClub || role === Verbs.entityTypeTeam) {
       fetchGroupDetails(uid, role, admin);
     }
-  }, [authContext.entity, route.params, getUserData]);
+  }, [authContext.entity, route.params, getUserData, fetchGroupDetails]);
 
-  const {onloading} = useSwitchAccount(route?.params?.entityObj, call);
+  const {onloading} = useSwitchAccount(route.params?.entityObj, call);
 
   useEffect(() => {
     if (route?.params?.isEntityCreated) {
@@ -271,18 +184,6 @@ const HomeScreen = ({navigation, route}) => {
       setCurrentUserData(route?.params?.entityObj);
       setCongratulationsModal(true);
       setSettingObject(route?.params?.entityObj);
-      console.log(route?.params?.entityObj, 'From sports');
-      console.log(route.params.entityObj?.setting?.sport, 'From sport');
-      console.log(
-        route.params.entityObj?.sports?.[0]?.sport,
-        'from sport name',
-      );
-      console.log(
-        authContext.entity.role === Verbs.entityTypeTeam
-          ? Verbs.sportTypeTeam
-          : Verbs.sportTypeSingle,
-        'From sportType',
-      );
     }
 
     if (route?.params?.userJoinTeam) {
@@ -298,7 +199,7 @@ const HomeScreen = ({navigation, route}) => {
         {cancelable: false},
       );
     }
-  }, [route?.params?.entityObj, route?.params?.isEntityCreated]);
+  }, [route.params, authContext]);
 
   const handleMoreOptions = (option) => {
     setShowMoreOptionsModal(false);
@@ -573,7 +474,7 @@ const HomeScreen = ({navigation, route}) => {
             title={route?.params?.entityObj?.group_name}
             subtitle={format(
               strings.congratesSubTitle,
-              route?.params?.entityObj?.group_name,
+              route.params?.entityObj?.group_name,
             )}
             fromCreateTeam={
               authContext.entity.role === Verbs.entityTypeTeam ? true : false

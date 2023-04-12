@@ -18,7 +18,7 @@ const PostsTabView = ({list = [], onPress = () => {}}) =>
           <Pressable
             style={[
               styles.buttonContainer,
-              index !== list.length - 1 ? {marginRight: 15} : {},
+              index !== list.length - 1 ? {marginRight: 10} : {},
             ]}
             onPress={() => onPress(item)}>
             <Text style={styles.buttonText}>{item}</Text>

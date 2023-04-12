@@ -19,26 +19,6 @@ const styles = StyleSheet.create({
     width: '100%',
     resizeMode: 'contain',
   },
-  placeHolder: {
-    width: 60,
-    height: 60,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.thinDividerColor,
-    borderRadius: 30,
-    backgroundColor: colors.whiteColor,
-    marginRight: 7,
-  },
-  teamPlaceholder: {
-    width: 15,
-    height: 15,
-    position: 'absolute',
-    zIndex: 99,
-    bottom: -2,
-    right: 0,
-    borderRadius: 8,
-  },
   levelContainer: {
     borderWidth: 1,
     borderColor: colors.yellowColor,
@@ -81,6 +61,20 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     color: colors.lightBlackColor,
     fontFamily: fonts.RBold,
+  },
+  recuritingContainer: {
+    marginTop: 10,
+    paddingHorizontal: 5,
+    paddingVertical: 2,
+    backgroundColor: colors.themeColor,
+    alignSelf: 'baseline',
+    borderRadius: 5,
+  },
+  recruitingText: {
+    fontSize: 12,
+    lineHeight: 14,
+    fontFamily: fonts.RMedium,
+    color: colors.whiteColor,
   },
 });
 

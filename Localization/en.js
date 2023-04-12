@@ -2664,16 +2664,18 @@ export default {
   invoicesent: 'en_Invoice Sent',
   invoicessent: 'en_Invoices Sent',
   sendnewinvoice: 'en_Send New Invoice',
-  datetimesetting:'en_Date and time displayed in-app will match the date and time settings of the device.',
-  noneselected:'None selected',
-  person:'en_person',
-  people:'en_people',
-  selected:'en_selected',
-  group:'en_group',
-  groups:'en_groups',
-  maximuminvoicerecipientvalidation:"en_You cannot select more than 75 recipients at once.",
-  selectallgroupmember:"en_All Individual members ({0})",
-  selectallteam:"en_All Teams ({0})",
+  datetimesetting:
+    'en_Date and time displayed in-app will match the date and time settings of the device.',
+  noneselected: 'None selected',
+  person: 'en_person',
+  people: 'en_people',
+  selected: 'en_selected',
+  group: 'en_group',
+  groups: 'en_groups',
+  maximuminvoicerecipientvalidation:
+    'en_You cannot select more than 75 recipients at once.',
+  selectallgroupmember: 'en_All Individual members ({0})',
+  selectallteam: 'en_All Teams ({0})',
   noRecipient: 'en_No Recipient',
   filterAntTime: 'en_Anytime',
   filterToday: 'en_Today',
@@ -2688,10 +2690,9 @@ export default {
   filterLowtoHighRefereeFee: 'en_Low to High Referee Fee',
   filterHightoLowRefereeFee: 'High to Low Referee Fee',
   filterNext7Day: 'en_Next 7 days',
-
-
-  refeeringText : 'Refeering',
-  scorekeeperingText : 'Scorekeepering',
-  onlineText : 'en_ONLINE'
-
+  refeeringText: 'Refeering',
+  scorekeeperingText: 'Scorekeepering',
+  onlineText: 'en_ONLINE',
+  andMoreText: 'en_& {0} more',
+  lessText: 'en_less',
 };

@@ -39,7 +39,7 @@ const UserHomeHeader = ({
       }
 
       if (loggedInEntity.role === Verbs.entityTypeTeam) {
-        if (currentUserData.joined_teams.length > 0) {
+        if (currentUserData.joined_teams?.length > 0) {
           const team = currentUserData.joined_teams.find(
             (item) => item.group_id === loggedInEntity.uid,
           );
