@@ -1,10 +1,17 @@
 // @flow
 import {useIsFocused} from '@react-navigation/native';
-import React, {useCallback, useContext, useEffect, useState} from 'react';
+import React, {
+  useCallback,
+  // useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import {View, StyleSheet, Text, TouchableOpacity, Image} from 'react-native';
+import ActionSheet from 'react-native-actionsheet';
+import {format} from 'react-string-format';
 import {strings} from '../../../Localization/translation';
-import {getTeamsOfClub} from '../../api/Groups';
-import AuthContext from '../../auth/context';
+// import AuthContext from '../../auth/context';
 import BottomSheet from '../../components/modals/BottomSheet';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
@@ -21,22 +28,26 @@ const GroupHomeButton = ({
   const [isAvailable, setIsAvailable] = useState(false);
   const [options, setOptions] = useState([]);
   const [options2, setOptions2] = useState([]);
+  const [options3, setOptions3] = useState([]);
   const [showOptions, setShowOptions] = useState(false);
   const [showOptions2, setShowOptions2] = useState(false);
+  const [showOptions3, setShowOptions3] = useState(false);
   const [buttons, setButtons] = useState({
     btn1: '',
     btn2: '',
     btn3: '',
   });
+  const [actionSheetTitle, setActionSheetTitle] = useState('');
 
   const isFocused = useIsFocused();
-  const authContext = useContext(AuthContext);
+  // const authContext = useContext(AuthContext);
+  const actionSheetRef = useRef();
 
   useEffect(() => {
     if (groupData.setting) {
       setIsAvailable(groupData.setting.availibility === Verbs.on);
     }
-  }, [groupData]);
+  }, [groupData.setting]);
 
   const checkIsRefereeOrScoreKeeper = useCallback(
     (type) => {
@@ -55,139 +66,180 @@ const GroupHomeButton = ({
     [groupData, loggedInEntity],
   );
 
-  const getButtonTitle = useCallback(async () => {
-    const obj = {
-      btn1: '',
-      btn2: '',
-      btn3: '',
-    };
+  const getTeamButtons = useCallback(() => {
+    const obj = {};
+    if (
+      loggedInEntity.role === Verbs.entityTypePlayer ||
+      loggedInEntity.role === Verbs.entityTypeUser
+    ) {
+      if (groupData.is_following) {
+        obj.btn2 = strings.following;
+        setOptions2([strings.unfollowText]);
+      } else {
+        obj.btn2 = strings.follow;
+      }
+      const isReferee = checkIsRefereeOrScoreKeeper(Verbs.entityTypeReferee);
+      const isScorekeeper = checkIsRefereeOrScoreKeeper(
+        Verbs.entityTypeScorekeeper,
+      );
+      if (isScorekeeper || isReferee) {
+        obj.btn3 = '···';
+      }
+      const list = [];
+      if (isReferee) {
+        list.push(strings.refereeOffer);
+      }
+      if (isScorekeeper) {
+        list.push(strings.scorekeeperOffer);
+      }
+      setOptions3(list);
 
-    if (!isAdmin) {
-      if (groupData.invite_request) {
-        if (groupData.invite_request.entity_type === Verbs.entityTypeUser) {
-          obj.btn1 = strings.requestSent;
-        } else if (
-          groupData.invite_request.entity_type === Verbs.entityTypeClub ||
-          groupData.invite_request.entity_type === Verbs.entityTypeTeam
-        ) {
-          obj.btn1 = strings.invitePending;
-        }
+      if (groupData.is_joined) {
+        obj.btn1 = strings.joining;
+        setOptions([strings.leaveTeam]);
+      } else if (groupData.invite_request?.action === Verbs.requestVerb) {
+        obj.btn1 = strings.requestSent;
+        setOptions([strings.cancelRequestText, strings.cancel]);
+        setActionSheetTitle(
+          format(strings.actionsheetTitle3, groupData.group_name),
+        );
+      } else if (groupData.invite_request?.action === Verbs.inviteVerb) {
+        obj.btn1 = strings.invitePending;
+        setOptions([strings.acceptInvite, strings.declineInvite]);
       } else {
         obj.btn1 = strings.join;
       }
     }
-
-    if (isAdmin) {
-      obj.btn1 = strings.editprofiletitle;
-    } else if (groupData.entity_type === Verbs.entityTypeTeam) {
-      if (
-        loggedInEntity.role === Verbs.entityTypePlayer ||
-        loggedInEntity.role === Verbs.entityTypeUser
-      ) {
-        const isReferee = checkIsRefereeOrScoreKeeper(Verbs.entityTypeReferee);
-        const isScorekeeper = checkIsRefereeOrScoreKeeper(
-          Verbs.entityTypeScorekeeper,
+    if (
+      loggedInEntity.role === Verbs.entityTypeTeam &&
+      isAvailable &&
+      groupData.sport === loggedInEntity.obj.sport &&
+      groupData.sport_type === loggedInEntity.obj.sport_Type
+    ) {
+      obj.btn1 = strings.challenge;
+      obj.btn2 = '';
+      obj.btn3 = '···';
+      setOptions3([strings.inviteToChallenge]);
+    }
+    if (loggedInEntity.role === Verbs.entityTypeClub) {
+      obj.btn2 = '';
+      obj.btn3 = '';
+      const teamId =
+        groupData.parent_groups?.length > 0
+          ? groupData.parent_groups.find((item) => item === loggedInEntity.uid)
+          : null;
+      if (teamId) {
+        obj.btn1 = strings.member;
+        setOptions([strings.removeTeamFromClub]);
+      } else if (groupData.invite_request?.action === Verbs.inviteVerb) {
+        obj.btn1 = strings.inviteSent;
+        setOptions([strings.cancelInvite, strings.cancel]);
+        setActionSheetTitle(
+          format(strings.actionsheetTitle8, loggedInEntity.obj.group_name),
         );
-        if (groupData.is_joined) {
-          obj.btn1 = strings.joining;
-        }
-        if (isScorekeeper || isReferee) {
-          obj.btn3 = '···';
-        }
-        const list = [];
-        if (isReferee) {
-          list.push(strings.refereeOffer);
-        }
-        if (isScorekeeper) {
-          list.push(strings.scorekeeperOffer);
-        }
-        setOptions(list);
-
-        if (groupData.is_following) {
-          obj.btn2 = strings.following;
-          setOptions2([strings.unfollowText]);
-        } else {
-          obj.btn2 = strings.follow;
-        }
-      }
-      if (
-        loggedInEntity.role === Verbs.entityTypeTeam &&
-        isAvailable &&
-        groupData.sport === loggedInEntity.obj.sport &&
-        groupData.sport_type === loggedInEntity.obj.sport_Type
-      ) {
-        obj.btn1 = strings.challenge;
-        obj.btn2 = '';
-        obj.btn3 = '···';
-        setOptions([strings.inviteToChallenge]);
-      }
-      if (loggedInEntity.role === Verbs.entityTypeClub) {
-        const res = await getTeamsOfClub(loggedInEntity.uid, authContext);
-        const team =
-          res.payload?.length > 0
-            ? res.payload.find((item) => item.group_id === groupData.group_id)
-            : {};
-        if (team?.group_id) {
-          obj.btn1 = strings.joining;
-        } else if (
-          groupData.invite_request?.entity_type === Verbs.entityTypeClub
-        ) {
-          obj.btn1 = strings.invitePending;
-        } else {
-          obj.btn1 = strings.invite;
-        }
-      }
-    } else if (groupData.entity_type === Verbs.entityTypeClub) {
-      if (
-        loggedInEntity.role === Verbs.entityTypePlayer ||
-        loggedInEntity.role === Verbs.entityTypeUser
-      ) {
-        if (groupData.is_following) {
-          obj.btn2 = strings.following;
-          setOptions([strings.unfollowText]);
-        } else {
-          obj.btn2 = strings.follow;
-        }
-      }
-
-      if (loggedInEntity.role === Verbs.entityTypeTeam) {
-        if (
-          groupData.invite_request?.entity_type === Verbs.entityTypeClub &&
-          groupData.invite_request?.invited_id === loggedInEntity.uid &&
-          groupData.invite_request?.action === Verbs.inviteVerb
-        ) {
-          obj.btn1 = strings.invitePending;
-        } else {
-          const team =
-            groupData.joined_teams?.length > 0
-              ? groupData.joined_teams.find(
-                  (item) => item.group_id === loggedInEntity.uid,
-                )
-              : {};
-          let isMember = false;
-          if (team?.group_id) {
-            isMember = true;
-          }
-          obj.btn1 = isMember ? strings.member : strings.join;
-        }
-      }
-
-      if (loggedInEntity.role === Verbs.entityTypeClub) {
-        obj.btn1 = '';
-        obj.btn2 = '';
-        obj.btn3 = '';
+      } else if (groupData.invite_request?.action === Verbs.requestVerb) {
+        obj.btn1 = strings.requestPendingText;
+        setOptions([
+          strings.acceptRequet,
+          strings.cancelRequestText,
+          strings.cancel,
+        ]);
+        setActionSheetTitle(
+          format(strings.actionsheetTitle9, groupData.group_name),
+        );
+      } else {
+        obj.btn1 = strings.invite;
       }
     }
-
     setButtons(obj);
-  }, [
-    checkIsRefereeOrScoreKeeper,
-    groupData,
-    isAdmin,
-    loggedInEntity,
-    isAvailable,
-    authContext,
-  ]);
+  }, [groupData, checkIsRefereeOrScoreKeeper, loggedInEntity, isAvailable]);
+
+  const getClubsBttons = useCallback(() => {
+    const obj = {};
+    if (
+      loggedInEntity.role === Verbs.entityTypePlayer ||
+      loggedInEntity.role === Verbs.entityTypeUser
+    ) {
+      if (groupData.is_following) {
+        obj.btn2 = strings.following;
+        setOptions2([strings.unfollowText]);
+      } else {
+        obj.btn2 = strings.follow;
+      }
+
+      if (groupData.is_joined) {
+        obj.btn1 = strings.joining;
+        setOptions([strings.leaveClub]);
+      } else if (groupData.invite_request?.action === Verbs.requestVerb) {
+        obj.btn1 = strings.requestSent;
+        setOptions([strings.cancelRequestText, strings.cancel]);
+        setActionSheetTitle(
+          format(strings.actionsheetTitle3, groupData.group_name),
+        );
+      } else if (groupData.invite_request?.action === Verbs.inviteVerb) {
+        obj.btn1 = strings.invitePending;
+        setOptions([strings.acceptInvite, strings.declineInvite]);
+      } else {
+        obj.btn1 = strings.join;
+      }
+    }
+    if (loggedInEntity.role === Verbs.entityTypeTeam) {
+      const teamId =
+        groupData.joined_teams?.length > 0
+          ? groupData.joined_teams.find(
+              (item) => item.group_id === loggedInEntity.uid,
+            )
+          : null;
+
+      if (teamId) {
+        obj.btn1 = strings.joining;
+        setOptions([strings.leaveClub]);
+      } else if (groupData.invite_request?.action === Verbs.inviteVerb) {
+        obj.btn1 = strings.invitePending;
+        setOptions([strings.acceptInvite, strings.declineInvite]);
+      } else if (groupData.invite_request?.action === Verbs.requestVerb) {
+        obj.btn1 = strings.requestSent;
+        setOptions([strings.cancelRequestText, strings.cancel]);
+        setActionSheetTitle(
+          format(strings.actionsheetTitle6, groupData.group_name),
+        );
+      } else {
+        obj.btn1 = strings.join;
+      }
+    }
+    if (loggedInEntity.role === Verbs.entityTypeClub) {
+      obj.btn1 = '';
+      obj.btn2 = '';
+      obj.btn3 = '';
+    }
+    setButtons(obj);
+  }, [groupData, loggedInEntity]);
+
+  const getButtonTitle = useCallback(async () => {
+    // if (!isAdmin) {
+    //   // this should be decided from action key
+    //   if (groupData.invite_request) {
+    //     if (groupData.invite_request.entity_type === Verbs.entityTypeUser) {
+    //       obj.btn1 = strings.requestSent;
+    //     } else if (
+    //       groupData.invite_request.entity_type === Verbs.entityTypeClub ||
+    //       groupData.invite_request.entity_type === Verbs.entityTypeTeam
+    //     ) {
+    //       obj.btn1 = strings.invitePending;
+    //     }
+    //   } else {
+    //     obj.btn1 = strings.join;
+    //   }
+    // }
+
+    if (isAdmin) {
+      setButtons({btn1: strings.editprofiletitle, btn2: '', btn3: ''});
+    } else if (groupData.entity_type === Verbs.entityTypeTeam) {
+      getTeamButtons();
+    } else if (groupData.entity_type === Verbs.entityTypeClub) {
+      getClubsBttons();
+    }
+  }, [groupData, isAdmin, getTeamButtons, getClubsBttons]);
 
   useEffect(() => {
     if (isFocused) {
@@ -198,41 +250,32 @@ const GroupHomeButton = ({
   const handleButtonPress = (option) => {
     switch (option) {
       case strings.member:
-        setOptions([strings.leaveTeamFromClub]);
         setShowOptions(true);
         break;
 
+      case strings.following:
+        setShowOptions2(true);
+        break;
+
+      case strings.inviteSent:
+      case strings.requestSent:
+      case strings.requestPendingText:
+        actionSheetRef.current.show();
+        break;
+
       case strings.invitePending:
-        if (
-          loggedInEntity.role === Verbs.entityTypePlayer &&
-          groupData.invite_request?.entity_type === Verbs.entityTypeTeam
-        ) {
-          setOptions([strings.acceptInvite, strings.declineInvite]);
-        } else if (
-          loggedInEntity.role === Verbs.entityTypeClub &&
-          groupData.invite_request?.entity_type === Verbs.entityTypeClub
-        ) {
-          setOptions([strings.cancelMembershipInvitation]);
-        } else if (
-          loggedInEntity.role === Verbs.entityTypeTeam &&
-          groupData.invite_request?.entity_type === Verbs.entityTypeClub
-        ) {
-          setOptions([
-            strings.acceptInvitateRequest,
-            strings.declineMemberRequest,
-          ]);
-        }
         setShowOptions(true);
         break;
 
       case strings.joining:
-        if (
-          loggedInEntity.role === Verbs.entityTypeClub &&
-          groupData.entity_type === Verbs.entityTypeTeam
-        ) {
-          setOptions([strings.leaveTeamFromClub]);
-          setShowOptions(true);
-        }
+        setShowOptions(true);
+        // if (
+        //   authContext.entity.role === Verbs.entityTypePlayer ||
+        //   authContext.entity.role === Verbs.entityTypeUser
+        // ) {
+        // } else {
+        //   onPress(option);
+        // }
         break;
 
       default:
@@ -285,11 +328,7 @@ const GroupHomeButton = ({
             buttons.btn3 ? {marginHorizontal: 7} : {marginLeft: 7},
           ]}
           onPress={() => {
-            if (options2.length > 0 && options2[0] === strings.unfollowText) {
-              setShowOptions2(true);
-            } else {
-              handleButtonPress(buttons.btn2);
-            }
+            handleButtonPress(buttons.btn2);
           }}>
           <Text
             style={[
@@ -308,7 +347,7 @@ const GroupHomeButton = ({
         <TouchableOpacity
           style={[styles.buttonContainer, {paddingHorizontal: 8}]}
           onPress={() => {
-            setShowOptions(true);
+            setShowOptions3(true);
           }}>
           <Text style={styles.buttonText}>{buttons.btn3}</Text>
         </TouchableOpacity>
@@ -329,8 +368,27 @@ const GroupHomeButton = ({
         closeModal={() => setShowOptions2(false)}
         optionList={options2}
         onSelect={(option) => {
-          setShowOptions(false);
+          setShowOptions2(false);
           handleButtonPress(option);
+        }}
+      />
+
+      <BottomSheet
+        isVisible={showOptions3}
+        closeModal={() => setShowOptions3(false)}
+        optionList={options3}
+        onSelect={(option) => {
+          setShowOptions3(false);
+          handleButtonPress(option);
+        }}
+      />
+      <ActionSheet
+        title={actionSheetTitle}
+        ref={actionSheetRef}
+        options={options}
+        cancelButtonIndex={options.length - 1}
+        onPress={(index) => {
+          handleButtonPress(options[index]);
         }}
       />
     </View>

@@ -17,15 +17,15 @@ const BottomSheet = ({
         <Modal visible={isVisible} transparent animationType="slide">
           <Pressable style={styles.modalParent} onPress={closeModal}>
             <Pressable style={styles.card} onPress={() => {}}>
-              {optionList.map((item) => (
-                <>
+              {optionList.map((item, index) => (
+                <View key={index}>
                   <Pressable
                     style={styles.modalButtonContainer}
                     onPress={() => onSelect(item)}>
                     <Text style={styles.modalButtonText}>{item}</Text>
                   </Pressable>
                   <View style={styles.modalLineSeparator} />
-                </>
+                </View>
               ))}
             </Pressable>
             <Pressable style={styles.modalCancelButton} onPress={closeModal}>

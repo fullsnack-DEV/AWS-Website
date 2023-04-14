@@ -12,7 +12,7 @@ import colors from '../../Constants/Colors';
 
 import AuthContext from '../../auth/context';
 import {followUser, unfollowUser, inviteUser} from '../../api/Users';
-import {cancelGroupInvite, followGroup} from '../../api/Groups';
+import {cancelGroupInvite, deleteMember} from '../../api/Groups';
 import {createPost} from '../../api/NewsFeeds';
 import {acceptRequest, declineRequest} from '../../api/Notificaitons';
 import ActivityLoader from '../../components/loader/ActivityLoader';
@@ -44,23 +44,6 @@ const UserHomeScreen = ({
   const [loading, setloading] = useState(false);
   const [addSportActivityModal, setAddSportActivityModal] = useState(false);
 
-  const [actionObject] = useState({
-    activity_id: '',
-    entity_type: '',
-    group_id: '',
-    invited_id: '',
-    action: '',
-  });
-  const createActionObject = useCallback(
-    (type, groupId, activityID, invitedId, action) => {
-      actionObject.entity_type = type;
-      actionObject.group_id = groupId;
-      actionObject.activity_id = activityID;
-      actionObject.action = action;
-      actionObject.invited_id = invitedId;
-    },
-    [actionObject],
-  );
   const [mainFlatListFromTop] = useState(new Animated.Value(0));
   const mainFlatListRef = useRef();
 
@@ -132,23 +115,21 @@ const UserHomeScreen = ({
   );
 
   const callFollowUser = useCallback(async () => {
-    currentUserData.is_following = true;
-    currentUserData.follower_count += 1;
-    // entityObject = currentUserData;
-
     setCurrentUserData({...currentUserData});
 
     const params = {
       entity_type: Verbs.entityTypePlayer,
     };
     followUser(params, userID, authContext)
-      .then(() => {})
+      .then(() => {
+        const obj = {
+          ...currentUserData,
+          is_following: true,
+          follower_count: currentUserData.follower_count + 1,
+        };
+        setCurrentUserData(obj);
+      })
       .catch((error) => {
-        currentUserData.is_following = false;
-        currentUserData.follower_count -= 1;
-        // entityObject = currentUserData;
-
-        setCurrentUserData({...currentUserData});
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message);
         }, 10);
@@ -156,25 +137,22 @@ const UserHomeScreen = ({
   }, [authContext, currentUserData, userID]);
 
   const callUnfollowUser = useCallback(async () => {
-    currentUserData.is_following = false;
-    if (currentUserData.follower_count > 0) {
-      currentUserData.follower_count -= 1;
-    }
-    // entityObject = currentUserData;
-
-    setCurrentUserData({...currentUserData});
-
     const params = {
       entity_type: Verbs.entityTypePlayer,
     };
     unfollowUser(params, userID, authContext)
-      .then(() => {})
+      .then(() => {
+        const obj = {
+          ...currentUserData,
+          is_following: false,
+          follower_count:
+            currentUserData.follower_count > 0
+              ? currentUserData.follower_count - 1
+              : 0,
+        };
+        setCurrentUserData(obj);
+      })
       .catch((error) => {
-        currentUserData.is_following = true;
-        currentUserData.follower_count += 1;
-        // entityObject = currentUserData;
-
-        setCurrentUserData({...currentUserData});
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message);
         }, 10);
@@ -189,16 +167,16 @@ const UserHomeScreen = ({
     };
     inviteUser(params, userID, authContext)
       .then((response) => {
-        // currentUserData.inviteBtnTitle = strings.invited;
-        // entityObject = currentUserData;
         setloading(false);
-        createActionObject(
-          authContext.entity.role,
-          authContext.entity.uid,
-          response.payload.id,
-          userID,
-          Verbs.inviteVerb,
-        );
+        const inviteRequest = {
+          activity_id: response.payload.id,
+          entity_type: authContext.entity.role,
+          group_id: authContext.entity.uid,
+          invited_id: userID,
+          action: Verbs.inviteVerb,
+        };
+        const obj = {...currentUserData, invite_request: inviteRequest};
+        setCurrentUserData(obj);
         setTimeout(() => {
           Alert.alert(
             strings.alertmessagetitle,
@@ -211,12 +189,16 @@ const UserHomeScreen = ({
       })
       .catch((error) => {
         setloading(false);
-
         setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, error.message);
+          Alert.alert(strings.alertmessagetitle, error.message, [
+            {
+              text: strings.okTitleText,
+              onPress: () => navigation.goBack(),
+            },
+          ]);
         }, 10);
       });
-  }, [authContext, currentUserData, userID, createActionObject]);
+  }, [authContext, currentUserData, userID, navigation]);
 
   const onMessageButtonPress = useCallback(
     (user) => {
@@ -235,45 +217,25 @@ const UserHomeScreen = ({
     [navigation],
   );
 
-  const callFollowGroup = useCallback(
-    async (silentlyCall = false) => {
-      currentUserData.is_following = true;
-      currentUserData.follower_count += 1;
-
-      const params = {
-        entity_type: currentUserData.entity_type,
-      };
-      followGroup(params, userID, authContext)
-        .then(() => {
-          setCurrentUserData({...currentUserData});
-        })
-        .catch((error) => {
-          currentUserData.is_following = false;
-          currentUserData.follower_count -= 1;
-
-          setCurrentUserData({...currentUserData});
-          if (silentlyCall === false) {
-            setTimeout(() => {
-              Alert.alert(strings.alertmessagetitle, error.message);
-            }, 10);
-          }
-        });
-    },
-    [authContext, currentUserData, userID],
-  );
-
   const onAccept = useCallback(
     (requestId) => {
       setloading(true);
       acceptRequest({}, requestId, authContext)
         .then(() => {
           // Succefully join case
-          currentUserData.is_joined = true;
-          currentUserData.member_count += 1;
-          if (currentUserData.is_following === false) {
-            callFollowGroup(true);
+          const obj = {...currentUserData};
+          if (authContext.entity.role === Verbs.entityTypeTeam) {
+            obj.joined_teams = [
+              ...currentUserData.joined_teams,
+              authContext.entity.obj,
+            ];
+          } else if (authContext.entity.role === Verbs.entityTypeClub) {
+            obj.joined_clubs = [
+              ...currentUserData.joined_clubs,
+              authContext.entity.obj,
+            ];
           }
-
+          setCurrentUserData(obj);
           setloading(false);
           setTimeout(() => {
             Alert.alert(
@@ -289,7 +251,7 @@ const UserHomeScreen = ({
           }, 10);
         });
     },
-    [authContext, currentUserData, callFollowGroup],
+    [authContext, currentUserData],
   );
 
   const onDecline = useCallback(
@@ -297,6 +259,14 @@ const UserHomeScreen = ({
       setloading(true);
       declineRequest(requestId, authContext)
         .then(() => {
+          const obj = {
+            ...currentUserData,
+            invite_request: {
+              ...currentUserData.invite_request,
+              action: Verbs.declineVerb,
+            },
+          };
+          setCurrentUserData(obj);
           setloading(false);
           setTimeout(() => {
             Alert.alert(
@@ -312,8 +282,35 @@ const UserHomeScreen = ({
           }, 10);
         });
     },
-    [authContext],
+    [authContext, currentUserData],
   );
+
+  const removeUserFromGroup = useCallback(() => {
+    setloading(true);
+
+    deleteMember(authContext.entity.uid, userID, authContext)
+      .then(() => {
+        const obj = {...currentUserData};
+
+        if (authContext.entity.role === Verbs.entityTypeTeam) {
+          obj.joined_teams = (currentUserData.joined_teams ?? []).filter(
+            (item) => item.group_id !== authContext.entity.uid,
+          );
+        } else if (authContext.entity.role === Verbs.entityTypeClub) {
+          obj.joined_clubs = (currentUserData.joined_clubs ?? []).filter(
+            (item) => item.group_id !== authContext.entity.uid,
+          );
+        }
+        setCurrentUserData(obj);
+        setloading(false);
+      })
+      .catch((error) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, error.message);
+        }, 10);
+      });
+  }, [authContext, userID, currentUserData]);
 
   const cancelGroupInvitation = useCallback(() => {
     setloading(true);
@@ -339,7 +336,6 @@ const UserHomeScreen = ({
         }, 10);
       });
   }, [authContext, currentUserData]);
-
   const onUserAction = useCallback(
     (action) => {
       switch (action) {
@@ -372,10 +368,12 @@ const UserHomeScreen = ({
           break;
 
         case strings.acceptInvitateRequest:
+        case strings.acceptRequet:
           onAccept(currentUserData.invite_request.activity_id);
           break;
 
         case strings.declineMemberRequest:
+        case strings.declineRequest:
           onDecline(currentUserData.invite_request.activity_id);
           break;
 
@@ -390,6 +388,7 @@ const UserHomeScreen = ({
           break;
 
         case strings.removeMemberFromTeamText:
+          removeUserFromGroup();
           break;
 
         default:
@@ -406,6 +405,7 @@ const UserHomeScreen = ({
       onAccept,
       onDecline,
       cancelGroupInvitation,
+      removeUserFromGroup,
     ],
   );
 

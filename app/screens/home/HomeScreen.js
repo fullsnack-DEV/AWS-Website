@@ -351,8 +351,7 @@ const HomeScreen = ({navigation, route}) => {
               if (route.params?.comeFrom === 'IncomingChallengeSettings') {
                 navigation.navigate('AccountScreen');
               } else if (route.params?.isEntityCreated) {
-                console.log('PRessed');
-                // navigation.pop(4);
+                navigation.pop(4);
               } else {
                 navigation.goBack();
               }
@@ -402,10 +401,13 @@ const HomeScreen = ({navigation, route}) => {
                   ]);
                 }
               } else {
-                setMoreOptions([
-                  strings.reportThisAccount,
-                  strings.blockThisAccount,
-                ]);
+                setShowMoreOptionsModal(true);
+                if (!isAdmin) {
+                  setMoreOptions([
+                    strings.reportThisAccount,
+                    strings.blockThisAccount,
+                  ]);
+                }
               }
             }}>
             <Image source={images.chat3Dot} style={styles.image} />

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {StyleSheet, View, Text, Image, Pressable} from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
 import colors from '../../Constants/Colors';
@@ -20,21 +20,64 @@ const UserHomeHeader = ({
   const [isMember, setIsMember] = useState(false);
   const [options, setOptions] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [buttonTitle, setButtonTitle] = useState('');
+
+  const getButtonTitle = useCallback(
+    (checkIsMember) => {
+      let name = '';
+      if (isAdmin) {
+        name = strings.editprofiletitle;
+      } else {
+        if (
+          loggedInEntity.role === Verbs.entityTypePlayer ||
+          loggedInEntity.role === Verbs.entityTypeUser
+        ) {
+          if (currentUserData.is_following) {
+            name = strings.following;
+          } else {
+            name = strings.follow;
+          }
+        }
+        if (
+          loggedInEntity.role === Verbs.entityTypeClub ||
+          loggedInEntity.role === Verbs.entityTypeTeam
+        ) {
+          if (checkIsMember) {
+            name = strings.member;
+          } else if (
+            currentUserData.invite_request?.action === Verbs.requestVerb
+          ) {
+            name = strings.requestPendingText;
+          } else if (
+            currentUserData.invite_request?.action === Verbs.inviteVerb
+          ) {
+            name = strings.inviteSent;
+          } else {
+            name = strings.invite;
+          }
+        }
+      }
+
+      setButtonTitle(name);
+    },
+    [isAdmin, currentUserData, loggedInEntity],
+  );
 
   useEffect(() => {
     if (isFocused) {
+      let flag = false;
       if (loggedInEntity.role === Verbs.entityTypeClub) {
-        if (currentUserData.joined_clubs.length > 0) {
+        if (currentUserData.joined_clubs?.length > 0) {
           const club = currentUserData.joined_clubs.find(
             (item) => item.group_id === loggedInEntity.uid,
           );
           if (club?.group_id) {
-            setIsMember(true);
+            flag = true;
           } else {
-            setIsMember(false);
+            flag = false;
           }
         } else {
-          setIsMember(false);
+          flag = false;
         }
       }
 
@@ -44,55 +87,18 @@ const UserHomeHeader = ({
             (item) => item.group_id === loggedInEntity.uid,
           );
           if (team?.group_id) {
-            setIsMember(true);
+            flag = true;
           } else {
-            setIsMember(false);
+            flag = false;
           }
         } else {
-          setIsMember(false);
+          flag = false;
         }
       }
+      setIsMember(flag);
+      getButtonTitle(flag);
     }
-  }, [isFocused, currentUserData, loggedInEntity]);
-
-  const getButtonTitle = () => {
-    if (isAdmin) {
-      return strings.editprofiletitle;
-    }
-    if (
-      loggedInEntity.role === Verbs.entityTypePlayer ||
-      loggedInEntity.role === Verbs.entityTypeUser
-    ) {
-      if (currentUserData.is_following) {
-        return strings.following;
-      }
-      return strings.follow;
-    }
-    if (
-      loggedInEntity.role === Verbs.entityTypeClub ||
-      loggedInEntity.role === Verbs.entityTypeTeam
-    ) {
-      if (isMember) {
-        return strings.member;
-      }
-      if (currentUserData.invite_request) {
-        if (
-          currentUserData.invite_request.entity_type === Verbs.entityTypeUser
-        ) {
-          return strings.requestPendingText;
-        }
-        if (
-          currentUserData.invite_request.entity_type === Verbs.entityTypeClub ||
-          currentUserData.invite_request.entity_type === Verbs.entityTypeTeam
-        ) {
-          return strings.requestPendingText;
-        }
-      }
-      return strings.invite;
-    }
-
-    return '';
-  };
+  }, [isFocused, currentUserData, loggedInEntity, getButtonTitle]);
 
   const handleButtonPress = (title) => {
     switch (title) {
@@ -101,8 +107,8 @@ const UserHomeHeader = ({
         break;
 
       case strings.following:
-        setShowModal(true);
         setOptions([strings.unfollowText]);
+        setShowModal(true);
         break;
 
       case strings.follow:
@@ -113,27 +119,22 @@ const UserHomeHeader = ({
         onAction(Verbs.inviteVerb);
         break;
 
-      case strings.requestPendingText:
+      case strings.inviteSent:
+        setOptions([
+          strings.acceptInvitateRequest,
+          strings.declineMemberRequest,
+        ]);
         setShowModal(true);
+        break;
 
-        if (
-          currentUserData.invite_request.entity_type === Verbs.entityTypeUser
-        ) {
-          setOptions([
-            strings.acceptInvitateRequest,
-            strings.declineMemberRequest,
-          ]);
-        } else if (
-          currentUserData.invite_request.entity_type === Verbs.entityTypeClub ||
-          currentUserData.invite_request.entity_type === Verbs.entityTypeTeam
-        ) {
-          setOptions(strings.cancelMembershipInvitation);
-        }
+      case strings.requestPendingText:
+        setOptions([strings.acceptRequet, strings.declineRequest]);
+        setShowModal(true);
         break;
 
       case strings.member:
-        setShowModal(true);
         setOptions([strings.removeMemberFromTeamText]);
+        setShowModal(true);
         break;
 
       default:
@@ -143,22 +144,10 @@ const UserHomeHeader = ({
 
   const handleOptions = (option) => {
     setShowModal(false);
-    switch (option) {
-      case strings.unfollowText:
-        onAction(Verbs.unfollowVerb);
-        break;
-
-      case strings.cancelMembershipInvitation:
-      case strings.acceptInvitateRequest:
-      case strings.declineMemberRequest:
-        onAction(option);
-        break;
-
-      case strings.removeMemberFromTeamText:
-        break;
-
-      default:
-        break;
+    if (option === strings.unfollowText) {
+      onAction(Verbs.unfollowVerb);
+    } else {
+      onAction(option);
     }
   };
 
@@ -181,8 +170,8 @@ const UserHomeHeader = ({
             styles.buttonContainer,
             isMember ? {flexDirection: 'row', alignItems: 'center'} : {},
           ]}
-          onPress={() => handleButtonPress(getButtonTitle())}>
-          <Text style={styles.buttonText}>{getButtonTitle()}</Text>
+          onPress={() => handleButtonPress(buttonTitle)}>
+          <Text style={styles.buttonText}>{buttonTitle}</Text>
           {isMember ? (
             <Image source={images.check} style={styles.checkIcon} />
           ) : null}

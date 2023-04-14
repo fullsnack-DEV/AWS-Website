@@ -2695,4 +2695,23 @@ export default {
   onlineText: 'en_ONLINE',
   andMoreText: 'en_& {0} more',
   lessText: 'en_less',
+  cancelInvite: 'en_Cancel Invite',
+  inviteCanceled: 'en_Invite Canceled',
+  removeTeamFromClub: 'en_Remove Team from Club',
+  leaveClub: 'en_Leave Club',
+  alertTitle1: 'en_Congratualtions! You are now a member of "{0}".',
+  alertTitle2: 'en_Your join request is sent to "{0}". ',
+  alertTitle4: 'en_Request Canceled',
+  alertTitle5: 'en_Invite Declined',
+  alertTitle6: 'en_Congratualtions! Your team now joined "{0}". ',
+  actionsheetTitle3:
+    'en_You have sent a request to join “{0}”.\n Do you want to cancel it?',
+  actionsheetTitle6:
+    'en_Your team has sent a request to join “{0}”. Do you want to cancel it?',
+  actionsheetTitle8:
+    'en_Your club has invited  "{0}" to join your club. Do you want to cancel it?',
+  actionsheetTitle9: 'en_"{0}" has sent a request to join your club.',
+  leaveTeam: 'en_Leave Team',
+  leaguesPlaceholder: 'en_Languages you can communicate in',
+  updateText: 'en_Update',
 };

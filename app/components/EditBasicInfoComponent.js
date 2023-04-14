@@ -6,7 +6,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  Platform,
+  // Platform,
   Image,
   Pressable,
 } from 'react-native';
@@ -59,16 +59,21 @@ const EditBasicInfoComponent = ({
                 {`${selectedCountryCode.country} (+${selectedCountryCode.code})`}
               </Text>
             </View>
-            <View style={{width: 20, height: 20}}>
+            <View style={{width: 10, height: 10}}>
               <Image
                 source={images.dropDownArrow}
-                style={{width: '100%', height: '100%', resizeMode: 'contain'}}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  resizeMode: 'contain',
+                  tintColor: colors.lightBlackColor,
+                }}
               />
             </View>
           </Pressable>
           <View style={{flex: 1, marginLeft: 8}}>
             <TextInput
-              placeholder={strings.phoneNumber}
+              placeholder={strings.phone}
               style={styles.inputField}
               keyboardType={'phone-pad'}
               onChangeText={(text) => {
@@ -103,16 +108,21 @@ const EditBasicInfoComponent = ({
               {`${selectedCountryCode.country} (+${selectedCountryCode.code})`}
             </Text>
           </View>
-          <View style={{width: 20, height: 20}}>
+          <View style={{width: 10, height: 10}}>
             <Image
               source={images.dropDownArrow}
-              style={{width: '100%', height: '100%', resizeMode: 'contain'}}
+              style={{
+                width: '100%',
+                height: '100%',
+                resizeMode: 'contain',
+                tintColor: colors.lightBlackColor,
+              }}
             />
           </View>
         </Pressable>
         <View style={{flex: 1, marginLeft: 8}}>
           <TextInput
-            placeholder={strings.phoneNumber}
+            placeholder={strings.phone}
             style={styles.inputField}
             keyboardType={'phone-pad'}
             onChangeText={(text) => {
@@ -272,6 +282,17 @@ const EditBasicInfoComponent = ({
       </View>
 
       <View style={{marginBottom: 30}}>
+        <Text style={styles.titleText}>
+          {strings.leaguesTitle.toUpperCase()}
+        </Text>
+        <TextInput
+          placeholder={strings.leaguesPlaceholder}
+          style={styles.inputField}
+          // value={}
+        />
+      </View>
+
+      <View style={{marginBottom: 30}}>
         <Text style={styles.titleText}>{strings.phone.toUpperCase()}</Text>
         {renderPhoneNumber()}
       </View>
@@ -283,14 +304,19 @@ const EditBasicInfoComponent = ({
         <Pressable
           onPress={() => {
             setVisibleAddressModal(true);
-          }}>
-          <TextInput
-            placeholder={strings.streetAddress}
-            pointerEvents="none"
-            editable={false}
-            value={userInfo.formattedAddress || userInfo.street_address}
-            style={styles.inputField}
-          />
+          }}
+          style={styles.mailingContainer}>
+          <Text
+            style={[
+              styles.mailingText,
+              userInfo.formattedAddress || userInfo.street_address
+                ? {color: colors.lightBlackColor}
+                : {color: colors.userPostTimeColor},
+            ]}>
+            {userInfo.formattedAddress || userInfo.street_address
+              ? userInfo.formattedAddress || userInfo.street_address
+              : strings.address}
+          </Text>
         </Pressable>
       </View>
 
@@ -341,8 +367,10 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   inputField: {
+    height: 40,
     backgroundColor: colors.textFieldBackground,
-    paddingVertical: Platform.OS === 'android' ? 5 : 12,
+    // paddingVertical: Platform.OS === 'android' ? 5 : 12,
+    // paddingVertical: 12,
     paddingHorizontal: 10,
     borderRadius: 5,
     fontSize: 16,
@@ -360,6 +388,17 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  mailingContainer: {
+    backgroundColor: colors.textFieldBackground,
+    padding: 10,
+    borderRadius: 5,
+    justifyContent: 'center',
+  },
+  mailingText: {
+    fontSize: 16,
+    lineHeight: 23,
+    fontFamily: fonts.RRegular,
   },
 });
 export default EditBasicInfoComponent;

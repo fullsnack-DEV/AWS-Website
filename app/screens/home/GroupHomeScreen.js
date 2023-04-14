@@ -24,7 +24,7 @@ import Verbs from '../../Constants/Verbs';
 import HomeFeed from '../homeFeed/HomeFeed';
 import GroupHomeButton from './GroupHomeButton';
 import {ErrorCodes} from '../../utils/constant';
-import {getGamesList, setAuthContextData, setStorage} from '../../utils';
+import {getGamesList} from '../../utils';
 import MemberList from '../../components/Home/MemberList';
 import {ImageUploadContext} from '../../context/ImageUploadContext';
 import {createPost} from '../../api/NewsFeeds';
@@ -183,7 +183,7 @@ const GroupHomeScreen = ({
         isAdmin={isAdmin}
       />
       <MemberList
-        list={groupData.joined_members}
+        list={currentUserData.joined_members}
         isAdmin={isAdmin}
         containerStyle={{
           paddingHorizontal: 15,
@@ -207,7 +207,7 @@ const GroupHomeScreen = ({
         groupData={currentUserData}
         loggedInEntity={authContext.entity}
         isAdmin={isAdmin}
-        onPress={() => handleGroupActions()}
+        onPress={handleGroupActions}
       />
       <View style={styles.separator} />
       <PostsTabView
@@ -236,25 +236,19 @@ const GroupHomeScreen = ({
   );
 
   const callFollowGroup = async (silentlyCall = false) => {
-    const obj = {
-      ...currentUserData,
-      is_following: true,
-      follower_count: currentUserData.follower_count + 1,
-    };
-    setCurrentUserData(obj);
-
     const params = {
       entity_type: currentUserData.entity_type,
     };
     followGroup(params, groupId, authContext)
-      .then(() => {})
-      .catch((error) => {
-        const group = {
+      .then(() => {
+        const obj = {
           ...currentUserData,
-          is_following: false,
-          follower_count: currentUserData.follower_count - 1,
+          is_following: true,
+          follower_count: currentUserData.follower_count + 1,
         };
-        setCurrentUserData(group);
+        setCurrentUserData(obj);
+      })
+      .catch((error) => {
         if (!silentlyCall) {
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, error.message);
@@ -264,22 +258,12 @@ const GroupHomeScreen = ({
   };
 
   const callUnfollowGroup = async () => {
-    const obj = {
-      ...currentUserData,
-      is_following: false,
-      follower_count:
-        currentUserData.follower_count > 0
-          ? currentUserData.follower_count - 1
-          : 0,
-    };
-    setCurrentUserData(obj);
     const params = {
       entity_type: currentUserData.entity_type,
     };
     unfollowGroup(params, groupId, authContext)
-      .then(() => {})
-      .catch((error) => {
-        const group = {
+      .then(() => {
+        const obj = {
           ...currentUserData,
           is_following: false,
           follower_count:
@@ -287,7 +271,9 @@ const GroupHomeScreen = ({
               ? currentUserData.follower_count - 1
               : 0,
         };
-        setCurrentUserData(group);
+        setCurrentUserData(obj);
+      })
+      .catch((error) => {
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message);
         }, 10);
@@ -456,21 +442,34 @@ const GroupHomeScreen = ({
     }
   };
 
-  const cancelGroupInvitation = () => {
+  const cancelGroupInvitation = (option) => {
     setLoading(true);
     const params = {
-      group_id: groupData.invite_request.group_id,
-      invited_id: groupData.invite_request.invited_id,
-      activity_id: groupData.invite_request.activity_id,
+      group_id: currentUserData.invite_request.group_id,
+      invited_id: currentUserData.invite_request.invited_id,
+      activity_id: currentUserData.invite_request.activity_id,
     };
     cancelGroupInvite(params, authContext)
       .then(() => {
         setLoading(false);
+        const obj = {
+          ...currentUserData,
+          invite_request: {
+            ...currentUserData.invite_request,
+            action: Verbs.declineVerb,
+          },
+        };
+        setCurrentUserData(obj);
+        let label = '';
+
+        if (option === strings.cancelInvite) {
+          label = strings.inviteCanceled;
+        }
+        if (option === strings.cancelRequestText) {
+          label = strings.alertTitle4;
+        }
         setTimeout(() => {
-          Alert.alert(
-            strings.alertmessagetitle,
-            strings.declinedRequestMessage,
-          );
+          Alert.alert(label);
         }, 10);
       })
       .catch((error) => {
@@ -481,117 +480,111 @@ const GroupHomeScreen = ({
       });
   };
 
+  const setCurrentGroupData = (type = Verbs.joinVerb) => {
+    const obj = {
+      ...currentUserData,
+    };
+    if (currentUserData.entity_type === Verbs.entityTypeClub) {
+      if (authContext.entity.role === Verbs.entityTypeTeam) {
+        if (type === Verbs.joinVerb) {
+          obj.joined_teams =
+            currentUserData.joined_teams?.length > 0
+              ? [...currentUserData.joined_teams, authContext.entity.obj]
+              : [authContext.entity.obj];
+        }
+        if (type === Verbs.leaveVerb) {
+          obj.joined_teams = currentUserData.joined_teams.filter(
+            (item) => item.group_id !== authContext.entity.uid,
+          );
+        }
+      } else if (
+        authContext.entity.role === Verbs.entityTypePlayer ||
+        authContext.entity.role === Verbs.entityTypeUser
+      ) {
+        if (type === Verbs.joinVerb) {
+          obj.is_joined = true;
+          obj.member_count += 1;
+          obj.joined_members =
+            currentUserData.joined_members?.length > 0
+              ? [...currentUserData.joined_members, authContext.entity.obj]
+              : [authContext.entity.obj];
+        }
+        if (type === Verbs.leaveVerb) {
+          obj.is_joined = false;
+          obj.member_count =
+            currentUserData.member_count > 0
+              ? currentUserData.member_count - 1
+              : 0;
+          obj.joined_members = currentUserData.joined_members.filter(
+            (item) => item.user_id !== authContext.entity.uid,
+          );
+        }
+      }
+    } else if (groupData.entity_type === Verbs.entityTypeTeam) {
+      if (type === Verbs.joinVerb) {
+        obj.is_joined = true;
+        obj.member_count += 1;
+      }
+      if (type === Verbs.leaveVerb) {
+        obj.is_joined = false;
+        obj.member_count =
+          currentUserData.member_count > 0
+            ? currentUserData.member_count - 1
+            : 0;
+      }
+    }
+
+    setCurrentUserData(obj);
+  };
+
   const userJoinGroup = () => {
     setLoading(true);
     const params = {};
     joinTeam(params, groupId, authContext)
       .then((response) => {
-        if (response.payload.error_code === ErrorCodes.MEMBEREXISTERRORCODE) {
-          setLoading(false);
-          Alert.alert(
-            '',
-            response.payload.user_message,
-            [
-              {
-                text: 'Join',
-                onPress: () => {
-                  joinTeam({...params, is_confirm: true}, groupId, authContext)
-                    .then(() => {
-                      // Succefully join case
-                      currentUserData.is_joined = true;
-                      currentUserData.member_count += 1;
-                      if (currentUserData.is_following === false) {
-                        callFollowGroup(true);
-                      }
-                      setCurrentUserData(currentUserData);
-                    })
-                    .catch((error) => {
-                      setTimeout(() => {
-                        Alert.alert(strings.alertmessagetitle, error.message);
-                      }, 10);
-                    });
-                },
-                style: 'destructive',
-              },
-              {
-                text: 'Cancel',
-                onPress: () => {},
-                style: 'cancel',
-              },
-            ],
-            {cancelable: false},
-          );
-        } else if (
-          response.payload.error_code === ErrorCodes.MEMBERALREADYERRORCODE
-        ) {
-          Alert.alert(strings.alertmessagetitle, response.payload.user_message);
-          setLoading(false);
-        } else if (
-          response.payload.error_code ===
-          ErrorCodes.MEMBERALREADYINVITEERRORCODE
-        ) {
-          const messageStr = response.payload.user_message;
-          setLoading(false);
-          Alert.alert(messageStr, '', [
-            {
-              text: strings.cancelRequestTitle,
-              style: 'destructive',
-              onPress: () => cancelGroupInvitation(),
-            },
-            {
-              text: strings.cancel,
-              style: 'cancel',
-              onPress: () => {},
-            },
-          ]);
-        } else if (
-          response.payload.error_code ===
-          ErrorCodes.MEMBERALREADYREQUESTERRORCODE
-        ) {
-          setLoading(false);
-          const messageStr = response.payload.user_message;
-          Alert.alert(messageStr, '', [
-            {
-              text: strings.cancelRequestTitle,
-              style: 'destructive',
-              // onPress:()=> cancelGroupInvitation()
-            },
-            {
-              text: strings.cancel,
-              style: 'cancel',
-              onPress: () => {},
-            },
-          ]);
-        } else if (
-          response.payload.error_code === ErrorCodes.MEMBERINVITEONLYERRORCODE
-        ) {
-          setLoading(false);
-          Alert.alert(strings.alertmessagetitle, response.payload.user_message);
-        } else if (response.payload.action === Verbs.joinVerb) {
-          // Succefully Join case
-          setLoading(false);
-          currentUserData.is_joined = true;
-          currentUserData.member_count += 1;
-          if (currentUserData.is_following === false) {
-            callFollowGroup(true);
-          }
-          setCurrentUserData({...currentUserData});
-          Alert.alert(strings.alertmessagetitle, strings.acceptRequestMessage);
-        } else if (response.payload.action === Verbs.requestVerb) {
-          currentUserData.joinBtnTitle = strings.joinRequested;
-          setLoading(false);
-          Alert.alert(strings.alertmessagetitle, strings.sendRequest);
-        } else {
-          // Succefully Join case
-          currentUserData.is_joined = true;
-          currentUserData.member_count += 1;
-          if (currentUserData.is_following === false) {
-            callFollowGroup(true);
-          }
-          setCurrentUserData({...currentUserData});
-          setLoading(false);
+        const inviteRequest = response.payload.data?.action
+          ? {...response.payload.data}
+          : {
+              action: response.payload?.action,
+              entity_type: authContext.entity.role,
+              invited_id: response.payload?.foreign_id,
+              group_id: groupData.group_id,
+              activity_id: response.payload?.id,
+            };
 
-          Alert.alert(strings.alertmessagetitle, strings.acceptRequestMessage);
+        if (response.payload.error_code) {
+          const obj = {
+            ...currentUserData,
+            invite_request: inviteRequest,
+          };
+          setCurrentUserData(obj);
+          if (
+            response.payload.error_code ===
+            ErrorCodes.MEMBERALREADYINVITEERRORCODE
+          ) {
+            setLoading(false);
+            // Alert.alert(
+            //   strings.alertmessagetitle,
+            //   format(strings.alertTitle2, groupData.group_name),
+            // );
+            Alert.alert('', response.payload.user_message);
+          } else if (
+            response.payload.error_code ===
+            ErrorCodes.MEMBERALREADYREQUESTERRORCODE
+          ) {
+            setLoading(false);
+            // Alert.alert(
+            //   strings.alertmessagetitle,
+            //   format(strings.alertTitle2, groupData.group_name),
+            // );
+            Alert.alert('', response.payload.user_message);
+          } else {
+            Alert.alert('', response.payload.user_message);
+          }
+        } else {
+          setCurrentGroupData(Verbs.joinVerb);
+          setLoading(false);
+          Alert.alert(format(strings.alertTitle1, groupData.group_name));
         }
       })
       .catch((error) => {
@@ -604,107 +597,17 @@ const GroupHomeScreen = ({
 
   const userLeaveGroup = () => {
     setLoading(true);
-    currentUserData.is_joined = false;
-    if (currentUserData.member_count > 0) {
-      currentUserData.member_count -= 1;
-    }
-    setCurrentUserData({...currentUserData});
     const params = {};
     leaveTeam(params, groupId, authContext)
       .then(() => {
         setLoading(false);
+        setCurrentGroupData(Verbs.leaveVerb);
       })
       .catch((error) => {
-        currentUserData.is_joined = true;
-        currentUserData.member_count += 1;
-
-        setCurrentUserData({...currentUserData});
         setLoading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message);
         }, 10);
-      });
-  };
-
-  const clubJoinTeam = () => {
-    setLoading(true);
-    const e = authContext.entity;
-    const tempIds = [];
-    tempIds.push(currentUserData.group_id);
-    e.obj.parent_groups = tempIds;
-
-    if (currentUserData.joined_teams) {
-      currentUserData.joined_teams.push(e.obj);
-    } else {
-      currentUserData.joined_teams = [e.obj];
-    }
-
-    setCurrentUserData({...currentUserData});
-    joinTeam({}, groupId, authContext)
-      .then(async (response) => {
-        await setAuthContextData(response.payload, authContext);
-        setLoading(false);
-      })
-      .catch((error) => {
-        delete e.obj.parent_group_id;
-
-        if (currentUserData.joined_teams) {
-          currentUserData.joined_teams = currentUserData.joined_teams.filter(
-            (team) => team.group_id !== e.uid,
-          );
-        }
-        setLoading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, error.message);
-        }, 10);
-      })
-      .finally(() => {
-        authContext.setEntity({...e});
-        setStorage('authContextEntity', {...e});
-        setCurrentUserData({...currentUserData});
-        setLoading(false);
-      });
-  };
-
-  const clubLeaveTeam = () => {
-    setLoading(true);
-    const e = authContext.entity;
-    e.obj.parent_groups = [];
-    authContext.setEntity({...e});
-    setStorage('authContextEntity', {...e});
-    if (currentUserData.parent_groups) {
-      currentUserData.parent_groups = currentUserData.parent_groups.filter(
-        (team) => team.group_id !== groupId,
-      );
-    }
-
-    setCurrentUserData({...currentUserData});
-    const params = {};
-    leaveTeam(params, groupId, authContext)
-      .then(() => {
-        setLoading(false);
-      })
-      .catch((error) => {
-        e.obj.parent_group_id = groupId;
-        authContext.setEntity({...e});
-        setStorage('authContextEntity', {...e});
-        if (currentUserData.joined_teams) {
-          currentUserData.joined_teams.push(e.obj);
-        } else {
-          currentUserData.joined_teams = [e.obj];
-        }
-
-        setCurrentUserData({...currentUserData});
-        setLoading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, error.message);
-        }, 10);
-      })
-      .finally(() => {
-        authContext.setEntity({...e});
-        setStorage('authContextEntity', {...e});
-        setCurrentUserData({...currentUserData});
-        setLoading(false);
       });
   };
 
@@ -712,11 +615,20 @@ const GroupHomeScreen = ({
     setLoading(true);
     const params = [groupId];
     inviteTeam(params, authContext.entity.uid, authContext)
-      .then(() => {
+      .then((response) => {
+        const request = response.payload.length > 0 ? response.payload[0] : {};
+        const inviteRequest = {
+          activity_id: request.id,
+          entity_type: authContext.entity.role,
+          group_id: authContext.entity.uid,
+          invited_id: groupId,
+          action: request.action,
+        };
+        const obj = {...currentUserData, invite_request: inviteRequest};
+        setCurrentUserData(obj);
         setLoading(false);
         setTimeout(() => {
           Alert.alert(
-            strings.alertmessagetitle,
             `“${currentUserData.group_name}“ ${strings.isinvitedsuccesfully}`,
           );
         }, 10);
@@ -734,19 +646,22 @@ const GroupHomeScreen = ({
     acceptRequest({}, requestId, authContext)
       .then(() => {
         // Succefully join case
-        currentUserData.is_joined = true;
-        currentUserData.member_count += 1;
-        setCurrentUserData({
+        const group = {
           ...currentUserData,
           is_joined: true,
-          member_count: currentUserData.member_count + 1,
-        });
-        if (currentUserData.is_following === false) {
-          callFollowGroup(true);
-        }
+        };
+        setCurrentUserData(group);
         setLoading(false);
         setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, strings.acceptRequestMessage);
+          Alert.alert(
+            format(
+              groupData.entity_type === Verbs.entityTypeClub &&
+                authContext.entity.role === Verbs.entityTypeTeam
+                ? strings.alertTitle6
+                : strings.alertTitle1,
+              groupData.group_name,
+            ),
+          );
         }, 10);
       })
       .catch((error) => {
@@ -762,11 +677,15 @@ const GroupHomeScreen = ({
     declineRequest(requestId, authContext)
       .then(() => {
         setLoading(false);
+        setCurrentUserData({
+          ...currentUserData,
+          invite_request: {
+            ...currentUserData.invite_request,
+            action: Verbs.declineVerb,
+          },
+        });
         setTimeout(() => {
-          Alert.alert(
-            strings.alertmessagetitle,
-            strings.declinedRequestMessage,
-          );
+          Alert.alert(strings.alertTitle5);
         }, 10);
       })
       .catch((error) => {
@@ -1173,40 +1092,19 @@ const GroupHomeScreen = ({
         });
         break;
 
-      // case strings.member:
-      //   clubLeaveTeam();
-      //   break;
-
+      case strings.removeTeamFromClub:
       case strings.joining:
-        if (
-          authContext.entity.role === Verbs.entityTypePlayer ||
-          authContext.entity.role === Verbs.entityTypeUser
-        ) {
-          userLeaveGroup();
-        } else {
-          clubLeaveTeam();
-        }
+      case strings.leaveClub:
+      case strings.leaveTeam:
+        userLeaveGroup();
         break;
-
-      // case strings.requestSent:
-      //   break;
-
-      // case strings.invitePending:
-      //   break;
 
       case strings.invite:
         clubInviteTeam();
         break;
 
       case strings.join:
-        if (
-          authContext.entity.role === Verbs.entityTypePlayer ||
-          authContext.entity.role === Verbs.entityTypeUser
-        ) {
-          userJoinGroup();
-        } else {
-          clubJoinTeam();
-        }
+        userJoinGroup();
         break;
 
       case strings.following:
@@ -1234,23 +1132,25 @@ const GroupHomeScreen = ({
         break;
 
       case strings.acceptInvite:
-        onAccept(groupData.invite_request.activity_id);
+      case strings.acceptRequest:
+        onAccept(currentUserData.invite_request.activity_id);
         break;
 
       case strings.declineInvite:
-        onDecline(groupData.invite_request.activity_id);
+        onDecline(currentUserData.invite_request.activity_id);
         break;
 
       case strings.acceptInvitateRequest:
-        onAccept(groupData.invite_request.activity_id);
+        onAccept(currentUserData.invite_request.activity_id);
         break;
 
       case strings.declineMemberRequest:
-        onDecline(groupData.invite_request.activity_id);
+        onDecline(currentUserData.invite_request.activity_id);
         break;
 
-      case strings.leaveTeamFromClub:
-        clubLeaveTeam();
+      case strings.cancelInvite:
+      case strings.cancelRequestText:
+        cancelGroupInvitation(action);
         break;
 
       default:
