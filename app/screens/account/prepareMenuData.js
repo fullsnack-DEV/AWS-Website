@@ -102,16 +102,77 @@ const paymentMethodMenu = () => [
           },
         },
       },
-      {
-        option: strings.invoicesTitle,
-        icon: images.Invoicing,
-        navigateTo: {
-          screenName: 'UserInvoiceScreen',
-        },
-      },
     ],
   },
 ];
+
+const invoicesMenuForUser = () =>  [
+    {
+      key: strings.invoicesTitle,
+      icon: images.invoiceIcon,
+      member: [
+        {
+          option: strings.invoicereceived,
+          icon: images.invoiceIcon,
+          navigateTo: {
+            screenName: 'Account',
+            data: {
+              screen: 'PaymentMethodsScreen',
+              params: {
+                comeFrom: 'AccountScreen',
+              },
+            },
+          },
+        },
+        {
+          option: strings.invoicesent,
+          icon: images.invoiceIcon,
+          navigateTo: {
+            screenName: 'PayoutMethodList',
+            data: {
+              comeFrom: 'AccountScreen',
+            },
+          },
+        },
+      ],
+    },
+  ];
+
+const invoicesMenuForGroup = () =>  [
+    {
+      key: strings.invoicesTitle,
+      icon: images.invoiceIcon,
+      member: [
+        {
+          option: strings.sendnewinvoice,
+          icon: images.invoiceIcon,
+        },
+        {
+          option: strings.invoicereceived,
+          icon: images.invoiceIcon,
+          navigateTo: {
+            screenName: 'Account',
+            data: {
+              screen: 'InvoiceScreen',
+              params: {
+                comeFrom: 'AccountScreen',
+              },
+            },
+          },
+        },
+        {
+          option: strings.invoicesent,
+          icon: images.invoiceIcon,
+          navigateTo: {
+            screenName: 'InvoiceScreen',
+            data: {
+              comeFrom: 'AccountScreen',
+            },
+          },
+        },
+      ],
+    },
+  ];
 
 export const prepareUserMenu = (authContext, teams, clubs, baseUrl) => {
   const userMenu = [
@@ -217,6 +278,7 @@ export const prepareUserMenu = (authContext, teams, clubs, baseUrl) => {
         },
       ],
     },
+    ...invoicesMenuForUser(),
     ...paymentMethodMenu(),
     {
       key: strings.settingsTitleText,
@@ -269,15 +331,16 @@ export const prepareTeamMenu = (authContext, teams, clubs) => {
       icon: images.accountMyClubs,
       member: [
         ...prepareGroupsSubMenu(clubs),
-        {
-          option: strings.createClubText,
-          icon: images.createClub,
-          navigateTo: {
-            screenName: 'CreateClubForm1',
-          },
-        },
+        // {
+        //   option: strings.createClubText,
+        //   icon: images.createClub,
+        //   navigateTo: {
+        //     screenName: 'CreateClubForm1',
+        //   },
+        // },
       ],
     },
+    ...invoicesMenuForGroup(),
     ...paymentMethodMenu(),
     {
       key: strings.settingsTitleText,
@@ -315,7 +378,7 @@ export const prepareClubMenu = (authContext, teams, clubs) => {
         {option: strings.createTeamText, icon: images.createTeam},
       ],
     },
-
+    ...invoicesMenuForGroup(),
     ...paymentMethodMenu(),
     {
       key: strings.settingsTitleText,

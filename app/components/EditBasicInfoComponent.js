@@ -1,12 +1,12 @@
 // @flow
-import moment from 'moment';
+
 import React, {useState} from 'react';
 import {
   View,
   StyleSheet,
   Text,
   TextInput,
-  Platform,
+  // Platform,
   Image,
   Pressable,
 } from 'react-native';
@@ -15,7 +15,7 @@ import {strings} from '../../Localization/translation';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import images from '../Constants/ImagePath';
-import {getJSDate} from '../utils';
+
 import {heightMesurement, weightMesurement} from '../utils/constant';
 import AddressLocationModal from './AddressLocationModal/AddressLocationModal';
 import TCCountryCodeModal from './TCCountryCodeModal';
@@ -31,6 +31,7 @@ const EditBasicInfoComponent = ({
     country: 'Canada',
   });
   const [visibleAddressModal, setVisibleAddressModal] = useState(false);
+
   const handleLocation = (_location) => {
     const obj = {...userInfo};
     obj.state_full = _location.state_full;
@@ -58,16 +59,21 @@ const EditBasicInfoComponent = ({
                 {`${selectedCountryCode.country} (+${selectedCountryCode.code})`}
               </Text>
             </View>
-            <View style={{width: 20, height: 20}}>
+            <View style={{width: 10, height: 10}}>
               <Image
                 source={images.dropDownArrow}
-                style={{width: '100%', height: '100%', resizeMode: 'contain'}}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  resizeMode: 'contain',
+                  tintColor: colors.lightBlackColor,
+                }}
               />
             </View>
           </Pressable>
           <View style={{flex: 1, marginLeft: 8}}>
             <TextInput
-              placeholder={strings.phoneNumber}
+              placeholder={strings.phone}
               style={styles.inputField}
               keyboardType={'phone-pad'}
               onChangeText={(text) => {
@@ -102,16 +108,21 @@ const EditBasicInfoComponent = ({
               {`${selectedCountryCode.country} (+${selectedCountryCode.code})`}
             </Text>
           </View>
-          <View style={{width: 20, height: 20}}>
+          <View style={{width: 10, height: 10}}>
             <Image
               source={images.dropDownArrow}
-              style={{width: '100%', height: '100%', resizeMode: 'contain'}}
+              style={{
+                width: '100%',
+                height: '100%',
+                resizeMode: 'contain',
+                tintColor: colors.lightBlackColor,
+              }}
             />
           </View>
         </Pressable>
         <View style={{flex: 1, marginLeft: 8}}>
           <TextInput
-            placeholder={strings.phoneNumber}
+            placeholder={strings.phone}
             style={styles.inputField}
             keyboardType={'phone-pad'}
             onChangeText={(text) => {
@@ -140,9 +151,14 @@ const EditBasicInfoComponent = ({
         <Text
           style={[
             styles.titleText,
-            {fontFamily: fonts.RRegular, marginBottom: 0},
+            {
+              fontFamily: fonts.RRegular,
+              marginBottom: 0,
+              textTransform: 'capitalize',
+            },
           ]}>
-          {userInfo.gender.charAt(0).toUpperCase() + userInfo.gender.slice(1)}
+          {userInfo.gender}
+          {/* {userInfo.gender.charAt(0).toUpperCase() + userInfo.gender.slice(1)} */}
         </Text>
       </View>
 
@@ -155,7 +171,7 @@ const EditBasicInfoComponent = ({
             styles.titleText,
             {fontFamily: fonts.RRegular, marginBottom: 0},
           ]}>
-          {moment(getJSDate(userInfo?.birthday)).format('MMM DD,YYYY')}
+          {userInfo?.birthday}
         </Text>
       </View>
 
@@ -266,6 +282,17 @@ const EditBasicInfoComponent = ({
       </View>
 
       <View style={{marginBottom: 30}}>
+        <Text style={styles.titleText}>
+          {strings.leaguesTitle.toUpperCase()}
+        </Text>
+        <TextInput
+          placeholder={strings.leaguesPlaceholder}
+          style={styles.inputField}
+          // value={}
+        />
+      </View>
+
+      <View style={{marginBottom: 30}}>
         <Text style={styles.titleText}>{strings.phone.toUpperCase()}</Text>
         {renderPhoneNumber()}
       </View>
@@ -277,14 +304,19 @@ const EditBasicInfoComponent = ({
         <Pressable
           onPress={() => {
             setVisibleAddressModal(true);
-          }}>
-          <TextInput
-            placeholder={strings.streetAddress}
-            pointerEvents="none"
-            editable={false}
-            value={userInfo.formattedAddress}
-            style={styles.inputField}
-          />
+          }}
+          style={styles.mailingContainer}>
+          <Text
+            style={[
+              styles.mailingText,
+              userInfo.formattedAddress || userInfo.street_address
+                ? {color: colors.lightBlackColor}
+                : {color: colors.userPostTimeColor},
+            ]}>
+            {userInfo.formattedAddress || userInfo.street_address
+              ? userInfo.formattedAddress || userInfo.street_address
+              : strings.address}
+          </Text>
         </Pressable>
       </View>
 
@@ -335,8 +367,10 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   inputField: {
+    height: 40,
     backgroundColor: colors.textFieldBackground,
-    paddingVertical: Platform.OS === 'android' ? 5 : 12,
+    // paddingVertical: Platform.OS === 'android' ? 5 : 12,
+    // paddingVertical: 12,
     paddingHorizontal: 10,
     borderRadius: 5,
     fontSize: 16,
@@ -354,6 +388,17 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  mailingContainer: {
+    backgroundColor: colors.textFieldBackground,
+    padding: 10,
+    borderRadius: 5,
+    justifyContent: 'center',
+  },
+  mailingText: {
+    fontSize: 16,
+    lineHeight: 23,
+    fontFamily: fonts.RRegular,
   },
 });
 export default EditBasicInfoComponent;

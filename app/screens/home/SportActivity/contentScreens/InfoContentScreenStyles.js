@@ -55,6 +55,11 @@ const styles = StyleSheet.create({
     color: colors.userPostTimeColor,
     fontFamily: fonts.RRegular,
   },
+  moreTextStyle: {
+    fontSize: 12,
+    color: colors.userPostTimeColor,
+    fontFamily: fonts.RRegular,
+  },
   modalParent: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.6)',

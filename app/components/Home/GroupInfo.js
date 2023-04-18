@@ -1,82 +1,112 @@
-import React, {useContext} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
   View,
   Text,
   StyleSheet,
   FlatList,
-  Image,
   Dimensions,
+  Pressable,
 } from 'react-native';
+import ReadMore from '@fawazahmed/react-native-read-more';
+import moment from 'moment';
 import Carousel from 'react-native-snap-carousel';
+import {format} from 'react-string-format';
 import {strings} from '../../../Localization/translation';
 import TCEditHeader from '../TCEditHeader';
 import {widthPercentageToDP} from '../../utils';
-
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
-import TCInfoField from '../TCInfoField';
 import * as Utility from '../../utils';
 import UserInfoGroupItem from './User/UserInfoGroupItem';
 import TCClubClipView from '../TCClubClipView';
-import NewsFeedDescription from '../newsFeed/NewsFeedDescription';
 import images from '../../Constants/ImagePath';
 import AuthContext from '../../auth/context';
 import EventMapView from '../Schedule/EventMapView';
-import TCThickDivider from '../TCThickDivider';
 import Verbs from '../../Constants/Verbs';
+import {getSportName} from '../../utils/sportsActivityUtils';
+import MemberList from './MemberList';
+import GroupIcon from '../GroupIcon';
 
 export default function GroupInfo({
   navigation,
-  membersList,
-  groupDetails,
-  isAdmin,
-  onGroupPress,
-  onGroupListPress,
+  membersList = [],
+  groupDetails = {},
+  isAdmin = false,
+  onGroupPress = () => {},
+  onGroupListPress = () => {},
 }) {
   const authContext = useContext(AuthContext);
+  const [sportName, setSportName] = useState('');
+  useEffect(() => {
+    if (groupDetails.entity_type === Verbs.entityTypeClub) {
+      if (groupDetails.sports?.length > 0) {
+        let name = '';
 
-  console.log('groupDetails?????', authContext);
-  const members =
-    groupDetails.joined_members && groupDetails.joined_members?.length > 0;
+        groupDetails.sports.forEach((item, index) => {
+          const sportname = getSportName(
+            item.sport,
+            item.sport_type,
+            authContext.sports,
+          );
 
-  const renderTeam = ({item}) => (
-    <UserInfoGroupItem
-      title={item.group_name}
-      imageData={item.thumbnail ? {uri: item.thumbnail} : undefined}
-      entityType={'team'}
-      onGroupPress={() => {
-        console.log('renderTeam press');
-        if (onGroupPress) {
+          if (index < 4) {
+            name += index !== 0 ? `, ${sportname}` : sportname;
+          }
+        });
+
+        if (groupDetails.sports.length > 4) {
+          name += ` ${format(
+            strings.andMoreText,
+
+            groupDetails.sports.length - 4,
+          )}`;
+        }
+
+        setSportName(name);
+      } else {
+        setSportName('');
+      }
+    }
+  }, [groupDetails, authContext]);
+
+  const renderTeam = ({item, index}) => (
+    <>
+      <Pressable
+        style={{flexDirection: 'row', alignItems: 'center'}}
+        onPress={() => {
           onGroupPress(item);
-        }
-      }}
-    />
-  );
+        }}>
+        <GroupIcon
+          entityType={item.entity_type}
+          groupName={item.group_name}
+          imageUrl={groupDetails.thumbnail}
+        />
+        <View style={{marginLeft: 10}}>
+          <Text style={[styles.longTextStyle, {fontFamily: fonts.RMedium}]}>
+            {item.group_name}
+          </Text>
 
-  const renderMember = ({item}) => (
-    <View
-      style={{
-        height: 37,
-        width: 37,
-        resizeMode: 'contain',
-        borderRadius: 74,
-        shadowColor: colors.googleColor,
-        shadowOffset: {width: 0, height: 1},
-        shadowOpacity: 0.5,
-        shadowRadius: 2,
-        elevation: 13,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: colors.whiteColor,
-        margin: 5,
-      }}>
-      <Image
-        source={
-          item?.thumbnail ? {uri: item?.thumbnail} : images.profilePlaceHolder
-        }
-        style={{height: 35, width: 35, resizeMode: 'contain', borderRadius: 70}}
-      />
-    </View>
+          <Text
+            style={{
+              fontSize: 14,
+              lineHeight: 21,
+              fontFamily: fonts.RRegular,
+              color: colors.lightBlackColor,
+            }}>{`${Utility.displayLocation(
+            groupDetails,
+          )} · ${sportName}`}</Text>
+        </View>
+      </Pressable>
+      {index !== groupDetails.joined_teams.length - 1 ? (
+        <View
+          style={{
+            height: 1,
+            backgroundColor: colors.grayBackgroundColor,
+            marginVertical: 15,
+          }}
+        />
+      ) : null}
+    </>
   );
 
   const renderLeague = ({item}) => (
@@ -95,8 +125,6 @@ export default function GroupInfo({
   let homefield = groupDetails.homefield_address;
 
   let memberage = strings.NA;
-  let membershipregfee = strings.NA;
-  let membershipfee = strings.NA;
 
   if (!groupDetails.office_address) {
     office = isAdmin ? strings.addoffice : strings.NA;
@@ -152,34 +180,6 @@ export default function GroupInfo({
     memberage = `${strings.minPlaceholder} ${groupDetails.min_age}`;
   }
 
-  if (groupDetails.registration_fee) {
-    membershipregfee = `${groupDetails.registration_fee} ${Verbs.CAD}`;
-  }
-
-  if (groupDetails.membership_fee) {
-    membershipfee = `${groupDetails.membership_fee} ${Verbs.CAD}`;
-    if (groupDetails.membership_fee_type === 'weekly') {
-      membershipfee = `${membershipfee}/${strings.week}`;
-    } else if (groupDetails.membership_fee_type === 'biweekly') {
-      membershipfee = `${membershipfee}/${strings.biweek}`;
-    } else if (groupDetails.membership_fee_type === 'monthly') {
-      membershipfee = `${membershipfee}/${strings.month}`;
-    } else if (groupDetails.membership_fee_type === 'yealy') {
-      membershipfee = `${membershipfee}/${strings.year}`;
-    }
-  }
-
-  const onTeamListPress = () => {
-    if (onGroupListPress) {
-      onGroupListPress(groupDetails.joined_teams, 'team');
-    }
-  };
-
-  const signUpString = (signUpDate) =>
-    `${Utility.monthNames[new Date(signUpDate * 1000).getMonth()]} ${new Date(
-      signUpDate * 1000,
-    ).getDate()}, ${new Date(signUpDate * 1000).getFullYear()}`;
-
   const renderVenues = ({item}) => {
     console.log('venue item:=>', item);
     return (
@@ -197,7 +197,7 @@ export default function GroupInfo({
   };
 
   return (
-    <View style={{flex: 1}}>
+    <View style={{flex: 1, paddingTop: 20}}>
       {/* Bio section */}
       <View style={styles.sectionStyle}>
         <TCEditHeader
@@ -209,28 +209,24 @@ export default function GroupInfo({
             });
           }}
         />
-        <View style={{marginTop: 15}}>
-          {groupDetails.bio && (
-            <NewsFeedDescription
-              descriptions={groupDetails.bio}
-              character={200}
-              descriptionTxt={styles.longTextStyle}
-              descText={styles.moreTextStyle}
-            />
-          )}
-        </View>
-        <View style={{marginTop: 5}}>
-          <Text
-            style={{
-              fontSize: 12,
-              fontFamily: fonts.RLight,
-              color: colors.userPostTimeColor,
-              marginLeft: 10,
-            }}>
-            {strings.signedupin}
-            {signUpString(groupDetails.createdAt)}
-          </Text>
-        </View>
+
+        {groupDetails.bio && (
+          <ReadMore
+            numberOfLines={7}
+            style={styles.longTextStyle}
+            seeMoreText={strings.moreText}
+            seeLessText={strings.lessText}
+            seeLessStyle={styles.moreLessText}
+            seeMoreStyle={styles.moreLessText}>
+            {groupDetails.bio}
+          </ReadMore>
+        )}
+
+        <Text style={[styles.moreLessText, {marginTop: 5}]}>
+          {strings.signedupin}
+          {moment(Utility.getJSDate(groupDetails.createdAt)).format('YYYY')}
+        </Text>
+
         {groupDetails.club && (
           <View
             style={{
@@ -248,9 +244,8 @@ export default function GroupInfo({
           </View>
         )}
       </View>
-      {/* Gray divider */}
-      <View
-        style={{height: 7, backgroundColor: colors.grayBackgroundColor}}></View>
+
+      <View style={styles.dividor} />
 
       {/* Basic Info section */}
       <View style={styles.sectionStyle}>
@@ -264,131 +259,182 @@ export default function GroupInfo({
           }}
         />
 
-        <TCInfoField
-          title={strings.sport}
-          value={
-            groupDetails.sports_string
-              ? groupDetails.sports_string
-              : Utility.getSportName(groupDetails, authContext)
-          }
-          marginLeft={10}
-          marginTop={20}
-        />
-        <TCInfoField
-          title={strings.membersgender}
-          value={
-            groupDetails.gender
-              ? Utility.capitalize(groupDetails.gender)
-              : groupDetails.gender
-          }
-          marginLeft={10}
-        />
-        <TCInfoField
-          title={strings.membersage}
-          value={memberage}
-          marginLeft={10}
-        />
-        <TCInfoField
-          title={strings.language}
-          value={groupDetails.language?.toString() ?? strings.NAText}
-          marginLeft={10}
-        />
-        <TCInfoField
-          title={strings.officeAddress}
-          value={groupDetails.office_address}
-          marginLeft={10}
-        />
+        <View style={styles.row}>
+          <View style={styles.col}>
+            <Text style={[styles.longTextStyle, {fontFamily: fonts.RMedium}]}>
+              {strings.sport}
+            </Text>
+          </View>
+          <View style={styles.col}>
+            <Text style={styles.longTextStyle}>
+              {groupDetails.entity_type === Verbs.entityTypeClub
+                ? groupDetails.sports_string
+                : getSportName(
+                    groupDetails.sport,
+                    groupDetails.sport_type,
+                    authContext.sports,
+                  )}
+            </Text>
+          </View>
+        </View>
+
+        <View style={styles.row}>
+          <View style={styles.col}>
+            <Text style={[styles.longTextStyle, {fontFamily: fonts.RMedium}]}>
+              {strings.homeCity}
+            </Text>
+          </View>
+          <View style={styles.col}>
+            <Text style={styles.longTextStyle}>{groupDetails.city}</Text>
+          </View>
+        </View>
+
+        <View style={styles.row}>
+          <View style={styles.col}>
+            <Text style={[styles.longTextStyle, {fontFamily: fonts.RMedium}]}>
+              {strings.membersgender}
+            </Text>
+          </View>
+          <View style={styles.col}>
+            <Text style={styles.longTextStyle}>
+              {groupDetails.gender
+                ? Utility.capitalize(groupDetails.gender)
+                : '--'}
+            </Text>
+          </View>
+        </View>
+
+        <View style={styles.row}>
+          <View style={styles.col}>
+            <Text style={[styles.longTextStyle, {fontFamily: fonts.RMedium}]}>
+              {strings.membersage}
+            </Text>
+          </View>
+          <View style={styles.col}>
+            <Text style={styles.longTextStyle}>{memberage}</Text>
+          </View>
+        </View>
+
+        <View style={[styles.row, {marginBottom: 0}]}>
+          <View style={styles.col}>
+            <Text style={[styles.longTextStyle, {fontFamily: fonts.RMedium}]}>
+              {strings.languages}
+            </Text>
+          </View>
+          <View style={styles.col}>
+            <Text style={styles.longTextStyle}>
+              {groupDetails.language?.toString() ?? '--'}
+            </Text>
+          </View>
+        </View>
       </View>
-      {/* Gray divider */}
-      <View
-        style={{height: 7, backgroundColor: colors.grayBackgroundColor}}></View>
+      <View style={styles.dividor} />
+
+      {/* Home facility */}
+      {groupDetails.entity_type === Verbs.entityTypeTeam && (
+        <>
+          <View style={styles.sectionStyle}>
+            <TCEditHeader
+              title={strings.homeFacility}
+              showEditButton={isAdmin}
+            />
+          </View>
+          <View style={styles.dividor} />
+        </>
+      )}
 
       {/* Members list section */}
-      {groupDetails.entity_type === 'team' && (
+      <View style={styles.sectionStyle}>
+        <TCEditHeader
+          title={strings.membersTitle}
+          showEditButton={isAdmin}
+          showSeeAll
+          onSeeAll={() => {
+            navigation.navigate('GroupMembersScreen', {
+              groupObj: groupDetails,
+              groupID: groupDetails.group_id,
+              fromProfile: true,
+            });
+          }}
+        />
+        <MemberList
+          list={membersList}
+          isAdmin={isAdmin}
+          onPressMember={(groupObject) => {
+            navigation.push('HomeScreen', {
+              uid: groupObject?.group_id,
+              role: groupObject?.entity_type,
+            });
+          }}
+          onPressMore={() => {
+            navigation.navigate('GroupMembersScreen', {
+              groupObj: groupDetails,
+              groupID: groupDetails.group_id,
+              fromProfile: true,
+            });
+          }}
+        />
+      </View>
+      <View style={styles.dividor} />
+
+      {/* TC Point section */}
+      {groupDetails.entity_type === Verbs.entityTypeTeam && (
         <View>
           <View style={styles.sectionStyle}>
             <TCEditHeader
-              showNextArrow={true}
-              title={strings.membersTitle}
-              showEditButton={isAdmin}
-              // subTitle={groupDetails.setting?.game_fee?.fee ? `$${groupDetails.setting?.game_fee?.fee} ${groupDetails.setting?.game_fee?.currency_type} / match` : strings.NAText}
-              subTitleTextStyle={{
-                marginLeft: 28,
-                fontFamily: fonts.RRegular,
-                fontSize: 16,
-                color: colors.lightBlackColor,
-              }}
-              onEditPress={() => {
-                navigation.navigate('GroupMembersScreen', {
-                  groupObj: groupDetails,
-                  groupID: groupDetails.group_id,
-                  fromProfile: true,
-                });
-              }}
+              title={strings.tcLevelPointsText}
+              showEditButton={false}
+              // subTitle={`${groupDetails.point} P`}
+              onEditPress={() => {}}
             />
-            <FlatList
-              style={{marginTop: 15, backgroundColor: colors.whiteColor}}
-              data={membersList}
-              horizontal
-              renderItem={renderMember}
-              keyExtractor={(item) => item.group_id}
-              showsHorizontalScrollIndicator={false}
-            />
+
+            <View style={styles.row}>
+              <View style={styles.col}>
+                <Text
+                  style={[styles.longTextStyle, {fontFamily: fonts.RMedium}]}>
+                  {strings.tcLevel}
+                </Text>
+              </View>
+              <View style={[styles.col, {alignItems: 'flex-end'}]}>
+                <Text style={[styles.longTextStyle, {textAlign: 'right'}]}>
+                  {groupDetails.level ?? '--'}
+                </Text>
+              </View>
+            </View>
+            <View style={[styles.row, {marginBottom: 0}]}>
+              <View style={styles.col}>
+                <Text
+                  style={[styles.longTextStyle, {fontFamily: fonts.RMedium}]}>
+                  {strings.tcpoint}
+                </Text>
+              </View>
+              <View style={[styles.col, {alignItems: 'flex-end'}]}>
+                <Text style={[styles.longTextStyle, {textAlign: 'right'}]}>
+                  {groupDetails.point ?? '--'}
+                </Text>
+              </View>
+            </View>
           </View>
-          <View
-            style={{
-              height: 7,
-              backgroundColor: colors.grayBackgroundColor,
-            }}></View>
+          <View style={styles.dividor} />
         </View>
       )}
 
-      {/* match fee section */}
-      {groupDetails.entity_type === 'team' && (
-        <View>
+      {/* TC Ranking */}
+      {groupDetails.entity_type === Verbs.entityTypeTeam && (
+        <>
           <View style={styles.sectionStyle}>
-            <TCEditHeader
-              // iconImage={images.myClubs}
-              title={strings.matchAmountTitle}
-              showEditButton={isAdmin}
-              subTitle={
-                groupDetails.setting?.game_fee?.fee
-                  ? `$${groupDetails.setting?.game_fee?.fee} ${groupDetails.setting?.game_fee?.currency_type} / match`
-                  : strings.NAText
-              }
-              subTitleTextStyle={{
-                marginLeft: 28,
-                fontFamily: fonts.RRegular,
-                fontSize: 16,
-                color: colors.lightBlackColor,
-              }}
-              onEditPress={() => {
-                navigation.navigate('GameFee', {
-                  settingObj: groupDetails.setting,
-                  comeFrom: 'EntityInfoScreen',
-                  sportName: groupDetails.sport,
-                });
-              }}
-            />
+            <TCEditHeader title={strings.tcranking} showEditButton={isAdmin} />
           </View>
-          <View
-            style={{
-              height: 7,
-              backgroundColor: colors.grayBackgroundColor,
-            }}></View>
-        </View>
+          <View style={styles.dividor} />
+        </>
       )}
 
-      {groupDetails.entity_type === 'team' && (
+      {/* Match Venues */}
+      {groupDetails.entity_type === Verbs.entityTypeTeam && (
         <View>
           <View style={styles.sectionStyle}>
             <TCEditHeader
-              title={
-                groupDetails.setting?.venue &&
-                groupDetails.setting.venue.length > 1
-                  ? strings.availableVenuesForMatch
-                  : strings.availableVenues
-              }
+              title={strings.matchVenues}
               showEditButton={isAdmin}
               onEditPress={() => {
                 navigation.navigate('Venue', {
@@ -420,114 +466,34 @@ export default function GroupInfo({
               {strings.noVenueFound}
             </Text>
           )}
-          <TCThickDivider marginTop={10} />
-        </View>
-      )}
-
-      {/* TC Point section */}
-      {groupDetails.entity_type === 'team' && (
-        <View>
-          <View style={styles.sectionStyle}>
-            <TCEditHeader
-              // iconImage={images.myClubs}
-              title={strings.tcpoint}
-              showEditButton={false}
-              subTitle={`${groupDetails.point} P`}
-              subTitleTextStyle={{
-                marginLeft: 28,
-                fontFamily: fonts.RRegular,
-                fontSize: 16,
-                color: colors.lightBlackColor,
-              }}
-              onEditPress={() => {}}
-            />
-          </View>
-          <View
-            style={{
-              height: 7,
-              backgroundColor: colors.grayBackgroundColor,
-            }}></View>
-        </View>
-      )}
-
-      {/* Members section */}
-      {members && (
-        <View>
-          <View style={[styles.sectionStyle, {marginHorizontal: 0}]}>
-            <TCEditHeader
-              containerStyle={{marginHorizontal: 15}}
-              title={strings.membersTitle}
-              showNextArrow={true}
-            />
-            <FlatList
-              style={{marginTop: 15, backgroundColor: colors.whiteColor}}
-              data={groupDetails.joined_members}
-              horizontal
-              renderItem={renderMember}
-              keyExtractor={(item) => item.group_id}
-              showsHorizontalScrollIndicator={false}
-            />
-          </View>
-          <View
-            style={{
-              height: 7,
-              backgroundColor: colors.grayBackgroundColor,
-            }}></View>
+          <View style={styles.dividor} />
         </View>
       )}
 
       {/* Leagues section */}
-      <View>
-        <View style={[styles.sectionStyle, {marginHorizontal: 0}]}>
-          <TCEditHeader
-            containerStyle={{marginHorizontal: 15}}
-            title={strings.leagues}
-            showNextArrow={true}
-          />
-          <FlatList
-            style={{marginTop: 15, backgroundColor: colors.whiteColor}}
-            data={groupDetails.joined_leagues}
-            horizontal
-            renderItem={renderLeague}
-            keyExtractor={(item) => item.group_id}
-            showsHorizontalScrollIndicator={false}
-          />
-        </View>
-        <View
-          style={{
-            height: 7,
-            backgroundColor: colors.grayBackgroundColor,
-          }}></View>
-      </View>
-
-      {/* Team section */}
-      {groupDetails.joined_teams && groupDetails.joined_teams.length > 0 && (
+      {groupDetails.entity_type === Verbs.entityTypeTeam && (
         <View>
           <View style={[styles.sectionStyle, {marginHorizontal: 0}]}>
-            <TCEditHeader
-              containerStyle={{marginHorizontal: 15}}
-              title={strings.teamstitle}
-              showNextArrow={true}
-              onNextArrowPress={onTeamListPress}
-            />
-            <FlatList
-              style={{marginTop: 15, backgroundColor: colors.whiteColor}}
-              data={groupDetails.joined_teams}
-              horizontal
-              renderItem={renderTeam}
-              keyExtractor={(item) => item.group_id}
-              showsHorizontalScrollIndicator={false}
-            />
+            <TCEditHeader title={strings.leagues} />
+            {groupDetails.joined_leagues?.length > 0 ? (
+              <FlatList
+                data={groupDetails.joined_leagues}
+                horizontal
+                renderItem={renderLeague}
+                keyExtractor={(item) => item.group_id}
+                showsHorizontalScrollIndicator={false}
+              />
+            ) : (
+              <Text style={styles.venuePlaceholderTitle}>
+                {strings.noVenueFound}
+              </Text>
+            )}
           </View>
-          {/* Gray divider */}
-          <View
-            style={{
-              height: 7,
-              backgroundColor: colors.grayBackgroundColor,
-            }}></View>
+          <View style={styles.dividor} />
         </View>
       )}
 
+      {/* Membership fees */}
       <View style={styles.sectionStyle}>
         <TCEditHeader
           title={strings.membershipFeesTitle}
@@ -538,28 +504,69 @@ export default function GroupInfo({
             });
           }}
         />
+        <View style={styles.row}>
+          <View style={styles.col}>
+            <Text style={[styles.longTextStyle, {fontFamily: fonts.RMedium}]}>
+              {strings.membershipfee}
+            </Text>
+          </View>
+          <View style={styles.col}>
+            <Text style={styles.longTextStyle}>
+              {groupDetails?.membership_fee
+                ? `${groupDetails.membership_fee} ${Verbs.cad}/${groupDetails.membership_fee_type}`
+                : '--'}
+            </Text>
+          </View>
+        </View>
 
-        <TCInfoField
-          title={strings.membershipregfee}
-          value={membershipregfee}
-          marginLeft={10}
-        />
-        <TCInfoField
-          title={strings.membershipfee}
-          value={membershipfee}
-          marginLeft={10}
-        />
+        <View style={[styles.row, {marginBottom: 0}]}>
+          <View style={styles.col}>
+            <Text style={[styles.longTextStyle, {fontFamily: fonts.RMedium}]}>
+              {strings.membershipregfee}
+            </Text>
+          </View>
+          <View style={styles.col}>
+            <Text style={styles.longTextStyle}>
+              {groupDetails?.registration_fee
+                ? `${groupDetails.registration_fee}/${Verbs.cad}`
+                : '--'}
+            </Text>
+          </View>
+        </View>
       </View>
-      {/* Gray divider */}
-      <View
-        style={{height: 7, backgroundColor: colors.grayBackgroundColor}}></View>
+      <View style={styles.dividor}></View>
+
+      {/* Team section */}
+      {groupDetails.joined_teams && groupDetails.joined_teams.length > 0 && (
+        <View>
+          <View style={styles.sectionStyle}>
+            <TCEditHeader
+              title={strings.teamstitle}
+              showSeeAll
+              onSeeAll={() => {
+                onGroupListPress(
+                  groupDetails.joined_teams,
+                  Verbs.entityTypeTeam,
+                );
+              }}
+            />
+            <FlatList
+              data={groupDetails.joined_teams}
+              renderItem={renderTeam}
+              keyExtractor={(item) => item.group_id}
+              showsVerticalScrollIndicator={false}
+            />
+          </View>
+          <View style={styles.dividor} />
+        </View>
+      )}
 
       {/* ByLaw section */}
       <View style={styles.sectionStyle}>
         <TCEditHeader
-          showNextArrow={true}
           title={strings.bylaw}
           showEditButton={isAdmin}
+          showSeeAll
           onEditPress={() => {
             navigation.navigate('GroupLongTextScreen', {
               groupDetails,
@@ -567,20 +574,19 @@ export default function GroupInfo({
             });
           }}
         />
-        <View style={{marginTop: 20}}>
-          {groupDetails.bylaw && (
-            <NewsFeedDescription
-              descriptions={groupDetails.bylaw}
-              character={200}
-              descriptionTxt={styles.longTextStyle}
-              descText={styles.moreTextStyle}
-            />
-          )}
-        </View>
+        {groupDetails.bylaw && (
+          <ReadMore
+            numberOfLines={7}
+            style={styles.longTextStyle}
+            seeMoreText={strings.moreText}
+            seeLessText={strings.lessText}
+            seeLessStyle={styles.moreLessText}
+            seeMoreStyle={styles.moreLessText}>
+            {groupDetails.bylaw}
+          </ReadMore>
+        )}
       </View>
-      {/* Gray divider */}
-      <View
-        style={{height: 7, backgroundColor: colors.grayBackgroundColor}}></View>
+      <View style={styles.dividor}></View>
     </View>
   );
 }
@@ -588,25 +594,15 @@ export default function GroupInfo({
 const styles = StyleSheet.create({
   sectionStyle: {
     flex: 1,
-    marginTop: 25,
-    marginBottom: 14,
-    marginHorizontal: 15,
+    paddingHorizontal: 15,
     backgroundColor: colors.whiteColor,
   },
-
   longTextStyle: {
     fontSize: 16,
+    lineHeight: 24,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
-
-    textAlign: 'justify',
   },
-  moreTextStyle: {
-    fontFamily: fonts.RLight,
-    fontSize: 12,
-    color: colors.userPostTimeColor,
-  },
-
   venueAddress: {
     fontFamily: fonts.RRegular,
     fontSize: 16,
@@ -639,6 +635,23 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.grayColor,
     textAlign: 'center',
-    marginBottom: 5,
+    marginBottom: 15,
   },
+  dividor: {
+    height: 7,
+    backgroundColor: colors.grayBackgroundColor,
+    marginVertical: 25,
+  },
+  moreLessText: {
+    fontSize: 12,
+    color: colors.userPostTimeColor,
+    fontFamily: fonts.RRegular,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 15,
+  },
+  col: {flex: 1, alignItems: 'flex-start'},
 });

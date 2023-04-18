@@ -28,6 +28,7 @@ import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 import {getUserSettings, saveUserSettings} from '../../../api/Users';
 import {strings} from '../../../../Localization/translation';
+import Verbs from '../../../Constants/Verbs';
 
 let image_url = '';
 
@@ -45,7 +46,6 @@ export default function ChangeSportsOrderScreen({navigation, route}) {
   });
 
   useEffect(() => {
-    console.log('AUTH CONTEXT', authContext.sports)
     const sportsList = [
       ...(authContext?.entity?.obj?.registered_sports?.filter(
         (obj) => obj.is_active,
@@ -62,8 +62,7 @@ export default function ChangeSportsOrderScreen({navigation, route}) {
       sport: obj.sport,
     }));
     const data = Utility.uniqueArray(res, 'sport');
-    console.log('resresres', data);
-
+    
     getUserSettings(authContext)
       .then((setting) => {
         console.log('Settings:=>', setting);
@@ -128,10 +127,19 @@ export default function ChangeSportsOrderScreen({navigation, route}) {
   const onSavePress = () => {
     setloading(true);
     if (addedSport.length > 0) {
-      const params = {
-        ...userSetting,
-        schedule_sport_filter: addedSport,
-      };
+      let params;
+      if([Verbs.entityTypeClub].includes(authContext.entity.role)) {
+        params = {
+          ...userSetting,
+          club_schedule_sport_filter: addedSport,
+        };
+      }else{
+        params = {
+          ...userSetting,
+          schedule_sport_filter: addedSport,
+        };
+      }
+
       saveUserSettings(params, authContext)
         .then((response) => {
           console.log('After save setting', response);

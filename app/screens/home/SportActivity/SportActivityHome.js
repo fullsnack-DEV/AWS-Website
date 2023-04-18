@@ -82,7 +82,6 @@ const SportActivityHome = ({navigation, route}) => {
           //   userDetails.roles = userRoles;
           // }
 
-
           const groupQuery = {
             query: {
               terms: {
@@ -475,6 +474,7 @@ const SportActivityHome = ({navigation, route}) => {
             menuBtnVisible: false,
           });
         }}
+        sportType={sportObj?.sport_type}
       />
 
       <ChallengeButton

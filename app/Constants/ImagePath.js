@@ -451,7 +451,6 @@ const images = {
   createMember: require('../assets/images/createMember.png'),
   unlinked: require('../assets/images/unlinked.png'),
   createTeamRoundIcon: require('../assets/images/createTeam.png'),
-  invoiceIcon: require('../assets/images/invvoice.png'),
   scoreBoardBackgroundImage: require('../assets/images/scoreboardBg.png'),
   moreOptions: require('../assets/images/moreOptions.png'),
   infoIcon: require('../assets/images/infoIcon.png'),
@@ -482,7 +481,10 @@ const images = {
   toggleList: require('../assets/images/toggle_list.png'),
 
   calenderToggle: require('../assets/images/upper-arrow.png'),
+
+  invoiceIcon: require('../assets/images/invoice.png'),
   xCircleImg: require('../assets/images/xCircle.png'),
+
 };
 
 export default images;

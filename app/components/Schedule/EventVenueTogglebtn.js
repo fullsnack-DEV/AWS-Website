@@ -37,7 +37,7 @@ export default function EventVenueTogglebtn({
             !online ? [styles.activeEventPrivacyText, activeEventPrivacyText] : 
             [styles.inactiveEventPrivacyText, inactiveEventPrivacyText]
           }>
-          {firstTabTitle}
+          {firstTabTitle} 
         </Text>
       </TouchableOpacity>
       <TouchableOpacity
@@ -63,17 +63,17 @@ export default function EventVenueTogglebtn({
 const styles = StyleSheet.create({
   eventPrivacyContianer: {
     flexDirection: 'row',
-    borderRadius: wp('1.5%'),
-    paddingHorizontal: wp('1%'),
+    borderRadius: wp('5%'),
+    paddingHorizontal: wp('2%'),
     paddingVertical: wp('1%'),
-    marginVertical: 10,
+    marginVertical: 15,
     width: wp('40%'),
     alignSelf: 'center',
-    height: 40,
+    height: 30,
     backgroundColor: colors.greeColor,
     position: 'absolute',
-    right: 0,
-    top: -15
+    right: 5,
+    top: -10
   },
   activeEventPricacy: {
     flex: 1,
@@ -81,23 +81,23 @@ const styles = StyleSheet.create({
 
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: wp('1.5%'),
+    borderRadius: wp('5%'),
   },
   inactiveEventPricacy: {
     flex: 1,
-    paddingVertical: hp('0.8'),
+    paddingVertical: hp('0.5'),
     alignItems: 'center',
   },
   activeEventPrivacyText: {
     color: colors.greeColor,
     fontFamily: fonts.RBold,
     letterSpacing: 0.5,
-    fontSize: 16,
+    fontSize: 11,
   },
   inactiveEventPrivacyText: {
     color: colors.grayColor,
     fontFamily: fonts.RBold,
     letterSpacing: 0.5,
-    fontSize: 16,
+    fontSize: 11,
   },
 });

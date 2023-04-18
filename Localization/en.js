@@ -1141,7 +1141,7 @@ export default {
   addLanguageText: 'en_Add language',
   clubNameText: 'en_Club name',
   homeCityText: 'en_Home city',
-  describeText: 'en_Describe',
+  describeText: 'en_Description',
   player: 'en_Player',
   parent: 'en_Parent (Guardian)',
   coach: 'en_Coach',
@@ -1398,7 +1398,7 @@ export default {
   attendeesMustRefundedText:
     'en_Attendees must be refunded if the event is canceled or rescheduled.',
   readPaymentPolicyText: 'en_\nRead payment policy for more information.',
-  additionalRefundPolicy: 'en_Additional Refund Policy',
+  additionalRefundPolicy: 'en_Add Additional Refund Policy',
   addColor: 'en_Add color',
 
   areYouSureQuitEditChallengeAvailibilityText:
@@ -1503,11 +1503,11 @@ export default {
 
   cancelRequestText: 'en_Cancel request',
   logOut: 'en_Log out',
-  teamCreateClubsText: 'en_When your team creates a club:',
-  yourTeamWillBelogText: 'en_\n• your team will belong to the club initially.',
-  teamCanLeaveClubText: 'en_\n• your team can leave the club anytime later.',
+  teamCreateClubsText: 'en_When your club creates a team:',
+  yourTeamWillBelogText: 'en_The team will belong to the club initially.',
+  teamCanLeaveClubText: 'en_The team can leave the club anytime later.',
   adminOfTeamWillClubAdminText:
-    'en_\n• the admins of your team will be the admins of the club initially.',
+    'en_The admins of your team will be the admins of the club initially.',
 
   account: 'en_Account',
   privacyText: 'en_Privacy',
@@ -2539,7 +2539,7 @@ export default {
   pleaseSelectLanguage: 'en_Please Select the Langauage',
   incomingChallengeSettingsTitleTeam:
     'en_Please review your team’s incoming challenge settings. These settings are only applicable to the match reservation when your team is the match host. When your team is the Challenger, the opponent’s incoming challenge settings Will be applied.',
-  createTeamModalTitle: 'en_What sport does the new team will play?',
+  createTeamModalTitle: 'en_What sport will the new team play?',
   congratsTeamCreated:
     'en_Congratulations! Vancouver Whitecaps FC has been created.',
   congratesSubTitle: 'en_Your account has been switched to {0}.  ',
@@ -2575,6 +2575,49 @@ export default {
 
   updateRecurringEvent: 'en_Update recurring event',
   deleteRecurringEvent: 'en_Delete recurring event',
+  alredyRequestSend: `en_You already sent a request to create a team with this player in {0}.`,
+  sentYouaRequest: `en_{0} sent you a request to create a team together. `,
+  respondToRequest: 'en_Respond to request',
+  areYouSureDeclineRequest: 'en_Are you sure you want to decline the request? ',
+  requestWasDeclined: 'en_The request Was alredy declined.',
+  thisRequestIsCancelled: 'en_This request was canceled.',
+  requestSendTo: 'en_Request sent to {0}',
+  teamWillGetCreated:
+    'en_The team will be created when {0} accepts your request to create a team together.',
+  teamCreationRequestSend: 'en_team-creating request Sent',
+  teamWillbeCreatedAcceptRequest:
+    'en_This team will be created when the team partner accepts your request.',
+  areYouSureTouWantToWithdrawRequest:
+    'en_Are you sure you want to withdraw the request to create the team?',
+  resendRequest: 'en_Resend Request',
+  declineRequest: 'en_Decline Request',
+  cancelTermination: 'en_Cancel Termination',
+  rejoin: 'en_Rejoin',
+  acceptRequet: 'en_Accept Request',
+  withDrawRequest: 'en_Withdraw Request',
+  goBack: 'en_Go Back',
+  cancelTerminateTxr: 'en_Cancel',
+  terminateText: 'en_Termination',
+  userJoinTeam:
+    'en_Great! You now rejoined to {0}. Your account has been switch to {0}',
+  playersAge: `en_PLAYER'S AGE `,
+  languageUsedBy: 'en_Languages used by the team',
+  sendRequesttxt1:
+    'en_The team will be created when the teampartner accept your request to create a team together.',
+  sendRequesttxt2:
+    'en_ You and your partner will be only the players in the team but you can allow other users to join your team as members, who may be parents, managers, supporters ect.',
+  sendRequesttxt3:
+    'en_ You and your partner will be the initial admins of the team, but you can add more admins of  the team later.',
+  sendRequestBtnTxt: 'en_SEND REQUEST',
+  requestSent: 'en_Request Sent',
+  sendrequestToCreateTeam: 'en_Send Request to Create Team',
+  responseToRequesttxt1:
+    'en_{0} sent you an request to create a team together. When you accept this request the team will be created ',
+  responseToRequesttxt2:
+    'en_{0} and you will be only the players in the team but you can allow other users to join your team as members, who may be parents, managers, supporters ect',
+  responseToRequesttxt3:
+    'en_{0} and you will be the initial admins of the team, but you can add more admins of the team later.',
+  fillInClubName: 'en_Please fill in the club name',
   emailText: 'en_E-MAIL',
   whatIsYourSlogan: 'en_What is your slogan?',
   teamText: 'en_Team',
@@ -2588,10 +2631,20 @@ export default {
   myFollowing: 'en_My Following',
   timeZoneDescription:
     'en_Date and time displayed in the app will follow the date and time settings of the device.',
-
+  inviteSent: 'en_Invite Sent',
+  unfollowText: 'en_Unfollow',
+  cancelMembershipInvitation: 'en_Cancel Membership Invitation',
+  requestPendingText: 'en_Request pending',
+  acceptInvitateRequest: 'en_Accept Membership Request',
+  declineMemberRequest: 'en_Decline Membership Request',
+  removeMemberFromTeamText: 'en_Remove Member From Team',
+  newTeamText: 'en_New Team',
+  invitePending: 'en_Invite Pending',
+  leaveTeamFromClub: 'en_Leave This Team  From Club',
   eventFilterOrganiserTitle: 'en_Organiser',
   eventFilterSportTitle: 'en_Sport',
   eventFilterNoneTitle: 'en_None',
+  eventFilterRoleTitle: 'en_Role',
   eventFilterRsvpText: 'en_RSVP',
   eventFilterRsvpAll: 'en_All',
   eventFilterRsvpGoing: 'en_Going',
@@ -2607,17 +2660,60 @@ export default {
 
   todayTitleText: 'en_Today',
   tomorrowTitleText: 'en_Tomorrow',
-
+  invoicereceived: 'en_Invoice Received',
+  invoicesent: 'en_Invoice Sent',
+  invoicessent: 'en_Invoices Sent',
+  sendnewinvoice: 'en_Send New Invoice',
+  datetimesetting:
+    'en_Date and time displayed in-app will match the date and time settings of the device.',
+  noneselected: 'None selected',
+  person: 'en_person',
+  people: 'en_people',
+  selected: 'en_selected',
+  group: 'en_group',
+  groups: 'en_groups',
+  maximuminvoicerecipientvalidation:
+    'en_You cannot select more than 75 recipients at once.',
+  selectallgroupmember: 'en_All Individual members ({0})',
+  selectallteam: 'en_All Teams ({0})',
+  noRecipient: 'en_No Recipient',
   filterAntTime: 'en_Anytime',
   filterToday: 'en_Today',
+  filterTomorrow: 'en_Tomorrow',
   filterYesterday: 'en_Yesterday',
   filterLast7Day: 'en_Last 7 days',
   filterThisMonth: 'en_This month',
   filterLastMonth: 'en_Last month',
+  filterNextMonth: 'en_Next month',
   filterPickaDate: 'en_Pick a date...',
   filterRandom: 'en_Random',
   filterLowtoHighRefereeFee: 'en_Low to High Referee Fee',
   filterHightoLowRefereeFee: 'High to Low Referee Fee',
   refereesAvailable: 'en_Referees Available',
   scoreKeeperAvailable: 'en_Scorekeepers Available',
+  filterNext7Day: 'en_Next 7 days',
+  refeeringText: 'Refeering',
+  scorekeeperingText: 'Scorekeepering',
+  onlineText: 'en_ONLINE',
+  andMoreText: 'en_& {0} more',
+  lessText: 'en_less',
+  cancelInvite: 'en_Cancel Invite',
+  inviteCanceled: 'en_Invite Canceled',
+  removeTeamFromClub: 'en_Remove Team from Club',
+  leaveClub: 'en_Leave Club',
+  alertTitle1: 'en_Congratualtions! You are now a member of "{0}".',
+  alertTitle2: 'en_Your join request is sent to "{0}". ',
+  alertTitle4: 'en_Request Canceled',
+  alertTitle5: 'en_Invite Declined',
+  alertTitle6: 'en_Congratualtions! Your team now joined "{0}". ',
+  actionsheetTitle3:
+    'en_You have sent a request to join “{0}”.\n Do you want to cancel it?',
+  actionsheetTitle6:
+    'en_Your team has sent a request to join “{0}”. Do you want to cancel it?',
+  actionsheetTitle8:
+    'en_Your club has invited  "{0}" to join your club. Do you want to cancel it?',
+  actionsheetTitle9: 'en_"{0}" has sent a request to join your club.',
+  leaveTeam: 'en_Leave Team',
+  leaguesPlaceholder: 'en_Languages you can communicate in',
+  updateText: 'en_Update',
 };

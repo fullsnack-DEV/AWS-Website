@@ -1,0 +1,427 @@
+// @flow
+import {useIsFocused} from '@react-navigation/native';
+import React, {
+  useCallback,
+  // useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import {View, StyleSheet, Text, TouchableOpacity, Image} from 'react-native';
+import ActionSheet from 'react-native-actionsheet';
+import {format} from 'react-string-format';
+import {strings} from '../../../Localization/translation';
+// import AuthContext from '../../auth/context';
+import BottomSheet from '../../components/modals/BottomSheet';
+import colors from '../../Constants/Colors';
+import fonts from '../../Constants/Fonts';
+import images from '../../Constants/ImagePath';
+import Verbs from '../../Constants/Verbs';
+import {getEntitySport} from '../../utils/sportsActivityUtils';
+
+const GroupHomeButton = ({
+  groupData = {},
+  loggedInEntity = {},
+  isAdmin = false,
+  onPress = () => {},
+}) => {
+  const [isAvailable, setIsAvailable] = useState(false);
+  const [options, setOptions] = useState([]);
+  const [options2, setOptions2] = useState([]);
+  const [options3, setOptions3] = useState([]);
+  const [showOptions, setShowOptions] = useState(false);
+  const [showOptions2, setShowOptions2] = useState(false);
+  const [showOptions3, setShowOptions3] = useState(false);
+  const [buttons, setButtons] = useState({
+    btn1: '',
+    btn2: '',
+    btn3: '',
+  });
+  const [actionSheetTitle, setActionSheetTitle] = useState('');
+
+  const isFocused = useIsFocused();
+  // const authContext = useContext(AuthContext);
+  const actionSheetRef = useRef();
+
+  useEffect(() => {
+    if (groupData.setting) {
+      setIsAvailable(groupData.setting.availibility === Verbs.on);
+    }
+  }, [groupData.setting]);
+
+  const checkIsRefereeOrScoreKeeper = useCallback(
+    (type) => {
+      const sportObj = getEntitySport({
+        user: loggedInEntity.obj,
+        role: type,
+        sportType: groupData?.sport_Type,
+        sport: groupData.sport,
+      });
+
+      if (sportObj?.sport) {
+        return true;
+      }
+      return false;
+    },
+    [groupData, loggedInEntity],
+  );
+
+  const getTeamButtons = useCallback(() => {
+    const obj = {};
+    if (
+      loggedInEntity.role === Verbs.entityTypePlayer ||
+      loggedInEntity.role === Verbs.entityTypeUser
+    ) {
+      if (groupData.is_following) {
+        obj.btn2 = strings.following;
+        setOptions2([strings.unfollowText]);
+      } else {
+        obj.btn2 = strings.follow;
+      }
+      const isReferee = checkIsRefereeOrScoreKeeper(Verbs.entityTypeReferee);
+      const isScorekeeper = checkIsRefereeOrScoreKeeper(
+        Verbs.entityTypeScorekeeper,
+      );
+      if (isScorekeeper || isReferee) {
+        obj.btn3 = '···';
+      }
+      const list = [];
+      if (isReferee) {
+        list.push(strings.refereeOffer);
+      }
+      if (isScorekeeper) {
+        list.push(strings.scorekeeperOffer);
+      }
+      setOptions3(list);
+
+      if (groupData.is_joined) {
+        obj.btn1 = strings.joining;
+        setOptions([strings.leaveTeam]);
+      } else if (groupData.invite_request?.action === Verbs.requestVerb) {
+        obj.btn1 = strings.requestSent;
+        setOptions([strings.cancelRequestText, strings.cancel]);
+        setActionSheetTitle(
+          format(strings.actionsheetTitle3, groupData.group_name),
+        );
+      } else if (groupData.invite_request?.action === Verbs.inviteVerb) {
+        obj.btn1 = strings.invitePending;
+        setOptions([strings.acceptInvite, strings.declineInvite]);
+      } else {
+        obj.btn1 = strings.join;
+      }
+    }
+    if (
+      loggedInEntity.role === Verbs.entityTypeTeam &&
+      isAvailable &&
+      groupData.sport === loggedInEntity.obj.sport &&
+      groupData.sport_type === loggedInEntity.obj.sport_Type
+    ) {
+      obj.btn1 = strings.challenge;
+      obj.btn2 = '';
+      obj.btn3 = '···';
+      setOptions3([strings.inviteToChallenge]);
+    }
+    if (loggedInEntity.role === Verbs.entityTypeClub) {
+      obj.btn2 = '';
+      obj.btn3 = '';
+      const teamId =
+        groupData.parent_groups?.length > 0
+          ? groupData.parent_groups.find((item) => item === loggedInEntity.uid)
+          : null;
+      if (teamId) {
+        obj.btn1 = strings.member;
+        setOptions([strings.removeTeamFromClub]);
+      } else if (groupData.invite_request?.action === Verbs.inviteVerb) {
+        obj.btn1 = strings.inviteSent;
+        setOptions([strings.cancelInvite, strings.cancel]);
+        setActionSheetTitle(
+          format(strings.actionsheetTitle8, loggedInEntity.obj.group_name),
+        );
+      } else if (groupData.invite_request?.action === Verbs.requestVerb) {
+        obj.btn1 = strings.requestPendingText;
+        setOptions([
+          strings.acceptRequet,
+          strings.cancelRequestText,
+          strings.cancel,
+        ]);
+        setActionSheetTitle(
+          format(strings.actionsheetTitle9, groupData.group_name),
+        );
+      } else {
+        obj.btn1 = strings.invite;
+      }
+    }
+    setButtons(obj);
+  }, [groupData, checkIsRefereeOrScoreKeeper, loggedInEntity, isAvailable]);
+
+  const getClubsBttons = useCallback(() => {
+    const obj = {};
+    if (
+      loggedInEntity.role === Verbs.entityTypePlayer ||
+      loggedInEntity.role === Verbs.entityTypeUser
+    ) {
+      if (groupData.is_following) {
+        obj.btn2 = strings.following;
+        setOptions2([strings.unfollowText]);
+      } else {
+        obj.btn2 = strings.follow;
+      }
+
+      if (groupData.is_joined) {
+        obj.btn1 = strings.joining;
+        setOptions([strings.leaveClub]);
+      } else if (groupData.invite_request?.action === Verbs.requestVerb) {
+        obj.btn1 = strings.requestSent;
+        setOptions([strings.cancelRequestText, strings.cancel]);
+        setActionSheetTitle(
+          format(strings.actionsheetTitle3, groupData.group_name),
+        );
+      } else if (groupData.invite_request?.action === Verbs.inviteVerb) {
+        obj.btn1 = strings.invitePending;
+        setOptions([strings.acceptInvite, strings.declineInvite]);
+      } else {
+        obj.btn1 = strings.join;
+      }
+    }
+    if (loggedInEntity.role === Verbs.entityTypeTeam) {
+      const teamId =
+        groupData.joined_teams?.length > 0
+          ? groupData.joined_teams.find(
+              (item) => item.group_id === loggedInEntity.uid,
+            )
+          : null;
+
+      if (teamId) {
+        obj.btn1 = strings.joining;
+        setOptions([strings.leaveClub]);
+      } else if (groupData.invite_request?.action === Verbs.inviteVerb) {
+        obj.btn1 = strings.invitePending;
+        setOptions([strings.acceptInvite, strings.declineInvite]);
+      } else if (groupData.invite_request?.action === Verbs.requestVerb) {
+        obj.btn1 = strings.requestSent;
+        setOptions([strings.cancelRequestText, strings.cancel]);
+        setActionSheetTitle(
+          format(strings.actionsheetTitle6, groupData.group_name),
+        );
+      } else {
+        obj.btn1 = strings.join;
+      }
+    }
+    if (loggedInEntity.role === Verbs.entityTypeClub) {
+      obj.btn1 = '';
+      obj.btn2 = '';
+      obj.btn3 = '';
+    }
+    setButtons(obj);
+  }, [groupData, loggedInEntity]);
+
+  const getButtonTitle = useCallback(async () => {
+    // if (!isAdmin) {
+    //   // this should be decided from action key
+    //   if (groupData.invite_request) {
+    //     if (groupData.invite_request.entity_type === Verbs.entityTypeUser) {
+    //       obj.btn1 = strings.requestSent;
+    //     } else if (
+    //       groupData.invite_request.entity_type === Verbs.entityTypeClub ||
+    //       groupData.invite_request.entity_type === Verbs.entityTypeTeam
+    //     ) {
+    //       obj.btn1 = strings.invitePending;
+    //     }
+    //   } else {
+    //     obj.btn1 = strings.join;
+    //   }
+    // }
+
+    if (isAdmin) {
+      setButtons({btn1: strings.editprofiletitle, btn2: '', btn3: ''});
+    } else if (groupData.entity_type === Verbs.entityTypeTeam) {
+      getTeamButtons();
+    } else if (groupData.entity_type === Verbs.entityTypeClub) {
+      getClubsBttons();
+    }
+  }, [groupData, isAdmin, getTeamButtons, getClubsBttons]);
+
+  useEffect(() => {
+    if (isFocused) {
+      getButtonTitle();
+    }
+  }, [isFocused, getButtonTitle]);
+
+  const handleButtonPress = (option) => {
+    switch (option) {
+      case strings.member:
+        setShowOptions(true);
+        break;
+
+      case strings.following:
+        setShowOptions2(true);
+        break;
+
+      case strings.inviteSent:
+      case strings.requestSent:
+      case strings.requestPendingText:
+        actionSheetRef.current.show();
+        break;
+
+      case strings.invitePending:
+        setShowOptions(true);
+        break;
+
+      case strings.joining:
+        setShowOptions(true);
+        // if (
+        //   authContext.entity.role === Verbs.entityTypePlayer ||
+        //   authContext.entity.role === Verbs.entityTypeUser
+        // ) {
+        // } else {
+        //   onPress(option);
+        // }
+        break;
+
+      default:
+        onPress(option);
+    }
+  };
+
+  return (
+    <View style={styles.buttonRow}>
+      {buttons.btn1 ? (
+        <TouchableOpacity
+          style={[
+            styles.buttonContainer,
+            {flex: 1},
+            !isAdmin &&
+            loggedInEntity.role === Verbs.entityTypeTeam &&
+            buttons.btn1 === strings.challenge
+              ? {marginRight: 7, backgroundColor: colors.themeColor}
+              : {},
+          ]}
+          onPress={() => handleButtonPress(buttons.btn1)}>
+          <Text
+            style={[
+              styles.buttonText,
+              !isAdmin &&
+              loggedInEntity.role === Verbs.entityTypeTeam &&
+              buttons.btn1 === strings.challenge
+                ? {color: colors.whiteColor}
+                : {},
+
+              buttons.btn1 === strings.join ||
+              buttons.btn1 === strings.invitePending
+                ? {color: colors.themeColor}
+                : {},
+            ]}>
+            {buttons.btn1}
+          </Text>
+          {buttons.btn1 === strings.joining ||
+          buttons.btn1 === strings.member ? (
+            <Image source={images.check} style={styles.checkImg} />
+          ) : null}
+        </TouchableOpacity>
+      ) : null}
+
+      {buttons.btn2 ? (
+        <TouchableOpacity
+          style={[
+            styles.buttonContainer,
+            {flex: 1},
+            buttons.btn3 ? {marginHorizontal: 7} : {marginLeft: 7},
+          ]}
+          onPress={() => {
+            handleButtonPress(buttons.btn2);
+          }}>
+          <Text
+            style={[
+              styles.buttonText,
+              buttons.btn1 === strings.follow ? {color: colors.themeColor} : {},
+            ]}>
+            {buttons.btn2}
+          </Text>
+          {buttons.btn2 === strings.following && (
+            <Image source={images.check} style={styles.checkImg} />
+          )}
+        </TouchableOpacity>
+      ) : null}
+
+      {buttons.btn3 ? (
+        <TouchableOpacity
+          style={[styles.buttonContainer, {paddingHorizontal: 8}]}
+          onPress={() => {
+            setShowOptions3(true);
+          }}>
+          <Text style={styles.buttonText}>{buttons.btn3}</Text>
+        </TouchableOpacity>
+      ) : null}
+
+      <BottomSheet
+        isVisible={showOptions}
+        closeModal={() => setShowOptions(false)}
+        optionList={options}
+        onSelect={(option) => {
+          setShowOptions(false);
+          handleButtonPress(option);
+        }}
+      />
+
+      <BottomSheet
+        isVisible={showOptions2}
+        closeModal={() => setShowOptions2(false)}
+        optionList={options2}
+        onSelect={(option) => {
+          setShowOptions2(false);
+          handleButtonPress(option);
+        }}
+      />
+
+      <BottomSheet
+        isVisible={showOptions3}
+        closeModal={() => setShowOptions3(false)}
+        optionList={options3}
+        onSelect={(option) => {
+          setShowOptions3(false);
+          handleButtonPress(option);
+        }}
+      />
+      <ActionSheet
+        title={actionSheetTitle}
+        ref={actionSheetRef}
+        options={options}
+        cancelButtonIndex={options.length - 1}
+        onPress={(index) => {
+          handleButtonPress(options[index]);
+        }}
+      />
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  buttonContainer: {
+    paddingVertical: 7,
+    backgroundColor: colors.grayBackgroundColor,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 5,
+    flexDirection: 'row',
+  },
+  buttonText: {
+    fontSize: 14,
+    lineHeight: 21,
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RBold,
+  },
+  buttonRow: {
+    marginHorizontal: 15,
+    marginBottom: 25,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  checkImg: {
+    width: 8,
+    height: 6,
+    resizeMode: 'contain',
+    tintColor: colors.lightBlackColor,
+    marginLeft: 5,
+  },
+});
+export default GroupHomeButton;

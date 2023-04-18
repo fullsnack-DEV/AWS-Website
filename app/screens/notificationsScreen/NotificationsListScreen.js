@@ -16,15 +16,13 @@ import {
   SectionList,
   Text,
   Alert,
-  ScrollView,
-  Dimensions,
   SafeAreaView,
   TouchableOpacity,
 } from 'react-native';
 import ActionSheet from 'react-native-actionsheet';
 import Moment from 'moment';
 import {useIsFocused} from '@react-navigation/native';
-import Modal from 'react-native-modal';
+import {format} from 'react-string-format';
 import PRNotificationDetailMessageItem from '../../components/notificationComponent/PRNotificationDetailMessageItem';
 import NotificationItem from '../../components/notificationComponent/NotificationItem';
 import PRNotificationInviteCell from '../../components/notificationComponent/PRNotificationInviteCell';
@@ -60,7 +58,7 @@ import {
 import {getUserDetails} from '../../api/Users';
 import {getGroupDetails} from '../../api/Groups';
 import NotificationListShimmer from '../../components/shimmer/account/NotificationListShimmer';
-import TCGradientButton from '../../components/TCGradientButton';
+
 import PRNotificationTeamInvite from '../../components/notificationComponent/PRNotificationTeamInvite';
 import PRNotificationDetailItem from '../../components/notificationComponent/PRNotificationDetailItem';
 import RefereeReservationStatus from '../../Constants/RefereeReservationStatus';
@@ -68,8 +66,12 @@ import ScorekeeperReservationStatus from '../../Constants/ScorekeeperReservation
 import {getEventById} from '../../api/Schedule';
 import TCInnerLoader from '../../components/TCInnerLoader';
 import errorCode from '../../Constants/errorCode';
+import SendRequestModal from '../../components/SendRequestModal/SendRequestModal';
 
 function NotificationsListScreen({navigation}) {
+
+
+
   const actionSheet = useRef();
   const [currentTab, setCurrentTab] = useState();
   const [groupList, setGroupList] = useState([]);
@@ -83,6 +85,7 @@ function NotificationsListScreen({navigation}) {
   const [isRulesModalVisible, setIsRulesModalVisible] = useState(false);
   const [groupData, setGroupData] = useState();
   const isFocused = useIsFocused();
+  const [isNotificationListName, setIsNotificationListName] = useState(0)
 
   const [loading, setloading] = useState(false);
   const [firstTimeLoading, setFirstTimeLoading] = useState(true);
@@ -643,6 +646,7 @@ function NotificationsListScreen({navigation}) {
         getRequestDetail(groupId, authContext)
           .then((response) => {
             setloading(false);
+
             setGroupData(response.payload);
             setIsRulesModalVisible(true);
           })
@@ -884,6 +888,7 @@ function NotificationsListScreen({navigation}) {
   };
 
   const RenderSections = ({item, section}) => {
+   
     if (section.section === strings.pendingrequests) {
       return renderPendingRequestComponent({item: {...item, type: 'request'}});
     }
@@ -1124,12 +1129,43 @@ function NotificationsListScreen({navigation}) {
     }
   };
 
+  useEffect(()=>{
+
+    if(mainNotificationsList && mainNotificationsList.length){
+
+      setIsNotificationListName(mainNotificationsList.length)
+
+    }
+    
+  },[mainNotificationsList])
+
+
   return (
     <SafeAreaView style={{flex: 1}}>
       {firstTimeLoading && <NotificationListShimmer />}
 
       <ActivityLoader visible={loading} />
       {/* eslint-disable-next-line no-nested-ternary */}
+
+      <SendRequestModal
+        visibleRequestModal={isRulesModalVisible}
+        onClosePress={() => setIsRulesModalVisible(false)}
+        onNextPress={() => onNextPressed()}
+        groupData={groupData}
+        textstring1={format(
+          strings.responseToRequesttxt1,
+          groupData?.player2?.full_name,
+        )}
+        textstring2={format(
+          strings.responseToRequesttxt2,
+          groupData?.player2?.full_name,
+        )}
+        textstring3={format(
+          strings.responseToRequesttxt3,
+          groupData?.player2?.full_name,
+        )}
+        btntext={strings.nextTitle}
+      />
 
       {!firstTimeLoading && mainNotificationsList?.length > 0 && (
         <SectionList
@@ -1150,8 +1186,18 @@ function NotificationsListScreen({navigation}) {
                   flex: 1,
                   flexDirection: 'row',
                   justifyContent: 'space-between',
+               
                 }}>
+                  <View style={styles.subHeader}> 
                 <Text style={styles.header}>{section}</Text>
+                {
+                  section === strings.pendingrequests && (
+                    <View style={{backgroundColor:'red', borderRadius:20}}>
+                      <Text style={styles.popUp}>{isNotificationListName}+</Text>
+                    </View>
+                  )
+                }
+                </View>
                 {section === strings.pendingrequests && (
                   <Image source={images.nextArrow} style={styles.nextArrow} />
                 )}
@@ -1176,7 +1222,7 @@ function NotificationsListScreen({navigation}) {
           }}>
           <Text style={styles.noEventText}>{strings.noNotification}</Text>
           <Text style={styles.dataNotFoundText}>
-            {strings.newNotificationn}
+            {strings.newNotificationn} 
           </Text>
         </View>
       )}
@@ -1196,7 +1242,7 @@ function NotificationsListScreen({navigation}) {
       />
 
       {/* Rules notes modal */}
-      <Modal
+      {/* <Modal
         isVisible={isRulesModalVisible}
         onBackdropPress={() => setIsRulesModalVisible(false)}
         onRequestClose={() => setIsRulesModalVisible(false)}
@@ -1238,7 +1284,7 @@ function NotificationsListScreen({navigation}) {
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
               }}>
-              {strings.respondToInviteCreateTeam}
+              {strings.respondToInviteCreateTeam} 
             </Text>
           </View>
           <View style={styles.separatorLine} />
@@ -1265,7 +1311,7 @@ function NotificationsListScreen({navigation}) {
             onPress={onNextPressed}
           />
         </View>
-      </Modal>
+      </Modal> */}
     </SafeAreaView>
   );
 }
@@ -1285,6 +1331,25 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     alignContent: 'center',
   },
+  popUp: {
+    // backgroundColor: 'red',
+    fontFamily: fonts.RBold,
+    fontSize: 12,
+    padding: 0,
+    // alignContent: 'center',
+    width:30,
+    color: colors.whiteColor,
+    textAlign:'center',
+    // borderRadius:50
+  },
+
+  subHeader:{
+    display:'flex',
+    alignItems:'center',
+    gap:5,
+    flexDirection:'row'
+  },
+
   listItemSeparatorStyle: {
     height: 0.5,
     width: '92%',

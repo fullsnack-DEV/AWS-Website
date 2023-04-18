@@ -14,7 +14,7 @@ import {format} from 'react-string-format';
 import {strings} from '../../../../../Localization/translation';
 import {getGameStatsData, getStatsRDMData} from '../../../../api/Games';
 import BottomSheet from '../../../../components/modals/BottomSheet';
-import TeamCard from '../../../../components/TeamCard';
+// import TeamCard from '../../../../components/TeamCard';
 import colors from '../../../../Constants/Colors';
 import fonts from '../../../../Constants/Fonts';
 import images from '../../../../Constants/ImagePath';
@@ -242,208 +242,231 @@ const StatsContentScreen = ({sportType = '', sport, authContext, userId}) => {
           </View>
         )}
       </View>
-      {sportType === Verbs.singleSport ? (
-        <>
-          <View style={styles.dividor} />
-          {/* TC Level & Points */}
-          <View style={[styles.container, {paddingTop: 0}]}>
-            <Text style={[styles.title, {marginBottom: 15}]}>
-              {strings.tcLevelPointsText}
-            </Text>
-            <View style={[styles.row, {marginBottom: 15}]}>
-              <View>
-                <Text style={(styles.label, {marginBottom: 0})}>
-                  {strings.tcLevel}
-                </Text>
+      {
+        sportType === Verbs.singleSport ? (
+          <>
+            <View style={styles.dividor} />
+            {/* TC Level & Points */}
+            <View style={[styles.container, {paddingTop: 0}]}>
+              <Text style={[styles.title, {marginBottom: 15}]}>
+                {strings.tcLevelPointsText}
+              </Text>
+              <View style={[styles.row, {marginBottom: 15}]}>
+                <View>
+                  <Text style={(styles.label, {marginBottom: 0})}>
+                    {strings.tcLevel}
+                  </Text>
+                </View>
+                <View style={{alignItems: 'flex-end'}}>
+                  <Text
+                    style={
+                      (styles.label, {marginBottom: 0, textAlign: 'right'})
+                    }>
+                    0
+                  </Text>
+                </View>
               </View>
-              <View style={{alignItems: 'flex-end'}}>
-                <Text
-                  style={(styles.label, {marginBottom: 0, textAlign: 'right'})}>
-                  0
-                </Text>
+              <View style={styles.row}>
+                <View>
+                  <Text style={(styles.label, {marginBottom: 0})}>
+                    {strings.tcpoint}
+                  </Text>
+                </View>
+                <View style={{alignItems: 'flex-end'}}>
+                  <Text
+                    style={
+                      (styles.label, {marginBottom: 0, textAlign: 'right'})
+                    }>
+                    0
+                  </Text>
+                </View>
               </View>
             </View>
-            <View style={styles.row}>
-              <View>
-                <Text style={(styles.label, {marginBottom: 0})}>
-                  {strings.tcpoint}
-                </Text>
-              </View>
-              <View style={{alignItems: 'flex-end'}}>
-                <Text
-                  style={(styles.label, {marginBottom: 0, textAlign: 'right'})}>
-                  0
-                </Text>
-              </View>
-            </View>
-          </View>
-          <View style={styles.dividor} />
+            <View style={styles.dividor} />
 
-          {/* TC Ranking */}
-          <View style={[styles.container, {paddingTop: 0}]}>
-            <Text style={[styles.title, {marginBottom: 15}]}>
-              {strings.tcranking}
-            </Text>
-            <View style={[styles.row, {marginBottom: 15}]}>
-              <View>
-                <Text style={(styles.label, {marginBottom: 0})}>Vancouver</Text>
+            {/* TC Ranking */}
+            <View style={[styles.container, {paddingTop: 0}]}>
+              <Text style={[styles.title, {marginBottom: 15}]}>
+                {strings.tcranking}
+              </Text>
+              <View style={[styles.row, {marginBottom: 15}]}>
+                <View>
+                  <Text style={(styles.label, {marginBottom: 0})}>
+                    Vancouver
+                  </Text>
+                </View>
+                <View style={{alignItems: 'flex-end'}}>
+                  <Text
+                    style={
+                      (styles.label, {marginBottom: 0, textAlign: 'right'})
+                    }>
+                    7th
+                  </Text>
+                </View>
               </View>
-              <View style={{alignItems: 'flex-end'}}>
-                <Text
-                  style={(styles.label, {marginBottom: 0, textAlign: 'right'})}>
-                  7th
-                </Text>
+              <View style={[styles.row, {marginBottom: 15}]}>
+                <View>
+                  <Text style={(styles.label, {marginBottom: 0})}>BC</Text>
+                </View>
+                <View style={{alignItems: 'flex-end'}}>
+                  <Text
+                    style={
+                      (styles.label, {marginBottom: 0, textAlign: 'right'})
+                    }>
+                    24th
+                  </Text>
+                </View>
+              </View>
+              <View style={[styles.row, {marginBottom: 15}]}>
+                <View>
+                  <Text style={(styles.label, {marginBottom: 0})}>Canada</Text>
+                </View>
+                <View style={{alignItems: 'flex-end'}}>
+                  <Text
+                    style={
+                      (styles.label, {marginBottom: 0, textAlign: 'right'})
+                    }>
+                    100th
+                  </Text>
+                </View>
+              </View>
+              <View style={styles.row}>
+                <View>
+                  <Text style={(styles.label, {marginBottom: 0})}>
+                    {strings.world}
+                  </Text>
+                </View>
+                <View style={{alignItems: 'flex-end'}}>
+                  <Text
+                    style={
+                      (styles.label, {marginBottom: 0, textAlign: 'right'})
+                    }>
+                    -
+                  </Text>
+                </View>
               </View>
             </View>
-            <View style={[styles.row, {marginBottom: 15}]}>
-              <View>
-                <Text style={(styles.label, {marginBottom: 0})}>BC</Text>
-              </View>
-              <View style={{alignItems: 'flex-end'}}>
-                <Text
-                  style={(styles.label, {marginBottom: 0, textAlign: 'right'})}>
-                  24th
-                </Text>
-              </View>
-            </View>
-            <View style={[styles.row, {marginBottom: 15}]}>
-              <View>
-                <Text style={(styles.label, {marginBottom: 0})}>Canada</Text>
-              </View>
-              <View style={{alignItems: 'flex-end'}}>
-                <Text
-                  style={(styles.label, {marginBottom: 0, textAlign: 'right'})}>
-                  100th
-                </Text>
-              </View>
-            </View>
-            <View style={styles.row}>
-              <View>
-                <Text style={(styles.label, {marginBottom: 0})}>
-                  {strings.world}
-                </Text>
-              </View>
-              <View style={{alignItems: 'flex-end'}}>
-                <Text
-                  style={(styles.label, {marginBottom: 0, textAlign: 'right'})}>
-                  -
-                </Text>
-              </View>
-            </View>
-          </View>
-          <View style={styles.dividor} />
+            <View style={styles.dividor} />
 
-          {/* DM Rate */}
-          <View style={[styles.container, {paddingTop: 0}]}>
-            <View style={[styles.row, {marginBottom: 15}]}>
-              <View style={[styles.row, {justifyContent: 'center'}]}>
-                <Text style={styles.title}>{strings.dmRate}</Text>
-                <TouchableOpacity style={styles.infoIcon}>
-                  <Image source={images.infoIcon} style={styles.image} />
+            {/* DM Rate */}
+            <View style={[styles.container, {paddingTop: 0}]}>
+              <View style={[styles.row, {marginBottom: 15}]}>
+                <View style={[styles.row, {justifyContent: 'center'}]}>
+                  <Text style={styles.title}>{strings.dmRate}</Text>
+                  <TouchableOpacity style={styles.infoIcon}>
+                    <Image source={images.infoIcon} style={styles.image} />
+                  </TouchableOpacity>
+                </View>
+                <TouchableOpacity
+                  style={styles.dropDownContainer}
+                  onPress={() => setOptionModal(true)}>
+                  <Text style={styles.dropDownLabel}>
+                    {selectedMonthsDMRate}
+                  </Text>
+                  <Image
+                    source={images.dropDownArrow}
+                    style={{width: 10, height: 10, marginLeft: 5}}
+                  />
                 </TouchableOpacity>
               </View>
-              <TouchableOpacity
-                style={styles.dropDownContainer}
-                onPress={() => setOptionModal(true)}>
-                <Text style={styles.dropDownLabel}>{selectedMonthsDMRate}</Text>
-                <Image
-                  source={images.dropDownArrow}
-                  style={{width: 10, height: 10, marginLeft: 5}}
-                />
-              </TouchableOpacity>
-            </View>
 
-            <View style={{alignItems: 'center', marginBottom: 15}}>
-              <Text style={[styles.label, {marginBottom: 10}]}>
-                {strings.dmsText}/{strings.dtsText}
-              </Text>
-              <View style={styles.progressBar}>
-                <View
-                  style={[
-                    styles.progressBar,
-                    {
-                      width: `${dmPercentage}%`,
-                      backgroundColor: colors.googleColor,
-                    },
-                  ]}
-                />
-              </View>
-              <Text style={[styles.label, {marginTop: 10, marginBottom: 0}]}>
-                {dmRate?.total_games ? dmPercentage : 0}%
-              </Text>
-            </View>
-
-            <View style={[styles.row, {marginBottom: 15}]}>
-              <View>
-                <Text style={(styles.label, {marginBottom: 0})}>
-                  {strings.totalMatches}
+              <View style={{alignItems: 'center', marginBottom: 15}}>
+                <Text style={[styles.label, {marginBottom: 10}]}>
+                  {strings.dmsText}/{strings.dtsText}
+                </Text>
+                <View style={styles.progressBar}>
+                  <View
+                    style={[
+                      styles.progressBar,
+                      {
+                        width: `${dmPercentage}%`,
+                        backgroundColor: colors.googleColor,
+                      },
+                    ]}
+                  />
+                </View>
+                <Text style={[styles.label, {marginTop: 10, marginBottom: 0}]}>
+                  {dmRate?.total_games ? dmPercentage : 0}%
                 </Text>
               </View>
-              <View style={{alignItems: 'flex-end'}}>
-                <Text
-                  style={(styles.label, {marginBottom: 0, textAlign: 'right'})}>
-                  {dmRate?.approved_games ?? '-'}
-                </Text>
-              </View>
-            </View>
-            <View style={[styles.row, {marginBottom: 15}]}>
-              <View>
-                <Text style={(styles.label, {marginBottom: 0})}>
-                  {strings.dmsText}{' '}
-                  <Text style={styles.lightText}>
-                    ({strings.disputedMatches})
+
+              <View style={[styles.row, {marginBottom: 15}]}>
+                <View>
+                  <Text style={(styles.label, {marginBottom: 0})}>
+                    {strings.totalMatches}
                   </Text>
-                </Text>
-              </View>
-              <View style={{alignItems: 'flex-end'}}>
-                <Text
-                  style={(styles.label, {marginBottom: 0, textAlign: 'right'})}>
-                  {dmRate?.disapproved_games ?? '-'}
-                </Text>
-              </View>
-            </View>
-            <View
-              style={{
-                height: 2,
-                backgroundColor: colors.grayBackgroundColor,
-                marginBottom: 15,
-              }}
-            />
-            <View style={styles.row}>
-              <View>
-                <Text style={(styles.label, {marginBottom: 0})}>
-                  {strings.dtsText}{' '}
-                  <Text style={styles.lightText}>
-                    ({strings.dmsText} + {strings.totalMatches})
+                </View>
+                <View style={{alignItems: 'flex-end'}}>
+                  <Text
+                    style={
+                      (styles.label, {marginBottom: 0, textAlign: 'right'})
+                    }>
+                    {dmRate?.approved_games ?? '-'}
                   </Text>
-                </Text>
+                </View>
               </View>
-              <View style={{alignItems: 'flex-end'}}>
-                <Text
-                  style={(styles.label, {marginBottom: 0, textAlign: 'right'})}>
-                  {dmRate?.total_games ?? '-'}
-                </Text>
+              <View style={[styles.row, {marginBottom: 15}]}>
+                <View>
+                  <Text style={(styles.label, {marginBottom: 0})}>
+                    {strings.dmsText}{' '}
+                    <Text style={styles.lightText}>
+                      ({strings.disputedMatches})
+                    </Text>
+                  </Text>
+                </View>
+                <View style={{alignItems: 'flex-end'}}>
+                  <Text
+                    style={
+                      (styles.label, {marginBottom: 0, textAlign: 'right'})
+                    }>
+                    {dmRate?.disapproved_games ?? '-'}
+                  </Text>
+                </View>
+              </View>
+              <View
+                style={{
+                  height: 2,
+                  backgroundColor: colors.grayBackgroundColor,
+                  marginBottom: 15,
+                }}
+              />
+              <View style={styles.row}>
+                <View>
+                  <Text style={(styles.label, {marginBottom: 0})}>
+                    {strings.dtsText}{' '}
+                    <Text style={styles.lightText}>
+                      ({strings.dmsText} + {strings.totalMatches})
+                    </Text>
+                  </Text>
+                </View>
+                <View style={{alignItems: 'flex-end'}}>
+                  <Text
+                    style={
+                      (styles.label, {marginBottom: 0, textAlign: 'right'})
+                    }>
+                    {dmRate?.total_games ?? '-'}
+                  </Text>
+                </View>
               </View>
             </View>
-          </View>
-          <View style={styles.dividor} />
-        </>
-      ) : (
-        <View style={styles.teamList}>
-          <Text style={[styles.label, {fontFamily: fonts.RBold}]}>
-            {format(strings.playedInTeams, 1)}
-          </Text>
+            <View style={styles.dividor} />
+          </>
+        ) : null
+        // <View style={styles.teamList}>
+        //   <Text style={[styles.label, {fontFamily: fonts.RBold}]}>
+        //     {format(strings.playedInTeams, 1)}
+        //   </Text>
 
-          <TeamCard
-            item={{
-              group_name: 'Volleyball Whitecaps FC',
-              city: 'Bangkok, Thailand ',
-            }}
-            iconStyle={{backgroundColor: colors.whiteColor}}
-            locationTextStyle={{fontFamily: fonts.RBold, lineHeight: 24}}
-          />
-        </View>
-      )}
+        //   <TeamCard
+        //     item={{
+        //       group_name: 'Volleyball Whitecaps FC',
+        //       city: 'Bangkok, Thailand ',
+        //     }}
+        //     iconStyle={{backgroundColor: colors.whiteColor}}
+        //     locationTextStyle={{fontFamily: fonts.RBold, lineHeight: 24}}
+        //   />
+        // </View>
+      }
 
       <BottomSheet
         isVisible={showModal}

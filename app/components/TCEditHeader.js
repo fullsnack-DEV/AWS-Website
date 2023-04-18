@@ -1,10 +1,11 @@
 import React, {memo} from 'react';
-import {StyleSheet, View, Text} from 'react-native';
+import {StyleSheet, View, Text, Pressable} from 'react-native';
 
 import ImageButton from './WritePost/ImageButton';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import images from '../Constants/ImagePath';
+import {strings} from '../../Localization/translation';
 // import TCPopupMessage from './TCPopupMessage';
 
 function TCEditHeader({
@@ -22,21 +23,21 @@ function TCEditHeader({
   onNextArrowPress,
   showNextArrow,
   showEditButton,
+  showSeeAll,
+  textButtonStyle,
+  onSeeAll = () => {},
 }) {
   return (
     <View style={[styles.containerStyle, containerStyle]}>
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}>
-        <Text style={[styles.textStyle, textStyle]}>{title}</Text>
-        {/* <TCPopupMessage
-              visible={true}
-              message={'this tc warning message'}
-              arrowFromLeft={85}
-          /> */}
+      <View style={styles.row}>
+        <Text style={[styles.textStyle, textStyle]}>{title.toUpperCase()}</Text>
+        {subTitle && (
+          <Text style={[styles.subTitleTextStyle, subTitleTextStyle]}>
+            {subTitle}
+          </Text>
+        )}
+      </View>
+      <View style={styles.row}>
         {iconImage && (
           <ImageButton
             style={[
@@ -50,11 +51,7 @@ function TCEditHeader({
             onImagePress={onIconPress}
           />
         )}
-        {subTitle && (
-          <Text style={[styles.subTitleTextStyle, subTitleTextStyle]}>
-            {subTitle}
-          </Text>
-        )}
+
         {showNextArrow && (
           <ImageButton
             source={images.nextArrow}
@@ -70,29 +67,42 @@ function TCEditHeader({
             onImagePress={onNextArrowPress}
           />
         )}
+        {showSeeAll && (
+          <Pressable
+            onPress={onSeeAll}
+            style={[showEditButton ? {marginRight: 15} : {}, textButtonStyle]}>
+            <Text style={styles.buttonText}>{strings.seeAllText}</Text>
+          </Pressable>
+        )}
+        {showEditButton && (
+          <ImageButton
+            source={images.editPencil}
+            style={[styles.imageContainerStyle, imageContainerStyle]}
+            imageStyle={[styles.imageStyle, imageStyle]}
+            onImagePress={onEditPress}
+          />
+        )}
       </View>
-      {showEditButton && (
-        <ImageButton
-          source={images.editPencil}
-          style={[styles.imageContainerStyle, imageContainerStyle]}
-          imageStyle={[styles.imageStyle, imageStyle]}
-          onImagePress={onEditPress}
-        />
-      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   containerStyle: {
-    flex: 1,
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
-    marginVertical: 0,
+    marginBottom: 15,
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   textStyle: {
     fontSize: 20,
-    fontFamily: fonts.RRegular,
+    lineHeight: 30,
+    fontFamily: fonts.RBold,
     color: colors.lightBlackColor,
   },
   subTitleTextStyle: {
@@ -110,6 +120,13 @@ const styles = StyleSheet.create({
   imageStyle: {
     height: 20,
     width: 18,
+  },
+  buttonText: {
+    fontSize: 12,
+    lineHeight: 18,
+    fontFamily: fonts.RRegular,
+    textAlign: 'right',
+    color: colors.themeColor,
   },
 });
 

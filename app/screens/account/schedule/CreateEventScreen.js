@@ -27,7 +27,7 @@ import {
   // eslint-disable-next-line react-native/split-platform-components
 } from 'react-native';
 import moment from 'moment';
-import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import ActionSheet from 'react-native-actionsheet';
 
 import Modal from 'react-native-modal';
@@ -397,10 +397,11 @@ export default function CreateEventScreen({navigation, route}) {
       <View
         style={{
           padding: 20,
+          paddingHorizontal: 35,
           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'space-between',
-          marginRight: 15,
+          marginRight: 40,
         }}>
         <Text style={styles.languageList}>
           {getSportName(item, authContext)}
@@ -841,7 +842,8 @@ export default function CreateEventScreen({navigation, route}) {
       <View style={styles.sperateLine} />
       <TCKeyboardView>
         <ScrollView bounces={false} nestedScrollEnabled={true}>
-          <SafeAreaView>
+          <SafeAreaView style={{paddingHorizontal: 10, marginTop:10}}>
+        
             <EventBackgroundPhoto
               isEdit={!!backgroundThumbnail}
               isPreview={false}
@@ -852,6 +854,7 @@ export default function CreateEventScreen({navigation, route}) {
               }
               onPress={() => onBGImageClicked()}
             />
+            
             <EventTextInputItem
               title={strings.title}
               isRequired={true}
@@ -897,7 +900,7 @@ export default function CreateEventScreen({navigation, route}) {
 
             <View style={styles.containerStyle}>
               <Text style={styles.headerTextStyle}>
-                {strings.organizerTitle}
+                {strings.organizerTitle} 
               </Text>
               <TCProfileView
                 type="medium"
@@ -918,7 +921,8 @@ export default function CreateEventScreen({navigation, route}) {
 
             <EventItemRender  
             containerStyle={{position : 'relative', margin: 20}} 
-            title={strings.place} isRequired={false}
+            headerTextStyle={{fontSize:16}}
+            title={strings.place} isRequired={true}
             >
 
               <EventVenueTogglebtn
@@ -996,7 +1000,7 @@ export default function CreateEventScreen({navigation, route}) {
             <EventItemRender
               title={strings.timeTitle}
               isRequired={true}
-              headerTextStyle={{marginBottom: 15}}>
+              headerTextStyle={{marginBottom: 15, fontSize:16}}>
               <EventTimeSelectItem
                 title={strings.starts}
                 toggle={!toggle}
@@ -1090,7 +1094,7 @@ export default function CreateEventScreen({navigation, route}) {
               )}
             </EventItemRender>
 
-            <EventItemRender containerStyle={{marginTop: -20, marginBottom: 20}} title={''}>
+            <EventItemRender containerStyle={{marginTop: -40, marginBottom: 10}} title={''}>
               <Text style={styles.availableSubHeader}>
                 {strings.availableSubTitle}
               </Text>
@@ -1104,6 +1108,7 @@ export default function CreateEventScreen({navigation, route}) {
                 endGradientColor={colors.grayBackgroundColor}
                 activeEventPricacy={styles.activeEventPricacy}
                 inactiveEventPricacy={styles.inactiveEventPricacy}
+                inactiveEventPrivacyText={styles.inactiveEventPrivacyText}
               />
             </EventItemRender>
 
@@ -1112,7 +1117,7 @@ export default function CreateEventScreen({navigation, route}) {
               <Text style={styles.headerTextStyle}>
                 {strings.eventFeeTitle}
               </Text>
-              <View style={styles.feeContainer}>
+              <View style={[styles.feeContainer, {marginTop:10}]}>
                 <TextInput
                   style={styles.eventFeeStyle}
                   placeholder={'0'}
@@ -1123,34 +1128,47 @@ export default function CreateEventScreen({navigation, route}) {
                   placeholderTextColor={colors.userPostTimeColor}
                 />
                 <Text style={styles.currencyStyle}>{strings.defaultCurrency}</Text>
+                
               </View>
+                              <Text
+                  style={{
+                    fontSize: 14,
+                    fontFamily: fonts.RRegular,
+                    textDecorationLine: 'underline',
+                    textAlign:'right',
+                    paddingHorizontal:5,
+                    marginTop:5,
+                    color: colors.lightBlackColor
+                  }}>
+                  {strings.changeCurrency} 
+                </Text>
             </View>
 
-            <View style={styles.containerStyle}>
+            <View style={[styles.containerStyle, {marginTop:20}]}>
               <Text style={styles.headerTextStyle}>
-                {strings.refundPolicyTitle}
+                {strings.refundPolicyTitle} 
               </Text>
-              <Text
+              {/* <Text
                 style={{fontSize: 14, fontFamily: fonts.RBold, marginTop: 15}}>
                 {strings.primaryRefundPolicy}
-              </Text>
+              </Text> */}
               <Text style={[styles.subTitleText, {marginTop: 10}]}>
                 {strings.attendeesMustRefundedText}
-                <Text
+                {/* <Text
                   style={{
                     fontSize: 12,
                     fontFamily: fonts.RRegular,
                     textDecorationLine: 'underline',
                   }}>
                   {strings.readPaymentPolicyText}
-                </Text>
+                </Text> */}
               </Text>
-              <Text
+              {/* <Text
                 style={{fontSize: 14, fontFamily: fonts.RBold, marginTop: 15}}>
                 {strings.additionalRefundPolicy}
-              </Text>
+              </Text> */}
               <TextInput
-                placeholder={strings.refundpolicy}
+                placeholder={strings.additionalRefundPolicy}
                 style={styles.detailsInputStyle}
                 onChangeText={(value) => setRefundPolicy(value)}
                 value={refundPolicy}
@@ -1162,10 +1180,10 @@ export default function CreateEventScreen({navigation, route}) {
           
             
            
-            <View style={styles.containerStyle}>
+            <View style={[styles.containerStyle,{marginTop:10}]}>
               <Text style={styles.headerTextStyle}>
                 {strings.numberOfAttend}
-                <Text style={styles.opetionalTextStyle}>{strings.optional}</Text>
+                {/* <Text style={styles.opetionalTextStyle}>{strings.optional}</Text> */}
               </Text>
               <Text style={styles.subTitleText}>
                 {strings.eventMayBeCancelledByOrganizerText}
@@ -1179,7 +1197,7 @@ export default function CreateEventScreen({navigation, route}) {
             </View>
 
 
-            <View style={styles.containerStyle}>
+            <View style={[styles.containerStyle,{marginTop:20}]}>
               <Text style={styles.headerTextStyle}>{strings.whoCanSee}</Text>
               <TouchableOpacity
                 onPress={() => {
@@ -1468,6 +1486,7 @@ export default function CreateEventScreen({navigation, route}) {
                 fontSize: 16,
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
+                marginLeft: '5%'
               }}>
               {strings.sportsTitleText}
             </Text>
@@ -1491,7 +1510,7 @@ export default function CreateEventScreen({navigation, route}) {
           </View>
           <View style={styles.separatorLine} />
           <FlatList
-            ItemSeparatorComponent={() => <TCThinDivider width="92%" />}
+            ItemSeparatorComponent={() => <TCThinDivider width="86%" />}
             showsVerticalScrollIndicator={false}
             data={sportsData}
             keyExtractor={(item, index) => index.toString()}
@@ -1789,14 +1808,14 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 16,
     fontFamily: fonts.RRegular,
-    marginBottom: 15,
+    marginBottom: 10,
     height: 100,
   },
   containerStyle: {
     width: wp('96%'),
     alignSelf: 'center',
     padding: wp('1.5%'),
-    marginBottom: 30
+    // marginBottom: 30
   },
 
   headerTextStyle: {
@@ -1804,12 +1823,12 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
     marginVertical: 3,
   },
-  opetionalTextStyle: {
-    fontSize: 12,
-    fontFamily: fonts.RRegular,
-    marginVertical: 3,
-    color: colors.userPostTimeColor,
-  },
+  // opetionalTextStyle: {
+  //   fontSize: 12,
+  //   fontFamily: fonts.RRegular,
+  //   marginVertical: 3,
+  //   color: colors.userPostTimeColor,
+  // },
 
   closeButton: {
     alignSelf: 'center',
@@ -1822,9 +1841,8 @@ const styles = StyleSheet.create({
 
   separatorLine: {
     alignSelf: 'center',
-    backgroundColor: colors.grayColor,
+    backgroundColor: colors.thinDividerColor,
     height: 0.5,
-
     width: wp('100%'),
   },
 
@@ -1919,4 +1937,8 @@ const styles = StyleSheet.create({
   inactiveEventPricacy: {
     paddingVertical: 2,
   },
+  inactiveEventPrivacyText:{
+    paddingVertical: hp('0.8'),
+  }
+  // UI Fixes styling
 });

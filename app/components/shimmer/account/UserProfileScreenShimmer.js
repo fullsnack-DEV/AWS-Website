@@ -14,7 +14,7 @@ const UserProfileScreenShimmer = () => (
           alignItems: 'center',
           justifyContent: 'space-between',
           marginRight: 15,
-          marginTop: 50,
+          marginTop: 20,
         }}>
         <ShimmerView
           style={{

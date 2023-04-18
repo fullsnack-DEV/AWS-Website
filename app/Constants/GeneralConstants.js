@@ -54,6 +54,24 @@ export const ModalTypes = {
   style8: 'style8',
 };
 
+
+export const InvoiceType = {
+  Invoice: 0,
+  Event: 1
+};
+
+export const InvoiceRowType = {
+  Recipient: 0,
+  CancelRecipient: 1,
+  SelectAll: 2,
+};
+
+export const InvoiceRecipientTabType = {
+  People: 0,
+  Teams: 1
+};
+
+
 export const doublesInviteOptions = {
   0: strings.none,
   1: strings.everyoneTitleText,

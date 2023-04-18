@@ -18,7 +18,7 @@ export default function TCInfoField({
       <Text style={[styles.fieldTitle, titleStyle]} numberOfLines={2}>
         {title}
       </Text>
-      <Text style={[styles.fieldValue, valueStyle, {color}]} numberOfLines={3}>
+      <Text style={[styles.fieldValue, valueStyle, {color}]} numberOfLines={0}>
         {value}
       </Text>
     </View>
@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     color: colors.veryLightBlack,
     flex: 0.4,
     marginRight: 15,
-
+    alignSelf: 'flex-start',
     fontFamily: fonts.RMedium,
 
     lineHeight: 24,

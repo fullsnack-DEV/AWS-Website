@@ -461,7 +461,9 @@ export default function EditGroupProfileScreen({navigation, route}) {
           <ActivityLoader visible={loading} />
           <TCProfileImageControl
             profileImage={
-              groupProfile.thumbnail ? {uri: groupProfile.thumbnail} : undefined
+              groupProfile.thumbnail
+                ? {uri: groupProfile.thumbnail}
+                : images.clubCover
             }
             profileImagePlaceholder={
               authContext.entity.role === Verbs.entityTypeClub
@@ -475,6 +477,31 @@ export default function EditGroupProfileScreen({navigation, route}) {
             }
             onPressBGImage={() => onBGImageClicked()}
             onPressProfileImage={() => onProfileImageClicked()}
+            bgImageContainerStyle={{
+              marginTop: 55,
+              position: 'absolute',
+              alignSelf: 'center',
+            }}
+            profileImageStyle={{
+              height: 40,
+              width: 40,
+              marginTop: 10,
+            }}
+            profileCameraButtonStyle={{
+              alignSelf: 'flex-start',
+              justifyContent: 'center',
+              height: 25,
+              width: 25,
+
+              borderRadius: 50,
+              elevation: 0,
+            }}
+            profileImageButtonStyle={{
+              alignSelf: 'center',
+            }}
+            profileImageContainerStyle={{
+              marginLeft: 15,
+            }}
             showEditButtons
           />
           <View>

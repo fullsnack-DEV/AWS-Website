@@ -90,6 +90,7 @@ export default function ChallengeAvailability({
   useEffect(() => {
     if(slots.length > 0){
       const editableSlots = [];
+      const recurringSlots = [];
       slots.forEach((item , index) => {
           const temp = {
             id : index,
@@ -101,8 +102,18 @@ export default function ChallengeAvailability({
           }
           editableSlots.push(temp);
       });
+      const tempRecrr = {
+        id : 0,
+        isBlock : true,
+        allDay: false,
+        start_datetime : getJSDate(slots[0]?.start_datetime),
+        end_datetime : getJSDate(slots[0]?.end_datetime),
+        is_recurring : true
+      }
+      recurringSlots.push(tempRecrr)
       setOneTimeAvailability(editableSlots);
       setChallengeAvailable(editableSlots);
+      setRecurringAvailability(recurringSlots);
     }
 
     if(slotLevel) {
@@ -462,6 +473,7 @@ export default function ChallengeAvailability({
                         activeEventPrivacyText={styles.activeEventPrivacyText}
                         inactiveEventPrivacyText={styles.activeEventPrivacyText}
                       />
+                      {!slotLevel && index !== 0 && (
                       <TouchableOpacity
                         onPress={() => {
                           deleteItemById(data.id);
@@ -474,6 +486,7 @@ export default function ChallengeAvailability({
                             resizeMode={'contain'}
                           />
                       </TouchableOpacity>
+                      )}
                     </View>
                     <EventTimeSelectItem
                       title={strings.starts}
@@ -603,7 +616,6 @@ export default function ChallengeAvailability({
                       }
                       />
                     )}
-
                     <DateTimePickerView
                       title={
                         challengeAvailable[currentIndex].allDay

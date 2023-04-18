@@ -3038,7 +3038,7 @@ const AccountNavigator = () => (
       name="RespondToInviteScreen"
       component={RespondToInviteScreen}
       options={{
-        title: strings.respondToInviteCreateTeam,
+        title: strings.respondToRequest,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

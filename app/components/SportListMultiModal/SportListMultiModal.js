@@ -1,4 +1,7 @@
 // @flow
+/* eslint-disable array-callback-return */
+/* eslint-disable no-param-reassign */
+
 import React, {useState, useEffect, useContext} from 'react';
 import {
   FlatList,
@@ -30,35 +33,20 @@ const SportListMultiModal = ({
   closeList = () => {},
   onNext = () => {},
   title = '',
+  sportsList,
 }) => {
   const [sportList, setSportList] = useState([]);
   const [visible, setVisible] = useState(false);
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
+
   useEffect(() => {
-    getSports();
-  }, [isFocused]);
-
-  const getSports = () => {
-    let sportArr = [];
-
-    authContext.sports.map((item) => {
-      sportArr = [...sportArr, ...item.format];
-      return null;
+    sportsList.map((item) => {
+      item.isChecked = false;
     });
 
-    const arr = [];
-    for (const tempData of sportArr) {
-      const obj = {};
-      obj.entity_type = tempData.entity_type;
-      obj.sport = tempData.sport;
-      obj.sport_type = tempData.sport_type;
-      obj.isChecked = false;
-      arr.push(obj);
-    }
-    setVisible(false);
-    setSportList(arr);
-  };
+    setSportList(sportsList);
+  }, [isFocused, isVisible]);
 
   const isIconCheckedOrNot = ({item, index}) => {
     sportList[index].isChecked = !item.isChecked;

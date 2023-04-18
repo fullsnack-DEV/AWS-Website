@@ -11,15 +11,21 @@ export default function TCPlayerImageInfo({
   player2Image,
   player1Name,
   player2Name,
+
   color = colors.lightBlackColor,
+  titlecolor = colors.lightBlackColor,
+  fontstyle = fonts.RLight,
   ...Props
 }) {
   return (
     <View style={[styles.fieldView, Props]}>
-      <Text style={styles.fieldTitle} numberOfLines={2}>
+      <Text
+        style={[styles.fieldTitle, {color: titlecolor, fontFamily: fontstyle}]}
+        numberOfLines={2}>
         {title}
       </Text>
-      <View style={{flex: 0.68}}>
+
+      <View style={{flex: 0.7, marginLeft: 73}}>
         <View style={styles.fieldValue}>
           <Image
             source={
@@ -29,7 +35,7 @@ export default function TCPlayerImageInfo({
           />
           <Text
             style={{
-              marginLeft: 5,
+              marginLeft: 10,
               fontFamily: fonts.RMedium,
               fontSize: 16,
               color,
@@ -47,12 +53,12 @@ export default function TCPlayerImageInfo({
           />
           <Text
             style={{
-              marginLeft: 5,
+              marginLeft: 10,
               fontFamily: fonts.RMedium,
               fontSize: 16,
               color,
             }}
-            numberOfLines={1}>
+            numberOfLines={2}>
             {player2Name}
           </Text>
         </View>
@@ -64,7 +70,7 @@ const styles = StyleSheet.create({
   fieldView: {
     flex: 1,
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     // backgroundColor: 'blue',
   },
   fieldTitle: {
@@ -72,6 +78,7 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     fontFamily: fonts.RLight,
     flex: 0.32,
+    alignItems: 'flex-start',
   },
   fieldValue: {
     flexDirection: 'row',

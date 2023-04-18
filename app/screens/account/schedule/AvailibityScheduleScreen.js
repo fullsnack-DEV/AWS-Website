@@ -55,16 +55,16 @@ export default function AvailibilityScheduleScreen({
 
   const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
+
   useEffect(() => {
-    if(allSlots.length === 0) {
-      setListView(false);
-    }
     setAllData(allSlots);
     setWeeklyCalender(false)
     setLoading(false)
   }, []);
 
+
   useEffect(() => {
+    // calculateWeekdays(1682721000, 1682800200);
     prepareSlotArray(selectedDate);
     prepareSlotListArray();
     const blocked = [];
@@ -82,6 +82,26 @@ export default function AvailibilityScheduleScreen({
     setSlotList(slots);
     setEditableSlots(slots);
   }, [slots]);
+
+
+
+  // function calculateWeekdays(startTimestamp, endTimestamp) {
+  //   let startMillis = startTimestamp * 1000;
+  //   let endMillis = endTimestamp * 1000;
+  
+  //   let startDate = new Date(startMillis).toUTCString();
+  //   let endDate = new Date(endMillis).toUTCString();
+  
+  //   let weekdays = 0;
+  //   let currentDate = new Date(startDate);
+  
+  //   while (currentDate <= new Date(endDate)) {
+  //     if (currentDate.getUTCDay() >= 1 && currentDate.getUTCDay() <= 7) {
+  //       weekdays = weekdays + 1;
+  //     }
+  //     currentDate.setUTCDate(currentDate.getUTCDate() + 1);
+  //   }
+  // }
 
 
 
@@ -181,7 +201,7 @@ export default function AvailibilityScheduleScreen({
       const currentDateTime = new Date();
       currentDateTime.setHours(0, 0, 0, 0);
 
-      let title = `${days[getJSDate(item[0]?.start_datetime).getDay()]} ,  ${moment(getJSDate(item[0]?.start_datetime)).format('MMM DD')}`;
+      let title = `${days[getJSDate(item[0]?.start_datetime).getDay()]}, ${moment(getJSDate(item[0]?.start_datetime)).format('MMM DD')}`;
       if(start.getTime() === currentDateTime.getTime()) {
         title = strings.todayTitleText
       }
@@ -232,6 +252,7 @@ export default function AvailibilityScheduleScreen({
   };
 
 
+
   const addToSlotData = (data) => {
     const tempData = [...allData];
     data.forEach((item1) => {
@@ -254,6 +275,7 @@ export default function AvailibilityScheduleScreen({
     });
     setAllData(tempData);
   };
+
 
 
   const createCalenderTimeSlots = (startTime, hours, mslots) => {
@@ -322,6 +344,7 @@ export default function AvailibilityScheduleScreen({
   };
 
 
+
   const deleteFromSlotData = async (delArr) => {
     const tempSlot = [...allSlots];
     delArr.forEach((cal_id) => {
@@ -353,6 +376,7 @@ export default function AvailibilityScheduleScreen({
   };
 
 
+
   const datesBlacklistFunc = (startDate, endDate) => {
     const start = new Date(startDate);
     const end = new Date(endDate);
@@ -365,6 +389,7 @@ export default function AvailibilityScheduleScreen({
 
     return dates;
   };
+
 
 
   const LeftArrow = () => (
@@ -385,6 +410,7 @@ export default function AvailibilityScheduleScreen({
   );
 
 
+
   const RightArrow = () => (
     <>
       <View
@@ -401,6 +427,8 @@ export default function AvailibilityScheduleScreen({
       </View>
     </>
   );
+
+
 
   const today = moment();
   const day = today.clone().startOf('month');
@@ -424,7 +452,7 @@ export default function AvailibilityScheduleScreen({
     ) {
       backgroundColorWrapper = colors.lightGrey;
       background_color = colors.lightGrey;
-      text_color = colors.whiteColor;
+      text_color = colors.grayColor;
     } else if (
       moment(new Date()).format('YYYY-MM-DD') ===
       moment(new Date(day.clone())).format('YYYY-MM-DD')
@@ -469,6 +497,7 @@ export default function AvailibilityScheduleScreen({
 
     day.add(1, 'day');
   }
+
 
   return (
     <>

@@ -43,7 +43,8 @@ export default function PersonalInformationScreen({navigation, route}) {
   const [loading, setloading] = useState(false);
   const [userInfo, setUserInfo] = useState(authContext.entity.obj);
   const [profileImageChanged, setProfileImageChanged] = useState(false);
-  const [locationPopup, setLocationPopup] = useState(false);
+
+  const [locationPopup, setLocationPopup] = useState();
 
   useLayoutEffect(() => {
     navigation.setOptions({

@@ -7,9 +7,12 @@ import {
   ImageBackground,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
+
+
 
 function EventBackgroundPhoto({
   imageURL,
@@ -21,6 +24,8 @@ function EventBackgroundPhoto({
   return (
     <ImageBackground
       source={imageURL}
+      imageStyle={styles.imageBorder}
+      resizeMode='cover'
       style={[styles.bgStyle, {height: isImage ? 200 : 150}]}>
       {!isPreview && (
         <View>
@@ -53,6 +58,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
     fontSize: 16,
     color: colors.lightBlackColor,
+ 
   },
   uploadPhoto: {
     height: 25,
@@ -66,6 +72,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+   
   },
 
   imageStyleText: {
@@ -78,16 +85,21 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: colors.lightBlackColor,
     marginLeft: 5,
+   
   },
   bgStyle: {
-    resizeMode: 'contain',
+    // resizeMode: 'contain',
     height: 200,
-    width: '100%',
+    width: wp('95%'),
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: colors.textFieldBackground,
-    marginBottom: 15,
+    marginBottom: 20,
+    borderRadius:5,
   },
+  imageBorder: { 
+       borderRadius: 5
+   },
 });
 
 export default EventBackgroundPhoto;

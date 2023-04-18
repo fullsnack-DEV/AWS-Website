@@ -35,8 +35,12 @@ import uploadImages from '../../../utils/imageAction';
 
 import fonts from '../../../Constants/Fonts';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
-import {createGroup} from '../../../api/Groups';
+import {createGroup, createGroupRequest} from '../../../api/Groups';
 import colors from '../../../Constants/Colors';
+
+import Modal from 'react-native-modal';
+
+import SendRequestModal from '../../../components/SendRequestModal/SendRequestModal';
 
 export default function IncomingChallengeSettings({navigation, route}) {
   const [settingObject, setSettingObject] = useState({});
@@ -48,6 +52,7 @@ export default function IncomingChallengeSettings({navigation, route}) {
   const [isAlreadyWarned, setIsAlreadyWarned] = useState(false);
   const [showSwitchScreen, setShowSwitchScreen] = useState(false);
   const animProgress = React.useState(new Animated.Value(0))[0];
+  const [visibleRequestModal, setVisibleRequestModal] = useState(false);
 
   const {
     playerData,
@@ -59,6 +64,7 @@ export default function IncomingChallengeSettings({navigation, route}) {
     groupData,
     thumbnail,
     backgroundThumbnail,
+    show_Double,
   } = route.params;
   const [playerObject] = useState(playerData);
   const [showModal, setShowModal] = useState(false);
@@ -166,16 +172,32 @@ export default function IncomingChallengeSettings({navigation, route}) {
     }
   };
 
+  const onCreateDoubleTeamPress = () => {
+    if (settingObject.game_fee?.fee === 0 && !isAlreadyWarned) {
+      setShowMatchFeeReminderModal(true);
+      setVisibleRequestModal(false);
+      setIsAlreadyWarned(true);
+    } else {
+      onCreateTeam();
+    }
+  };
+
   const onCreateTeam = () => {
     onANimate(20);
 
     if (settingObject.game_fee?.fee === 0 && !isAlreadyWarned) {
       setShowMatchFeeReminderModal(true);
+      setVisibleRequestModal(false);
       setIsAlreadyWarned(true);
     } else {
-      setShowSwitchScreen(true);
+      if (show_Double) {
+        setloading(true);
+      } else {
+        setShowSwitchScreen(true);
+      }
 
       settingObject.sport = sport;
+      delete settingObject.entity_type;
       settingObject.sport_type = sportType;
       groupData.setting = settingObject;
 
@@ -224,28 +246,52 @@ export default function IncomingChallengeSettings({navigation, route}) {
               onANimate(50);
             }, 30);
 
-            createGroup(bodyParams, entity.uid, entity.obj.role, authContext)
-              .then((response) => {
-                setloading(false);
-                setShowSwitchScreen(true);
-
-                navigation.navigate('HomeScreen', {
-                  uid: response.payload.group_id,
-                  role: response.payload.entity_type,
-                  backButtonVisible: true,
-                  menuBtnVisible: false,
-                  isEntityCreated: true,
-                  groupName: response.payload.group_name,
-                  entityObj: response.payload,
+            if (show_Double) {
+              createGroupRequest(bodyParams, authContext)
+                .then((response) => {
+                  setloading(false);
+                  Alert.alert(
+                    strings.requestSent,
+                    '',
+                    [
+                      {
+                        text: strings.okTitleText,
+                        onPress: () => navigation.navigate('AccountScreen'),
+                      },
+                    ],
+                    {cancelable: false},
+                  );
+                })
+                .catch((e) => {
+                  setShowSwitchScreen(false);
+                  setTimeout(() => {
+                    Alert.alert(strings.appName, e.messages);
+                  }, 0.1);
                 });
-              })
-              .catch((e) => {
-                setloading(false);
-                setShowSwitchScreen(false);
-                setTimeout(() => {
-                  Alert.alert(strings.alertmessagetitle, e.message);
-                }, 10);
-              });
+            } else {
+              createGroup(bodyParams, entity.uid, entity.obj.role, authContext)
+                .then((response) => {
+                  setloading(false);
+                  setShowSwitchScreen(true);
+
+                  navigation.navigate('HomeScreen', {
+                    uid: response.payload.group_id,
+                    role: response.payload.entity_type,
+                    backButtonVisible: true,
+                    menuBtnVisible: false,
+                    isEntityCreated: true,
+                    groupName: response.payload.group_name,
+                    entityObj: response.payload,
+                  });
+                })
+                .catch((e) => {
+                  setloading(false);
+                  setShowSwitchScreen(false);
+                  setTimeout(() => {
+                    Alert.alert(strings.alertmessagetitle, e.message);
+                  }, 10);
+                });
+            }
           })
           .catch((e) => {
             setShowSwitchScreen(false);
@@ -255,28 +301,54 @@ export default function IncomingChallengeSettings({navigation, route}) {
           });
       } else {
         onANimate(100);
-        createGroup(bodyParams, entity.uid, entity.obj.role, authContext)
-          .then((response) => {
-            setloading(false);
-            setShowSwitchScreen(true);
 
-            navigation.navigate('HomeScreen', {
-              uid: response.payload.group_id,
-              role: response.payload.entity_type,
-              backButtonVisible: true,
-              menuBtnVisible: false,
-              isEntityCreated: true,
-              groupName: response.payload.group_name,
-              entityObj: response.payload,
+        if (show_Double) {
+          createGroupRequest(bodyParams, authContext)
+            .then(() => {
+              setloading(false);
+
+              Alert.alert(
+                strings.requestSent,
+                '',
+                [
+                  {
+                    text: strings.okTitleText,
+                    onPress: () => navigation.navigate('AccountScreen'),
+                  },
+                ],
+                {cancelable: false},
+              );
+            })
+            .catch((e) => {
+              setShowSwitchScreen(false);
+              setTimeout(() => {
+                Alert.alert(strings.appName, e.messages);
+              }, 0.1);
             });
-          })
-          .catch((e) => {
-            setloading(false);
-            setShowSwitchScreen(false);
-            setTimeout(() => {
-              Alert.alert(strings.alertmessagetitle, e.message);
-            }, 10);
-          });
+        } else {
+          createGroup(bodyParams, entity.uid, entity.obj.role, authContext)
+            .then((response) => {
+              setloading(false);
+              setShowSwitchScreen(true);
+
+              navigation.navigate('HomeScreen', {
+                uid: response.payload.group_id,
+                role: response.payload.entity_type,
+                backButtonVisible: true,
+                menuBtnVisible: false,
+                isEntityCreated: true,
+                groupName: response.payload.group_name,
+                entityObj: response.payload,
+              });
+            })
+            .catch((e) => {
+              setloading(false);
+              setShowSwitchScreen(false);
+              setTimeout(() => {
+                Alert.alert(strings.alertmessagetitle, e.message);
+              }, 10);
+            });
+        }
       }
     }
   };
@@ -481,6 +553,20 @@ export default function IncomingChallengeSettings({navigation, route}) {
           {/* PRogree Bar */}
         </View>
       )}
+      {/* {RequestModal()} */}
+
+      <SendRequestModal
+        onNextPress={() => onCreateDoubleTeamPress()}
+        visibleRequestModal={visibleRequestModal}
+        onClosePress={() => setVisibleRequestModal(false)}
+        groupData={groupData}
+        loading={loading}
+        textstring1={strings.sendRequesttxt1}
+        textstring2={strings.sendRequesttxt2}
+        textstring3={strings.sendRequesttxt3}
+        btntext={strings.sendRequestBtnTxt}
+      />
+
       <ScreenHeader
         title={
           fromCreateTeam
@@ -495,7 +581,11 @@ export default function IncomingChallengeSettings({navigation, route}) {
         rightButtonText={strings.done}
         onRightButtonPress={() => {
           if (fromCreateTeam) {
-            onCreateTeam();
+            if (show_Double) {
+              onCreateDoubleTeamPress();
+            } else {
+              onCreateTeam();
+            }
           } else {
             onSave();
           }
@@ -545,6 +635,7 @@ export default function IncomingChallengeSettings({navigation, route}) {
               item={item}
               handleOptions={handleOptions}
               settingObject={settingObject}
+              o
             />
           )}
         />
@@ -664,7 +755,11 @@ export default function IncomingChallengeSettings({navigation, route}) {
         onContinue={() => {
           setShowMatchFeeReminderModal(false);
           if (fromCreateTeam) {
-            onCreateTeam();
+            if (show_Double) {
+              setVisibleRequestModal(true);
+            } else {
+              onCreateTeam();
+            }
           } else {
             onSave();
           }

@@ -18,6 +18,7 @@ import TCTags from '../../../components/TCTags';
 import {getUserIndex} from '../../../api/elasticSearch';
 import TCThinDivider from '../../../components/TCThinDivider';
 import {inviteToEvent} from '../../../api/Schedule';
+// import { wrap } from 'lodash';
 
 let stopFetchMore = true;
 
@@ -31,6 +32,7 @@ export default function InviteToEventScreen({navigation, route}) {
   const [pageFrom, setPageFrom] = useState(0);
   const [filters, setFilters] = useState();
 
+ 
   const selectedPlayers = [];
   useEffect(() => {
     getUsers(filters);
@@ -47,8 +49,13 @@ export default function InviteToEventScreen({navigation, route}) {
 
   const sendInvitation = () => {
     setloading(true);
+    const data = {
+      userIds: selectedList,
+      start_datetime: route?.params?.start_datetime,
+      end_datetime: route?.params?.start_endtime
+    }
 
-    inviteToEvent(eventID, selectedList, authContext)
+    inviteToEvent(eventID, data, authContext)
       .then((response) => {
         setloading(false);
         console.log('Response of Invitation sent:', response);
@@ -168,6 +175,8 @@ export default function InviteToEventScreen({navigation, route}) {
 
   const ItemSeparatorComponent = useCallback(() => <TCThinDivider />, []);
 
+  
+
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
@@ -192,11 +201,14 @@ export default function InviteToEventScreen({navigation, route}) {
           applyFilter(tempFilter);
         }}
       />
-      <TCTags
-        dataSource={players}
-        titleKey={'full_name'}
-        onTagCancelPress={handleTagPress}
-      />
+     
+        <TCTags
+          dataSource={players}
+          titleKey={'full_name'}
+          onTagCancelPress={handleTagPress}
+        />
+      
+     
       <FlatList
         extraData={players}
         showsVerticalScrollIndicator={false}
@@ -223,8 +235,9 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     marginBottom: 20,
     fontFamily: fonts.RRegular,
-    fontSize: 16,
+    fontSize: 21,
     color: colors.lightBlackColor,
+    fontWeight:'500'
   },
   sendButtonStyle: {
     fontFamily: fonts.RRegular,

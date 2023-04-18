@@ -23,12 +23,13 @@ function TCLabel({
 
 const styles = StyleSheet.create({
   labelText: {
-    marginLeft: 15,
+    marginHorizontal: 15,
     marginTop: 35,
     color: colors.lightBlackColor,
     fontSize: 16,
     textAlign: 'left',
     fontFamily: fonts.RBold,
+    lineHeight:17
   },
   mendatory: {
     color: 'red',
