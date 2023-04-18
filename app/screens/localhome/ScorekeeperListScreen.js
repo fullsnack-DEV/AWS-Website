@@ -6,20 +6,13 @@ import {
   StyleSheet,
   FlatList,
   Image,
-  TouchableOpacity,
   Text,
   TouchableWithoutFeedback,
   Platform,
-  Dimensions,
   Alert,
   TextInput,
-  KeyboardAvoidingView,
-  ScrollView,
   SafeAreaView,
-  Pressable,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import Modal from 'react-native-modal';
 import AuthContext from '../../auth/context';
 import * as Utility from '../../utils';
 import colors from '../../Constants/Colors';
@@ -29,66 +22,29 @@ import fonts from '../../Constants/Fonts';
 import TCThinDivider from '../../components/TCThinDivider';
 import {strings} from '../../../Localization/translation';
 import {getUserIndex} from '../../api/elasticSearch';
-// import TCScorekeeperView from '../../components/TCScorekeeperView';
 import TCTagsFilter from '../../components/TCTagsFilter';
 import {getGeocoordinatesWithPlaceName} from '../../utils/location';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import {locationType} from '../../utils/constant';
-import LocationModal from '../../components/LocationModal/LocationModal';
 import TCPlayerView from '../../components/TCPlayerView';
 import {getSportList} from '../../utils/sportsActivityUtils';
 import Verbs from '../../Constants/Verbs';
+import SearchModal from '../../components/Filter/SearchModal';
 
 let stopFetchMore = true;
-const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
 
 export default function ScorekeeperListScreen({navigation, route}) {
   const [loading, setloading] = useState(false);
   const authContext = useContext(AuthContext);
   const [filters, setFilters] = useState(route?.params?.filters);
   const [settingPopup, setSettingPopup] = useState(false);
-  const [visibleSportsModal, setVisibleSportsModal] = useState(false);
-  const [visibleLocationModal, setVisibleLocationModal] = useState(false);
-  const [locationFilterOpetion, setLocationFilterOpetion] = useState(
-    route.params.locationOption,
-  );
   const [sports, setSports] = useState([]);
-
-  const [minFee, setMinFee] = useState(0);
-  const [maxFee, setMaxFee] = useState(0);
   const [scorekeepers, setScorekeepers] = useState([]);
   const [pageSize] = useState(10);
   const [pageFrom, setPageFrom] = useState(0);
   // eslint-disable-next-line no-unused-vars
   const [loadMore, setLoadMore] = useState(false);
-  const [selectedSport, setSelectedSport] = useState({
-    sport: route.params?.filters?.sport,
-    sport_type: route.params?.filters?.sport_type,
-    sport_name: route.params?.filters?.sport_name,
-  });
   const [location, setLocation] = useState(route.params?.filters?.location);
-  const [lastSelection, setLastSelection] = useState(0);
-  const [isSearchPlaceholder, setIsSearchPlaceholder] = useState(
-    locationFilterOpetion !== 3,
-  );
-  const [selectedLocation, setSelectedLocation] = useState(
-    route.params?.filters?.location,
-  );
-
-  useEffect(() => {
-    if (settingPopup) {
-      setLastSelection(locationFilterOpetion);
-    }
-  }, [settingPopup]);
-
-  useEffect(() => {
-    if (route.params?.locationText) {
-      setSettingPopup(true);
-      setTimeout(() => {
-        setLocation(route.params?.locationText);
-      }, 10);
-    }
-  }, [route.params?.locationText]);
 
   useEffect(() => {
     const defaultSport = [
@@ -104,6 +60,22 @@ export default function ScorekeeperListScreen({navigation, route}) {
       ...getSportList(authContext.sports, Verbs.entityTypeReferee),
     ]);
   }, [authContext]);
+
+  useEffect(() => {
+    getScorekeepers(filters);
+  }, []);
+
+  useEffect(() => {
+    const tempFilter = {...filters};
+    tempFilter.location = location;
+    setFilters({
+      ...tempFilter,
+    });
+    setPageFrom(0);
+    setScorekeepers([]);
+    applyFilter(tempFilter);
+  }, [location]);
+
   const modifiedScoreKeeperElasticSearchResult = (response) => {
     const modifiedData = [];
     for (const item of response) {
@@ -195,30 +167,9 @@ export default function ScorekeeperListScreen({navigation, route}) {
     [pageFrom, pageSize, scorekeepers],
   );
 
-  useEffect(() => {
-    getScorekeepers(filters);
-  }, []);
-
   const renderRefereesScorekeeperListView = useCallback(
     ({item}) => (
       <View style={[styles.separator, {flex: 1}]}>
-        {/* <TCScorekeeperView
-          data={item}
-          showStar={true}
-          sport={selectedSport}
-          onPress={() => {
-            navigation.navigate('HomeScreen', {
-              uid: ['user', 'player']?.includes(item?.entity_type)
-                ? item?.user_id
-                : item?.group_id,
-              role: ['user', 'player']?.includes(item?.entity_type)
-                ? 'user'
-                : item.entity_type,
-              backButtonVisible: true,
-              menuBtnVisible: false,
-            });
-          }}
-        /> */}
         <TCPlayerView
           data={item}
           authContext={authContext}
@@ -258,7 +209,7 @@ export default function ScorekeeperListScreen({navigation, route}) {
         />
       </View>
     ),
-    [navigation, selectedSport],
+    [authContext, filters, navigation],
   );
 
   const keyExtractor = useCallback((item, index) => index.toString(), []);
@@ -277,33 +228,31 @@ export default function ScorekeeperListScreen({navigation, route}) {
   };
 
   const handleTagPress = ({item}) => {
-    const tempFilter = filters;
+    const tempFilter = {...filters};
     Object.keys(tempFilter).forEach((key) => {
       if (key === Object.keys(item)[0]) {
         if (Object.keys(item)[0] === 'sport') {
           tempFilter.sport = strings.allSport;
-          delete tempFilter.scorekeeperFee;
-          setSelectedSport({
-            sport: strings.allSport,
-            sport_type: strings.allSport,
-            sport_name: strings.allSport,
-          });
-          setMinFee(0);
-          setMaxFee(0);
+          tempFilter.sport_name = strings.allSport;
+          tempFilter.sport_type = strings.allSport;
+          tempFilter.minFee = 0;
+          tempFilter.maxFee = 0;
+          delete tempFilter.fee;
         }
         if (Object.keys(item)[0] === 'location') {
           tempFilter.location = strings.worldTitleText;
-          setIsSearchPlaceholder(true);
-          setLocationFilterOpetion(0);
+          tempFilter.locationOption = locationType.WORLD;
+          tempFilter.isSearchPlaceholder = true;
         }
-        if (Object.keys(item)[0] === 'scorekeeperFee') {
-          delete tempFilter[key];
-          setMinFee(0);
-          setMaxFee(0);
+        if (Object.keys(item)[0] === 'fee') {
+          tempFilter.minFee = 0;
+          tempFilter.maxFee = 0;
+          delete tempFilter.fee;
         }
+
+        // delete tempFilter[key];
       }
     });
-
     setFilters({...tempFilter});
     // applyFilter();
     setTimeout(() => {
@@ -312,18 +261,20 @@ export default function ScorekeeperListScreen({navigation, route}) {
       applyFilter(tempFilter);
     }, 10);
   };
-
   const getLocation = () => {
-    setloading(true);
+    // setloading(true);
+    console.log('start location task');
     getGeocoordinatesWithPlaceName(Platform.OS)
       .then((currentLocation) => {
+        console.log('result location task', currentLocation);
         setloading(false);
         if (currentLocation.position) {
           setLocation(
             currentLocation.city?.charAt(0).toUpperCase() +
               currentLocation.city?.slice(1),
           );
-          setLocationFilterOpetion(2);
+          // setLocationFilterOpetion(2);
+          setFilters({...filters, locationOption: 2});
         }
       })
       .catch((e) => {
@@ -340,22 +291,6 @@ export default function ScorekeeperListScreen({navigation, route}) {
     getScorekeepers(fil);
   }, []);
 
-  const applyValidation = useCallback(() => {
-    if (Number(minFee) > 0 && Number(maxFee) <= 0) {
-      Alert.alert(strings.scorekeeperMaxFeeValidation);
-      return false;
-    }
-    if (Number(minFee) <= 0 && Number(maxFee) > 0) {
-      Alert.alert(strings.scorekeeperMinFeeValidation);
-      return false;
-    }
-    if (Number(minFee) > Number(maxFee)) {
-      Alert.alert(strings.correctScorekeeperFeeValidation);
-      return false;
-    }
-    return true;
-  }, [maxFee, minFee]);
-
   const listEmptyComponent = () => (
     <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
       <Text
@@ -369,109 +304,19 @@ export default function ScorekeeperListScreen({navigation, route}) {
     </View>
   );
 
-  const onPressReset = () => {
-    setFilters({
-      location: strings.worldTitleText,
-      sport: strings.allSport,
-      sport_type: strings.allSport,
-      sport_name: strings.allSport,
-    });
-    setSelectedSport({
-      sport: strings.allSport,
-      sport_type: strings.allSport,
-      sport_name: strings.allSport,
-    });
-    setIsSearchPlaceholder(true);
-    setSelectedLocation(location);
-    setMinFee(0);
-    setMaxFee(0);
-  };
-
-  useEffect(() => {
-    const tempFilter = {...filters};
-    tempFilter.sport = selectedSport?.sport;
-    tempFilter.sport_type = selectedSport?.sport_type;
-    tempFilter.sport_name = selectedSport?.sport_name;
-    tempFilter.location = location;
-    setFilters({
-      ...tempFilter,
-    });
-    setPageFrom(0);
-    setScorekeepers([]);
-    applyFilter(tempFilter);
-  }, [location]);
-
-  const renderSports = ({item}) => (
-    <Pressable
-      style={styles.listItem}
-      onPress={() => {
-        if (item.value === strings.allSport) {
-          setSelectedSport({
-            sport: strings.allSport,
-            sport_type: strings.allSport,
-            sport_name: strings.allSport,
-          });
-        } else {
-          setSelectedSport(item);
-        }
-        setVisibleSportsModal(false);
-      }}>
-      <View
-        style={{
-          width: '100%',
-          padding: 20,
-          alignItems: 'center',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-        }}>
-        <Text style={styles.languageList}>{item.sport_name}</Text>
-        <View style={styles.checkbox}>
-          {selectedSport?.sport.toLowerCase() === item.sport.toLowerCase() ? (
-            <Image
-              source={images.radioCheckYellow}
-              style={styles.checkboxImg}
-            />
-          ) : (
-            <Image source={images.radioUnselect} style={styles.checkboxImg} />
-          )}
-        </View>
-      </View>
-    </Pressable>
-  );
-
-  const ModalHeader = () => (
-    <View
-      style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}>
-      <View style={styles.handleStyle} />
-    </View>
-  );
-
-  const handleSetLocationOptions = (locationObj) => {
-    setIsSearchPlaceholder(false);
-    // eslint-disable-next-line no-prototype-builtins
-    if (locationObj.hasOwnProperty('address')) {
-      setSelectedLocation(locationObj?.formattedAddress);
-      // setLocation(location?.formattedAddress);
-    } else {
-      // setLocation(location?.city);
-      setSelectedLocation(locationObj?.city);
-    }
-  };
-
   return (
     <SafeAreaView style={{flex: 1}}>
       <ActivityLoader visible={loading} />
       <View style={styles.searchView}>
         <View style={styles.searchViewContainer}>
           <TextInput
+            clearButtonMode={Platform.OS === 'ios' ? 'while-editing' : 'never'}
+            clearButtonVisible={Platform.OS === 'android'}
             placeholder={strings.searchText}
             style={styles.searchTxt}
             autoCorrect={false}
             onChangeText={(text) => {
+              // setSearchText(text);
               const tempFilter = {...filters};
 
               if (text?.length > 0) {
@@ -488,7 +333,11 @@ export default function ScorekeeperListScreen({navigation, route}) {
             }}
             // value={search}
           />
-          <TouchableWithoutFeedback onPress={() => setSettingPopup(true)}>
+
+          <TouchableWithoutFeedback
+            onPress={() => {
+              setSettingPopup(true);
+            }}>
             <Image source={images.homeSetting} style={styles.settingImage} />
           </TouchableWithoutFeedback>
         </View>
@@ -506,7 +355,11 @@ export default function ScorekeeperListScreen({navigation, route}) {
         ItemSeparatorComponent={renderSeparator}
         keyExtractor={keyExtractor}
         renderItem={renderRefereesScorekeeperListView}
-        style={styles.listStyle}
+        style={[
+          styles.listStyle,
+          {height: filters.sport !== strings.allSport ? 91 : 70},
+        ]}
+        // contentContainerStyle={{ paddingBottom: 1 }}
         onScroll={onScrollHandler}
         onEndReachedThreshold={0.01}
         onScrollBeginDrag={() => {
@@ -514,417 +367,48 @@ export default function ScorekeeperListScreen({navigation, route}) {
         }}
         ListEmptyComponent={listEmptyComponent}
       />
-      <Modal
-        onBackdropPress={() => {
-          setLocationFilterOpetion(lastSelection);
-          setSettingPopup(false);
-        }}
-        style={{
-          margin: 0,
-        }}
+      {/* note */}
+
+      <SearchModal
+        // enityType={Verbs.entityTypeReferee}
+        sports={sports}
+        filterObject={filters}
         isVisible={settingPopup}
-        animationInTiming={300}
-        animationOutTiming={800}
-        backdropTransitionInTiming={300}
-        backdropTransitionOutTiming={800}>
-        <View
-          style={[
-            styles.bottomPopupContainer,
-            {height: Dimensions.get('window').height - 50},
-          ]}>
-          <KeyboardAvoidingView
-            style={{flex: 1}}
-            keyboardVerticalOffset={keyboardVerticalOffset}
-            behavior={Platform.OS === 'ios' ? 'padding' : null}>
-            <ScrollView style={{flex: 1}}>
-              <View style={styles.viewsContainer}>
-                <Text
-                  onPress={() => {
-                    setLocationFilterOpetion(lastSelection);
-                    setSettingPopup(false);
-                    if (lastSelection !== locationType.SEARCH_CITY) {
-                      setIsSearchPlaceholder(true);
-                      setSelectedLocation('');
-                    } else {
-                      setIsSearchPlaceholder(false);
-                      setSelectedLocation(location);
-                    }
-                  }}
-                  style={styles.cancelText}>
-                  {strings.cancel}
-                </Text>
-                <Text style={styles.locationText}>{strings.filter}</Text>
-                <Text
-                  style={styles.doneText}
-                  onPress={() => {
-                    if (applyValidation()) {
-                      const tempFilter = {...filters};
-                      tempFilter.sport = selectedSport?.sport;
-                      tempFilter.sport_type = selectedSport?.sport_type;
-                      tempFilter.sport_name = selectedSport?.sport_name;
-
-                      if (locationFilterOpetion === 0) {
-                        setLocation(strings.worldTitleText);
-                        tempFilter.location = location;
-                      } else if (locationFilterOpetion === 1) {
-                        setLocation(
-                          authContext?.entity?.obj?.city
-                            .charAt(0)
-                            .toUpperCase() +
-                            authContext?.entity?.obj?.city.slice(1),
-                        );
-                        tempFilter.location = location;
-                      } else if (locationFilterOpetion === 2) {
-                        getLocation();
-                        tempFilter.location = location;
-                      } else if (locationFilterOpetion === 3) {
-                        setLocation(selectedLocation);
-                      }
-
-                      if (minFee && maxFee) {
-                        tempFilter.scorekeeperFee = `${minFee}-${maxFee}`;
-                        filters.scorekeeperFee = tempFilter.scorekeeperFee;
-                      }
-                      // setFilters({
-                      //   ...tempFilter,
-                      // });
-                      filters.sport = tempFilter.sport;
-                      filters.sport_type = tempFilter.sport_type;
-                      filters.sport_name = tempFilter.sport_name;
-                      filters.location = tempFilter.location;
-                      setPageFrom(0);
-                      setScorekeepers([]);
-                      applyFilter(tempFilter);
-                      setSettingPopup(false);
-                    }
-                  }}>
-                  {strings.apply}
-                </Text>
-              </View>
-              <TCThinDivider width={'100%'} marginBottom={15} />
-              <View>
-                <View style={{flexDirection: 'column', margin: 15}}>
-                  <View>
-                    <Text style={styles.filterTitleBold}>
-                      {strings.locationTitleText}
-                    </Text>
-                  </View>
-                  <View style={{marginTop: 10}}>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        marginBottom: 10,
-                        justifyContent: 'space-between',
-                      }}>
-                      <Text style={styles.filterTitle}>
-                        {strings.currrentCityTitle}
-                      </Text>
-                      <TouchableWithoutFeedback
-                        onPress={() => {
-                          setLocationFilterOpetion(
-                            locationType.CURRENT_LOCATION,
-                          );
-                          setIsSearchPlaceholder(true);
-                        }}>
-                        <Image
-                          source={
-                            locationFilterOpetion === 2
-                              ? images.checkRoundOrange
-                              : images.radioUnselect
-                          }
-                          style={styles.radioButtonStyle}
-                        />
-                      </TouchableWithoutFeedback>
-                    </View>
-
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        marginBottom: 10,
-                        justifyContent: 'space-between',
-                      }}>
-                      <Text style={styles.filterTitle}>
-                        {strings.currentCity}
-                      </Text>
-                      <TouchableWithoutFeedback
-                        onPress={() => {
-                          setLocationFilterOpetion(locationType.HOME_CITY);
-                          setIsSearchPlaceholder(true);
-                        }}>
-                        <Image
-                          source={
-                            locationFilterOpetion === 1
-                              ? images.checkRoundOrange
-                              : images.radioUnselect
-                          }
-                          style={styles.radioButtonStyle}
-                        />
-                      </TouchableWithoutFeedback>
-                    </View>
-
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        marginBottom: 10,
-                        justifyContent: 'space-between',
-                      }}>
-                      <Text style={styles.filterTitle}>{strings.world}</Text>
-                      <TouchableWithoutFeedback
-                        onPress={() => {
-                          setLocationFilterOpetion(locationType.WORLD);
-                          setIsSearchPlaceholder(true);
-                        }}>
-                        <Image
-                          source={
-                            locationFilterOpetion === 0
-                              ? images.checkRoundOrange
-                              : images.radioUnselect
-                          }
-                          style={styles.radioButtonStyle}
-                        />
-                      </TouchableWithoutFeedback>
-                    </View>
-
-                    <TouchableWithoutFeedback
-                      onPress={() => {
-                        setLocationFilterOpetion(locationType.SEARCH_CITY);
-                        setVisibleLocationModal(true);
-                      }}>
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          justifyContent: 'space-between',
-                        }}>
-                        <View style={styles.searchCityContainer}>
-                          {/* <Text style={styles.searchCityText}>
-                            {isSearchPlaceholder === true
-                              ? strings.searchCityText
-                              : selectedLocation}
-                          </Text> */}
-                          <Text
-                            style={[
-                              styles.searchCityText,
-                              {
-                                color:
-                                  isSearchPlaceholder === true
-                                    ? colors.placeHolderColor
-                                    : colors.lightBlackColor,
-                              },
-                            ]}>
-                            {isSearchPlaceholder === true
-                              ? strings.searchTitle
-                              : selectedLocation}
-                          </Text>
-                        </View>
-                        <View
-                          style={{
-                            alignSelf: 'center',
-                          }}>
-                          <Image
-                            source={
-                              locationFilterOpetion === 3
-                                ? images.checkRoundOrange
-                                : images.radioUnselect
-                            }
-                            style={styles.radioButtonStyle}
-                          />
-                        </View>
-                      </View>
-                    </TouchableWithoutFeedback>
-                  </View>
-                </View>
-                <View>
-                  <View
-                    style={{
-                      flexDirection: 'column',
-                      margin: 15,
-                      justifyContent: 'space-between',
-                    }}>
-                    <View>
-                      <Text style={styles.filterTitleBold}>
-                        {strings.sport}
-                      </Text>
-                    </View>
-                    <View style={{marginTop: 10}}>
-                      <View
-                        style={[
-                          {
-                            marginBottom: 10,
-                            justifyContent: 'flex-start',
-                          },
-                          styles.sportsContainer,
-                        ]}>
-                        <TouchableWithoutFeedback
-                          onPress={() => {
-                            setVisibleSportsModal(true);
-                          }}>
-                          <View
-                            style={{
-                              flexDirection: 'row',
-                              justifyContent: 'flex-start',
-                            }}>
-                            <View>
-                              <Text style={styles.searchCityText}>
-                                {selectedSport?.sport_name ?? strings.allSport}
-                              </Text>
-                            </View>
-                            <View
-                              style={{
-                                position: 'absolute',
-                                right: 0,
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                              }}>
-                              <Icon
-                                size={24}
-                                color="black"
-                                name="chevron-down"
-                              />
-                            </View>
-                          </View>
-                        </TouchableWithoutFeedback>
-                      </View>
-                    </View>
-                  </View>
-                </View>
-              </View>
-              {selectedSport?.sport !== strings.allSport && (
-                <View
-                  style={{
-                    flexDirection: 'column',
-                    margin: 15,
-                    justifyContent: 'space-between',
-                  }}>
-                  <View style={{}}>
-                    <Text style={styles.filterTitle}>
-                      {strings.scorekeeperFee}
-                    </Text>
-                  </View>
-                  <View style={{marginTop: 10}}>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                      }}>
-                      <TextInput
-                        onChangeText={(text) => setMinFee(text)}
-                        value={minFee}
-                        style={styles.minFee}
-                        placeholder={strings.minPlaceholder}
-                        autoCorrect={false}
-                        // clearButtonMode={'always'}
-                        keyboardType={'numeric'}
-                        placeholderTextColor={colors.userPostTimeColor}
-                      />
-                      <TextInput
-                        onChangeText={(text) => setMaxFee(text)}
-                        value={maxFee}
-                        style={styles.minFee}
-                        placeholder={strings.maxPlaceholder}
-                        autoCorrect={false}
-                        // clearButtonMode={'always'}
-                        keyboardType={'numeric'}
-                        placeholderTextColor={colors.userPostTimeColor}
-                      />
-                    </View>
-                  </View>
-                </View>
-              )}
-              <View style={{flex: 1}} />
-            </ScrollView>
-          </KeyboardAvoidingView>
-
-          <TouchableOpacity
-            style={styles.resetButton}
-            onPress={() => {
-              Alert.alert(
-                strings.areYouSureRemoveFilterText,
-                '',
-                [
-                  {
-                    text: strings.cancel,
-                    onPress: () => console.log('Cancel Pressed'),
-                    style: 'cancel',
-                  },
-                  {
-                    text: strings.okTitleText,
-                    onPress: () => onPressReset(),
-                  },
-                ],
-                {cancelable: false},
-              );
-            }}>
-            <Text style={styles.resetTitle}>{strings.resetTitleText}</Text>
-          </TouchableOpacity>
-
-          <LocationModal
-            visibleLocationModal={visibleLocationModal}
-            title={strings.cityStateOrCountryTitle}
-            setVisibleLocationModalhandler={() =>
-              setVisibleLocationModal(false)
-            }
-            onLocationSelect={handleSetLocationOptions}
-            placeholder={strings.searchTitle}
-            type={'country'}
-          />
-
-          <Modal
-            isVisible={visibleSportsModal}
-            onBackdropPress={() => setVisibleSportsModal(false)}
-            onRequestClose={() => setVisibleSportsModal(false)}
-            animationInTiming={300}
-            animationOutTiming={800}
-            backdropTransitionInTiming={300}
-            backdropTransitionOutTiming={800}
-            style={{
-              margin: 0,
-            }}>
-            <View
-              behavior="position"
-              style={{
-                width: '100%',
-                height: Dimensions.get('window').height - 75,
-                maxHeight: Dimensions.get('window').height - 75,
-                backgroundColor: 'white',
-                position: 'absolute',
-                bottom: 0,
-                left: 0,
-                borderTopLeftRadius: 30,
-                borderTopRightRadius: 30,
-                shadowColor: '#000',
-                shadowOffset: {width: 0, height: 1},
-                shadowOpacity: 0.5,
-                shadowRadius: 5,
-                elevation: 15,
-              }}>
-              {ModalHeader()}
-              <View
-                style={{
-                  flexDirection: 'row',
-                  paddingHorizontal: 15,
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}></View>
-              <View style={styles.separatorLine} />
-              <FlatList
-                ItemSeparatorComponent={() => <TCThinDivider />}
-                data={sports}
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={renderSports}
-              />
-            </View>
-          </Modal>
-        </View>
-        {/* <DateTimePickerView
-          date={new Date()}
-          visible={show}
-          onDone={handleDonePress}
-          onCancel={handleCancelPress}
-          onHide={handleCancelPress}
-          // minutesGap={30}
-          mode={'datetime'}
-        /> */}
-      </Modal>
+        onPressApply={(filterData) => {
+          setloading(false);
+          console.log('filterData==>', filterData);
+          let tempFilter = {};
+          tempFilter = {...filterData};
+          setSettingPopup(false);
+          setPageFrom(0);
+          setScorekeepers([]);
+          if (filterData.locationOption === locationType.WORLD) {
+            setLocation(strings.worldTitleText);
+            tempFilter.location = strings.worldTitleText;
+          } else if (filterData.locationOption === locationType.HOME_CITY) {
+            setLocation(
+              authContext?.entity?.obj?.city.charAt(0).toUpperCase() +
+                authContext?.entity?.obj?.city.slice(1),
+            );
+            tempFilter.location =
+              authContext?.entity?.obj?.city.charAt(0).toUpperCase() +
+              authContext?.entity?.obj?.city.slice(1);
+          } else if (
+            filterData.locationOption === locationType.CURRENT_LOCATION
+          ) {
+            getLocation();
+            tempFilter.location = location;
+          } else if (filterData.locationOption === locationType.SEARCH_CITY) {
+            setLocation(filterData.searchCityLoc);
+            tempFilter.location = filterData.searchCityLoc;
+          }
+          setFilters({...tempFilter});
+          console.log('tempFilter-2===>', tempFilter);
+          applyFilter(tempFilter);
+        }}
+        onPressCancel={() => {
+          setSettingPopup(false);
+        }}></SearchModal>
     </SafeAreaView>
   );
 }
@@ -933,24 +417,19 @@ const styles = StyleSheet.create({
     flex: 1,
     margin: 15,
   },
-
   separator: {
     borderRightWidth: 20,
     borderColor: colors.whiteColor,
   },
-
   searchViewContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     height: 40,
     width: widthPercentageToDP('92%'),
-    borderRadius: 20,
-    shadowColor: colors.grayColor,
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.2,
-    shadowRadius: 1,
+    borderRadius: 25,
     elevation: 2,
-    backgroundColor: colors.offwhite,
+    backgroundColor: '#F5F5F5',
+    marginTop: 10,
   },
   settingImage: {
     height: 20,
@@ -960,167 +439,13 @@ const styles = StyleSheet.create({
     marginRight: 15,
   },
   searchView: {
-    backgroundColor: colors.grayBackgroundColor,
     height: 55,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-
-  radioButtonStyle: {
-    height: 22,
-    width: 22,
-    resizeMode: 'cover',
-    alignSelf: 'center',
-  },
-
-  filterTitle: {
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    color: colors.lightBlackColor,
-  },
-  filterTitleBold: {
-    fontSize: 16,
-    fontFamily: fonts.RBold,
-    color: colors.lightBlackColor,
-  },
-
-  bottomPopupContainer: {
-    flex: 1,
-    paddingBottom: Platform.OS === 'ios' ? 34 : 0,
-    backgroundColor: colors.whiteColor,
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    position: 'absolute',
-    bottom: 0,
-    width: '100%',
-
-    ...Platform.select({
-      ios: {
-        shadowColor: colors.googleColor,
-        shadowOffset: {width: 0, height: 3},
-        shadowOpacity: 0.5,
-        shadowRadius: 8,
-      },
-      android: {
-        elevation: 15,
-      },
-    }),
-  },
-
-  doneText: {
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    color: colors.themeColor,
-  },
-  locationText: {
-    fontSize: 16,
-    fontFamily: fonts.RMedium,
-    color: colors.lightBlackColor,
-  },
-  cancelText: {
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    color: colors.veryLightGray,
-  },
-  viewsContainer: {
-    height: 60,
-    justifyContent: 'space-between',
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginLeft: 20,
-    marginRight: 20,
-  },
-
-  resetButton: {
-    alignSelf: 'center',
-    backgroundColor: colors.whiteColor,
-    borderRadius: 5,
-    elevation: 5,
-    height: 30,
-    width: 113,
-    shadowOpacity: 0.16,
-    flexDirection: 'row',
-    shadowColor: colors.grayColor,
-    shadowOffset: {width: 0, height: 5},
-    shadowRadius: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 15,
-  },
-  resetTitle: {
-    fontSize: 12,
-    fontFamily: fonts.RMedium,
-    color: colors.lightBlackColor,
-    alignSelf: 'center',
-    // margin: 15,
-  },
-
-  searchCityContainer: {
-    backgroundColor: colors.lightGrey,
-    borderRadius: 5,
-    height: 40,
-    paddingLeft: 15,
-    paddingRight: 15,
-    width: widthPercentageToDP('75%'),
-    justifyContent: 'center',
-  },
-  sportsContainer: {
-    backgroundColor: colors.lightGrey,
-    borderRadius: 5,
-    height: 40,
-    paddingLeft: 15,
-    paddingRight: 15,
-    width: widthPercentageToDP('93%'),
-    justifyContent: 'center',
-  },
-  minFee: {
-    backgroundColor: colors.lightGrey,
-    borderRadius: 5,
-    height: 40,
-    paddingLeft: 15,
-    paddingRight: 15,
-    width: widthPercentageToDP('45%'),
-    justifyContent: 'center',
-    textAlign: 'center',
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    color: colors.lightBlackColor,
-  },
-  searchCityText: {
-    fontFamily: fonts.RRegular,
-    fontSize: 16,
-    color: colors.lightBlackColor,
   },
   searchTxt: {
     marginLeft: 15,
     fontSize: widthPercentageToDP('3.8%'),
     width: widthPercentageToDP('75%'),
-  },
-  listItem: {
-    // flexDirection: 'row',
-    // marginLeft: widthPercentageToDP('10%'),
-    // width: widthPercentageToDP('80%'),
-  },
-
-  languageList: {
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RRegular,
-    fontSize: widthPercentageToDP('4%'),
-  },
-  checkboxImg: {
-    width: 22,
-    height: 22,
-    resizeMode: 'contain',
-    alignSelf: 'center',
-  },
-  handleStyle: {
-    marginVertical: 15,
-    alignSelf: 'center',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 5,
-    width: 40,
-    borderRadius: 15,
-    backgroundColor: '#DADBDA',
   },
 });

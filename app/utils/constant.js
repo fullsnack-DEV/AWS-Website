@@ -173,6 +173,11 @@ export const locationType = {
   WORLD: 0,
   SEARCH_CITY: 3,
 };
+export const sortOptionType = {
+  RANDOM: 0,
+  LOW_TO_HIGH: 1,
+  HIGH_TO_LOW: 2,
+};
 
 export const game_data = [
   {

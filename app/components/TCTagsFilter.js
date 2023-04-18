@@ -25,7 +25,17 @@ function TCTagsFilter({dataSource, onTagCancelPress, filter, authContext}) {
         Object.keys(item)[0] !== 'sport_type' &&
         Object.keys(item)[0] !== 'sport_name' &&
         Object.keys(item)[0] !== 'locationType' &&
-        Object.keys(item)[0] !== 'sportType' && (
+        Object.keys(item)[0] !== 'locationOption' &&
+        Object.keys(item)[0] !== 'sportType' &&
+        Object.keys(item)[0] !== 'isSearchPlaceholder' &&
+        Object.keys(item)[0] !== 'minFee' &&
+        Object.keys(item)[0] !== 'maxFee' &&
+        Object.keys(item)[0] !== 'availableTime' &&
+        Object.keys(item)[0] !== 'sortOption' &&
+        Object.keys(item)[0] !== 'searchCityLoc' &&
+        Object.keys(item)[0] !== 'fromDateTime' &&
+        Object.keys(item)[0] !== 'fromDateTime' &&
+        Object.keys(item)[0] !== 'toDateTime' && (
           <View
             style={styles.textContainer}
             onPress={() => onTagCancelPress({item, index})}>

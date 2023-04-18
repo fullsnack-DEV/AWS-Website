@@ -48,7 +48,7 @@ import {
   getGroupIndex,
   getUserIndex,
 } from '../../api/elasticSearch';
-import {gameData} from '../../utils/constant';
+import {gameData, locationType} from '../../utils/constant';
 import ShortsCard from '../../components/ShortsCard';
 import {getHitSlop, widthPercentageToDP} from '../../utils';
 import TCChallengerCard from '../../components/TCChallengerCard';
@@ -1195,16 +1195,16 @@ export default function LocalHomeScreen({navigation, route}) {
     setLocationPopup(false);
   };
   const getLocationOption = () => {
-    if (selectedLocationOption === 0) {
+    if (selectedLocationOption === locationType.WORLD) {
       return 2;
     }
-    if (selectedLocationOption === 1) {
+    if (selectedLocationOption === locationType.HOME_CITY) {
       return 1;
     }
-    if (selectedLocationOption === 2) {
+    if (selectedLocationOption === locationType.CURRENT_LOCATION) {
       return 0;
     }
-    if (selectedLocationOption === 3) {
+    if (selectedLocationOption === locationType.SEARCH_CITY) {
       return 3;
     }
   };
@@ -1217,6 +1217,7 @@ export default function LocalHomeScreen({navigation, route}) {
           : filters.sport_type,
       sport_name: Utility.getSportName(filters, authContext),
       location,
+      locationOption: getLocationOption(),
     };
     return data;
   };
@@ -1507,10 +1508,8 @@ export default function LocalHomeScreen({navigation, route}) {
                 viewStyle={{marginTop: 20, marginBottom: 15}}
                 onPress={() => {
                   const data = getSortDataForNextScreen();
-                  const option = getLocationOption();
                   navigation.navigate('RefereesListScreen', {
                     filters: data,
-                    locationOption: option,
                   });
                 }}
               />
@@ -1539,10 +1538,8 @@ export default function LocalHomeScreen({navigation, route}) {
                 viewStyle={{marginTop: 20, marginBottom: 15}}
                 onPress={() => {
                   const data = getSortDataForNextScreen();
-                  const option = getLocationOption();
                   navigation.navigate('ScorekeeperListScreen', {
                     filters: data,
-                    locationOption: option,
                   });
                 }}
               />

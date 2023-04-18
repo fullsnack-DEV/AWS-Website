@@ -2618,4 +2618,6 @@ export default {
   filterRandom: 'en_Random',
   filterLowtoHighRefereeFee: 'en_Low to High Referee Fee',
   filterHightoLowRefereeFee: 'High to Low Referee Fee',
+  refereesAvailable: 'en_Referees Available',
+  scoreKeeperAvailable: 'en_Scorekeepers Available',
 };

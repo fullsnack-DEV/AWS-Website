@@ -152,7 +152,10 @@ function TCPlayerView({
             {data?.full_name}
           </Text>
           {showSport ? (
-            <Text style={styles.locationText} numberOfLines={1}>
+            <Text
+              style={styles.locationText}
+              numberOfLines={1}
+              ellipsizeMode={'tail'}>
               {data?.city} ·{' '}
               {sports.length === 1 &&
                 sports[0].sport_name?.charAt(0).toUpperCase() +
