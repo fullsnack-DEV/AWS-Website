@@ -69,7 +69,7 @@ export default function GroupInviteYouScreen({navigation, route}) {
       bodyParams.who_can_invite_for_club = value;
     }
 
-    if (type === strings.canPeopleInviteYouText) {
+    if (type === strings.whoCanInviteYouToEvent) {
       bodyParams.invite_me_event = value;
     }
 
@@ -106,8 +106,8 @@ export default function GroupInviteYouScreen({navigation, route}) {
       case strings.canClubInviteYou:
         return strings.canClubInviteYouToJoinClub;
 
-      case strings.canPeopleInviteYouText:
-        return strings.canPeopleInviteYouText;
+      case strings.whoCanInviteYouToEvent:
+        return strings.whoCanInviteToTheirEvent;
 
       default:
         return strings.whoCanInviteYouToDoubleTeam;
@@ -134,11 +134,7 @@ export default function GroupInviteYouScreen({navigation, route}) {
   return (
     <SafeAreaView style={{flex: 1}}>
       <ScreenHeader
-        title={
-          type === strings.canPeopleInviteYouText
-            ? strings.toWhatEventPeopleInviteText
-            : type
-        }
+        title={type}
         leftIcon={images.backArrow}
         leftIconPress={() => navigation.goBack()}
         containerStyle={styles.headerRow}
@@ -159,6 +155,9 @@ export default function GroupInviteYouScreen({navigation, route}) {
           keyExtractor={(item) => item.key}
           renderItem={renderWhocanJoinOption}
         />
+        <Text style={[styles.listText, {marginTop: 35}]}>
+          {strings.doublesTeamInviteDescriptionText}
+        </Text>
       </View>
     </SafeAreaView>
   );

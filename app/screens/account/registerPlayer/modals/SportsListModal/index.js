@@ -6,7 +6,7 @@ import images from '../../../../../Constants/ImagePath';
 import styles from './styles';
 
 const SportsListModal = ({
-  isVisible,
+  isVisible = false,
   closeList = () => {},
   sportsList = [],
   onNext = () => {},

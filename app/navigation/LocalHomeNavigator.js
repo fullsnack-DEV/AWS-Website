@@ -3572,18 +3572,7 @@ const LocalHomeNavigator = () => (
     <Stack.Screen
       name="DeactivateAccountScreen"
       component={DeactivateAccountScreen}
-      options={{
-        title: 'Deactivate Account',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
+      options={{headerShown: false}}
     />
     <Stack.Screen
       name="PauseGroupScreen"

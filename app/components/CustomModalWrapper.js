@@ -1,6 +1,13 @@
 // @flow
 import React, {useEffect, useState} from 'react';
-import {View, StyleSheet, Modal, Dimensions, Animated} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Modal,
+  Dimensions,
+  Animated,
+  Pressable,
+} from 'react-native';
 import {PanGestureHandler} from 'react-native-gesture-handler';
 import colors from '../Constants/Colors';
 import {ModalTypes} from '../Constants/GeneralConstants';
@@ -19,7 +26,7 @@ const CustomModalWrapper = ({
   modalType = ModalTypes.default,
   headerBottomBorderColor = colors.grayBackgroundColor,
   children = null,
-  Top = 50
+  Top = 50,
 }) => {
   const [showModal, setShowModal] = useState(false);
   const translateY = new Animated.Value(0);
@@ -38,7 +45,7 @@ const CustomModalWrapper = ({
     if (isVisible) {
       setTimeout(() => {
         setShowModal(true);
-      }, 200);
+      }, 30);
     }
   }, [isVisible]);
 
@@ -124,12 +131,15 @@ const CustomModalWrapper = ({
       transparent
       animationType="fade"
       onRequestClose={() => handleCloseModal()}>
-      <View
-        style={[
-          styles.parent,
-            {paddingTop: Top}
-        ]}>
-        {showModal && (
+      <Pressable
+        style={[styles.parent, {paddingTop: Top}]}
+        onPress={() => {
+          handleCloseModal();
+        }}>
+        {(modalType === ModalTypes.style7 ||
+          modalType === ModalTypes.style2 ||
+          modalType === ModalTypes.default) &&
+        showModal ? (
           <PanGestureHandler
             onGestureEvent={onPanGestureEvent}
             onEnded={() => handleCloseModal()}>
@@ -144,12 +154,31 @@ const CustomModalWrapper = ({
                   ],
                 },
               ]}>
-              {getModalHeader()}
-              <View style={[{padding: 25}, containerStyle]}>{children}</View>
+              <Pressable onPress={() => {}}>
+                {getModalHeader()}
+                <View style={[{padding: 25}, containerStyle]}>{children}</View>
+              </Pressable>
             </Animated.View>
           </PanGestureHandler>
+        ) : (
+          <Animated.View
+            style={[
+              getCardStyle(),
+              {
+                transform: [
+                  {
+                    translateY,
+                  },
+                ],
+              },
+            ]}>
+            <Pressable onPress={() => {}}>
+              {getModalHeader()}
+              <View style={[{padding: 25}, containerStyle]}>{children}</View>
+            </Pressable>
+          </Animated.View>
         )}
-      </View>
+      </Pressable>
     </Modal>
   );
 };

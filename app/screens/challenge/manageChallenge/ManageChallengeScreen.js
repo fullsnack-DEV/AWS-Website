@@ -26,6 +26,7 @@ import colors from '../../../Constants/Colors';
 import WrapperModal from '../../../components/IncomingChallengeSettingsModals/WrapperModal';
 import {patchPlayer} from '../../../api/Users';
 import {setAuthContextData} from '../../../utils';
+import {patchGroup} from '../../../api/Groups';
 
 export default function ManageChallengeScreen({navigation, route}) {
   const [settingObject, setSettingObject] = useState();
@@ -39,19 +40,29 @@ export default function ManageChallengeScreen({navigation, route}) {
   const {sportName, sportType, groupObj} = route.params;
 
   const getSettings = useCallback(
-    (user) => {
-      const sport = getEntitySport({
-        user,
-        role: Verbs.entityTypePlayer,
-        sportType,
-        sport: sportName,
-      });
+    (entity = {}) => {
+      if (
+        entity.entity_type === Verbs.entityTypePlayer ||
+        entity.entity_type === Verbs.entityTypeUser
+      ) {
+        const sport = getEntitySport({
+          user: entity,
+          role: Verbs.entityTypePlayer,
+          sportType,
+          sport: sportName,
+        });
 
-      if (sport?.setting) {
-        setSettingObject(sport.setting);
+        if (sport?.setting) {
+          setSettingObject(sport.setting);
+        } else {
+          const setting = getSportDefaultSettings(
+            sportName,
+            authContext.sports,
+          );
+          setSettingObject(setting);
+        }
       } else {
-        const setting = getSportDefaultSettings(sportName, authContext.sports);
-        setSettingObject(setting);
+        setSettingObject(entity.setting ?? {});
       }
     },
     [sportName, sportType, authContext.sports],
@@ -266,8 +277,8 @@ export default function ManageChallengeScreen({navigation, route}) {
     </View>
   );
 
-  const handleSave = (settings) => {
-    if (!groupObj) {
+  const updateUser = (settings) => {
+    if (!groupObj?.user_id) {
       return;
     }
     const updatedSettings = {...settingObject, ...settings};
@@ -278,7 +289,7 @@ export default function ManageChallengeScreen({navigation, route}) {
             ...item,
             setting: {
               ...updatedSettings,
-              ntrp: '1.0',
+              ntrp: updatedSettings.ntrp ?? '5.0',
             },
           };
         }
@@ -300,6 +311,35 @@ export default function ManageChallengeScreen({navigation, route}) {
 
     setloading(true);
     patchPlayer(body, authContext)
+      .then(async (response) => {
+        if (response.status === true) {
+          getSettings(response.payload);
+          await setAuthContextData(response.payload, authContext);
+        } else {
+          Alert.alert(strings.appName, response.messages);
+        }
+        setloading(false);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
+
+  const updateGroup = (settings) => {
+    if (!groupObj?.group_id) {
+      return;
+    }
+    const updatedSettings = {...settingObject, ...settings};
+    const body = {
+      ...groupObj,
+      setting: {...updatedSettings},
+    };
+
+    setloading(true);
+    patchGroup(groupObj.group_id, body, authContext)
       .then(async (response) => {
         if (response.status === true) {
           getSettings(response.payload);
@@ -383,7 +423,14 @@ export default function ManageChallengeScreen({navigation, route}) {
         {...modalObj}
         onSave={(settings) => {
           setShowModal(false);
-          handleSave(settings);
+          if (
+            groupObj.entity_type === Verbs.entityTypePlayer ||
+            groupObj.entity_type === Verbs.entityTypeUser
+          ) {
+            updateUser(settings);
+          } else {
+            updateGroup(settings);
+          }
         }}
         entityType={Verbs.entityTypePlayer}
       />

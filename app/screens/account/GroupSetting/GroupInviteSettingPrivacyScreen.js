@@ -51,7 +51,7 @@ export default function GroupInviteSettingPrivacyScreen({navigation, route}) {
     } else if (type === Verbs.entityTypeClub) {
       options = [strings.canClubInviteYou];
     } else if (type === Verbs.eventVerb) {
-      options = [strings.canPeopleInviteYouText];
+      options = [strings.whoCanInviteYouToEvent];
     }
     setSettingOptions(options);
   }, [type]);
@@ -68,7 +68,7 @@ export default function GroupInviteSettingPrivacyScreen({navigation, route}) {
       case strings.canClubInviteYou:
         return entity.who_can_invite_for_club ?? 1;
 
-      case strings.canPeopleInviteYouText:
+      case strings.whoCanInviteYouToEvent:
         return entity.invite_me_event ?? 1;
 
       default:

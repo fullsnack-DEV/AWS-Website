@@ -302,7 +302,7 @@ export default function PersonalInformationScreen({navigation, route}) {
         leftIcon={images.backArrow}
         leftIconPress={() => navigation.goBack()}
         isRightIconText
-        rightButtonText={strings.update}
+        rightButtonText={strings.updateText}
         onRightButtonPress={() => {
           onSavePress();
         }}
@@ -430,7 +430,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 15,
-    paddingTop: 22,
+    paddingTop: 25,
   },
   profileImageStyle: {
     height: 60,
@@ -441,7 +441,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 22,
+    marginBottom: 25,
   },
   image: {
     width: '100%',

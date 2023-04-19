@@ -69,6 +69,11 @@ const CongratulationsModal = ({
                       must: [
                         {term: {'registered_sports.is_active': true}},
                         {term: {'registered_sports.sport.keyword': sport}},
+                        {
+                          term: {
+                            'registered_sports.sport_type.keyword': sportType,
+                          },
+                        },
                       ],
                     },
                   },
@@ -76,7 +81,7 @@ const CongratulationsModal = ({
               },
               {
                 bool: {
-                  should: [{match: {sport_type: {query: sportType}}}],
+                  should: [],
                 },
               },
             ],
@@ -95,7 +100,7 @@ const CongratulationsModal = ({
       if (authContext.entity.auth.user?.state) {
         playersQuery.query.bool.must[1].bool.should.push({
           match: {
-            city: {query: authContext.entity.auth.user.state, boost: 3},
+            state: {query: authContext.entity.auth.user.state, boost: 3},
           },
         });
       }
@@ -103,7 +108,10 @@ const CongratulationsModal = ({
       if (authContext.entity.auth.user?.state_abbr) {
         playersQuery.query.bool.must[1].bool.should.push({
           match: {
-            city: {query: authContext.entity.auth.user.state_abbr, boost: 2},
+            state_abbr: {
+              query: authContext.entity.auth.user.state_abbr,
+              boost: 2,
+            },
           },
         });
       }
@@ -111,7 +119,7 @@ const CongratulationsModal = ({
       if (authContext.entity.auth.user?.country) {
         playersQuery.query.bool.must[1].bool.should.push({
           match: {
-            city: {query: authContext.entity.auth.user.country, boost: 1},
+            country: {query: authContext.entity.auth.user.country, boost: 1},
           },
         });
       }
@@ -120,9 +128,7 @@ const CongratulationsModal = ({
         .then((res) => {
           const newList =
             res.length > 0
-              ? res.filter(
-                  (item) => item.user_id !== authContext.entity.auth.user_id,
-                )
+              ? res.filter((item) => item.user_id !== authContext.entity.uid)
               : [];
           setTimeout(() => {
             setLoading(false);
@@ -165,6 +171,12 @@ const CongratulationsModal = ({
       },
     });
 
+    queryParams.query.bool.must[0].bool.should.push({
+      match: {
+        entity_type: {query: Verbs.entityTypeTeam},
+      },
+    });
+
     if (authContext.entity.auth.user?.city) {
       queryParams.query.bool.must[1].bool.should.push({
         match: {
@@ -175,8 +187,17 @@ const CongratulationsModal = ({
     if (authContext.entity.auth.user?.state) {
       queryParams.query.bool.must[1].bool.should.push({
         match: {
-          state_abbr: {
+          state: {
             query: authContext.entity.auth.user.state,
+          },
+        },
+      });
+    }
+    if (authContext.entity.auth.user?.state_abbr) {
+      queryParams.query.bool.must[1].bool.should.push({
+        match: {
+          state_abbr: {
+            query: authContext.entity.auth.user.state_abbr,
           },
         },
       });
@@ -188,11 +209,7 @@ const CongratulationsModal = ({
         },
       });
     }
-    queryParams.query.bool.must[1].bool.should.push({
-      match: {
-        entity_type: {query: 'team'},
-      },
-    });
+
     // queryParams.query.bool.must[1].bool.should.push({
     //   match: {
     //     entity_type: {query: 'club'},

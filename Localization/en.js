@@ -2714,4 +2714,12 @@ export default {
   leaveTeam: 'en_Leave Team',
   leaguesPlaceholder: 'en_Languages you can communicate in',
   updateText: 'en_Update',
+  activateText: 'en_Activate',
+  decativateText: 'en_Decativate',
+  reactivateMyAccount: 'en_REACTIVATE MY ACCOUNT',
+  accountAlert: 'en_Are you sure you want to {0} your account?',
+  whoCanInviteYouToEvent: 'en_Who Can Invite You to Event',
+  whoCanInviteToTheirEvent: 'en_Who can invite you to their event?',
+  doublesTeamInviteDescriptionText:
+    'en_A doubles team can be created by two players in sports such as tennis Doubles, Badminton Doubles, Table Tennis Doubles and so on.',
 };

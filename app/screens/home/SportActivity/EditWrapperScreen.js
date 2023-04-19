@@ -125,7 +125,6 @@ const EditWrapperScreen = ({navigation, route}) => {
     patchPlayer(data, authContext)
       .then(async (res) => {
         setLoading(false);
-        console.log({res});
         await setAuthContextData(res.payload, authContext);
         navigation.navigate('SportActivityHome', {
           sport: sportObj?.sport,
@@ -183,7 +182,7 @@ const EditWrapperScreen = ({navigation, route}) => {
     if (section === strings.certiTitle) {
       handleCertifcate();
     } else {
-      const newList = getEntitySportList(userData).map((ele) => {
+      const newList = getEntitySportList(userData, entityType).map((ele) => {
         if (ele.sport === sportObj?.sport) {
           return {...updatedSportObj};
         }

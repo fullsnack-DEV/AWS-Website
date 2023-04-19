@@ -1,6 +1,6 @@
 // @flow
 
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   StyleSheet,
@@ -15,6 +15,8 @@ import {strings} from '../../Localization/translation';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import images from '../Constants/ImagePath';
+import LanguagesListModal from '../screens/account/registerPlayer/modals/LanguagesListModal';
+import {languageList} from '../utils';
 
 import {heightMesurement, weightMesurement} from '../utils/constant';
 import AddressLocationModal from './AddressLocationModal/AddressLocationModal';
@@ -31,6 +33,29 @@ const EditBasicInfoComponent = ({
     country: 'Canada',
   });
   const [visibleAddressModal, setVisibleAddressModal] = useState(false);
+  const [languages, setLanguages] = useState([]);
+  const [languageName, setLanguageName] = useState('');
+  const [selectedLanguages, setSelectedLanguages] = useState([]);
+  const [showLanguageModal, setShowLanguageModal] = useState(false);
+
+  useEffect(() => {
+    const arr = languageList.map((item) => ({
+      ...item,
+      isChecked: false,
+    }));
+    setLanguages(arr);
+  }, []);
+
+  const handleLanguageSelection = (lang) => {
+    const newList = languages.map((item) => ({
+      ...item,
+      isChecked: item.id === lang.id ? !item.isChecked : item.isChecked,
+    }));
+    setLanguages([...newList]);
+
+    const list = newList.filter((item) => item.isChecked);
+    setSelectedLanguages([...list]);
+  };
 
   const handleLocation = (_location) => {
     const obj = {...userInfo};
@@ -282,14 +307,16 @@ const EditBasicInfoComponent = ({
       </View>
 
       <View style={{marginBottom: 30}}>
-        <Text style={styles.titleText}>
-          {strings.leaguesTitle.toUpperCase()}
-        </Text>
-        <TextInput
-          placeholder={strings.leaguesPlaceholder}
-          style={styles.inputField}
-          // value={}
-        />
+        <Text style={styles.titleText}>{strings.languages.toUpperCase()}</Text>
+        <Pressable onPress={() => setShowLanguageModal(true)}>
+          <TextInput
+            placeholder={strings.leaguesPlaceholder}
+            style={styles.inputField}
+            editable={false}
+            pointerEvents={'none'}
+            value={languageName}
+          />
+        </Pressable>
       </View>
 
       <View style={{marginBottom: 30}}>
@@ -328,6 +355,23 @@ const EditBasicInfoComponent = ({
         countryCodeObj={(obj) => {
           setSelectedCountryCode(obj);
           setCountryCodeVisible(false);
+        }}
+      />
+
+      <LanguagesListModal
+        isVisible={showLanguageModal}
+        closeList={() => setShowLanguageModal(false)}
+        languageList={languages}
+        onSelect={handleLanguageSelection}
+        onApply={() => {
+          setShowLanguageModal(false);
+          if (selectedLanguages.length > 0) {
+            let name = '';
+            selectedLanguages.forEach((item) => {
+              name += name ? `, ${item.language}` : item.language;
+            });
+            setLanguageName(name);
+          }
         }}
       />
 

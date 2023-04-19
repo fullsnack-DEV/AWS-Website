@@ -61,6 +61,7 @@ const Verbs = {
   reactivateVerb: 'reactivate',
   pauseVerb: 'pause',
   deactivateVerb: 'deactivate',
+  activateVerb: 'activate',
   challengeVerb: 'challenge',
   allVerb: 'All',
   soccer: 'Soccer',
@@ -125,12 +126,12 @@ const Verbs = {
   ACCEPTDECLINE: 'acceptdecline',
 
   setText: 'Set',
-  EVENT_FILTER_TIME_ANY : 0,
-  EVENT_FILTER_TIME_ONE_WEEK : 7,
-  EVENT_FILTER_TIME_ONE_MONTH : 30,
-  EVENT_FILTER_TIME_THREE_MONTH : 90,
+  EVENT_FILTER_TIME_ANY: 0,
+  EVENT_FILTER_TIME_ONE_WEEK: 7,
+  EVENT_FILTER_TIME_ONE_MONTH: 30,
+  EVENT_FILTER_TIME_THREE_MONTH: 90,
 
-  MAXIMUM_RECIPIENT_INVOICE:15
+  MAXIMUM_RECIPIENT_INVOICE: 15,
 };
 
 export default Verbs;

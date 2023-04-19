@@ -179,7 +179,6 @@ const SportActivityHome = ({navigation, route}) => {
           ? item.sport === sport && item.sport_type === sportType
           : item.sport === sport,
       );
-      // console.log({userData, obj});
       setSportObj(obj);
     }
   }, [userData, sport, sportType, entityType, isFocused]);
@@ -244,6 +243,7 @@ const SportActivityHome = ({navigation, route}) => {
       sport: sportObj?.sport,
       sportType: sportObj?.sport_type,
       privacyKey,
+      entityType,
     });
   };
 

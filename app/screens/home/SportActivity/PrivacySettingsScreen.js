@@ -26,7 +26,8 @@ const PrivacySettingsScreen = ({navigation, route}) => {
   const [loading, setLoading] = useState(false);
   const [sportObj, setSportObj] = useState({});
 
-  const {sportIcon, section, sport, sportType, privacyKey} = route.params;
+  const {sportIcon, section, sport, sportType, privacyKey, entityType} =
+    route.params;
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
@@ -67,6 +68,7 @@ const PrivacySettingsScreen = ({navigation, route}) => {
         navigation.navigate('SportActivityHome', {
           sport,
           sportType,
+          entityType,
           uid: userData.user_id,
         });
       })
