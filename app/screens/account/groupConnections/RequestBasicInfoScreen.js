@@ -390,9 +390,9 @@ export default function RequestBasicInfoScreen({navigation, route}) {
                 height: {
                   height: text,
                   height_type:
-                    memberInfo?.height?.height === undefined
+                    memberInfo.height?.height === undefined
                       ? heightMesurement[1].value
-                      : memberInfo?.height?.height_type,
+                      : memberInfo.height?.height_type,
                 },
               });
             }}
@@ -405,7 +405,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
             value: null,
           }}
           items={heightMesurement}
-          value={memberInfo?.height?.height_type}
+          value={memberInfo.height?.height_type}
           onValueChange={(value) => {
             setMemberInfo({
               ...memberInfo,
@@ -484,7 +484,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
                 },
               });
             }}
-            value={memberInfo?.weight?.weight}
+            value={memberInfo.weight?.weight}
           />
         </View>
         <RNPickerSelect
@@ -497,12 +497,12 @@ export default function RequestBasicInfoScreen({navigation, route}) {
             setMemberInfo({
               ...memberInfo,
               weight: {
-                weight: memberInfo?.weight?.weight,
+                weight: memberInfo.weight?.weight,
                 weight_type: value,
               },
             });
           }}
-          value={memberInfo?.weight?.weight_type}
+          value={memberInfo.weight?.weight_type}
           useNativeAndroidPickerStyle={false}
           style={{
             placeholder: {

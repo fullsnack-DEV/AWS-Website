@@ -31,20 +31,20 @@ import images from '../../../../Constants/ImagePath';
 import Verbs from '../../../../Constants/Verbs';
 
 export default function RespondToInviteScreen({navigation, route}) {
-  const [teamObject, SetteamObject] = useState(route?.params?.teamObject);
+  const [teamObject, SetteamObject] = useState(route.params.teamObject);
 
   const authContext = useContext(AuthContext);
   // eslint-disable-next-line no-unused-vars
   const entity = authContext.entity;
   const [loading, setloading] = useState(false);
   const [sportsetting, Setsportsetting] = useState(
-    route?.params?.incomingchallengeSettings,
+    route.params?.incomingchallengeSettings,
   );
 
   useEffect(() => {
-    SetteamObject(route?.params?.teamObject);
+    SetteamObject(route.params.teamObject);
 
-    Setsportsetting(teamObject?.setting);
+    Setsportsetting(teamObject.setting);
   }, []);
 
   useEffect(() => {
@@ -52,7 +52,7 @@ export default function RespondToInviteScreen({navigation, route}) {
       ...teamObject.setting,
       ...route?.params?.incomingchallengeSettings,
     });
-  }, [route?.params?.incomingchallengeSettings]);
+  }, [route.params?.incomingchallengeSettings]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -170,7 +170,7 @@ export default function RespondToInviteScreen({navigation, route}) {
                 fontFamily: fonts.RMedium,
                 lineHeight: 30,
               }}>
-              {format(strings.sentYouaRequest, teamObject?.player1.full_name)}
+              {format(strings.sentYouaRequest, teamObject.player1.full_name)}
             </Text>
           )}
         </View>
@@ -265,12 +265,12 @@ export default function RespondToInviteScreen({navigation, route}) {
           <View>
             <TCPlayerImageInfo
               title={strings.playerTitle}
-              player1Image={teamObject?.player1?.thumbnail}
-              player2Image={teamObject?.player2?.thumbnail}
-              player1Name={teamObject?.player1?.full_name}
-              player2Name={teamObject?.player2?.full_name}
-              player1City={teamObject?.player1?.city}
-              player2City={teamObject?.player2?.city}
+              player1Image={teamObject.player1.thumbnail}
+              player2Image={teamObject.player2.thumbnail}
+              player1Name={teamObject.player1.full_name}
+              player2Name={teamObject.player2.full_name}
+              player1City={teamObject.player1?.city}
+              player2City={teamObject.player2?.city}
               marginLeft={25}
               marginRight={25}
               marginTop={10}
@@ -389,9 +389,9 @@ export default function RespondToInviteScreen({navigation, route}) {
                       text: strings.decline.toLowerCase(),
                       onPress: () =>
                         onAcceptDecline(
-                          'decline',
+                          Verbs.decline,
 
-                          teamObject?.group_id,
+                          teamObject.group_id,
                         ),
                     },
                   ],
