@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, TextInput, View} from 'react-native';
+import {ScrollView, StyleSheet, TextInput, View} from 'react-native';
 
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
@@ -21,21 +21,26 @@ function TCTextField({
 }) {
   return (
     <View style={[styles.textContainer, style, {height, width}]}>
-      <TextInput
-        testID={testID}
-        style={[styles.textInput, textStyle, {height}]}
-        placeholder={placeholder}
-        placeholderTextColor={placeholderTextColor}
-        autoCapitalize={'none'}
-        autoCorrect={false}
-        editable={editable}
-        secureTextEntry={secureText}
-        keyboardType={keyboardType}
-        multiline={multiline}
-        textAlignVertical={multiline ? 'top' : 'center'}
-        {...otherProps}
-      />
-      {leftView}
+      <ScrollView
+        horizontal={true}
+        showsHorizontalScrollIndicator={false}
+        pagingEnabled={true}>
+        <TextInput
+          testID={testID}
+          style={[styles.textInput, textStyle, {height}]}
+          placeholder={placeholder}
+          placeholderTextColor={placeholderTextColor}
+          autoCapitalize={'none'}
+          autoCorrect={false}
+          editable={editable}
+          secureTextEntry={secureText}
+          keyboardType={keyboardType}
+          multiline={multiline}
+          textAlignVertical={multiline ? 'top' : 'center'}
+          {...otherProps}
+        />
+        {leftView}
+      </ScrollView>
     </View>
   );
 }

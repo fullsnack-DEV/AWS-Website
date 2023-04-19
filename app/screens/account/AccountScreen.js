@@ -83,6 +83,7 @@ import MemberListModal from '../../components/MemberListModal/MemberListModal';
 import {getUserIndex} from '../../api/elasticSearch';
 import SportListMultiModal from '../../components/SportListMultiModal/SportListMultiModal';
 import SendNewInvoiceModal from './Invoice/SendNewInvoiceModal';
+import TCKeyboardView from '../../components/TCKeyboardView';
 
 // FIXME: fix all warning in useCallBack()
 export default function AccountScreen({navigation, route}) {
@@ -364,8 +365,9 @@ export default function AccountScreen({navigation, route}) {
       });
   }, [authContext, clubList]);
 
-  const actionOnTeamRequest = (type, requestID) => {
+  const actionOnTeamRequest = (type, requestID, authContext) => {
     setLoading(true);
+
     actionOnGroupRequest(type, requestID, authContext)
       .then((response) => {
         setLoading(false);
@@ -404,6 +406,7 @@ export default function AccountScreen({navigation, route}) {
       })
       .catch((e) => {
         setLoading(false);
+
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
@@ -708,7 +711,7 @@ export default function AccountScreen({navigation, route}) {
   const validateIfDoubleExist = (p1, p2, _sport) => {
     const obj = {
       player1: p1,
-      player2: p2,
+      player2: p2.user_id,
       sport: _sport.sport,
       sport_type: _sport.sport_type,
       entity_type: Verbs.entityTypeTeam,
@@ -763,22 +766,32 @@ export default function AccountScreen({navigation, route}) {
             Platform.OS === 'android' ? response.payload.user_message : '',
             [
               {
-                text: strings.acceptRequet,
-                onPress: () =>
-                  actionOnTeamRequest(
-                    'accept',
-                    response.payload.data.request_id,
-                    authContext,
-                  ),
+                text: strings.respondToRequest,
+                onPress: () => {
+                  setMemberListModal(false);
+                  const teamObject = response.payload.data;
+
+                  delete teamObject.player1;
+                  delete teamObject.player2;
+
+                  teamObject.player1 = {
+                    full_name: p2.full_name,
+
+                    thumbnail: p2.thumbnail,
+                  };
+
+                  teamObject.player2 = {
+                    full_name: authContext.entity.obj.full_name,
+                    thumbnail: authContext.entity.obj.thumbnail,
+                  };
+                  teamObject.group_id = response.payload.data.request_id;
+
+                  navigation.navigate('RespondToInviteScreen', {
+                    teamObject: teamObject,
+                  });
+                },
               },
-              {
-                text: strings.declineRequest,
-                onPress: () =>
-                  actionOnTeamRequest(
-                    'decline',
-                    response.payload.data.request_id,
-                  ),
-              },
+
               {
                 text: strings.cancel,
                 onPress: () => console.log('PRessed'),
@@ -845,7 +858,11 @@ export default function AccountScreen({navigation, route}) {
         {
           text: strings.withDrawRequest,
           onPress: () =>
-            actionOnTeamRequest(Verbs.cancelVerb, rowItem?.option?.request_id),
+            actionOnTeamRequest(
+              Verbs.cancelVerb,
+              rowItem?.option?.request_id,
+              authContext,
+            ),
         },
       ],
 
@@ -1794,7 +1811,7 @@ export default function AccountScreen({navigation, route}) {
         onItemPress={(item) => {
           validateIfDoubleExist(
             authContext.entity.auth.user.user_id,
-            item.user_id,
+            item,
             doubleSport,
             authContext,
           );

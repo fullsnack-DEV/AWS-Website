@@ -60,7 +60,7 @@ const SportsListModal = ({
           <View style={styles.headerRow}>
             <View style={{flex: 1}}>
               <Pressable style={{width: 26, height: 26}} onPress={closeList}>
-                <Image source={images.crossImage} style={styles.image} />
+                <Image source={images.backArrow} style={styles.image} />
               </Pressable>
             </View>
             <View style={styles.headerTitleContainer}>

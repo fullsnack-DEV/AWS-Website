@@ -1,4 +1,4 @@
-import React, {useState, useContext, useLayoutEffect} from 'react';
+import React, {useState, useContext, useLayoutEffect, useEffect} from 'react';
 import {
   StyleSheet,
   View,
@@ -7,6 +7,7 @@ import {
   Alert,
   Image,
   TouchableWithoutFeedback,
+  Pressable,
 } from 'react-native';
 
 import {format} from 'react-string-format';
@@ -20,7 +21,6 @@ import {strings} from '../../../../../Localization/translation';
 import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
 
-import TCFormProgress from '../../../../components/TCFormProgress';
 import TCThinDivider from '../../../../components/TCThinDivider';
 import TCPlayerImageInfo from '../../../../components/TCPlayerImageInfo';
 import TCSmallButton from '../../../../components/TCSmallButton';
@@ -31,11 +31,28 @@ import images from '../../../../Constants/ImagePath';
 import Verbs from '../../../../Constants/Verbs';
 
 export default function RespondToInviteScreen({navigation, route}) {
-  const [teamObject] = useState(route?.params?.teamObject);
+  const [teamObject, SetteamObject] = useState(route?.params?.teamObject);
+
   const authContext = useContext(AuthContext);
   // eslint-disable-next-line no-unused-vars
   const entity = authContext.entity;
   const [loading, setloading] = useState(false);
+  const [sportsetting, Setsportsetting] = useState(
+    route?.params?.incomingchallengeSettings,
+  );
+
+  useEffect(() => {
+    SetteamObject(route?.params?.teamObject);
+
+    Setsportsetting(teamObject?.setting);
+  }, []);
+
+  useEffect(() => {
+    Setsportsetting({
+      ...teamObject.setting,
+      ...route?.params?.incomingchallengeSettings,
+    });
+  }, [route?.params?.incomingchallengeSettings]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -48,8 +65,10 @@ export default function RespondToInviteScreen({navigation, route}) {
   }, [navigation]);
 
   const onAcceptDecline = (type, groupId) => {
+    const setting = {...sportsetting};
+
     setloading(true);
-    actionOnGroupRequest(type, groupId, authContext)
+    actionOnGroupRequest(type, groupId, authContext, {setting})
       .then((response) => {
         setloading(false);
 
@@ -105,9 +124,25 @@ export default function RespondToInviteScreen({navigation, route}) {
 
   const placeHolder = images.teamPlaceholderSmall;
 
+  const onReviewIncomingSetting = () => {
+    navigation.navigate('IncomingChallengeSettings', {
+      playerData: {},
+      sportName: getSportName(teamObject, authContext),
+
+      sportType: teamObject.sport_type,
+      sport: teamObject.sport,
+      settingObj: sportsetting,
+
+      settingType: teamObject.setting.default_setting_key,
+      fromRespondToInvite: true,
+      teamgrpId: teamObject.group_id,
+      fromCreateTeam: true,
+    });
+  };
+
   return (
     <>
-      <TCFormProgress totalSteps={3} curruentStep={3} />
+      {/* <TCFormProgress totalSteps={3} curruentStep={2} /> */}
 
       <ScrollView
         style={styles.mainContainer}
@@ -135,10 +170,7 @@ export default function RespondToInviteScreen({navigation, route}) {
                 fontFamily: fonts.RMedium,
                 lineHeight: 30,
               }}>
-              {format(
-                strings.sentYouaRequest,
-                route.params.teamObject?.player1.full_name,
-              )}
+              {format(strings.sentYouaRequest, teamObject?.player1.full_name)}
             </Text>
           )}
         </View>
@@ -213,7 +245,7 @@ export default function RespondToInviteScreen({navigation, route}) {
                   fontFamily: fonts.RBold,
                   fontSize: 16,
                 }}>
-                {route.params.teamObject.group_name?.charAt(0)}
+                {route?.params?.teamObject?.group_name?.charAt(0)}
               </Text>
             </View>
           </View>
@@ -302,7 +334,23 @@ export default function RespondToInviteScreen({navigation, route}) {
           {teamObject?.descriptions}
         </Text>
 
-        <View style={{flex: 1}} />
+        <Pressable
+          onPress={() => onReviewIncomingSetting()}
+          style={{
+            alignSelf: 'flex-end',
+            marginRight: 24,
+            marginBottom: 40,
+          }}>
+          <Text
+            style={{
+              fontSize: 16,
+              lineHeight: 24,
+              fontFamily: fonts.RMedium,
+              textDecorationLine: 'underline',
+            }}>
+            {strings.reviewIncomingchallengetitle}
+          </Text>
+        </Pressable>
 
         {teamObject?.status !== TeamStatus.new ? null : (
           <View style={styles.bottomButtonContainer}>
@@ -340,7 +388,11 @@ export default function RespondToInviteScreen({navigation, route}) {
                     {
                       text: strings.decline.toLowerCase(),
                       onPress: () =>
-                        onAcceptDecline('decline', teamObject?.group_id),
+                        onAcceptDecline(
+                          'decline',
+
+                          teamObject?.group_id,
+                        ),
                     },
                   ],
                   {cancelable: false},
@@ -354,19 +406,6 @@ export default function RespondToInviteScreen({navigation, route}) {
     </>
   );
 }
-
-// {teamObject?.status !== TeamStatus.new ? (
-//   <Text
-//     style={{
-//       marginBottom: 50,
-//       marginLeft: 15,
-//       fontSize: 20,
-//       fontFamily: fonts.RRegular,
-//       color: colors.lightBlackColor,
-//     }}>
-//     {getStatusMessage()}
-//   </Text>
-// ) : (
 
 const styles = StyleSheet.create({
   mainContainer: {

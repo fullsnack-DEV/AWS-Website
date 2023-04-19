@@ -69,9 +69,6 @@ import errorCode from '../../Constants/errorCode';
 import SendRequestModal from '../../components/SendRequestModal/SendRequestModal';
 
 function NotificationsListScreen({navigation}) {
-
-
-
   const actionSheet = useRef();
   const [currentTab, setCurrentTab] = useState();
   const [groupList, setGroupList] = useState([]);
@@ -85,12 +82,13 @@ function NotificationsListScreen({navigation}) {
   const [isRulesModalVisible, setIsRulesModalVisible] = useState(false);
   const [groupData, setGroupData] = useState();
   const isFocused = useIsFocused();
-  const [isNotificationListName, setIsNotificationListName] = useState(0)
+  const [isNotificationListName, setIsNotificationListName] = useState(0);
 
   const [loading, setloading] = useState(false);
   const [firstTimeLoading, setFirstTimeLoading] = useState(true);
   const [loadMore, setLoadMore] = useState(false);
   const [IDLT, setIDLT] = useState();
+
   const onDetailPress = (item) => {
     if (activeScreen) {
       const verb = item.activities[0].verb;
@@ -888,7 +886,6 @@ function NotificationsListScreen({navigation}) {
   };
 
   const RenderSections = ({item, section}) => {
-   
     if (section.section === strings.pendingrequests) {
       return renderPendingRequestComponent({item: {...item, type: 'request'}});
     }
@@ -1129,16 +1126,11 @@ function NotificationsListScreen({navigation}) {
     }
   };
 
-  useEffect(()=>{
-
-    if(mainNotificationsList && mainNotificationsList.length){
-
-      setIsNotificationListName(mainNotificationsList.length)
-
+  useEffect(() => {
+    if (mainNotificationsList && mainNotificationsList.length) {
+      setIsNotificationListName(mainNotificationsList.length);
     }
-    
-  },[mainNotificationsList])
-
+  }, [mainNotificationsList]);
 
   return (
     <SafeAreaView style={{flex: 1}}>
@@ -1154,15 +1146,15 @@ function NotificationsListScreen({navigation}) {
         groupData={groupData}
         textstring1={format(
           strings.responseToRequesttxt1,
-          groupData?.player2?.full_name,
+          groupData?.player1?.full_name,
         )}
         textstring2={format(
           strings.responseToRequesttxt2,
-          groupData?.player2?.full_name,
+          groupData?.player1?.full_name,
         )}
         textstring3={format(
           strings.responseToRequesttxt3,
-          groupData?.player2?.full_name,
+          groupData?.player1?.full_name,
         )}
         btntext={strings.nextTitle}
       />
@@ -1186,17 +1178,16 @@ function NotificationsListScreen({navigation}) {
                   flex: 1,
                   flexDirection: 'row',
                   justifyContent: 'space-between',
-               
                 }}>
-                  <View style={styles.subHeader}> 
-                <Text style={styles.header}>{section}</Text>
-                {
-                  section === strings.pendingrequests && (
-                    <View style={{backgroundColor:'red', borderRadius:20}}>
-                      <Text style={styles.popUp}>{isNotificationListName}+</Text>
+                <View style={styles.subHeader}>
+                  <Text style={styles.header}>{section}</Text>
+                  {section === strings.pendingrequests && (
+                    <View style={{backgroundColor: 'red', borderRadius: 20}}>
+                      <Text style={styles.popUp}>
+                        {isNotificationListName}+
+                      </Text>
                     </View>
-                  )
-                }
+                  )}
                 </View>
                 {section === strings.pendingrequests && (
                   <Image source={images.nextArrow} style={styles.nextArrow} />
@@ -1222,7 +1213,7 @@ function NotificationsListScreen({navigation}) {
           }}>
           <Text style={styles.noEventText}>{strings.noNotification}</Text>
           <Text style={styles.dataNotFoundText}>
-            {strings.newNotificationn} 
+            {strings.newNotificationn}
           </Text>
         </View>
       )}
@@ -1337,17 +1328,17 @@ const styles = StyleSheet.create({
     fontSize: 12,
     padding: 0,
     // alignContent: 'center',
-    width:30,
+    width: 30,
     color: colors.whiteColor,
-    textAlign:'center',
+    textAlign: 'center',
     // borderRadius:50
   },
 
-  subHeader:{
-    display:'flex',
-    alignItems:'center',
-    gap:5,
-    flexDirection:'row'
+  subHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 5,
+    flexDirection: 'row',
   },
 
   listItemSeparatorStyle: {

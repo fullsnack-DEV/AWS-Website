@@ -67,7 +67,7 @@ const AvailabilityModal = ({
                 } else if (entityType === Verbs.entityTypeScorekeeper) {
                   obj = {scorekeeper_availibility: item.value};
                 } else {
-                  obj = {availability: item.value};
+                  obj = {availibility: item.value};
                 }
                 onChange(obj);
               }}>

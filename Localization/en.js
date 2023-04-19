@@ -2577,7 +2577,7 @@ export default {
   deleteRecurringEvent: 'en_Delete recurring event',
   alredyRequestSend: `en_You already sent a request to create a team with this player in {0}.`,
   sentYouaRequest: `en_{0} sent you a request to create a team together. `,
-  respondToRequest: 'en_Respond to request',
+  respondToRequest: 'en_Respond to Request',
   areYouSureDeclineRequest: 'en_Are you sure you want to decline the request? ',
   requestWasDeclined: 'en_The request Was alredy declined.',
   thisRequestIsCancelled: 'en_This request was canceled.',
@@ -2722,4 +2722,9 @@ export default {
   whoCanInviteToTheirEvent: 'en_Who can invite you to their event?',
   doublesTeamInviteDescriptionText:
     'en_A doubles team can be created by two players in sports such as tennis Doubles, Badminton Doubles, Table Tennis Doubles and so on.',
+  updateBtnText: 'en_Update',
+  locationValidation: 'en_Please enter all the location parameter.',
+  allphoneParameter: 'en_Please fill all phone number parameter.',
+  basicInfoItemSent: 'en_The basic info items were  sent',
+  reviewIncomingchallengetitle: 'en_Review Incoming Challenge Settings >',
 };

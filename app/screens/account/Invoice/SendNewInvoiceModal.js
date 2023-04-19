@@ -1,4 +1,6 @@
 // @flow
+/* eslint-disable no-else-return */
+
 import React, {useState, useContext} from 'react';
 import {
   FlatList,
@@ -15,6 +17,7 @@ import {
 } from 'react-native';
 
 import moment from 'moment';
+
 import images from '../../../Constants/ImagePath';
 import {strings} from '../../../../Localization/translation';
 import colors from '../../../Constants/Colors';
@@ -141,9 +144,7 @@ const SendNewInvoiceModal = ({
       const recipients = selectedRecipients.map((entity) => {
         if (entity.user_id) {
           return {entity_id: entity.user_id, entity_type: Verbs.entityTypeUser};
-        } 
-        /* eslint-disable no-else-return */
-        else {
+        } else {
           return {entity_id: entity.group_id, entity_type: entity.entity_type};
         }
       });
@@ -214,7 +215,7 @@ const SendNewInvoiceModal = ({
     setSelectedRecipients(recipients);
     setShowRecipientsModal(false);
   };
-  
+
   /* eslint-disable no-unused-vars */
   const removeRecipient = ({item, index}) => {
     selectedRecipients.splice(index, 1);
@@ -332,9 +333,7 @@ const SendNewInvoiceModal = ({
                 paddingHorizontal: 10,
                 color: colors.lightBlackColor,
               }}>
-              {selectedDueDate
-                ? moment(selectedDueDate).format('LLL')
-                : ''}
+              {selectedDueDate ? moment(selectedDueDate).format('LLL') : ''}
             </Text>
           </TouchableOpacity>
         </View>
@@ -345,7 +344,12 @@ const SendNewInvoiceModal = ({
             onPress={() => {
               Alert.alert(strings.datetimesetting);
             }}>
-            <Text style={styles.timeZoneUnderlineText}>Vancouver</Text>
+            <Text style={styles.timeZoneUnderlineText}>
+              {Intl.DateTimeFormat()
+                ?.resolvedOptions()
+                .timeZone.split('/')
+                .pop()}
+            </Text>
           </TouchableOpacity>
         </View>
         {/* Code for Description */}

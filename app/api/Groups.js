@@ -40,10 +40,16 @@ export const getGroupName = (name, city, authContext) =>
     authContext,
   });
 
-export const actionOnGroupRequest = (requestType, groupID, authContext) =>
+export const actionOnGroupRequest = (
+  requestType,
+  groupID,
+  authContext,
+  params,
+) =>
   makeAPIRequest({
     method: 'post',
     url: `${Config.BASE_URL}/groups/request/${requestType}/${groupID}`,
+    data: params,
     authContext,
   });
 

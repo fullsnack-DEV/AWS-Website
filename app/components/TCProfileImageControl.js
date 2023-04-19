@@ -12,7 +12,7 @@ function TCProfileImageControl({
   profileImagePlaceholder = images.profilePlaceHolder,
   bgImage,
   profileImage,
-  buttonImage = images.certificateUpload,
+  buttonImage = images.uploadCameraIcon,
   bgImageStyle,
   profileImageStyle,
   profileImageContainerStyle,
