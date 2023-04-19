@@ -41,6 +41,8 @@ export default function App() {
   }, []);
 
   const [selectedLocation, setSelectedLoaction] = useState('');
+  const [managedEntities, setManagedEntityList] = useState([]);
+  const [unreadNotificationCount, setNotificationCount] = useState({});
 
   async function requestUserPermission() {
     const authStatus = await messaging().requestPermission();
@@ -148,6 +150,14 @@ export default function App() {
     setTimeout(() => setAlertData(null), 1000);
   };
 
+  const setUnreadNotificationCount = useCallback(
+    (notificationsCount = {}, managedEntitiesList = []) => {
+      setNotificationCount(notificationsCount);
+      setManagedEntityList(managedEntitiesList);
+    },
+    [],
+  );
+
   const authValue = useMemo(
     () => ({
       role,
@@ -166,6 +176,9 @@ export default function App() {
       networkConnected,
       showNetworkAlert,
       showAlert,
+      setUnreadNotificationCount,
+      managedEntities,
+      unreadNotificationCount,
     }),
     [
       role,
@@ -177,6 +190,9 @@ export default function App() {
       setTokenData,
       updateAuth,
       networkConnected,
+      setUnreadNotificationCount,
+      managedEntities,
+      unreadNotificationCount,
     ],
   );
 

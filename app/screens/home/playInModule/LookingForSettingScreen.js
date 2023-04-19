@@ -189,7 +189,11 @@ export default function LookingForSettingScreen({navigation, route}) {
         <View style={{alignItems: 'center', justifyContent: 'center'}}>
           <View style={{width: 240, height: 230}}>
             <Image
-              source={images.lookingForImg}
+              source={
+                sportObj?.sport_type === Verbs.singleSport
+                  ? images.lookingForClubImg
+                  : images.lookingForImg
+              }
               style={{width: '100%', height: '100%', resizeMode: 'cover'}}
             />
           </View>

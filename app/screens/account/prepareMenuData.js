@@ -106,73 +106,73 @@ const paymentMethodMenu = () => [
   },
 ];
 
-const invoicesMenuForUser = () =>  [
-    {
-      key: strings.invoicesTitle,
-      icon: images.invoiceIcon,
-      member: [
-        {
-          option: strings.invoicereceived,
-          icon: images.invoiceIcon,
-          navigateTo: {
-            screenName: 'Account',
-            data: {
-              screen: 'PaymentMethodsScreen',
-              params: {
-                comeFrom: 'AccountScreen',
-              },
-            },
-          },
-        },
-        {
-          option: strings.invoicesent,
-          icon: images.invoiceIcon,
-          navigateTo: {
-            screenName: 'PayoutMethodList',
-            data: {
+const invoicesMenuForUser = () => [
+  {
+    key: strings.invoicesTitle,
+    icon: images.invoiceIcon,
+    member: [
+      {
+        option: strings.invoicereceived,
+        icon: images.invoiceIcon,
+        navigateTo: {
+          screenName: 'Account',
+          data: {
+            screen: 'PaymentMethodsScreen',
+            params: {
               comeFrom: 'AccountScreen',
             },
           },
         },
-      ],
-    },
-  ];
+      },
+      {
+        option: strings.invoicesent,
+        icon: images.invoiceIcon,
+        navigateTo: {
+          screenName: 'PayoutMethodList',
+          data: {
+            comeFrom: 'AccountScreen',
+          },
+        },
+      },
+    ],
+  },
+];
 
-const invoicesMenuForGroup = () =>  [
-    {
-      key: strings.invoicesTitle,
-      icon: images.invoiceIcon,
-      member: [
-        {
-          option: strings.sendnewinvoice,
-          icon: images.invoiceIcon,
-        },
-        {
-          option: strings.invoicereceived,
-          icon: images.invoiceIcon,
-          navigateTo: {
-            screenName: 'Account',
-            data: {
-              screen: 'InvoiceScreen',
-              params: {
-                comeFrom: 'AccountScreen',
-              },
-            },
-          },
-        },
-        {
-          option: strings.invoicesent,
-          icon: images.invoiceIcon,
-          navigateTo: {
-            screenName: 'InvoiceScreen',
-            data: {
+const invoicesMenuForGroup = () => [
+  {
+    key: strings.invoicesTitle,
+    icon: images.invoiceIcon,
+    member: [
+      {
+        option: strings.sendnewinvoice,
+        icon: images.invoiceIcon,
+      },
+      {
+        option: strings.invoicereceived,
+        icon: images.invoiceIcon,
+        navigateTo: {
+          screenName: 'Account',
+          data: {
+            screen: 'InvoiceScreen',
+            params: {
               comeFrom: 'AccountScreen',
             },
           },
         },
-      ],
-    },
-  ];
+      },
+      {
+        option: strings.invoicesent,
+        icon: images.invoiceIcon,
+        navigateTo: {
+          screenName: 'InvoiceScreen',
+          data: {
+            comeFrom: 'AccountScreen',
+          },
+        },
+      },
+    ],
+  },
+];
 
 export const prepareUserMenu = (authContext, teams, clubs, baseUrl) => {
   const userMenu = [
@@ -291,7 +291,7 @@ export const prepareUserMenu = (authContext, teams, clubs, baseUrl) => {
   return userMenu;
 };
 
-export const prepareTeamMenu = (authContext, teams, clubs) => {
+export const prepareTeamMenu = (authContext, clubs) => {
   const teamMenu = [
     {
       key: strings.reservationsTitleText,
@@ -347,16 +347,13 @@ export const prepareTeamMenu = (authContext, teams, clubs) => {
       icon: images.accountSettingPrivacy,
       navigateTo: {
         screenName: 'GroupSettingPrivacyScreen',
-        data: {
-          groups: teams,
-        },
       },
     },
   ];
   return teamMenu;
 };
 
-export const prepareClubMenu = (authContext, teams, clubs) => {
+export const prepareClubMenu = (authContext, teams) => {
   const clubMenu = [
     {
       key: strings.membersTitle,
@@ -385,9 +382,6 @@ export const prepareClubMenu = (authContext, teams, clubs) => {
       icon: images.accountSettingPrivacy,
       navigateTo: {
         screenName: 'GroupSettingPrivacyScreen',
-        data: {
-          groups: clubs,
-        },
       },
     },
   ];

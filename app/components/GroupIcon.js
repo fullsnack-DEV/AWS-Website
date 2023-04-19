@@ -21,29 +21,42 @@ const GroupIcon = ({
     } else if (entityType === Verbs.entityTypeTeam) {
       background = images.teamPlaceholderSmall;
       placeHolder = images.newTeamIcon;
+    } else if (
+      entityType === Verbs.entityTypePlayer ||
+      entityType === Verbs.entityTypeUser
+    ) {
+      background = images.profilePlaceHolder;
+      placeHolder = '';
     }
     return {background, placeHolder};
   };
-  return (
+  return imageUrl ? (
     <View style={[styles.parent, containerStyle]}>
-      {imageUrl ? (
-        <>
-          <Image source={{uri: imageUrl}} style={styles.image} />
-          <View style={styles.placeHolder}>
-            <Image source={getPlaceholder().placeHolder} style={styles.image} />
-          </View>
-        </>
-      ) : (
-        <View style={styles.parent}>
-          <Image source={getPlaceholder().background} style={styles.image} />
-          <View style={styles.name}>
-            <Text style={styles.text}>{groupName[0]}</Text>
-          </View>
-          <View style={styles.placeHolder}>
-            <Image source={getPlaceholder().placeHolder} style={styles.image} />
-          </View>
+      <Image
+        source={
+          imageUrl && typeof imageUrl === 'string' ? {uri: imageUrl} : imageUrl
+        }
+        style={styles.image}
+      />
+      <View style={styles.placeHolder}>
+        <Image source={getPlaceholder().placeHolder} style={styles.image} />
+      </View>
+    </View>
+  ) : (
+    <View style={[styles.parent, containerStyle]}>
+      <Image source={getPlaceholder().background} style={styles.image} />
+      {entityType === Verbs.entityTypePlayer ||
+      entityType === Verbs.entityTypeUser ? null : (
+        <View style={styles.name}>
+          <Text style={styles.text}>{groupName[0]}</Text>
         </View>
       )}
+
+      {getPlaceholder().placeHolder ? (
+        <View style={styles.placeHolder}>
+          <Image source={getPlaceholder().placeHolder} style={styles.image} />
+        </View>
+      ) : null}
     </View>
   );
 };

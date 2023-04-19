@@ -2584,7 +2584,7 @@ export default {
   requestSendTo: 'en_Request sent to {0}',
   teamWillGetCreated:
     'en_The team will be created when {0} accepts your request to create a team together.',
-  teamCreationRequestSend: 'en_team-creating request Sent',
+  teamCreationRequestSend: 'en_CANCEL TEAM-CREATING REQUEST',
   teamWillbeCreatedAcceptRequest:
     'en_This team will be created when the team partner accepts your request.',
   areYouSureTouWantToWithdrawRequest:
@@ -2727,4 +2727,6 @@ export default {
   allphoneParameter: 'en_Please fill all phone number parameter.',
   basicInfoItemSent: 'en_The basic info items were  sent',
   reviewIncomingchallengetitle: 'en_Review Incoming Challenge Settings >',
+  createGroupAccount: 'en_Create Group Account',
+  switchingTo: 'en_Switching to',
 };

@@ -1,10 +1,13 @@
 /* eslint-disable no-nested-ternary */
-import React, {memo} from 'react';
+import React, {memo, useContext, useEffect, useState} from 'react';
 import {Text, View, StyleSheet, Image, Pressable} from 'react-native';
-import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
 import {strings} from '../../../../Localization/translation';
+import GroupIcon from '../../../components/GroupIcon';
+import Verbs from '../../../Constants/Verbs';
+import {getSportsLabel} from '../../../utils/accountUtils';
+import AuthContext from '../../../auth/context';
 
 const AccountMenuRow = ({
   item,
@@ -12,129 +15,94 @@ const AccountMenuRow = ({
   onPressSetting,
   onPressSport,
   onPressCancelRequest,
-}) => (
-  <View>
-    {!isAccountDeactivated && (
-      <View style={styles.listContainer}>
-        <Pressable style={styles.listContainer} onPress={onPressSport}>
-          <View
-            style={
-              item.icon && typeof item.icon === 'string'
-                ? {...styles.subMenuContainer}
-                : {...styles.subMenuPlaceHolderContainer}
-            }>
-            <Image
-              source={
-                item.icon && typeof item.icon === 'string'
-                  ? {uri: item.icon}
-                  : item.icon
-              }
-              style={
-                item.icon && typeof item.icon === 'string'
-                  ? {...styles.subMenuItem}
-                  : {...styles.subMenuItemPlaceHolder}
-              }
-            />
+}) => {
+  const [groupSportName, setGroupSportName] = useState('');
+  const authContext = useContext(AuthContext);
+
+  useEffect(() => {
+    if (item.option?.entity_type) {
+      setGroupSportName(
+        getSportsLabel({
+          entityData: item.option,
+          sportList: authContext.sports,
+          maxSports: 2,
+        }),
+      );
+    }
+  }, [item, authContext]);
+
+  return !isAccountDeactivated ? (
+    <View
+      style={[
+        {paddingHorizontal: 15},
+        item.option?.request_id ? {opacity: 0.3} : {},
+      ]}
+      pointerEvents={item.option?.request_id ? 'none' : 'auto'}>
+      <View style={[styles.row, {paddingLeft: 30}]}>
+        <Pressable
+          style={[styles.row, {marginVertical: 5}]}
+          onPress={onPressSport}>
+          <GroupIcon
+            imageUrl={item.icon}
+            entityType={Verbs.entityTypePlayer}
+            containerStyle={[
+              styles.iconContainer,
+              item.option.group_name ? {borderWidth: 2} : {borderWidth: 0},
+            ]}
+          />
+          <View style={styles.row}>
+            <View style={{maxWidth: '65%'}}>
+              <Text style={styles.listItems} numberOfLines={1}>
+                {item.option?.group_name ?? item.option}
+              </Text>
+            </View>
+            {groupSportName ? (
+              <Text
+                style={[
+                  styles.game,
+                  item.option.entity_type === Verbs.entityTypeClub
+                    ? {color: colors.greeColor}
+                    : {},
+                ]}>
+                {groupSportName}
+              </Text>
+            ) : null}
           </View>
-          <Text style={styles.listItems}>
-            {item.option.group_name ?? item.option}
-          </Text>
         </Pressable>
         <Pressable onPress={onPressSetting}>
           <Image source={item?.iconRight} style={styles.nextArrow} />
         </Pressable>
       </View>
-    )}
-    {item?.option?.request_id && (
-      <TouchableWithoutFeedback onPress={onPressCancelRequest}>
-        <View style={styles.buttonView}>
+      {item.option?.request_id && (
+        <Pressable style={styles.buttonView} onPress={onPressCancelRequest}>
           <Text style={styles.textStyle}>
             {strings.teamCreationRequestSend}
           </Text>
-        </View>
-      </TouchableWithoutFeedback>
-    )}
-  </View>
-);
+        </Pressable>
+      )}
+    </View>
+  ) : null;
+};
 
 const styles = StyleSheet.create({
-  subMenuContainer: {
-    marginVertical: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 40,
-    marginLeft: 45,
-    width: 40,
-    borderRadius: 20,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.5,
-    shadowRadius: 2,
-    elevation: 4,
-    backgroundColor: 'transparent',
-  },
-  subMenuPlaceHolderContainer: {
-    marginVertical: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 40,
-    marginLeft: 45,
-    width: 40,
-    borderRadius: 20,
-  },
-  subMenuItem: {
-    alignSelf: 'center',
-    height: 35,
-    resizeMode: 'contain',
-    width: 35,
-    borderRadius: 20,
-    top: 1,
-  },
-  subMenuItemPlaceHolder: {
-    alignSelf: 'center',
-    height: 40,
-    resizeMode: 'contain',
-    width: 40,
-    borderRadius: 20,
-  },
-  buttonView: {
-    marginTop: 2,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 5,
-    height: 25,
-    width: 250,
-    marginBottom: 5,
-    marginLeft: 80,
-    backgroundColor: colors.whiteColor,
-
-    shadowColor: colors.blackColor,
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
-  },
-  textStyle: {
-    alignSelf: 'center',
-    fontFamily: fonts.RMedium,
-    fontSize: 12,
-    textAlign: 'center',
-    color: colors.lightBlackColor,
-  },
-  listContainer: {
+  row: {
     flex: 1,
-    justifyContent: 'space-between',
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  iconContainer: {
+    width: 40,
+    height: 40,
+    marginVertical: 5,
+    borderRadius: 20,
+    backgroundColor: 'transparent',
+    marginRight: 10,
   },
   listItems: {
-    flex: 1,
-    marginLeft: 5,
     fontSize: 16,
+    lineHeight: 24,
     fontFamily: fonts.RRegular,
     color: colors.blackColor,
-    alignSelf: 'center',
   },
   nextArrow: {
     tintColor: colors.lightBlackColor,
@@ -143,6 +111,28 @@ const styles = StyleSheet.create({
     width: 15,
     marginRight: 15,
     resizeMode: 'contain',
+  },
+  buttonView: {
+    padding: 6,
+    marginLeft: 80,
+    marginRight: 25,
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.textFieldBackground,
+  },
+  textStyle: {
+    fontSize: 12,
+    lineHeight: 15,
+    fontFamily: fonts.RMedium,
+    color: colors.lightBlackColor,
+  },
+  game: {
+    fontSize: 12,
+    // lineHeight: 24,
+    color: colors.themeColor,
+    fontFamily: fonts.RRegular,
+    marginLeft: 3,
   },
 });
 export default memo(AccountMenuRow);

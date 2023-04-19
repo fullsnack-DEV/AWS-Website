@@ -478,15 +478,15 @@ const images = {
   refreshIcon: require('../assets/images/refreshIcon.png'),
   noScoreboardImage: require('../assets/images/noScoreboardImage.png'),
   lookingForImg: require('../assets/images/lookingForImg.png'),
+  lookingForClubImg: require('../assets/images/lookingForClub.png'),
   toggleList: require('../assets/images/toggle_list.png'),
-
   calenderToggle: require('../assets/images/upper-arrow.png'),
-
   invoiceIcon: require('../assets/images/invoice.png'),
   xCircleImg: require('../assets/images/xCircle.png'),
   newTeamLogo: require('../assets/images/NewTeamLogo.png'),
   newClubLogo: require('../assets/images/newClubIcon.png'),
   uploadCameraIcon: require('../assets/images/UploadCameraIcon.png'),
+  createGroupIcon: require('../assets/images/createGroupIcon.png'),
 };
 
 export default images;

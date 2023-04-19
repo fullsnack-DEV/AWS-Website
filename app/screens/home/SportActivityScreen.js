@@ -100,6 +100,7 @@ export default function SportActivityScreen({navigation}) {
               (obj) =>
                 obj.sport && (obj.is_active === true || !('is_active' in obj)),
             );
+            if (list.length === 0) return null;
             return (
               <View style={{marginBottom: 35}}>
                 <Text style={styles.title}>{item.toUpperCase()}</Text>

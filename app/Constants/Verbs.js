@@ -60,6 +60,7 @@ const Verbs = {
   unpauseVerb: 'unpause',
   reactivateVerb: 'reactivate',
   pauseVerb: 'pause',
+  terminate: 'terminate',
   deactivateVerb: 'deactivate',
   activateVerb: 'activate',
   challengeVerb: 'challenge',
@@ -130,7 +131,6 @@ const Verbs = {
   EVENT_FILTER_TIME_ONE_WEEK: 7,
   EVENT_FILTER_TIME_ONE_MONTH: 30,
   EVENT_FILTER_TIME_THREE_MONTH: 90,
-
   MAXIMUM_RECIPIENT_INVOICE: 15,
 };
 

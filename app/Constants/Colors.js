@@ -145,5 +145,7 @@ const colors = {
   createClubGradientfrom: 'rgba(170, 216, 64, 0.6)',
   createClubGradientto: 'rgba(0, 193, 104, 0.6)',
   blueTextcolor: '#0093ff',
+  notificationCountBgColor: '#FE440C',
+  maskViewColor: 'rgba(0,0,0,0.3)',
 };
 export default colors;

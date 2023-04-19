@@ -257,6 +257,7 @@ const getSportDetails = (
     if (
       role === Verbs.entityTypeTeam ||
       role === Verbs.entityTypePlayer ||
+      role === Verbs.entityTypeUser ||
       role === Verbs.entityTypeClub
     ) {
       obj.sport_image = sportObj.player_image;
