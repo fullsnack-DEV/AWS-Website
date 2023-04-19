@@ -17,8 +17,7 @@ import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import images from '../Constants/ImagePath';
 import LanguagesListModal from '../screens/account/registerPlayer/modals/LanguagesListModal';
-import {languageList} from '../utils';
-import {getJSDate} from '../utils';
+import {languageList, getJSDate} from '../utils';
 
 import {heightMesurement, weightMesurement} from '../utils/constant';
 import AddressLocationModal from './AddressLocationModal/AddressLocationModal';
