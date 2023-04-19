@@ -28,14 +28,14 @@ import CongratulationsModal from './modals/CongratulationsModal';
 import MatchFeeReminder from './modals/MatchFeeReminder';
 import SettingsMenuItem from './components/SettingsMenuItem';
 import WrapperModal from '../../../components/IncomingChallengeSettingsModals/WrapperModal';
-import DataSource from '../../../Constants/DataSource';
+
 import HostChallengerInfoModal from './modals/HostChallengerInfoModal';
 import ScreenHeader from '../../../components/ScreenHeader';
 import uploadImages from '../../../utils/imageAction';
 
 import fonts from '../../../Constants/Fonts';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
-import {createGroup, createGroupRequest} from '../../../api/Groups';
+import {createGroup, createGroupRequest, patchGroup} from '../../../api/Groups';
 import colors from '../../../Constants/Colors';
 
 import Modal from 'react-native-modal';
@@ -65,6 +65,8 @@ export default function IncomingChallengeSettings({navigation, route}) {
     thumbnail,
     backgroundThumbnail,
     show_Double,
+    fromRespondToInvite,
+    teamgrpId,
   } = route.params;
   const [playerObject] = useState(playerData);
   const [showModal, setShowModal] = useState(false);
@@ -177,6 +179,10 @@ export default function IncomingChallengeSettings({navigation, route}) {
       setShowMatchFeeReminderModal(true);
       setVisibleRequestModal(false);
       setIsAlreadyWarned(true);
+    } else if (fromRespondToInvite) {
+      navigation.navigate('RespondToInviteScreen', {
+        incomingchallengeSettings: settingObject,
+      });
     } else {
       onCreateTeam();
     }
@@ -578,11 +584,16 @@ export default function IncomingChallengeSettings({navigation, route}) {
           navigation.goBack();
         }}
         isRightIconText
-        rightButtonText={strings.done}
+        rightButtonText={fromRespondToInvite ? strings.save : strings.done}
         onRightButtonPress={() => {
           if (fromCreateTeam) {
             if (show_Double) {
               onCreateDoubleTeamPress();
+            } else if (fromRespondToInvite) {
+              // patchIncomingSetting();
+              navigation.navigate('RespondToInviteScreen', {
+                incomingchallengeSettings: settingObject,
+              });
             } else {
               onCreateTeam();
             }
@@ -635,7 +646,6 @@ export default function IncomingChallengeSettings({navigation, route}) {
               item={item}
               handleOptions={handleOptions}
               settingObject={settingObject}
-              o
             />
           )}
         />
@@ -768,6 +778,7 @@ export default function IncomingChallengeSettings({navigation, route}) {
 
       <WrapperModal
         isVisible={showModal}
+        show_Double={show_Double}
         closeModal={() => {
           setShowModal(false);
         }}

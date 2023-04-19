@@ -1,6 +1,7 @@
 // @flow
 
 import React, {useEffect, useState} from 'react';
+import moment from 'moment';
 import {
   View,
   StyleSheet,
@@ -16,7 +17,7 @@ import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import images from '../Constants/ImagePath';
 import LanguagesListModal from '../screens/account/registerPlayer/modals/LanguagesListModal';
-import {languageList} from '../utils';
+import {languageList, getJSDate} from '../utils';
 
 import {heightMesurement, weightMesurement} from '../utils/constant';
 import AddressLocationModal from './AddressLocationModal/AddressLocationModal';
@@ -196,7 +197,7 @@ const EditBasicInfoComponent = ({
             styles.titleText,
             {fontFamily: fonts.RRegular, marginBottom: 0},
           ]}>
-          {userInfo?.birthday}
+          {moment(getJSDate(userInfo?.birthday)).format('MMM DD,YYYY')}
         </Text>
       </View>
 

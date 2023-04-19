@@ -18,6 +18,7 @@ import {
   widthPercentageToDP,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
+
 import LinearGradient from 'react-native-linear-gradient';
 import {useIsFocused} from '@react-navigation/native';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
@@ -54,13 +55,14 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
   const isFocused = useIsFocused();
 
   const [loading, setloading] = useState(false);
-  const [postalCode, setPostalCode] = useState('');
+
   const [showDate, setShowDate] = useState(false);
   const [role, setRole] = useState('');
   const [location, setLocation] = useState();
   const [city, setCity] = useState();
   const [state, setState] = useState();
   const [country, setCountry] = useState();
+  const [date, setDate] = useState();
   const [visibleLocationModal, setVisibleLocationModal] = useState(false);
 
   const [maxDateValue] = useState(new Date());
@@ -103,6 +105,12 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
       ],
     );
     setMemberInfo(route.params.memberInfo);
+
+    if (route.params.memberInfo.birthday === undefined) {
+      setDate(new Date());
+    } else {
+      setDate(new Date(route.params.memberInfo.birthday));
+    }
 
     setCity(route.params.memberInfo?.city);
     setCountry(route.params.memberInfo?.coutry);
@@ -194,7 +202,7 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
         memberInfo.height.height_type === undefined &&
         memberInfo.height !== ''
       ) {
-        memberInfo.height.height_type = 'lb';
+        memberInfo.height.height_type = 'ft';
       }
 
       if (!memberInfo.height.height_type) {
@@ -232,6 +240,7 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
     setloading(true);
 
     const bodyParams = {...memberInfo};
+    bodyParams.last_updatedBy = `${authContext.user.full_name}`;
     delete bodyParams.group;
 
     patchMember(entity?.uid, memberInfo?.user_id, bodyParams, authContext)
@@ -248,10 +257,12 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
         }, 10);
       });
   };
-  const handleDonePress = (date) => {
+  const handleDonePress = (dates) => {
     setShowDate(!showDate);
-    if (date !== '') {
-      setMemberInfo({...memberInfo, birthday: new Date(date).getTime()});
+    setDate(dates);
+
+    if (dates !== '') {
+      setMemberInfo({...memberInfo, birthday: new Date(dates).getTime()});
     }
   };
   const handleCancelPress = () => {
@@ -482,7 +493,7 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
     setCity(_location.city);
     setState(_location.state);
     setCountry(_location.country);
-    setPostalCode(_location.postalCode);
+
     setLocation(_location.formattedAddress);
 
     setMemberInfo({
@@ -495,19 +506,22 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
   };
 
   const setCityandPostal = (street, code) => {
-    setCity(street);
-    setPostalCode(code);
+    setLocation(`${street} ${city} ${state} ${country} ${code}`);
+    setMemberInfo({
+      ...memberInfo,
+      street_address: `${street} ${city} ${state} ${country} ${code}`,
+    });
 
     if (code === '') {
       setMemberInfo({...memberInfo, postal_code: code});
     }
   };
 
-  const locationString = () =>
-    [location, city, state, country, postalCode].filter((v) => v).join(', ');
+  // const locationString = () =>
+  //   [location, city, state, country, postalCode].filter((v) => v).join(', ');
 
-  const addressManualString = () =>
-    [city, state, country, location, postalCode].filter((w) => w).join(', ');
+  // const addressManualString = () =>
+  //   [city, state, country, location, postalCode].filter((w) => w).join(', ');
 
   return (
     <TCKeyboardView>
@@ -674,7 +688,7 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
           />
 
           <TCTextField
-            value={locationString() || addressManualString()}
+            value={location}
             autoCapitalize="none"
             autoCorrect={false}
             placeholder={strings.streetAddress}
@@ -688,7 +702,7 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
         <View>
           <DateTimePickerView
             visible={showDate}
-            date={new Date()}
+            date={date}
             onDone={handleDonePress}
             onCancel={handleCancelPress}
             onHide={handleCancelPress}

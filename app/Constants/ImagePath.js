@@ -484,7 +484,9 @@ const images = {
 
   invoiceIcon: require('../assets/images/invoice.png'),
   xCircleImg: require('../assets/images/xCircle.png'),
-
+  newTeamLogo: require('../assets/images/NewTeamLogo.png'),
+  newClubLogo: require('../assets/images/newClubIcon.png'),
+  uploadCameraIcon: require('../assets/images/UploadCameraIcon.png'),
 };
 
 export default images;

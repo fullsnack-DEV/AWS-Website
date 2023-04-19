@@ -1145,6 +1145,7 @@ const AccountNavigator = () => (
       options={{
         title: strings.createTeamText,
         headerTintColor: colors.blackColor,
+        headerTitleAlign: 'center',
         headerTitleStyle: {
           fontWeight: '500',
         },

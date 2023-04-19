@@ -15,6 +15,7 @@ import images from '../Constants/ImagePath';
 import ScreenHeader from './ScreenHeader';
 
 const screenHeight = Dimensions.get('window').height;
+
 const CustomModalWrapper = ({
   loading = false,
   isVisible = false,
@@ -27,6 +28,7 @@ const CustomModalWrapper = ({
   headerBottomBorderColor = colors.grayBackgroundColor,
   children = null,
   Top = 50,
+  showBackButton = false,
 }) => {
   const [showModal, setShowModal] = useState(false);
   const translateY = new Animated.Value(0);
@@ -59,7 +61,7 @@ const CustomModalWrapper = ({
       case ModalTypes.style1:
         return (
           <ScreenHeader
-            leftIcon={images.crossImage}
+            leftIcon={showBackButton ? images.backArrow : images.crossImage}
             leftIconPress={() => handleCloseModal()}
             title={title}
             isRightIconText

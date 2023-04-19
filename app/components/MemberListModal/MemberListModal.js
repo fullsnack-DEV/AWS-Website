@@ -3,15 +3,12 @@ import React, {useEffect, useState} from 'react';
 import {
   FlatList,
   Image,
-  Pressable,
   Text,
   View,
   StyleSheet,
-  Dimensions,
   TouchableWithoutFeedback,
 } from 'react-native';
 
-import Modal from 'react-native-modal';
 import {useIsFocused} from '@react-navigation/native';
 import images from '../../Constants/ImagePath';
 
@@ -23,6 +20,10 @@ import TCFollowerList from '../TCFollowerList';
 import TCThinDivider from '../TCThinDivider';
 import ActivityLoader from '../loader/ActivityLoader';
 import CustomIosAlert from '../CustomIosAlert';
+import TCSearchBox from '../TCSearchBox';
+
+import CustomModalWrapper from '../CustomModalWrapper';
+import {ModalTypes} from '../../Constants/GeneralConstants';
 
 const MemberListModal = ({
   isVisible,
@@ -39,13 +40,15 @@ const MemberListModal = ({
   onCancetTerminationPress = () => {},
 }) => {
   const [follower, setFollower] = useState();
+  const [players, Setplayers] = useState(sportsList);
 
   const [followersSelection, setFollowersSelection] = useState();
   const isFocused = useIsFocused();
 
   useEffect(() => {
     setFollowersSelection('');
-  }, [isFocused]);
+    Setplayers(sportsList);
+  }, [isFocused, isVisible]);
 
   const renderFollowers = ({item}) => (
     <TouchableWithoutFeedback
@@ -90,63 +93,70 @@ const MemberListModal = ({
     </TouchableWithoutFeedback>
   );
 
+  const searchFilterFunction = (text) => {
+    const result = sportsList.filter(
+      (x) =>
+        x.first_name.toLowerCase().includes(text.toLowerCase()) ||
+        x.last_name.toLowerCase().includes(text.toLowerCase()),
+    );
+    if (text.length > 0) {
+      Setplayers(result);
+    } else {
+      Setplayers(sportsList);
+    }
+  };
+
   return (
-    <Modal
+    <CustomModalWrapper
       isVisible={isVisible}
-      transparent
-      animationInTiming={300}
-      animationOutTiming={800}
-      backdropTransitionInTiming={300}
-      backdropTransitionOutTiming={800}
-      animationType="slide"
-      style={{
-        margin: 0,
-      }}>
+      closeModal={closeList}
+      modalType={ModalTypes.style1}
+      onRightButtonPress={() => onNext(follower)}
+      headerRightButtonText={strings.next}
+      title={sport?.sport ? strings.sportTextTitle : title}
+      containerStyle={{padding: 0, flex: 1}}
+      showBackButton>
       <CustomIosAlert
         visibleAlert={visibleAlert}
         onGoBack={onGoBack}
         alertTitle={titleAlert}
         onCancetTerminationPress={onCancetTerminationPress}
       />
+
       <ActivityLoader visible={loading} />
+
       <View style={styles.card}>
-        <View style={styles.headerRow}>
-          <View style={{flex: 1}}>
-            <Pressable style={{width: 26, height: 26}} onPress={closeList}>
-              <Image source={images.crossImage} style={styles.image} />
-            </Pressable>
-          </View>
-          <View style={styles.headerTitleContainer}>
-            <Text style={styles.headerTitle}>
-              {sport?.sport ? strings.sportTextTitle : title}
-            </Text>
-          </View>
-          <Pressable
-            style={styles.buttonContainer}
-            onPress={() => {
-              onNext(follower);
-            }}>
-            <Text style={styles.buttonText}>
-              {sport?.sport ? strings.apply : strings.next}
-            </Text>
-          </Pressable>
-        </View>
         <View style={styles.divider} />
         <View style={styles.container}>
           <Text style={styles.title}>
             {strings.whoDoYouwantToCreateTeamWith}
           </Text>
-          <View>
-            <FlatList
-              ItemSeparatorComponent={() => <TCThinDivider />}
-              data={sportsList}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={renderFollowers}
+
+          <View
+            style={{
+              alignSelf: 'center',
+              marginTop: 15,
+              marginBottom: 25,
+            }}>
+            <TCSearchBox
+              onChangeText={(text) => searchFilterFunction(text)}
+              placeholderText={strings.searchText}
+              style={{
+                height: 40,
+              }}
             />
           </View>
+
+          <FlatList
+            extraData={players}
+            ItemSeparatorComponent={() => <TCThinDivider />}
+            data={players}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={renderFollowers}
+          />
         </View>
       </View>
-    </Modal>
+    </CustomModalWrapper>
   );
 };
 
@@ -154,52 +164,9 @@ export default MemberListModal;
 
 const styles = StyleSheet.create({
   card: {
-    width: '100%',
-    height: Dimensions.get('window').height / 1.07,
-    backgroundColor: colors.whiteColor,
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    shadowColor: colors.blackColor,
-  },
-  headerRow: {
-    paddingTop: 15,
-    paddingLeft: 15,
-    paddingRight: 17,
-    paddingBottom: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  headerTitleContainer: {
-    flex: 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  headerTitle: {
-    fontSize: 16,
-    lineHeight: 24,
-    fontFamily: fonts.RBold,
-    textAlign: 'center',
-    paddingHorizontal: 30,
-  },
-  buttonContainer: {
     flex: 1,
-    alignItems: 'flex-end',
-    justifyContent: 'center',
   },
-  buttonText: {
-    fontSize: 16,
-    fontFamily: fonts.RMedium,
-    textAlign: 'center',
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'contain',
-  },
+
   divider: {
     height: 1,
     backgroundColor: colors.grayBackgroundColor,
@@ -231,3 +198,25 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
 });
+
+// <View style={styles.headerRow}>
+// <View style={{flex: 1}}>
+//   <Pressable style={{width: 26, height: 26}} onPress={closeList}>
+//     <Image source={images.backArrow} style={styles.image} />
+//   </Pressable>
+// </View>
+// <View style={styles.headerTitleContainer}>
+//   <Text style={styles.headerTitle}>
+//     {sport?.sport ? strings.sportTextTitle : title}
+//   </Text>
+// </View>
+// <Pressable
+//   style={styles.buttonContainer}
+//   onPress={() => {
+//     onNext(follower);
+//   }}>
+//   <Text style={styles.buttonText}>
+//     {sport?.sport ? strings.apply : strings.next}
+//   </Text>
+// </Pressable>
+// </View>

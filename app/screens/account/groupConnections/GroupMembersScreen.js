@@ -1,4 +1,5 @@
 /* eslint-disable no-nested-ternary */
+
 import React, {
   useState,
   useLayoutEffect,
@@ -58,9 +59,7 @@ export default function GroupMembersScreen({navigation, route}) {
   // For activity indigator
   const [loading, setloading] = useState(false);
   const [searchMember, setSearchMember] = useState();
-  // const [isModalVisible, setModalVisible] = useState(false);
-  // const [allSelected, setAllSelected] = useState(false);
-  // const [filter, setFilter] = useState([]);
+
   const [members, setMembers] = useState([]);
 
   const [switchUser] = useState(authContext.entity);
@@ -104,6 +103,7 @@ export default function GroupMembersScreen({navigation, route}) {
 
   const getMembers = async () => {
     setloading(true);
+
     if (groupID) {
       getGroupMembers(groupID, authContext)
         .then((response) => {
@@ -114,6 +114,7 @@ export default function GroupMembersScreen({navigation, route}) {
         })
         .catch((e) => {
           setloading(false);
+
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
@@ -298,7 +299,7 @@ export default function GroupMembersScreen({navigation, route}) {
             <TouchableOpacity
               style={styles.buttonContainer}
               onPress={() => onPressProfile(data)}
-              hitSlop={getHitSlop(15)}>
+              hitSlop={getHitSlop(20)}>
               <Image
                 source={images.arrowGraterthan}
                 style={styles.arrowStyle}
@@ -584,6 +585,8 @@ export default function GroupMembersScreen({navigation, route}) {
                   style={{
                     flexDirection: 'row',
                     alignItems: 'center',
+
+                    alignSelf: 'flex-start',
                   }}
                   onPress={() => onPressProfilePhotoAndTitle(data)}>
                   <Text style={styles.nameText} numberOfLines={1}>
@@ -659,6 +662,7 @@ export default function GroupMembersScreen({navigation, route}) {
               </View>
             </View>
           </View>
+
           {renderFollowUnfollowArrow(data, index)}
         </View>
         <TCThinDivider />
@@ -710,21 +714,24 @@ export default function GroupMembersScreen({navigation, route}) {
         <View style={styles.headerSeperator} />
       </View>
       <View tabLabel={strings.membersTitle} style={{flex: 1}}>
-        <View style={styles.searchBarView}>
-          <TCSearchBox
-            onChangeText={(text) => searchFilterFunction(text)}
-            placeholderText={strings.searchText}
-            style={{
-              height: 40,
-            }}
-          />
-        </View>
         {/* eslint-disable-next-line no-nested-ternary */}
         {members.length > 0 ? (
           <FlatList
+            extraData={members}
             style={{marginTop: -10}}
             data={members}
             renderItem={renderMembers}
+            ListHeaderComponent={
+              <View style={styles.searchBarView}>
+                <TCSearchBox
+                  onChangeText={(text) => searchFilterFunction(text)}
+                  placeholderText={strings.searchText}
+                  style={{
+                    height: 40,
+                  }}
+                />
+              </View>
+            }
             keyExtractor={(item, index) => index.toString()}
           />
         ) : (
@@ -789,6 +796,7 @@ const styles = StyleSheet.create({
   searchBarView: {
     flexDirection: 'row',
     margin: 15,
+    marginTop: 20,
   },
   navigationRightItem: {
     height: 25,
@@ -840,6 +848,8 @@ const styles = StyleSheet.create({
   buttonContainer: {
     justifyContent: 'center',
     alignItems: 'center',
+
+    paddingLeft: 50,
   },
   arrowStyle: {
     height: 15,
