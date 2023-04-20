@@ -3,7 +3,7 @@ import React, {
   // useEffect,
   useLayoutEffect,
   useContext,
-  useCallback,
+  // useCallback,
 } from 'react';
 import {
   StyleSheet,
@@ -12,33 +12,34 @@ import {
   TouchableOpacity,
   SafeAreaView,
   Alert,
-  TextInput,
-  Platform,
+  // Alert,
+  // TextInput,
+  // Platform,
 } from 'react-native';
 
-import firebase from '@react-native-firebase/app';
+// import firebase from '@react-native-firebase/app';
 
 // import {useIsFocused} from '@react-navigation/native';
-import {QBLogout} from '../../../utils/QuickBlox';
+// import {QBLogout} from '../../../utils/QuickBlox';
 import AuthContext from '../../../auth/context';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import images from '../../../Constants/ImagePath';
 import {strings} from '../../../../Localization/translation';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
-import {clearStorage} from '../../../utils';
-import {updateUserProfile} from '../../../api/Users';
+// import {clearStorage} from '../../../utils';
+// import {updateUserProfile} from '../../../api/Users';
 import ScreenHeader from '../../../components/ScreenHeader';
 
 export default function AccountInfoScreen({navigation}) {
-  const [loading, setloading] = useState(false);
-  const [showEmailBox, setShowEmailBox] = useState(false);
+  const [loading] = useState(false);
+  const [showEmailBox] = useState(false);
 
   const authContext = useContext(AuthContext);
   // const isFocused = useIsFocused();
 
-  const [userInfo, setUserInfo] = useState(authContext.entity.obj);
-  const [oldPassword, setOldPassword] = useState('');
+  const [userInfo] = useState(authContext.entity.obj);
+  // const [oldPassword, setOldPassword] = useState('');
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -72,93 +73,94 @@ export default function AccountInfoScreen({navigation}) {
   //     });
   // };
 
-  const checkValidation = () => {
-    if (userInfo.email === '') {
-      Alert.alert(strings.appName, strings.emailNotBlankText);
-      return false;
-    }
-    if (oldPassword === '') {
-      Alert.alert(strings.appName, strings.passwordCanNotBlank);
-      return false;
-    }
-    if (authContext?.entity?.obj?.email === userInfo.email) {
-      Alert.alert(strings.appName, strings.addNewEmailValidation);
-      return false;
-    }
+  // const checkValidation = () => {
+  //   if (userInfo.email === '') {
+  //     Alert.alert(strings.appName, strings.emailNotBlankText);
+  //     return false;
+  //   }
+  //   if (oldPassword === '') {
+  //     Alert.alert(strings.appName, strings.passwordCanNotBlank);
+  //     return false;
+  //   }
+  //   if (authContext?.entity?.obj?.email === userInfo.email) {
+  //     Alert.alert(strings.appName, strings.addNewEmailValidation);
+  //     return false;
+  //   }
 
-    return true;
-  };
+  //   return true;
+  // };
 
-  const onLogout = useCallback(async () => {
-    QBLogout();
-    await firebase.auth().signOut();
-    await clearStorage();
-    await authContext.setUser(null);
-    await authContext.setEntity(null);
-  }, [authContext]);
+  // const onLogout = useCallback(async () => {
+  //   QBLogout();
+  //   await firebase.auth().signOut();
+  //   await clearStorage();
+  //   await authContext.setUser(null);
+  //   await authContext.setEntity(null);
+  // }, [authContext]);
 
-  const onSavePress = () => {
-    if (checkValidation()) {
-      setloading(true);
-      const credential = firebase.auth.EmailAuthProvider.credential(
-        authContext?.entity?.obj?.email,
-        oldPassword,
-      );
-      firebase
-        .auth()
-        .currentUser.reauthenticateWithCredential(credential)
-        .then(() => {
-          firebase
-            .auth()
-            .currentUser.updateEmail(userInfo.email)
-            .then(() => {
-              updateUserProfile(
-                {
-                  ...authContext.entity.auth.user,
-                  email: userInfo.email,
-                },
-                authContext,
-              )
-                .then((response) => {
-                  console.log(response);
-                  setloading(false);
-                  setTimeout(() => {
-                    Alert.alert(
-                      strings.checkInboxText,
-                      '',
-                      [
-                        {
-                          text: strings.okTitleText,
-                          onPress: () => onLogout(),
-                        },
-                      ],
-                      {cancelable: false},
-                    );
-                  }, 300);
-                })
-                .catch((e) => {
-                  setloading(false);
-                  setTimeout(() => {
-                    Alert.alert(strings.alertmessagetitle, e.message);
-                  }, 10);
-                });
-            })
-            .catch((error) => {
-              setloading(false);
-              setTimeout(() => {
-                Alert.alert(strings.alertmessagetitle, error.message);
-              }, 10);
-            });
-        })
-        .catch((error) => {
-          console.log(error);
-          setloading(false);
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, error.message);
-          }, 10);
-        });
-    }
-  };
+  // const onSavePress = () => {
+
+  //   if (checkValidation()) {
+  //     setloading(true);
+  //     const credential = firebase.auth.EmailAuthProvider.credential(
+  //       authContext?.entity?.obj?.email,
+  //       oldPassword,
+  //     );
+  //     firebase
+  //       .auth()
+  //       .currentUser.reauthenticateWithCredential(credential)
+  //       .then(() => {
+  //         firebase
+  //           .auth()
+  //           .currentUser.updateEmail(userInfo.email)
+  //           .then(() => {
+  //             updateUserProfile(
+  //               {
+  //                 ...authContext.entity.auth.user,
+  //                 email: userInfo.email,
+  //               },
+  //               authContext,
+  //             )
+  //               .then((response) => {
+  //                 console.log(response);
+  //                 setloading(false);
+  //                 setTimeout(() => {
+  //                   Alert.alert(
+  //                     strings.checkInboxText,
+  //                     '',
+  //                     [
+  //                       {
+  //                         text: strings.okTitleText,
+  //                         onPress: () => onLogout(),
+  //                       },
+  //                     ],
+  //                     {cancelable: false},
+  //                   );
+  //                 }, 300);
+  //               })
+  //               .catch((e) => {
+  //                 setloading(false);
+  //                 setTimeout(() => {
+  //                   Alert.alert(strings.alertmessagetitle, e.message);
+  //                 }, 10);
+  //               });
+  //           })
+  //           .catch((error) => {
+  //             setloading(false);
+  //             setTimeout(() => {
+  //               Alert.alert(strings.alertmessagetitle, error.message);
+  //             }, 10);
+  //           });
+  //       })
+  //       .catch((error) => {
+  //         console.log(error);
+  //         setloading(false);
+  //         setTimeout(() => {
+  //           Alert.alert(strings.alertmessagetitle, error.message);
+  //         }, 10);
+  //       });
+  //   }
+  // };
 
   return (
     <SafeAreaView style={{flex: 1}}>
@@ -169,7 +171,7 @@ export default function AccountInfoScreen({navigation}) {
         containerStyle={styles.headerRow}
         isRightIconText={showEmailBox}
         rightButtonText={strings.update}
-        onRightButtonPress={onSavePress}
+        // onRightButtonPress={onSavePress}
       />
       <ActivityLoader visible={loading} />
       <View style={{paddingTop: 31, paddingHorizontal: 15}}>
@@ -186,12 +188,15 @@ export default function AccountInfoScreen({navigation}) {
           </View>
           <TouchableOpacity
             style={styles.buttonContainer}
-            onPress={() => setShowEmailBox(true)}>
+            onPress={() => {
+              // setShowEmailBox(true);
+              Alert.alert(strings.functionNotAvailable);
+            }}>
             <Text style={styles.buttonText}>{strings.editEmail}</Text>
           </TouchableOpacity>
         </View>
 
-        {showEmailBox && (
+        {/* {showEmailBox && (
           <>
             <TextInput
               style={styles.textFieldStyle}
@@ -209,7 +214,7 @@ export default function AccountInfoScreen({navigation}) {
               value={oldPassword}
             />
           </>
-        )}
+        )} */}
 
         <TouchableOpacity
           style={{alignSelf: 'baseline'}}
@@ -243,33 +248,25 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     paddingHorizontal: 11,
-    paddingVertical: 6,
-    backgroundColor: colors.whiteColor,
-    shadowColor: colors.blackColor,
-    shadowOffset: {
-      width: 2,
-      height: 3,
-    },
-    shadowOpacity: 0.16,
-    shadowRadius: 3,
+    paddingVertical: 4,
     borderRadius: 5,
-    elevation: 5,
+    backgroundColor: colors.textFieldBackground,
   },
   buttonText: {
     fontSize: 12,
-    lineHeight: 15,
+    lineHeight: 18,
     color: colors.lightBlackColor,
     fontFamily: fonts.RBold,
   },
-  textFieldStyle: {
-    backgroundColor: colors.textFieldBackground,
-    paddingVertical: Platform.OS === 'android' ? 5 : 12,
-    paddingHorizontal: 10,
-    borderRadius: 5,
-    marginBottom: 15,
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-  },
+  // textFieldStyle: {
+  //   backgroundColor: colors.textFieldBackground,
+  //   paddingVertical: Platform.OS === 'android' ? 5 : 12,
+  //   paddingHorizontal: 10,
+  //   borderRadius: 5,
+  //   marginBottom: 15,
+  //   fontSize: 16,
+  //   fontFamily: fonts.RRegular,
+  // },
   textButton: {
     fontSize: 16,
     lineHeight: 26,

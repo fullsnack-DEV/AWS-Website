@@ -30,13 +30,15 @@ const ScreenHeader = ({
   labelStyle = {},
 }) => (
   <View style={[styles.headerRow, containerStyle]}>
-    {leftIcon ? (
-      <TouchableOpacity style={styles.iconContainer} onPress={leftIconPress}>
-        <Image source={leftIcon} style={styles.image} />
-      </TouchableOpacity>
-    ) : (
-      <View />
-    )}
+    <View style={{width: 80}}>
+      {leftIcon ? (
+        <TouchableOpacity style={styles.iconContainer} onPress={leftIconPress}>
+          <Image source={leftIcon} style={styles.image} />
+        </TouchableOpacity>
+      ) : (
+        <View />
+      )}
+    </View>
 
     <View style={styles.titleContainer}>
       {sportIcon ? (
@@ -56,41 +58,43 @@ const ScreenHeader = ({
       </Text>
     </View>
 
-    {isRightIconText ? (
-      <View style={{alignItems: 'flex-end'}}>
-        <TouchableOpacity onPress={onRightButtonPress}>
-          {loading ? (
-            <ActivityIndicator size={'small'} />
-          ) : (
-            <Text style={styles.buttonText}>{rightButtonText}</Text>
-          )}
-        </TouchableOpacity>
-      </View>
-    ) : null}
-
-    {!isRightIconText ? (
-      <View style={styles.rightButtonContainer}>
-        {rightIcon1 ? (
-          <TouchableOpacity
-            style={styles.iconContainer}
-            onPress={rightIcon1Press}>
-            <Image source={rightIcon1} style={styles.image} />
-          </TouchableOpacity>
-        ) : null}
-
-        {rightIcon2 ? (
-          <TouchableOpacity
-            style={styles.iconContainer}
-            onPress={rightIcon2Press}>
+    <View style={{width: 80}}>
+      {isRightIconText ? (
+        <View style={{alignItems: 'flex-end'}}>
+          <TouchableOpacity onPress={onRightButtonPress}>
             {loading ? (
               <ActivityIndicator size={'small'} />
             ) : (
-              <Image source={rightIcon2} style={styles.image} />
+              <Text style={styles.buttonText}>{rightButtonText}</Text>
             )}
           </TouchableOpacity>
-        ) : null}
-      </View>
-    ) : null}
+        </View>
+      ) : null}
+
+      {!isRightIconText ? (
+        <View style={styles.rightButtonContainer}>
+          {rightIcon1 ? (
+            <TouchableOpacity
+              style={styles.iconContainer}
+              onPress={rightIcon1Press}>
+              <Image source={rightIcon1} style={styles.image} />
+            </TouchableOpacity>
+          ) : null}
+
+          {rightIcon2 ? (
+            <TouchableOpacity
+              style={styles.iconContainer}
+              onPress={rightIcon2Press}>
+              {loading ? (
+                <ActivityIndicator size={'small'} />
+              ) : (
+                <Image source={rightIcon2} style={styles.image} />
+              )}
+            </TouchableOpacity>
+          ) : null}
+        </View>
+      ) : null}
+    </View>
   </View>
 );
 
@@ -99,10 +103,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingLeft: 10,
-    paddingRight: 16,
-    paddingBottom: 4,
-    paddingTop: 10,
+    padding: 10,
     borderBottomWidth: 1,
     borderBottomColor: colors.writePostSepratorColor,
   },

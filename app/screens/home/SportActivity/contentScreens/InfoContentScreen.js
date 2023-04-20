@@ -25,7 +25,7 @@ import styles from './InfoContentScreenStyles';
 import TeamsList from '../components/TeamsList';
 import UserDetails from '../components/UserDetails';
 import Venues from '../components/Venues';
-import {privacyKey} from '../../../../Constants/GeneralConstants';
+import {DEFAULT_NTRP, privacyKey} from '../../../../Constants/GeneralConstants';
 import {getJSDate} from '../../../../utils';
 import CertificateList from '../components/CertificateList';
 import ServicableArea from '../components/ServicableArea';
@@ -168,7 +168,7 @@ const InfoContentScreen = ({
             </View>
             <View style={{alignItems: 'flex-start'}}>
               <Text style={[styles.label, {textAlign: 'right'}]}>
-                {sportObj?.ntrp ?? '5.0'}
+                {sportObj?.ntrp ?? DEFAULT_NTRP}
               </Text>
             </View>
           </View>

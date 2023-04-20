@@ -1,5 +1,5 @@
 import React, {useState, useLayoutEffect, useContext, useEffect} from 'react';
-import {StyleSheet, Alert, SafeAreaView} from 'react-native';
+import {Alert, SafeAreaView} from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
 import {getUserDetails, updateUserProfile} from '../../../api/Users';
 import AuthContext from '../../../auth/context';
@@ -109,23 +109,6 @@ export default function BasicInfoScreen({navigation}) {
       updateUserProfile(bodyParams, authContext)
         .then(async (response) => {
           await Utility.setAuthContextData(response.payload, authContext);
-          // const accountType = getQBAccountType(response?.payload?.entity_type);
-          // QBupdateUser(
-          //   response?.payload?.user_id,
-          //   response?.payload,
-          //   accountType,
-          //   response.payload,
-          //   authContext,
-          // )
-          //   .then(() => {
-          //     setloading(false);
-          //     navigation.goBack();
-          //   })
-          //   .catch((error) => {
-          //     console.log('QB error : ', error);
-          //     setloading(false);
-          //     navigation.goBack();
-          //   });
           setloading(false);
           navigation.goBack();
         })
@@ -149,7 +132,6 @@ export default function BasicInfoScreen({navigation}) {
         onRightButtonPress={() => {
           onSavePress();
         }}
-        containerStyle={styles.headerRow}
       />
 
       <ActivityLoader visible={loading} />
@@ -163,12 +145,3 @@ export default function BasicInfoScreen({navigation}) {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  headerRow: {
-    paddingLeft: 10,
-    paddingTop: 8,
-    paddingRight: 15,
-    paddingBottom: 12,
-  },
-});

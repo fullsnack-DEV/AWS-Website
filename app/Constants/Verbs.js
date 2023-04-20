@@ -132,6 +132,8 @@ const Verbs = {
   EVENT_FILTER_TIME_ONE_MONTH: 30,
   EVENT_FILTER_TIME_THREE_MONTH: 90,
   MAXIMUM_RECIPIENT_INVOICE: 15,
+  defaultHeightType: 'ft',
+  defaultWeightType: 'lb',
 };
 
 export default Verbs;

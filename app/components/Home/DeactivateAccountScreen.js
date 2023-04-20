@@ -97,29 +97,12 @@ export default function DeactivateAccountScreen({navigation}) {
         title={strings.deactivateAccountText}
         leftIcon={images.backArrow}
         leftIconPress={() => navigation.goBack()}
-        containerStyle={styles.headerRow}
       />
       <ActivityLoader visible={loading} />
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
           <Text style={styles.descText}>
-            • If you have a checkout (as a challenger or a challengee) within
-            the past 60 days, you can’t delete your account until the 60-day
-            claim period has elapsed.{'\n'}
-            {'\n'}• When you delete your account, you can cancel deleting your
-            account (recover your account ) up to 14 days after you delete it.
-            {'\n'}
-            {'\n'}• 14 days after you delete your account, your information will
-            be permanently deleted, except for certain information that we are
-            legally required or permitted to retain, as outlined in our Privacy
-            Policy.{'\n'}
-            {'\n'}• If you want to use TownsCup in the future, you’ll need to
-            set up a new account.{'\n'}
-            {'\n'}• If you have any future reservations, they must first be
-            cancelled in accordance with the applicable host cancellation policy
-            before you delete your account . Cancellation fees may apply.
-            {'\n'}
-            {'\n'}
+            {strings.deactiveScreenDescription}
           </Text>
         </View>
         <TCGradientButton
@@ -144,11 +127,6 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 26,
     paddingHorizontal: 15,
-  },
-  headerRow: {
-    paddingHorizontal: 10,
-    paddingTop: 6,
-    paddingBottom: 14,
   },
   descText: {
     fontSize: 16,
