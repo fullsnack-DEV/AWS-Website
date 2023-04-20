@@ -152,7 +152,11 @@ const CongratulationsModal = ({
           must: [
             {
               bool: {
-                must: [{term: {entity_type: Verbs.entityTypeTeam}}],
+                must: [
+                  {term: {'sport.keyword': sport}},
+                  {term: {'sport_type.keyword': sportType}},
+                  {term: {'entity_type.keyword': Verbs.entityTypeTeam}},
+                ],
               },
             },
             {
@@ -164,18 +168,6 @@ const CongratulationsModal = ({
         },
       },
     };
-    queryParams.query.bool.must[0].bool.must.push({
-      multi_match: {
-        query: `${sportName}`,
-        fields: ['sport', 'sports.sport'],
-      },
-    });
-
-    // queryParams.query.bool.must[0].bool.should.push({
-    //   match: {
-    //     entity_type: {query: Verbs.entityTypeTeam},
-    //   },
-    // });
 
     if (authContext.entity.auth.user?.city) {
       queryParams.query.bool.must[1].bool.should.push({
@@ -210,17 +202,11 @@ const CongratulationsModal = ({
       });
     }
 
-    // queryParams.query.bool.must[1].bool.should.push({
-    //   match: {
-    //     entity_type: {query: 'club'},
-    //   },
-    // });
     setLoading(true);
     getGroupIndex(queryParams)
       .then((response) => {
         setTimeout(() => {
           setLoading(false);
-          console.log({response});
         }, 20);
         setTeamsList(response);
       })
@@ -228,7 +214,7 @@ const CongratulationsModal = ({
         console.log(e);
         setLoading(false);
       });
-  }, [authContext.entity.auth.user, sportName]);
+  }, [authContext.entity.auth.user, sport, sportType]);
 
   useEffect(() => {
     if (!isFocused) return;
