@@ -155,9 +155,11 @@ export default function GroupInviteYouScreen({navigation, route}) {
           keyExtractor={(item) => item.key}
           renderItem={renderWhocanJoinOption}
         />
-        <Text style={[styles.listText, {marginTop: 35}]}>
-          {strings.doublesTeamInviteDescriptionText}
-        </Text>
+        {type === strings.inviteToDoubleTeamTitle && (
+          <Text style={[styles.listText, {marginTop: 35}]}>
+            {strings.doublesTeamInviteDescriptionText}
+          </Text>
+        )}
       </View>
     </SafeAreaView>
   );

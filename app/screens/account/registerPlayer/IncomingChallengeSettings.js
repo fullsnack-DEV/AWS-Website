@@ -41,6 +41,7 @@ import colors from '../../../Constants/Colors';
 import Modal from 'react-native-modal';
 
 import SendRequestModal from '../../../components/SendRequestModal/SendRequestModal';
+import {DEFAULT_NTRP} from '../../../Constants/GeneralConstants';
 
 export default function IncomingChallengeSettings({navigation, route}) {
   const [settingObject, setSettingObject] = useState({});
@@ -371,7 +372,7 @@ export default function IncomingChallengeSettings({navigation, route}) {
               ...item,
               setting: {
                 ...settingObject,
-                ntrp: '1.0',
+                ntrp: settingObject.ntrp ?? DEFAULT_NTRP,
               },
             };
           }

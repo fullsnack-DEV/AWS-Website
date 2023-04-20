@@ -2,24 +2,18 @@ import React, {useState} from 'react';
 import {
   View,
   StyleSheet,
-  Dimensions,
-  TouchableOpacity,
-  Image,
   Text,
   TextInput,
   FlatList,
   Pressable,
-  Platform,
 } from 'react-native';
-import Modal from 'react-native-modal';
+import CustomModalWrapper from './CustomModalWrapper';
 
 import colors from '../Constants/Colors';
 import countryCodeList from '../utils/countryCode.json';
-import {getHitSlop, widthPercentageToDP} from '../utils';
-import images from '../Constants/ImagePath';
-import TCThinDivider from './TCThinDivider';
 import {strings} from '../../Localization/translation';
 import fonts from '../Constants/Fonts';
+import {ModalTypes} from '../Constants/GeneralConstants';
 
 const TCCountryCodeModal = ({
   countryCodeVisible,
@@ -27,26 +21,18 @@ const TCCountryCodeModal = ({
   countryCodeObj,
 }) => {
   const [countryList, setCountryList] = useState(countryCodeList);
+
   const renderCountryCode = ({item}) => (
     <>
-      <Pressable
-        onPress={() => countryCodeObj(item)}
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}>
+      <Pressable onPress={() => countryCodeObj(item)} style={styles.row}>
         <View>
-          <Text style={styles.cityList}>{item.country}</Text>
+          <Text style={styles.label}>{item.country}</Text>
         </View>
         <View style={{alignItems: 'flex-end'}}>
-          <Text style={styles.cityList}>+{item.code}</Text>
+          <Text style={[styles.label, {textAlign: 'right'}]}>+{item.code}</Text>
         </View>
       </Pressable>
-      <TCThinDivider
-        width={'100%'}
-        backgroundColor={colors.grayBackgroundColor}
-      />
+      <View style={styles.dividor} />
     </>
   );
 
@@ -65,137 +51,58 @@ const TCCountryCodeModal = ({
   };
 
   return (
-    <Modal
-      onBackdropPress={onCloseModal}
+    <CustomModalWrapper
       isVisible={countryCodeVisible}
-      animationInTiming={300}
-      animationOutTiming={800}
-      backdropTransitionInTiming={300}
-      backdropTransitionOutTiming={800}
-      style={{
-        margin: 0,
-      }}>
-      <View
-        style={[
-          styles.bottomPopupContainer,
-          {height: Dimensions.get('window').height - 50},
-        ]}>
-        <View style={styles.topHeaderContainer}>
-          <TouchableOpacity
-            hitSlop={getHitSlop(15)}
-            style={styles.closeButton}
-            onPress={onCloseModal}>
-            <Image source={images.crossImage} style={styles.closeButton} />
-          </TouchableOpacity>
-          <Text style={styles.moreText}>Select Code</Text>
-        </View>
-        <TCThinDivider
-          width={'100%'}
-          marginBottom={15}
-          backgroundColor={colors.thinDividerColor}
-        />
-        <View style={styles.sectionStyle}>
-          <TextInput
-            autoCorrect={false}
-            spellCheck={false}
-            style={styles.textInput}
-            placeholder={strings.searchCountryCode}
-            clearButtonMode="always"
-            placeholderTextColor={colors.userPostTimeColor}
-            onChangeText={(text) => searchCode(text)}
-          />
-        </View>
-
-        <FlatList
-          data={countryList}
-          renderItem={renderCountryCode}
-          keyExtractor={(index) => index.toString()}
-        />
-      </View>
-    </Modal>
+      closeModal={onCloseModal}
+      modalType={ModalTypes.style6}
+      title={strings.countryCode}
+      containerStyle={{paddingHorizontal: 15}}>
+      <TextInput
+        autoCorrect={false}
+        spellCheck={false}
+        style={styles.textInput}
+        clearButtonMode="always"
+        placeholder={strings.searchCountryCode}
+        placeholderTextColor={colors.userPostTimeColor}
+        onChangeText={(text) => searchCode(text)}
+      />
+      <FlatList
+        data={countryList}
+        keyExtractor={(item, index) => index.toString()}
+        showsVerticalScrollIndicator={false}
+        renderItem={renderCountryCode}
+      />
+    </CustomModalWrapper>
   );
 };
 
 const styles = StyleSheet.create({
-  bottomPopupContainer: {
-    paddingBottom: Platform.OS === 'ios' ? 30 : 0,
-    backgroundColor: colors.whiteColor,
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    position: 'absolute',
-    bottom: 0,
-    width: '100%',
-
-    ...Platform.select({
-      ios: {
-        shadowColor: colors.googleColor,
-        shadowOffset: {width: 0, height: 3},
-        shadowOpacity: 0.5,
-        shadowRadius: 8,
-      },
-      android: {
-        elevation: 15,
-      },
-    }),
-  },
-  topHeaderContainer: {
-    height: 60,
-    // justifyContent: 'space-between',
+  row: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginLeft: 0,
-    marginRight: 0,
+    justifyContent: 'space-between',
+    paddingHorizontal: 15,
+    paddingVertical: 16,
   },
-  closeButton: {
-    alignSelf: 'center',
-    width: 25,
-    height: 25,
-    resizeMode: 'contain',
-    left: 5,
-  },
-
-  moreText: {
+  label: {
     fontSize: 16,
-    fontFamily: fonts.RBold,
+    lineHeight: 24,
     color: colors.lightBlackColor,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: widthPercentageToDP('36%'),
+    fontFamily: fonts.RRegular,
   },
-  sectionStyle: {
-    alignItems: 'center',
+  textInput: {
+    paddingVertical: 8,
+    paddingHorizontal: 15,
     backgroundColor: colors.textFieldBackground,
     borderRadius: 25,
-
-    flexDirection: 'row',
-    height: 50,
-    justifyContent: 'center',
-    margin: widthPercentageToDP('4%'),
-    paddingLeft: 17,
-    paddingRight: 5,
-  },
-
-  cityList: {
+    fontFamily: fonts.RRegular,
+    fontSize: 15,
     color: colors.lightBlackColor,
-    fontSize: widthPercentageToDP('4%'),
-    textAlign: 'left',
-    fontFamily: fonts.RRegular,
-    // paddingLeft: wp('1%'),
-    // width: widthPercentageToDP('70%'),
-    // margin: wp('4%'),
-    marginBottom: widthPercentageToDP('4%'),
-    marginRight: widthPercentageToDP('4%'),
-    marginTop: widthPercentageToDP('4%'),
-    marginLeft: 30,
-    textAlignVertical: 'center',
   },
-
-  textInput: {
-    color: colors.userPostTimeColor,
-    flex: 1,
-    fontFamily: fonts.RRegular,
-    fontSize: widthPercentageToDP('4.5%'),
-    paddingLeft: 10,
+  dividor: {
+    height: 1,
+    marginHorizontal: 10,
+    backgroundColor: colors.grayBackgroundColor,
   },
 });
 export default TCCountryCodeModal;

@@ -152,7 +152,7 @@ const CongratulationsModal = ({
           must: [
             {
               bool: {
-                should: [],
+                must: [{term: {entity_type: Verbs.entityTypeTeam}}],
               },
             },
             {
@@ -164,18 +164,18 @@ const CongratulationsModal = ({
         },
       },
     };
-    queryParams.query.bool.must[0].bool.should.push({
+    queryParams.query.bool.must[0].bool.must.push({
       multi_match: {
         query: `${sportName}`,
         fields: ['sport', 'sports.sport'],
       },
     });
 
-    queryParams.query.bool.must[0].bool.should.push({
-      match: {
-        entity_type: {query: Verbs.entityTypeTeam},
-      },
-    });
+    // queryParams.query.bool.must[0].bool.should.push({
+    //   match: {
+    //     entity_type: {query: Verbs.entityTypeTeam},
+    //   },
+    // });
 
     if (authContext.entity.auth.user?.city) {
       queryParams.query.bool.must[1].bool.should.push({
@@ -220,6 +220,7 @@ const CongratulationsModal = ({
       .then((response) => {
         setTimeout(() => {
           setLoading(false);
+          console.log({response});
         }, 20);
         setTeamsList(response);
       })

@@ -9,6 +9,8 @@ import {
   Alert,
   Platform,
   SafeAreaView,
+  Text,
+  Pressable,
 } from 'react-native';
 
 import ImagePicker from 'react-native-image-crop-picker';
@@ -24,7 +26,6 @@ import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import TCLabel from '../../../components/TCLabel';
 import TCKeyboardView from '../../../components/TCKeyboardView';
-import TCTextField from '../../../components/TCTextField';
 import uploadImages from '../../../utils/imageAction';
 import {getQBAccountType, QBupdateUser} from '../../../utils/QuickBlox';
 import LocationModal from '../../../components/LocationModal/LocationModal';
@@ -306,7 +307,6 @@ export default function PersonalInformationScreen({navigation, route}) {
         onRightButtonPress={() => {
           onSavePress();
         }}
-        containerStyle={styles.headerRow}
       />
 
       <TCKeyboardView>
@@ -361,33 +361,37 @@ export default function PersonalInformationScreen({navigation, route}) {
             style={styles.inputLabel}
           />
 
-          <TouchableOpacity onPress={() => setLocationPopup(true)}>
-            <TextInput
-              placeholder={strings.searchCityPlaceholder}
-              style={styles.inputField}
-              value={[userInfo.city, userInfo.state, userInfo.country]
+          <TouchableOpacity
+            onPress={() => setLocationPopup(true)}
+            style={styles.homeCityContainer}>
+            <Text style={styles.homeCityText} numberOfLines={1}>
+              {[userInfo.city, userInfo.state, userInfo.country]
                 .filter((v) => v)
                 .join(', ')}
-              editable={false}
-              pointerEvents="none"
-            />
+            </Text>
           </TouchableOpacity>
 
           <TCLabel
             title={strings.slogan.toUpperCase()}
             style={styles.inputLabel}
           />
-          <TCTextField
-            placeholder={strings.whatIsYourSlogan}
-            onChangeText={(text) =>
-              setUserInfo({...userInfo, description: text})
-            }
-            multiline
-            maxLength={150}
-            value={userInfo.description}
-            height={120}
-            style={{backgroundColor: colors.textFieldBackground, marginLeft: 0}}
-          />
+          <Pressable style={styles.textArea}>
+            <TextInput
+              placeholder={strings.whatIsYourSlogan}
+              onChangeText={(text) =>
+                setUserInfo({...userInfo, description: text})
+              }
+              multiline={true}
+              maxLength={150}
+              value={userInfo.description}
+              style={{
+                padding: 0,
+                fontSize: 16,
+                fontFamily: fonts.RRegular,
+                color: colors.lightBlackColor,
+              }}
+            />
+          </Pressable>
         </View>
       </TCKeyboardView>
 
@@ -421,12 +425,6 @@ export default function PersonalInformationScreen({navigation, route}) {
   );
 }
 const styles = StyleSheet.create({
-  headerRow: {
-    paddingLeft: 10,
-    paddingTop: 8,
-    paddingRight: 18,
-    paddingBottom: 12,
-  },
   container: {
     flex: 1,
     paddingHorizontal: 15,
@@ -484,5 +482,27 @@ const styles = StyleSheet.create({
     height: 22,
     width: 22,
     resizeMode: 'contain',
+  },
+  homeCityContainer: {
+    flex: 1,
+    borderRadius: 5,
+    marginBottom: 35,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    justifyContent: 'center',
+    backgroundColor: colors.textFieldBackground,
+  },
+  homeCityText: {
+    fontSize: 16,
+    lineHeight: 23,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
+  },
+  textArea: {
+    padding: 10,
+    height: 100,
+    borderRadius: 5,
+    marginBottom: 35,
+    backgroundColor: colors.textFieldBackground,
   },
 });

@@ -54,10 +54,9 @@ export const ModalTypes = {
   style8: 'style8',
 };
 
-
 export const InvoiceType = {
   Invoice: 0,
-  Event: 1
+  Event: 1,
 };
 
 export const InvoiceRowType = {
@@ -68,15 +67,16 @@ export const InvoiceRowType = {
 
 export const InvoiceRecipientTabType = {
   People: 0,
-  Teams: 1
+  Teams: 1,
 };
-
 
 export const doublesInviteOptions = {
   0: strings.none,
   1: strings.everyoneTitleText,
   2: strings.myFollowing,
 };
+
+export const DEFAULT_NTRP = '5.0';
 
 export default EntityStatus;
 export {privacySettingEnum, privacyKey};

@@ -143,7 +143,6 @@ const SwitchAccountModal = ({
 const styles = StyleSheet.create({
   modalContainer: {
     paddingHorizontal: 15,
-    flex: 1,
   },
   row: {
     flexDirection: 'row',

@@ -56,7 +56,7 @@ const WrapperModal = ({
       case strings.gameTypeTitle:
         return (
           <MatchTypeModal
-            gameType={settings.game_type}
+            gameType={settings.game_type ?? strings.friendlyGameType}
             onChange={(gameType) => {
               setSettings({...settings, game_type: gameType});
             }}
@@ -92,7 +92,7 @@ const WrapperModal = ({
       case strings.refundPolicy:
         return (
           <CancellationPolicyModal
-            refundPolicy={settings.refund_policy}
+            refundPolicy={settings.refund_policy ?? Verbs.flexibleText}
             onChange={(refundPolicy) => {
               setSettings({...settings, refund_policy: refundPolicy});
             }}

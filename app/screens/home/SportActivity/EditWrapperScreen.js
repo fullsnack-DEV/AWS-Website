@@ -14,6 +14,7 @@ import EditNTRPScreen from './contentScreens/EditNTRPScreen';
 import EditCertificateScreen from './contentScreens/EditCertificateScreen';
 import {getEntitySportList} from '../../../utils/sportsActivityUtils';
 import Verbs from '../../../Constants/Verbs';
+import {DEFAULT_NTRP} from '../../../Constants/GeneralConstants';
 
 const EditWrapperScreen = ({navigation, route}) => {
   const [userData, setUserData] = useState({});
@@ -69,7 +70,7 @@ const EditWrapperScreen = ({navigation, route}) => {
       case strings.ntrpTitle:
         return (
           <EditNTRPScreen
-            ntrp={updatedSportObj.ntrp ?? '5.0'}
+            ntrp={updatedSportObj.ntrp ?? DEFAULT_NTRP}
             setData={(val) => {
               const obj = {
                 ...updatedSportObj,

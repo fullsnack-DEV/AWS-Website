@@ -157,7 +157,10 @@ const CustomModalWrapper = ({
                 },
               ]}>
               <Pressable onPress={() => {}}>
-                {getModalHeader()}
+                <View style={{flexDirection: 'row', alignSelf: 'stretch'}}>
+                  {getModalHeader()}
+                </View>
+
                 <View style={[{padding: 25}, containerStyle]}>{children}</View>
               </Pressable>
             </Animated.View>
@@ -174,8 +177,10 @@ const CustomModalWrapper = ({
                 ],
               },
             ]}>
-            <Pressable onPress={() => {}}>
-              {getModalHeader()}
+            <Pressable onPress={() => {}} style={{}}>
+              <View style={{flexDirection: 'row', alignSelf: 'stretch'}}>
+                {getModalHeader()}
+              </View>
               <View style={[{padding: 25}, containerStyle]}>{children}</View>
             </Pressable>
           </Animated.View>
@@ -194,8 +199,8 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: colors.whiteColor,
-    borderTopRightRadius: 20,
-    borderTopLeftRadius: 20,
+    borderTopRightRadius: 15,
+    borderTopLeftRadius: 15,
     shadowColor: colors.blackColor,
     shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
@@ -211,10 +216,8 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   headerStyle: {
-    paddingLeft: 15,
-    paddingTop: 15,
-    paddingRight: 17,
-    paddingBottom: 10,
+    height: '100%',
+    width: '100%',
     borderBottomWidth: 1,
     borderBottomColor: colors.greyBorderColor,
   },
