@@ -1144,6 +1144,7 @@ function NotificationsListScreen({navigation}) {
         onClosePress={() => setIsRulesModalVisible(false)}
         onNextPress={() => onNextPressed()}
         groupData={groupData}
+        headerTitle={strings.respondToInviteCreateTeam}
         textstring1={format(
           strings.responseToRequesttxt1,
           groupData?.player1?.full_name,

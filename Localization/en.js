@@ -2237,7 +2237,7 @@ export default {
   matchHostChallengeText: 'en_Who the match host and challenger are',
   matchFeeModalInfo1:
     'en_If you receive a challenge or invite someone to send you a challenge, you will be the match host and the opponent will be the challenger in the resulting match.',
-  whatMatchHostDo: 'en_What the match host must doen_:',
+  whatMatchHostDo: 'en_What the match host must do:',
   matchFeeModalInfo2:
     'en_The match host must secure the following at their own cost as specified in their incoming challenge settings. Changes may be made if the match host and challenger are in agreement.',
   addMatchFeeText: 'en_ADD MATCH FEE',
@@ -2729,4 +2729,5 @@ export default {
   reviewIncomingchallengetitle: 'en_Review Incoming Challenge Settings >',
   createGroupAccount: 'en_Create Group Account',
   switchingTo: 'en_Switching to',
+  SPORTStxt: 'en_SPORTS',
 };

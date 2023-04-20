@@ -26,6 +26,7 @@ export default function SendRequestModal({
   textstring1,
   textstring2,
   textstring3,
+  headerTitle = strings.sendrequestToCreateTeam,
 }) {
   const placeHolder = images.teamPlaceholderSmall;
   return (
@@ -77,7 +78,7 @@ export default function SendRequestModal({
                 marginLeft: 20,
                 marginBottom: 14,
               }}>
-              {strings.sendrequestToCreateTeam}
+              {headerTitle}
             </Text>
             <TouchableOpacity
               hitSlop={Utility.getHitSlop(15)}

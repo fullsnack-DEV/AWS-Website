@@ -484,7 +484,7 @@ const images = {
   invoiceIcon: require('../assets/images/invoice.png'),
   xCircleImg: require('../assets/images/xCircle.png'),
   newTeamLogo: require('../assets/images/NewTeamLogo.png'),
-  newClubLogo: require('../assets/images/newClubIcon.png'),
+  newClubLogo: require('../assets/images/NewClubLogo.png'),
   uploadCameraIcon: require('../assets/images/UploadCameraIcon.png'),
   createGroupIcon: require('../assets/images/createGroupIcon.png'),
 };
