@@ -121,7 +121,7 @@ export default function GroupMembersScreen({navigation, route}) {
           );
 
           const SortedMembers = [...adminMembers, ...normalMembers];
-
+          console.log(SortedMembers, 'from Sort');
           setMembers(SortedMembers);
 
           setSearchMember(SortedMembers);
@@ -195,13 +195,14 @@ export default function GroupMembersScreen({navigation, route}) {
   ]);
 
   const searchFilterFunction = (text) => {
-    const result = members.filter(
-      (x) =>
-        x.first_name.toLowerCase().includes(text.toLowerCase()) ||
-        x.last_name.toLowerCase().includes(text.toLowerCase()),
-    );
+    const filteredData = members.filter((item) => {
+      const fullName = `${item.first_name}${item.last_name}`.toLowerCase();
+
+      return fullName.includes(text);
+    });
+
     if (text.length > 0) {
-      setMembers(result);
+      setMembers(filteredData);
     } else {
       setMembers(searchMember);
     }
@@ -686,6 +687,18 @@ export default function GroupMembersScreen({navigation, route}) {
     [onPressProfilePhotoAndTitle, renderFollowUnfollowArrow],
   );
 
+  const SearchBox = () => (
+    <View style={styles.searchBarView}>
+      <TCSearchBox
+        onChangeText={(text) => searchFilterFunction(text)}
+        placeholderText={strings.searchText}
+        style={{
+          height: 40,
+        }}
+      />
+    </View>
+  );
+
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
@@ -730,15 +743,7 @@ export default function GroupMembersScreen({navigation, route}) {
         <View style={styles.headerSeperator} />
       </View>
       <View tabLabel={strings.membersTitle} style={{flex: 1}}>
-        <View style={styles.searchBarView}>
-          <TCSearchBox
-            onChangeText={(text) => searchFilterFunction(text)}
-            placeholderText={strings.searchText}
-            style={{
-              height: 40,
-            }}
-          />
-        </View>
+        {SearchBox()}
 
         {/* eslint-disable-next-line no-nested-ternary */}
         {members.length > 0 ? (
@@ -747,7 +752,8 @@ export default function GroupMembersScreen({navigation, route}) {
             style={{marginTop: -10}}
             data={members}
             renderItem={renderMembers}
-            keyExtractor={(item, index) => index.toString()}
+            showsVerticalScrollIndicator={false}
+            keyExtractor={(item, index) => `${item?.full_name}/${index}`}
           />
         ) : (
           <TCNoDataView title={strings.noMebersFoundText} />
