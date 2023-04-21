@@ -121,7 +121,7 @@ export default function GroupMembersScreen({navigation, route}) {
           );
 
           const SortedMembers = [...adminMembers, ...normalMembers];
-          console.log(SortedMembers, 'from Sort');
+
           setMembers(SortedMembers);
 
           setSearchMember(SortedMembers);
@@ -753,7 +753,7 @@ export default function GroupMembersScreen({navigation, route}) {
             data={members}
             renderItem={renderMembers}
             showsVerticalScrollIndicator={false}
-            keyExtractor={(item, index) => `${item?.full_name}/${index}`}
+            keyExtractor={(item, index) => `${item.first_name}/${index}`}
           />
         ) : (
           <TCNoDataView title={strings.noMebersFoundText} />
