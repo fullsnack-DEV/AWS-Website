@@ -28,19 +28,20 @@ import CongratulationsModal from './modals/CongratulationsModal';
 import MatchFeeReminder from './modals/MatchFeeReminder';
 import SettingsMenuItem from './components/SettingsMenuItem';
 import WrapperModal from '../../../components/IncomingChallengeSettingsModals/WrapperModal';
-import DataSource from '../../../Constants/DataSource';
+
 import HostChallengerInfoModal from './modals/HostChallengerInfoModal';
 import ScreenHeader from '../../../components/ScreenHeader';
 import uploadImages from '../../../utils/imageAction';
 
 import fonts from '../../../Constants/Fonts';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
-import {createGroup, createGroupRequest} from '../../../api/Groups';
+import {createGroup, createGroupRequest, patchGroup} from '../../../api/Groups';
 import colors from '../../../Constants/Colors';
 
 import Modal from 'react-native-modal';
 
 import SendRequestModal from '../../../components/SendRequestModal/SendRequestModal';
+import {DEFAULT_NTRP} from '../../../Constants/GeneralConstants';
 
 export default function IncomingChallengeSettings({navigation, route}) {
   const [settingObject, setSettingObject] = useState({});
@@ -65,6 +66,8 @@ export default function IncomingChallengeSettings({navigation, route}) {
     thumbnail,
     backgroundThumbnail,
     show_Double,
+    fromRespondToInvite,
+    teamgrpId,
   } = route.params;
   const [playerObject] = useState(playerData);
   const [showModal, setShowModal] = useState(false);
@@ -177,6 +180,10 @@ export default function IncomingChallengeSettings({navigation, route}) {
       setShowMatchFeeReminderModal(true);
       setVisibleRequestModal(false);
       setIsAlreadyWarned(true);
+    } else if (fromRespondToInvite) {
+      navigation.navigate('RespondToInviteScreen', {
+        incomingchallengeSettings: settingObject,
+      });
     } else {
       onCreateTeam();
     }
@@ -365,7 +372,7 @@ export default function IncomingChallengeSettings({navigation, route}) {
               ...item,
               setting: {
                 ...settingObject,
-                ntrp: '1.0',
+                ntrp: settingObject.ntrp ?? DEFAULT_NTRP,
               },
             };
           }
@@ -578,11 +585,16 @@ export default function IncomingChallengeSettings({navigation, route}) {
           navigation.goBack();
         }}
         isRightIconText
-        rightButtonText={strings.done}
+        rightButtonText={fromRespondToInvite ? strings.save : strings.done}
         onRightButtonPress={() => {
           if (fromCreateTeam) {
             if (show_Double) {
               onCreateDoubleTeamPress();
+            } else if (fromRespondToInvite) {
+              // patchIncomingSetting();
+              navigation.navigate('RespondToInviteScreen', {
+                incomingchallengeSettings: settingObject,
+              });
             } else {
               onCreateTeam();
             }
@@ -635,7 +647,6 @@ export default function IncomingChallengeSettings({navigation, route}) {
               item={item}
               handleOptions={handleOptions}
               settingObject={settingObject}
-              o
             />
           )}
         />
@@ -656,7 +667,6 @@ export default function IncomingChallengeSettings({navigation, route}) {
           } else {
             navigation.navigate('AccountScreen', {
               createdSportName: sportName,
-              // eslint-disable-next-line
               sportType: sportType,
             });
           }
@@ -690,7 +700,11 @@ export default function IncomingChallengeSettings({navigation, route}) {
             });
           }
           if (filters.sport_type === Verbs.sportTypeDouble) {
-            //
+            navigation.navigate('AccountScreen', {
+              createdSportName: sportName,
+              sportType: sportType,
+              isSearchPlayerForDoubles: true,
+            });
           }
         }}
         onUserClick={(userData) => {
@@ -768,6 +782,7 @@ export default function IncomingChallengeSettings({navigation, route}) {
 
       <WrapperModal
         isVisible={showModal}
+        show_Double={show_Double}
         closeModal={() => {
           setShowModal(false);
         }}

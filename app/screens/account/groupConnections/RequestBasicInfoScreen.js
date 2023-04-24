@@ -44,6 +44,8 @@ import DataSource from '../../../Constants/DataSource';
 import TCTextField from '../../../components/TCTextField';
 
 import AddressLocationModal from '../../../components/AddressLocationModal/AddressLocationModal';
+import {getUserDetails} from '../../../api/Users';
+import {getJSDate} from '../../../utils';
 
 let entity = {};
 
@@ -85,6 +87,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
   const [city, setCity] = useState();
   const [state, setState] = useState();
   const [country, setCountry] = useState();
+  const [grpInfo, setGrpInfo] = useState();
 
   useEffect(() => {
     const mindate = new Date();
@@ -96,31 +99,12 @@ export default function RequestBasicInfoScreen({navigation, route}) {
 
   useEffect(() => {
     if (isFocused) {
-      getMemberInfo();
+      getUserInfo();
+      getGroupMemberInfo();
 
-      if (
-        route?.params?.city &&
-        route?.params?.state &&
-        route?.params?.country
-      ) {
-        setMemberInfo({
-          ...memberInfo,
-          city: route?.params?.city,
-          state_abbr: route?.params?.state,
-          country: route?.params?.country,
-        });
-
-        setLocation(
-          `${route?.params?.city}, ${route?.params?.state}, ${route?.params?.country}`,
-        );
-      }
+      setLocation(memberInfo?.street_address);
     }
-  }, [
-    isFocused,
-    route?.params?.city,
-    route?.params?.country,
-    route?.params?.state,
-  ]);
+  }, [isFocused]);
 
   useEffect(() => {
     setPhoneNumber(
@@ -136,13 +120,27 @@ export default function RequestBasicInfoScreen({navigation, route}) {
     getAuthEntity();
   }, []);
 
-  const getMemberInfo = () => {
-    setloading(true);
+  const getGroupMemberInfo = () => {
     getGroupMembersInfo(
       route?.params?.groupID,
       route?.params?.memberID,
       authContext,
     )
+      .then((response) => {
+        setGrpInfo(response.payload);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
+
+  const getUserInfo = () => {
+    setloading(true);
+
+    getUserDetails(authContext.entity?.uid, authContext)
       .then((response) => {
         setMemberInfo(response?.payload);
 
@@ -153,6 +151,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
           weight: !!response?.payload?.weight,
           email: !!response?.payload?.email,
           phone: !!response?.payload?.phone_numbers,
+
           address:
             !!response?.payload?.street_address &&
             !!response?.payload?.city &&
@@ -163,11 +162,8 @@ export default function RequestBasicInfoScreen({navigation, route}) {
         if (response?.payload?.phone_numbers?.length > 0) {
           setPhoneNumber(response?.payload?.phone_numbers);
         }
-        if (response?.payload?.city) {
-          setLocation(
-            memberInfo?.city &&
-              `${memberInfo?.city}, ${memberInfo?.state_abbr}, ${memberInfo?.country}`,
-          );
+        if (response?.payload?.street_address) {
+          setLocation(response?.payload?.street_address);
         }
         setloading(false);
       })
@@ -208,42 +204,41 @@ export default function RequestBasicInfoScreen({navigation, route}) {
   // Form Validation
   const checkValidation = () => {
     if (setting.address && location === undefined) {
-      console.log(location, 'Frpm val');
-      Alert.alert('Towns Cup', 'Please enter all location parameter.');
+      Alert.alert(strings.appName, strings.locationValidation);
       return false;
     }
 
     if (setting?.weight && memberInfo.weight !== null) {
       if (!memberInfo.weight?.weight_type) {
-        Alert.alert('Towns Cup', 'Please select weight measurement');
+        Alert.alert(strings.appName, strings.weightValidation);
         return false;
       } else if (
         memberInfo.weight.weight <= 0 ||
         memberInfo.weight.weight >= 1000 ||
         memberInfo.weight.weight === undefined
       ) {
-        Alert.alert('Towns Cup', 'Please enter valid weight.');
+        Alert.alert(strings.appName, strings.validWeightValidation);
         return false;
       }
     }
 
     if (setting?.height && memberInfo.height !== null) {
       if (!memberInfo.height?.height_type) {
-        Alert.alert('Towns Cup', 'Please select height measurement');
+        Alert.alert(strings.appName, strings.heightValidation);
         return false;
       } else if (
         memberInfo.height.height <= 0 ||
         memberInfo.height.height >= 1000 ||
         memberInfo.height.height === undefined
       ) {
-        Alert.alert('Towns Cup', 'Please enter valid height.');
+        Alert.alert(strings.appName, strings.validHeightValidation);
         return false;
       }
     }
 
     if (setting.phone) {
       if (memberInfo?.phone_numbers?.length == null) {
-        Alert.alert('Towns Cup', 'Please enter phone number.');
+        Alert.alert(strings.appName, strings.phoneNumberValidation);
         return false;
       }
       const filteredNumber = memberInfo?.phone_numbers?.filter(
@@ -251,7 +246,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
           ![null, undefined, ''].includes(obj.phone_number && obj.country_code),
       );
       if (filteredNumber?.length <= 0) {
-        Alert.alert('Towns Cup', 'Please fill all phone number parameter.');
+        Alert.alert(strings.appName, strings.allphoneParameter);
         return false;
       }
     }
@@ -259,15 +254,20 @@ export default function RequestBasicInfoScreen({navigation, route}) {
   };
 
   const editMemberBasicInfo = () => {
-    const bodyParams = {...memberInfo, update_profile_info: updateProfile};
+    const bodyParams = {...grpInfo, update_profile_info: updateProfile};
 
     setloading(true);
+
+    if (setting?.gender === true) {
+      bodyParams.gender = memberInfo?.gender;
+    }
 
     if (setting?.height === true) {
       bodyParams.height = memberInfo?.height;
     }
+
     if (setting?.birthday === true) {
-      bodyParams.birthday = moment(memberInfo.birthday).format('MMM DD, YYYY');
+      bodyParams.birthday = memberInfo.birthday;
     }
 
     if (setting?.weight === true) {
@@ -280,9 +280,9 @@ export default function RequestBasicInfoScreen({navigation, route}) {
     ) {
       bodyParams.dominant = memberInfo?.dominant;
     }
-    if (setting?.email === true) {
-      bodyParams.email = memberInfo?.email;
-    }
+    // if (setting?.email === true) {
+    //   bodyParams.email = memberInfo?.email;
+    // }
     if (setting?.phone === true) {
       bodyParams.phone_numbers = memberInfo?.phone_numbers;
     }
@@ -293,6 +293,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
       bodyParams.country = country;
       bodyParams.postal_code = postalCode;
     }
+    console.log(bodyParams, 'From bosy');
 
     approveBasicInfoRequest(
       route?.params?.groupID,
@@ -303,7 +304,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
       .then(() => {
         setloading(false);
 
-        Alert.alert('The basic info items were  sent', '', [
+        Alert.alert(strings.basicInfoItemSent, '', [
           {
             text: strings.okTitleText,
             style: 'default',
@@ -389,9 +390,9 @@ export default function RequestBasicInfoScreen({navigation, route}) {
                 height: {
                   height: text,
                   height_type:
-                    memberInfo?.height?.height_type === undefined
+                    memberInfo.height?.height === undefined
                       ? heightMesurement[1].value
-                      : memberInfo?.height?.height_type,
+                      : memberInfo.height?.height_type,
                 },
               });
             }}
@@ -404,7 +405,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
             value: null,
           }}
           items={heightMesurement}
-          value={'ft'}
+          value={memberInfo.height?.height_type}
           onValueChange={(value) => {
             setMemberInfo({
               ...memberInfo,
@@ -483,7 +484,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
                 },
               });
             }}
-            value={memberInfo?.weight?.weight}
+            value={memberInfo.weight?.weight}
           />
         </View>
         <RNPickerSelect
@@ -496,12 +497,12 @@ export default function RequestBasicInfoScreen({navigation, route}) {
             setMemberInfo({
               ...memberInfo,
               weight: {
-                weight: memberInfo?.weight?.weight,
+                weight: memberInfo.weight?.weight,
                 weight_type: value,
               },
             });
           }}
-          value={memberInfo?.weight?.weight_type}
+          value={memberInfo.weight?.weight_type}
           useNativeAndroidPickerStyle={false}
           style={{
             placeholder: {
@@ -632,7 +633,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
           </View>
           <View style={{marginLeft: 50}}>
             <Text style={styles.fixedText}>
-              {moment(memberInfo.birthday).format('MMM DD, YYYY')}
+              {moment(getJSDate(memberInfo?.birthday)).format('MMM DD,YYYY')}
             </Text>
           </View>
         </View>
@@ -710,7 +711,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
             </View>
           )}
 
-        <View style={styles.checkBoxContainer}>
+        {/* <View style={styles.checkBoxContainer}>
           <TouchableOpacity
             onPress={() => {
               setSetting({
@@ -745,7 +746,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
             autoCorrect={false}
             placeholder={strings.email}
           />
-        </View>
+        </View> */}
 
         <View>
           <View style={styles.checkBoxContainer}>
@@ -884,7 +885,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
               color: colors.whiteColor,
               textTransform: 'uppercase',
             }}>
-            Update
+            {strings.updateBtnText}
           </Text>
         </TouchableOpacity>
 

@@ -54,11 +54,7 @@ const prepareGroupsSubMenu = (groupList) =>
     if (groupList) {
       menu = groupList?.map((item) => ({
         option: item,
-        icon:
-          item.thumbnail ||
-          (item.entity_type === Verbs.entityTypeClub
-            ? images.clubPlaceholder
-            : images.teamPlaceholder),
+        icon: item.thumbnail,
         // iconRight: images.settingSport,
         navigateTo: {
           screenName: 'HomeScreen',
@@ -106,73 +102,73 @@ const paymentMethodMenu = () => [
   },
 ];
 
-const invoicesMenuForUser = () =>  [
-    {
-      key: strings.invoicesTitle,
-      icon: images.invoiceIcon,
-      member: [
-        {
-          option: strings.invoicereceived,
-          icon: images.invoiceIcon,
-          navigateTo: {
-            screenName: 'Account',
-            data: {
-              screen: 'PaymentMethodsScreen',
-              params: {
-                comeFrom: 'AccountScreen',
-              },
-            },
-          },
-        },
-        {
-          option: strings.invoicesent,
-          icon: images.invoiceIcon,
-          navigateTo: {
-            screenName: 'PayoutMethodList',
-            data: {
+const invoicesMenuForUser = () => [
+  {
+    key: strings.invoicesTitle,
+    icon: images.invoiceIcon,
+    member: [
+      {
+        option: strings.invoicereceived,
+        icon: images.invoiceRecievedIcon,
+        navigateTo: {
+          screenName: 'Account',
+          data: {
+            screen: 'PaymentMethodsScreen',
+            params: {
               comeFrom: 'AccountScreen',
             },
           },
         },
-      ],
-    },
-  ];
+      },
+      {
+        option: strings.invoicesent,
+        icon: images.invoiceIcon,
+        navigateTo: {
+          screenName: 'PayoutMethodList',
+          data: {
+            comeFrom: 'AccountScreen',
+          },
+        },
+      },
+    ],
+  },
+];
 
-const invoicesMenuForGroup = () =>  [
-    {
-      key: strings.invoicesTitle,
-      icon: images.invoiceIcon,
-      member: [
-        {
-          option: strings.sendnewinvoice,
-          icon: images.invoiceIcon,
-        },
-        {
-          option: strings.invoicereceived,
-          icon: images.invoiceIcon,
-          navigateTo: {
-            screenName: 'Account',
-            data: {
-              screen: 'InvoiceScreen',
-              params: {
-                comeFrom: 'AccountScreen',
-              },
-            },
-          },
-        },
-        {
-          option: strings.invoicesent,
-          icon: images.invoiceIcon,
-          navigateTo: {
-            screenName: 'InvoiceScreen',
-            data: {
+const invoicesMenuForGroup = () => [
+  {
+    key: strings.invoicesTitle,
+    icon: images.invoiceIcon,
+    member: [
+      {
+        option: strings.sendnewinvoice,
+        icon: images.sendNewInvoiceIcon,
+      },
+      {
+        option: strings.invoicereceived,
+        icon: images.invoiceRecievedIcon,
+        navigateTo: {
+          screenName: 'Account',
+          data: {
+            screen: 'InvoiceScreen',
+            params: {
               comeFrom: 'AccountScreen',
             },
           },
         },
-      ],
-    },
-  ];
+      },
+      {
+        option: strings.invoicesent,
+        icon: images.invoiceIcon,
+        navigateTo: {
+          screenName: 'InvoiceScreen',
+          data: {
+            comeFrom: 'AccountScreen',
+          },
+        },
+      },
+    ],
+  },
+];
 
 export const prepareUserMenu = (authContext, teams, clubs, baseUrl) => {
   const userMenu = [
@@ -199,6 +195,7 @@ export const prepareUserMenu = (authContext, teams, clubs, baseUrl) => {
         {
           option: strings.addSportsTitle,
           icon: images.addSport,
+          iconRight: images.nextArrow,
           menuOptionType: Verbs.entityTypePlayer,
           navigateTo: {
             screenName: 'RegisterPlayer',
@@ -243,6 +240,7 @@ export const prepareUserMenu = (authContext, teams, clubs, baseUrl) => {
         {
           option: strings.addSportsTitle,
           icon: images.registerScorekeeper,
+          iconRight: images.nextArrow,
           menuOptionType: Verbs.entityTypeScorekeeper,
           navigateTo: {
             screenName: 'RegisterScorekeeper',
@@ -258,6 +256,7 @@ export const prepareUserMenu = (authContext, teams, clubs, baseUrl) => {
         {
           option: strings.createTeamText,
           icon: images.createTeam,
+          iconRight: images.nextArrow,
           navigateTo: {
             screenName: 'CreateTeamForm1',
           },
@@ -272,13 +271,24 @@ export const prepareUserMenu = (authContext, teams, clubs, baseUrl) => {
         {
           option: strings.createClubText,
           icon: images.createClub,
+          iconRight: images.nextArrow,
           navigateTo: {
             screenName: 'CreateClubForm1',
           },
         },
       ],
     },
+    {
+      key: strings.leagues,
+      icon: images.accountMyLeagues,
+      member: [],
+    },
     ...invoicesMenuForUser(),
+    {
+      key: strings.transactions,
+      icon: images.transactionsIcon,
+      member: [],
+    },
     ...paymentMethodMenu(),
     {
       key: strings.settingsTitleText,
@@ -291,11 +301,11 @@ export const prepareUserMenu = (authContext, teams, clubs, baseUrl) => {
   return userMenu;
 };
 
-export const prepareTeamMenu = (authContext, teams, clubs) => {
+export const prepareTeamMenu = (authContext, clubs) => {
   const teamMenu = [
     {
       key: strings.reservationsTitleText,
-      icon: images.accountMySchedule,
+      icon: images.accountMyReservations,
       navigateTo: {
         screenName: 'ReservationNavigator',
         data: {
@@ -304,7 +314,7 @@ export const prepareTeamMenu = (authContext, teams, clubs) => {
       },
     },
     {
-      key: strings.challengeSettingText,
+      key: strings.incomingChallengeSettingsTitle,
       icon: images.manageChallengeIcon,
       navigateTo: {
         screenName: 'ManageChallengeScreen',
@@ -315,17 +325,17 @@ export const prepareTeamMenu = (authContext, teams, clubs) => {
         },
       },
     },
-    {
-      key: strings.membersTitle,
-      icon: images.Members,
-      navigateTo: {
-        screenName: 'GroupMembersScreen',
-        data: {
-          groupID: authContext.entity.uid,
-          groupObj: authContext.entity.obj,
-        },
-      },
-    },
+    // {
+    //   key: strings.membersTitle,
+    //   icon: images.Members,
+    //   navigateTo: {
+    //     screenName: 'GroupMembersScreen',
+    //     data: {
+    //       groupID: authContext.entity.uid,
+    //       groupObj: authContext.entity.obj,
+    //     },
+    //   },
+    // },
     {
       key: strings.clubstitle,
       icon: images.accountMyClubs,
@@ -340,35 +350,42 @@ export const prepareTeamMenu = (authContext, teams, clubs) => {
         // },
       ],
     },
+    {
+      key: strings.leagues,
+      icon: images.accountMyLeagues,
+      member: [],
+    },
     ...invoicesMenuForGroup(),
+    {
+      key: strings.transactions,
+      icon: images.transactionsIcon,
+      member: [],
+    },
     ...paymentMethodMenu(),
     {
       key: strings.settingsTitleText,
       icon: images.accountSettingPrivacy,
       navigateTo: {
         screenName: 'GroupSettingPrivacyScreen',
-        data: {
-          groups: teams,
-        },
       },
     },
   ];
   return teamMenu;
 };
 
-export const prepareClubMenu = (authContext, teams, clubs) => {
+export const prepareClubMenu = (authContext, teams) => {
   const clubMenu = [
-    {
-      key: strings.membersTitle,
-      icon: images.Members,
-      navigateTo: {
-        screenName: 'GroupMembersScreen',
-        data: {
-          groupID: authContext.entity.uid,
-          groupObj: authContext.entity.obj,
-        },
-      },
-    },
+    // {
+    //   key: strings.membersTitle,
+    //   icon: images.Members,
+    //   navigateTo: {
+    //     screenName: 'GroupMembersScreen',
+    //     data: {
+    //       groupID: authContext.entity.uid,
+    //       groupObj: authContext.entity.obj,
+    //     },
+    //   },
+    // },
 
     {
       key: strings.teamstitle,
@@ -379,15 +396,17 @@ export const prepareClubMenu = (authContext, teams, clubs) => {
       ],
     },
     ...invoicesMenuForGroup(),
+    {
+      key: strings.transactions,
+      icon: images.transactionsIcon,
+      member: [],
+    },
     ...paymentMethodMenu(),
     {
       key: strings.settingsTitleText,
       icon: images.accountSettingPrivacy,
       navigateTo: {
         screenName: 'GroupSettingPrivacyScreen',
-        data: {
-          groups: clubs,
-        },
       },
     },
   ];

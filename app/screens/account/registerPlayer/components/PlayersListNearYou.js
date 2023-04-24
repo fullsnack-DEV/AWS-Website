@@ -71,7 +71,7 @@ const PlayersListNearYou = ({
               styles.buttonContainer,
               {backgroundColor: colors.lightGrayBackground},
             ]}
-            onPress={onChoose}>
+            onPress={() => onChoose(item)}>
             <Text style={[styles.buttonText, {color: colors.themeColor}]}>
               {strings.choose}
             </Text>

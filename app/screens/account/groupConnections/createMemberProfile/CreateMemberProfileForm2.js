@@ -11,10 +11,10 @@ import {
   Text,
   Image,
   ScrollView,
-  TouchableOpacity,
   FlatList,
   TextInput,
   Platform,
+  TouchableWithoutFeedback,
 } from 'react-native';
 
 import {useIsFocused} from '@react-navigation/native';
@@ -124,17 +124,13 @@ export default function CreateMemberProfileForm2({navigation, route}) {
   }, [isFocused]);
 
   const validation = useCallback(() => {
-    if (
-      !city?.length ||
-      !state?.length ||
-      !country?.length ||
-      !location?.length
-    ) {
+    if (!location?.length) {
       showAlert(strings.addressValidation);
       return false;
     }
     return true;
   }, [city, country, location, postalCode, state]);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -398,11 +394,11 @@ export default function CreateMemberProfileForm2({navigation, route}) {
     </View>
   );
 
-  const locationString = () =>
-    [location, city, state, country, postalCode].filter((v) => v).join(', ');
+  // const locationString = () =>
+  //   [location, city, state, country, postalCode].filter((v) => v).join(', ');
 
-  const addressManualString = () =>
-    [city, state, country, location, postalCode].filter((w) => w).join(', ');
+  // const addressManualString = () =>
+  //   [city, state, country, location, postalCode].filter((w) => w).join(', ');
 
   const onSelectAddress = (_location) => {
     setCity(_location.city);
@@ -413,7 +409,8 @@ export default function CreateMemberProfileForm2({navigation, route}) {
   };
 
   const setCityandPostal = (street, code) => {
-    setCity(street);
+    setLocation(`${street} ${city} ${state} ${country} ${code}`);
+
     setPostalCode(code);
   };
 
@@ -510,7 +507,7 @@ export default function CreateMemberProfileForm2({navigation, route}) {
         />
       )}
 
-      <TouchableOpacity
+      <TouchableWithoutFeedback
         onPress={() => {
           setVisibleLocationModal(true);
         }}>
@@ -521,15 +518,17 @@ export default function CreateMemberProfileForm2({navigation, route}) {
           />
 
           <TCTextField
-            value={locationString() || addressManualString()}
+            value={location}
             autoCapitalize="none"
             autoCorrect={false}
             placeholder={strings.streetAddress}
             pointerEvents="none"
             editable={false}
+            // multiline={true}
+            numberOfLines={4}
           />
         </View>
-      </TouchableOpacity>
+      </TouchableWithoutFeedback>
 
       {showDate && (
         <View>

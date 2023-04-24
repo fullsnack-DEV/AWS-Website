@@ -19,6 +19,11 @@ import colors from '../../../Constants/Colors';
 import {strings} from '../../../../Localization/translation';
 import {patchPlayer} from '../../../api/Users';
 import ScreenHeader from '../../../components/ScreenHeader';
+import {
+  doublesInviteOptionsList,
+  eventsInviteOptionsList,
+  groupInviteOptionsList,
+} from '../../../Constants/GeneralConstants';
 
 export default function GroupInviteYouScreen({navigation, route}) {
   const {groupInviteYou, type, comeFrom, routeParams} = route.params;
@@ -26,30 +31,7 @@ export default function GroupInviteYouScreen({navigation, route}) {
 
   const [loading, setloading] = useState(false);
   const [value, setValue] = useState(groupInviteYou);
-  const groupInviteOpetions = [
-    {
-      key: strings.yes,
-      id: 1,
-    },
-    {
-      key: strings.no,
-      id: 0,
-    },
-  ];
-  const doublesInviteOptions = [
-    {
-      key: strings.everyoneTitleText,
-      id: 1,
-    },
-    {
-      key: strings.myFollowing,
-      id: 2,
-    },
-    {
-      key: strings.none,
-      id: 0,
-    },
-  ];
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: false,
@@ -69,7 +51,7 @@ export default function GroupInviteYouScreen({navigation, route}) {
       bodyParams.who_can_invite_for_club = value;
     }
 
-    if (type === strings.canPeopleInviteYouText) {
+    if (type === strings.whoCanInviteYouToEvent) {
       bodyParams.invite_me_event = value;
     }
 
@@ -106,8 +88,8 @@ export default function GroupInviteYouScreen({navigation, route}) {
       case strings.canClubInviteYou:
         return strings.canClubInviteYouToJoinClub;
 
-      case strings.canPeopleInviteYouText:
-        return strings.canPeopleInviteYouText;
+      case strings.whoCanInviteYouToEvent:
+        return strings.whoCanInviteToTheirEvent;
 
       default:
         return strings.whoCanInviteYouToDoubleTeam;
@@ -131,14 +113,21 @@ export default function GroupInviteYouScreen({navigation, route}) {
     </Pressable>
   );
 
+  const getOptions = () => {
+    if (type === strings.inviteToDoubleTeamTitle) {
+      return doublesInviteOptionsList;
+    }
+
+    if (type === strings.whoCanInviteYouToEvent) {
+      return eventsInviteOptionsList;
+    }
+    return groupInviteOptionsList;
+  };
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <ScreenHeader
-        title={
-          type === strings.canPeopleInviteYouText
-            ? strings.toWhatEventPeopleInviteText
-            : type
-        }
+        title={type}
         leftIcon={images.backArrow}
         leftIconPress={() => navigation.goBack()}
         containerStyle={styles.headerRow}
@@ -151,14 +140,15 @@ export default function GroupInviteYouScreen({navigation, route}) {
       <View style={{paddingHorizontal: 15, paddingTop: 25}}>
         <Text style={styles.opetionsTitle}>{getTitle(type)}</Text>
         <FlatList
-          data={
-            type === strings.inviteToDoubleTeamTitle
-              ? doublesInviteOptions
-              : groupInviteOpetions
-          }
+          data={getOptions()}
           keyExtractor={(item) => item.key}
           renderItem={renderWhocanJoinOption}
         />
+        {type === strings.inviteToDoubleTeamTitle && (
+          <Text style={[styles.listText, {marginTop: 35}]}>
+            {strings.doublesTeamInviteDescriptionText}
+          </Text>
+        )}
       </View>
     </SafeAreaView>
   );

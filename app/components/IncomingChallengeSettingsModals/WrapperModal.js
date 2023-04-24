@@ -1,4 +1,6 @@
 // @flow
+/* eslint-disable no-nested-ternary */
+
 import React, {useEffect, useState} from 'react';
 import {View, Modal, Pressable, Image, Text} from 'react-native';
 import {strings} from '../../../Localization/translation';
@@ -23,6 +25,7 @@ const WrapperModal = ({
   settingsObj = null,
   sportName = '',
   entityType = '',
+  show_Double = 'false',
 }) => {
   const [settings, setSettings] = useState({});
 
@@ -38,7 +41,7 @@ const WrapperModal = ({
         return (
           <AvailabilityModal
             availability={
-              settings?.availability ||
+              settings?.availibility ||
               settings?.referee_availibility ||
               settings?.scorekeeper_availibility
             }
@@ -53,7 +56,7 @@ const WrapperModal = ({
       case strings.gameTypeTitle:
         return (
           <MatchTypeModal
-            gameType={settings.game_type}
+            gameType={settings.game_type ?? strings.friendlyGameType}
             onChange={(gameType) => {
               setSettings({...settings, game_type: gameType});
             }}
@@ -89,7 +92,7 @@ const WrapperModal = ({
       case strings.refundPolicy:
         return (
           <CancellationPolicyModal
-            refundPolicy={settings.refund_policy}
+            refundPolicy={settings.refund_policy ?? Verbs.flexibleText}
             onChange={(refundPolicy) => {
               setSettings({...settings, refund_policy: refundPolicy});
             }}
@@ -122,13 +125,22 @@ const WrapperModal = ({
         return (
           <SetsGamesDurationModal
             gameDuration={
-              settings.sport.toLowerCase() === Verbs.tennisSport
-                ? settings.score_rules
+              settings?.sport?.toLowerCase() === Verbs.tennisSport
+                ? show_Double
+                  ? settings.game_duration
+                  : settings.score_rules
                 : settings.game_duration
             }
             onChange={(gameDuration) => {
               if (settings.sport.toLowerCase() === Verbs.tennisSport) {
-                setSettings({...settings, score_rules: {...gameDuration}});
+                if (show_Double) {
+                  setSettings({
+                    ...settings,
+                    game_duration: {...settings.game_duration, ...gameDuration},
+                  });
+                } else {
+                  setSettings({...settings, score_rules: {...gameDuration}});
+                }
               } else {
                 setSettings({...settings, game_duration: {...gameDuration}});
               }

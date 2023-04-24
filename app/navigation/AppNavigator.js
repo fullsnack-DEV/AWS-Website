@@ -41,6 +41,7 @@ import {strings} from '../../Localization/translation';
 import ScheduleNavigator from './ScheduleNavigator';
 import MembersNavigator from './MembersNavigator';
 import fonts from '../Constants/Fonts';
+import {getNotificationCount} from '../utils/accountUtils';
 
 // import HomeNavigator from './HomeNavigator';
 // import HomeNavigator from './HomeNavigator';
@@ -349,29 +350,10 @@ const AppNavigator = ({navigation}) => {
   }, [getQBToken]);
 
   const getUnReadNotificationHandler = useCallback(() => {
-    getUnreadCount(authContext)
-      .then((response) => {
-        if (response.status === true) {
-          const {teams} = response.payload;
-          const {clubs} = response.payload;
-          const {user} = response.payload;
-
-          const groups = [{...user}, ...clubs, ...teams];
-          let notificationCount = 0;
-          (groups || []).map((e) => {
-            if (e.unread) {
-              notificationCount += e.unread;
-            }
-          });
-
-          setUnreadNotificationCount(notificationCount);
-        }
-      })
-      .catch((e) => {
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
+    if (authContext.entity.uid) {
+      const count = getNotificationCount(authContext.entity.uid, authContext);
+      setUnreadNotificationCount(count);
+    }
   }, [authContext]);
 
   const changeRole = useCallback(async () => {

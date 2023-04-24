@@ -11,39 +11,54 @@ const GroupIcon = ({
   entityType = Verbs.entityTypeTeam,
   groupName = '',
   containerStyle = {},
+  placeHolderStyle = {},
+  showPlaceholder = true,
 }) => {
   const getPlaceholder = () => {
     let background = null;
     let placeHolder = null;
     if (entityType === Verbs.entityTypeClub) {
       background = images.clubPlaceholderSmall;
-      placeHolder = images.newClubIcon;
+      placeHolder = showPlaceholder ? images.newClubIcon : '';
     } else if (entityType === Verbs.entityTypeTeam) {
-      background = images.teamPlaceholderSmall;
-      placeHolder = images.newTeamIcon;
+      background = images.teamBcgPlaceholder;
+      placeHolder = showPlaceholder ? images.newTeamIcon : '';
+    } else if (
+      entityType === Verbs.entityTypePlayer ||
+      entityType === Verbs.entityTypeUser
+    ) {
+      background = images.profilePlaceHolder;
+      placeHolder = '';
     }
     return {background, placeHolder};
   };
-  return (
+  return imageUrl ? (
     <View style={[styles.parent, containerStyle]}>
-      {imageUrl ? (
-        <>
-          <Image source={{uri: imageUrl}} style={styles.image} />
-          <View style={styles.placeHolder}>
-            <Image source={getPlaceholder().placeHolder} style={styles.image} />
-          </View>
-        </>
-      ) : (
-        <View style={styles.parent}>
-          <Image source={getPlaceholder().background} style={styles.image} />
-          <View style={styles.name}>
-            <Text style={styles.text}>{groupName[0]}</Text>
-          </View>
-          <View style={styles.placeHolder}>
-            <Image source={getPlaceholder().placeHolder} style={styles.image} />
-          </View>
+      <Image
+        source={
+          imageUrl && typeof imageUrl === 'string' ? {uri: imageUrl} : imageUrl
+        }
+        style={styles.image}
+      />
+      <View style={styles.placeHolder}>
+        <Image source={getPlaceholder().placeHolder} style={styles.image} />
+      </View>
+    </View>
+  ) : (
+    <View style={[styles.parent, containerStyle]}>
+      <Image source={getPlaceholder().background} style={styles.image} />
+      {entityType === Verbs.entityTypePlayer ||
+      entityType === Verbs.entityTypeUser ? null : (
+        <View style={styles.name}>
+          <Text style={styles.text}>{groupName[0]}</Text>
         </View>
       )}
+
+      {getPlaceholder().placeHolder ? (
+        <View style={[styles.placeHolder, placeHolderStyle]}>
+          <Image source={getPlaceholder().placeHolder} style={styles.image} />
+        </View>
+      ) : null}
     </View>
   );
 };
@@ -62,13 +77,12 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: '100%',
-    resizeMode: 'contain',
+    resizeMode: 'cover',
     borderRadius: 30,
   },
   name: {
     justifyContent: 'center',
     alignItems: 'center',
-
     position: 'absolute',
     top: 0,
     bottom: 0,
@@ -90,7 +104,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 0,
     bottom: 0,
-    zIndex: 99,
   },
 });
 export default GroupIcon;

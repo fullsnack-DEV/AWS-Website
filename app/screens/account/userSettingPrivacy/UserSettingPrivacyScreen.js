@@ -123,7 +123,6 @@ export default function UserSettingPrivacyScreen({navigation}) {
         leftIcon={images.backArrow}
         leftIconPress={() => navigation.goBack()}
         title={strings.settingsTitleText}
-        containerStyle={styles.headerRow}
       />
 
       <View style={styles.container}>
@@ -137,7 +136,8 @@ export default function UserSettingPrivacyScreen({navigation}) {
               <Pressable
                 style={[
                   styles.listContainer,
-                  {opacity: isAccountDeactivated && index <= 3 ? 0.5 : 1},
+                  {opacity: isAccountDeactivated && index <= 3 ? 0.3 : 1},
+                  index === 0 ? {marginTop: 10} : {},
                 ]}
                 onPress={() => {
                   handleOptions(item);
@@ -161,27 +161,23 @@ export default function UserSettingPrivacyScreen({navigation}) {
   );
 }
 const styles = StyleSheet.create({
-  headerRow: {
-    paddingHorizontal: 10,
-    paddingTop: 6,
-    paddingBottom: 14,
-  },
   container: {
     flex: 1,
     paddingHorizontal: 15,
-    paddingTop: 27,
   },
   listContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    paddingVertical: 15,
+    paddingLeft: 10,
+    paddingRight: 5,
   },
   listItems: {
     fontSize: 16,
     lineHeight: 24,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
-    paddingHorizontal: 10,
   },
   nextArrow: {
     width: 15,
@@ -197,6 +193,5 @@ const styles = StyleSheet.create({
   separatorLine: {
     height: 1,
     backgroundColor: colors.grayBackgroundColor,
-    marginVertical: 18,
   },
 });

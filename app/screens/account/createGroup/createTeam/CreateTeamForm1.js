@@ -127,13 +127,10 @@ export default function CreateTeamForm1({navigation, route}) {
 
   useEffect(() => {
     if (isFocused) {
-      // console.log(RNLocalize.getTimeZone(), 'From time');
-
       // to get the club id if club creating the team
       if (route.params) {
         delete route.params.grp_id;
         SetSelectedSport(route?.params || route.params.sports);
-        console.log(selectedSport, 'From Sel');
       }
 
       setSportsSelection(
@@ -426,9 +423,11 @@ export default function CreateTeamForm1({navigation, route}) {
       showAlertWithoutTitle(strings.pleaseFillHomeCity);
       return false;
     }
-    if (gender === '') {
-      showAlertWithoutTitle(strings.pleaseFillPlayerGender);
-      return false;
+    if (!showDouble) {
+      if (gender === '') {
+        showAlertWithoutTitle(strings.pleaseFillPlayerGender);
+        return false;
+      }
     }
 
     if (languagesName === '') {
@@ -472,7 +471,9 @@ export default function CreateTeamForm1({navigation, route}) {
 
     navigation.navigate('IncomingChallengeSettings', {
       groupData,
-      sportName: selectedSport.sport_name,
+      sportName: showDouble
+        ? route.params.sports.sport_name
+        : selectedSport.sport_name,
       sportType: showDouble
         ? route.params.sports.sport_type
         : selectedSport.sport_type,
@@ -492,14 +493,14 @@ export default function CreateTeamForm1({navigation, route}) {
 
   return (
     <>
-      <TCFormProgress totalSteps={3} curruentStep={2} />
+      <TCFormProgress totalSteps={2} curruentStep={1} />
       <TCKeyboardView>
         <ScrollView
           style={styles.mainContainer}
           showsVerticalScrollIndicator={false}>
           <TCProfileImageControl
             profileImage={thumbnail ? {uri: thumbnail} : undefined}
-            profileImagePlaceholder={images.teamCover}
+            profileImagePlaceholder={images.newTeamLogo}
             bgImage={
               backgroundThumbnail
                 ? {uri: backgroundThumbnail}
@@ -513,8 +514,8 @@ export default function CreateTeamForm1({navigation, route}) {
               alignSelf: 'center',
             }}
             profileImageStyle={{
-              height: 40,
-              width: 40,
+              height: 60,
+              width: 60,
               marginTop: 10,
             }}
             profileCameraButtonStyle={{
@@ -532,6 +533,8 @@ export default function CreateTeamForm1({navigation, route}) {
             }}
             profileImageContainerStyle={{
               marginLeft: 15,
+              height: 60,
+              width: 60,
             }}
             showEditButtons
           />
@@ -629,7 +632,7 @@ export default function CreateTeamForm1({navigation, route}) {
           <View>
             <TCLabel
               title={strings.teamName.toUpperCase()}
-              style={{marginTop: 25}}
+              style={{marginTop: 30}}
               required={true}
             />
             <TextInput
@@ -644,7 +647,7 @@ export default function CreateTeamForm1({navigation, route}) {
           <View>
             <TCLabel
               title={strings.homeCityTitleText.toUpperCase()}
-              style={{marginTop: 25}}
+              style={{marginTop: 30}}
               required={true}
             />
             <TouchableOpacity onPress={() => setVisibleLocationModal(true)}>
@@ -659,162 +662,169 @@ export default function CreateTeamForm1({navigation, route}) {
           </View>
           {/* gender */}
 
-          <TCLabel
-            title={strings.playersGenderText.toUpperCase()}
-            style={{marginTop: 25}}
-            required={true}
-          />
-          <TouchableOpacity
-            testID="gender-button"
-            onPress={() => setVisibleGendersModal(true)}>
-            <TextInput
-              style={[styles.matchFeeTxt, {marginBottom: 5}]}
-              placeholder={strings.genderTitle}
-              value={gender}
-              editable={false}
-              pointerEvents="none"
-            />
-          </TouchableOpacity>
+          {!showDouble && (
+            <>
+              <TCLabel
+                title={strings.playersGenderText.toUpperCase()}
+                style={{marginTop: 25}}
+                required={true}
+              />
+              <TouchableOpacity
+                testID="gender-button"
+                onPress={() => setVisibleGendersModal(true)}>
+                <TextInput
+                  style={[styles.matchFeeTxt, {marginBottom: 5}]}
+                  placeholder={strings.genderTitle}
+                  value={gender}
+                  editable={false}
+                  pointerEvents="none"
+                />
+              </TouchableOpacity>
+            </>
+          )}
 
           {/* age */}
-
-          <TCLabel
-            title={strings.playersAge}
-            style={{marginTop: 25}}
-            required={false}
-          />
-          <View
-            style={{
-              flexDirection: 'row',
-
-              marginTop: 12,
-
-              alignItems: 'center',
-              marginLeft: 15,
-              marginRight: 15,
-              justifyContent: 'space-between',
-            }}>
-            <RNPickerSelect
-              testID="min-age-picker"
-              placeholder={{
-                label: strings.minPlaceholder,
-                value: 0,
-              }}
-              items={minAgeValue}
-              onValueChange={(value) => {
-                setMinAge(value);
-                setMaxAge(0);
-              }}
-              useNativeAndroidPickerStyle={false}
-              style={{
-                placeholder: {
-                  color: colors.blackColor,
-                },
-                iconContainer: {
-                  top: 0,
-                  right: 0,
-                },
-
-                inputIOS: {
-                  height: 40,
-                  textAlign: 'center',
-                  fontSize: wp('3.5%'),
-                  paddingVertical: 12,
-                  paddingHorizontal: 15,
-                  width: wp('40%'),
-                  color: 'black',
-                  paddingRight: 30,
-                  backgroundColor: colors.lightGrey,
-
-                  borderRadius: 5,
-                },
-                inputAndroid: {
-                  height: 40,
-                  textAlign: 'center',
-                  fontSize: wp('4%'),
-                  paddingVertical: 12,
-                  paddingHorizontal: 15,
-                  width: wp('40%'),
-                  color: 'black',
-
-                  backgroundColor: colors.lightGrey,
-                  borderRadius: 5,
-                  borderWidth: 1,
-                  borderColor: '#fff',
-                },
-              }}
-              value={minAge}
-              Icon={() => (
-                <Image
-                  source={images.dropDownArrow}
-                  style={styles.miniDownArrow}
-                />
-              )}
-            />
-            <Text
-              style={{
-                textAlign: 'center',
-                textAlignVertical: 'center',
-              }}>
-              -
-            </Text>
-            <Pressable>
-              <RNPickerSelect
-                testID="max-age-picker"
-                placeholder={{
-                  label: strings.maxPlaceholder,
-                  value: 0,
-                }}
-                items={maxAgeValue}
-                onValueChange={(value) => {
-                  setMaxAge(value);
-                }}
-                useNativeAndroidPickerStyle={false}
-                style={{
-                  placeholder: {
-                    color: colors.blackColor,
-                  },
-                  inputIOS: {
-                    height: 40,
-
-                    fontSize: wp('3.5%'),
-                    textAlign: 'center',
-                    paddingVertical: 12,
-                    paddingHorizontal: 15,
-                    width: wp('40%'),
-                    color: 'black',
-
-                    backgroundColor: colors.lightGrey,
-
-                    borderRadius: 5,
-                  },
-                  inputAndroid: {
-                    height: 40,
-                    textAlign: 'center',
-                    fontSize: wp('4%'),
-                    paddingVertical: 12,
-                    paddingHorizontal: 15,
-                    width: wp('40%'),
-                    color: 'black',
-                    backgroundColor: colors.lightGrey,
-                  },
-                }}
-                value={maxAge}
-                Icon={() => (
-                  <Image
-                    source={images.dropDownArrow}
-                    style={styles.miniDownArrow}
-                  />
-                )}
+          {!showDouble && (
+            <>
+              <TCLabel
+                title={strings.playersAge}
+                style={{marginTop: 25}}
+                required={false}
               />
-            </Pressable>
-          </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+
+                  marginTop: 12,
+
+                  alignItems: 'center',
+                  marginLeft: 15,
+                  marginRight: 15,
+                  justifyContent: 'space-between',
+                }}>
+                <RNPickerSelect
+                  testID="min-age-picker"
+                  placeholder={{
+                    label: strings.minPlaceholder,
+                    value: 0,
+                  }}
+                  items={minAgeValue}
+                  onValueChange={(value) => {
+                    setMinAge(value);
+                    setMaxAge(0);
+                  }}
+                  useNativeAndroidPickerStyle={false}
+                  style={{
+                    placeholder: {
+                      color: colors.blackColor,
+                    },
+                    iconContainer: {
+                      top: 0,
+                      right: 0,
+                    },
+
+                    inputIOS: {
+                      height: 40,
+                      textAlign: 'center',
+                      fontSize: wp('3.5%'),
+                      paddingVertical: 12,
+                      paddingHorizontal: 15,
+                      width: wp('40%'),
+                      color: 'black',
+                      paddingRight: 30,
+                      backgroundColor: colors.lightGrey,
+
+                      borderRadius: 5,
+                    },
+                    inputAndroid: {
+                      height: 40,
+                      textAlign: 'center',
+                      fontSize: wp('4%'),
+                      paddingVertical: 12,
+                      paddingHorizontal: 15,
+                      width: wp('40%'),
+                      color: 'black',
+
+                      backgroundColor: colors.lightGrey,
+                      borderRadius: 5,
+                      borderWidth: 1,
+                      borderColor: '#fff',
+                    },
+                  }}
+                  value={minAge}
+                  Icon={() => (
+                    <Image
+                      source={images.dropDownArrow}
+                      style={styles.miniDownArrow}
+                    />
+                  )}
+                />
+                <Text
+                  style={{
+                    textAlign: 'center',
+                    textAlignVertical: 'center',
+                  }}>
+                  -
+                </Text>
+                <Pressable>
+                  <RNPickerSelect
+                    testID="max-age-picker"
+                    placeholder={{
+                      label: strings.maxPlaceholder,
+                      value: 0,
+                    }}
+                    items={maxAgeValue}
+                    onValueChange={(value) => {
+                      setMaxAge(value);
+                    }}
+                    useNativeAndroidPickerStyle={false}
+                    style={{
+                      placeholder: {
+                        color: colors.blackColor,
+                      },
+                      inputIOS: {
+                        height: 40,
+
+                        fontSize: wp('3.5%'),
+                        textAlign: 'center',
+                        paddingVertical: 12,
+                        paddingHorizontal: 15,
+                        width: wp('40%'),
+                        color: 'black',
+
+                        backgroundColor: colors.lightGrey,
+
+                        borderRadius: 5,
+                      },
+                      inputAndroid: {
+                        height: 40,
+                        textAlign: 'center',
+                        fontSize: wp('4%'),
+                        paddingVertical: 12,
+                        paddingHorizontal: 15,
+                        width: wp('40%'),
+                        color: 'black',
+                        backgroundColor: colors.lightGrey,
+                      },
+                    }}
+                    value={maxAge}
+                    Icon={() => (
+                      <Image
+                        source={images.dropDownArrow}
+                        style={styles.miniDownArrow}
+                      />
+                    )}
+                  />
+                </Pressable>
+              </View>
+            </>
+          )}
 
           {/* languges */}
 
           <TCLabel
             title={strings.languages.toUpperCase()}
-            style={{marginTop: 25}}
+            style={{marginTop: 30}}
             required={true}
           />
           <TouchableOpacity onPress={toggleModal}>
@@ -831,7 +841,7 @@ export default function CreateTeamForm1({navigation, route}) {
 
           <TCLabel
             title={strings.bio.toUpperCase()}
-            style={{marginTop: 25}}
+            style={{marginTop: 30}}
             required={false}
           />
 

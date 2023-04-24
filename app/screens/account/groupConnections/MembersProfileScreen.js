@@ -209,6 +209,7 @@ export default function MembersProfileScreen({navigation, route}) {
     bodyParams.is_parent = groupMemberDetail.is_parent;
     bodyParams.is_others = groupMemberDetail.is_others;
     bodyParams.is_player = groupMemberDetail.is_player;
+    bodyParams.last_updatedBy = `${authContext.user.full_name}`;
 
     const body = {
       ...bodyParams,
@@ -550,11 +551,11 @@ export default function MembersProfileScreen({navigation, route}) {
 
     if (memberDetail?.connected) {
       if (
-        memberDetail?.user_city &&
-        memberDetail?.user_country &&
-        memberDetail?.user_state_abbr
+        memberDetail?.city &&
+        memberDetail?.country
+        // memberDetail?.user_state_abbr
       ) {
-        locationString = `${memberDetail?.user_city}, ${memberDetail?.user_state_abbr}, ${memberDetail?.user_country}`;
+        locationString = `${memberDetail?.user_city}, ${memberDetail?.user_country}`;
       }
     } else if (
       memberDetail?.city &&
@@ -670,16 +671,7 @@ export default function MembersProfileScreen({navigation, route}) {
             <TouchableOpacity
               hitSlop={getHitSlop(15)}
               onPress={() => {
-                console.log(groupMemberDetail.jersey_number, 'From num');
-                if (groupMemberDetail.jersey_number !== undefined) {
-                  if (/[^a-zA-Z]/.test(groupMemberDetail.jersey_number)) {
-                    Alert.alert(strings.jerseyValidation);
-                  } else {
-                    editTeamProfile();
-                  }
-                } else {
-                  editTeamProfile();
-                }
+                editTeamProfile();
               }}>
               <Text
                 style={{
@@ -1570,6 +1562,7 @@ export default function MembersProfileScreen({navigation, route}) {
             <TCInfoField
               title={strings.birthDatePlaceholder}
               value={
+                // memberDetail.birthday ? memberDetail.birthday : strings.NAText
                 memberDetail.birthday
                   ? `${
                       shortMonthNames[

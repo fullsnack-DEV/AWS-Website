@@ -1,6 +1,13 @@
 // @flow
 import React, {useEffect, useState} from 'react';
-import {View, StyleSheet, Modal, Dimensions, Animated} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Modal,
+  Dimensions,
+  Animated,
+  Pressable,
+} from 'react-native';
 import {PanGestureHandler} from 'react-native-gesture-handler';
 import colors from '../Constants/Colors';
 import {ModalTypes} from '../Constants/GeneralConstants';
@@ -8,6 +15,7 @@ import images from '../Constants/ImagePath';
 import ScreenHeader from './ScreenHeader';
 
 const screenHeight = Dimensions.get('window').height;
+
 const CustomModalWrapper = ({
   loading = false,
   isVisible = false,
@@ -19,7 +27,8 @@ const CustomModalWrapper = ({
   modalType = ModalTypes.default,
   headerBottomBorderColor = colors.grayBackgroundColor,
   children = null,
-  Top = 50
+  Top = 50,
+  showBackButton = false,
 }) => {
   const [showModal, setShowModal] = useState(false);
   const translateY = new Animated.Value(0);
@@ -38,7 +47,7 @@ const CustomModalWrapper = ({
     if (isVisible) {
       setTimeout(() => {
         setShowModal(true);
-      }, 200);
+      }, 30);
     }
   }, [isVisible]);
 
@@ -52,7 +61,7 @@ const CustomModalWrapper = ({
       case ModalTypes.style1:
         return (
           <ScreenHeader
-            leftIcon={images.crossImage}
+            leftIcon={showBackButton ? images.backArrow : images.crossImage}
             leftIconPress={() => handleCloseModal()}
             title={title}
             isRightIconText
@@ -124,12 +133,15 @@ const CustomModalWrapper = ({
       transparent
       animationType="fade"
       onRequestClose={() => handleCloseModal()}>
-      <View
-        style={[
-          styles.parent,
-            {paddingTop: Top}
-        ]}>
-        {showModal && (
+      <Pressable
+        style={[styles.parent, {paddingTop: Top}]}
+        onPress={() => {
+          handleCloseModal();
+        }}>
+        {(modalType === ModalTypes.style7 ||
+          modalType === ModalTypes.style2 ||
+          modalType === ModalTypes.default) &&
+        showModal ? (
           <PanGestureHandler
             onGestureEvent={onPanGestureEvent}
             onEnded={() => handleCloseModal()}>
@@ -144,12 +156,36 @@ const CustomModalWrapper = ({
                   ],
                 },
               ]}>
-              {getModalHeader()}
-              <View style={[{padding: 25}, containerStyle]}>{children}</View>
+              <Pressable onPress={() => {}}>
+                <View style={{flexDirection: 'row', alignSelf: 'stretch'}}>
+                  {getModalHeader()}
+                </View>
+
+                <View style={[{padding: 25}, containerStyle]}>{children}</View>
+              </Pressable>
             </Animated.View>
           </PanGestureHandler>
+        ) : (
+          <Animated.View
+            style={[
+              getCardStyle(),
+              {
+                transform: [
+                  {
+                    translateY,
+                  },
+                ],
+              },
+            ]}>
+            <Pressable onPress={() => {}} style={{}}>
+              <View style={{flexDirection: 'row', alignSelf: 'stretch'}}>
+                {getModalHeader()}
+              </View>
+              <View style={[{padding: 25}, containerStyle]}>{children}</View>
+            </Pressable>
+          </Animated.View>
         )}
-      </View>
+      </Pressable>
     </Modal>
   );
 };
@@ -163,8 +199,8 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: colors.whiteColor,
-    borderTopRightRadius: 20,
-    borderTopLeftRadius: 20,
+    borderTopRightRadius: 15,
+    borderTopLeftRadius: 15,
     shadowColor: colors.blackColor,
     shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
@@ -180,10 +216,8 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   headerStyle: {
-    paddingLeft: 15,
-    paddingTop: 15,
-    paddingRight: 17,
-    paddingBottom: 10,
+    height: '100%',
+    width: '100%',
     borderBottomWidth: 1,
     borderBottomColor: colors.greyBorderColor,
   },

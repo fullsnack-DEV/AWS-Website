@@ -26,6 +26,7 @@ import ActivityLoader from './app/components/loader/ActivityLoader';
 import {removeFBToken} from './app/api/Users';
 import LoneStackNavigator from './app/navigation/LoneStackNavigator';
 import {getSportsList} from './app/api/Games';
+import {getUnreadNotificationCount} from './app/utils/accountUtils';
 
 const Stack = createStackNavigator();
 
@@ -161,6 +162,13 @@ export default function NavigationMainContainer() {
       fetchSportList();
     }
   }, []);
+
+  useEffect(() => {
+    if (authContext.entity?.uid) {
+      getUnreadNotificationCount(authContext);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authContext.entity?.uid]);
 
   return (
     <Fragment>

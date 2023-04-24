@@ -87,9 +87,21 @@ export default function LookingForSettingScreen({navigation, route}) {
           setloading(false);
           await Utility.setAuthContextData(response.payload, authContext);
           if (comeFrom) {
-            navigation.navigate(comeFrom, {...routeParams});
+            navigation.navigate(comeFrom, {
+              ...routeParams,
+              sport: {
+                ...routeParams?.sport,
+                lookingForTeamClub: lookingFor === strings.yesDisplayItText,
+              },
+            });
           } else {
-            navigation.navigate('SportActivityScreen');
+            navigation.navigate('SportActivityScreen', {
+              sport: {
+                ...selectedSport,
+                lookingForTeamClub: lookingFor === strings.yesDisplayItText,
+              },
+              type: entityType,
+            });
           }
         } else {
           Alert.alert(strings.appName, response.messages);
@@ -189,7 +201,11 @@ export default function LookingForSettingScreen({navigation, route}) {
         <View style={{alignItems: 'center', justifyContent: 'center'}}>
           <View style={{width: 240, height: 230}}>
             <Image
-              source={images.lookingForImg}
+              source={
+                sportObj?.sport_type === Verbs.singleSport
+                  ? images.lookingForClubImg
+                  : images.lookingForImg
+              }
               style={{width: '100%', height: '100%', resizeMode: 'cover'}}
             />
           </View>

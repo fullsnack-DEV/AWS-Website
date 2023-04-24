@@ -1,12 +1,6 @@
-import React, {useState, useContext, useEffect} from 'react';
-import {
-  View,
-  StyleSheet,
-  Text,
-  ScrollView,
-  SafeAreaView,
-  Alert,
-} from 'react-native';
+import React, {useState, useContext} from 'react';
+import {View, StyleSheet, Text, SafeAreaView, Alert} from 'react-native';
+import {format} from 'react-string-format';
 import AuthContext from '../../auth/context';
 import ActivityLoader from '../loader/ActivityLoader';
 import colors from '../../Constants/Colors';
@@ -14,49 +8,17 @@ import fonts from '../../Constants/Fonts';
 import {strings} from '../../../Localization/translation';
 import TCGradientButton from '../TCGradientButton';
 import {userTerminate} from '../../api/Users';
-import {getGroups, groupTerminate} from '../../api/Groups';
-import {getQBAccountType, QBupdateUser} from '../../utils/QuickBlox';
+import {groupTerminate} from '../../api/Groups';
 import {setAuthContextData} from '../../utils';
+import ScreenHeader from '../ScreenHeader';
+import images from '../../Constants/ImagePath';
+import Verbs from '../../Constants/Verbs';
 
-export default function TerminateAccountScreen({navigation, route}) {
-  const [sportObj] = useState(route?.params?.sport);
+export default function TerminateAccountScreen({navigation}) {
   const authContext = useContext(AuthContext);
-  // eslint-disable-next-line no-unused-vars
-  const [showLeaveMsg, setShowLeaveMsg] = useState(false);
 
   const [loading, setloading] = useState(false);
   const [accountType] = useState(authContext.entity.role);
-
-  console.log('Entity SportObject: => ', sportObj);
-
-  useEffect(() => {
-    getGroups(authContext)
-      .then((response) => {
-        console.log('Get user groups Data Res ::--', response);
-        if (
-          response.payload.clubs?.length > 0 ||
-          response.payload.teams?.length > 0
-        ) {
-          if (
-            response.payload.clubs.filter(
-              (obj) =>
-                obj?.sport === sportObj?.sport &&
-                obj?.sport_type === sportObj?.sport_type,
-            )?.length > 0 ||
-            response.payload.teams.filter(
-              (obj) =>
-                obj?.sport === sportObj?.sport &&
-                obj?.sport_type === sportObj?.sport_type,
-            )?.length > 0
-          ) {
-            setShowLeaveMsg(true);
-          }
-        }
-      })
-      .catch((error) => {
-        Alert.alert(strings.alertmessagetitle, error.message);
-      });
-  }, [authContext]);
 
   const terminateUser = () => {
     setloading(true);
@@ -64,24 +26,8 @@ export default function TerminateAccountScreen({navigation, route}) {
     userTerminate(authContext)
       .then(async (response) => {
         await setAuthContextData(response.payload, authContext);
-
-        const QBAccountType = getQBAccountType(response?.payload?.entity_type);
-        QBupdateUser(
-          response?.payload?.user_id,
-          response?.payload,
-          QBAccountType,
-          response.payload,
-          authContext,
-        )
-          .then(() => {
-            setloading(false);
-            navigation.pop(2);
-          })
-          .catch((error) => {
-            console.log('QB error : ', error);
-            setloading(false);
-            navigation.pop(2);
-          });
+        setloading(false);
+        navigation.pop(2);
       })
       .catch((e) => {
         setloading(false);
@@ -96,23 +42,8 @@ export default function TerminateAccountScreen({navigation, route}) {
     groupTerminate(authContext)
       .then(async (response) => {
         await setAuthContextData(response.payload, authContext);
-        const QBaccountType = getQBAccountType(response?.payload?.entity_type);
-        QBupdateUser(
-          response?.payload?.user_id,
-          response?.payload,
-          QBaccountType,
-          response.payload,
-          authContext,
-        )
-          .then(() => {
-            setloading(false);
-            navigation.pop(2);
-          })
-          .catch((error) => {
-            console.log('QB error : ', error);
-            setloading(false);
-            navigation.pop(2);
-          });
+        setloading(false);
+        navigation.pop(2);
       })
       .catch((e) => {
         setloading(false);
@@ -123,93 +54,103 @@ export default function TerminateAccountScreen({navigation, route}) {
   };
 
   return (
-    <>
-      <ScrollView style={styles.mainContainer}>
-        <ActivityLoader visible={loading} />
-        <View style={styles.mailContainer}>
+    <SafeAreaView style={styles.parent}>
+      <ScreenHeader
+        title={strings.terminateAccountText}
+        leftIcon={images.backArrow}
+        leftIconPress={() => navigation.goBack()}
+      />
+      <ActivityLoader visible={loading} />
+      <View style={styles.container}>
+        <Text style={styles.descText}>
+          {strings.terminateAccountDescription1}
+        </Text>
+        <View style={styles.row}>
+          <Text style={[styles.descText, {marginRight: 10}]}>•</Text>
           <Text style={styles.descText}>
-            • If you have a checkout (as a challenger or a challengee) within
-            the past 60 days, you can’t delete your account until the 60-day
-            claim period has elapsed.{'\n'}
-            {'\n'}• When you delete your account, you can cancel deleting your
-            account (recover your account ) up to 14 days after you delete it.
-            {'\n'}
-            {'\n'}• 14 days after you delete your account, your information will
-            be permanently deleted, except for certain information that we are
-            legally required or permitted to retain, as outlined in our Privacy
-            Policy.{'\n'}
-            {'\n'}• If you want to use TownsCup in the future, you’ll need to
-            set up a new account.{'\n'}
-            {'\n'}• If you have any future reservations, they must first be
-            cancelled in accordance with the applicable host cancellation policy
-            before you delete your account . Cancellation fees may apply.
-            {'\n'}
-            {'\n'}
+            {strings.terminateAccountDescription2}
           </Text>
         </View>
-      </ScrollView>
-      <SafeAreaView>
-        <TCGradientButton
-          title={
-            authContext?.entity?.obj?.under_terminate === true
-              ? 'REACTIVATE ACCOUNT'
-              : 'TERMINATE ACCOUNT'
-          }
-          onPress={() => {
-            Alert.alert(
-              `Are you sure you want to ${
-                authContext?.entity?.obj?.under_terminate === true
-                  ? 'reactivate'
-                  : 'terminate'
-              } your TownsCup account?`,
-              '',
-              [
-                {
-                  text: strings.cancel,
-                  style: 'cancel',
+        <View style={styles.row}>
+          <Text style={[styles.descText, {marginRight: 10}]}>•</Text>
+          <Text style={styles.descText}>
+            {strings.terminateAccountDescription3}
+          </Text>
+        </View>
+      </View>
+
+      <TCGradientButton
+        title={
+          authContext.entity.obj.under_terminate === true
+            ? strings.reactivateAccount
+            : strings.terminateAccount
+        }
+        onPress={() => {
+          Alert.alert(
+            format(
+              strings.areYouSureToTerminate,
+              authContext.entity.obj.under_terminate === true
+                ? Verbs.reactivateVerb
+                : Verbs.terminate,
+            ),
+            '',
+            [
+              {
+                text: strings.cancel,
+                style: 'cancel',
+              },
+              {
+                text:
+                  authContext.entity.obj.under_terminate === true
+                    ? strings.reactivate
+                    : strings.terminate,
+                style: 'destructive',
+                onPress: () => {
+                  if (accountType === Verbs.entityTypeTeam) {
+                    terminateGroup();
+                  }
+                  if (
+                    accountType === Verbs.entityTypeUser ||
+                    accountType === Verbs.entityTypePlayer
+                  ) {
+                    terminateUser();
+                  }
                 },
-                {
-                  text:
-                    authContext?.entity?.obj?.under_terminate === true
-                      ? 'Reactivate'
-                      : 'Terminate',
-                  style: 'destructive',
-                  onPress: () => {
-                    if (accountType === 'team') {
-                      terminateGroup();
-                    }
-                    if (accountType === 'user' || accountType === 'player') {
-                      terminateUser();
-                    }
-                  },
-                },
-              ],
-              {cancelable: false},
-            );
-            // }
-          }}
-        />
-      </SafeAreaView>
-    </>
+              },
+            ],
+            {cancelable: false},
+          );
+        }}
+        outerContainerStyle={styles.buttonContainer}
+      />
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  mainContainer: {
+  parent: {
     flex: 1,
-    flexDirection: 'column',
   },
-
+  container: {
+    flex: 1,
+    paddingTop: 25,
+    paddingHorizontal: 15,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
   descText: {
-    marginLeft: 15,
-    marginRight: 15,
-    marginTop: 15,
     fontSize: 16,
+    lineHeight: 24,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
+    marginBottom: 15,
   },
-
-  mailContainer: {
-    flex: 1,
+  buttonContainer: {
+    backgroundColor: colors.userPostTimeColor,
+    marginHorizontal: 15,
+    marginVertical: 11,
+    borderRadius: 23,
   },
 });

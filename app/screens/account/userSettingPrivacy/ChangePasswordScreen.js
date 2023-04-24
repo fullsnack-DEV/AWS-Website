@@ -40,28 +40,40 @@ export default function ChangePasswordScreen({navigation}) {
   };
   const checkValidation = () => {
     if (oldPassword === '') {
-      Alert.alert(strings.appName, strings.oldPasswordCanNotBlankValidation);
+      Alert.alert(strings.appName, strings.oldPasswordCanNotBlankValidation, [
+        {text: strings.okTitleText},
+      ]);
       return false;
     }
     if (newPassword === '') {
-      Alert.alert(strings.appName, strings.newPasswordCanNotBlankValidation);
+      Alert.alert(strings.appName, strings.newPasswordCanNotBlankValidation, [
+        {text: strings.okTitleText},
+      ]);
       return false;
     }
     if (confirmPassword === '') {
-      Alert.alert(strings.appName, strings.cofirmpPswCanNotBlank);
+      Alert.alert(strings.appName, strings.cofirmpPswCanNotBlank, [
+        {text: strings.okTitleText},
+      ]);
       return false;
     }
     if (newPassword.length < 8) {
-      Alert.alert(strings.appName, strings.passwordWarningMessage);
+      Alert.alert(strings.appName, strings.passwordWarningMessage, [
+        {text: strings.okTitleText},
+      ]);
       return false;
     }
 
     if (newPassword !== confirmPassword) {
-      Alert.alert(strings.appName, strings.passwordSamevalidation);
+      Alert.alert(strings.appName, strings.passwordSamevalidation, [
+        {text: strings.okTitleText},
+      ]);
       return false;
     }
     if (newPassword === oldPassword) {
-      Alert.alert(strings.appName, strings.passwordMustSameValidation);
+      Alert.alert(strings.appName, strings.passwordMustSameValidation, [
+        {text: strings.okTitleText},
+      ]);
       return false;
     }
 
@@ -137,10 +149,7 @@ export default function ChangePasswordScreen({navigation}) {
           placeholderTextColor={colors.userPostTimeColor}
           placeholder={strings.oldPassword}
           secureTextEntry
-          style={[
-            styles.textFieldStyle,
-            {fontSize: 16, fontFamily: fonts.RRegular, paddingHorizontal: 10},
-          ]}
+          style={[styles.textFieldStyle, {paddingHorizontal: 10}]}
           onChangeText={(text) => setOldPassword(text)}
           value={oldPassword}
         />
@@ -149,7 +158,7 @@ export default function ChangePasswordScreen({navigation}) {
         <View style={styles.passwordView}>
           <TextInput
             placeholderTextColor={colors.userPostTimeColor}
-            placeholder={`${strings.newPassword} ${strings.atLeastText}`}
+            placeholder={strings.newPassword}
             secureTextEntry={hideNewPassword}
             style={[styles.textFieldStyle, {flex: 1}]}
             onChangeText={(text) => setNewPassword(text)}
@@ -166,6 +175,9 @@ export default function ChangePasswordScreen({navigation}) {
               {hideNewPassword ? strings.SHOW : strings.HIDE}
             </Text>
           </TouchableOpacity>
+        </View>
+        <View style={{alignSelf: 'flex-end', marginTop: 5, marginBottom: 19}}>
+          <Text style={styles.atLeastText}>{strings.atLeastText}</Text>
         </View>
 
         <View style={styles.passwordView}>
@@ -218,6 +230,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.textFieldBackground,
     paddingVertical: Platform.OS === 'android' ? 5 : 12,
     borderRadius: 5,
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
   },
 
   passwordView: {
@@ -225,13 +239,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.textFieldBackground,
     borderRadius: 5,
-    marginBottom: 15,
     paddingLeft: 10,
     paddingRight: 14,
   },
   separatorLine: {
     height: 1,
     backgroundColor: colors.grayBackgroundColor,
-    marginVertical: 35,
+    marginVertical: 25,
+  },
+  atLeastText: {
+    fontSize: 10,
+    lineHeight: 12,
+    color: colors.userPostTimeColor,
+    fontFamily: fonts.RRegular,
   },
 });

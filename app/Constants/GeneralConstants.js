@@ -54,10 +54,9 @@ export const ModalTypes = {
   style8: 'style8',
 };
 
-
 export const InvoiceType = {
   Invoice: 0,
-  Event: 1
+  Event: 1,
 };
 
 export const InvoiceRowType = {
@@ -68,15 +67,77 @@ export const InvoiceRowType = {
 
 export const InvoiceRecipientTabType = {
   People: 0,
-  Teams: 1
+  Teams: 1,
 };
 
+export const groupInviteOptionsList = [
+  {
+    key: strings.yes,
+    id: 1,
+  },
+  {
+    key: strings.no,
+    id: 0,
+  },
+];
+export const doublesInviteOptionsList = [
+  {
+    key: strings.everyoneTitleText,
+    id: 1,
+  },
+  {
+    key: strings.myFollowing,
+    id: 2,
+  },
+  {
+    key: strings.none,
+    id: 0,
+  },
+];
+
+export const eventsInviteOptionsList = [
+  {
+    key: strings.everyoneTitleText,
+    id: 1,
+  },
+  {
+    key: strings.myFollowingFollowersAndGroups,
+    id: 2,
+  },
+  {
+    key: strings.myFollowingAndGroups,
+    id: 3,
+  },
+  {
+    key: strings.myGroups,
+    id: 4,
+  },
+  {
+    key: strings.none,
+    id: 0,
+  },
+];
+
+export const grouInviteOptions = {
+  0: strings.no,
+  1: strings.yes,
+};
 
 export const doublesInviteOptions = {
   0: strings.none,
   1: strings.everyoneTitleText,
   2: strings.myFollowing,
 };
+
+export const eventsInviteOptions = {
+  0: strings.none,
+  1: strings.everyoneTitleText,
+  2: strings.myFollowingFollowersAndGroups,
+  3: strings.myFollowingAndGroups,
+  4: strings.myGroups,
+};
+
+export const DEFAULT_NTRP = '5.0';
 
 export default EntityStatus;
 export {privacySettingEnum, privacyKey};

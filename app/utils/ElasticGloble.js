@@ -40,7 +40,7 @@ const globalElasticApiCall = async ({method, url, data}) => {
     return response?.data?.hits?.hits?.map((item) => item?._source);
   } catch (error) {
     console.log('SERVER ELASTIC ERROR ::--->', error.response.status);
-    
+
     if (error.response) {
       // Request made and server responded
       if (error.response.status === 404) {

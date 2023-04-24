@@ -304,6 +304,7 @@ const MembersNavigator = () => (
       options={{
         title: strings.memberProfile,
         headerTintColor: colors.blackColor,
+        headerTitleAlign: 'center',
         headerTitleStyle: {
           fontWeight: '500',
         },

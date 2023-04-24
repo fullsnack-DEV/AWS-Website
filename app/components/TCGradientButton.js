@@ -1,6 +1,5 @@
 import React, {memo} from 'react';
 import {StyleSheet, Text, Image, TouchableOpacity} from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 
@@ -11,8 +10,6 @@ const TCGradientButton = ({
   textStyle,
   rightIcon,
   rightIconStyle,
-  startGradientColor = colors.textFieldBackground,
-  endGradientColor = colors.textFieldBackground,
   outerContainerStyle,
   disabled = false,
   isDisabled = false,
@@ -23,61 +20,51 @@ const TCGradientButton = ({
     testID={`${accessibilityLabel}`}
     disabled={disabled || isDisabled}
     onPress={onPress}
-    style={[styles.outerContainerStyle, outerContainerStyle, props]}>
-    <LinearGradient
-      colors={
-        disabled || isDisabled
-          ? [colors.grayBackgroundColor, colors.grayBackgroundColor]
-          : [endGradientColor, startGradientColor]
-      }
-      style={[styles.containerStyle, style]}>
-      <Text
-        style={[
-          styles.buttonText,
-          {
-            color:
-              isDisabled || disabled
-                ? colors.blocklightgraycolor
-                : colors.lightBlackColor,
-          },
-          textStyle,
-        ]}>
-        {title}
-      </Text>
-      {rightIcon && (
-        <Image
-          style={[styles.rightIconStyle, rightIconStyle]}
-          source={rightIcon}
-        />
-      )}
-    </LinearGradient>
+    style={[
+      styles.outerContainerStyle,
+      outerContainerStyle,
+      props,
+      isDisabled || disabled
+        ? {backgroundColor: colors.grayBackgroundColor}
+        : {},
+    ]}>
+    <Text
+      style={[
+        styles.buttonText,
+        textStyle,
+        isDisabled || disabled ? {color: colors.blocklightgraycolor} : {},
+      ]}>
+      {title}
+    </Text>
+    {rightIcon && (
+      <Image
+        style={[styles.rightIconStyle, rightIconStyle]}
+        source={rightIcon}
+      />
+    )}
   </TouchableOpacity>
 );
 
 const styles = StyleSheet.create({
   outerContainerStyle: {
-    width: '92%',
-    alignSelf: 'center',
-    // shadowColor: colors.blackColor,
-    // shadowOffset: {width: 0, height: 1},
-    // shadowOpacity: 0.16,
-    // shadowRadius: 3,
-    // elevation: 1.5,
-  },
-  containerStyle: {
     flexDirection: 'row',
-    height: 40,
-    borderRadius: 20,
-
+    alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: colors.themeColor,
+    padding: 8,
+    borderRadius: 5,
   },
+
   buttonText: {
-    alignSelf: 'center',
-    fontSize: 14,
+    fontSize: 16,
+    lineHeight: 24,
     fontFamily: fonts.RBold,
+    color: colors.whiteColor,
   },
   rightIconStyle: {
-    alignSelf: 'center',
+    width: 15,
+    height: 15,
+    resizeMode: 'contain',
   },
 });
 

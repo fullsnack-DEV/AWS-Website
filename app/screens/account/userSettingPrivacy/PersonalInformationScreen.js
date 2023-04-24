@@ -9,6 +9,8 @@ import {
   Alert,
   Platform,
   SafeAreaView,
+  Text,
+  Pressable,
 } from 'react-native';
 
 import ImagePicker from 'react-native-image-crop-picker';
@@ -16,7 +18,6 @@ import {useIsFocused} from '@react-navigation/native';
 import {check, PERMISSIONS, RESULTS, request} from 'react-native-permissions';
 import {updateUserProfile} from '../../../api/Users';
 import AuthContext from '../../../auth/context';
-import ActivityLoader from '../../../components/loader/ActivityLoader';
 import images from '../../../Constants/ImagePath';
 import {strings} from '../../../../Localization/translation';
 import * as Utility from '../../../utils/index';
@@ -24,12 +25,12 @@ import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import TCLabel from '../../../components/TCLabel';
 import TCKeyboardView from '../../../components/TCKeyboardView';
-import TCTextField from '../../../components/TCTextField';
 import uploadImages from '../../../utils/imageAction';
 import {getQBAccountType, QBupdateUser} from '../../../utils/QuickBlox';
 import LocationModal from '../../../components/LocationModal/LocationModal';
 import ScreenHeader from '../../../components/ScreenHeader';
 import BottomSheet from '../../../components/modals/BottomSheet';
+import AccountProfileShimmer from '../../../components/shimmer/account/AccountProfileShimmer';
 
 export default function PersonalInformationScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
@@ -302,94 +303,97 @@ export default function PersonalInformationScreen({navigation, route}) {
         leftIcon={images.backArrow}
         leftIconPress={() => navigation.goBack()}
         isRightIconText
-        rightButtonText={strings.update}
+        rightButtonText={strings.updateText}
         onRightButtonPress={() => {
           onSavePress();
         }}
-        containerStyle={styles.headerRow}
       />
 
-      <TCKeyboardView>
-        <ActivityLoader visible={loading} />
-
-        <View style={styles.container}>
-          <View style={styles.profileImageStyle}>
-            <Image
-              source={
-                userInfo?.thumbnail
-                  ? {uri: userInfo.thumbnail}
-                  : images.profilePlaceHolder
-              }
-              style={styles.image}
-            />
-            <TouchableOpacity
-              style={styles.profileCameraButtonStyle}
-              onPress={() => onProfileImageClicked()}>
+      {loading ? (
+        <AccountProfileShimmer />
+      ) : (
+        <TCKeyboardView>
+          <View style={styles.container}>
+            <View style={styles.profileImageStyle}>
               <Image
-                style={styles.profileImageButtonStyle}
-                source={images.certificateUpload}
+                source={
+                  userInfo?.thumbnail
+                    ? {uri: userInfo.thumbnail}
+                    : images.profilePlaceHolder
+                }
+                style={styles.image}
               />
+              <TouchableOpacity
+                style={styles.profileCameraButtonStyle}
+                onPress={() => onProfileImageClicked()}>
+                <Image
+                  style={styles.profileImageButtonStyle}
+                  source={images.certificateUpload}
+                />
+              </TouchableOpacity>
+            </View>
+            <TCLabel
+              title={strings.nameText.toUpperCase()}
+              required={true}
+              style={styles.inputLabel}
+            />
+            <View style={styles.row}>
+              <TextInput
+                placeholder={strings.fnameText}
+                style={[styles.inputField, {marginRight: 7}]}
+                onChangeText={(text) => {
+                  setUserInfo({...userInfo, first_name: text});
+                }}
+                value={userInfo.first_name}
+              />
+              <TextInput
+                placeholder={strings.lnameText}
+                style={[styles.inputField, {marginLeft: 8}]}
+                onChangeText={(text) => {
+                  setUserInfo({...userInfo, last_name: text});
+                }}
+                value={userInfo.last_name}
+              />
+            </View>
+
+            <TCLabel
+              title={strings.currentCity.toUpperCase()}
+              required={true}
+              style={styles.inputLabel}
+            />
+
+            <TouchableOpacity
+              onPress={() => setLocationPopup(true)}
+              style={styles.homeCityContainer}>
+              <Text style={styles.homeCityText} numberOfLines={1}>
+                {Utility.displayLocation(userInfo)}
+              </Text>
             </TouchableOpacity>
+
+            <TCLabel
+              title={strings.slogan.toUpperCase()}
+              style={styles.inputLabel}
+            />
+            <Pressable style={styles.textArea}>
+              <TextInput
+                placeholder={strings.whatIsYourSlogan}
+                onChangeText={(text) =>
+                  setUserInfo({...userInfo, description: text})
+                }
+                multiline={true}
+                maxLength={150}
+                value={userInfo.description}
+                style={{
+                  padding: 0,
+                  fontSize: 16,
+                  fontFamily: fonts.RRegular,
+                  color: colors.lightBlackColor,
+                }}
+              />
+            </Pressable>
           </View>
-          <TCLabel
-            title={strings.nameText.toUpperCase()}
-            required={true}
-            style={styles.inputLabel}
-          />
-          <View style={styles.row}>
-            <TextInput
-              placeholder={strings.fnameText}
-              style={[styles.inputField, {marginRight: 7}]}
-              onChangeText={(text) => {
-                setUserInfo({...userInfo, first_name: text});
-              }}
-              value={userInfo.first_name}
-            />
-            <TextInput
-              placeholder={strings.lnameText}
-              style={[styles.inputField, {marginLeft: 8}]}
-              onChangeText={(text) => {
-                setUserInfo({...userInfo, last_name: text});
-              }}
-              value={userInfo.last_name}
-            />
-          </View>
-
-          <TCLabel
-            title={strings.currentCity.toUpperCase()}
-            required={true}
-            style={styles.inputLabel}
-          />
-
-          <TouchableOpacity onPress={() => setLocationPopup(true)}>
-            <TextInput
-              placeholder={strings.searchCityPlaceholder}
-              style={styles.inputField}
-              value={[userInfo.city, userInfo.state, userInfo.country]
-                .filter((v) => v)
-                .join(', ')}
-              editable={false}
-              pointerEvents="none"
-            />
-          </TouchableOpacity>
-
-          <TCLabel
-            title={strings.slogan.toUpperCase()}
-            style={styles.inputLabel}
-          />
-          <TCTextField
-            placeholder={strings.whatIsYourSlogan}
-            onChangeText={(text) =>
-              setUserInfo({...userInfo, description: text})
-            }
-            multiline
-            maxLength={150}
-            value={userInfo.description}
-            height={120}
-            style={{backgroundColor: colors.textFieldBackground, marginLeft: 0}}
-          />
-        </View>
-      </TCKeyboardView>
+        </TCKeyboardView>
+      )}
 
       <LocationModal
         visibleLocationModal={locationPopup}
@@ -421,16 +425,10 @@ export default function PersonalInformationScreen({navigation, route}) {
   );
 }
 const styles = StyleSheet.create({
-  headerRow: {
-    paddingLeft: 10,
-    paddingTop: 8,
-    paddingRight: 18,
-    paddingBottom: 12,
-  },
   container: {
     flex: 1,
     paddingHorizontal: 15,
-    paddingTop: 22,
+    paddingTop: 25,
   },
   profileImageStyle: {
     height: 60,
@@ -441,7 +439,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 22,
+    marginBottom: 25,
   },
   image: {
     width: '100%',
@@ -484,5 +482,27 @@ const styles = StyleSheet.create({
     height: 22,
     width: 22,
     resizeMode: 'contain',
+  },
+  homeCityContainer: {
+    flex: 1,
+    borderRadius: 5,
+    marginBottom: 35,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    justifyContent: 'center',
+    backgroundColor: colors.textFieldBackground,
+  },
+  homeCityText: {
+    fontSize: 16,
+    lineHeight: 23,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
+  },
+  textArea: {
+    padding: 10,
+    height: 100,
+    borderRadius: 5,
+    marginBottom: 35,
+    backgroundColor: colors.textFieldBackground,
   },
 });

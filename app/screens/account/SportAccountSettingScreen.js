@@ -12,7 +12,6 @@ import {
   Image,
   FlatList,
   SafeAreaView,
-  TouchableOpacity,
   Pressable,
 } from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
@@ -24,17 +23,20 @@ import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
 import {strings} from '../../../Localization/translation';
 import Verbs from '../../Constants/Verbs';
-import {getSportDetails} from '../../utils/sportsActivityUtils';
+import {
+  getEntityTpeLabel,
+  getSportDetails,
+} from '../../utils/sportsActivityUtils';
+import ScreenHeader from '../../components/ScreenHeader';
 
 export default function SportAccountSettingScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
+  const {sport, type} = route.params;
 
   const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
   const [pointEvent, setPointEvent] = useState('auto');
   const [userSetting, setUserSetting] = useState();
-  const [sport] = useState(route.params.sport);
-  const [type] = useState(route.params.type);
   const [sportObj, setSportObj] = useState({});
 
   useLayoutEffect(() => {
@@ -71,7 +73,11 @@ export default function SportAccountSettingScreen({navigation, route}) {
     const list = [strings.deactivateActivityText];
     if (type === Verbs.entityTypePlayer) {
       if (sport?.sport_type === Verbs.singleSport) {
-        list.splice(0, 0, format(strings.challengeSetting, Verbs.challenge));
+        list.splice(
+          0,
+          0,
+          format(strings.challengeSetting, Verbs.incomingChallenge),
+        );
         list.splice(1, 0, strings.lookingForClubText);
       } else {
         list.splice(0, 0, strings.lookingForTeamText);
@@ -89,7 +95,11 @@ export default function SportAccountSettingScreen({navigation, route}) {
   }, [getUserSettingMenu]);
 
   const handleOptions = (options) => {
-    if (options.toLowerCase() === strings.challengeSettingText.toLowerCase()) {
+    if (
+      options.toLowerCase() === strings.challengeSettingText.toLowerCase() ||
+      options.toLowerCase() ===
+        strings.incomingChallengeSettingsTitle.toLowerCase()
+    ) {
       navigation.navigate('ManageChallengeScreen', {
         groupObj: authContext.entity.obj,
         sportName: sport.sport,
@@ -159,20 +169,13 @@ export default function SportAccountSettingScreen({navigation, route}) {
 
   return (
     <SafeAreaView style={{flex: 1}}>
-      <View style={styles.headerRow}>
-        <TouchableOpacity
-          style={styles.backIcon}
-          onPress={() => {
-            navigation.goBack();
-          }}>
-          <Image source={images.backArrow} style={styles.image} />
-        </TouchableOpacity>
-        <View style={{flex: 1, alignItems: 'center'}}>
-          <Text style={styles.headerTitle}>{strings.settingsTitleText}</Text>
-          <Text style={styles.headerText}>{sportObj.sport_name}</Text>
-        </View>
-        <View style={styles.backIcon} />
-      </View>
+      <ScreenHeader
+        title={`${getEntityTpeLabel(type)} • ${sportObj.sport_name}`}
+        leftIcon={images.backArrow}
+        leftIconPress={() => {
+          navigation.goBack();
+        }}
+      />
 
       <FlatList
         data={userSetting}
@@ -209,37 +212,5 @@ const styles = StyleSheet.create({
     backgroundColor: colors.grayBackgroundColor,
     height: 1,
     marginVertical: 15,
-  },
-  backIcon: {
-    width: 25,
-    height: 25,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'contain',
-  },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingBottom: 6,
-    paddingTop: 3,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.writePostSepratorColor,
-  },
-  headerTitle: {
-    fontSize: 16,
-    lineHeight: 16,
-    fontFamily: fonts.RBold,
-    color: colors.lightBlackColor,
-  },
-  headerText: {
-    fontSize: 12,
-    lineHeight: 18,
-    fontFamily: fonts.RMedium,
-    color: colors.lightBlackColor,
   },
 });

@@ -1,15 +1,15 @@
 import React, {useState, useLayoutEffect, useContext, useEffect} from 'react';
-import {StyleSheet, Alert, SafeAreaView} from 'react-native';
+import {Alert, SafeAreaView} from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
 import {getUserDetails, updateUserProfile} from '../../../api/Users';
 import AuthContext from '../../../auth/context';
-import ActivityLoader from '../../../components/loader/ActivityLoader';
 import images from '../../../Constants/ImagePath';
 import {strings} from '../../../../Localization/translation';
 import * as Utility from '../../../utils/index';
 // import {getQBAccountType, QBupdateUser} from '../../../utils/QuickBlox';
 import ScreenHeader from '../../../components/ScreenHeader';
 import EditBasicInfoComponent from '../../../components/EditBasicInfoComponent';
+import AccountBasicInfoShimmer from '../../../components/shimmer/account/AccountBasicInfoShimmer';
 
 export default function BasicInfoScreen({navigation}) {
   const isFocused = useIsFocused();
@@ -109,23 +109,6 @@ export default function BasicInfoScreen({navigation}) {
       updateUserProfile(bodyParams, authContext)
         .then(async (response) => {
           await Utility.setAuthContextData(response.payload, authContext);
-          // const accountType = getQBAccountType(response?.payload?.entity_type);
-          // QBupdateUser(
-          //   response?.payload?.user_id,
-          //   response?.payload,
-          //   accountType,
-          //   response.payload,
-          //   authContext,
-          // )
-          //   .then(() => {
-          //     setloading(false);
-          //     navigation.goBack();
-          //   })
-          //   .catch((error) => {
-          //     console.log('QB error : ', error);
-          //     setloading(false);
-          //     navigation.goBack();
-          //   });
           setloading(false);
           navigation.goBack();
         })
@@ -149,26 +132,19 @@ export default function BasicInfoScreen({navigation}) {
         onRightButtonPress={() => {
           onSavePress();
         }}
-        containerStyle={styles.headerRow}
       />
 
-      <ActivityLoader visible={loading} />
-      <EditBasicInfoComponent
-        userInfo={userInfo}
-        containerStyle={{paddingTop: 31}}
-        setUserInfo={(obj) => {
-          setUserInfo(obj);
-        }}
-      />
+      {loading ? (
+        <AccountBasicInfoShimmer />
+      ) : (
+        <EditBasicInfoComponent
+          userInfo={userInfo}
+          containerStyle={{paddingTop: 31}}
+          setUserInfo={(obj) => {
+            setUserInfo(obj);
+          }}
+        />
+      )}
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  headerRow: {
-    paddingLeft: 10,
-    paddingTop: 8,
-    paddingRight: 15,
-    paddingBottom: 12,
-  },
-});

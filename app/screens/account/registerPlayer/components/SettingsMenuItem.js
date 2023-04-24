@@ -28,7 +28,7 @@ const SettingsMenuItem = ({
         case strings.gameTypeTitle:
           return (
             <Text style={styles.normalStyle}>
-              {settingObject.game_type || Verbs.friendly}
+              {settingObject.game_type || strings.friendlyGameType}
             </Text>
           );
 

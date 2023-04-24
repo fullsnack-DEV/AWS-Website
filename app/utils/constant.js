@@ -1,5 +1,6 @@
 import Config from 'react-native-config';
 import {strings} from '../../Localization/translation';
+import {DEFAULT_NTRP} from '../Constants/GeneralConstants';
 import images from '../Constants/ImagePath';
 
 // AsyncConstants
@@ -496,7 +497,7 @@ export const gameData = {
         homePlace: 'Gorakhpur',
         fee: '0',
         latitude: 26.7605545,
-        ntrp: '1.0',
+        ntrp: DEFAULT_NTRP,
         cancellation_policy: 'strict',
         descriptions: 'Soccer Description',
         point: 530,

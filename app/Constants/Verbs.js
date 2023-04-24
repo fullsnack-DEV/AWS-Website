@@ -60,7 +60,9 @@ const Verbs = {
   unpauseVerb: 'unpause',
   reactivateVerb: 'reactivate',
   pauseVerb: 'pause',
+  terminate: 'terminate',
   deactivateVerb: 'deactivate',
+  activateVerb: 'activate',
   challengeVerb: 'challenge',
   allVerb: 'All',
   soccer: 'Soccer',
@@ -125,12 +127,14 @@ const Verbs = {
   ACCEPTDECLINE: 'acceptdecline',
 
   setText: 'Set',
-  EVENT_FILTER_TIME_ANY : 0,
-  EVENT_FILTER_TIME_ONE_WEEK : 7,
-  EVENT_FILTER_TIME_ONE_MONTH : 30,
-  EVENT_FILTER_TIME_THREE_MONTH : 90,
-
-  MAXIMUM_RECIPIENT_INVOICE:15
+  EVENT_FILTER_TIME_ANY: 0,
+  EVENT_FILTER_TIME_ONE_WEEK: 7,
+  EVENT_FILTER_TIME_ONE_MONTH: 30,
+  EVENT_FILTER_TIME_THREE_MONTH: 90,
+  MAXIMUM_RECIPIENT_INVOICE: 15,
+  defaultHeightType: 'ft',
+  defaultWeightType: 'lb',
+  incomingChallenge: 'Incoming Challenge',
 };
 
 export default Verbs;

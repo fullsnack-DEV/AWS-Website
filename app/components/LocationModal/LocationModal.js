@@ -164,7 +164,7 @@ function LocationModal({
             `${e.message}(getNearbyCityData),${lat},${long},${radius}`,
           );
         }, 10);
-        handleVisibleModal();
+        // handleVisibleModal();
       });
   };
 
@@ -204,7 +204,7 @@ function LocationModal({
             );
           }, 10);
         }
-        handleVisibleModal();
+        //  handleVisibleModal();
       });
   };
 

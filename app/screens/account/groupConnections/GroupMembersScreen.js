@@ -1,4 +1,5 @@
 /* eslint-disable no-nested-ternary */
+
 import React, {
   useState,
   useLayoutEffect,
@@ -58,9 +59,7 @@ export default function GroupMembersScreen({navigation, route}) {
   // For activity indigator
   const [loading, setloading] = useState(false);
   const [searchMember, setSearchMember] = useState();
-  // const [isModalVisible, setModalVisible] = useState(false);
-  // const [allSelected, setAllSelected] = useState(false);
-  // const [filter, setFilter] = useState([]);
+
   const [members, setMembers] = useState([]);
 
   const [switchUser] = useState(authContext.entity);
@@ -104,16 +103,33 @@ export default function GroupMembersScreen({navigation, route}) {
 
   const getMembers = async () => {
     setloading(true);
+
     if (groupID) {
       getGroupMembers(groupID, authContext)
         .then((response) => {
-          setMembers(response.payload);
+          const unsortedReponse = response.payload;
+          unsortedReponse.sort((a, b) =>
+            a.first_name.normalize().localeCompare(b.first_name.normalize()),
+          );
 
-          setSearchMember(response.payload);
+          const adminMembers = unsortedReponse.filter(
+            (item) => item.is_admin === true,
+          );
+
+          const normalMembers = unsortedReponse.filter(
+            (item) => item.is_admin !== true,
+          );
+
+          const SortedMembers = [...adminMembers, ...normalMembers];
+
+          setMembers(SortedMembers);
+
+          setSearchMember(SortedMembers);
           setloading(false);
         })
         .catch((e) => {
           setloading(false);
+
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
@@ -179,13 +195,14 @@ export default function GroupMembersScreen({navigation, route}) {
   ]);
 
   const searchFilterFunction = (text) => {
-    const result = members.filter(
-      (x) =>
-        x.first_name.toLowerCase().includes(text.toLowerCase()) ||
-        x.last_name.toLowerCase().includes(text.toLowerCase()),
-    );
+    const filteredData = members.filter((item) => {
+      const fullName = `${item.first_name}${item.last_name}`.toLowerCase();
+
+      return fullName.includes(text);
+    });
+
     if (text.length > 0) {
-      setMembers(result);
+      setMembers(filteredData);
     } else {
       setMembers(searchMember);
     }
@@ -298,7 +315,7 @@ export default function GroupMembersScreen({navigation, route}) {
             <TouchableOpacity
               style={styles.buttonContainer}
               onPress={() => onPressProfile(data)}
-              hitSlop={getHitSlop(15)}>
+              hitSlop={getHitSlop(20)}>
               <Image
                 source={images.arrowGraterthan}
                 style={styles.arrowStyle}
@@ -584,6 +601,8 @@ export default function GroupMembersScreen({navigation, route}) {
                   style={{
                     flexDirection: 'row',
                     alignItems: 'center',
+
+                    alignSelf: 'flex-start',
                   }}
                   onPress={() => onPressProfilePhotoAndTitle(data)}>
                   <Text style={styles.nameText} numberOfLines={1}>
@@ -659,6 +678,7 @@ export default function GroupMembersScreen({navigation, route}) {
               </View>
             </View>
           </View>
+
           {renderFollowUnfollowArrow(data, index)}
         </View>
         <TCThinDivider />
@@ -667,9 +687,22 @@ export default function GroupMembersScreen({navigation, route}) {
     [onPressProfilePhotoAndTitle, renderFollowUnfollowArrow],
   );
 
+  const SearchBox = () => (
+    <View style={styles.searchBarView}>
+      <TCSearchBox
+        onChangeText={(text) => searchFilterFunction(text)}
+        placeholderText={strings.searchText}
+        style={{
+          height: 40,
+        }}
+      />
+    </View>
+  );
+
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
+
       <View
         style={{
           opacity: isAccountDeactivated ? 0.5 : 1,
@@ -710,22 +743,17 @@ export default function GroupMembersScreen({navigation, route}) {
         <View style={styles.headerSeperator} />
       </View>
       <View tabLabel={strings.membersTitle} style={{flex: 1}}>
-        <View style={styles.searchBarView}>
-          <TCSearchBox
-            onChangeText={(text) => searchFilterFunction(text)}
-            placeholderText={strings.searchText}
-            style={{
-              height: 40,
-            }}
-          />
-        </View>
+        {SearchBox()}
+
         {/* eslint-disable-next-line no-nested-ternary */}
         {members.length > 0 ? (
           <FlatList
+            extraData={members}
             style={{marginTop: -10}}
             data={members}
             renderItem={renderMembers}
-            keyExtractor={(item, index) => index.toString()}
+            showsVerticalScrollIndicator={false}
+            keyExtractor={(item, index) => `${item.first_name}/${index}`}
           />
         ) : (
           <TCNoDataView title={strings.noMebersFoundText} />
@@ -789,6 +817,7 @@ const styles = StyleSheet.create({
   searchBarView: {
     flexDirection: 'row',
     margin: 15,
+    marginTop: 20,
   },
   navigationRightItem: {
     height: 25,
@@ -840,6 +869,8 @@ const styles = StyleSheet.create({
   buttonContainer: {
     justifyContent: 'center',
     alignItems: 'center',
+
+    paddingLeft: 50,
   },
   arrowStyle: {
     height: 15,

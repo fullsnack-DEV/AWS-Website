@@ -1145,6 +1145,7 @@ const AccountNavigator = () => (
       options={{
         title: strings.createTeamText,
         headerTintColor: colors.blackColor,
+        headerTitleAlign: 'center',
         headerTitleStyle: {
           fontWeight: '500',
         },
@@ -1226,6 +1227,7 @@ const AccountNavigator = () => (
       options={{
         title: strings.createClubText,
         headerTintColor: colors.blackColor,
+        headerTitleAlign: 'center',
         headerTitleStyle: {
           fontWeight: '500',
         },
@@ -3038,8 +3040,9 @@ const AccountNavigator = () => (
       name="RespondToInviteScreen"
       component={RespondToInviteScreen}
       options={{
-        title: strings.respondToRequest,
+        title: strings.respondToInviteCreateTeam,
         headerTintColor: colors.blackColor,
+        headerTitleAlign: 'center',
         headerTitleStyle: {
           fontWeight: '500',
         },
@@ -3396,18 +3399,7 @@ const AccountNavigator = () => (
     <Stack.Screen
       name="DeactivateAccountScreen"
       component={DeactivateAccountScreen}
-      options={{
-        title: strings.deactivateAccountText,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
+      options={{headerShown: false}}
     />
     <Stack.Screen
       name="PauseGroupScreen"
@@ -3429,18 +3421,7 @@ const AccountNavigator = () => (
     <Stack.Screen
       name="TerminateAccountScreen"
       component={TerminateAccountScreen}
-      options={{
-        title: 'Terminate Account',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
+      options={{headerShown: false}}
     />
     <Stack.Screen
       name="SearchScreen"
