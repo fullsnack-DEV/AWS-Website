@@ -149,10 +149,7 @@ export default function ChangePasswordScreen({navigation}) {
           placeholderTextColor={colors.userPostTimeColor}
           placeholder={strings.oldPassword}
           secureTextEntry
-          style={[
-            styles.textFieldStyle,
-            {fontSize: 16, fontFamily: fonts.RRegular, paddingHorizontal: 10},
-          ]}
+          style={[styles.textFieldStyle, {paddingHorizontal: 10}]}
           onChangeText={(text) => setOldPassword(text)}
           value={oldPassword}
         />
@@ -233,6 +230,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.textFieldBackground,
     paddingVertical: Platform.OS === 'android' ? 5 : 12,
     borderRadius: 5,
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
   },
 
   passwordView: {

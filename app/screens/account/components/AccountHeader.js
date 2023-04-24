@@ -14,11 +14,13 @@ const AccountHeader = ({
     <Text style={styles.label}>{strings.account}</Text>
     <TouchableOpacity style={styles.iconButton} onPress={onPressNotification}>
       <Image source={images.notificationBell} style={styles.image} />
-      <View style={styles.countContainer}>
-        <Text style={styles.count}>
-          {notificationCount > 99 ? '99+' : notificationCount}
-        </Text>
-      </View>
+      {notificationCount > 0 && (
+        <View style={styles.countContainer}>
+          <Text style={styles.count}>
+            {notificationCount > 99 ? '99+' : notificationCount}
+          </Text>
+        </View>
+      )}
     </TouchableOpacity>
   </View>
 );
@@ -53,12 +55,15 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   countContainer: {
-    backgroundColor: colors.notificationCountBgColor,
-    padding: 3,
+    width: 26,
+    height: 15,
     borderRadius: 25,
+    alignItems: 'center',
+    justifyContent: 'center',
     position: 'absolute',
     top: -3,
-    right: -3,
+    right: 0,
+    backgroundColor: colors.notificationCountBgColor,
   },
   count: {
     fontSize: 12,

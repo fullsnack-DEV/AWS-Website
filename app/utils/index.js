@@ -2501,7 +2501,8 @@ export const displayLocation = (data) => {
 
   if (
     data.country?.toLowerCase() === 'canada' ||
-    data.country?.toLowerCase() === 'usa'
+    data.country?.toLowerCase() === 'usa' ||
+    data.country?.toLowerCase() === 'united states'
   ) {
     loc.push(data.state_abbr ?? data.state);
   } else {
@@ -2580,4 +2581,24 @@ export const getRatingsOptions = (
     return list ?? [];
   }
   return [];
+};
+
+export const getPrivacyValue = (option, authContext) => {
+  const entity = authContext.entity.obj;
+  switch (option) {
+    case strings.inviteToDoubleTeamTitle:
+      return entity.who_can_invite_for_doubles_team ?? 1;
+
+    case strings.canTeamInviteYou:
+      return entity.who_can_invite_for_team ?? 1;
+
+    case strings.canClubInviteYou:
+      return entity.who_can_invite_for_club ?? 1;
+
+    case strings.whoCanInviteYouToEvent:
+      return entity.invite_me_event ?? 1;
+
+    default:
+      return 0;
+  }
 };

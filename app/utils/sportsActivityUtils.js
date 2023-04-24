@@ -34,6 +34,22 @@ const getIsAvailable = (sportObj = {}, entityType = Verbs.entityTypePlayer) => {
   }
 };
 
+const getEntityTpeLabel = (type = Verbs.entityTypePlayer) => {
+  switch (type) {
+    case Verbs.entityTypePlayer:
+      return strings.playingText;
+
+    case Verbs.entityTypeReferee:
+      return strings.refereeingTitleText;
+
+    case Verbs.entityTypeScorekeeper:
+      return strings.scorekeepingTitleText;
+
+    default:
+      return type;
+  }
+};
+
 const getHeaderTitle = (entityType = Verbs.entityTypePlayer) => {
   switch (entityType) {
     case Verbs.entityTypePlayer:
@@ -324,4 +340,5 @@ export {
   getSportName,
   getCardBorderColor,
   getSportDefaultSettings,
+  getEntityTpeLabel,
 };

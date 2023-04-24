@@ -166,7 +166,7 @@ const images = {
   accountMyScoreKeeping: require('../assets/images/accountMyScoreKeeping.png'),
   accountMyTeams: require('../assets/images/accountMyTeams.png'),
   accountMyClubs: require('../assets/images/accountMyClubs.png'),
-  accountMyLeagues: require('../assets/images/accountMyTeams.png'),
+  accountMyLeagues: require('../assets/images/accountMyLeagues.png'),
   accountPaymentPayout: require('../assets/images/accountPaymentPayout.png'),
   accountSettingPrivacy: require('../assets/images/accountSettingPrivacy.png'),
   // accountMembers: require('../assets/images/accountMembers.png'),
@@ -487,6 +487,9 @@ const images = {
   newClubLogo: require('../assets/images/NewClubLogo.png'),
   uploadCameraIcon: require('../assets/images/UploadCameraIcon.png'),
   createGroupIcon: require('../assets/images/createGroupIcon.png'),
+  invoiceRecievedIcon: require('../assets/images/invoiceRecievedIcon.png'),
+  sendNewInvoiceIcon: require('../assets/images/sendNewInvoiceIcon.png'),
+  transactionsIcon: require('../assets/images/transactionsIcon.png'),
 };
 
 export default images;

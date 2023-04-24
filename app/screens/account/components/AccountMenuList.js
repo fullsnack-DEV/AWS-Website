@@ -56,7 +56,7 @@ const AccountMenuList = ({
               item={item}
               isSectionOpen={isExpanded}
               onPress={() => {
-                if (item?.member?.length > 0) {
+                if (item.member?.length > 0) {
                   let list = [];
                   if (expandedSections.includes(item.key)) {
                     list = expandedSections.filter((ele) => ele !== item.key);
@@ -64,6 +64,11 @@ const AccountMenuList = ({
                     list = [...expandedSections, item.key];
                   }
                   setExpandedSections(list);
+                } else if (
+                  item.key === strings.transactions ||
+                  item.key === strings.leagues
+                ) {
+                  // return;
                 } else {
                   onPressSport(item);
                 }

@@ -134,6 +134,7 @@ const Verbs = {
   MAXIMUM_RECIPIENT_INVOICE: 15,
   defaultHeightType: 'ft',
   defaultWeightType: 'lb',
+  incomingChallenge: 'Incoming Challenge',
 };
 
 export default Verbs;

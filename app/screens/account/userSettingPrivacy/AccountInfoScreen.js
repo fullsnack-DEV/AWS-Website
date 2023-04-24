@@ -190,7 +190,9 @@ export default function AccountInfoScreen({navigation}) {
             style={styles.buttonContainer}
             onPress={() => {
               // setShowEmailBox(true);
-              Alert.alert(strings.functionNotAvailable);
+              Alert.alert(strings.functionNotAvailable, '', [
+                {text: strings.okTitleText},
+              ]);
             }}>
             <Text style={styles.buttonText}>{strings.editEmail}</Text>
           </TouchableOpacity>

@@ -49,16 +49,13 @@ const MenuSectionRow = ({
             style={[
               styles.icon,
               {
-                tintColor: colors.veryLightBlack,
+                // tintColor: colors.veryLightBlack,
                 transform: [{rotateZ: isSectionOpen ? '270deg' : '90deg'}],
               },
             ]}
           />
         ) : (
-          <Image
-            source={images.nextArrow}
-            style={[styles.icon, {tintColor: colors.veryLightBlack}]}
-          />
+          <Image source={images.nextArrow} style={styles.icon} />
         )}
       </View>
     </Pressable>
@@ -102,7 +99,7 @@ const styles = StyleSheet.create({
   icon: {
     width: '100%',
     height: '100%',
-    resizeMode: 'cover',
+    resizeMode: 'contain',
   },
   arrowIcon: {
     width: 15,

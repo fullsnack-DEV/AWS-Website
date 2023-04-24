@@ -1,6 +1,5 @@
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {
-  ActivityIndicator,
   Alert,
   Dimensions,
   Modal,
@@ -51,8 +50,9 @@ import SendNewInvoiceModal from './Invoice/SendNewInvoiceModal';
 import MemberListModal from '../../components/MemberListModal/MemberListModal';
 import {getUserIndex} from '../../api/elasticSearch';
 import TCAccountDeactivate from '../../components/TCAccountDeactivate';
+import AccountShimmer from '../../components/shimmer/account/AccountShimmer';
 
-const AccountScreen = ({navigation}) => {
+const AccountScreen = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
 
@@ -182,6 +182,17 @@ const AccountScreen = ({navigation}) => {
     [authContext],
   );
 
+  useEffect(() => {
+    if (
+      isFocused &&
+      route.params?.isSearchPlayerForDoubles &&
+      route.params?.sportType === Verbs.doubleSport
+    ) {
+      getUsers();
+      setMemberListModal(true);
+    }
+  }, [route.params, getUsers, isFocused]);
+
   const getLists = useCallback(() => {
     const list = [];
     if (authContext.entity.role === Verbs.entityTypeClub) {
@@ -194,12 +205,11 @@ const AccountScreen = ({navigation}) => {
       list.push(getTeamPendingRequest(authContext));
       list.push(getJoinedGroups(Verbs.entityTypeClub, authContext));
     } else if (authContext.entity.role === Verbs.entityTypeTeam) {
-      list.push(getJoinedGroups(Verbs.entityTypeTeam, authContext));
+      list.push(getJoinedGroups(Verbs.entityTypeClub, authContext));
     }
     setLoading(true);
-
     Promise.all(list)
-      .then((response) => {
+      .then(async (response) => {
         let fetchedTeams = [];
         let fetchedClubs = [];
         if (authContext.entity.role === Verbs.entityTypeClub) {
@@ -214,7 +224,11 @@ const AccountScreen = ({navigation}) => {
           fetchedClubs = response[0].payload;
         }
 
-        const menu = getAccountMenu(fetchedTeams, fetchedClubs, imageBaseUrl);
+        const menu = await getAccountMenu(
+          fetchedTeams,
+          fetchedClubs,
+          imageBaseUrl,
+        );
 
         setAccountMenu(menu);
         setLoading(false);
@@ -251,11 +265,13 @@ const AccountScreen = ({navigation}) => {
   }, [isFocused]);
 
   const onLogout = async () => {
+    setLoading(true);
     await removeFBToken(authContext);
     await firebase.auth().signOut();
     await clearStorage();
     await authContext.setUser(null);
     await authContext.setEntity(null);
+    setLoading(false);
   };
 
   const handleSectionMemberClick = (rowObj) => {
@@ -766,7 +782,7 @@ const AccountScreen = ({navigation}) => {
       {cancelable: false},
     );
   };
-
+  //
   return (
     <SafeAreaView style={{flex: 1}}>
       <AccountHeader
@@ -775,47 +791,47 @@ const AccountScreen = ({navigation}) => {
           navigation.navigate('NotificationsListScreen')
         }
       />
-      <AccountEntity
-        entity={authContext.entity.obj}
-        onSwitchAccount={() => setShowSwitchAccountModal(true)}
-        onPress={() => {
-          navigation.navigate('HomeScreen', {
-            uid: authContext.entity.uid,
-            role: authContext.entity.role,
-            backButtonVisible: true,
-            menuBtnVisible: false,
-          });
-        }}
-      />
-      {isAccountDeactivated && (
-        <TCAccountDeactivate
-          type={getDeactivationType()}
-          onPress={handleAccountActivation}
-        />
-      )}
-
-      {loading ? (
-        <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-          <ActivityIndicator size={'large'} />
-        </View>
+      {loading && accountMenu.length === 0 ? (
+        <AccountShimmer />
       ) : (
-        <AccountMenuList
-          menuList={accountMenu}
-          isAccountDeactivated={isAccountDeactivated}
-          onPressSetting={(rowItem) => {
-            navigation.navigate(
-              rowItem.navigateTo.screenName,
-              rowItem.navigateTo.data,
-            );
-          }}
-          onPressSport={(rowItem) => {
-            handleSectionMemberClick(rowItem);
-          }}
-          onPressCancelRequest={(rowItem) => {
-            onCancelRequest(rowItem);
-          }}
-          onLogout={onLogout}
-        />
+        <>
+          <AccountEntity
+            entity={authContext.entity.obj}
+            onSwitchAccount={() => setShowSwitchAccountModal(true)}
+            onPress={() => {
+              navigation.navigate('HomeScreen', {
+                uid: authContext.entity.uid,
+                role: authContext.entity.role,
+                backButtonVisible: true,
+                menuBtnVisible: false,
+              });
+            }}
+          />
+          {isAccountDeactivated && (
+            <TCAccountDeactivate
+              type={getDeactivationType()}
+              onPress={handleAccountActivation}
+            />
+          )}
+
+          <AccountMenuList
+            menuList={accountMenu}
+            isAccountDeactivated={isAccountDeactivated}
+            onPressSetting={(rowItem) => {
+              navigation.navigate(
+                rowItem.navigateTo.screenName,
+                rowItem.navigateTo.data,
+              );
+            }}
+            onPressSport={(rowItem) => {
+              handleSectionMemberClick(rowItem);
+            }}
+            onPressCancelRequest={(rowItem) => {
+              onCancelRequest(rowItem);
+            }}
+            onLogout={onLogout}
+          />
+        </>
       )}
 
       <SwitchAccountModal
@@ -1001,7 +1017,6 @@ const AccountScreen = ({navigation}) => {
             authContext.entity.auth.user.user_id,
             item,
             doubleSport,
-            authContext,
           );
         }}
         sportsList={players}

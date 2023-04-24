@@ -9,8 +9,10 @@ import {
   TextInput,
   Keyboard,
   Alert,
+  Platform,
 } from 'react-native';
 import {strings} from '../../../../Localization/translation';
+import {groupValidate} from '../../../api/Groups';
 import {patchPlayer} from '../../../api/Users';
 import AuthContext from '../../../auth/context';
 import ScreenHeader from '../../../components/ScreenHeader';
@@ -140,6 +142,46 @@ const RegisterPlayer = ({navigation, route}) => {
     }
   };
 
+  const handleDoubleTeamCreate = (p1, p2, _sport) => {
+    const obj = {
+      player1: p1,
+      player2: p2.user_id,
+      sport: _sport.sport,
+      sport_type: _sport.sport_type,
+      entity_type: Verbs.entityTypeTeam,
+    };
+
+    setLoading(true);
+    groupValidate(obj, authContext)
+      .then((response) => {
+        if (typeof response.payload === 'boolean' && response.payload) {
+          navigation.navigate('CreateTeamForm1', {
+            sports: _sport,
+            double_Player: p2,
+            showDouble: true,
+          });
+          setShowCongratulationsModal(false);
+          setLoading(false);
+        }
+      })
+      .catch((e) => {
+        Alert.alert(
+          Platform.OS === 'android' ? '' : e.message,
+          Platform.OS === 'android' ? e.message : '',
+
+          [
+            {
+              text: strings.OkText,
+              onPress: () => console.log('PRessed'),
+            },
+          ],
+          {cancelable: false},
+        );
+
+        setLoading(false);
+      });
+  };
+
   return (
     <SafeAreaView style={styles.parent}>
       <ScreenHeader
@@ -255,7 +297,6 @@ const RegisterPlayer = ({navigation, route}) => {
           } else {
             navigation.navigate('AccountScreen', {
               createdSportName: selectedSport?.sport_name,
-              // eslint-disable-next-line
               sportType: selectedSport?.sport_type,
             });
           }
@@ -289,7 +330,11 @@ const RegisterPlayer = ({navigation, route}) => {
             });
           }
           if (filters.sport_type === Verbs.sportTypeDouble) {
-            //
+            navigation.navigate('AccountScreen', {
+              createdSportName: selectedSport?.sport_name,
+              sportType: selectedSport?.sport_type,
+              isSearchPlayerForDoubles: true,
+            });
           }
         }}
         onUserClick={(userData) => {
@@ -325,13 +370,6 @@ const RegisterPlayer = ({navigation, route}) => {
         }}
         goToSportActivityHome={({sport, sportType}) => {
           setShowCongratulationsModal(false);
-          // navigation.navigate('HomeScreen', {
-          //   uid: authContext.entity.uid,
-          //   role: authContext.entity.role,
-          //   backButtonVisible: true,
-          //   menuBtnVisible: false,
-          //   comeFrom: 'IncomingChallengeSettings',
-          // });
           navigation.navigate('SportActivityHome', {
             sport,
             sportType,
@@ -343,6 +381,13 @@ const RegisterPlayer = ({navigation, route}) => {
               sportType: selectedSport?.sport_type,
             },
           });
+        }}
+        onChoose={(player2) => {
+          handleDoubleTeamCreate(
+            authContext.entity.obj.user_id,
+            player2,
+            selectedSport,
+          );
         }}
       />
     </SafeAreaView>

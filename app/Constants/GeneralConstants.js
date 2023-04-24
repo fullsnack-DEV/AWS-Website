@@ -70,10 +70,71 @@ export const InvoiceRecipientTabType = {
   Teams: 1,
 };
 
+export const groupInviteOptionsList = [
+  {
+    key: strings.yes,
+    id: 1,
+  },
+  {
+    key: strings.no,
+    id: 0,
+  },
+];
+export const doublesInviteOptionsList = [
+  {
+    key: strings.everyoneTitleText,
+    id: 1,
+  },
+  {
+    key: strings.myFollowing,
+    id: 2,
+  },
+  {
+    key: strings.none,
+    id: 0,
+  },
+];
+
+export const eventsInviteOptionsList = [
+  {
+    key: strings.everyoneTitleText,
+    id: 1,
+  },
+  {
+    key: strings.myFollowingFollowersAndGroups,
+    id: 2,
+  },
+  {
+    key: strings.myFollowingAndGroups,
+    id: 3,
+  },
+  {
+    key: strings.myGroups,
+    id: 4,
+  },
+  {
+    key: strings.none,
+    id: 0,
+  },
+];
+
+export const grouInviteOptions = {
+  0: strings.no,
+  1: strings.yes,
+};
+
 export const doublesInviteOptions = {
   0: strings.none,
   1: strings.everyoneTitleText,
   2: strings.myFollowing,
+};
+
+export const eventsInviteOptions = {
+  0: strings.none,
+  1: strings.everyoneTitleText,
+  2: strings.myFollowingFollowersAndGroups,
+  3: strings.myFollowingAndGroups,
+  4: strings.myGroups,
 };
 
 export const DEFAULT_NTRP = '5.0';
