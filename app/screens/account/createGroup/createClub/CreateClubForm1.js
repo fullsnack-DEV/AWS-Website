@@ -559,8 +559,8 @@ export default function CreateClubForm1({navigation, route}) {
 
         <View>
           <TCProfileImageControl
-            profileImage={thumbnail ? {uri: thumbnail} : images.clubCover}
-            profileImagePlaceholder={images.clubCover}
+            profileImage={thumbnail ? {uri: thumbnail} : undefined}
+            profileImagePlaceholder={images.newClubLogo}
             bgImage={
               backgroundThumbnail
                 ? {uri: backgroundThumbnail}
@@ -574,8 +574,8 @@ export default function CreateClubForm1({navigation, route}) {
               alignSelf: 'center',
             }}
             profileImageStyle={{
-              height: 40,
-              width: 40,
+              height: 60,
+              width: 60,
               marginTop: 10,
             }}
             profileCameraButtonStyle={{
@@ -592,6 +592,8 @@ export default function CreateClubForm1({navigation, route}) {
             }}
             profileImageContainerStyle={{
               marginLeft: 15,
+              height: 60,
+              width: 60,
             }}
             showEditButtons
           />
@@ -633,7 +635,7 @@ export default function CreateClubForm1({navigation, route}) {
           </View>
           <View style={styles.fieldView}>
             <TCLabel
-              title={strings.sport}
+              title={strings.SPORTStxt}
               style={{marginTop: 0}}
               required={true}
             />

@@ -2237,7 +2237,7 @@ export default {
   matchHostChallengeText: 'en_Who the match host and challenger are',
   matchFeeModalInfo1:
     'en_If you receive a challenge or invite someone to send you a challenge, you will be the match host and the opponent will be the challenger in the resulting match.',
-  whatMatchHostDo: 'en_What the match host must doen_:',
+  whatMatchHostDo: 'en_What the match host must do:',
   matchFeeModalInfo2:
     'en_The match host must secure the following at their own cost as specified in their incoming challenge settings. Changes may be made if the match host and challenger are in agreement.',
   addMatchFeeText: 'en_ADD MATCH FEE',
@@ -2721,7 +2721,7 @@ export default {
   whoCanInviteYouToEvent: 'en_Who Can Invite You to Event',
   whoCanInviteToTheirEvent: 'en_Who can invite you to their event?',
   doublesTeamInviteDescriptionText:
-    'en_A doubles team can be created by two players in sports such as tennis Doubles, Badminton Doubles, Table Tennis Doubles and so on.',
+   'en_A doubles team can be created by two players in sports such as tennis Doubles, Badminton Doubles, Table Tennis Doubles and so on.',
   updateBtnText: 'en_Update',
   locationValidation: 'en_Please enter all the location parameter.',
   allphoneParameter: 'en_Please fill all phone number parameter.',
@@ -2729,7 +2729,9 @@ export default {
   reviewIncomingchallengetitle: 'en_Review Incoming Challenge Settings >',
   createGroupAccount: 'en_Create Group Account',
   switchingTo: 'en_Switching to',
+  SPORTStxt: 'en_SPORTS',
   functionNotAvailable: 'en_This function is not available now.',
   deactiveScreenDescription:
-    'en_• If you have a checkout (as a challenger or a challengee) within the past 60 days, you can’t delete your account until the 60-day claim period has elapsed.\n\n• When you delete your account, you can cancel deleting your account (recover your account ) up to 14 days after you delete it.\n\n• 14 days after you delete your account, your information will be permanently deleted, except for certain information that we are legally required or permitted to retain, as outlined in our Privacy Policy.\n\n• If you want to use TownsCup in the future, you’ll need to set up a new account.\n\n• If you have any future reservations, they must first be cancelled in accordance with the applicable host cancellation policy before you delete your account . Cancellation fees may apply.\n\n',
+  'en_• If you have a checkout (as a challenger or a challengee) within the past 60 days, you can’t delete your account until the 60-day claim period has elapsed.\n\n• When you delete your account, you can cancel deleting your account (recover your account ) up to 14 days after you delete it.\n\n• 14 days after you delete your account, your information will be permanently deleted, except for certain information that we are legally required or permitted to retain, as outlined in our Privacy Policy.\n\n• If you want to use TownsCup in the future, you’ll need to set up a new account.\n\n• If you have any future reservations, they must first be cancelled in accordance with the applicable host cancellation policy before you delete your account . Cancellation fees may apply.\n\n',
+
 };

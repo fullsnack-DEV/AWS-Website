@@ -47,6 +47,7 @@ const MemberListModal = ({
 
   useEffect(() => {
     setFollowersSelection('');
+
     Setplayers(sportsList);
   }, [isFocused, isVisible]);
 
@@ -114,7 +115,9 @@ const MemberListModal = ({
       onRightButtonPress={() => onNext(follower)}
       headerRightButtonText={strings.next}
       title={sport?.sport ? strings.sportTextTitle : title}
-      containerStyle={{padding: 0, flex: 1}}
+      containerStyle={{
+        padding: 0,
+      }}
       showBackButton>
       <CustomIosAlert
         visibleAlert={visibleAlert}
@@ -136,7 +139,7 @@ const MemberListModal = ({
             style={{
               alignSelf: 'center',
               marginTop: 15,
-              marginBottom: 25,
+              marginBottom: 10,
             }}>
             <TCSearchBox
               onChangeText={(text) => searchFilterFunction(text)}
@@ -146,14 +149,17 @@ const MemberListModal = ({
               }}
             />
           </View>
-
-          <FlatList
-            extraData={players}
-            ItemSeparatorComponent={() => <TCThinDivider />}
-            data={players}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={renderFollowers}
-          />
+          <View style={{flex: 1}}>
+            <FlatList
+              extraData={players}
+              ItemSeparatorComponent={() => <TCThinDivider />}
+              data={players}
+              showsVerticalScrollIndicator={false}
+              keyExtractor={(item, index) => `${item?.full_name}/${index}`}
+              renderItem={renderFollowers}
+              ListFooterComponent={() => <View style={{height: 90}} />}
+            />
+          </View>
         </View>
       </View>
     </CustomModalWrapper>
@@ -164,7 +170,7 @@ export default MemberListModal;
 
 const styles = StyleSheet.create({
   card: {
-    flex: 1,
+    alignSelf: 'center',
   },
 
   divider: {

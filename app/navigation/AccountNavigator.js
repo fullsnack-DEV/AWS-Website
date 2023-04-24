@@ -1227,6 +1227,7 @@ const AccountNavigator = () => (
       options={{
         title: strings.createClubText,
         headerTintColor: colors.blackColor,
+        headerTitleAlign: 'center',
         headerTitleStyle: {
           fontWeight: '500',
         },
@@ -3039,8 +3040,9 @@ const AccountNavigator = () => (
       name="RespondToInviteScreen"
       component={RespondToInviteScreen}
       options={{
-        title: strings.respondToRequest,
+        title: strings.respondToInviteCreateTeam,
         headerTintColor: colors.blackColor,
+        headerTitleAlign: 'center',
         headerTitleStyle: {
           fontWeight: '500',
         },

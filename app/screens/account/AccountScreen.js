@@ -525,8 +525,8 @@ const AccountScreen = ({navigation}) => {
         ) {
           setLoading(false);
 
-          // const {player1, player2, sport, sport_type, request_id} =
-          //   response.payload.data;
+          const {player1, player2, sport, sport_type, request_id} =
+            response.payload.data;
 
           Alert.alert(
             Platform.OS === 'android' ? '' : response.payload.user_message,
@@ -534,25 +534,20 @@ const AccountScreen = ({navigation}) => {
 
             [
               {
-                text: strings.respondToRequest,
+                text: strings.resendRequest,
                 onPress: () => {
-                  setMemberListModal(false);
-                  const teamObject = response.payload.data;
-                  delete teamObject.player1;
-                  delete teamObject.player2;
-                  teamObject.player1 = {
-                    full_name: p2.full_name,
-                    thumbnail: p2.thumbnail,
-                  };
-                  teamObject.player2 = {
-                    full_name: authContext.entity.obj.full_name,
-                    thumbnail: authContext.entity.obj.thumbnail,
-                  };
-                  teamObject.group_id = response.payload.data.request_id;
-                  navigation.navigate('RespondToInviteScreen', {
-                    teamObject,
-                  });
+                  onResendRequest(
+                    player1,
+                    player2,
+                    sport,
+                    sport_type,
+                    request_id,
+                  );
                 },
+              },
+              {
+                text: strings.goBack,
+                onPress: () => console.log('Pressed'),
               },
             ],
             {cancelable: false},

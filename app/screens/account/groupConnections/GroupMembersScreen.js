@@ -107,9 +107,24 @@ export default function GroupMembersScreen({navigation, route}) {
     if (groupID) {
       getGroupMembers(groupID, authContext)
         .then((response) => {
-          setMembers(response.payload);
+          const unsortedReponse = response.payload;
+          unsortedReponse.sort((a, b) =>
+            a.first_name.normalize().localeCompare(b.first_name.normalize()),
+          );
 
-          setSearchMember(response.payload);
+          const adminMembers = unsortedReponse.filter(
+            (item) => item.is_admin === true,
+          );
+
+          const normalMembers = unsortedReponse.filter(
+            (item) => item.is_admin !== true,
+          );
+
+          const SortedMembers = [...adminMembers, ...normalMembers];
+
+          setMembers(SortedMembers);
+
+          setSearchMember(SortedMembers);
           setloading(false);
         })
         .catch((e) => {
@@ -180,13 +195,14 @@ export default function GroupMembersScreen({navigation, route}) {
   ]);
 
   const searchFilterFunction = (text) => {
-    const result = members.filter(
-      (x) =>
-        x.first_name.toLowerCase().includes(text.toLowerCase()) ||
-        x.last_name.toLowerCase().includes(text.toLowerCase()),
-    );
+    const filteredData = members.filter((item) => {
+      const fullName = `${item.first_name}${item.last_name}`.toLowerCase();
+
+      return fullName.includes(text);
+    });
+
     if (text.length > 0) {
-      setMembers(result);
+      setMembers(filteredData);
     } else {
       setMembers(searchMember);
     }
@@ -671,9 +687,22 @@ export default function GroupMembersScreen({navigation, route}) {
     [onPressProfilePhotoAndTitle, renderFollowUnfollowArrow],
   );
 
+  const SearchBox = () => (
+    <View style={styles.searchBarView}>
+      <TCSearchBox
+        onChangeText={(text) => searchFilterFunction(text)}
+        placeholderText={strings.searchText}
+        style={{
+          height: 40,
+        }}
+      />
+    </View>
+  );
+
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
+
       <View
         style={{
           opacity: isAccountDeactivated ? 0.5 : 1,
@@ -714,6 +743,8 @@ export default function GroupMembersScreen({navigation, route}) {
         <View style={styles.headerSeperator} />
       </View>
       <View tabLabel={strings.membersTitle} style={{flex: 1}}>
+        {SearchBox()}
+
         {/* eslint-disable-next-line no-nested-ternary */}
         {members.length > 0 ? (
           <FlatList
@@ -721,18 +752,8 @@ export default function GroupMembersScreen({navigation, route}) {
             style={{marginTop: -10}}
             data={members}
             renderItem={renderMembers}
-            ListHeaderComponent={
-              <View style={styles.searchBarView}>
-                <TCSearchBox
-                  onChangeText={(text) => searchFilterFunction(text)}
-                  placeholderText={strings.searchText}
-                  style={{
-                    height: 40,
-                  }}
-                />
-              </View>
-            }
-            keyExtractor={(item, index) => index.toString()}
+            showsVerticalScrollIndicator={false}
+            keyExtractor={(item, index) => `${item.first_name}/${index}`}
           />
         ) : (
           <TCNoDataView title={strings.noMebersFoundText} />
