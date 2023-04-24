@@ -18,12 +18,18 @@ import {
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Modal from 'react-native-modal';
 import moment from 'moment';
+import FastImage from 'react-native-fast-image';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
 import TCThinDivider from '../TCThinDivider';
 import {strings} from '../../../Localization/translation';
 // import TCRefereeView from '../../components/TCRefereeView';
-import {locationType, sortOptionType} from '../../utils/constant';
+import {
+  locationType,
+  sortOptionType,
+  filterType,
+  groupsType,
+} from '../../utils/constant';
 import LocationModal from '../LocationModal/LocationModal';
 import BottomSheet from '../modals/BottomSheet';
 import DateTimePickerView from '../Schedule/DateTimePickerModal';
@@ -36,6 +42,7 @@ import {widthPercentageToDP} from '../../utils';
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
 
 const SearchModal = ({
+  fType,
   sports,
   isVisible,
   filterObject,
@@ -50,6 +57,13 @@ const SearchModal = ({
   const [filterOptions, setFilterOptions] = useState([]);
   const [datePickerShow, setDatePickerShow] = useState(false);
   const [tag, setTag] = useState();
+  const [groups, setGroups] = useState(groupsType);
+  const [showTimeComponent, setShowTimeComponent] = useState(false);
+  const [showSortComponent, setShowSortComponent] = useState(false);
+  const [showFeeComponent, setShowFeeComponent] = useState(false);
+  console.log('showTimeComponent', showTimeComponent);
+  console.log('fType', fType);
+
   useEffect(() => {
     setFilterOptions([
       strings.filterAntTime,
@@ -63,14 +77,69 @@ const SearchModal = ({
   }, []);
   useEffect(() => {
     if (isVisible) {
-      setFilters({
-        ...filterObject,
-        isSearchPlaceholder: filterObject.locationOption !== 3,
-        sortOption: filterObject.sortOption ?? 0,
-        availableTime: filterObject.availableTime ?? strings.filterAntTime,
-      });
+      if (fType === filterType.RECRUIITINGMEMBERS) {
+        setFilters({
+          ...filterObject,
+          isSearchPlaceholder: filterObject.locationOption !== 3,
+        });
+      } else if (fType === filterType.LOOKINGFORTEAMCLUB) {
+        setFilters({
+          ...filterObject,
+          isSearchPlaceholder: filterObject.locationOption !== 3,
+        });
+      } else {
+        setFilters({
+          ...filterObject,
+          isSearchPlaceholder: filterObject.locationOption !== 3,
+          sortOption: filterObject.sortOption ?? 0,
+          availableTime: filterObject.availableTime ?? strings.filterAntTime,
+        });
+      }
+      setShowTimeComponent(
+        fType === filterType.REFEREES ||
+          fType === filterType.SCOREKEEPERS ||
+          fType === filterType.TEAMAVAILABLECHALLENGE,
+      );
+      setShowSortComponent(
+        fType === filterType.REFEREES ||
+          fType === filterType.SCOREKEEPERS ||
+          fType === filterType.TEAMAVAILABLECHALLENGE,
+      );
+      setShowFeeComponent(
+        fType === filterType.REFEREES ||
+          fType === filterType.SCOREKEEPERS ||
+          fType === filterType.TEAMAVAILABLECHALLENGE,
+      );
     }
   }, [filterObject, isVisible]);
+
+  useEffect(() => {
+    if (fType === filterType.RECRUIITINGMEMBERS && isVisible) {
+      groups.forEach((x, i) => {
+        if (x.type === filterObject.groupTeam) {
+          groups[i].isChecked = true;
+        } else if (x.type === filterObject.groupClub) {
+          groups[i].isChecked = true;
+        } else if (x.type === filterObject.groupLeague) {
+          groups[i].isChecked = true;
+        } else {
+          groups[i].isChecked = false;
+        }
+        setGroups([...groups]);
+      });
+    }
+    console.log('groups==>1', groups);
+  }, [isVisible]);
+
+  const isIconCheckedOrNot = useCallback(({item, index}) => {
+    if (item.isChecked) {
+      groups[index].isChecked = false;
+    } else {
+      groups[index].isChecked = true;
+    }
+
+    setGroups([...groups]);
+  }, []);
 
   const handleSetLocationOptions = useCallback(
     (location1) => {
@@ -189,6 +258,40 @@ const SearchModal = ({
       <View style={styles.handleStyle} />
     </View>
   );
+  const keyExtractor = useCallback((item, index) => index.toString(), []);
+
+  const renderGroupsTypeItem = ({item, index}) => (
+    <TouchableOpacity
+      style={styles.listItem}
+      onPress={() => isIconCheckedOrNot({item, index})}>
+      <View
+        style={{
+          width: '100%',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          marginRight: 15,
+          alignSelf: 'flex-start',
+          height: 50,
+        }}>
+        <Text style={styles.sportList}>{item?.type}</Text>
+        <View style={styles.checkbox}>
+          {item?.isChecked ? (
+            <FastImage
+              resizeMode={'contain'}
+              source={images.orangeCheckBox}
+              style={styles.checkboxImg}
+            />
+          ) : (
+            <FastImage
+              resizeMode={'contain'}
+              source={images.uncheckWhite}
+              style={styles.unCheckboxImg}
+            />
+          )}
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
   return (
     <View>
       <CustomModalWrapper
@@ -201,7 +304,51 @@ const SearchModal = ({
         // containerStyle={styles.bottomPopupContainer}
         headerRightButtonText={strings.apply}
         onRightButtonPress={() => {
-          if (applyValidation()) {
+          if (fType === filterType.RECRUIITINGMEMBERS) {
+            const tempFilter = {
+              ...filters,
+            };
+            // For fee
+            if (Number(filters.minFee) >= 0 && Number(filters.maxFee) > 0) {
+              tempFilter.fee = `${tempFilter.minFee}-${tempFilter.maxFee}`;
+            }
+            if (fType === filterType.RECRUIITINGMEMBERS) {
+              if (
+                groups.filter(
+                  (obj) => obj.type === strings.teamstitle && obj.isChecked,
+                ).length > 0
+              ) {
+                tempFilter.groupTeam = strings.teamstitle;
+              } else {
+                delete tempFilter.groupTeam;
+              }
+              if (
+                groups.filter(
+                  (obj) => obj.type === strings.clubstitle && obj.isChecked,
+                ).length > 0
+              ) {
+                tempFilter.groupClub = strings.clubstitle;
+              } else {
+                delete tempFilter.groupClub;
+              }
+              if (
+                groups.filter(
+                  (obj) => obj.type === strings.leaguesTitle && obj.isChecked,
+                ).length > 0
+              ) {
+                tempFilter.groupLeague = strings.leaguesTitle;
+              } else {
+                delete tempFilter.groupLeague;
+              }
+            }
+            console.log('Apply tempFilter ==>', tempFilter);
+            onPressApply(tempFilter);
+          } else if (fType === filterType.LOOKINGFORTEAMCLUB) {
+            const tempFilter = {
+              ...filters,
+            };
+            onPressApply(tempFilter);
+          } else if (applyValidation()) {
             const tempFilter = {
               ...filters,
             };
@@ -422,90 +569,95 @@ const SearchModal = ({
                     </View>
                   </View>
                 </View>
-                <View
-                  style={{
-                    flexDirection: 'column',
-                    margin: 15,
-                    marginTop: 20,
-                    justifyContent: 'space-between',
-                  }}>
-                  <View>
-                    <Text style={styles.filterTitleBold}>
-                      {strings.availableTime}
-                    </Text>
-                  </View>
-                  <View style={{marginTop: 10}}>
-                    <View
-                      style={[
-                        {
-                          justifyContent: 'flex-start',
-                        },
-                        styles.sportsContainer,
-                      ]}>
-                      <TouchableWithoutFeedback
-                        onPress={() => {
-                          setShowTimeActionSheet(true);
-                        }}>
-                        <View
-                          style={{
-                            flexDirection: 'row',
-                            justifyContent: 'center',
+                {showTimeComponent && (
+                  <View
+                    style={{
+                      flexDirection: 'column',
+                      margin: 15,
+                      marginTop: 20,
+                      justifyContent: 'space-between',
+                    }}>
+                    <View>
+                      <Text style={styles.filterTitleBold}>
+                        {strings.availableTime}
+                      </Text>
+                    </View>
+                    <View style={{marginTop: 10}}>
+                      <View
+                        style={[
+                          {
+                            justifyContent: 'flex-start',
+                          },
+                          styles.sportsContainer,
+                        ]}>
+                        <TouchableWithoutFeedback
+                          onPress={() => {
+                            setShowTimeActionSheet(true);
                           }}>
-                          <View>
-                            <Text style={styles.searchCityText}>
-                              {filters.availableTime}
-                            </Text>
-                          </View>
                           <View
                             style={{
-                              position: 'absolute',
-                              right: 0,
-                              alignItems: 'center',
+                              flexDirection: 'row',
                               justifyContent: 'center',
                             }}>
-                            <Icon size={24} color="black" name="chevron-down" />
+                            <View>
+                              <Text style={styles.searchCityText}>
+                                {filters.availableTime}
+                              </Text>
+                            </View>
+                            <View
+                              style={{
+                                position: 'absolute',
+                                right: 0,
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                              }}>
+                              <Icon
+                                size={24}
+                                color="black"
+                                name="chevron-down"
+                              />
+                            </View>
                           </View>
-                        </View>
-                      </TouchableWithoutFeedback>
+                        </TouchableWithoutFeedback>
+                      </View>
                     </View>
+                    {filters.availableTime === strings.filterPickaDate && (
+                      <View style={{marginTop: 10}}>
+                        <FilterTimeSelectItem
+                          title={strings.from}
+                          date={
+                            filters.fromDateTime
+                              ? moment(filters.fromDateTime).format('ll')
+                              : ''
+                          }
+                          onDatePress={() => {
+                            setTag(1);
+                            setDatePickerShow(true);
+                          }}
+                          onXCirclePress={() =>
+                            setFilters({...filters, fromDateTime: ''})
+                          }
+                        />
+                        <FilterTimeSelectItem
+                          title={strings.to}
+                          date={
+                            filters.toDateTime
+                              ? moment(filters.toDateTime).format('ll')
+                              : ''
+                          }
+                          onDatePress={() => {
+                            setDatePickerShow(true);
+                            setTag(2);
+                          }}
+                          onXCirclePress={() =>
+                            setFilters({...filters, toDateTime: ''})
+                          }
+                        />
+                      </View>
+                    )}
                   </View>
-                  {filters.availableTime === strings.filterPickaDate && (
-                    <View style={{marginTop: 10}}>
-                      <FilterTimeSelectItem
-                        title={strings.from}
-                        date={
-                          filters.fromDateTime
-                            ? moment(filters.fromDateTime).format('ll')
-                            : ''
-                        }
-                        onDatePress={() => {
-                          setTag(1);
-                          setDatePickerShow(true);
-                        }}
-                        onXCirclePress={() =>
-                          setFilters({...filters, fromDateTime: ''})
-                        }
-                      />
-                      <FilterTimeSelectItem
-                        title={strings.to}
-                        date={
-                          filters.toDateTime
-                            ? moment(filters.toDateTime).format('ll')
-                            : ''
-                        }
-                        onDatePress={() => {
-                          setDatePickerShow(true);
-                          setTag(2);
-                        }}
-                        onXCirclePress={() =>
-                          setFilters({...filters, toDateTime: ''})
-                        }
-                      />
-                    </View>
-                  )}
-                </View>
-
-                {filters?.sport !== strings.allSport && (
+                )}
+                {filters?.sport !== strings.allSport && showFeeComponent && (
                   <View
                     style={{
                       flexDirection: 'column',
@@ -571,97 +723,124 @@ const SearchModal = ({
                     </View>
                   </View>
                 )}
-                <View
-                  style={{
-                    flexDirection: 'column',
-                    margin: 15,
-                    marginTop: 34,
-                    justifyContent: 'space-between',
-                  }}>
-                  <View>
-                    <Text style={styles.filterTitleBold}>{strings.sortBy}</Text>
+                {showSortComponent && (
+                  <View
+                    style={{
+                      flexDirection: 'column',
+                      margin: 15,
+                      marginTop: 34,
+                      justifyContent: 'space-between',
+                    }}>
+                    <View>
+                      <Text style={styles.filterTitleBold}>
+                        {strings.sortBy}
+                      </Text>
+                    </View>
+                    <View style={{marginTop: 15}}>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          marginBottom: 15,
+                          // justifyContent: 'space-between',
+                        }}>
+                        <TouchableWithoutFeedback
+                          onPress={() => {
+                            // setSortOption(0);
+                            setFilters({
+                              ...filters,
+                              sortOption: sortOptionType.RANDOM,
+                            });
+                          }}>
+                          <Image
+                            source={
+                              filters.sortOption === sortOptionType.RANDOM
+                                ? images.checkRoundOrange
+                                : images.radioUnselect
+                            }
+                            style={styles.radioButtonStyle}
+                          />
+                        </TouchableWithoutFeedback>
+                        <Text style={styles.sortOptionStyle}>
+                          {strings.filterRandom}
+                        </Text>
+                      </View>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          marginBottom: 15,
+                        }}>
+                        <TouchableWithoutFeedback
+                          onPress={() => {
+                            setFilters({
+                              ...filters,
+                              sortOption: sortOptionType.LOW_TO_HIGH,
+                            });
+                          }}>
+                          <Image
+                            source={
+                              filters.sortOption === sortOptionType.LOW_TO_HIGH
+                                ? images.checkRoundOrange
+                                : images.radioUnselect
+                            }
+                            style={styles.radioButtonStyle}
+                          />
+                        </TouchableWithoutFeedback>
+                        <Text style={styles.sortOptionStyle}>
+                          {strings.filterLowtoHighRefereeFee}
+                        </Text>
+                      </View>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          marginBottom: 15,
+                        }}>
+                        <TouchableWithoutFeedback
+                          onPress={() => {
+                            // setSortOption(2);
+                            setFilters({
+                              ...filters,
+                              sortOption: sortOptionType.HIGH_TO_LOW,
+                            });
+                          }}>
+                          <Image
+                            source={
+                              filters.sortOption === sortOptionType.HIGH_TO_LOW
+                                ? images.checkRoundOrange
+                                : images.radioUnselect
+                            }
+                            style={styles.radioButtonStyle}
+                          />
+                        </TouchableWithoutFeedback>
+                        <Text style={styles.sortOptionStyle}>
+                          {strings.filterHightoLowRefereeFee}
+                        </Text>
+                      </View>
+                    </View>
                   </View>
-                  <View style={{marginTop: 15}}>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        marginBottom: 15,
-                        // justifyContent: 'space-between',
-                      }}>
-                      <TouchableWithoutFeedback
-                        onPress={() => {
-                          // setSortOption(0);
-                          setFilters({
-                            ...filters,
-                            sortOption: sortOptionType.RANDOM,
-                          });
-                        }}>
-                        <Image
-                          source={
-                            filters.sortOption === sortOptionType.RANDOM
-                              ? images.checkRoundOrange
-                              : images.radioUnselect
-                          }
-                          style={styles.radioButtonStyle}
-                        />
-                      </TouchableWithoutFeedback>
-                      <Text style={styles.sortOptionStyle}>
-                        {strings.filterRandom}
+                )}
+                {fType === filterType.RECRUIITINGMEMBERS && (
+                  <View
+                    style={{
+                      flexDirection: 'column',
+                      margin: 15,
+                      marginTop: 34,
+                    }}>
+                    <View>
+                      <Text style={styles.filterTitleBold}>
+                        {strings.groupsTitleText}
                       </Text>
                     </View>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        marginBottom: 15,
-                      }}>
-                      <TouchableWithoutFeedback
-                        onPress={() => {
-                          setFilters({
-                            ...filters,
-                            sortOption: sortOptionType.LOW_TO_HIGH,
-                          });
-                        }}>
-                        <Image
-                          source={
-                            filters.sortOption === sortOptionType.LOW_TO_HIGH
-                              ? images.checkRoundOrange
-                              : images.radioUnselect
-                          }
-                          style={styles.radioButtonStyle}
+                    <View style={{marginTop: 10}}>
+                      <View style={{flexDirection: 'row', marginBottom: 10}}>
+                        <FlatList
+                          data={groups}
+                          keyExtractor={keyExtractor}
+                          renderItem={renderGroupsTypeItem}
                         />
-                      </TouchableWithoutFeedback>
-                      <Text style={styles.sortOptionStyle}>
-                        {strings.filterLowtoHighRefereeFee}
-                      </Text>
-                    </View>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        marginBottom: 15,
-                      }}>
-                      <TouchableWithoutFeedback
-                        onPress={() => {
-                          // setSortOption(2);
-                          setFilters({
-                            ...filters,
-                            sortOption: sortOptionType.HIGH_TO_LOW,
-                          });
-                        }}>
-                        <Image
-                          source={
-                            filters.sortOption === sortOptionType.HIGH_TO_LOW
-                              ? images.checkRoundOrange
-                              : images.radioUnselect
-                          }
-                          style={styles.radioButtonStyle}
-                        />
-                      </TouchableWithoutFeedback>
-                      <Text style={styles.sortOptionStyle}>
-                        {strings.filterHightoLowRefereeFee}
-                      </Text>
+                      </View>
                     </View>
                   </View>
-                </View>
+                )}
               </View>
               <View style={{flex: 1}} />
             </ScrollView>
@@ -879,4 +1058,32 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.lightBlackColor,
   },
+  sportList: {
+    color: colors.lightBlackColor,
+    textAlign: 'left',
+    fontFamily: fonts.RRegular,
+    margin: widthPercentageToDP('4%'),
+    textAlignVertical: 'center',
+    fontSize: 16,
+  },
+  checkbox: {
+    alignSelf: 'center',
+    marginRight: 15,
+  },
+  unCheckboxImg: {
+    width: widthPercentageToDP('5.5%'),
+    height: widthPercentageToDP('5.5%'),
+    tintColor: colors.lightBlackColor,
+    alignSelf: 'center',
+  },
+  // checkboxImg: {
+  //   width: widthPercentageToDP('5.5%'),
+  //   height: widthPercentageToDP('5.5%'),
+  // },
+  // listItem: {
+  //   alignSelf: 'center',
+  //   // marginLeft: wp('10%'),
+  //   width: widthPercentageToDP('100%'),
+  //   // backgroundColor: 'red',
+  // },
 });

@@ -1477,8 +1477,10 @@ export default function LocalHomeScreen({navigation, route}) {
                 showArrow={true}
                 viewStyle={{marginTop: 20, marginBottom: 15}}
                 onPress={() => {
+                  const data = getSortDataForNextScreen();
+
                   navigation.navigate('LookingForChallengeScreen', {
-                    filters,
+                    filters: data,
                   });
                 }}
               />
@@ -1606,10 +1608,8 @@ export default function LocalHomeScreen({navigation, route}) {
                 viewStyle={{marginTop: 20, marginBottom: 15}}
                 onPress={() => {
                   const data = getSortDataForNextScreen();
-                  const option = getLocationOption();
                   navigation.navigate('LookingTeamScreen', {
                     filters: data,
-                    locationOption: option,
                   });
                 }}
               />

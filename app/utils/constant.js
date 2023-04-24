@@ -178,6 +178,16 @@ export const sortOptionType = {
   LOW_TO_HIGH: 1,
   HIGH_TO_LOW: 2,
 };
+export const filterType = {
+  RECENTMATCHS: 0,
+  UPCOMINGMATCHES: 1,
+  TEAMAVAILABLECHALLENGE: 2,
+  PLAYERAVAILABLECHALLENGE: 3,
+  REFEREES: 4,
+  SCOREKEEPERS: 5,
+  RECRUIITINGMEMBERS: 6,
+  LOOKINGFORTEAMCLUB: 7,
+};
 
 export const game_data = [
   {

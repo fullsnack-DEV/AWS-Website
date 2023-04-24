@@ -454,7 +454,7 @@ const LocalHomeNavigator = () => (
       name="LookingTeamScreen"
       component={LookingTeamScreen}
       options={{
-        title: 'Looking for a Team',
+        title: strings.individualsLookingforGroups,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

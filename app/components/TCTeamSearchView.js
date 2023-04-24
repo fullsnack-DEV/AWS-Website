@@ -142,14 +142,14 @@ function TCTeamSearchView({
             }}>
             <View
               style={{
-                backgroundColor: '#FF7F00',
-                width: 74,
+                backgroundColor: '#F5F5F5',
+                width: 75,
                 height: 25,
                 borderRadius: 5,
                 alignItems: 'center',
                 justifyContent: 'center',
               }}>
-              <Text style={styles.challengeBtn}>{strings.join}</Text>
+              <Text style={styles.joinBtn}>{strings.join}</Text>
             </View>
           </TouchableWithoutFeedback>
         )}
@@ -161,7 +161,7 @@ function TCTeamSearchView({
             <View
               style={{
                 backgroundColor: '#FF7F00',
-                width: 74,
+                width: 75,
                 height: 25,
                 borderRadius: 5,
                 alignItems: 'center',
@@ -244,6 +244,13 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: fonts.RBold,
     color: colors.whiteColor,
+    alignSelf: 'center',
+  },
+  joinBtn: {
+    fontSize: 12,
+    fontFamily: fonts.RBold,
+    color: colors.themeColor,
+    alignSelf: 'center',
   },
 });
 

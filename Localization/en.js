@@ -2716,4 +2716,5 @@ export default {
   leaveTeam: 'en_Leave Team',
   leaguesPlaceholder: 'en_Languages you can communicate in',
   updateText: 'en_Update',
+  individualsLookingforGroups: 'en_Individuals Looking for Groups',
 };

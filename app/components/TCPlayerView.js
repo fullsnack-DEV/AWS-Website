@@ -198,6 +198,7 @@ function TCPlayerView({
             </View>
           )}
         </View>
+
         {isChallengeButtonShow && (
           <TouchableWithoutFeedback
             onPress={() => {
@@ -206,7 +207,7 @@ function TCPlayerView({
             <View
               style={{
                 backgroundColor: '#FF7F00',
-                width: 74,
+                width: 75,
                 height: 25,
                 borderRadius: 5,
                 alignItems: 'center',
@@ -222,7 +223,7 @@ function TCPlayerView({
             <View
               style={{
                 backgroundColor: '#FF7F00',
-                width: 74,
+                width: 75,
                 height: 25,
                 borderRadius: 5,
                 alignItems: 'center',
@@ -236,14 +237,14 @@ function TCPlayerView({
           <TouchableWithoutFeedback onPress={() => onPressInviteButton(data)}>
             <View
               style={{
-                backgroundColor: '#FF7F00',
-                width: 74,
+                backgroundColor: '#F5F5F5',
+                width: 75,
                 height: 25,
                 borderRadius: 5,
                 alignItems: 'center',
                 justifyContent: 'center',
               }}>
-              <Text style={styles.challengeBtn}>{strings.invite}</Text>
+              <Text style={styles.inviteBtn}>{strings.invite}</Text>
             </View>
           </TouchableWithoutFeedback>
         )}
@@ -286,6 +287,12 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: fonts.RBold,
     color: colors.whiteColor,
+    alignSelf: 'center',
+  },
+  inviteBtn: {
+    fontSize: 12,
+    fontFamily: fonts.RBold,
+    color: colors.themeColor,
     alignSelf: 'center',
   },
 });

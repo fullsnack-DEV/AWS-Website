@@ -26,7 +26,7 @@ import {getUserIndex} from '../../api/elasticSearch';
 import TCTagsFilter from '../../components/TCTagsFilter';
 import {getGeocoordinatesWithPlaceName} from '../../utils/location';
 import ActivityLoader from '../../components/loader/ActivityLoader';
-import {locationType} from '../../utils/constant';
+import {locationType, filterType} from '../../utils/constant';
 import TCPlayerView from '../../components/TCPlayerView';
 import {getSportList} from '../../utils/sportsActivityUtils';
 import Verbs from '../../Constants/Verbs';
@@ -249,7 +249,7 @@ export default function RefereesListScreen({navigation, route}) {
 
   const renderRefereesScorekeeperListView = useCallback(
     ({item}) => (
-      <View style={[styles.separator, {flex: 1}]}>
+      <View style={{flex: 1}}>
         <TCPlayerView
           data={item}
           authContext={authContext}
@@ -454,6 +454,7 @@ export default function RefereesListScreen({navigation, route}) {
 
       <SearchModal
         // enityType={Verbs.entityTypeReferee}
+        fType={filterType.REFEREES}
         sports={sports}
         filterObject={filters}
         isVisible={settingPopup}
@@ -500,11 +501,6 @@ const styles = StyleSheet.create({
   listStyle: {
     flex: 1,
     margin: 15,
-  },
-
-  separator: {
-    borderRightWidth: 20,
-    borderColor: colors.whiteColor,
   },
 
   searchViewContainer: {
