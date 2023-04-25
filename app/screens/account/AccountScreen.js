@@ -278,23 +278,13 @@ const AccountScreen = ({navigation, route}) => {
   }, [authContext]);
 
   useEffect(() => {
-    if (isFocused && authContext.entity.uid) {
-      getNotificationCount();
-    }
-  }, [authContext.entity.uid, getNotificationCount, isFocused]);
-
-  useEffect(() => {
-    if (isFocused) {
+    if (isFocused && authContext.tokenData) {
       getUsers();
+      getLists();
+      getNotificationCount();
       setShowOnlyTeamSport(false);
     }
-  }, [isFocused, authContext, getUsers, getLists, getNotificationCount]);
-
-  useEffect(() => {
-    if (isFocused) {
-      getLists();
-    }
-  }, [getLists, isFocused]);
+  }, [authContext, getNotificationCount, isFocused, getUsers, getLists]);
 
   useEffect(() => {
     if (isFocused) {

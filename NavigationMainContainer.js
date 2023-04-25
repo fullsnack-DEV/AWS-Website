@@ -5,8 +5,6 @@ import React, {
   useContext,
   useCallback,
 } from 'react';
-import QB from 'quickblox-react-native-sdk';
-
 import {NavigationContainer} from '@react-navigation/native';
 import firebase from '@react-native-firebase/app';
 import jwtDecode from 'jwt-decode';
@@ -17,37 +15,29 @@ import AuthNavigator from './app/navigation/AuthNavigator';
 import AppNavigator from './app/navigation/AppNavigator';
 import navigationTheme from './app/navigation/navigationTheme';
 import * as Utility from './app/utils/index';
-import {
-  getQBSetting,
-  QBconnectAndSubscribe,
-  QBLogout,
-} from './app/utils/QuickBlox';
 import ActivityLoader from './app/components/loader/ActivityLoader';
-import {removeFBToken} from './app/api/Users';
 import LoneStackNavigator from './app/navigation/LoneStackNavigator';
 import {getSportsList} from './app/api/Games';
-import {getUnreadNotificationCount} from './app/utils/accountUtils';
+// import {getUnreadNotificationCount} from './app/utils/accountUtils';
 
 const Stack = createStackNavigator();
 
 export default function NavigationMainContainer() {
   const authContext = useContext(AuthContext);
-  const [appInitialize, setAppInitialize] = useState(false);
+  const {setTokenData, setEntity, setUser} = authContext;
   const [loading, setLoading] = useState(false);
 
-  const resetApp = useCallback(async () => {
-    QBLogout();
-    if (authContext.entity) {
-      await removeFBToken(authContext);
-    }
-
-    firebase.auth().signOut();
-    await Utility.clearStorage();
-    await authContext.setTokenData(null);
-    authContext.setUser(null);
-    authContext.setEntity(null);
-    setAppInitialize(true);
+  const fetchSportList = useCallback(() => {
+    getSportsList(authContext).then((res) => {
+      authContext.setSports(res.payload);
+    });
   }, [authContext]);
+
+  useEffect(() => {
+    if (authContext.entity?.isLoggedIn && authContext.sports?.length === 0) {
+      fetchSportList();
+    }
+  }, [authContext, fetchSportList]);
 
   const getRefereshToken = () =>
     new Promise((resolve, reject) => {
@@ -71,112 +61,59 @@ export default function NavigationMainContainer() {
       }, reject);
     });
 
-  const checkToken = useCallback(async () => {
-    getQBSetting().then((setting) => {
-      if (setting) {
-        authContext.setQBCredential(setting);
-        QB.settings
-          .init({
-            appId: setting.quickblox.appId,
-            authKey: setting.quickblox.authKey,
-            authSecret: setting.quickblox.authSecret,
-            accountKey: setting.quickblox.accountKey,
-          })
-          .then(() => {
-            setLoading(false);
+  const setLocalData = useCallback(
+    async (tokenData = {}) => {
+      setLoading(true);
+      const contextEntity = await Utility.getStorage('authContextEntity');
+      const authContextUser = await Utility.getStorage('authContextUser');
 
-            QB.settings.enableAutoReconnect({enable: true});
-          })
-          .catch((e) => {
-            setLoading(false);
-
-            console.log('QB ERROR:=>', e);
-            // Some error occured, look at the exception message for more details
-          });
-      }
-      // else {
-      //   const QBSetting = {
-      //     accountKey: 'S3jzJdhgvNjrHTT8VRMi',
-      //     appId: '92185',
-      //     authKey: 'NGpyPS265yy4QBS',
-      //     authSecret: 'bdxqa7sDzbODJew',
-      //   };
-      //   QB.settings
-      //     .init(QBSetting)
-      //     .then(() => {})
-      //     .catch(() => {
-      //       // Some error occured, look at the exception message for more details
-      //     });
-      // }
-    });
-
-    const contextEntity = await Utility.getStorage('authContextEntity');
-    const authContextUser = await Utility.getStorage('authContextUser');
-    const tokenData = await Utility.getStorage('tokenData');
-    if (contextEntity && tokenData && authContextUser) {
       const {exp} = await jwtDecode(tokenData.token);
       const expiryDate = new Date(exp * 1000);
       const currentDate = new Date();
-      // const expiryDate = new Date('08 Jan 2021 09:13');
+
       if (expiryDate.getTime() > currentDate.getTime()) {
-        await QBconnectAndSubscribe({...contextEntity});
-        await authContext.setTokenData(tokenData);
-        await QBconnectAndSubscribe(contextEntity);
-        await authContext.setEntity({...contextEntity});
-        await authContext.setUser({...authContextUser});
-        setAppInitialize(true);
+        setEntity({...contextEntity});
+        setUser({...authContextUser});
+        setLoading(false);
       } else {
-        getRefereshToken()
-          .then(async (refereshToken) => {
-            const token = {
-              token: refereshToken.token,
-              expirationTime: refereshToken.expirationTime,
-            };
-            await QBconnectAndSubscribe({...contextEntity});
-            await authContext.setTokenData(token);
-            await authContext.setEntity({...contextEntity});
-            await Utility.setStorage('authContextEntity', {...contextEntity});
-            setAppInitialize(true);
-          })
-          .catch(() => {
-            resetApp();
-          });
+        const refereshToken = await getRefereshToken();
+        const token = {
+          token: refereshToken.token,
+          expirationTime: refereshToken.expirationTime,
+        };
+
+        setTokenData(token);
+        setEntity({...contextEntity});
+        Utility.setStorage('authContextEntity', {...contextEntity});
+        setLoading(false);
       }
-    } else {
-      resetApp();
-    }
-  }, [authContext, resetApp]);
+    },
+    [setTokenData, setEntity, setUser],
+  );
 
   useEffect(() => {
-    checkToken();
-  }, []);
-
-  const fetchSportList = useCallback(() => {
-    getSportsList(authContext).then((res) => {
-      authContext.setSports(res.payload);
+    Utility.getStorage('tokenData').then((res) => {
+      if (res.token) {
+        setTokenData(res);
+        setLocalData(res);
+      } else {
+        setLoading(false);
+      }
     });
-  }, []);
+  }, [setTokenData, setLocalData]);
 
-  useEffect(() => {
-    if (authContext?.entity?.isLoggedIn) {
-      fetchSportList();
-    }
-  }, []);
-
-  useEffect(() => {
-    if (authContext.entity?.uid) {
-      getUnreadNotificationCount(authContext);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authContext.entity?.uid]);
+  // useEffect(() => {
+  //   if (authContext.tokenData?.token) {
+  //     getUnreadNotificationCount(authContext);
+  //   }
+  // }, [authContext.tokenData]);
 
   return (
     <Fragment>
-      <ActivityLoader visible={loading} />
-      {appInitialize ? (
+      {!loading ? (
         <NavigationContainer theme={navigationTheme}>
           <Host>
-            {authContext?.entity?.isLoggedIn ? (
+            {authContext.entity?.isLoggedIn ? (
               <Stack.Navigator initialRouteName="App">
                 <Stack.Screen
                   name="App"
@@ -190,7 +127,6 @@ export default function NavigationMainContainer() {
                 />
               </Stack.Navigator>
             ) : (
-              // <AppNavigator />
               <AuthNavigator />
             )}
           </Host>

@@ -17,8 +17,7 @@ import images from '../../../Constants/ImagePath';
 import {strings} from '../../../../Localization/translation';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
-import {clearStorage} from '../../../utils';
-import {QBLogout} from '../../../utils/QuickBlox';
+import {onLogout} from '../../../utils';
 import ScreenHeader from '../../../components/ScreenHeader';
 
 export default function ChangePasswordScreen({navigation}) {
@@ -80,12 +79,10 @@ export default function ChangePasswordScreen({navigation}) {
     return true;
   };
 
-  const onLogout = useCallback(async () => {
-    QBLogout();
-    await firebase.auth().signOut();
-    await clearStorage();
-    await authContext.setUser(null);
-    await authContext.setEntity(null);
+  const handleLogout = useCallback(async () => {
+    setloading(true);
+    await onLogout(authContext);
+    setloading(false);
   }, [authContext]);
 
   const onSavePress = () => {
@@ -114,7 +111,7 @@ export default function ChangePasswordScreen({navigation}) {
                 [
                   {
                     text: 'OK',
-                    onPress: () => onLogout(),
+                    onPress: () => handleLogout(),
                   },
                 ],
                 {cancelable: false},

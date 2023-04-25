@@ -2618,12 +2618,10 @@ export const getPrivacyValue = (option, authContext) => {
 
 export const onLogout = async (authContext) => {
   try {
-    await removeFBToken(authContext);
     await firebase.auth().signOut();
+    await authContext.clearAuthContext();
+    await removeFBToken(authContext);
     await clearStorage();
-    await authContext.setTokenData(null);
-    await authContext.setUser(null);
-    await authContext.setEntity(null);
   } catch (error) {
     console.log('error==>', error);
   }

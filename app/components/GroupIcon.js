@@ -17,8 +17,8 @@ const GroupIcon = ({
   showPlaceholder = true,
 }) => {
   const getPlaceholder = () => {
-    let background = null;
-    let placeHolder = null;
+    let background = images.profilePlaceHolder;
+    let placeHolder = '';
     if (entityType === Verbs.entityTypeClub) {
       background = images.clubPlaceholderSmall;
       placeHolder = showPlaceholder ? images.newClubIcon : '';
