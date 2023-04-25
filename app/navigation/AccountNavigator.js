@@ -1147,7 +1147,8 @@ const AccountNavigator = () => (
         headerTintColor: colors.blackColor,
         headerTitleAlign: 'center',
         headerTitleStyle: {
-          fontWeight: '500',
+          fontFamily: fonts.RBold,
+          fontSize: 16,
         },
         headerStyle: {
           backgroundColor: colors.whiteColor,
@@ -1211,8 +1212,10 @@ const AccountNavigator = () => (
       options={{
         title: strings.createClubText,
         headerTintColor: colors.blackColor,
+        headerTitleAlign: 'center',
         headerTitleStyle: {
-          fontWeight: '500',
+          fontFamily: fonts.RBold,
+          fontSize: 16,
         },
         headerStyle: {
           backgroundColor: colors.whiteColor,

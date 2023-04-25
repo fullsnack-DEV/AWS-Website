@@ -614,6 +614,7 @@ export default function CreateClubForm1({navigation, route}) {
               maxLength={20}
               onChangeText={(text) => setClubName(text)}
               value={clubName}
+              placeholderTextColor={colors.userPostTimeColor}
             />
           </View>
 
@@ -630,6 +631,7 @@ export default function CreateClubForm1({navigation, route}) {
                 value={location}
                 editable={false}
                 pointerEvents="none"
+                placeholderTextColor={colors.userPostTimeColor}
               />
             </TouchableOpacity>
           </View>
@@ -660,7 +662,7 @@ export default function CreateClubForm1({navigation, route}) {
               }}>
               <TCLabel
                 title={strings.bio}
-                style={{marginTop: 0, textTransform: 'uppercase'}}
+                style={{marginTop: 0, textTransform: 'uppercase', fontSize: 16}}
               />
             </View>
             <TextInput
