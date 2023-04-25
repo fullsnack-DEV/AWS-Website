@@ -41,7 +41,7 @@ import {strings} from '../../Localization/translation';
 import ScheduleNavigator from './ScheduleNavigator';
 import MembersNavigator from './MembersNavigator';
 import fonts from '../Constants/Fonts';
-import {getNotificationCount} from '../utils/accountUtils';
+import {getUnreadNotificationCount} from '../utils/accountUtils';
 
 // import HomeNavigator from './HomeNavigator';
 // import HomeNavigator from './HomeNavigator';
@@ -314,7 +314,6 @@ const AppNavigator = ({navigation}) => {
   const count = useRef(0);
   const [role, setRole] = useState('user');
   const [unreadCount, setUnreadCount] = useState(0);
-  const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
 
   useEffect(() => {
     if (authContext?.entity?.QB) QBeventListeners();
@@ -349,12 +348,9 @@ const AppNavigator = ({navigation}) => {
     }
   }, [getQBToken]);
 
-  const getUnReadNotificationHandler = useCallback(() => {
-    if (authContext.entity.uid) {
-      const count = getNotificationCount(authContext.entity.uid, authContext);
-      setUnreadNotificationCount(count);
-    }
-  }, [authContext]);
+  useEffect(() => {
+    getUnreadNotificationCount(authContext);
+  }, []);
 
   const changeRole = useCallback(async () => {
     setRole(authContext.entity.role);
@@ -371,10 +367,9 @@ const AppNavigator = ({navigation}) => {
     count.current += 1;
     if (count.current === MAX_COUNT_FOR_BOTTOM_TAB) {
       count.current = 0;
-      getUnReadNotificationHandler();
       getUnReadMessageHandler();
     }
-  }, [getUnReadMessageHandler, getUnReadNotificationHandler]);
+  }, [getUnReadMessageHandler]);
 
   const renderTabIcon = useCallback(
     ({focused}) => {
@@ -642,9 +637,11 @@ const AppNavigator = ({navigation}) => {
         navigation={navigation}
         component={AccountNavigator}
         options={({route}) => ({
-          ...(unreadNotificationCount > 0 && {
+          ...(authContext.totalNotificationCount > 0 && {
             tabBarBadge:
-              unreadNotificationCount > 300 ? '300+' : unreadNotificationCount,
+              authContext.totalNotificationCount > 300
+                ? '300+'
+                : authContext.totalNotificationCount,
           }),
           unmountOnBlur: false,
           tabBarBadgeStyle: {zIndex: 10, fontSize: 12},

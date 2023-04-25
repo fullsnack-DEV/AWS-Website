@@ -1,5 +1,5 @@
 // @flow
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, StyleSheet, Text, Modal, Pressable, Platform} from 'react-native';
 import {strings} from '../../../Localization/translation';
 import colors from '../../Constants/Colors';
@@ -10,21 +10,57 @@ const BottomSheet = ({
   closeModal = () => {},
   optionList = [],
   onSelect = () => {},
+  type = 'default',
+  itemStyle = {},
+  cardStyle = {},
+  title = '',
+  headerStyle = {},
+  headerTitleStyle = {},
+  separatorLineStyle = {},
 }) => {
+  const [sheetType, setSheetType] = useState('default');
+
+  useEffect(() => {
+    if (type !== 'default') {
+      setSheetType(type);
+    } else {
+      setSheetType(Platform.OS);
+    }
+  }, [type]);
+
   if (optionList.length > 0) {
-    if (Platform.OS === 'ios') {
+    if (sheetType === 'ios') {
       return (
         <Modal visible={isVisible} transparent animationType="slide">
           <Pressable style={styles.modalParent} onPress={closeModal}>
-            <Pressable style={styles.card} onPress={() => {}}>
+            <Pressable style={[styles.card, cardStyle]} onPress={() => {}}>
+              {title ? (
+                <>
+                  <View
+                    style={[
+                      styles.modalButtonContainer,
+                      {paddingVertical: 15},
+                      headerStyle,
+                    ]}>
+                    <Text style={[styles.modalTitle, headerTitleStyle]}>
+                      {title}
+                    </Text>
+                  </View>
+                  <View
+                    style={[styles.modalLineSeparator, separatorLineStyle]}
+                  />
+                </>
+              ) : null}
               {optionList.map((item, index) => (
                 <View key={index}>
                   <Pressable
-                    style={styles.modalButtonContainer}
+                    style={[styles.modalButtonContainer, itemStyle]}
                     onPress={() => onSelect(item)}>
                     <Text style={styles.modalButtonText}>{item}</Text>
                   </Pressable>
-                  <View style={styles.modalLineSeparator} />
+                  <View
+                    style={[styles.modalLineSeparator, separatorLineStyle]}
+                  />
                 </View>
               ))}
             </Pressable>
@@ -36,19 +72,40 @@ const BottomSheet = ({
       );
     }
 
-    if (Platform.OS === 'android') {
+    if (sheetType === 'android') {
       return (
         <Modal visible={isVisible} transparent animationType="fade">
           <Pressable style={styles.modalParent} onPress={closeModal}>
-            <Pressable style={styles.cardAndroid} onPress={() => {}}>
+            <Pressable
+              style={[styles.cardAndroid, cardStyle]}
+              onPress={() => {}}>
+              {title ? (
+                <>
+                  <View
+                    style={[
+                      styles.modalButtonContainer,
+                      {paddingVertical: 15},
+                      headerStyle,
+                    ]}>
+                    <Text style={[styles.modalTitle, headerTitleStyle]}>
+                      {title}
+                    </Text>
+                  </View>
+                  <View
+                    style={[styles.modalLineSeparator, separatorLineStyle]}
+                  />
+                </>
+              ) : null}
               {optionList.map((item) => (
                 <>
                   <Pressable
-                    style={styles.modalButtonContainerAndroid}
+                    style={[styles.modalButtonContainerAndroid, itemStyle]}
                     onPress={() => onSelect(item)}>
                     <Text style={styles.modalButtonTextAndroid}>{item}</Text>
                   </Pressable>
-                  <View style={styles.modalLineSeparator} />
+                  <View
+                    style={[styles.modalLineSeparator, separatorLineStyle]}
+                  />
                 </>
               ))}
             </Pressable>
@@ -113,6 +170,12 @@ const styles = StyleSheet.create({
     paddingVertical: 17,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  modalTitle: {
+    fontSize: 16,
+    lineHeight: 24,
+    fontFamily: fonts.RBold,
+    color: colors.lightBlackColor,
   },
 });
 export default BottomSheet;

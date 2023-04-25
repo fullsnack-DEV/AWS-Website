@@ -15,6 +15,7 @@ import {
   PixelRatio,
   LayoutAnimation,
 } from 'react-native';
+import firebase from '@react-native-firebase/app';
 import _ from 'lodash';
 import moment from 'moment';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -32,6 +33,8 @@ import {
   getUserIndex,
 } from '../api/elasticSearch';
 import Verbs from '../Constants/Verbs';
+// eslint-disable-next-line import/no-cycle
+import {removeFBToken} from '../api/Users';
 
 export const deviceHeight = Dimensions.get('window').height;
 export const deviceWidth = Dimensions.get('window').width;
@@ -2600,5 +2603,18 @@ export const getPrivacyValue = (option, authContext) => {
 
     default:
       return 0;
+  }
+};
+
+export const onLogout = async (authContext) => {
+  try {
+    await removeFBToken(authContext);
+    await firebase.auth().signOut();
+    await clearStorage();
+    await authContext.setTokenData(null);
+    await authContext.setUser(null);
+    await authContext.setEntity(null);
+  } catch (error) {
+    console.log('error==>', error);
   }
 };

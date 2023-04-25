@@ -72,6 +72,7 @@ export default function PersonalInformationScreen({navigation, route}) {
   const handleSetLocationOptions = (location) => {
     const obj = {...userInfo};
     obj.city = location.city;
+    obj.state = location.state_full;
     obj.state_abbr = location.state;
     obj.country = location.country;
     setUserInfo(obj);
@@ -366,7 +367,10 @@ export default function PersonalInformationScreen({navigation, route}) {
               onPress={() => setLocationPopup(true)}
               style={styles.homeCityContainer}>
               <Text style={styles.homeCityText} numberOfLines={1}>
-                {Utility.displayLocation(userInfo)}
+                {/* {Utility.displayLocation(userInfo)} */}
+                {`${userInfo.city}, ${userInfo.state_abbr ?? userInfo.state}, ${
+                  userInfo.country
+                }`}
               </Text>
             </TouchableOpacity>
 

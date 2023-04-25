@@ -1,7 +1,6 @@
 // @flow
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {StyleSheet, FlatList, View, Pressable, Image, Text} from 'react-native';
-import ActionSheet from 'react-native-actionsheet';
 import {strings} from '../../../Localization/translation';
 import AuthContext from '../../auth/context';
 import colors from '../../Constants/Colors';
@@ -13,6 +12,7 @@ import CustomModalWrapper from '../CustomModalWrapper';
 import AccountCard from './AccountCard';
 import useSwitchAccount from '../../hooks/useSwitchAccount';
 import SwitchAccountLoader from './SwitchAccountLoader';
+import BottomSheet from '../modals/BottomSheet';
 
 const SwitchAccountModal = ({
   isVisible = false,
@@ -26,11 +26,10 @@ const SwitchAccountModal = ({
     strings.team,
     strings.club,
     strings.leaguesTitle,
-    strings.cancel,
   ]);
+  const [showBottomSheet, setBottomSheet] = useState(false);
 
   const authContext = useContext(AuthContext);
-  const actionSheetRef = useRef();
   const {onSwitchProfile} = useSwitchAccount();
 
   useEffect(() => {
@@ -96,7 +95,7 @@ const SwitchAccountModal = ({
             <Pressable
               style={[styles.row, {justifyContent: 'flex-start'}]}
               onPress={() => {
-                actionSheetRef.current.show();
+                setBottomSheet(true);
               }}>
               <View style={styles.iconContainer}>
                 <Image
@@ -113,9 +112,9 @@ const SwitchAccountModal = ({
         )}
       />
 
-      <ActionSheet
+      {/* <ActionSheet
         ref={actionSheetRef}
-        title={strings.create}
+        title={<Text>{strings.create}</Text>}
         options={createOptions}
         cancelButtonIndex={3}
         onPress={(index) => {
@@ -125,6 +124,17 @@ const SwitchAccountModal = ({
           closeModal();
           onCreate(createOptions[index]);
         }}
+      /> */}
+      <BottomSheet
+        optionList={createOptions}
+        isVisible={showBottomSheet}
+        closeModal={() => setBottomSheet(false)}
+        onSelect={(option) => {
+          closeModal();
+          onCreate(option);
+        }}
+        type="ios"
+        title={strings.create}
       />
       <SwitchAccountLoader
         isVisible={showLoader}

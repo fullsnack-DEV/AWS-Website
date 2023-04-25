@@ -10,14 +10,13 @@ import {
   View,
 } from 'react-native';
 import {format} from 'react-string-format';
-import firebase from '@react-native-firebase/app';
+
 import {useIsFocused} from '@react-navigation/native';
 import AccountHeader from './components/AccountHeader';
 import AuthContext from '../../auth/context';
 import AccountEntity from './components/AccountEntity';
-import {clearStorage, getStorage, setAuthContextData} from '../../utils';
-import {removeFBToken, userActivate} from '../../api/Users';
-import {getNotificationCount} from '../../utils/accountUtils';
+import {getStorage, onLogout, setAuthContextData} from '../../utils';
+import {userActivate} from '../../api/Users';
 import SwitchAccountModal from '../../components/account/SwitchAccountModal';
 import AccountMenuList from './components/AccountMenuList';
 import {
@@ -52,6 +51,8 @@ import TCAccountDeactivate from '../../components/TCAccountDeactivate';
 import CustomModalWrapper from '../../components/CustomModalWrapper';
 import {ModalTypes} from '../../Constants/GeneralConstants';
 import AccountShimmer from '../../components/shimmer/account/AccountShimmer';
+import {getUnreadCount} from '../../api/Notificaitons';
+import ActivityLoader from '../../components/loader/ActivityLoader';
 
 
 const AccountScreen = ({navigation, route}) => {
@@ -85,6 +86,7 @@ const AccountScreen = ({navigation, route}) => {
   const [grpIdforTermination, setGrpIdForTermination] = useState();
   const [players, setPlayers] = useState([]);
   const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
+  const [onLoad, setOnLoad] = useState(false);
 
   useEffect(() => {
     if (
@@ -243,14 +245,50 @@ const AccountScreen = ({navigation, route}) => {
       });
   }, [authContext, getAccountMenu, imageBaseUrl]);
 
+  const getNotificationCount = useCallback(() => {
+    getUnreadCount(authContext)
+      .then((response) => {
+        const {teams, clubs, user} = response.payload;
+        let count = 0;
+        if (authContext.entity.obj.entity_type === Verbs.entityTypeClub) {
+          const obj = clubs.find(
+            (item) => item.group_id === authContext.entity.uid,
+          );
+          count = obj.unread ?? 0;
+        } else if (
+          authContext.entity.obj.entity_type === Verbs.entityTypeTeam
+        ) {
+          const obj = teams.find(
+            (item) => item.group_id === authContext.entity.uid,
+          );
+          count = obj.unread ?? 0;
+        } else {
+          count = user.unread ?? 0;
+        }
+        authContext.setTotalNotificationCount(
+          response.payload.totalUnread ?? 0,
+        );
+        setUnreadNotificationCount(count);
+      })
+      .catch((e) => {
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  }, [authContext]);
+
+  useEffect(() => {
+    if (isFocused && authContext.entity.uid) {
+      getNotificationCount();
+    }
+  }, [authContext.entity.uid, getNotificationCount, isFocused]);
+
   useEffect(() => {
     if (isFocused) {
-      const count = getNotificationCount(authContext.entity.uid, authContext);
-      setUnreadNotificationCount(count);
       getUsers();
       setShowOnlyTeamSport(false);
     }
-  }, [isFocused, authContext, getUsers, getLists]);
+  }, [isFocused, authContext, getUsers, getLists, getNotificationCount]);
 
   useEffect(() => {
     if (isFocused) {
@@ -266,14 +304,10 @@ const AccountScreen = ({navigation, route}) => {
     }
   }, [isFocused]);
 
-  const onLogout = async () => {
-    setLoading(true);
-    await removeFBToken(authContext);
-    await firebase.auth().signOut();
-    await clearStorage();
-    await authContext.setUser(null);
-    await authContext.setEntity(null);
-    setLoading(false);
+  const handleLogout = async () => {
+    setOnLoad(true);
+    await onLogout(authContext);
+    setOnLoad(false);
   };
 
   const handleSectionMemberClick = (rowObj) => {
@@ -793,6 +827,7 @@ const AccountScreen = ({navigation, route}) => {
           navigation.navigate('NotificationsListScreen')
         }
       />
+      <ActivityLoader visible={onLoad} />
       {loading && accountMenu.length === 0 ? (
         <AccountShimmer />
       ) : (
@@ -831,7 +866,7 @@ const AccountScreen = ({navigation, route}) => {
             onPressCancelRequest={(rowItem) => {
               onCancelRequest(rowItem);
             }}
-            onLogout={onLogout}
+            onLogout={handleLogout}
           />
         </>
       )}

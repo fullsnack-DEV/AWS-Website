@@ -1,5 +1,3 @@
-/* eslint-disable no-unneeded-ternary */
-
 import React, {
   useEffect,
   useState,
@@ -45,8 +43,6 @@ import GroupHomeScreen from './GroupHomeScreen';
 import TCAccountDeactivate from '../../components/TCAccountDeactivate';
 import {setAuthContextData} from '../../utils';
 import CongratulationsModal from '../account/registerPlayer/modals/CongratulationsModal';
-
-import useSwitchAccount from '../../hooks/useSwitchAccount';
 import * as Utility from '../../utils';
 
 const HomeScreen = ({navigation, route}) => {
@@ -61,7 +57,6 @@ const HomeScreen = ({navigation, route}) => {
   const [showMoreOptionsModal, setShowMoreOptionsModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [congratulationsModal, setCongratulationsModal] = useState(false);
-  const [call, setCall] = useState(false);
   const [listLoading, setListLoading] = useState(false);
 
   const [settingObject, setSettingObject] = useState();
@@ -175,20 +170,16 @@ const HomeScreen = ({navigation, route}) => {
     }
   }, [authContext.entity, route.params, getUserData, fetchGroupDetails]);
 
-  const {onloading} = useSwitchAccount(route.params?.entityObj, call);
-
   useEffect(() => {
-    if (route?.params?.isEntityCreated) {
-      setCall(true);
-
-      setCurrentUserData(route?.params?.entityObj);
+    if (isFocused && route.params?.isEntityCreated && route.params?.entityObj) {
+      setCurrentUserData(route.params.entityObj);
+      setSettingObject(route.params.entityObj);
       setCongratulationsModal(true);
-      setSettingObject(route?.params?.entityObj);
     }
 
-    if (route?.params?.userJoinTeam) {
+    if (route.params?.userJoinTeam) {
       Alert.alert(
-        format(strings.userJoinTeam, route?.params?.entityObj.group_name),
+        format(strings.userJoinTeam, route.params?.entityObj?.group_name),
         '',
         [
           {
@@ -199,7 +190,7 @@ const HomeScreen = ({navigation, route}) => {
         {cancelable: false},
       );
     }
-  }, [route.params, authContext]);
+  }, [route.params, isFocused]);
 
   const handleMoreOptions = (option) => {
     setShowMoreOptionsModal(false);
@@ -267,7 +258,7 @@ const HomeScreen = ({navigation, route}) => {
   };
 
   const renderScreen = () => {
-    if (loading || onloading) return null;
+    if (loading) return null;
     if (
       route.params.role === Verbs.entityTypePlayer ||
       route.params.role === Verbs.entityTypeUser
@@ -478,12 +469,8 @@ const HomeScreen = ({navigation, route}) => {
               strings.congratesSubTitle,
               route.params?.entityObj?.group_name,
             )}
-            fromCreateTeam={
-              authContext.entity.role === Verbs.entityTypeTeam ? true : false
-            }
-            fromCreateClub={
-              authContext.entity.role === Verbs.entityTypeClub ? true : false
-            }
+            fromCreateTeam={authContext.entity.role === Verbs.entityTypeTeam}
+            fromCreateClub={authContext.entity.role === Verbs.entityTypeClub}
             closeModal={() => {
               setCongratulationsModal(false);
             }}

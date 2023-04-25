@@ -43,6 +43,7 @@ export default function App() {
   const [selectedLocation, setSelectedLoaction] = useState('');
   const [managedEntities, setManagedEntityList] = useState([]);
   const [unreadNotificationCount, setNotificationCount] = useState({});
+  const [totalNotificationCount, setTotalNotificationCount] = useState(0);
 
   async function requestUserPermission() {
     const authStatus = await messaging().requestPermission();
@@ -179,6 +180,8 @@ export default function App() {
       setUnreadNotificationCount,
       managedEntities,
       unreadNotificationCount,
+      totalNotificationCount,
+      setTotalNotificationCount,
     }),
     [
       role,
@@ -193,6 +196,8 @@ export default function App() {
       setUnreadNotificationCount,
       managedEntities,
       unreadNotificationCount,
+      totalNotificationCount,
+      setTotalNotificationCount,
     ],
   );
 
