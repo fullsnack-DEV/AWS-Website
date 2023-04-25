@@ -16,7 +16,12 @@ import colors from '../../../Constants/Colors';
 import {strings} from '../../../../Localization/translation';
 import Verbs from '../../../Constants/Verbs';
 import ScreenHeader from '../../../components/ScreenHeader';
-import {doublesInviteOptions} from '../../../Constants/GeneralConstants';
+import {
+  doublesInviteOptions,
+  eventsInviteOptions,
+  grouInviteOptions,
+} from '../../../Constants/GeneralConstants';
+import {getPrivacyValue} from '../../../utils';
 
 export default function GroupInviteSettingPrivacyScreen({navigation, route}) {
   const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
@@ -57,22 +62,21 @@ export default function GroupInviteSettingPrivacyScreen({navigation, route}) {
   }, [type]);
 
   const getSettingValue = (option) => {
-    const entity = authContext.entity.obj;
+    const value = getPrivacyValue(option, authContext);
+
     switch (option) {
       case strings.inviteToDoubleTeamTitle:
-        return entity.who_can_invite_for_doubles_team ?? 1;
+        return doublesInviteOptions[value];
 
       case strings.canTeamInviteYou:
-        return entity.who_can_invite_for_team ?? 1;
-
       case strings.canClubInviteYou:
-        return entity.who_can_invite_for_club ?? 1;
+        return grouInviteOptions[value];
 
       case strings.whoCanInviteYouToEvent:
-        return entity.invite_me_event ?? 1;
+        return eventsInviteOptions[value];
 
       default:
-        return 0;
+        return grouInviteOptions[0];
     }
   };
 
@@ -87,7 +91,7 @@ export default function GroupInviteSettingPrivacyScreen({navigation, route}) {
         disabled={isAccountDeactivated}
         onPress={() => {
           navigation.navigate('GroupInviteYouScreen', {
-            groupInviteYou: getSettingValue(item),
+            groupInviteYou: getPrivacyValue(item, authContext),
             type: item,
             comeFrom: 'GroupInviteSettingPrivacyScreen',
             routeParams: {
@@ -98,17 +102,11 @@ export default function GroupInviteSettingPrivacyScreen({navigation, route}) {
         <View style={{flex: 1}}>
           <Text style={styles.label}>{item}</Text>
         </View>
-        <View style={styles.row}>
-          <View>
-            {item === strings.inviteToDoubleTeamTitle ? (
-              <Text style={styles.currencyTypeStyle}>
-                {doublesInviteOptions[getSettingValue(item)]}
-              </Text>
-            ) : (
-              <Text style={styles.currencyTypeStyle}>
-                {getSettingValue(item) === 1 ? strings.yes : strings.no}
-              </Text>
-            )}
+        <View style={[styles.row, {flex: 1, justifyContent: 'flex-end'}]}>
+          <View style={{flex: 1, alignItems: 'flex-end'}}>
+            <Text style={styles.currencyTypeStyle} numberOfLines={2}>
+              {getSettingValue(item)}
+            </Text>
           </View>
           <Image source={images.nextArrow} style={styles.nextArrow} />
         </View>

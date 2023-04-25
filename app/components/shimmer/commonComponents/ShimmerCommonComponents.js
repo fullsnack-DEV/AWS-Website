@@ -23,7 +23,7 @@ export const ShimmerSeperator = ({
 export const ShimmerView = ({
   height,
   width,
-  colors = ['#EEEEEE', '#D0D0D0', '#EEEEEE'],
+  colors = ['#F5F5F5', '#DBDBDB', '#F5F5F5'],
   style,
   borderRadius = 10,
   marginVertical = 5,

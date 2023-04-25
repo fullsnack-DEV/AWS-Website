@@ -47,9 +47,10 @@ const MemberListModal = ({
 
   useEffect(() => {
     setFollowersSelection('');
-
-    Setplayers(sportsList);
-  }, [isFocused, isVisible]);
+    if (sportsList.length > 0) {
+      Setplayers(sportsList);
+    }
+  }, [isFocused, isVisible, sportsList]);
 
   const renderFollowers = ({item}) => (
     <TouchableWithoutFeedback
@@ -115,9 +116,7 @@ const MemberListModal = ({
       onRightButtonPress={() => onNext(follower)}
       headerRightButtonText={strings.next}
       title={sport?.sport ? strings.sportTextTitle : title}
-      containerStyle={{
-        padding: 0,
-      }}
+      containerStyle={{padding: 0, width: '100%', height: '100%'}}
       showBackButton>
       <CustomIosAlert
         visibleAlert={visibleAlert}
@@ -149,15 +148,14 @@ const MemberListModal = ({
               }}
             />
           </View>
-          <View style={{flex: 1}}>
+          <View style={{flex: 1, marginBottom: 75}}>
             <FlatList
+              showsVerticalScrollIndicator={false}
               extraData={players}
               ItemSeparatorComponent={() => <TCThinDivider />}
               data={players}
-              showsVerticalScrollIndicator={false}
-              keyExtractor={(item, index) => `${item?.full_name}/${index}`}
+              keyExtractor={(item, index) => index.toString()}
               renderItem={renderFollowers}
-              ListFooterComponent={() => <View style={{height: 90}} />}
             />
           </View>
         </View>

@@ -64,6 +64,7 @@ export default {
   deactivateTitle: 'en_DEACTIVATE ACTIVITY',
   deactivateAccountTitle: 'en_DEACTIVATE MY ACCOUNT',
   terminateAccount: 'en_TERMINATE ACCOUNT',
+  reactivateAccount: 'REACTIVATE ACCOUNT',
   pauseTeam: 'en_PAUSE TEAM',
 
   acceptTitle: 'en_ACCEPT',
@@ -1119,7 +1120,7 @@ export default {
   createTeamText: 'en_Create Team',
   createClubText: 'en_Create Club',
   createLeagueText: 'en_Create a League',
-  paymentPayoutText: 'en_Payment & Payout',
+  paymentPayoutText: 'en_Payment & Payout Method',
   paymentMethodTitle: 'en_Payment Method',
   payoutMethodTitle: 'en_Payout Method',
   invoicesTitle: 'en_Invoices',
@@ -1502,7 +1503,7 @@ export default {
   ninePlus: 'en_9+',
 
   cancelRequestText: 'en_Cancel request',
-  logOut: 'en_Log out',
+  logOut: 'en_Log Out',
   teamCreateClubsText: 'en_When your club creates a team:',
   yourTeamWillBelogText: 'en_The team will belong to the club initially.',
   teamCanLeaveClubText: 'en_The team can leave the club anytime later.',
@@ -2598,6 +2599,7 @@ export default {
   goBack: 'en_Go Back',
   cancelTerminateTxr: 'en_Cancel',
   terminateText: 'en_Termination',
+  terminate: 'en_Terminate',
   userJoinTeam:
     'en_Great! You now rejoined to {0}. Your account has been switch to {0}',
   playersAge: `en_PLAYER'S AGE `,
@@ -2733,4 +2735,16 @@ export default {
   functionNotAvailable: 'en_This function is not available now.',
   deactiveScreenDescription:
     'en_• If you have a checkout (as a challenger or a challengee) within the past 60 days, you can’t delete your account until the 60-day claim period has elapsed.\n\n• When you delete your account, you can cancel deleting your account (recover your account ) up to 14 days after you delete it.\n\n• 14 days after you delete your account, your information will be permanently deleted, except for certain information that we are legally required or permitted to retain, as outlined in our Privacy Policy.\n\n• If you want to use TownsCup in the future, you’ll need to set up a new account.\n\n• If you have any future reservations, they must first be cancelled in accordance with the applicable host cancellation policy before you delete your account . Cancellation fees may apply.\n\n',
+  terminateAccountDescription1: 'en_When you terminate the team:',
+  terminateAccountDescription2:
+    'en_You can cancel terminating the team (recover the club) up to 14 days after you terminate it.',
+  terminateAccountDescription3:
+    'en_14 days after you terminate the team, the team information will be permanently deleted, except for certain information that we are legally required or permitted to retain, as outlined in our Privacy Policy',
+  areYouSureToTerminate:
+    'en_Are you sure you want to {0} your TownsCup account?',
+  myFollowingFollowersAndGroups: 'en_My Following, Followers & Groups',
+  myFollowingAndGroups: 'en_My Following & Groups',
+  myGroups: 'en_My Groups',
+  transactions: 'en_Transations',
+
 };

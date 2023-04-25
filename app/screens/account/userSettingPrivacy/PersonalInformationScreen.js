@@ -18,7 +18,6 @@ import {useIsFocused} from '@react-navigation/native';
 import {check, PERMISSIONS, RESULTS, request} from 'react-native-permissions';
 import {updateUserProfile} from '../../../api/Users';
 import AuthContext from '../../../auth/context';
-import ActivityLoader from '../../../components/loader/ActivityLoader';
 import images from '../../../Constants/ImagePath';
 import {strings} from '../../../../Localization/translation';
 import * as Utility from '../../../utils/index';
@@ -31,6 +30,7 @@ import {getQBAccountType, QBupdateUser} from '../../../utils/QuickBlox';
 import LocationModal from '../../../components/LocationModal/LocationModal';
 import ScreenHeader from '../../../components/ScreenHeader';
 import BottomSheet from '../../../components/modals/BottomSheet';
+import AccountProfileShimmer from '../../../components/shimmer/account/AccountProfileShimmer';
 
 export default function PersonalInformationScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
@@ -309,91 +309,91 @@ export default function PersonalInformationScreen({navigation, route}) {
         }}
       />
 
-      <TCKeyboardView>
-        <ActivityLoader visible={loading} />
-
-        <View style={styles.container}>
-          <View style={styles.profileImageStyle}>
-            <Image
-              source={
-                userInfo?.thumbnail
-                  ? {uri: userInfo.thumbnail}
-                  : images.profilePlaceHolder
-              }
-              style={styles.image}
-            />
-            <TouchableOpacity
-              style={styles.profileCameraButtonStyle}
-              onPress={() => onProfileImageClicked()}>
+      {loading ? (
+        <AccountProfileShimmer />
+      ) : (
+        <TCKeyboardView>
+          <View style={styles.container}>
+            <View style={styles.profileImageStyle}>
               <Image
-                style={styles.profileImageButtonStyle}
-                source={images.certificateUpload}
+                source={
+                  userInfo?.thumbnail
+                    ? {uri: userInfo.thumbnail}
+                    : images.profilePlaceHolder
+                }
+                style={styles.image}
               />
+              <TouchableOpacity
+                style={styles.profileCameraButtonStyle}
+                onPress={() => onProfileImageClicked()}>
+                <Image
+                  style={styles.profileImageButtonStyle}
+                  source={images.certificateUpload}
+                />
+              </TouchableOpacity>
+            </View>
+            <TCLabel
+              title={strings.nameText.toUpperCase()}
+              required={true}
+              style={styles.inputLabel}
+            />
+            <View style={styles.row}>
+              <TextInput
+                placeholder={strings.fnameText}
+                style={[styles.inputField, {marginRight: 7}]}
+                onChangeText={(text) => {
+                  setUserInfo({...userInfo, first_name: text});
+                }}
+                value={userInfo.first_name}
+              />
+              <TextInput
+                placeholder={strings.lnameText}
+                style={[styles.inputField, {marginLeft: 8}]}
+                onChangeText={(text) => {
+                  setUserInfo({...userInfo, last_name: text});
+                }}
+                value={userInfo.last_name}
+              />
+            </View>
+
+            <TCLabel
+              title={strings.currentCity.toUpperCase()}
+              required={true}
+              style={styles.inputLabel}
+            />
+
+            <TouchableOpacity
+              onPress={() => setLocationPopup(true)}
+              style={styles.homeCityContainer}>
+              <Text style={styles.homeCityText} numberOfLines={1}>
+                {Utility.displayLocation(userInfo)}
+              </Text>
             </TouchableOpacity>
+
+            <TCLabel
+              title={strings.slogan.toUpperCase()}
+              style={styles.inputLabel}
+            />
+            <Pressable style={styles.textArea}>
+              <TextInput
+                placeholder={strings.whatIsYourSlogan}
+                onChangeText={(text) =>
+                  setUserInfo({...userInfo, description: text})
+                }
+                multiline={true}
+                maxLength={150}
+                value={userInfo.description}
+                style={{
+                  padding: 0,
+                  fontSize: 16,
+                  fontFamily: fonts.RRegular,
+                  color: colors.lightBlackColor,
+                }}
+              />
+            </Pressable>
           </View>
-          <TCLabel
-            title={strings.nameText.toUpperCase()}
-            required={true}
-            style={styles.inputLabel}
-          />
-          <View style={styles.row}>
-            <TextInput
-              placeholder={strings.fnameText}
-              style={[styles.inputField, {marginRight: 7}]}
-              onChangeText={(text) => {
-                setUserInfo({...userInfo, first_name: text});
-              }}
-              value={userInfo.first_name}
-            />
-            <TextInput
-              placeholder={strings.lnameText}
-              style={[styles.inputField, {marginLeft: 8}]}
-              onChangeText={(text) => {
-                setUserInfo({...userInfo, last_name: text});
-              }}
-              value={userInfo.last_name}
-            />
-          </View>
-
-          <TCLabel
-            title={strings.currentCity.toUpperCase()}
-            required={true}
-            style={styles.inputLabel}
-          />
-
-          <TouchableOpacity
-            onPress={() => setLocationPopup(true)}
-            style={styles.homeCityContainer}>
-            <Text style={styles.homeCityText} numberOfLines={1}>
-              {[userInfo.city, userInfo.state, userInfo.country]
-                .filter((v) => v)
-                .join(', ')}
-            </Text>
-          </TouchableOpacity>
-
-          <TCLabel
-            title={strings.slogan.toUpperCase()}
-            style={styles.inputLabel}
-          />
-          <Pressable style={styles.textArea}>
-            <TextInput
-              placeholder={strings.whatIsYourSlogan}
-              onChangeText={(text) =>
-                setUserInfo({...userInfo, description: text})
-              }
-              multiline={true}
-              maxLength={150}
-              value={userInfo.description}
-              style={{
-                padding: 0,
-                fontSize: 16,
-                fontFamily: fonts.RRegular,
-                color: colors.lightBlackColor,
-              }}
-            />
-          </Pressable>
-        </View>
-      </TCKeyboardView>
+        </TCKeyboardView>
+      )}
 
       <LocationModal
         visibleLocationModal={locationPopup}

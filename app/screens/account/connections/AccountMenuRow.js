@@ -32,19 +32,22 @@ const AccountMenuRow = ({
   }, [item, authContext]);
 
   return !isAccountDeactivated ? (
-    <View
-      style={[
-        {paddingHorizontal: 15},
-        item.option?.request_id ? {opacity: 0.3} : {},
-      ]}
-      pointerEvents={item.option?.request_id ? 'none' : 'auto'}>
-      <View style={[styles.row, {paddingLeft: 30}]}>
+    <View style={{paddingHorizontal: 15}}>
+      <View
+        style={[
+          styles.row,
+          {paddingLeft: 30},
+          item.option?.request_id ? {opacity: 0.3} : {},
+        ]}
+        pointerEvents={item.option?.request_id ? 'none' : 'auto'}>
         <Pressable
           style={[styles.row, {marginVertical: 5}]}
           onPress={onPressSport}>
           <GroupIcon
             imageUrl={item.icon}
-            entityType={Verbs.entityTypePlayer}
+            entityType={item.option.entity_type ?? Verbs.entityTypePlayer}
+            groupName={item.option.group_name ?? ''}
+            showPlaceholder={false}
             containerStyle={[
               styles.iconContainer,
               item.option.group_name ? {borderWidth: 2} : {borderWidth: 0},
@@ -97,6 +100,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     backgroundColor: 'transparent',
     marginRight: 10,
+    padding: 4,
   },
   listItems: {
     fontSize: 16,

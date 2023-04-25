@@ -11,7 +11,6 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import {format} from 'react-string-format';
-import {useIsFocused} from '@react-navigation/native';
 import AuthContext from '../../../auth/context';
 import images from '../../../Constants/ImagePath';
 import {strings} from '../../../../Localization/translation';
@@ -40,8 +39,6 @@ export default function ManageChallengeScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const {sportName, sportType, groupObj} = route.params;
 
-  const isFocused = useIsFocused();
-
   const getSettings = useCallback(
     (entity = {}) => {
       if (
@@ -68,7 +65,7 @@ export default function ManageChallengeScreen({navigation, route}) {
         setSettingObject(entity.setting ?? {});
       }
     },
-    [sportName, sportType, authContext.sports, isFocused],
+    [sportName, sportType, authContext.sports],
   );
 
   useEffect(() => {
@@ -120,7 +117,10 @@ export default function ManageChallengeScreen({navigation, route}) {
           return settingObject.refund_policy || Verbs.flexibleText;
 
         case strings.setGamesDuration:
-          return `${settingObject.score_rules?.match_duration}`;
+          return `${
+            (settingObject.score_rules ?? settingObject.game_duration)
+              ?.match_duration
+          }`;
 
         case strings.gameDuration:
           return `${settingObject?.game_duration?.totalHours}h ${settingObject?.game_duration?.totalMinutes}m`;

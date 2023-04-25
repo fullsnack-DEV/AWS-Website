@@ -479,7 +479,7 @@ const SportActivityHome = ({navigation, route}) => {
 
       <ChallengeButton
         isAdmin={isAdmin}
-        isAvailable={getIsAvailable(entityType)}
+        isAvailable={getIsAvailable(sportObj, entityType)}
         isScorekeeper={isScorekeeper}
         isReferee={isReferee}
         isUserWithSameSport={isUserWithSameSport}

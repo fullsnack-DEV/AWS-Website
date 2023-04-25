@@ -187,7 +187,7 @@ const InfoContentScreen = ({
         );
 
       case strings.certiTitle:
-        return (
+        return isAdmin ? (
           <CertificateList
             list={sportObj?.certificates ?? []}
             onAdd={() =>
@@ -195,6 +195,8 @@ const InfoContentScreen = ({
             }
             onPress={onPressCertificate}
           />
+        ) : (
+          <Text style={styles.label}>{strings.noneText}</Text>
         );
 
       case strings.servicableAreas:

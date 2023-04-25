@@ -11,16 +11,18 @@ const GroupIcon = ({
   entityType = Verbs.entityTypeTeam,
   groupName = '',
   containerStyle = {},
+  placeHolderStyle = {},
+  showPlaceholder = true,
 }) => {
   const getPlaceholder = () => {
     let background = null;
     let placeHolder = null;
     if (entityType === Verbs.entityTypeClub) {
       background = images.clubPlaceholderSmall;
-      placeHolder = images.newClubIcon;
+      placeHolder = showPlaceholder ? images.newClubIcon : '';
     } else if (entityType === Verbs.entityTypeTeam) {
-      background = images.teamPlaceholderSmall;
-      placeHolder = images.newTeamIcon;
+      background = images.teamBcgPlaceholder;
+      placeHolder = showPlaceholder ? images.newTeamIcon : '';
     } else if (
       entityType === Verbs.entityTypePlayer ||
       entityType === Verbs.entityTypeUser
@@ -53,7 +55,7 @@ const GroupIcon = ({
       )}
 
       {getPlaceholder().placeHolder ? (
-        <View style={styles.placeHolder}>
+        <View style={[styles.placeHolder, placeHolderStyle]}>
           <Image source={getPlaceholder().placeHolder} style={styles.image} />
         </View>
       ) : null}
@@ -75,13 +77,12 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: '100%',
-    resizeMode: 'contain',
+    resizeMode: 'cover',
     borderRadius: 30,
   },
   name: {
     justifyContent: 'center',
     alignItems: 'center',
-
     position: 'absolute',
     top: 0,
     bottom: 0,
@@ -103,7 +104,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 0,
     bottom: 0,
-    zIndex: 99,
   },
 });
 export default GroupIcon;

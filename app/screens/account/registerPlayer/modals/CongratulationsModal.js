@@ -26,7 +26,6 @@ const CongratulationsModal = ({
   isVisible,
   title = strings.congratsModalTitle,
   subtitle = '',
-
   fromCreateTeam = false,
   fromCreateClub = false,
   closeModal = () => {},
@@ -43,6 +42,7 @@ const CongratulationsModal = ({
   onInviteClick = () => {},
   listloading = false,
   settingsObj = {},
+  onChoose = () => {},
 }) => {
   const [playerList, setPlayersList] = useState([]);
   const [teamsList, setTeamsList] = useState([]);
@@ -250,18 +250,26 @@ const CongratulationsModal = ({
             setSelectedUser(user);
           }}
           searchPlayer={() => {
-            closeModal();
-            searchPlayer({
-              sport,
-              sport_type: sportType,
-              location: authContext.entity.auth.user?.city,
-            });
+            if (sportType === Verbs.sportTypeSingle) {
+              closeModal();
+              searchPlayer({
+                sport,
+                sport_type: sportType,
+                location: authContext.entity.auth.user?.city,
+              });
+            } else {
+              searchPlayer({
+                sport,
+                sport_type: sportType,
+                location: authContext.entity.auth.user?.city,
+              });
+            }
           }}
           onUserClick={(item) => {
             closeModal();
             onUserClick(item);
           }}
-          onChoose={() => {}}
+          onChoose={onChoose}
         />
       );
     }

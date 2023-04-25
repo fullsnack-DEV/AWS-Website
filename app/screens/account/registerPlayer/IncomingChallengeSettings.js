@@ -667,7 +667,6 @@ export default function IncomingChallengeSettings({navigation, route}) {
           } else {
             navigation.navigate('AccountScreen', {
               createdSportName: sportName,
-              // eslint-disable-next-line
               sportType: sportType,
             });
           }
@@ -701,7 +700,11 @@ export default function IncomingChallengeSettings({navigation, route}) {
             });
           }
           if (filters.sport_type === Verbs.sportTypeDouble) {
-            //
+            navigation.navigate('AccountScreen', {
+              createdSportName: sportName,
+              sportType: sportType,
+              isSearchPlayerForDoubles: true,
+            });
           }
         }}
         onUserClick={(userData) => {
