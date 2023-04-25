@@ -143,10 +143,30 @@ const SendNewInvoiceModal = ({
       const body = {};
       const recipients = selectedRecipients.map((entity) => {
         if (entity.user_id) {
-          return {entity_id: entity.user_id, entity_type: Verbs.entityTypeUser};
-        } else {
-          return {entity_id: entity.group_id, entity_type: entity.entity_type};
+          if (invoiceType === InvoiceType.Event) {
+            return {
+              entity_id: entity.user_id,
+              entity_type: Verbs.entityTypeUser,
+              name: `${entity.first_name} ${entity.last_name}`,
+              email: entity.email,
+            };
+          }
+          if (entity.connected) {
+            return {
+              entity_id: entity.user_id,
+              entity_type: Verbs.entityTypeUser,
+              name: `${entity.first_name} ${entity.last_name}`,
+              email: entity.email,
+            };
+          }
+          return {
+            entity_id: entity.user_id,
+            entity_type: Verbs.entityTypeGroupMember,
+            name: `${entity.first_name} ${entity.last_name}`,
+            email: entity.email,
+          };
         }
+        return {entity_id: entity.group_id, entity_type: entity.entity_type};
       });
 
       body.receivers = recipients;
@@ -156,19 +176,32 @@ const SendNewInvoiceModal = ({
       body.currency_type = currency;
       body.invoice_description = description;
       body.invoice_type = invoiceType;
-      body.email_sent = true;
+      body.email_sent = false;
+      body.sender_name = authContext.entity.obj.group_name
+        ? authContext.entity.obj.group_name
+        : authContext.entity.obj.full_name;
 
       createInvoice(body, authContext)
         .then(() => {
           setLoading(false);
+          let message = `1 ${strings.invoicesent}`;
           if (recipients.length > 1) {
-            Alert.alert(`${recipients.length} ${strings.invoicessent}`);
-          } else {
-            Alert.alert(`1 ${strings.invoicesent}`);
+            message = `${recipients.length} ${strings.invoicessent}`;
           }
-
-          onCloseThisModal();
-          onDone();
+          Alert.alert(
+            message,
+            undefined,
+            [
+              {
+                text: strings.okTitleText,
+                onPress: () => {
+                  onCloseThisModal();
+                  onDone();
+                },
+              },
+            ],
+            {cancelable: false},
+          );
         })
         .catch((e) => {
           setLoading(false);

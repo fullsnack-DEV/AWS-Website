@@ -183,16 +183,16 @@ import ChooseVenueScreen from '../screens/challenge/manageChallenge/ChooseVenueS
 import InviteChallengeScreen from '../screens/challenge/createChallenge/InviteChallengeScreen';
 import ChallengeScreen from '../screens/challenge/createChallenge/ChallengeScreen';
 import RespondToInviteScreen from '../screens/account/createGroup/createTeam/RespondToInviteScreen';
-import InvoiceScreen from '../screens/account/payment/InvoiceScreen';
-import MembersDetailScreen from '../screens/account/payment/MembersDetailScreen';
+import InvoiceSentScreen from '../screens/account/Invoice/InvoiceSentScreen';
+import RecipientDetailScreen from '../screens/account/Invoice/RecipientDetailScreen';
 import InviteToMemberScreen from '../screens/account/groupConnections/createMemberProfile/InviteToMemberScreen';
-import UserInvoiceScreen from '../screens/account/payment/UserInvoiceScreen';
-import InvoiceDetailScreen from '../screens/account/payment/InvoiceDetailScreen';
+import InvoiceReceivedScreen from '../screens/account/Invoice/InvoiceReceivedScreen';
+
 import LogDetailScreen from '../screens/account/payment/LogDetailScreen';
-import BatchDetailScreen from '../screens/account/payment/BatchDetailScreen';
-import TeamInvoiceDetailScreen from '../screens/account/payment/TeamInvoiceDetailScreen';
+import BatchDetailScreen from '../screens/account/Invoice/BatchDetailScreen';
+import InvoiceDetailScreen from '../screens/account/Invoice/InvoiceDetailScreen';
 import AddLogScreen from '../screens/account/payment/AddLogScreen';
-import CanceledInvoicesScreen from '../screens/account/payment/CanceledInvoicesScreen';
+import CanceledInvoicesScreen from '../screens/account/Invoice/CanceledInvoicesScreen';
 import InvoiceFilterScreen from '../screens/account/payment/InvoiceFilterScreen';
 import RefereeReservationSetting from '../screens/game/bookReferee/RefereeReservationSetting';
 import AvailibilityReferee from '../screens/game/bookReferee/refereeSetting/AvailibilityReferee';
@@ -3058,8 +3058,8 @@ const AccountNavigator = () => (
     />
 
     <Stack.Screen
-      name="InvoiceScreen"
-      component={InvoiceScreen}
+      name="InvoiceSentScreen"
+      component={InvoiceSentScreen}
       options={{
         title: strings.invoicingTitleText,
         headerTintColor: colors.blackColor,
@@ -3074,8 +3074,8 @@ const AccountNavigator = () => (
       }}
     />
     <Stack.Screen
-      name="MembersDetailScreen"
-      component={MembersDetailScreen}
+      name="RecipientDetailScreen"
+      component={RecipientDetailScreen}
       options={{
         title: strings.invoicingTitleText,
         headerTintColor: colors.blackColor,
@@ -3094,7 +3094,7 @@ const AccountNavigator = () => (
       name="BatchDetailScreen"
       component={BatchDetailScreen}
       options={{
-        title: strings.membershipFeeTitle,
+        title: strings.batch,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -3108,10 +3108,10 @@ const AccountNavigator = () => (
     />
 
     <Stack.Screen
-      name="TeamInvoiceDetailScreen"
-      component={TeamInvoiceDetailScreen}
+      name="InvoiceDetailScreen"
+      component={InvoiceDetailScreen}
       options={{
-        title: strings.membershipFeeTitle,
+        title: strings.invoice,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -3141,27 +3141,10 @@ const AccountNavigator = () => (
       }}
     />
     <Stack.Screen
-      name="UserInvoiceScreen"
-      component={UserInvoiceScreen}
+      name="InvoiceReceivedScreen"
+      component={InvoiceReceivedScreen}
       options={{
-        title: strings.invoicesTitle,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
-    />
-
-    <Stack.Screen
-      name="InvoiceDetailScreen"
-      component={InvoiceDetailScreen}
-      options={{
-        title: strings.membershipFee,
+        title: strings.invoicesreceived,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

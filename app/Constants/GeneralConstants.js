@@ -129,6 +129,14 @@ export const doublesInviteOptions = {
   2: strings.myFollowing,
 };
 
+export const MonthData = [
+  'Anytime',
+  'Past 30 Days',
+  'Past 90 Days',
+  'Past 180 Days',
+  'Past 1 year ',
+  'Pick a date',
+];
 export const eventsInviteOptions = {
   0: strings.none,
   1: strings.everyoneTitleText,

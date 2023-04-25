@@ -174,14 +174,14 @@ const getTabBarVisibility = (route) => {
     routeName === 'ChangeReservationInfoScreen' ||
     routeName === 'EditChallenge' ||
     routeName === 'RespondToInviteScreen' ||
-    routeName === 'InvoiceScreen' ||
-    routeName === 'MembersDetailScreen' ||
+    routeName === 'InvoiceSentScreen' ||
+    routeName === 'RecipientDetailScreen' ||
     routeName === 'InviteToMemberScreen' ||
-    routeName === 'UserInvoiceScreen' ||
+    routeName === 'InvoiceReceivedScreen' ||
     routeName === 'InvoiceDetailScreen' ||
     routeName === 'LogDetailScreen' ||
     routeName === 'BatchDetailScreen' ||
-    routeName === 'TeamInvoiceDetailScreen' ||
+    routeName === 'SenderInvoiceDetailScreen' ||
     routeName === 'AddLogScreen' ||
     routeName === 'CanceledInvoicesScreen' ||
     routeName === 'RefereeReservationSetting' ||

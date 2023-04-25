@@ -10,56 +10,82 @@ import fonts from '../../Constants/Fonts';
 import Verbs from '../../Constants/Verbs';
 import GroupIcon from '../GroupIcon';
 
-export default function MemberInvoiceView({invoice, onPressCard}) {
-  const getStatus = () => {
-    if (invoice.invoice_status === Verbs.INVOICE_REJECTED) {
-      return strings.rejected;
-    } else if (invoice.invoice_status === Verbs.paid) {
-      return strings.paidText;
+export default function MemberInvoicesView({data, onPressCard}) {
+  const getInvoices = () => {
+    const paidInvoices = data.invoices.filter(
+      (inv) => inv.invoice_status === Verbs.paid,
+    );
+    if (paidInvoices.length === 0) {
+      return `${data.invoices.length}  ${strings.invoicesTitle.toLowerCase()}`;
+    } else {
+      return `${paidInvoices.length} / ${
+        data.invoices.length
+      } ${strings.invoicesTitle.toLowerCase()}`;
     }
-    return strings.openText;
+  };
+
+  const getStatus = () => {
+    if (
+      data.invoices.some(
+        (invoice) => invoice.invoice_status === Verbs.INVOICE_REJECTED,
+      )
+    ) {
+      return strings.openrejectedtext1;
+    } else if (
+      data.invoices.some(
+        (invoice) =>
+          invoice.invoice_status === Verbs.UNPAID ||
+          invoice.invoice_status === Verbs.PARTIALLY_PAID,
+      )
+    ) {
+      return strings.openText;
+    }
+    return strings.paidText;
   };
 
   return (
     <TouchableOpacity style={styles.viewContainer} onPress={onPressCard}>
       {/* group icon */}
-
-      <GroupIcon
-        entityType={invoice.receiver_type}
-        imageUrl={invoice.thumbnail}
-        containerStyle={styles.profileContainer}
-        groupName={invoice.full_name}
-        grpImageStyle={{
-          height: 32,
-          width: 28,
-        }}
-        textstyle={{
-          fontSize: 12,
-        }}
-      />
+      <View>
+        <GroupIcon
+          entityType={data.receiver_type}
+          imageUrl={data.thumbnail}
+          containerStyle={styles.profileContainer}
+          groupName={data.full_name}
+          grpImageStyle={{
+            height: 32,
+            width: 28,
+          }}
+          textstyle={{
+            fontSize: 12,
+          }}
+        />
+      </View>
 
       <View style={styles.playerInvoiceInfoContainer}>
         {/* Player name and invoces text */}
         <View style={{marginLeft: 15, flex: 1}}>
-          <Text style={styles.userInfoStyle} numberOfLines={2}>
-            {invoice.full_name}
-          </Text>
+          <Text
+            numberOfLines={2}
+            style={styles.userInfoStyle}>{`${data?.full_name}`}</Text>
+
+          <Text style={styles.invoiceTextStyle}>{getInvoices()}</Text>
         </View>
 
         {/* invoice amount */}
         <View style={styles.invoiveAmountContainer}>
           <Text style={styles.invoiceAmountTexStyle}>
-            {invoice.amount_due.toFixed(2)}
-            {invoice.currency_type}
+            {data.invoice_total.toFixed(2)} {data.invoices[0].currency_type}
+            {/* {data.invvoicetopaid} */}
           </Text>
-          {invoice.invoice_status !== Verbs.paid && (
+          {data.invoice_total !== data.invoice_paid_total && (
             <Text
               style={[
                 styles.invoiceAmountTexStyle,
                 {color: colors.darkThemeColor},
               ]}>
-              {invoice.amount_remaining.toFixed(2)}
-              {invoice.currency_type}
+              {data.invoice_open_total.toFixed(2)}
+              {data.invoices[0].currency_type}
             </Text>
           )}
           <View>
@@ -68,7 +94,7 @@ export default function MemberInvoiceView({invoice, onPressCard}) {
                 styles.invoiceAmountTexStyle,
                 {
                   color:
-                    invoice.amount_remaining === 0
+                    data.invoice_total === data.invoice_paid_total
                       ? colors.gameDetailColor
                       : colors.darkThemeColor,
                   alignSelf: 'flex-end',
@@ -88,10 +114,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginHorizontal: 15,
     alignSelf: 'center',
+
     alignItems: 'center',
+    // alignItems: 'flex-start',
     borderBottomWidth: 1,
+
     borderBottomColor: '#EFEFEF',
   },
+
   invoiveAmountContainer: {
     marginVertical: 15,
     flex: 0.5,
@@ -120,5 +150,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.lightBlackColor,
     lineHeight: 24,
+  },
+  invoiceTextStyle: {
+    fontFamily: fonts.RMedium,
+    fontSize: 14,
+    color: colors.lightBlackColor,
+    lineHeight: 21,
   },
 });

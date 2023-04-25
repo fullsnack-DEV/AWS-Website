@@ -8,6 +8,7 @@
 /* eslint-disable array-callback-return */
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable no-unused-expressions */
+/* eslint-disable no-param-reassign */
 import {
   Platform,
   Alert,
@@ -2586,6 +2587,15 @@ export const getRatingsOptions = (
   return [];
 };
 
+export const groupBy = (
+  array,
+  key,
+) => array.reduce((result, currentValue) => {
+    (result[currentValue[key]] = result[currentValue[key]] || []).push(
+      currentValue
+    )
+    return result
+  }, {});
 export const getPrivacyValue = (option, authContext) => {
   const entity = authContext.entity.obj;
   switch (option) {

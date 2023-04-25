@@ -11,6 +11,8 @@ const GroupIcon = ({
   entityType = Verbs.entityTypeTeam,
   groupName = '',
   containerStyle = {},
+  grpImageStyle = {},
+  textstyle = {},
   placeHolderStyle = {},
   showPlaceholder = true,
 }) => {
@@ -32,33 +34,47 @@ const GroupIcon = ({
     }
     return {background, placeHolder};
   };
-  return imageUrl ? (
+  return (
     <View style={[styles.parent, containerStyle]}>
-      <Image
-        source={
-          imageUrl && typeof imageUrl === 'string' ? {uri: imageUrl} : imageUrl
-        }
-        style={styles.image}
-      />
-      <View style={styles.placeHolder}>
-        <Image source={getPlaceholder().placeHolder} style={styles.image} />
-      </View>
-    </View>
-  ) : (
-    <View style={[styles.parent, containerStyle]}>
-      <Image source={getPlaceholder().background} style={styles.image} />
-      {entityType === Verbs.entityTypePlayer ||
-      entityType === Verbs.entityTypeUser ? null : (
-        <View style={styles.name}>
-          <Text style={styles.text}>{groupName[0]}</Text>
+      {imageUrl ? (
+        <>
+          <Image source={{uri: imageUrl}} style={styles.image} />
+          <View style={styles.placeHolder}>
+            <Image source={getPlaceholder().placeHolder} style={styles.image} />
+          </View>
+        </>
+      ) : (
+        <View style={[styles.parent, containerStyle]}>
+          {(entityType === Verbs.entityTypeClub ||
+            entityType === Verbs.entityTypeTeam) && (
+            <>
+              <Image
+                source={getPlaceholder().background}
+                style={[styles.image, grpImageStyle]}
+              />
+              <View style={styles.name}>
+                <Text style={[styles.text, textstyle]}>
+                  {groupName[0].toUpperCase()}
+                </Text>
+              </View>
+            </>
+          )}
+          {(entityType === Verbs.entityTypeUser ||
+            entityType === Verbs.entityTypeGroupMember) && (
+            <>
+              <Image source={images.profilePlaceHolder} style={styles.image} />
+            </>
+          )}
+          {getPlaceholder().placeHolder ? (
+            <View style={[styles.placeHolder, placeHolderStyle]}>
+              <Image
+                source={getPlaceholder().placeHolder}
+                style={styles.image}
+              />
+            </View>
+          ) : null}
         </View>
       )}
-
-      {getPlaceholder().placeHolder ? (
-        <View style={[styles.placeHolder, placeHolderStyle]}>
-          <Image source={getPlaceholder().placeHolder} style={styles.image} />
-        </View>
-      ) : null}
     </View>
   );
 };

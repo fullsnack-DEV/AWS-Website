@@ -1,21 +1,17 @@
-/* eslint-disable no-else-return */
-
 import React from 'react';
 import {View, StyleSheet, Text, TouchableOpacity} from 'react-native';
-import {strings} from '../../../Localization/translation';
-
+import moment from 'moment';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
-
-import Verbs from '../../Constants/Verbs';
+import {getJSDate} from '../../utils';
 import GroupIcon from '../GroupIcon';
+import Verbs from '../../Constants/Verbs';
+import {strings} from '../../../Localization/translation';
 
-export default function MemberInvoiceView({invoice, onPressCard}) {
+export default function InvoiceReceivedCellView({invoice, onPressCard}) {
   const getStatus = () => {
-    if (invoice.invoice_status === Verbs.INVOICE_REJECTED) {
-      return strings.rejected;
-    } else if (invoice.invoice_status === Verbs.paid) {
-      return strings.paidText;
+    if (invoice.amount_due === 0) {
+      return strings.allpaid;
     }
     return strings.openText;
   };
@@ -23,12 +19,11 @@ export default function MemberInvoiceView({invoice, onPressCard}) {
   return (
     <TouchableOpacity style={styles.viewContainer} onPress={onPressCard}>
       {/* group icon */}
-
       <GroupIcon
-        entityType={invoice.receiver_type}
-        imageUrl={invoice.thumbnail}
+        entityType={invoice.sender_type}
+        imageUrl={invoice.sender.thumbnail}
         containerStyle={styles.profileContainer}
-        groupName={invoice.full_name}
+        groupName={invoice.sender.sender_name}
         grpImageStyle={{
           height: 32,
           width: 28,
@@ -42,7 +37,13 @@ export default function MemberInvoiceView({invoice, onPressCard}) {
         {/* Player name and invoces text */}
         <View style={{marginLeft: 15, flex: 1}}>
           <Text style={styles.userInfoStyle} numberOfLines={2}>
-            {invoice.full_name}
+            {invoice.sender.sender_name}
+          </Text>
+          <Text style={styles.secondaryTextStyle} numberOfLines={2}>
+            {invoice.invoice_title}
+          </Text>
+          <Text style={styles.secondaryTextStyle}>
+            {moment(getJSDate(invoice.due_date)).format('LLL')}
           </Text>
         </View>
 
@@ -91,10 +92,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomWidth: 1,
     borderBottomColor: '#EFEFEF',
-  },
-  invoiveAmountContainer: {
-    marginVertical: 15,
-    flex: 0.5,
+    paddingVertical: 15,
   },
   playerInvoiceInfoContainer: {
     flex: 1,
@@ -105,20 +103,28 @@ const styles = StyleSheet.create({
   profileContainer: {
     height: 40,
     width: 40,
-
     borderWidth: 1,
+  },
+  userInfoStyle: {
+    fontFamily: fonts.RMedium,
+    fontSize: 16,
+    color: colors.lightBlackColor,
+    lineHeight: 17,
+  },
+  secondaryTextStyle: {
+    fontFamily: fonts.RRegular,
+    fontSize: 14,
+    color: colors.lightBlackColor,
+    lineHeight: 21,
+  },
+  invoiveAmountContainer: {
+    flex: 0.5,
   },
   invoiceAmountTexStyle: {
     fontSize: 16,
     fontFamily: fonts.RMedium,
     color: '#333333',
     alignSelf: 'flex-end',
-    lineHeight: 24,
-  },
-  userInfoStyle: {
-    fontFamily: fonts.RMedium,
-    fontSize: 16,
-    color: colors.lightBlackColor,
     lineHeight: 24,
   },
 });
