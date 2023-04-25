@@ -122,7 +122,12 @@ export default function MembersProfileScreen({navigation, route}) {
                 source={images.invoiceIcon}
                 style={[
                   styles.navigationRightItem,
-                  {marginRight: memberDetail?.connected ? 5 : 12},
+                  {
+                    marginRight: memberDetail?.connected ? 5 : 12,
+                    height: 50,
+                    width: 50,
+                    resizeMode: 'center',
+                  },
                 ]}
               />
             </TouchableWithoutFeedback>
@@ -834,8 +839,9 @@ export default function MembersProfileScreen({navigation, route}) {
               data={positions}
               renderItem={renderPosition}
               keyExtractor={(item, index) => index.toString()}
+
               // style={styles.flateListStyle}
-            ></FlatList>
+            />
           </View>
           <TCMessageButton
             title={strings.addPosition}
@@ -1810,7 +1816,7 @@ const styles = StyleSheet.create({
   navigationRightItem: {
     height: 25,
     marginRight: 15,
-    resizeMode: 'contain',
+    resizeMode: 'center',
     width: 25,
   },
   backArrowStyle: {

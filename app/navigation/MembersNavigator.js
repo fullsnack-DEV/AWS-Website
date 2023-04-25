@@ -498,8 +498,10 @@ const MembersNavigator = () => (
       options={{
         title: strings.createMemberProfileText,
         headerTintColor: colors.blackColor,
+        headerTitleAlign: 'center',
         headerTitleStyle: {
-          fontWeight: '500',
+          fontFamily: fonts.RBold,
+          fontSize: 16,
         },
         headerStyle: {
           backgroundColor: colors.whiteColor,
@@ -513,6 +515,16 @@ const MembersNavigator = () => (
       component={CreateMemberProfileTeamForm3}
       options={{
         title: strings.createMemberProfileText,
+        headerTitleAlign: 'center',
+        headerTitleStyle: {
+          fontFamily: fonts.RBold,
+          fontSize: 16,
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -521,8 +533,10 @@ const MembersNavigator = () => (
       options={{
         title: strings.createMemberProfileText,
         headerTintColor: colors.blackColor,
+        headerTitleAlign: 'center',
         headerTitleStyle: {
-          fontWeight: '500',
+          fontFamily: fonts.RBold,
+          fontSize: 16,
         },
         headerStyle: {
           backgroundColor: colors.whiteColor,
@@ -1059,6 +1073,17 @@ const MembersNavigator = () => (
       options={{
         title: 'Create Club',
         headerTintColor: colors.blackColor,
+        headerTitleAlign: 'center',
+        headerTitleStyle: {
+          fontFamily: fonts.RBold,
+          fontSize: 16,
+        },
+
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -1238,6 +1263,12 @@ const MembersNavigator = () => (
       options={{
         title: strings.editbasicinfotitle,
         headerTintColor: colors.blackColor,
+
+        headerTitleAlign: 'center',
+        headerTitleStyle: {
+          fontFamily: fonts.RBold,
+          fontSize: 16,
+        },
       }}
     />
     <Stack.Screen

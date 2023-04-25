@@ -2,7 +2,6 @@ import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {
   Alert,
   Dimensions,
-  Modal,
   Platform,
   Pressable,
   SafeAreaView,
@@ -50,7 +49,10 @@ import SendNewInvoiceModal from './Invoice/SendNewInvoiceModal';
 import MemberListModal from '../../components/MemberListModal/MemberListModal';
 import {getUserIndex} from '../../api/elasticSearch';
 import TCAccountDeactivate from '../../components/TCAccountDeactivate';
+import CustomModalWrapper from '../../components/CustomModalWrapper';
+import {ModalTypes} from '../../Constants/GeneralConstants';
 import AccountShimmer from '../../components/shimmer/account/AccountShimmer';
+
 
 const AccountScreen = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
@@ -842,16 +844,12 @@ const AccountScreen = ({navigation, route}) => {
         }}
       />
 
-      <Modal
-        visible={isRulesModalVisible}
-        onBackdropPress={() => setIsRulesModalVisible(false)}
-        onRequestClose={() => setIsRulesModalVisible(false)}
-        animationInTiming={300}
-        animationOutTiming={800}
-        backdropTransitionInTiming={300}
-        backdropTransitionOutTiming={800}
-        style={{
-          margin: 0,
+      <CustomModalWrapper
+        isVisible={isRulesModalVisible}
+        closeModal={() => setIsRulesModalVisible(false)}
+        modalType={ModalTypes.style2}
+        containerStyle={{
+          padding: 0,
         }}>
         <View style={styles.modalViewContainer}>
           <View
@@ -871,7 +869,7 @@ const AccountScreen = ({navigation, route}) => {
             style={{
               marginLeft: 20,
               marginTop: 25,
-              //  marginBottom: 15,
+              marginBottom: 15,
             }}>
             <Text style={styles.rulesText}>{strings.teamCreateClubsText}</Text>
           </View>
@@ -879,7 +877,7 @@ const AccountScreen = ({navigation, route}) => {
           <View
             style={{
               marginLeft: 25,
-              //  marginBottom: 35,
+
               marginRight: 27,
             }}>
             <View style={styles.rulesTitleContainer}>
@@ -911,7 +909,6 @@ const AccountScreen = ({navigation, route}) => {
             onPress={() => {
               setIsRulesModalVisible(false);
               setShowOnlyTeamSport(true);
-
               setTimeout(() => setVisibleSportsModalForTeam(true), 1000);
             }}
             style={{
@@ -935,7 +932,7 @@ const AccountScreen = ({navigation, route}) => {
             </Text>
           </Pressable>
         </View>
-      </Modal>
+      </CustomModalWrapper>
 
       <SportsListModal
         isVisible={visibleSportsModal}
@@ -1034,7 +1031,7 @@ export default AccountScreen;
 
 const styles = StyleSheet.create({
   modalViewContainer: {
-    height: Dimensions.get('window').height / 2.3,
+    height: Dimensions.get('window').height / 2.4,
     backgroundColor: 'white',
     position: 'absolute',
     bottom: 0,
@@ -1065,6 +1062,7 @@ const styles = StyleSheet.create({
   rulesTitleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: 10,
   },
   rulesDots: {
     height: 5,
@@ -1073,6 +1071,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.blackColor,
     marginRight: 5,
     alignSelf: 'center',
-    marginTop: -7,
+    marginTop: 2,
+  },
+  rulesText: {
+    fontSize: 16,
+    lineHeight: 24,
+    fontFamily: fonts.RRegular,
   },
 });

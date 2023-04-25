@@ -521,11 +521,12 @@ export default function CreateMemberProfileForm2({navigation, route}) {
             value={location}
             autoCapitalize="none"
             autoCorrect={false}
-            placeholder={strings.streetAddress}
+            placeholder={strings.address}
             pointerEvents="none"
             editable={false}
             // multiline={true}
             numberOfLines={4}
+            placeholderTextColor={colors.userPostTimeColor}
           />
         </View>
       </TouchableWithoutFeedback>
