@@ -484,7 +484,7 @@ const SportActivityHome = ({navigation, route}) => {
         isReferee={isReferee}
         isUserWithSameSport={isUserWithSameSport}
         isActiveSportActivity={
-          sportObj?.is_active || !('is_active' in sportObj)
+          sportObj && (sportObj?.is_active || !('is_active' in sportObj))
         }
         inviteToChallenge={() => {
           navigation.navigate('InviteChallengeScreen', {

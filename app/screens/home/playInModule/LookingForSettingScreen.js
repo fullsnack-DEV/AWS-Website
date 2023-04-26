@@ -87,13 +87,7 @@ export default function LookingForSettingScreen({navigation, route}) {
           setloading(false);
           await Utility.setAuthContextData(response.payload, authContext);
           if (comeFrom) {
-            navigation.navigate(comeFrom, {
-              ...routeParams,
-              sport: {
-                ...routeParams?.sport,
-                lookingForTeamClub: lookingFor === strings.yesDisplayItText,
-              },
-            });
+            navigation.navigate(comeFrom, {...routeParams});
           } else {
             navigation.navigate('SportActivityScreen', {
               sport: {

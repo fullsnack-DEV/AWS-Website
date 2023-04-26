@@ -117,7 +117,13 @@ export default function CreateTeamForm1({navigation, route}) {
       headerLeft: () => (
         <TouchableWithoutFeedback
           onPress={() => {
-            navigation.goBack();
+            if (route.params?.backScreen) {
+              navigation.navigate(route.params.backScreen, {
+                ...route.params.backScreenParams,
+              });
+            } else {
+              navigation.goBack();
+            }
           }}>
           <Image source={images.backArrow} style={styles.backArrowStyle} />
         </TouchableWithoutFeedback>

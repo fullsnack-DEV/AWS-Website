@@ -54,7 +54,6 @@ import AccountShimmer from '../../components/shimmer/account/AccountShimmer';
 import {getUnreadCount} from '../../api/Notificaitons';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 
-
 const AccountScreen = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();

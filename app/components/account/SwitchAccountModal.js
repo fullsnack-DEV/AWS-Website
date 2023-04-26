@@ -1,6 +1,15 @@
 // @flow
 import React, {useContext, useEffect, useState} from 'react';
-import {StyleSheet, FlatList, View, Pressable, Image, Text} from 'react-native';
+import {
+  StyleSheet,
+  FlatList,
+  View,
+  Pressable,
+  Image,
+  Text,
+  Alert,
+  Platform,
+} from 'react-native';
 import {strings} from '../../../Localization/translation';
 import AuthContext from '../../auth/context';
 import colors from '../../Constants/Colors';
@@ -13,6 +22,12 @@ import AccountCard from './AccountCard';
 import useSwitchAccount from '../../hooks/useSwitchAccount';
 import SwitchAccountLoader from './SwitchAccountLoader';
 import BottomSheet from '../modals/BottomSheet';
+import {
+  actionOnGroupRequest,
+  getTeamPendingRequest,
+  groupValidate,
+} from '../../api/Groups';
+import Verbs from '../../Constants/Verbs';
 
 const SwitchAccountModal = ({
   isVisible = false,
@@ -28,21 +43,124 @@ const SwitchAccountModal = ({
     strings.leaguesTitle,
   ]);
   const [showBottomSheet, setBottomSheet] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const authContext = useContext(AuthContext);
   const {onSwitchProfile} = useSwitchAccount();
 
   useEffect(() => {
     if (isVisible && authContext.managedEntities?.length > 0) {
-      setAccountList(authContext.managedEntities);
+      getTeamPendingRequest(authContext)
+        .then((res) => {
+          if (res.payload.length > 0) {
+            setAccountList([...authContext.managedEntities, ...res.payload]);
+          } else {
+            setAccountList(authContext.managedEntities);
+          }
+        })
+        .catch((err) => {
+          Alert.alert(strings.alertmessagetitle, err.message);
+        });
     }
-  }, [isVisible, authContext.managedEntities]);
+  }, [isVisible, authContext]);
 
   const handleSwitchAccount = async (entity) => {
     setShowLoader(true);
     setSelectedAccount(entity);
     await onSwitchProfile(entity);
     // closeModal();
+  };
+
+  const onResendRequest = (entity = {}) => {
+    const obj = {
+      player1: entity.player1,
+      player2: entity.player2,
+      sport: entity.sport,
+      sport_type: entity.sport_type,
+      entity_type: entity.entity_type,
+      request_id: entity.request_id,
+    };
+    setLoading(true);
+
+    groupValidate(obj, authContext)
+      .then(() => {
+        setLoading(false);
+
+        Alert.alert(
+          Platform.OS === 'android' ? '' : strings.requestSent,
+          Platform.OS === 'android' ? strings.requestSent : '',
+
+          [
+            {
+              text: strings.OkText,
+              onPress: () => closeModal(),
+            },
+          ],
+          {cancelable: false},
+        );
+      })
+      .catch((e) => {
+        setLoading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
+
+  const actionOnTeamRequest = (type, requestID) => {
+    setLoading(true);
+    actionOnGroupRequest(type, requestID, authContext)
+      .then(() => {
+        setLoading(false);
+        closeModal();
+      })
+      .catch((e) => {
+        setLoading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
+
+  const onWithdrawRequest = (item) => {
+    Alert.alert(
+      strings.areYouSureTouWantToWithdrawRequest,
+      '',
+      [
+        {
+          text: strings.cancel,
+        },
+        {
+          text: strings.withDrawRequest,
+          onPress: () => actionOnTeamRequest(Verbs.cancelVerb, item.request_id),
+        },
+      ],
+
+      {cancelable: true},
+    );
+  };
+
+  const handleCancelRequest = (item = {}) => {
+    Alert.alert(
+      Platform.OS === 'android' ? '' : strings.teamWillbeCreatedAcceptRequest,
+      Platform.OS === 'android' ? strings.teamWillbeCreatedAcceptRequest : '',
+      [
+        {
+          text: strings.resendRequest,
+          onPress: () => onResendRequest(item),
+        },
+        {
+          text: strings.withDrawRequest,
+          onPress: () => onWithdrawRequest(item),
+        },
+        {
+          text: strings.cancel,
+          style: 'destructive',
+        },
+      ],
+
+      {cancelable: true},
+    );
   };
 
   return (
@@ -72,8 +190,16 @@ const SwitchAccountModal = ({
                   authContext,
                 )}
                 onPress={() => {
-                  handleSwitchAccount(item);
+                  if (item.request_id) {
+                    Alert.alert(strings.appName);
+                  } else {
+                    handleSwitchAccount(item);
+                  }
                 }}
+                onPressCancelRequest={() => {
+                  handleCancelRequest(item);
+                }}
+                loading={loading}
               />
               <View style={styles.radioIcon}>
                 <Image
@@ -112,19 +238,6 @@ const SwitchAccountModal = ({
         )}
       />
 
-      {/* <ActionSheet
-        ref={actionSheetRef}
-        title={<Text>{strings.create}</Text>}
-        options={createOptions}
-        cancelButtonIndex={3}
-        onPress={(index) => {
-          if (index === 3) {
-            return;
-          }
-          closeModal();
-          onCreate(createOptions[index]);
-        }}
-      /> */}
       <BottomSheet
         optionList={createOptions}
         isVisible={showBottomSheet}

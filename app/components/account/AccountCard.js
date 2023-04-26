@@ -1,6 +1,14 @@
 // @flow
 import React, {useEffect, useState} from 'react';
-import {View, StyleSheet, Text, Pressable, Image} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Text,
+  Pressable,
+  Image,
+  ActivityIndicator,
+} from 'react-native';
+import {strings} from '../../../Localization/translation';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
@@ -13,11 +21,13 @@ const AccountCard = ({
   onPress = () => {},
   containerStyle = {},
   notificationCount = 0,
+  onPressCancelRequest = () => {},
+  loading = false,
 }) => {
   const [sportsName, setSportsName] = useState('');
 
   useEffect(() => {
-    if (entityData.user_id || entityData.group_id) {
+    if (entityData.user_id || entityData.group_id || entityData.request_id) {
       setSportsName(getSportsLabel({entityData, sportList, maxSports: 1}));
     }
   }, [entityData, sportList]);
@@ -51,6 +61,19 @@ const AccountCard = ({
             </View>
           ) : null}
         </View>
+        {entityData?.request_id && (
+          <Pressable
+            style={styles.buttonView}
+            onPress={() => (loading ? {} : onPressCancelRequest())}>
+            {loading ? (
+              <ActivityIndicator />
+            ) : (
+              <Text style={styles.textStyle}>
+                {strings.teamCreationRequestSend}
+              </Text>
+            )}
+          </Pressable>
+        )}
       </View>
     </Pressable>
   );
@@ -104,6 +127,20 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     resizeMode: 'cover',
+  },
+  buttonView: {
+    padding: 6,
+    marginTop: 5,
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.textFieldBackground,
+  },
+  textStyle: {
+    fontSize: 12,
+    lineHeight: 15,
+    fontFamily: fonts.RMedium,
+    color: colors.lightBlackColor,
   },
 });
 export default AccountCard;
