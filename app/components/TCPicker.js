@@ -16,7 +16,7 @@ export default function TCPicker({
   onDonePress = () => {},
   disabled = false,
   arrowStyle = {},
-  Extrastyles = {},
+
   placeholderColor = colors.userPostTimeColor,
 }) {
   return (
@@ -37,9 +37,6 @@ export default function TCPicker({
         },
         ...(Platform.OS === 'ios' ? styles.inputIOS : styles.inputAndroid),
         ...styles,
-        inputIOS: {
-          ...Extrastyles,
-        },
       }}
       value={value}
       Icon={() => (
