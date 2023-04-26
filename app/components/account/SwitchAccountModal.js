@@ -9,6 +9,7 @@ import {
   Text,
   Alert,
   Platform,
+  ActivityIndicator,
 } from 'react-native';
 import {strings} from '../../../Localization/translation';
 import AuthContext from '../../auth/context';
@@ -44,12 +45,14 @@ const SwitchAccountModal = ({
   ]);
   const [showBottomSheet, setBottomSheet] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isFetchingList, setIsFetchingList] = useState(false);
 
   const authContext = useContext(AuthContext);
   const {onSwitchProfile} = useSwitchAccount();
 
   useEffect(() => {
     if (isVisible && authContext.managedEntities?.length > 0) {
+      setIsFetchingList(true);
       getTeamPendingRequest(authContext)
         .then((res) => {
           if (res.payload.length > 0) {
@@ -57,9 +60,11 @@ const SwitchAccountModal = ({
           } else {
             setAccountList(authContext.managedEntities);
           }
+          setIsFetchingList(false);
         })
         .catch((err) => {
           Alert.alert(strings.alertmessagetitle, err.message);
+          setIsFetchingList(false);
         });
     }
   }, [isVisible, authContext]);
@@ -170,73 +175,79 @@ const SwitchAccountModal = ({
       closeModal={closeModal}
       title={strings.switchAccount}
       containerStyle={styles.modalContainer}>
-      <FlatList
-        data={accountList}
-        keyExtractor={(item) => item.user_id ?? item.group_id}
-        showsVerticalScrollIndicator={false}
-        renderItem={({item}) => (
-          <>
-            <Pressable
-              style={styles.row}
-              onPress={() => {
-                handleSwitchAccount(item);
-              }}>
-              <AccountCard
-                entityData={item}
-                sportList={authContext.sports}
-                containerStyle={{paddingHorizontal: 5}}
-                notificationCount={getNotificationCount(
-                  item.user_id ?? item.group_id,
-                  authContext,
-                )}
+      {isFetchingList ? (
+        <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+          <ActivityIndicator size={'large'} />
+        </View>
+      ) : (
+        <FlatList
+          data={accountList}
+          keyExtractor={(item) => item.user_id ?? item.group_id}
+          showsVerticalScrollIndicator={false}
+          renderItem={({item}) => (
+            <>
+              <Pressable
+                style={styles.row}
                 onPress={() => {
-                  if (item.request_id) {
-                    Alert.alert(strings.appName);
-                  } else {
-                    handleSwitchAccount(item);
-                  }
-                }}
-                onPressCancelRequest={() => {
-                  handleCancelRequest(item);
-                }}
-                loading={loading}
-              />
-              <View style={styles.radioIcon}>
-                <Image
-                  source={
-                    authContext.entity.uid === item.user_id ||
-                    authContext.entity.uid === item.group_id
-                      ? images.radioSelectYellow
-                      : images.radioUnselect
-                  }
-                  style={styles.image}
+                  handleSwitchAccount(item);
+                }}>
+                <AccountCard
+                  entityData={item}
+                  sportList={authContext.sports}
+                  containerStyle={{paddingHorizontal: 5}}
+                  notificationCount={getNotificationCount(
+                    item.user_id ?? item.group_id,
+                    authContext,
+                  )}
+                  onPress={() => {
+                    if (item.request_id) {
+                      Alert.alert(strings.appName);
+                    } else {
+                      handleSwitchAccount(item);
+                    }
+                  }}
+                  onPressCancelRequest={() => {
+                    handleCancelRequest(item);
+                  }}
+                  loading={loading}
                 />
-              </View>
-            </Pressable>
-            <View style={styles.dividor} />
-          </>
-        )}
-        ListFooterComponent={() => (
-          <>
-            <Pressable
-              style={[styles.row, {justifyContent: 'flex-start'}]}
-              onPress={() => {
-                setBottomSheet(true);
-              }}>
-              <View style={styles.iconContainer}>
-                <Image
-                  source={images.createGroupIcon}
-                  style={[styles.image, {borderRadius: 30}]}
-                />
-              </View>
-              <View style={{marginLeft: 15}}>
-                <Text style={styles.label}>{strings.createGroupAccount}</Text>
-              </View>
-            </Pressable>
-            <View style={styles.dividor} />
-          </>
-        )}
-      />
+                <View style={styles.radioIcon}>
+                  <Image
+                    source={
+                      authContext.entity.uid === item.user_id ||
+                      authContext.entity.uid === item.group_id
+                        ? images.radioSelectYellow
+                        : images.radioUnselect
+                    }
+                    style={styles.image}
+                  />
+                </View>
+              </Pressable>
+              <View style={styles.dividor} />
+            </>
+          )}
+          ListFooterComponent={() => (
+            <>
+              <Pressable
+                style={[styles.row, {justifyContent: 'flex-start'}]}
+                onPress={() => {
+                  setBottomSheet(true);
+                }}>
+                <View style={styles.iconContainer}>
+                  <Image
+                    source={images.createGroupIcon}
+                    style={[styles.image, {borderRadius: 30}]}
+                  />
+                </View>
+                <View style={{marginLeft: 15}}>
+                  <Text style={styles.label}>{strings.createGroupAccount}</Text>
+                </View>
+              </Pressable>
+              <View style={styles.dividor} />
+            </>
+          )}
+        />
+      )}
 
       <BottomSheet
         optionList={createOptions}

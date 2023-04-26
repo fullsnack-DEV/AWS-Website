@@ -54,8 +54,9 @@ const GroupIcon = ({
         source={getPlaceholder().background}
         style={[styles.image, grpImageStyle]}
       />
-      {entityType === Verbs.entityTypeClub ||
-      entityType === Verbs.entityTypeTeam ? (
+      {(entityType === Verbs.entityTypeClub ||
+        entityType === Verbs.entityTypeTeam) &&
+      groupName ? (
         <View style={styles.name}>
           <Text style={[styles.text, textstyle]}>
             {groupName[0].toUpperCase()}
@@ -86,7 +87,7 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: '100%',
-    resizeMode: 'cover',
+    resizeMode: 'contain',
     borderRadius: 30,
   },
   name: {
