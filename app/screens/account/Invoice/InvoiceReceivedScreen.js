@@ -167,7 +167,6 @@ export default function InvoiceReceivedScreen({navigation}) {
     <InvoiceReceivedCellView
       invoice={item}
       onPressCard={() => {
-        console.log('item', item.invoice_id);
         navigation.navigate('InvoiceDetailScreen', {
           from: Verbs.INVOICERECEVIED,
           invoice: item,

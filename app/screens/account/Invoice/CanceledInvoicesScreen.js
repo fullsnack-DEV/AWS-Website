@@ -82,7 +82,7 @@ export default function CanceledInvoicesScreen({navigation, route}) {
       from={from}
       onPressCard={() =>
         navigation.navigate('InvoiceDetailScreen', {
-          from,
+          from: Verbs.INVOICECANCELLED,
           invoice: item,
         })
       }
@@ -100,7 +100,7 @@ export default function CanceledInvoicesScreen({navigation, route}) {
         .then((response) => {
           setloading(false);
           setInvoiceList(response.payload);
-          console.log('response.payload', response.payload);
+
           const allTitle = format(strings.allNInvoice, response.payload.length);
           const canceledTitle = format(
             strings.canceledNInvoice,

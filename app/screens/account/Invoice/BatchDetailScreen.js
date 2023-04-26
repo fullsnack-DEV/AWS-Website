@@ -154,8 +154,6 @@ export default function BatchDetailScreen({navigation, route}) {
   // }, [authContext, batchData?.invoice_group, recipientData]);
 
   useEffect(() => {
-    console.log(batchData, 'From batchdata');
-
     const allTitle = format(
       strings.allNInvoice,
       batchListByFilter(Verbs.allStatus).length,
@@ -200,7 +198,8 @@ export default function BatchDetailScreen({navigation, route}) {
         return batchData.invoices.filter(
           (obj) =>
             obj.invoice_status === Verbs.UNPAID ||
-            obj?.invoice_status === Verbs.PARTIALLY_PAID,
+            obj.invoice_status === Verbs.PARTIALLY_PAID ||
+            obj.invoice_status === Verbs.INVOICE_REJECTED,
         );
       }
     },
@@ -269,7 +268,6 @@ export default function BatchDetailScreen({navigation, route}) {
 
                   resendBatchInvoice(batchData.invoice_group, body, authContext)
                     .then(() => {
-                      console.log('');
                       setloading(false);
                       setSelectedRecipient([]);
 
@@ -293,7 +291,6 @@ export default function BatchDetailScreen({navigation, route}) {
 
                   createBatchInvoice(batchData.invoice_group, body, authContext)
                     .then(() => {
-                      console.log('');
                       setloading(false);
                       setSelectedRecipient([]);
 
@@ -340,7 +337,7 @@ export default function BatchDetailScreen({navigation, route}) {
                   return obj.user_id;
                 }
               });
-              console.log(result);
+
               setSelectedRecipient(result);
               recipientModalRef.current.close();
             }
@@ -352,7 +349,7 @@ export default function BatchDetailScreen({navigation, route}) {
                   return obj.user_id;
                 }
               });
-              console.log(result);
+
               setSelectedRecipient(result);
 
               Alert.alert(
@@ -466,7 +463,6 @@ export default function BatchDetailScreen({navigation, route}) {
         PaidInvoices += PaidInvoices;
       }
     });
-    console.log(PaidInvoices);
 
     return PaidInvoices;
   };
@@ -740,9 +736,9 @@ export default function BatchDetailScreen({navigation, route}) {
             backgroundColor: colors.whiteColor,
           }}
           data={
-            (tabNumber === 0 && batchListByFilter(Verbs.open)) ||
+            (tabNumber === 0 && batchListByFilter(Verbs.allStatus)) ||
             (tabNumber === 1 && batchListByFilter(Verbs.paid)) ||
-            (tabNumber === 2 && batchListByFilter(strings.allType))
+            (tabNumber === 2 && batchListByFilter(Verbs.open))
           }
           renderItem={renderRecipientView}
           keyExtractor={(item, index) => index.toString()}
@@ -1065,14 +1061,16 @@ export default function BatchDetailScreen({navigation, route}) {
                 }}>
                 {strings.membersTitle}
               </Text>
-              <FlatList
-                data={
-                  (selectedActionSheetOpetion === 2 && newRecipientData) ||
-                  (selectedActionSheetOpetion === 1 && addNewList)
-                }
-                renderItem={renderRecipients}
-                keyExtractor={(item, index) => index.toString()}
-              />
+              <View style={{flex: 1}}>
+                <FlatList
+                  data={
+                    (selectedActionSheetOpetion === 2 && newRecipientData) ||
+                    (selectedActionSheetOpetion === 1 && addNewList)
+                  }
+                  renderItem={renderRecipients}
+                  keyExtractor={(item, index) => index.toString()}
+                />
+              </View>
             </View>
           </View>
         </Modalize>

@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomWidth: 1,
     backgroundColor: colors.whiteColor,
-    borderBottomColor: '#EFEFEF',
+    borderBottomColor: colors.bordercolor,
     paddingVertical: 15,
   },
 
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
   invoiceAmountTexStyle: {
     fontSize: 16,
     fontFamily: fonts.RMedium,
-    color: '#333333',
+    color: colors.lightBlackColor,
     alignSelf: 'flex-end',
     lineHeight: 24,
   },

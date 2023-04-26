@@ -492,6 +492,7 @@ export default function InvoiceSentScreen({navigation}) {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
+    // backgroundColor:"red"
   },
   navTitle: {
     fontFamily: fonts.RMedium,

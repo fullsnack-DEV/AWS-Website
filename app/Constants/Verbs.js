@@ -145,6 +145,7 @@ const Verbs = {
   defaultHeightType: 'ft',
   defaultWeightType: 'lb',
   incomingChallenge: 'Incoming Challenge',
+  INVOICECANCELLED: 'InvoiceCancelled',
 };
 
 export default Verbs;

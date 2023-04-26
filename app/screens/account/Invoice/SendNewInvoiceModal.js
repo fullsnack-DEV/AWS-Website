@@ -14,6 +14,7 @@ import {
   StyleSheet,
   ScrollView,
   Alert,
+  Platform,
 } from 'react-native';
 
 import moment from 'moment';
@@ -291,22 +292,18 @@ const SendNewInvoiceModal = ({
       <ActivityLoader visible={loading} />
       <ScrollView>
         {/* Code for Invoice Title */}
-        <View style={{height: 86}}>
-          <TCLabel
-            style={{marginTop: 28}}
-            title={strings.titlePlaceholder.toUpperCase()}
-            required={true}
-          />
-          <TCTextField
-            onChangeText={(text) => setInvoiceTitle(text)}
-            value={invoiceTitle}
-            style={{
-              marginTop: 6,
-              height: 35,
-            }}
-            height={35}
-          />
-        </View>
+
+        <TCLabel
+          style={{marginTop: 28, marginBottom: 6}}
+          title={strings.titlePlaceholder.toUpperCase()}
+          required={true}
+        />
+        <TCTextField
+          height={35}
+          onChangeText={(text) => setInvoiceTitle(text)}
+          value={invoiceTitle}
+        />
+
         {/* Code for Invoice Amount */}
         <View style={{height: 96}}>
           <TCLabel
@@ -325,7 +322,6 @@ const SendNewInvoiceModal = ({
               marginTop: 6,
               height: 35,
             }}
-            textStyle={{paddingBottom: 5}}
             keyboardType={'decimal-pad'}
             textAlign="right"
             leftView={<Text style={styles.leftViewStyle}>{currency}</Text>}
@@ -364,9 +360,13 @@ const SendNewInvoiceModal = ({
                 fontFamily: fonts.RRegular,
                 fontSize: 16,
                 paddingHorizontal: 10,
-                color: colors.lightBlackColor,
+                color: selectedDueDate
+                  ? colors.lightBlackColor
+                  : colors.magnifyIconColor,
               }}>
-              {selectedDueDate ? moment(selectedDueDate).format('LLL') : ''}
+              {selectedDueDate
+                ? moment(selectedDueDate).format('LLL')
+                : strings.select}
             </Text>
           </TouchableOpacity>
         </View>
@@ -375,7 +375,16 @@ const SendNewInvoiceModal = ({
           <Text style={styles.timeZoneText}>Time zone </Text>
           <TouchableOpacity
             onPress={() => {
-              Alert.alert(strings.datetimesetting);
+              Alert.alert(
+                Platform.OS === 'android' ? '' : strings.datetimesetting,
+                Platform.OS === 'android' ? strings.datetimesetting : '',
+                [
+                  {
+                    text: strings.okTitleText,
+                    onPress: () => console.log('no'),
+                  },
+                ],
+              );
             }}>
             <Text style={styles.timeZoneUnderlineText}>
               {Intl.DateTimeFormat()
@@ -394,6 +403,7 @@ const SendNewInvoiceModal = ({
           <TextInput
             style={styles.descriptionTxt}
             multiline
+            textAlignVertical="top"
             onChangeText={(text) => setDescription(text)}
             value={description}></TextInput>
         </View>

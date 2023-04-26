@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     alignItems: 'center',
     borderBottomWidth: 1,
-    borderBottomColor: '#EFEFEF',
+    borderBottomColor: colors.bordercolor,
     paddingVertical: 15,
   },
   playerInvoiceInfoContainer: {

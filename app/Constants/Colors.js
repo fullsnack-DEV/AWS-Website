@@ -149,5 +149,6 @@ const colors = {
   progressBarBgColor: '#D9EBFF',
   notificationCountBgColor: '#FE440C',
   maskViewColor: 'rgba(0,0,0,0.3)',
+  bordercolor: '#EFEFEF',
 };
 export default colors;

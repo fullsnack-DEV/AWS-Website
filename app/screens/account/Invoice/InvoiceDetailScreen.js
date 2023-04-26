@@ -2,6 +2,7 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable array-callback-return */
 /* eslint-disable no-unused-expressions */
+/* eslint-disable no-else-return */
 
 import React, {useLayoutEffect, useRef, useState, useContext} from 'react';
 import {
@@ -41,7 +42,7 @@ import Verbs from '../../../Constants/Verbs';
 
 export default function InvoiceDetailScreen({navigation, route}) {
   const [from] = useState(route.params.from);
-  const [invoice, setInvoice] = useState(route.params.invoice);
+  const [invoice] = useState(route.params.invoice);
   const [loading, setLoading] = useState(false);
   const authContext = useContext(AuthContext);
   const userActionSheet = useRef();
@@ -102,8 +103,7 @@ export default function InvoiceDetailScreen({navigation, route}) {
     rejectInvoice(invoice.invoice_id, authContext)
       .then(() => {
         setLoading(false);
-        invoice.invoice_status = Verbs.INVOICE_REJECTED;
-        setInvoice(invoice);
+        navigation.goBack();
       })
       .catch((e) => {
         setLoading(false);
@@ -118,7 +118,7 @@ export default function InvoiceDetailScreen({navigation, route}) {
     cancelInvoice(invoice.invoice_id, authContext)
       .then(() => {
         setLoading(false);
-        invoice.invoice_status = Verbs.INVOICE_CANCELLED;
+
         navigation.goBack();
       })
       .catch((e) => {
@@ -127,6 +127,45 @@ export default function InvoiceDetailScreen({navigation, route}) {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
+  };
+
+  const setcolor = () => {
+    if (invoice.invoice_status === Verbs.paid) {
+      return colors.gameDetailColor;
+    }
+
+    if (
+      invoice.invoice_status === Verbs.INVOICE_CANCELLED ||
+      invoice.invoice_status === Verbs.INVOICE_REJECTED
+    ) {
+      return colors.blockZoneText;
+    }
+
+    return colors.darkThemeColor;
+  };
+
+  // const getNonRefundAmount = () => {
+  //   return ` ${invoice.amount_paid - invoice.total_refund} ${
+  //     invoice.currency_type
+  //   }`;
+  // };
+
+  const getCancelandRejectedBy = () => {
+    if (invoice.invoice_status === Verbs.INVOICE_CANCELLED) {
+      return `${strings.cancelledBy} ${invoice.canceled_by.first_name}  ${
+        invoice.canceled_by.last_name
+      } ${moment(getJSDate(invoice.canceled_at)).format(
+        'MMM DD, YYYY, hh:mm, A',
+      )} `;
+    } else if (invoice.invoice_status === Verbs.INVOICE_REJECTED) {
+      return `${strings.rejectedBy} ${invoice?.rejected_by?.first_name}  ${
+        invoice?.rejected_by?.last_name
+      } ${moment(getJSDate(invoice?.rejected_at)).format(
+        'MMM DD, YYYY, hh:mm, A',
+      )} `;
+    }
+
+    return '';
   };
 
   // const payNowClicked = () => {
@@ -154,13 +193,17 @@ export default function InvoiceDetailScreen({navigation, route}) {
   //   }
   // };
 
-
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
       {invoice && (
         <View style={{flex: 1}}>
-          <View style={{margin: 15}}>
+          <View
+            style={{
+              marginHorizontal: 15,
+
+              marginTop: 17,
+            }}>
             <>
               <Text
                 style={{
@@ -247,7 +290,7 @@ export default function InvoiceDetailScreen({navigation, route}) {
               {format(
                 strings.issuedAt,
                 moment(getJSDate(invoice.created_date)).format(
-                  'MMM DD, YYYY, HH:mm',
+                  'MMM DD, YYYY, hh:mm, A',
                 ),
               )}
             </Text>
@@ -259,64 +302,89 @@ export default function InvoiceDetailScreen({navigation, route}) {
               }}>
               {format(
                 strings.dueAtNText,
-                moment(getJSDate(invoice.due_date)).format('MMM DD, YYYY'),
+                moment(getJSDate(invoice.due_date)).format(
+                  'MMM DD, YYYY, hh:mm, A',
+                ),
               )}
+            </Text>
+            {/* only for Rejected and Cancelled */}
+
+            <Text
+              style={{
+                color: colors.userPostTimeColor,
+                fontSize: 13,
+                fontFamily: fonts.RRegular,
+                lineHeight: 18,
+                marginTop: 6,
+              }}>
+              {getCancelandRejectedBy()}
             </Text>
           </View>
 
           {/* Progress Bar */}
 
-          <LinearGradient
-            colors={[colors.progressBarColor, colors.progressBarColor]}
-            style={styles.paymentProgressView}>
-            {/* this need to show conditionally when there is 0% amount paid */}
+          {invoice.invoice_status !== Verbs.INVOICE_CANCELLED &&
+          invoice.invoice_status !== Verbs.INVOICE_REJECTED ? (
+            <View>
+              <LinearGradient
+                colors={[colors.progressBarColor, colors.progressBarColor]}
+                style={styles.paymentProgressView}>
+                {/* this need to show conditionally when there is 0% amount paid */}
 
-            {invoice.amount_due === invoice.amount_remaining && (
-              <Text
-                style={{
-                  color: colors.neonBlue,
-                  fontFamily: fonts.RBold,
-                  fontSize: 12,
-                  marginLeft: 10,
-                  height: 18,
+                {invoice.status === Verbs.paid && (
+                  <Text
+                    style={{
+                      color: colors.neonBlue,
+                      fontFamily: fonts.RBold,
+                      fontSize: 12,
+                      marginLeft: 10,
+                      height: 18,
 
-                  alignSelf: 'flex-start',
-                }}>
-                {`${(invoice.amount_paid / invoice.amount_due) * 100}%`}
-              </Text>
-            )}
+                      alignSelf: 'flex-start',
+                    }}>
+                    {`${(invoice.amount_paid / invoice.amount_due) * 100}%`}
+                  </Text>
+                )}
 
-            <LinearGradient
-              colors={[colors.progressBarBgColor, colors.progressBarBgColor]}
-              style={{
-                borderWidth: 1,
-                height: 18,
-                borderColor: colors.neonBlue,
+                <LinearGradient
+                  colors={[
+                    colors.progressBarBgColor,
+                    colors.progressBarBgColor,
+                  ]}
+                  style={{
+                    borderWidth: 1,
+                    height: 18,
+                    borderColor: colors.neonBlue,
 
-                borderTopLeftRadius: 4,
-                borderBottomLeftRadius: 4,
-                width: `${(invoice.amount_paid / invoice.amount_due) * 100}%`,
-                justifyContent: 'center',
-              }}>
-              <Text
-                style={{
-                  color: colors.neonBlue,
-                  fontFamily: fonts.RBold,
-                  fontSize: 12,
-                  marginLeft: 30,
-                  height: 18,
-                  alignSelf: 'flex-end',
-                }}>
-                {`${(invoice.amount_paid / invoice.amount_due) * 100}%`}
-              </Text>
-            </LinearGradient>
-          </LinearGradient>
+                    borderTopLeftRadius: 4,
+                    borderBottomLeftRadius: 4,
+                    width: `${
+                      (invoice.amount_paid / invoice.amount_due) * 100
+                    }%`,
+                    justifyContent: 'center',
+                  }}>
+                  <Text
+                    style={{
+                      color: colors.neonBlue,
+                      fontFamily: fonts.RBold,
+                      fontSize: 12,
+                      marginLeft: 30,
+                      height: 18,
+                      alignSelf: 'flex-end',
+                    }}>
+                    {`${(invoice.amount_paid / invoice.amount_due) * 100}%`}
+                  </Text>
+                </LinearGradient>
+              </LinearGradient>
+            </View>
+          ) : null}
 
           {/* status contINER */}
 
           <View
             style={{
               paddingHorizontal: 15,
+              marginTop: 29,
             }}>
             <View
               style={{
@@ -324,22 +392,19 @@ export default function InvoiceDetailScreen({navigation, route}) {
                 alignItems: 'center',
                 justifyContent: 'space-between',
               }}>
-              <Text style={styles.statusText}> {strings.status}</Text>
+              <Text style={styles.statusText}>{`${strings.status}`}</Text>
               <Text
                 style={[
                   styles.amountTextStyle,
                   {
-                    color:
-                      invoice.invoice_status === Verbs.UNPAID
-                        ? colors.darkThemeColor
-                        : colors.gameDetailColor,
+                    color: setcolor(),
                   },
                 ]}>
                 {getStatus()}
               </Text>
             </View>
             <View style={styles.statusRows}>
-              <Text style={styles.statusText}>{strings.invoicedtxt}</Text>
+              <Text style={styles.statusText}>{`${strings.invoicedtxt}`}</Text>
               <Text
                 style={[
                   styles.amountTextStyle,
@@ -349,13 +414,14 @@ export default function InvoiceDetailScreen({navigation, route}) {
               </Text>
             </View>
             <View style={styles.statusRows}>
-              <Text style={styles.statusText}> {strings.paidText} </Text>
+              <Text style={styles.statusText}>{`${strings.paidText}`}</Text>
               <Text style={[styles.amountTextStyle, {color: colors.neonBlue}]}>
                 {`${invoice.amount_paid.toFixed(2)} ${invoice.currency_type}`}
               </Text>
             </View>
+
             <View style={styles.statusRows}>
-              <Text style={styles.statusText}> {strings.balance}</Text>
+              <Text style={styles.statusText}>{`${strings.balance}`}</Text>
               <Text
                 style={[
                   styles.amountTextStyle,
@@ -366,7 +432,39 @@ export default function InvoiceDetailScreen({navigation, route}) {
                 }`}
               </Text>
             </View>
+
+            {/*  only For Cancelled Invoice   */}
+            {/* 
+            {from === Verbs.INVOICECANCELLED ? (
+              <>
+                <View style={styles.statusRows}>
+                  <Text style={styles.statusText}>{'Refunded'}</Text>
+                  <Text
+                    style={[
+                      styles.amountTextStyle,
+                      {color: colors.lightBlackColor},
+                    ]}>
+                    {`${invoice.total_refund.toFixed(2)} ${
+                      invoice.currency_type
+                    }`}
+                  </Text>
+                </View>
+
+                <View style={styles.statusRows}>
+                  <Text style={styles.statusText}>Non-Refunded</Text>
+                  <Text
+                    style={[
+                      styles.amountTextStyle,
+                      {color: colors.darkThemeColor},
+                    ]}>
+                    {getNonRefundAmount()}
+                  </Text>
+                </View>
+              </>
+            ) : null} */}
           </View>
+
+          {/* Divider */}
           <TCThinDivider
             marginTop={15}
             width={'94%'}
@@ -475,7 +573,24 @@ export default function InvoiceDetailScreen({navigation, route}) {
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => {
-                      onRejectInvoice();
+                      Alert.alert(
+                        Platform.OS === 'android'
+                          ? ''
+                          : strings.rejectInvoicetext,
+                        Platform.OS === 'android'
+                          ? strings.rejectInvoicetext
+                          : '',
+                        [
+                          {
+                            text: strings.back,
+                            onPress: () => console.log('no'),
+                          },
+                          {
+                            text: strings.rejectText,
+                            onPress: () => onRejectInvoice(),
+                          },
+                        ],
+                      );
                     }}>
                     <Text style={styles.rejectTextstyle}>
                       {strings.rejectText}
@@ -531,7 +646,9 @@ export default function InvoiceDetailScreen({navigation, route}) {
                 },
                 {
                   text: strings.cancel,
-                  onPress: () => { onCancelInvoice()},
+                  onPress: () => {
+                    onCancelInvoice();
+                  },
                   style: 'destructive',
                 },
               ],
@@ -571,7 +688,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.darkThemeColor,
     marginTop: 15,
-    marginBottom: 25,
   },
 
   profileContainer: {

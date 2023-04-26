@@ -3062,9 +3062,10 @@ const AccountNavigator = () => (
       component={InvoiceSentScreen}
       options={{
         title: strings.invoicingTitleText,
+        headerTitleAlign: 'center',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
-          fontWeight: '500',
+          fontFamily: fonts.RMedium,
         },
         headerStyle: {
           backgroundColor: colors.whiteColor,
@@ -3078,10 +3079,12 @@ const AccountNavigator = () => (
       component={RecipientDetailScreen}
       options={{
         title: strings.invoicingTitleText,
+        headerTitleAlign: 'center',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
-          fontWeight: '500',
+          fontFamily: fonts.RMedium,
         },
+
         headerStyle: {
           backgroundColor: colors.whiteColor,
           borderBottomColor: colors.grayColor,
@@ -3095,9 +3098,10 @@ const AccountNavigator = () => (
       component={BatchDetailScreen}
       options={{
         title: strings.batch,
+        headerTitleAlign: 'center',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
-          fontWeight: '500',
+          fontFamily: fonts.RMedium,
         },
         headerStyle: {
           backgroundColor: colors.whiteColor,
@@ -3112,10 +3116,12 @@ const AccountNavigator = () => (
       component={InvoiceDetailScreen}
       options={{
         title: strings.invoice,
+        headerTitleAlign: 'center',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
-          fontWeight: '500',
+          fontFamily: fonts.RMedium,
         },
+
         headerStyle: {
           backgroundColor: colors.whiteColor,
           borderBottomColor: colors.grayColor,
@@ -3145,9 +3151,10 @@ const AccountNavigator = () => (
       component={InvoiceReceivedScreen}
       options={{
         title: strings.invoicesreceived,
+        headerTitleAlign: 'center',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
-          fontWeight: '500',
+          fontFamily: fonts.RMedium,
         },
         headerStyle: {
           backgroundColor: colors.whiteColor,
@@ -3179,9 +3186,10 @@ const AccountNavigator = () => (
       component={CanceledInvoicesScreen}
       options={{
         title: strings.cancelledInvoiceText,
+        headerTitleAlign: 'center',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
-          fontWeight: '500',
+          fontFamily: fonts.RMedium,
         },
         headerStyle: {
           backgroundColor: colors.whiteColor,
