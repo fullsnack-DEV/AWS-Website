@@ -171,7 +171,6 @@ export default function InvoiceReceivedScreen({navigation}) {
         navigation.navigate('InvoiceDetailScreen', {
           from: Verbs.INVOICERECEVIED,
           invoice: item,
-          currency_type: currentRecordSet.currency_type,
         });
       }}
     />

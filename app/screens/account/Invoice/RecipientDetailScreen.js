@@ -131,25 +131,25 @@ export default function RecipientDetailScreen({navigation, route}) {
     <RecipientInvoiceView
       invoice={item}
       onPressCard={() =>
+      {
         navigation.navigate('InvoiceDetailScreen', {
           from,
-          invoice: item,
-          currency_type: currentRecordSet.currency_type,
+          invoice: item
         })
-      }
+      }}
     />
   );
   const memberListByFilter = useCallback(
     (status) => {
-      if (status === 'All') {
+      if (status === Verbs.allStatus) {
         return currentRecordSet.invoices;
       }
-      if (status === 'Paid') {
+      if (status === Verbs.paid) {
         return currentRecordSet.invoices.filter(
           (obj) => obj.invoice_status === Verbs.paid,
         );
       }
-      if (status === 'Open') {
+      if (status === Verbs.open) {
         return currentRecordSet.invoices.filter(
           (obj) =>
             obj.invoice_status === Verbs.UNPAID ||
@@ -319,7 +319,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   navTitle: {
-    fontFamily: fonts.RBold,
+    fontFamily: fonts.RMedium,
     fontSize: 16,
     color: colors.lightBlackColor,
   },

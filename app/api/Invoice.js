@@ -91,10 +91,10 @@ export const payStripeInvoice = (invoiceID, params, authContext) =>
     authContext,
   });
 
-export const deleteInvoice = (invoiceID, authContext) =>
+export const rejectInvoice = (invoiceID, authContext) =>
   makeAPIRequest({
-    method: 'delete',
-    url: `${Config.BASE_URL}/invoices/${invoiceID}`,
+    method: 'post',
+    url: `${Config.BASE_URL}/invoices/${invoiceID}/reject`,
     authContext,
   });
 

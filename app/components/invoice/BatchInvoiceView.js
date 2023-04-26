@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
 
   invoiveAmountContainer: {
     // marginVertical: 15,
-    flex: 0.5,
+    flex: 1,
   },
   invoiceAmountTexStyle: {
     fontSize: 16,

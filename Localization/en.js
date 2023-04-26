@@ -2730,7 +2730,7 @@ export default {
   openrejectedtext1: 'en_Open/Rejected',
   rejected: 'en_Rejected',
   batch: 'en_Batch',
-  invoicesreceived: 'Invoices Received',
+  invoicesreceived: 'en_Invoices Received',
   rejected: 'en_Rejected',
   batch: 'en_Batch',
   amountInvoicedCopy: 'en_ Amount Invoiced/copy',
@@ -2775,6 +2775,10 @@ export default {
   transactions: 'en_Transations',
   canceledNInvoice: 'en_Canceled ({0})',
   rejectedNInvoice: 'en_Rejected ({0})',
+  invoicesCancelled: 'en_Invoices Canceled',
+  invoiceCancelledandRejected: 'en_Invoices Canceled & Rejected',
+  paybalanceBtnText: 'en_Pay Balance',
   areYouSureWantToDeactivate: 'en_Are you sure you want to deactivate {0}?',
   deactivateText: 'en_Deactivate',
+
 };

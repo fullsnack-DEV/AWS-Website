@@ -371,7 +371,7 @@ const AddRecipientsModal = ({
       closeModal={() => onCloseThisModal()}
       modalType={ModalTypes.style1}
       title={strings.recipients}
-      containerStyle={{padding: 0, flex: 1}}
+      containerStyle={{padding: 0}}
       headerRightButtonText={strings.addText}
       onRightButtonPress={() => onAddRecipients()}
       Top={75}>

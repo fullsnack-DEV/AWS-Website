@@ -75,7 +75,10 @@ export default function MemberInvoicesView({data, onPressCard}) {
         {/* invoice amount */}
         <View style={styles.invoiveAmountContainer}>
           <Text style={styles.invoiceAmountTexStyle}>
-            {data.invoice_total.toFixed(2)} {data.invoices[0].currency_type}
+            {`${data.invoice_total.toFixed(2)} ${
+              data.invoices[0].currency_type
+            }`}
+
             {/* {data.invvoicetopaid} */}
           </Text>
           {data.invoice_total !== data.invoice_paid_total && (
@@ -84,8 +87,9 @@ export default function MemberInvoicesView({data, onPressCard}) {
                 styles.invoiceAmountTexStyle,
                 {color: colors.darkThemeColor},
               ]}>
-              {data.invoice_open_total.toFixed(2)}
-              {data.invoices[0].currency_type}
+              {`${data.invoice_open_total.toFixed(2)} ${
+                data.invoices[0].currency_type
+              }`}
             </Text>
           )}
           <View>
@@ -124,7 +128,7 @@ const styles = StyleSheet.create({
 
   invoiveAmountContainer: {
     marginVertical: 15,
-    flex: 0.5,
+    flex: 1,
   },
   playerInvoiceInfoContainer: {
     flex: 1,

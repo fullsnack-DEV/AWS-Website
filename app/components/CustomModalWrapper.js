@@ -157,7 +157,7 @@ const CustomModalWrapper = ({
                 },
               ]}>
               <Pressable onPress={() => {}}>
-                <View style={{flexDirection: 'row', alignSelf: 'stretch'}}>
+                <View style={{flexDirection: 'row', alignSelf: 'stretch', justifyContent:'center'}}>
                   {getModalHeader()}
                 </View>
 

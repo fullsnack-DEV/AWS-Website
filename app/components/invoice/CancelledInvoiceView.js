@@ -2,11 +2,11 @@ import React from 'react';
 import {View, StyleSheet, Text, TouchableOpacity} from 'react-native';
 import moment from 'moment';
 import colors from '../../Constants/Colors';
-import { getJSDate } from '../../utils';
+import {getJSDate} from '../../utils';
 import fonts from '../../Constants/Fonts';
 import GroupIcon from '../GroupIcon';
 import Verbs from '../../Constants/Verbs';
-import { strings } from '../../../Localization/translation';
+import {strings} from '../../../Localization/translation';
 
 export default function CancelledInvoiceView({invoice, onPressCard, from}) {
   const getStatus = () => {
@@ -17,53 +17,56 @@ export default function CancelledInvoiceView({invoice, onPressCard, from}) {
   };
   return (
     <TouchableOpacity style={styles.viewContainer} onPress={onPressCard}>
-    {/* group icon */}
-    <GroupIcon
-      entityType={from === Verbs.INVOICERECEVIED ? invoice.sender_type : invoice.receiver_type}
-      imageUrl={from === Verbs.INVOICERECEVIED ? invoice.sender.thumbnail : invoice.receiver.thumbnail}
-      containerStyle={styles.profileContainer}
-      groupName={from === Verbs.INVOICERECEVIED ? invoice.sender.sender_name : invoice.receiver.full_name}
-      grpImageStyle={{
-        height: 32,
-        width: 28,
-      }}
-      textstyle={{
-        fontSize: 12,
-      }}
-    />
+      {/* group icon */}
+      <GroupIcon
+        entityType={
+          from === Verbs.INVOICERECEVIED
+            ? invoice.sender_type
+            : invoice.receiver_type
+        }
+        imageUrl={invoice?.thumbnail}
+        containerStyle={styles.profileContainer}
+        groupName={invoice.full_name}
+        grpImageStyle={{
+          height: 32,
+          width: 28,
+        }}
+        textstyle={{
+          fontSize: 12,
+        }}
+      />
 
-    <View style={styles.playerInvoiceInfoContainer}>
-      {/* Player name and invoces text */}
-      <View style={{marginLeft: 15}}>
-        <Text style={styles.userInfoStyle}>{from === Verbs.INVOICERECEVIED ? invoice.sender.sender_name : invoice.receiver.full_name }</Text>
-        <Text style={styles.secondaryTextStyle}>{invoice.invoice_title}</Text>
-        <Text style={styles.secondaryTextStyle}>{moment(getJSDate(invoice.created_date)).format('LLL')}</Text>
-      </View>
-
-      {/* invoice amount */}
-      <View style={styles.invoiveAmountContainer}>
-        <Text style={styles.invoiceAmountTexStyle}>
-          {invoice.amount_due.toFixed(2)}{' '}
-          {invoice.currency_type}
-        </Text>
-        <View>
-          <Text
-            style={[
-              styles.invoiceAmountTexStyle,
-              {
-                color:
-                invoice.amount_remaining === 0
-                    ? colors.gameDetailColor
-                    : colors.darkThemeColor,
-                alignSelf: 'flex-end',
-              },
-            ]}>
-            {getStatus()}
+      <View style={styles.playerInvoiceInfoContainer}>
+        {/* Player name and invoces text */}
+        <View style={{marginLeft: 15, flex: 1}}>
+          <Text style={styles.userInfoStyle} numberOfLines={2}>
+            {invoice.full_name}
+          </Text>
+          <Text style={styles.secondaryTextStyle}>
+            {moment(getJSDate(invoice.created_date)).format('LLL')}
           </Text>
         </View>
+
+        {/* invoice amount */}
+        <View style={styles.invoiveAmountContainer}>
+          <Text style={styles.invoiceAmountTexStyle}>
+            {`${invoice.amount_due.toFixed(2)} ${invoice.currency_type} `}
+          </Text>
+          <View>
+            <Text
+              style={[
+                styles.invoiceAmountTexStyle,
+                {
+                  color: colors.googleColor,
+                  alignSelf: 'flex-end',
+                },
+              ]}>
+              {getStatus()}
+            </Text>
+          </View>
+        </View>
       </View>
-    </View>
-  </TouchableOpacity>
+    </TouchableOpacity>
   );
 }
 
@@ -75,6 +78,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomWidth: 1,
     borderBottomColor: '#EFEFEF',
+    paddingVertical: 15,
   },
   playerInvoiceInfoContainer: {
     flex: 1,
@@ -100,12 +104,12 @@ const styles = StyleSheet.create({
     lineHeight: 21,
   },
   invoiveAmountContainer: {
-    marginVertical: 15,
+    flex: 1,
   },
   invoiceAmountTexStyle: {
     fontSize: 16,
     fontFamily: fonts.RMedium,
-    color: '#333333',
+    color: colors.userPostTimeColor,
     alignSelf: 'flex-end',
     lineHeight: 24,
   },

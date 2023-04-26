@@ -51,8 +51,7 @@ export default function RecipientInvoiceView({invoice, onPressCard}) {
 
       <View style={styles.invoiveAmountContainer}>
         <Text style={styles.invoiceAmountTexStyle}>
-          {invoice.amount_due.toFixed(2)} {invoice.currency_type}
-          {/* {data.invvoicetopaid} */}
+          {`${invoice.amount_due.toFixed(2)} ${invoice.currency_type}`}
         </Text>
         {invoice.amount_due !== invoice.amount_paid && (
           <Text
@@ -60,7 +59,7 @@ export default function RecipientInvoiceView({invoice, onPressCard}) {
               styles.invoiceAmountTexStyle,
               {color: colors.darkThemeColor},
             ]}>
-            {invoice.amount_remaining.toFixed(2)} {invoice.currency_type}
+            {`${invoice.amount_remaining.toFixed(2)} ${invoice.currency_type}`}
           </Text>
         )}
         <View>

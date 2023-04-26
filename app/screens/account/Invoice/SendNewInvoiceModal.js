@@ -285,7 +285,7 @@ const SendNewInvoiceModal = ({
       closeModal={() => onCloseThisModal()}
       modalType={ModalTypes.style1}
       title={strings.newInvoice}
-      containerStyle={{padding: 0, flex: 1}}
+      containerStyle={{padding: 0}}
       headerRightButtonText={strings.send}
       onRightButtonPress={() => onSendInvoice()}>
       <ActivityLoader visible={loading} />

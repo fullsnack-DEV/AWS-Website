@@ -1085,7 +1085,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   navTitle: {
-    fontFamily: fonts.RBold,
+    fontFamily: fonts.RMedium,
     fontSize: 16,
     color: colors.lightBlackColor,
   },

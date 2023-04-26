@@ -21,9 +21,9 @@ export default function InvoiceReceivedCellView({invoice, onPressCard}) {
       {/* group icon */}
       <GroupIcon
         entityType={invoice.sender_type}
-        imageUrl={invoice.sender.thumbnail}
+        imageUrl={invoice.thumbnail}
         containerStyle={styles.profileContainer}
-        groupName={invoice.sender.sender_name}
+        groupName={invoice.full_name}
         grpImageStyle={{
           height: 32,
           width: 28,
@@ -37,7 +37,7 @@ export default function InvoiceReceivedCellView({invoice, onPressCard}) {
         {/* Player name and invoces text */}
         <View style={{marginLeft: 15, flex: 1}}>
           <Text style={styles.userInfoStyle} numberOfLines={2}>
-            {invoice.sender.sender_name}
+            {invoice.full_name}
           </Text>
           <Text style={styles.secondaryTextStyle} numberOfLines={2}>
             {invoice.invoice_title}
@@ -50,8 +50,7 @@ export default function InvoiceReceivedCellView({invoice, onPressCard}) {
         {/* invoice amount */}
         <View style={styles.invoiveAmountContainer}>
           <Text style={styles.invoiceAmountTexStyle}>
-            {invoice.amount_due.toFixed(2)}
-            {invoice.currency_type}
+            {`${invoice.amount_due.toFixed(2)} ${invoice.currency_type}`}
           </Text>
           {invoice.invoice_status !== Verbs.paid && (
             <Text
@@ -59,8 +58,9 @@ export default function InvoiceReceivedCellView({invoice, onPressCard}) {
                 styles.invoiceAmountTexStyle,
                 {color: colors.darkThemeColor},
               ]}>
-              {invoice.amount_remaining.toFixed(2)}
-              {invoice.currency_type}
+              {`${invoice.amount_remaining.toFixed(2)} ${
+                invoice.currency_type
+              }`}
             </Text>
           )}
           <View>

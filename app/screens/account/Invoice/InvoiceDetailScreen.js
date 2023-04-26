@@ -26,33 +26,25 @@ import fonts from '../../../Constants/Fonts';
 import TCThinDivider from '../../../components/TCThinDivider';
 import images from '../../../Constants/ImagePath';
 
-// import {
-// getInvoiceDetail,
-// deleteInvoice,
-// cancelInvoice,
-// payStripeInvoice,
-// resendInvoice,
-// deleteInvoiceLog,
-// } from '../../../api/Invoice';
+import {
+  // getInvoiceDetail,
+  rejectInvoice,
+  cancelInvoice,
+  // payStripeInvoice,
+  // resendInvoice,
+  // deleteInvoiceLog,
+} from '../../../api/Invoice';
 import {strings} from '../../../../Localization/translation';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
-
 import {getJSDate} from '../../../utils';
 import Verbs from '../../../Constants/Verbs';
 
 export default function InvoiceDetailScreen({navigation, route}) {
   const [from] = useState(route.params.from);
-  const [invoice] = useState(route.params.invoice);
-  const [currency_type] = useState(route.params.currency_type);
-
-  const [loading] = useState(false);
-
+  const [invoice, setInvoice] = useState(route.params.invoice);
+  const [loading, setLoading] = useState(false);
   const authContext = useContext(AuthContext);
-
   const userActionSheet = useRef();
-  // const resendModalRef = useRef();
-
-  // const recipientModalRef = useRef();
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -87,7 +79,81 @@ export default function InvoiceDetailScreen({navigation, route}) {
         </TouchableWithoutFeedback>
       ),
     });
-  }, [from, navigation]);
+  }, [navigation]);
+
+  const getStatus = () => {
+    if (invoice.invoice_status === Verbs.paid) {
+      return strings.paidText;
+    }
+
+    if (invoice.invoice_status === Verbs.INVOICE_CANCELLED) {
+      return strings.Cancelled;
+    }
+
+    if (invoice.invoice_status === Verbs.INVOICE_REJECTED) {
+      return strings.rejected;
+    }
+
+    return strings.openText;
+  };
+
+  const onRejectInvoice = () => {
+    setLoading(true);
+    rejectInvoice(invoice.invoice_id, authContext)
+      .then(() => {
+        setLoading(false);
+        invoice.invoice_status = Verbs.INVOICE_REJECTED;
+        setInvoice(invoice);
+      })
+      .catch((e) => {
+        setLoading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
+
+  const onCancelInvoice = () => {
+    setLoading(true);
+    cancelInvoice(invoice.invoice_id, authContext)
+      .then(() => {
+        setLoading(false);
+        invoice.invoice_status = Verbs.INVOICE_CANCELLED;
+        navigation.goBack();
+      })
+      .catch((e) => {
+        setLoading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
+
+  // const payNowClicked = () => {
+  //   if (route.params.paymentMethod) {
+  //     console.log(route.params.paymentMethod);
+
+  //     setLoading(true);
+  //     const body = {};
+  //     body.source = route.params.paymentMethod?.id;
+  //     body.payment_method_type = 'card';
+  //     body.currency_type = invoice.currency_type;
+  //     payStripeInvoice(invoice.invoice_id, body, authContext)
+  //       .then(() => {
+  //         setLoading(false);
+  //         navigation.goBack();
+  //       })
+  //       .catch((e) => {
+  //         setLoading(false);
+  //         setTimeout(() => {
+  //           Alert.alert(strings.alertmessagetitle, e.message);
+  //         }, 10);
+  //       });
+  //   } else {
+  //     Alert.alert(strings.choosePayment);
+  //   }
+  // };
+
 
   return (
     <View style={styles.mainContainer}>
@@ -124,7 +190,7 @@ export default function InvoiceDetailScreen({navigation, route}) {
                   lineHeight: 18,
                 }}>{`${strings.issuedBy} ${
                 from === Verbs.INVOICERECEVIED
-                  ? invoice.sender.sender_name
+                  ? invoice.full_name
                   : authContext.entity.obj.full_name ??
                     authContext.entity.obj.group_name
               }`}</Text>
@@ -150,14 +216,12 @@ export default function InvoiceDetailScreen({navigation, route}) {
                     flexDirection: 'row',
                     alignItems: 'center',
                   }}>
-                  {invoice.thumbnail || invoice.sender.thumbnail ? (
+                  {invoice.thumbnail ? (
                     <Image
                       style={styles.profileContainer}
-                      source={
-                        from === Verbs.INVOICERECEVIED
-                          ? invoice.sender.thumbnail
-                          : invoice.thumbnail
-                      }
+                      source={{
+                        uri: invoice.thumbnail,
+                      }}
                     />
                   ) : null}
 
@@ -168,9 +232,7 @@ export default function InvoiceDetailScreen({navigation, route}) {
                       lineHeight: 24,
                       marginLeft: 5,
                     }}>
-                    {from === Verbs.INVOICERECEVIED
-                      ? invoice.sender.sender_name
-                      : invoice.full_name}
+                    {invoice.full_name}
                   </Text>
                 </View>
               </View>
@@ -268,14 +330,12 @@ export default function InvoiceDetailScreen({navigation, route}) {
                   styles.amountTextStyle,
                   {
                     color:
-                      invoice.amount_due === invoice.amount_remaining
+                      invoice.invoice_status === Verbs.UNPAID
                         ? colors.darkThemeColor
                         : colors.gameDetailColor,
                   },
                 ]}>
-                {invoice.amount_due === invoice.amount_remaining
-                  ? strings.openText
-                  : strings.paidText}
+                {getStatus()}
               </Text>
             </View>
             <View style={styles.statusRows}>
@@ -285,23 +345,25 @@ export default function InvoiceDetailScreen({navigation, route}) {
                   styles.amountTextStyle,
                   {color: colors.lightBlackColor},
                 ]}>
-                {`${invoice.amount_due.toFixed(2)} ${currency_type} `}
+                {`${invoice.amount_due.toFixed(2)} ${invoice.currency_type}`}
               </Text>
             </View>
             <View style={styles.statusRows}>
               <Text style={styles.statusText}> {strings.paidText} </Text>
               <Text style={[styles.amountTextStyle, {color: colors.neonBlue}]}>
-                {`${invoice.amount_paid.toFixed(2)}  ${currency_type}`}
+                {`${invoice.amount_paid.toFixed(2)} ${invoice.currency_type}`}
               </Text>
             </View>
             <View style={styles.statusRows}>
-              <Text style={styles.statusText}> {strings.balance} </Text>
+              <Text style={styles.statusText}> {strings.balance}</Text>
               <Text
                 style={[
                   styles.amountTextStyle,
                   {color: colors.darkThemeColor},
                 ]}>
-                {`${invoice.amount_remaining.toFixed(2)}  ${currency_type}`}
+                {`${invoice.amount_remaining.toFixed(2)} ${
+                  invoice.currency_type
+                }`}
               </Text>
             </View>
           </View>
@@ -311,11 +373,9 @@ export default function InvoiceDetailScreen({navigation, route}) {
             color={colors.thinDividerColor}
             height={2}
           />
-
           <View
             style={{
               marginTop: 15,
-              //  marginLeft: 15,
             }}>
             <Text
               style={{
@@ -338,7 +398,6 @@ export default function InvoiceDetailScreen({navigation, route}) {
                   fontFamily: fonts.RRegular,
                   fontSize: 16,
                   color: colors.lightBlackColor,
-                  // marginLeft: 25,
                   lineHeight: 24,
                 }}
                 seeMoreText={strings.moreText}
@@ -358,15 +417,6 @@ export default function InvoiceDetailScreen({navigation, route}) {
                 {invoice?.invoice_description}
               </ReadMore>
             </View>
-
-            {/* <Text
-              style={{
-                fontFamily: fonts.RRegular,
-                fontSize: 16,
-                color: colors.lightBlackColor,
-                marginLeft: 25,
-                lineHeight: 24,
-              }}></Text> */}
           </View>
 
           {/* log view */}
@@ -386,16 +436,18 @@ export default function InvoiceDetailScreen({navigation, route}) {
               }}>
               {strings.log}
             </Text>
-            <Text
-              style={{
-                fontFamily: fonts.RRegular,
-                fontSize: 16,
-                lineHeight: 24,
-                color: colors.lightBlackColor,
-                textDecorationLine: 'underline',
-              }}>
-              {strings.logManually}
-            </Text>
+            {from === Verbs.INVOICESENT && (
+              <Text
+                style={{
+                  fontFamily: fonts.RRegular,
+                  fontSize: 16,
+                  lineHeight: 24,
+                  color: colors.lightBlackColor,
+                  textDecorationLine: 'underline',
+                }}>
+                {strings.logManually}
+              </Text>
+            )}
           </View>
 
           {invoice.amount_due !== invoice.amount_remaining && (
@@ -412,39 +464,25 @@ export default function InvoiceDetailScreen({navigation, route}) {
             </View>
           )}
 
+          {/* Pay Now Button */}
+
           {from === Verbs.INVOICERECEVIED && (
             <>
-              <TouchableOpacity
-                style={{
-                  width: 345,
-                  alignSelf: 'center',
-                  height: 40,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  backgroundColor: colors.orangeColorCard,
-                  borderRadius: 20,
-                  marginTop: 36,
-                }}>
-                <Text
-                  style={{
-                    fontSize: 16,
-                    fontFamily: fonts.RBold,
-                    color: colors.whiteColor,
-                  }}>
-                  {strings.PAYNOW}
-                </Text>
-              </TouchableOpacity>
-              <Text
-                style={{
-                  fontFamily: fonts.RBold,
-                  fontSize: 16,
-                  lineHeight: 50,
-                  alignSelf: 'center',
-                  color: colors.blockZoneText,
-                  textDecorationLine: 'underline',
-                }}>
-                {strings.rejectText}
-              </Text>
+              {invoice.invoice_status === Verbs.UNPAID ? (
+                <>
+                  <TouchableOpacity style={styles.btncontainer}>
+                    <Text style={styles.btntextstyle}>{strings.PAYNOW}</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      onRejectInvoice();
+                    }}>
+                    <Text style={styles.rejectTextstyle}>
+                      {strings.rejectText}
+                    </Text>
+                  </TouchableOpacity>
+                </>
+              ) : null}
             </>
           )}
         </View>
@@ -493,7 +531,7 @@ export default function InvoiceDetailScreen({navigation, route}) {
                 },
                 {
                   text: strings.cancel,
-                  onPress: () => console.log('Cancel'),
+                  onPress: () => { onCancelInvoice()},
                   style: 'destructive',
                 },
               ],
@@ -539,7 +577,7 @@ const styles = StyleSheet.create({
   profileContainer: {
     height: 25,
     width: 25,
-    borderWidth: 1,
+    borderRadius: 50,
   },
   statusRows: {
     flexDirection: 'row',
@@ -569,5 +607,28 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RMedium,
     lineHeight: 24,
+  },
+  btncontainer: {
+    width: 345,
+    alignSelf: 'center',
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.orangeColorCard,
+    borderRadius: 20,
+    marginTop: 36,
+  },
+  btntextstyle: {
+    fontSize: 16,
+    fontFamily: fonts.RBold,
+    color: colors.whiteColor,
+  },
+  rejectTextstyle: {
+    fontFamily: fonts.RBold,
+    fontSize: 16,
+    lineHeight: 50,
+    alignSelf: 'center',
+    color: colors.blockZoneText,
+    textDecorationLine: 'underline',
   },
 });
