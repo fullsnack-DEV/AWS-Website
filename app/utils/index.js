@@ -2042,18 +2042,15 @@ export const getCalendar = async (
 };
 
 export const getEventsSlots = async (
-  participantId,
+  participants,
   fromDate,
-  type,
-  rangeTime,
+  toDate,
 ) => {
   try {
     return getStorage('scheduleSetting').then(async (ids) => {
       const IDs = ids ?? [];
-      const participants = [];
-      participants.push(participantId);
       const body = {
-        size: 100,
+        size: 500,
         query: {
           bool: {
             must: [
@@ -2075,26 +2072,12 @@ export const getEventsSlots = async (
           },
         },
       };
-
-      if (type === 'future') {
-        body.query.bool.must.push({
-          range: {actual_enddatetime: {gt: fromDate}},
-        });
-        if (rangeTime > 0) {
-          body.query.bool.must.push({
-            range: {actual_enddatetime: {lt: rangeTime}},
-          });
-        }
-      } else {
-        body.query.bool.must.push({
-          range: {start_datetime: {lt: fromDate}},
-        });
-        if (rangeTime > 0) {
-          body.query.bool.must.push({
-            range: {start_datetime: {gt: rangeTime}},
-          });
-        }
-      }
+      body.query.bool.must.push({
+        range: {start_datetime: {gt: fromDate}},
+      });
+      body.query.bool.must.push({
+        range: {actual_enddatetime: {lt: toDate}},
+      });
       console.log('calender elastic search :=>', JSON.stringify(body));
       return getCalendarIndex(body);
     });

@@ -59,11 +59,8 @@ const styles = StyleSheet.create({
     borderRadius: 88,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: colors.grayColor,
-    shadowOffset: {width: 0, height: 3},
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
-    elevation: 3,
+    borderWidth: 1,
+    borderColor: colors.thinDividerColor
   },
   topTextContainer: {
     marginLeft: 10,

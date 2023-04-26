@@ -140,6 +140,7 @@ export default function BlockSlotView({
         </TouchableOpacity>
       )}
 
+
       {/*  Availability modal */}
       <Modal
         isVisible={visibleAvailabilityModal}
@@ -149,7 +150,7 @@ export default function BlockSlotView({
         onBackdropPress={() => {
           setVisibleAvailabilityModal(false);
         }}
-        backdropOpacity={0}>
+        backdropOpacity={0.5}>
         <View style={[styles.modalMainViewStyle, {height: Dimensions.get('window').height * heightRange}]}>
           <ChallengeAvailability
             setVisibleAvailabilityModal={setVisibleAvailabilityModal}

@@ -56,11 +56,10 @@ import {getGameHomeScreen} from '../../../utils/gameUtils';
 import ScorekeeperReservationItem from '../../../components/Schedule/ScorekeeperReservationItem';
 import {getHitSlop,   getRoundedDate, /* getSportName */} from '../../../utils';
 import * as Utility from '../../../utils/index';
-// import BlockSlotView from '../../../components/Schedule/BlockSlotView';
 import {getGameIndex, getUserIndex} from '../../../api/elasticSearch';
 import TCAccountDeactivate from '../../../components/TCAccountDeactivate';
 import {getUserSettings, userActivate} from '../../../api/Users';
-import {getGroups, groupUnpaused, /* getTeamsOfClub */} from '../../../api/Groups';
+import {getGroups, groupUnpaused, getTeamsOfClub } from '../../../api/Groups';
 import {getQBAccountType, QBupdateUser} from '../../../utils/QuickBlox';
 import TCThinDivider from '../../../components/TCThinDivider';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
@@ -74,51 +73,8 @@ import DateTimePickerView from '../../../components/Schedule/DateTimePickerModal
 
 
 export default function ScheduleScreen({navigation, route}) {
+
   let authContext = useContext(AuthContext);
-  const refContainer = useRef();
-  const sortFilterData = [
-    ![Verbs.entityTypeClub].includes(
-      authContext.entity.role
-    ) ? strings.eventFilterRoleTitle : strings.eventFilterNoneTitle,
-    strings.eventFilterOrganiserTitle, 
-    strings.eventFilterSportTitle, 
-  ];
-  const sortFilterDataClub = [strings.eventFilterOrganiserTitle, strings.eventFilterSportTitle];
-  const rsvpFilterOptions = [strings.eventFilterRsvpAll, strings.eventFilterRsvpGoing, strings.eventFilterRsvpMaybe, strings.eventFilterRsvpNotGoing];
-  const timeFilterData = [strings.eventFilterTimeFuture, strings.eventFilterTimePast];
-
-  const timeSelectionFutureList = [
-    strings.filterAntTime,
-    strings.filterToday,
-    strings.filterTomorrow,
-    strings.filterNext7Day,
-    strings.filterThisMonth,
-    strings.filterNextMonth,
-    strings.filterPickaDate
-  ];
-
-  const timeSelectionPastList = [
-    strings.filterAntTime,
-    strings.filterToday,
-    strings.filterYesterday,
-    strings.filterLast7Day,
-    strings.filterThisMonth,
-    strings.filterLastMonth,
-    strings.filterPickaDate
-  ];
-  
-  const [startDateTime, setStartDateTime] = useState(new Date());
-  const [endDateTime, setEndDateTime] = useState(new Date());
-  const [startDateVisible, setStartDateVisible] = useState(false);
-  const [endDateVisible, setEndDateVisible] = useState(false);
-  const [timeSelectionOption, setTimeSelectionOption] = useState(strings.filterAntTime);
-  const [timeSelectionModal, setTimeSelectionModal] = useState(false);
-  const [timeSelectionPicker, setTimeSelectionPicker] = useState(false);
-
-  const [sports, setSports] = useState([]);
-  const [organizerOptions, setOrganizerOptions] = useState([]);
-  const [owners, setOwners] = useState([]);
-
   if (route?.params?.isBackVisible) {
     authContext = {
       entity: {
@@ -150,11 +106,48 @@ export default function ScheduleScreen({navigation, route}) {
     }
   }
 
+  const refContainer = useRef();
+  const rsvpFilterOptions = [strings.eventFilterRsvpAll, strings.eventFilterRsvpGoing, strings.eventFilterRsvpMaybe, strings.eventFilterRsvpNotGoing];
+  const timeFilterData = [strings.eventFilterTimeFuture, strings.eventFilterTimePast];
   const actionSheet = useRef();
   const plusActionSheet = useRef();
   const isFocused = useIsFocused();
 
+  const timeSelectionFutureList = [
+    strings.filterAntTime,
+    strings.filterToday,
+    strings.filterTomorrow,
+    strings.filterNext7Day,
+    strings.filterThisMonth,
+    strings.filterNextMonth,
+    strings.filterPickaDate
+  ];
+
+  const timeSelectionPastList = [
+    strings.filterAntTime,
+    strings.filterToday,
+    strings.filterYesterday,
+    strings.filterLast7Day,
+    strings.filterThisMonth,
+    strings.filterLastMonth,
+    strings.filterPickaDate
+  ];
+
+  const settingsOptions = [strings.eventsViewSettings, strings.viewPrivacy];
+
+  let nextThreeMonth = new Date()
+  nextThreeMonth = nextThreeMonth.setMonth(nextThreeMonth.getMonth() + 3);
   
+  const [startDateTime, setStartDateTime] = useState(new Date()); 
+  const [endDateTime, setEndDateTime] = useState(new Date(nextThreeMonth));
+  const [startDateVisible, setStartDateVisible] = useState(false);
+  const [endDateVisible, setEndDateVisible] = useState(false);
+  const [timeSelectionOption, setTimeSelectionOption] = useState(strings.filterAntTime);
+  const [timeSelectionModal, setTimeSelectionModal] = useState(false);
+  const [timeSelectionPicker, setTimeSelectionPicker] = useState(false);
+  const [sports, setSports] = useState([]);
+  const [organizerOptions, setOrganizerOptions] = useState([]);
+  const [owners, setOwners] = useState([]);
   const [scheduleIndexCounter, setScheduleIndexCounter] = useState(0);
   const [eventData, setEventData] = useState([]);
   const [selectedEventItem, setSelectedEventItem] = useState(null);
@@ -164,23 +157,19 @@ export default function ScheduleScreen({navigation, route}) {
   const [refereeReservData, setRefereeReserveData] = useState([]);
   const [scorekeeperReservData, setScorekeeperReserveData] = useState([]);
   const [indigator, setIndigator] = useState(false);
-  const [hasGroup, setHasGroup] = useState(true);
-  const [hasSports, setHasSports] = useState(true);
   const [isRefeering, setIsRefeering] = useState(true);
   const [isScorekeeping, setIsScoreKeeping] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(true);
   const [isSortbyOthers, setIsSortByOthers] = useState(true);
-
+  const [eventSettingsOption, setEventSettingsOption] = useState(settingsOptions);
   const [selectedOptions, setSelectedOptions] = useState({
     option: 0,
     title: strings.all,
   });
-
   const [filterSetting, setFilterSetting] = useState({
-    sort: 0,
+    sort: 1,
     time: 0,
   });
-
-  const [sortFilterOption, setSortFilterOpetion] = useState(0);
   const [timeFilterOpetion, setTimeFilterOpetion] = useState(0);
   const [rsvpFilterOption, setRsvpFilterOption] = useState(0);
   const [filterPopup, setFilterPopup] = useState(false);
@@ -189,6 +178,67 @@ export default function ScheduleScreen({navigation, route}) {
   const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
   const [pointEvent, setPointEvent] = useState('auto');
   const [visibleAvailabilityModal, setVisibleAvailabilityModal] = useState(false);
+  const [settingsModal, setSettingsModal] = useState(false);
+  const [allUserData, setAllUserData] = useState([]);
+  const [popupFilterHeight, setPopupFilterHeight]  = useState(300)
+
+
+  // Get Future Date:
+  const getDates = (optionsState) => {
+    const startDate = new Date();
+    const endDate = new Date();
+    endDate.setHours(0, 0, 0, 0);
+
+    if(optionsState === strings.filterToday){
+       endDate.setDate(endDate.getDate() + 0);
+       endDate.setMinutes(59)
+       endDate.setHours(23)
+    }else if (optionsState === strings.filterTomorrow) {
+      startDate.setDate(startDate.getDate()+ 1)
+      endDate.setDate(endDate.getDate() + 2);
+    } else if (optionsState === strings.filterNext7Day) {
+      endDate.setDate(endDate.getDate() + 7);
+    } else if (optionsState === strings.filterThisMonth && timeFilterOpetion === 0) {
+      endDate.setMonth(endDate.getMonth() + 1); 
+      endDate.setDate(0); 
+      endDate.setHours(0, 0, 0, 0); 
+    } else if (optionsState === strings.filterNextMonth) {
+      endDate.setMonth(endDate.getMonth() + 2);
+      endDate.setDate(0); 
+      startDate.setMonth(endDate.getMonth()); 
+      startDate.setDate(1); 
+      startDate.setHours(0, 0, 0, 0);
+    } else if(optionsState === strings.filterAntTime && timeFilterOpetion === 0) {
+      endDate.setMonth(endDate.getMonth() + 3)
+      endDate.setHours(0, 0, 0, 0); 
+    }// Past dates conditions
+    else if(optionsState === strings.filterYesterday){
+      startDate.setHours(0, 0, 0, 0);
+      startDate.setDate(startDate.getDate() - 1);
+    }else if(optionsState === strings.filterLast7Day){
+      startDate.setHours(0, 0, 0, 0);
+      startDate.setDate(startDate.getDate() - 7);
+    }else if(optionsState === strings.filterThisMonth){
+      startDate.setMonth(startDate.getMonth()); 
+      startDate.setDate(1); 
+      startDate.setHours(0, 0, 0, 0);
+      endDate.setHours(0, 0, 0, 0);
+    }else if(optionsState === strings.filterLastMonth){
+      endDate.setMonth(endDate.getMonth()); 
+      endDate.setDate(0); 
+      endDate.setHours(0, 0, 0, 0); 
+      startDate.setMonth(endDate.getMonth()); 
+      startDate.setDate(1); 
+      startDate.setHours(0, 0, 0, 0); 
+    }else if(optionsState === strings.filterAntTime) {
+      startDate.setMonth(startDate.getMonth() - 3)
+      startDate.setHours(0, 0, 0, 0); 
+    }
+    
+    setStartDateTime(startDate)
+    setEndDateTime(endDate)
+  }
+
 
   useEffect(() => {
     setIsAccountDeactivated(false);
@@ -204,12 +254,23 @@ export default function ScheduleScreen({navigation, route}) {
       }
     }
 
+    if([Verbs.entityTypeClub].includes(authContext.entity.role)) {
+      setPopupFilterHeight(500)
+    }
+
+    // Check if role contains referee
     if(!authContext?.entity?.obj?.referee_data) {
       setIsRefeering(false)
     }
 
+    // Check if role contains scorekeeper
     if(!authContext?.entity?.obj?.scorekeeper_data) {
       setIsScoreKeeping(false)
+    }
+
+    // Check if user has any registered sport
+    if(!authContext?.entity?.obj?.registered_sports) {
+      setIsPlaying(false)
     }
   }, [
     authContext.entity?.obj.entity_type,
@@ -220,11 +281,7 @@ export default function ScheduleScreen({navigation, route}) {
     indigator
   ]);
 
-  const fromGoBack = (flag) => {
-    if (flag) {
-      setFilterPopup(true);
-    }
-  };
+
 
   const handleCancelPress = () => {
     setStartDateVisible(false);
@@ -256,94 +313,101 @@ export default function ScheduleScreen({navigation, route}) {
     return occr;
   };
 
-
-  // Check user belong to any group 
-  const checkHasGroup = (data) =>{
-    if(data?.payload.length > 0) {
-      if(data?.payload?.teams.length === 0 && data?.payload?.clubs.length === 0) {
-        setHasGroup(false);
-      }
-    }else{
-      setHasGroup(false);
-    }
-  }
-
-  // Check user has any registered sports
-  const checkHasSports = () => {
-    if([Verbs.entityTypeClub].includes(authContext.entity.role)) {
-      const res = authContext?.entity?.obj?.sports.map((obj) => ({
-        sport: obj.sport,
-      }));
-      const data = Utility.uniqueArray(res, Verbs.sportType);
-      if(data.length === 0) {
-        setHasSports(false);
-      }
-    }else{
-      const sportsList = [
-        ...(authContext?.entity?.obj?.registered_sports?.filter(
-          (obj) => obj.is_active,
-        ) || []),
-        ...(authContext?.entity?.obj?.referee_data?.filter(
-          (obj) => obj.is_active,
-        ) || []),
-        ...(authContext?.entity?.obj?.scorekeeper_data?.filter(
-          (obj) => obj.is_active,
-        ) || []),
-      ];
-      const res = sportsList.map((obj) => ({
-        sport: obj.sport,
-      }));
-      const data = Utility.uniqueArray(res, Verbs.sportType);
-      if(data.length === 0) {
-        setHasSports(false);
-      }
-    }
-  }
-
   
 
   // Check any event assigned to others option.
   useEffect(() => {
-   const events = eventData.filter((obj) => !obj.game);
-   if(events.length === 0 ) {
-    setIsSortByOthers(false);
-   }else{
-    setIsSortByOthers(true);
-   }
-   
-  }, [eventData, isSortbyOthers]);
+    const events = eventData.filter((obj) => !obj.game);
+    if(events.length === 0 ) {
+      setIsSortByOthers(false);
+    }else{
+      setIsSortByOthers(true);
+    }
+  },[eventData, isSortbyOthers]);
+
+
+
+  // Check Validation to show the event settings for clubs  
+  useEffect(() => {
+    if([Verbs.entityTypeClub].includes(authContext.entity.role)) {
+      getTeamsOfClub(authContext.entity.uid, authContext)
+      .then((response) => {
+        const res = authContext?.entity?.obj?.sports.map((obj) =>  ({
+          sport: obj.sport 
+        }));
+        const data = Utility.uniqueArray(res, Verbs.sportType);
+        if((!response?.payload || response?.payload.length === 0) && data.length === 0) {
+          const newSettingsOption = eventSettingsOption.filter((item) => item !== strings.eventsViewSettings);
+          setEventSettingsOption(newSettingsOption);
+        }
+      })
+      .catch((e) => {
+        setLoading(false);
+          console.log('Error==>', e.message);
+          Alert.alert(strings.townsCupTitle, e.message);
+      });
+    }else if([Verbs.entityTypeTeam].includes(authContext.entity.obj.entity_type)) {
+      const newSettingsOption = eventSettingsOption.filter((item) => item !== strings.eventsViewSettings);
+      setEventSettingsOption(newSettingsOption);
+    }else{
+      setEventSettingsOption(settingsOptions);
+    }
+  },[authContext, isFocused]);
 
 
 
   useEffect(() => {
-    checkHasSports(authContext);
     getUserSettings(authContext)
       .then((setting) => {
         if (setting?.payload?.user !== {}) {
           const scheduleFilter = [Verbs.entityTypeClub].includes(authContext.entity.role) ? 
-          setting?.payload?.user?.club_schedule_group_filter : setting?.payload?.user?.schedule_group_filter
+          setting?.payload?.user?.club_schedule_group_filter : setting?.payload?.user?.schedule_group_filter;
+          const eventViewOption = [Verbs.entityTypeClub].includes(authContext.entity.role) ? 
+          setting?.payload?.user?.club_event_view_settings_option : setting?.payload?.user?.event_view_settings_option;
+
+          setFilterSetting({...filterSetting, sort :  eventViewOption})
+          setSelectedOptions({...selectedOptions, option : 0, title : strings.all})
+ 
           if (
             scheduleFilter &&
             scheduleFilter?.length > 0
           ) {
-            setOrganizerOptions([
-              {group_name: strings.all, group_id: 0},
-              {group_name: Verbs.me, group_id: 1},
-              ...scheduleFilter,
-              {group_name: strings.othersText, group_id: 2},
-            ]);
-          } else {
-              // getTeamsOfClub(authContext.entity.uid, authContext)
-              // .then(() => {
-              // })
-              // .catch((e) => {
-              //   setTimeout(() => {
-              //     Alert.alert(strings.alertmessagetitle, e.message);
-              //   }, 10);
-              // });
+            if([Verbs.entityTypeClub].includes(authContext.entity.role)) {
+              setOrganizerOptions([
+                {group_name: strings.all, group_id: 0},
+                ...scheduleFilter,
+              ]);
+            }else{
+              setOrganizerOptions([
+                {group_name: strings.all, group_id: 0},
+                {group_name: Verbs.me, group_id: 1},
+                ...scheduleFilter,
+                {group_name: strings.othersText, group_id: 2},
+              ]);
+            }
+          } else if([Verbs.entityTypeClub].includes(authContext.entity.role)) {
+              getTeamsOfClub(authContext.entity.uid, authContext)
+              .then((response) => {
+                if (response.payload && response.payload.length > 0) {
+                  setOrganizerOptions([
+                    {group_name: strings.all, group_id: 0},
+                    ...response.payload,
+                  ]);
+                } else {
+                  setOrganizerOptions([
+                    {group_name: strings.all, group_id: 0}
+                  ]);
+                }
+                setloading(false);
+              })
+              .catch((e) => {
+                setTimeout(() => {
+                  Alert.alert(strings.alertmessagetitle, e.message);
+                }, 10);
+              });
+          }else{
               getGroups(authContext)
               .then((response) => {
-                checkHasGroup(response);
                 const {teams, clubs} = response.payload ?? [];
                 if (response.payload.length > 0) {
                   setOrganizerOptions([
@@ -368,6 +432,7 @@ export default function ScheduleScreen({navigation, route}) {
                 Alert.alert(strings.townsCupTitle, e.message);
               });
           }
+
           const sportsFilter = [Verbs.entityTypeClub].includes(authContext.entity.role) ? 
           setting?.payload?.user?.club_schedule_sport_filter : setting?.payload?.user?.schedule_sport_filter
           if (
@@ -564,6 +629,10 @@ export default function ScheduleScreen({navigation, route}) {
       }else{
         getEventsAndSlotsList();
       }
+
+      if(route?.params?.optionValue) {
+        setFilterSetting({...filterSetting, sort :  route?.params?.optionValue})
+      }
     }
   }, [isFocused]);
 
@@ -573,141 +642,201 @@ export default function ScheduleScreen({navigation, route}) {
   };
 
 
-  const getEventsAndSlotsList = useCallback(async(data = {} , timeSlot = 0) => {
-    // setloading(true);
-    const eventTimeTableData = [];
-    let type = 'future';
-    if(timeSlot === 1) {
-      type = 'past';
-    }
 
-    let rangeTime = 0;
+  const getQueryParticipants = async() => {
+    let participants = [];
 
-    if(rangeTime > 0){
-      const rangeDate = new Date()
-      if(timeSlot === 1) {
-        rangeDate.setDate(rangeDate.getDate() - timeSelection);
-      }else{
-        rangeDate.setDate(rangeDate.getDate() + timeSelection);
-      }
-      rangeTime = Utility.getTCDate(rangeDate);
-    }
-
-    Utility.getEventsSlots(authContext?.entity?.uid, Utility.getTCDate(new Date()), type, rangeTime)
+    if([Verbs.entityTypeClub].includes(authContext.entity.role)) {
+      await getTeamsOfClub(authContext.entity.uid, authContext)
       .then((response) => {
+        const teams = [];
+        const group_data = [{
+          id : authContext.entity?.obj?.group_id,
+          name : authContext.entity?.obj?.group_name,
+        }]
+        if(response?.payload && response?.payload.length > 0) {
+          response?.payload.forEach((item) => {
+            teams.push(item.group_id)
+            const temp = {}
+            temp.id = item.group_id;
+            temp.name = item.group_name;
+            group_data.push(temp)
+          });
+        }
+        participants = [
+          authContext?.entity?.uid,
+          ...teams
+        ];
+        setAllUserData(group_data)
+      })
+      .catch((e) => {
+        Alert.alert(strings.townsCupTitle, e.message);
+      });
+    }else{
+      await getGroups(authContext).then((response) => {
+        const group_data = [{
+          id : authContext?.user?.user_id,
+          name : authContext?.user?.full_name,
+          type : images.clubPlaceholderSmall
+        }]
+        if(response?.payload && response?.payload?.clubs.length > 0) {
+          response?.payload?.clubs.forEach((item) => {
+            const temp = {}
+            temp.id = item.group_id;
+            temp.name = item.group_name;
+            group_data.push(temp)
+          })
+        }
+        if(response?.payload && response?.payload?.teams.length > 0) {
+          response?.payload?.teams.forEach((item) => {
+            const temp = {}
+            temp.id = item.group_id;
+            temp.name = item.group_name;
+            group_data.push(temp)
+          })
+        }
+        setAllUserData(group_data)
+      })
+      .catch((e) => {
+        Alert.alert(strings.townsCupTitle, e.message);
+      });
+      const clubs = authContext?.entity?.obj?.clubIds ? authContext?.entity?.obj?.clubIds : [];
+      const teams = authContext?.entity?.obj?.teamIds ? authContext?.entity?.obj?.teamIds : [];
+      participants = [
+        authContext?.entity?.uid,
+        ...clubs,
+        ...teams
+      ];
+    }
 
-        const allUserIds = []
-        response.forEach((item) =>  {
-          if(item.cal_type === 'event') {
-            allUserIds.push(item.created_by.uid);
+    return participants;
+  }
+
+
+  
+  const getEventsAndSlotsList = useCallback(async(data = {} ) => {
+
+    setIndigator(true);
+
+    const eventTimeTableData = [];
+    const startDateUnixTime = Utility.getTCDate(startDateTime);
+    const endDateUnixTime = Utility.getTCDate(endDateTime);
+    const participants = await getQueryParticipants();
+
+    Utility.getEventsSlots(participants, startDateUnixTime, endDateUnixTime)
+    .then((response) => {
+      const allUserIds = []
+      response.forEach((item) =>  {
+        if(item.cal_type === 'event') {
+          allUserIds.push(item.created_by.uid);
+        }
+      });
+      const getUserDetailQuery = {
+        size: 1000,
+        from: 0,
+        query: {
+          terms: {
+            'user_id.keyword': allUserIds,
+          },
+        },
+      };
+
+      getUserIndex(getUserDetailQuery)
+      .then((res) => {
+        setOwners(res)
+      })
+      .catch((e) => {
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+
+      let resCalenders = [];
+      let eventsCal = [];
+      if (response) {
+        let hasRecord = false;
+        response.forEach((item) => {
+          if(item.cal_id === data.cal_id) {
+            hasRecord = true;
           }
+        })
+        if(data && !hasRecord) {
+          response = [...response, data];
+        }
+        resCalenders = response.filter((obj) => {     
+          if (obj.cal_type === 'blocked') {
+            return obj;
+          }
+          return false;
         });
-        const getUserDetailQuery = {
-          size: 1000,
-          from: 0,
+        eventsCal = response.filter((obj) => {     
+          if (obj.cal_type === 'event') {
+            if (obj?.expiry_datetime) {
+              if (obj?.expiry_datetime >= Utility.getTCDate(new Date())) {
+                return obj;
+              }
+            } else {
+              return obj;
+            }
+          }
+          return false;
+        });
+      
+      }
+
+      setAllSlots(resCalenders);
+      eventsCal.forEach((item) => {
+        if (item?.rrule) {
+          let rEvents = getEventOccuranceFromRule(item);
+          rEvents = rEvents.filter(
+            (x) => x.end_datetime > Utility.getTCDate(new Date()),
+          );
+          eventTimeTableData.push(...rEvents);
+        } else {
+          eventTimeTableData.push(item);
+        }
+      });
+
+      let gameIDs = [...new Set(response.map((item) => item.game_id))];
+      gameIDs = (gameIDs || []).filter((item) => item !== undefined);
+
+      if (gameIDs.length > 0) {
+        const gameList = {
           query: {
             terms: {
-              'user_id.keyword': allUserIds,
+              _id: gameIDs,
             },
           },
         };
 
-        getUserIndex(getUserDetailQuery)
-        .then((res) => {
-          setOwners(res)
-        })
-        .catch((e) => {
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
+        getGameIndex(gameList).then((games) => {
+          const listObj = response.map((obj) => {
+            if (obj.game_id === obj.challenge_id) {
+              return obj.game;
+            }
+          });
+
+          const pendingChallenge = listObj.filter((obj) => obj !== undefined);
+
+          const gamelists = [
+            ...games,
+            ...pendingChallenge,
+            ...response.filter((obj) => obj.owner_id),
+          ]
+          Utility.getGamesList(gamelists).then((gamedata) => {
+            setloading(false);
+            configureEvents(eventTimeTableData, gamedata);
+          });
         });
-
-        let resCalenders = [];
-        let eventsCal = [];
-        if (response) {
-          let hasRecord = false;
-          response.forEach((item) => {
-            if(item.cal_id === data.cal_id) {
-              hasRecord = true;
-            }
-          })
-          if(data && !hasRecord) {
-            response = [...response, data];
-          }
-          resCalenders = response.filter((obj) => {     
-            if (obj.cal_type === 'blocked') {
-              return obj;
-            }
-            return false;
-          });
-          eventsCal = response.filter((obj) => {     
-            if (obj.cal_type === 'event') {
-              if (obj?.expiry_datetime) {
-                if (obj?.expiry_datetime >= Utility.getTCDate(new Date())) {
-                  return obj;
-                }
-              } else {
-                return obj;
-              }
-            }
-            return false;
-          });
-        
-        }
-
-        setAllSlots(resCalenders);
-        eventsCal.forEach((item) => {
-          if (item?.rrule) {
-            let rEvents = getEventOccuranceFromRule(item);
-            rEvents = rEvents.filter(
-              (x) => x.end_datetime > Utility.getTCDate(new Date()),
-            );
-            eventTimeTableData.push(...rEvents);
-          } else {
-            eventTimeTableData.push(item);
-          }
-        });
-
-        let gameIDs = [...new Set(response.map((item) => item.game_id))];
-        gameIDs = (gameIDs || []).filter((item) => item !== undefined);
-
-        if (gameIDs.length > 0) {
-          const gameList = {
-            query: {
-              terms: {
-                _id: gameIDs,
-              },
-            },
-          };
-
-          getGameIndex(gameList).then((games) => {
-            const listObj = response.map((obj) => {
-              if (obj.game_id === obj.challenge_id) {
-                return obj.game;
-              }
-            });
-
-            const pendingChallenge = listObj.filter((obj) => obj !== undefined);
-
-            const gamelists = [
-              ...games,
-              ...pendingChallenge,
-              ...response.filter((obj) => obj.owner_id),
-            ]
-            Utility.getGamesList(gamelists).then((gamedata) => {
-              setloading(false);
-              configureEvents(eventTimeTableData, gamedata);
-            });
-          });
-        }
-
-        configureEvents(eventTimeTableData);
-      })
-      .catch((e) => {
-        setloading(false);
-        Alert.alert(strings.alertmessagetitle, e.message);
-      });
-  }, [authContext?.entity?.uid, configureEvents]);
+      }
+      setIndigator(false);
+      configureEvents(eventTimeTableData);
+    })
+    .catch((e) => {
+      setloading(false);
+      Alert.alert(strings.alertmessagetitle, e.message);
+    });
+  }, [authContext?.entity?.uid, configureEvents, startDateTime, endDateTime]);
 
 
   const unPauseGroup = () => {
@@ -766,13 +895,12 @@ export default function ScheduleScreen({navigation, route}) {
         }, 10);
       });
   };
-
-
   const keyExtractor = useCallback((item, index) => index.toString(), []);
 
+  
   const makeOpetionsSelected = useCallback(
     (item) => {
-      if (sortFilterOption === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? 0 : 1)) {
+      if (filterSetting.sort === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? 1 : 1)) {
         if (
           selectedOptions.title.group_name === item.group_name ||
           selectedOptions.title === item.group_name
@@ -781,21 +909,59 @@ export default function ScheduleScreen({navigation, route}) {
         }
         return styles.sportName;
       }
-      if (sortFilterOption === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? 1 : 2)) {
-        if (selectedOptions.title.sport === item.sport) {
+      if (filterSetting.sort === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? 2 : 3)) {
+        if (selectedOptions.title.sport === item.sport || selectedOptions.title === item.sport) {
           return styles.sportSelectedName;
         }
         return styles.sportName;
       }
-      if (sortFilterOption === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? -1 : 0)) {
+      if (filterSetting.sort === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? -1 : 2)) {
         if (selectedOptions.title === item) {
           return styles.sportSelectedName;
         }
         return styles.sportName;
       }
     },
-    [selectedOptions.title, sortFilterOption],
+    [selectedOptions.title, filterSetting.sort],
   );
+
+
+  const wrapperClassStyle = useCallback(
+    (item) => {
+      if (filterSetting.sort === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? 1 : 1)) {
+        if (
+          selectedOptions.title.group_name === item.group_name ||
+          selectedOptions.title === item.group_name
+        ) {
+          if([Verbs.entityTypeClub].includes(authContext.entity.role)) {
+            return styles.clubActiveWrapper;
+          }
+          return styles.clubInactiveWrapper;
+        }
+        return styles.clubInactiveWrapper;
+      }
+      if (filterSetting.sort === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? 2 : 3)) {
+        if (selectedOptions.title.sport === item.sport || selectedOptions.title === item.sport) {
+          if([Verbs.entityTypeClub].includes(authContext.entity.role)) {
+            return styles.clubActiveWrapper;
+          }
+          return styles.clubInactiveWrapper;
+        }
+        return styles.clubInactiveWrapper;
+      }
+      if (filterSetting.sort === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? -1 : 2)) {
+        if (selectedOptions.title === item) {
+          if([Verbs.entityTypeClub].includes(authContext.entity.role)) {
+            return styles.clubActiveWrapper;
+          }
+          return styles.clubInactiveWrapper;
+        }
+        return styles.clubInactiveWrapper;
+      }
+    },
+    [selectedOptions.title, filterSetting.sort],
+  );
+
 
   const optionsListView = useCallback(
     ({item, index}) => {
@@ -808,6 +974,10 @@ export default function ScheduleScreen({navigation, route}) {
         return null;
       }
 
+      if(item === strings.playingTitleText && !isPlaying) {
+        return null;
+      }
+
       if(item === strings.othersText && 
         eventData.length > 0 && 
         !isSortbyOthers) {
@@ -815,55 +985,37 @@ export default function ScheduleScreen({navigation, route}) {
       }
 
       return (
-        <Text
-          style={makeOpetionsSelected(item)}
-          onPress={() => {
-            refContainer.current.scrollToIndex({
-              animated: true,
-              index,
-              viewPosition: 0.8,
-            });
-            setSelectedOptions({
-              option: sortFilterOption,
-              title: item,
-            });
-          }}>
-          {item?.sport
-            ? item?.sport === strings.all
-              ? strings.all
-              : getSportName(item, authContext)
-            : item}
-        </Text>
+        <View style={wrapperClassStyle(item)}>
+          <Text
+            style={[makeOpetionsSelected(item), {marginLeft: 15, marginRight: [Verbs.entityTypeClub].includes(authContext.entity.role) ? 15 : 5}]}
+            onPress={() => {
+              refContainer.current.scrollToIndex({
+                animated: true,
+                index,
+                viewPosition: 0.8,
+              });
+              setSelectedOptions({
+                option: index,
+                title: item,
+              });
+            }}>
+            {item?.sport
+              ? item?.sport === strings.all
+                ? strings.all
+                : getSportName(item, authContext)
+              : item}
+          </Text>
+        </View>
       )
     },
-    [authContext, makeOpetionsSelected, sortFilterOption, isRefeering, isScorekeeping],
+    [authContext, makeOpetionsSelected, isRefeering, isScorekeeping, isPlaying],
   );
 
   const sportOptionsListView = useCallback(
     ({item, index}) => (
-      <Text
-        style={makeOpetionsSelected(item)}
-        onPress={() => {
-          refContainer.current.scrollToIndex({
-            animated: true,
-            index,
-            viewPosition: 0.5,
-          });
-          setSelectedOptions({
-            option: sortFilterOption,
-            title: item,
-          });
-        }}>
-        {item.sport[0].toUpperCase() + item.sport.slice(1)}
-      </Text>
-    ),
-    [makeOpetionsSelected, selectedOptions.title, sortFilterOption],
-  );
-
-  const organizerListView = useCallback(
-    ({item, index}) => (
+      <View style={wrapperClassStyle(item)}>
         <Text
-          style={makeOpetionsSelected(item)}
+          style={[makeOpetionsSelected(item), {marginLeft: 15, marginRight: [Verbs.entityTypeClub].includes(authContext.entity.role) ? 15 : 5}]}
           onPress={() => {
             refContainer.current.scrollToIndex({
               animated: true,
@@ -871,86 +1023,40 @@ export default function ScheduleScreen({navigation, route}) {
               viewPosition: 0.5,
             });
             setSelectedOptions({
-              option: sortFilterOption,
+              option: index,
+              title: item,
+            });
+          }}>
+          {item.sport[0] + item.sport.slice(1)}
+        </Text>
+      </View>
+    ),
+    [makeOpetionsSelected, selectedOptions.title],
+  );
+
+  const organizerListView = useCallback(
+    ({item, index}) => (
+      <View style={wrapperClassStyle(item)}>
+        <Text
+          style={[makeOpetionsSelected(item), {marginLeft: 15, marginRight: [Verbs.entityTypeClub].includes(authContext.entity.role) ? 15 : 5}]}
+          onPress={() => {
+            refContainer.current.scrollToIndex({
+              animated: true,
+              index,
+              viewPosition: 0.5,
+            });
+            setSelectedOptions({
+              option: index,
               title: item,
             });
           }}>
           {item.group_name}
         </Text>
+      </View>
     ),
-    [makeOpetionsSelected, selectedOptions.title, sortFilterOption],
+    [makeOpetionsSelected, selectedOptions.title],
   );
 
-  const renderSortFilterOpetions = ({index, item}) => {
-
-    if(index === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? 1 : 2) && !hasSports) {
-      return null;
-    }
-
-    if(index === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? 0 : 1) && !hasGroup) {
-      return null;
-    }
-
-    return (
-    <View
-      style={{
-        flexDirection: 'row',
-        marginBottom: 15,
-        justifyContent: 'space-between',
-        marginLeft: 15,
-        marginRight: 15,
-      }}>
-      <View>
-        <Text style={styles.filterTitle}>{item}</Text>
-        {index === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? 1 : 2) &&
-          sortFilterOption === index && 
-          (
-            <Text
-              style={styles.changeOrderStyle}
-              onPress={() => {
-                setFilterPopup(false);
-                navigation.navigate('ChangeSportsOrderScreen', {
-                  onBackClick: fromGoBack,
-                });
-              }}>
-              Change order of sports
-            </Text>
-          )}
-        {index === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? 0 : 1) &&
-          sortFilterOption === index &&
-          (
-            <Text
-              style={styles.changeOrderStyle}
-              onPress={() => {
-                setFilterPopup(false);
-                navigation.navigate('ChangeOtherListScreen', {
-                  onBackClick: fromGoBack,
-                });
-              }}>
-              Change list of Organizers
-            </Text>
-          )}
-      </View>
-      <TouchableOpacity
-        onPress={() => {
-          setSortFilterOpetion(index);
-          setSelectedOptions({
-            option: 0,
-            title: index === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? 1 : 2) ? {sport: strings.all} : strings.all,
-          });
-        }}>
-        <Image
-          source={
-            sortFilterOption === index
-              ? images.radioRoundOrange
-              : images.radioUnselect
-          }
-          style={styles.radioButtonStyle}
-        />
-      </TouchableOpacity>
-    </View>
-    )
-  };
 
   const renderRsvpFilterOpetions = ({index, item}) => (
     <View
@@ -1014,7 +1120,9 @@ export default function ScheduleScreen({navigation, route}) {
         pointerEvents={pointEvent}>
         <Header
           leftComponent={
-            <Text style={styles.eventTitleTextStyle}>{strings.schedule} </Text>
+            <Text style={styles.eventTitleTextStyle}>
+              {[Verbs.entityTypeClub].includes(authContext.entity.role) ? strings.events : strings.schedule} 
+            </Text>
           }
           showBackgroundColor={true}
           rightComponent={
@@ -1025,6 +1133,21 @@ export default function ScheduleScreen({navigation, route}) {
                   alignItems: 'center',
                   justifyContent: 'space-between',
                 }}>
+
+                {
+                [Verbs.entityTypeClub].includes(authContext.entity.role) && (
+                  <TouchableOpacity
+                  onPress={() => {
+                    setFilterPopup(true);
+                  }}>
+                  <FastImage
+                    source={images.localHomeFilter}
+                    style={{height: 25, width: 25, marginRight: 15}}
+                    resizeMode={'contain'}
+                  />
+                  </TouchableOpacity>
+                )}
+
                 <TouchableOpacity onPress={() => {
                   navigation.navigate('CreateEventScreen', {
                     comeName: 'ScheduleScreen',
@@ -1032,6 +1155,13 @@ export default function ScheduleScreen({navigation, route}) {
                 }}>
                   <Image source={images.addEvent} style={styles.headerRightImg} />
                 </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => setSettingsModal(true)}>
+                    <Image
+                      source={images.vertical3Dot}
+                      style={styles.threeDotImageStyle}
+                    />
+                </TouchableOpacity> 
               </View>
             )
           }
@@ -1087,8 +1217,11 @@ export default function ScheduleScreen({navigation, route}) {
           {opacity: isAccountDeactivated ? 0.5 : 1},
         ]}
         pointerEvents={pointEvent}
-        needsOffscreenAlphaCompositing>
+        needsOffscreenAlphaCompositing
+      >
         <View style={{flex: 1, backgroundColor: colors.offwhite}}>
+          {
+          ![Verbs.entityTypeClub].includes(authContext.entity.role) && (
           <View
             style={{
               flexDirection: 'row',
@@ -1096,6 +1229,7 @@ export default function ScheduleScreen({navigation, route}) {
               justifyContent: 'space-between',
               alignItems: 'center',
             }}>
+            
             <View style={{flexDirection: 'row'}}>
               <View style={scheduleIndexCounter === 0 ? styles.activeWrapper : styles.inactiveWrapper}>
                 <Text
@@ -1125,6 +1259,7 @@ export default function ScheduleScreen({navigation, route}) {
                 </Text>
               </View>
             </View>
+
             {
             scheduleIndexCounter === 0 && (
               <TouchableOpacity
@@ -1139,7 +1274,7 @@ export default function ScheduleScreen({navigation, route}) {
               </TouchableOpacity>
             )}
           </View>
-
+          )}
 
           <View style={styles.separateLine} />
           {!loading &&
@@ -1148,22 +1283,22 @@ export default function ScheduleScreen({navigation, route}) {
               Verbs.entityTypeUser,
               Verbs.entityTypePlayer,
               Verbs.entityTypeClub,
-            ].includes(authContext.entity.role) && (
+            ].includes(authContext.entity.role) && filterSetting.sort > 0 &&(
               <View style={styles.sportsListView}>
                 <FlatList
                   ref={refContainer}
                   horizontal={true}
                   showsHorizontalScrollIndicator={false}
                   data={
-                    (filterSetting.sort === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? 0 : 1) && organizerOptions) ||
-                    (filterSetting.sort === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? 1 : 2) && sports) ||
-                    (filterSetting.sort === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? -1 : 0) && reservationOpetions)
+                    (filterSetting.sort === ([Verbs.entityTypeClub].includes(authContext.entity.role) ?  1 : 1) && organizerOptions) ||
+                    (filterSetting.sort === ([Verbs.entityTypeClub].includes(authContext.entity.role) ?  2 : 3) && sports) ||
+                    (filterSetting.sort === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? -1 : 2) && reservationOpetions)
                   }
                   keyExtractor={keyExtractor}
                   renderItem={
-                    (filterSetting.sort === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? 0 : 1) && organizerListView) ||
-                    (filterSetting.sort === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? 1 : 2) && sportOptionsListView) ||
-                    (filterSetting.sort === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? -1 : 0) && ![Verbs.entityTypeClub].includes(
+                    (filterSetting.sort === ([Verbs.entityTypeClub].includes(authContext.entity.role) ?  1 : 1) && organizerListView) ||
+                    (filterSetting.sort === ([Verbs.entityTypeClub].includes(authContext.entity.role) ?  2 : 3) && sportOptionsListView) ||
+                    (filterSetting.sort === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? -1 : 2) && ![Verbs.entityTypeClub].includes(
                       authContext.entity.role
                     ) && optionsListView)
                   }
@@ -1204,6 +1339,7 @@ export default function ScheduleScreen({navigation, route}) {
               }}
               entity={authContext.entity}
               owners={owners}
+              allUserData={allUserData}
             />
             </>
           )}
@@ -1377,7 +1513,10 @@ export default function ScheduleScreen({navigation, route}) {
           <View
             style={[
               styles.bottomPopupContainer,
-              {height: Dimensions.get('window').height - 50},
+              {
+                height: Dimensions.get('window').height - popupFilterHeight,
+                paddingBottom: 50
+              },
             ]}>
             <View style={styles.topHeaderContainer}>
               <TouchableOpacity
@@ -1390,22 +1529,21 @@ export default function ScheduleScreen({navigation, route}) {
               </TouchableOpacity>
               <Text style={styles.titleText}>{strings.filter}</Text>
               <Text
-                style={styles.applyText}
+                style={styles.applyText} 
                 onPress={async() => {
                   setFilterPopup(false)
                   setIndigator(true)
                   await getEventsAndSlotsList({}, timeFilterOpetion);
                   setFilterSetting({
                     ...filterSetting,
-                    sort: sortFilterOption,
                     time: timeFilterOpetion,
                   });
                   setIndigator(false)
                 }}>
-                {strings.apply}
+                {strings.apply} 
               </Text>
             </View>
-            <View style={{height : Dimensions.get('window').height - 100}}>
+            <View >
               <ScrollView>
                 <>
                 {[
@@ -1414,19 +1552,6 @@ export default function ScheduleScreen({navigation, route}) {
                   Verbs.entityTypeClub,
                 ].includes(authContext.entity.role) && (
                   <View style={{flex: 1}}>
-                    <TCThinDivider width={'100%'} marginBottom={15} />
-                    <View>
-                      <Text style={styles.titleText}>{strings.sortBy}</Text>
-                      <FlatList
-                        data={
-                          [Verbs.entityTypeClub].includes(authContext.entity.role)
-                            ? sortFilterDataClub
-                            : sortFilterData
-                        }
-                        renderItem={renderSortFilterOpetions}
-                        style={{marginTop: 15}}
-                      />
-                    </View>
                     {
                     ![Verbs.entityTypeClub].includes(authContext.entity.role) && (
                     <>
@@ -1461,7 +1586,7 @@ export default function ScheduleScreen({navigation, route}) {
                   }}>
                   <View style={styles.dropContainer}>
                     <Text style={styles.textInputDropStyle}>
-                      {timeSelectionOption}
+                      {timeSelectionOption} 
                     </Text>
                     <Image
                       source={images.dropDownArrow}
@@ -1533,7 +1658,6 @@ export default function ScheduleScreen({navigation, route}) {
 
                 <TouchableOpacity
                 onPress={() => {
-                  setSortFilterOpetion(0);
                   setTimeFilterOpetion(0);
                   setRsvpFilterOption(0);
                 }}
@@ -1554,80 +1678,7 @@ export default function ScheduleScreen({navigation, route}) {
               </ScrollView>
             </View>
           </View>
-          {/* <Modal
-          isVisible={timeSelectionModal}
-          backdropColor="black"
-          onBackdropPress={() => setTimeSelectionModal(false)}
-          onRequestClose={() => setTimeSelectionModal(false)}
-          animationInTiming={300}
-          animationOutTiming={800}
-          backdropTransitionInTiming={10}
-          backdropTransitionOutTiming={10}
-          style={{
-            margin: 0,
-          }}>
-          <View
-            style={{
-              width: '100%',
-              height: Dimensions.get('window').height / 1.3,
-              backgroundColor: 'white',
-              position: 'absolute',
-              bottom: 0,
-              left: 0,
-              borderTopLeftRadius: 30,
-              borderTopRightRadius: 30,
-              shadowColor: '#000',
-              shadowOffset: {width: 0, height: 1},
-              shadowOpacity: 0.5,
-              shadowRadius: 5,
-              elevation: 15,
-            }}>
-            <View
-              style={{
-                flexDirection: 'row',
-                paddingHorizontal: 15,
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              }}>
-              <TouchableOpacity
-                hitSlop={getHitSlop(15)}
-                style={styles.closeButton}
-                onPress={() => setTimeSelectionModal(false)}>
-                <Image source={images.cancelImage} style={styles.closeButton} />
-              </TouchableOpacity>
-
-              <Text
-                style={{
-                  alignSelf: 'center',
-                  marginVertical: 20,
-                  fontSize: 16,
-                  fontFamily: fonts.RBold,
-                  color: colors.lightBlackColor,
-                }}>
-                {strings.privacySettingText}
-              </Text>
-
-              <Text
-                style={{
-                  alignSelf: 'center',
-                  marginVertical: 20,
-                  fontSize: 16,
-                  fontFamily: fonts.RRegular,
-                  color: colors.themeColor,
-                }}></Text>
-            </View>
-            <View style={styles.separatorLine} />
-            <FlatList
-              ItemSeparatorComponent={() => <TCThinDivider width="92%" />}
-              showsVerticalScrollIndicator={false}
-              data={
-                timeSelectionList
-              }
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={renderTimeSelectionList}
-            />
-          </View>
-          </Modal> */}
+         
           <BottomSheet
             optionList={timeFilterOpetion === 0 ? timeSelectionFutureList : timeSelectionPastList}
             isVisible={timeSelectionModal}
@@ -1635,14 +1686,33 @@ export default function ScheduleScreen({navigation, route}) {
             onSelect={(option) => {
               if(option === strings.filterPickaDate) {
                 setTimeSelectionPicker(true);
+                setPopupFilterHeight(100)
               }else{
+                // New Calculation Function will pass here:
+                getDates(option);
                 setTimeSelectionPicker(false);
+                setPopupFilterHeight(300)
               }
               setTimeSelectionModal(false)
               setTimeSelectionOption(option)
             }}
           />
         </Modal>
+
+        {/* Schedule settings modal */}
+        <BottomSheet
+          optionList={eventSettingsOption}
+          isVisible={settingsModal}
+          closeModal={() => setSettingsModal(false)}
+          onSelect={(option) => {
+            if(option === strings.eventsViewSettings) {
+              navigation.navigate('ViewEventSettingsScreen');
+            }else{
+              navigation.navigate('ViewPrivacyScreen');
+            }
+            setSettingsModal(false)
+          }}
+        />
 
 
         
@@ -1932,6 +2002,13 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 15
   },
+  clubActiveWrapper:{
+    borderBottomColor: colors.darkYellowColor,
+    borderBottomWidth: 2,
+  },
+  clubInactiveWrapper:{
+    borderBottomWidth: 0,
+  },
   headerRightImg: {
     height: 25,
     resizeMode: 'contain',
@@ -1961,7 +2038,6 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.veryLightGray,
     borderBottomWidth: 0.5,
     alignItems: 'center',
-    paddingHorizontal: 5
   },
   sportName: {
     fontSize: 14,
@@ -2048,11 +2124,19 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
   },
-  changeOrderStyle: {
-    fontSize: 14,
-    fontFamily: fonts.RRegular,
-    color: colors.themeColor,
-    textDecorationLine: 'underline',
-    marginLeft: 20,
+  // changeOrderStyle: {
+  //   fontSize: 14,
+  //   fontFamily: fonts.RRegular,
+  //   color: colors.themeColor,
+  //   textDecorationLine: 'underline',
+  //   marginLeft: 20,
+  // },
+  threeDotImageStyle: {
+    height: 25,
+    width: 25,
+    // tintColor: colors.blackColor,
+    resizeMode: 'contain',
+    marginLeft: 10,
+    marginRight: -7
   },
 });

@@ -85,7 +85,7 @@ function PRNotificationTeamInvite({
                       : styles.btnTextStyle
                   }
                   style={styles.acceptButtonInnerStyle}
-                  title={strings.respond}
+                  title={strings.venueDetailsPlaceholder}
                   disabled={disabled}
                   onPress={onRespond}
                   startGradientColor = {colors.textFieldBackground}

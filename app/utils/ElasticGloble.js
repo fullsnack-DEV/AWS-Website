@@ -34,7 +34,7 @@ const globalElasticApiCall = async ({method, url, data}) => {
       'Content-Type': 'application/json',
     },
   };
-
+  console.log('BEFORE API Opetions::--->', JSON.stringify(options));
   try {
     const response = await axios(options);
     return response?.data?.hits?.hits?.map((item) => item?._source);
@@ -46,9 +46,9 @@ const globalElasticApiCall = async ({method, url, data}) => {
       if (error.response.status === 404) {
         return [];
       }
-      console.log(error.response.data);
-      console.log(error.response.status);
-      console.log(error.response.headers);
+      // console.log(error.response.data);
+      // console.log(error.response.status);
+      // console.log(error.response.headers);
     } else if (error.request) {
       // The request was made but no response was received
       console.log(error.request);

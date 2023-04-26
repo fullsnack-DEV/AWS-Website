@@ -76,6 +76,10 @@ import Verbs from '../../../Constants/Verbs';
 import AddressLocationModal from '../../../components/AddressLocationModal/AddressLocationModal';
 
 export default function CreateEventScreen({navigation, route}) {
+
+
+ 
+
   const eventPostedList = [
     {value: 0, text: strings.scheduleOnlyText},
     {value: 1, text: strings.scheduleAndPostText},
@@ -102,7 +106,8 @@ export default function CreateEventScreen({navigation, route}) {
   const [searchLocation, setSearchLocation] = useState();
   const [locationDetail, setLocationDetail] = useState({latitude: 0.0,longitude: 0.0});
   const [is_Blocked, setIsBlocked] = useState(false);
-  const [is_Online, setIsOnline] = useState(false);
+  const [is_Offline, setIsOffline] = useState(true);
+  const [onlineUrl, setOnlineUrl] = useState('');
   const [loading, setloading] = useState(false);
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
   const [visibleWhoModal, setVisibleWhoModal] = useState(false);
@@ -153,45 +158,48 @@ export default function CreateEventScreen({navigation, route}) {
   const whoCanJoinUser = [
     {text: strings.everyoneRadio, value: 0},
     {
-      text: 'Followers',
+      text: strings.followersRadio,
       value: 1,
     },
-    {text: 'Only me', value: 2},
+    {text: strings.onlymeTitleText, value: 2},
   ];
 
   const whoCanSeeUser = [
     {text: strings.everyoneRadio, value: 0},
     {
-      text: 'Followers',
+      text: strings.followersRadio,
       value: 1,
     },
-    {text: 'Only me', value: 2},
+    {text: strings.onlymeTitleText, value: 2},
   ];
 
   const whoCanInviteUser = [
     {
-      text: 'Attendee',
+      text: strings.attendeeRadioText,
       value: 0,
     },
-    {text: 'Only me', value: 1},
+    {text: strings.onlymeTitleText, value: 1},
   ];
+
 
   const whoCanJoinGroup = [
     {text: strings.everyoneRadio, value: 0},
     {
-      text: 'Follower',
+      text: strings.followersRadio,
       value: 1,
     },
     {
-      text: 'Member',
+      text: strings.member,
       value: 2,
     },
-    {text: 'Only me', value: 3},
+    {text: strings.onlymeTitleText, value: 3},
   ];
+
+
   const whoCanSeeGroup = [
     {text: strings.everyoneRadio, value: 0},
     {
-      text: 'Follower',
+      text: strings.followersRadio,
       value: 1,
     },
     {
@@ -203,10 +211,10 @@ export default function CreateEventScreen({navigation, route}) {
 
   const whoCanInviteGroup = [
     {
-      text: 'Attendee',
+      text: strings.attendeeRadioText,
       value: 0,
     },
-    {text: 'Only me', value: 1},
+    {text: strings.onlymeTitleText, value: 1},
   ];
 
   const handleStartDatePress = (date) => {
@@ -282,7 +290,7 @@ export default function CreateEventScreen({navigation, route}) {
         <TouchableOpacity
           style={{padding: 2, marginRight: 15}}
           onPress={onDonePress}>
-          <Text>{strings.done}</Text>
+          <Text style={{fontWeight: '500'}}>{strings.done}</Text>
         </TouchableOpacity>
       ),
     });
@@ -774,6 +782,7 @@ export default function CreateEventScreen({navigation, route}) {
             venue_name: locationDetail.venue_name,
             venue_detail: locationDetail.venue_detail,
           },
+          online_url: onlineUrl,
         },
       ];
 
@@ -926,14 +935,14 @@ export default function CreateEventScreen({navigation, route}) {
             >
 
               <EventVenueTogglebtn
-                online={is_Online}
+                offline={is_Offline}
                 firstTabTitle='Offline'
                 secondTabTitle='Online'
-                onFirstTabPress={() => setIsOnline(false)}
-                onSecondTabPress={() => setIsOnline(true)}
+                onFirstTabPress={() => setIsOffline(true)}
+                onSecondTabPress={() => setIsOffline(false)}
               />
               {
-              !is_Online ? (
+              is_Offline ? (
               <>
               <TextInput
                 placeholder={strings.venueNamePlaceholder}
@@ -942,7 +951,6 @@ export default function CreateEventScreen({navigation, route}) {
                   setLocationDetail({...locationDetail, venue_name: value});
                 }}
                 value={locationDetail.venue_name}
-                // multiline={multiline}
                 textAlignVertical={'center'}
                 placeholderTextColor={colors.userPostTimeColor}
               />
@@ -956,7 +964,7 @@ export default function CreateEventScreen({navigation, route}) {
                   setVisibleLocationModal(true)
                 }}
                 style={{
-                  width: '98%',
+                  width: '100%',
                   alignSelf: 'center',
                   backgroundColor: colors.textFieldBackground,
                 }}
@@ -993,7 +1001,20 @@ export default function CreateEventScreen({navigation, route}) {
                 onDonePress={() => {}}
               />
               </>
-            ): null}
+            ): (
+              <>
+                <TextInput
+                  placeholder={strings.onlineUrl}
+                  style={styles.textInputStyle}
+                  onChangeText={(value) => {
+                    setOnlineUrl(value);
+                  }}
+                  value={onlineUrl}
+                  textAlignVertical={'center'}
+                  placeholderTextColor={colors.userPostTimeColor}
+                />
+              </>
+            )}
             </EventItemRender>
 
 
@@ -1034,6 +1055,23 @@ export default function CreateEventScreen({navigation, route}) {
                 containerStyle={{marginBottom: 8}}
                 onDatePress={() => setEndDateVisible(!endDateVisible)}
               />
+
+              <View style={{flexDirection: 'row', justifyContent: 'flex-end' , marginBottom: 20}}>
+                <Text>
+                  {strings.timezone} &nbsp;
+                </Text>
+                <TouchableOpacity 
+                  onPress={() => {Alert.alert(strings.timezoneAvailability)}}>
+                    <Text
+                    style={{
+                      textDecorationLine: 'underline',
+                      textDecorationStyle: 'solid',
+                      textDecorationColor: colors.darkGrayColor
+                    }} 
+                    >{strings.vancouver}</Text>
+                </TouchableOpacity>
+              </View>
+
               <EventMonthlySelection
                 title={strings.repeat}
                 dataSource={[
@@ -1094,6 +1132,7 @@ export default function CreateEventScreen({navigation, route}) {
               )}
             </EventItemRender>
 
+
             <EventItemRender containerStyle={{marginTop: -40, marginBottom: 10}} title={''}>
               <Text style={styles.availableSubHeader}>
                 {strings.availableSubTitle}
@@ -1128,9 +1167,8 @@ export default function CreateEventScreen({navigation, route}) {
                   placeholderTextColor={colors.userPostTimeColor}
                 />
                 <Text style={styles.currencyStyle}>{strings.defaultCurrency}</Text>
-                
               </View>
-                              <Text
+                <Text
                   style={{
                     fontSize: 14,
                     fontFamily: fonts.RRegular,
@@ -1144,29 +1182,16 @@ export default function CreateEventScreen({navigation, route}) {
                 </Text>
             </View>
 
+
             <View style={[styles.containerStyle, {marginTop:20}]}>
               <Text style={styles.headerTextStyle}>
                 {strings.refundPolicyTitle} 
               </Text>
-              {/* <Text
-                style={{fontSize: 14, fontFamily: fonts.RBold, marginTop: 15}}>
-                {strings.primaryRefundPolicy}
-              </Text> */}
+
               <Text style={[styles.subTitleText, {marginTop: 10}]}>
                 {strings.attendeesMustRefundedText}
-                {/* <Text
-                  style={{
-                    fontSize: 12,
-                    fontFamily: fonts.RRegular,
-                    textDecorationLine: 'underline',
-                  }}>
-                  {strings.readPaymentPolicyText}
-                </Text> */}
               </Text>
-              {/* <Text
-                style={{fontSize: 14, fontFamily: fonts.RBold, marginTop: 15}}>
-                {strings.additionalRefundPolicy}
-              </Text> */}
+
               <TextInput
                 placeholder={strings.additionalRefundPolicy}
                 style={styles.detailsInputStyle}
@@ -1178,8 +1203,6 @@ export default function CreateEventScreen({navigation, route}) {
               />
             </View>
           
-            
-           
             <View style={[styles.containerStyle,{marginTop:10}]}>
               <Text style={styles.headerTextStyle}>
                 {strings.numberOfAttend}
@@ -1195,7 +1218,6 @@ export default function CreateEventScreen({navigation, route}) {
                 max={maxAttendees}
               />
             </View>
-
 
             <View style={[styles.containerStyle,{marginTop:20}]}>
               <Text style={styles.headerTextStyle}>{strings.whoCanSee}</Text>
@@ -1215,6 +1237,7 @@ export default function CreateEventScreen({navigation, route}) {
                 </View>
               </TouchableOpacity>
             </View>
+
             {whoCanSeeOption.value === indexThree &&
               authContext.entity.role === Verbs.entityTypeUser && (
                 <View>
