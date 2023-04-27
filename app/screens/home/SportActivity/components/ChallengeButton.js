@@ -1,5 +1,5 @@
 // @flow
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, Text, TouchableOpacity, Image, Modal} from 'react-native';
 import {strings} from '../../../../../Localization/translation';
 import images from '../../../../Constants/ImagePath';
@@ -9,19 +9,53 @@ import styles from './ChallengeButtonStyles';
 const ChallengeButton = ({
   isAdmin = false,
   isAvailable = false,
-  isScorekeeper = false,
-  isReferee = false,
-  isUserWithSameSport = false,
   inviteToChallenge = () => {},
-  containerStyle = {},
   continueToChallenge = () => {},
-  gameFee = {},
-  entityType = Verbs.entityTypePlayer,
   bookReferee = () => {},
   bookScoreKeeper = () => {},
-  isActiveSportActivity = false,
+  // ownerDetails = {},
+  loggedInEntity = {},
+  sportObj = {},
+  containerStyle = {},
 }) => {
   const [showModal, setShowModal] = useState(false);
+  const [isScorekeeper, setIsScoreKeeper] = useState(false);
+  const [isReferee, setIsReferee] = useState(false);
+  const [isUserWithSameSport, setIsUserWithSameSport] = useState(false);
+  const [isActiveSportActivity, setIsActiveSportActivity] = useState(false);
+
+  useEffect(() => {
+    if (sportObj.sport && (sportObj?.is_active || !('is_active' in sportObj))) {
+      setIsActiveSportActivity(true);
+    }
+  }, [sportObj]);
+
+  useEffect(() => {
+    const playingSport = (loggedInEntity.registered_sports ?? []).filter(
+      (item) =>
+        item.sport === sportObj?.sport &&
+        item.sport_type === sportObj?.sport_type,
+    );
+    setIsUserWithSameSport(playingSport.length > 0);
+
+    if (
+      sportObj.sport_type === Verbs.singleSport &&
+      loggedInEntity.entity_type === Verbs.entityTypePlayer
+    ) {
+      const sportList = (loggedInEntity.scorekeeper_data ?? []).filter(
+        (item) => item.sport === sportObj?.sport,
+      );
+      setIsScoreKeeper(sportList.length > 0);
+
+      const sportList1 = (loggedInEntity.referee_data ?? []).filter(
+        (item) => item.sport === sportObj?.sport,
+      );
+      setIsReferee(sportList1.length > 0);
+    } else {
+      setIsScoreKeeper(false);
+      setIsReferee(false);
+    }
+  }, [loggedInEntity, sportObj]);
 
   const getModalOptions = () => (
     <>
@@ -71,40 +105,80 @@ const ChallengeButton = ({
     </>
   );
 
-  return !isAdmin && isAvailable && isActiveSportActivity ? (
+  const getButtonLabel = () => {
+    if (
+      sportObj?.sport_type === Verbs.singleSport &&
+      loggedInEntity.entity_type === Verbs.entityTypePlayer &&
+      isAvailable
+    ) {
+      return strings.challenge;
+    }
+
+    if (
+      sportObj?.type === Verbs.entityTypeReferee ||
+      sportObj?.type === Verbs.entityTypeScorekeeper
+    ) {
+      if (
+        loggedInEntity.entity_type === Verbs.entityTypePlayer &&
+        isUserWithSameSport &&
+        isAvailable
+      ) {
+        return strings.book;
+      }
+
+      if (loggedInEntity.entity_type === Verbs.entityTypeTeam && isAvailable) {
+        return strings.book;
+      }
+    }
+
+    return '';
+  };
+
+  if (
+    isAdmin ||
+    !isActiveSportActivity ||
+    (sportObj?.sport_type === Verbs.doubleSport &&
+      sportObj?.type === Verbs.entityTypePlayer)
+  ) {
+    return null;
+  }
+
+  const handleButtonPress = () => {
+    const option = getButtonLabel();
+    if (option === strings.challenge) {
+      continueToChallenge();
+    } else if (option === strings.book) {
+      if (sportObj?.type === Verbs.entityTypeReferee) {
+        bookReferee();
+      }
+      if (sportObj?.type === Verbs.entityTypeScorekeeper) {
+        bookScoreKeeper();
+      }
+    }
+  };
+
+  return (
     <View style={[styles.parent, containerStyle]}>
-      <TouchableOpacity
-        style={styles.buttonContainer}
-        onPress={() => {
-          if (entityType === Verbs.entityTypePlayer) {
-            continueToChallenge();
-          }
-          if (entityType === Verbs.entityTypeReferee) {
-            bookReferee();
-          }
-          if (entityType === Verbs.entityTypeScorekeeper) {
-            bookScoreKeeper();
-          }
-        }}>
-        {entityType === Verbs.entityTypePlayer ? (
+      {getButtonLabel() ? (
+        <TouchableOpacity
+          style={styles.buttonContainer}
+          onPress={() => handleButtonPress()}>
           <Text style={styles.buttonText}>
-            {strings.challenge}{' '}
+            {getButtonLabel()}{' '}
             <Text style={styles.buttonText1}>
-              {gameFee?.fee ?? 0} {gameFee?.currency_type ?? Verbs.cad} /{' '}
-              {strings.matchText}
+              {sportObj.setting?.game_fee?.fee ?? 0}{' '}
+              {sportObj.setting?.game_fee?.currency_type ?? Verbs.cad} /{' '}
+              {loggedInEntity.entity_type === Verbs.entityTypePlayer
+                ? strings.matchText
+                : strings.hourText}
             </Text>
           </Text>
-        ) : (
-          <Text style={styles.buttonText}>
-            {strings.book}{' '}
-            <Text style={styles.buttonText1}>
-              {gameFee?.fee ?? 0} {gameFee?.currency_type ?? Verbs.cad} /{' '}
-              {strings.hourText}
-            </Text>
-          </Text>
-        )}
-      </TouchableOpacity>
-      {entityType === Verbs.entityTypePlayer ? (
+        </TouchableOpacity>
+      ) : null}
+      {sportObj?.sport_type === Verbs.singleSport &&
+      loggedInEntity.entity_type === Verbs.entityTypePlayer &&
+      isAvailable &&
+      (isUserWithSameSport || isReferee || isScorekeeper) ? (
         <TouchableOpacity
           style={styles.buttonContainer2}
           onPress={() => {
@@ -113,7 +187,6 @@ const ChallengeButton = ({
           <Image source={images.moreOptions} style={styles.image} />
         </TouchableOpacity>
       ) : null}
-
       <Modal visible={showModal} transparent>
         <View style={styles.modalContainer}>
           <View style={styles.container1}>{getModalOptions()}</View>
@@ -127,7 +200,7 @@ const ChallengeButton = ({
         </View>
       </Modal>
     </View>
-  ) : null;
+  );
 };
 
 export default ChallengeButton;
