@@ -7,57 +7,36 @@ import {
   SafeAreaView,
   Alert,
 } from 'react-native';
+import {format} from 'react-string-format';
 import AuthContext from '../../auth/context';
 import ActivityLoader from '../loader/ActivityLoader';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
+import images from '../../Constants/ImagePath';
 import {strings} from '../../../Localization/translation';
 import TCGradientButton from '../TCGradientButton';
 import {groupPaused, groupUnpaused} from '../../api/Groups';
-import {getQBAccountType, QBupdateUser} from '../../utils/QuickBlox';
 import {setAuthContextData} from '../../utils';
+import ScreenHeader from '../ScreenHeader';
+import Verbs from '../../Constants/Verbs';
 
-export default function PauseGroupScreen({navigation, route}) {
-  const [sportObj] = useState(route?.params?.sport);
+export default function PauseGroupScreen({navigation}) {
   const authContext = useContext(AuthContext);
   const [loading, setloading] = useState(false);
 
-  console.log('Entity SportObject: => ', sportObj);
-
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: () => (
-        <Text style={styles.titleScreenText}>
-          Pause {authContext.entity.role === 'club' ? 'Club' : 'Team'}
-        </Text>
-      ),
+      headerShown: false,
     });
-  }, [authContext.entity.role, navigation]);
+  }, [navigation]);
 
   const pauseGroup = () => {
     setloading(true);
     groupPaused(authContext)
       .then(async (response) => {
         await setAuthContextData(response.payload, authContext);
-
-        const accountType = getQBAccountType(response?.payload?.entity_type);
-        QBupdateUser(
-          response?.payload?.user_id ?? response?.payload?.group_id,
-          response?.payload,
-          accountType,
-          response.payload,
-          authContext,
-        )
-          .then(() => {
-            setloading(false);
-            navigation.navigate('AccountScreen');
-          })
-          .catch((error) => {
-            console.log('QB error : ', error);
-
-            setloading(false);
-            navigation.navigate('AccountScreen');
-          });
+        setloading(false);
+        navigation.navigate('AccountScreen');
       })
       .catch((e) => {
         setloading(false);
@@ -70,27 +49,10 @@ export default function PauseGroupScreen({navigation, route}) {
   const unPauseGroup = () => {
     setloading(true);
     groupUnpaused(authContext)
-      .then((response) => {
-        console.log('deactivate account ', response);
-
-        const accountType = getQBAccountType(response?.payload?.entity_type);
-        QBupdateUser(
-          response?.payload?.user_id ?? response?.payload?.group_id,
-          response?.payload,
-          accountType,
-          response.payload,
-          authContext,
-        )
-          .then(() => {
-            setloading(false);
-            navigation.navigate('AccountScreen');
-          })
-          .catch((error) => {
-            console.log('QB error : ', error);
-
-            setloading(false);
-            navigation.navigate('AccountScreen');
-          });
+      .then(async (response) => {
+        await setAuthContextData(response.payload, authContext);
+        setloading(false);
+        navigation.navigate('AccountScreen');
       })
       .catch((e) => {
         setloading(false);
@@ -100,87 +62,87 @@ export default function PauseGroupScreen({navigation, route}) {
       });
   };
 
+  const handleButtonPress = () => {
+    Alert.alert(
+      format(
+        strings.areYouSureTo,
+        authContext?.entity?.obj?.is_pause === true
+          ? Verbs.unpauseVerb
+          : Verbs.pauseVerb,
+        authContext.entity.obj.group_name,
+      ),
+      '',
+      [
+        {
+          text: strings.cancel,
+          style: 'cancel',
+        },
+        {
+          text:
+            authContext.entity.obj?.is_pause === true
+              ? strings.unpause
+              : strings.pause,
+          style: 'destructive',
+          onPress: () => {
+            if (authContext.entity.obj?.is_pause === true) {
+              unPauseGroup();
+            } else {
+              pauseGroup();
+            }
+          },
+        },
+      ],
+      {cancelable: false},
+    );
+  };
+
   return (
-    <>
-      <ScrollView style={styles.mainContainer}>
-        <ActivityLoader visible={loading} />
-        <View style={styles.mailContainer}>
+    <SafeAreaView style={styles.parent}>
+      <ScreenHeader
+        title={strings.pauseTeamTitle}
+        leftIcon={images.backArrow}
+        leftIconPress={() => navigation.goBack()}
+      />
+      <ActivityLoader visible={loading} />
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View style={styles.container}>
           <Text style={styles.descText}>
-            When you Pause the team:{'\n'}
-            {'\n'}• You can cancel terminating the team (recover the club) up to
-            14 days after you terminate it.{'\n'}
-            {'\n'}• 14 days after you terminate the team, the team information
-            will be permanently deleted, except for certain information that we
-            are legally required or permitted to retain, as outlined in our
-            Privacy Policy.
-            {'\n'}
-            {'\n'}
+            {strings.deactiveScreenDescription}
           </Text>
         </View>
-      </ScrollView>
-      <SafeAreaView>
         <TCGradientButton
-          title={`${
-            authContext?.entity?.obj?.is_pause === true ? 'UNPAUSE' : 'PAUSE'
-          } ${authContext.entity.role === 'club' ? 'CLUB' : 'TEAM'}`}
-          onPress={() => {
-            Alert.alert(
-              `Are you sure you want to ${
-                authContext?.entity?.obj?.is_pause === true
-                  ? 'unpause'
-                  : 'pause'
-              } ${authContext.entity.obj.group_name}?`,
-              '',
-              [
-                {
-                  text: strings.cancel,
-                  style: 'cancel',
-                },
-                {
-                  text:
-                    authContext?.entity?.obj?.is_pause === true
-                      ? 'Unpause'
-                      : 'Pause',
-                  style: 'destructive',
-                  onPress: () => {
-                    if (authContext?.entity?.obj?.is_pause === true) {
-                      unPauseGroup();
-                    } else {
-                      pauseGroup();
-                    }
-                  },
-                },
-              ],
-              {cancelable: false},
-            );
-          }}
+          title={
+            authContext.entity.obj.is_pause === true
+              ? strings.unpause
+              : strings.pause
+          }
+          outerContainerStyle={styles.buttonContainer}
+          onPress={handleButtonPress}
         />
-      </SafeAreaView>
-    </>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  mainContainer: {
+  parent: {
     flex: 1,
-    flexDirection: 'column',
   },
-
+  container: {
+    flex: 1,
+    paddingTop: 26,
+    paddingHorizontal: 15,
+  },
   descText: {
-    marginLeft: 15,
-    marginRight: 15,
-    marginTop: 15,
     fontSize: 16,
+    lineHeight: 24,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
   },
-
-  mailContainer: {
-    flex: 1,
-  },
-  titleScreenText: {
-    fontFamily: fonts.RBold,
-    fontSize: 16,
-    color: colors.lightBlackColor,
+  buttonContainer: {
+    backgroundColor: colors.userPostTimeColor,
+    marginHorizontal: 15,
+    marginVertical: 11,
+    borderRadius: 23,
   },
 });

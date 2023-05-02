@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'left',
     fontFamily: fonts.RBold,
-    lineHeight:17
+    lineHeight: 17,
   },
   mendatory: {
     color: 'red',

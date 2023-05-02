@@ -1,17 +1,15 @@
-/* eslint-disable no-bitwise */
 import React, {useState, useLayoutEffect, useContext} from 'react';
 import {
   StyleSheet,
   View,
   Image,
-  ScrollView,
-  TouchableWithoutFeedback,
   FlatList,
   Text,
   Alert,
+  SafeAreaView,
+  TouchableOpacity,
 } from 'react-native';
 import {format} from 'react-string-format';
-import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import AuthContext from '../../../auth/context';
 import images from '../../../Constants/ImagePath';
 import * as Utility from '../../../utils';
@@ -22,92 +20,46 @@ import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
 import {strings} from '../../../../Localization/translation';
 import Verbs from '../../../Constants/Verbs';
+import ScreenHeader from '../../../components/ScreenHeader';
 
-export default function WhoCanJoinTeamScreen({navigation, route}) {
-  const [comeFrom] = useState(route?.params?.comeFrom);
-
+const WhoCanJoinTeamScreen = ({navigation}) => {
   const authContext = useContext(AuthContext);
-
   const [loading, setloading] = useState(false);
-
   const whoCanJoinGroupOpetions = [
-    {key: strings.everyoneRadio, id: 1},
+    {key: strings.everyoneRadio, id: 0},
     {
       key: format(
         strings.personWhoseRequestText,
         authContext.entity.role === Verbs.entityTypeTeam
-          ? strings.teamAdminsText
+          ? Verbs.entityTypeTeam
           : Verbs.entityTypeClub,
       ),
-      id: 2,
+      id: 1,
     },
-    {key: strings.inviteOnly, id: 3},
+    {key: strings.inviteOnly, id: 2},
   ];
-
   const [whoCanJoinTeam, setWhoCanJoinTeam] = useState(
-    (route?.params?.whoCanJoinGroup === 0 && {
-      key: strings.everyoneRadio,
-      id: 0,
-    }) ||
-      (route?.params?.whoCanJoinGroup === 1 && {
-        key: whoCanJoinGroupOpetions[1].key,
-
-        id: 1,
-      }) ||
-      (route?.params?.whoCanJoinGroup === 2 && {
-        key: strings.inviteOnly,
-        id: 2,
-      }),
+    authContext.entity.obj.who_can_join_for_member ?? 0,
   );
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: () => (
-        <Text style={styles.headerTitle}>
-          {format(
-            strings.whoCanJoinGroupText,
-            Utility.capitalize(authContext.entity.role),
-          )}
-        </Text>
-      ),
-      headerRight: () => (
-        <Text
-          style={styles.saveButtonStyle}
-          onPress={() => {
-            onSavePressed();
-          }}>
-          {strings.save}
-        </Text>
-      ),
+      headerShown: false,
     });
-  }, [comeFrom, navigation, whoCanJoinTeam]);
+  }, [navigation]);
 
   const saveTeam = () => {
-    const bodyParams = {};
-
-    if (whoCanJoinTeam.key === whoCanJoinGroupOpetions[0].key) {
-      bodyParams.who_can_join_for_member = 0;
-    }
-    if (whoCanJoinTeam.key === whoCanJoinGroupOpetions[1].key) {
-      bodyParams.who_can_join_for_member = 1;
-    }
-    if (whoCanJoinTeam.key === whoCanJoinGroupOpetions[2].key) {
-      bodyParams.who_can_join_for_member = 2;
-    }
+    const bodyParams = {
+      who_can_join_for_member: whoCanJoinTeam,
+    };
 
     setloading(true);
     patchGroup(authContext.entity.uid, bodyParams, authContext)
       .then(async (response) => {
         if (response.status === true) {
           setloading(false);
-          const entity = authContext.entity;
-          entity.obj = response.payload;
-          authContext.setEntity({...entity});
-
-          await Utility.setStorage('authContextEntity', {...entity});
-          navigation.navigate(comeFrom, {
-            whoCanJoinGroup: response?.payload?.who_can_join_for_member,
-          });
+          await Utility.setAuthContextData(response.payload, authContext);
+          navigation.goBack();
         } else {
           Alert.alert(strings.appName, response.messages);
         }
@@ -121,108 +73,72 @@ export default function WhoCanJoinTeamScreen({navigation, route}) {
       });
   };
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const onSavePressed = () => {
-    if (
-      authContext.entity.role === 'team' ||
-      authContext.entity.role === 'club'
-    ) {
-      saveTeam();
-    }
-  };
-
   const renderWhocanJoinOption = ({item}) => (
-    <TouchableWithoutFeedback
+    <TouchableOpacity
       onPress={() => {
-        setWhoCanJoinTeam(item);
-      }}>
-      <View style={styles.radioItem}>
-        <Text style={styles.languageList}>{item.key}</Text>
-        <View style={styles.checkbox}>
-          {whoCanJoinTeam?.key === item?.key ? (
-            <Image
-              source={images.radioCheckYellow}
-              style={styles.checkboxImg}
-            />
-          ) : (
-            <Image source={images.radioUnselect} style={styles.checkboxImg} />
-          )}
-        </View>
+        setWhoCanJoinTeam(item.id);
+      }}
+      style={styles.radioItem}>
+      <View style={{flex: 1}}>
+        <Text style={styles.labelText}>{item.key}</Text>
       </View>
-    </TouchableWithoutFeedback>
+      <View style={styles.checkbox}>
+        {whoCanJoinTeam === item.id ? (
+          <Image source={images.radioCheckYellow} style={styles.checkboxImg} />
+        ) : (
+          <Image source={images.radioUnselect} style={styles.checkboxImg} />
+        )}
+      </View>
+    </TouchableOpacity>
   );
 
   return (
-    <ScrollView
-      style={styles.mainContainer}
-      showsVerticalScrollIndicator={false}>
+    <SafeAreaView style={{flex: 1}}>
+      <ScreenHeader
+        title={format(
+          strings.whoCanJoinGroupText,
+          authContext.entity.role === Verbs.entityTypeClub
+            ? Verbs.club
+            : Verbs.team,
+        )}
+        leftIcon={images.backArrow}
+        leftIconPress={() => navigation.goBack()}
+        isRightIconText
+        rightButtonText={strings.save}
+        onRightButtonPress={() => {
+          saveTeam();
+        }}
+      />
       <ActivityLoader visible={loading} />
       <Text style={styles.opetionsTitle}>
-        {format(strings.whoCanJounGroupText, authContext.entity.role)}
+        {authContext.entity.role === Verbs.entityTypeClub
+          ? strings.whoCanJoinClub
+          : strings.whoCanJoinTeam}
       </Text>
       <FlatList
-        // ItemSeparatorComponent={() => <TCThinDivider />}
         data={whoCanJoinGroupOpetions}
         keyExtractor={(item, index) => index.toString()}
         renderItem={renderWhocanJoinOption}
       />
-    </ScrollView>
+    </SafeAreaView>
   );
-}
+};
+
 const styles = StyleSheet.create({
-  // eslint-disable-next-line react-native/no-unused-styles
-  inputAndroid: {
-    alignSelf: 'center',
-    backgroundColor: colors.offwhite,
-    borderRadius: 5,
-    color: 'black',
-    elevation: 3,
-    fontSize: wp('4%'),
-    height: 40,
-
-    marginTop: 12,
-    paddingHorizontal: 15,
-    paddingRight: 30,
-
-    paddingVertical: 12,
-
-    width: wp('92%'),
-  },
-  // eslint-disable-next-line react-native/no-unused-styles
-  inputIOS: {
-    alignSelf: 'center',
-    backgroundColor: colors.offwhite,
-    borderRadius: 5,
-    color: 'black',
-    elevation: 3,
-    fontSize: wp('3.5%'),
-    height: 40,
-
-    marginTop: 12,
-    paddingHorizontal: 15,
-    paddingRight: 30,
-
-    paddingVertical: 12,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
-    width: wp('92%'),
-  },
-  mainContainer: {
-    flex: 1,
-  },
   opetionsTitle: {
+    fontSize: 20,
+    lineHeight: 30,
+    fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
-    fontFamily: fonts.RRegular,
-    fontSize: 16,
-    margin: 15,
+    marginTop: 20,
+    marginBottom: 25,
+    marginHorizontal: 15,
   },
-  languageList: {
-    width: '90%',
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RRegular,
+  labelText: {
     fontSize: 16,
+    lineHeight: 24,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
   },
   checkboxImg: {
     width: 22,
@@ -230,23 +146,13 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     alignSelf: 'center',
   },
-  checkbox: {},
   radioItem: {
-    paddingLeft: 25,
-    paddingTop: 15,
-    paddingRight: 25,
-    alignItems: 'center',
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
-  },
-  saveButtonStyle: {
-    fontFamily: fonts.RMedium,
-    fontSize: 16,
-    marginRight: 10,
-  },
-  headerTitle: {
-    fontFamily: fonts.RBold,
-    fontSize: 16,
-    color: colors.lightBlackColor,
+    paddingHorizontal: 25,
+    marginBottom: 15,
   },
 });
+
+export default WhoCanJoinTeamScreen;

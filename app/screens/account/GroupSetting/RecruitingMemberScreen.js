@@ -3,67 +3,42 @@ import {
   StyleSheet,
   View,
   Image,
-  ScrollView,
-  TouchableWithoutFeedback,
-  FlatList,
   Text,
   Alert,
+  SafeAreaView,
+  TouchableOpacity,
 } from 'react-native';
-
-import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import AuthContext from '../../../auth/context';
 import images from '../../../Constants/ImagePath';
 import * as Utility from '../../../utils';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import {patchGroup} from '../../../api/Groups';
-
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
-import TCLable from '../../../components/TCLabel';
 import {strings} from '../../../../Localization/translation';
-import Verbs from '../../../Constants/Verbs';
+import ScreenHeader from '../../../components/ScreenHeader';
 
 const hiringPlayersOptions = [
-  {key: strings.yes, id: 0},
-  {key: strings.no, id: 1},
+  {key: strings.yesDisplayItText, id: 1},
+  {key: strings.noDisplayItText, id: 0},
 ];
-export default function RecruitingMemberScreen({navigation, route}) {
-  const [comeFrom] = useState(route?.params?.comeFrom);
 
+export default function RecruitingMemberScreen({navigation}) {
   const authContext = useContext(AuthContext);
-
   const [loading, setloading] = useState(false);
-  console.log('route?.params?.settingObj', route?.params?.settingObj);
   const [hiringPlayersSelection, setHiringPlayersSelection] = useState(
-    (route?.params?.settingObj?.hiringPlayers === 1 && {
-      key: strings.yes,
-      id: 0,
-    }) ||
-      (route?.params?.settingObj?.hiringPlayers === 0 && {
-        key: strings.no,
-        id: 1,
-      }),
+    authContext.entity.obj.hiringPlayers ?? 1,
   );
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () => (
-        <Text
-          style={styles.saveButtonStyle}
-          onPress={() => {
-            onSavePressed();
-          }}>
-          {strings.save}
-        </Text>
-      ),
+      headerShown: false,
     });
-  }, [comeFrom, navigation, hiringPlayersSelection.key]);
+  }, [navigation]);
 
   const saveTeam = () => {
     const bodyParams = {
-      hiringPlayers:
-        (hiringPlayersSelection.key === strings.yes && 1) ||
-        (hiringPlayersSelection.key === strings.no && 0),
+      hiringPlayers: hiringPlayersSelection,
     };
     setloading(true);
 
@@ -71,14 +46,8 @@ export default function RecruitingMemberScreen({navigation, route}) {
       .then(async (response) => {
         if (response.status === true) {
           setloading(false);
-          const entity = authContext.entity;
-          entity.obj = response.payload;
-          authContext.setEntity({...entity});
-
-          await Utility.setStorage('authContextEntity', {...entity});
-          navigation.navigate(comeFrom, {
-            hiringPlayersObject: response.payload.setting,
-          });
+          await Utility.setAuthContextData(response.payload, authContext);
+          navigation.goBack();
         } else {
           Alert.alert(strings.appName, response.messages);
         }
@@ -92,100 +61,90 @@ export default function RecruitingMemberScreen({navigation, route}) {
       });
   };
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const onSavePressed = () => {
-    if (
-      authContext.entity.role === Verbs.entityTypeTeam ||
-      authContext.entity.role === Verbs.entityTypeClub
-    ) {
-      saveTeam();
-    }
-  };
+  return (
+    <SafeAreaView style={{flex: 1}}>
+      <ScreenHeader
+        title={strings.whoCanInviteMemberText}
+        leftIcon={images.backArrow}
+        leftIconPress={() => navigation.goBack()}
+        isRightIconText
+        rightButtonText={strings.save}
+        onRightButtonPress={() => {
+          saveTeam();
+        }}
+      />
+      <ActivityLoader visible={loading} />
+      <Text style={styles.opetionsTitle}>
+        {strings.isYourTeamRecruitingMember}
+      </Text>
+      <View style={styles.recruitingContainer}>
+        <Text style={styles.recruitingContainerText}>
+          {strings.recruitingPlayerText}
+        </Text>
+      </View>
 
-  const renderHiringPlayersOption = ({item}) => (
-    <TouchableWithoutFeedback
-      onPress={() => {
-        setHiringPlayersSelection(item);
-      }}>
-      <View style={styles.radioItem}>
-        <Text style={styles.languageList}>{item.key}</Text>
-        <View style={styles.checkbox}>
-          {hiringPlayersSelection?.key === item?.key ? (
-            <Image
-              source={images.radioCheckYellow}
-              style={styles.checkboxImg}
-            />
-          ) : (
-            <Image source={images.radioUnselect} style={styles.checkboxImg} />
-          )}
+      {hiringPlayersOptions.map((item) => (
+        <TouchableOpacity
+          key={item}
+          onPress={() => {
+            setHiringPlayersSelection(item.id);
+          }}
+          style={styles.radioItem}>
+          <View style={{flex: 1}}>
+            <Text style={styles.labelText}>{item.key}</Text>
+          </View>
+          <View style={styles.checkbox}>
+            {hiringPlayersSelection === item.id ? (
+              <Image
+                source={images.radioCheckYellow}
+                style={styles.checkboxImg}
+              />
+            ) : (
+              <Image source={images.radioUnselect} style={styles.checkboxImg} />
+            )}
+          </View>
+        </TouchableOpacity>
+      ))}
+      <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+        <View
+          style={{
+            width: 240,
+            height: 230,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+          <Image
+            source={
+              hiringPlayersSelection
+                ? images.recruitingMemberYesImg
+                : images.recruitingMemberNoImg
+            }
+            style={{width: '100%', height: '100%', resizeMode: 'contain'}}
+          />
         </View>
       </View>
-    </TouchableWithoutFeedback>
-  );
-
-  return (
-    <ScrollView
-      style={styles.mainContainer}
-      showsVerticalScrollIndicator={false}>
-      <ActivityLoader visible={loading} />
-      <TCLable title={strings.isYourTeamRecruitingMember} required={false} />
-      <FlatList
-        // ItemSeparatorComponent={() => <TCThinDivider />}
-        data={hiringPlayersOptions}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={renderHiringPlayersOption}
-      />
-    </ScrollView>
+      <Text
+        style={[styles.labelText, {paddingHorizontal: 15, paddingVertical: 6}]}>
+        {strings.recruitingBottomText}
+      </Text>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
-  // eslint-disable-next-line react-native/no-unused-styles
-  inputAndroid: {
-    alignSelf: 'center',
-    backgroundColor: colors.offwhite,
-    borderRadius: 5,
-    color: 'black',
-    elevation: 3,
-    fontSize: wp('4%'),
-    height: 40,
-
-    marginTop: 12,
-    paddingHorizontal: 15,
-    paddingRight: 30,
-
-    paddingVertical: 12,
-
-    width: wp('92%'),
-  },
-  // eslint-disable-next-line react-native/no-unused-styles
-  inputIOS: {
-    alignSelf: 'center',
-    backgroundColor: colors.offwhite,
-    borderRadius: 5,
-    color: 'black',
-    elevation: 3,
-    fontSize: wp('3.5%'),
-    height: 40,
-
-    marginTop: 12,
-    paddingHorizontal: 15,
-    paddingRight: 30,
-
-    paddingVertical: 12,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
-    width: wp('92%'),
-  },
-  mainContainer: {
-    flex: 1,
-  },
-
-  languageList: {
+  opetionsTitle: {
+    fontSize: 20,
+    lineHeight: 30,
+    fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
+    marginTop: 20,
+    marginBottom: 10,
+    marginHorizontal: 15,
+  },
+  labelText: {
+    fontSize: 16,
+    lineHeight: 24,
     fontFamily: fonts.RRegular,
-    fontSize: wp('4%'),
+    color: colors.lightBlackColor,
   },
   checkboxImg: {
     width: 22,
@@ -193,18 +152,28 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     alignSelf: 'center',
   },
-  checkbox: {},
   radioItem: {
-    paddingLeft: 25,
-    paddingTop: 15,
-    paddingRight: 25,
-    alignItems: 'center',
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
+    paddingHorizontal: 25,
+    marginBottom: 15,
   },
-  saveButtonStyle: {
+  recruitingContainer: {
+    paddingHorizontal: 5,
+    paddingVertical: 2,
+    borderRadius: 3,
+    backgroundColor: colors.themeColor,
+    alignSelf: 'baseline',
+    marginLeft: 15,
+    marginBottom: 25,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  recruitingContainerText: {
+    fontSize: 12,
+    lineHeight: 15,
+    color: colors.whiteColor,
     fontFamily: fonts.RMedium,
-    fontSize: 16,
-    marginRight: 10,
   },
 });

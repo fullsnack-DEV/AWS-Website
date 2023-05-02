@@ -309,8 +309,8 @@ export default {
     'en_Does a user need the approval for its membership request from the club to join it?',
   whoJoinText: 'en_Who can join the club?',
   whoCanJoinTeam: 'en_Who can join the team?',
-  whoCanJounGroupText: 'en_Who can join the {0}?',
-
+  whoCanJoinTeam: 'en_Who can join your team?',
+  whoCanJoinClub: 'en_Who can join the club?',
   everyoneText: 'en_Everyone and Every team',
   onlyPersonText: 'en_Only person or team invited by club',
   whoseApprovalText:
@@ -977,7 +977,8 @@ export default {
   streetAddress: 'en_Street Address',
   postalCode: 'en_Postal Code',
   // Members
-  isYourTeamRecruitingMember: 'en_Is your team recruiting a new member?',
+  isYourTeamRecruitingMember:
+    'en_Are you recruiting a new member? Do you want to display the badge below on your team profile?',
   whoCanJoinGroupText: 'en_Who Can Join {0}',
   configureYourRefereeSetting:
     'en_You can’t send offer, please configure your referee setting first.',
@@ -1266,7 +1267,7 @@ export default {
   errorCodeText: 'en_Error code: {0}',
 
   canInviteYouToJoinText: 'en_Can a {0} invite you to join the {1}?',
-  recruitingPlayerText: 'en_Recruiting Player',
+  recruitingPlayerText: 'en_Recruiting Members',
   areYouSureLeaveText: 'en_Are you sure your team wants to leave {0}?',
   leave: 'en_Leave',
   whatTeamJoinClub: 'en_Which Team Can Join Club',
@@ -1276,11 +1277,12 @@ export default {
   whoCanInviteToYourEventText: 'en_Who can invite people to your {0} event?',
 
   teamAndMembersText: 'en_Team & members',
-  teamOnly: 'en_Team (admin) only',
+  teamOnly: 'en_Team only',
   clubAndMembersText: 'en_Club & members',
-  clubOnly: 'en_Club (admin) only',
+  clubOnly: 'en_Club only',
   whoCanInviteMemberText: 'en_Who Can Invite Member',
-  whoCanInviteMemberToText: 'en_Who can invite a member to {0}?',
+  whoCanInviteMemberToTeam: 'en_Who can invite a member to your team?',
+  whoCanInviteMemberToClub: 'en_Who can invite a member to club?',
   membersProfile: 'en_Members Profile',
 
   personWhoseRequestText: 'en_A person whose request has been accepted by {0}',
@@ -2807,4 +2809,7 @@ export default {
   onlineUrl: 'en_URL',
   emptyEventUrl: "en_URL hasn't been provided yet.",
   postTitle: 'en_Post',
+  recruitingBottomText:
+    'en_If you select “Yes, display it.”, your team profile may be displayed on the “Recruiting Members” section in Local Home.',
+  areYouSureTo: 'en_Are you sure you want to {0} {1}?',
 };

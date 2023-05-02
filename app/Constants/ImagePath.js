@@ -491,9 +491,9 @@ const images = {
   invoiceRecievedIcon: require('../assets/images/invoiceRecievedIcon.png'),
   sendNewInvoiceIcon: require('../assets/images/sendNewInvoiceIcon.png'),
   transactionsIcon: require('../assets/images/transactionsIcon.png'),
-
   starProfile: require('../assets/images/star_profile.png'),
-
+  recruitingMemberYesImg: require('../assets/images/recruitingMemberYesImg.png'),
+  recruitingMemberNoImg: require('../assets/images/recruitingMemberNoImg.png'),
 };
 
 export default images;

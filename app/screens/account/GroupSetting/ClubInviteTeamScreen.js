@@ -9,9 +9,10 @@ import {
   FlatList,
   Text,
   Alert,
+  SafeAreaView,
 } from 'react-native';
 
-import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
+// import {widthPercentageToDP} from 'react-native-responsive-screen';
 import AuthContext from '../../../auth/context';
 import images from '../../../Constants/ImagePath';
 import * as Utility from '../../../utils';
@@ -21,6 +22,7 @@ import {patchGroup} from '../../../api/Groups';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
 import {strings} from '../../../../Localization/translation';
+import ScreenHeader from '../../../components/ScreenHeader';
 
 export default function ClubInviteTeamScreen({navigation, route}) {
   const [comeFrom] = useState(route?.params?.comeFrom);
@@ -50,20 +52,9 @@ export default function ClubInviteTeamScreen({navigation, route}) {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: () => (
-        <Text style={styles.headerTitle}>{strings.canClubInviteTeamText}</Text>
-      ),
-      headerRight: () => (
-        <Text
-          style={styles.saveButtonStyle}
-          onPress={() => {
-            onSavePressed();
-          }}>
-          {strings.save}
-        </Text>
-      ),
+      headerShown: false,
     });
-  }, [comeFrom, navigation, clubInviteTeam]);
+  }, [navigation]);
 
   const saveTeam = () => {
     const bodyParams = {};
@@ -80,13 +71,9 @@ export default function ClubInviteTeamScreen({navigation, route}) {
       .then(async (response) => {
         if (response.status === true) {
           setloading(false);
-          const entity = authContext.entity;
-          entity.obj = response.payload;
-          authContext.setEntity({...entity});
-
-          await Utility.setStorage('authContextEntity', {...entity});
+          await Utility.setAuthContextData(response.payload, authContext);
           navigation.navigate(comeFrom, {
-            clubInviteTeam: response?.payload?.who_can_invite_for_club,
+            clubInviteTeam: response.payload?.who_can_invite_for_club,
           });
         } else {
           Alert.alert(strings.appName, response.messages);
@@ -102,7 +89,7 @@ export default function ClubInviteTeamScreen({navigation, route}) {
   };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const onSavePressed = () => {
+  const onSaveButtonClicked = () => {
     if (
       authContext.entity.role === 'team' ||
       authContext.entity.role === 'club'
@@ -133,69 +120,44 @@ export default function ClubInviteTeamScreen({navigation, route}) {
   );
 
   return (
-    <ScrollView
-      style={styles.mainContainer}
-      showsVerticalScrollIndicator={false}>
-      <ActivityLoader visible={loading} />
-      <Text style={styles.opetionsTitle}>
-        {strings.canClubInviteYourTeamText}
-      </Text>
-      <FlatList
-        data={clubInviteTeamOpetions}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={renderClubInviteTeam}
+    <SafeAreaView style={{flex: 1}}>
+      <ScreenHeader
+        title={strings.canClubInviteTeamText}
+        leftIcon={images.backArrow}
+        isRightIconText
+        rightButtonText={strings.save}
+        onRightButtonPress={() => {
+          onSaveButtonClicked();
+        }}
+        leftIconPress={() => navigation.goBack()}
       />
-    </ScrollView>
+      <ScrollView
+        style={styles.mainContainer}
+        showsVerticalScrollIndicator={false}>
+        <ActivityLoader visible={loading} />
+        <Text style={styles.opetionsTitle}>
+          {strings.canClubInviteYourTeamText}
+        </Text>
+        <FlatList
+          data={clubInviteTeamOpetions}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={renderClubInviteTeam}
+        />
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
-  // eslint-disable-next-line react-native/no-unused-styles
-  inputAndroid: {
-    alignSelf: 'center',
-    backgroundColor: colors.offwhite,
-    borderRadius: 5,
-    color: 'black',
-    elevation: 3,
-    fontSize: wp('4%'),
-    height: 40,
-
-    marginTop: 12,
-    paddingHorizontal: 15,
-    paddingRight: 30,
-
-    paddingVertical: 12,
-
-    width: wp('92%'),
-  },
-  // eslint-disable-next-line react-native/no-unused-styles
-  inputIOS: {
-    alignSelf: 'center',
-    backgroundColor: colors.offwhite,
-    borderRadius: 5,
-    color: 'black',
-    elevation: 3,
-    fontSize: wp('3.5%'),
-    height: 40,
-
-    marginTop: 12,
-    paddingHorizontal: 15,
-    paddingRight: 30,
-
-    paddingVertical: 12,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
-    width: wp('92%'),
-  },
   mainContainer: {
     flex: 1,
   },
   opetionsTitle: {
     color: colors.lightBlackColor,
-    fontFamily: fonts.RRegular,
-    fontSize: 16,
-    margin: 15,
+    fontFamily: fonts.RMedium,
+    fontSize: 20,
+    marginHorizontal: 15,
+    lineHeight: 30,
+    marginTop: 20,
   },
   languageList: {
     width: '90%',
@@ -209,7 +171,6 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     alignSelf: 'center',
   },
-  checkbox: {},
   radioItem: {
     paddingLeft: 25,
     paddingTop: 15,
@@ -217,15 +178,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-  },
-  saveButtonStyle: {
-    fontFamily: fonts.RMedium,
-    fontSize: 16,
-    marginRight: 10,
-  },
-  headerTitle: {
-    fontFamily: fonts.RBold,
-    fontSize: 16,
-    color: colors.lightBlackColor,
   },
 });

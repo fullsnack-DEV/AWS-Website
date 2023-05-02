@@ -1,7 +1,3 @@
-// @flow
-/* eslint-disable array-callback-return */
-/* eslint-disable no-param-reassign */
-
 import React, {useState, useEffect, useContext} from 'react';
 import {
   FlatList,
@@ -9,202 +5,135 @@ import {
   Text,
   View,
   StyleSheet,
-  Dimensions,
-  TouchableWithoutFeedback,
   TouchableOpacity,
 } from 'react-native';
-import Modal from 'react-native-modal';
 import {widthPercentageToDP} from 'react-native-responsive-screen';
-import {useIsFocused} from '@react-navigation/native';
 import images from '../../Constants/ImagePath';
-
 import {strings} from '../../../Localization/translation';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
-
-import TCThinDivider from '../TCThinDivider';
-
-import {getHitSlop, getSportName} from '../../utils';
-
+import CustomModalWrapper from '../CustomModalWrapper';
+import {ModalTypes} from '../../Constants/GeneralConstants';
+import {getSportList} from '../../utils/sportsActivityUtils';
 import AuthContext from '../../auth/context';
+import Verbs from '../../Constants/Verbs';
 
 const SportListMultiModal = ({
   isVisible,
   closeList = () => {},
   onNext = () => {},
   title = '',
-  sportsList,
+  selectedSports = [],
 }) => {
-  const [sportList, setSportList] = useState([]);
-  const [visible, setVisible] = useState(false);
   const authContext = useContext(AuthContext);
-  const isFocused = useIsFocused();
+  const [sportList, setSportList] = useState([]);
+  const [selectedList, setSelectedList] = useState([]);
 
   useEffect(() => {
-    sportsList.map((item) => {
-      item.isChecked = false;
-    });
+    if (isVisible) {
+      const list = getSportList(authContext.sports, Verbs.entityTypeClub);
+      setSportList(list);
+    }
+  }, [isVisible, authContext.sports]);
 
-    setSportList(sportsList);
-  }, [isFocused, isVisible]);
+  useEffect(() => {
+    if (isVisible && selectedSports.length > 0) {
+      setSelectedList(selectedSports);
+    }
+  }, [isVisible, selectedSports]);
 
-  const isIconCheckedOrNot = ({item, index}) => {
-    sportList[index].isChecked = !item.isChecked;
-    setSportList([...sportList]);
+  const handleClick = (item) => {
+    let list = [...selectedList];
+    if (selectedList.length > 0) {
+      const sport = selectedList.find(
+        (obj) => obj.sport === item.sport && obj.sport_type === item.sport_type,
+      );
+      if (sport) {
+        list = selectedList.filter(
+          (obj) =>
+            obj.sport !== item.sport && obj.sport_type !== item.sport_type,
+        );
+      } else {
+        list.push(item);
+      }
+    } else {
+      list.push(item);
+    }
+    setSelectedList([...list]);
   };
 
-  const renderSports = ({item, index}) => (
-    <TouchableWithoutFeedback
-      style={styles.listItem}
-      onPress={() => {
-        if (!visible) {
-          setVisible(true);
-        }
-
-        isIconCheckedOrNot({item, index});
-      }}>
-      <View
-        style={{
-          alignItems: 'center',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          paddingHorizontal: 40,
-          paddingVertical: 20,
-        }}>
-        <Text style={styles.languageList}>
-          {getSportName(item, authContext)}
-        </Text>
-        <View style={styles.checkbox}>
-          {sportList[index].isChecked ? (
-            <Image source={images.orangeCheckBox} style={styles.checkboxImg} />
-          ) : (
-            <Image source={images.uncheckWhite} style={styles.checkboxImg} />
-          )}
-        </View>
-      </View>
-    </TouchableWithoutFeedback>
-  );
+  const checkIsSelected = (item) => {
+    const sport = selectedList.find(
+      (obj) => obj.sport === item.sport && obj.sport_type === item.sport_type,
+    );
+    if (sport) {
+      return true;
+    }
+    return false;
+  };
 
   return (
-    <>
-      <Modal
-        isVisible={isVisible}
-        onBackdropPress={closeList}
-        onRequestClose={closeList}
-        animationInTiming={300}
-        animationOutTiming={800}
-        backdropTransitionInTiming={300}
-        backdropTransitionOutTiming={800}
-        style={{
-          margin: 0,
-        }}>
-        <View
-          style={{
-            width: '100%',
-            height: Dimensions.get('window').height / 1.07,
-            backgroundColor: 'white',
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            borderTopLeftRadius: 30,
-            borderTopRightRadius: 30,
-            shadowColor: '#000',
-          }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              // paddingHorizontal: 15,
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}>
-            <TouchableOpacity
-              hitSlop={getHitSlop(15)}
-              style={[styles.closeButton, {marginTop: 20, marginBottom: 10}]}
-              onPress={() => closeList()}>
-              <Image source={images.cancelImage} style={styles.closeButton} />
-            </TouchableOpacity>
-            <Text
-              style={{
-                alignSelf: 'center',
-                //  marginVertical: 20,
-                fontSize: 16,
-                fontFamily: fonts.RBold,
-                color: colors.lightBlackColor,
-                textAlign: 'center',
-                marginTop: 20,
-                marginLeft: 20,
-                marginBottom: 14,
-              }}>
-              {title}
-            </Text>
-            <TouchableOpacity
-              onPress={() => {
-                const filterChecked = sportList.filter((obj) => obj.isChecked);
-                if (filterChecked.length === 0) {
-                  return;
-                }
-                onNext(filterChecked);
-              }}>
-              <Text
-                style={{
-                  alignSelf: 'center',
-                  opacity: visible ? 1 : 0.5,
-                  fontSize: 16,
-                  fontFamily: fonts.RMedium,
-
-                  marginRight: 17,
-                  marginTop: 20,
-                  marginBottom: 10,
-                }}>
-                {strings.next}
-              </Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.separatorLine} />
-
+    <CustomModalWrapper
+      isVisible={isVisible}
+      closeModal={() => closeList()}
+      modalType={ModalTypes.style1}
+      title={title}
+      headerRightButtonText={
+        title === strings.createClubText ? strings.next : strings.applyTitle
+      }
+      onRightButtonPress={() => {
+        if (selectedList.length === 0) {
+          return;
+        }
+        onNext(selectedList);
+      }}>
+      {title === strings.createClubText ? (
+        <>
           <Text style={styles.title}>{strings.clubModalTitle}</Text>
-          <Text
-            style={{
-              fontSize: 14,
-              lineHeight: 21,
-              fontFamily: fonts.RRegular,
-              marginLeft: 30,
-              marginRight: 19,
-              color: colors.lightBlackColor,
-            }}>
-            {strings.clubModalSubTitle}
-          </Text>
+          <Text style={styles.description}>{strings.clubModalSubTitle}</Text>
+        </>
+      ) : null}
 
-          <FlatList
-            style={{marginTop: 5}}
-            showsVerticalScrollIndicator={false}
-            ItemSeparatorComponent={() => <TCThinDivider />}
-            data={sportList}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={renderSports}
-          />
-        </View>
-      </Modal>
-    </>
+      <FlatList
+        data={sportList}
+        showsVerticalScrollIndicator={false}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={({item}) => (
+          <>
+            <TouchableOpacity
+              style={styles.listItem}
+              onPress={() => handleClick(item)}>
+              <View>
+                <Text style={styles.languageList}>{item.sport_name}</Text>
+              </View>
+              <View style={styles.checkbox}>
+                <Image
+                  source={
+                    checkIsSelected(item)
+                      ? images.orangeCheckBox
+                      : images.uncheckWhite
+                  }
+                  style={styles.checkboxImg}
+                />
+              </View>
+            </TouchableOpacity>
+            <View style={styles.dividor} />
+          </>
+        )}
+      />
+    </CustomModalWrapper>
   );
 };
 
 export default SportListMultiModal;
 
 const styles = StyleSheet.create({
-  separatorLine: {
-    alignSelf: 'center',
-    backgroundColor: colors.grayColor,
-    height: 0.5,
-    width: widthPercentageToDP('100%'),
-  },
-
-  closeButton: {
-    alignSelf: 'center',
-    width: 13,
-    height: 13,
-    marginLeft: 20,
-    resizeMode: 'contain',
+  description: {
+    fontSize: 14,
+    lineHeight: 21,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
+    marginBottom: 15,
   },
   checkboxImg: {
     width: 22,
@@ -218,17 +147,20 @@ const styles = StyleSheet.create({
     fontSize: widthPercentageToDP('4%'),
   },
   listItem: {
+    flex: 1,
     flexDirection: 'row',
-    marginLeft: widthPercentageToDP('10%'),
-    width: widthPercentageToDP('80%'),
-    paddingHorizontal: 60,
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   title: {
     fontSize: 20,
     lineHeight: 30,
     fontFamily: fonts.RMedium,
     marginBottom: 7,
-    paddingHorizontal: 30,
-    marginTop: 20,
+  },
+  dividor: {
+    height: 1,
+    marginVertical: 15,
+    backgroundColor: colors.grayBackgroundColor,
   },
 });

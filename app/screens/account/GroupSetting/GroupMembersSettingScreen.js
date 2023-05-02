@@ -1,18 +1,14 @@
-/* eslint-disable consistent-return */
-import React, {useContext, useState, useEffect, useCallback} from 'react';
+import React, {useContext, useState, useEffect, useLayoutEffect} from 'react';
 import {
   StyleSheet,
   View,
   Text,
   Image,
   FlatList,
-  TouchableWithoutFeedback,
-  ScrollView,
   SafeAreaView,
+  TouchableOpacity,
 } from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
-
-import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import {format} from 'react-string-format';
 import AuthContext from '../../../auth/context';
 import images from '../../../Constants/ImagePath';
@@ -20,211 +16,154 @@ import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
 import {strings} from '../../../../Localization/translation';
 import Verbs from '../../../Constants/Verbs';
+import ScreenHeader from '../../../components/ScreenHeader';
 
-export default function GroupMembersSettingScreen({navigation, route}) {
+export default function GroupMembersSettingScreen({navigation}) {
   const isFocused = useIsFocused();
-
   const authContext = useContext(AuthContext);
-  const [hiringPlayersObject, setHiringPlayersObject] = useState();
-  const [whoCanJoinGroup, setWhoCanJoinGroup] = useState(
-    route?.params?.whoCanJoinGroup
-      ? route?.params?.whoCanJoinGroup
-      : authContext.entity?.obj?.who_can_join_for_member,
-  );
-  const [whoCanInviteGroup, setWhoCanInviteGroup] = useState(
-    route?.params?.whoCanInviteGroup
-      ? route?.params?.whoCanInviteGroup
-      : authContext.entity?.obj?.who_can_invite_member,
-  );
+  const [groupDetails, setGroupDetails] = useState({});
 
-  const [userSetting] = useState([
-    {
-      key: format(
-        strings.whoCanJoinGroupText,
-        authContext.entity.role === Verbs.entityTypeTeam ? 'Team' : 'Club',
-      ),
-      id: 1,
-    },
-    {key: strings.whoCanInviteMemberText, id: 2},
-    {key: strings.recruitingPlayerText, id: 3},
-    {key: strings.membersProfile, id: 4},
+  const [groupSettings] = useState([
+    format(
+      strings.whoCanJoinGroupText,
+      authContext.entity.role === Verbs.entityTypeTeam
+        ? Verbs.team
+        : Verbs.club,
+    ),
+    strings.whoCanInviteMemberText,
+    strings.recruitingPlayerText,
   ]);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerShown: false,
+    });
+  }, [navigation]);
 
   useEffect(() => {
     if (isFocused) {
-      setWhoCanJoinGroup(
-        route?.params?.whoCanJoinGroup ??
-          authContext.entity?.obj?.who_can_join_for_member,
-      );
-
-      setWhoCanInviteGroup(
-        route?.params?.whoCanInviteGroup ??
-          authContext.entity?.obj?.who_can_invite_member,
-      );
+      setGroupDetails({...authContext.entity.obj});
     }
-  }, [
-    authContext.entity?.obj?.who_can_invite_member,
-    authContext.entity?.obj?.who_can_join_for_member,
-    isFocused,
-    route?.params?.whoCanInviteGroup,
-    route?.params?.whoCanJoinGroup,
-  ]);
+  }, [isFocused, authContext.entity.obj]);
 
-  const handleOpetions = (opetions) => {
-    if (opetions === userSetting[0].key) {
-      navigation.navigate('WhoCanJoinTeamScreen', {
-        whoCanJoinGroup,
-        comeFrom: 'GroupMembersSettingScreen',
-        sportName: authContext.entity?.obj?.sport,
-        sportType: authContext.entity?.obj?.sport_type,
-      });
-    } else if (opetions === userSetting[1].key) {
-      navigation.navigate('WhoCanInviteMemberScreen', {
-        whoCanInviteGroup,
-        comeFrom: 'GroupMembersSettingScreen',
-        sportName: authContext.entity?.obj?.sport,
-        sportType: authContext.entity?.obj?.sport_type,
-      });
-    } else if (opetions === userSetting[2].key) {
+  const handleOptions = (option) => {
+    if (
+      option ===
+      format(
+        strings.whoCanJoinGroupText,
+        authContext.entity.role === Verbs.entityTypeTeam
+          ? Verbs.team
+          : Verbs.club,
+      )
+    ) {
+      navigation.navigate('WhoCanJoinTeamScreen');
+    } else if (option === strings.whoCanInviteMemberText) {
+      navigation.navigate('WhoCanInviteMemberScreen');
+    } else if (option === strings.recruitingPlayerText) {
       navigation.navigate('RecruitingMemberScreen', {
-        settingObj: hiringPlayersObject,
+        settingObj: authContext.entity.obj,
         comeFrom: 'GroupMembersSettingScreen',
-        sportName: authContext.entity?.obj?.sport,
-        sportType: authContext.entity?.obj?.sport_type,
-      });
-    } else if (opetions === userSetting[3].key) {
-      const entity = authContext.entity;
-      navigation.navigate('GroupMembersScreen', {
-        groupID: entity.uid,
-        groupObj: entity.obj,
+        sportName: authContext.entity.obj.sport,
+        sportType: authContext.entity.obj.sport_type,
       });
     }
   };
-  const getSettings = useCallback(() => {
-    if (
-      authContext.entity.role === Verbs.entityTypeTeam ||
-      authContext.entity.role === 'club'
-    ) {
-      setHiringPlayersObject(authContext?.entity?.obj);
-    }
-  }, [authContext]);
 
-  useEffect(() => {
-    if (route?.params?.entity?.obj) {
-      setHiringPlayersObject(route?.params?.entity?.obj);
-    } else {
-      getSettings();
-    }
-  }, [
-    authContext,
-    getSettings,
-    route?.params?.settingObj,
-    hiringPlayersObject,
-    route?.params?.entity?.obj,
-  ]);
-
-  const getSettingValue = useCallback(
-    (item) => {
-      console.log('item.key', item);
-      if (item === strings.recruitingPlayerText) {
-        if (hiringPlayersObject?.hiringPlayers) {
-          // return hiringPlayersObject?.hiringPlayers;
-          return strings.yes;
-        }
-        // return 'No';
-        return strings.no;
-      }
-      if (item === userSetting[0].key) {
-        if (whoCanJoinGroup === 0) {
+  const getSettingValue = (option) => {
+    switch (option) {
+      case format(
+        strings.whoCanJoinGroupText,
+        authContext.entity.role === Verbs.entityTypeTeam
+          ? Verbs.team
+          : Verbs.club,
+      ):
+        if (groupDetails.who_can_join_for_member === 0) {
           return strings.everyoneRadio;
         }
-        if (whoCanJoinGroup === 1) {
+        if (groupDetails.who_can_join_for_member === 1) {
           return `${
             authContext.entity.role === Verbs.entityTypeTeam
-              ? strings.teamAdmin
-              : 'Club'
+              ? strings.camAccepted
+              : strings.clubText
           }`;
         }
-        if (whoCanJoinGroup === 2) {
+        if (groupDetails.who_can_join_for_member === 2) {
           return strings.inviteOnly;
         }
-      }
-      if (item === userSetting[1].key) {
-        if (whoCanInviteGroup === 1) {
+        return groupDetails.who_can_join_for_member;
+
+      case strings.whoCanInviteMemberText:
+        if (groupDetails.who_can_invite_member === 1) {
           return `${
             authContext.entity.role === Verbs.entityTypeTeam
               ? strings.teamAndMembersText
               : strings.clubAndMembersText
           }`;
         }
-        if (whoCanInviteGroup === 0) {
+        if (groupDetails.who_can_invite_member === 0) {
           return `${
             authContext.entity.role === Verbs.entityTypeTeam
               ? strings.teamOnly
               : strings.clubOnly
           }`;
         }
-      }
-      if (item === userSetting[2].key) {
-        if (hiringPlayersObject?.hiringPlayers === 1) {
-          return strings.yes;
-        }
-        if (hiringPlayersObject?.hiringPlayers === 0) {
-          return strings.no;
-        }
-      }
-    },
-    [
-      authContext.entity.role,
-      hiringPlayersObject?.hiringPlayers,
-      userSetting,
-      whoCanInviteGroup,
-      whoCanJoinGroup,
-    ],
-  );
+        return groupDetails.who_can_invite_member;
+
+      case strings.recruitingPlayerText:
+        return groupDetails.hiringPlayers ? strings.yes : strings.no;
+
+      default:
+        return null;
+    }
+  };
+
   const renderMenu = ({item}) => (
-    <TouchableWithoutFeedback
-      style={styles.listContainer}
-      onPress={() => {
-        handleOpetions(item.key);
-      }}>
-      <View
-        style={{
-          flexDirection: 'row',
+    <>
+      <TouchableOpacity
+        style={styles.listContainer}
+        onPress={() => {
+          handleOptions(item);
         }}>
-        <Text style={styles.listItems}>{item.key}</Text>
-        {item.key === strings.recruitingPlayerText && (
-          <Text style={styles.currencyTypeStyle}>
-            {getSettingValue(item.key)}
+        <View style={{flex: 1, marginRight: 10}}>
+          <Text style={styles.labelText} numberOfLines={1}>
+            {item}
           </Text>
-        )}
-        {item.key === userSetting[0].key && (
-          <Text style={styles.currencyTypeStyle}>
-            {getSettingValue(item.key)}
-          </Text>
-        )}
-        {item.key === userSetting[1].key && (
-          <Text style={styles.currencyTypeStyle}>
-            {getSettingValue(item.key)}
-          </Text>
-        )}
-        <Image source={images.nextArrow} style={styles.nextArrow} />
-      </View>
-    </TouchableWithoutFeedback>
+        </View>
+        <View style={styles.row}>
+          {getSettingValue(item) ? (
+            <Text
+              style={[
+                styles.labelText,
+                {marginRight: 10},
+                getSettingValue(item) === strings.no
+                  ? {color: colors.userPostTimeColor}
+                  : {color: colors.greeColor},
+              ]}>
+              {getSettingValue(item)}
+            </Text>
+          ) : null}
+
+          <Image source={images.nextArrow} style={styles.nextArrow} />
+        </View>
+      </TouchableOpacity>
+      <View style={styles.separator} />
+    </>
   );
+
   return (
     <SafeAreaView style={{flex: 1}}>
-      <ScrollView style={styles.mainContainer}>
-        <FlatList
-          data={userSetting}
-          keyExtractor={(index) => index.toString()}
-          renderItem={renderMenu}
-          ItemSeparatorComponent={() => (
-            <View style={styles.separatorLine}></View>
-          )}
-        />
-        <View style={styles.separatorLine}></View>
-      </ScrollView>
+      <ScreenHeader
+        title={strings.membersTitle}
+        leftIcon={images.backArrow}
+        leftIconPress={() => navigation.goBack()}
+      />
+
+      <FlatList
+        data={groupSettings}
+        keyExtractor={(item, index) => index.toString()}
+        style={{paddingHorizontal: 15, paddingTop: 25}}
+        renderItem={renderMenu}
+      />
     </SafeAreaView>
   );
 }
@@ -232,40 +171,29 @@ const styles = StyleSheet.create({
   listContainer: {
     flex: 1,
     flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 10,
   },
-  listItems: {
-    flex: 1,
-    padding: 20,
-    paddingLeft: 15,
+  labelText: {
     fontSize: 16,
+    lineHeight: 24,
     fontFamily: fonts.RRegular,
     color: colors.blackColor,
-    alignSelf: 'center',
-  },
-  currencyTypeStyle: {
-    marginRight: 10,
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    color: colors.greeColor,
-    alignSelf: 'center',
-  },
-  mainContainer: {
-    flex: 1,
-    flexDirection: 'column',
   },
   nextArrow: {
-    alignSelf: 'center',
-    flex: 0.1,
-    height: 15,
-    marginRight: 10,
-    resizeMode: 'contain',
-    tintColor: colors.lightBlackColor,
     width: 15,
+    height: 15,
+    resizeMode: 'contain',
   },
-  separatorLine: {
-    alignSelf: 'center',
-    backgroundColor: colors.lightgrayColor,
-    height: 0.5,
-    width: wp('90%'),
+  row: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  separator: {
+    height: 1,
+    marginVertical: 15,
+    backgroundColor: colors.grayBackgroundColor,
   },
 });

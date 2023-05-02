@@ -146,6 +146,8 @@ const Verbs = {
   defaultWeightType: 'lb',
   incomingChallenge: 'Incoming Challenge',
   INVOICECANCELLED: 'InvoiceCancelled',
+  team: 'Team',
+  club: 'Club',
 };
 
 export default Verbs;
