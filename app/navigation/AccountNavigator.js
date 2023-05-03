@@ -3061,6 +3061,7 @@ const AccountNavigator = () => (
       name="InvoiceSentScreen"
       component={InvoiceSentScreen}
       options={{
+        headerShown: false,
         title: strings.invoicingTitleText,
         headerTitleAlign: 'center',
         headerTintColor: colors.blackColor,
@@ -3078,18 +3079,7 @@ const AccountNavigator = () => (
       name="RecipientDetailScreen"
       component={RecipientDetailScreen}
       options={{
-        title: strings.invoicingTitleText,
-        headerTitleAlign: 'center',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontFamily: fonts.RMedium,
-        },
-
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
+        headerShown: false,
       }}
     />
 
@@ -3097,17 +3087,7 @@ const AccountNavigator = () => (
       name="BatchDetailScreen"
       component={BatchDetailScreen}
       options={{
-        title: strings.batch,
-        headerTitleAlign: 'center',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontFamily: fonts.RMedium,
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
+        headerShown: false,
       }}
     />
 
@@ -3115,18 +3095,7 @@ const AccountNavigator = () => (
       name="InvoiceDetailScreen"
       component={InvoiceDetailScreen}
       options={{
-        title: strings.invoice,
-        headerTitleAlign: 'center',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontFamily: fonts.RMedium,
-        },
-
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
+        headerShown: false,
       }}
     />
 
@@ -3150,6 +3119,8 @@ const AccountNavigator = () => (
       name="InvoiceReceivedScreen"
       component={InvoiceReceivedScreen}
       options={{
+        headerShown: false,
+        tabBarVisible: false,
         title: strings.invoicesreceived,
         headerTitleAlign: 'center',
         headerTintColor: colors.blackColor,

@@ -15,6 +15,21 @@ export default function CancelledInvoiceView({invoice, onPressCard, from}) {
     }
     return strings.rejected;
   };
+
+  const getPaidPartiallyPaidstatus = () => {
+    if (invoice.amount_due === 0) {
+      return strings.paidText;
+    }
+    if (
+      invoice.amount_due !== 0 &&
+      invoice.amount_paid !== 0 &&
+      invoice.amount_remaining !== 0
+    ) {
+      return strings.pariallyPaid;
+    }
+    return '';
+  };
+
   return (
     <TouchableOpacity style={styles.viewContainer} onPress={onPressCard}>
       {/* group icon */}
@@ -62,6 +77,16 @@ export default function CancelledInvoiceView({invoice, onPressCard, from}) {
                 },
               ]}>
               {getStatus()}
+            </Text>
+            <Text
+              style={[
+                styles.invoiceAmountTexStyle,
+                {
+                  color: colors.neonBlue,
+                  alignSelf: 'flex-end',
+                },
+              ]}>
+              {getPaidPartiallyPaidstatus()}
             </Text>
           </View>
         </View>

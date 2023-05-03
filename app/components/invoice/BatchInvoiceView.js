@@ -51,7 +51,7 @@ export default function BatchInvoiceView({data, onPressCard}) {
             fontFamily: fonts.RRegular,
             lineHeight: 24,
           }}>
-          {data.invoice_description}
+          {data.invoice_title}
         </Text>
         <Text
           style={{

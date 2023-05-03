@@ -49,8 +49,7 @@ export default function MemberInvoiceView({invoice, onPressCard}) {
         {/* invoice amount */}
         <View style={styles.invoiveAmountContainer}>
           <Text style={styles.invoiceAmountTexStyle}>
-            {invoice.amount_due.toFixed(2)}
-            {invoice.currency_type}
+            {`${invoice.amount_due.toFixed(2)} ${invoice.currency_type}`}
           </Text>
           {invoice.invoice_status !== Verbs.paid && (
             <Text
@@ -58,8 +57,9 @@ export default function MemberInvoiceView({invoice, onPressCard}) {
                 styles.invoiceAmountTexStyle,
                 {color: colors.darkThemeColor},
               ]}>
-              {invoice.amount_remaining.toFixed(2)}
-              {invoice.currency_type}
+              {`${invoice.amount_remaining.toFixed(2)} ${
+                invoice.currency_type
+              }`}
             </Text>
           )}
           <View>

@@ -42,34 +42,58 @@ export const resendBatchInvoice = (batchID, params, authContext) =>
     authContext,
   });
 
-export const getSenderInvoices = (authContext) =>
+export const getSenderInvoices = (authContext, invoiceDate, invoiceEndDate) => {
+  let str = '';
+
+  if (invoiceDate) {
+    str = `invoice_date=${invoiceDate}`;
+  }
+  if (invoiceEndDate) {
+    if (str.length > 0) {
+      str = `${str}&invoice_enddate=${invoiceEndDate}`;
+    }
+  }
+
+  return makeAPIRequest({
+    method: 'get',
+    url: `${Config.BASE_URL}/invoices/sender?${str}`,
+    authContext,
+  });
+};
+
+// recevier_id
+
+export const getRecieverInvoices = (
+  authContext,
+  invoiceDate,
+  invoiceEndDate,
+) => {
+  let str = '';
+
+  if (invoiceDate) {
+    str = `invoice_date=${invoiceDate}`;
+  }
+  if (invoiceEndDate) {
+    if (str.length > 0) {
+      str = `${str}&invoice_enddate=${invoiceEndDate}`;
+    }
+  }
+
+  return makeAPIRequest({
+    method: 'get',
+    url: `${Config.BASE_URL}/invoices/receiver?${str}`,
+    authContext,
+  });
+};
+
+export const getBatchInvoices = (bacthID, authContext) =>
   makeAPIRequest({
     method: 'get',
-    url: `${Config.BASE_URL}/invoices/sender`,
+    url: `${Config.BASE_URL}/invoices/batch/${bacthID}`,
     authContext,
   });
 
-  export const getRecieverInvoices = (authContext) =>
-  makeAPIRequest({
-    method: 'get',
-    url: `${Config.BASE_URL}/invoices/receiver`,
-    authContext,
-  });
-
-export const getTeamMemberInvoice = (memberID, authContext) =>
-  makeAPIRequest({
-    method: 'get',
-    url: `${Config.BASE_URL}/invoices/member/${memberID}`,
-    authContext,
-  });
-export const getReceiverInvoice = (authContext) =>
-  makeAPIRequest({
-    method: 'get',
-    url: `${Config.BASE_URL}/invoices/receiver`,
-    authContext,
-  });
-
-export const getCancelledInvoice = (type,authContext) =>
+export const getCancelledInvoice = (type, authContext) =>
   makeAPIRequest({
     method: 'get',
     url: `${Config.BASE_URL}/invoices/${type}?cancel_invoice=true`,
@@ -119,6 +143,7 @@ export const addRecipientList = (batchID, authContext) =>
     url: `${Config.BASE_URL}/invoices/batch/${batchID}/list`,
     authContext,
   });
+
 export const deleteInvoiceLog = (invoiceID, logID, authContext) =>
   makeAPIRequest({
     method: 'delete',

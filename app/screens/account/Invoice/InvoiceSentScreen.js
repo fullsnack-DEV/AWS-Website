@@ -2,9 +2,9 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable consistent-return */
 /* eslint-disable array-callback-return */
+
 import React, {
   useState,
-  useLayoutEffect,
   useRef,
   useCallback,
   useEffect,
@@ -19,7 +19,7 @@ import {
   FlatList,
   Alert,
   ScrollView,
-  TouchableWithoutFeedback,
+  SafeAreaView,
   Pressable,
 } from 'react-native';
 
@@ -35,7 +35,6 @@ import images from '../../../Constants/ImagePath';
 import MemberInvoicesView from '../../../components/invoice/MemberInvoicesView';
 import BatchInvoiceView from '../../../components/invoice/BatchInvoiceView';
 import {strings} from '../../../../Localization/translation';
-
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import Verbs from '../../../Constants/Verbs';
 import TCScrollableProfileTabs from '../../../components/TCScrollableProfileTabs';
@@ -43,6 +42,8 @@ import TCScrollableProfileTabs from '../../../components/TCScrollableProfileTabs
 import SendNewInvoiceModal from './SendNewInvoiceModal';
 import BottomSheet from '../../../components/modals/BottomSheet';
 import {MonthData} from '../../../Constants/GeneralConstants';
+import ScreenHeader from '../../../components/ScreenHeader';
+import {getTCDate} from '../../../utils';
 
 export default function InvoiceSentScreen({navigation}) {
   const [loading, setloading] = useState(false);
@@ -66,7 +67,8 @@ export default function InvoiceSentScreen({navigation}) {
   const [totalInvoices, setTotalInvoices] = useState(0);
   const [data, setData] = useState([]);
   const [visiblemonthModal, setVisibleMonthModal] = useState();
-  const [selectedMonth, setSelectedMonth] = useState(strings.past30DaysText);
+  const [visibleCurrencySheet, setVisibleCurrencySheet] = useState();
+  const [selectedMonth, setSelectedMonth] = useState(MonthData[1]);
   const [currentRecordSet, setCurrentRecordSet] = useState({
     currency_type: 'USD',
     invoice_total: 0,
@@ -77,73 +79,74 @@ export default function InvoiceSentScreen({navigation}) {
     total_invoice: 0,
   });
 
+  const [currencyInvoiceAmount, setCurrencyInvoiceAmount] = useState();
+
+  const [allCurrencies, setAllCurrencies] = useState();
+
+  const [currencies, setCurrencies] = useState([currencyData[0].currency]);
+  const [currency, setCurrency] = useState(currencyData[0].currency);
+  const [startDateTime, setStartDateTime] = useState(
+    new Date(new Date().setDate(new Date().getDate() - 90)),
+  );
+  const [endDateTime, setEndDateTime] = useState(new Date());
+
   const tabChangePress = useCallback((changeTab) => {
     updateSubTabs(changeTab.i);
     setMaintabNumber(changeTab.i);
   }, []);
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        <TouchableWithoutFeedback
-          onPress={() => {
-            navigation.goBack();
-          }}>
-          <Image source={images.backArrow} style={styles.backArrowStyle} />
-        </TouchableWithoutFeedback>
-      ),
+  const getSendInvoices = () => {
+    const TcstartDate = getTCDate(startDateTime);
+    const TCendDate = getTCDate(endDateTime);
 
-      headerTitle: () => (
-        <Text style={styles.navTitle}>{strings.invoicesent}</Text>
-      ),
-      headerRight: () => (
-        <View style={styles.rightHeaderView}>
-          {authContext.entity.obj.entity_type !== Verbs.entityTypePlayer ? (
-            <TouchableOpacity onPress={() => SetSendNewInvoice(true)}>
-              <Image
-                source={images.newinvoiceIcon}
-                style={styles.townsCupPlusIcon}
-              />
-            </TouchableOpacity>
-          ) : null}
+    setloading(true);
+    getSenderInvoices(authContext, TcstartDate, TCendDate)
+      .then((response) => {
+        if (response.payload.length > 0) {
+          let total = 0;
+          response.payload.forEach((obj) => {
+            total += obj.total_invoice;
+          });
+          setData(response.payload);
+          setTotalInvoices(total);
+          updateCurrencyData(response.payload);
+          const record = response.payload[0];
+          setCurrency(record.currency_type);
+          setCurrentRecordSet(record);
+        }
+        setloading(false);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
 
-          <TouchableOpacity onPress={() => actionSheet.current.show()}>
-            <Image
-              source={images.vertical3Dot}
-              style={styles.townsCupthreeDotIcon}
-            />
-          </TouchableOpacity>
-        </View>
-      ),
-    });
-  }, [navigation, authContext]);
+  const getDates = (optionsState) => {
+    const startDate = new Date();
+    const endDate = new Date();
+
+    if (optionsState === strings.past90DaysText) {
+      startDate.setDate(startDate.getDate() - 90);
+    } else if (optionsState === strings.past30DaysText) {
+      startDate.setDate(startDate.getDate() - 30);
+    } else if (optionsState === strings.past180Days) {
+      startDate.setDate(startDate.getDate() - 180);
+    } else if (optionsState === strings.past1year) {
+      startDate.setDate(startDate.getDate() - 360);
+    }
+
+    setStartDateTime(startDate);
+    setEndDateTime(endDate);
+  };
 
   useEffect(() => {
     if (isFocused) {
-      setloading(true);
-      getSenderInvoices(authContext)
-        .then((response) => {
-          if (response.payload.length > 0) {
-            let total = 0;
-            response.payload.forEach((obj) => {
-              total += obj.total_invoice;
-            });
-            setData(response.payload);
-            setTotalInvoices(total);
-            updateCurrencyData(response.payload);
-            const record = response.payload[0];
-            setCurrentRecordSet(record);
-          }
-          setloading(false);
-        })
-        .catch((e) => {
-          setloading(false);
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
-        });
+      getSendInvoices();
     }
-  }, [authContext, isFocused]);
+  }, [authContext, isFocused, selectedMonth]);
 
   useEffect(() => {
     updateTabs(
@@ -162,8 +165,14 @@ export default function InvoiceSentScreen({navigation}) {
     records.map((obj) => {
       objects.push({currency: obj.currency_type, invoices: obj.total_invoice});
     });
+
+    setCurrencies([strings.all, ...objects.map((item) => item.currency)]);
+
     setCurrencyData(objects);
+
+    setCurrencyInvoiceAmount(objects[0].invoices);
   };
+
   const updateTabs = (peopleCount, batchesCount) => {
     let recipientsTitle = strings.recipients;
     let batchesTitle = strings.batches;
@@ -198,6 +207,7 @@ export default function InvoiceSentScreen({navigation}) {
 
     setSubTabs([allTitle, paidTitle, openTitle]);
   };
+
   const updateSubTabs = (mainTabN) => {
     const allTitle = format(
       strings.allNInvoice,
@@ -222,12 +232,14 @@ export default function InvoiceSentScreen({navigation}) {
 
     setSubTabs([allTitle, paidTitle, openTitle]);
   };
+
   const onCurrencyPress = (item) => {
     const record = data.find((obj) => obj.currency_type === item);
     if (record) {
       setCurrentRecordSet(record);
     }
   };
+
   const onRecipientPress = (recipient) => {
     const recipentData = [];
     const receiver = {
@@ -271,12 +283,14 @@ export default function InvoiceSentScreen({navigation}) {
       currency: currentRecordSet.currency_type,
     });
   };
+
   const renderMemberView = ({item}) => (
     <MemberInvoicesView
       data={item}
       onPressCard={() => onRecipientPress(item)}
     />
   );
+
   const renderBatchView = ({item}) => (
     <BatchInvoiceView
       data={item}
@@ -336,192 +350,315 @@ export default function InvoiceSentScreen({navigation}) {
     [currentRecordSet],
   );
 
-  return (
-    <View style={styles.mainContainer}>
-      <ActivityLoader visible={loading} />
+  const setAllInvoices = () => {
+    setAllCurrencies(true);
+  };
 
-      <BottomSheet
-        isVisible={visiblemonthModal}
-        closeModal={() => setVisibleMonthModal(false)}
-        optionList={MonthData}
-        onSelect={(option) => {
-          setSelectedMonth(option);
-          setVisibleMonthModal(false);
+  return (
+    <SafeAreaView
+      style={{
+        flex: 1,
+        backgroundColor: colors.lightGrayBackground,
+      }}>
+      <ScreenHeader
+        title={strings.invoicesent}
+        leftIcon={images.backArrow}
+        leftIconPress={() => {
+          navigation.goBack();
+        }}
+        rightIcon1={
+          authContext.entity.obj.entity_type !== Verbs.entityTypePlayer
+            ? images.newinvoiceIcon
+            : null
+        }
+        rightIcon2={images.vertical3Dot}
+        rightIcon1Press={() => SetSendNewInvoice(true)}
+        rightIcon2Press={() => actionSheet.current.show()}
+        containerStyle={{
+          paddingLeft: 10,
+          paddingRight: 17,
+          borderBottomWidth: 1,
+          paddingBottom: 13,
         }}
       />
 
-      <Pressable
-        onPress={() => setVisibleMonthModal(true)}
-        style={{
-          backgroundColor: colors.lightGrayBackground,
+      <View style={styles.mainContainer}>
+        {/* screen header */}
 
-          paddingHorizontal: 15,
-        }}>
-        <View
-          style={{
-            marginTop: 15,
-            width: '100%',
-            height: 40,
-            backgroundColor: colors.whiteColor,
-            alignSelf: 'center',
-            borderRadius: 25,
-            justifyContent: 'space-between',
-            alignItems: 'flex-start',
-            flexDirection: 'row',
-          }}>
-          <Text
-            style={{
-              fontFamily: fonts.RRegular,
-              fontSize: 16,
-              lineHeight: 36,
-              paddingHorizontal: 15,
-            }}>
-            {selectedMonth}
-          </Text>
-          <Image
-            source={images.dropDownArrow2}
-            style={{
-              height: 15,
-              width: 15,
-              marginRight: 15,
-              tintColor: colors.userPostTimeColor,
-              alignSelf: 'center',
-            }}
-          />
-        </View>
-      </Pressable>
+        <ActivityLoader visible={loading} />
 
-      <View style={{flex: 1}}>
-        <InvoiceAmount
-          currency={currentRecordSet.currency_type}
-          totalInvoices={totalInvoices}
-          totalAmount={currentRecordSet.invoice_total}
-          paidAmount={currentRecordSet.invoice_paid_total}
-          openAmount={currentRecordSet.invoice_open_total}
-          currencyData={currencyData}
-          onCurrencyPress={onCurrencyPress}
+        <BottomSheet
+          isVisible={visiblemonthModal}
+          closeModal={() => setVisibleMonthModal(false)}
+          optionList={MonthData}
+          onSelect={(option) => {
+            setSelectedMonth(option);
+            setVisibleMonthModal(false);
+            getDates(option);
+          }}
         />
 
-        <View style={{backgroundColor: colors.whiteColor}}>
-          <TCScrollableProfileTabs
-            tabItem={tabs}
-            tabVerticalScroll={false}
-            onChangeTab={tabChangePress}
-            currentTab={maintabNumber}
-          />
-        </View>
+        <Pressable
+          onPress={() => setVisibleMonthModal(true)}
+          style={{
+            backgroundColor: colors.lightGrayBackground,
+
+            paddingHorizontal: 15,
+          }}>
+          <View
+            style={{
+              marginTop: 15,
+              width: '100%',
+              height: 40,
+              backgroundColor: colors.whiteColor,
+              alignSelf: 'center',
+              borderRadius: 25,
+              justifyContent: 'space-between',
+              alignItems: 'flex-start',
+              flexDirection: 'row',
+            }}>
+            <Text
+              style={{
+                fontFamily: fonts.RRegular,
+                fontSize: 16,
+                lineHeight: 36,
+                paddingHorizontal: 15,
+              }}>
+              {selectedMonth}
+            </Text>
+            <Image
+              source={images.dropDownArrow2}
+              style={{
+                height: 15,
+                width: 15,
+                marginRight: 15,
+                tintColor: colors.userPostTimeColor,
+                alignSelf: 'center',
+              }}
+            />
+          </View>
+        </Pressable>
+
+        {/* invoices DropDown */}
+
         <View
           style={{
+            paddingHorizontal: 15,
             flexDirection: 'row',
-            borderBottomColor: colors.grayBackgroundColor,
-            borderBottomWidth: 1,
-            backgroundColor: colors.whiteGradientColor,
+            justifyContent: 'space-between',
+            backgroundColor: colors.lightGrayBackground,
+            marginTop: 20,
+            marginBottom: allCurrencies ? 20 : 0,
           }}>
-          <ScrollView
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
+          <TouchableOpacity
+            onPress={() => {
+              setVisibleCurrencySheet(true);
+            }}
             style={{
-              marginRight: 40,
+              flexDirection: 'row',
             }}>
-            {subTabs.map((item, index) => (
-              <TouchableOpacity
-                key={item}
-                style={{padding: 10}}
-                onPress={() => setCurrentSubTab(index)}>
-                <Text
-                  style={{
-                    color:
-                      index === currentSubTab
-                        ? colors.themeColor
-                        : colors.lightBlackColor,
-                    fontFamily:
-                      index === currentSubTab ? fonts.RBold : fonts.RRegular,
-                  }}>
-                  {item}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
+            <Text
+              style={{
+                fontFamily: fonts.RMedium,
+                fontSize: 20,
+                color: colors.lightBlackColor,
+              }}>
+              {allCurrencies
+                ? strings.allNInvoice
+                : `${strings.invoicesIn} ${currency}`}
+            </Text>
+            <Image
+              source={images.dropDownArrow}
+              style={{
+                width: 14,
+                height: 26,
+                resizeMode: 'contain',
+                marginLeft: 5,
+                alignItems: 'center',
+                lineHeight: 30,
+                tintColor: colors.lightBlackColor,
+              }}
+            />
+          </TouchableOpacity>
+
+          <Text
+            style={{
+              fontSize: 20,
+              fontFamily: fonts.RMedium,
+              lineHeight: 30,
+              color: colors.lightBlackColor,
+            }}>
+            {currencyInvoiceAmount}
+          </Text>
         </View>
 
-        {maintabNumber === 0 ? (
-          <FlatList
-            showsVerticalScrollIndicator={false}
-            data={
-              (currentSubTab === 0 && memberListByFilter('All')) ||
-              (currentSubTab === 1 && memberListByFilter('Paid')) ||
-              (currentSubTab === 2 && memberListByFilter('Open'))
-            }
-            renderItem={renderMemberView}
-            keyExtractor={(index) => index.toString()}
-          />
+        {allCurrencies ? (
+          <View
+            style={{
+              flex: 1,
+              backgroundColor: colors.whiteColor,
+            }}>
+            <FlatList
+              extraData={data}
+              data={data}
+              showsVerticalScrollIndicator={false}
+              style={{backgroundColor: colors.whiteColor}}
+              keyExtractor={(item, index) => index.toString()}
+              ItemSeparatorComponent={() => <View style={styles.dividerLine} />}
+              renderItem={({item}) => (
+                <InvoiceAmount
+                  style={{
+                    backgroundColor: colors.whiteColor,
+                    marginTop: 15,
+                  }}
+                  currency={item.currency_type}
+                  currencyInvoiceAmount={item.total_invoice}
+                  totalAmount={item.invoice_total}
+                  paidAmount={item.invoice_paid_total}
+                  openAmount={item.invoice_open_total}
+                  allCurrencies={allCurrencies}
+                />
+              )}
+            />
+          </View>
         ) : (
-          <FlatList
-            showsVerticalScrollIndicator={false}
-            data={
-              (currentSubTab === 0 && batchListByFilter('All')) ||
-              (currentSubTab === 1 && batchListByFilter('Paid')) ||
-              (currentSubTab === 2 && batchListByFilter('Open'))
-            }
-            renderItem={renderBatchView}
-            keyExtractor={(index) => index.toString()}
-          />
-        )}
-      </View>
+          <View style={{flex: 1, backgroundColor: colors.lightGrayBackground}}>
+            <InvoiceAmount
+              currency={currentRecordSet.currency_type}
+              totalAmount={currentRecordSet.invoice_total}
+              paidAmount={currentRecordSet.invoice_paid_total}
+              openAmount={currentRecordSet.invoice_open_total}
+            />
 
-      <ActionSheet
-        ref={actionSheet}
-        options={[strings.cancelledInvoiceText, strings.cancel]}
-        cancelButtonIndex={1}
-        // destructiveButtonIndex={2}
-        onPress={(index) => {
-          if (index === 0) {
-            navigation.navigate('CanceledInvoicesScreen', {
-              from: Verbs.INVOICESENT,
-            });
-          }
-        }}
-      />
-      <SendNewInvoiceModal
-        isVisible={sendNewInvoice}
-        onClose={() => SetSendNewInvoice(false)}
-      />
-    </View>
+            <View style={{backgroundColor: colors.whiteColor}}>
+              <TCScrollableProfileTabs
+                tabItem={tabs}
+                tabVerticalScroll={false}
+                onChangeTab={tabChangePress}
+                currentTab={maintabNumber}
+              />
+            </View>
+            <View
+              style={{
+                flexDirection: 'row',
+                borderBottomColor: colors.grayBackgroundColor,
+                borderBottomWidth: 1,
+                backgroundColor: colors.whiteGradientColor,
+              }}>
+              <ScrollView
+                horizontal={true}
+                showsHorizontalScrollIndicator={false}
+                style={{
+                  marginRight: 40,
+                }}>
+                {subTabs.map((item, index) => (
+                  <TouchableOpacity
+                    key={item}
+                    style={{padding: 10}}
+                    onPress={() => setCurrentSubTab(index)}>
+                    <Text
+                      style={{
+                        color:
+                          index === currentSubTab
+                            ? colors.themeColor
+                            : colors.lightBlackColor,
+                        fontFamily:
+                          index === currentSubTab
+                            ? fonts.RBold
+                            : fonts.RRegular,
+                      }}>
+                      {item}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
+
+            {maintabNumber === 0 ? (
+              <FlatList
+                style={{backgroundColor: colors.whiteColor}}
+                showsVerticalScrollIndicator={false}
+                data={
+                  (currentSubTab === 0 &&
+                    memberListByFilter(Verbs.allStatus)) ||
+                  (currentSubTab === 1 && memberListByFilter(Verbs.paid)) ||
+                  (currentSubTab === 2 && memberListByFilter(Verbs.open))
+                }
+                renderItem={renderMemberView}
+                keyExtractor={(item, index) => index.toString()}
+              />
+            ) : (
+              <FlatList
+                style={{backgroundColor: colors.whiteColor}}
+                showsVerticalScrollIndicator={false}
+                data={
+                  (currentSubTab === 0 && batchListByFilter(Verbs.allStatus)) ||
+                  (currentSubTab === 1 && batchListByFilter(Verbs.paid)) ||
+                  (currentSubTab === 2 && batchListByFilter(Verbs.open))
+                }
+                renderItem={renderBatchView}
+                keyExtractor={(item, index) => index.toString()}
+              />
+            )}
+          </View>
+        )}
+
+        <BottomSheet
+          isVisible={visibleCurrencySheet}
+          optionList={currencies}
+          closeModal={() => setVisibleCurrencySheet(false)}
+          onSelect={(option) => {
+            if (option === strings.all) {
+              setAllCurrencies(true);
+              setCurrencyInvoiceAmount(totalInvoices);
+              setVisibleCurrencySheet(false);
+              return;
+            }
+
+            setVisibleCurrencySheet(false);
+
+            const selectedIndex = currencyData.findIndex(
+              (obj) => obj.currency === option,
+            );
+
+            setAllCurrencies(false);
+            setCurrencyInvoiceAmount(currencyData[selectedIndex].invoices);
+            onCurrencyPress(currencyData[selectedIndex].currency);
+            setCurrency(currencyData[selectedIndex].currency);
+          }}
+        />
+
+        <ActionSheet
+          ref={actionSheet}
+          options={[strings.cancelledInvoiceText, strings.cancel]}
+          cancelButtonIndex={1}
+          // destructiveButtonIndex={2}
+          onPress={(index) => {
+            if (index === 0) {
+              navigation.navigate('CanceledInvoicesScreen', {
+                from: Verbs.INVOICESENT,
+              });
+            }
+          }}
+        />
+        <SendNewInvoiceModal
+          isVisible={sendNewInvoice}
+          onClose={() => SetSendNewInvoice(false)}
+        />
+      </View>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    // backgroundColor:"red"
-  },
-  navTitle: {
-    fontFamily: fonts.RMedium,
-    fontSize: 16,
-    color: colors.lightBlackColor,
-    lineHeight: 18,
-  },
-  townsCupthreeDotIcon: {
-    height: 25,
 
-    resizeMode: 'contain',
-    width: 25,
+    backgroundColor: colors.lightGrayBackground,
   },
-  townsCupPlusIcon: {
-    resizeMode: 'contain',
-    height: 25,
-    width: 25,
-    marginLeft: 10,
-    marginRight: 10,
-  },
-  rightHeaderView: {
-    flexDirection: 'row',
-    marginRight: 15,
-    alignItems: 'center',
-  },
-  backArrowStyle: {
-    height: 20,
-    marginLeft: 15,
-    resizeMode: 'contain',
-    tintColor: colors.blackColor,
+
+  dividerLine: {
+    backgroundColor: colors.grayBackgroundColor,
+    marginHorizontal: 15,
+    height: 2,
   },
 });

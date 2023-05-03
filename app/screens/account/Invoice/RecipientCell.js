@@ -51,7 +51,6 @@ const RecipientCell = ({
                 />
               </View>
             )}
-
             {!item.user_id && (
               <View style={styles.placeholderView}>
                 <Image
@@ -87,66 +86,78 @@ const RecipientCell = ({
 
             {/* Name section */}
             <View style={{flex: 1, marginLeft: 10}}>
-              {rowType === InvoiceRowType.SelectAll &&  <Text style={styles.nameStyle} numberOfLines={1}>
-                    {selectAllTitle}
-                  </Text>}
-                  {rowType !== InvoiceRowType.SelectAll &&  <View>
-                <View style={{flexDirection: 'row'}}>
-                  <Text style={styles.nameStyle} numberOfLines={1}>
-                    {item.group_name}
-                    {item.first_name} {item.last_name}
-                  </Text>
-                  {item.user_id && !item.connected && (
-                    <Image
-                      source={images.unlinked}
-                      style={styles.unlinedImage}
-                    />
+              {rowType === InvoiceRowType.SelectAll && (
+                <Text style={styles.nameStyle} numberOfLines={1}>
+                  {selectAllTitle}
+                </Text>
+              )}
+              {rowType !== InvoiceRowType.SelectAll && (
+                <View>
+                  <View style={{flexDirection: 'row'}}>
+                    <Text style={styles.nameStyle} numberOfLines={1}>
+                      {item.group_name}
+                      {item.first_name} {item.last_name}
+                    </Text>
+                    {item.user_id && !item.connected && (
+                      <Image
+                        source={images.unlinked}
+                        style={styles.unlinedImage}
+                      />
+                    )}
+                  </View>
+                  {item.group_name && (
+                    <Text
+                      style={{
+                        fontFamily: fonts.RRegular,
+                        fontSize: 14,
+                        lineHeight: 21,
+                        color: colors.lightBlackColor,
+                      }}>{`${item.city} · ${getSportName(
+                      item,
+                      authContext,
+                    )}`}</Text>
                   )}
                 </View>
-                {item.group_name && (
-                  <Text
-                    style={{
-                      fontFamily: fonts.RRegular,
-                      fontSize: 14,
-                      lineHeight: 21,
-                      color: colors.lightBlackColor,
-                    }}>{`${item.city} · ${getSportName(
-                    item,
-                    authContext,
-                  )}`}</Text>
-                )}
-              </View>}
+              )}
             </View>
             {/* Checkbox section */}
-            {rowType !== InvoiceRowType.CancelRecipient &&  <View
-              style={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                width: 42,
-              }}>
-              <Image
-                source={
-                  (item.isChecked || isChecked) ? images.orangeCheckBox : images.whiteUncheck
-                }
-                style={[
-                  styles.checkImage,
-                  {borderWidth: (item.isChecked || isChecked) ? 0.3 : 1},
-                ]}
-              />
-            </View>}
+            {rowType !== InvoiceRowType.CancelRecipient && (
+              <View
+                style={{
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  width: 42,
+                }}>
+                <Image
+                  source={
+                    item.isChecked || isChecked
+                      ? images.orangeCheckBox
+                      : images.whiteUncheck
+                  }
+                  style={[
+                    styles.checkImage,
+                    {borderWidth: item.isChecked || isChecked ? 0.3 : 1},
+                  ]}
+                />
+              </View>
+            )}
 
-            
-          {rowType === InvoiceRowType.CancelRecipient &&  <TouchableWithoutFeedback
-          onPress={() => onSelectCancel({item, index})}>
-          <View
-            style={{
-              flexDirection: 'column',
-              alignItems: 'center',
-              width: 44,
-            }}>
-            <Image source={images.closeRound} style={styles.cancelImage} />
-          </View>
-        </TouchableWithoutFeedback>}
+            {rowType === InvoiceRowType.CancelRecipient && (
+              <TouchableWithoutFeedback
+                onPress={() => onSelectCancel({item, index})}>
+                <View
+                  style={{
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    width: 44,
+                  }}>
+                  <Image
+                    source={images.closeRound}
+                    style={styles.cancelImage}
+                  />
+                </View>
+              </TouchableWithoutFeedback>
+            )}
           </View>
         </View>
       </TouchableWithoutFeedback>

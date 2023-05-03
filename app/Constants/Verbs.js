@@ -146,8 +146,14 @@ const Verbs = {
   defaultWeightType: 'lb',
   incomingChallenge: 'Incoming Challenge',
   INVOICECANCELLED: 'InvoiceCancelled',
+
   team: 'Team',
   club: 'Club',
+
+  PAYMENT: 'payment',
+  CASH: 'Cash',
+  DATE_FORMAT: 'MMM DD, YYYY hh:mm A',
+  CHEQUE: 'Cheque',
 };
 
 export default Verbs;

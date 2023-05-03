@@ -1297,7 +1297,7 @@ export default {
   notRefundMorethanInvoiceValication:
     'en_User should not refund more than invoice paid amount.',
 
-  invoiceNoteValidation: 'en_Please select invoice note.',
+  invoiceNoteValidation: 'en_Please enter invoice note.',
   cancelInvoiceAlertText:
     'en_Are you sure that you want to cancel {0} invoice?',
   cancelThisInvoiceText:
@@ -2670,7 +2670,7 @@ export default {
   sendnewinvoice: 'en_Send New Invoice',
   datetimesetting:
     'en_Date and time displayed in-app will match the date and time settings of the device.',
-  noneselected: 'None selected',
+  noneselected: 'en_None selected',
   person: 'en_person',
   people: 'en_people',
   selected: 'en_selected',
@@ -2809,7 +2809,42 @@ export default {
   onlineUrl: 'en_URL',
   emptyEventUrl: "en_URL hasn't been provided yet.",
   postTitle: 'en_Post',
+  cancelInvoiveModaltitle:
+    'en_Choose recipients of the invoices that you want to cancel.',
+  peopleSelected: 'en_people selected',
+  allRecipientsCount: 'en_All Recipients ({0})',
+  resendInvoiceModalTitle:
+    'en_Please choose recipients. You can also add a new message.',
+  addnewMessage: 'en_ADD NEW mESSAGE',
+  amountRecevied: 'en_Amount Recevied',
+  amountRefunded: 'en_Amount Refunded',
+  deleteLogText: 'en_Are you sure you want to delete this log?',
+  deletelogbtntext: 'en_delete log',
+  loggedbytxt: 'en_Logged by',
+  loggedat: 'en_logged at',
+  transctionNumber: 'en_Transaction No:',
+  logaPayment: 'en_Log a Payment',
+  logaRefund: 'en_Log a Refund',
+  nopaymentrequired: 'en_No payment reuired for this invoice.',
+  norefundrequired: 'en_No refund reuired for this invoice.',
+  noinvoice: 'en_No Invoice',
   recruitingBottomText:
     'en_If you select “Yes, display it.”, your team profile may be displayed on the “Recruiting Members” section in Local Home.',
   areYouSureTo: 'en_Are you sure you want to {0} {1}?',
+
+  paidInCash: 'en_Paid in cash',
+  paidthroughStripe: 'en_Paid through Stripe',
+  paidbyCheque: 'en_Paid by Cheque',
+  refundInCash: 'en_Refund in cash',
+  refundthroughStripe: 'en_Refund through Stripe',
+  refundByCheck: 'en_Refund by Cheque',
+  past180Days: 'en_Past 180 days',
+  past1year: 'en_Past 1 year',
+  pickaDate: 'en_Pick a date',
+  pariallyPaid: 'en_Partially Paid',
+  invoicesIn: 'en_Invoices in',
+  chooseReciepint: 'en_Choose Recipients',
+  chooseReciepientModaltitle:
+    'en_Choose recipients to whom you wantto resent the invoice.',
+  newRecipents: 'en_New Recipients',
 };
