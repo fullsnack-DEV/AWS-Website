@@ -46,13 +46,25 @@ import ScreenHeader from '../../../components/ScreenHeader';
 import {getTCDate} from '../../../utils';
 
 export default function InvoiceSentScreen({navigation}) {
-  const [loading, setloading] = useState(false);
+  const defaultRecords = [
+    {
+      currency_type: 'USD',
+      invoice_total: 0,
+      invoice_paid_total: 0,
+      invoice_open_total: 0,
+      members: [],
+      batches: [],
+      total_invoice: 0,
+    },
+  ];
+  const [loading, setLoading] = useState(false);
   const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
   const actionSheet = useRef();
-  const [sendNewInvoice, SetSendNewInvoice] = useState(false);
+  const [showSendNewInvoice, setShowSendNewInvoice] = useState(false);
   // Reciepients / Batches
   const [maintabNumber, setMaintabNumber] = useState(0);
+
   const [tabs, setTabs] = useState([strings.recipients, strings.batches]);
   // For All / Paid / Open
   const [subTabs, setSubTabs] = useState([
@@ -60,64 +72,79 @@ export default function InvoiceSentScreen({navigation}) {
     strings.paidNInvoice,
     strings.openNInvoice,
   ]);
+
   const [currentSubTab, setCurrentSubTab] = useState(0);
-  const [currencyData, setCurrencyData] = useState([
-    {currency: 'USD', invoices: 0},
-  ]);
   const [totalInvoices, setTotalInvoices] = useState(0);
-  const [data, setData] = useState([]);
+  const [data, setData] = useState(defaultRecords);
+
+  const [currentRecordSet, setCurrentRecordSet] = useState(defaultRecords[0]);
+  const [selectedCurrency, setSelectedCurrency] = useState();
+
   const [visiblemonthModal, setVisibleMonthModal] = useState();
   const [visibleCurrencySheet, setVisibleCurrencySheet] = useState();
+
   const [selectedMonth, setSelectedMonth] = useState(MonthData[1]);
-  const [currentRecordSet, setCurrentRecordSet] = useState({
-    currency_type: 'USD',
-    invoice_total: 0,
-    invoice_paid_total: 0,
-    invoice_open_total: 0,
-    members: [],
-    batches: [],
-    total_invoice: 0,
-  });
-
-  const [currencyInvoiceAmount, setCurrencyInvoiceAmount] = useState();
-
-  const [allCurrencies, setAllCurrencies] = useState();
-
-  const [currencies, setCurrencies] = useState([currencyData[0].currency]);
-  const [currency, setCurrency] = useState(currencyData[0].currency);
   const [startDateTime, setStartDateTime] = useState(
     new Date(new Date().setDate(new Date().getDate() - 90)),
   );
   const [endDateTime, setEndDateTime] = useState(new Date());
 
+  const InvoiceSentMainTab = {
+    Recipients: 0,
+    Batches: 1,
+  };
+  const InvoiceSentSubTab = {
+    ALL: 0,
+    PAID: 1,
+    OPEN: 2,
+  };
+
   const tabChangePress = useCallback((changeTab) => {
-    updateSubTabs(changeTab.i);
     setMaintabNumber(changeTab.i);
   }, []);
 
   const getSendInvoices = () => {
-    const TcstartDate = getTCDate(startDateTime);
-    const TCendDate = getTCDate(endDateTime);
+    const startDate = getTCDate(startDateTime);
+    const endDate = getTCDate(endDateTime);
 
-    setloading(true);
-    getSenderInvoices(authContext, TcstartDate, TCendDate)
+    setLoading(true);
+    getSenderInvoices(authContext, startDate, endDate)
       .then((response) => {
+        let records = defaultRecords;
         if (response.payload.length > 0) {
-          let total = 0;
-          response.payload.forEach((obj) => {
-            total += obj.total_invoice;
-          });
-          setData(response.payload);
-          setTotalInvoices(total);
-          updateCurrencyData(response.payload);
-          const record = response.payload[0];
-          setCurrency(record.currency_type);
-          setCurrentRecordSet(record);
+          records = response.payload;
         }
-        setloading(false);
+
+        const record = records[0];
+        let total = 0;
+        records.forEach((obj) => {
+          total += obj.total_invoice;
+        });
+        setData(records);
+        setTotalInvoices(total);
+        if (selectedCurrency) {
+          if (selectedCurrency !== strings.all) {
+            const selectedRecord = records.find(
+              (obj) => obj.currency_type === selectedCurrency,
+            );
+            if (selectedRecord) {
+              setCurrentRecordSet(selectedRecord);
+            } else {
+              setCurrentRecordSet(record);
+              setSelectedCurrency(record.currency_type);
+              setMaintabNumber(InvoiceSentMainTab.Recipients);
+              setCurrentSubTab(InvoiceSentSubTab.ALL);
+            }
+          }
+        } else {
+          setCurrentRecordSet(record);
+          setSelectedCurrency(record.currency_type);
+        }
+
+        setLoading(false);
       })
       .catch((e) => {
-        setloading(false);
+        setLoading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
@@ -153,25 +180,15 @@ export default function InvoiceSentScreen({navigation}) {
       currentRecordSet.members.length,
       currentRecordSet.batches.length,
     );
-    updateSubTabs(maintabNumber);
   }, [currentRecordSet]);
 
   useEffect(() => {
     updateSubTabs(maintabNumber);
   }, [maintabNumber]);
 
-  const updateCurrencyData = (records) => {
-    const objects = [];
-    records.map((obj) => {
-      objects.push({currency: obj.currency_type, invoices: obj.total_invoice});
-    });
-
-    setCurrencies([strings.all, ...objects.map((item) => item.currency)]);
-
-    setCurrencyData(objects);
-
-    setCurrencyInvoiceAmount(objects[0].invoices);
-  };
+  // useLayoutEffect(() => {
+  //   updateSubTabs(maintabNumber);
+  // }, [maintabNumber]);
 
   const updateTabs = (peopleCount, batchesCount) => {
     let recipientsTitle = strings.recipients;
@@ -183,61 +200,32 @@ export default function InvoiceSentScreen({navigation}) {
       batchesTitle = `${batchesTitle} (${batchesCount})`;
     }
     setTabs([recipientsTitle, batchesTitle]);
-
-    const allTitle = format(
-      strings.allNInvoice,
-      maintabNumber === 0
-        ? memberListByFilter(Verbs.allVerb).length
-        : batchListByFilter(Verbs.allVerb).length,
-    );
-
-    const paidTitle = format(
-      strings.paidNInvoice,
-      maintabNumber === 0
-        ? memberListByFilter(Verbs.paid).length
-        : batchListByFilter(Verbs.paid).length,
-    );
-
-    const openTitle = format(
-      strings.openNInvoice,
-      maintabNumber === 0
-        ? memberListByFilter(Verbs.open).length
-        : batchListByFilter(Verbs.open).length,
-    );
-
-    setSubTabs([allTitle, paidTitle, openTitle]);
+    updateSubTabs(maintabNumber);
   };
 
   const updateSubTabs = (mainTabN) => {
     const allTitle = format(
       strings.allNInvoice,
-      mainTabN === 0
+      mainTabN === InvoiceSentMainTab.Recipients
         ? memberListByFilter(Verbs.allVerb).length
         : batchListByFilter(Verbs.allVerb).length,
     );
 
     const paidTitle = format(
       strings.paidNInvoice,
-      mainTabN === 0
+      mainTabN === InvoiceSentMainTab.Recipients
         ? memberListByFilter(Verbs.paid).length
         : batchListByFilter(Verbs.paid).length,
     );
 
     const openTitle = format(
       strings.openNInvoice,
-      mainTabN === 0
+      mainTabN === InvoiceSentMainTab.Recipients
         ? memberListByFilter(Verbs.open).length
         : batchListByFilter(Verbs.open).length,
     );
 
     setSubTabs([allTitle, paidTitle, openTitle]);
-  };
-
-  const onCurrencyPress = (item) => {
-    const record = data.find((obj) => obj.currency_type === item);
-    if (record) {
-      setCurrentRecordSet(record);
-    }
   };
 
   const onRecipientPress = (recipient) => {
@@ -280,6 +268,10 @@ export default function InvoiceSentScreen({navigation}) {
       recipentData,
       receiver,
       totalInvoices: totInvoices,
+      receiver_id: recipient.receiver_id,
+      startDate: startDateTime,
+      endDate: endDateTime,
+
       currency: currentRecordSet.currency_type,
     });
   };
@@ -294,15 +286,16 @@ export default function InvoiceSentScreen({navigation}) {
   const renderBatchView = ({item}) => (
     <BatchInvoiceView
       data={item}
-      onPressCard={() =>
+      onPressCard={() => {
         navigation.navigate('BatchDetailScreen', {
           from: Verbs.INVOICESENT,
           batchData: item,
-          currency_type: currentRecordSet.currency_type,
-        })
-      }
+          batchId: item.batch_id
+        });
+      }}
     />
   );
+
   const memberListByFilter = useCallback(
     (status) => {
       if (status === Verbs.allStatus) {
@@ -325,6 +318,7 @@ export default function InvoiceSentScreen({navigation}) {
     },
     [currentRecordSet],
   );
+
   const batchListByFilter = useCallback(
     (status) => {
       if (status === Verbs.allStatus) {
@@ -350,10 +344,6 @@ export default function InvoiceSentScreen({navigation}) {
     [currentRecordSet],
   );
 
-  const setAllInvoices = () => {
-    setAllCurrencies(true);
-  };
-
   return (
     <SafeAreaView
       style={{
@@ -372,7 +362,7 @@ export default function InvoiceSentScreen({navigation}) {
             : null
         }
         rightIcon2={images.vertical3Dot}
-        rightIcon1Press={() => SetSendNewInvoice(true)}
+        rightIcon1Press={() => setShowSendNewInvoice(true)}
         rightIcon2Press={() => actionSheet.current.show()}
         containerStyle={{
           paddingLeft: 10,
@@ -448,7 +438,7 @@ export default function InvoiceSentScreen({navigation}) {
             justifyContent: 'space-between',
             backgroundColor: colors.lightGrayBackground,
             marginTop: 20,
-            marginBottom: allCurrencies ? 20 : 0,
+            marginBottom: selectedCurrency === strings.all ? 20 : 0,
           }}>
           <TouchableOpacity
             onPress={() => {
@@ -463,9 +453,18 @@ export default function InvoiceSentScreen({navigation}) {
                 fontSize: 20,
                 color: colors.lightBlackColor,
               }}>
-              {allCurrencies
-                ? strings.allNInvoice
-                : `${strings.invoicesIn} ${currency}`}
+              {selectedCurrency === strings.all
+                ? strings.allInvoiceText
+                : `${strings.invoicesIn}`}
+              {selectedCurrency !== strings.all && (
+                <Text
+                  style={{
+                    fontFamily: fonts.RBold,
+                  }}>
+                  {' '}
+                  {`${currentRecordSet.currency_type}`}
+                </Text>
+              )}
             </Text>
             <Image
               source={images.dropDownArrow}
@@ -488,11 +487,13 @@ export default function InvoiceSentScreen({navigation}) {
               lineHeight: 30,
               color: colors.lightBlackColor,
             }}>
-            {currencyInvoiceAmount}
+            {selectedCurrency === strings.all
+              ? totalInvoices
+              : currentRecordSet.total_invoice}
           </Text>
         </View>
 
-        {allCurrencies ? (
+        {selectedCurrency === strings.all ? (
           <View
             style={{
               flex: 1,
@@ -512,11 +513,11 @@ export default function InvoiceSentScreen({navigation}) {
                     marginTop: 15,
                   }}
                   currency={item.currency_type}
-                  currencyInvoiceAmount={item.total_invoice}
+                  totalInvoices={item.total_invoice}
                   totalAmount={item.invoice_total}
                   paidAmount={item.invoice_paid_total}
                   openAmount={item.invoice_open_total}
-                  allCurrencies={allCurrencies}
+                  allCurrencySelected={selectedCurrency === strings.all}
                 />
               )}
             />
@@ -536,6 +537,10 @@ export default function InvoiceSentScreen({navigation}) {
                 tabVerticalScroll={false}
                 onChangeTab={tabChangePress}
                 currentTab={maintabNumber}
+                bounces={false}
+                tabStyle={{
+                  marginTop: -2,
+                }}
               />
             </View>
             <View
@@ -574,27 +579,58 @@ export default function InvoiceSentScreen({navigation}) {
               </ScrollView>
             </View>
 
-            {maintabNumber === 0 ? (
+            {maintabNumber === InvoiceSentMainTab.Recipients ? (
               <FlatList
                 style={{backgroundColor: colors.whiteColor}}
                 showsVerticalScrollIndicator={false}
                 data={
-                  (currentSubTab === 0 &&
+                  (currentSubTab === InvoiceSentSubTab.ALL &&
                     memberListByFilter(Verbs.allStatus)) ||
-                  (currentSubTab === 1 && memberListByFilter(Verbs.paid)) ||
-                  (currentSubTab === 2 && memberListByFilter(Verbs.open))
+                  (currentSubTab === InvoiceSentSubTab.PAID &&
+                    memberListByFilter(Verbs.paid)) ||
+                  (currentSubTab === InvoiceSentSubTab.OPEN &&
+                    memberListByFilter(Verbs.open))
                 }
                 renderItem={renderMemberView}
+                ListEmptyComponent={() => (
+                  <Text
+                    style={{
+                      marginTop: 180,
+                      alignSelf: 'center',
+                      color: colors.userPostTimeColor,
+                      fontSize: 16,
+                      fontFamily: fonts.RMedium,
+                      lineHeight: 24,
+                    }}>
+                    {strings.noinvoice}
+                  </Text>
+                )}
                 keyExtractor={(item, index) => index.toString()}
               />
             ) : (
               <FlatList
                 style={{backgroundColor: colors.whiteColor}}
                 showsVerticalScrollIndicator={false}
+                ListEmptyComponent={() => (
+                  <Text
+                    style={{
+                      marginTop: 180,
+                      alignSelf: 'center',
+                      color: colors.userPostTimeColor,
+                      fontSize: 16,
+                      fontFamily: fonts.RMedium,
+                      lineHeight: 24,
+                    }}>
+                    {strings.noinvoice}
+                  </Text>
+                )}
                 data={
-                  (currentSubTab === 0 && batchListByFilter(Verbs.allStatus)) ||
-                  (currentSubTab === 1 && batchListByFilter(Verbs.paid)) ||
-                  (currentSubTab === 2 && batchListByFilter(Verbs.open))
+                  (currentSubTab === InvoiceSentSubTab.ALL &&
+                    batchListByFilter(Verbs.allStatus)) ||
+                  (currentSubTab === InvoiceSentSubTab.PAID &&
+                    batchListByFilter(Verbs.paid)) ||
+                  (currentSubTab === InvoiceSentSubTab.OPEN &&
+                    batchListByFilter(Verbs.open))
                 }
                 renderItem={renderBatchView}
                 keyExtractor={(item, index) => index.toString()}
@@ -605,26 +641,25 @@ export default function InvoiceSentScreen({navigation}) {
 
         <BottomSheet
           isVisible={visibleCurrencySheet}
-          optionList={currencies}
+          optionList={[strings.all, ...data.map((item) => item.currency_type)]}
           closeModal={() => setVisibleCurrencySheet(false)}
           onSelect={(option) => {
             if (option === strings.all) {
-              setAllCurrencies(true);
-              setCurrencyInvoiceAmount(totalInvoices);
+              setSelectedCurrency(strings.all);
               setVisibleCurrencySheet(false);
               return;
             }
 
             setVisibleCurrencySheet(false);
 
-            const selectedIndex = currencyData.findIndex(
-              (obj) => obj.currency === option,
+            const selectedRecord = data.find(
+              (obj) => obj.currency_type === option,
             );
 
-            setAllCurrencies(false);
-            setCurrencyInvoiceAmount(currencyData[selectedIndex].invoices);
-            onCurrencyPress(currencyData[selectedIndex].currency);
-            setCurrency(currencyData[selectedIndex].currency);
+            if (selectedRecord) {
+              setSelectedCurrency(option);
+              setCurrentRecordSet(selectedRecord);
+            }
           }}
         />
 
@@ -642,8 +677,8 @@ export default function InvoiceSentScreen({navigation}) {
           }}
         />
         <SendNewInvoiceModal
-          isVisible={sendNewInvoice}
-          onClose={() => SetSendNewInvoice(false)}
+          isVisible={showSendNewInvoice}
+          onClose={() => setShowSendNewInvoice(false)}
         />
       </View>
     </SafeAreaView>

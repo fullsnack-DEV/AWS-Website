@@ -34,7 +34,7 @@ const globalElasticApiCall = async ({method, url, data}) => {
       'Content-Type': 'application/json',
     },
   };
-  console.log('BEFORE API Opetions::--->', JSON.stringify(options));
+  // console.log('BEFORE API Opetions::--->', JSON.stringify(options));
   try {
     const response = await axios(options);
     return response?.data?.hits?.hits?.map((item) => item?._source);

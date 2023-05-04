@@ -106,7 +106,6 @@ const SendNewInvoiceModal = ({
         );
       }
     } else if (invoiceType === InvoiceType.Event) {
-      // get all the attendee here
       setLoading(false);
     }
   };
@@ -288,7 +287,7 @@ const SendNewInvoiceModal = ({
       headerRightButtonText={strings.send}
       onRightButtonPress={() => onSendInvoice()}>
       <ActivityLoader visible={loading} />
-      <ScrollView>
+      <ScrollView showsVerticalScrollIndicator={false}>
         {/* Code for Invoice Title */}
 
         <TCLabel

@@ -2847,4 +2847,6 @@ export default {
   chooseReciepientModaltitle:
     'en_Choose recipients to whom you wantto resent the invoice.',
   newRecipents: 'en_New Recipients',
+  toalnumberOfInvoices: 'en_Total Number of Invoices',
+  addRecipientToBatch: 'en_Add Recipients to Batch',
 };

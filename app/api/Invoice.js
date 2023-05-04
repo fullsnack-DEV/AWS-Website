@@ -42,11 +42,23 @@ export const resendBatchInvoice = (batchID, params, authContext) =>
     authContext,
   });
 
-export const getSenderInvoices = (authContext, invoiceDate, invoiceEndDate) => {
+export const getSenderInvoices = (
+  authContext,
+  invoiceDate,
+  invoiceEndDate,
+  receiverId,
+) => {
   let str = '';
 
+  if (receiverId) {
+    str = `receiver_id=${receiverId}`;
+  }
   if (invoiceDate) {
-    str = `invoice_date=${invoiceDate}`;
+    if (str.length > 1) {
+      str = `${str}&invoice_date=${invoiceDate}`;
+    } else {
+      str = `invoice_date=${invoiceDate}`;
+    }
   }
   if (invoiceEndDate) {
     if (str.length > 0) {
@@ -67,17 +79,28 @@ export const getRecieverInvoices = (
   authContext,
   invoiceDate,
   invoiceEndDate,
+  receiverId,
 ) => {
   let str = '';
 
+  if (receiverId) {
+    str = `receiver_id=${receiverId}`;
+  }
+
   if (invoiceDate) {
-    str = `invoice_date=${invoiceDate}`;
+    if (str.length > 1) {
+      str = `${str}&invoice_date=${invoiceDate}`;
+    } else {
+      str = `invoice_date=${invoiceDate}`;
+    }
   }
   if (invoiceEndDate) {
     if (str.length > 0) {
       str = `${str}&invoice_enddate=${invoiceEndDate}`;
     }
   }
+
+  // `${Config.BASE_URL}/invoices/receiver?receiver_id=jjkiuiiki&invoice_date=kjkjkk&invoice_enddate="lklklklklk"`
 
   return makeAPIRequest({
     method: 'get',

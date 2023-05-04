@@ -41,40 +41,42 @@ import {MonthData} from '../../../Constants/GeneralConstants';
 import ScreenHeader from '../../../components/ScreenHeader';
 
 export default function InvoiceReceivedScreen({navigation}) {
-  const [loading, setloading] = useState(false);
+  const defaultRecords = [
+    {
+      currency_type: 'USD',
+      invoice_total: 0,
+      invoice_paid_total: 0,
+      invoice_open_total: 0,
+      invoices: [],
+    },
+  ];
+  const [loading, setLoading] = useState(false);
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
   const [data, setData] = useState([]);
   const [tabNumber, setTabNumber] = useState(0);
-  const [currencyData, setCurrencyData] = useState([
-    {currency: 'USD', invoices: 0},
-  ]);
   const [tabs, setTabs] = useState([
     strings.allNInvoice,
     strings.paidNInvoice,
     strings.openNInvoice,
   ]);
-  const [currentRecordSet, setCurrentRecordSet] = useState({
-    currency_type: 'USD',
-    invoice_total: 0,
-    invoice_paid_total: 0,
-    invoice_open_total: 0,
-    invoices: [],
-  });
+  const [currentRecordSet, setCurrentRecordSet] = useState(defaultRecords[0]);
   const [selectedMonth, setSelectedMonth] = useState(MonthData[1]);
   const [visiblemonthModal, setVisibleMonthModal] = useState();
   const actionSheet = useRef();
   const [visibleCurrencySheet, setVisibleCurrencySheet] = useState();
 
   const [totalInvoices, setTotalInvoices] = useState(0);
-  const [allCurrencies, setAllCurrencies] = useState();
+  const [selectedCurrency, setSelectedCurrency] = useState();
   const [startDateTime, setStartDateTime] = useState(
     new Date(new Date().setDate(new Date().getDate() - 90)),
   );
   const [endDateTime, setEndDateTime] = useState(new Date());
-  const [currencies, setCurrencies] = useState([currencyData[0].currency]);
-  const [currency, setCurrency] = useState(currencyData[0].currency);
-  const [currencyInvoiceAmount, setCurrencyInvoiceAmount] = useState();
+  const InvoiceReceivedTab = {
+    ALL: 0,
+    PAID: 1,
+    OPEN: 2,
+  };
 
   const tabChangePress = useCallback((changeTab) => {
     setTabNumber(changeTab.i);
@@ -109,25 +111,18 @@ export default function InvoiceReceivedScreen({navigation}) {
   }, [navigation]);
 
   const getReceviedInvoices = () => {
-    const TcstartDate = getTCDate(startDateTime);
-    const TCendDate = getTCDate(endDateTime);
-    setloading(true);
-    getRecieverInvoices(authContext, TcstartDate, TCendDate)
+    const startDate = getTCDate(startDateTime);
+    const endDate = getTCDate(endDateTime);
+    setLoading(true);
+    getRecieverInvoices(authContext, startDate, endDate)
       .then((response) => {
-        setloading(false);
-        const dataObj = [];
-        const objects = [];
-
+        setLoading(false);
+        let dataObj = defaultRecords;
+        let totalLength = 0;
         if (response.payload.length > 0) {
+          totalLength = response.payload.length;
           const result = groupBy(response.payload, 'currency_type');
-
-          const totalLength = Object.values(result).reduce(
-            (acc, curr) => acc + curr.length,
-            0,
-          );
-
-          setTotalInvoices(totalLength);
-
+          dataObj = [];
           // eslint-disable-next-line guard-for-in
           for (const currencyKey in result) {
             const receiverInvoices = {
@@ -143,30 +138,37 @@ export default function InvoiceReceivedScreen({navigation}) {
               receiverInvoices.invoice_open_total += e.amount_remaining;
               receiverInvoices.invoice_total += e.amount_due;
             });
-            objects.push({
-              currency: currencyKey,
-              invoices: receiverInvoices.invoices.length,
-            });
             dataObj.push(receiverInvoices);
           }
           setData(dataObj);
-          setCurrencies([strings.all, ...objects.map((item) => item.currency)]);
+        }
 
-          setCurrencyData(objects);
+        setTotalInvoices(totalLength);
 
+        if (selectedCurrency) {
+          if (selectedCurrency !== strings.all) {
+            const selectedRecord = dataObj.find(
+              (obj) => obj.currency_type === selectedCurrency,
+            );
+            if (selectedRecord) {
+              setCurrentRecordSet(selectedRecord);
+            } else {
+              setCurrentRecordSet(dataObj[0]);
+              setSelectedCurrency(dataObj[0].currency_type);
+              setTabNumber(InvoiceReceivedTab.ALL);
+            }
+          }
+        } else {
           setCurrentRecordSet(dataObj[0]);
-          setCurrency(dataObj[0].currency_type);
-
-          setCurrencyInvoiceAmount(objects[0].invoices);
+          setSelectedCurrency(dataObj[0].currency_type);
         }
       })
       .catch((e) => {
-        setloading(false);
+        setLoading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
-    setloading(true);
   };
 
   const getDates = (optionsState) => {
@@ -208,13 +210,6 @@ export default function InvoiceReceivedScreen({navigation}) {
     );
     setTabs([allTitle, paidTitle, openTitle]);
   }, [currentRecordSet]);
-
-  const onCurrencyPress = (item) => {
-    const record = data.find((obj) => obj.currency_type === item);
-    if (record) {
-      setCurrentRecordSet(record);
-    }
-  };
 
   const renderRecipientView = ({item}) => (
     <InvoiceReceivedCellView
@@ -271,7 +266,6 @@ export default function InvoiceReceivedScreen({navigation}) {
           onSelect={(option) => {
             setSelectedMonth(option);
             setVisibleMonthModal(false);
-            setCurrencyInvoiceAmount(totalInvoices);
             getDates(option);
           }}
         />
@@ -327,18 +321,18 @@ export default function InvoiceReceivedScreen({navigation}) {
             justifyContent: 'space-between',
             backgroundColor: colors.lightGrayBackground,
             marginTop: 20,
-            marginBottom: allCurrencies ? 20 : 0,
+            marginBottom: selectedCurrency === strings.all ? 20 : 0,
           }}>
           <TouchableOpacity
             onPress={() => {
-              if (currencyData.length > 1) {
+              if (data.length > 1) {
                 setVisibleCurrencySheet(true);
               }
             }}
             style={{
               flexDirection: 'row',
             }}>
-            {currencyData.length === 1 ? (
+            {data.length === 1 ? (
               <Text
                 style={{
                   fontFamily: fonts.RMedium,
@@ -355,22 +349,24 @@ export default function InvoiceReceivedScreen({navigation}) {
                     fontSize: 20,
                     color: colors.lightBlackColor,
                   }}>
-                  {allCurrencies
+                  {selectedCurrency === strings.all
                     ? strings.allInvoiceText
-                    : `${strings.invoicesIn} ${currency}`}
+                    : `${strings.invoicesIn}`}
+
+                  {selectedCurrency !== strings.all && (
+                    <Text
+                      style={{
+                        fontFamily: fonts.RBold,
+                      }}>
+                      {' '}
+                      {`${currentRecordSet.currency_type}`}
+                    </Text>
+                  )}
                 </Text>
 
                 <Image
                   source={images.dropDownArrow}
-                  style={{
-                    width: 14,
-                    height: 26,
-                    resizeMode: 'contain',
-                    marginLeft: 5,
-                    alignItems: 'center',
-                    lineHeight: 30,
-                    tintColor: colors.lightBlackColor,
-                  }}
+                  style={styles.dropdownArrow}
                 />
               </>
             )}
@@ -383,11 +379,13 @@ export default function InvoiceReceivedScreen({navigation}) {
               lineHeight: 30,
               color: colors.lightBlackColor,
             }}>
-            {currencyInvoiceAmount}
+            {selectedCurrency === strings.all
+              ? totalInvoices
+              : currentRecordSet.invoices.length}
           </Text>
         </View>
 
-        {allCurrencies ? (
+        {selectedCurrency === strings.all ? (
           <View
             style={{
               flex: 1,
@@ -407,11 +405,11 @@ export default function InvoiceReceivedScreen({navigation}) {
                     marginTop: 15,
                   }}
                   currency={item.currency_type}
-                  currencyInvoiceAmount={item.invoices.length}
+                  totalInvoices={item.invoices.length}
                   totalAmount={item.invoice_total}
                   paidAmount={item.invoice_paid_total}
                   openAmount={item.invoice_open_total}
-                  allCurrencies={allCurrencies}
+                  allCurrencySelected={selectedCurrency === strings.all}
                 />
               )}
             />
@@ -436,15 +434,18 @@ export default function InvoiceReceivedScreen({navigation}) {
                 }}
                 bounces={false}
                 tabStyle={{
-                  marginTop: -4,
+                  marginTop: -2,
                 }}
               />
             </View>
             <FlatList
               data={
-                (tabNumber === 0 && memberListByFilter(Verbs.allStatus)) ||
-                (tabNumber === 1 && memberListByFilter(Verbs.paid)) ||
-                (tabNumber === 2 && memberListByFilter(Verbs.open))
+                (tabNumber === InvoiceReceivedTab.ALL &&
+                  memberListByFilter(Verbs.allStatus)) ||
+                (tabNumber === InvoiceReceivedTab.PAID &&
+                  memberListByFilter(Verbs.paid)) ||
+                (tabNumber === InvoiceReceivedTab.OPEN &&
+                  memberListByFilter(Verbs.open))
               }
               showsVerticalScrollIndicator={false}
               ListEmptyComponent={() => (
@@ -467,29 +468,25 @@ export default function InvoiceReceivedScreen({navigation}) {
         )}
 
         {/* BottomSheet */}
-
         <BottomSheet
           isVisible={visibleCurrencySheet}
-          optionList={currencies}
+          optionList={[strings.all, ...data.map((item) => item.currency_type)]}
           closeModal={() => setVisibleCurrencySheet(false)}
           onSelect={(option) => {
             if (option === strings.all) {
-              setAllCurrencies(true);
-              setCurrencyInvoiceAmount(totalInvoices);
+              setSelectedCurrency(option);
               setVisibleCurrencySheet(false);
               return;
             }
 
             setVisibleCurrencySheet(false);
-
-            const selectedIndex = currencyData.findIndex(
-              (obj) => obj.currency === option,
+            const selectedRecord = data.find(
+              (obj) => obj.currency_type === option,
             );
-
-            setAllCurrencies(false);
-            setCurrencyInvoiceAmount(currencyData[selectedIndex].invoices);
-            onCurrencyPress(currencyData[selectedIndex].currency);
-            setCurrency(currencyData[selectedIndex].currency);
+            if (selectedRecord) {
+              setSelectedCurrency(option);
+              setCurrentRecordSet(selectedRecord);
+            }
           }}
         />
 
@@ -531,5 +528,14 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     resizeMode: 'contain',
     tintColor: colors.blackColor,
+  },
+  dropdownArrow: {
+    width: 14,
+    height: 26,
+    resizeMode: 'contain',
+    marginLeft: 5,
+    alignItems: 'center',
+    lineHeight: 30,
+    tintColor: colors.lightBlackColor,
   },
 });

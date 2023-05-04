@@ -37,26 +37,27 @@ export default function BatchInvoiceView({data, onPressCard}) {
           flex: 1,
         }}>
         <Text
-          style={{
-            lineHeight: 24,
-            fontFamily: fonts.RRegular,
-            fontSize: 14,
-          }}>
-          {moment(getJSDate(data.due_date)).format('LLL')}
-        </Text>
-        <Text
           numberOfLines={2}
           style={{
             fontSize: 16,
-            fontFamily: fonts.RRegular,
+            fontFamily: fonts.RMedium,
             lineHeight: 24,
           }}>
           {data.invoice_title}
         </Text>
         <Text
           style={{
+            lineHeight: 24,
+            fontFamily: fonts.RRegular,
             fontSize: 14,
-            fontFamily: fonts.RMedium,
+          }}>
+          {moment(getJSDate(data.due_date)).format(Verbs.DATE_FORMAT)}
+        </Text>
+
+        <Text
+          style={{
+            fontSize: 14,
+            fontFamily: fonts.RRegular,
             lineHeight: 24,
           }}>
           {getRecipientsInString()}
@@ -70,15 +71,15 @@ export default function BatchInvoiceView({data, onPressCard}) {
           {data.invoice_total} {data.invoices[0].currency_type}
           {/* {data.invvoicetopaid} */}
         </Text>
-        {data.invoice_total !== data.invoice_paid_total && (
+        {/* {data.invoice_total !== data.invoice_paid_total && (
           <Text
             style={[
               styles.invoiceAmountTexStyle,
               {color: colors.darkThemeColor},
             ]}>
-            {data.invoice_open_total} {data.invoices[0].currency_type}
+            {data.invoice_open_total} kk{data.invoices[0].currency_type}
           </Text>
-        )}
+        )} */}
         <View>
           <Text
             style={[

@@ -3,7 +3,13 @@
 /* eslint-disable consistent-return */
 /* eslint-disable  no-unused-vars */
 
-import React, {useState, useCallback, useRef, useEffect} from 'react';
+import React, {
+  useState,
+  useCallback,
+  useRef,
+  useEffect,
+  useContext,
+} from 'react';
 import {
   View,
   StyleSheet,
@@ -13,6 +19,7 @@ import {
   SafeAreaView,
   Pressable,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 
 import {format} from 'react-string-format';
@@ -28,19 +35,24 @@ import GroupIcon from '../../../components/GroupIcon';
 
 import TCScrollableProfileTabs from '../../../components/TCScrollableProfileTabs';
 import Verbs from '../../../Constants/Verbs';
-import {displayLocation} from '../../../utils';
+import {displayLocation, getTCDate} from '../../../utils';
 import BottomSheet from '../../../components/modals/BottomSheet';
 import {MonthData} from '../../../Constants/GeneralConstants';
 import ScreenHeader from '../../../components/ScreenHeader';
+import {getRecieverInvoices, getSenderInvoices} from '../../../api/Invoice';
+import AuthContext from '../../../auth/context';
 
 export default function RecipientDetailScreen({navigation, route}) {
   const [receiver] = useState(route.params.receiver);
+  const [receiverId] = useState(route.params.receiver_id);
   const [from] = useState(route.params.from);
   const [recipentData] = useState(route.params.recipentData);
+
   const [loading, setloading] = useState(false);
   const [currencyData, setCurrencyData] = useState([
     {currency: 'USD', invoices: 0},
   ]);
+
   const [selectedMonth, setSelectedMonth] = useState(MonthData[1]);
   const [tabNumber, setTabNumber] = useState(0);
   const [currentRecordSet, setCurrentRecordSet] = useState({
@@ -55,6 +67,7 @@ export default function RecipientDetailScreen({navigation, route}) {
     strings.paidText,
     strings.openText,
   ]);
+  const authContext = useContext(AuthContext);
   const [visiblemonthModal, setVisibleMonthModal] = useState();
   const actionSheet = useRef();
 
@@ -64,8 +77,44 @@ export default function RecipientDetailScreen({navigation, route}) {
   const [allCurrencies, setAllCurrencies] = useState();
   const [totalInvoice, settotalInvoice] = useState();
   const [visibleCurrencySheet, setVisibleCurrencySheet] = useState();
+  const [startDateTime, setStartDateTime] = useState(route.params.startDate);
+  const [endDateTime, setEndDateTime] = useState(route.params.endDate);
+
+  const getRecipientDetail = () => {
+    const TcstartDate = getTCDate(startDateTime);
+    const TCendDate = getTCDate(endDateTime);
+
+    getSenderInvoices(authContext, TcstartDate, TCendDate, receiverId)
+      .then((response) => {})
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
+
+  const getDates = (optionsState) => {
+    const startDate = new Date();
+    const endDate = new Date();
+
+    if (optionsState === strings.past90DaysText) {
+      startDate.setDate(startDate.getDate() - 90);
+    } else if (optionsState === strings.past30DaysText) {
+      startDate.setDate(startDate.getDate() - 30);
+    } else if (optionsState === strings.past180Days) {
+      startDate.setDate(startDate.getDate() - 180);
+    } else if (optionsState === strings.past1year) {
+      startDate.setDate(startDate.getDate() - 360);
+    }
+
+    setStartDateTime(startDate);
+    setEndDateTime(endDate);
+  };
 
   useEffect(() => {
+    getRecipientDetail();
+
     const result = recipentData.find(
       (recipient) => recipient.currency_type === route.params.currency,
     );
@@ -91,7 +140,7 @@ export default function RecipientDetailScreen({navigation, route}) {
     setCurrencies([strings.all, ...objects.map((item) => item.currency)]);
     setCurrencyData(objects);
     setCurrencyInvoiceAmount(objects[0].invoices);
-  }, []);
+  }, [selectedMonth]);
 
   useEffect(() => {
     const allTitle = format(
@@ -228,6 +277,7 @@ export default function RecipientDetailScreen({navigation, route}) {
             onSelect={(option) => {
               setSelectedMonth(option);
               setVisibleMonthModal(false);
+              getDates(option);
             }}
           />
 
@@ -331,6 +381,7 @@ export default function RecipientDetailScreen({navigation, route}) {
                 }}>
                 <FlatList
                   extraData={recipentData}
+                  showsVerticalScrollIndicator={false}
                   data={recipentData}
                   keyExtractor={(index) => index.toString()}
                   ItemSeparatorComponent={() => (
@@ -345,11 +396,11 @@ export default function RecipientDetailScreen({navigation, route}) {
                           marginTop: 15,
                         }}
                         currency={item.currency_type}
-                        currencyInvoiceAmount={item.total_invoice}
+                        totalInvoices={item.total_invoice}
                         totalAmount={item.invoice_total}
                         paidAmount={item.invoice_paid_total}
                         openAmount={item.invoice_open_total}
-                        allCurrencies={allCurrencies}
+                        allCurrencySelected={allCurrencies}
                       />
                     );
                   }}

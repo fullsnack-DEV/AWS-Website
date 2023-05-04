@@ -46,6 +46,8 @@ export default function AddRecipientsInBatchModal({
   batchData,
   invoiceAction,
   title,
+  onDonePressForAddrecipients = () => {},
+  onDonePressForResend = () => {}
 }) {
   const [newMembers, setNewMembers] = useState([]);
   const [newTeams, setNewTeams] = useState([]);
@@ -171,6 +173,7 @@ export default function AddRecipientsInBatchModal({
           setLoading(false);
           setSelectedRecipients([]);
           closeModal();
+          onDonePressForAddrecipients()
         })
         .catch((e) => {
           setLoading(false);
@@ -195,6 +198,7 @@ export default function AddRecipientsInBatchModal({
           setLoading(false);
           setSelectedRecipients([]);
           closeModal();
+          onDonePressForResend();
         })
         .catch((e) => {
           setLoading(false);

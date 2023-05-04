@@ -12,14 +12,14 @@ export default function InvoiceAmount({
   currency,
   paidAmount,
   openAmount,
-  currencyInvoiceAmount,
-  allCurrencies,
+  totalInvoices,
+  allCurrencySelected,
   style,
 }) {
   return (
     <View style={[styles.parent, style]}>
       <View style={{marginVertical: 15}}>
-        {allCurrencies && (
+        {allCurrencySelected && (
           <View
             style={{
               paddingHorizontal: 15,
@@ -43,7 +43,7 @@ export default function InvoiceAmount({
                 lineHeight: 30,
                 color: colors.lightBlackColor,
               }}>
-              {currencyInvoiceAmount}
+              {totalInvoices}
             </Text>
           </View>
         )}
@@ -54,14 +54,20 @@ export default function InvoiceAmount({
             2,
           )} ${currency}`}</Text>
         </View>
-        <View style={styles.containerView}>
+        <View
+          style={[
+            styles.containerView,
+            {
+              marginTop: 10,
+            },
+          ]}>
           <Text style={styles.titleText}>{strings.paidText}</Text>
 
           <Text style={[styles.amountTitle, {color: colors.neonBlue}]}>
             {`${paidAmount.toFixed(2)} ${currency}`}
           </Text>
         </View>
-        <View style={styles.containerView}>
+        <View style={[styles.containerView, {marginTop: 10}]}>
           <Text style={styles.titleText}>{strings.openText}</Text>
           <Text style={[styles.amountTitle, {color: colors.darkThemeColor}]}>
             {`${openAmount.toFixed(2)} ${currency}`}
