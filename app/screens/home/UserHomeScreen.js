@@ -409,30 +409,6 @@ const UserHomeScreen = ({
     ],
   );
 
-  const onConnectionButtonPress = useCallback(
-    (tab) => {
-      const entity_type = route.params.role ?? authContext.entity.role;
-      const user_id = route.params.uid ?? authContext.entity.uid;
-
-      if (tab === Verbs.followingVerb) {
-        if (
-          entity_type === Verbs.entityTypeTeam ||
-          entity_type === Verbs.entityTypeClub
-        ) {
-          navigation.navigate('JoinedTeamsScreen', {
-            uid: user_id,
-            role: entity_type,
-          });
-        } else {
-          navigation.navigate('UserConnections', {tab, entity_type, user_id});
-        }
-      } else if (tab === Verbs.privacyTypeFollowers) {
-        navigation.navigate('UserConnections', {tab, entity_type, user_id});
-      }
-    },
-    [authContext.entity, navigation, route.params],
-  );
-
   const renderImageProgress = useMemo(() => <ImageProgress />, []);
 
   const handleSportActivityPress = (sport, type) => {
@@ -497,7 +473,16 @@ const UserHomeScreen = ({
     <>
       <UserHomeHeader
         currentUserData={currentUserData}
-        onConnectionButtonPress={onConnectionButtonPress}
+        onConnectionButtonPress={(tab = '') => {
+          const entityType = route.params.role ?? authContext.entity.role;
+          const userId = route.params.uid ?? authContext.entity.uid;
+          navigation.navigate('UserConnections', {
+            entityType,
+            userId,
+            userName: currentUserData.full_name,
+            tab,
+          });
+        }}
         onAction={onUserAction}
         isAdmin={isAdmin}
         loggedInEntity={authContext.entity}

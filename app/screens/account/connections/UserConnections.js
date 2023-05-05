@@ -1,12 +1,23 @@
-import React, {useEffect, useState, useContext, useLayoutEffect} from 'react';
-import {View, StyleSheet, FlatList} from 'react-native';
-
+import React, {
+  useEffect,
+  useState,
+  useContext,
+  useLayoutEffect,
+  useCallback,
+} from 'react';
+import {
+  View,
+  StyleSheet,
+  FlatList,
+  SafeAreaView,
+  Text,
+  Pressable,
+  TouchableOpacity,
+} from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
-import _ from 'lodash';
 import {format} from 'react-string-format';
 import TCNoDataView from '../../../components/TCNoDataView';
 import AuthContext from '../../../auth/context';
-import TCUserList from './TCUserList';
 
 import {
   followUser,
@@ -16,121 +27,278 @@ import {
 import UserListShimmer from '../../../components/shimmer/commonComponents/UserListShimmer';
 import {strings} from '../../../../Localization/translation';
 import Verbs from '../../../Constants/Verbs';
+import ScreenHeader from '../../../components/ScreenHeader';
+import images from '../../../Constants/ImagePath';
+import colors from '../../../Constants/Colors';
+import fonts from '../../../Constants/Fonts';
+import GroupIcon from '../../../components/GroupIcon';
+import {displayLocation} from '../../../utils';
+
+const tabList = [strings.followerTitleText, strings.following];
+
+const obj = {
+  following: {
+    count: 0,
+    data: [],
+  },
+  follower: {
+    count: 0,
+    data: [],
+  },
+};
 
 export default function UserConnections({navigation, route}) {
-  const isFocused = useIsFocused();
-  const tab = route?.params?.tab;
-  const eType = route?.params?.entity_type;
-  const user_id = route?.params?.user_id;
-  const [loading, setLoading] = useState(true);
-  const [data, setData] = useState([]);
   const authContext = useContext(AuthContext);
-  const userRole = authContext?.entity?.role;
+  const isFocused = useIsFocused();
+  const {entityType, userId, userName, tab} = route.params;
+
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState(obj);
+  const [selectedTab, setSelectedTab] = useState('');
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: _.startCase(tab),
+      headerShown: false,
     });
   }, [navigation]);
+
+  useEffect(() => {
+    if (tab) {
+      setSelectedTab(tab);
+    }
+  }, [tab]);
+
+  const getData = useCallback(() => {
+    setLoading(true);
+    const list = [];
+    tabList.forEach((item) => {
+      list.push(
+        getUserFollowerFollowing(
+          userId,
+          Verbs.entityTypePlayers,
+          item === strings.following
+            ? Verbs.followingVerb
+            : Verbs.privacyTypeFollowers,
+          authContext,
+        ),
+      );
+    });
+
+    Promise.all(list)
+      .then(([following, follower]) => {
+        const newData = {};
+
+        newData.following = {
+          count: following.payload.length ?? 0,
+          data: following.payload.length > 0 ? [...following.payload] : [],
+        };
+
+        newData.follower = {
+          count: follower.payload.length ?? 0,
+          data: follower.payload.length > 0 ? [...follower.payload] : [],
+        };
+
+        setData({...newData});
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setLoading(false);
+      });
+  }, [authContext, userId]);
+
   useEffect(() => {
     if (isFocused) {
-      setLoading(true);
-
-      getUserFollowerFollowing(
-        user_id,
-        eType === Verbs.entityTypeUser
-          ? Verbs.entityTypePlayers
-          : Verbs.entityTypeGroups,
-        tab,
-        authContext,
-      )
-        .then((res) => {
-          setData([...res?.payload]);
-        })
-        .catch(() => {})
-        .finally(() => setLoading(false));
+      getData();
     }
-  }, [authContext, eType, isFocused, navigation, tab, user_id]);
-  return (
-    <View style={styles.mainContainer}>
-      <View style={{flex: 1}}>
-        {data.length === 0 ? (
-          <View style={{flex: 1}}>
-            {loading ? (
-              <UserListShimmer />
-            ) : (
-              <View style={{flex: 1}}>
-                <TCNoDataView
-                  title={format(strings.noTabsFoundText_dy, _.startCase(tab))}
-                />
-              </View>
-            )}
-          </View>
-        ) : (
-          <FlatList
-            data={data}
-            keyExtractor={(item, index) => index.toString()}
-            style={{
-              marginTop: 15,
-            }}
-            renderItem={({item}) => {
-              const showFollowUnfollowButton =
-                userRole === Verbs.entityTypeUser &&
-                item.user_id !== authContext.entity.uid;
-              return (
-                <TCUserList
-                  onProfilePress={() => {
-                    navigation.push('HomeScreen', {
-                      role: [
-                        Verbs.entityTypePlayer,
-                        Verbs.entityTypeUser,
-                      ]?.includes(item?.entity_type)
-                        ? Verbs.entityTypeUser
-                        : item?.entity_type,
-                      uid: [
-                        Verbs.entityTypePlayer,
-                        Verbs.entityTypeUser,
-                      ]?.includes(item?.entity_type)
-                        ? item?.user_id
-                        : item?.group_id,
-                      backButtonVisible: true,
-                      menuBtnVisible: false,
-                    });
-                  }}
-                  showFollowUnfollowButton={showFollowUnfollowButton}
-                  profileImage={item?.full_image}
-                  entityType={item?.entity_type}
-                  title={
-                    item?.entity_type === Verbs.entityTypePlayer
-                      ? item?.full_name
-                      : item?.group_name
-                  }
-                  subTitle={`${item?.city} , ${item?.country}`}
-                  is_following={item?.is_following}
-                  followUnfollowPress={(wantToFollow) => {
-                    const entity_type = item?.entity_type;
-                    const uid =
-                      item?.entity_type === Verbs.entityTypePlayer
-                        ? item?.user_id
-                        : item?.group_id;
-                    if (wantToFollow) {
-                      followUser({entity_type}, uid, authContext);
+  }, [isFocused, getData]);
+
+  const getCount = (option) => {
+    if (option === strings.following) {
+      return data.following.count;
+    }
+
+    if (option === strings.followerTitleText) {
+      return data.follower.count;
+    }
+    return 0;
+  };
+
+  const renderList = (option) => {
+    if (option === strings.following && data.following.count > 0) {
+      return null;
+    }
+
+    let list = [];
+    if (option === strings.followerTitleText && data.follower.count > 0) {
+      list = [...data.follower.data];
+    } else if (option === strings.following && data.following.count > 0) {
+      list = [...data.following.data];
+    }
+
+    if (list.length > 0) {
+      return (
+        <FlatList
+          data={list}
+          keyExtractor={(item, index) => index.toString()}
+          style={{paddingHorizontal: 15, paddingTop: 15}}
+          renderItem={({item}) => (
+            <>
+              <View style={[styles.row, {justifyContent: 'space-between'}]}>
+                <View style={styles.row}>
+                  <GroupIcon
+                    imageUrl={item.full_image}
+                    entityType={Verbs.entityTypePlayer}
+                    containerStyle={styles.iconContainer}
+                  />
+                  <View style={{marginLeft: 10}}>
+                    <Text style={styles.userName}>
+                      {item.group_name ?? item.full_name}
+                    </Text>
+                    <Text style={styles.locationText}>
+                      {displayLocation(item)}
+                    </Text>
+                  </View>
+                </View>
+                <TouchableOpacity
+                  style={styles.buttonContainer}
+                  onPress={() => {
+                    if (item.is_following) {
+                      unfollowUser(
+                        {entity_type: entityType},
+                        userId,
+                        authContext,
+                      );
                     } else {
-                      unfollowUser({entity_type}, uid, authContext);
+                      followUser(
+                        {entity_type: entityType},
+                        userId,
+                        authContext,
+                      );
                     }
-                  }}
-                />
-              );
-            }}
-          />
-        )}
+                  }}>
+                  <Text
+                    style={[
+                      styles.buttonText,
+                      item.is_following ? {color: colors.lightBlackColor} : {},
+                    ]}>
+                    {strings.following}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.separator} />
+            </>
+          )}
+        />
+      );
+    }
+
+    return (
+      <View style={{flex: 1}}>
+        <TCNoDataView title={format(strings.noTabsFoundText_dy, selectedTab)} />
       </View>
-    </View>
+    );
+  };
+
+  return (
+    <SafeAreaView style={styles.parent}>
+      <ScreenHeader
+        title={userName}
+        leftIcon={images.backArrow}
+        leftIconPress={() => navigation.goBack()}
+      />
+      <View style={styles.tabRow}>
+        {tabList.map((item) => (
+          <Pressable
+            key={item}
+            style={[
+              styles.tabItem,
+              selectedTab === item
+                ? {
+                    paddingBottom: 7,
+                    borderBottomWidth: 3,
+                    borderBottomColor: colors.orangeColorCard,
+                  }
+                : {},
+            ]}
+            onPress={() => setSelectedTab(item)}>
+            <Text
+              style={[
+                styles.tabItemText,
+                selectedTab === item
+                  ? {color: colors.orangeColorCard, fontFamily: fonts.RBlack}
+                  : {},
+              ]}>
+              {`${getCount(item)} ${item}`}
+            </Text>
+          </Pressable>
+        ))}
+      </View>
+      <View style={{flex: 1}}>
+        {loading ? <UserListShimmer /> : renderList(selectedTab)}
+      </View>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
-  mainContainer: {
+  parent: {
     flex: 1,
-    flexDirection: 'column',
+  },
+  tabRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  tabItem: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: colors.writePostSepratorColor,
+    paddingBottom: 9,
+    paddingTop: 15,
+  },
+  tabItemText: {
+    fontSize: 16,
+    lineHeight: 24,
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RMedium,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  iconContainer: {
+    width: 40,
+    height: 40,
+    borderWidth: 0,
+  },
+  userName: {
+    fontSize: 16,
+    lineHeight: 24,
+    fontFamily: fonts.RMedium,
+    color: colors.lightBlackColor,
+  },
+  locationText: {
+    fontSize: 12,
+    lineHeight: 18,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
+  },
+  buttonContainer: {
+    backgroundColor: colors.textFieldBackground,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+  },
+  buttonText: {
+    fontSize: 12,
+    lineHeight: 14,
+    fontFamily: fonts.RBold,
+    color: colors.themeColor,
+  },
+  separator: {
+    height: 1,
+    marginVertical: 15,
+    backgroundColor: colors.grayBackgroundColor,
   },
 });

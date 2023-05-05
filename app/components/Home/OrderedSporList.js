@@ -37,6 +37,7 @@ const OrderedSporList = ({
   showToggleButton = false,
   onToggle = () => {},
   isAdmin = false,
+  renderListHeader = () => null,
 }) => {
   const [orderType, setOrderType] = useState('');
   const [categoryOrder, setCategoryOrder] = useState([]);
@@ -348,6 +349,7 @@ const OrderedSporList = ({
                 }
                 return null;
               }}
+              ListHeaderComponent={renderListHeader}
             />
           </View>
         );
@@ -488,7 +490,7 @@ const OrderedSporList = ({
 
 const styles = StyleSheet.create({
   parent: {
-    // flex: 1,
+    flex: 1,
   },
   row: {
     flexDirection: 'row',
@@ -571,18 +573,13 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingHorizontal: 8,
     paddingVertical: 4,
-    backgroundColor: colors.whiteColor,
-    shadowColor: colors.blackColor,
-    shadowOffset: {
-      width: 2,
-      height: 3,
-    },
-    shadowRadius: 3,
-    shadowOpacity: 0.16,
-    elevation: 3,
+    backgroundColor: colors.textFieldBackground,
     marginVertical: 35,
+    borderRadius: 5,
   },
   buttonText: {
     fontSize: 12,

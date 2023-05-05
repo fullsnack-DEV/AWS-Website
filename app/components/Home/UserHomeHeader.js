@@ -187,7 +187,7 @@ const UserHomeHeader = ({
       <View style={[styles.row, {justifyContent: 'flex-start', marginTop: 20}]}>
         <Pressable
           style={[styles.row, {marginRight: 25}]}
-          onPress={() => onConnectionButtonPress(Verbs.followingVerb)}>
+          onPress={() => onConnectionButtonPress(strings.followerTitleText)}>
           <Text
             style={[
               styles.location,
@@ -199,7 +199,7 @@ const UserHomeHeader = ({
         </Pressable>
         <Pressable
           style={styles.row}
-          onPress={() => onConnectionButtonPress(Verbs.privacyTypeFollowers)}>
+          onPress={() => onConnectionButtonPress(strings.following)}>
           <Text
             style={[
               styles.location,

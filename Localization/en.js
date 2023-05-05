@@ -2045,7 +2045,7 @@ export default {
   reviewTitle: 'en_Review',
   preview: 'en_Preview',
   displayInFixOrder: 'en_Display in the fixed order',
-  addSportActivity: 'en_Add New Sports Activity',
+  addSportActivity: 'en_Add Sports Activity',
   sportActivityTagOrder: 'en_sports Activity Tags Order',
   listUnlist: 'en_List / Unlist',
   classifySportActivity:

@@ -21,9 +21,12 @@ export default function SportHideUnhideScreen({navigation}) {
   const onSavePress = () => {
     const user = authContext.entity.obj;
     setloading(true);
-    let registeredSports = [...user.registered_sports];
-    let refereeSports = [...user.referee_data];
-    let scorekeeperSports = [...user.scorekeeper_data];
+    let registeredSports =
+      user.registered_sports?.length > 0 ? [...user.registered_sports] : [];
+    let refereeSports =
+      user.referee_data?.length > 0 ? [...user.referee_data] : [];
+    let scorekeeperSports =
+      user.scorekeeper_data?.length > 0 ? [...user.scorekeeper_data] : [];
 
     updatedSportList.forEach((item) => {
       if (item.type === Verbs.entityTypePlayer) {
@@ -89,15 +92,18 @@ export default function SportHideUnhideScreen({navigation}) {
         containerStyle={styles.headerRow}
         loading={loading}
       />
-      <View style={{paddingTop: 15, paddingHorizontal: 15}}>
-        <Text style={styles.label}>{strings.hideUnhideDescription}</Text>
-      </View>
+
       <OrderedSporList
         user={authContext.entity.obj}
         showToggleButton
         onToggle={(list) => {
           setUpdatedSportList(list);
         }}
+        renderListHeader={() => (
+          <View style={{paddingTop: 15, paddingHorizontal: 15}}>
+            <Text style={styles.label}>{strings.hideUnhideDescription}</Text>
+          </View>
+        )}
       />
     </SafeAreaView>
   );
