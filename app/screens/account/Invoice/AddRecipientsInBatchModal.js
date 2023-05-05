@@ -46,13 +46,13 @@ export default function AddRecipientsInBatchModal({
   batchData,
   invoiceAction,
   title,
-  onDonePressForAddrecipients = () => {},
+  onDonePressForAddRecipients = () => {},
   onDonePressForResend = () => {}
 }) {
   const [newMembers, setNewMembers] = useState([]);
   const [newTeams, setNewTeams] = useState([]);
   const [resendMessage, setResendMessage] = useState();
-  const [loading, setLoading] = useState();
+  const [mLoading, setMLoading] = useState();
   const [currentInvoice] = useState(invoice ?? batchData.invoices[0]);
   const [selectedRecipients, setSelectedRecipients] = useState([]);
   const [showRecipientsModal, setShowRecipientsModal] = useState(false);
@@ -65,15 +65,15 @@ export default function AddRecipientsInBatchModal({
     if (visible) {
       setResendMessage();
       if (invoiceAction === InvoiceActionType.AddRecipient) {
-        setLoading(true);
+        setMLoading(true);
         addRecipientList(batchData.batch_id, authContext)
           .then((response) => {
-            setLoading(false);
+            setMLoading(false);
             setNewMembers(response.payload.members ?? []);
             setNewTeams(response.payload.teams ?? []);
           })
           .catch((e) => {
-            setLoading(false);
+            setMLoading(false);
             setTimeout(() => {
               Alert.alert(strings.alertmessagetitle, e.message);
             }, 10);
@@ -134,7 +134,7 @@ export default function AddRecipientsInBatchModal({
 
   const onAddRecipientsInBatch = () => {
     if (sendInvoiceValidation()) {
-      setLoading(true);
+      setMLoading(true);
       const body = {};
       body.email_sent = true;
       body.new_message = resendMessage;
@@ -170,13 +170,12 @@ export default function AddRecipientsInBatchModal({
 
       createBatchInvoice(batchData.batch_id, body, authContext)
         .then(() => {
-          setLoading(false);
+          setMLoading(false);
           setSelectedRecipients([]);
-          closeModal();
-          onDonePressForAddrecipients()
+          onDonePressForAddRecipients()
         })
         .catch((e) => {
-          setLoading(false);
+          setMLoading(false);
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
@@ -186,7 +185,7 @@ export default function AddRecipientsInBatchModal({
 
   const onResendInvoicesInBatch = () => {
     if (sendInvoiceValidation()) {
-      setLoading(true);
+      setMLoading(true);
       const body = {};
       body.email_sent = true;
       body.resend_msg = resendMessage;
@@ -195,13 +194,12 @@ export default function AddRecipientsInBatchModal({
 
       resendBatchInvoice(batchData.batch_id, body, authContext)
         .then(() => {
-          setLoading(false);
+          setMLoading(false);
           setSelectedRecipients([]);
-          closeModal();
           onDonePressForResend();
         })
         .catch((e) => {
-          setLoading(false);
+          setMLoading(false);
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
@@ -210,18 +208,18 @@ export default function AddRecipientsInBatchModal({
   };
 
   const onResendInvoice = () => {
-    setLoading(true);
+    setMLoading(true);
     const body = {};
     body.email_sent = true;
     body.resend_msg = resendMessage;
     resendInvoice(currentInvoice.invoice_id, body, authContext)
       .then(() => {
-        setLoading(false);
+        setMLoading(false);
         setSelectedRecipients([]);
         closeModal();
       })
       .catch((e) => {
-        setLoading(false);
+        setMLoading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
@@ -257,7 +255,7 @@ export default function AddRecipientsInBatchModal({
         width: '100%',
         height: '100%',
       }}>
-      <ActivityLoader visible={loading} />
+      <ActivityLoader visible={mLoading} />
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.headertitle}>
           <Text style={styles.headerTextstyle}>

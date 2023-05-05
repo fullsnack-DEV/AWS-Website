@@ -132,7 +132,6 @@ export default function InvoiceSentScreen({navigation}) {
             } else {
               setCurrentRecordSet(record);
               setSelectedCurrency(record.currency_type);
-              setMaintabNumber(InvoiceSentMainTab.Recipients);
               setCurrentSubTab(InvoiceSentSubTab.ALL);
             }
           }
@@ -229,7 +228,7 @@ export default function InvoiceSentScreen({navigation}) {
   };
 
   const onRecipientPress = (recipient) => {
-    const recipentData = [];
+    const recipientData = [];
     const receiver = {
       receiver_id: recipient.receiver_id,
       receiver_type: recipient.receiver_type,
@@ -259,19 +258,18 @@ export default function InvoiceSentScreen({navigation}) {
           record.invoice_open_total += invoice.amount_remaining;
           record.invoice_total += invoice.amount_due;
         });
-        recipentData.push(record);
+        recipientData.push(record);
       }
     });
 
     navigation.navigate('RecipientDetailScreen', {
       from: Verbs.INVOICESENT,
-      recipentData,
+      recipientData,
       receiver,
       totalInvoices: totInvoices,
       receiver_id: recipient.receiver_id,
       startDate: startDateTime,
       endDate: endDateTime,
-
       currency: currentRecordSet.currency_type,
     });
   };
@@ -290,7 +288,7 @@ export default function InvoiceSentScreen({navigation}) {
         navigation.navigate('BatchDetailScreen', {
           from: Verbs.INVOICESENT,
           batchData: item,
-          batchId: item.batch_id
+          batchId: item.batch_id,
         });
       }}
     />

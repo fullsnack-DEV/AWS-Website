@@ -27,7 +27,7 @@ export default function LogDetailModal({isVisible, invoice, log, closeList}) {
       [
         {
           text: strings.cancel,
-          onPress: () => console.log('invoice', invoice),
+          onPress: () => console.log('invoice'),
         },
         {
           text: strings.delete,
@@ -36,6 +36,66 @@ export default function LogDetailModal({isVisible, invoice, log, closeList}) {
         },
       ],
       {cancelable: false},
+    );
+  };
+
+  const onRefundPress = () => {
+    console.log('Refund');
+  };
+
+  const getPaymentModeText = () => {
+    if (log.transaction_type === Verbs.PAYMENT) {
+      if (log.payment_mode === Verbs.CASH) {
+        return strings.inCashtext;
+      }
+      if (log.payment_mode === Verbs.card) {
+        return strings.throughStripe;
+      }
+      return strings.byChequeText;
+    }
+    if (log.payment_mode === Verbs.CASH) {
+      return strings.inCashtext;
+    }
+    if (log.payment_mode === Verbs.card) {
+      return strings.throughStripe;
+    }
+    return strings.byChequeText;
+  };
+
+  const RenderDeleteRefundButtons = () => {
+    if (log.transaction_type === Verbs.PAYMENT) {
+      if (log.payment_mode === Verbs.card) {
+        return (
+          <TouchableOpacity
+            onPress={() => onRefundPress()}
+            style={styles.refundbtnstyle}>
+            <Text
+              style={[
+                styles.btntextstyle,
+                {
+                  fontSize: 16,
+                  fontFamily: fonts.RBold,
+                  lineHeight: 24,
+                  textTransform: 'uppercase',
+                  color: colors.lightBlackColor,
+                },
+              ]}>
+              {strings.refund}
+            </Text>
+          </TouchableOpacity>
+        );
+      }
+    }
+    if (log.transaction_type === Verbs.refundStatus) {
+      if (log.payment_mode === Verbs.card) {
+        return null;
+      }
+    }
+
+    return (
+      <TouchableOpacity onPress={() => onDeletePress()} style={styles.btnstyle}>
+        <Text style={styles.btntextstyle}>{strings.deletelogbtntext}</Text>
+      </TouchableOpacity>
     );
   };
 
@@ -61,7 +121,7 @@ export default function LogDetailModal({isVisible, invoice, log, closeList}) {
             flexDirection: 'row',
           }}>
           <Text style={styles.textStyle}>{strings.transctionNumber}</Text>
-          <Text style={styles.textStyle}>88890</Text>
+          <Text style={styles.textStyle}>{log.transaction_id}</Text>
         </View>
 
         {/* logged by */}
@@ -83,7 +143,7 @@ export default function LogDetailModal({isVisible, invoice, log, closeList}) {
               styles.textStyle,
               {color: colors.userPostTimeColor, fontSize: 12, lineHeight: 18},
             ]}>
-            PP
+            {`${log.done_by?.first_name} ${log.done_by?.last_name}`}
           </Text>
         </View>
 
@@ -96,24 +156,45 @@ export default function LogDetailModal({isVisible, invoice, log, closeList}) {
           }}>
           <View style={styles.rowStyle}>
             <Text style={styles.textStyle}>{strings.type}</Text>
-            <Text style={styles.statusTextStyle}> Refund </Text>
+            <Text
+              style={[styles.statusTextStyle, {textTransform: 'capitalize'}]}>
+              {' '}
+              {log.transaction_type}{' '}
+            </Text>
           </View>
           <View style={[styles.rowStyle, {marginTop: 10}]}>
             <Text style={styles.textStyle}>{strings.amountTitle}</Text>
             <Text
-              style={[styles.statusTextStyle, {color: colors.darkThemeColor}]}>
-              {' '}
-              Refund
+              style={[
+                styles.statusTextStyle,
+                {
+                  color:
+                    log?.transaction_type === Verbs.PAYMENT
+                      ? colors.neonBlue
+                      : colors.darkThemeColor,
+                },
+              ]}>
+              {log.transaction_type === Verbs.PAYMENT ? (
+                <Text>
+                  {`${log.amount?.toFixed(2)} ${invoice?.currency_type}`}
+                </Text>
+              ) : (
+                <Text>{`-${log.amount?.toFixed(2)} ${
+                  invoice?.currency_type
+                }`}</Text>
+              )}
             </Text>
           </View>
           <View style={[styles.rowStyle, {marginTop: 10}]}>
             <Text style={styles.textStyle}>{strings.method}</Text>
-            <Text style={styles.statusTextStyle}> By check </Text>
+            <Text style={styles.statusTextStyle}> {getPaymentModeText()} </Text>
           </View>
           <View style={[styles.rowStyle, {marginTop: 10}]}>
             <Text style={styles.textStyle}>{strings.loggedat}</Text>
             <Text style={styles.statusTextStyle}>
-              {moment(getJSDate(1682922780)).format(Verbs.DATE_FORMAT)}
+              {moment(getJSDate(log.transaction_date)).format(
+                Verbs.DATE_FORMAT,
+              )}
             </Text>
           </View>
         </View>
@@ -123,17 +204,13 @@ export default function LogDetailModal({isVisible, invoice, log, closeList}) {
         <View style={{marginTop: 25}}>
           <Text style={styles.textStyle}>{strings.noteTitle}</Text>
           <Text style={[styles.textStyle, {marginTop: 10, marginLeft: 5}]}>
-            Member ship canceled
+            {log.notes}
           </Text>
         </View>
 
         {/* Delete Log */}
 
-        <TouchableOpacity
-          onPress={() => onDeletePress()}
-          style={styles.btnstyle}>
-          <Text style={styles.btntextstyle}>{strings.deletelogbtntext}</Text>
-        </TouchableOpacity>
+        {RenderDeleteRefundButtons()}
       </View>
     </CustomModalWrapper>
   );
@@ -145,6 +222,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
+  },
+  refundbtnstyle: {
+    alignSelf: 'center',
+    position: 'absolute',
+    bottom: 10,
+
+    paddingVertical: 8,
+    width: '100%',
+    marginHorizontal: 15,
+    backgroundColor: colors.textFieldBackground,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   statusTextStyle: {
     lineHeight: 24,

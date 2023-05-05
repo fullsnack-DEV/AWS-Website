@@ -69,7 +69,7 @@ export default function RecipientInvoiceView({invoice, onPressCard}) {
               {
                 color:
                   invoice.amount_due === invoice.amount_paid
-                    ? colors.gameDetailColor
+                    ? colors.neonBlue
                     : colors.darkThemeColor,
                 alignSelf: 'flex-end',
               },

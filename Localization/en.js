@@ -2849,4 +2849,9 @@ export default {
   newRecipents: 'en_New Recipients',
   toalnumberOfInvoices: 'en_Total Number of Invoices',
   addRecipientToBatch: 'en_Add Recipients to Batch',
+  throughStripe: 'en_Through Stripe',
+  addedMeesages: 'en_Added Message ({0})',
+  sentBy: 'en_send by',
+  atText: 'en_at {0} ',
+  refudviaStripe: 'en_Refund (Through Stripe)',
 };

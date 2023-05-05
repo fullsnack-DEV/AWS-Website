@@ -25,9 +25,8 @@ export default function CancelInvoivebybatchModal({
   batchData,
   onCancelInvoice = () => {}
 }) {
-  const [recipients, setRecipients] = useState(batchData.invoices ?? []);
+  const [recipients, setRecipients] = useState([]);
   const [searchRecipients, setSearchRecipients] = useState([]);
-
   const [selectedRecipients, setSelectedRecipients] = useState([]);
   const [searchText, setSearchText] = useState('');
   const [loading, setLoading] = useState(false);
@@ -42,7 +41,7 @@ export default function CancelInvoivebybatchModal({
     } else {
       setSearchRecipients(recipients);
     }
-  }, [searchText]);
+  }, [searchText, recipients]);
 
   const showAllRecepint = () => {
     const isChecked = batchData.invoices?.length === selectedRecipients.length;
@@ -63,7 +62,7 @@ export default function CancelInvoivebybatchModal({
   const renderAllRecipientRow = (isChecked) => {
     const title = format(
       strings.allRecipientsCount,
-      batchData.invoices?.length,
+      batchData.invoices.length,
     );
     return (
       <>
@@ -247,7 +246,7 @@ export default function CancelInvoivebybatchModal({
         keyExtractor={(item, index) => index.toString()}
         ItemSeparatorComponent={() => <View style={styles.dividerLine} />}
         renderItem={renderRecipients}
-        ListFooterComponent={() => <View style={{marginBottom: 30}} />}
+        ListFooterComponent={() => <View style={{marginBottom: 110}} />}
       />
     </CustomModalWrapper>
   );

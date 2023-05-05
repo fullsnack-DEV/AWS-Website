@@ -1,7 +1,5 @@
-/* eslint-disable array-callback-return */
-/* eslint-disable no-unused-expressions */
+/* eslint-disable arrow-body-style */
 /* eslint-disable consistent-return */
-/* eslint-disable  no-unused-vars */
 
 import React, {
   useState,
@@ -20,8 +18,10 @@ import {
   Pressable,
   TouchableOpacity,
   Alert,
+  ScrollView,
 } from 'react-native';
 
+import {useIsFocused} from '@react-navigation/native';
 import {format} from 'react-string-format';
 import ActionSheet from 'react-native-actionsheet';
 import colors from '../../../Constants/Colors';
@@ -39,29 +39,35 @@ import {displayLocation, getTCDate} from '../../../utils';
 import BottomSheet from '../../../components/modals/BottomSheet';
 import {MonthData} from '../../../Constants/GeneralConstants';
 import ScreenHeader from '../../../components/ScreenHeader';
-import {getRecieverInvoices, getSenderInvoices} from '../../../api/Invoice';
+import {getSenderInvoices} from '../../../api/Invoice';
 import AuthContext from '../../../auth/context';
 
 export default function RecipientDetailScreen({navigation, route}) {
+  const defaultRecords = [
+    {
+      currency_type: 'USD',
+      invoice_total: 0,
+      invoice_paid_total: 0,
+      invoice_open_total: 0,
+      invoices: [],
+    },
+  ];
   const [receiver] = useState(route.params.receiver);
   const [receiverId] = useState(route.params.receiver_id);
   const [from] = useState(route.params.from);
-  const [recipentData] = useState(route.params.recipentData);
-
-  const [loading, setloading] = useState(false);
-  const [currencyData, setCurrencyData] = useState([
-    {currency: 'USD', invoices: 0},
-  ]);
-
+  const [recipientData, setRecipientData] = useState(
+    route.params.recipientData,
+  );
+  const [totalInvoice, setTotalInvoice] = useState(route.params.totalInvoices);
+  const [selectedCurrency, setSelectedCurrency] = useState(
+    route.params.currency,
+  );
+  const [startDateTime, setStartDateTime] = useState(route.params.startDate);
+  const [endDateTime, setEndDateTime] = useState(route.params.endDate);
+  const [loading, setLoading] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState(MonthData[1]);
   const [tabNumber, setTabNumber] = useState(0);
-  const [currentRecordSet, setCurrentRecordSet] = useState({
-    currency_type: 'USD',
-    invoice_total: 0,
-    invoice_paid_total: 0,
-    invoice_open_total: 0,
-    invoices: [],
-  });
+  const [currentRecordSet, setCurrentRecordSet] = useState(defaultRecords[0]);
   const [tabs, setTabs] = useState([
     strings.all,
     strings.paidText,
@@ -70,24 +76,54 @@ export default function RecipientDetailScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const [visiblemonthModal, setVisibleMonthModal] = useState();
   const actionSheet = useRef();
-
-  const [currencies, setCurrencies] = useState(currencyData[0].currency);
-  const [currency, setCurrency] = useState(currencyData[0].currency);
-  const [currencyInvoiceAmount, setCurrencyInvoiceAmount] = useState();
-  const [allCurrencies, setAllCurrencies] = useState();
-  const [totalInvoice, settotalInvoice] = useState();
   const [visibleCurrencySheet, setVisibleCurrencySheet] = useState();
-  const [startDateTime, setStartDateTime] = useState(route.params.startDate);
-  const [endDateTime, setEndDateTime] = useState(route.params.endDate);
+  const isFocused = useIsFocused();
 
   const getRecipientDetail = () => {
-    const TcstartDate = getTCDate(startDateTime);
-    const TCendDate = getTCDate(endDateTime);
+    const startDate = getTCDate(startDateTime);
+    const endDate = getTCDate(endDateTime);
+    setLoading(true);
+    getSenderInvoices(authContext, startDate, endDate, receiverId)
+      .then((response) => {
+        let records = defaultRecords;
+        if (response.payload.length > 0) {
+          records = response.payload;
+          records.forEach((item) => {
+            if (item.members[0]) {
+              // eslint-disable-next-line no-param-reassign
+              item.invoices = item.members[0].invoices;
+            }
+          });
+        }
 
-    getSenderInvoices(authContext, TcstartDate, TCendDate, receiverId)
-      .then((response) => {})
+        setRecipientData(records);
+
+        let totInvoices = 0;
+        records.forEach((item) => {
+          totInvoices += item.invoices.length;
+        });
+        setTotalInvoice(totInvoices);
+        if (selectedCurrency) {
+          if (selectedCurrency !== strings.all) {
+            const selectedRecord = records.find(
+              (obj) => obj.currency_type === selectedCurrency,
+            );
+            if (selectedRecord) {
+              setCurrentRecordSet(selectedRecord);
+            } else {
+              setCurrentRecordSet(records[0]);
+              setSelectedCurrency(records[0].currency_type);
+            }
+          }
+        } else {
+          setCurrentRecordSet(records[0]);
+          setSelectedCurrency(records[0].currency_type);
+        }
+
+        setLoading(false);
+      })
       .catch((e) => {
-        setloading(false);
+        setLoading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
@@ -114,33 +150,7 @@ export default function RecipientDetailScreen({navigation, route}) {
 
   useEffect(() => {
     getRecipientDetail();
-
-    const result = recipentData.find(
-      (recipient) => recipient.currency_type === route.params.currency,
-    );
-    if (result) {
-      setCurrentRecordSet(result);
-    }
-    const objects = [];
-    recipentData.map((obj) => {
-      objects.push({
-        currency: obj.currency_type,
-        invoices: obj.invoices.length,
-      });
-    });
-
-    let total_invoice = 0;
-
-    recipentData.forEach((obj) => {
-      total_invoice += obj.invoices.length;
-    });
-
-    settotalInvoice(total_invoice);
-    setCurrencies([]);
-    setCurrencies([strings.all, ...objects.map((item) => item.currency)]);
-    setCurrencyData(objects);
-    setCurrencyInvoiceAmount(objects[0].invoices);
-  }, [selectedMonth]);
+  }, [isFocused, selectedMonth]);
 
   useEffect(() => {
     const allTitle = format(
@@ -158,12 +168,6 @@ export default function RecipientDetailScreen({navigation, route}) {
     setTabs([allTitle, paidTitle, openTitle]);
   }, [currentRecordSet]);
 
-  const onCurrencyPress = (item) => {
-    const record = recipentData.find((obj) => obj.currency_type === item);
-    if (record) {
-      setCurrentRecordSet(record);
-    }
-  };
   const renderInvoiceView = ({item}) => (
     <RecipientInvoiceView
       invoice={item}
@@ -171,10 +175,12 @@ export default function RecipientDetailScreen({navigation, route}) {
         navigation.navigate('InvoiceDetailScreen', {
           from,
           invoice: item,
+          thumbnail: receiver.thumbnail,
         });
       }}
     />
   );
+
   const memberListByFilter = useCallback(
     (status) => {
       if (status === Verbs.allStatus) {
@@ -189,12 +195,14 @@ export default function RecipientDetailScreen({navigation, route}) {
         return currentRecordSet.invoices.filter(
           (obj) =>
             obj.invoice_status === Verbs.UNPAID ||
-            obj.invoice_status === Verbs.PARTIALLY_PAID,
+            obj.invoice_status === Verbs.PARTIALLY_PAID ||
+            obj.invoice_status === Verbs.INVOICE_REJECTED,
         );
       }
     },
     [currentRecordSet],
   );
+
   const tabChangePress = useCallback((changeTab) => {
     setTabNumber(changeTab.i);
   }, []);
@@ -219,255 +227,237 @@ export default function RecipientDetailScreen({navigation, route}) {
         }}
       />
 
-      <View style={styles.mainContainer}>
-        <ActivityLoader visible={loading} />
-        <View style={{flex: 1, backgroundColor: colors.lightGrayBackground}}>
-          {/* recipient name and Image View */}
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              marginLeft: 15,
-              marginTop: 20,
-            }}>
-            <GroupIcon
-              entityType={receiver.receiver_type}
-              imageUrl={receiver.thumbnail}
-              containerStyle={styles.profileContainer}
-              groupName={receiver.full_name}
-              grpImageStyle={{
-                height: 32,
-                width: 28,
-              }}
-              textstyle={{
-                fontSize: 12,
-              }}
-            />
+      <ScrollView
+        stickyHeaderIndices={[2]}
+        showsVerticalScrollIndicator={false}>
+        <View style={styles.mainContainer}>
+          <ActivityLoader visible={loading} />
+          <View style={{flex: 1, backgroundColor: colors.lightGrayBackground}}>
+            {/* recipient name and Image View */}
             <View
               style={{
-                marginLeft: 10,
-              }}>
-              <Text
-                style={{
-                  fontSize: 16,
-                  fontFamily: fonts.RBold,
-                  lineHeight: 24,
-                }}>
-                {receiver.full_name}
-              </Text>
-              <Text
-                style={{
-                  fontSize: 14,
-                  fontFamily: fonts.RRegular,
-                  lineHeight: 21,
-                }}>
-                {displayLocation(receiver)}
-              </Text>
-            </View>
-          </View>
-
-          {/* Implemet the Bottom sheet Here */}
-
-          {/* Todo */}
-
-          <BottomSheet
-            isVisible={visiblemonthModal}
-            closeModal={() => setVisibleMonthModal(false)}
-            optionList={MonthData}
-            onSelect={(option) => {
-              setSelectedMonth(option);
-              setVisibleMonthModal(false);
-              getDates(option);
-            }}
-          />
-
-          <Pressable
-            onPress={() => setVisibleMonthModal(true)}
-            style={{
-              backgroundColor: colors.lightGrayBackground,
-              marginTop: 25,
-              paddingHorizontal: 15,
-            }}>
-            <View
-              style={{
-                width: '100%',
-                height: 40,
-                backgroundColor: colors.whiteColor,
-                alignSelf: 'center',
-                borderRadius: 25,
-                justifyContent: 'space-between',
-                alignItems: 'flex-start',
                 flexDirection: 'row',
+                alignItems: 'center',
+                marginLeft: 15,
+                marginTop: 20,
               }}>
-              <Text
-                style={{
-                  fontFamily: fonts.RRegular,
-                  fontSize: 16,
-                  lineHeight: 36,
-                  paddingHorizontal: 15,
-                }}>
-                {selectedMonth}
-              </Text>
-              <Image
-                source={images.dropDownArrow2}
-                style={{
-                  height: 15,
-                  width: 15,
-                  marginRight: 15,
-                  tintColor: colors.userPostTimeColor,
-                  alignSelf: 'center',
+              <GroupIcon
+                entityType={receiver.receiver_type}
+                imageUrl={receiver.thumbnail}
+                containerStyle={styles.profileContainer}
+                groupName={receiver.full_name}
+                grpImageStyle={{
+                  height: 32,
+                  width: 28,
+                }}
+                textstyle={{
+                  fontSize: 12,
                 }}
               />
-            </View>
-          </Pressable>
-
-          {/* invoices DropDown */}
-
-          <View
-            style={{
-              paddingHorizontal: 15,
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              backgroundColor: colors.lightGrayBackground,
-              marginTop: 20,
-              marginBottom: allCurrencies ? 20 : 0,
-            }}>
-            <TouchableOpacity
-              onPress={() => setVisibleCurrencySheet(true)}
-              style={{
-                flexDirection: 'row',
-              }}>
-              <Text
-                style={{
-                  fontFamily: fonts.RMedium,
-                  fontSize: 20,
-                  color: colors.lightBlackColor,
-                }}>
-                {allCurrencies
-                  ? strings.allInvoiceText
-                  : `${strings.invoicesIn} ${currency}`}
-              </Text>
-              <Image
-                source={images.dropDownArrow}
-                style={{
-                  width: 14,
-                  height: 26,
-                  resizeMode: 'contain',
-                  marginLeft: 5,
-                  alignItems: 'center',
-                  lineHeight: 30,
-                  tintColor: colors.lightBlackColor,
-                }}
-              />
-            </TouchableOpacity>
-
-            <Text
-              style={{
-                fontSize: 20,
-                fontFamily: fonts.RMedium,
-                lineHeight: 30,
-                color: colors.lightBlackColor,
-              }}>
-              {currencyInvoiceAmount}
-            </Text>
-          </View>
-
-          {allCurrencies ? (
-            <>
               <View
                 style={{
-                  flex: 1,
-                  backgroundColor: colors.whiteColor,
+                  marginLeft: 10,
                 }}>
-                <FlatList
-                  extraData={recipentData}
-                  showsVerticalScrollIndicator={false}
-                  data={recipentData}
-                  keyExtractor={(index) => index.toString()}
-                  ItemSeparatorComponent={() => (
-                    <View style={styles.dividerLine} />
-                  )}
-                  renderItem={({item}) => {
-                    console.log(item, 'from item');
-                    return (
-                      <InvoiceAmount
-                        style={{
-                          backgroundColor: colors.whiteColor,
-                          marginTop: 15,
-                        }}
-                        currency={item.currency_type}
-                        totalInvoices={item.total_invoice}
-                        totalAmount={item.invoice_total}
-                        paidAmount={item.invoice_paid_total}
-                        openAmount={item.invoice_open_total}
-                        allCurrencySelected={allCurrencies}
-                      />
-                    );
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontFamily: fonts.RBold,
+                    lineHeight: 24,
+                  }}>
+                  {receiver.full_name}
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 14,
+                    fontFamily: fonts.RRegular,
+                    lineHeight: 21,
+                  }}>
+                  {displayLocation(receiver)}
+                </Text>
+              </View>
+            </View>
+
+            {/* Implemet the Bottom sheet Here */}
+
+            {/* Todo */}
+
+            <BottomSheet
+              isVisible={visiblemonthModal}
+              closeModal={() => setVisibleMonthModal(false)}
+              optionList={MonthData}
+              onSelect={(option) => {
+                setSelectedMonth(option);
+                setVisibleMonthModal(false);
+                getDates(option);
+              }}
+            />
+
+            <Pressable
+              onPress={() => setVisibleMonthModal(true)}
+              style={{
+                backgroundColor: colors.lightGrayBackground,
+                marginTop: 25,
+                paddingHorizontal: 15,
+              }}>
+              <View
+                style={{
+                  width: '100%',
+                  height: 40,
+                  backgroundColor: colors.whiteColor,
+                  alignSelf: 'center',
+                  borderRadius: 25,
+                  justifyContent: 'space-between',
+                  alignItems: 'flex-start',
+                  flexDirection: 'row',
+                }}>
+                <Text
+                  style={{
+                    fontFamily: fonts.RRegular,
+                    fontSize: 16,
+                    lineHeight: 36,
+                    paddingHorizontal: 15,
+                  }}>
+                  {selectedMonth}
+                </Text>
+                <Image
+                  source={images.dropDownArrow2}
+                  style={{
+                    height: 15,
+                    width: 15,
+                    marginRight: 15,
+                    tintColor: colors.userPostTimeColor,
+                    alignSelf: 'center',
                   }}
                 />
               </View>
-            </>
-          ) : (
-            <>
-              <InvoiceAmount
-                currency={currentRecordSet.currency_type}
-                totalInvoices={route.params.totalInvoices}
-                totalAmount={currentRecordSet.invoice_total}
-                paidAmount={currentRecordSet.invoice_paid_total}
-                openAmount={currentRecordSet.invoice_open_total}
-                currencyData={currencyData}
-                onCurrencyPress={onCurrencyPress}
-              />
-              <View style={{backgroundColor: colors.whiteColor}}>
-                <TCScrollableProfileTabs
-                  tabItem={tabs}
-                  tabVerticalScroll={false}
-                  onChangeTab={tabChangePress}
-                  currentTab={tabNumber}
+            </Pressable>
+
+            {/* invoices DropDown */}
+
+            <View
+              style={{
+                paddingHorizontal: 15,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                backgroundColor: colors.lightGrayBackground,
+                marginTop: 20,
+                marginBottom: selectedCurrency === strings.all ? 20 : 0,
+              }}>
+              <TouchableOpacity
+                onPress={() => setVisibleCurrencySheet(true)}
+                style={{
+                  flexDirection: 'row',
+                }}>
+                <Text
+                  style={{
+                    fontFamily: fonts.RMedium,
+                    fontSize: 20,
+                    color: colors.lightBlackColor,
+                  }}>
+                  {selectedCurrency === strings.all
+                    ? strings.allInvoiceText
+                    : `${strings.invoicesIn} ${currentRecordSet.currency_type}`}
+                </Text>
+                <Image
+                  source={images.dropDownArrow}
+                  style={{
+                    width: 14,
+                    height: 26,
+                    resizeMode: 'contain',
+                    marginLeft: 5,
+                    alignItems: 'center',
+                    lineHeight: 30,
+                    tintColor: colors.lightBlackColor,
+                  }}
                 />
-              </View>
-              <SafeAreaView
-                style={{flex: 1, backgroundColor: colors.whiteColor}}>
-                <FlatList
-                  showsVerticalScrollIndicator={false}
-                  data={
-                    (tabNumber === 0 && memberListByFilter(Verbs.allStatus)) ||
-                    (tabNumber === 1 && memberListByFilter(Verbs.paid)) ||
-                    (tabNumber === 2 && memberListByFilter(Verbs.open))
-                  }
-                  renderItem={renderInvoiceView}
-                  keyExtractor={(item, index) => index.toString()}
-                />
-              </SafeAreaView>
-            </>
-          )}
+              </TouchableOpacity>
+
+              <Text
+                style={{
+                  fontSize: 20,
+                  fontFamily: fonts.RMedium,
+                  lineHeight: 30,
+                  color: colors.lightBlackColor,
+                }}>
+                {selectedCurrency === strings.all
+                  ? totalInvoice
+                  : currentRecordSet.invoices.length}
+              </Text>
+            </View>
+          </View>
         </View>
 
-        <BottomSheet
-          isVisible={visibleCurrencySheet}
-          optionList={currencies}
-          closeModal={() => setVisibleCurrencySheet(false)}
-          onSelect={(option) => {
-            if (option === strings.all) {
-              setAllCurrencies(true);
-              setCurrencyInvoiceAmount(totalInvoice);
-              setVisibleCurrencySheet(false);
-              return;
-            }
+        {selectedCurrency !== strings.all && (
+          <InvoiceAmount
+            currency={currentRecordSet.currency_type}
+            totalInvoices={currentRecordSet.invoices.length}
+            totalAmount={currentRecordSet.invoice_total}
+            paidAmount={currentRecordSet.invoice_paid_total}
+            openAmount={currentRecordSet.invoice_open_total}
+          />
+        )}
+        {selectedCurrency === strings.all ? (
+          <>
+            <View
+              style={{
+                flex: 1,
+                backgroundColor: colors.whiteColor,
+              }}>
+              <FlatList
+                extraData={recipientData}
+                showsVerticalScrollIndicator={false}
+                data={recipientData}
+                keyExtractor={(index) => index.toString()}
+                ItemSeparatorComponent={() => (
+                  <View style={styles.dividerLine} />
+                )}
+                renderItem={({item}) => {
+                  return (
+                    <InvoiceAmount
+                      style={{
+                        backgroundColor: colors.whiteColor,
+                        marginTop: 15,
+                      }}
+                      currency={item.currency_type}
+                      totalInvoices={item.invoices.length}
+                      totalAmount={item.invoice_total}
+                      paidAmount={item.invoice_paid_total}
+                      openAmount={item.invoice_open_total}
+                      allCurrencySelected={selectedCurrency === strings.all}
+                    />
+                  );
+                }}
+              />
+            </View>
+          </>
+        ) : (
+          <View style={{backgroundColor: colors.whiteColor}}>
+            <TCScrollableProfileTabs
+              tabItem={tabs}
+              tabVerticalScroll={false}
+              onChangeTab={tabChangePress}
+              currentTab={tabNumber}
+            />
+          </View>
+        )}
 
-            setVisibleCurrencySheet(false);
-
-            const selectedIndex = currencyData.findIndex(
-              (obj) => obj.currency === option,
-            );
-
-            setAllCurrencies(false);
-            setCurrencyInvoiceAmount(currencyData[selectedIndex].invoices);
-            onCurrencyPress(currencyData[selectedIndex].currency);
-            setCurrency(currencyData[selectedIndex].currency);
-          }}
-        />
-
+        {selectedCurrency !== strings.all && (
+          <View>
+            <FlatList
+              nestedScrollEnabled
+              scrollEnabled
+              showsVerticalScrollIndicator={false}
+              ListFooterComponent={() => <View style={{marginBottom: 100}} />}
+              data={
+                (tabNumber === 0 && memberListByFilter(Verbs.allStatus)) ||
+                (tabNumber === 1 && memberListByFilter(Verbs.paid)) ||
+                (tabNumber === 2 && memberListByFilter(Verbs.open))
+              }
+              renderItem={renderInvoiceView}
+              keyExtractor={(item, index) => index.toString()}
+            />
+          </View>
+        )}
         <ActionSheet
           ref={actionSheet}
           options={[strings.cancelledInvoiceText, strings.cancel]}
@@ -482,10 +472,38 @@ export default function RecipientDetailScreen({navigation, route}) {
             }
           }}
         />
-      </View>
+
+        <BottomSheet
+          isVisible={visibleCurrencySheet}
+          optionList={[
+            strings.all,
+            ...recipientData.map((item) => item.currency_type),
+          ]}
+          closeModal={() => setVisibleCurrencySheet(false)}
+          onSelect={(option) => {
+            if (option === strings.all) {
+              setSelectedCurrency(option);
+              setVisibleCurrencySheet(false);
+              return;
+            }
+
+            setVisibleCurrencySheet(false);
+
+            const selectedRecord = recipientData.find(
+              (obj) => obj.currency_type === option,
+            );
+
+            if (selectedRecord) {
+              setSelectedCurrency(option);
+              setCurrentRecordSet(selectedRecord);
+            }
+          }}
+        />
+      </ScrollView>
     </SafeAreaView>
   );
 }
+
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,

@@ -37,17 +37,18 @@ export default function InvoiceLogRowView({data, currency, onPressCard}) {
         <Text
           style={{
             lineHeight: 24,
-            fontFamily: fonts.RRegular,
-            fontSize: 14,
+            fontFamily: fonts.RBold,
+            fontSize: 16,
           }}>
-          {moment(getJSDate(data.payment_date)).format('LLL')}
+          {moment(getJSDate(data.payment_date)).format('LL')}
         </Text>
         <Text
           numberOfLines={2}
           style={{
-            fontSize: 16,
-            fontFamily: fonts.RMedium,
+            fontSize: 14,
+            fontFamily: fonts.RRegular,
             lineHeight: 24,
+            marginTop: -2,
           }}>
           {getPaymentModeText()}
         </Text>
@@ -56,8 +57,21 @@ export default function InvoiceLogRowView({data, currency, onPressCard}) {
       {/* amount Container */}
 
       <View style={styles.invoiveAmountContainer}>
-        <Text style={styles.invoiceAmountTexStyle}>
-          {`$${data.amount} ${currency}`}
+        <Text
+          style={[
+            styles.invoiceAmountTexStyle,
+            {
+              color:
+                data.transaction_type === Verbs.PAYMENT
+                  ? colors.neonBlue
+                  : colors.lightBlackColor,
+            },
+          ]}>
+          {data.transaction_type === Verbs.PAYMENT ? (
+            <Text>{`${data.amount} ${currency}`}</Text>
+          ) : (
+            <Text>{`-${data.amount} ${currency}`}</Text>
+          )}
         </Text>
       </View>
     </TouchableOpacity>
@@ -68,6 +82,7 @@ const styles = StyleSheet.create({
   viewContainer: {
     flexDirection: 'row',
     marginHorizontal: 15,
+    paddingVertical: 15,
     justifyContent: 'space-between',
     flex: 1,
     alignItems: 'center',
@@ -83,7 +98,7 @@ const styles = StyleSheet.create({
   invoiceAmountTexStyle: {
     fontSize: 16,
     fontFamily: fonts.RMedium,
-    color: '#333333',
+
     alignSelf: 'flex-end',
     lineHeight: 24,
   },
