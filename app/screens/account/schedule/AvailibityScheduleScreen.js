@@ -35,7 +35,7 @@ export default function AvailibilityScheduleScreen({
 }) {
 
   const [weeklyCalender, setWeeklyCalender] = useState(false);
-   const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [allData, setAllData] = useState(allSlots);
   const [slots, setSlots] = useState([]);
   const [slotList, setSlotList] = useState([]);
@@ -45,9 +45,8 @@ export default function AvailibilityScheduleScreen({
   const [editableSlots, setEditableSlots] = useState([]);
   const [listView, setListView] = useState(true);
   const [listViewData, setListViewData] = useState([]);
-  const [visibleAvailabilityModal, setVisibleAvailabilityModal] =
-    useState(false);
-
+  const [visibleAvailabilityModal, setVisibleAvailabilityModal] = useState(false);
+  const [customDatesStyles, setCustomDatesStyles] = useState([]);
   const authContext = useContext(AuthContext);
   const entity = authContext.entity;
   const uid = entity.uid || entity.auth.user_id;
@@ -58,22 +57,28 @@ export default function AvailibilityScheduleScreen({
 
   useEffect(() => {
     setAllData(allSlots);
-    setWeeklyCalender(false)
+    setWeeklyCalender(true)
     setLoading(false)
   }, []);
 
 
   useEffect(() => {
-    // calculateWeekdays(1682721000, 1682800200);
     prepareSlotArray(selectedDate);
     prepareSlotListArray();
     const blocked = [];
-    allSlots.forEach((obj) => {
-      if (obj.allDay) {
+    let tempSlot = [...allData];
+    tempSlot = newBlockedSlots(tempSlot);
+    tempSlot.forEach((obj) => {
+      const start = Utility.getJSDate(obj.start_datetime);
+      start.setHours(0, 0, 0, 0);
+      const startSlotTime = Utility.getTCDate(start);
+      const endSlotTime = startSlotTime + 24 * 60 * 60;
+      if (obj.start_datetime >= startSlotTime && obj.end_datetime <= endSlotTime) {
         blocked.push(moment.unix(obj.start_datetime).format('YYYY-MM-DD'));
       }
     });
     setBlockedDaySlots(blocked);
+    createCalenderViewData(blocked);
   }, [allData, selectedDate]);
 
 
@@ -85,35 +90,63 @@ export default function AvailibilityScheduleScreen({
 
 
 
-  // function calculateWeekdays(startTimestamp, endTimestamp) {
-  //   let startMillis = startTimestamp * 1000;
-  //   let endMillis = endTimestamp * 1000;
+  const generateTimestampRanges = (startTimestamp, endTimestamp) => {
+    const startDate = startTimestamp * 1000;
+    const endDate = endTimestamp * 1000;
+    const ranges = [];
+    let startOfCurrentRange = startDate;
   
-  //   let startDate = new Date(startMillis).toUTCString();
-  //   let endDate = new Date(endMillis).toUTCString();
+    while (startOfCurrentRange < endDate) {
+      const startDateFullDate = new Date(startOfCurrentRange);
+      let endOfCurrentDay = new Date(
+        startDateFullDate.getFullYear(),
+        startDateFullDate.getMonth(),
+        startDateFullDate.getDate() + 1
+      ).getTime();
   
-  //   let weekdays = 0;
-  //   let currentDate = new Date(startDate);
+      if (endOfCurrentDay > endDate) {
+        endOfCurrentDay = endDate;
+      }
   
-  //   while (currentDate <= new Date(endDate)) {
-  //     if (currentDate.getUTCDay() >= 1 && currentDate.getUTCDay() <= 7) {
-  //       weekdays = weekdays + 1;
-  //     }
-  //     currentDate.setUTCDate(currentDate.getUTCDate() + 1);
-  //   }
-  // }
+      ranges.push({ start: startOfCurrentRange, end: endOfCurrentDay });
+  
+      startOfCurrentRange = endOfCurrentDay;
+    }
+  
+    return ranges;
+  };
 
+
+  const newBlockedSlots = (request) => {
+    const newPlans = request.flatMap((plan) => {
+      const { start_datetime, end_datetime } = plan;
+      const timestampRange = generateTimestampRanges(start_datetime, end_datetime);
+      if (timestampRange.length > 1) {
+        return timestampRange.map(({ start, end }) => ({
+          ...plan,
+          start_datetime: start / 1000,
+          end_datetime: end / 1000,
+          actual_enddatetime: end / 1000,
+        }));
+      } 
+      return plan;
+    });
+  
+    return newPlans;
+  };
 
 
   const prepareSlotArray = (dateObj = {}, newItem = {}) => {
     const start = new Date(dateObj);
     start.setHours(0, 0, 0, 0);
     const temp = [];
-    const tempSlot = [...allData];
+    let tempSlot = [...allData];
 
     if (Object.entries(newItem).length > 0) {
       tempSlot.push(newItem);
     }
+
+    tempSlot = newBlockedSlots(tempSlot);
 
     for (const blockedSlot of tempSlot) {
       const eventDate = Utility.getJSDate(blockedSlot.start_datetime);
@@ -143,12 +176,14 @@ export default function AvailibilityScheduleScreen({
 
   const prepareSlotListArray = () => {
     const temp = [];
-    const tempSlot = [...allData];
+    let tempSlot = [...allData];
     const monthData = [];
     const today = moment();
     const day   = today.clone();
 
-    while (day.isSame(today, 'month')) {
+    tempSlot = newBlockedSlots(tempSlot);
+
+    while(day.quarter() === today.quarter()) {
       const startDate = new Date(day.clone());
       startDate.setHours(0, 0, 0, 0);
       const startSlotTime = Utility.getTCDate(startDate);
@@ -252,9 +287,8 @@ export default function AvailibilityScheduleScreen({
   };
 
 
-
   const addToSlotData = (data) => {
-    const tempData = [...allData];
+    let tempData = [...allData];
     data.forEach((item1) => {
       allData.forEach((item2, key) => {
         if (
@@ -269,13 +303,11 @@ export default function AvailibilityScheduleScreen({
           tempData[key].start_datetime = item1.start_datetime;
         }
       });
-      
       tempData.push(item1);
-
     });
+    tempData = newBlockedSlots(tempData);
     setAllData(tempData);
   };
-
 
 
   const createCalenderTimeSlots = (startTime, hours, mslots) => {
@@ -344,7 +376,6 @@ export default function AvailibilityScheduleScreen({
   };
 
 
-
   const deleteFromSlotData = async (delArr) => {
     const tempSlot = [...allSlots];
     delArr.forEach((cal_id) => {
@@ -376,7 +407,6 @@ export default function AvailibilityScheduleScreen({
   };
 
 
-
   const datesBlacklistFunc = (startDate, endDate) => {
     const start = new Date(startDate);
     const end = new Date(endDate);
@@ -389,7 +419,6 @@ export default function AvailibilityScheduleScreen({
 
     return dates;
   };
-
 
 
   const LeftArrow = () => (
@@ -410,7 +439,6 @@ export default function AvailibilityScheduleScreen({
   );
 
 
-
   const RightArrow = () => (
     <>
       <View
@@ -429,73 +457,75 @@ export default function AvailibilityScheduleScreen({
   );
 
 
+  const createCalenderViewData = (blocked) => {
+    const today = moment();
+    const day = today.clone().startOf('month');
+    const customStyles = [];
+    while (day.isSame(today, 'year')) {
+      let backgroundColorWrapper;
+      let background_color;
+      let text_color;
+      let fontWeightVal = '400'
 
-  const today = moment();
-  const day = today.clone().startOf('month');
-  const customDatesStyles = [];
-  while (day.isSame(today, 'year')) {
-    let backgroundColorWrapper;
-    let background_color;
-    let text_color;
-    let fontWeightVal = '400'
-
-    if (
-      moment(selectedDate).format('YYYY-MM-DD') ===
-      moment(new Date(day.clone())).format('YYYY-MM-DD')
-    ) {
-      backgroundColorWrapper = colors.themeColor;
-      background_color = colors.themeColor;
-      text_color = colors.whiteColor;
-      fontWeightVal = '700'
-    } else if (
-      blockedDaySlots.includes(moment(day.clone()).format('YYYY-MM-DD'))
-    ) {
-      backgroundColorWrapper = colors.lightGrey;
-      background_color = colors.lightGrey;
-      text_color = colors.grayColor;
-    } else if (
-      moment(new Date()).format('YYYY-MM-DD') ===
-      moment(new Date(day.clone())).format('YYYY-MM-DD')
-    ) {
       if (
-        moment(new Date()).format('YYYY-MM-DD') !==
-        moment(selectedDate).format('YYYY-MM-DD')
+        moment(selectedDate).format('YYYY-MM-DD') ===
+        moment(new Date(day.clone())).format('YYYY-MM-DD')
       ) {
-        backgroundColorWrapper = colors.whiteColor;
-      } else {
         backgroundColorWrapper = colors.themeColor;
+        background_color = colors.themeColor;
+        text_color = colors.whiteColor;
+        fontWeightVal = '700'
+      } else if (
+        blocked.includes(moment(day.clone()).format('YYYY-MM-DD'))
+      ) {
+        backgroundColorWrapper = colors.lightGrey;
+        background_color = colors.lightGrey;
+        text_color = colors.grayColor;
+      } else if (
+        moment(new Date()).format('YYYY-MM-DD') ===
+        moment(new Date(day.clone())).format('YYYY-MM-DD')
+      ) {
+        if (
+          moment(new Date()).format('YYYY-MM-DD') !==
+          moment(selectedDate).format('YYYY-MM-DD')
+        ) {
+          backgroundColorWrapper = colors.whiteColor;
+        } else {
+          backgroundColorWrapper = colors.themeColor;
+        }
+        background_color = colors.whiteColor;
+        text_color = colors.themeColor;
+      } else {
+        background_color = colors.whiteColor;
+        text_color = colors.greenGradientStart;
       }
-      background_color = colors.whiteColor;
-      text_color = colors.themeColor;
-    } else {
-      background_color = colors.whiteColor;
-      text_color = colors.greenGradientStart;
+
+      customStyles.push({
+        date: day.clone(),
+        containerStyle: {
+          borderRadius: 5,
+          padding: 0,
+          width: 35,
+          height: 35,
+          backgroundColor: backgroundColorWrapper,
+          marginTop: 5,
+          marginBottom: 5,
+          marginLeft: 8,
+          marginRight: 8,
+        },
+        style: {
+          backgroundColor: background_color,
+          borderRadius: 5,
+        },
+        textStyle: {
+          color: text_color,
+          fontWeight: fontWeightVal
+        },
+      });
+
+      day.add(1, 'day');
     }
-
-    customDatesStyles.push({
-      date: day.clone(),
-      containerStyle: {
-        borderRadius: 5,
-        padding: 0,
-        width: 35,
-        height: 35,
-        backgroundColor: backgroundColorWrapper,
-        marginTop: 5,
-        marginBottom: 5,
-        marginLeft: 8,
-        marginRight: 8,
-      },
-      style: {
-        backgroundColor: background_color,
-        borderRadius: 5,
-      },
-      textStyle: {
-        color: text_color,
-        fontWeight: fontWeightVal
-      },
-    });
-
-    day.add(1, 'day');
+    setCustomDatesStyles(customStyles);
   }
 
 
@@ -825,7 +855,7 @@ export default function AvailibilityScheduleScreen({
         onBackdropPress={() => {
           setVisibleAvailabilityModal(false);
         }}
-        backdropOpacity={0}>
+        backdropOpacity={0.5}>
         <View style={styles.modalMainViewStyle}>
           <ChallengeAvailability
             setVisibleAvailabilityModal={setVisibleAvailabilityModal}

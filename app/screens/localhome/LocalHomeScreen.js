@@ -43,7 +43,6 @@ import {strings} from '../../../Localization/translation';
 import {getShortsList, getSportsList} from '../../api/Games'; // getRecentGameDetails
 import * as Utility from '../../utils';
 import {
-  getEntityIndex,
   getGameIndex,
   getGroupIndex,
   getUserIndex,
@@ -75,6 +74,7 @@ import {getQBAccountType, QBupdateUser} from '../../utils/QuickBlox';
 import Verbs from '../../Constants/Verbs';
 import {getGeocoordinatesWithPlaceName} from '../../utils/location';
 import LocationModal from '../../components/LocationModal/LocationModal';
+import {getSingleSportList} from '../../utils/sportsActivityUtils';
 
 const defaultPageSize = 10;
 export default function LocalHomeScreen({navigation, route}) {
@@ -115,7 +115,6 @@ export default function LocalHomeScreen({navigation, route}) {
   const [pointEvent, setPointEvent] = useState('auto');
   const [locationSelectedViaModal, setLocationSelectedViaModal] =
     useState(false);
-
   const [filters, setFilters] = useState({
     sport: selectedSport,
     sport_type: sportType,
@@ -378,6 +377,110 @@ export default function LocalHomeScreen({navigation, route}) {
           },
         });
       }
+      // Player available for challenge
+      const playerAvailableForchallengeQuery = {
+        size: defaultPageSize,
+        query: {
+          bool: {
+            must: [
+              {match: {entity_type: 'player'}},
+              {
+                nested: {
+                  path: 'registered_sports',
+                  query: {
+                    bool: {
+                      must: [
+                        {
+                          term: {
+                            'registered_sports.setting.availibility.keyword':
+                              Verbs.on,
+                          },
+                        },
+                      ],
+                    },
+                  },
+                },
+              },
+            ],
+          },
+        },
+      };
+
+      // Sport filter
+      if (selectedSport !== strings.allType) {
+        playerAvailableForchallengeQuery.query.bool.must[1].nested.query.bool.must.push(
+          {
+            term: {
+              'registered_sports.sport.keyword': `${selectedSport.toLowerCase()}`,
+            },
+          },
+        );
+        playerAvailableForchallengeQuery.query.bool.must[1].nested.query.bool.must.push(
+          {
+            term: {
+              'registered_sports.sport_type.keyword': `${sportType.toLowerCase()}`,
+            },
+          },
+        );
+      }
+
+      // World filter
+      if (location !== strings.worldTitleText) {
+        playerAvailableForchallengeQuery.query.bool.must.push({
+          multi_match: {
+            query: `${location.toLowerCase()}`,
+            fields: ['city', 'country', 'state', 'state_abbr', 'venue.address'],
+          },
+        });
+      }
+
+      console.log(
+        '11111 ==>',
+        JSON.stringify(playerAvailableForchallengeQuery),
+      );
+
+      // Team available for challenge
+      const teamAvailableForchallengeQuery = {
+        size: defaultPageSize,
+        query: {
+          bool: {
+            must: [
+              {term: {'setting.availibility.keyword': Verbs.on}},
+              {term: {entity_type: 'team'}},
+              {term: {is_pause: false}},
+            ],
+          },
+        },
+      };
+
+      if (location !== strings.worldTitleText) {
+        teamAvailableForchallengeQuery.query.bool.must.push({
+          multi_match: {
+            query: location,
+            fields: ['city', 'country', 'state_abbr', 'venue.address'],
+          },
+        });
+      }
+      if (selectedSport !== strings.allSport) {
+        teamAvailableForchallengeQuery.query.bool.must.push({
+          term: {
+            'sport.keyword': {
+              value: `${selectedSport.toLowerCase()}`,
+            },
+          },
+        });
+
+        teamAvailableForchallengeQuery.query.bool.must.push({
+          term: {
+            'sport_type.keyword': {
+              value: `${sportType.toLowerCase()}`,
+            },
+          },
+        });
+      }
+
+      console.log('2222 ==>', JSON.stringify(teamAvailableForchallengeQuery));
+      /*
       // Looking Challengee query
       const availableForchallengeQuery = {
         size: defaultPageSize,
@@ -479,7 +582,7 @@ export default function LocalHomeScreen({navigation, route}) {
           },
         );
       }
-
+*/
       // Looking Challengee query
 
       // Hiring player query
@@ -665,9 +768,18 @@ export default function LocalHomeScreen({navigation, route}) {
         });
       });
 
-      getEntityIndex(availableForchallengeQuery).then((entity) => {
-        setChallengeeMatch(entity);
-      });
+      // getEntityIndex(availableForchallengeQuery).then((entity) => {
+      //   setChallengeeMatch(entity);
+      // });
+      if (authContext.entity.role === Verbs.entityTypeUser) {
+        getUserIndex(playerAvailableForchallengeQuery).then((players) => {
+          setChallengeeMatch(players);
+        });
+      } else if (authContext.entity.role === Verbs.entityTypeTeam) {
+        getGroupIndex(teamAvailableForchallengeQuery).then((teams) => {
+          setChallengeeMatch(teams);
+        });
+      }
 
       getGroupIndex(recruitingPlayersQuery).then((teams) => {
         setHiringPlayers(teams);
@@ -1221,6 +1333,50 @@ export default function LocalHomeScreen({navigation, route}) {
     };
     return data;
   };
+  const getNextScreenTeamData = () => {
+    if (authContext.entity.role === Verbs.entityTypeTeam) {
+      const data = {
+        teamSportData: {
+          sport:
+            filters.sport === strings.all
+              ? authContext.entity?.obj.sport
+              : filters.sport,
+          sport_type:
+            filters.sport_type === strings.all
+              ? authContext.entity?.obj.sport_type
+              : filters.sport_type,
+          sport_name: Utility.getSportName(filters, authContext),
+        },
+        location,
+        locationOption: getLocationOption(),
+      };
+      return data;
+    }
+    const data = {
+      sport: filters.sport === strings.all ? strings.allSport : filters.sport,
+      sport_type:
+        filters.sport_type === strings.all
+          ? strings.allSport
+          : filters.sport_type,
+      sport_name: Utility.getSportName(filters, authContext),
+      location,
+      locationOption: getLocationOption(),
+    };
+    return data;
+  };
+  const getNextScreenPlayerData = () => {
+    const data = {
+      sport: filters.sport === strings.all ? strings.allSport : filters.sport,
+      sport_type:
+        filters.sport_type === strings.all
+          ? strings.allSport
+          : filters.sport_type,
+      sport_name: Utility.getSportName(filters, authContext),
+      location,
+      locationOption: getLocationOption(),
+    };
+    return data;
+  };
   return (
     <View style={{flex: 1}}>
       <ActivityLoader visible={loading} />
@@ -1469,46 +1625,103 @@ export default function LocalHomeScreen({navigation, route}) {
                 )}
               />
             </View>
+            {((authContext.entity.role === Verbs.entityTypeUser &&
+              selectedSport === strings.all) ||
+              (authContext.entity.role === Verbs.entityTypeUser &&
+                sportType === Verbs.singleSport)) && (
+              <View>
+                <TCTitleWithArrow
+                  isDisabled={!(challengeeMatch?.length > 0)}
+                  title={strings.playersAvailableforChallenge}
+                  showArrow={true}
+                  viewStyle={{marginTop: 20, marginBottom: 15}}
+                  onPress={() => {
+                    console.log('selected sport', selectedSport);
+                    const data = getNextScreenPlayerData();
+                    console.log('data==>', data);
+                    console.log('sports==>', sports);
 
-            <View>
-              <TCTitleWithArrow
-                isDisabled={!(challengeeMatch?.length > 0)}
-                title={strings.lookingForTitle}
-                showArrow={true}
-                viewStyle={{marginTop: 20, marginBottom: 15}}
-                onPress={() => {
-                  const data = getSortDataForNextScreen();
+                    navigation.navigate('LookingForChallengeScreen', {
+                      filters: data,
+                      registerFavSports: getSingleSportList(sports),
+                    });
+                  }}
+                />
 
-                  navigation.navigate('LookingForChallengeScreen', {
-                    filters: data,
-                  });
-                }}
-              />
+                <FlatList
+                  horizontal={true}
+                  scrollEnabled={challengeeMatch?.length > 0}
+                  showsHorizontalScrollIndicator={false}
+                  data={challengeeMatch}
+                  ItemSeparatorComponent={renderSeparator}
+                  keyExtractor={keyExtractor}
+                  renderItem={renderChallengerItems}
+                  style={{paddingLeft: 15}}
+                  ListEmptyComponent={() => (
+                    <TCTeamsCardPlaceholder
+                      data={gameData}
+                      cardWidth={'94%'}
+                      placeholderText={strings.noPlayerTeamText}
+                    />
+                  )}
+                />
+              </View>
+            )}
+            {((authContext.entity.role === Verbs.entityTypeTeam &&
+              selectedSport === strings.all) ||
+              (authContext.entity.role === Verbs.entityTypeTeam &&
+                sportType !== Verbs.singleSport)) && (
+              <View>
+                <TCTitleWithArrow
+                  isDisabled={!(challengeeMatch?.length > 0)}
+                  title={strings.teamAvailableforChallenge}
+                  showArrow={true}
+                  viewStyle={{marginTop: 20, marginBottom: 15}}
+                  onPress={() => {
+                    console.log('selected sport', selectedSport);
+                    const data = getNextScreenTeamData();
+                    console.log('data==>', data);
+                    console.log('sports==>', data.teamSportData);
 
-              <FlatList
-                horizontal={true}
-                scrollEnabled={challengeeMatch?.length > 0}
-                showsHorizontalScrollIndicator={false}
-                data={challengeeMatch}
-                ItemSeparatorComponent={renderSeparator}
-                keyExtractor={keyExtractor}
-                renderItem={renderChallengerItems}
-                style={{paddingLeft: 15}}
-                ListEmptyComponent={() => (
-                  <TCTeamsCardPlaceholder
-                    data={gameData}
-                    cardWidth={'94%'}
-                    placeholderText={strings.noPlayerTeamText}
-                  />
-                )}
-              />
-            </View>
+                    navigation.navigate('LookingForChallengeScreen', {
+                      filters: {
+                        location: data.location,
+                        locationOption: data.locationOption,
+                      },
+                      teamSportData: data.teamSportData,
+                      registerFavSports: sports,
+                    });
+                  }}
+                />
+
+                <FlatList
+                  horizontal={true}
+                  scrollEnabled={challengeeMatch?.length > 0}
+                  showsHorizontalScrollIndicator={false}
+                  data={challengeeMatch}
+                  ItemSeparatorComponent={renderSeparator}
+                  keyExtractor={keyExtractor}
+                  renderItem={renderChallengerItems}
+                  style={{paddingLeft: 15}}
+                  ListEmptyComponent={() => (
+                    <TCTeamsCardPlaceholder
+                      data={gameData}
+                      cardWidth={'94%'}
+                      placeholderText={strings.noPlayerTeamText}
+                    />
+                  )}
+                />
+              </View>
+            )}
+
             <View>
               <TCTitleWithArrow
                 title={strings.refereesTitle}
                 showArrow={true}
                 viewStyle={{marginTop: 20, marginBottom: 15}}
                 onPress={() => {
+                  console.log('selected sport', selectedSport);
+
                   const data = getSortDataForNextScreen();
                   navigation.navigate('RefereesListScreen', {
                     filters: data,
@@ -1562,74 +1775,78 @@ export default function LocalHomeScreen({navigation, route}) {
                 )}
               />
             </View>
-            <View>
-              <TCTitleWithArrow
-                isDisabled={!(hiringPlayers?.length > 0)}
-                title={strings.hiringPlayerTitle}
-                showArrow={true}
-                viewStyle={{marginTop: 20, marginBottom: 15}}
-                onPress={() => {
-                  const data = getSortDataForNextScreen();
-                  navigation.navigate('RecruitingPlayerScreen', {
-                    filters: {
-                      ...data,
-                      groupTeam: strings.teamstitle,
-                      groupClub: strings.clubstitle,
-                      groupLeague: strings.leaguesTitle,
-                    },
-                  });
-                }}
-              />
+            {authContext.entity.role === Verbs.entityTypeUser && (
+              <View>
+                <TCTitleWithArrow
+                  isDisabled={!(hiringPlayers?.length > 0)}
+                  title={strings.hiringPlayerTitle}
+                  showArrow={true}
+                  viewStyle={{marginTop: 20, marginBottom: 15}}
+                  onPress={() => {
+                    const data = getSortDataForNextScreen();
+                    navigation.navigate('RecruitingPlayerScreen', {
+                      filters: {
+                        ...data,
+                        // groupTeam: strings.teamstitle,
+                        // groupClub: strings.clubstitle,
+                        // groupLeague: strings.leaguesTitle,
+                      },
+                    });
+                  }}
+                />
 
-              <FlatList
-                horizontal={true}
-                scrollEnabled={hiringPlayers?.length > 0}
-                showsHorizontalScrollIndicator={false}
-                data={hiringPlayers}
-                ItemSeparatorComponent={renderSeparator}
-                keyExtractor={keyExtractor}
-                renderItem={renderHiringPlayersItems}
-                style={{paddingLeft: 15}}
-                ListEmptyComponent={() => (
-                  <TCTeamsCardPlaceholder
-                    data={gameData}
-                    cardWidth={'94%'}
-                    placeholderText={strings.hiringPlayersPlaceholderText}
-                  />
-                )}
-              />
-            </View>
-
-            <View>
-              <TCTitleWithArrow
-                isDisabled={!(lookingTeam?.length > 0)}
-                title={strings.lookingForTeamTitle}
-                showArrow={true}
-                viewStyle={{marginTop: 20, marginBottom: 15}}
-                onPress={() => {
-                  const data = getSortDataForNextScreen();
-                  navigation.navigate('LookingTeamScreen', {
-                    filters: data,
-                  });
-                }}
-              />
-              <FlatList
-                horizontal={true}
-                scrollEnabled={lookingTeam?.length > 0}
-                showsHorizontalScrollIndicator={false}
-                data={lookingTeam}
-                ItemSeparatorComponent={renderSeparator}
-                keyExtractor={keyExtractor}
-                renderItem={renderEntityListView}
-                style={{marginLeft: 15}}
-                ListEmptyComponent={() => (
-                  <TCEntityListPlaceholder
-                    cardWidth={'94%'}
-                    placeholderText={strings.lookingTeamsPlaceholderText}
-                  />
-                )}
-              />
-            </View>
+                <FlatList
+                  horizontal={true}
+                  scrollEnabled={hiringPlayers?.length > 0}
+                  showsHorizontalScrollIndicator={false}
+                  data={hiringPlayers}
+                  ItemSeparatorComponent={renderSeparator}
+                  keyExtractor={keyExtractor}
+                  renderItem={renderHiringPlayersItems}
+                  style={{paddingLeft: 15}}
+                  ListEmptyComponent={() => (
+                    <TCTeamsCardPlaceholder
+                      data={gameData}
+                      cardWidth={'94%'}
+                      placeholderText={strings.hiringPlayersPlaceholderText}
+                    />
+                  )}
+                />
+              </View>
+            )}
+            {(authContext.entity.role === Verbs.entityTypeTeam ||
+              authContext.entity.role === Verbs.entityTypeClub) && (
+              <View>
+                <TCTitleWithArrow
+                  isDisabled={!(lookingTeam?.length > 0)}
+                  title={strings.lookingForTeamTitle}
+                  showArrow={true}
+                  viewStyle={{marginTop: 20, marginBottom: 15}}
+                  onPress={() => {
+                    const data = getSortDataForNextScreen();
+                    navigation.navigate('LookingTeamScreen', {
+                      filters: data,
+                    });
+                  }}
+                />
+                <FlatList
+                  horizontal={true}
+                  scrollEnabled={lookingTeam?.length > 0}
+                  showsHorizontalScrollIndicator={false}
+                  data={lookingTeam}
+                  ItemSeparatorComponent={renderSeparator}
+                  keyExtractor={keyExtractor}
+                  renderItem={renderEntityListView}
+                  style={{marginLeft: 15}}
+                  ListEmptyComponent={() => (
+                    <TCEntityListPlaceholder
+                      cardWidth={'94%'}
+                      placeholderText={strings.lookingTeamsPlaceholderText}
+                    />
+                  )}
+                />
+              </View>
+            )}
           </ScrollView>
         </View>
       )}

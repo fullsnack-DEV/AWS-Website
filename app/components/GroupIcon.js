@@ -11,12 +11,14 @@ const GroupIcon = ({
   entityType = Verbs.entityTypeTeam,
   groupName = '',
   containerStyle = {},
+  grpImageStyle = {},
+  textstyle = {},
   placeHolderStyle = {},
   showPlaceholder = true,
 }) => {
   const getPlaceholder = () => {
-    let background = null;
-    let placeHolder = null;
+    let background = images.profilePlaceHolder;
+    let placeHolder = '';
     if (entityType === Verbs.entityTypeClub) {
       background = images.clubPlaceholderSmall;
       placeHolder = showPlaceholder ? images.newClubIcon : '';
@@ -25,34 +27,42 @@ const GroupIcon = ({
       placeHolder = showPlaceholder ? images.newTeamIcon : '';
     } else if (
       entityType === Verbs.entityTypePlayer ||
-      entityType === Verbs.entityTypeUser
+      entityType === Verbs.entityTypeUser ||
+      entityType === Verbs.entityTypeGroupMember
     ) {
       background = images.profilePlaceHolder;
       placeHolder = '';
     }
     return {background, placeHolder};
   };
+
   return imageUrl ? (
     <View style={[styles.parent, containerStyle]}>
       <Image
-        source={
-          imageUrl && typeof imageUrl === 'string' ? {uri: imageUrl} : imageUrl
-        }
+        source={typeof imageUrl === 'string' ? {uri: imageUrl} : imageUrl}
         style={styles.image}
       />
-      <View style={styles.placeHolder}>
-        <Image source={getPlaceholder().placeHolder} style={styles.image} />
-      </View>
+      {getPlaceholder().placeHolder ? (
+        <View style={styles.placeHolder}>
+          <Image source={getPlaceholder().placeHolder} style={styles.image} />
+        </View>
+      ) : null}
     </View>
   ) : (
     <View style={[styles.parent, containerStyle]}>
-      <Image source={getPlaceholder().background} style={styles.image} />
-      {entityType === Verbs.entityTypePlayer ||
-      entityType === Verbs.entityTypeUser ? null : (
+      <Image
+        source={getPlaceholder().background}
+        style={[styles.image, grpImageStyle]}
+      />
+      {(entityType === Verbs.entityTypeClub ||
+        entityType === Verbs.entityTypeTeam) &&
+      groupName ? (
         <View style={styles.name}>
-          <Text style={styles.text}>{groupName[0]}</Text>
+          <Text style={[styles.text, textstyle]}>
+            {groupName[0].toUpperCase()}
+          </Text>
         </View>
-      )}
+      ) : null}
 
       {getPlaceholder().placeHolder ? (
         <View style={[styles.placeHolder, placeHolderStyle]}>
@@ -77,7 +87,7 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: '100%',
-    resizeMode: 'cover',
+    resizeMode: 'contain',
     borderRadius: 30,
   },
   name: {

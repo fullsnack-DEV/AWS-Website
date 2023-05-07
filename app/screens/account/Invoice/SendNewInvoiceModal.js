@@ -14,6 +14,7 @@ import {
   StyleSheet,
   ScrollView,
   Alert,
+  Platform,
 } from 'react-native';
 
 import moment from 'moment';
@@ -143,10 +144,30 @@ const SendNewInvoiceModal = ({
       const body = {};
       const recipients = selectedRecipients.map((entity) => {
         if (entity.user_id) {
-          return {entity_id: entity.user_id, entity_type: Verbs.entityTypeUser};
-        } else {
-          return {entity_id: entity.group_id, entity_type: entity.entity_type};
+          if (invoiceType === InvoiceType.Event) {
+            return {
+              entity_id: entity.user_id,
+              entity_type: Verbs.entityTypeUser,
+              name: `${entity.first_name} ${entity.last_name}`,
+              email: entity.email,
+            };
+          }
+          if (entity.connected) {
+            return {
+              entity_id: entity.user_id,
+              entity_type: Verbs.entityTypeUser,
+              name: `${entity.first_name} ${entity.last_name}`,
+              email: entity.email,
+            };
+          }
+          return {
+            entity_id: entity.user_id,
+            entity_type: Verbs.entityTypeGroupMember,
+            name: `${entity.first_name} ${entity.last_name}`,
+            email: entity.email,
+          };
         }
+        return {entity_id: entity.group_id, entity_type: entity.entity_type};
       });
 
       body.receivers = recipients;
@@ -156,19 +177,32 @@ const SendNewInvoiceModal = ({
       body.currency_type = currency;
       body.invoice_description = description;
       body.invoice_type = invoiceType;
-      body.email_sent = true;
+      body.email_sent = false;
+      body.sender_name = authContext.entity.obj.group_name
+        ? authContext.entity.obj.group_name
+        : authContext.entity.obj.full_name;
 
       createInvoice(body, authContext)
         .then(() => {
           setLoading(false);
+          let message = `1 ${strings.invoicesent}`;
           if (recipients.length > 1) {
-            Alert.alert(`${recipients.length} ${strings.invoicessent}`);
-          } else {
-            Alert.alert(`1 ${strings.invoicesent}`);
+            message = `${recipients.length} ${strings.invoicessent}`;
           }
-
-          onCloseThisModal();
-          onDone();
+          Alert.alert(
+            message,
+            undefined,
+            [
+              {
+                text: strings.okTitleText,
+                onPress: () => {
+                  onCloseThisModal();
+                  onDone();
+                },
+              },
+            ],
+            {cancelable: false},
+          );
         })
         .catch((e) => {
           setLoading(false);
@@ -252,28 +286,24 @@ const SendNewInvoiceModal = ({
       closeModal={() => onCloseThisModal()}
       modalType={ModalTypes.style1}
       title={strings.newInvoice}
-      containerStyle={{padding: 0, flex: 1}}
+      containerStyle={{padding: 0}}
       headerRightButtonText={strings.send}
       onRightButtonPress={() => onSendInvoice()}>
       <ActivityLoader visible={loading} />
       <ScrollView>
         {/* Code for Invoice Title */}
-        <View style={{height: 86}}>
-          <TCLabel
-            style={{marginTop: 28}}
-            title={strings.titlePlaceholder.toUpperCase()}
-            required={true}
-          />
-          <TCTextField
-            onChangeText={(text) => setInvoiceTitle(text)}
-            value={invoiceTitle}
-            style={{
-              marginTop: 6,
-              height: 35,
-            }}
-            height={35}
-          />
-        </View>
+
+        <TCLabel
+          style={{marginTop: 28, marginBottom: 6}}
+          title={strings.titlePlaceholder.toUpperCase()}
+          required={true}
+        />
+        <TCTextField
+          height={35}
+          onChangeText={(text) => setInvoiceTitle(text)}
+          value={invoiceTitle}
+        />
+
         {/* Code for Invoice Amount */}
         <View style={{height: 96}}>
           <TCLabel
@@ -292,7 +322,6 @@ const SendNewInvoiceModal = ({
               marginTop: 6,
               height: 35,
             }}
-            textStyle={{paddingBottom: 5}}
             keyboardType={'decimal-pad'}
             textAlign="right"
             leftView={<Text style={styles.leftViewStyle}>{currency}</Text>}
@@ -331,9 +360,13 @@ const SendNewInvoiceModal = ({
                 fontFamily: fonts.RRegular,
                 fontSize: 16,
                 paddingHorizontal: 10,
-                color: colors.lightBlackColor,
+                color: selectedDueDate
+                  ? colors.lightBlackColor
+                  : colors.magnifyIconColor,
               }}>
-              {selectedDueDate ? moment(selectedDueDate).format('LLL') : ''}
+              {selectedDueDate
+                ? moment(selectedDueDate).format('LLL')
+                : strings.select}
             </Text>
           </TouchableOpacity>
         </View>
@@ -342,7 +375,16 @@ const SendNewInvoiceModal = ({
           <Text style={styles.timeZoneText}>Time zone </Text>
           <TouchableOpacity
             onPress={() => {
-              Alert.alert(strings.datetimesetting);
+              Alert.alert(
+                Platform.OS === 'android' ? '' : strings.datetimesetting,
+                Platform.OS === 'android' ? strings.datetimesetting : '',
+                [
+                  {
+                    text: strings.okTitleText,
+                    onPress: () => console.log('no'),
+                  },
+                ],
+              );
             }}>
             <Text style={styles.timeZoneUnderlineText}>
               {Intl.DateTimeFormat()
@@ -361,6 +403,7 @@ const SendNewInvoiceModal = ({
           <TextInput
             style={styles.descriptionTxt}
             multiline
+            textAlignVertical="top"
             onChangeText={(text) => setDescription(text)}
             value={description}></TextInput>
         </View>

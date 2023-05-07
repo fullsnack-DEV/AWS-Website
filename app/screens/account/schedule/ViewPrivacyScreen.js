@@ -52,7 +52,7 @@ export default function ViewPrivacyScreen({navigation}) {
           </TouchableOpacity>
         }
         centerComponent={
-          <Text style={styles.eventTextStyle}>{strings.viewPrivacy}</Text>
+          <Text style={styles.eventTextStyle}>{strings.privacySettings}</Text>
         }
         rightComponent={
           <TouchableOpacity
@@ -71,7 +71,7 @@ export default function ViewPrivacyScreen({navigation}) {
           containerStyle={{marginTop: 10}}>
           <FlatList
             data={scheduleData}
-            style={{marginTop: 20}}
+            style={{marginTop: 15}}
             ItemSeparatorComponent={() => <View style={{height: 15}} />}
             renderItem={({item}) => (
               <RadioBtnItem

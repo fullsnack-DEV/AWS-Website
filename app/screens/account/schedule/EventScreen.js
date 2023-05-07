@@ -26,6 +26,7 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import ReadMore from '@fawazahmed/react-native-read-more';
 import ActionSheet from 'react-native-actionsheet';
 import FastImage from 'react-native-fast-image';
 
@@ -75,26 +76,32 @@ export default function EventScreen({navigation, route}) {
   const ALLEVENT = 2
 
   const recurringEditList = [
-    {text: 'This event Only', value: THISEVENT},
     {
-      text: 'This and all following events',
+      text: strings.recuringoptionOne, 
+      value: THISEVENT
+    },
+    {
+      text: strings.recurringOptionTwo,
       value: FUTUREEVENT,
     },
-    {text: 'All events', value: ALLEVENT},
+    {
+      ext: strings.recurringOptionThree, 
+      value: ALLEVENT
+    },
   ];
 
-  let titleValue = 'Game';
-  let description = 'Game With';
+
+  let titleValue = strings.gameSingular;
+  let description = strings.gameWith;
   let description2 = '';
   let startTime = '';
   let endTime = '';
   let untilTime = '';
   let gameDataLati = null;
   let gameDataLongi = null;
-  const reportText = 'Report This Event';
-  const blockEventOrganiser = 'Block Event Organiser';
-  const attendyText = 'The event may be canceled by the organizer if the minimum number of the attendees isn’t met.';
-  const feeText = 'The event may be canceled by the organizer if the minimum number of the attendees isn’t met.';
+
+
+
   // let blocked = false;
  
   let repeatString = strings.never;
@@ -143,11 +150,13 @@ export default function EventScreen({navigation, route}) {
     }
 
     if (eventData.repeat !== Verbs.eventRecurringEnum.Never) {
-      repeatString = format(
-        strings.repeatTime,
-        repeatString,
-        moment(untilTime).format('MMM DD, YYYY hh:mm a'),
-      );
+      if(untilTime) {
+        repeatString = format(
+          strings.repeatTime,
+          repeatString,
+          moment(untilTime).format('MMM DD, YYYY hh:mm a'),
+        );
+      }
     }
 
     // if (eventData.blocked) {
@@ -169,6 +178,14 @@ export default function EventScreen({navigation, route}) {
 
   useLayoutEffect(() => {
     navigation.setOptions({
+      headerLeft: () => (
+        <TouchableOpacity
+          onPress={() => {
+            navigation.goBack()
+          }}>
+          <Image source={images.backArrow} style={styles.backImageStyle} />
+        </TouchableOpacity>
+      ),
       headerRight: () => (
         <TouchableOpacity
           style={{padding: 2, marginRight: 15}}
@@ -195,6 +212,16 @@ export default function EventScreen({navigation, route}) {
   useEffect(() => {
     const goingData = eventData.going ?? [];
     const getUserDetailQuery = {
+      size: 1000,
+      from: 0,
+      query: {
+        bool: {
+          must: [{match: {user_id: eventData?.created_by?.uid}}],
+        },
+      },
+    };
+
+    const getUserGoingQuery = {
       size: 1000,
       from: 0,
       query: {
@@ -226,18 +253,27 @@ export default function EventScreen({navigation, route}) {
         });
     } else {
       getUserIndex(getUserDetailQuery)
-        .then((res) => {
-          const org = res.filter(
-            (obj) => obj.user_id === eventData.created_by.uid,
-          )?.[0];
-          setOrganizer(org);
-          setGoing(res);
-        })
-        .catch((e) => {
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
-        });
+      .then((res) => {
+        const org = res.filter(
+          (obj) => obj.user_id === eventData.created_by.uid,
+        )?.[0];
+        setOrganizer(org);
+      })
+      .catch((e) => {
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+
+      getUserIndex(getUserGoingQuery)
+      .then((res) => {
+        setGoing(res);
+      })
+      .catch((e) => {
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
     }
 
 
@@ -280,8 +316,6 @@ export default function EventScreen({navigation, route}) {
 
 
   const checkIsGoing = () => {
-
-    console.log('Role', authContext.entity.role)
 
     if(!['user', 'player'].includes(authContext.entity.role)) {
       return false;
@@ -379,7 +413,11 @@ export default function EventScreen({navigation, route}) {
         source={
           item?.thumbnail ? {uri: item?.thumbnail} : images.profilePlaceHolder
         }
-        style={{height: 35, width: 35, borderRadius: 70}}
+        style={{
+          height: 40, 
+          width: 40, 
+          borderRadius: 70
+        }}
       />
     </View>
   );
@@ -440,7 +478,7 @@ export default function EventScreen({navigation, route}) {
   );
 
 
-
+  
   return (
     <>
       <Modal
@@ -516,12 +554,12 @@ export default function EventScreen({navigation, route}) {
               infoType === 'attendee' ? (
                 <View>
                   <Text style={styles.titleText}>{strings.numberOfAttend}</Text>
-                  <Text style={styles.contentText}>{attendyText}</Text>
+                  <Text style={styles.contentText}>{strings.attendyText}</Text>
                 </View>
               ):(
                 <View>
                   <Text style={styles.titleText}>{strings.eventFeeTitle}</Text>
-                  <Text style={styles.contentText}>{feeText}</Text>
+                  <Text style={styles.contentText}>{strings.feeText}</Text>
                 </View>
               )}
             </View>
@@ -555,15 +593,16 @@ export default function EventScreen({navigation, route}) {
             {' '} 
             {eventData?.selected_sport && eventData?.selected_sport?.sport_name} 
           </Text>
-
+     
           <EventTimeItem
             from={strings.from}
-            fromTime={moment(startTime).format('MMM DD, YYYY hh:mm a')}
+            fromTime={moment(startTime).format('MMM DD, YYYY')}
             to={strings.to}
-            toTime={moment(endTime).format('MMM DD, YYYY hh:mm a')}
+            toTime={`${moment(startTime).format('hh:mm a')} - ${moment(endTime).format('hh:mm a')}`}
             repeat={strings.repeat}
             repeatTime={repeatString}
             location={eventData?.location?.location_name}
+            eventOnlineUrl={eventData?.online_url}
           />
 
           {/* Join and Invite button wrapper */}
@@ -619,7 +658,6 @@ export default function EventScreen({navigation, route}) {
          
 
           {checkIsInvite()  && (
-            
             <TCProfileButton
               title={'Invite'}
               style={[styles.firstButtonStyle, {width: checkIsGoing() ? '48%' : '100%'}]}
@@ -638,46 +676,14 @@ export default function EventScreen({navigation, route}) {
           )}
           </View>
 
-          {/* {!blocked ? (
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                marginLeft: 15,
-                marginTop: 5,
-              }}>
-              <Image
-                source={images.availableChallenge}
-                style={styles.availableImageStyle}
-              />
-              <Text style={styles.availableTextStyle}>{strings.available}</Text>
-            </View>
-          ) : (
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                marginLeft: 15,
-                marginTop: 5,
-              }}>
-              <Image
-                source={images.blockedChallenge}
-                style={styles.availableImageStyle}
-              />
-              <Text style={styles.blockTextStyle}>
-                {strings.blockedForChallenge}
-              </Text>
-            </View>
-          )} */}
-
-
           <View style={{ marginBottom: 20, backgroundColor: colors.whiteColor, marginTop:0}}> 
             <View 
             style={{
               flexDirection: 'row',
               justifyContent: 'space-evenly',
               width: '100%'
-            }}>
+            }}
+            >
               <View
                 style={{
                   borderBottomWidth : 3, 
@@ -694,7 +700,7 @@ export default function EventScreen({navigation, route}) {
                     fontWeight: activeTab === 'info' ? 'bold' : '',
                     color: activeTab === 'info' ? colors.themeColor : colors.lightBlackColor,
                     paddingVertical: 10
-                  }}>Info</Text>
+                  }}>{strings.infoTitle}</Text>
                 </TouchableOpacity>
               </View>
               <View
@@ -713,7 +719,7 @@ export default function EventScreen({navigation, route}) {
                     fontWeight: activeTab === 'post' ? 'bold' : '',
                     color: activeTab === 'post' ? colors.themeColor : colors.lightBlackColor,
                     paddingVertical: 10
-                  }}>Post</Text>
+                  }}>{strings.postTitle}</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -723,41 +729,68 @@ export default function EventScreen({navigation, route}) {
           activeTab === 'info' ? (
           <>
             <EventItemRender title={strings.description}>
-              <Text style={styles.textValueStyle}>
+              <ReadMore
+                numberOfLines={3}
+                style={styles.longTextStyle}
+                seeMoreText={strings.moreText}
+                seeLessText={strings.lessText}
+                seeLessStyle={styles.moreLessText}
+                seeMoreStyle={styles.moreLessText}>
                 {description} {description2} 
-              </Text>
+              </ReadMore>
             </EventItemRender>
-
             <TCThinDivider marginTop={10} marginBottom={10} />
+
 
             <View style={styles.containerStyle}>
               <Text style={styles.headerTextStyle}>{strings.organizerTitle}</Text>
               {organizer && (
-              <TCProfileView
-                type="medium"
-                name={organizer.group_name ?? organizer.full_name}
-                location={`${organizer.city}, ${organizer.state_abbr ? organizer.state_abbr:''}${organizer.state_abbr ? ',':''} ${organizer.country}`}
-                image={
-                  organizer.thumbnail ? {uri: organizer.thumbnail} : images.teamPH
-                }
-                alignSelf={'flex-start'}
-                marginTop={10}
-              />)}
+                <View style={{position: 'relative'}}>
+                  <TCProfileView
+                    type="medium"
+                    name={organizer.group_name ?? organizer.full_name}
+                    location={`${organizer.city}, ${organizer.state_abbr ? organizer.state_abbr:''}${organizer.state_abbr ? ',':''} ${organizer.country}`}
+                    image={
+                      organizer.thumbnail ? {uri: organizer.thumbnail} : images.teamPH
+                    }
+                    alignSelf={'flex-start'}
+                    marginTop={10}
+                  />
+                  <Image source={images.starProfile} style={styles.starProfile} />
+                </View>
+              )}
             </View>
-
             <TCThinDivider marginTop={10} marginBottom={10} />
 
             {eventData?.going?.length > 0 && (
+            <>
             <View style={styles.containerStyle}>
-              <Text
-                style={styles.headerTextStyle}
-                onPress={() => {
-                  navigation.navigate('GoingListScreen', {
-                    showRemove: authContext.entity.uid === organizer.user_id,
-                    going_ids: eventData?.going ?? [],
-                    eventData,
-                  });
-                }}>{`${strings.goingTitle} (${eventData?.going?.length})`}</Text>
+              <View 
+              style={{
+                flexDirection:'row', 
+                justifyContent: 'space-between', 
+                alignItems: 'center'
+              }}
+              >
+                <Text
+                  style={styles.headerTextStyle}
+                >{`${strings.goingTitle} (${eventData?.going?.length})`}
+                </Text>
+
+                <Text
+                  onPress={() => {
+                    navigation.navigate('GoingListScreen', {
+                      showRemove: authContext.entity.uid === organizer.user_id,
+                      going_ids: eventData?.going ?? [],
+                      eventData,
+                    });
+                  }}
+                  style={styles.seeAllText}
+                >
+                  {`${strings.seeAllText}`}
+                </Text>
+              </View>
+
               <FlatList
                 data={going}
                 horizontal
@@ -768,35 +801,46 @@ export default function EventScreen({navigation, route}) {
                 keyExtractor={(item, index) => index.toString()}
                 style={{padding: 3}}
               />
-              <TCThinDivider marginTop={10} marginBottom={10} />
             </View>
+            <TCThinDivider marginTop={10} marginBottom={10} />
+            </>
             )}
 
-
             <EventItemRender title={strings.place} >
-              <Text style={[styles.textValueStyle, {fontFamily: fonts.RBold}]}>
-                {eventData?.location?.venue_name} 
-              </Text>
-              <Text style={styles.textValueStyle}>
-                {eventData?.location?.location_name}
-              </Text>
-              <EventMapView
-                region={{
-                  latitude: eventData?.location?.latitude ?? Number(gameDataLati),
-                  longitude:
-                    eventData?.location?.longitude ?? Number(gameDataLongi),
-                  latitudeDelta: 0.0922,
-                  longitudeDelta: 0.0421,
-                }}
-                coordinate={{
-                  latitude: eventData?.location?.latitude ?? Number(gameDataLati),
-                  longitude:
-                    eventData?.location?.longitude ?? Number(gameDataLongi),
-                }}
-              />
-              <Text style={[styles.textValueStyle, {marginTop: 10}]}>
-                {eventData?.location?.venue_detail} 
-              </Text>
+              {eventData?.location?.location_name ? (
+              <>
+                <Text style={[styles.textValueStyle, {fontFamily: fonts.RBold}]}>
+                  {eventData?.location?.venue_name} 
+                </Text>
+                <Text style={styles.textValueStyle}>
+                  {eventData?.location?.location_name}
+                </Text>
+                <EventMapView
+                  region={{
+                    latitude: eventData?.location?.latitude ?? Number(gameDataLati),
+                    longitude:
+                      eventData?.location?.longitude ?? Number(gameDataLongi),
+                    latitudeDelta: 0.0922,
+                    longitudeDelta: 0.0421,
+                  }}
+                  coordinate={{
+                    latitude: eventData?.location?.latitude ?? Number(gameDataLati),
+                    longitude:
+                      eventData?.location?.longitude ?? Number(gameDataLongi),
+                  }}
+                />
+                <Text style={[styles.textValueStyle, {marginTop: 10}]}>
+                  {eventData?.location?.venue_detail} 
+                </Text>
+              </>
+              ):(
+                <Text style={[
+                  styles.textValueStyle, 
+                  eventData.online_url && styles.textUrl
+                ]}>
+                  {eventData.online_url ? eventData?.online_url : strings.emptyEventUrl} 
+                </Text>
+              )}
             </EventItemRender>
 
             <View style={styles.sepratorViewStyle} />
@@ -805,7 +849,7 @@ export default function EventScreen({navigation, route}) {
               <View>
                 <View style={{flexDirection: 'row', justifyContent: 'space-between' , marginBottom: 10}}>
                   <Text style={styles.textValueStyle}>
-                    Start
+                    {strings.starts}
                   </Text>
                   <Text style={styles.textValueStyle}>
                   {`${moment(startTime).format(
@@ -815,9 +859,9 @@ export default function EventScreen({navigation, route}) {
                   )}`}
                   </Text>
                 </View>
-                <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20}}>
                   <Text style={styles.textValueStyle}>
-                    End
+                    {strings.ends}
                   </Text>
                   <Text style={styles.textValueStyle}>
                   {`${moment(endTime).format(
@@ -827,16 +871,31 @@ export default function EventScreen({navigation, route}) {
                   )}`}
                   </Text>
                 </View>
+                <View style={{flexDirection: 'row', justifyContent: 'flex-end' , marginBottom: 20}}>
+                  <Text style={{fontWeight:'300'}}>
+                    {strings.timezone} &nbsp;
+                  </Text>
+                  <TouchableOpacity 
+                    onPress={() => {Alert.alert(strings.timezoneAvailability)}}>
+                      <Text
+                      style={{
+                        textDecorationLine: 'underline',
+                        textDecorationStyle: 'solid',
+                        textDecorationColor: '#000'
+                      }} 
+                      >{strings.vancouver}</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
 
               {
               isOrganizer && (
               <>
               <TCThinDivider marginTop={10}  marginBottom={10} width='100%'  />
-              <View >
+              <View>
                 <View style={{flexDirection: 'row', justifyContent: 'space-between' , marginBottom: 10}}>
                   <Text style={styles.textValueStyle}>
-                    Repeat
+                    {strings.repeat}
                   </Text>
                   <Text style={[styles.textValueStyle, { textAlign: 'right'}]}>
                     {repeatString}
@@ -859,17 +918,30 @@ export default function EventScreen({navigation, route}) {
               )}
             </EventItemRender>
 
-            {
-            isOrganizer && (
-            <>
+            
             <View style={styles.sepratorViewStyle} />
-            <EventItemRender title={strings.whoCanJoin}>
+            <EventItemRender title={strings.eventFeeTitle} icon={images.infoIcon} clickInfoIcon={clickInfoIcon} type={'fee'}>
               <Text style={styles.textValueStyle}>
-                {eventData?.who_can_join?.text} 
+                {`${parseFloat(eventData?.event_fee?.value).toFixed(2)} ${
+                  eventData?.event_fee?.currency_type
+                }`}
               </Text>
             </EventItemRender>
-            </>
-            )}
+
+
+            <View style={styles.sepratorViewStyle} />
+            <EventItemRender title={strings.refundPolicyTitle}>
+              <ReadMore
+                numberOfLines={1}
+                style={styles.longTextStyle}
+                seeMoreText={strings.moreText}
+                seeLessText={strings.lessText}
+                seeLessStyle={styles.moreLessText}
+                seeMoreStyle={styles.moreLessText}>
+                {strings.attendeesMustRefundedText} {eventData?.refund_policy}
+              </ReadMore>
+            </EventItemRender>
+
 
             <View style={styles.sepratorViewStyle} />
             <EventItemRender title={strings.numberOfAttend} icon={images.infoIcon} clickInfoIcon={clickInfoIcon} type={'attendee'}>
@@ -882,58 +954,34 @@ export default function EventScreen({navigation, route}) {
               </Text>
             </EventItemRender>
 
-            <View style={styles.sepratorViewStyle} />
-
-            <EventItemRender title={strings.eventFeeTitle} icon={images.infoIcon} clickInfoIcon={clickInfoIcon} type={'fee'}>
-              <Text style={styles.textValueStyle}>
-                {`${parseFloat(eventData?.event_fee?.value).toFixed(2)} ${
-                  eventData?.event_fee?.currency_type
-                }`}
-              </Text>
-            </EventItemRender>
-
-            <View style={styles.sepratorViewStyle} />
-            <EventItemRender title={strings.refundPolicyTitle}>
-              <Text style={{fontSize: 14, fontFamily: fonts.RBold, marginTop: 15}}>
-                {'Primary Refund Policy'}
-              </Text>
-              <Text style={[styles.subTitleText, {marginTop: 10}]}>
-                Attendees must be refunded if the event is canceled or rescheduled.
-                <Text
-                  style={{
-                    fontSize: 12,
-                    fontFamily: fonts.RRegular,
-                    textDecorationLine: 'underline',
-                  }}>
-                  {'\n'}Read payment policy for more information.
-                </Text>
-              </Text>
-              <Text style={{fontSize: 14, fontFamily: fonts.RBold, marginTop: 15}}>
-                {strings.additionalRefundPolicy}
-              </Text>
-              <Text style={styles.textValueStyle}>{eventData?.refund_policy}</Text>
-            </EventItemRender>
 
             {
             isOrganizer && (
             <>
-              <View style={styles.sepratorViewStyle} />
-              <EventItemRender title={strings.whereEventPosted}>
-                <Text style={styles.textValueStyle}>
-                  {eventData?.event_posted_at?.text}
-                </Text>
-              </EventItemRender>
-
               <View style={styles.sepratorViewStyle} />
               <EventItemRender title={strings.whoCanSee}>
                 <Text style={styles.textValueStyle}>
                   {eventData?.who_can_see?.text}
                 </Text>
               </EventItemRender>
+
+              <View style={styles.sepratorViewStyle} />
+              <EventItemRender title={strings.whoCanJoin}>
+                <Text style={styles.textValueStyle}>
+                  {eventData?.who_can_join?.text} 
+                </Text>
+              </EventItemRender>
+
+              <View style={styles.sepratorViewStyle} />
+              <EventItemRender title={strings.whoCanInvite}>
+                <Text style={styles.textValueStyle}>
+                  {eventData?.who_can_invite?.text}
+                </Text>
+              </EventItemRender>
             </>
             )}
 
-          <View marginBottom={70} />
+            <View marginBottom={70} />
           </>
           ):null}
         </ScrollView>
@@ -965,7 +1013,7 @@ export default function EventScreen({navigation, route}) {
         />
         <ActionSheet
           ref={userActionSheet}
-          options={[reportText, blockEventOrganiser, strings.cancel]}
+          options={[strings.reportText, strings.blockEventOrganiser, strings.cancel]}
           cancelButtonIndex={2}
           // destructiveButtonIndex={1}
           onPress={() => {}}
@@ -992,8 +1040,8 @@ const styles = StyleSheet.create({
   },
 
   threeDotImageStyle: {
-    height: 18,
-    width: 18,
+    height: 25,
+    width: 25,
     // tintColor: colors.blackColor,
     resizeMode: 'contain',
   },
@@ -1052,13 +1100,11 @@ const styles = StyleSheet.create({
     height: 37,
     width: 37,
     borderRadius: 74,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.4,
-    shadowRadius: 2,
     backgroundColor: colors.whiteColor,
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: colors.thinDividerColor
   },
   modalMainViewStyle: {
     shadowOpacity: 0.15,
@@ -1097,4 +1143,31 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     color: '#0093FF',
   },
+  backImageStyle: {
+    height: 20,
+    width: 15,
+    tintColor: colors.lightBlackColor,
+    resizeMode: 'contain',
+    marginLeft: 15,
+  },
+  moreLessText: {
+    fontSize: 12,
+    color: colors.userPostTimeColor,
+    fontFamily: fonts.RRegular,
+  },
+  starProfile:{
+    width: 15,
+    height: 15,
+    position: 'absolute',
+    left: 30,
+    top:40
+  },
+  seeAllText:{
+    color: colors.themeColor
+  },
+  textUrl: {
+    textDecorationLine: 'underline',
+    textDecorationStyle: 'solid',
+    textDecorationColor: '#000'
+  }
 });

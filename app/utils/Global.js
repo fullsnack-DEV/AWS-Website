@@ -5,7 +5,6 @@ import NetInfo from '@react-native-community/netinfo';
 import firebase from '@react-native-firebase/app';
 import jwtDecode from 'jwt-decode';
 import * as Utility from '.';
-import {QBLogout} from './QuickBlox';
 import {strings} from '../../Localization/translation';
 
 const prepareHeader = (headers, authToken, caller_id, caller) => {
@@ -29,12 +28,7 @@ const prepareHeader = (headers, authToken, caller_id, caller) => {
 };
 
 const resetApp = async (authContext) => {
-  QBLogout();
-  firebase.auth().signOut();
-  await Utility.clearStorage();
-  await authContext.setTokenData(null);
-  authContext.setUser(null);
-  authContext.setEntity(null);
+  await Utility.onLogout(authContext);
 };
 
 const getRefereshToken = () =>
@@ -147,14 +141,14 @@ const globalApiCall = async ({
     responseType,
     cancelToken,
   };
-  // console.log('BEFORE API Opetions::--->', JSON.stringify(options));
+  console.log('BEFORE API Opetions::--->', JSON.stringify(options));
   try {
     const response = await axios(options);
     if (!response.data.status) {
       console.log('ERROR RESPONSE ::', response.data);
       throw response.data.messages || response;
     }
-    // console.log('RESPONSE ::', options, '\n', response.data);
+    console.log('RESPONSE ::', options, '\n', response.data);
     return response.data;
   } catch (e) {
     const error = {

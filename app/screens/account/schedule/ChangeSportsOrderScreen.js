@@ -2,7 +2,6 @@
 import React, {
   useContext,
   useCallback,
-  useLayoutEffect,
   useRef,
   useState,
   useEffect,
@@ -14,7 +13,7 @@ import {
   Image,
   TouchableOpacity,
   Alert,
-  SafeAreaView,
+  SafeAreaView
 } from 'react-native';
 
 import DraggableFlatList from 'react-native-drag-flatlist';
@@ -26,22 +25,22 @@ import AuthContext from '../../../auth/context';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
-import {getUserSettings, saveUserSettings} from '../../../api/Users';
+import {getUserSettings} from '../../../api/Users';
 import {strings} from '../../../../Localization/translation';
 import Verbs from '../../../Constants/Verbs';
+import Header from '../../../components/Home/Header';
+import TCThinDivider from '../../../components/TCThinDivider';
 
 let image_url = '';
 
-export default function ChangeSportsOrderScreen({navigation, route}) {
+export default function ChangeSportsOrderScreen({navigation, closeBtn , userSetting, setUserSetting}) {
   const actionSheet = useRef();
   const authContext = useContext(AuthContext);
   const [loading, setloading] = useState(false);
   const [addedSport, setAddedSport] = useState([]);
   const [removedSport, setRemovedSport] = useState([]);
-  const [userSetting, setUserSetting] = useState();
 
   Utility.getStorage('appSetting').then((setting) => {
-    console.log('APPSETTING:=', setting);
     image_url = setting.base_url_sporticon;
   });
 
@@ -65,8 +64,6 @@ export default function ChangeSportsOrderScreen({navigation, route}) {
     
     getUserSettings(authContext)
       .then((setting) => {
-        console.log('Settings:=>', setting);
-        setUserSetting(setting.payload.user);
         if (
           setting?.payload?.user !== {} &&
           setting?.payload?.user?.schedule_sport_filter &&
@@ -97,31 +94,6 @@ export default function ChangeSportsOrderScreen({navigation, route}) {
     authContext?.entity?.obj?.scorekeeper_data,
   ]);
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        <TouchableOpacity
-          onPress={() => {
-            route?.params?.onBackClick(true);
-            navigation.goBack();
-          }}>
-          <Image source={images.backArrow} style={styles.backImageStyle} />
-        </TouchableOpacity>
-      ),
-      headerRight: () => (
-        <Text
-          onPress={() => onSavePress()}
-          style={{
-            fontFamily: fonts.RMedium,
-            fontSize: 16,
-            marginRight: 10,
-            color: colors.lightBlackColor,
-          }}>
-          Save
-        </Text>
-      ),
-    });
-  }, [navigation, addedSport, route?.params]);
 
   const keyExtractor = useCallback((item, index) => index.toString(), []);
   const onSavePress = () => {
@@ -139,18 +111,9 @@ export default function ChangeSportsOrderScreen({navigation, route}) {
           schedule_sport_filter: addedSport,
         };
       }
-
-      saveUserSettings(params, authContext)
-        .then((response) => {
-          console.log('After save setting', response);
-          route?.params?.onBackClick(true);
-          navigation.goBack();
-          setloading(false);
-        })
-        .catch((e) => {
-          setloading(false);
-          Alert.alert('', e.messages);
-        });
+      setUserSetting(params);
+      closeBtn(false);
+      setloading(false);
     } else {
       setloading(false);
       Alert.alert('Please select any of the group.');
@@ -251,6 +214,33 @@ export default function ChangeSportsOrderScreen({navigation, route}) {
   return (
     <SafeAreaView style={{flex: 1}}>
         <ActivityLoader visible={loading} />
+        <Header
+        safeAreaStyle={{
+            borderTopLeftRadius: 20,
+            borderTopRightRadius: 20
+        }}
+        leftComponent={
+          <TouchableOpacity
+            onPress={() => {
+              closeBtn(false)
+            }}>
+            <Image source={images.crossImage} style={styles.backImageStyle} />
+          </TouchableOpacity>
+        }
+        centerComponent={
+          <Text style={styles.eventTextStyle}>
+            {strings.editChallengeAvailibility}
+          </Text>
+        }
+        rightComponent={
+          <TouchableOpacity
+            style={{padding: 2}}
+            onPress={() => onSavePress()}>
+            <Text style={styles.saveText}>{strings.save}</Text>
+          </TouchableOpacity>
+        }
+      />
+      <TCThinDivider width={'100%'}/>
         <View style={{flex: 1, paddingBottom: 20}}>
           <Text style={styles.mainTextStyle}>Sports displayed in filter bar</Text>
           <Text style={styles.subTitle}>
@@ -368,10 +358,10 @@ const styles = StyleSheet.create({
 
   backImageStyle: {
     height: 20,
-    width: 15,
+    width: 20,
     tintColor: colors.lightBlackColor,
     resizeMode: 'contain',
-    marginLeft: 15,
+    // marginLeft: 15,
   },
   subTitle: {
     fontFamily: fonts.RRegular,
@@ -422,4 +412,15 @@ const styles = StyleSheet.create({
     color: colors.veryLightBlack,
     alignSelf: 'center',
   },
+  saveText: {
+    fontSize: 16,
+    fontFamily: fonts.RMedium,
+    color: colors.lightBlackColor,
+  },
+  eventTextStyle:{
+    fontFamily: fonts.RBold,
+    fontSize: 16,
+    color: colors.lightBlackColor,
+    marginLeft: 27,
+  }
 });

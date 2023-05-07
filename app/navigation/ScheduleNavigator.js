@@ -92,6 +92,7 @@ import ChooseAddressScreen from '../screens/challenge/createChallenge/ChooseAddr
 import PayAgainScreen from '../screens/challenge/alterChallenge/PayAgainScreen';
 import PayAgainRefereeScreen from '../screens/referee/PayAgainRefereeScreen';
 
+import ViewEventSettingsScreen from '../screens/account/schedule/ViewEventSettingsScreen';
 import ViewPrivacyScreen from '../screens/account/schedule/ViewPrivacyScreen';
 import EditEventScreen from '../screens/account/schedule/EditEventScreen';
 import ChallengeSentScreen from '../screens/challenge/createChallenge/ChallengeSentScreen';
@@ -339,7 +340,7 @@ const ScheduleNavigator = () => (
       name="EventScreen"
       component={EventScreen}
       options={{
-        title: 'Event',
+        title: strings.event,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -355,7 +356,7 @@ const ScheduleNavigator = () => (
       name="GoingListScreen"
       component={GoingListScreen}
       options={{
-        title: 'Going',
+        title: strings.going,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -403,7 +404,7 @@ const ScheduleNavigator = () => (
       name="EditEventScreen"
       component={EditEventScreen}
       options={{
-        title: 'Edit Event',
+        title: strings.editEvent,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -419,7 +420,7 @@ const ScheduleNavigator = () => (
       name="CreateEventScreen"
       component={CreateEventScreen}
       options={{
-        title: 'Create an Event',
+        title: strings.createAnEvent,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -463,9 +464,18 @@ const ScheduleNavigator = () => (
       }}
     />
     <Stack.Screen
+      name="ViewEventSettingsScreen"
+      component={ViewEventSettingsScreen}
+      options={{
+        title: strings.eventsViewSettings,
+        headerShown: false,
+      }}
+    />
+    <Stack.Screen
       name="ViewPrivacyScreen"
       component={ViewPrivacyScreen}
       options={{
+        title: strings.privacySettings,
         headerShown: false,
       }}
     />

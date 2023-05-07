@@ -13,6 +13,7 @@ import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import {strings} from '../../Localization/translation';
 import Verbs from '../Constants/Verbs';
+import {filterType} from '../utils/constant';
 
 function TCPlayerView({
   onPress,
@@ -23,6 +24,7 @@ function TCPlayerView({
   subTab,
   sportFilter,
   authContext,
+  fType,
   onPressChallengButton,
   onPressBookButton,
   onPressInviteButton,
@@ -31,7 +33,6 @@ function TCPlayerView({
   let isChallengeButtonShow = false;
   let isBookButtonShow = false;
   let isInviteButtonShow = false;
-
   const filterSport = () => {
     // Case - With Filter
     if (sportFilter.sport !== strings.allSport) {
@@ -59,7 +60,15 @@ function TCPlayerView({
     } else {
       // Case without filter
       sports = sports.filter((value) => {
-        if (value.is_active === true) {
+        // Available challenge case
+        if (fType === filterType.PLAYERAVAILABLECHALLENGE) {
+          if (
+            value.is_active === true &&
+            value.sport_type === Verbs.singleSport
+          ) {
+            return value;
+          }
+        } else if (value.is_active === true) {
           return value;
         }
         return false;
@@ -70,6 +79,7 @@ function TCPlayerView({
     data.registered_sports.map((value) => sports.push(value));
     filterSport();
     if (
+      sportFilter.sport !== strings.allSport &&
       sports.length === 1 &&
       sports[0].sport_type === Verbs.singleSport &&
       sports[0].setting?.availibility === Verbs.on &&
@@ -89,6 +99,7 @@ function TCPlayerView({
     data.referee_data.map((value) => sports.push(value));
     filterSport();
     if (
+      sportFilter.sport !== strings.allSport &&
       authContext.entity.role === Verbs.entityTypeUser &&
       sports.length === 1 &&
       sports[0].setting?.referee_availibility === Verbs.on &&
@@ -100,6 +111,7 @@ function TCPlayerView({
     ) {
       isBookButtonShow = true;
     } else if (
+      sportFilter.sport !== strings.allSport &&
       authContext.entity.role === Verbs.entityTypeTeam &&
       sports.length === 1 &&
       sports[0].setting?.referee_availibility === Verbs.on &&
@@ -113,8 +125,8 @@ function TCPlayerView({
   } else if (subTab === strings.scorekeeperTitle) {
     data.scorekeeper_data.map((value) => sports.push(value));
     filterSport();
-
     if (
+      sportFilter.sport !== strings.allSport &&
       authContext.entity.role === Verbs.entityTypeUser &&
       sports.length === 1 &&
       sports[0].setting?.scorekeeper_availibility === Verbs.on &&
@@ -126,6 +138,7 @@ function TCPlayerView({
     ) {
       isBookButtonShow = true;
     } else if (
+      sportFilter.sport !== strings.allSport &&
       authContext.entity.role === Verbs.entityTypeTeam &&
       sports.length === 1 &&
       sports[0].setting?.scorekeeper_availibility === Verbs.on &&
@@ -138,7 +151,10 @@ function TCPlayerView({
     }
   }
   return (
-    <TouchableOpacity onPress={onPress}>
+    <TouchableOpacity
+      onPress={() => {
+        onPress(sports);
+      }}>
       <View style={styles.viewContainer}>
         <Image
           source={

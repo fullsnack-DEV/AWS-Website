@@ -117,7 +117,13 @@ export default function CreateTeamForm1({navigation, route}) {
       headerLeft: () => (
         <TouchableWithoutFeedback
           onPress={() => {
-            navigation.goBack();
+            if (route.params?.backScreen) {
+              navigation.navigate(route.params.backScreen, {
+                ...route.params.backScreenParams,
+              });
+            } else {
+              navigation.goBack();
+            }
           }}>
           <Image source={images.backArrow} style={styles.backArrowStyle} />
         </TouchableWithoutFeedback>
@@ -642,6 +648,7 @@ export default function CreateTeamForm1({navigation, route}) {
               maxLength={20}
               onChangeText={(text) => setTeamName(text)}
               value={teamName}
+              placeholderTextColor={colors.userPostTimeColor}
             />
           </View>
           <View>
@@ -657,6 +664,7 @@ export default function CreateTeamForm1({navigation, route}) {
                 value={homeCity}
                 editable={false}
                 pointerEvents="none"
+                placeholderTextColor={colors.userPostTimeColor}
               />
             </TouchableOpacity>
           </View>
@@ -678,6 +686,7 @@ export default function CreateTeamForm1({navigation, route}) {
                   value={gender}
                   editable={false}
                   pointerEvents="none"
+                  placeholderTextColor={colors.userPostTimeColor}
                 />
               </TouchableOpacity>
             </>
@@ -834,6 +843,7 @@ export default function CreateTeamForm1({navigation, route}) {
               value={languagesName}
               editable={false}
               pointerEvents="none"
+              placeholderTextColor={colors.userPostTimeColor}
             />
           </TouchableOpacity>
 
@@ -854,6 +864,7 @@ export default function CreateTeamForm1({navigation, route}) {
             textAlignVertical={'top'}
             numberOfLines={4}
             placeholder={strings.descriptionTeamTextPlaceholder}
+            placeholderTextColor={colors.userPostTimeColor}
           />
 
           <View style={{flex: 1}} />

@@ -11,7 +11,7 @@ import fonts from '../../Constants/Fonts';
 export default function EventVenueTogglebtn({
   onFirstTabPress,
   onSecondTabPress,
-  online,
+  offline,
   style,
   startGradientColor = colors.grayBackgroundColor,
   endGradientColor = colors.grayBackgroundColor,
@@ -29,12 +29,12 @@ export default function EventVenueTogglebtn({
       <TouchableOpacity
         onPress={onFirstTabPress}
         style={
-            !online ? [styles.activeEventPricacy, activeEventPricacy] : 
+            offline ? [styles.activeEventPricacy, activeEventPricacy] : 
             [styles.inactiveEventPricacy, inactiveEventPricacy]
         }>
         <Text
           style={
-            !online ? [styles.activeEventPrivacyText, activeEventPrivacyText] : 
+            offline ? [styles.activeEventPrivacyText, activeEventPrivacyText] : 
             [styles.inactiveEventPrivacyText, inactiveEventPrivacyText]
           }>
           {firstTabTitle} 
@@ -43,13 +43,13 @@ export default function EventVenueTogglebtn({
       <TouchableOpacity
         onPress={onSecondTabPress}
         style={
-        online ? 
+        !offline ? 
          [styles.activeEventPricacy, activeEventPricacy] : 
          [styles.inactiveEventPricacy, inactiveEventPricacy]
         }>
         <Text
           style={
-            online ? 
+            !offline ? 
           [styles.activeEventPrivacyText, activeEventPrivacyText] : 
           [styles.inactiveEventPrivacyText, inactiveEventPrivacyText]
           }>

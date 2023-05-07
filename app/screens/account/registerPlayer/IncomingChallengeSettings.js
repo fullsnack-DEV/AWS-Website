@@ -42,6 +42,8 @@ import Modal from 'react-native-modal';
 
 import SendRequestModal from '../../../components/SendRequestModal/SendRequestModal';
 import {DEFAULT_NTRP} from '../../../Constants/GeneralConstants';
+import {getUnreadNotificationCount} from '../../../utils/accountUtils';
+import useSwitchAccount from '../../../hooks/useSwitchAccount';
 
 export default function IncomingChallengeSettings({navigation, route}) {
   const [settingObject, setSettingObject] = useState({});
@@ -54,6 +56,7 @@ export default function IncomingChallengeSettings({navigation, route}) {
   const [showSwitchScreen, setShowSwitchScreen] = useState(false);
   const animProgress = React.useState(new Animated.Value(0))[0];
   const [visibleRequestModal, setVisibleRequestModal] = useState(false);
+  const {onSwitchProfile} = useSwitchAccount();
 
   const {
     playerData,
@@ -279,8 +282,8 @@ export default function IncomingChallengeSettings({navigation, route}) {
               createGroup(bodyParams, entity.uid, entity.obj.role, authContext)
                 .then((response) => {
                   setloading(false);
+                  onSwitchProfile(response.payload);
                   setShowSwitchScreen(true);
-
                   navigation.navigate('HomeScreen', {
                     uid: response.payload.group_id,
                     role: response.payload.entity_type,
@@ -336,8 +339,9 @@ export default function IncomingChallengeSettings({navigation, route}) {
           createGroup(bodyParams, entity.uid, entity.obj.role, authContext)
             .then((response) => {
               setloading(false);
+              onSwitchProfile(response.payload);
               setShowSwitchScreen(true);
-
+              getUnreadNotificationCount(authContext);
               navigation.navigate('HomeScreen', {
                 uid: response.payload.group_id,
                 role: response.payload.entity_type,

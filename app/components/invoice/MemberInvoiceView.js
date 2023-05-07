@@ -1,78 +1,82 @@
+/* eslint-disable no-else-return */
+
 import React from 'react';
-import {View, StyleSheet, Text, Image, TouchableOpacity} from 'react-native';
-import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
+import {View, StyleSheet, Text, TouchableOpacity} from 'react-native';
+import {strings} from '../../../Localization/translation';
+
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
-import images from '../../Constants/ImagePath';
 
-export default function MemberInvoiceView({data, onPressCard}) {
-  console.log(data);
+import Verbs from '../../Constants/Verbs';
+import GroupIcon from '../GroupIcon';
+
+export default function MemberInvoiceView({invoice, onPressCard}) {
+  const getStatus = () => {
+    if (invoice.invoice_status === Verbs.INVOICE_REJECTED) {
+      return strings.rejected;
+    } else if (invoice.invoice_status === Verbs.paid) {
+      return strings.paidText;
+    }
+    return strings.openText;
+  };
+
   return (
     <TouchableOpacity style={styles.viewContainer} onPress={onPressCard}>
-      <View
-        style={{
-          width: '20%',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}>
-        <View style={styles.profileContainer}>
-          <Image
-            source={
-              data?.thumbnail && data?.thumbnail !== ''
-                ? {uri: data?.thumbnail}
-                : images.profilePlaceHolder
-            }
-            style={styles.townsCupPlusIcon}
-          />
-        </View>
-      </View>
-      <View
-        style={{
-          width: '80%',
-          justifyContent: 'center',
-        }}>
-        <Text
-          style={{
-            fontFamily: fonts.RMedium,
-            fontSize: 16,
-            color: colors.lightBlackColor,
-          }}>
-          {`${data?.first_name} ${data?.last_name}`}
-        </Text>
-        <Text
-          style={{
-            fontFamily: fonts.RMedium,
-            fontSize: 14,
-            color: colors.lightBlackColor,
-          }}>
-          ${data?.invoice_paid_total}
-          <Text
-            style={{
-              fontFamily: fonts.RLight,
-              fontSize: 14,
-              color: colors.lightBlackColor,
-            }}>
-            {` of $${data?.invoice_total}`}
+      {/* group icon */}
+
+      <GroupIcon
+        entityType={invoice.receiver_type}
+        imageUrl={invoice.thumbnail}
+        containerStyle={styles.profileContainer}
+        groupName={invoice.full_name}
+        grpImageStyle={{
+          height: 32,
+          width: 28,
+        }}
+        textstyle={{
+          fontSize: 12,
+        }}
+      />
+
+      <View style={styles.playerInvoiceInfoContainer}>
+        {/* Player name and invoces text */}
+        <View style={{marginLeft: 15, flex: 1}}>
+          <Text style={styles.userInfoStyle} numberOfLines={2}>
+            {invoice.full_name}
           </Text>
-        </Text>
-        <Text
-          style={{
-            fontFamily: fonts.RLight,
-            fontSize: 14,
-            color: colors.lightBlackColor,
-          }}>
-          {`${data?.invoices?.length} invoices`}
-        </Text>
-        <View style={styles.percentageView}>
-          <View
-            style={{
-              height: 3,
-              width: `${
-                (100 * data?.invoice_paid_total) / data?.invoice_total
-              }%`,
-              backgroundColor: colors.greeColor,
-            }}
-          />
+        </View>
+
+        {/* invoice amount */}
+        <View style={styles.invoiveAmountContainer}>
+          <Text style={styles.invoiceAmountTexStyle}>
+            {invoice.amount_due.toFixed(2)}
+            {invoice.currency_type}
+          </Text>
+          {invoice.invoice_status !== Verbs.paid && (
+            <Text
+              style={[
+                styles.invoiceAmountTexStyle,
+                {color: colors.darkThemeColor},
+              ]}>
+              {invoice.amount_remaining.toFixed(2)}
+              {invoice.currency_type}
+            </Text>
+          )}
+          <View>
+            <Text
+              style={[
+                styles.invoiceAmountTexStyle,
+                {
+                  color:
+                    invoice.amount_remaining === 0
+                      ? colors.gameDetailColor
+                      : colors.darkThemeColor,
+                  alignSelf: 'flex-end',
+                },
+              ]}>
+              {getStatus()}
+            </Text>
+          </View>
         </View>
       </View>
     </TouchableOpacity>
@@ -81,46 +85,40 @@ export default function MemberInvoiceView({data, onPressCard}) {
 
 const styles = StyleSheet.create({
   viewContainer: {
-    backgroundColor: colors.offwhite,
     flexDirection: 'row',
-    borderRadius: wp('2%'),
+    marginHorizontal: 15,
+    alignSelf: 'center',
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#EFEFEF',
+  },
+  invoiveAmountContainer: {
+    marginVertical: 15,
+    flex: 0.5,
+  },
+  playerInvoiceInfoContainer: {
+    flex: 1,
     justifyContent: 'space-between',
-
-    marginBottom: 15,
-    width: wp('90%'),
-    height: 85,
-    alignSelf: 'center',
-
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.3,
-    shadowRadius: 2,
-    elevation: 5,
-  },
-  percentageView: {
-    height: 3,
-    backgroundColor: colors.thinDividerColor,
-    marginRight: 30,
-    marginTop: 10,
-  },
-  townsCupPlusIcon: {
-    resizeMode: 'contain',
-    height: 43,
-    width: 43,
-    alignSelf: 'center',
-    borderRadius: 86,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   profileContainer: {
-    height: 45,
-    width: 45,
-    borderRadius: 90,
-    alignItems: 'center',
-    justifyContent: 'center',
+    height: 40,
+    width: 40,
 
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.5,
-    shadowRadius: 2,
-    elevation: 5,
+    borderWidth: 1,
+  },
+  invoiceAmountTexStyle: {
+    fontSize: 16,
+    fontFamily: fonts.RMedium,
+    color: '#333333',
+    alignSelf: 'flex-end',
+    lineHeight: 24,
+  },
+  userInfoStyle: {
+    fontFamily: fonts.RMedium,
+    fontSize: 16,
+    color: colors.lightBlackColor,
+    lineHeight: 24,
   },
 });

@@ -23,7 +23,8 @@ export default function  EventScheduleScreen({
   screenUserId,
   filterOptions,
   selectedFilter,
-  owners
+  owners,
+  allUserData
 }) {
 
   const authContext = useContext(AuthContext);
@@ -46,12 +47,12 @@ export default function  EventScheduleScreen({
       ].includes(authContext.entity.role)
     ) {
       if (
-        filterOptions.sort === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? -1 : 0) &&
+        filterOptions.sort === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? -1 : 2) &&
         [Verbs.entityTypePlayer, Verbs.entityTypeUser].includes(
           authContext.entity.role,
         )
       ) {
-        if (selectedFilter.title.sport !== strings.all) {
+        if (selectedFilter.title !== strings.all) {
           if (selectedFilter.title === strings.playingTitleText) {
             events = events.filter(
               (obj) =>
@@ -75,15 +76,15 @@ export default function  EventScheduleScreen({
             events = events.filter((obj) => !obj.game);
           }
         }
-      } else if (filterOptions.sort === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? 1 : 2)) {
-        if (selectedFilter.title.sport !== strings.all) {
+      } else if (filterOptions.sort === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? 2 : 3)) {
+        if (selectedFilter.title.sport !== strings.all && selectedFilter.title !== strings.all) {
           events = events.filter(
             (obj) => ((obj.game && obj.game.sport === selectedFilter.title.sport) || 
             (obj.selected_sport && obj.selected_sport.sport === selectedFilter.title.sport)),
           );
         }
-      } else if (filterOptions.sort === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? 0 : 1)) {
-        if (selectedFilter.title.group_name !== strings.all) {
+      } else if (filterOptions.sort === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? 1 : 1)) {
+        if (selectedFilter.title.group_name !== strings.all && selectedFilter.title !== strings.all) {
           if (selectedFilter.title.group_name === Verbs.me) {
             events = events.filter(
               (obj) =>
@@ -209,6 +210,7 @@ export default function  EventScheduleScreen({
                   }
                   entity={entity}
                   owners={owners}
+                  allUserData={allUserData}
                 />
               );
             }

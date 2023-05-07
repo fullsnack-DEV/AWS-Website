@@ -457,6 +457,7 @@ export default function RefereesListScreen({navigation, route}) {
         fType={filterType.REFEREES}
         sports={sports}
         filterObject={filters}
+        feeTitle={strings.refereeFee}
         isVisible={settingPopup}
         onPressApply={(filterData) => {
           setloading(false);

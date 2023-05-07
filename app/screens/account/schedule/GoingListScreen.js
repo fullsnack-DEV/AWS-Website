@@ -1,5 +1,5 @@
-import React, {useEffect, useState, useContext} from 'react';
-import {View, StyleSheet, FlatList, Alert} from 'react-native';
+import React, {useEffect, useState, useContext, useLayoutEffect} from 'react';
+import {View, StyleSheet, FlatList, Alert, TouchableOpacity, Image} from 'react-native';
 
 import AuthContext from '../../../auth/context';
 import {followUser, unfollowUser} from '../../../api/Users';
@@ -10,6 +10,8 @@ import TCRemoveUser from '../connections/TCRemoveUser';
 import {removeAttendeeFromEvent} from '../../../api/Schedule';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import Verbs from '../../../Constants/Verbs';
+import images from '../../../Constants/ImagePath';
+import colors from '../../../Constants/Colors';
 
 export default function GoingListScreen({navigation, route}) {
   const [going, setGoing] = useState([]);
@@ -18,6 +20,20 @@ export default function GoingListScreen({navigation, route}) {
   const [showRemove] = useState(route?.params?.showRemove);
   const authContext = useContext(AuthContext);
   const userRole = authContext?.entity?.role;
+
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <TouchableOpacity
+          onPress={() => {
+            navigation.goBack()
+          }}>
+          <Image source={images.backArrow} style={styles.backImageStyle} />
+        </TouchableOpacity>
+      )
+    });
+  }, [navigation]);
 
   useEffect(() => {
     const getUserDetailQuery = {
@@ -177,5 +193,12 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     flexDirection: 'column',
+  },
+  backImageStyle: {
+    height: 20,
+    width: 15,
+    tintColor: colors.lightBlackColor,
+    resizeMode: 'contain',
+    marginLeft: 15,
   },
 });

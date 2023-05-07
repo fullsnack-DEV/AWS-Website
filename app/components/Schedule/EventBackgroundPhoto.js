@@ -11,6 +11,7 @@ import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
+import {strings} from '../../../Localization/translation';
 
 
 
@@ -31,9 +32,9 @@ function EventBackgroundPhoto({
         <View>
           {!isEdit && (
             <View style={{marginBottom: 15}}>
-              <Text style={styles.featuredImageStyle}>FEATURED PHOTO</Text>
+              <Text style={styles.featuredImageStyle}>{strings.eventFeaturePhoto}</Text>
               <Text style={styles.imageStyleText}>
-                At least 1284x2778 pixels
+                {strings.eventPhotoRatio}
               </Text>
             </View>
           )}
@@ -44,7 +45,7 @@ function EventBackgroundPhoto({
               style={{height: 15, width: 15}}
             />
             <Text style={styles.uploadPhotoStyles}>
-              {isEdit ? 'Edit photo' : 'Upload photo'}
+              {isEdit ? strings.eventPhotoEdit : strings.eventPhotoUpdate}
             </Text>
           </TouchableOpacity>
         </View>
@@ -70,8 +71,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 3,
     flexDirection: 'row',
-    alignItems: 'center',
+    alignSelf: 'center',
     justifyContent: 'center',
+    paddingTop: 5,
    
   },
 

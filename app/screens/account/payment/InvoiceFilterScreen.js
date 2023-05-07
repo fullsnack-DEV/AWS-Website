@@ -32,7 +32,7 @@ import ActionSheet from 'react-native-actionsheet';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import {getGroupMembers} from '../../../api/Groups';
-import {createInvoice, getTeamInvoice} from '../../../api/Invoice';
+import {createInvoice, getSenderInvoices} from '../../../api/Invoice';
 
 import AuthContext from '../../../auth/context';
 
@@ -41,7 +41,7 @@ import TCTabView from '../../../components/TCTabView';
 import images from '../../../Constants/ImagePath';
 import MemberInvoiceView from '../../../components/invoice/MemberInvoiceView';
 import TopFilterBar from '../../../components/invoice/TopFilterBar';
-import BatchFeeView from '../../../components/invoice/BatchFeeView';
+import BatchInvoiceView from '../../../components/invoice/BatchInvoiceView';
 import {strings} from '../../../../Localization/translation';
 import TCThinDivider from '../../../components/TCThinDivider';
 import {heightPercentageToDP as hp} from '../../../utils';
@@ -152,13 +152,11 @@ export default function InvoiceFilterScreen({navigation}) {
 
   useEffect(() => {
     setloading(true);
-    getTeamInvoice(authContext)
+    getSenderInvoices(authContext)
       .then((response) => {
         setloading(false);
-
         setMemberList(response.payload.members);
         setBatchList(response.payload.batches);
-
         setMemberListFilter(memberListByFilter('Open'));
       })
       .catch((e) => {
@@ -175,7 +173,7 @@ export default function InvoiceFilterScreen({navigation}) {
       <MemberInvoiceView
         data={item}
         onPressCard={() =>
-          navigation.navigate('MembersDetailScreen', {from: 'member'})
+          navigation.navigate('RecipientDetailScreen', {from: 'member'})
         }
       />
     );
@@ -184,7 +182,7 @@ export default function InvoiceFilterScreen({navigation}) {
   const renderBatchView = ({item}) => {
     console.log('item', item);
     return (
-      <BatchFeeView
+      <BatchInvoiceView
         data={item}
         onPressCard={() =>
           navigation.navigate('BatchDetailScreen', {from: 'batch'})

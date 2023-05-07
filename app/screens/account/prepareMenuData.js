@@ -1,6 +1,5 @@
 import images from '../../Constants/ImagePath';
 import {strings} from '../../../Localization/translation';
-// import {getSportIcon} from '../../utils/index';
 import Verbs from '../../Constants/Verbs';
 import {
   getEntitySportList,
@@ -102,7 +101,7 @@ const paymentMethodMenu = () => [
   },
 ];
 
-const invoicesMenuForUser = () => [
+const invoicesMenuForUser = () =>  [
   {
     key: strings.invoicesTitle,
     icon: images.invoiceIcon,
@@ -113,7 +112,7 @@ const invoicesMenuForUser = () => [
         navigateTo: {
           screenName: 'Account',
           data: {
-            screen: 'PaymentMethodsScreen',
+            screen: 'InvoiceReceivedScreen',
             params: {
               comeFrom: 'AccountScreen',
             },
@@ -124,7 +123,7 @@ const invoicesMenuForUser = () => [
         option: strings.invoicesent,
         icon: images.invoiceIcon,
         navigateTo: {
-          screenName: 'PayoutMethodList',
+          screenName: 'InvoiceSentScreen',
           data: {
             comeFrom: 'AccountScreen',
           },
@@ -134,41 +133,42 @@ const invoicesMenuForUser = () => [
   },
 ];
 
-const invoicesMenuForGroup = () => [
-  {
-    key: strings.invoicesTitle,
-    icon: images.invoiceIcon,
-    member: [
-      {
-        option: strings.sendnewinvoice,
-        icon: images.sendNewInvoiceIcon,
-      },
-      {
-        option: strings.invoicereceived,
-        icon: images.invoiceRecievedIcon,
-        navigateTo: {
-          screenName: 'Account',
-          data: {
-            screen: 'InvoiceScreen',
-            params: {
+const invoicesMenuForGroup = () =>  [
+    {
+      key: strings.invoicesTitle,
+      icon: images.invoiceIcon,
+      member: [
+        {
+          option: strings.sendnewinvoice,
+          icon: images.sendNewInvoiceIcon,
+        },
+        {
+          option: strings.invoicereceived,
+          icon: images.invoiceRecievedIcon,
+          navigateTo: {
+            screenName: 'Account',
+            data: {
+              screen: 'InvoiceReceivedScreen',
+              params: {
+                comeFrom: 'AccountScreen',
+              },
+            },
+          },
+        },
+        {
+          option: strings.invoicesent,
+          icon: images.invoiceIcon,
+          navigateTo: {
+            screenName: 'InvoiceSentScreen',
+            data: {
               comeFrom: 'AccountScreen',
             },
           },
         },
-      },
-      {
-        option: strings.invoicesent,
-        icon: images.invoiceIcon,
-        navigateTo: {
-          screenName: 'InvoiceScreen',
-          data: {
-            comeFrom: 'AccountScreen',
-          },
-        },
-      },
-    ],
-  },
+      ],
+    },
 ];
+
 
 export const prepareUserMenu = (authContext, teams, clubs, baseUrl) => {
   const userMenu = [
@@ -325,29 +325,11 @@ export const prepareTeamMenu = (authContext, clubs) => {
         },
       },
     },
-    // {
-    //   key: strings.membersTitle,
-    //   icon: images.Members,
-    //   navigateTo: {
-    //     screenName: 'GroupMembersScreen',
-    //     data: {
-    //       groupID: authContext.entity.uid,
-    //       groupObj: authContext.entity.obj,
-    //     },
-    //   },
-    // },
     {
       key: strings.clubstitle,
       icon: images.accountMyClubs,
       member: [
         ...prepareGroupsSubMenu(clubs),
-        // {
-        //   option: strings.createClubText,
-        //   icon: images.createClub,
-        //   navigateTo: {
-        //     screenName: 'CreateClubForm1',
-        //   },
-        // },
       ],
     },
     {
@@ -375,18 +357,6 @@ export const prepareTeamMenu = (authContext, clubs) => {
 
 export const prepareClubMenu = (authContext, teams) => {
   const clubMenu = [
-    // {
-    //   key: strings.membersTitle,
-    //   icon: images.Members,
-    //   navigateTo: {
-    //     screenName: 'GroupMembersScreen',
-    //     data: {
-    //       groupID: authContext.entity.uid,
-    //       groupObj: authContext.entity.obj,
-    //     },
-    //   },
-    // },
-
     {
       key: strings.teamstitle,
       icon: images.accountMyTeams,

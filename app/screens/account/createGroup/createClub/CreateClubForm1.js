@@ -56,6 +56,7 @@ import Verbs from '../../../../Constants/Verbs';
 import {createGroup} from '../../../../api/Groups';
 import uploadImages from '../../../../utils/imageAction';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
+import useSwitchAccount from '../../../../hooks/useSwitchAccount';
 
 export default function CreateClubForm1({navigation, route}) {
   const isFocused = useIsFocused();
@@ -81,6 +82,7 @@ export default function CreateClubForm1({navigation, route}) {
   const actionSheetWithDelete = useRef();
 
   const animProgress = React.useState(new Animated.Value(0))[0];
+  const {onSwitchProfile} = useSwitchAccount();
 
   useEffect(() => {
     let sportText = '';
@@ -184,8 +186,8 @@ export default function CreateClubForm1({navigation, route}) {
           )
             .then((response) => {
               onANimate(100);
+              onSwitchProfile(response.payload);
               setloading(false);
-
               navigation.push('HomeScreen', {
                 uid: response.payload.group_id,
                 role: response.payload.entity_type,
@@ -222,8 +224,8 @@ export default function CreateClubForm1({navigation, route}) {
         authContext,
       )
         .then((response) => {
+          onSwitchProfile(response.payload);
           setloading(false);
-
           navigation.push('HomeScreen', {
             uid: response.payload.group_id,
             role: response.payload.entity_type,
@@ -614,6 +616,7 @@ export default function CreateClubForm1({navigation, route}) {
               maxLength={20}
               onChangeText={(text) => setClubName(text)}
               value={clubName}
+              placeholderTextColor={colors.userPostTimeColor}
             />
           </View>
 
@@ -630,6 +633,7 @@ export default function CreateClubForm1({navigation, route}) {
                 value={location}
                 editable={false}
                 pointerEvents="none"
+                placeholderTextColor={colors.userPostTimeColor}
               />
             </TouchableOpacity>
           </View>
@@ -660,7 +664,7 @@ export default function CreateClubForm1({navigation, route}) {
               }}>
               <TCLabel
                 title={strings.bio}
-                style={{marginTop: 0, textTransform: 'uppercase'}}
+                style={{marginTop: 0, textTransform: 'uppercase', fontSize: 16}}
               />
             </View>
             <TextInput

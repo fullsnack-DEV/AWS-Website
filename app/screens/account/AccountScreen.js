@@ -2,7 +2,6 @@ import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {
   Alert,
   Dimensions,
-  Modal,
   Platform,
   Pressable,
   SafeAreaView,
@@ -11,14 +10,13 @@ import {
   View,
 } from 'react-native';
 import {format} from 'react-string-format';
-import firebase from '@react-native-firebase/app';
+
 import {useIsFocused} from '@react-navigation/native';
 import AccountHeader from './components/AccountHeader';
 import AuthContext from '../../auth/context';
 import AccountEntity from './components/AccountEntity';
-import {clearStorage, getStorage, setAuthContextData} from '../../utils';
-import {removeFBToken, userActivate} from '../../api/Users';
-import {getNotificationCount} from '../../utils/accountUtils';
+import {getStorage, onLogout, setAuthContextData} from '../../utils';
+import {userActivate} from '../../api/Users';
 import SwitchAccountModal from '../../components/account/SwitchAccountModal';
 import AccountMenuList from './components/AccountMenuList';
 import {
@@ -50,7 +48,11 @@ import SendNewInvoiceModal from './Invoice/SendNewInvoiceModal';
 import MemberListModal from '../../components/MemberListModal/MemberListModal';
 import {getUserIndex} from '../../api/elasticSearch';
 import TCAccountDeactivate from '../../components/TCAccountDeactivate';
+import CustomModalWrapper from '../../components/CustomModalWrapper';
+import {ModalTypes} from '../../Constants/GeneralConstants';
 import AccountShimmer from '../../components/shimmer/account/AccountShimmer';
+import {getUnreadCount} from '../../api/Notificaitons';
+import ActivityLoader from '../../components/loader/ActivityLoader';
 
 const AccountScreen = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
@@ -83,6 +85,7 @@ const AccountScreen = ({navigation, route}) => {
   const [grpIdforTermination, setGrpIdForTermination] = useState();
   const [players, setPlayers] = useState([]);
   const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
+  const [onLoad, setOnLoad] = useState(false);
 
   useEffect(() => {
     if (
@@ -241,20 +244,46 @@ const AccountScreen = ({navigation, route}) => {
       });
   }, [authContext, getAccountMenu, imageBaseUrl]);
 
-  useEffect(() => {
-    if (isFocused) {
-      const count = getNotificationCount(authContext.entity.uid, authContext);
-      setUnreadNotificationCount(count);
-      getUsers();
-      setShowOnlyTeamSport(false);
-    }
-  }, [isFocused, authContext, getUsers, getLists]);
+  const getNotificationCount = useCallback(() => {
+    getUnreadCount(authContext)
+      .then((response) => {
+        const {teams, clubs, user} = response.payload;
+        let count = 0;
+        if (authContext.entity.obj.entity_type === Verbs.entityTypeClub) {
+          const obj = clubs.find(
+            (item) => item.group_id === authContext.entity.uid,
+          );
+          count = obj.unread ?? 0;
+        } else if (
+          authContext.entity.obj.entity_type === Verbs.entityTypeTeam
+        ) {
+          const obj = teams.find(
+            (item) => item.group_id === authContext.entity.uid,
+          );
+          count = obj.unread ?? 0;
+        } else {
+          count = user.unread ?? 0;
+        }
+        authContext.setTotalNotificationCount(
+          response.payload.totalUnread ?? 0,
+        );
+        setUnreadNotificationCount(count);
+      })
+      .catch((e) => {
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  }, [authContext]);
 
   useEffect(() => {
-    if (isFocused) {
+    if (isFocused && authContext.tokenData) {
+      getUsers();
       getLists();
+      getNotificationCount();
+      setShowOnlyTeamSport(false);
     }
-  }, [getLists, isFocused]);
+  }, [authContext, getNotificationCount, isFocused, getUsers, getLists]);
 
   useEffect(() => {
     if (isFocused) {
@@ -264,14 +293,10 @@ const AccountScreen = ({navigation, route}) => {
     }
   }, [isFocused]);
 
-  const onLogout = async () => {
-    setLoading(true);
-    await removeFBToken(authContext);
-    await firebase.auth().signOut();
-    await clearStorage();
-    await authContext.setUser(null);
-    await authContext.setEntity(null);
-    setLoading(false);
+  const handleLogout = async () => {
+    setOnLoad(true);
+    await onLogout(authContext);
+    setOnLoad(false);
   };
 
   const handleSectionMemberClick = (rowObj) => {
@@ -791,6 +816,7 @@ const AccountScreen = ({navigation, route}) => {
           navigation.navigate('NotificationsListScreen')
         }
       />
+      <ActivityLoader visible={onLoad} />
       {loading && accountMenu.length === 0 ? (
         <AccountShimmer />
       ) : (
@@ -829,7 +855,7 @@ const AccountScreen = ({navigation, route}) => {
             onPressCancelRequest={(rowItem) => {
               onCancelRequest(rowItem);
             }}
-            onLogout={onLogout}
+            onLogout={handleLogout}
           />
         </>
       )}
@@ -842,16 +868,12 @@ const AccountScreen = ({navigation, route}) => {
         }}
       />
 
-      <Modal
-        visible={isRulesModalVisible}
-        onBackdropPress={() => setIsRulesModalVisible(false)}
-        onRequestClose={() => setIsRulesModalVisible(false)}
-        animationInTiming={300}
-        animationOutTiming={800}
-        backdropTransitionInTiming={300}
-        backdropTransitionOutTiming={800}
-        style={{
-          margin: 0,
+      <CustomModalWrapper
+        isVisible={isRulesModalVisible}
+        closeModal={() => setIsRulesModalVisible(false)}
+        modalType={ModalTypes.style2}
+        containerStyle={{
+          padding: 0,
         }}>
         <View style={styles.modalViewContainer}>
           <View
@@ -871,7 +893,7 @@ const AccountScreen = ({navigation, route}) => {
             style={{
               marginLeft: 20,
               marginTop: 25,
-              //  marginBottom: 15,
+              marginBottom: 15,
             }}>
             <Text style={styles.rulesText}>{strings.teamCreateClubsText}</Text>
           </View>
@@ -879,7 +901,7 @@ const AccountScreen = ({navigation, route}) => {
           <View
             style={{
               marginLeft: 25,
-              //  marginBottom: 35,
+
               marginRight: 27,
             }}>
             <View style={styles.rulesTitleContainer}>
@@ -911,7 +933,6 @@ const AccountScreen = ({navigation, route}) => {
             onPress={() => {
               setIsRulesModalVisible(false);
               setShowOnlyTeamSport(true);
-
               setTimeout(() => setVisibleSportsModalForTeam(true), 1000);
             }}
             style={{
@@ -935,7 +956,7 @@ const AccountScreen = ({navigation, route}) => {
             </Text>
           </Pressable>
         </View>
-      </Modal>
+      </CustomModalWrapper>
 
       <SportsListModal
         isVisible={visibleSportsModal}
@@ -1034,7 +1055,7 @@ export default AccountScreen;
 
 const styles = StyleSheet.create({
   modalViewContainer: {
-    height: Dimensions.get('window').height / 2.3,
+    height: Dimensions.get('window').height / 2.4,
     backgroundColor: 'white',
     position: 'absolute',
     bottom: 0,
@@ -1065,6 +1086,7 @@ const styles = StyleSheet.create({
   rulesTitleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: 10,
   },
   rulesDots: {
     height: 5,
@@ -1073,6 +1095,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.blackColor,
     marginRight: 5,
     alignSelf: 'center',
-    marginTop: -7,
+    marginTop: 2,
+  },
+  rulesText: {
+    fontSize: 16,
+    lineHeight: 24,
+    fontFamily: fonts.RRegular,
   },
 });

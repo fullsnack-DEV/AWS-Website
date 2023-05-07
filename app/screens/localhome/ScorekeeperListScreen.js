@@ -375,6 +375,7 @@ export default function ScorekeeperListScreen({navigation, route}) {
         sports={sports}
         filterObject={filters}
         isVisible={settingPopup}
+        feeTitle={strings.scorekeeperFeeText}
         onPressApply={(filterData) => {
           setloading(false);
           console.log('filterData==>', filterData);

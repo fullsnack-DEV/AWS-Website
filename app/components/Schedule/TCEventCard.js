@@ -12,7 +12,8 @@ import { strings } from '../../../Localization/translation';
 export default function TCEventCard({
   onPress,
   data,
-  owners
+  owners,
+  allUserData
 }) {
   const authContext = useContext(AuthContext);
   const isGame = !!(data?.game_id && data?.game);
@@ -33,6 +34,17 @@ export default function TCEventCard({
       }
     });
   });
+
+
+  const getUserFullName = () => {
+    let name = '';
+    allUserData.forEach((item) => {
+      if(item.id === data.owner_id) {
+        name = item.name
+      }
+    })
+    return name;
+  }
 
   return (
     <TouchableWithoutFeedback onPress={onPress}>
@@ -71,14 +83,7 @@ export default function TCEventCard({
                 )} `}</Text>
                
                 <Text style={styles.eventTime}> | </Text>
-                {/* <Text numberOfLines={1} style={{...styles.eventTime, flex: 1}}>
-                  {' '}
-                  {data?.going?.length ?? 0}
-                  {strings.going}
-                </Text>
-                {location !== '' && (
-                <Text style={styles.eventTime}> | </Text>
-                )} */}
+
                 {
                 location !== '' ? (
                 <Text numberOfLines={1} style={{...styles.eventTime, flex: 1}}>
@@ -99,7 +104,7 @@ export default function TCEventCard({
                   style={{height: 25, width: 25, borderRadius: 70}}
                 />
               </View>
-              <Text style={styles.ownerText}>{ownerDetails?.full_name}</Text>
+              <Text style={styles.ownerText}>{getUserFullName()}</Text>
             </View>
           </View>
       </View>

@@ -72,7 +72,7 @@ const GroupHomeHeader = ({groupData = {}, sportList = [], isAdmin = false}) => {
           <GroupIcon
             imageUrl={groupData.thumbnail}
             groupName={groupData.group_name}
-            containerStyle={{marginRight: 7}}
+            containerStyle={{marginRight: 7, padding: 5}}
             entityType={groupData.entity_type}
           />
         </View>

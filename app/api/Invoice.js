@@ -42,29 +42,37 @@ export const resendBatchInvoice = (batchID, params, authContext) =>
     authContext,
   });
 
-export const getTeamInvoice = (authContext) =>
+export const getSenderInvoices = (authContext) =>
   makeAPIRequest({
     method: 'get',
-    url: `${Config.BASE_URL}/invoices`,
+    url: `${Config.BASE_URL}/invoices/sender`,
     authContext,
   });
+
+  export const getRecieverInvoices = (authContext) =>
+  makeAPIRequest({
+    method: 'get',
+    url: `${Config.BASE_URL}/invoices/receiver`,
+    authContext,
+  });
+
 export const getTeamMemberInvoice = (memberID, authContext) =>
   makeAPIRequest({
     method: 'get',
     url: `${Config.BASE_URL}/invoices/member/${memberID}`,
     authContext,
   });
-export const getMemberInvoice = (authContext) =>
+export const getReceiverInvoice = (authContext) =>
   makeAPIRequest({
     method: 'get',
-    url: `${Config.BASE_URL}/invoices`,
+    url: `${Config.BASE_URL}/invoices/receiver`,
     authContext,
   });
 
-export const getCancelledInvoice = (authContext) =>
+export const getCancelledInvoice = (type,authContext) =>
   makeAPIRequest({
     method: 'get',
-    url: `${Config.BASE_URL}/invoices?cancel_invoice=true`,
+    url: `${Config.BASE_URL}/invoices/${type}?cancel_invoice=true`,
     authContext,
   });
 
@@ -83,10 +91,10 @@ export const payStripeInvoice = (invoiceID, params, authContext) =>
     authContext,
   });
 
-export const deleteInvoice = (invoiceID, authContext) =>
+export const rejectInvoice = (invoiceID, authContext) =>
   makeAPIRequest({
-    method: 'delete',
-    url: `${Config.BASE_URL}/invoices/${invoiceID}`,
+    method: 'post',
+    url: `${Config.BASE_URL}/invoices/${invoiceID}/reject`,
     authContext,
   });
 

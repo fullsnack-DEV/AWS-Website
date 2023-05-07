@@ -10,7 +10,7 @@ const getUnreadNotificationCount = (authContext) => {
     .then((response) => {
       const {teams, clubs, user} = response.payload;
       const allAccounts = [{...user}, ...clubs, ...teams];
-
+      authContext.setTotalNotificationCount(response.payload.totalUnread ?? 0);
       const obj = {};
       allAccounts.forEach((item) => {
         obj[`${item.user_id ?? item.group_id}`] = item.unread ?? 0;

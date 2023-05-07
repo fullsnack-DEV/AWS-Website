@@ -1,4 +1,4 @@
-import React, {useState, useCallback, useEffect} from 'react';
+import React, {useState, useCallback, useEffect, useMemo} from 'react';
 import {
   View,
   StyleSheet,
@@ -14,6 +14,7 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   Pressable,
+  SectionList,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Modal from 'react-native-modal';
@@ -37,15 +38,17 @@ import CustomModalWrapper from '../CustomModalWrapper';
 import {ModalTypes} from '../../Constants/GeneralConstants';
 import FilterTimeSelectItem from './FilterTimeSelectItem';
 import fonts from '../../Constants/Fonts';
-import {widthPercentageToDP} from '../../utils';
+import {widthPercentageToDP, getJSDate} from '../../utils';
 
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
 
 const SearchModal = ({
+  favoriteSportsList,
   fType,
   sports,
   isVisible,
   filterObject,
+  feeTitle,
   onPressCancel = () => {},
   onPressApply = () => {},
 }) => {
@@ -59,9 +62,12 @@ const SearchModal = ({
   const [tag, setTag] = useState();
   const [groups, setGroups] = useState(groupsType);
   const [showTimeComponent, setShowTimeComponent] = useState(false);
-  const [showSortComponent, setShowSortComponent] = useState(false);
   const [showFeeComponent, setShowFeeComponent] = useState(false);
+  const [showSportComponent, setShowSportComponent] = useState(false);
+
   console.log('showTimeComponent', showTimeComponent);
+  console.log('showSportComponent', showSportComponent);
+
   console.log('fType', fType);
 
   useEffect(() => {
@@ -98,20 +104,23 @@ const SearchModal = ({
       setShowTimeComponent(
         fType === filterType.REFEREES ||
           fType === filterType.SCOREKEEPERS ||
-          fType === filterType.TEAMAVAILABLECHALLENGE,
+          fType === filterType.TEAMAVAILABLECHALLENGE ||
+          fType === filterType.PLAYERAVAILABLECHALLENGE,
       );
-      setShowSortComponent(
+      setShowSportComponent(
         fType === filterType.REFEREES ||
           fType === filterType.SCOREKEEPERS ||
-          fType === filterType.TEAMAVAILABLECHALLENGE,
+          fType === filterType.PLAYERAVAILABLECHALLENGE ||
+          fType === filterType.RECRUIITINGMEMBERS,
       );
+
       setShowFeeComponent(
         fType === filterType.REFEREES ||
           fType === filterType.SCOREKEEPERS ||
-          fType === filterType.TEAMAVAILABLECHALLENGE,
+          fType === filterType.PLAYERAVAILABLECHALLENGE,
       );
     }
-  }, [filterObject, isVisible]);
+  }, [fType, filterObject, isVisible, showSportComponent]);
 
   useEffect(() => {
     if (fType === filterType.RECRUIITINGMEMBERS && isVisible) {
@@ -128,28 +137,31 @@ const SearchModal = ({
         setGroups([...groups]);
       });
     }
-    console.log('groups==>1', groups);
   }, [isVisible]);
 
-  const isIconCheckedOrNot = useCallback(({item, index}) => {
-    if (item.isChecked) {
-      groups[index].isChecked = false;
-    } else {
-      groups[index].isChecked = true;
-    }
+  const isIconCheckedOrNot = useCallback(
+    ({item, index}) => {
+      if (item.isChecked) {
+        groups[index].isChecked = false;
+      } else {
+        groups[index].isChecked = true;
+      }
 
-    setGroups([...groups]);
-  }, []);
+      setGroups([...groups]);
+    },
+    [groups],
+  );
 
   const handleSetLocationOptions = useCallback(
     (location1) => {
+      console.log('location1?.formattedAddress', location1);
       // eslint-disable-next-line no-prototype-builtins
       if (location1.hasOwnProperty('address')) {
         setFilters({
           ...filters,
-          location: location1?.formattedAddress,
+          location: location1?.city,
           isSearchPlaceholder: false,
-          searchCityLoc: location1?.formattedAddress,
+          searchCityLoc: location1?.city,
         });
       } else {
         setFilters({
@@ -197,10 +209,15 @@ const SearchModal = ({
       <View
         style={{
           width: '100%',
-          padding: 20,
           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'space-between',
+          alignContent: 'center',
+          textAlignVertical: 'center',
+          // backgroundColor: colors.redColor,
+          flex: 1,
+          marginLeft: 10,
+          marginRight: 10,
         }}>
         <Text style={styles.languageList}>{item.sport_name}</Text>
         <View style={styles.checkbox}>
@@ -292,6 +309,32 @@ const SearchModal = ({
       </View>
     </TouchableOpacity>
   );
+  const renderSeparator = () => <View style={styles.separatorLine} />;
+  const Header = ({title}) => (
+    <View style={styles.header}>
+      <Text style={styles.headerText}>{title}</Text>
+    </View>
+  );
+
+  const sections = useMemo(() => {
+    if (favoriteSportsList?.length > 0)
+      return [
+        {
+          title: strings.favoriteSports,
+          data: favoriteSportsList ?? [],
+        },
+        {
+          title: strings.otherSports,
+          data: sports ?? [],
+        },
+      ];
+    return [
+      {
+        title: strings.otherSports,
+        data: sports ?? [],
+      },
+    ];
+  }, [favoriteSportsList, sports]);
   return (
     <View>
       <CustomModalWrapper
@@ -347,6 +390,31 @@ const SearchModal = ({
             const tempFilter = {
               ...filters,
             };
+            onPressApply(tempFilter);
+          } else if (fType === filterType.PLAYERAVAILABLECHALLENGE) {
+            const tempFilter = {
+              ...filters,
+            };
+            if (Number(filters.minFee) >= 0 && Number(filters.maxFee) > 0) {
+              tempFilter.fee = `${tempFilter.minFee}-${tempFilter.maxFee}`;
+            }
+            if (filters.fromDateTime && filters.toDateTime) {
+              console.log(
+                'date==>',
+                `${moment(getJSDate(filters.fromDateTime).getTime()).format(
+                  'MMM DD',
+                )}-${moment(getJSDate(filters.toDateTime).getTime()).format(
+                  'MMM DD',
+                )}`,
+              );
+              tempFilter.availableTime = `${moment(
+                getJSDate(filters.fromDateTime).getTime(),
+              ).format('MMM DD')}-${moment(
+                getJSDate(filters.toDateTime).getTime(),
+              ).format('MMM DD')}`;
+            }
+            console.log('Apply PLAYERAVAILABLECHALLENGE ==>', tempFilter);
+
             onPressApply(tempFilter);
           } else if (applyValidation()) {
             const tempFilter = {
@@ -515,60 +583,63 @@ const SearchModal = ({
                     </TouchableWithoutFeedback>
                   </View>
                 </View>
-                <View>
-                  <View
-                    style={{
-                      flexDirection: 'column',
-                      margin: 15,
-                      marginTop: 20,
-                      justifyContent: 'space-between',
-                    }}>
-                    <View>
-                      <Text style={styles.filterTitleBold}>
-                        {strings.sport}
-                      </Text>
-                    </View>
-                    <View style={{marginTop: 10}}>
-                      <View
-                        style={[
-                          {
-                            justifyContent: 'flex-start',
-                          },
-                          styles.sportsContainer,
-                        ]}>
-                        <TouchableWithoutFeedback
-                          onPress={() => {
-                            setVisibleSportsModal(true);
-                          }}>
-                          <View
-                            style={{
-                              flexDirection: 'row',
-                              justifyContent: 'center',
+                {showSportComponent && (
+                  <View>
+                    <View
+                      style={{
+                        flexDirection: 'column',
+                        margin: 15,
+                        marginTop: 20,
+                        justifyContent: 'space-between',
+                      }}>
+                      <View>
+                        <Text style={styles.filterTitleBold}>
+                          {strings.sport}
+                        </Text>
+                      </View>
+                      <View style={{marginTop: 10}}>
+                        <View
+                          style={[
+                            {
+                              justifyContent: 'flex-start',
+                            },
+                            styles.sportsContainer,
+                          ]}>
+                          <TouchableWithoutFeedback
+                            onPress={() => {
+                              setVisibleSportsModal(true);
                             }}>
-                            <View>
-                              <Text style={styles.searchCityText}>
-                                {filters?.sport_name ?? strings.allSport}
-                              </Text>
-                            </View>
                             <View
                               style={{
-                                position: 'absolute',
-                                right: 0,
-                                alignItems: 'center',
+                                flexDirection: 'row',
                                 justifyContent: 'center',
                               }}>
-                              <Icon
-                                size={24}
-                                color="black"
-                                name="chevron-down"
-                              />
+                              <View>
+                                <Text style={styles.searchCityText}>
+                                  {filters?.sport_name ?? strings.allSport}
+                                </Text>
+                              </View>
+                              <View
+                                style={{
+                                  position: 'absolute',
+                                  right: 0,
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                }}>
+                                <Icon
+                                  size={24}
+                                  color="black"
+                                  name="chevron-down"
+                                />
+                              </View>
                             </View>
-                          </View>
-                        </TouchableWithoutFeedback>
+                          </TouchableWithoutFeedback>
+                        </View>
                       </View>
                     </View>
                   </View>
-                </View>
+                )}
+
                 {showTimeComponent && (
                   <View
                     style={{
@@ -666,9 +737,7 @@ const SearchModal = ({
                       justifyContent: 'space-between',
                     }}>
                     <View style={{}}>
-                      <Text style={styles.filterTitleBold}>
-                        {strings.refereeFee}
-                      </Text>
+                      <Text style={styles.filterTitleBold}>{feeTitle}</Text>
                     </View>
                     <View style={{marginTop: 10}}>
                       <View
@@ -723,7 +792,7 @@ const SearchModal = ({
                     </View>
                   </View>
                 )}
-                {showSortComponent && (
+                {/* {showSortComponent && (
                   <View
                     style={{
                       flexDirection: 'column',
@@ -817,7 +886,7 @@ const SearchModal = ({
                       </View>
                     </View>
                   </View>
-                )}
+                )} */}
                 {fType === filterType.RECRUIITINGMEMBERS && (
                   <View
                     style={{
@@ -902,7 +971,74 @@ const SearchModal = ({
           mode={'date'}
           minimumDate={new Date()}
         />
-        <Modal
+        {fType === filterType.PLAYERAVAILABLECHALLENGE ? (
+          <CustomModalWrapper
+            isVisible={visibleSportsModal}
+            closeModal={() => {
+              setVisibleSportsModal(false);
+            }}
+            modalType={ModalTypes.style7}>
+            <SectionList
+              sections={sections}
+              renderItem={renderSports}
+              renderSectionHeader={({section: {title}}) => (
+                <Header title={title} />
+              )}
+              keyExtractor={(item, index) => index.toString()}
+              ItemSeparatorComponent={renderSeparator}
+              showsVerticalScrollIndicator={false}
+              showsHorizontalScrollIndicator={false}
+            />
+          </CustomModalWrapper>
+        ) : (
+          <Modal
+            isVisible={visibleSportsModal}
+            onBackdropPress={() => setVisibleSportsModal(false)}
+            onRequestClose={() => setVisibleSportsModal(false)}
+            animationInTiming={300}
+            animationOutTiming={800}
+            backdropTransitionInTiming={300}
+            backdropTransitionOutTiming={800}
+            style={{
+              margin: 0,
+            }}>
+            <View
+              behavior="position"
+              style={{
+                width: '100%',
+                height: Dimensions.get('window').height - 75,
+                maxHeight: Dimensions.get('window').height - 75,
+                backgroundColor: 'white',
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                borderTopLeftRadius: 30,
+                borderTopRightRadius: 30,
+                shadowColor: '#000',
+                shadowOffset: {width: 0, height: 1},
+                shadowOpacity: 0.5,
+                shadowRadius: 5,
+                elevation: 15,
+              }}>
+              {ModalHeader()}
+              <View
+                style={{
+                  flexDirection: 'row',
+                  paddingHorizontal: 15,
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}></View>
+              <View style={styles.separatorLine} />
+              <FlatList
+                ItemSeparatorComponent={() => <TCThinDivider />}
+                data={sports}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={renderSports}
+              />
+            </View>
+          </Modal>
+        )}
+        {/* <Modal
           isVisible={visibleSportsModal}
           onBackdropPress={() => setVisibleSportsModal(false)}
           onRequestClose={() => setVisibleSportsModal(false)}
@@ -947,7 +1083,7 @@ const SearchModal = ({
               renderItem={renderSports}
             />
           </View>
-        </Modal>
+        </Modal> */}
       </CustomModalWrapper>
     </View>
   );
@@ -1034,7 +1170,9 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
   },
 
-  listItem: {},
+  listItem: {
+    height: 64,
+  },
 
   languageList: {
     color: colors.lightBlackColor,
@@ -1047,12 +1185,12 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     alignSelf: 'center',
   },
-  sortOptionStyle: {
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    color: colors.lightBlackColor,
-    left: 10,
-  },
+  // sortOptionStyle: {
+  //   fontSize: 16,
+  //   fontFamily: fonts.RRegular,
+  //   color: colors.lightBlackColor,
+  //   left: 10,
+  // },
   timeZoneText: {
     fontFamily: fonts.RLight,
     fontSize: 14,
@@ -1076,14 +1214,20 @@ const styles = StyleSheet.create({
     tintColor: colors.lightBlackColor,
     alignSelf: 'center',
   },
-  // checkboxImg: {
-  //   width: widthPercentageToDP('5.5%'),
-  //   height: widthPercentageToDP('5.5%'),
-  // },
-  // listItem: {
-  //   alignSelf: 'center',
-  //   // marginLeft: wp('10%'),
-  //   width: widthPercentageToDP('100%'),
-  //   // backgroundColor: 'red',
-  // },
+  header: {
+    // backgroundColor: colors.yellowColor,
+  },
+  headerText: {
+    fontFamily: fonts.RMedium,
+    fontSize: 18,
+    color: colors.lightBlackColor,
+  },
+  separatorLine: {
+    backgroundColor: colors.grayBackgroundColor,
+    width: '100%',
+    alignSelf: 'center',
+    height: 1,
+    // marginTop: 10,
+    // marginBottom: 10,
+  },
 });

@@ -152,14 +152,12 @@ export default function DefaultColorScreen({navigation}) {
               const createEventData = createEventItem;
               if (createEventData.id === item.id) {
                 createEventData.isSelected = true;
-
                 setSelectedEventColors(createEventData.color);
               } else {
                 createEventData.isSelected = false;
               }
               return null;
             });
-
             setCreatedEventColors([...createdEventColors]);
           }
         }}

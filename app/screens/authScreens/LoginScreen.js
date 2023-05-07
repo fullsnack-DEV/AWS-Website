@@ -40,7 +40,6 @@ import fonts from '../../Constants/Fonts';
 
 import TCButton from '../../components/TCButton';
 import TCTextField from '../../components/TCTextField';
-import {QBconnectAndSubscribe, QBlogin} from '../../utils/QuickBlox';
 import {eventDefaultColorsData} from '../../Constants/LoaderImages';
 import apiCall from '../../utils/apiCall';
 import {getAppSettingsWithoutAuth, updateFBToken} from '../../api/Users';
@@ -165,31 +164,6 @@ const LoginScreen = ({navigation}) => {
     ],
   );
 
-  const QBInitialLogin = useCallback(
-    (firebaseUser, townscupUser) => {
-      const response = {...townscupUser};
-      let qbEntity = {...dummyAuthContext?.entity};
-
-      QBlogin(qbEntity.uid, response)
-        .then(async (res) => {
-          qbEntity = {
-            ...qbEntity,
-            QB: {...res.user, connected: true, token: res?.session?.token},
-          };
-          QBconnectAndSubscribe(qbEntity);
-          dummyAuthContext.entity = {...qbEntity};
-          loginFinalRedirection(firebaseUser, response);
-        })
-        .catch((error) => {
-          console.log('QB Login Error : ', error.message);
-          qbEntity = {...qbEntity, QB: {connected: false}};
-          dummyAuthContext.entity = {...qbEntity};
-          loginFinalRedirection(firebaseUser, response);
-        });
-    },
-    [dummyAuthContext, loginFinalRedirection],
-  );
-
   const onAuthStateChanged = useCallback(
     (user) => {
       if (user) {
@@ -223,7 +197,7 @@ const LoginScreen = ({navigation}) => {
                     user: response.payload,
                   },
                 };
-                QBInitialLogin(user, response.payload);
+                loginFinalRedirection(user, response.payload);
               })
               .catch(() => {
                 navigateToAddNameScreen(user);
@@ -232,7 +206,7 @@ const LoginScreen = ({navigation}) => {
         });
       }
     },
-    [QBInitialLogin, dummyAuthContext],
+    [dummyAuthContext],
   );
 
   const navigateToEmailVarificationScreen = async (user) => {

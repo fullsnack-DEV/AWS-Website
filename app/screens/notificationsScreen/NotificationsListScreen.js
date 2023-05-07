@@ -619,7 +619,7 @@ function NotificationsListScreen({navigation}) {
         )
           .then((response) => {
             setloading(false);
-            navigation.navigate('AcceptEventInviteScreen', {
+            navigation.navigate('EventScreen', {
               data: response.payload,
               requestID: groupObj?.activities?.[0].id,
             });

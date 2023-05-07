@@ -30,7 +30,6 @@ function TCTagsFilter({dataSource, onTagCancelPress, filter, authContext}) {
         Object.keys(item)[0] !== 'isSearchPlaceholder' &&
         Object.keys(item)[0] !== 'minFee' &&
         Object.keys(item)[0] !== 'maxFee' &&
-        Object.keys(item)[0] !== 'availableTime' &&
         Object.keys(item)[0] !== 'sortOption' &&
         Object.keys(item)[0] !== 'searchCityLoc' &&
         Object.keys(item)[0] !== 'fromDateTime' &&

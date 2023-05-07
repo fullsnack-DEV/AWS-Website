@@ -159,6 +159,11 @@ const RegisterPlayer = ({navigation, route}) => {
             sports: _sport,
             double_Player: p2,
             showDouble: true,
+            backScreen: 'AccountScreen',
+            backScreenParams: {
+              createdSportName: selectedSport?.sport_name,
+              sportType: selectedSport?.sport_type,
+            },
           });
           setShowCongratulationsModal(false);
           setLoading(false);
@@ -382,6 +387,7 @@ const RegisterPlayer = ({navigation, route}) => {
             },
           });
         }}
+        onLoad={loading}
         onChoose={(player2) => {
           handleDoubleTeamCreate(
             authContext.entity.obj.user_id,

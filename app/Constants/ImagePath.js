@@ -51,6 +51,7 @@ const images = {
   nextArrow: require('../assets/images/ic_next_arrow.png'),
   calNextArrow: require('../assets/images/cal_next.png'),
   calPrevArrow: require('../assets/images/cal_prev.png'),
+  newinvoiceIcon: require('../assets/images/InvoiceNewIcon.png'),
 
   backArrow: require('../assets/images/ic_back_arrow.png'),
   menu: require('../assets/images/menu.png'),
@@ -490,6 +491,9 @@ const images = {
   invoiceRecievedIcon: require('../assets/images/invoiceRecievedIcon.png'),
   sendNewInvoiceIcon: require('../assets/images/sendNewInvoiceIcon.png'),
   transactionsIcon: require('../assets/images/transactionsIcon.png'),
+
+  starProfile: require('../assets/images/star_profile.png'),
+
 };
 
 export default images;

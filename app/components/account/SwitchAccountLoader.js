@@ -1,6 +1,7 @@
 // @flow
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, StyleSheet, Modal, Text} from 'react-native';
+import * as Progress from 'react-native-progress';
 import {strings} from '../../../Localization/translation';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
@@ -14,13 +15,30 @@ const SwitchAccountLoader = ({
   entityType = Verbs.entityTypePlayer,
   stopLoading = () => {},
 }) => {
+  const [isIntermediate, setIsIntermediate] = useState(true);
   useEffect(() => {
     if (isVisible) {
+      setTimeout(() => {
+        setIsIntermediate(false);
+      }, 2000);
       setTimeout(() => {
         stopLoading();
       }, 3000);
     }
   }, [isVisible, stopLoading]);
+
+  const getLoaderColor = () => {
+    switch (entityType) {
+      case Verbs.entityTypeClub:
+        return 'rgba(0, 193, 104, 0.6)';
+
+      case Verbs.entityTypeTeam:
+        return 'rgba(255, 88, 0, 0.6)';
+
+      default:
+        return 'rgba(255, 138, 1, 0.6)';
+    }
+  };
 
   return (
     <Modal visible={isVisible} transparent animationType="fade">
@@ -37,6 +55,18 @@ const SwitchAccountLoader = ({
           <Text style={[styles.label, {fontFamily: fonts.RBold}]}>
             {entityName}
           </Text>
+        </View>
+        <View style={{position: 'absolute', bottom: 60}}>
+          <Progress.Bar
+            progress={1}
+            width={136}
+            height={5}
+            borderRadius={5}
+            borderWidth={0}
+            color={getLoaderColor()}
+            unfilledColor={colors.grayBackgroundColor}
+            indeterminate={isIntermediate}
+          />
         </View>
       </View>
     </Modal>

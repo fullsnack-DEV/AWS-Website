@@ -84,15 +84,15 @@ import AvailableAreaReferee from '../screens/game/bookReferee/refereeSetting/Ava
 import AvailibilityReferee from '../screens/game/bookReferee/refereeSetting/AvailibilityReferee';
 import InvoiceFilterScreen from '../screens/account/payment/InvoiceFilterScreen';
 import InviteToMemberScreen from '../screens/account/groupConnections/createMemberProfile/InviteToMemberScreen';
-import CanceledInvoicesScreen from '../screens/account/payment/CanceledInvoicesScreen';
+import CanceledInvoicesScreen from '../screens/account/Invoice/CanceledInvoicesScreen';
 import LogDetailScreen from '../screens/account/payment/LogDetailScreen';
-import InvoiceDetailScreen from '../screens/account/payment/InvoiceDetailScreen';
-import UserInvoiceScreen from '../screens/account/payment/UserInvoiceScreen';
+
+import InvoiceReceivedScreen from '../screens/account/Invoice/InvoiceReceivedScreen';
 import AddLogScreen from '../screens/account/payment/AddLogScreen';
-import TeamInvoiceDetailScreen from '../screens/account/payment/TeamInvoiceDetailScreen';
-import BatchDetailScreen from '../screens/account/payment/BatchDetailScreen';
-import MembersDetailScreen from '../screens/account/payment/MembersDetailScreen';
-import InvoiceScreen from '../screens/account/payment/InvoiceScreen';
+import InvoiceDetailScreen from '../screens/account/Invoice/InvoiceDetailScreen';
+import BatchDetailScreen from '../screens/account/Invoice/BatchDetailScreen';
+import RecipientDetailScreen from '../screens/account/Invoice/RecipientDetailScreen';
+import InvoiceSentScreen from '../screens/account/Invoice/InvoiceSentScreen';
 import RespondToInviteScreen from '../screens/account/createGroup/createTeam/RespondToInviteScreen';
 import InviteToChallengeSentScreen from '../screens/challenge/createChallenge/InviteToChallengeSentScreen';
 import ChooseTimeSlotScreen from '../screens/challenge/createChallenge/ChooseTimeSlotScreen';
@@ -3245,8 +3245,8 @@ const LocalHomeNavigator = () => (
     />
 
     <Stack.Screen
-      name="InvoiceScreen"
-      component={InvoiceScreen}
+      name="InvoiceSentScreen"
+      component={InvoiceSentScreen}
       options={{
         title: 'Invoicing',
         headerTintColor: colors.blackColor,
@@ -3261,8 +3261,8 @@ const LocalHomeNavigator = () => (
       }}
     />
     <Stack.Screen
-      name="MembersDetailScreen"
-      component={MembersDetailScreen}
+      name="RecipientDetailScreen"
+      component={RecipientDetailScreen}
       options={{
         title: 'Invoicing',
         headerTintColor: colors.blackColor,
@@ -3295,8 +3295,8 @@ const LocalHomeNavigator = () => (
     />
 
     <Stack.Screen
-      name="TeamInvoiceDetailScreen"
-      component={TeamInvoiceDetailScreen}
+      name="InvoiceDetailScreen"
+      component={InvoiceDetailScreen}
       options={{
         title: 'Membership Fee',
         headerTintColor: colors.blackColor,
@@ -3328,27 +3328,10 @@ const LocalHomeNavigator = () => (
       }}
     />
     <Stack.Screen
-      name="UserInvoiceScreen"
-      component={UserInvoiceScreen}
+      name="InvoiceReceivedScreen"
+      component={InvoiceReceivedScreen}
       options={{
         title: 'Invoices',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
-    />
-
-    <Stack.Screen
-      name="InvoiceDetailScreen"
-      component={InvoiceDetailScreen}
-      options={{
-        title: 'Membership Fee',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

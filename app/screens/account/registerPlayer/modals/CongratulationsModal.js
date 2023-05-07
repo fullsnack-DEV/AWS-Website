@@ -11,6 +11,7 @@ import {
   Image,
   Alert,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 import {strings} from '../../../../../Localization/translation';
 import {getGroupIndex, getUserIndex} from '../../../../api/elasticSearch';
@@ -43,6 +44,7 @@ const CongratulationsModal = ({
   listloading = false,
   settingsObj = {},
   onChoose = () => {},
+  onLoad = false,
 }) => {
   const [playerList, setPlayersList] = useState([]);
   const [teamsList, setTeamsList] = useState([]);
@@ -236,7 +238,9 @@ const CongratulationsModal = ({
 
   const renderList = (type) => {
     if (type === Verbs.sportTypeSingle || type === Verbs.sportTypeDouble) {
-      return (
+      return onLoad ? (
+        <ActivityIndicator />
+      ) : (
         <PlayersListNearYou
           list={playerList}
           sportType={sportType}

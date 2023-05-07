@@ -8,6 +8,7 @@
 /* eslint-disable array-callback-return */
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable no-unused-expressions */
+/* eslint-disable no-param-reassign */
 import {
   Platform,
   Alert,
@@ -15,6 +16,7 @@ import {
   PixelRatio,
   LayoutAnimation,
 } from 'react-native';
+import firebase from '@react-native-firebase/app';
 import _ from 'lodash';
 import moment from 'moment';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -32,6 +34,8 @@ import {
   getUserIndex,
 } from '../api/elasticSearch';
 import Verbs from '../Constants/Verbs';
+// eslint-disable-next-line import/no-cycle
+import {removeFBToken} from '../api/Users';
 
 export const deviceHeight = Dimensions.get('window').height;
 export const deviceWidth = Dimensions.get('window').width;
@@ -2038,18 +2042,15 @@ export const getCalendar = async (
 };
 
 export const getEventsSlots = async (
-  participantId,
+  participants,
   fromDate,
-  type,
-  rangeTime,
+  toDate,
 ) => {
   try {
     return getStorage('scheduleSetting').then(async (ids) => {
       const IDs = ids ?? [];
-      const participants = [];
-      participants.push(participantId);
       const body = {
-        size: 100,
+        size: 500,
         query: {
           bool: {
             must: [
@@ -2071,26 +2072,12 @@ export const getEventsSlots = async (
           },
         },
       };
-
-      if (type === 'future') {
-        body.query.bool.must.push({
-          range: {actual_enddatetime: {gt: fromDate}},
-        });
-        if (rangeTime > 0) {
-          body.query.bool.must.push({
-            range: {actual_enddatetime: {lt: rangeTime}},
-          });
-        }
-      } else {
-        body.query.bool.must.push({
-          range: {start_datetime: {lt: fromDate}},
-        });
-        if (rangeTime > 0) {
-          body.query.bool.must.push({
-            range: {start_datetime: {gt: rangeTime}},
-          });
-        }
-      }
+      body.query.bool.must.push({
+        range: {start_datetime: {gt: fromDate}},
+      });
+      body.query.bool.must.push({
+        range: {actual_enddatetime: {lt: toDate}},
+      });
       console.log('calender elastic search :=>', JSON.stringify(body));
       return getCalendarIndex(body);
     });
@@ -2583,6 +2570,15 @@ export const getRatingsOptions = (
   return [];
 };
 
+export const groupBy = (
+  array,
+  key,
+) => array.reduce((result, currentValue) => {
+    (result[currentValue[key]] = result[currentValue[key]] || []).push(
+      currentValue
+    )
+    return result
+  }, {});
 export const getPrivacyValue = (option, authContext) => {
   const entity = authContext.entity.obj;
   switch (option) {
@@ -2600,5 +2596,16 @@ export const getPrivacyValue = (option, authContext) => {
 
     default:
       return 0;
+  }
+};
+
+export const onLogout = async (authContext) => {
+  try {
+    await firebase.auth().signOut();
+    await authContext.clearAuthContext();
+    await removeFBToken(authContext);
+    await clearStorage();
+  } catch (error) {
+    console.log('error==>', error);
   }
 };

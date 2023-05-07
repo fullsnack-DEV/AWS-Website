@@ -16,72 +16,76 @@ import {
   TouchableOpacity,
   Image,
   Alert,
+  TouchableWithoutFeedback,
+  Platform,
 } from 'react-native';
 
-// import { useIsFocused } from '@react-navigation/native';
 import {format} from 'react-string-format';
-
 import moment from 'moment';
+import LinearGradient from 'react-native-linear-gradient';
 import ActionSheet from 'react-native-actionsheet';
 import {Modalize} from 'react-native-modalize';
 import {Portal} from 'react-native-portalize';
-
 import AuthContext from '../../../auth/context';
-import {getGroupMembers} from '../../../api/Groups';
+
+// import {getGroupMembers} from '../../../api/Groups';
 import {
   createBatchInvoice,
   cancelBatchInvoice,
   resendBatchInvoice,
-  addRecipientList,
+  // addRecipientList,
 } from '../../../api/Invoice';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
-import InvoiceAmount from '../../../components/invoice/InvoiceAmount';
-import TCTabView from '../../../components/TCTabView';
-import TopFilterBar from '../../../components/invoice/TopFilterBar';
 import images from '../../../Constants/ImagePath';
-import BatchDetailView from '../../../components/invoice/BatchDetailView';
+import MemberInvoiceView from '../../../components/invoice/MemberInvoiceView';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import TCThinDivider from '../../../components/TCThinDivider';
-import {heightPercentageToDP} from '../../../utils';
+import {getJSDate, heightPercentageToDP} from '../../../utils';
 import {strings} from '../../../../Localization/translation';
 import InvoiceTypeSelection from '../../../components/invoice/InvoiceTypeSelection';
 import Verbs from '../../../Constants/Verbs';
+import TCScrollableProfileTabs from '../../../components/TCScrollableProfileTabs';
 
-let entity = {};
+// let entity = {};
 export default function BatchDetailScreen({navigation, route}) {
-  const [from] = useState(route?.params?.from);
-  const [batchData] = useState(route?.params?.batchData);
-  console.log('Batch data:=>', batchData);
+  const [from] = useState(route.params.from);
+  const [batchData] = useState(route.params.batchData);
   const [loading, setloading] = useState(false);
-
+  const [currency_type] = useState(route.params.currency_type);
   const batchActionsheet = useRef();
   const resendModalRef = useRef();
   const recipientModalRef = useRef();
 
   const authContext = useContext(AuthContext);
-  entity = authContext.entity;
-  console.log(entity);
-  // const isFocused = useIsFocused();
+  // entity = authContext.entity;
 
   const [tabNumber, setTabNumber] = useState(0);
-  const [recipientData, setRecipientData] = useState([]);
+  // const [recipientData, setRecipientData] = useState([]);
   const [newRecipientData, setNewRecipientData] = useState([]);
-
   const [addNewList, setAddNewList] = useState([]);
-
   const [recipientAllData, setRecipientAllData] = useState(false);
   const [selectedRecipient, setSelectedRecipient] = useState([]);
   const [selectInvoiceType, setSelectInvoiceType] = useState('Open Invoices');
-
   const [selectedActionSheetOpetion, setSelectedActionSheetOpetion] =
     useState(0);
+  const [tabs, setTabs] = useState([
+    strings.all,
+    strings.paidText,
+    strings.openText,
+  ]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: () => (
-        <Text style={styles.navTitle}>{strings.membershipFeeTitle}</Text>
+      headerLeft: () => (
+        <TouchableWithoutFeedback
+          onPress={() => {
+            navigation.goBack();
+          }}>
+          <Image source={images.backArrow} style={styles.backArrowStyle} />
+        </TouchableWithoutFeedback>
       ),
+      headerTitle: () => <Text style={styles.navTitle}>{strings.batch}</Text>,
       headerRight: () => (
         <View style={styles.rightHeaderView}>
           <TouchableOpacity
@@ -89,7 +93,7 @@ export default function BatchDetailScreen({navigation, route}) {
               batchActionsheet.current.show();
             }}>
             <Image
-              source={images.threeDotIcon}
+              source={images.vertical3Dot}
               style={styles.townsCupthreeDotIcon}
             />
           </TouchableOpacity>
@@ -98,86 +102,108 @@ export default function BatchDetailScreen({navigation, route}) {
     });
   }, [navigation]);
 
-  useEffect(() => {
-    setloading(true);
-    getGroupMembers(authContext.entity.uid, authContext)
-      .then((response) => {
-        setloading(false);
-        setRecipientData(response.payload);
-      })
-      .catch((e) => {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
-  }, [authContext]);
-
-  useEffect(() => {
-    setloading(true);
-    addRecipientList(batchData?.invoice_group, authContext)
-      .then((response) => {
-        setloading(false);
-        setNewRecipientData(response.payload);
-
-        const result = [];
-        for (let i = 0; i < recipientData.length; i++) {
-          if (
-            response.payload.filter(
-              (obj) => obj.user_id === recipientData[i].user_id,
-            ).length > 0
-          ) {
-            console.log('found');
-          } else {
-            result.push(recipientData[i]);
-          }
-        }
-        setAddNewList(result);
-      })
-      .catch((e) => {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
-  }, [authContext, batchData?.invoice_group, recipientData]);
-
-  const renderBatchDetailView = ({item}) => {
-    console.log('item', item);
-    return (
-      <BatchDetailView
-        data={item}
-        onPressCard={() =>
-          navigation.navigate('TeamInvoiceDetailScreen', {
-            from,
-            invoiceObj: item,
-          })
-        }
-      />
-    );
+  const getStatus = () => {
+    if (batchData.invoice_total === batchData.invoice_paid_total) {
+      return strings.allpaid;
+    }
+    return `${strings.openText}`;
   };
+
+  // useEffect(() => {
+  //   setloading(true);
+  //   getGroupMembers(authContext.entity.uid, authContext)
+  //     .then((response) => {
+  //       setloading(false);
+  //       setRecipientData(response.payload);
+
+  //     .catch((e) => {
+  //       setloading(false);
+  //       setTimeout(() => {
+  //         Alert.alert(strings.alertmessagetitle, e.message);
+  //       }, 10);
+  //     });
+  // }, [authContext]);
+
+  // useEffect(() => {
+  //   setloading(true);
+  //   addRecipientList(batchData?.invoice_group, authContext)
+  //     .then((response) => {
+  //       setloading(false);
+  //       setNewRecipientData(response.payload);
+
+  //       const result = [];
+  //       for (let i = 0; i < recipientData.length; i++) {
+  //         if (
+  //           response.payload.filter(
+  //             (obj) => obj.user_id === recipientData[i].user_id,
+  //           ).length > 0
+  //         ) {
+  //           console.log('found');
+  //         } else {
+  //           result.push(recipientData[i]);
+  //         }
+  //       }
+  //       setAddNewList(result);
+  //     })
+  //     .catch((e) => {
+  //       setloading(false);
+  //       setTimeout(() => {
+  //         Alert.alert(strings.alertmessagetitle, e.message);
+  //       }, 10);
+  //     });
+  // }, [authContext, batchData?.invoice_group, recipientData]);
+
+  useEffect(() => {
+    const allTitle = format(
+      strings.allNInvoice,
+      batchListByFilter(Verbs.allStatus).length,
+    );
+
+    const paidTitle = format(
+      strings.paidNInvoice,
+      batchListByFilter(Verbs.paid).length,
+    );
+
+    const openTitle = format(
+      strings.openNInvoice,
+      batchListByFilter(Verbs.open).length,
+    );
+
+    setTabs([allTitle, paidTitle, openTitle]);
+  }, [batchData]);
+
+  const renderRecipientView = ({item}) => (
+    <MemberInvoiceView
+      invoice={item}
+      onPressCard={() =>
+        navigation.navigate('InvoiceDetailScreen', {
+          from,
+          invoice: item,
+        })
+      }
+    />
+  );
 
   const batchListByFilter = useCallback(
     (status) => {
-      console.log('Status', status);
-
-      if (status === 'All') {
-        return batchData?.invoices;
+      if (status === Verbs.allStatus) {
+        return batchData.invoices;
       }
-      if (status === 'Paid') {
-        return batchData?.invoices.filter(
-          (obj) => obj.invoice_status === 'Paid',
+      if (status === Verbs.paid) {
+        return batchData.invoices.filter(
+          (obj) => obj.invoice_status === Verbs.paid,
         );
       }
-      if (status === 'Open') {
-        return batchData?.invoices.filter(
+      if (status === Verbs.open) {
+        return batchData.invoices.filter(
           (obj) =>
-            obj.invoice_status === 'Unpaid' ||
-            obj?.invoice_status === 'Partially Paid',
+            obj.invoice_status === Verbs.UNPAID ||
+            obj.invoice_status === Verbs.PARTIALLY_PAID ||
+            obj.invoice_status === Verbs.INVOICE_REJECTED,
         );
       }
     },
-    [batchData?.invoices],
+    [batchData],
   );
 
   const sendInvoiceValidation = () => {
@@ -242,7 +268,6 @@ export default function BatchDetailScreen({navigation, route}) {
 
                   resendBatchInvoice(batchData.invoice_group, body, authContext)
                     .then(() => {
-                      console.log('');
                       setloading(false);
                       setSelectedRecipient([]);
 
@@ -266,7 +291,6 @@ export default function BatchDetailScreen({navigation, route}) {
 
                   createBatchInvoice(batchData.invoice_group, body, authContext)
                     .then(() => {
-                      console.log('');
                       setloading(false);
                       setSelectedRecipient([]);
 
@@ -282,7 +306,7 @@ export default function BatchDetailScreen({navigation, route}) {
               }
             }
           }}>
-          Send
+          {strings.send}
         </Text>
       </View>
 
@@ -313,7 +337,7 @@ export default function BatchDetailScreen({navigation, route}) {
                   return obj.user_id;
                 }
               });
-              console.log(result);
+
               setSelectedRecipient(result);
               recipientModalRef.current.close();
             }
@@ -325,7 +349,7 @@ export default function BatchDetailScreen({navigation, route}) {
                   return obj.user_id;
                 }
               });
-              console.log(result);
+
               setSelectedRecipient(result);
 
               Alert.alert(
@@ -431,62 +455,292 @@ export default function BatchDetailScreen({navigation, route}) {
       });
   };
 
+  const getPaidInvoices = () => {
+    let PaidInvoices = 0;
+
+    batchData.invoices.map((item) => {
+      if (item.invoice_status !== Verbs.UNPAID) {
+        PaidInvoices += PaidInvoices;
+      }
+    });
+
+    return PaidInvoices;
+  };
+
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-      <View>
-        <TopFilterBar />
-
+      <View
+        style={{
+          backgroundColor: colors.lightGrayBackground,
+        }}>
         <View
           style={{
-            margin: 15,
+            marginHorizontal: 15,
+            marginTop: 15,
           }}>
-          <Text style={styles.dateView}>
+          {/* invoivw title */}
+
+          <Text
+            style={{
+              fontSize: 16,
+              lineHeight: 24,
+              fontFamily: fonts.RBold,
+            }}>
+            {batchData.invoice_description}
+          </Text>
+
+          {/* Recepints */}
+          <View
+            style={{
+              marginTop: 20,
+            }}>
+            <Text>
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontFamily: fonts.RBold,
+                  lineHeight: 30,
+                }}>
+                {batchData.invoices.length}
+              </Text>
+              <Text
+                style={{
+                  fontSize: 16,
+                  lineHeight: 30,
+                }}>
+                {' '}
+                {strings.recipients}
+              </Text>
+            </Text>
+          </View>
+
+          <Text
+            style={{
+              color: colors.userPostTimeColor,
+              fontSize: 13,
+              fontFamily: fonts.RRegular,
+              lineHeight: 18,
+              marginBottom: 15,
+            }}>{`${strings.issuedBy} ${
+            authContext.entity.obj.full_name ??
+            authContext.entity.obj.group_name
+          }`}</Text>
+
+          {/* Issues At */}
+
+          <Text
+            style={{
+              fontSize: 16,
+              fontFamily: fonts.RRegular,
+              lineHeight: 24,
+              marginBottom: 5,
+            }}>
             {format(
-              strings.dueDateInvoice,
-              moment(batchData?.due_date * 1000).format('ddd, MMM DD, YYYY'),
+              strings.issuedAt,
+              moment(getJSDate(batchData.created_date)).format(
+                'MMM DD, YYYY, HH:mm',
+              ),
             )}
           </Text>
-          <Text style={styles.dateView}>
-            {format(strings.NreciepientText, batchData?.invoices?.length)}
+          <Text
+            style={{
+              fontSize: 16,
+              fontFamily: fonts.RRegular,
+              lineHeight: 24,
+            }}>
+            {format(
+              strings.dueAtNText,
+              moment(getJSDate(batchData.due_date)).format('MMM DD, YYYY'),
+            )}
           </Text>
+
+          {/* Amount invoives / Copy */}
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginTop: 5,
+            }}>
+            <Text
+              style={{
+                fontSize: 16,
+                fontFamily: fonts.RRegular,
+                lineHeight: 24,
+              }}>
+              {strings.amountInvoicedCopy}
+            </Text>
+            <Text
+              style={{
+                fontSize: 16,
+                fontFamily: fonts.RMedium,
+                lineHeight: 24,
+              }}>
+              {` ${batchData.invoice_open_total} ${currency_type}`}
+            </Text>
+          </View>
+          {/* Total Amount invoices section */}
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginTop: 5,
+            }}>
+            <Text
+              style={{
+                fontSize: 16,
+                fontFamily: fonts.RRegular,
+                lineHeight: 24,
+              }}>
+              {strings.totalAmountInvoice}
+            </Text>
+            <Text
+              style={{
+                fontSize: 16,
+                fontFamily: fonts.RMedium,
+                lineHeight: 24,
+              }}>
+              {` ${batchData.invoice_total} ${currency_type}`}
+            </Text>
+          </View>
+
+          {/* Progress Bar */}
+
+          <LinearGradient
+            colors={[colors.progressBarColor, colors.progressBarColor]}
+            style={styles.paymentProgressView}>
+            {/* this need to show conditionally when there is 0% amount paid */}
+
+            {batchData.amount_due === batchData.amount_remaining && (
+              <Text
+                style={{
+                  color: colors.neonBlue,
+                  fontFamily: fonts.RBold,
+                  fontSize: 12,
+                  marginLeft: 10,
+                  height: 18,
+
+                  alignSelf: 'flex-start',
+                }}>
+                {`${
+                  (batchData.invoice_paid_total /
+                    batchData.invoice_open_total) *
+                  100
+                }%`}
+              </Text>
+            )}
+
+            <LinearGradient
+              colors={[colors.progressBarBgColor, colors.progressBarBgColor]}
+              style={{
+                borderWidth: 1,
+                height: 18,
+                borderColor: colors.neonBlue,
+
+                borderTopLeftRadius: 4,
+                borderBottomLeftRadius: 4,
+                width: `${
+                  (batchData.invoice_paid_total /
+                    batchData.invoice_open_total) *
+                  100
+                }%`,
+                justifyContent: 'center',
+              }}>
+              <Text
+                style={{
+                  color: colors.neonBlue,
+                  fontFamily: fonts.RBold,
+                  fontSize: 12,
+                  marginLeft: 30,
+                  height: 18,
+                  alignSelf: 'flex-end',
+                }}>
+                {`${
+                  (batchData.invoice_paid_total /
+                    batchData.invoice_open_total) *
+                  100
+                }%`}
+              </Text>
+            </LinearGradient>
+          </LinearGradient>
+
+          {/* status container */}
+
+          <View style={{marginBottom: 15}}>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}>
+              <Text style={styles.statusText}>{strings.status}</Text>
+              <Text
+                style={[
+                  styles.amountTextStyle,
+                  {
+                    color:
+                      batchData.amount_due === batchData.amount_remaining
+                        ? colors.darkThemeColor
+                        : colors.gameDetailColor,
+                  },
+                ]}>
+                {getStatus()}
+              </Text>
+            </View>
+            <View style={styles.statusRows}>
+              <Text style={styles.statusText}>Total Number of Invoices</Text>
+              <Text
+                style={[
+                  styles.amountTextStyle,
+                  {color: colors.lightBlackColor},
+                ]}>
+                {`${batchData.invoices.length}`}
+              </Text>
+            </View>
+            <View style={styles.statusRows}>
+              <Text style={styles.statusText}>{strings.paidText} </Text>
+              <Text style={[styles.amountTextStyle, {color: colors.neonBlue}]}>
+                {getPaidInvoices()}
+                {/* {`${batchData.invoice_paid_total}`} */}
+              </Text>
+            </View>
+            <View style={styles.statusRows}>
+              <Text style={styles.statusText}>Open</Text>
+              <Text
+                style={[
+                  styles.amountTextStyle,
+                  {color: colors.darkThemeColor},
+                ]}>
+                {`${batchData.invoices.length}` - `${getPaidInvoices()}   `}
+              </Text>
+            </View>
+          </View>
         </View>
 
-        <InvoiceAmount
-          currencyType={strings.defaultCurrency}
-          totalAmount={batchData?.invoice_total ?? '00.00'}
-          paidAmount={batchData?.invoice_paid_total ?? '00.00'}
-          openAmount={batchData?.invoice_open_total ?? '00.00'}
-        />
-
-        <TCTabView
-          totalTabs={3}
-          firstTabTitle={format(
-            strings.openNInvoice,
-            batchListByFilter('Open').length,
-          )}
-          secondTabTitle={format(
-            strings.paidNInvoice,
-            batchListByFilter('Paid').length,
-          )}
-          thirdTabTitle={format(
-            strings.allNInvoice,
-            batchListByFilter('All').length,
-          )}
-          indexCounter={tabNumber}
-          eventPrivacyContianer={{width: 100}}
-          onFirstTabPress={() => setTabNumber(0)}
-          onSecondTabPress={() => setTabNumber(1)}
-          onThirdTabPress={() => setTabNumber(2)}
-        />
-
+        <View style={{backgroundColor: colors.whiteColor}}>
+          <TCScrollableProfileTabs
+            tabItem={tabs}
+            tabVerticalScroll={false}
+            onChangeTab={(Tab) => setTabNumber(Tab.i)}
+            currentTab={tabNumber}
+            customStyle={{
+              marginTop: 15,
+            }}
+          />
+        </View>
         <FlatList
+          showsVerticalScrollIndicator={false}
+          style={{
+            backgroundColor: colors.whiteColor,
+          }}
           data={
-            (tabNumber === 0 && batchListByFilter(Verbs.open)) ||
+            (tabNumber === 0 && batchListByFilter(Verbs.allStatus)) ||
             (tabNumber === 1 && batchListByFilter(Verbs.paid)) ||
-            (tabNumber === 2 && batchListByFilter(strings.allType))
+            (tabNumber === 2 && batchListByFilter(Verbs.open))
           }
-          renderItem={renderBatchDetailView}
+          renderItem={renderRecipientView}
           keyExtractor={(item, index) => index.toString()}
         />
       </View>
@@ -496,7 +750,7 @@ export default function BatchDetailScreen({navigation, route}) {
         options={[
           strings.resendInvoiceText,
           strings.addRecipientText,
-          strings.cancelInvoiceText,
+          strings.cancelInvoicesInBatch,
           strings.cancel,
         ]}
         cancelButtonIndex={3}
@@ -511,8 +765,31 @@ export default function BatchDetailScreen({navigation, route}) {
             resendModalRef.current.open();
           }
           if (index === 2) {
-            setSelectedActionSheetOpetion(2);
-            recipientModalRef.current.open();
+            Alert.alert(
+              Platform.OS === 'android'
+                ? ''
+                : format(
+                    strings.areYouSureWantoCancelAllInvoices,
+                    route.params?.grpname?.obj.group_name,
+                  ),
+              Platform.OS === 'android'
+                ? format(
+                    strings.areYouSureWantoCancelAllInvoices,
+                    route.params?.grpname?.obj.group_name,
+                  )
+                : '',
+              [
+                {
+                  text: strings.no,
+                  onPress: () => console.log('no'),
+                },
+                {
+                  text: strings.cancel,
+                  onPress: () => console.log('Cancel'),
+                  style: 'destructive',
+                },
+              ],
+            );
           }
         }}
       />
@@ -784,14 +1061,16 @@ export default function BatchDetailScreen({navigation, route}) {
                 }}>
                 {strings.membersTitle}
               </Text>
-              <FlatList
-                data={
-                  (selectedActionSheetOpetion === 2 && newRecipientData) ||
-                  (selectedActionSheetOpetion === 1 && addNewList)
-                }
-                renderItem={renderRecipients}
-                keyExtractor={(item, index) => index.toString()}
-              />
+              <View style={{flex: 1}}>
+                <FlatList
+                  data={
+                    (selectedActionSheetOpetion === 2 && newRecipientData) ||
+                    (selectedActionSheetOpetion === 1 && addNewList)
+                  }
+                  renderItem={renderRecipients}
+                  keyExtractor={(item, index) => index.toString()}
+                />
+              </View>
             </View>
           </View>
         </Modalize>
@@ -802,31 +1081,22 @@ export default function BatchDetailScreen({navigation, route}) {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    // backgroundColor: colors.grayBackgroundColor,
   },
   navTitle: {
-    fontFamily: fonts.RBold,
+    fontFamily: fonts.RMedium,
     fontSize: 16,
     color: colors.lightBlackColor,
   },
 
   townsCupthreeDotIcon: {
+    height: 25,
     resizeMode: 'contain',
-    height: 19,
-    width: 8,
-    marginLeft: 10,
-    tintColor: colors.lightBlackColor,
+    width: 25,
   },
-
   rightHeaderView: {
     flexDirection: 'row',
     marginRight: 15,
     alignItems: 'center',
-  },
-  dateView: {
-    fontFamily: fonts.RRegular,
-    fontSize: 16,
-    color: colors.lightBlackColor,
   },
 
   headerStyle: {
@@ -929,5 +1199,39 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RMedium,
     fontSize: 16,
     color: colors.themeColor,
+  },
+  paymentProgressView: {
+    height: 20,
+    backgroundColor: colors.thinDividerColor,
+
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: colors.darkThemeColor,
+    marginTop: 15,
+    marginBottom: 25,
+  },
+  statusText: {
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    lineHeight: 24,
+    color: colors.lightBlackColor,
+  },
+  amountTextStyle: {
+    fontSize: 16,
+    lineHeight: 24,
+    fontFamily: fonts.RMedium,
+    color: colors.darkThemeColor,
+  },
+  statusRows: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 5,
+  },
+  backArrowStyle: {
+    height: 20,
+    marginLeft: 15,
+    resizeMode: 'contain',
+    tintColor: colors.blackColor,
   },
 });

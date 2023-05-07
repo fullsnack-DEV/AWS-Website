@@ -15,6 +15,9 @@ export default function TCPicker({
   onValueChange = () => {},
   onDonePress = () => {},
   disabled = false,
+  arrowStyle = {},
+
+  placeholderColor = colors.userPostTimeColor,
 }) {
   return (
     <RNPickerSelect
@@ -29,6 +32,9 @@ export default function TCPicker({
       useNativeAndroidPickerStyle={false}
       // eslint-disable-next-line no-sequences
       style={{
+        placeholder: {
+          color: placeholderColor,
+        },
         ...(Platform.OS === 'ios' ? styles.inputIOS : styles.inputAndroid),
         ...styles,
       }}
@@ -37,7 +43,7 @@ export default function TCPicker({
         <FastImage
           resizeMode="contain"
           source={images.dropDownArrow}
-          style={styles.downArrow}
+          style={[styles.downArrow, {...arrowStyle}]}
         />
       )}
     />

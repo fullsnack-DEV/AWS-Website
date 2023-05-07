@@ -303,7 +303,7 @@ export default function RecruitingPlayerScreen({navigation, route}) {
           data={item}
           authContext={authContext}
           isClub={item.entity_type === Verbs.entityTypeClub}
-          showStar={item.entity_type === Verbs.entityTypeTeam}
+          showLevelOnly={item.entity_type === Verbs.entityTypeTeam}
           sportFilter={
             (item.entity_type === Verbs.entityTypeTeam && filters) ||
             (item.entity_type === Verbs.entityTypeClub && filters)
