@@ -48,9 +48,6 @@ const SportActivityModal = ({
   const authContext = useContext(AuthContext);
   const [matchList, setMatchList] = useState([]);
   const [isFetchingMatchList, setIsFetchingMatchList] = useState(false);
-  const [isScorekeeper, setIsScoreKeeper] = useState(false);
-  const [isReferee, setIsReferee] = useState(false);
-  const [isUserWithSameSport, setIsUserWithSameSport] = useState(false);
   const [sportIcon, setSportIcon] = useState('');
   const [availabilityList, setAvailabilityList] = useState([]);
   const [fetchingAvailability, setFectchingAavailability] = useState(false);
@@ -181,35 +178,6 @@ const SportActivityModal = ({
     });
   }, [sport, authContext, userData]);
 
-  useEffect(() => {
-    const scorekeeperObj = (userData.scorekeeper_data ?? []).find(
-      (item) =>
-        item.sport === sportObj?.sport &&
-        item.sport_type === sportObj?.sport_type,
-    );
-    if (scorekeeperObj) {
-      setIsScoreKeeper(true);
-    }
-    // registered_sports
-    const refereeObj = (userData.referee_data ?? []).find(
-      (item) =>
-        item.sport === sportObj?.sport &&
-        item.sport_type === sportObj?.sport_type,
-    );
-    if (refereeObj) {
-      setIsReferee(true);
-    }
-
-    const userWithSameSport = (userData.registered_sports ?? []).find(
-      (item) =>
-        item.sport === sportObj?.sport &&
-        item.sport_type === sportObj?.sport_type,
-    );
-    if (userWithSameSport) {
-      setIsUserWithSameSport(true);
-    }
-  }, [userData, sportObj]);
-
   return (
     <Modal visible={isVisible} transparent animationType="slide">
       <View style={styles.parent}>
@@ -240,19 +208,13 @@ const SportActivityModal = ({
               />
               <ChallengeButton
                 isAdmin={isAdmin}
+                loggedInEntity={authContext.entity.obj}
+                sportObj={sportObj}
                 isAvailable={getIsAvailable(sportObj, entityType)}
-                isScorekeeper={isScorekeeper}
-                isReferee={isReferee}
-                isUserWithSameSport={isUserWithSameSport}
                 inviteToChallenge={handleChallengeClick}
-                gameFee={sportObj?.setting?.game_fee ?? {}}
-                entityType={entityType}
                 continueToChallenge={continueToChallenge}
                 bookReferee={bookReferee}
                 bookScoreKeeper={bookScoreKeeper}
-                isActiveSportActivity={
-                  sportObj?.is_active || !('is_active' in sportObj)
-                }
               />
 
               {sportObj?.sport_type === Verbs.singleSport ||

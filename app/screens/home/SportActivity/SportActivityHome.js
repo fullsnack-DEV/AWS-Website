@@ -31,9 +31,6 @@ import SportActivityModal from './SportActivityModal';
 const SportActivityHome = ({navigation, route}) => {
   const [userData, setCurrentUserData] = useState({});
   const [isAdmin, setIsAdmin] = useState(false);
-  const [isScorekeeper, setIsScoreKeeper] = useState(false);
-  const [isReferee, setIsReferee] = useState(false);
-  const [isUserWithSameSport, setIsUserWithSameSport] = useState(false);
   const [activeTab, setActiveTab] = useState('');
   const [sportObj, setSportObj] = useState({});
   const [isFectchingUser, setIsFetchingUser] = useState(false);
@@ -61,26 +58,6 @@ const SportActivityHome = ({navigation, route}) => {
       getUserDetails(userId, authContext)
         .then((res1) => {
           const userDetails = res1.payload;
-          // if (!userDetails.games) {
-          //   userDetails.games = [];
-          // }
-
-          // if (!userDetails.referee_data) {
-          //   userDetails.referee_data = [];
-          // }
-
-          // let count = 0;
-          // count =
-          //   userDetails.games &&
-          //   userDetails.games.length + userDetails.referee_data.length;
-
-          // if (count < 5) {
-          //   const userRoles = [
-          //     ...userDetails.games,
-          //     ...userDetails.referee_data,
-          //   ];
-          //   userDetails.roles = userRoles;
-          // }
 
           const groupQuery = {
             query: {
@@ -147,29 +124,6 @@ const SportActivityHome = ({navigation, route}) => {
       getUserData(uid);
     }
   }, [getUserData, uid, authContext]);
-
-  useEffect(() => {
-    (userData.scorekeeper_data ?? []).forEach((item) => {
-      setIsScoreKeeper(
-        item.sport === sportObj?.sport &&
-          item.sport_type === sportObj?.sport_type,
-      );
-    });
-    // registered_sports
-    (userData.referee_data ?? []).forEach((item) => {
-      setIsReferee(
-        item.sport === sportObj?.sport &&
-          item.sport_type === sportObj?.sport_type,
-      );
-    });
-
-    (userData.registered_sports ?? []).forEach((item) => {
-      setIsUserWithSameSport(
-        item.sport === sportObj?.sport &&
-          item.sport_type === sportObj?.sport_type,
-      );
-    });
-  }, [userData, sportObj]);
 
   useEffect(() => {
     if (userData.user_id && isFocused) {
@@ -479,13 +433,9 @@ const SportActivityHome = ({navigation, route}) => {
 
       <ChallengeButton
         isAdmin={isAdmin}
+        loggedInEntity={authContext.entity.obj}
+        sportObj={sportObj}
         isAvailable={getIsAvailable(sportObj, entityType)}
-        isScorekeeper={isScorekeeper}
-        isReferee={isReferee}
-        isUserWithSameSport={isUserWithSameSport}
-        isActiveSportActivity={
-          sportObj && (sportObj?.is_active || !('is_active' in sportObj))
-        }
         inviteToChallenge={() => {
           navigation.navigate('InviteChallengeScreen', {
             setting: sportObj?.setting,
@@ -495,8 +445,6 @@ const SportActivityHome = ({navigation, route}) => {
           });
         }}
         containerStyle={{paddingHorizontal: 16, marginTop: 0, marginBottom: 20}}
-        gameFee={sportObj?.setting?.game_fee ?? {}}
-        entityType={entityType}
         continueToChallenge={() => {
           navigation.navigate('ChallengeScreen', {
             setting: sportObj?.setting ?? {},

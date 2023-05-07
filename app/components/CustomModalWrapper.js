@@ -81,6 +81,7 @@ const CustomModalWrapper = ({
           <ScreenHeader
             rightIcon2={images.crossImage}
             rightIcon2Press={() => handleCloseModal()}
+            title={title}
             containerStyle={[styles.headerStyle, {paddingRight: 15}]}
           />
         );
@@ -157,7 +158,12 @@ const CustomModalWrapper = ({
                 },
               ]}>
               <Pressable onPress={() => {}}>
-                <View style={{flexDirection: 'row', alignSelf: 'stretch', justifyContent:'center'}}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignSelf: 'stretch',
+                    justifyContent: 'center',
+                  }}>
                   {getModalHeader()}
                 </View>
 

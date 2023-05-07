@@ -82,13 +82,9 @@ import RefundPolicyScorekeeper from '../screens/game/bookScorekeeper/scorekeeper
 import RefundPolicyReferee from '../screens/game/bookReferee/refereeSetting/RefundPolicyReferee';
 import AvailableAreaReferee from '../screens/game/bookReferee/refereeSetting/AvailableAreaReferee';
 import AvailibilityReferee from '../screens/game/bookReferee/refereeSetting/AvailibilityReferee';
-import InvoiceFilterScreen from '../screens/account/payment/InvoiceFilterScreen';
 import InviteToMemberScreen from '../screens/account/groupConnections/createMemberProfile/InviteToMemberScreen';
 import CanceledInvoicesScreen from '../screens/account/Invoice/CanceledInvoicesScreen';
-import LogDetailScreen from '../screens/account/payment/LogDetailScreen';
-
 import InvoiceReceivedScreen from '../screens/account/Invoice/InvoiceReceivedScreen';
-import AddLogScreen from '../screens/account/payment/AddLogScreen';
 import InvoiceDetailScreen from '../screens/account/Invoice/InvoiceDetailScreen';
 import BatchDetailScreen from '../screens/account/Invoice/BatchDetailScreen';
 import RecipientDetailScreen from '../screens/account/Invoice/RecipientDetailScreen';
@@ -3312,43 +3308,10 @@ const LocalHomeNavigator = () => (
     />
 
     <Stack.Screen
-      name="AddLogScreen"
-      component={AddLogScreen}
-      options={{
-        title: 'Log Manually',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
-    />
-    <Stack.Screen
       name="InvoiceReceivedScreen"
       component={InvoiceReceivedScreen}
       options={{
         title: 'Invoices',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
-    />
-
-    <Stack.Screen
-      name="LogDetailScreen"
-      component={LogDetailScreen}
-      options={{
-        title: 'Log',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -3387,23 +3350,6 @@ const LocalHomeNavigator = () => (
         headerTransparent: true,
         title: ' ',
         headerTintColor: colors.whiteColor,
-      }}
-    />
-
-    <Stack.Screen
-      name="InvoiceFilterScreen"
-      component={InvoiceFilterScreen}
-      options={{
-        title: 'Invoicing',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 

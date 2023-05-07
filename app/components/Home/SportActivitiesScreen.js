@@ -15,16 +15,34 @@ import {strings} from '../../../Localization/translation';
 import OrderedSporList from './OrderedSporList';
 import BottomSheet from '../modals/BottomSheet';
 import ScreenHeader from '../ScreenHeader';
+import SportsListModal from '../../screens/account/registerPlayer/modals/SportsListModal';
+import {
+  getExcludedSportsList,
+  getTitleForRegister,
+} from '../../utils/sportsActivityUtils';
+import Verbs from '../../Constants/Verbs';
 
 const SportActivitiesScreen = ({navigation, route}) => {
   const [loading, setloading] = useState(true);
   const [userObject, setUserObject] = useState();
-
   const [showMoreOptions, setShowMoreOptions] = useState(false);
+  const [visibleSportsModal, setVisibleSportsModal] = useState(false);
+  const [sportsData, setSportsData] = useState([]);
+  const [selectedMenuOptionType, setSelectedMenuOptionType] = useState(
+    Verbs.entityTypePlayer,
+  );
 
   const {isAdmin, uid} = route.params;
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
+
+  useEffect(() => {
+    const sportArr = getExcludedSportsList(authContext, selectedMenuOptionType);
+    sportArr.sort((a, b) =>
+      a.sport_name.normalize().localeCompare(b.sport_name.normalize()),
+    );
+    setSportsData([...sportArr]);
+  }, [authContext, selectedMenuOptionType]);
 
   useEffect(() => {
     if (isFocused) {
@@ -42,6 +60,38 @@ const SportActivitiesScreen = ({navigation, route}) => {
         });
     }
   }, [authContext, isFocused, uid]);
+
+  const handleSportSelection = (sport) => {
+    setVisibleSportsModal(false);
+    let screenName = '';
+    switch (selectedMenuOptionType) {
+      case Verbs.entityTypePlayer:
+        screenName = 'RegisterPlayer';
+
+        break;
+
+      case Verbs.entityTypeReferee:
+        screenName = 'RegisterReferee';
+        break;
+
+      case Verbs.entityTypeScorekeeper:
+        screenName = 'RegisterScorekeeper';
+        break;
+
+      default:
+        break;
+    }
+    if (screenName) {
+      navigation.navigate(screenName, {
+        comeFrom: 'SportActivitiesScreen',
+        routeParams: {
+          isAdmin,
+          uid: uid ?? authContext.uid,
+        },
+        ...sport,
+      });
+    }
+  };
 
   return (
     <SafeAreaView style={styles.parent}>
@@ -83,14 +133,13 @@ const SportActivitiesScreen = ({navigation, route}) => {
           isAdmin={isAdmin}
           onSelect={(option) => {
             if (option === strings.addPlaying) {
-              navigation.navigate('RegisterPlayer', {
-                comeFrom: 'SportActivityScreen',
-              });
+              setSelectedMenuOptionType(Verbs.entityTypePlayer);
             } else if (option === strings.addRefereeing) {
-              navigation.navigate('RegisterReferee');
+              setSelectedMenuOptionType(Verbs.entityTypeReferee);
             } else if (option === strings.addScorekeeping) {
-              navigation.navigate('RegisterScorekeeper');
+              setSelectedMenuOptionType(Verbs.entityTypeScorekeeper);
             }
+            setVisibleSportsModal(true);
           }}
         />
       )}
@@ -108,6 +157,14 @@ const SportActivitiesScreen = ({navigation, route}) => {
             navigation.navigate('SportHideUnhideScreen');
           }
         }}
+      />
+
+      <SportsListModal
+        isVisible={visibleSportsModal}
+        closeList={() => setVisibleSportsModal(false)}
+        title={getTitleForRegister(selectedMenuOptionType)}
+        sportsList={sportsData}
+        onNext={handleSportSelection}
       />
     </SafeAreaView>
   );

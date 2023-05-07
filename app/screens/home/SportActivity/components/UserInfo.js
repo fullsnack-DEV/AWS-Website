@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   Pressable,
 } from 'react-native';
-import ReadMore from '@fawazahmed/react-native-read-more';
+// import ReadMore from '@fawazahmed/react-native-read-more';
 import {strings} from '../../../../../Localization/translation';
 import LevelBars from '../../../../components/LevelBars';
 import {ShimmerView} from '../../../../components/shimmer/commonComponents/ShimmerCommonComponents';
@@ -106,16 +106,22 @@ const UserInfo = ({
         ) : null}
       </Pressable>
       {screenType !== Verbs.screenTypeMainScreen ? (
-        <ReadMore
-          style={styles.description}
-          numberOfLines={7}
-          seeMoreText={strings.moreText}
-          seeLessText={strings.lessText}
-          seeLessStyle={styles.moreText}
-          seeMoreStyle={styles.moreText}
-          onSeeMoreBlocked={onMore}>
-          {description}
-        </ReadMore>
+        // <ReadMore
+        //   style={styles.description}
+        //   numberOfLines={7}
+        //   seeMoreText={strings.moreText}
+        //   seeLessText={strings.lessText}
+        //   seeLessStyle={styles.moreText}
+        //   seeMoreStyle={styles.moreText}
+        //   onSeeMoreBlocked={onMore}>
+        //   {description}
+        // </ReadMore>
+        <Text style={styles.description}>
+          {description}{' '}
+          <TouchableOpacity onPress={onMore}>
+            <Text style={styles.moreText}>{strings.moreText}</Text>
+          </TouchableOpacity>
+        </Text>
       ) : null}
     </View>
   );

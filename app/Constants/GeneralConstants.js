@@ -59,6 +59,17 @@ export const InvoiceType = {
   Event: 1,
 };
 
+export const InvoiceActionType = {
+  Resend: 0,
+  ResendBatch: 1,
+  AddRecipient: 2,
+};
+
+export const LogType = {
+  Refund: 0,
+  Payment: 1,
+};
+
 export const InvoiceRowType = {
   Recipient: 0,
   CancelRecipient: 1,
@@ -130,13 +141,13 @@ export const doublesInviteOptions = {
 };
 
 export const MonthData = [
-  'Anytime',
-  'Past 30 Days',
-  'Past 90 Days',
-  'Past 180 Days',
-  'Past 1 year ',
-  'Pick a date',
+  strings.past30DaysText,
+  strings.past90DaysText,
+  strings.past180Days,
+  strings.past1year,
+  strings.pickaDate,
 ];
+
 export const eventsInviteOptions = {
   0: strings.none,
   1: strings.everyoneTitleText,
@@ -144,6 +155,8 @@ export const eventsInviteOptions = {
   3: strings.myFollowingAndGroups,
   4: strings.myGroups,
 };
+
+export const currencyList = ['CAD', 'INR', 'KRW', 'THB', 'USD'];
 
 export const DEFAULT_NTRP = '5.0';
 

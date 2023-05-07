@@ -13,25 +13,17 @@ import {
   Alert,
   StyleSheet,
   Keyboard,
-  TouchableOpacity,
-  Image,
-  TouchableWithoutFeedback,
-  FlatList,
-  Dimensions,
+  SafeAreaView,
+  Pressable,
+  TextInput,
 } from 'react-native';
-import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
-import Modal from 'react-native-modal';
 import ActionSheet from 'react-native-actionsheet';
 import ImagePicker from 'react-native-image-crop-picker';
 import {useIsFocused} from '@react-navigation/native';
-import TCTouchableLabel from '../../components/TCTouchableLabel';
 import TCTextField from '../../components/TCTextField';
-import TCLabel from '../../components/TCLabel';
 import TCProfileImageControl from '../../components/TCProfileImageControl';
 import {patchGroup} from '../../api/Groups';
-
-import {getHitSlop, getSportName, deleteConfirmation} from '../../utils';
-
+import {deleteConfirmation, setAuthContextData} from '../../utils';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import {strings} from '../../../Localization/translation';
 import AuthContext from '../../auth/context';
@@ -40,12 +32,13 @@ import fonts from '../../Constants/Fonts';
 import uploadImages from '../../utils/imageAction';
 import images from '../../Constants/ImagePath';
 import TCKeyboardView from '../../components/TCKeyboardView';
-import {getQBAccountType, QBupdateUser} from '../../utils/QuickBlox';
-import TCThinDivider from '../../components/TCThinDivider';
 import Verbs from '../../Constants/Verbs';
 import LocationModal from '../../components/LocationModal/LocationModal';
+import ScreenHeader from '../../components/ScreenHeader';
+import SportListMultiModal from '../../components/SportListMultiModal/SportListMultiModal';
+import {getSportName} from '../../utils/sportsActivityUtils';
 
-export default function EditGroupProfileScreen({navigation, route}) {
+export default function EditGroupProfileScreen({navigation}) {
   const authContext = useContext(AuthContext);
   const actionSheet = useRef();
   const actionSheetWithDelete = useRef();
@@ -55,135 +48,50 @@ export default function EditGroupProfileScreen({navigation, route}) {
   const [currentImageSelection, setCurrentImageSelection] = useState(0);
   const [profileImageChanged, setProfileImageChanged] = useState(false);
   const [backgroundImageChanged, setBackgroundImageChanged] = useState(false);
-  const [groupProfile, setGroupProfile] = useState('');
+  const [groupProfile, setGroupProfile] = useState({});
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
   const [selectedSports, setSelectedSports] = useState([]);
-  const [sportList, setSportList] = useState([]);
   const [sportsName, setSportsName] = useState('');
   const [visibleLocationModal, setVisibleLocationModal] = useState(false);
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: route.params.isEditProfileTitle
-        ? strings.editprofiletitle
-        : strings.profileText,
-      headerLeft: () => (
-        <View style={styles.backIconViewStyle}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Image source={images.backArrow} style={styles.backImage} />
-          </TouchableOpacity>
-        </View>
-      ),
-      headerRight: () => (
-        <Text
-          style={{
-            marginRight: 15,
-            fontSize: 16,
-            fontFamily: fonts.RMedium,
-            color: colors.lightBlackColor,
-          }}
-          onPress={() => {
-            onSaveButtonClicked();
-          }}>
-          {strings.save}
-        </Text>
-      ),
+      headerShown: false,
     });
-  }, [
-    navigation,
-    profileImageChanged,
-    backgroundImageChanged,
-    currentImageSelection,
-    groupProfile,
-  ]);
+  }, [navigation]);
 
   useEffect(() => {
-    getSports();
-    getUserInformation();
-  }, []);
-
-  useEffect(() => {
-    if (route.params && route.params.city) {
-      setGroupProfile({
-        ...groupProfile,
-        location: [route.params.city, route.params.state, route.params.country]
-          .filter((v) => v)
-          .join(', '),
-        city: route.params.city,
-        state_abbr: route.params.state,
-        country: route.params.country,
-      });
+    const entity = {...authContext.entity.obj};
+    if (isFocused && entity.group_id) {
+      setGroupProfile({...authContext.entity.obj});
+      if (entity.entity_type === Verbs.entityTypeTeam) {
+        const name = getSportName(
+          entity.sport,
+          entity.sport_type,
+          authContext.sports,
+        );
+        setSportsName(name);
+      } else {
+        setSelectedSports(entity.sports);
+      }
     }
-  }, [isFocused]);
+  }, [isFocused, authContext]);
 
   useEffect(() => {
     let sportText = '';
     if (selectedSports.length > 0) {
-      selectedSports.map((sportItem, index) => {
-        sportText =
-          sportText +
-          (index ? ', ' : '') +
-          getSportName(sportItem, authContext);
-        return null;
+      selectedSports.forEach((item) => {
+        const name = getSportName(
+          item.sport,
+          item.sport_type,
+          authContext.sports,
+        );
+        sportText += sportText.length > 0 ? `, ${name}` : name;
       });
+
       setSportsName(sportText);
-    } else {
-      setSportsName(route?.params?.sportType);
     }
-  }, [authContext, route?.params?.sportType, selectedSports]);
-
-  const toggleModal = () => {
-    setVisibleSportsModal(!visibleSportsModal);
-  };
-
-  const getSports = () => {
-    let sportArr = [];
-
-    authContext.sports.map((item) => {
-      sportArr = [...sportArr, ...item.format];
-      return null;
-    });
-
-    const arr = [];
-    for (const tempData of sportArr) {
-      const obj = {};
-      obj.entity_type = tempData.entity_type;
-      obj.sport = tempData.sport;
-      obj.sport_type = tempData.sport_type;
-      obj.isChecked = false;
-      arr.push(obj);
-    }
-    setSportList(arr);
-  };
-
-  const isIconCheckedOrNot = ({item, index}) => {
-    sportList[index].isChecked = !item.isChecked;
-    setSportList([...sportList]);
-  };
-  const renderSports = ({item, index}) => (
-    <TouchableWithoutFeedback
-      style={styles.listItem}
-      onPress={() => {
-        isIconCheckedOrNot({item, index});
-      }}>
-      <View
-        style={{
-          padding: 20,
-          alignItems: 'center',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-        }}>
-        <Text style={styles.sportList}>{getSportName(item, authContext)}</Text>
-        <View style={styles.checkbox}>
-          {sportList[index].isChecked ? (
-            <Image source={images.orangeCheckBox} style={styles.checkboxImg} />
-          ) : (
-            <Image source={images.uncheckWhite} style={styles.checkboxImg} />
-          )}
-        </View>
-      </View>
-    </TouchableWithoutFeedback>
-  );
+  }, [selectedSports, authContext.sports]);
 
   // Form Validation
   const checkValidation = () => {
@@ -203,22 +111,13 @@ export default function EditGroupProfileScreen({navigation, route}) {
     return true;
   };
 
-  // Get user information from async store
-  const getUserInformation = async () => {
-    const entity = authContext.entity;
-    setGroupProfile({
-      ...entity.obj,
-      location: `${entity.obj.city}, ${entity.obj.state_abbr}, ${entity.obj.country}`,
-    });
-  };
-
-  const onSaveButtonClicked = () => {
+  const onUpdateButtonClicked = () => {
     Keyboard.dismiss();
     if (checkValidation()) {
       setloading(true);
       setGroupProfile({
         ...groupProfile,
-        sports_string: sportsName,
+        // sports_string: sportsName,
       });
       const userProfile = {...groupProfile};
       if (profileImageChanged || backgroundImageChanged) {
@@ -280,32 +179,10 @@ export default function EditGroupProfileScreen({navigation, route}) {
   const callUpdateUserAPI = (userProfile, paramGroupID) => {
     setloading(true);
     patchGroup(paramGroupID, userProfile, authContext)
-      .then((response) => {
-        // entity.auth.user = response.payload;
-        const entity_id = [
-          Verbs.entityTypeUser,
-          Verbs.entityTypePlayer,
-        ]?.includes(response?.payload?.entity_type)
-          ? response?.payload?.user_id
-          : response?.payload?.group_id;
-        const accountType = getQBAccountType(response?.payload?.entity_type);
-        QBupdateUser(
-          entity_id,
-          response?.payload,
-          accountType,
-          response.payload,
-          authContext,
-        )
-          .then(() => {
-            setloading(false);
-            navigation.goBack();
-          })
-          .catch((error) => {
-            console.log('QB error : ', error);
-
-            setloading(false);
-            navigation.goBack();
-          });
+      .then(async (response) => {
+        await setAuthContextData(response.payload, authContext);
+        setloading(false);
+        navigation.goBack();
       })
       .catch((error) => {
         setloading(false);
@@ -395,22 +272,197 @@ export default function EditGroupProfileScreen({navigation, route}) {
   const handleSelectLocationOptions = (currentLocation) => {
     setGroupProfile({
       ...groupProfile,
-      location: [
-        currentLocation?.city,
-        currentLocation?.state,
-        currentLocation?.country,
-      ]
-        .filter((v) => v)
-        .join(', '),
       city: currentLocation.city,
       state_abbr: currentLocation.state,
+      state: currentLocation.state_full,
       country: currentLocation.country,
     });
   };
 
   return (
-    <TCKeyboardView>
-      <>
+    <SafeAreaView style={{flex: 1}}>
+      <ScreenHeader
+        title={strings.profileText}
+        leftIcon={images.backArrow}
+        isRightIconText
+        rightButtonText={strings.updateText}
+        onRightButtonPress={() => {
+          onUpdateButtonClicked();
+        }}
+        leftIconPress={() => navigation.goBack()}
+      />
+      <TCKeyboardView>
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <ActivityLoader visible={loading} />
+          <TCProfileImageControl
+            profileImage={
+              groupProfile.thumbnail
+                ? {uri: groupProfile.thumbnail}
+                : images.clubCover
+            }
+            profileImagePlaceholder={
+              authContext.entity.role === Verbs.entityTypeClub
+                ? images.clubPlaceholder
+                : images.teamBcgPlaceholder
+            }
+            bgImage={
+              groupProfile.background_thumbnail
+                ? {uri: groupProfile.background_thumbnail}
+                : undefined
+            }
+            onPressBGImage={() => onBGImageClicked()}
+            onPressProfileImage={() => onProfileImageClicked()}
+            bgImageContainerStyle={{
+              marginTop: 55,
+              position: 'absolute',
+              alignSelf: 'center',
+            }}
+            profileImageStyle={{
+              height: 40,
+              width: 40,
+              marginTop: 10,
+            }}
+            profileCameraButtonStyle={{
+              alignSelf: 'flex-start',
+              justifyContent: 'center',
+              height: 25,
+              width: 25,
+              borderRadius: 50,
+              elevation: 0,
+            }}
+            profileImageButtonStyle={{
+              alignSelf: 'center',
+            }}
+            profileImageContainerStyle={{
+              marginLeft: 15,
+            }}
+            showEditButtons
+          />
+          <View style={{marginTop: 25, paddingHorizontal: 15}}>
+            <View style={{marginBottom: 35}}>
+              <Text style={styles.labelText}>
+                {authContext.entity.role === Verbs.entityTypeTeam
+                  ? strings.teamName.toUpperCase()
+                  : strings.clubName.toUpperCase()}
+                <Text
+                  style={[styles.labelText, {color: colors.darkThemeColor}]}>
+                  {' '}
+                  *
+                </Text>
+              </Text>
+
+              <TextInput
+                placeholder={
+                  authContext.entity.role === Verbs.entityTypeTeam
+                    ? strings.teamNamePlaceholder
+                    : strings.clubNameplaceholder
+                }
+                onChangeText={(text) =>
+                  setGroupProfile({...groupProfile, group_name: text})
+                }
+                value={groupProfile.group_name}
+                style={styles.inputField}
+                placeholderTextColor={colors.userPostTimeColor}
+              />
+            </View>
+
+            <View style={{marginBottom: 35}}>
+              <Text style={styles.labelText}>
+                {strings.homeCityTitle.toUpperCase()}
+                <Text
+                  style={[styles.labelText, {color: colors.darkThemeColor}]}>
+                  {' '}
+                  *
+                </Text>
+              </Text>
+              <Pressable
+                style={styles.inputContainer}
+                onPress={() => setVisibleLocationModal(true)}>
+                <Text
+                  style={[
+                    styles.labelText,
+                    {marginBottom: 0, fontFamily: fonts.RRegular},
+                  ]}>{`${groupProfile.city}, ${
+                  groupProfile.state_abbr ?? groupProfile.state
+                }, ${groupProfile.country}`}</Text>
+              </Pressable>
+            </View>
+
+            {authContext.entity.role === Verbs.entityTypeClub && (
+              <View style={{marginBottom: 35}}>
+                <Text style={styles.labelText}>
+                  {strings.sportsTitleText.toUpperCase()}
+                  <Text
+                    style={[styles.labelText, {color: colors.darkThemeColor}]}>
+                    {' '}
+                    *
+                  </Text>
+                </Text>
+                <Pressable
+                  onPress={() => {
+                    setVisibleSportsModal(true);
+                  }}
+                  style={styles.inputContainer}>
+                  <Text
+                    style={[
+                      styles.labelText,
+                      {marginBottom: 0, fontFamily: fonts.RRegular},
+                    ]}>
+                    {sportsName}
+                  </Text>
+                </Pressable>
+              </View>
+            )}
+
+            {authContext.entity.role === Verbs.entityTypeTeam && (
+              <View style={{marginBottom: 35}}>
+                <Text style={styles.labelText}>
+                  {strings.sportsTitleText.toUpperCase()}
+                </Text>
+                <Text style={styles.sport}>{sportsName}</Text>
+              </View>
+            )}
+
+            <View style={{marginBottom: 35}}>
+              <Text style={styles.labelText}>
+                {strings.slogan.toUpperCase()}
+              </Text>
+              <TCTextField
+                placeholder={
+                  authContext.entity.role === Verbs.entityTypeClub
+                    ? strings.writeClubSlogan
+                    : strings.writeTeamSlogan
+                }
+                onChangeText={(text) =>
+                  setGroupProfile({...groupProfile, bio: text})
+                }
+                multiline
+                maxLength={120}
+                value={groupProfile.bio}
+                height={120}
+                style={{marginHorizontal: 0}}
+              />
+            </View>
+          </View>
+        </ScrollView>
+
+        <LocationModal
+          visibleLocationModal={visibleLocationModal}
+          title={strings.homeCityTitleText}
+          setVisibleLocationModalhandler={() => setVisibleLocationModal(false)}
+          onLocationSelect={handleSelectLocationOptions}
+        />
+        <SportListMultiModal
+          isVisible={visibleSportsModal}
+          closeList={() => setVisibleSportsModal(false)}
+          title={strings.sportsTitleText}
+          onNext={(sports = []) => {
+            setSelectedSports(sports);
+            setVisibleSportsModal(false);
+          }}
+          selectedSports={selectedSports}
+        />
+
         <ActionSheet
           ref={actionSheet}
           options={[strings.camera, strings.album, strings.cancelTitle]}
@@ -456,264 +508,12 @@ export default function EditGroupProfileScreen({navigation, route}) {
             }
           }}
         />
-
-        <ScrollView style={styles.mainContainer}>
-          <ActivityLoader visible={loading} />
-          <TCProfileImageControl
-            profileImage={
-              groupProfile.thumbnail
-                ? {uri: groupProfile.thumbnail}
-                : images.clubCover
-            }
-            profileImagePlaceholder={
-              authContext.entity.role === Verbs.entityTypeClub
-                ? images.clubPlaceholder
-                : images.teamGreenPH
-            }
-            bgImage={
-              groupProfile.background_thumbnail
-                ? {uri: groupProfile.background_thumbnail}
-                : undefined
-            }
-            onPressBGImage={() => onBGImageClicked()}
-            onPressProfileImage={() => onProfileImageClicked()}
-            bgImageContainerStyle={{
-              marginTop: 55,
-              position: 'absolute',
-              alignSelf: 'center',
-            }}
-            profileImageStyle={{
-              height: 40,
-              width: 40,
-              marginTop: 10,
-            }}
-            profileCameraButtonStyle={{
-              alignSelf: 'flex-start',
-              justifyContent: 'center',
-              height: 25,
-              width: 25,
-
-              borderRadius: 50,
-              elevation: 0,
-            }}
-            profileImageButtonStyle={{
-              alignSelf: 'center',
-            }}
-            profileImageContainerStyle={{
-              marginLeft: 15,
-            }}
-            showEditButtons
-          />
-          <View>
-            <TCLabel
-              title={route.params.nameTitle}
-              style={{marginTop: 37}}
-              required={true}
-            />
-            <TCTextField
-              placeholder={route.params.placeholder}
-              onChangeText={(text) =>
-                setGroupProfile({...groupProfile, group_name: text})
-              }
-              value={groupProfile.group_name}
-              style={{
-                marginTop: 5,
-                backgroundColor: colors.textFieldBackground,
-              }}
-            />
-          </View>
-          <View>
-            <TCLabel
-              title={strings.currentCity}
-              required={true}
-              style={{marginTop: 31}}
-            />
-            <TCTouchableLabel
-              title={groupProfile.location}
-              onPress={() => setVisibleLocationModal(true)}
-              placeholder={strings.searchCityPlaceholder}
-              showNextArrow={true}
-              style={{
-                marginTop: 5,
-                backgroundColor: colors.textFieldBackground,
-              }}
-            />
-          </View>
-
-          {authContext.entity.role === Verbs.entityTypeClub && (
-            <View>
-              <TCLabel
-                title={strings.sportsEventsTitle}
-                style={{marginTop: 31}}
-                required={true}
-              />
-              {/* <TCTextField
-                placeholder={strings.selectSportPlaceholder}
-                // onChangeText={(text) =>
-                //   setGroupProfile({...groupProfile, group_name: text})
-                // }
-                value={route?.params?.sportType}
-                style={{marginTop: 5}}
-              /> */}
-              <TouchableOpacity
-                style={styles.languageView}
-                onPress={toggleModal}>
-                <Text
-                  style={
-                    sportsName
-                      ? styles.languageText
-                      : styles.languagePlaceholderText
-                  }
-                  numberOfLines={50}>
-                  {sportsName || strings.sportsEventsTitle}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          )}
-          {authContext.entity.role === Verbs.entityTypeTeam && (
-            <View>
-              <TCLabel
-                title={strings.sportsEventsTitle}
-                style={{marginTop: 31}}
-              />
-              <Text style={styles.sport}>{route?.params?.sportType}</Text>
-            </View>
-          )}
-
-          <View>
-            <TCLabel title={strings.slogan} style={{marginTop: 31}} />
-            <TCTextField
-              placeholder={
-                authContext.entity.role === Verbs.entityTypeClub
-                  ? strings.writeClubSlogan
-                  : strings.writeTeamSlogan
-              }
-              onChangeText={(text) =>
-                setGroupProfile({...groupProfile, bio: text})
-              }
-              multiline
-              maxLength={150}
-              value={groupProfile.bio}
-              height={120}
-              style={{
-                marginTop: 5,
-                backgroundColor: colors.textFieldBackground,
-              }}
-            />
-          </View>
-        </ScrollView>
-
-        {/* this is the Modal */}
-
-        <LocationModal
-          visibleLocationModal={visibleLocationModal}
-          title={strings.homeCityTitleText}
-          setVisibleLocationModalhandler={() => setVisibleLocationModal(false)}
-          onLocationSelect={handleSelectLocationOptions}
-        />
-
-        <Modal
-          isVisible={visibleSportsModal}
-          onBackdropPress={() => setVisibleSportsModal(false)}
-          onRequestClose={() => setVisibleSportsModal(false)}
-          animationInTiming={300}
-          animationOutTiming={800}
-          backdropTransitionInTiming={300}
-          backdropTransitionOutTiming={800}
-          style={{
-            margin: 0,
-          }}>
-          <View
-            style={{
-              width: '100%',
-              height: Dimensions.get('window').height / 1.3,
-              backgroundColor: 'white',
-              position: 'absolute',
-              bottom: 0,
-              left: 0,
-              borderTopLeftRadius: 30,
-              borderTopRightRadius: 30,
-              shadowColor: '#000',
-              shadowOffset: {width: 0, height: 1},
-              shadowOpacity: 0.5,
-              shadowRadius: 5,
-              elevation: 15,
-            }}>
-            <View
-              style={{
-                flexDirection: 'row',
-                paddingHorizontal: 15,
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              }}>
-              <TouchableOpacity
-                hitSlop={getHitSlop(15)}
-                style={{...styles.closeButton, left: 0}}
-                onPress={() => setVisibleSportsModal(false)}>
-                <Image
-                  source={images.crossImage}
-                  style={{...styles.closeButton, left: 0}}
-                />
-              </TouchableOpacity>
-              <Text
-                style={{
-                  alignSelf: 'center',
-                  marginVertical: 20,
-                  fontSize: 16,
-                  fontFamily: fonts.RBold,
-                  color: colors.lightBlackColor,
-                }}>
-                {strings.sportsEventsTitle}
-              </Text>
-              <TouchableOpacity
-                onPress={() => {
-                  const filterChecked = sportList.filter(
-                    (obj) => obj.isChecked,
-                  );
-                  setSelectedSports(filterChecked);
-                  toggleModal();
-                }}>
-                <Text
-                  style={{
-                    alignSelf: 'center',
-                    marginVertical: 20,
-                    fontSize: 16,
-                    fontFamily: fonts.RRegular,
-                    color: colors.themeColor,
-                  }}>
-                  {strings.apply}
-                </Text>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.separatorLine} />
-            <FlatList
-              ItemSeparatorComponent={() => <TCThinDivider />}
-              data={sportList}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={renderSports}
-            />
-          </View>
-        </Modal>
-      </>
-    </TCKeyboardView>
+      </TCKeyboardView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  mainContainer: {
-    flex: 1,
-    flexDirection: 'column',
-  },
-  backIconViewStyle: {
-    justifyContent: 'center',
-    width: 30,
-    marginLeft: 15,
-  },
-  backImage: {
-    height: 20,
-    tintColor: colors.lightBlackColor,
-    width: 10,
-  },
   sport: {
     color: colors.lightBlackColor,
     fontSize: 16,
@@ -722,62 +522,27 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     top: 5,
   },
-
-  closeButton: {
-    alignSelf: 'center',
-    width: 25,
-    height: 25,
-    resizeMode: 'contain',
-    left: 5,
+  labelText: {
+    fontSize: 16,
+    lineHeight: 24,
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RBold,
+    marginBottom: 10,
   },
-
-  listItem: {
-    flexDirection: 'row',
-    marginLeft: wp('10%'),
-    width: wp('80%'),
-  },
-
-  languageView: {
-    alignSelf: 'center',
-    backgroundColor: colors.textFieldBackground,
+  inputField: {
+    paddingHorizontal: 10,
+    paddingTop: 7,
+    paddingBottom: 9,
     borderRadius: 5,
-    color: 'black',
-    elevation: 3,
-    flexDirection: 'row',
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    marginTop: 12,
-    paddingHorizontal: 15,
-    paddingRight: 30,
-    paddingVertical: 12,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
-
-    width: wp('92%'),
-  },
-  languageText: {
     backgroundColor: colors.textFieldBackground,
-    color: colors.lightBlackColor,
     fontSize: 16,
     fontFamily: fonts.RRegular,
   },
-  languagePlaceholderText: {
+  inputContainer: {
+    paddingHorizontal: 10,
+    paddingTop: 7,
+    paddingBottom: 9,
+    borderRadius: 5,
     backgroundColor: colors.textFieldBackground,
-    color: colors.userPostTimeColor,
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-  },
-  checkboxImg: {
-    width: 22,
-    height: 22,
-    resizeMode: 'contain',
-    alignSelf: 'center',
-  },
-  sportList: {
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RRegular,
-    fontSize: wp('4%'),
   },
 });

@@ -309,8 +309,8 @@ export default {
     'en_Does a user need the approval for its membership request from the club to join it?',
   whoJoinText: 'en_Who can join the club?',
   whoCanJoinTeam: 'en_Who can join the team?',
-  whoCanJounGroupText: 'en_Who can join the {0}?',
-
+  whoCanJoinTeam: 'en_Who can join your team?',
+  whoCanJoinClub: 'en_Who can join the club?',
   everyoneText: 'en_Everyone and Every team',
   onlyPersonText: 'en_Only person or team invited by club',
   whoseApprovalText:
@@ -977,7 +977,8 @@ export default {
   streetAddress: 'en_Street Address',
   postalCode: 'en_Postal Code',
   // Members
-  isYourTeamRecruitingMember: 'en_Is your team recruiting a new member?',
+  isYourTeamRecruitingMember:
+    'en_Are you recruiting a new member? Do you want to display the badge below on your team profile?',
   whoCanJoinGroupText: 'en_Who Can Join {0}',
   configureYourRefereeSetting:
     'en_You can’t send offer, please configure your referee setting first.',
@@ -1266,7 +1267,7 @@ export default {
   errorCodeText: 'en_Error code: {0}',
 
   canInviteYouToJoinText: 'en_Can a {0} invite you to join the {1}?',
-  recruitingPlayerText: 'en_Recruiting Player',
+  recruitingPlayerText: 'en_Recruiting Members',
   areYouSureLeaveText: 'en_Are you sure your team wants to leave {0}?',
   leave: 'en_Leave',
   whatTeamJoinClub: 'en_Which Team Can Join Club',
@@ -1276,11 +1277,12 @@ export default {
   whoCanInviteToYourEventText: 'en_Who can invite people to your {0} event?',
 
   teamAndMembersText: 'en_Team & members',
-  teamOnly: 'en_Team (admin) only',
+  teamOnly: 'en_Team only',
   clubAndMembersText: 'en_Club & members',
-  clubOnly: 'en_Club (admin) only',
+  clubOnly: 'en_Club only',
   whoCanInviteMemberText: 'en_Who Can Invite Member',
-  whoCanInviteMemberToText: 'en_Who can invite a member to {0}?',
+  whoCanInviteMemberToTeam: 'en_Who can invite a member to your team?',
+  whoCanInviteMemberToClub: 'en_Who can invite a member to club?',
   membersProfile: 'en_Members Profile',
 
   personWhoseRequestText: 'en_A person whose request has been accepted by {0}',
@@ -1295,7 +1297,7 @@ export default {
   notRefundMorethanInvoiceValication:
     'en_User should not refund more than invoice paid amount.',
 
-  invoiceNoteValidation: 'en_Please select invoice note.',
+  invoiceNoteValidation: 'en_Please enter invoice note.',
   cancelInvoiceAlertText:
     'en_Are you sure that you want to cancel {0} invoice?',
   cancelThisInvoiceText:
@@ -2043,7 +2045,7 @@ export default {
   reviewTitle: 'en_Review',
   preview: 'en_Preview',
   displayInFixOrder: 'en_Display in the fixed order',
-  addSportActivity: 'en_Add New Sports Activity',
+  addSportActivity: 'en_Add Sports Activity',
   sportActivityTagOrder: 'en_sports Activity Tags Order',
   listUnlist: 'en_List / Unlist',
   classifySportActivity:
@@ -2668,7 +2670,7 @@ export default {
   sendnewinvoice: 'en_Send New Invoice',
   datetimesetting:
     'en_Date and time displayed in-app will match the date and time settings of the device.',
-  noneselected: 'None selected',
+  noneselected: 'en_None selected',
   person: 'en_person',
   people: 'en_people',
   selected: 'en_selected',
@@ -2815,4 +2817,49 @@ export default {
   favoriteSports: 'en_Favorite Sports',
   otherSports: 'en_Other Sports',
   sportsText: '{0} sports',
+  cancelInvoiveModaltitle:
+    'en_Choose recipients of the invoices that you want to cancel.',
+  peopleSelected: 'en_people selected',
+  allRecipientsCount: 'en_All Recipients ({0})',
+  resendInvoiceModalTitle:
+    'en_Please choose recipients. You can also add a new message.',
+  addnewMessage: 'en_ADD NEW mESSAGE',
+  amountRecevied: 'en_Amount Recevied',
+  amountRefunded: 'en_Amount Refunded',
+  deleteLogText: 'en_Are you sure you want to delete this log?',
+  deletelogbtntext: 'en_delete log',
+  loggedbytxt: 'en_Logged by',
+  loggedat: 'en_logged at',
+  transctionNumber: 'en_Transaction No:',
+  logaPayment: 'en_Log a Payment',
+  logaRefund: 'en_Log a Refund',
+  nopaymentrequired: 'en_No payment reuired for this invoice.',
+  norefundrequired: 'en_No refund reuired for this invoice.',
+  noinvoice: 'en_No Invoice',
+  recruitingBottomText:
+    'en_If you select “Yes, display it.”, your team profile may be displayed on the “Recruiting Members” section in Local Home.',
+  areYouSureTo: 'en_Are you sure you want to {0} {1}?',
+
+  paidInCash: 'en_Paid in cash',
+  paidthroughStripe: 'en_Paid through Stripe',
+  paidbyCheque: 'en_Paid by Cheque',
+  refundInCash: 'en_Refund in cash',
+  refundthroughStripe: 'en_Refund through Stripe',
+  refundByCheck: 'en_Refund by Cheque',
+  past180Days: 'en_Past 180 days',
+  past1year: 'en_Past 1 year',
+  pickaDate: 'en_Pick a date',
+  pariallyPaid: 'en_Partially Paid',
+  invoicesIn: 'en_Invoices in',
+  chooseReciepint: 'en_Choose Recipients',
+  chooseReciepientModaltitle:
+    'en_Choose recipients to whom you wantto resent the invoice.',
+  newRecipents: 'en_New Recipients',
+  toalnumberOfInvoices: 'en_Total Number of Invoices',
+  addRecipientToBatch: 'en_Add Recipients to Batch',
+  throughStripe: 'en_Through Stripe',
+  addedMeesages: 'en_Added Message ({0})',
+  sentBy: 'en_send by',
+  atText: 'en_at {0} ',
+  refudviaStripe: 'en_Refund (Through Stripe)',
 };

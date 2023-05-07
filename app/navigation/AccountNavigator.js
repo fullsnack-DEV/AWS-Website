@@ -187,13 +187,9 @@ import InvoiceSentScreen from '../screens/account/Invoice/InvoiceSentScreen';
 import RecipientDetailScreen from '../screens/account/Invoice/RecipientDetailScreen';
 import InviteToMemberScreen from '../screens/account/groupConnections/createMemberProfile/InviteToMemberScreen';
 import InvoiceReceivedScreen from '../screens/account/Invoice/InvoiceReceivedScreen';
-
-import LogDetailScreen from '../screens/account/payment/LogDetailScreen';
 import BatchDetailScreen from '../screens/account/Invoice/BatchDetailScreen';
 import InvoiceDetailScreen from '../screens/account/Invoice/InvoiceDetailScreen';
-import AddLogScreen from '../screens/account/payment/AddLogScreen';
 import CanceledInvoicesScreen from '../screens/account/Invoice/CanceledInvoicesScreen';
-import InvoiceFilterScreen from '../screens/account/payment/InvoiceFilterScreen';
 import RefereeReservationSetting from '../screens/game/bookReferee/RefereeReservationSetting';
 import AvailibilityReferee from '../screens/game/bookReferee/refereeSetting/AvailibilityReferee';
 import RefereeFee from '../screens/game/bookReferee/refereeSetting/RefereeFee';
@@ -3061,6 +3057,7 @@ const AccountNavigator = () => (
       name="InvoiceSentScreen"
       component={InvoiceSentScreen}
       options={{
+        headerShown: false,
         title: strings.invoicingTitleText,
         headerTitleAlign: 'center',
         headerTintColor: colors.blackColor,
@@ -3078,18 +3075,7 @@ const AccountNavigator = () => (
       name="RecipientDetailScreen"
       component={RecipientDetailScreen}
       options={{
-        title: strings.invoicingTitleText,
-        headerTitleAlign: 'center',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontFamily: fonts.RMedium,
-        },
-
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
+        headerShown: false,
       }}
     />
 
@@ -3097,17 +3083,7 @@ const AccountNavigator = () => (
       name="BatchDetailScreen"
       component={BatchDetailScreen}
       options={{
-        title: strings.batch,
-        headerTitleAlign: 'center',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontFamily: fonts.RMedium,
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
+        headerShown: false,
       }}
     />
 
@@ -3115,63 +3091,21 @@ const AccountNavigator = () => (
       name="InvoiceDetailScreen"
       component={InvoiceDetailScreen}
       options={{
-        title: strings.invoice,
-        headerTitleAlign: 'center',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontFamily: fonts.RMedium,
-        },
-
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
+        headerShown: false,
       }}
     />
 
-    <Stack.Screen
-      name="AddLogScreen"
-      component={AddLogScreen}
-      options={{
-        title: strings.logManually,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
-    />
     <Stack.Screen
       name="InvoiceReceivedScreen"
       component={InvoiceReceivedScreen}
       options={{
+        headerShown: false,
+        tabBarVisible: false,
         title: strings.invoicesreceived,
         headerTitleAlign: 'center',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontFamily: fonts.RMedium,
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
-    />
-
-    <Stack.Screen
-      name="LogDetailScreen"
-      component={LogDetailScreen}
-      options={{
-        title: strings.logText,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
         },
         headerStyle: {
           backgroundColor: colors.whiteColor,
@@ -3208,23 +3142,6 @@ const AccountNavigator = () => (
         headerTransparent: true,
         title: ' ',
         headerTintColor: colors.whiteColor,
-      }}
-    />
-
-    <Stack.Screen
-      name="InvoiceFilterScreen"
-      component={InvoiceFilterScreen}
-      options={{
-        title: strings.invoicingTitleText,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
       }}
     />
 

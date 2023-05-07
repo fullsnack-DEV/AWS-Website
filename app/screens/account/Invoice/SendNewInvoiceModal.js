@@ -5,8 +5,6 @@ import React, {useState, useContext} from 'react';
 import {
   FlatList,
   Image,
-  Modal,
-  Pressable,
   TextInput,
   TouchableOpacity,
   Text,
@@ -32,8 +30,7 @@ import {
 import TCLabel from '../../../components/TCLabel';
 import TCTextField from '../../../components/TCTextField';
 import DateTimePickerView from '../../../components/Schedule/DateTimePickerModal';
-import modalStyles from '../../../components/IncomingChallengeSettingsModals/WrapperModalStyles';
-import DataSource from '../../../Constants/DataSource';
+
 import AddRecipientsModal from './AddRecipientsModal';
 import {getTeamsOfClub, getGroupMembers} from '../../../api/Groups';
 import {createInvoice} from '../../../api/Invoice';
@@ -42,6 +39,7 @@ import Verbs from '../../../Constants/Verbs';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import {getTCDate} from '../../../utils';
 import RecipientCell from './RecipientCell';
+import CurrencyModal from '../../../components/CurrencyModal/CurrencyModal';
 
 const SendNewInvoiceModal = ({
   isVisible,
@@ -108,7 +106,6 @@ const SendNewInvoiceModal = ({
         );
       }
     } else if (invoiceType === InvoiceType.Event) {
-      // get all the attendee here
       setLoading(false);
     }
   };
@@ -290,7 +287,7 @@ const SendNewInvoiceModal = ({
       headerRightButtonText={strings.send}
       onRightButtonPress={() => onSendInvoice()}>
       <ActivityLoader visible={loading} />
-      <ScrollView>
+      <ScrollView showsVerticalScrollIndicator={false}>
         {/* Code for Invoice Title */}
 
         <TCLabel
@@ -482,7 +479,16 @@ const SendNewInvoiceModal = ({
           mode={'datetime'}
         />
 
-        <Modal visible={showCurrencyModal} transparent animationType="slide">
+        <CurrencyModal
+          isVisible={showCurrencyModal}
+          closeList={() => setShowCurrencyModal(false)}
+          onNext={(item) => {
+            setCurrency(item);
+            setShowCurrencyModal(false);
+          }}
+        />
+
+        {/* <Modal visible={showCurrencyModal} transparent animationType="slide">
           <View
             style={{
               flex: 1,
@@ -563,7 +569,7 @@ const SendNewInvoiceModal = ({
               </View>
             </View>
           </View>
-        </Modal>
+        </Modal> */}
 
         <AddRecipientsModal
           isVisible={showRecipientsModal}

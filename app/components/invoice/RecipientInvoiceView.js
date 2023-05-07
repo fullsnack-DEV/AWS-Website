@@ -34,7 +34,7 @@ export default function RecipientInvoiceView({invoice, onPressCard}) {
             fontFamily: fonts.RRegular,
             fontSize: 14,
           }}>
-          {moment(getJSDate(invoice.due_date)).format('LLL')}
+          {moment(getJSDate(invoice.due_date)).format(Verbs.DATE_FORMAT)}
         </Text>
         <Text
           numberOfLines={2}
@@ -69,7 +69,7 @@ export default function RecipientInvoiceView({invoice, onPressCard}) {
               {
                 color:
                   invoice.amount_due === invoice.amount_paid
-                    ? colors.gameDetailColor
+                    ? colors.neonBlue
                     : colors.darkThemeColor,
                 alignSelf: 'flex-end',
               },

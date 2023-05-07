@@ -1005,7 +1005,6 @@ const AccountScreen = ({navigation, route}) => {
         isVisible={visibleSportsModalForClub}
         closeList={() => setVisibleSportsModalForClub(false)}
         title={strings.createClubText}
-        sportsList={sportsData}
         onNext={(sports) => {
           setVisibleSportsModalForClub(false);
           navigation.navigate(navigationOptions.screenName, sports);

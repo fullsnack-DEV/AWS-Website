@@ -1603,8 +1603,6 @@ export default function LocalHomeScreen({navigation, route}) {
                   navigation.navigate('UpcomingMatchScreen', {
                     filters,
                   });
-
-                  // navigation.navigate('AddLogScreen')
                 }}
               />
               <Carousel

@@ -92,7 +92,7 @@ const AddRecipientsModal = ({
   }, [isVisible]);
 
   useEffect(() => {
-    if (searchText.length >= 0) {
+    if (searchText.length > 0) {
       const result = recipientMembers.filter((obj) =>
         `${obj.first_name} ${obj.last_name}`
           .toLowerCase()
@@ -370,7 +370,7 @@ const AddRecipientsModal = ({
       isVisible={isVisible}
       closeModal={() => onCloseThisModal()}
       modalType={ModalTypes.style1}
-      title={strings.recipients}
+      title={strings.newRecipents}
       containerStyle={{padding: 0}}
       headerRightButtonText={strings.addText}
       onRightButtonPress={() => onAddRecipients()}

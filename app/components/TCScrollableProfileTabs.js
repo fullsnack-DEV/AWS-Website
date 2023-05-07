@@ -15,12 +15,13 @@ const TCScrollableProfileTabs = ({
   bounces = true,
   tabItem,
   customStyle,
+  tabStyle,
 }) => (
   <ScrollView style={customStyle} nestedScrollEnabled={true} bounces={bounces}>
     <ScrollableTabView
       locked={true}
       onChangeTab={onChangeTab}
-      style={{marginTop: 5}}
+      style={{marginTop: 5, ...tabStyle}}
       tabBarTextStyle={{
         fontSize: 16,
         fontFamily: fonts.RBold,
@@ -29,7 +30,7 @@ const TCScrollableProfileTabs = ({
       tabBarActiveTextColor={colors.themeColor}
       tabBarInactiveTextColor={colors.lightBlackColor}
       tabBarUnderlineStyle={{backgroundColor: colors.themeColor}}
-      initialPage={0}
+      // initialPage={currentTab}
       renderTabBar={() => <ScrollableTabBar />}>
       {tabItem.map((item, key) => (
         <View key={key} tabLabel={item} />

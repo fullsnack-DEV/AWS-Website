@@ -164,7 +164,9 @@ const RegisterReferee = ({navigation, route}) => {
         leftIcon={images.backArrow}
         leftIconPress={() => {
           if (route.params?.comeFrom) {
-            navigation.navigate(route.params.comeFrom);
+            navigation.navigate(route.params.comeFrom, {
+              ...route.params.routeParams,
+            });
           } else {
             navigation.navigate('AccountScreen');
           }

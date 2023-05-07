@@ -56,6 +56,7 @@
     "axios": "^0.27.2",
     "base-64": "^1.0.0",
     "bodybuilder": "^2.4.0",
+    "country-currency-map": "^2.1.7",
     "detox": "^19.8.4",
     "fbjs": "^3.0.4",
     "i": "^0.3.7",

@@ -154,11 +154,9 @@ const getSportList = (sportList, role = Verbs.entityTypePlayer) => {
       list.push(obj);
     });
   }
-  sportList.sort((a, b) =>
-    a.sport_name.normalize().localeCompare(b.sport_name.normalize()),
-  );
-
-  return list;
+  return list.length > 0
+    ? list.sort((a, b) => a.sport.localeCompare(b.sport))
+    : [];
 };
 const getSingleSportList = (sports) => {
   const sportList = (sports || []).filter(

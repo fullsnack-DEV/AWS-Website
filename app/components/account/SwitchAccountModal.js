@@ -9,7 +9,6 @@ import {
   Text,
   Alert,
   Platform,
-  ActivityIndicator,
 } from 'react-native';
 import {strings} from '../../../Localization/translation';
 import AuthContext from '../../auth/context';
@@ -29,6 +28,7 @@ import {
   groupValidate,
 } from '../../api/Groups';
 import Verbs from '../../Constants/Verbs';
+import SwitchAccountShimmer from './SwitchAccountShimmer';
 
 const SwitchAccountModal = ({
   isVisible = false,
@@ -176,9 +176,7 @@ const SwitchAccountModal = ({
       title={strings.switchAccount}
       containerStyle={styles.modalContainer}>
       {isFetchingList ? (
-        <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-          <ActivityIndicator size={'large'} />
-        </View>
+        <SwitchAccountShimmer />
       ) : (
         <FlatList
           data={accountList}

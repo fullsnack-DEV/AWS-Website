@@ -24,6 +24,7 @@ import images from '../../../Constants/ImagePath';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
 import {strings} from '../../../../Localization/translation';
+import ScreenHeader from '../../../components/ScreenHeader';
 
 export default function ClubSettingPrivacyScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
@@ -39,9 +40,7 @@ export default function ClubSettingPrivacyScreen({navigation, route}) {
   );
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: () => (
-        <Text style={styles.headerTitle}>{strings.clubText}</Text>
-      ),
+      headerShown: false,
     });
   }, [navigation]);
 
@@ -129,6 +128,11 @@ export default function ClubSettingPrivacyScreen({navigation, route}) {
   );
   return (
     <SafeAreaView style={{flex: 1}}>
+      <ScreenHeader
+        title={strings.club}
+        leftIcon={images.backArrow}
+        leftIconPress={() => navigation.goBack()}
+      />
       <ScrollView style={styles.mainContainer}>
         <FlatList
           data={clubSetting}
@@ -176,12 +180,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.lightgrayColor,
     height: 0.5,
     width: wp('90%'),
-  },
-
-  headerTitle: {
-    fontFamily: fonts.RBold,
-    fontSize: 16,
-    color: colors.lightBlackColor,
   },
   currencyTypeStyle: {
     marginRight: 10,

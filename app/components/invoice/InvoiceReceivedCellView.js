@@ -43,7 +43,7 @@ export default function InvoiceReceivedCellView({invoice, onPressCard}) {
             {invoice.invoice_title}
           </Text>
           <Text style={styles.secondaryTextStyle}>
-            {moment(getJSDate(invoice.due_date)).format('LLL')}
+            {moment(getJSDate(invoice.due_date)).format(Verbs.DATE_FORMAT)}
           </Text>
         </View>
 
@@ -70,7 +70,7 @@ export default function InvoiceReceivedCellView({invoice, onPressCard}) {
                 {
                   color:
                     invoice.amount_remaining === 0
-                      ? colors.gameDetailColor
+                      ? colors.neonBlue
                       : colors.darkThemeColor,
                   alignSelf: 'flex-end',
                 },
