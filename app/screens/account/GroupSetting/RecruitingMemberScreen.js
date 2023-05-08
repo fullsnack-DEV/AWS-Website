@@ -64,7 +64,7 @@ export default function RecruitingMemberScreen({navigation}) {
   return (
     <SafeAreaView style={{flex: 1}}>
       <ScreenHeader
-        title={strings.whoCanInviteMemberText}
+        title={strings.recruitingPlayerText}
         leftIcon={images.backArrow}
         leftIconPress={() => navigation.goBack()}
         isRightIconText

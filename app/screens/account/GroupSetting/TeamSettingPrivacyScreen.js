@@ -24,6 +24,7 @@ import images from '../../../Constants/ImagePath';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
 import {strings} from '../../../../Localization/translation';
+import ScreenHeader from '../../../components/ScreenHeader';
 
 export default function TeamSettingPrivacyScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
@@ -31,7 +32,7 @@ export default function TeamSettingPrivacyScreen({navigation, route}) {
 
   const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
   const [pointEvent, setPointEvent] = useState('auto');
-  const [teamSetting] = useState([{key: strings.whatTeamJoinClub, id: 0}]);
+  const [teamSetting] = useState([{key: strings.whoCanJoinTeam, id: 0}]);
   const [teamCanJoinClub, setTeamCanJoinClub] = useState(
     route?.params?.teamCanJoinClub
       ? route?.params?.teamCanJoinClub
@@ -39,7 +40,8 @@ export default function TeamSettingPrivacyScreen({navigation, route}) {
   );
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: () => <Text style={styles.headerTitle}>{strings.team}</Text>,
+      headerShown: false,
+      // headerTitle: () => <, style={styles.headerTitle}>{strings.team}</,>,
     });
   }, [navigation]);
 
@@ -130,6 +132,12 @@ export default function TeamSettingPrivacyScreen({navigation, route}) {
   );
   return (
     <SafeAreaView style={{flex: 1}}>
+      <ScreenHeader
+        title={strings.team}
+        leftIcon={images.backArrow}
+        leftIconPress={() => navigation.goBack()}
+      />
+
       <ScrollView style={styles.mainContainer}>
         <FlatList
           data={teamSetting}
@@ -179,11 +187,11 @@ const styles = StyleSheet.create({
     width: wp('90%'),
   },
 
-  headerTitle: {
-    fontFamily: fonts.RBold,
-    fontSize: 16,
-    color: colors.lightBlackColor,
-  },
+  // headerTitle: {
+  //   fontFamily: fonts.RBold,
+  //   fontSize: 16,
+  //   color: colors.lightBlackColor,
+  // },
   currencyTypeStyle: {
     marginRight: 10,
     fontSize: 16,

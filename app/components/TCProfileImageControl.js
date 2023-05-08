@@ -31,7 +31,7 @@ function TCProfileImageControl({
           imageStyle={[styles.bgImageStyle, bgImageStyle]}
           source={bgImage}
           defaultSource={bgImagePlaceholder}
-          resizeMode={'contain'}
+          resizeMode={'cover'}
         />
 
         {showEditButtons && (
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
   bgImageStyle: {
     flex: 1,
     backgroundColor: colors.grayBackgroundColor,
-    resizeMode: 'contain',
+    resizeMode: 'cover',
   },
   profileImageStyle: {
     height: 60,

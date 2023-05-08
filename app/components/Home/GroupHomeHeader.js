@@ -159,13 +159,13 @@ const GroupHomeHeader = ({groupData = {}, sportList = [], isAdmin = false}) => {
           </View>
         ) : null}
 
-        {groupData.description ? (
+        {groupData.bio ? (
           <Text
             style={[
               styles.label,
               groupData.hiringPlayers ? {marginTop: 10} : {marginTop: 15},
             ]}>
-            {groupData.description}
+            {groupData.bio}
           </Text>
         ) : null}
       </View>

@@ -9,6 +9,7 @@ import {
   FlatList,
   Text,
   Alert,
+  SafeAreaView,
 } from 'react-native';
 
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
@@ -22,6 +23,7 @@ import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
 import {strings} from '../../../../Localization/translation';
 import Verbs from '../../../Constants/Verbs';
+import ScreenHeader from '../../../components/ScreenHeader';
 
 export default function TeamJoinClubScreen({navigation, route}) {
   const [comeFrom] = useState(route?.params?.comeFrom);
@@ -56,21 +58,21 @@ export default function TeamJoinClubScreen({navigation, route}) {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: () => (
-        <Text style={styles.headerTitle}>{strings.whatTeamJoinClub}</Text>
-      ),
-      headerRight: () => (
-        <Text
-          style={styles.saveButtonStyle}
-          onPress={() => {
-            onSavePressed();
-          }}>
-          {strings.save}
-        </Text>
-      ),
+      headerShown: false,
+      // headerTitle: () => (
+      //   <Text style={styles.headerTitle}>{strings.whatTeamJoinClub}</Text>
+      // ),
+      // headerRight: () => (
+      //   <Text
+      //     style={styles.saveButtonStyle}
+      //     onPress={() => {
+      //       onSavePressed();
+      //     }}>
+      //     {strings.save}
+      //   </Text>
+      // ),
     });
   }, [comeFrom, navigation, teamCanJoinClub]);
-
   const saveTeam = () => {
     const bodyParams = {};
 
@@ -142,17 +144,29 @@ export default function TeamJoinClubScreen({navigation, route}) {
   );
 
   return (
-    <ScrollView
-      style={styles.mainContainer}
-      showsVerticalScrollIndicator={false}>
-      <ActivityLoader visible={loading} />
-      <Text style={styles.opetionsTitle}>{strings.whatTeamJoinClub}</Text>
-      <FlatList
-        data={teamCanJoinClubOpetions}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={renderWhocanJoinOption}
+    <SafeAreaView style={{flex: 1}}>
+      <ScreenHeader
+        title={strings.whoCanJoinTeam}
+        leftIcon={images.backArrow}
+        leftIconPress={() => navigation.goBack()}
+        isRightIconText
+        rightButtonText={strings.save}
+        onRightButtonPress={() => {
+          onSavePressed();
+        }}
       />
-    </ScrollView>
+      <ScrollView
+        style={styles.mainContainer}
+        showsVerticalScrollIndicator={false}>
+        <ActivityLoader visible={loading} />
+        <Text style={styles.optionsTitle}>{strings.whoCanJoinTeam}</Text>
+        <FlatList
+          data={teamCanJoinClubOpetions}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={renderWhocanJoinOption}
+        />
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
@@ -165,13 +179,10 @@ const styles = StyleSheet.create({
     elevation: 3,
     fontSize: wp('4%'),
     height: 40,
-
     marginTop: 12,
     paddingHorizontal: 15,
     paddingRight: 30,
-
     paddingVertical: 12,
-
     width: wp('92%'),
   },
   // eslint-disable-next-line react-native/no-unused-styles
@@ -183,11 +194,9 @@ const styles = StyleSheet.create({
     elevation: 3,
     fontSize: wp('3.5%'),
     height: 40,
-
     marginTop: 12,
     paddingHorizontal: 15,
     paddingRight: 30,
-
     paddingVertical: 12,
     shadowColor: colors.googleColor,
     shadowOffset: {width: 0, height: 1},
@@ -198,10 +207,10 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
   },
-  opetionsTitle: {
+  optionsTitle: {
     color: colors.lightBlackColor,
-    fontFamily: fonts.RRegular,
-    fontSize: 16,
+    fontFamily: fonts.RMedium,
+    fontSize: 20,
     margin: 15,
   },
   languageList: {
@@ -225,14 +234,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  saveButtonStyle: {
-    fontFamily: fonts.RMedium,
-    fontSize: 16,
-    marginRight: 10,
-  },
-  headerTitle: {
-    fontFamily: fonts.RBold,
-    fontSize: 16,
-    color: colors.lightBlackColor,
-  },
+  // saveButtonStyle: {
+  //   fontFamily: fonts.RMedium,
+  //   fontSize: 16,
+  //   marginRight: 10,
+  // },
+  // headerTitle: {
+  //   fontFamily: fonts.RBold,
+  //   fontSize: 16,
+  //   color: colors.lightBlackColor,
+  // },
 });

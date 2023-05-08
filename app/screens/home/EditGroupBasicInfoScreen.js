@@ -258,7 +258,7 @@ const EditGroupBasicInfoScreen = ({navigation, route}) => {
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                // justifyContent: 'space-between',
+                justifyContent: 'space-between',
               }}>
               <View style={{flex: 1}}>
                 <RNPickerSelect
@@ -273,7 +273,10 @@ const EditGroupBasicInfoScreen = ({navigation, route}) => {
                   useNativeAndroidPickerStyle={false}
                   style={{
                     inputIOS: [styles.inputIOS, {marginRight: 7}],
-                    inputAndroid: [styles.inputAndroid, {marginRight: 7}],
+                    inputAndroid: [
+                      styles.inputAndroid,
+                      {marginRight: 7, backgroundColor: colors.lightGrey},
+                    ],
                   }}
                   value={groupData.min_age ?? 1}
                   Icon={() => (
@@ -298,7 +301,10 @@ const EditGroupBasicInfoScreen = ({navigation, route}) => {
                   useNativeAndroidPickerStyle={false}
                   style={{
                     inputIOS: [styles.inputIOS, {marginLeft: 8}],
-                    inputAndroid: [styles.inputAndroid, {marginLeft: 8}],
+                    inputAndroid: [
+                      styles.inputAndroid,
+                      {marginLeft: 8, backgroundColor: colors.lightGrey},
+                    ],
                   }}
                   value={groupData.max_age ?? 70}
                   Icon={() => (
