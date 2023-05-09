@@ -38,6 +38,7 @@ import GroupHomeScreen from './GroupHomeScreen';
 import TCAccountDeactivate from '../../components/TCAccountDeactivate';
 import CongratulationsModal from '../account/registerPlayer/modals/CongratulationsModal';
 import * as Utility from '../../utils';
+import SwitchAccountModal from '../../components/account/SwitchAccountModal';
 
 const HomeScreen = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
@@ -53,6 +54,7 @@ const HomeScreen = ({navigation, route}) => {
   const [listLoading, setListLoading] = useState(false);
 
   const [settingObject, setSettingObject] = useState();
+  const [showSwitchAccountModal, setShowSwitchAccountModal] = useState(false);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -175,11 +177,19 @@ const HomeScreen = ({navigation, route}) => {
 
   const handleMoreOptions = (option) => {
     setShowMoreOptionsModal(false);
+
     switch (option) {
       case strings.sportActivity:
         navigation.navigate('SportActivitiesScreen', {
           isAdmin,
           uid: route.params?.uid ?? authContext.uid,
+        });
+        break;
+
+      case strings.recruitingMembers:
+        navigation.navigate('GroupMembersScreen', {
+          groupID: route.params.uid,
+          groupObj: currentUserData,
         });
         break;
 
@@ -280,6 +290,39 @@ const HomeScreen = ({navigation, route}) => {
       });
   };
 
+  const setKebabButtonOptions = () => {
+    if (
+      route.params.role === Verbs.entityTypePlayer ||
+      route.params.role === Verbs.entityTypeUser
+    ) {
+      setShowMoreOptionsModal(true);
+      if (isAdmin) {
+        setMoreOptions([strings.sportActivity]);
+      } else {
+        setMoreOptions([
+          strings.sportActivity,
+          strings.reportThisAccount,
+          strings.blockThisAccount,
+        ]);
+      }
+    } else if (
+      route.params.role === Verbs.entityTypeClub ||
+      route.params.role === Verbs.entityTypeTeam
+    ) {
+      setShowMoreOptionsModal(true);
+      if (isAdmin) {
+        setMoreOptions([strings.recruitingMembers]);
+      } else {
+        setMoreOptions([strings.reportThisAccount, strings.blockThisAccount]);
+      }
+    } else {
+      setShowMoreOptionsModal(true);
+      if (!isAdmin) {
+        setMoreOptions([strings.reportThisAccount, strings.blockThisAccount]);
+      }
+    }
+  };
+
   return (
     <SafeAreaView style={styles.mainContainer}>
       <View style={styles.headerRow}>
@@ -302,7 +345,9 @@ const HomeScreen = ({navigation, route}) => {
               {currentUserData.full_name ?? currentUserData.group_name}
             </Text>
           </View>
-          <Pressable style={styles.dropDownImage}>
+          <Pressable
+            style={styles.dropDownImage}
+            onPress={() => setShowSwitchAccountModal(true)}>
             <Image source={images.path} style={styles.image} />
           </Pressable>
         </View>
@@ -325,29 +370,7 @@ const HomeScreen = ({navigation, route}) => {
           <Pressable
             style={styles.imageContainer}
             onPress={() => {
-              if (
-                route.params.role === Verbs.entityTypePlayer ||
-                route.params.role === Verbs.entityTypeUser
-              ) {
-                setShowMoreOptionsModal(true);
-                if (isAdmin) {
-                  setMoreOptions([strings.sportActivity]);
-                } else {
-                  setMoreOptions([
-                    strings.sportActivity,
-                    strings.reportThisAccount,
-                    strings.blockThisAccount,
-                  ]);
-                }
-              } else {
-                setShowMoreOptionsModal(true);
-                if (!isAdmin) {
-                  setMoreOptions([
-                    strings.reportThisAccount,
-                    strings.blockThisAccount,
-                  ]);
-                }
-              }
+              setKebabButtonOptions();
             }}>
             <Image source={images.chat3Dot} style={styles.image} />
           </Pressable>
@@ -425,6 +448,17 @@ const HomeScreen = ({navigation, route}) => {
           />
         </>
       ) : null}
+
+      <SwitchAccountModal
+        isVisible={showSwitchAccountModal}
+        closeModal={() => {
+          setShowSwitchAccountModal(false);
+          navigation.navigate('AccountScreen');
+        }}
+        onCreate={(option) => {
+          console.log({option});
+        }}
+      />
     </SafeAreaView>
   );
 };

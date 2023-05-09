@@ -32,6 +32,23 @@ const AccountCard = ({
     }
   }, [entityData, sportList]);
 
+  const renderDeactivateFlag = () => {
+    let label = '';
+    if (entityData.under_termination) {
+      label = strings.terminated;
+    } else if (entityData.is_pause) {
+      label = strings.paused;
+    } else if (entityData.is_deactivate) {
+      label = strings.deactivated;
+    }
+
+    return label ? (
+      <View style={styles.buttonView}>
+        <Text style={styles.textStyle}>{label}</Text>
+      </View>
+    ) : null;
+  };
+
   return (
     <Pressable style={[styles.parent, containerStyle]} onPress={onPress}>
       <GroupIcon
@@ -74,6 +91,7 @@ const AccountCard = ({
             )}
           </Pressable>
         )}
+        {renderDeactivateFlag()}
       </View>
     </Pressable>
   );

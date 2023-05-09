@@ -692,6 +692,7 @@ const MembersNavigator = () => (
       name="EntityReviewScreen"
       component={EntityReviewScreen}
       options={{
+        headerShown: false,
         title: 'Review',
         headerTintColor: colors.blackColor,
       }}
@@ -700,6 +701,7 @@ const MembersNavigator = () => (
       name="EntityStatScreen"
       component={EntityStatScreen}
       options={{
+        headerShown: false,
         title: 'Stats',
         headerTintColor: colors.blackColor,
       }}
@@ -716,8 +718,7 @@ const MembersNavigator = () => (
       name="EntityScoreboardScreen"
       component={EntityScoreboardScreen}
       options={{
-        title: 'Scoreboard',
-        headerTintColor: colors.blackColor,
+        headerShown: false,
       }}
     />
     <Stack.Screen

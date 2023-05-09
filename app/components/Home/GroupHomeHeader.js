@@ -1,6 +1,6 @@
 // @flow
 import React, {useEffect, useState} from 'react';
-import {View, Text, Image} from 'react-native';
+import {View, Text, Image, Pressable} from 'react-native';
 import {format} from 'react-string-format';
 import {strings} from '../../../Localization/translation';
 import fonts from '../../Constants/Fonts';
@@ -11,7 +11,13 @@ import GroupIcon from '../GroupIcon';
 import LevelBars from '../LevelBars';
 import styles from './GroupHomeHeaderStyles';
 
-const GroupHomeHeader = ({groupData = {}, sportList = [], isAdmin = false}) => {
+const GroupHomeHeader = ({
+  groupData = {},
+  sportList = [],
+  isAdmin = false,
+  onClickMembers = () => {},
+  onClickFollowers = () => {},
+}) => {
   const [sporName, setSportName] = useState('');
 
   useEffect(() => {
@@ -106,25 +112,28 @@ const GroupHomeHeader = ({groupData = {}, sportList = [], isAdmin = false}) => {
                 <Text style={styles.newTeamText}>
                   {groupData.level > 0
                     ? `Lv.${groupData.level}`
-                    : strings.newTeamText}
+                    : strings.newTextTitleCase}
                 </Text>
               </View>
             </View>
           )}
 
           <View style={[styles.row, {flex: 1, justifyContent: 'flex-end'}]}>
-            <View
+            <Pressable
               style={[
                 styles.row,
                 {justifyContent: 'flex-end', marginRight: 10},
-              ]}>
+              ]}
+              onPress={onClickMembers}>
               <Text style={styles.count}>{groupData.member_count}</Text>
               <Text style={styles.label}>{strings.membersTitle}</Text>
-            </View>
-            <View style={[styles.row, {justifyContent: 'flex-end'}]}>
+            </Pressable>
+            <Pressable
+              style={[styles.row, {justifyContent: 'flex-end'}]}
+              onPress={onClickFollowers}>
               <Text style={styles.count}>{groupData.follower_count}</Text>
               <Text style={styles.label}>{strings.followerTitleText}</Text>
-            </View>
+            </Pressable>
           </View>
         </View>
       </View>

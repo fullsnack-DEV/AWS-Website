@@ -7,6 +7,7 @@ import {
   getGameScoreboardEvents,
   getRefereedMatch,
   getScorekeeperMatch,
+  getScroreboardGameDetails,
 } from '../../../../api/Games';
 import AuthContext from '../../../../auth/context';
 import colors from '../../../../Constants/Colors';
@@ -19,6 +20,7 @@ const ScoreboardContentScreen = ({
   userData = {},
   sport = '',
   entityType = Verbs.entityTypePlayer,
+  onCardPress = () => {},
 }) => {
   const [scoreboardList, setScoreboardList] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -96,6 +98,18 @@ const ScoreboardContentScreen = ({
       });
   }, [userData, sport, authContext]);
 
+  const getScoreboardGroup = useCallback(() => {
+    getScroreboardGameDetails(userData.group_id, authContext)
+      .then((res) => {
+        setLoading(false);
+        setScoreboardList(res.payload);
+        setMatchData(res.payload);
+      })
+      .catch((error) => {
+        setLoading(false);
+        console.log('error :-', error);
+      });
+  }, [userData.group_id, authContext]);
   useEffect(() => {
     if (isFocused) {
       if (entityType === Verbs.entityTypePlayer) {
@@ -107,11 +121,18 @@ const ScoreboardContentScreen = ({
       if (entityType === Verbs.entityTypeScorekeeper) {
         getScorekeeperMatchList();
       }
+      if (
+        entityType === Verbs.entityTypeClub ||
+        entityType === Verbs.entityTypeTeam
+      ) {
+        getScoreboardGroup();
+      }
     }
   }, [
     isFocused,
     getScoreboardList,
     entityType,
+    getScoreboardGroup,
     getRefereeMatchList,
     getScorekeeperMatchList,
   ]);
@@ -173,6 +194,7 @@ const ScoreboardContentScreen = ({
         screenType={Verbs.screenTypeMainScreen}
         sectionList={getSectionList()}
         matchCount={getMatchCount()}
+        onCardPress={onCardPress}
       />
     </View>
   );

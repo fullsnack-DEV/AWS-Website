@@ -29,6 +29,7 @@ import {
 } from '../../api/Groups';
 import Verbs from '../../Constants/Verbs';
 import SwitchAccountShimmer from './SwitchAccountShimmer';
+import ScreenHeader from '../ScreenHeader';
 
 const SwitchAccountModal = ({
   isVisible = false,
@@ -170,11 +171,12 @@ const SwitchAccountModal = ({
 
   return (
     <CustomModalWrapper
-      modalType={ModalTypes.style1}
+      modalType={ModalTypes.default}
       isVisible={isVisible}
       closeModal={closeModal}
       title={strings.switchAccount}
       containerStyle={styles.modalContainer}>
+      <ScreenHeader title={strings.switchAccount} />
       {isFetchingList ? (
         <SwitchAccountShimmer />
       ) : (
@@ -182,6 +184,7 @@ const SwitchAccountModal = ({
           data={accountList}
           keyExtractor={(item) => item.user_id ?? item.group_id}
           showsVerticalScrollIndicator={false}
+          contentContainerStyle={{padding: 20}}
           renderItem={({item}) => (
             <>
               <Pressable
@@ -199,7 +202,19 @@ const SwitchAccountModal = ({
                   )}
                   onPress={() => {
                     if (item.request_id) {
-                      Alert.alert(strings.appName);
+                      Alert.alert(
+                        Platform.OS === 'android'
+                          ? ''
+                          : strings.requestSwitchModalAlertMessage,
+                        Platform.OS === 'android'
+                          ? strings.requestSwitchModalAlertMessage
+                          : '',
+                        [
+                          {
+                            text: strings.okTitleText,
+                          },
+                        ],
+                      );
                     } else {
                       handleSwitchAccount(item);
                     }
@@ -274,8 +289,8 @@ const SwitchAccountModal = ({
 
 const styles = StyleSheet.create({
   modalContainer: {
-    paddingHorizontal: 15,
-    height: '95%',
+    height: '98%',
+    padding: 0,
   },
   row: {
     flexDirection: 'row',

@@ -1058,7 +1058,7 @@ export default {
   editHomePlaceText: 'en_Edit Home Place',
   editCertificateText: 'en_Edit Certificates',
   editPolicyText: 'en_Edit Policy',
-
+  editOption: 'en_Edit {0}',
   englishLangText: 'en_English',
   englishCanadaLangText: 'en_English(Canada)',
   englishSingaporeLangText: 'en_English(Singapore)',
@@ -1486,7 +1486,7 @@ export default {
     'en_Email Verification Link is already Sent, Try after some moment',
 
   passwordMustSameValidation: 'en_New Password and Old Password must be same.',
-
+  newTextTitleCase: 'en_New',
   SHOW: 'en_SHOW',
   HIDE: 'en_HIDE',
   profile: 'en_Profile',
@@ -2422,6 +2422,7 @@ export default {
   invited: 'en_Invited',
   joinRequested: 'en_Join Requested',
   groupsRecruitingMembers: 'en_Groups Recruiting Members',
+  recruitingMembers: 'en_Recruiting Members',
   parentBadgeText: 'en_Parent',
   leaveReplyText: 'en_Leave a reply',
   ratingsInfo:
@@ -2859,6 +2860,11 @@ export default {
   sentAt: 'en_sent at',
   atText: 'en_at {0} ',
   refudviaStripe: 'en_Refund (Through Stripe)',
+  requestSwitchModalAlertMessage:
+    'en_The team will be created after the team partner accepts your request to create it. Then, you will be able to switch to the team account.',
+  deactivated: 'en_DEACTIVATED',
+  paused: 'en_PAUSED',
+  terminated: 'en_TERMINATED',
   enterText: 'en_Enter',
   deleted: 'en_Deleted',
   resendInvoiceSingleTitle: 'en_Please add new message and choose recipients.',

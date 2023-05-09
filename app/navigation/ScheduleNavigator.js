@@ -260,32 +260,14 @@ const ScheduleNavigator = () => (
       name="EntityReviewScreen"
       component={EntityReviewScreen}
       options={{
-        title: 'Review',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
+        headerShown: false,
       }}
     />
     <Stack.Screen
       name="EntityStatScreen"
       component={EntityStatScreen}
       options={{
-        title: 'Stats',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
+        headerShown: false,
       }}
     />
     <Stack.Screen
@@ -308,16 +290,7 @@ const ScheduleNavigator = () => (
       name="EntityScoreboardScreen"
       component={EntityScoreboardScreen}
       options={{
-        title: 'Scoreboard',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
+        headerShown: false,
       }}
     />
     <Stack.Screen

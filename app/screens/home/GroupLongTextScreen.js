@@ -1,53 +1,59 @@
-import React, {useState, useLayoutEffect, useContext} from 'react';
-
-import {View, Text, ScrollView, Alert, StyleSheet} from 'react-native';
-
-import TCTextField from '../../components/TCTextField';
-import TCLabel from '../../components/TCLabel';
+import React, {
+  useState,
+  useLayoutEffect,
+  useContext,
+  useRef,
+  useEffect,
+} from 'react';
+import {
+  View,
+  Alert,
+  StyleSheet,
+  SafeAreaView,
+  Pressable,
+  TextInput,
+} from 'react-native';
 import {patchGroup} from '../../api/Groups';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import {strings} from '../../../Localization/translation';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import AuthContext from '../../auth/context';
+import ScreenHeader from '../../components/ScreenHeader';
+import images from '../../Constants/ImagePath';
 
 export default function GroupLongTextScreen({navigation, route}) {
-  // For activity indicator
   const [loading, setloading] = useState(false);
-  const [textData, setTextData] = useState(
-    route.params.isBylaw
-      ? route.params.groupDetails.bylaw
-      : route.params.groupDetails.bio,
-  );
+  const [description, setDescription] = useState('');
+
+  const {groupDetails} = route.params;
   const authContext = useContext(AuthContext);
+  const inputRef = useRef();
+
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: route.params.isBylaw ? strings.editbylaw : strings.editbio,
-      headerRight: () => (
-        <Text
-          style={{
-            marginEnd: 16,
-            fontSize: 14,
-            fontFamily: fonts.RRegular,
-            color: colors.lightBlackColor,
-          }}
-          onPress={() => {
-            onSaveButtonClicked();
-          }}>
-          {strings.done}
-        </Text>
-      ),
+      headerShown: false,
     });
-  }, [navigation, textData]);
+  }, [navigation]);
+
+  useEffect(() => {
+    if (groupDetails.bio) {
+      setDescription(groupDetails.bio);
+    }
+  }, [groupDetails.bio]);
 
   const onSaveButtonClicked = () => {
     setloading(true);
-    const groupProfile = {};
-    if (route.params.isBylaw) {
-      groupProfile.bylaw = textData;
-    } else {
-      groupProfile.bio = textData;
+    if (!description) {
+      navigation.goBack();
+      return;
     }
+
+    const groupProfile = {
+      ...groupDetails,
+      bio: description,
+    };
+
     patchGroup(
       route.params.groupDetails.group_id,
       groupProfile,
@@ -68,31 +74,60 @@ export default function GroupLongTextScreen({navigation, route}) {
   };
 
   return (
-    <>
-      <ScrollView style={styles.mainContainer}>
-        <ActivityLoader visible={loading} />
-        <View>
-          <TCLabel title={route.params.isBylaw ? strings.bylaw : strings.bio} />
-          <TCTextField
-            placeholder={
-              route.params.isBylaw
-                ? strings.enterBylawPlaceholder
-                : strings.enterBioPlaceholder
-            }
-            onChangeText={(text) => setTextData(text)}
+    <SafeAreaView style={styles.parent}>
+      <ScreenHeader
+        title={strings.editBioText}
+        leftIcon={images.backArrow}
+        leftIconPress={() => {
+          navigation.goBack();
+        }}
+        isRightIconText
+        rightButtonText={strings.save}
+        onRightButtonPress={onSaveButtonClicked}
+      />
+      <ActivityLoader visible={loading} />
+      <View style={{paddingTop: 20, paddingHorizontal: 15}}>
+        <Pressable
+          style={styles.inputContainer}
+          onPress={() => {
+            inputRef.current.focus();
+          }}>
+          <TextInput
+            ref={inputRef}
+            placeholder={strings.enterBioPlaceholder}
+            onChangeText={(text) => setDescription(text)}
             multiline
             maxLength={500}
-            value={textData}
-            height={155}
+            value={description}
+            style={styles.input}
           />
-        </View>
-      </ScrollView>
-    </>
+        </Pressable>
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  mainContainer: {
+  parent: {
     flex: 1,
+  },
+  inputContainer: {
+    backgroundColor: colors.textFieldBackground,
+    borderRadius: 5,
+    padding: 10,
+    minHeight: 193,
+    shadowColor: colors.blackColor,
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.1608,
+    elevation: 1,
+  },
+  input: {
+    padding: 0,
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
   },
 });

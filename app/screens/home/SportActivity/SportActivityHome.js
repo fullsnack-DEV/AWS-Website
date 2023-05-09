@@ -293,6 +293,12 @@ const SportActivityHome = ({navigation, route}) => {
             userData={userData}
             sport={sportObj?.sport}
             entityType={entityType}
+            onCardPress={(item = {}) => {
+              navigation.navigate('EventScreen', {
+                data: item,
+                gameData: item,
+              });
+            }}
           />
         );
 

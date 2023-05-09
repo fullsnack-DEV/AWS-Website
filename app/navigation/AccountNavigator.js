@@ -569,16 +569,7 @@ const AccountNavigator = () => (
       name="EntityReviewScreen"
       component={EntityReviewScreen}
       options={{
-        title: strings.reviewTitle,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
+        headerShown: false,
       }}
     />
 
@@ -586,32 +577,14 @@ const AccountNavigator = () => (
       name="EntityStatScreen"
       component={EntityStatScreen}
       options={{
-        title: strings.statsTitle,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
+        headerShown: false,
       }}
     />
     <Stack.Screen
       name="EntityScoreboardScreen"
       component={EntityScoreboardScreen}
       options={{
-        title: strings.scoreboard,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
+        headerShown: false,
       }}
     />
     <Stack.Screen
@@ -3692,7 +3665,6 @@ const AccountNavigator = () => (
         },
       }}
     />
-
     <Stack.Screen
       name="LanguageSettingScreen"
       component={LanguageSettingScreen}
@@ -3702,7 +3674,6 @@ const AccountNavigator = () => (
         headerTitleStyle: {
           fontWeight: '500',
         },
-
         headerShown: true,
         headerStyle: {
           backgroundColor: colors.whiteColor,

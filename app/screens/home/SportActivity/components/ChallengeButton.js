@@ -157,24 +157,22 @@ const ChallengeButton = ({
     }
   };
 
-  return (
+  return getButtonLabel() ? (
     <View style={[styles.parent, containerStyle]}>
-      {getButtonLabel() ? (
-        <TouchableOpacity
-          style={styles.buttonContainer}
-          onPress={() => handleButtonPress()}>
-          <Text style={styles.buttonText}>
-            {getButtonLabel()}{' '}
-            <Text style={styles.buttonText1}>
-              {sportObj.setting?.game_fee?.fee ?? 0}{' '}
-              {sportObj.setting?.game_fee?.currency_type ?? Verbs.cad} /{' '}
-              {loggedInEntity.entity_type === Verbs.entityTypePlayer
-                ? strings.matchText
-                : strings.hourText}
-            </Text>
+      <TouchableOpacity
+        style={styles.buttonContainer}
+        onPress={() => handleButtonPress()}>
+        <Text style={styles.buttonText}>
+          {getButtonLabel()}{' '}
+          <Text style={styles.buttonText1}>
+            {sportObj.setting?.game_fee?.fee ?? 0}{' '}
+            {sportObj.setting?.game_fee?.currency_type ?? Verbs.cad} /{' '}
+            {loggedInEntity.entity_type === Verbs.entityTypePlayer
+              ? strings.matchText
+              : strings.hourText}
           </Text>
-        </TouchableOpacity>
-      ) : null}
+        </Text>
+      </TouchableOpacity>
       {sportObj?.sport_type === Verbs.singleSport &&
       loggedInEntity.entity_type === Verbs.entityTypePlayer &&
       isAvailable &&
@@ -200,7 +198,7 @@ const ChallengeButton = ({
         </View>
       </Modal>
     </View>
-  );
+  ) : null;
 };
 
 export default ChallengeButton;
