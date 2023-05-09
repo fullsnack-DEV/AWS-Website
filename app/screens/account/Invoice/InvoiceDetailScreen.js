@@ -1,10 +1,6 @@
-/* eslint-disable consistent-return */
-/* eslint-disable no-nested-ternary */
-/* eslint-disable array-callback-return */
-/* eslint-disable no-unused-expressions */
 /* eslint-disable no-else-return */
 
-import React, {useRef, useState, useContext} from 'react';
+import React, {useEffect, useRef, useState, useContext} from 'react';
 import {
   View,
   StyleSheet,
@@ -23,7 +19,8 @@ import moment from 'moment';
 import ReadMore from '@fawazahmed/react-native-read-more';
 import ActionSheet from 'react-native-actionsheet';
 import {format} from 'react-string-format';
-import LinearGradient from 'react-native-linear-gradient';
+
+import {useIsFocused} from '@react-navigation/native';
 import AuthContext from '../../../auth/context';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
@@ -31,12 +28,10 @@ import TCThinDivider from '../../../components/TCThinDivider';
 import images from '../../../Constants/ImagePath';
 
 import {
-  // getInvoiceDetail,
+  getInvoiceDetail,
   rejectInvoice,
   cancelInvoice,
   // payStripeInvoice,
-  // resendInvoice,
-  // deleteInvoiceLog,
 } from '../../../api/Invoice';
 import {strings} from '../../../../Localization/translation';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
@@ -49,11 +44,11 @@ import LogModal from './LogModal';
 import LogDetailModal from './LogDetailModal';
 import InvoiceLogRowView from './InvoiceLogRowView';
 import AddedMessagesModal from './AddedMessageModal';
+import InvoiceProgressBar from './InvoiceProgressBar';
 
 export default function InvoiceDetailScreen({navigation, route}) {
   const [from] = useState(route.params.from);
-  const [invoice] = useState(route.params.invoice);
-  const [thumbnail] = useState(route.params.thumbnail);
+  const [invoice, setInvoice] = useState(route.params.invoice);
   const [selectedLog, setSelectedLog] = useState({});
   const [loading, setLoading] = useState(false);
   const [showResendModal, setShowResendModal] = useState(false);
@@ -64,6 +59,51 @@ export default function InvoiceDetailScreen({navigation, route}) {
   const [showAddedMessages, setShowAddedMessages] = useState(false);
   const userActionSheet = useRef();
   const logManuallyActionSheet = useRef();
+  const isFocused = useIsFocused();
+  const [isApiCalled, setIsApiCalled] = useState(false);
+  const [actionSheetOption] = useState([
+    strings.refudviaStripe,
+    strings.resendInvoiceText,
+
+    strings.cancelInvoiceText,
+    strings.cancel,
+  ]);
+  const ActionSheetPress = {
+    RefundStripe: 0,
+    ResendInvoice: 1,
+    CancelInvoice: 2,
+    Cancel: 3,
+  };
+
+  const OnLogSheetPress = {
+    LogPayment: 0,
+    LogRefund: 1,
+    Cancel: 3,
+  };
+
+  useEffect(() => {
+    if (isFocused || isApiCalled) {
+      getInvoiceData(invoice.invoice_id, authContext);
+    }
+  }, [isFocused, isApiCalled]);
+
+  const getInvoiceData = (invoiceId, auth) => {
+    setIsApiCalled(false);
+    setLoading(true);
+    getInvoiceDetail(invoiceId, auth)
+      .then((response) => {
+        if (response.payload.length > 0) {
+          setInvoice(response.payload[0]);
+        }
+        setLoading(false);
+      })
+      .catch((e) => {
+        setLoading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
 
   const getStatus = () => {
     if (invoice.invoice_status === Verbs.paid) {
@@ -101,7 +141,6 @@ export default function InvoiceDetailScreen({navigation, route}) {
     cancelInvoice(invoice.invoice_id, authContext)
       .then(() => {
         setLoading(false);
-
         navigation.goBack();
       })
       .catch((e) => {
@@ -151,15 +190,11 @@ export default function InvoiceDetailScreen({navigation, route}) {
     if (invoice.invoice_status === Verbs.INVOICE_CANCELLED) {
       return `${strings.cancelledBy} ${invoice.canceled_by.first_name}  ${
         invoice.canceled_by.last_name
-      } ${moment(getJSDate(invoice.canceled_at)).format(
-        'MMM DD, YYYY, hh:mm, A',
-      )} `;
+      } ${moment(getJSDate(invoice.canceled_at)).format(Verbs.DATE_FORMAT)} `;
     } else if (invoice.invoice_status === Verbs.INVOICE_REJECTED) {
       return `${strings.rejectedBy} ${invoice?.rejected_by?.first_name}  ${
         invoice?.rejected_by?.last_name
-      } ${moment(getJSDate(invoice?.rejected_at)).format(
-        'MMM DD, YYYY, hh:mm, A',
-      )} `;
+      } ${moment(getJSDate(invoice?.rejected_at)).format(Verbs.DATE_FORMAT)} `;
     }
 
     return null;
@@ -224,7 +259,8 @@ export default function InvoiceDetailScreen({navigation, route}) {
           navigation.goBack();
         }}
         rightIcon2={
-          invoice.invoice_status === Verbs.INVOICE_CANCELLED
+          invoice.invoice_status === Verbs.INVOICE_CANCELLED ||
+          from === Verbs.INVOICERECEVIED
             ? null
             : images.vertical3Dot
         }
@@ -243,23 +279,10 @@ export default function InvoiceDetailScreen({navigation, route}) {
                   marginTop: 17,
                 }}>
                 <>
-                  <Text
-                    style={{
-                      color: colors.lightBlackColor,
-                      fontSize: 16,
-                      lineHeight: 24,
-                      fontFamily: fonts.RBold,
-                    }}>
+                  <Text style={[styles.statusText, {fontFamily: fonts.RBold}]}>
                     {invoice.invoice_title}
                   </Text>
-                  <Text
-                    style={{
-                      fontFamily: fonts.RRegular,
-                      fontSize: 16,
-                      color: colors.lightBlackColor,
-                      lineHeight: 24,
-                      marginTop: 5,
-                    }}>
+                  <Text style={[styles.statusText, {marginTop: 5}]}>
                     {`${strings.invoiceNumberText} ${invoice.invoice_id}`}
                   </Text>
 
@@ -277,13 +300,7 @@ export default function InvoiceDetailScreen({navigation, route}) {
                       alignItems: 'center',
                       marginTop: 21,
                     }}>
-                    <Text
-                      style={{
-                        fontSize: 16,
-                        lineHeight: 24,
-                        fontFamily: fonts.RRegular,
-                        marginRight: 5,
-                      }}>
+                    <Text style={[styles.issuedAtstyle, {marginRight: 5}]}>
                       {from === Verbs.INVOICERECEVIED
                         ? strings.from
                         : strings.to}
@@ -294,35 +311,26 @@ export default function InvoiceDetailScreen({navigation, route}) {
                         flexDirection: 'row',
                         alignItems: 'center',
                       }}>
-                      {invoice.thumbnail || thumbnail ? (
+                      {invoice.thumbnail ? (
                         <Image
                           style={styles.profileContainer}
                           source={{
-                            uri: invoice.thumbnail || thumbnail,
+                            uri: invoice.thumbnail,
                           }}
                         />
                       ) : null}
 
                       <Text
-                        style={{
-                          fontSize: 16,
-                          fontFamily: fonts.RRegular,
-                          lineHeight: 24,
-                          marginLeft: 5,
-                        }}>
+                        style={[
+                          styles.issuedAtstyle,
+                          {marginLeft: 5, marginTop: 5},
+                        ]}>
                         {invoice.full_name || invoice.receiver_name}
                       </Text>
                     </View>
                   </View>
                 </>
-                <Text
-                  style={{
-                    fontSize: 16,
-                    fontFamily: fonts.RRegular,
-                    lineHeight: 24,
-
-                    marginTop: 5,
-                  }}>
+                <Text style={styles.issuedAtstyle}>
                   {format(
                     strings.issuedAt,
                     moment(getJSDate(invoice.created_date)).format(
@@ -344,7 +352,6 @@ export default function InvoiceDetailScreen({navigation, route}) {
                     ),
                   )}
                 </Text>
-                {/* Cancelled by only be shown in invoice sent not in invoice recvied   */}
 
                 {from === Verbs.INVOICESENT &&
                 (invoice.invoice_status === Verbs.INVOICE_CANCELLED ||
@@ -366,63 +373,13 @@ export default function InvoiceDetailScreen({navigation, route}) {
 
               {/* Progress Bar */}
 
-              <View style={{marginTop: 25}}>
-                <LinearGradient
-                  colors={[colors.progressBarColor, colors.progressBarColor]}
-                  style={styles.paymentProgressView}>
-                  {/* this need to show conditionally when there is 0% amount paid */}
-
-                  {invoice.status !== Verbs.paid && (
-                    <Text
-                      style={{
-                        color: colors.neonBlue,
-                        fontFamily: fonts.RBold,
-                        fontSize: 12,
-                        marginLeft: 5,
-                        marginTop: 10,
-                        height: 20,
-
-                        position: 'absolute',
-                        top: -9,
-                      }}>
-                      {`${(invoice.amount_paid / invoice.amount_due) * 100}%`}
-                    </Text>
-                  )}
-
-                  <LinearGradient
-                    colors={[
-                      colors.progressBarBgColor,
-                      colors.progressBarBgColor,
-                    ]}
-                    style={{
-                      borderWidth: 1.5,
-                      height: 18,
-                      borderColor: colors.neonBlue,
-
-                      borderRadius: 4,
-                      width: `${
-                        (invoice.amount_paid / invoice.amount_due) * 100
-                      }%`,
-
-                      // justifyContent: 'center',
-                    }}>
-                    <Text
-                      style={{
-                        color: colors.neonBlue,
-                        fontFamily: fonts.RBold,
-                        fontSize: 12,
-                        marginRight: 12,
-                        marginTop: -1,
-                        alignSelf: 'flex-end',
-                      }}>
-                      {`${
-                        (invoice.amount_paid / invoice.amount_due).toFixed(2) *
-                        100
-                      }% `}
-                    </Text>
-                  </LinearGradient>
-                </LinearGradient>
-              </View>
+              <InvoiceProgressBar
+                paidamount={invoice.amount_paid}
+                dueamount={invoice.amount_due}
+                Containerstyles={{
+                  marginTop: 25,
+                }}
+              />
 
               {/* status contINER */}
 
@@ -431,12 +388,7 @@ export default function InvoiceDetailScreen({navigation, route}) {
                   paddingHorizontal: 15,
                   marginTop: 25,
                 }}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                  }}>
+                <View style={[styles.statusRows, {marginTop: 0}]}>
                   <Text style={styles.statusText}>{`${strings.status}`}</Text>
                   <Text
                     style={[
@@ -472,34 +424,6 @@ export default function InvoiceDetailScreen({navigation, route}) {
                 </View>
                 {/* balance status not shown in invoice recevied ==>  if  invoice status is  cancelled and Rejected */}
                 {DisplayBalanceRow()}
-
-                {/* {from === Verbs.INVOICECANCELLED ? (
-                <>
-                  <View style={styles.statusRows}>
-                    <Text style={styles.statusText}>{'Refunded'}</Text>
-                    <Text
-                      style={[
-                        styles.amountTextStyle,
-                        {color: colors.lightBlackColor},
-                      ]}>
-                      {`${invoice.total_refund.toFixed(2)} ${
-                        invoice.currency_type
-                      }`}
-                    </Text>
-                  </View>
-
-                  <View style={styles.statusRows}>
-                    <Text style={styles.statusText}>Non-Refunded</Text>
-                    <Text
-                      style={[
-                        styles.amountTextStyle,
-                        {color: colors.darkThemeColor},
-                      ]}>
-                      {getNonRefundAmount()}
-                    </Text>
-                  </View>
-                </>
-              ) : null} */}
               </View>
 
               {/* Divider */}
@@ -514,72 +438,17 @@ export default function InvoiceDetailScreen({navigation, route}) {
                   marginTop: 15,
                 }}>
                 <Text
-                  style={{
-                    fontFamily: fonts.RRegular,
-                    fontSize: 16,
-                    color: colors.lightBlackColor,
-                    lineHeight: 16,
-                    marginBottom: 10,
-                    marginLeft: 15,
-                  }}>
+                  style={[
+                    styles.statusText,
+                    {marginBottom: 10, marginLeft: 15, lineHeight: 16},
+                  ]}>
                   {strings.describeText}
                 </Text>
                 <View
                   style={{
                     paddingHorizontal: 15,
                   }}>
-                  <ReadMore
-                    numberOfLines={3}
-                    style={{
-                      fontFamily: fonts.RRegular,
-                      fontSize: 16,
-                      color: colors.lightBlackColor,
-                      lineHeight: 24,
-                    }}
-                    seeMoreText={strings.moreText}
-                    seeLessText={strings.lessText}
-                    seeLessStyle={[
-                      styles.moreLessText,
-                      {
-                        color: colors.userPostTimeColor,
-                      },
-                    ]}
-                    seeMoreStyle={[
-                      styles.moreLessText,
-                      {
-                        color: colors.userPostTimeColor,
-                      },
-                    ]}>
-                    {invoice?.invoice_description}
-                  </ReadMore>
-                </View>
-              </View>
-              {/* Added messages */}
-
-              {/* Divider */}
-              <TCThinDivider
-                marginTop={15}
-                width={'94%'}
-                color={colors.thinDividerColor}
-                height={2}
-              />
-
-              {/* invoice.resend_data?.length > 0 */}
-
-              {invoice.resend_data?.length > 0 && (
-                <View style={{marginTop: 25, paddingHorizontal: 15}}>
-                  <Text
-                    style={{
-                      fontFamily: fonts.RRegular,
-                      fontSize: 16,
-                      color: colors.lightBlackColor,
-                      lineHeight: 16,
-                      marginBottom: 10,
-                    }}>
-                    {`${'Added Messages'} (${invoice.resend_data?.length}) `}
-                  </Text>
-
-                  <TouchableOpacity onPress={() => setShowAddedMessages(true)}>
+                  {invoice.invoice_description?.length > 1 ? (
                     <ReadMore
                       numberOfLines={3}
                       style={{
@@ -602,28 +471,24 @@ export default function InvoiceDetailScreen({navigation, route}) {
                           color: colors.userPostTimeColor,
                         },
                       ]}>
-                      {invoice?.resend_data[0].message}
+                      {invoice?.invoice_description}
                     </ReadMore>
-                  </TouchableOpacity>
-
-                  <Text
-                    style={{
-                      marginTop: 15,
-                      color: colors.userPostTimeColor,
-                      fontSize: 12,
-                      lineHeight: 18,
-                    }}>
-                    {`${strings.sentBy} ${
-                      invoice?.resend_data[0].resend_by.first_name
-                    } ${invoice?.resend_data[0].resend_by.last_name} ${format(
-                      strings.atText,
-                      moment(
-                        getJSDate(invoice?.resend_data[0].resend_date),
-                      ).format(Verbs.DATE_FORMAT),
-                    )} `}
-                  </Text>
+                  ) : (
+                    <Text
+                      style={[
+                        styles.statusText,
+                        {
+                          fontSize: 14,
+                          color: colors.userPostTimeColor,
+                          marginLeft: 5,
+                        },
+                      ]}>
+                      {strings.noDescription}
+                    </Text>
+                  )}
                 </View>
-              )}
+              </View>
+              {/* Added messages */}
 
               {/* Divider */}
               <TCThinDivider
@@ -632,6 +497,82 @@ export default function InvoiceDetailScreen({navigation, route}) {
                 color={colors.thinDividerColor}
                 height={2}
               />
+
+              {invoice.resend_data?.length > 0 && (
+                <>
+                  <View style={{marginTop: 25, paddingHorizontal: 15}}>
+                    <Text
+                      style={{
+                        fontFamily: fonts.RRegular,
+                        fontSize: 16,
+                        color: colors.lightBlackColor,
+                        lineHeight: 16,
+                        marginBottom: 10,
+                      }}>
+                      {format(
+                        strings.addedMeesages,
+                        invoice.resend_data?.length,
+                      )}
+                    </Text>
+
+                    <TouchableOpacity
+                      onPress={() => setShowAddedMessages(true)}>
+                      <ReadMore
+                        numberOfLines={3}
+                        style={{
+                          fontFamily: fonts.RRegular,
+                          fontSize: 16,
+                          color: colors.lightBlackColor,
+                          lineHeight: 24,
+                        }}
+                        seeMoreText={strings.moreText}
+                        seeLessText={strings.lessText}
+                        seeLessStyle={[
+                          styles.moreLessText,
+                          {
+                            color: colors.userPostTimeColor,
+                          },
+                        ]}
+                        seeMoreStyle={[
+                          styles.moreLessText,
+                          {
+                            color: colors.userPostTimeColor,
+                          },
+                        ]}>
+                        {invoice?.resend_data[0].message}
+                      </ReadMore>
+                    </TouchableOpacity>
+
+                    <Text
+                      style={{
+                        marginTop: 5,
+                        color: colors.userPostTimeColor,
+                        fontSize: 12,
+                        lineHeight: 18,
+                      }}>
+                      {`${
+                        from === Verbs.INVOICESENT
+                          ? strings.sentBy
+                          : strings.sentAt
+                      } ${invoice?.resend_data[0].resend_by.first_name} ${
+                        invoice?.resend_data[0].resend_by.last_name
+                      } ${format(
+                        strings.atText,
+                        moment(
+                          getJSDate(invoice?.resend_data[0].resend_date),
+                        ).format(Verbs.DATE_FORMAT),
+                      )} `}
+                    </Text>
+                  </View>
+
+                  <TCThinDivider
+                    marginTop={15}
+                    width={'94%'}
+                    color={colors.thinDividerColor}
+                    height={2}
+                  />
+                </>
+              )}
 
               {/* Added Messages Modal */}
 
@@ -644,26 +585,29 @@ export default function InvoiceDetailScreen({navigation, route}) {
               {/* log view */}
               <View style={styles.logViewContainer}>
                 <Text
-                  style={{
-                    fontFamily: fonts.RBold,
-                    fontSize: 16,
-                    color: colors.lightBlackColor,
-                    lineHeight: 24,
-                    textTransform: 'uppercase',
-                  }}>
+                  style={[
+                    styles.statusText,
+                    {
+                      fontFamily: fonts.RBold,
+                      color: colors.lightBlackColor,
+                      textTransform: 'uppercase',
+                    },
+                  ]}>
                   {strings.log}
                 </Text>
                 {from === Verbs.INVOICESENT && (
                   <Pressable
                     onPress={() => logManuallyActionSheet.current.show()}>
                     <Text
-                      style={{
-                        fontFamily: fonts.RRegular,
-                        fontSize: 14,
-                        lineHeight: 24,
-                        color: colors.lightBlackColor,
-                        textDecorationLine: 'underline',
-                      }}>
+                      style={[
+                        styles.statusText,
+                        {
+                          fontFamily: fonts.RRegular,
+                          color: colors.lightBlackColor,
+                          fontSize: 14,
+                          textDecorationLine: 'underline',
+                        },
+                      ]}>
                       {strings.logManually}
                     </Text>
                   </Pressable>
@@ -684,6 +628,12 @@ export default function InvoiceDetailScreen({navigation, route}) {
                 invoice={invoice}
                 closeList={() => setShowLogManually(false)}
                 mode={logModalType}
+                onActionPress={() => {
+                  setTimeout(() => {
+                    setIsApiCalled(true);
+                  }, 10);
+                  setShowLogManually(false);
+                }}
               />
 
               {/* Log  */}
@@ -693,6 +643,12 @@ export default function InvoiceDetailScreen({navigation, route}) {
                 invoice={invoice}
                 log={selectedLog}
                 closeList={() => setShowLogModal(false)}
+                onActionPress={() => {
+                  setTimeout(() => {
+                    setIsApiCalled(true);
+                  }, 10);
+                  setShowLogModal(false);
+                }}
               />
             </View>
           )}
@@ -738,17 +694,11 @@ export default function InvoiceDetailScreen({navigation, route}) {
 
         <ActionSheet
           ref={userActionSheet}
-          options={[
-            strings.refudviaStripe,
-            strings.resendInvoiceText,
-
-            strings.cancelInvoiceText,
-            strings.cancel,
-          ]}
+          options={actionSheetOption}
           cancelButtonIndex={3}
           destructiveButtonIndex={2}
           onPress={(index) => {
-            if (index === 0) {
+            if (index === ActionSheetPress.RefundStripe) {
               Alert.alert(
                 Platform.OS === 'android' ? '' : strings.invoiceRefundText,
                 Platform.OS === 'android' ? strings.invoiceRefundText : '',
@@ -759,11 +709,11 @@ export default function InvoiceDetailScreen({navigation, route}) {
                 ],
               );
             }
-            if (index === 1) {
+            if (index === ActionSheetPress.ResendInvoice) {
               setShowResendModal(true);
             }
 
-            if (index === 2) {
+            if (index === ActionSheetPress.CancelInvoice) {
               Alert.alert(
                 Platform.OS === 'android' ? '' : strings.cancelSingleInvoice,
                 Platform.OS === 'android' ? strings.cancelSingleInvoice : '',
@@ -788,7 +738,7 @@ export default function InvoiceDetailScreen({navigation, route}) {
           options={[strings.logaPayment, strings.logaRefund, strings.cancel]}
           cancelButtonIndex={2}
           onPress={(index) => {
-            if (index === 0) {
+            if (index === OnLogSheetPress.LogPayment) {
               if (invoice.amount_remaining === 0) {
                 Alert.alert(
                   strings.alertmessagetitle,
@@ -799,7 +749,7 @@ export default function InvoiceDetailScreen({navigation, route}) {
               setLogModalType(LogType.Payment);
               setShowLogManually(true);
             }
-            if (index === 1) {
+            if (index === OnLogSheetPress.LogRefund) {
               if (invoice.amount_paid === 0) {
                 Alert.alert(
                   strings.alertmessagetitle,
@@ -819,6 +769,12 @@ export default function InvoiceDetailScreen({navigation, route}) {
           invoiceAction={InvoiceActionType.Resend}
           closeModal={() => setShowResendModal(false)}
           title={strings.resendInvoiceText}
+          Modaltitle={strings.resendInvoiceSingleTitle}
+          onDonePressForResend={() => {
+            setTimeout(() => {
+              setIsApiCalled(true);
+            }, 10);
+          }}
         />
       </ScrollView>
     </SafeAreaView>
@@ -827,17 +783,6 @@ export default function InvoiceDetailScreen({navigation, route}) {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-  },
-  paymentProgressView: {
-    height: 20,
-    backgroundColor: colors.thinDividerColor,
-    marginLeft: 15,
-    marginRight: 15,
-    borderRadius: 4,
-    borderWidth: 1,
-    borderColor: colors.darkThemeColor,
-    // marginTop: 10,
-    alignItems: 'flex-start',
   },
 
   profileContainer: {
@@ -891,5 +836,12 @@ const styles = StyleSheet.create({
     marginTop: 25,
     flexDirection: 'row',
     justifyContent: 'space-between',
+  },
+  issuedAtstyle: {
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    lineHeight: 24,
+
+    marginTop: 5,
   },
 });

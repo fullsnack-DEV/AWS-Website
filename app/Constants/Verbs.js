@@ -152,8 +152,9 @@ const Verbs = {
 
   PAYMENT: 'payment',
   CASH: 'Cash',
-  DATE_FORMAT: 'MMM DD, YYYY hh:mm A',
+  DATE_FORMAT: 'MMM DD, YYYY, hh:mmA',
   CHEQUE: 'Cheque',
+  DATE_MDY_FORMAT: 'll',
 };
 
 export default Verbs;

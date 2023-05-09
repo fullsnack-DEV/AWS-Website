@@ -17,6 +17,8 @@ import {
   Image,
   TouchableWithoutFeedback,
 } from 'react-native';
+
+import moment from 'moment';
 import {useIsFocused} from '@react-navigation/native';
 import {format} from 'react-string-format';
 import AuthContext from '../../../auth/context';
@@ -32,6 +34,7 @@ import BottomSheet from '../../../components/modals/BottomSheet';
 import images from '../../../Constants/ImagePath';
 import fonts from '../../../Constants/Fonts';
 import {getTCDate} from '../../../utils';
+import DateFilterModal from './DatefilterModal';
 
 export default function CanceledInvoicesScreen({navigation, route}) {
   const [loading, setloading] = useState(false);
@@ -44,8 +47,8 @@ export default function CanceledInvoicesScreen({navigation, route}) {
   const [startDateTime, setStartDateTime] = useState(
     new Date(new Date().setDate(new Date().getDate() - 90)),
   );
-  const [endDateTime, setEndDateTime] = useState(new Date());
-
+  const [endDateTime, setEndDateTime] = useState();
+  const [showDateModal, setShowDateModal] = useState(false);
   const [tabs, setTabs] = useState([
     strings.allNInvoice,
     strings.canceledNInvoice,
@@ -84,7 +87,6 @@ export default function CanceledInvoicesScreen({navigation, route}) {
 
   const getDates = (optionsState) => {
     const startDate = new Date();
-    const endDate = new Date();
 
     if (optionsState === strings.past90DaysText) {
       startDate.setDate(startDate.getDate() - 90);
@@ -97,7 +99,6 @@ export default function CanceledInvoicesScreen({navigation, route}) {
     }
 
     setStartDateTime(startDate);
-    setEndDateTime(endDate);
   };
 
   const renderCancelledView = ({item}) => (
@@ -115,15 +116,13 @@ export default function CanceledInvoicesScreen({navigation, route}) {
 
   const getCancelInvoices = () => {
     const TcstartDate = getTCDate(startDateTime);
-    const TCendDate = getTCDate(endDateTime);
-    console.log(TcstartDate, TCendDate);
 
     setloading(true);
     let type = 'receiver';
     if (from === Verbs.INVOICESENT) {
       type = 'sender';
     }
-    getCancelledInvoice(type, authContext)
+    getCancelledInvoice(type, authContext, TcstartDate, endDateTime)
       .then((response) => {
         setloading(false);
         setInvoiceList(response.payload);
@@ -200,10 +199,10 @@ export default function CanceledInvoicesScreen({navigation, route}) {
               {selectedMonth}
             </Text>
             <Image
-              source={images.dropDownArrow2}
+              source={images.invoiceLightDownArrow}
               style={{
-                height: 15,
-                width: 15,
+                height: 10,
+                width: 16,
                 marginRight: 15,
                 tintColor: colors.userPostTimeColor,
                 alignSelf: 'center',
@@ -233,6 +232,13 @@ export default function CanceledInvoicesScreen({navigation, route}) {
         closeModal={() => setVisibleMonthModal(false)}
         optionList={MonthData}
         onSelect={(option) => {
+          if (option === strings.pickaDate) {
+            setVisibleMonthModal(false);
+            setShowDateModal(true);
+
+            return;
+          }
+          setEndDateTime();
           setSelectedMonth(option);
           setVisibleMonthModal(false);
           getDates(option);
@@ -277,6 +283,22 @@ export default function CanceledInvoicesScreen({navigation, route}) {
           keyExtractor={(item, index) => index.toString()}
         />
       </View>
+
+      <DateFilterModal
+        isVisible={showDateModal}
+        closeList={() => setShowDateModal(false)}
+        onApplyPress={(startDate, endDate) => {
+          setShowDateModal(false);
+          setStartDateTime(startDate);
+          setEndDateTime(getTCDate(endDate));
+
+          setSelectedMonth(
+            `${moment(startDate).format(Verbs.DATE_MDY_FORMAT)} - ${moment(
+              endDate,
+            ).format(Verbs.DATE_MDY_FORMAT)}`,
+          );
+        }}
+      />
     </View>
   );
 }

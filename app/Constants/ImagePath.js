@@ -52,6 +52,8 @@ const images = {
   calNextArrow: require('../assets/images/cal_next.png'),
   calPrevArrow: require('../assets/images/cal_prev.png'),
   newinvoiceIcon: require('../assets/images/InvoiceNewIcon.png'),
+  invoiceDarkDownArrow: require('../assets/images/InvoiceDarkDownArrow.png'),
+  invoiceLightDownArrow: require('../assets/images/InvoiceLightdownarrow.png'),
 
   backArrow: require('../assets/images/ic_back_arrow.png'),
   menu: require('../assets/images/menu.png'),

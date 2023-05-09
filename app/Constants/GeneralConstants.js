@@ -156,7 +156,28 @@ export const eventsInviteOptions = {
   4: strings.myGroups,
 };
 
-export const currencyList = ['CAD', 'INR', 'KRW', 'THB', 'USD'];
+export const currencyList = [
+  {
+    countryName: 'Canada',
+    currency: 'CAD',
+  },
+  {
+    countryName: 'India',
+    currency: 'INR',
+  },
+  {
+    countryName: 'Korea',
+    currency: 'KRW',
+  },
+  {
+    countryName: 'ThaiLand',
+    currency: 'THB',
+  },
+  {
+    countryName: 'Unites States',
+    currency: 'USD',
+  },
+];
 
 export const DEFAULT_NTRP = '5.0';
 

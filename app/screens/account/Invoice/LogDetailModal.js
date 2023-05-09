@@ -6,32 +6,49 @@ import {
   Alert,
   Platform,
 } from 'react-native';
-import React from 'react';
+import React, {useState, useContext} from 'react';
 import moment from 'moment';
 import CustomModalWrapper from '../../../components/CustomModalWrapper';
 import {ModalTypes} from '../../../Constants/GeneralConstants';
 import {strings} from '../../../../Localization/translation';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
-
 import {getJSDate} from '../../../utils';
 import TCThinDivider from '../../../components/TCThinDivider';
 import Verbs from '../../../Constants/Verbs';
+import {deleteInvoiceLog} from '../../../api/Invoice';
+import AuthContext from '../../../auth/context';
+import ActivityLoader from '../../../components/loader/ActivityLoader';
 
-export default function LogDetailModal({isVisible, invoice, log, closeList}) {
+export default function LogDetailModal({isVisible, invoice, log, closeList, onActionPress = () => {},}) {
+  const [loading, setLoading] = useState(false);
+  const authContext = useContext(AuthContext);
+  const onDeleteLog = () => {
+      setLoading(true);
+      deleteInvoiceLog(invoice.invoice_id, log.transaction_id, authContext)
+        .then(() => {
+          setLoading(false);
+          onActionPress()
+        })
+        .catch((e) => {
+          setLoading(false);
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
+  };
+
   const onDeletePress = () => {
     Alert.alert(
       Platform.OS === 'android' ? '' : strings.deleteLogText,
       Platform.OS === 'android' ? strings.deleteLogText : '',
-
       [
         {
           text: strings.cancel,
-          onPress: () => console.log('invoice'),
         },
         {
           text: strings.delete,
-          onPress: () => console.log('log', log),
+          onPress: () => onDeleteLog(),
           style: 'destructive',
         },
       ],
@@ -109,6 +126,7 @@ export default function LogDetailModal({isVisible, invoice, log, closeList}) {
       title={strings.log}
       containerStyle={{padding: 0, width: '100%', height: '90%'}}
       showBackButton>
+      <ActivityLoader visible={loading} />
       <View
         style={{
           paddingHorizontal: 20,

@@ -29,14 +29,6 @@ export default function RecipientInvoiceView({invoice, onPressCard}) {
           flex: 1,
         }}>
         <Text
-          style={{
-            lineHeight: 24,
-            fontFamily: fonts.RRegular,
-            fontSize: 14,
-          }}>
-          {moment(getJSDate(invoice.due_date)).format(Verbs.DATE_FORMAT)}
-        </Text>
-        <Text
           numberOfLines={2}
           style={{
             fontSize: 16,
@@ -44,6 +36,14 @@ export default function RecipientInvoiceView({invoice, onPressCard}) {
             lineHeight: 24,
           }}>
           {invoice.invoice_title}
+        </Text>
+        <Text
+          style={{
+            lineHeight: 24,
+            fontFamily: fonts.RRegular,
+            fontSize: 14,
+          }}>
+          {moment(getJSDate(invoice.due_date)).format(Verbs.DATE_FORMAT)}
         </Text>
       </View>
 

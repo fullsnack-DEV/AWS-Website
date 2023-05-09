@@ -1,5 +1,13 @@
-import {View, Text, TouchableOpacity, Image, Alert} from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  Alert,
+  Platform,
+} from 'react-native';
 import React, {useState, useContext} from 'react';
+import {format} from 'react-string-format';
 import CustomModalWrapper from '../../../components/CustomModalWrapper';
 import {LogType, ModalTypes} from '../../../Constants/GeneralConstants';
 import {strings} from '../../../../Localization/translation';
@@ -11,8 +19,15 @@ import ActivityLoader from '../../../components/loader/ActivityLoader';
 import AuthContext from '../../../auth/context';
 import {addLog} from '../../../api/Invoice';
 import Verbs from '../../../Constants/Verbs';
+import colors from '../../../Constants/Colors';
 
-export default function LogModal({isVisible, invoice, closeList, mode}) {
+export default function LogModal({
+  isVisible,
+  invoice,
+  closeList,
+  mode,
+  onActionPress = () => {},
+}) {
   const [loading, setLoading] = useState(false);
   const [paymentType, setPaymentType] = useState(0);
   const [amount, setAmount] = useState(0);
@@ -32,7 +47,8 @@ export default function LogModal({isVisible, invoice, closeList, mode}) {
       addLog(invoice.invoice_id, body, authContext)
         .then(() => {
           setLoading(false);
-          closeList();
+          Clearfileds();
+          onActionPress();
         })
         .catch((e) => {
           setLoading(false);
@@ -43,6 +59,13 @@ export default function LogModal({isVisible, invoice, closeList, mode}) {
     }
   };
 
+  const Clearfileds = () => {
+    closeList();
+    setNotes('');
+    setAmount('');
+    setPaymentType(0);
+  };
+
   const IsNumeric = (num) => num >= 0 || num < 0;
 
   const addLogValidation = () => {
@@ -51,7 +74,9 @@ export default function LogModal({isVisible, invoice, closeList, mode}) {
       return false;
     }
     if (amount < 1 && amount >= 0) {
-      Alert.alert(strings.lessThan1AmountValidation);
+      Alert.alert(
+        format(strings.lessThan1AmountValidation, invoice.currency_type),
+      );
       return false;
     }
     if (mode === LogType.Payment && amount > invoice.amount_due) {
@@ -72,7 +97,7 @@ export default function LogModal({isVisible, invoice, closeList, mode}) {
   return (
     <CustomModalWrapper
       isVisible={isVisible}
-      closeModal={closeList}
+      closeModal={() => Clearfileds()}
       modalType={ModalTypes.style1}
       onRightButtonPress={() => onAddLog()}
       headerRightButtonText={strings.done}
@@ -99,21 +124,34 @@ export default function LogModal({isVisible, invoice, closeList, mode}) {
           style={{
             height: 35,
             paddingHorizontal: 0,
-            marginTop: 6,
+            marginTop: 12,
           }}>
           <TCTextField
-            height={35}
             onChangeText={(text) => {
               if (IsNumeric(text)) {
                 setAmount(text);
               }
             }}
             style={{
-              height: 35,
+              marginTop: Platform.OS === 'android' ? 0 : -5,
               marginHorizontal: 0,
             }}
             keyboardType="numeric"
+            placeholder={strings.enterAmount}
             value={amount}
+            leftView={
+              <Text
+                style={{
+                  alignSelf: 'center',
+                  marginRight: 15,
+                  fontFamily: fonts.RRegular,
+                  fontSize: 16,
+
+                  color: colors.lightBlackColor,
+                }}>
+                {invoice.currency_type}
+              </Text>
+            }
             textAlign="right"
           />
         </View>
@@ -199,6 +237,7 @@ export default function LogModal({isVisible, invoice, closeList, mode}) {
             <TCTextField
               height={100}
               multiline
+              placeholder={strings.enterNotePlaceholder}
               onChangeText={(text) => setNotes(text)}
               style={{
                 marginHorizontal: 0,

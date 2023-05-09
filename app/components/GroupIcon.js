@@ -52,7 +52,10 @@ const GroupIcon = ({
     <View style={[styles.parent, containerStyle]}>
       <Image
         source={getPlaceholder().background}
-        style={[styles.image, grpImageStyle]}
+        style={[
+          styles.image,
+          entityType === Verbs.entityTypeTeam ? grpImageStyle : {},
+        ]}
       />
       {(entityType === Verbs.entityTypeClub ||
         entityType === Verbs.entityTypeTeam) &&

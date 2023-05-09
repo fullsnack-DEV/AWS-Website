@@ -99,7 +99,7 @@ export default function MemberInvoicesView({data, onPressCard}) {
                 {
                   color:
                     data.invoice_total === data.invoice_paid_total
-                      ? colors.gameDetailColor
+                      ? colors.neonBlue
                       : colors.darkThemeColor,
                   alignSelf: 'flex-end',
                 },
