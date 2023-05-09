@@ -108,6 +108,13 @@ export default function NavigationMainContainer() {
   //   }
   // }, [authContext.tokenData]);
 
+  useEffect(() => {
+    authContext.setIsAccountDeactivated(
+      authContext?.entity?.obj?.is_pause ||
+        authContext?.entity?.obj?.is_deactivate,
+    );
+  }, [authContext]);
+
   return (
     <Fragment>
       {!loading ? (

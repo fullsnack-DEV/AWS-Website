@@ -27,6 +27,7 @@ export default function App() {
   const [managedEntities, setManagedEntityList] = useState([]);
   const [unreadNotificationCount, setNotificationCount] = useState({});
   const [totalNotificationCount, setTotalNotificationCount] = useState(0);
+  const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
 
   const setTokenData = useCallback(async (token) => {
     setToken(token);
@@ -128,6 +129,8 @@ export default function App() {
       totalNotificationCount,
       setTotalNotificationCount,
       clearAuthContext,
+      isAccountDeactivated,
+      setIsAccountDeactivated,
     }),
     [
       role,
@@ -145,6 +148,7 @@ export default function App() {
       totalNotificationCount,
       setTotalNotificationCount,
       clearAuthContext,
+      isAccountDeactivated,
     ],
   );
 

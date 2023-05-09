@@ -23,7 +23,7 @@ const AccountEntity = ({
   const [isBgImage, setIsBgImage] = useState(false);
 
   useEffect(() => {
-    if (entity.group_id && entity.full_image) {
+    if (entity.group_id && entity.background_full_image) {
       setIsBgImage(true);
     } else {
       setIsBgImage(false);
@@ -101,7 +101,9 @@ const AccountEntity = ({
   );
 
   return isBgImage ? (
-    <ImageBackground style={styles.parent} source={{uri: entity.full_image}}>
+    <ImageBackground
+      style={styles.parent}
+      source={{uri: entity.full_image ?? entity.background_full_image}}>
       {renderView()}
     </ImageBackground>
   ) : (

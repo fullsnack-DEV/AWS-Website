@@ -106,7 +106,10 @@ export default function TerminateAccountScreen({navigation}) {
                     : strings.terminate,
                 style: 'destructive',
                 onPress: () => {
-                  if (accountType === Verbs.entityTypeTeam) {
+                  if (
+                    accountType === Verbs.entityTypeTeam ||
+                    accountType === Verbs.entityTypeClub
+                  ) {
                     terminateGroup();
                   }
                   if (

@@ -9,14 +9,11 @@ import {
   Text,
   View,
 } from 'react-native';
-import {format} from 'react-string-format';
-
 import {useIsFocused} from '@react-navigation/native';
 import AccountHeader from './components/AccountHeader';
 import AuthContext from '../../auth/context';
 import AccountEntity from './components/AccountEntity';
-import {getStorage, onLogout, setAuthContextData} from '../../utils';
-import {userActivate} from '../../api/Users';
+import {getStorage, onLogout} from '../../utils';
 import SwitchAccountModal from '../../components/account/SwitchAccountModal';
 import AccountMenuList from './components/AccountMenuList';
 import {
@@ -84,18 +81,7 @@ const AccountScreen = ({navigation, route}) => {
   const [CustomeAlertTitle, setCustomeAlertTitle] = useState();
   const [grpIdforTermination, setGrpIdForTermination] = useState();
   const [players, setPlayers] = useState([]);
-  const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
   const [onLoad, setOnLoad] = useState(false);
-
-  useEffect(() => {
-    if (
-      isFocused &&
-      (authContext.entity.obj?.is_pause === true ||
-        authContext.entity.obj?.is_deactivate === true)
-    ) {
-      setIsAccountDeactivated(true);
-    }
-  }, [isFocused, authContext]);
 
   const getUsers = useCallback(() => {
     const generalsQuery = {
@@ -733,81 +719,6 @@ const AccountScreen = ({navigation, route}) => {
     );
   };
 
-  const getDeactivationType = () => {
-    if (authContext.entity.obj?.is_pause === true) {
-      return Verbs.pauseVerb;
-    }
-    if (authContext.entity.obj?.under_terminate === true) {
-      return Verbs.terminate;
-    }
-    return Verbs.deactivateVerb;
-  };
-
-  const reActivateUser = () => {
-    setLoading(true);
-    userActivate(authContext)
-      .then(async (response) => {
-        setIsAccountDeactivated(false);
-        await setAuthContextData(response.payload, authContext);
-        setLoading(false);
-      })
-      .catch((e) => {
-        setLoading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
-  };
-
-  const unPauseGroup = () => {
-    setLoading(true);
-    groupUnpaused(authContext)
-      .then(async (response) => {
-        setIsAccountDeactivated(false);
-        await setAuthContextData(response.payload, authContext);
-        setLoading(false);
-      })
-      .catch((e) => {
-        setLoading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
-  };
-
-  const handleAccountActivation = () => {
-    Alert.alert(
-      format(
-        strings.pauseUnpauseAccountText,
-        authContext?.entity?.obj?.is_pause === true
-          ? Verbs.unpauseVerb
-          : Verbs.reactivateVerb,
-      ),
-      '',
-      [
-        {
-          text: strings.cancel,
-          style: 'cancel',
-        },
-        {
-          text:
-            authContext?.entity?.obj?.is_pause === true
-              ? 'Unpause'
-              : 'Reactivate',
-          style: 'destructive',
-          onPress: () => {
-            if (authContext.entity.obj?.is_pause === true) {
-              unPauseGroup();
-            } else {
-              reActivateUser();
-            }
-          },
-        },
-      ],
-      {cancelable: false},
-    );
-  };
-  //
   return (
     <SafeAreaView style={{flex: 1}}>
       <AccountHeader
@@ -833,16 +744,11 @@ const AccountScreen = ({navigation, route}) => {
               });
             }}
           />
-          {isAccountDeactivated && (
-            <TCAccountDeactivate
-              type={getDeactivationType()}
-              onPress={handleAccountActivation}
-            />
-          )}
+          {authContext.isAccountDeactivated && <TCAccountDeactivate />}
 
           <AccountMenuList
             menuList={accountMenu}
-            isAccountDeactivated={isAccountDeactivated}
+            isAccountDeactivated={authContext.isAccountDeactivated}
             onPressSetting={(rowItem) => {
               navigation.navigate(
                 rowItem.navigateTo.screenName,

@@ -64,8 +64,7 @@ export default function GroupMembersScreen({navigation, route}) {
 
   const [switchUser] = useState(authContext.entity);
   const [groupObj] = useState(route.params?.groupObj);
-  const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
-  const [pointEvent, setPointEvent] = useState('auto');
+  const [pointEvent] = useState('auto');
   const [active, setActive] = useState(true);
 
   const [groupObjNew, setGroupObjNew] = useState({});
@@ -173,26 +172,7 @@ export default function GroupMembersScreen({navigation, route}) {
   useEffect(() => {
     callGroup(groupID, authContext);
     getGroupsLoggedInUser();
-
-    setIsAccountDeactivated(false);
-    setPointEvent('auto');
-    if (isFocused) {
-      if (authContext?.entity?.obj?.is_pause === true) {
-        setIsAccountDeactivated(true);
-        setPointEvent('none');
-      }
-      if (authContext?.entity?.obj?.is_deactivate === true) {
-        setIsAccountDeactivated(true);
-        setPointEvent('none');
-      }
-    }
-  }, [
-    authContext.entity?.obj.entity_type,
-    authContext.entity?.obj?.is_deactivate,
-    authContext.entity?.obj?.is_pause,
-    authContext.entity.role,
-    isFocused,
-  ]);
+  }, [authContext, getGroupsLoggedInUser, groupID]);
 
   const searchFilterFunction = (text) => {
     const filteredData = members.filter((item) => {
@@ -705,7 +685,7 @@ export default function GroupMembersScreen({navigation, route}) {
 
       <View
         style={{
-          opacity: isAccountDeactivated ? 0.5 : 1,
+          opacity: authContext.isAccountDeactivated ? 0.5 : 1,
         }}
         pointerEvents={pointEvent}>
         {currentRoute === 'GroupMembersScreen' && (

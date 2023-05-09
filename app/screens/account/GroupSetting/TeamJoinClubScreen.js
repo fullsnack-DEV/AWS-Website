@@ -146,7 +146,7 @@ export default function TeamJoinClubScreen({navigation, route}) {
   return (
     <SafeAreaView style={{flex: 1}}>
       <ScreenHeader
-        title={strings.whoCanJoinTeam}
+        title={strings.WhatTeamCanJoinClub}
         leftIcon={images.backArrow}
         leftIconPress={() => navigation.goBack()}
         isRightIconText
@@ -159,7 +159,7 @@ export default function TeamJoinClubScreen({navigation, route}) {
         style={styles.mainContainer}
         showsVerticalScrollIndicator={false}>
         <ActivityLoader visible={loading} />
-        <Text style={styles.optionsTitle}>{strings.whoCanJoinTeam}</Text>
+        <Text style={styles.optionsTitle}>{strings.WhatTeamCanJoinClub}</Text>
         <FlatList
           data={teamCanJoinClubOpetions}
           keyExtractor={(item, index) => index.toString()}

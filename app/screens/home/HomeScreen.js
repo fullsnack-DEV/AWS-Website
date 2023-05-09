@@ -21,11 +21,7 @@ import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 
 import AuthContext from '../../auth/context';
-import {
-  getUserDetails,
-  sendInvitationInGroup,
-  userActivate,
-} from '../../api/Users';
+import {getUserDetails, sendInvitationInGroup} from '../../api/Users';
 import {strings} from '../../../Localization/translation';
 import {getGroupIndex} from '../../api/elasticSearch';
 import Verbs from '../../Constants/Verbs';
@@ -37,11 +33,9 @@ import {
   getGroupDetails,
   getGroupMembers,
   getTeamsOfClub,
-  groupUnpaused,
 } from '../../api/Groups';
 import GroupHomeScreen from './GroupHomeScreen';
 import TCAccountDeactivate from '../../components/TCAccountDeactivate';
-import {setAuthContextData} from '../../utils';
 import CongratulationsModal from '../account/registerPlayer/modals/CongratulationsModal';
 import * as Utility from '../../utils';
 
@@ -49,8 +43,7 @@ const HomeScreen = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
 
-  const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
-  const [pointEvent, setPointEvent] = useState('auto');
+  const [pointEvent] = useState('auto');
   const [isAdmin, setIsAdmin] = useState(false);
   const [currentUserData, setCurrentUserData] = useState({});
   const [moreOptions, setMoreOptions] = useState([]);
@@ -66,18 +59,6 @@ const HomeScreen = ({navigation, route}) => {
       headerShown: false,
     });
   }, [navigation]);
-
-  useEffect(() => {
-    setIsAccountDeactivated(false);
-    setPointEvent('auto');
-    if (
-      isFocused &&
-      (authContext.entity.obj.is_pause || authContext.entity.obj.is_deactivate)
-    ) {
-      setIsAccountDeactivated(true);
-      setPointEvent('none');
-    }
-  }, [authContext.entity, pointEvent, isAccountDeactivated, isFocused]);
 
   const getUserData = useCallback(
     (uid, admin) => {
@@ -211,39 +192,6 @@ const HomeScreen = ({navigation, route}) => {
     }
   };
 
-  const unPauseGroup = () => {
-    setLoading(true);
-    groupUnpaused(authContext)
-      .then(async (response) => {
-        setLoading(false);
-        setIsAccountDeactivated(false);
-        await setAuthContextData(response.payload, authContext);
-      })
-      .catch((e) => {
-        setLoading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
-  };
-
-  const reActivateUser = () => {
-    setLoading(true);
-    userActivate(authContext)
-      .then(async (response) => {
-        setLoading(false);
-        setIsAccountDeactivated(false);
-        await setAuthContextData(response.payload, authContext);
-        navigation.pop(2);
-      })
-      .catch((e) => {
-        setLoading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
-  };
-
   const getShimmer = () => {
     if (loading) {
       if (
@@ -270,7 +218,7 @@ const HomeScreen = ({navigation, route}) => {
           userID={route.params.uid ?? authContext.entity.uid}
           isAdmin={isAdmin}
           pointEvent={pointEvent}
-          isAccountDeactivated={isAccountDeactivated}
+          isAccountDeactivated={authContext.isAccountDeactivated}
           userData={currentUserData}
         />
       );
@@ -287,7 +235,7 @@ const HomeScreen = ({navigation, route}) => {
           groupId={route.params.uid ?? authContext.entity.uid}
           isAdmin={isAdmin}
           pointEvent={pointEvent}
-          isAccountDeactivated={isAccountDeactivated}
+          isAccountDeactivated={authContext.isAccountDeactivated}
           groupData={currentUserData}
         />
       );
@@ -405,46 +353,7 @@ const HomeScreen = ({navigation, route}) => {
           </Pressable>
         </View>
       </View>
-      {isAccountDeactivated && (
-        <TCAccountDeactivate
-          type={
-            authContext.entity.obj.is_pause
-              ? Verbs.pauseVerb
-              : Verbs.deactivateVerb
-          }
-          onPress={() => {
-            Alert.alert(
-              format(
-                strings.pauseUnpauseAccountText,
-                authContext.entity.obj.is_pause
-                  ? Verbs.unpauseVerb
-                  : Verbs.reactivateVerb,
-              ),
-              '',
-              [
-                {
-                  text: strings.cancel,
-                  style: 'cancel',
-                },
-                {
-                  text: authContext.entity.obj.is_pause
-                    ? Verbs.unpauseVerb
-                    : Verbs.reactivateVerb,
-                  style: 'destructive',
-                  onPress: () => {
-                    if (authContext.entity.obj.is_pause) {
-                      unPauseGroup();
-                    } else {
-                      reActivateUser();
-                    }
-                  },
-                },
-              ],
-              {cancelable: false},
-            );
-          }}
-        />
-      )}
+      {authContext.isAccountDeactivated && <TCAccountDeactivate />}
       {getShimmer()}
       {renderScreen()}
 

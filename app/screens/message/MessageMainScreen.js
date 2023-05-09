@@ -12,10 +12,7 @@ import {
   NativeEventEmitter,
   Text,
   FlatList,
-  Alert,
 } from 'react-native';
-
-import {format} from 'react-string-format';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import QB from 'quickblox-react-native-sdk';
 import {useIsFocused, StackActions} from '@react-navigation/native';
@@ -32,16 +29,12 @@ import {
   QBconnectAndSubscribe,
   QBgetDialogs,
   QBsetupSettings,
-  getQBAccountType,
-  QBupdateUser,
 } from '../../utils/QuickBlox';
 import {widthPercentageToDP as wp} from '../../utils';
 import AuthContext from '../../auth/context';
 import UserListShimmer from '../../components/shimmer/commonComponents/UserListShimmer';
 import TCAccountDeactivate from '../../components/TCAccountDeactivate';
-import {groupUnpaused} from '../../api/Groups';
 import {strings} from '../../../Localization/translation';
-import {userActivate} from '../../api/Users';
 
 const QbMessageEmitter = new NativeEventEmitter(QB);
 
@@ -49,8 +42,7 @@ const MessageMainScreen = ({navigation}) => {
   const authContext = useContext(AuthContext);
   const [loading, setLoading] = useState(true);
 
-  const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
-  const [pointEvent, setPointEvent] = useState('auto');
+  const [pointEvent] = useState('auto');
 
   const [endReachedCalled, setEndReachedCalled] = useState(false);
   const [pressStatus, setPressStatus] = useState(null);
@@ -66,28 +58,6 @@ const MessageMainScreen = ({navigation}) => {
   useEffect(() => {
     if (!authContext?.entity?.QB) navigation.dispatch(StackActions.popToTop());
   }, [authContext?.entity?.QB, navigation]);
-
-  useEffect(() => {
-    setIsAccountDeactivated(false);
-    setPointEvent('auto');
-    if (isFocused) {
-      console.log('its called....', authContext.entity.role);
-      if (authContext?.entity?.obj?.is_pause === true) {
-        setIsAccountDeactivated(true);
-        setPointEvent('none');
-      }
-      if (authContext?.entity?.obj?.is_deactivate === true) {
-        setIsAccountDeactivated(true);
-        setPointEvent('none');
-      }
-    }
-  }, [
-    authContext.entity?.obj.entity_type,
-    authContext.entity?.obj?.is_deactivate,
-    authContext.entity?.obj?.is_pause,
-    authContext.entity.role,
-    isFocused,
-  ]);
 
   useEffect(() => {
     if (authContext?.entity?.QB && isFocused) {
@@ -281,116 +251,17 @@ const MessageMainScreen = ({navigation}) => {
     [authContext?.entity?.QB, pressStatus, navigation],
   );
 
-  const unPauseGroup = () => {
-    setLoading(true);
-    groupUnpaused(authContext)
-      .then((response) => {
-        setIsAccountDeactivated(false);
-        const accountType = getQBAccountType(response?.payload?.entity_type);
-        QBupdateUser(
-          response?.payload?.user_id,
-          response?.payload,
-          accountType,
-          response.payload,
-          authContext,
-        )
-          .then(() => {
-            setLoading(false);
-          })
-          .catch((error) => {
-            console.log('QB error : ', error);
-            setLoading(false);
-          });
-      })
-      .catch((e) => {
-        setLoading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
-  };
-
-  const reActivateUser = () => {
-    setLoading(true);
-    userActivate(authContext)
-      .then((response) => {
-        const accountType = getQBAccountType(response?.payload?.entity_type);
-        QBupdateUser(
-          response?.payload?.user_id,
-          response?.payload,
-          accountType,
-          response.payload,
-          authContext,
-        )
-          .then(() => {
-            setLoading(false);
-          })
-          .catch((error) => {
-            console.log('QB error : ', error);
-            setLoading(false);
-          });
-      })
-      .catch((e) => {
-        setLoading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
-  };
-
   return (
     <View style={styles.mainContainer}>
       <View
-        style={{opacity: isAccountDeactivated ? 0.5 : 1}}
+        style={{opacity: authContext.isAccountDeactivated ? 0.5 : 1}}
         pointerEvents={pointEvent}>
         {renderHeader}
         <View style={styles.separateLine} />
       </View>
-      {isAccountDeactivated && (
-        <TCAccountDeactivate
-          type={
-            authContext?.entity?.obj?.is_pause === true
-              ? 'pause'
-              : authContext?.entity?.obj?.under_terminate === true
-              ? 'terminate'
-              : 'deactivate'
-          }
-          onPress={() => {
-            Alert.alert(
-              format(
-                strings.pauseUnpauseAccountText,
-                authContext?.entity?.obj?.is_pause === true
-                  ? strings.unpausesmall
-                  : strings.reactivatesmall,
-              ),
-              '',
-              [
-                {
-                  text: strings.cancel,
-                  style: 'cancel',
-                },
-                {
-                  text:
-                    authContext?.entity?.obj?.is_pause === true
-                      ? strings.unpause
-                      : strings.reactivate,
-                  style: 'destructive',
-                  onPress: () => {
-                    if (authContext?.entity?.obj?.is_pause === true) {
-                      unPauseGroup();
-                    } else {
-                      reActivateUser();
-                    }
-                  },
-                },
-              ],
-              {cancelable: false},
-            );
-          }}
-        />
-      )}
+      {authContext.isAccountDeactivated && <TCAccountDeactivate />}
       <View
-        style={{flex: 1, opacity: isAccountDeactivated ? 0.5 : 1}}
+        style={{flex: 1, opacity: authContext.isAccountDeactivated ? 0.5 : 1}}
         pointerEvents={pointEvent}>
         {/* eslint-disable-next-line no-nested-ternary */}
         {loading ? (
