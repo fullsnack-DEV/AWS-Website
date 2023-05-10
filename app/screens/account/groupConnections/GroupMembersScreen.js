@@ -79,12 +79,11 @@ export default function GroupMembersScreen({navigation, route}) {
 
     setGroupObjNew(response.payload);
   };
-
-  const getGroupsLoggedInUser = () => {
+  const getGroupsLoggedInUser = useCallback(() => {
     getJoinedGroups(Verbs.entityTypeClub, authContext).then((response) => {
       setUserJoinedGrpList(response.payload);
     });
-  };
+  }, [authContext]);
 
   useEffect(() => {
     getMembers();

@@ -107,8 +107,6 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
       return obj;
     });
 
-    console.log(selectedList.length, 'from arragy');
-
     setSelectedList(selectedPlayers);
   };
 
@@ -143,13 +141,14 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
 
   const handleTagPress = ({index}) => {
     players[index].isChecked = false;
-    setPlayers([...players]);
     players.map((obj) => {
       if (obj.isChecked) {
         selectedPlayers.push(obj.user_id);
       }
       return obj;
     });
+
+    setSelectedList(selectedPlayers);
   };
 
   const listEmptyComponent = () => (
@@ -248,7 +247,7 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
         )}
       </>
     ),
-    [selectedList],
+    [selectedList, players],
   );
 
   return (

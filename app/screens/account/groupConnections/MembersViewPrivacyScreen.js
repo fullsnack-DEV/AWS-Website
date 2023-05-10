@@ -57,8 +57,10 @@ export default function MembersViewPrivacyScreen({navigation, route}) {
   };
 
   useEffect(() => {
-    callGroup(route.params?.groupID, authContext);
-  }, []);
+    if (route.params?.groupID) {
+      callGroup(route.params?.groupID, authContext);
+    }
+  }, [route.params?.groupID, authContext]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
