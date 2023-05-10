@@ -162,6 +162,7 @@ export default function  EventScheduleScreen({
 
 
   return (
+    <>
     <View style={styles.mainContainer}>
       {filterData && (
         <SectionList
@@ -169,17 +170,40 @@ export default function  EventScheduleScreen({
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
             <View style={{marginTop: 15}}>
-              <Text style={styles.noEventText}>{strings.noEventText}</Text>
+              <Text style={styles.noEventText}>
+                {strings.noEventText}
+              </Text>
               <Text style={styles.dataNotFoundText}>
                 {strings.newEventWillAppearHereText}
               </Text>
             </View>
           }
+          style={{backgroundColor: colors.whiteColor}}
           renderItem={({item}) => {
             if (item.cal_type === 'event') {
               if (item?.game_id && item?.game) {
                 return (
-                  <TCEventView
+                  <View style={{backgroundColor: colors.whiteColor}}>
+                    <TCEventView
+                      onPress={() => onItemPress(item)}
+                      data={item}
+                      profileID={profileID}
+                      screenUserId={screenUserId}
+                      onThreeDotPress={() => onThreeDotPress(item)}
+                      eventBetweenSection={item.game}
+                      eventOfSection={
+                        item.game &&
+                        item.game.referees &&
+                        item.game.referees.length > 0
+                      }
+                      entity={entity}
+                    />
+                  </View>
+                );
+              }
+              return (
+                <View style={{backgroundColor: colors.whiteColor}}>
+                  <TCEventCard
                     onPress={() => onItemPress(item)}
                     data={item}
                     profileID={profileID}
@@ -192,26 +216,10 @@ export default function  EventScheduleScreen({
                       item.game.referees.length > 0
                     }
                     entity={entity}
+                    owners={owners}
+                    allUserData={allUserData}
                   />
-                );
-              }
-              return (
-                <TCEventCard
-                  onPress={() => onItemPress(item)}
-                  data={item}
-                  profileID={profileID}
-                  screenUserId={screenUserId}
-                  onThreeDotPress={() => onThreeDotPress(item)}
-                  eventBetweenSection={item.game}
-                  eventOfSection={
-                    item.game &&
-                    item.game.referees &&
-                    item.game.referees.length > 0
-                  }
-                  entity={entity}
-                  owners={owners}
-                  allUserData={allUserData}
-                />
+                </View>
               );
             }
             return null;
@@ -229,6 +237,7 @@ export default function  EventScheduleScreen({
         />
       )}
     </View>
+    </>
   );
 }
 

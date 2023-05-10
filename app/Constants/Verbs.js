@@ -155,6 +155,9 @@ const Verbs = {
   DATE_FORMAT: 'MMM DD, YYYY, hh:mmA',
   CHEQUE: 'Cheque',
   DATE_MDY_FORMAT: 'll',
+
+  THOUSAND_SECOND: '1000',
+  AVAILABILITY_DATE_FORMATE: 'YYYY-MM-DD'
 };
 
 export default Verbs;

@@ -496,6 +496,9 @@ const images = {
   starProfile: require('../assets/images/star_profile.png'),
   recruitingMemberYesImg: require('../assets/images/recruitingMemberYesImg.png'),
   recruitingMemberNoImg: require('../assets/images/recruitingMemberNoImg.png'),
+  tickImage: require('../assets/images/image-tick.png'),
+  arrows : require('../assets/images/arrows.png'),
+
 };
 
 export default images;

@@ -85,7 +85,7 @@ export default function TCEventCard({
                 <Text style={styles.eventTime}> | </Text>
 
                 {
-                location !== '' ? (
+                data?.is_Offline ? (
                 <Text numberOfLines={1} style={{...styles.eventTime, flex: 1}}>
                   {location}
                 </Text>
@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
     shadowColor: colors.googleColor,
     shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.5,
-    shadowRadius: 5,
+    shadowRadius: 7,
     width: wp('94%'),
   },
   bottomView: {
@@ -154,13 +154,12 @@ const styles = StyleSheet.create({
   },
   eventTitle: {
     fontSize: 16,
-    fontFamily: fonts.RMedium,
+    fontFamily: fonts.RBold,
     width: wp('70%'),
     color: colors.whiteColor,
     textShadowColor: 'rgba(0, 0, 0, 1)',
     textShadowOffset: {width: -1, height: 1},
-    textShadowRadius: 10,
-    fontWeight: 'bold'
+    textShadowRadius: 7,
   },
   eventTitlewithDot: {
     flex: 1,

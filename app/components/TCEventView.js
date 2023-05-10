@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
     shadowColor: colors.googleColor,
     shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.5,
-    shadowRadius: 5,
+    shadowRadius: 7,
     width: wp('94%'),
   },
   bottomView: {
@@ -207,7 +207,7 @@ const styles = StyleSheet.create({
     color: colors.googleColor,
     textShadowColor: 'rgba(0, 0, 0, 1)',
     textShadowOffset: {width: -1, height: 1},
-    textShadowRadius: 10,
+    textShadowRadius: 7,
     fontWeight: 'bold'
   },
   eventTitlewithDot: {

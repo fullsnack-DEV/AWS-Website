@@ -313,32 +313,14 @@ const ScheduleNavigator = () => (
       name="EventScreen"
       component={EventScreen}
       options={{
-        title: strings.event,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
+        headerShown: false
       }}
     />
     <Stack.Screen
       name="GoingListScreen"
       component={GoingListScreen}
       options={{
-        title: strings.going,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
+        headerShown: false
       }}
     />
     <Stack.Screen
@@ -377,32 +359,14 @@ const ScheduleNavigator = () => (
       name="EditEventScreen"
       component={EditEventScreen}
       options={{
-        title: strings.editEvent,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
+        headerShown: false
       }}
     />
     <Stack.Screen
       name="CreateEventScreen"
       component={CreateEventScreen}
       options={{
-        title: strings.createAnEvent,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
+        headerShown: false,
       }}
     />
     <Stack.Screen

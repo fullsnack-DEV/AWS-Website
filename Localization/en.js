@@ -2881,4 +2881,28 @@ export default {
 
   clubteamPrivacyTextFollwers:
     'en_Club and Team (admin) always can see followers.',
+
+  eventFeaturePhoto: 'en_FEATURED PHOTO',
+  eventPhotoRatio: 'en_At least 1284x2778 pixels',
+  eventPhotoEdit : 'en_Edit photo',
+  eventPhotoUpdate: 'en_Upload photo',
+  thisEventOnly : 'en_This event Only',
+  thisAndAllEvent: 'en_This and all following events',
+  allEvents : 'en_All events',
+  attendeeRadioText: 'en_Attendee',
+  attendyText: 'en_The event may be canceled by the organizer if the minimum number of the attendees isn’t met.',
+  feeText: 'en_Attendees can pay the event fee after they are invoiced by the event organiser.',
+  reportText: 'en_Report This Event',
+  blockEventOrganiser :'en_Block Event Organiser',
+  recuringoptionOne: 'en_This event Only',
+  recurringOptionTwo: 'en_This and all following events',
+  recurringOptionThree: 'en_All events',
+  gameSingular: 'en_Game',
+  gameWith: 'en_Game With',
+  eventsViewSettings: 'en_Events View Settings',
+  onlineUrl : 'en_URL',
+  emptyEventUrl : "en_URL hasn't been provided yet.",
+  postTitle: 'en_Post',
+  list: 'en_List',
+  plusDayOne: 'en_+1day'
 };

@@ -9,7 +9,6 @@ import React, {
   useContext,
   useRef,
   useCallback,
-  useLayoutEffect,
 } from 'react';
 import {
   View,
@@ -72,6 +71,7 @@ import uploadImages from '../../../utils/imageAction';
 import {editEvent} from '../../../api/Schedule';
 import Verbs from '../../../Constants/Verbs';
 import AddressLocationModal from '../../../components/AddressLocationModal/AddressLocationModal';
+import ScreenHeader from '../../../components/ScreenHeader';
 
 export default function EditEventScreen({navigation, route}) {
   const eventPostedList = [
@@ -81,10 +81,8 @@ export default function EditEventScreen({navigation, route}) {
   const actionSheet = useRef();
   const actionSheetWithDelete = useRef();
   const isFocused = useIsFocused();
-
   const authContext = useContext(AuthContext);
   const [eventData] = useState(route?.params?.data);
-
   const [eventTitle, setEventTitle] = useState(eventData.title);
   const [eventDescription, setEventDescription] = useState(
     eventData.descriptions,
@@ -92,8 +90,6 @@ export default function EditEventScreen({navigation, route}) {
   const [eventPosted, setEventPosted] = useState({
     ...eventData?.event_posted_at,
   });
- 
-
   const [minAttendees, setMinAttendees] = useState(eventData.min_attendees);
   const [maxAttendees, setMaxAttendees] = useState(eventData.max_attendees);
   const [eventFee, setEventFee] = useState(eventData.event_fee.value);
@@ -111,7 +107,7 @@ export default function EditEventScreen({navigation, route}) {
   const [locationDetail, setLocationDetail] = useState(eventData.location);
   const [is_Blocked, setIsBlocked] = useState(eventData.blocked);
   const [loading, setloading] = useState(false);
-  const [is_Offline, setIsOffline] = useState(eventData.location?.location_name);
+  const [is_Offline, setIsOffline] = useState(eventData.is_offline);
   const [onlineUrl, setOnlineUrl] = useState(eventData?.online_url)
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
   const [visibleWhoModal, setVisibleWhoModal] = useState(false);
@@ -149,9 +145,7 @@ export default function EditEventScreen({navigation, route}) {
   const [sportsData, setSportsData] = useState([]);
   const [groupsSeeList, setGroupsSeeList] = useState([]);
   const [groupsJoinList, setGroupsJoinList] = useState([]);
-
   const [isAll, setIsAll] = useState(false);
-
   const [startDateVisible, setStartDateVisible] = useState(false);
   const [endDateVisible, setEndDateVisible] = useState(false);
   const [untilDateVisible, setUntilDateVisible] = useState(false);
@@ -200,7 +194,6 @@ export default function EditEventScreen({navigation, route}) {
     {text: strings.onlymeTitleText, value: 3},
   ];
 
-
   const whoCanSeeGroup = [
     {text: strings.everyoneRadio, value: 0},
     {
@@ -214,7 +207,6 @@ export default function EditEventScreen({navigation, route}) {
     {text: strings.teamOnly, value: 3},
   ];
 
-
   const whoCanInviteGroup = [
     {
       text: strings.attendeeRadioText,
@@ -222,7 +214,6 @@ export default function EditEventScreen({navigation, route}) {
     },
     {text: strings.onlymeTitleText, value: 1},
   ];
-
 
   const handleStartDatePress = (date) => {
     const startDateTime = toggle ? new Date(date).setHours(0, 0, 0, 0) : date
@@ -266,48 +257,6 @@ export default function EditEventScreen({navigation, route}) {
     setEventUntildateTime(toggle ? date.setHours(23,59,59,0): date);
     setUntilDateVisible(!untilDateVisible);
   };
-
-
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        <TouchableOpacity
-          onPress={() => {
-            navigation.goBack()
-          }}>
-          <Image source={images.backArrow} style={styles.backImageStyle} />
-        </TouchableOpacity>
-      ),
-      headerRight: () => (
-        <TouchableOpacity
-          style={{padding: 2, marginRight: 15}}
-          onPress={() => onDonePress()}>
-          <Text style={{fontWeight: '500'}}>{strings.done}</Text>
-        </TouchableOpacity>
-      ),
-    });
-  }, [
-    navigation,
-    backgroundThumbnail,
-    eventTitle,
-    eventDescription,
-    sportsSelection,
-    maxAttendees,
-    minAttendees,
-    locationDetail,
-    eventFee,
-    refundPolicy,
-    is_Blocked,
-    selectedSport,
-    selectWeekMonth,
-    eventStartDateTime,
-    eventEndDateTime,
-    eventUntilDateTime,
-    whoCanSeeOption,
-    whoCanJoinOption,
-    searchLocation,
-    eventPosted,
-  ]);
 
 
   useEffect(() => {
@@ -598,17 +547,6 @@ export default function EditEventScreen({navigation, route}) {
       return false;
     }
 
-    // if (!locationDetail?.venue_name || locationDetail?.venue_name?.length < 1) {
-    //   Alert.alert(strings.appName, strings.enterVenueNameValidation);
-    //   return false;
-    // }
-    // if (
-    //   !locationDetail?.venue_detail ||
-    //   locationDetail?.venue_detail?.length < 1
-    // ) {
-    //   Alert.alert(strings.appName, strings.enterVenueDescriptionValidation);
-    //   return false;
-    // }
 
     if (Number(minAttendees) > 0 && Number(maxAttendees) > 0) {
       if (Number(minAttendees) === 0) {
@@ -837,8 +775,8 @@ export default function EditEventScreen({navigation, route}) {
 
 
   return (
-    <>
-    <Modal
+    <SafeAreaView style={{flex : 1}}>
+      <Modal
       isVisible={recurringEditModal}
       backdropColor="black"
       onBackdropPress={() => setRecurringEditModal(false)}
@@ -893,6 +831,26 @@ export default function EditEventScreen({navigation, route}) {
           />
         </View>
       </Modal>
+      <ScreenHeader
+        title={strings.editEvent}
+        leftIcon={images.backArrow}
+        leftIconPress={() => {
+          navigation.goBack()
+        }}
+        isRightIconText
+        rightButtonText={strings.done}
+        onRightButtonPress={() => {
+          onDonePress();
+        }}
+        loading={loading}
+        containerStyle={{
+          paddingLeft: 10,
+          paddingRight: 17,
+          paddingTop: 8,
+          paddingBottom: 13,
+          borderBottomWidth: 0,
+        }}
+      />
       <ActivityLoader visible={loading} />
       <View style={styles.sperateLine} />
       <TCKeyboardView>
@@ -1108,7 +1066,7 @@ export default function EditEventScreen({navigation, route}) {
                       textDecorationStyle: 'solid',
                       textDecorationColor: '#000'
                     }} 
-                    >{strings.vancouver}</Text>
+                    >{Intl.DateTimeFormat()?.resolvedOptions().timeZone.split('/').pop()}</Text>
                 </TouchableOpacity>
               </View>
 
@@ -1385,7 +1343,9 @@ export default function EditEventScreen({navigation, route}) {
               authContext.entity.role === Verbs.entityTypeUser && (
                 <View>
                   <View style={styles.allStyle}>
-                    <Text style={styles.titleTextStyle}>{strings.all}</Text>
+                    <Text style={styles.titleTextStyle}>
+                      {strings.all}
+                    </Text>
                     <TouchableOpacity
                       onPress={() => {
                         setIsAll(!isAll);
@@ -1394,7 +1354,8 @@ export default function EditEventScreen({navigation, route}) {
                           isSelected: !isAll,
                         }));
                         setGroupsSeeList([...groups]);
-                      }}>
+                      }}
+                    >
                       <Image
                         source={
                           isAll ? images.orangeCheckBox : images.uncheckWhite
@@ -1579,7 +1540,9 @@ export default function EditEventScreen({navigation, route}) {
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
               }}>
-              {strings.privacySettingText}
+              {whoOption === 'join'
+                  ? strings.whoCanJoin
+                  : strings.whoCanSee}
             </Text>
 
             <Text
@@ -1661,7 +1624,7 @@ export default function EditEventScreen({navigation, route}) {
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
               }}>
-              {strings.privacySettingText}
+              {strings.whoCanInvite}
             </Text>
 
             <Text
@@ -1730,7 +1693,7 @@ export default function EditEventScreen({navigation, route}) {
           }
         }}
       />
-    </>
+    </SafeAreaView>
   );
 }
 
@@ -1764,13 +1727,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RRegular,
     marginBottom: 15,
-  },
-  backImageStyle: {
-    height: 20,
-    width: 15,
-    tintColor: colors.lightBlackColor,
-    resizeMode: 'contain',
-    marginLeft: 15,
   },
   textInputDropStyle: {
     flex: 1,

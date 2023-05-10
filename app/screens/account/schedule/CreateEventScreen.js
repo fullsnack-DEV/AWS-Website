@@ -9,7 +9,6 @@ import React, {
   useContext,
   useRef,
   useCallback,
-  useLayoutEffect,
 } from 'react';
 import {
   View,
@@ -49,7 +48,6 @@ import images from '../../../Constants/ImagePath';
 import {strings} from '../../../../Localization/translation';
 import {createEvent} from '../../../api/Schedule';
 import TCProfileView from '../../../components/TCProfileView';
-
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import BlockAvailableTabView from '../../../components/Schedule/BlockAvailableTabView';
 import EventVenueTogglebtn from '../../../components/Schedule/EventVenueTogglebtn';
@@ -57,6 +55,7 @@ import TCKeyboardView from '../../../components/TCKeyboardView';
 import TCTouchableLabel from '../../../components/TCTouchableLabel';
 import EventBackgroundPhoto from '../../../components/Schedule/EventBackgroundPhoto';
 import TCThinDivider from '../../../components/TCThinDivider';
+import * as Utility from '../../../utils/index';
 import {
   deleteConfirmation,
   getHitSlop,
@@ -73,12 +72,10 @@ import {getGroups} from '../../../api/Groups';
 import GroupEventItems from '../../../components/Schedule/GroupEvent/GroupEventItems';
 import uploadImages from '../../../utils/imageAction';
 import Verbs from '../../../Constants/Verbs';
+import ScreenHeader from '../../../components/ScreenHeader';
 import AddressLocationModal from '../../../components/AddressLocationModal/AddressLocationModal';
 
 export default function CreateEventScreen({navigation, route}) {
-
-
- 
 
   const eventPostedList = [
     {value: 0, text: strings.scheduleOnlyText},
@@ -137,23 +134,20 @@ export default function CreateEventScreen({navigation, route}) {
   });
 
   const [whoCanInviteOption, setWhoCanInviteOption] = useState({
-    text: strings.everyoneRadio,
+    text: strings.attendeeRadioText,
     value: 0,
   });
 
   const [sportsData, setSportsData] = useState([]);
   const [groupsSeeList, setGroupsSeeList] = useState([]);
   const [groupsJoinList, setGroupsJoinList] = useState([]);
-
   const [isAll, setIsAll] = useState(false);
-
   const [startDateVisible, setStartDateVisible] = useState(false);
   const [endDateVisible, setEndDateVisible] = useState(false);
   const [untilDateVisible, setUntilDateVisible] = useState(false);
   const [selectWeekMonth, setSelectWeekMonth] = useState(Verbs.eventRecurringEnum.Never);
   const [backgroundThumbnail, setBackgroundThumbnail] = useState();
   const [backgroundImageChanged, setBackgroundImageChanged] = useState(false);
-
 
   const whoCanJoinUser = [
     {text: strings.everyoneRadio, value: 0},
@@ -181,7 +175,6 @@ export default function CreateEventScreen({navigation, route}) {
     {text: strings.onlymeTitleText, value: 1},
   ];
 
-
   const whoCanJoinGroup = [
     {text: strings.everyoneRadio, value: 0},
     {
@@ -194,7 +187,6 @@ export default function CreateEventScreen({navigation, route}) {
     },
     {text: strings.onlymeTitleText, value: 3},
   ];
-
 
   const whoCanSeeGroup = [
     {text: strings.everyoneRadio, value: 0},
@@ -259,64 +251,6 @@ export default function CreateEventScreen({navigation, route}) {
     setUntilDateVisible(!untilDateVisible);
   };
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        <TouchableOpacity
-          onPress={() => {
-            Alert.alert(
-              strings.areYouSureQuitCreateEvent,
-              '',
-              [
-                {
-                  text: strings.cancel,
-                  onPress: () => console.log('Cancel Pressed'),
-                  style: 'cancel',
-                },
-                {
-                  text: strings.quit,
-                  onPress: () => {
-                    navigation.goBack()
-                  },
-                },
-              ],
-              {cancelable: false},
-            );
-          }}>
-          <Image source={images.backArrow} style={styles.backImageStyle} />
-        </TouchableOpacity>
-      ),
-      headerRight: () => (
-        <TouchableOpacity
-          style={{padding: 2, marginRight: 15}}
-          onPress={onDonePress}>
-          <Text style={{fontWeight: '500'}}>{strings.done}</Text>
-        </TouchableOpacity>
-      ),
-    });
-  }, [
-    navigation,
-    backgroundThumbnail,
-    eventTitle,
-    eventDescription,
-    sportsSelection,
-    selectedSport,
-    maxAttendees,
-    minAttendees,
-    locationDetail,
-    eventFee,
-    refundPolicy,
-    eventPosted,
-    is_Blocked,
-    selectWeekMonth,
-    eventStartDateTime,
-    eventEndDateTime,
-    eventUntilDateTime,
-    whoCanSeeOption,
-    whoCanJoinOption,
-    searchLocation,
-    route?.params,
-  ]);
 
   useEffect(() => {
     if (isFocused) {
@@ -385,15 +319,41 @@ export default function CreateEventScreen({navigation, route}) {
   }, [authContext]);
 
   const getSports = () => {
+    const sportsList = [
+      ...(authContext?.entity?.obj?.registered_sports?.filter(
+        (obj) => obj.is_active,
+      ) || []),
+      ...(authContext?.entity?.obj?.referee_data?.filter(
+        (obj) => obj.is_active,
+      ) || []),
+      ...(authContext?.entity?.obj?.scorekeeper_data?.filter(
+        (obj) => obj.is_active,
+      ) || []),
+    ];
+
+    const res = sportsList.map((obj) => ({
+      sport_name: obj.sport_name,
+      entity_type: obj.type,
+      sport: obj.sport,
+      sport_type: obj.sport_type
+    }));
+    res.sort((a, b) => a.sport_name !== b.sport_name ? a.sport_name < b.sport_name ? -1 : 1 : 0);
+    const data = Utility.uniqueArray(res, Verbs.sportType);
+
     let sportArr = [];
     authContext.sports.map((item) => {
       const filterFormat = item.format.filter(
-        (obj) => obj.entity_type === Verbs.entityTypeTeam,
+        (obj) => obj,
       );
       sportArr = [...sportArr, ...filterFormat];
       return null;
     });
-    setSportsData([...sportArr]);
+    sportArr.sort((a, b) => a.sport_name !== b.sport_name ? a.sport_name < b.sport_name ? -1 : 1 : 0);
+    const final = Utility.uniqueArray(sportArr, 'sport_name');
+    const tempArr = [...data , ...final];
+    const finalArr = Utility.uniqueArray(tempArr, 'sport_name');
+
+    setSportsData(finalArr);
   };
 
   const renderSports = ({item}) => (
@@ -415,7 +375,7 @@ export default function CreateEventScreen({navigation, route}) {
           {getSportName(item, authContext)}
         </Text>
         <View style={styles.checkbox}>
-          {selectedSport?.sport === item?.sport ? (
+          {selectedSport.sport_name === item.sport_name ? (
             <Image
               source={images.radioCheckYellow}
               style={styles.checkboxImg}
@@ -472,8 +432,6 @@ export default function CreateEventScreen({navigation, route}) {
       </View>
     </TouchableOpacity>
   );
-
-  
 
   const renderSeeGroups = ({item, index}) => (
     <GroupEventItems
@@ -783,6 +741,7 @@ export default function CreateEventScreen({navigation, route}) {
             venue_detail: locationDetail.venue_detail,
           },
           online_url: onlineUrl,
+          is_Offline
         },
       ];
 
@@ -845,14 +804,50 @@ export default function CreateEventScreen({navigation, route}) {
 
   
   return (
-    <>
+    <SafeAreaView style={{flex: 1}}>
+      <ScreenHeader
+        title={strings.createAnEvent}
+        leftIcon={images.backArrow}
+        leftIconPress={() => {
+          Alert.alert(
+            strings.areYouSureQuitCreateEvent,
+            '',
+            [
+              {
+                text: strings.cancel,
+                onPress: () => console.log('Cancel Pressed'),
+                style: 'cancel',
+              },
+              {
+                text: strings.quit,
+                onPress: () => {
+                  navigation.goBack()
+                },
+              },
+            ],
+            {cancelable: false},
+          );
+        }}
+        isRightIconText
+        rightButtonText={strings.done}
+        onRightButtonPress={() => {
+          onDonePress();
+        }}
+        loading={loading}
+        containerStyle={{
+          paddingLeft: 10,
+          paddingRight: 17,
+          paddingTop: 8,
+          paddingBottom: 13,
+          borderBottomWidth: 0,
+        }}
+      />
       <ActivityLoader visible={loading} />
 
       <View style={styles.sperateLine} />
       <TCKeyboardView>
         <ScrollView bounces={false} nestedScrollEnabled={true}>
-          <SafeAreaView style={{paddingHorizontal: 10, marginTop:10}}>
-        
+          <View style={{paddingHorizontal: 10, marginTop:10}}>
             <EventBackgroundPhoto
               isEdit={!!backgroundThumbnail}
               isPreview={false}
@@ -929,11 +924,10 @@ export default function CreateEventScreen({navigation, route}) {
 
 
             <EventItemRender  
-            containerStyle={{position : 'relative', margin: 20}} 
-            headerTextStyle={{fontSize:16}}
-            title={strings.place} isRequired={true}
+              containerStyle={{position : 'relative', margin: 20}} 
+              headerTextStyle={{fontSize:16}}
+              title={strings.place} isRequired={true}
             >
-
               <EventVenueTogglebtn
                 offline={is_Offline}
                 firstTabTitle='Offline'
@@ -989,7 +983,7 @@ export default function CreateEventScreen({navigation, route}) {
                 }}
                 value={locationDetail.venue_detail}
                 multiline={true}
-                textAlignVertical={'center'}
+                textAlignVertical={'top'}
                 placeholderTextColor={colors.userPostTimeColor}
               />
 
@@ -1021,7 +1015,8 @@ export default function CreateEventScreen({navigation, route}) {
             <EventItemRender
               title={strings.timeTitle}
               isRequired={true}
-              headerTextStyle={{marginBottom: 15, fontSize:16}}>
+              headerTextStyle={{marginBottom: 15, fontSize:16}}
+            >
               <EventTimeSelectItem
                 title={strings.starts}
                 toggle={!toggle}
@@ -1068,7 +1063,7 @@ export default function CreateEventScreen({navigation, route}) {
                       textDecorationStyle: 'solid',
                       textDecorationColor: colors.darkGrayColor
                     }} 
-                    >{strings.vancouver}</Text>
+                    >{Intl.DateTimeFormat()?.resolvedOptions().timeZone.split('/').pop()}</Text>
                 </TouchableOpacity>
               </View>
 
@@ -1198,7 +1193,7 @@ export default function CreateEventScreen({navigation, route}) {
                 onChangeText={(value) => setRefundPolicy(value)}
                 value={refundPolicy}
                 multiline={true}
-                textAlignVertical={'center'}
+                textAlignVertical={'top'}
                 placeholderTextColor={colors.userPostTimeColor}
               />
             </View>
@@ -1458,7 +1453,7 @@ export default function CreateEventScreen({navigation, route}) {
               minutesGap={5}
               mode={toggle ? 'date' : 'datetime'}
             />
-          </SafeAreaView>
+          </View>
         </ScrollView>
       </TCKeyboardView>
       <Modal
@@ -1509,7 +1504,7 @@ export default function CreateEventScreen({navigation, route}) {
                 fontSize: 16,
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
-                marginLeft: '5%'
+                marginLeft: '10%'
               }}>
               {strings.sportsTitleText}
             </Text>
@@ -1519,7 +1514,7 @@ export default function CreateEventScreen({navigation, route}) {
                 alignSelf: 'center',
                 marginVertical: 20,
                 fontSize: 16,
-                fontFamily: fonts.RRegular,
+                fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
               }}
               onPress={() => {
@@ -1592,7 +1587,9 @@ export default function CreateEventScreen({navigation, route}) {
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
               }}>
-              {strings.privacySettingText}
+              {whoOption === join
+                  ? strings.whoCanJoin
+                  : strings.whoCanSee}
             </Text>
 
             <Text
@@ -1674,7 +1671,7 @@ export default function CreateEventScreen({navigation, route}) {
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
               }}>
-              {strings.privacySettingText}
+              {strings.whoCanInvite}
             </Text>
 
             <Text
@@ -1743,7 +1740,7 @@ export default function CreateEventScreen({navigation, route}) {
           }
         }}
       />
-    </>
+    </SafeAreaView>
   );
 }
 
@@ -1944,13 +1941,6 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     marginTop: 15,
     paddingBottom: 10,
-  },
-  backImageStyle: {
-    height: 20,
-    width: 15,
-    tintColor: colors.lightBlackColor,
-    resizeMode: 'contain',
-    marginLeft: 15,
   },
   activeEventPricacy: {
     paddingVertical: 4,

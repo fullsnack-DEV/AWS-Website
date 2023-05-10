@@ -623,16 +623,7 @@ const AccountNavigator = () => (
       name="EventScreen"
       component={EventScreen}
       options={{
-        title: strings.event,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
+        headerShown: false,
       }}
     />
     <Stack.Screen

@@ -1,5 +1,5 @@
-import React, {useEffect, useState, useContext, useLayoutEffect} from 'react';
-import {View, StyleSheet, FlatList, Alert, TouchableOpacity, Image} from 'react-native';
+import React, {useEffect, useState, useContext} from 'react';
+import {View, StyleSheet, FlatList, Alert, SafeAreaView} from 'react-native';
 
 import AuthContext from '../../../auth/context';
 import {followUser, unfollowUser} from '../../../api/Users';
@@ -12,6 +12,7 @@ import ActivityLoader from '../../../components/loader/ActivityLoader';
 import Verbs from '../../../Constants/Verbs';
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors';
+import ScreenHeader from '../../../components/ScreenHeader';
 
 export default function GoingListScreen({navigation, route}) {
   const [going, setGoing] = useState([]);
@@ -20,20 +21,6 @@ export default function GoingListScreen({navigation, route}) {
   const [showRemove] = useState(route?.params?.showRemove);
   const authContext = useContext(AuthContext);
   const userRole = authContext?.entity?.role;
-
-
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        <TouchableOpacity
-          onPress={() => {
-            navigation.goBack()
-          }}>
-          <Image source={images.backArrow} style={styles.backImageStyle} />
-        </TouchableOpacity>
-      )
-    });
-  }, [navigation]);
 
   useEffect(() => {
     const getUserDetailQuery = {
@@ -47,37 +34,51 @@ export default function GoingListScreen({navigation, route}) {
     };
 
     getUserIndex(getUserDetailQuery)
-      .then((res) => {
-        setGoing(res);
-        console.log('dsfdsfasd', res);
-      })
-      .catch((e) => {
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
+    .then((res) => {
+      setGoing(res);
+    })
+    .catch((e) => {
+      setTimeout(() => {
+        Alert.alert(strings.alertmessagetitle, e.message);
+      }, 10);
+    });
   }, [route?.params?.going_ids]);
 
   const removeAttendee = (userData) => {
     setloading(true);
     removeAttendeeFromEvent(eventData.cal_id, [userData.user_id], authContext)
-      .then((response) => {
-        setloading(false);
-        navigation.pop(2);
-        console.log('response-->', response);
-      })
-      .catch((e) => {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
+    .then((response) => {
+      setloading(false);
+      navigation.pop(2);
+      console.log('response-->', response);
+    })
+    .catch((e) => {
+      setloading(false);
+      setTimeout(() => {
+        Alert.alert(strings.alertmessagetitle, e.message);
+      }, 10);
+    });
   };
 
   return (
-    <View style={styles.mainContainer}>
+    <SafeAreaView style={{flex: 1}}>
+      <ScreenHeader
+        title={strings.going}
+        leftIcon={images.backArrow}
+        leftIconPress={() => {
+          navigation.goBack()
+        }}
+        containerStyle={{
+          paddingLeft: 10,
+          paddingRight: 17,
+          paddingTop: 8,
+          paddingBottom: 13,
+          borderBottomWidth: 0,
+        }}
+      />
+      
       <ActivityLoader visible={loading} />
-
+      <View style={styles.sperateLine} />
       <View style={{flex: 1}}>
         <FlatList
           data={going}
@@ -186,19 +187,12 @@ export default function GoingListScreen({navigation, route}) {
           }}
         />
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
-  mainContainer: {
-    flex: 1,
-    flexDirection: 'column',
-  },
-  backImageStyle: {
-    height: 20,
-    width: 15,
-    tintColor: colors.lightBlackColor,
-    resizeMode: 'contain',
-    marginLeft: 15,
+  sperateLine: {
+    borderColor: colors.writePostSepratorColor,
+    borderWidth: 0.5,
   },
 });

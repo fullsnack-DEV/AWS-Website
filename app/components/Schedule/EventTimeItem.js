@@ -7,7 +7,7 @@ import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 
-function EventTimeItem({fromTime, toTime, location = '', eventOnlineUrl = ''}) {
+function EventTimeItem({fromTime, toTime, location = '', eventOnlineUrl = '', is_Offline}) {
   return (
     <View style={styles.containerStyle}>
       <View style={styles.timeValueStyle}>
@@ -25,7 +25,7 @@ function EventTimeItem({fromTime, toTime, location = '', eventOnlineUrl = ''}) {
         style={{width: 14, height: 18, marginRight: 10}}
         />
         {
-          location ? (
+          is_Offline ? (
             <Text style={styles.fromTimeTextStyle}>{location} </Text>
           ):(
               <Text style={[styles.fromTimeTextStyle, {

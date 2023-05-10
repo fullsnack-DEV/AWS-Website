@@ -2073,7 +2073,7 @@ export const getEventsSlots = async (
         },
       };
       body.query.bool.must.push({
-        range: {start_datetime: {gt: fromDate}},
+        range: {end_datetime: {gt: fromDate}},
       });
       body.query.bool.must.push({
         range: {actual_enddatetime: {lt: toDate}},
