@@ -13,8 +13,7 @@ import {
   TouchableWithoutFeedback,
   Pressable,
 } from 'react-native';
-import Modal from 'react-native-modal';
-import {format} from 'react-string-format';
+
 import {getGroupDetails, patchGroup} from '../../../api/Groups';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import images from '../../../Constants/ImagePath';
@@ -31,9 +30,7 @@ export default function MembersViewPrivacyScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
 
   const [loading, setloading] = useState(false);
-  const [modalstring, setModalString] = useState('');
-
-  const [OpenInfo, setOpenInfo] = useState(false);
+  const [grpInfo, setGrpInfo] = useState();
   const [obj, SetObj] = useState({
     members:
       authContext.entity.obj.who_can_see_member ??
@@ -51,6 +48,7 @@ export default function MembersViewPrivacyScreen({navigation, route}) {
   const callGroup = async (groupID, authContext) => {
     const response = await getGroupDetails(groupID, authContext);
 
+    setGrpInfo(response.payload);
     SetObj({
       members: response.payload.who_can_see_member,
       followers: response.payload.who_can_see_follower,
@@ -122,78 +120,10 @@ export default function MembersViewPrivacyScreen({navigation, route}) {
       });
   };
 
-  const OpenInfoModal = () => (
-    <Modal
-      isVisible={OpenInfo}
-      onBackdropPress={() => setOpenInfo(false)}
-      animationInTiming={300}
-      animationOutTiming={800}
-      backdropTransitionInTiming={300}
-      backdropTransitionOutTiming={800}
-      style={{
-        margin: 0,
-      }}>
-      <View
-        behavior="height"
-        enabled={false}
-        style={{
-          width: '100%',
-          backgroundColor: 'white',
-          position: 'absolute',
-          bottom: 0,
-          right: 0,
-          left: 0,
-          shadowColor: '#000',
-          shadowOffset: {width: 0, height: 1},
-          shadowOpacity: 0.5,
-          shadowRadius: 5,
-          elevation: 15,
-          borderTopLeftRadius: 30,
-          borderTopRightRadius: 30,
-          flex: 1,
-        }}>
-        <View
-          style={{
-            height: 140,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-          <View
-            style={{
-              marginTop: 16,
-            }}>
-            <View
-              style={{
-                width: 40,
-                height: 5,
-                backgroundColor: colors.modalHandleColor,
-              }}
-            />
-          </View>
-          <Text
-            style={{
-              marginTop: 24,
-              marginBottom: 25,
-              lineHeight: 24,
-              fontSize: 16,
-              fontFamily: fonts.RRegular,
-
-              paddingLeft: 24,
-              paddingRight: 21,
-            }}>
-            {format(strings.infoPrivacyTeamMember, modalstring)}
-          </Text>
-        </View>
-      </View>
-    </Modal>
-  );
-
-  // render team and club differently
-
   return (
     <SafeAreaView style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-      <OpenInfoModal />
+      {/* <OpenInfoModal /> */}
       <ScrollView>
         <Text style={styles.titleStyle}>{strings.membersTitle}</Text>
         <View style={[styles.privacyCell, {marginTop: 15}]}>
@@ -215,7 +145,7 @@ export default function MembersViewPrivacyScreen({navigation, route}) {
               />
             </TouchableOpacity>
 
-            {authContext.entity.obj.parent_groups?.length >= 1 &&
+            {grpInfo?.parent_groups?.length >= 1 &&
             authContext.entity.role === Verbs.entityTypeTeam ? (
               <TouchableOpacity
                 style={styles.radioButtonView}
@@ -260,7 +190,7 @@ export default function MembersViewPrivacyScreen({navigation, route}) {
               </TouchableOpacity>
             )}
 
-            {authContext.entity.obj.parent_groups?.length >= 1 &&
+            {grpInfo?.parent_groups?.length >= 1 &&
               authContext.entity.role === Verbs.entityTypeTeam && (
                 <TouchableOpacity
                   style={styles.radioButtonView}
@@ -303,51 +233,47 @@ export default function MembersViewPrivacyScreen({navigation, route}) {
             )}
 
             {authContext.entity.role === Verbs.entityTypeTeam && (
-              <TouchableOpacity
-                style={styles.radioButtonView}
-                onPress={() => {
-                  SetObj({
-                    ...obj,
-                    members: Verbs.PRIVACY_GROUP_MEMBER_TEAMMEMBERS,
-                  });
-                }}>
-                <Pressable
+              <>
+                <TouchableOpacity
+                  style={styles.radioButtonView}
                   onPress={() => {
-                    setOpenInfo(true);
-
-                    setModalString('members');
-                  }}
-                  hitSlop={Utility.getHitSlop(15)}
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'center',
+                    SetObj({
+                      ...obj,
+                      members: Verbs.PRIVACY_GROUP_MEMBER_TEAMMEMBERS,
+                    });
                   }}>
-                  <Text style={styles.radioText}>{strings.teamMember}</Text>
-                  <Image
-                    source={images.infoIcon}
+                  <View
                     style={{
-                      height: 15,
-                      width: 15,
-                      marginLeft: -9,
-                      marginTop: 3,
-                      display:
-                        authContext.entity.obj.parent_groups?.length >= 1
-                          ? 'flex'
-                          : 'none',
-                    }}
-                  />
-                </Pressable>
+                      alignSelf: 'flex-start',
+                      alignItems: 'center',
+                      alignContent: 'flex-start',
+                    }}>
+                    <Text style={styles.radioText}>{strings.teamMember}</Text>
+                  </View>
 
-                <Image
-                  source={
-                    obj.members === Verbs.PRIVACY_GROUP_MEMBER_TEAMMEMBERS
-                      ? images.radioRoundOrange
-                      : images.radioUnselect
-                  }
-                  style={styles.radioImage}
-                />
-              </TouchableOpacity>
+                  <Image
+                    source={
+                      obj.members === Verbs.PRIVACY_GROUP_MEMBER_TEAMMEMBERS
+                        ? images.radioRoundOrange
+                        : images.radioUnselect
+                    }
+                    style={styles.radioImage}
+                  />
+                </TouchableOpacity>
+                <Text
+                  style={[
+                    styles.radioText,
+                    {
+                      color: colors.userPostTimeColor,
+                      fontSize: 14,
+                      fontFamily: fonts.RRegular,
+                      marginTop: 14,
+                      alignSelf: 'flex-start',
+                    },
+                  ]}>
+                  {strings.clubteamPrivacyText}
+                </Text>
+              </>
             )}
           </View>
         </View>
@@ -376,7 +302,7 @@ export default function MembersViewPrivacyScreen({navigation, route}) {
               />
             </TouchableOpacity>
 
-            {authContext.entity.obj.parent_groups?.length >= 1 &&
+            {grpInfo?.parent_groups?.length >= 1 &&
             authContext.entity.role === Verbs.entityTypeTeam ? (
               <TouchableOpacity
                 style={styles.radioButtonView}
@@ -437,7 +363,7 @@ export default function MembersViewPrivacyScreen({navigation, route}) {
               />
             </TouchableOpacity> */}
 
-            {authContext.entity.obj.parent_groups?.length >= 1 &&
+            {grpInfo?.parent_groups?.length >= 1 &&
               authContext.entity.role === Verbs.entityTypeTeam && (
                 <TouchableOpacity
                   style={styles.radioButtonView}
@@ -480,55 +406,53 @@ export default function MembersViewPrivacyScreen({navigation, route}) {
             )}
 
             {authContext.entity.role === Verbs.entityTypeTeam && (
-              <TouchableOpacity
-                style={styles.radioButtonView}
-                onPress={() => {
-                  SetObj({
-                    ...obj,
-                    followers: Verbs.PRIVACY_GROUP_MEMBER_TEAMMEMBERS,
-                  });
-                }}>
-                <Pressable
+              <>
+                <TouchableOpacity
+                  style={styles.radioButtonView}
                   onPress={() => {
-                    setOpenInfo(true);
-                    setModalString('followers');
-                  }}
-                  hitSlop={Utility.getHitSlop(15)}
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'center',
+                    SetObj({
+                      ...obj,
+                      followers: Verbs.PRIVACY_GROUP_MEMBER_TEAMMEMBERS,
+                    });
                   }}>
-                  <Text style={styles.radioText}>{strings.teamMember}</Text>
-                  <Image
-                    source={images.infoIcon}
+                  <Pressable
+                    hitSlop={Utility.getHitSlop(15)}
                     style={{
-                      height: 15,
-                      width: 15,
-                      marginLeft: -9,
-                      marginTop: 3,
-                      display:
-                        authContext.entity.obj.parent_groups?.length >= 1
-                          ? 'flex'
-                          : 'none',
-                    }}
-                  />
-                </Pressable>
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}>
+                    <Text style={styles.radioText}>{strings.teamMember}</Text>
+                  </Pressable>
 
-                <Image
-                  source={
-                    obj.followers === Verbs.PRIVACY_GROUP_MEMBER_TEAMMEMBERS
-                      ? images.radioRoundOrange
-                      : images.radioUnselect
-                  }
-                  style={styles.radioImage}
-                />
-              </TouchableOpacity>
+                  <Image
+                    source={
+                      obj.followers === Verbs.PRIVACY_GROUP_MEMBER_TEAMMEMBERS
+                        ? images.radioRoundOrange
+                        : images.radioUnselect
+                    }
+                    style={styles.radioImage}
+                  />
+                </TouchableOpacity>
+                <Text
+                  style={[
+                    styles.radioText,
+                    {
+                      color: colors.userPostTimeColor,
+                      fontSize: 14,
+                      fontFamily: fonts.RRegular,
+                      marginTop: 14,
+                      alignSelf: 'flex-start',
+                    },
+                  ]}>
+                  {strings.clubteamPrivacyTextFollwers}
+                </Text>
+              </>
             )}
           </View>
         </View>
 
-        <View style={styles.privacyCell}>
+        {/* <View style={styles.privacyCell}>
           <Text style={styles.privacyNameStyle}>
             {strings.whoCanSeeMemberProfileText}
           </Text>
@@ -648,7 +572,6 @@ export default function MembersViewPrivacyScreen({navigation, route}) {
                   onPress={() => {
                     SetObj({...obj, profiles: Verbs.PRIVACY_GROUP_MEMBER_TEAM});
                   }}>
-                  {/* for team team only and for club club only */}
                   <Text style={styles.radioText}>{strings.teamOnly}</Text>
                   <Image
                     source={
@@ -671,7 +594,6 @@ export default function MembersViewPrivacyScreen({navigation, route}) {
                         profiles: Verbs.PRIVACY_GROUP_MEMBER_TEAM,
                       });
                     }}>
-                    {/* for team team only and for club club only */}
                     <Text style={styles.radioText}>{strings.teamOnly}</Text>
                     <Image
                       source={
@@ -691,7 +613,6 @@ export default function MembersViewPrivacyScreen({navigation, route}) {
                         profiles: Verbs.PRIVACY_GROUP_MEMBER_CLUB,
                       });
                     }}>
-                    {/* for team team only and for club club only */}
                     <Text style={styles.radioText}>{strings.clubOnly}</Text>
                     <Image
                       source={
@@ -706,7 +627,7 @@ export default function MembersViewPrivacyScreen({navigation, route}) {
               </>
             )}
           </View>
-        </View>
+        </View> */}
       </ScrollView>
     </SafeAreaView>
   );

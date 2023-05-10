@@ -89,47 +89,6 @@ const AccountScreen = ({navigation, route}) => {
       query: {bool: {must: [{bool: {should: []}}]}},
     };
 
-    if (authContext.entity.auth.user?.city) {
-      generalsQuery.query.bool.must[0].bool.should.push({
-        match: {
-          city: {query: authContext.entity.auth.user.city, boost: 4},
-        },
-      });
-    }
-
-    if (authContext.entity.auth.user?.state) {
-      generalsQuery.query.bool.must[0].bool.should.push({
-        match: {
-          state: {
-            query: authContext.entity.auth.user.state,
-            boost: 3,
-          },
-        },
-      });
-    }
-
-    if (authContext.entity.auth.user?.state_abbr) {
-      generalsQuery.query.bool.must[0].bool.should.push({
-        match: {
-          state_abbr: {
-            query: authContext.entity.auth.user.state_abbr,
-            boost: 3,
-          },
-        },
-      });
-    }
-
-    if (authContext.entity.auth.user?.country) {
-      generalsQuery.query.bool.must[0].bool.should.push({
-        match: {
-          country: {
-            query: authContext.entity.auth.user?.country,
-            boost: 2,
-          },
-        },
-      });
-    }
-
     getUserIndex(generalsQuery)
       .then((response) => {
         setLoading(false);

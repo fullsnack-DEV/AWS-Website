@@ -1,10 +1,4 @@
-import React, {
-  useLayoutEffect,
-  useState,
-  useContext,
-  useEffect,
-  useCallback,
-} from 'react';
+import React, {useLayoutEffect, useState, useContext, useEffect} from 'react';
 import {
   StyleSheet,
   View,
@@ -32,7 +26,7 @@ import TCPicker from '../../../../components/TCPicker';
 import DataSource from '../../../../Constants/DataSource';
 import TCLabel from '../../../../components/TCLabel';
 import TCTouchableLabel from '../../../../components/TCTouchableLabel';
-import {monthNames, showAlert, widthPercentageToDP} from '../../../../utils';
+import {monthNames, widthPercentageToDP} from '../../../../utils';
 import TCPhoneNumber from '../../../../components/TCPhoneNumber';
 import TCMessageButton from '../../../../components/TCMessageButton';
 
@@ -123,20 +117,17 @@ export default function CreateMemberProfileForm2({navigation, route}) {
     }
   }, [isFocused]);
 
-  const validation = useCallback(() => {
-    if (!location?.length) {
-      showAlert(strings.addressValidation);
-      return false;
-    }
-    return true;
-  }, [city, country, location, postalCode, state]);
-
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
         <Text style={styles.nextButtonStyle} onPress={() => pressedNext()}>
           {strings.next}
         </Text>
+      ),
+      headerLeft: () => (
+        <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
+          <Image source={images.backArrow} style={styles.backArrowStyle} />
+        </TouchableWithoutFeedback>
       ),
     });
   }, [
@@ -152,33 +143,31 @@ export default function CreateMemberProfileForm2({navigation, route}) {
   ]);
 
   const pressedNext = () => {
-    if (validation()) {
-      const membersAuthority = {
-        ...memberInfo,
-        ...route.params.form1,
-        group_id: entity.uid,
-        is_member: true,
-        gender,
-        street_address: location,
-        city,
-        state_abbr: state,
-        country,
-        postal_code: postalCode,
-        birthday,
-      };
+    const membersAuthority = {
+      ...memberInfo,
+      ...route.params.form1,
+      group_id: entity.uid,
+      is_member: true,
+      gender,
+      street_address: location,
+      city,
+      state_abbr: state,
+      country,
+      postal_code: postalCode,
+      birthday,
+    };
 
-      if (entity.role === Verbs.entityTypeTeam) {
-        navigation.navigate('CreateMemberProfileTeamForm3', {
-          form2:
-            entity.obj.sport === 'soccer'
-              ? {...membersAuthority, dominant_foot: dominant}
-              : membersAuthority,
-        });
-      } else if (entity.role === Verbs.entityTypeClub) {
-        navigation.navigate('CreateMemberProfileClubForm3', {
-          form2: membersAuthority,
-        });
-      }
+    if (entity.role === Verbs.entityTypeTeam) {
+      navigation.navigate('CreateMemberProfileTeamForm3', {
+        form2:
+          entity.obj.sport === 'soccer'
+            ? {...membersAuthority, dominant_foot: dominant}
+            : membersAuthority,
+      });
+    } else if (entity.role === Verbs.entityTypeClub) {
+      navigation.navigate('CreateMemberProfileClubForm3', {
+        form2: membersAuthority,
+      });
     }
   };
 
@@ -599,5 +588,11 @@ const styles = StyleSheet.create({
     fontSize: widthPercentageToDP('3.8%'),
     width: '90%',
     textAlign: 'center',
+  },
+  backArrowStyle: {
+    height: 20,
+    marginLeft: 15,
+    resizeMode: 'contain',
+    tintColor: colors.blackColor,
   },
 });

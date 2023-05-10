@@ -2082,7 +2082,7 @@ export default {
   doYouWantSwitchAc: 'en_Do you want to switch account to',
   noNotification: 'en_No Notification',
   newNotificationn: 'en_New notification will appear here.',
-  respondToInviteCreateTeam: 'en_Respond to invite to create team',
+  respondToInviteCreateTeam: 'en_Respond to Invite to Create Team',
   trash: 'en_Trash',
   editPost: 'en_Edit Post',
   unpausesmall: 'en_unpause',
@@ -2811,6 +2811,8 @@ export default {
   onlineUrl: 'en_URL',
   emptyEventUrl: "en_URL hasn't been provided yet.",
   postTitle: 'en_Post',
+  searchForTeamPartener: 'en_Search for team partner',
+  matchCapText: 'en_Match',
   cancelInvoiveModaltitle:
     'en_Choose recipients of the invoices that you want to cancel.',
   peopleSelected: 'en_people selected',
@@ -2860,6 +2862,7 @@ export default {
   sentAt: 'en_sent at',
   atText: 'en_at {0} ',
   refudviaStripe: 'en_Refund (Through Stripe)',
+  clubteamPrivacyText: 'en_Club and Team (admin) always can see members.',
   requestSwitchModalAlertMessage:
     'en_The team will be created after the team partner accepts your request to create it. Then, you will be able to switch to the team account.',
   deactivated: 'en_DEACTIVATED',
@@ -2875,4 +2878,7 @@ export default {
   PeopleText: 'en_People',
   enterAmount: 'en_Enter Amount',
   enterDescription: 'en_Enter Description',
+
+  clubteamPrivacyTextFollwers:
+    'en_Club and Team (admin) always can see followers.',
 };

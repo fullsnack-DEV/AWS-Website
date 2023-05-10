@@ -251,9 +251,11 @@ const MembersNavigator = () => (
       options={{
         title: strings.membersTitle,
         headerShown: true,
+        headerTitleAlign: 'center',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
-          fontWeight: '500',
+          fontFamily: fonts.RMedium,
+          fontSize: 16,
         },
         headerStyle: {
           backgroundColor: colors.whiteColor,
@@ -305,9 +307,12 @@ const MembersNavigator = () => (
         title: strings.memberProfile,
         headerTintColor: colors.blackColor,
         headerTitleAlign: 'center',
+
         headerTitleStyle: {
-          fontWeight: '500',
+          fontFamily: fonts.RMedium,
+          fontSize: 16,
         },
+
         headerStyle: {
           backgroundColor: colors.whiteColor,
           borderBottomColor: colors.grayColor,
@@ -338,9 +343,12 @@ const MembersNavigator = () => (
       component={InviteMembersBySearchScreen}
       options={{
         title: strings.inviteMemberText,
+
+        headerTitleAlign: 'center',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
-          fontWeight: '500',
+          fontFamily: fonts.RMedium,
+          fontSize: 16,
         },
         headerShown: true,
         headerStyle: {
@@ -356,10 +364,11 @@ const MembersNavigator = () => (
       component={RequestMultipleBasicInfoScreen}
       options={{
         title: strings.sendRequestText,
+        headerTitleAlign: 'center',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
-          fontWeight: '500',
           fontSize: 16,
+          fontFamily: fonts.RMedium,
         },
         headerStyle: {
           backgroundColor: colors.whiteColor,
@@ -406,9 +415,11 @@ const MembersNavigator = () => (
       component={MembersViewPrivacyScreen}
       options={{
         title: strings.viewPrivacy,
+        headerTitleAlign: 'center',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
-          fontWeight: '500',
+          fontFamily: fonts.RMedium,
+          fontSize: 16,
         },
         headerStyle: {
           backgroundColor: colors.whiteColor,
@@ -500,7 +511,7 @@ const MembersNavigator = () => (
         headerTintColor: colors.blackColor,
         headerTitleAlign: 'center',
         headerTitleStyle: {
-          fontFamily: fonts.RBold,
+          fontFamily: fonts.RMedium,
           fontSize: 16,
         },
         headerStyle: {
@@ -517,7 +528,7 @@ const MembersNavigator = () => (
         title: strings.createMemberProfileText,
         headerTitleAlign: 'center',
         headerTitleStyle: {
-          fontFamily: fonts.RBold,
+          fontFamily: fonts.RMedium,
           fontSize: 16,
         },
         headerStyle: {
@@ -535,7 +546,7 @@ const MembersNavigator = () => (
         headerTintColor: colors.blackColor,
         headerTitleAlign: 'center',
         headerTitleStyle: {
-          fontFamily: fonts.RBold,
+          fontFamily: fonts.RMedium,
           fontSize: 16,
         },
         headerStyle: {
@@ -550,6 +561,12 @@ const MembersNavigator = () => (
       component={CreateMemberProfileClubForm3}
       options={{
         title: strings.createMemberProfileText,
+        headerTitleAlign: 'center',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontFamily: fonts.RMedium,
+          fontSize: 16,
+        },
       }}
     />
     <Stack.Screen

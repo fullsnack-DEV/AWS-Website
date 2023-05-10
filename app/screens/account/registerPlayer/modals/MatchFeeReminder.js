@@ -47,7 +47,7 @@ const MatchFeeReminder = ({
               <Text style={styles.title}>
                 {strings.warningTextForFee}{' '}
                 <Text style={[styles.title, {color: colors.themeColor}]}>
-                  {getTitle()}?
+                  {getTitle()}
                 </Text>
               </Text>
 

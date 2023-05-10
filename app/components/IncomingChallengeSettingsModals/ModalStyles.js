@@ -8,7 +8,7 @@ const styles = StyleSheet.create({
     lineHeight: 30,
     color: colors.lightBlackColor,
     fontFamily: fonts.RMedium,
-    marginBottom: 25,
+    marginBottom: 10,
   },
   row: {
     flexDirection: 'row',

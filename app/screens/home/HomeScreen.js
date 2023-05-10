@@ -418,8 +418,8 @@ const HomeScreen = ({navigation, route}) => {
             }
             sportType={
               authContext.entity.role === Verbs.entityTypeTeam
-                ? Verbs.sportTypeTeam
-                : Verbs.sportTypeSingle
+                ? route.params.entityObj?.setting?.sport
+                : route.params.entityObj?.sports?.[0]?.sport
             }
             searchTeam={(filters) => {
               navigation.navigate('LookingForChallengeScreen', {
