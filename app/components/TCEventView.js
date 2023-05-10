@@ -105,7 +105,7 @@ export default function TCEventView({
                     {color: colors.whiteColor},
                   ]}
                   numberOfLines={1}>
-                  {title.toUpperCase()}
+                  {title ? title.toUpperCase() : null}
                 </Text>
               </View>
           </ImageBackground>
