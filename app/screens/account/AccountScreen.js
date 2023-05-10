@@ -687,7 +687,7 @@ const AccountScreen = ({navigation, route}) => {
         }
       />
       <ActivityLoader visible={onLoad} />
-      {loading && accountMenu.length === 0 ? (
+      {accountMenu.length === 0 ? (
         <AccountShimmer />
       ) : (
         <>

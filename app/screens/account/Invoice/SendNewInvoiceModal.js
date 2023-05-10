@@ -68,7 +68,7 @@ const SendNewInvoiceModal = ({
   useEffect(() => {
     const Usercurrency = getCountry(authContext.entity.obj.country);
 
-    setCurrency(Usercurrency.currency);
+    setCurrency(Usercurrency?.currency);
   }, [authContext, isVisible]);
 
   const handleDueDatePress = (date) => {

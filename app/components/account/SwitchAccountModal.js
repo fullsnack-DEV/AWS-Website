@@ -182,7 +182,7 @@ const SwitchAccountModal = ({
       ) : (
         <FlatList
           data={accountList}
-          keyExtractor={(item) => item.user_id ?? item.group_id}
+          keyExtractor={(item, index) => index.toString()}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{padding: 20}}
           renderItem={({item}) => (
