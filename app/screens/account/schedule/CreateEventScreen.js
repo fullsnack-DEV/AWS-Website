@@ -375,7 +375,7 @@ export default function CreateEventScreen({navigation, route}) {
           {getSportName(item, authContext)}
         </Text>
         <View style={styles.checkbox}>
-          {selectedSport.sport_name === item.sport_name ? (
+          {selectedSport?.sport_name === item?.sport_name ? (
             <Image
               source={images.radioCheckYellow}
               style={styles.checkboxImg}
