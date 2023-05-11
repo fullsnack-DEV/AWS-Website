@@ -19,7 +19,7 @@ function TCPlayerView({
   onPress,
   showStar = false,
   showLevel = false,
-  data = [],
+  data = {},
   showSport = false,
   subTab,
   sportFilter,

@@ -1321,7 +1321,6 @@ export default function LocalHomeScreen({navigation, route}) {
     }
   };
   const getSortDataForNextScreen = () => {
-    console.log('ffffff', filters);
     const data = {
       sport: filters.sport === strings.all ? strings.allSport : filters.sport,
       sport_type:
@@ -1340,18 +1339,17 @@ export default function LocalHomeScreen({navigation, route}) {
         teamSportData: {
           sport:
             filters.sport === strings.all
-              ? authContext.entity?.obj.sport
+              ? authContext.entity.obj.sport
               : filters.sport,
           sport_type:
             filters.sport_type === strings.all
-              ? authContext.entity?.obj.sport_type
+              ? authContext.entity.obj.sport_type
               : filters.sport_type,
           sport_name: Utility.getSportName(filters, authContext),
         },
         location,
         locationOption: getLocationOption(),
       };
-      console.log('data123==>', data);
       return data;
     }
     const data = {

@@ -1481,6 +1481,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
             ? filterType.TEAMAVAILABLECHALLENGE
             : filterType.PLAYERAVAILABLECHALLENGE
         }
+        showSportOption={authContext.entity.role === Verbs.entityTypeUser}
         favoriteSportsList={route.params.registerFavSports}
         sports={sports}
         filterObject={filters}

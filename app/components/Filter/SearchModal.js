@@ -17,7 +17,6 @@ import {
   SectionList,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import Modal from 'react-native-modal';
 import moment from 'moment';
 import FastImage from 'react-native-fast-image';
 import colors from '../../Constants/Colors';
@@ -121,30 +120,31 @@ const SearchModal = ({
 
   useEffect(() => {
     if (fType === filterType.RECRUIITINGMEMBERS && isVisible) {
-      groups.forEach((x, i) => {
+      const temp = [...groups];
+      temp.forEach((x, i) => {
         if (x.type === filterObject.groupTeam) {
-          groups[i].isChecked = true;
+          temp[i].isChecked = true;
         } else if (x.type === filterObject.groupClub) {
-          groups[i].isChecked = true;
+          temp[i].isChecked = true;
         } else if (x.type === filterObject.groupLeague) {
-          groups[i].isChecked = true;
+          temp[i].isChecked = true;
         } else {
-          groups[i].isChecked = false;
+          temp[i].isChecked = false;
         }
-        setGroups([...groups]);
+        setGroups([...temp]);
       });
     }
-  }, [isVisible]);
+  }, [fType, filterObject, groups, isVisible]);
 
   const isIconCheckedOrNot = useCallback(
     ({item, index}) => {
+      const temp = [...groups];
       if (item.isChecked) {
-        groups[index].isChecked = false;
+        temp[index].isChecked = false;
       } else {
-        groups[index].isChecked = true;
+        temp[index].isChecked = true;
       }
-
-      setGroups([...groups]);
+      setGroups([...temp]);
     },
     [groups],
   );
@@ -261,16 +261,7 @@ const SearchModal = ({
     }
     return true;
   }, [filters.maxFee, filters.minFee]);
-  const ModalHeader = () => (
-    <View
-      style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}>
-      <View style={styles.handleStyle} />
-    </View>
-  );
+
   const keyExtractor = useCallback((item, index) => index.toString(), []);
 
   const renderGroupsTypeItem = ({item, index}) => (
@@ -897,52 +888,28 @@ const SearchModal = ({
             />
           </CustomModalWrapper>
         ) : (
-          <Modal
+          <CustomModalWrapper
             isVisible={visibleSportsModal}
-            onBackdropPress={() => setVisibleSportsModal(false)}
-            onRequestClose={() => setVisibleSportsModal(false)}
-            animationInTiming={300}
-            animationOutTiming={800}
-            backdropTransitionInTiming={300}
-            backdropTransitionOutTiming={800}
-            style={{
-              margin: 0,
-            }}>
+            closeModal={() => {
+              setVisibleSportsModal(false);
+            }}
+            modalType={ModalTypes.style7}>
             <View
-              behavior="position"
               style={{
-                width: '100%',
-                height: Dimensions.get('window').height - 75,
-                maxHeight: Dimensions.get('window').height - 75,
-                backgroundColor: 'white',
-                position: 'absolute',
-                bottom: 0,
-                left: 0,
-                borderTopLeftRadius: 30,
-                borderTopRightRadius: 30,
-                shadowColor: colors.blackColor,
-                shadowOffset: {width: 0, height: 1},
-                shadowOpacity: 0.5,
-                shadowRadius: 5,
-                elevation: 15,
-              }}>
-              {ModalHeader()}
-              <View
-                style={{
-                  flexDirection: 'row',
-                  paddingHorizontal: 15,
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}></View>
-              <View style={styles.separatorLine} />
-              <FlatList
-                ItemSeparatorComponent={() => <TCThinDivider />}
-                data={sports}
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={renderSports}
-              />
-            </View>
-          </Modal>
+                flexDirection: 'row',
+                paddingHorizontal: 15,
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}></View>
+            <FlatList
+              ItemSeparatorComponent={() => <TCThinDivider />}
+              data={sports}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={renderSports}
+              showsVerticalScrollIndicator={false}
+              showsHorizontalScrollIndicator={false}
+            />
+          </CustomModalWrapper>
         )}
       </CustomModalWrapper>
     </View>
