@@ -657,9 +657,16 @@ export default function InvoiceDetailScreen({navigation, route}) {
 
           {from === Verbs.INVOICERECEVIED && (
             <>
-              {invoice.invoice_status === Verbs.UNPAID ? (
+              {invoice.invoice_status === Verbs.UNPAID ||
+              invoice.invoice_status === Verbs.PARTIALLY_PAID ? (
                 <>
-                  <TouchableOpacity style={styles.btncontainer}>
+                  <TouchableOpacity
+                    style={styles.btncontainer}
+                    onPress={() =>
+                      navigation.navigate('PayInvoiceScreen', {
+                        data: invoice,
+                      })
+                    }>
                     <Text style={styles.btntextstyle}>{strings.PAYNOW}</Text>
                   </TouchableOpacity>
                   <TouchableOpacity

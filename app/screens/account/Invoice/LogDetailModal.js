@@ -20,22 +20,28 @@ import {deleteInvoiceLog} from '../../../api/Invoice';
 import AuthContext from '../../../auth/context';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 
-export default function LogDetailModal({isVisible, invoice, log, closeList, onActionPress = () => {},}) {
+export default function LogDetailModal({
+  isVisible,
+  invoice,
+  log,
+  closeList,
+  onActionPress = () => {},
+}) {
   const [loading, setLoading] = useState(false);
   const authContext = useContext(AuthContext);
   const onDeleteLog = () => {
-      setLoading(true);
-      deleteInvoiceLog(invoice.invoice_id, log.transaction_id, authContext)
-        .then(() => {
-          setLoading(false);
-          onActionPress()
-        })
-        .catch((e) => {
-          setLoading(false);
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
-        });
+    setLoading(true);
+    deleteInvoiceLog(invoice.invoice_id, log.transaction_id, authContext)
+      .then(() => {
+        setLoading(false);
+        onActionPress();
+      })
+      .catch((e) => {
+        setLoading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
   };
 
   const onDeletePress = () => {
@@ -124,7 +130,11 @@ export default function LogDetailModal({isVisible, invoice, log, closeList, onAc
       onRightButtonPress={() => console.log('NextPressed')}
       headerRightButtonText={strings.done}
       title={strings.log}
-      containerStyle={{padding: 0, width: '100%', height: '90%'}}
+      containerStyle={{
+        padding: 0,
+        width: '100%',
+        height: '90%',
+      }}
       showBackButton>
       <ActivityLoader visible={loading} />
       <View
@@ -173,7 +183,7 @@ export default function LogDetailModal({isVisible, invoice, log, closeList, onAc
             marginBottom: 25,
           }}>
           <View style={styles.rowStyle}>
-            <Text style={styles.textStyle}>{strings.type}</Text>
+            <Text style={styles.textStyle}>{strings.logType}</Text>
             <Text
               style={[styles.statusTextStyle, {textTransform: 'capitalize'}]}>
               {' '}

@@ -1,12 +1,6 @@
 /* eslint-disable array-callback-return */
 /* eslint-disable consistent-return */
-import React, {
-  useState,
-  useContext,
-  useEffect,
-  useCallback,
-  useLayoutEffect,
-} from 'react';
+import React, {useState, useContext, useEffect, useCallback} from 'react';
 import {
   View,
   StyleSheet,
@@ -15,7 +9,7 @@ import {
   Pressable,
   Text,
   Image,
-  TouchableWithoutFeedback,
+  SafeAreaView,
 } from 'react-native';
 
 import moment from 'moment';
@@ -35,6 +29,7 @@ import images from '../../../Constants/ImagePath';
 import fonts from '../../../Constants/Fonts';
 import {getTCDate} from '../../../utils';
 import DateFilterModal from './DatefilterModal';
+import ScreenHeader from '../../../components/ScreenHeader';
 
 export default function CanceledInvoicesScreen({navigation, route}) {
   const [loading, setloading] = useState(false);
@@ -59,31 +54,6 @@ export default function CanceledInvoicesScreen({navigation, route}) {
   const tabChangePress = useCallback((changeTab) => {
     setTabNumber(changeTab.i);
   }, []);
-
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        <TouchableWithoutFeedback
-          onPress={() => {
-            navigation.goBack();
-          }}>
-          <Image source={images.backArrow} style={styles.backArrowStyle} />
-        </TouchableWithoutFeedback>
-      ),
-
-      headerTitle: () => (
-        <>
-          {from === Verbs.INVOICERECEVIED ? (
-            <Text style={styles.navTitle}>
-              {strings.invoiceCancelledandRejected}
-            </Text>
-          ) : (
-            <Text style={styles.navTitle}>{strings.invoicesCancelled}</Text>
-          )}
-        </>
-      ),
-    });
-  }, [navigation, authContext]);
 
   const getDates = (optionsState) => {
     const startDate = new Date();
@@ -166,140 +136,162 @@ export default function CanceledInvoicesScreen({navigation, route}) {
   );
 
   return (
-    <View style={styles.mainContainer}>
-      <ActivityLoader visible={loading} />
-      {/* Month Bar */}
-      <View style={{backgroundColor: colors.lightGrayBackground}}>
-        <Pressable
-          onPress={() => setVisibleMonthModal(true)}
-          style={{
-            backgroundColor: colors.lightGrayBackground,
-
-            paddingHorizontal: 15,
-          }}>
-          <View
-            style={{
-              marginTop: 25,
-              width: '100%',
-              height: 40,
-              backgroundColor: colors.whiteColor,
-              alignSelf: 'center',
-              borderRadius: 25,
-              justifyContent: 'space-between',
-              alignItems: 'flex-start',
-              flexDirection: 'row',
-            }}>
-            <Text
-              style={{
-                fontFamily: fonts.RRegular,
-                fontSize: 16,
-                lineHeight: 36,
-                paddingHorizontal: 15,
-              }}>
-              {selectedMonth}
-            </Text>
-            <Image
-              source={images.invoiceLightDownArrow}
-              style={{
-                height: 10,
-                width: 16,
-                marginRight: 15,
-                tintColor: colors.userPostTimeColor,
-                alignSelf: 'center',
-              }}
-            />
-          </View>
-        </Pressable>
-
-        {/* invocies cancelled */}
-
-        <Text style={{marginLeft: 15, marginTop: 30, marginBottom: 15}}>
-          <Text style={{fontSize: 20, fontFamily: fonts.RMedium}}>
-            {
-              invoiceList.filter(
-                (obj) => obj.invoice_status === Verbs.INVOICE_CANCELLED,
-              ).length
-            }
-          </Text>
-          <Text style={styles.invoiceSentheading}>
-            {''} {strings.invoicesCancelled}
-          </Text>
-        </Text>
-      </View>
-
-      <BottomSheet
-        isVisible={visiblemonthModal}
-        closeModal={() => setVisibleMonthModal(false)}
-        optionList={MonthData}
-        onSelect={(option) => {
-          if (option === strings.pickaDate) {
-            setVisibleMonthModal(false);
-            setShowDateModal(true);
-
-            return;
-          }
-          setEndDateTime();
-          setSelectedMonth(option);
-          setVisibleMonthModal(false);
-          getDates(option);
+    <SafeAreaView style={{flex: 1}}>
+      <ScreenHeader
+        title={
+          from === Verbs.INVOICERECEVIED
+            ? strings.invoiceCancelledandRejected
+            : strings.invoicesCancelled
+        }
+        leftIcon={images.backArrow}
+        leftIconPress={() => {
+          navigation.goBack();
+        }}
+        containerStyle={{
+          paddingLeft: 10,
+          paddingRight: 17,
+          borderBottomWidth: 1,
+          paddingBottom: 13,
         }}
       />
 
-      <View>
-        {from === Verbs.INVOICERECEVIED ? (
-          <View style={{backgroundColor: colors.whiteColor}}>
-            <TCScrollableProfileTabs
-              tabItem={tabs}
-              tabVerticalScroll={false}
-              onChangeTab={tabChangePress}
-              currentTab={tabNumber}
-              bounces={false}
-              tabStyle={{
-                marginTop: -4,
-              }}
-            />
-          </View>
-        ) : null}
-        <FlatList
-          data={
-            (tabNumber === 0 && invoiceListByFilter(Verbs.allStatus)) ||
-            (tabNumber === 1 && invoiceListByFilter(Verbs.INVOICE_CANCELLED)) ||
-            (tabNumber === 2 && invoiceListByFilter(Verbs.INVOICE_REJECTED))
-          }
-          ListEmptyComponent={() => (
-            <Text
+      <View style={styles.mainContainer}>
+        <ActivityLoader visible={loading} />
+        {/* Month Bar */}
+        <View style={{backgroundColor: colors.lightGrayBackground}}>
+          <Pressable
+            onPress={() => setVisibleMonthModal(true)}
+            style={{
+              backgroundColor: colors.lightGrayBackground,
+
+              paddingHorizontal: 15,
+            }}>
+            <View
               style={{
-                marginTop: 180,
+                marginTop: 25,
+                width: '100%',
+                height: 40,
+                backgroundColor: colors.whiteColor,
                 alignSelf: 'center',
-                color: colors.userPostTimeColor,
-                fontSize: 16,
-                fontFamily: fonts.RMedium,
-                lineHeight: 24,
+                borderRadius: 25,
+                justifyContent: 'space-between',
+                alignItems: 'flex-start',
+                flexDirection: 'row',
               }}>
-              {strings.noinvoice}
+              <Text
+                style={{
+                  fontFamily: fonts.RRegular,
+                  fontSize: 16,
+                  lineHeight: 36,
+                  paddingHorizontal: 15,
+                }}>
+                {selectedMonth}
+              </Text>
+              <Image
+                source={images.invoiceLightDownArrow}
+                style={{
+                  height: 10,
+                  width: 16,
+                  marginRight: 15,
+                  tintColor: colors.userPostTimeColor,
+                  alignSelf: 'center',
+                }}
+              />
+            </View>
+          </Pressable>
+
+          {/* invocies cancelled */}
+
+          <Text style={{marginLeft: 15, marginTop: 30, marginBottom: 15}}>
+            <Text style={{fontSize: 20, fontFamily: fonts.RMedium}}>
+              {
+                invoiceList.filter(
+                  (obj) => obj.invoice_status === Verbs.INVOICE_CANCELLED,
+                ).length
+              }
             </Text>
-          )}
-          renderItem={renderCancelledView}
-          keyExtractor={(item, index) => index.toString()}
+            <Text style={styles.invoiceSentheading}>
+              {''} {strings.invoicesCancelled}
+            </Text>
+          </Text>
+        </View>
+
+        <BottomSheet
+          isVisible={visiblemonthModal}
+          closeModal={() => setVisibleMonthModal(false)}
+          optionList={MonthData}
+          onSelect={(option) => {
+            if (option === strings.pickaDate) {
+              setVisibleMonthModal(false);
+              setShowDateModal(true);
+
+              return;
+            }
+            setEndDateTime();
+            setSelectedMonth(option);
+            setVisibleMonthModal(false);
+            getDates(option);
+          }}
+        />
+
+        <View style={{flex: 1}}>
+          {from === Verbs.INVOICERECEVIED ? (
+            <View style={{backgroundColor: colors.whiteColor}}>
+              <TCScrollableProfileTabs
+                tabItem={tabs}
+                tabVerticalScroll={false}
+                onChangeTab={tabChangePress}
+                currentTab={tabNumber}
+                bounces={false}
+                tabStyle={{
+                  marginTop: -4,
+                }}
+              />
+            </View>
+          ) : null}
+          <FlatList
+            data={
+              (tabNumber === 0 && invoiceListByFilter(Verbs.allStatus)) ||
+              (tabNumber === 1 &&
+                invoiceListByFilter(Verbs.INVOICE_CANCELLED)) ||
+              (tabNumber === 2 && invoiceListByFilter(Verbs.INVOICE_REJECTED))
+            }
+            showsVerticalScrollIndicator={false}
+            ListEmptyComponent={() => (
+              <Text
+                style={{
+                  marginTop: 180,
+                  alignSelf: 'center',
+                  color: colors.userPostTimeColor,
+                  fontSize: 16,
+                  fontFamily: fonts.RMedium,
+                  lineHeight: 24,
+                }}>
+                {strings.noinvoice}
+              </Text>
+            )}
+            renderItem={renderCancelledView}
+            keyExtractor={(item, index) => index.toString()}
+          />
+        </View>
+
+        <DateFilterModal
+          isVisible={showDateModal}
+          closeList={() => setShowDateModal(false)}
+          onApplyPress={(startDate, endDate) => {
+            setShowDateModal(false);
+            setStartDateTime(startDate);
+            setEndDateTime(getTCDate(endDate));
+
+            setSelectedMonth(
+              `${moment(startDate).format(Verbs.DATE_MDY_FORMAT)} - ${moment(
+                endDate,
+              ).format(Verbs.DATE_MDY_FORMAT)}`,
+            );
+          }}
         />
       </View>
-
-      <DateFilterModal
-        isVisible={showDateModal}
-        closeList={() => setShowDateModal(false)}
-        onApplyPress={(startDate, endDate) => {
-          setShowDateModal(false);
-          setStartDateTime(startDate);
-          setEndDateTime(getTCDate(endDate));
-
-          setSelectedMonth(
-            `${moment(startDate).format(Verbs.DATE_MDY_FORMAT)} - ${moment(
-              endDate,
-            ).format(Verbs.DATE_MDY_FORMAT)}`,
-          );
-        }}
-      />
-    </View>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
@@ -311,17 +303,5 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
     marginLeft: 5,
-  },
-  backArrowStyle: {
-    height: 20,
-    marginLeft: 15,
-    resizeMode: 'contain',
-    tintColor: colors.blackColor,
-  },
-  navTitle: {
-    fontFamily: fonts.RMedium,
-    fontSize: 16,
-    color: colors.lightBlackColor,
-    lineHeight: 18,
   },
 });

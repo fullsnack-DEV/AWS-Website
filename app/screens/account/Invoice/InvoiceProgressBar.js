@@ -13,7 +13,15 @@ export default function InvoiceProgressBar({
 
   return (
     <View style={Containerstyles}>
-      <View style={[styles.progressBarStyle, {...barStyle}]}>
+      <View
+        style={[
+          styles.progressBarStyle,
+          {
+            borderColor:
+              CalcPercentage === 0 ? colors.themeColor2 : colors.neonBlue,
+          },
+          {...barStyle},
+        ]}>
         <View
           style={[
             styles.innerGradient,
@@ -48,7 +56,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 15,
     borderRadius: 4,
     borderWidth: 1,
-    borderColor: colors.neonBlue,
+
     alignItems: 'flex-start',
 
     flexDirection: 'row',

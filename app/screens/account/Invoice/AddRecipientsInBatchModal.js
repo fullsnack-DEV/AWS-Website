@@ -254,10 +254,20 @@ export default function AddRecipientsInBatchModal({
     </View>
   );
 
+  const onCloseModal = () => {
+    setResendMessage('');
+
+    setSelectedRecipients([]);
+    setShowRecipientsModal([]);
+    setNewMembers([]);
+    setNewTeams([]);
+    closeModal();
+  };
+
   return (
     <CustomModalWrapper
       isVisible={visible}
-      closeModal={closeModal}
+      closeModal={() => onCloseModal()}
       modalType={ModalTypes.style1}
       headerRightButtonText={strings.send}
       title={title}
@@ -268,7 +278,7 @@ export default function AddRecipientsInBatchModal({
         height: '100%',
       }}>
       <ActivityLoader visible={mLoading} />
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView showsVerticalScrollIndicator={false} nestedScrollEnabled>
         <View style={styles.headertitle}>
           <Text style={styles.headerTextstyle}>{getModalTitle()}</Text>
         </View>
@@ -448,14 +458,13 @@ export default function AddRecipientsInBatchModal({
 
         {invoiceAction === InvoiceActionType.ResendBatch && (
           <FlatList
-            showsVerticalScrollIndicator={false}
             style={{marginTop: 10}}
             data={selectedRecipients}
             keyExtractor={(item, index) => index.toString()}
             ItemSeparatorComponent={() => <View style={styles.dividerLine} />}
             renderItem={renderResendRecipient}
             ListEmptyComponent={listEmptyComponent}
-            ListFooterComponent={() => <View style={{marginBottom: 100}} />}
+            nestedScrollEnabled
           />
         )}
 
@@ -477,6 +486,7 @@ export default function AddRecipientsInBatchModal({
             onClose={() => setShowChooseRecipientsModal(false)}
             invoices={batchData.invoices ?? []}
             selectedRecipients={selectedRecipients}
+            ModalTitle={strings.addresendRecipintModaltitle}
           />
         )}
       </ScrollView>

@@ -291,7 +291,7 @@ const SendNewInvoiceModal = ({
       closeModal={() => onCloseThisModal()}
       modalType={ModalTypes.style1}
       title={strings.newInvoice}
-      containerStyle={{padding: 0}}
+      containerStyle={{padding: 0, width: '100%', height: '100%'}}
       headerRightButtonText={strings.send}
       onRightButtonPress={() => onSendInvoice()}>
       <ActivityLoader visible={loading} />
@@ -377,7 +377,7 @@ const SendNewInvoiceModal = ({
                     : colors.magnifyIconColor,
                 }}>
                 {selectedDueDate
-                  ? moment(selectedDueDate).format('LL')
+                  ? moment(selectedDueDate).format(Verbs.DATE_FORMAT)
                   : strings.select}
               </Text>
             </TouchableOpacity>
@@ -482,7 +482,7 @@ const SendNewInvoiceModal = ({
           ItemSeparatorComponent={() => <View style={styles.dividerLine} />}
           renderItem={renderRecipient}
           ListEmptyComponent={listEmptyComponent}
-          ListFooterComponent={() => <View style={{marginBottom: 20}} />}
+          ListFooterComponent={() => <View style={{marginBottom: 100}} />}
         />
         {/* Code for DueDate Model */}
         <DateTimePickerView

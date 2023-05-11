@@ -374,7 +374,7 @@ const AddRecipientsModal = ({
       closeModal={() => onCloseThisModal()}
       modalType={ModalTypes.style1}
       title={modalTitle || strings.newRecipents}
-      containerStyle={{padding: 0}}
+      containerStyle={{padding: 0, width: '100%', height: '100%'}}
       headerRightButtonText={rightbuttonText || strings.done}
       onRightButtonPress={() => onAddRecipients()}
       Top={75}>
@@ -441,7 +441,7 @@ const AddRecipientsModal = ({
           ItemSeparatorComponent={() => <View style={styles.dividerLine} />}
           renderItem={renderRecipient}
           ListEmptyComponent={listEmptyComponent}
-          ListFooterComponent={() => <View style={{marginBottom: 10}} />}
+          ListFooterComponent={() => <View style={{marginBottom: 100}} />}
         />
       )}
 

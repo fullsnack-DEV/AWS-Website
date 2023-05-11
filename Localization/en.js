@@ -2823,9 +2823,9 @@ export default {
   amountRecevied: 'en_Amount Recevied',
   amountRefunded: 'en_Amount Refunded',
   deleteLogText: 'en_Are you sure you want to delete this log?',
-  deletelogbtntext: 'en_delete log',
+  deletelogbtntext: 'en_Delete log',
   loggedbytxt: 'en_Logged by',
-  loggedat: 'en_logged at',
+  loggedat: 'en_logged at:',
   transctionNumber: 'en_Transaction No:',
   logaPayment: 'en_Log a Payment',
   logaRefund: 'en_Log a Refund',
@@ -2881,6 +2881,20 @@ export default {
 
   clubteamPrivacyTextFollwers:
     'en_Club and Team (admin) always can see followers.',
+  logType: 'en_Type:',
+  logAmount: 'en_Amount:',
+  logMethod: 'en_Method:',
+  internationalFeeText:
+    'en_An internartional transactin fee is charged when the transaction is processed outside of  the country where your credit card was issued.The international transaction fee is 0.25% of the sum of the match fee and service fee.',
+  addresendRecipintModaltitle:
+    'en_Choose recipients to whom you want to resent the invoice.',
+  addpaymentMethod: 'en_Add a payment method',
+  invoicedAmount: 'en_Invoiced Amount',
+  serviceFee: 'en_Service Fee',
+  international: 'en_International',
+  transactionFee: 'en_Transaction Fee',
+  makeAPayment: 'en_Make a Payment',
+
 
   eventFeaturePhoto: 'en_FEATURED PHOTO',
   eventPhotoRatio: 'en_At least 1284x2778 pixels',
@@ -2905,4 +2919,5 @@ export default {
   postTitle: 'en_Post',
   list: 'en_List',
   plusDayOne: 'en_+1day'
+
 };

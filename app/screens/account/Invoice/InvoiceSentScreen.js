@@ -197,10 +197,6 @@ export default function InvoiceSentScreen({navigation}) {
     updateSubTabs(maintabNumber);
   }, [maintabNumber, refreshflag]);
 
-  // useLayoutEffect(() => {
-  //   updateSubTabs(maintabNumber);
-  // }, [maintabNumber]);
-
   const updateTabs = (peopleCount, batchesCount) => {
     let recipientsTitle = strings.recipients;
     let batchesTitle = strings.batches;
