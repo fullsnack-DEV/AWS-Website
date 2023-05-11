@@ -19,7 +19,7 @@ function TCTeamSearchView({
   onPress,
   showStar = false,
   showLevelOnly = false,
-  data,
+  data = [],
   isClub = false,
   authContext,
   onPressChallengeButton,

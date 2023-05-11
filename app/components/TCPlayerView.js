@@ -19,7 +19,7 @@ function TCPlayerView({
   onPress,
   showStar = false,
   showLevel = false,
-  data,
+  data = [],
   showSport = false,
   subTab,
   sportFilter,
@@ -158,21 +158,21 @@ function TCPlayerView({
       <View style={styles.viewContainer}>
         <Image
           source={
-            data?.thumbnail ? {uri: data?.thumbnail} : images.profilePlaceHolder
+            data.thumbnail ? {uri: data.thumbnail} : images.profilePlaceHolder
           }
           style={styles.profileImage}
         />
 
         <View style={{flexDirection: 'column', marginLeft: 10, flex: 1}}>
           <Text style={styles.entityName} numberOfLines={2}>
-            {data?.full_name}
+            {data.full_name}
           </Text>
           {showSport ? (
             <Text
               style={styles.locationText}
               numberOfLines={1}
               ellipsizeMode={'tail'}>
-              {data?.city} ·{' '}
+              {data.city} ·{' '}
               {sports.length === 1 &&
                 sports[0].sport_name?.charAt(0).toUpperCase() +
                   sports[0].sport_name?.slice(1)}
@@ -184,7 +184,7 @@ function TCPlayerView({
             </Text>
           ) : (
             <Text style={styles.locationText} numberOfLines={1}>
-              {data?.city}
+              {data.city}
             </Text>
           )}
           {showStar && (
