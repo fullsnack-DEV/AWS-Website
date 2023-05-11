@@ -1321,6 +1321,7 @@ export default function LocalHomeScreen({navigation, route}) {
     }
   };
   const getSortDataForNextScreen = () => {
+    console.log('ffffff', filters);
     const data = {
       sport: filters.sport === strings.all ? strings.allSport : filters.sport,
       sport_type:
@@ -1350,6 +1351,7 @@ export default function LocalHomeScreen({navigation, route}) {
         location,
         locationOption: getLocationOption(),
       };
+      console.log('data123==>', data);
       return data;
     }
     const data = {
@@ -1362,6 +1364,7 @@ export default function LocalHomeScreen({navigation, route}) {
       location,
       locationOption: getLocationOption(),
     };
+    console.log('data1', data);
     return data;
   };
   const getNextScreenPlayerData = () => {
@@ -1600,9 +1603,21 @@ export default function LocalHomeScreen({navigation, route}) {
                 showArrow={true}
                 viewStyle={{marginTop: 20, marginBottom: 15}}
                 onPress={() => {
-                  navigation.navigate('UpcomingMatchScreen', {
-                    filters,
-                  });
+                  if (authContext.entity.role === Verbs.entityTypeTeam) {
+                    const data = getNextScreenTeamData();
+                    navigation.navigate('UpcomingMatchScreen', {
+                      filters: {
+                        location: data.location,
+                        locationOption: data.locationOption,
+                      },
+                      teamSportData: data.teamSportData,
+                    });
+                  } else {
+                    const data = getSortDataForNextScreen();
+                    navigation.navigate('UpcomingMatchScreen', {
+                      filters: data,
+                    });
+                  }
                 }}
               />
               <Carousel

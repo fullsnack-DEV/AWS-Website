@@ -49,10 +49,10 @@ const SearchModal = ({
   isVisible,
   filterObject,
   feeTitle,
+  showSportOption,
   onPressCancel = () => {},
   onPressApply = () => {},
 }) => {
-  console.log('filterObject object  ', filterObject);
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
   const [filters, setFilters] = useState(filterObject);
   const [visibleLocationModal, setVisibleLocationModal] = useState(false);
@@ -64,11 +64,6 @@ const SearchModal = ({
   const [showTimeComponent, setShowTimeComponent] = useState(false);
   const [showFeeComponent, setShowFeeComponent] = useState(false);
   const [showSportComponent, setShowSportComponent] = useState(false);
-
-  console.log('showTimeComponent', showTimeComponent);
-  console.log('showSportComponent', showSportComponent);
-
-  console.log('fType', fType);
 
   useEffect(() => {
     setFilterOptions([
@@ -105,12 +100,14 @@ const SearchModal = ({
         fType === filterType.REFEREES ||
           fType === filterType.SCOREKEEPERS ||
           fType === filterType.TEAMAVAILABLECHALLENGE ||
+          fType === filterType.UPCOMINGMATCHES ||
           fType === filterType.PLAYERAVAILABLECHALLENGE,
       );
       setShowSportComponent(
         fType === filterType.REFEREES ||
           fType === filterType.SCOREKEEPERS ||
           fType === filterType.PLAYERAVAILABLECHALLENGE ||
+          fType === filterType.UPCOMINGMATCHES ||
           fType === filterType.RECRUIITINGMEMBERS,
       );
 
@@ -154,21 +151,20 @@ const SearchModal = ({
 
   const handleSetLocationOptions = useCallback(
     (location1) => {
-      console.log('location1?.formattedAddress', location1);
       // eslint-disable-next-line no-prototype-builtins
       if (location1.hasOwnProperty('address')) {
         setFilters({
           ...filters,
-          location: location1?.city,
+          location: location1.city,
           isSearchPlaceholder: false,
-          searchCityLoc: location1?.city,
+          searchCityLoc: location1.city,
         });
       } else {
         setFilters({
           ...filters,
-          location: location1?.city,
+          location: location1.city,
           isSearchPlaceholder: false,
-          searchCityLoc: location1?.city,
+          searchCityLoc: location1.city,
         });
       }
     },
@@ -287,7 +283,7 @@ const SearchModal = ({
           flexDirection: 'row',
           justifyContent: 'space-between',
           marginRight: 15,
-          alignSelf: 'flex-start',
+          alignSelf: 'flex-end',
           height: 50,
         }}>
         <Text style={styles.sportList}>{item?.type}</Text>
@@ -384,7 +380,6 @@ const SearchModal = ({
                 delete tempFilter.groupLeague;
               }
             }
-            console.log('Apply tempFilter ==>', tempFilter);
             onPressApply(tempFilter);
           } else if (fType === filterType.LOOKINGFORTEAMCLUB) {
             const tempFilter = {
@@ -399,21 +394,12 @@ const SearchModal = ({
               tempFilter.fee = `${tempFilter.minFee}-${tempFilter.maxFee}`;
             }
             if (filters.fromDateTime && filters.toDateTime) {
-              console.log(
-                'date==>',
-                `${moment(getJSDate(filters.fromDateTime).getTime()).format(
-                  'MMM DD',
-                )}-${moment(getJSDate(filters.toDateTime).getTime()).format(
-                  'MMM DD',
-                )}`,
-              );
               tempFilter.availableTime = `${moment(
                 getJSDate(filters.fromDateTime).getTime(),
               ).format('MMM DD')}-${moment(
                 getJSDate(filters.toDateTime).getTime(),
               ).format('MMM DD')}`;
             }
-            console.log('Apply PLAYERAVAILABLECHALLENGE ==>', tempFilter);
 
             onPressApply(tempFilter);
           } else if (applyValidation()) {
@@ -424,7 +410,6 @@ const SearchModal = ({
             if (Number(filters.minFee) >= 0 && Number(filters.maxFee) > 0) {
               tempFilter.fee = `${tempFilter.minFee}-${tempFilter.maxFee}`;
             }
-            console.log('Apply tempFilter ==>', tempFilter);
             onPressApply(tempFilter);
           }
         }}>
@@ -583,7 +568,7 @@ const SearchModal = ({
                     </TouchableWithoutFeedback>
                   </View>
                 </View>
-                {showSportComponent && (
+                {showSportOption && (
                   <View>
                     <View
                       style={{
@@ -792,101 +777,6 @@ const SearchModal = ({
                     </View>
                   </View>
                 )}
-                {/* {showSortComponent && (
-                  <View
-                    style={{
-                      flexDirection: 'column',
-                      margin: 15,
-                      marginTop: 34,
-                      justifyContent: 'space-between',
-                    }}>
-                    <View>
-                      <Text style={styles.filterTitleBold}>
-                        {strings.sortBy}
-                      </Text>
-                    </View>
-                    <View style={{marginTop: 15}}>
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          marginBottom: 15,
-                          // justifyContent: 'space-between',
-                        }}>
-                        <TouchableWithoutFeedback
-                          onPress={() => {
-                            // setSortOption(0);
-                            setFilters({
-                              ...filters,
-                              sortOption: sortOptionType.RANDOM,
-                            });
-                          }}>
-                          <Image
-                            source={
-                              filters.sortOption === sortOptionType.RANDOM
-                                ? images.checkRoundOrange
-                                : images.radioUnselect
-                            }
-                            style={styles.radioButtonStyle}
-                          />
-                        </TouchableWithoutFeedback>
-                        <Text style={styles.sortOptionStyle}>
-                          {strings.filterRandom}
-                        </Text>
-                      </View>
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          marginBottom: 15,
-                        }}>
-                        <TouchableWithoutFeedback
-                          onPress={() => {
-                            setFilters({
-                              ...filters,
-                              sortOption: sortOptionType.LOW_TO_HIGH,
-                            });
-                          }}>
-                          <Image
-                            source={
-                              filters.sortOption === sortOptionType.LOW_TO_HIGH
-                                ? images.checkRoundOrange
-                                : images.radioUnselect
-                            }
-                            style={styles.radioButtonStyle}
-                          />
-                        </TouchableWithoutFeedback>
-                        <Text style={styles.sortOptionStyle}>
-                          {strings.filterLowtoHighRefereeFee}
-                        </Text>
-                      </View>
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          marginBottom: 15,
-                        }}>
-                        <TouchableWithoutFeedback
-                          onPress={() => {
-                            // setSortOption(2);
-                            setFilters({
-                              ...filters,
-                              sortOption: sortOptionType.HIGH_TO_LOW,
-                            });
-                          }}>
-                          <Image
-                            source={
-                              filters.sortOption === sortOptionType.HIGH_TO_LOW
-                                ? images.checkRoundOrange
-                                : images.radioUnselect
-                            }
-                            style={styles.radioButtonStyle}
-                          />
-                        </TouchableWithoutFeedback>
-                        <Text style={styles.sortOptionStyle}>
-                          {strings.filterHightoLowRefereeFee}
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
-                )} */}
                 {fType === filterType.RECRUIITINGMEMBERS && (
                   <View
                     style={{
@@ -981,9 +871,25 @@ const SearchModal = ({
             <SectionList
               sections={sections}
               renderItem={renderSports}
-              renderSectionHeader={({section: {title}}) => (
-                <Header title={title} />
-              )}
+              renderSectionHeader={({section: {title}}) => {
+                if (title === strings.otherSports) {
+                  return (
+                    <View
+                      style={{
+                        flex: 1,
+                        flexDirection: 'column',
+                        // height: 80,
+                        justifyContent: 'space-between',
+                      }}>
+                      <View
+                        style={{...styles.separatorLine, marginBottom: 35}}
+                      />
+                      <Header title={title} />
+                    </View>
+                  );
+                }
+                return <Header title={title} />;
+              }}
               keyExtractor={(item, index) => index.toString()}
               ItemSeparatorComponent={renderSeparator}
               showsVerticalScrollIndicator={false}
@@ -1014,7 +920,7 @@ const SearchModal = ({
                 left: 0,
                 borderTopLeftRadius: 30,
                 borderTopRightRadius: 30,
-                shadowColor: '#000',
+                shadowColor: colors.blackColor,
                 shadowOffset: {width: 0, height: 1},
                 shadowOpacity: 0.5,
                 shadowRadius: 5,
@@ -1038,52 +944,6 @@ const SearchModal = ({
             </View>
           </Modal>
         )}
-        {/* <Modal
-          isVisible={visibleSportsModal}
-          onBackdropPress={() => setVisibleSportsModal(false)}
-          onRequestClose={() => setVisibleSportsModal(false)}
-          animationInTiming={300}
-          animationOutTiming={800}
-          backdropTransitionInTiming={300}
-          backdropTransitionOutTiming={800}
-          style={{
-            margin: 0,
-          }}>
-          <View
-            behavior="position"
-            style={{
-              width: '100%',
-              height: Dimensions.get('window').height - 75,
-              maxHeight: Dimensions.get('window').height - 75,
-              backgroundColor: 'white',
-              position: 'absolute',
-              bottom: 0,
-              left: 0,
-              borderTopLeftRadius: 30,
-              borderTopRightRadius: 30,
-              shadowColor: '#000',
-              shadowOffset: {width: 0, height: 1},
-              shadowOpacity: 0.5,
-              shadowRadius: 5,
-              elevation: 15,
-            }}>
-            {ModalHeader()}
-            <View
-              style={{
-                flexDirection: 'row',
-                paddingHorizontal: 15,
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              }}></View>
-            <View style={styles.separatorLine} />
-            <FlatList
-              ItemSeparatorComponent={() => <TCThinDivider />}
-              data={sports}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={renderSports}
-            />
-          </View>
-        </Modal> */}
       </CustomModalWrapper>
     </View>
   );
@@ -1113,16 +973,14 @@ const styles = StyleSheet.create({
 
   resetButton: {
     alignSelf: 'center',
-    backgroundColor: '#F5F5F5',
+    backgroundColor: colors.ligherGray,
     borderRadius: 5,
     height: 25,
     width: 130,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    // marginBottom: 10,
     position: 'absolute',
-    // flex: 1,
     bottom: 80,
   },
   resetTitle: {
@@ -1130,7 +988,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
     alignSelf: 'center',
-    // margin: 15,
   },
 
   searchCityContainer: {
@@ -1139,7 +996,7 @@ const styles = StyleSheet.create({
     height: 40,
     paddingLeft: 15,
     paddingRight: 15,
-    width: widthPercentageToDP('80%'),
+    width: 300,
     justifyContent: 'center',
   },
   sportsContainer: {
@@ -1148,7 +1005,6 @@ const styles = StyleSheet.create({
     height: 40,
     paddingLeft: 15,
     paddingRight: 15,
-    width: widthPercentageToDP('93%'),
     justifyContent: 'center',
   },
   minFee: {
@@ -1177,7 +1033,7 @@ const styles = StyleSheet.create({
   languageList: {
     color: colors.lightBlackColor,
     fontFamily: fonts.RRegular,
-    fontSize: widthPercentageToDP('4%'),
+    fontSize: 16,
   },
   checkboxImg: {
     width: 22,
@@ -1185,12 +1041,6 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     alignSelf: 'center',
   },
-  // sortOptionStyle: {
-  //   fontSize: 16,
-  //   fontFamily: fonts.RRegular,
-  //   color: colors.lightBlackColor,
-  //   left: 10,
-  // },
   timeZoneText: {
     fontFamily: fonts.RLight,
     fontSize: 14,
@@ -1200,7 +1050,7 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     textAlign: 'left',
     fontFamily: fonts.RRegular,
-    margin: widthPercentageToDP('4%'),
+    margin: 15,
     textAlignVertical: 'center',
     fontSize: 16,
   },
@@ -1209,14 +1059,12 @@ const styles = StyleSheet.create({
     marginRight: 15,
   },
   unCheckboxImg: {
-    width: widthPercentageToDP('5.5%'),
-    height: widthPercentageToDP('5.5%'),
+    width: 22,
+    height: 22,
     tintColor: colors.lightBlackColor,
     alignSelf: 'center',
   },
-  header: {
-    // backgroundColor: colors.yellowColor,
-  },
+  header: {},
   headerText: {
     fontFamily: fonts.RMedium,
     fontSize: 18,
@@ -1227,7 +1075,5 @@ const styles = StyleSheet.create({
     width: '100%',
     alignSelf: 'center',
     height: 1,
-    // marginTop: 10,
-    // marginBottom: 10,
   },
 });

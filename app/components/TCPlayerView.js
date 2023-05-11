@@ -222,7 +222,7 @@ function TCPlayerView({
             }}>
             <View
               style={{
-                backgroundColor: '#FF7F00',
+                backgroundColor: colors.darkYellowColor,
                 width: 75,
                 height: 25,
                 borderRadius: 5,
@@ -238,7 +238,7 @@ function TCPlayerView({
             onPress={() => onPressBookButton(data, sports[0])}>
             <View
               style={{
-                backgroundColor: '#FF7F00',
+                backgroundColor: colors.darkYellowColor,
                 width: 75,
                 height: 25,
                 borderRadius: 5,
@@ -253,7 +253,7 @@ function TCPlayerView({
           <TouchableWithoutFeedback onPress={() => onPressInviteButton(data)}>
             <View
               style={{
-                backgroundColor: '#F5F5F5',
+                backgroundColor: colors.lightGrey,
                 width: 75,
                 height: 25,
                 borderRadius: 5,

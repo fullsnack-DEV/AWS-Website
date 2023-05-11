@@ -427,7 +427,7 @@ const styles = StyleSheet.create({
     width: widthPercentageToDP('92%'),
     borderRadius: 25,
     elevation: 2,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: colors.lightGrey,
     marginTop: 10,
   },
   settingImage: {

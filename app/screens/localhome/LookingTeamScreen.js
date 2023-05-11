@@ -1370,7 +1370,6 @@ export default function LookingTeamScreen({navigation, route}) {
         isVisible={settingPopup}
         onPressApply={(filterData) => {
           setloading(false);
-          console.log('filterData==>', filterData);
           let tempFilter = {};
           tempFilter = {...filterData};
           setSettingPopup(false);
@@ -1397,7 +1396,6 @@ export default function LookingTeamScreen({navigation, route}) {
             tempFilter.location = filterData.searchCityLoc;
           }
           setFilters({...tempFilter});
-          console.log('tempFilter-2===>', tempFilter);
           applyFilter(tempFilter);
         }}
         onPressCancel={() => {

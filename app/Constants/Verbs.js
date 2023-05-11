@@ -154,6 +154,21 @@ const Verbs = {
   CASH: 'Cash',
   DATE_FORMAT: 'MMM DD, YYYY hh:mm A',
   CHEQUE: 'Cheque',
+  // Tag verbs
+  entityID: 'entityID',
+  searchText: 'searchText',
+  sport_type: 'sport_type',
+  sport_name: 'sport_name',
+  location_Type: 'locationType',
+  locationOption: 'locationOption',
+  sportType_tag: 'sportType',
+  isSearchPlaceholder: 'isSearchPlaceholder',
+  minFee: 'minFee',
+  maxFee: 'maxFee',
+  sortOption: 'sortOption',
+  searchCityLoc: 'searchCityLoc',
+  fromDateTime: 'fromDateTime',
+  toDateTime: 'toDateTime',
 };
 
 export default Verbs;

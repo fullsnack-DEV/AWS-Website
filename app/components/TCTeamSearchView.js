@@ -167,7 +167,7 @@ function TCTeamSearchView({
             }}>
             <View
               style={{
-                backgroundColor: '#F5F5F5',
+                backgroundColor: colors.lightGrey,
                 width: 75,
                 height: 25,
                 borderRadius: 5,
@@ -185,7 +185,7 @@ function TCTeamSearchView({
             }}>
             <View
               style={{
-                backgroundColor: '#FF7F00',
+                backgroundColor: colors.darkYellowColor,
                 width: 75,
                 height: 25,
                 borderRadius: 5,
@@ -211,7 +211,7 @@ const styles = StyleSheet.create({
     height: 40,
     width: 40,
     borderRadius: 80,
-    backgroundColor: '#00000000',
+    backgroundColor: colors.blackColor,
   },
   placeHolderImg: {
     height: 32,
@@ -264,7 +264,7 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     backgroundColor: colors.whiteColor,
     borderWidth: 1,
-    borderColor: '#dddddd',
+    borderColor: colors.borderlinecolor,
   },
   challengeBtn: {
     fontSize: 12,

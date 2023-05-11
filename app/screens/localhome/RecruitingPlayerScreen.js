@@ -81,9 +81,6 @@ export default function RecruitingPlayerScreen({navigation, route}) {
   const [myGroupDetail] = useState(
     authContext.entity.role === Verbs.entityTypeTeam && authContext.entity.obj,
   );
-  console.log('Recruiting filter default', filters);
-  console.log('Recruiting group ', groups);
-  console.log('Recruiting sports ', sports);
 
   useEffect(() => {
     const defaultSport = [
@@ -1744,7 +1741,6 @@ export default function RecruitingPlayerScreen({navigation, route}) {
         isVisible={settingPopup}
         onPressApply={(filterData) => {
           setloading(false);
-          console.log('filterData==>', filterData);
           let tempFilter = {};
           tempFilter = {...filterData};
           setSettingPopup(false);
@@ -1771,7 +1767,6 @@ export default function RecruitingPlayerScreen({navigation, route}) {
             tempFilter.location = filterData.searchCityLoc;
           }
           setFilters({...tempFilter});
-          console.log('tempFilter-2===>', tempFilter);
           applyFilter(tempFilter);
         }}
         onPressCancel={() => {

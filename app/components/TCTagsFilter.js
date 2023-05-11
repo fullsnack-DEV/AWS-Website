@@ -13,6 +13,7 @@ import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import images from '../Constants/ImagePath';
 import {getSportName} from '../utils';
+import Verbs from '../Constants/Verbs';
 
 function TCTagsFilter({dataSource, onTagCancelPress, filter, authContext}) {
   const renderTags = ({item, index}) => (
@@ -20,21 +21,20 @@ function TCTagsFilter({dataSource, onTagCancelPress, filter, authContext}) {
       {Object.values(item)[0] !== strings.allType &&
         Object.values(item)[0] !== strings.worldTitleText &&
         Object.values(item)[0] !== strings.allSport &&
-        Object.keys(item)[0] !== 'entityID' &&
-        Object.keys(item)[0] !== 'searchText' &&
-        Object.keys(item)[0] !== 'sport_type' &&
-        Object.keys(item)[0] !== 'sport_name' &&
-        Object.keys(item)[0] !== 'locationType' &&
-        Object.keys(item)[0] !== 'locationOption' &&
-        Object.keys(item)[0] !== 'sportType' &&
-        Object.keys(item)[0] !== 'isSearchPlaceholder' &&
-        Object.keys(item)[0] !== 'minFee' &&
-        Object.keys(item)[0] !== 'maxFee' &&
-        Object.keys(item)[0] !== 'sortOption' &&
-        Object.keys(item)[0] !== 'searchCityLoc' &&
-        Object.keys(item)[0] !== 'fromDateTime' &&
-        Object.keys(item)[0] !== 'fromDateTime' &&
-        Object.keys(item)[0] !== 'toDateTime' && (
+        Object.keys(item)[0] !== Verbs.entityID &&
+        Object.keys(item)[0] !== Verbs.searchText &&
+        Object.keys(item)[0] !== Verbs.sport_type &&
+        Object.keys(item)[0] !== Verbs.sport_name &&
+        Object.keys(item)[0] !== Verbs.location_Type &&
+        Object.keys(item)[0] !== Verbs.locationOption &&
+        Object.keys(item)[0] !== Verbs.sportType_tag &&
+        Object.keys(item)[0] !== Verbs.isSearchPlaceholder &&
+        Object.keys(item)[0] !== Verbs.minFee &&
+        Object.keys(item)[0] !== Verbs.maxFee &&
+        Object.keys(item)[0] !== Verbs.sortOption &&
+        Object.keys(item)[0] !== Verbs.searchCityLoc &&
+        Object.keys(item)[0] !== Verbs.fromDateTime &&
+        Object.keys(item)[0] !== Verbs.toDateTime && (
           <View
             style={styles.textContainer}
             onPress={() => onTagCancelPress({item, index})}>

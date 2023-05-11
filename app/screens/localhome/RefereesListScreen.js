@@ -342,13 +342,9 @@ export default function RefereesListScreen({navigation, route}) {
   };
 
   const getLocation = () => {
-    console.log('we are here');
-
     // setloading(true);
-    console.log('start location task');
     getGeocoordinatesWithPlaceName(Platform.OS)
       .then((currentLocation) => {
-        console.log('result location task', currentLocation);
         setloading(false);
         if (currentLocation.position) {
           setLocation(
@@ -455,13 +451,17 @@ export default function RefereesListScreen({navigation, route}) {
       <SearchModal
         // enityType={Verbs.entityTypeReferee}
         fType={filterType.REFEREES}
+        showSportOption={
+          (authContext.entity.role === Verbs.entityTypeUser && true) ||
+          (authContext.entity.role === Verbs.entityTypeTeam && false) ||
+          (authContext.entity.role === Verbs.entityTypeClub && true)
+        }
         sports={sports}
         filterObject={filters}
         feeTitle={strings.refereeFee}
         isVisible={settingPopup}
         onPressApply={(filterData) => {
           setloading(false);
-          console.log('filterData==>', filterData);
           let tempFilter = {};
           tempFilter = {...filterData};
           setSettingPopup(false);
@@ -488,7 +488,6 @@ export default function RefereesListScreen({navigation, route}) {
             tempFilter.location = filterData.searchCityLoc;
           }
           setFilters({...tempFilter});
-          console.log('tempFilter-2===>', tempFilter);
           applyFilter(tempFilter);
         }}
         onPressCancel={() => {
