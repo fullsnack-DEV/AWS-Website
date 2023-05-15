@@ -10,6 +10,7 @@ import {userActivate} from '../api/Users';
 import {setAuthContextData} from '../utils';
 import {groupUnpaused} from '../api/Groups';
 import ActivityLoader from './loader/ActivityLoader';
+import {getUnreadNotificationCount} from '../utils/accountUtils';
 
 const TCAccountDeactivate = () => {
   const authContext = useContext(AuthContext);
@@ -47,6 +48,7 @@ const TCAccountDeactivate = () => {
     setLoading(true);
     userActivate(authContext)
       .then(async (response) => {
+        getUnreadNotificationCount(authContext);
         await setAuthContextData(response.payload, authContext);
         setLoading(false);
       })
@@ -62,6 +64,7 @@ const TCAccountDeactivate = () => {
     setLoading(true);
     groupUnpaused(authContext)
       .then(async (response) => {
+        getUnreadNotificationCount(authContext);
         await setAuthContextData(response.payload, authContext);
         setLoading(false);
       })

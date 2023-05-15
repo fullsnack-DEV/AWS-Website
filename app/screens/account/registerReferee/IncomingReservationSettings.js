@@ -211,6 +211,7 @@ const IncomingReservationSettings = ({navigation, route}) => {
           onSave();
         }}
         entityType={entityType}
+        onCloseModal={() => setShowMatchFeeReminderModal(false)}
       />
 
       <RefereeCongratulationsModal

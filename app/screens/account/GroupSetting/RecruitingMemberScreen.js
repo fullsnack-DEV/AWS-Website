@@ -8,6 +8,7 @@ import {
   SafeAreaView,
   TouchableOpacity,
 } from 'react-native';
+import {format} from 'react-string-format';
 import AuthContext from '../../../auth/context';
 import images from '../../../Constants/ImagePath';
 import * as Utility from '../../../utils';
@@ -17,6 +18,7 @@ import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
 import {strings} from '../../../../Localization/translation';
 import ScreenHeader from '../../../components/ScreenHeader';
+import Verbs from '../../../Constants/Verbs';
 
 const hiringPlayersOptions = [
   {key: strings.yesDisplayItText, id: 1},
@@ -61,6 +63,17 @@ export default function RecruitingMemberScreen({navigation}) {
       });
   };
 
+  const getImage = () => {
+    if (authContext.entity.obj.entity_type === Verbs.entityTypeClub) {
+      return hiringPlayersSelection
+        ? images.recruitingMemberClubYesImg
+        : images.recruitingMemberClubNoImg;
+    }
+    return hiringPlayersSelection
+      ? images.recruitingMemberYesImg
+      : images.recruitingMemberNoImg;
+  };
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <ScreenHeader
@@ -75,7 +88,12 @@ export default function RecruitingMemberScreen({navigation}) {
       />
       <ActivityLoader visible={loading} />
       <Text style={styles.opetionsTitle}>
-        {strings.isYourTeamRecruitingMember}
+        {format(
+          strings.isYourTeamRecruitingMember,
+          authContext.entity.obj.entity_type === Verbs.entityTypeClub
+            ? Verbs.entityTypeClub
+            : Verbs.entityTypeTeam,
+        )}
       </Text>
       <View style={styles.recruitingContainer}>
         <Text style={styles.recruitingContainerText}>
@@ -114,18 +132,16 @@ export default function RecruitingMemberScreen({navigation}) {
             justifyContent: 'center',
           }}>
           <Image
-            source={
-              hiringPlayersSelection
-                ? images.recruitingMemberYesImg
-                : images.recruitingMemberNoImg
-            }
+            source={getImage()}
             style={{width: '100%', height: '100%', resizeMode: 'contain'}}
           />
         </View>
       </View>
       <Text
         style={[styles.labelText, {paddingHorizontal: 15, paddingVertical: 6}]}>
-        {strings.recruitingBottomText}
+        {authContext.entity.obj.entity_type === Verbs.entityTypeClub
+          ? strings.recruitingBottomClubText
+          : strings.recruitingBottomText}
       </Text>
     </SafeAreaView>
   );

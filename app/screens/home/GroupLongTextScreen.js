@@ -25,8 +25,9 @@ import images from '../../Constants/ImagePath';
 export default function GroupLongTextScreen({navigation, route}) {
   const [loading, setloading] = useState(false);
   const [description, setDescription] = useState('');
+  const [byLaw, setByLaw] = useState('');
 
-  const {groupDetails} = route.params;
+  const {groupDetails, isBylaw} = route.params;
   const authContext = useContext(AuthContext);
   const inputRef = useRef();
 
@@ -37,46 +38,44 @@ export default function GroupLongTextScreen({navigation, route}) {
   }, [navigation]);
 
   useEffect(() => {
-    if (groupDetails.bio) {
+    if (isBylaw && groupDetails.bylaw) {
+      setByLaw(groupDetails.bylaw);
+    } else if (groupDetails.bio) {
       setDescription(groupDetails.bio);
     }
-  }, [groupDetails.bio]);
+  }, [groupDetails.bio, groupDetails.bylaw, isBylaw]);
 
   const onSaveButtonClicked = () => {
     setloading(true);
-    if (!description) {
-      navigation.goBack();
-      return;
+
+    const groupProfile = {};
+    if (isBylaw) {
+      groupProfile.bylaw = byLaw;
+    } else {
+      groupProfile.bio = description;
     }
 
-    const groupProfile = {
-      ...groupDetails,
-      bio: description,
-    };
-
-    patchGroup(
-      route.params.groupDetails.group_id,
-      groupProfile,
-      authContext,
-    ).then(async (response) => {
-      setloading(false);
-      if (response && response.status === true) {
-        const entity = authContext.entity;
-        entity.obj = response.payload;
-        authContext.setEntity({...entity});
-        navigation.goBack();
-      } else {
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, strings.defaultError);
-        }, 0.1);
-      }
-    });
+    patchGroup(groupDetails.group_id, groupProfile, authContext).then(
+      async (response) => {
+        setloading(false);
+        if (response && response.status === true) {
+          const entity = authContext.entity;
+          entity.obj = response.payload;
+          authContext.setEntity({...entity});
+          navigation.goBack();
+        } else {
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, strings.defaultError);
+          }, 0.1);
+        }
+      },
+    );
   };
 
   return (
     <SafeAreaView style={styles.parent}>
       <ScreenHeader
-        title={strings.editBioText}
+        title={isBylaw ? strings.editbylaw : strings.editBioText}
         leftIcon={images.backArrow}
         leftIconPress={() => {
           navigation.goBack();
@@ -95,10 +94,16 @@ export default function GroupLongTextScreen({navigation, route}) {
           <TextInput
             ref={inputRef}
             placeholder={strings.enterBioPlaceholder}
-            onChangeText={(text) => setDescription(text)}
+            onChangeText={(text) => {
+              if (isBylaw) {
+                setByLaw(text);
+              } else {
+                setDescription(text);
+              }
+            }}
             multiline
             maxLength={500}
-            value={description}
+            value={isBylaw ? byLaw : description}
             style={styles.input}
           />
         </Pressable>

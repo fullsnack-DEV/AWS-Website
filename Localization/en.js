@@ -978,7 +978,7 @@ export default {
   postalCode: 'en_Postal Code',
   // Members
   isYourTeamRecruitingMember:
-    'en_Are you recruiting a new member? Do you want to display the badge below on your team profile?',
+    'en_Are you recruiting a new member? Do you want to display the badge below on your {0} profile?',
   whoCanJoinGroupText: 'en_Who Can Join {0}',
   configureYourRefereeSetting:
     'en_You can’t send offer, please configure your referee setting first.',
@@ -1272,6 +1272,7 @@ export default {
   leave: 'en_Leave',
   WhichTeamJoinClub: 'en_Which Team Can Join Club',
   WhatTeamCanJoinClub: 'en_What Team Can Join Club',
+  WhatTeamCanJoinClubQuestionMark: 'en_What Team Can Join Club?',
   canPeopleInviteYouText: 'en_Can People Invite You Their Events',
   toWhatEventPeopleInviteText: 'en_To What Event Can People Invite',
   canPeopleInviteTheirEventText: 'en_Can people invite you to their events ?',
@@ -2834,6 +2835,8 @@ export default {
   noinvoice: 'en_No Invoice',
   recruitingBottomText:
     'en_If you select “Yes, display it.”, your team profile may be displayed on the “Recruiting Members” section in Local Home.',
+  recruitingBottomClubText:
+    'en_If you select “Yes, display it.”, your club profile may be displayed on the “Recruiting Members” section in Local Home.',
   areYouSureTo: 'en_Are you sure you want to {0} {1}?',
 
   paidInCash: 'en_Paid in cash',
@@ -2895,29 +2898,29 @@ export default {
   transactionFee: 'en_Transaction Fee',
   makeAPayment: 'en_Make a Payment',
 
-
   eventFeaturePhoto: 'en_FEATURED PHOTO',
   eventPhotoRatio: 'en_At least 1284x2778 pixels',
-  eventPhotoEdit : 'en_Edit photo',
+  eventPhotoEdit: 'en_Edit photo',
   eventPhotoUpdate: 'en_Upload photo',
-  thisEventOnly : 'en_This event Only',
+  thisEventOnly: 'en_This event Only',
   thisAndAllEvent: 'en_This and all following events',
-  allEvents : 'en_All events',
+  allEvents: 'en_All events',
   attendeeRadioText: 'en_Attendee',
-  attendyText: 'en_The event may be canceled by the organizer if the minimum number of the attendees isn’t met.',
-  feeText: 'en_Attendees can pay the event fee after they are invoiced by the event organiser.',
+  attendyText:
+    'en_The event may be canceled by the organizer if the minimum number of the attendees isn’t met.',
+  feeText:
+    'en_Attendees can pay the event fee after they are invoiced by the event organiser.',
   reportText: 'en_Report This Event',
-  blockEventOrganiser :'en_Block Event Organiser',
+  blockEventOrganiser: 'en_Block Event Organiser',
   recuringoptionOne: 'en_This event Only',
   recurringOptionTwo: 'en_This and all following events',
   recurringOptionThree: 'en_All events',
   gameSingular: 'en_Game',
   gameWith: 'en_Game With',
   eventsViewSettings: 'en_Events View Settings',
-  onlineUrl : 'en_URL',
-  emptyEventUrl : "en_URL hasn't been provided yet.",
+  onlineUrl: 'en_URL',
+  emptyEventUrl: "en_URL hasn't been provided yet.",
   postTitle: 'en_Post',
   list: 'en_List',
-  plusDayOne: 'en_+1day'
-
+  plusDayOne: 'en_+1day',
 };

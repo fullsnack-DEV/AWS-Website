@@ -5,7 +5,7 @@ import {strings} from '../../../../Localization/translation';
 import AuthContext from '../../../auth/context';
 import fonts from '../../../Constants/Fonts';
 import Verbs from '../../../Constants/Verbs';
-import {getSportName} from '../../../utils/sportsActivityUtils';
+import {getGroupSportName} from '../../../utils/sportsActivityUtils';
 import * as Utility from '../../../utils';
 import colors from '../../../Constants/Colors';
 
@@ -14,32 +14,7 @@ const GroupBasicInfo = ({groupDetails = {}}) => {
   const [sportName, setSportName] = useState('');
 
   useEffect(() => {
-    if (groupDetails.entity_type === Verbs.entityTypeClub) {
-      if (groupDetails.sports?.length > 0) {
-        let name = '';
-
-        groupDetails.sports.forEach((item, index) => {
-          const sportname = getSportName(
-            item.sport,
-            item.sport_type,
-            authContext.sports,
-          );
-
-          if (index < 4) {
-            name += index !== 0 ? `, ${sportname}` : sportname;
-          }
-        });
-
-        setSportName(name);
-      }
-    } else if (groupDetails.entity_type === Verbs.entityTypeTeam) {
-      const sportname = getSportName(
-        groupDetails.sport,
-        groupDetails.sport_type,
-        authContext.sports,
-      );
-      setSportName(sportname);
-    }
+    setSportName(getGroupSportName(groupDetails, authContext.sports, 4));
   }, [groupDetails, authContext]);
 
   return (

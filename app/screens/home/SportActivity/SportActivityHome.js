@@ -14,7 +14,7 @@ import ReviewsContentScreen from './contentScreens/ReviewsContentScreen';
 import ScoreboardContentScreen from './contentScreens/ScoreboardContentScreen';
 import SportActivityTabBar from './components/SportActivityTabBar';
 import UserInfo from './components/UserInfo';
-import {getSportIconUrl} from '../../../utils';
+import {getStorage} from '../../../utils';
 import ScreenHeader from '../../../components/ScreenHeader';
 import BottomSheet from '../../../components/modals/BottomSheet';
 import StatsContentScreen from './contentScreens/StatsContentScreen';
@@ -24,6 +24,7 @@ import {
   getEntitySportList,
   getHeaderTitle,
   getIsAvailable,
+  getSportDetails,
   getSportName,
 } from '../../../utils/sportsActivityUtils';
 import SportActivityModal from './SportActivityModal';
@@ -98,10 +99,16 @@ const SportActivityHome = ({navigation, route}) => {
   );
 
   useEffect(() => {
-    getSportIconUrl(sport, userData.entity_type, authContext).then((url) => {
-      setSportIcon(url);
+    getStorage('appSetting').then((setting) => {
+      const obj = getSportDetails(
+        sport,
+        sportType,
+        authContext.sports,
+        entityType,
+      );
+      setSportIcon(`${setting.base_url_sporticon}${obj.sport_image}`);
     });
-  }, [sport, authContext, userData]);
+  }, [sport, authContext, entityType, sportType]);
 
   useEffect(() => {
     if (selectedTab) {

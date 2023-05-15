@@ -34,7 +34,7 @@ const AccountCard = ({
 
   const renderDeactivateFlag = () => {
     let label = '';
-    if (entityData.under_termination) {
+    if (entityData.under_terminate) {
       label = strings.terminated;
     } else if (entityData.is_pause) {
       label = strings.paused;
@@ -56,6 +56,7 @@ const AccountCard = ({
         groupName={entityData.group_name}
         imageUrl={entityData.thumbnail}
         containerStyle={styles.profileIcon}
+        textstyle={{fontSize: 12}}
       />
       <View style={{marginLeft: 15}}>
         <Text style={styles.entityName} numberOfLines={1}>

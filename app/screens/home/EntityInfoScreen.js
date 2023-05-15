@@ -78,6 +78,7 @@ const EntityInfoScreen = ({navigation, route}) => {
       case strings.basicInfoText:
         navigation.navigate('EditGroupBasicInfoScreen', {
           groupDetails: currentUserData,
+          isEditable: true,
         });
         break;
 
@@ -91,7 +92,7 @@ const EntityInfoScreen = ({navigation, route}) => {
         break;
 
       case strings.membershipFee:
-        navigation.navigate('EditGroupBasicInfoScreen', {
+        navigation.navigate('GameFeeEditScreen', {
           groupDetails: currentUserData,
         });
         break;

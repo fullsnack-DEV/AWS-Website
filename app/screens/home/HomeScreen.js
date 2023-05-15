@@ -135,16 +135,13 @@ const HomeScreen = ({navigation, route}) => {
 
   useEffect(() => {
     const loginEntity = authContext.entity;
-
     const uid = route.params.uid ?? loginEntity.uid;
 
-    let admin = false;
-    if (loginEntity.uid === uid) {
-      admin = true;
-      setIsAdmin(true);
-    }
-
+    const admin = loginEntity.uid === uid;
     const role = route.params.role ?? '';
+
+    setIsAdmin(loginEntity.uid === uid);
+
     if (role === Verbs.entityTypePlayer || role === Verbs.entityTypeUser) {
       getUserData(uid, admin);
     }

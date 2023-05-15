@@ -324,9 +324,12 @@ export default function EditGroupProfileScreen({navigation}) {
                     height: 60,
                     width: 60,
                     resizeMode: 'contain',
-                    // backgroundColor: 'red',
                   }
-                : {height: 40, width: 40, resizeMode: 'contain'}
+                : {
+                    height: 40,
+                    width: 40,
+                    resizeMode: 'center',
+                  }
             }
             profileCameraButtonStyle={{
               alignSelf: 'flex-start',
@@ -335,6 +338,7 @@ export default function EditGroupProfileScreen({navigation}) {
               width: 15,
               borderRadius: 50,
               elevation: 0,
+              backgroundColor: 'yellow',
             }}
             profileImageButtonStyle={{
               alignSelf: 'center',

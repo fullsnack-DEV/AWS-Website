@@ -71,9 +71,21 @@ const SwitchAccountModal = ({
   }, [isVisible, authContext]);
 
   const handleSwitchAccount = async (entity) => {
-    setShowLoader(true);
-    setSelectedAccount(entity);
-    await onSwitchProfile(entity);
+    if (entity.request_id) {
+      Alert.alert(
+        Platform.OS === 'android' ? '' : strings.requestSwitchModalAlertMessage,
+        Platform.OS === 'android' ? strings.requestSwitchModalAlertMessage : '',
+        [
+          {
+            text: strings.okTitleText,
+          },
+        ],
+      );
+    } else {
+      setShowLoader(true);
+      setSelectedAccount(entity);
+      await onSwitchProfile(entity);
+    }
     // closeModal();
   };
 
@@ -201,23 +213,7 @@ const SwitchAccountModal = ({
                     authContext,
                   )}
                   onPress={() => {
-                    if (item.request_id) {
-                      Alert.alert(
-                        Platform.OS === 'android'
-                          ? ''
-                          : strings.requestSwitchModalAlertMessage,
-                        Platform.OS === 'android'
-                          ? strings.requestSwitchModalAlertMessage
-                          : '',
-                        [
-                          {
-                            text: strings.okTitleText,
-                          },
-                        ],
-                      );
-                    } else {
-                      handleSwitchAccount(item);
-                    }
+                    handleSwitchAccount(item);
                   }}
                   onPressCancelRequest={() => {
                     handleCancelRequest(item);
@@ -279,7 +275,10 @@ const SwitchAccountModal = ({
         entityType={selectedAccount.entity_type}
         entityImage={selectedAccount.thumbnail}
         stopLoading={() => {
-          closeModal();
+          closeModal({
+            uid: selectedAccount.group_id ?? selectedAccount.user_id,
+            role: selectedAccount.entity_type,
+          });
           setShowLoader(false);
         }}
       />

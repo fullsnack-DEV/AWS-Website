@@ -159,7 +159,9 @@ export default function TeamJoinClubScreen({navigation, route}) {
         style={styles.mainContainer}
         showsVerticalScrollIndicator={false}>
         <ActivityLoader visible={loading} />
-        <Text style={styles.optionsTitle}>{strings.WhatTeamCanJoinClub}</Text>
+        <Text style={styles.optionsTitle}>
+          {strings.WhatTeamCanJoinClubQuestionMark}
+        </Text>
         <FlatList
           data={teamCanJoinClubOpetions}
           keyExtractor={(item, index) => index.toString()}

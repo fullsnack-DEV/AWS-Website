@@ -497,8 +497,9 @@ const images = {
   recruitingMemberYesImg: require('../assets/images/recruitingMemberYesImg.png'),
   recruitingMemberNoImg: require('../assets/images/recruitingMemberNoImg.png'),
   tickImage: require('../assets/images/image-tick.png'),
-  arrows : require('../assets/images/arrows.png'),
-
+  arrows: require('../assets/images/arrows.png'),
+  recruitingMemberClubNoImg: require('../assets/images/recruitingMemberClubNo.png'),
+  recruitingMemberClubYesImg: require('../assets/images/recruitingMemberClubYes.png'),
 };
 
 export default images;

@@ -10,7 +10,7 @@ const ServicableArea = ({avialableArea = null}) => {
   if (avialableArea) {
     if (avialableArea.is_specific_address) {
       return (avialableArea.address_list ?? []).map((item, index) => (
-        <View style={{paddingLeft: 10, marginBottom: 15}} key={index}>
+        <View style={{marginBottom: 15}} key={index}>
           <Text style={styles.label}>{item.address}</Text>
         </View>
       ));

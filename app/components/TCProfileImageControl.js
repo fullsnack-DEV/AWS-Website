@@ -55,7 +55,6 @@ function TCProfileImageControl({
           imageStyle={[
             styles.profileImageStyle,
             profileImageStyle,
-
             {marginTop: showEditButtons ? 0 : -36},
           ]}
           source={profileImage || profileImagePlaceholder}
@@ -101,7 +100,6 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     borderWidth: 1,
     borderColor: colors.greyBorderColor,
-
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: colors.whiteColor,

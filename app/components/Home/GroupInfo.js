@@ -403,7 +403,9 @@ export default function GroupInfo({
                     </TouchableOpacity>
                   ) : null}
 
-                  {isAdmin ? (
+                  {isAdmin &&
+                  item !== strings.tcLevelPointsText &&
+                  item !== strings.tcranking ? (
                     <TouchableOpacity
                       style={styles.editIcon}
                       onPress={() => handleEdit(item)}>

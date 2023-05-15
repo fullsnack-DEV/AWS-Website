@@ -8,11 +8,12 @@ import fonts from '../../Constants/Fonts';
 import {strings} from '../../../Localization/translation';
 import TCGradientButton from '../TCGradientButton';
 import {userTerminate} from '../../api/Users';
-import {groupTerminate} from '../../api/Groups';
+import {groupTerminate, groupUnpaused} from '../../api/Groups';
 import {setAuthContextData} from '../../utils';
 import ScreenHeader from '../ScreenHeader';
 import images from '../../Constants/ImagePath';
 import Verbs from '../../Constants/Verbs';
+import {getUnreadNotificationCount} from '../../utils/accountUtils';
 
 export default function TerminateAccountScreen({navigation}) {
   const authContext = useContext(AuthContext);
@@ -25,6 +26,7 @@ export default function TerminateAccountScreen({navigation}) {
 
     userTerminate(authContext)
       .then(async (response) => {
+        getUnreadNotificationCount(authContext);
         await setAuthContextData(response.payload, authContext);
         setloading(false);
         navigation.pop(2);
@@ -41,6 +43,24 @@ export default function TerminateAccountScreen({navigation}) {
     setloading(true);
     groupTerminate(authContext)
       .then(async (response) => {
+        getUnreadNotificationCount(authContext);
+        await setAuthContextData(response.payload, authContext);
+        setloading(false);
+        navigation.pop(2);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
+
+  const reActivateUser = () => {
+    setloading(true);
+    groupUnpaused(authContext)
+      .then(async (response) => {
+        getUnreadNotificationCount(authContext);
         await setAuthContextData(response.payload, authContext);
         setloading(false);
         navigation.pop(2);
@@ -106,17 +126,25 @@ export default function TerminateAccountScreen({navigation}) {
                     : strings.terminate,
                 style: 'destructive',
                 onPress: () => {
-                  if (
-                    accountType === Verbs.entityTypeTeam ||
-                    accountType === Verbs.entityTypeClub
-                  ) {
-                    terminateGroup();
-                  }
-                  if (
-                    accountType === Verbs.entityTypeUser ||
-                    accountType === Verbs.entityTypePlayer
-                  ) {
-                    terminateUser();
+                  console.log(
+                    'status ==>',
+                    authContext.entity.obj.under_terminate,
+                  );
+                  if (authContext.entity.obj.under_terminate === true) {
+                    reActivateUser();
+                  } else {
+                    if (
+                      accountType === Verbs.entityTypeTeam ||
+                      accountType === Verbs.entityTypeClub
+                    ) {
+                      terminateGroup();
+                    }
+                    if (
+                      accountType === Verbs.entityTypeUser ||
+                      accountType === Verbs.entityTypePlayer
+                    ) {
+                      terminateUser();
+                    }
                   }
                 },
               },

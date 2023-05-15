@@ -49,12 +49,15 @@ const GroupIcon = ({
       ) : null}
     </View>
   ) : (
-    <View style={[styles.parent, containerStyle]}>
+    <View style={[styles.parent, {paddingTop: 5}, containerStyle]}>
       <Image
         source={getPlaceholder().background}
         style={[
           styles.image,
-          entityType === Verbs.entityTypeTeam ? grpImageStyle : {},
+          entityType === Verbs.entityTypeTeam ||
+          entityType === Verbs.entityTypeClub
+            ? grpImageStyle
+            : {},
         ]}
       />
       {(entityType === Verbs.entityTypeClub ||
