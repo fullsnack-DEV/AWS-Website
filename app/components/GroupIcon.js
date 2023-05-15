@@ -6,6 +6,8 @@ import fonts from '../Constants/Fonts';
 import images from '../Constants/ImagePath';
 import Verbs from '../Constants/Verbs';
 
+// group Icon
+
 const GroupIcon = ({
   imageUrl = '',
   entityType = Verbs.entityTypeTeam,
@@ -49,7 +51,18 @@ const GroupIcon = ({
       ) : null}
     </View>
   ) : (
-    <View style={[styles.parent, {paddingTop: 5}, containerStyle]}>
+    <View
+      style={[
+        styles.parent,
+        {
+          paddingTop:
+            entityType === Verbs.entityTypeTeam ||
+            entityType === Verbs.entityTypeClub
+              ? 5
+              : 0,
+        },
+        containerStyle,
+      ]}>
       <Image
         source={getPlaceholder().background}
         style={[
