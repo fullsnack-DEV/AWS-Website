@@ -17,7 +17,6 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import QB from 'quickblox-react-native-sdk';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import Config from 'react-native-config';
@@ -35,13 +34,6 @@ import fonts from '../../Constants/Fonts';
 import {getGroupIndex} from '../../api/elasticSearch';
 import {uploadImageOnPreSignedUrls} from '../../utils/imageAction';
 import apiCall from '../../utils/apiCall';
-
-import {
-  QBconnectAndSubscribe,
-  QBcreateUser,
-  QBlogin,
-  QB_ACCOUNT_TYPE,
-} from '../../utils/QuickBlox';
 
 export default function ChooseSportsScreen({navigation, route}) {
   const [sports, setSports] = useState([]);
@@ -366,16 +358,16 @@ export default function ChooseSportsScreen({navigation, route}) {
       if (token) {
         data.fcm_id = token;
       }
-
-      await createUser(data, authContext)
-        .then((createdUser) => {
+      createUser(data, authContext)
+        .then(async (createdUser) => {
           const authEntity = {...dummyAuthContext.entity};
           authEntity.obj = createdUser?.payload;
           authEntity.auth.user = createdUser?.payload;
           authEntity.role = 'user';
+          console.log({authEntity});
           setDummyAuthContext('entity', authEntity);
           setDummyAuthContext('user', createdUser?.payload);
-          signUpWithQB(createdUser?.payload);
+          await wholeSignUpProcessComplete(createdUser?.payload);
         })
         .catch((e) => {
           setloading(false);
@@ -385,52 +377,24 @@ export default function ChooseSportsScreen({navigation, route}) {
         });
     }
   };
-  const signUpWithQB = async (response) => {
-    let qbEntity = {...dummyAuthContext.entity};
 
-    const setting = await Utility.getStorage('appSetting');
-
-    authContext.setQBCredential(setting);
-    QB.settings.enableAutoReconnect({enable: true});
-    QBlogin(qbEntity.uid, response)
-      .then(async (res) => {
-        qbEntity = {
-          ...qbEntity,
-          QB: {...res.user, connected: true, token: res?.session?.token},
-        };
-        QBconnectAndSubscribe(qbEntity);
-        setDummyAuthContext('entity', qbEntity);
-        await wholeSignUpProcessComplete(response);
-      })
-      .catch(async (error) => {
-        console.log('QB Login Error : ', error.message);
-        qbEntity = {...qbEntity, QB: {connected: false}};
-        setDummyAuthContext('entity', qbEntity);
-        QBcreateUser(qbEntity.uid, response, QB_ACCOUNT_TYPE.USER)
-          .then(() => {
-            QBlogin(qbEntity.uid).then((loginRes) => {
-              console.log('QB loginRes', loginRes);
-            });
-          })
-          .catch((e) => {
-            console.log('QB error', e);
-          });
-        await wholeSignUpProcessComplete(response);
-      });
-  };
   const wholeSignUpProcessComplete = async (userData) => {
-    const entity = dummyAuthContext?.entity;
-    const tokenData = dummyAuthContext?.tokenData;
-    entity.auth.user = {...userData};
-    entity.obj = {...userData};
-    entity.uid = userData?.user_id;
-    entity.isLoggedIn = true;
-    await Utility.setStorage('loggedInEntity', {...entity});
-    await Utility.setStorage('authContextEntity', {...entity});
-    await Utility.setStorage('authContextUser', {...userData});
-    await authContext.setTokenData(tokenData);
-    await authContext.setUser({...userData});
-    await authContext.setEntity({...entity});
+    try {
+      const entity = dummyAuthContext?.entity;
+      const tokenData = dummyAuthContext?.tokenData;
+      entity.auth.user = {...userData};
+      entity.obj = {...userData};
+      entity.uid = userData?.user_id;
+      entity.isLoggedIn = true;
+      await Utility.setStorage('loggedInEntity', {...entity});
+      await Utility.setStorage('authContextEntity', {...entity});
+      await Utility.setStorage('authContextUser', {...userData});
+      await authContext.setTokenData(tokenData);
+      await authContext.setUser({...userData});
+      await authContext.setEntity({...entity});
+    } catch (error) {
+      console.log('error ==>', error);
+    }
 
     setloading(false);
   };
