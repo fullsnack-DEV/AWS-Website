@@ -1,89 +1,100 @@
 import React from 'react';
 import {View, ScrollView} from 'react-native';
 import {ShimmerView} from '../commonComponents/ShimmerCommonComponents';
-import colors from '../../../Constants/Colors';
+
 import NewsFeedShimmer from '../newsFeed/NewsFeedShimmer';
 
 const ProfileScreenShimmer = () => (
   <ScrollView style={{width: '100%'}}>
-    <View>
-      {/* Top Background And Profile */}
-      <View style={{alignItems: 'center', marginTop: 20}}>
-        <ShimmerView
-          style={{width: '94%'}}
-          height={135}
-          margin={10}
-          borderRadius={10}
-          alignSelf={'center'}
-        />
+    <View style={{marginHorizontal: 10}}>
+      {/*  Post Section */}
+      <View style={{marginBottom: 15}}>
+        <ShimmerView style={{width: '100%'}} height={150} borderRadius={20} />
         <ShimmerView
           style={{
+            borderRadius: 30,
+            width: 60,
+            height: 60,
             position: 'absolute',
-            bottom: -30,
-            shadowColor: colors.googleColor,
-            shadowOffset: {width: 0, height: 1},
-            shadowOpacity: 0.5,
-            shadowRadius: 6,
-            elevation: 13,
-            alignSelf: 'center',
-            borderRadius: 50,
+            bottom: -25,
+            left: 10,
           }}
-          width={75}
-          height={75}
         />
       </View>
-
-      {/*    Name and Extra Details */}
+      <View style={{flexDirection: 'row', alignSelf: 'flex-end'}}>
+        <ShimmerView width={100} style={{marginRight: 15}} />
+        <ShimmerView width={100} />
+      </View>
+      <View style={{marginTop: 15}}>
+        <ShimmerView style={{width: '40%'}} />
+        <ShimmerView style={{width: '20%'}} />
+      </View>
+      <View style={{marginTop: 15}}>
+        <ShimmerView style={{width: '100%'}} />
+        <ShimmerView style={{width: '100%'}} />
+        <ShimmerView style={{width: '80%'}} />
+      </View>
       <View
         style={{
-          marginTop: 40,
-          padding: 15,
+          marginTop: 24,
+          flexDirection: 'row',
           alignItems: 'center',
-          justifyContent: 'center',
+          justifyContent: 'space-between',
         }}>
-        <ShimmerView style={{width: '70%'}} />
-        <ShimmerView style={{width: '80%'}} height={10} />
-        <ShimmerView style={{width: '50%'}} height={10} />
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}>
-          <ShimmerView style={{flex: 1, width: '100%'}} />
-          <View style={{marginHorizontal: 10}} />
-          <ShimmerView style={{flex: 1}} />
-        </View>
-        {/*  Edit Profile */}
         <ShimmerView
-          style={{flex: 1, width: '100%'}}
-          height={30}
-          marginVertical={25}
+          style={{
+            borderRadius: 60,
+            width: 40,
+            height: 40,
+          }}
         />
-
-        {/*    Play In */}
-        {new Array(3).fill('').map((item, index) => (
-          <View key={`parent${index}`} style={{marginTop: 15, width: '100%'}}>
-            <ShimmerView width={150} style={{alignSelf: 'flex-start'}} />
-            <ScrollView
-              horizontal={true}
-              showsHorizontalScrollIndicator={false}
-              showsVerticalScrollIndicator={false}>
-              {new Array(5).fill('').map((childItem, childIndex) => (
-                <View key={`child${childIndex}`}>
-                  <ShimmerView
-                    width={150}
-                    height={40}
-                    style={{alignSelf: 'flex-start', marginRight: 15}}
-                  />
-                </View>
-              ))}
-            </ScrollView>
-          </View>
-        ))}
+        <ShimmerView
+          style={{
+            borderRadius: 60,
+            width: 40,
+            height: 40,
+          }}
+        />
+        <ShimmerView
+          style={{
+            borderRadius: 60,
+            width: 40,
+            height: 40,
+          }}
+        />
+        <ShimmerView
+          style={{
+            borderRadius: 60,
+            width: 40,
+            height: 40,
+          }}
+        />
+        <ShimmerView
+          style={{
+            borderRadius: 60,
+            width: 40,
+            height: 40,
+          }}
+        />
+        <ShimmerView
+          style={{
+            borderRadius: 60,
+            width: 40,
+            height: 40,
+          }}
+        />
       </View>
-
-      {/*  Post Section */}
+      <View style={{marginTop: 19, marginBottom: 15}}>
+        <ShimmerView height={27} style={{width: '100%'}} />
+      </View>
+      <ShimmerView width={80} height={24} />
+      <View style={{flexDirection: 'row', justifyContent: 'space-evenly'}}>
+        <ShimmerView width={45} height={25} />
+        <ShimmerView width={78} height={25} />
+        <ShimmerView width={78} height={25} />
+        <ShimmerView width={78} height={25} />
+      </View>
+      <ShimmerView height={2} style={{width: '100%', marginBottom: 15}} />
       <NewsFeedShimmer />
     </View>
   </ScrollView>

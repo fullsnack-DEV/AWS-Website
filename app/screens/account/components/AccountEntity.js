@@ -13,6 +13,7 @@ import GroupIcon from '../../../components/GroupIcon';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
+import Verbs from '../../../Constants/Verbs';
 import {displayLocation} from '../../../utils';
 
 const AccountEntity = ({
@@ -23,7 +24,7 @@ const AccountEntity = ({
   const [isBgImage, setIsBgImage] = useState(false);
 
   useEffect(() => {
-    if (entity.group_id && entity.full_image) {
+    if (entity.group_id && entity.background_full_image) {
       setIsBgImage(true);
     } else {
       setIsBgImage(false);
@@ -101,7 +102,15 @@ const AccountEntity = ({
   );
 
   return isBgImage ? (
-    <ImageBackground style={styles.parent} source={{uri: entity.full_image}}>
+    <ImageBackground
+      style={styles.parent}
+      source={{
+        uri:
+          entity.entity_type === Verbs.entityTypePlayer ||
+          entity.entity_type === Verbs.entityTypeUser
+            ? entity.full_image
+            : entity.background_full_image,
+      }}>
       {renderView()}
     </ImageBackground>
   ) : (
@@ -137,7 +146,6 @@ const styles = StyleSheet.create({
     marginRight: 20,
     width: 55,
     height: 55,
-    padding: 3,
   },
   row: {
     flexDirection: 'row',

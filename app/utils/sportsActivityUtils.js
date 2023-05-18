@@ -1,3 +1,4 @@
+import {format} from 'react-string-format';
 import {strings} from '../../Localization/translation';
 import colors from '../Constants/Colors';
 import Verbs from '../Constants/Verbs';
@@ -336,6 +337,34 @@ const getCardBorderColor = (entityType) => {
   }
 };
 
+const getGroupSportName = (groupData = {}, sportList = [], maxSports = 0) => {
+  if (groupData.entity_type === Verbs.entityTypeClub) {
+    let name = '';
+
+    if (groupData.sports?.length > 0) {
+      groupData.sports.forEach((item, index) => {
+        const sportname = getSportName(item.sport, item.sport_type, sportList);
+
+        if (maxSports === 0) {
+          name += index !== 0 ? `, ${sportname}` : sportname;
+        } else if (index < maxSports) {
+          name += index !== 0 ? `, ${sportname}` : sportname;
+        }
+      });
+      if (maxSports !== 0 && groupData.sports.length > maxSports) {
+        name += ` ${format(
+          strings.andMoreText,
+          groupData.sports.length - maxSports,
+        )}`;
+      }
+    } else {
+      name = '';
+    }
+    return name;
+  }
+  return getSportName(groupData.sport, groupData.sport_type, sportList);
+};
+
 export {
   getProgressBarColor,
   getIsAvailable,
@@ -352,4 +381,5 @@ export {
   getSportDefaultSettings,
   getEntityTpeLabel,
   getSingleSportList,
+  getGroupSportName,
 };

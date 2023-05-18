@@ -1,7 +1,7 @@
 // @flow
 /* eslint-disable no-else-return */
 
-import React, {useState, useContext} from 'react';
+import React, {useState, useContext, useEffect} from 'react';
 import {
   FlatList,
   Image,
@@ -16,7 +16,7 @@ import {
 } from 'react-native';
 
 import moment from 'moment';
-
+import {getCountry} from 'country-currency-map';
 import images from '../../../Constants/ImagePath';
 import {strings} from '../../../../Localization/translation';
 import colors from '../../../Constants/Colors';
@@ -45,6 +45,7 @@ const SendNewInvoiceModal = ({
   isVisible,
   onDone = () => {},
   onClose = () => {},
+  refreshInvoices = () => {},
   invoiceType = InvoiceType.Invoice,
 }) => {
   const authContext = useContext(AuthContext);
@@ -63,6 +64,12 @@ const SendNewInvoiceModal = ({
   const [loading, setLoading] = useState(false);
 
   const IsNumeric = (num) => num >= 0 || num < 0;
+
+  useEffect(() => {
+    const Usercurrency = getCountry(authContext.entity.obj.country);
+
+    setCurrency(Usercurrency?.currency);
+  }, [authContext, isVisible]);
 
   const handleDueDatePress = (date) => {
     setSelectedDueDate(new Date(date));
@@ -182,6 +189,7 @@ const SendNewInvoiceModal = ({
       createInvoice(body, authContext)
         .then(() => {
           setLoading(false);
+          refreshInvoices();
           let message = `1 ${strings.invoicesent}`;
           if (recipients.length > 1) {
             message = `${recipients.length} ${strings.invoicessent}`;
@@ -283,7 +291,7 @@ const SendNewInvoiceModal = ({
       closeModal={() => onCloseThisModal()}
       modalType={ModalTypes.style1}
       title={strings.newInvoice}
-      containerStyle={{padding: 0}}
+      containerStyle={{padding: 0, width: '100%', height: '100%'}}
       headerRightButtonText={strings.send}
       onRightButtonPress={() => onSendInvoice()}>
       <ActivityLoader visible={loading} />
@@ -291,38 +299,44 @@ const SendNewInvoiceModal = ({
         {/* Code for Invoice Title */}
 
         <TCLabel
-          style={{marginTop: 28, marginBottom: 6}}
+          style={{marginTop: 20, marginBottom: 5, lineHeight: 24}}
           title={strings.titlePlaceholder.toUpperCase()}
           required={true}
         />
+
         <TCTextField
-          height={35}
+          style={{
+            height: 35,
+          }}
+          placeholder={strings.enterText}
           onChangeText={(text) => setInvoiceTitle(text)}
           value={invoiceTitle}
         />
 
         {/* Code for Invoice Amount */}
-        <View style={{height: 96}}>
+        <View>
           <TCLabel
-            style={{marginTop: 38}}
+            style={{marginTop: 25}}
             title={strings.amountTitle.toUpperCase()}
             required={true}
           />
-          <TCTextField
-            onChangeText={(text) => {
-              if (IsNumeric(text)) {
-                setAmount(text);
-              }
-            }}
-            value={amount}
-            style={{
-              marginTop: 6,
-              height: 35,
-            }}
-            keyboardType={'decimal-pad'}
-            textAlign="right"
-            leftView={<Text style={styles.leftViewStyle}>{currency}</Text>}
-          />
+          <View style={{marginTop: 5, height: 35}}>
+            <TCTextField
+              onChangeText={(text) => {
+                if (IsNumeric(text)) {
+                  setAmount(text);
+                }
+              }}
+              placeholder={strings.enterAmount}
+              textStyle={{
+                marginTop: Platform.OS === 'android' ? 0 : -2,
+              }}
+              value={amount}
+              keyboardType={'decimal-pad'}
+              textAlign="right"
+              leftView={<Text style={styles.leftViewStyle}>{currency}</Text>}
+            />
+          </View>
         </View>
         {/* Code for Change Currency */}
         <TouchableOpacity
@@ -331,68 +345,70 @@ const SendNewInvoiceModal = ({
           <Text style={styles.linkButtonText}>{strings.changeCurrency}</Text>
         </TouchableOpacity>
         {/* Code for DueDate */}
-        <View style={{height: 70}}>
-          <TCLabel
-            style={{marginTop: 12}}
-            title={strings.duedate.toUpperCase()}
-            required={true}
-          />
-          <TouchableOpacity
-            onPress={() => setDueDateVisible(true)}
-            style={{
-              marginHorizontal: 15,
-              flexDirection: 'row',
-              alignSelf: 'stretch',
-              alignItems: 'center',
-              backgroundColor: colors.textFieldBackground,
-              borderRadius: 4,
-              flex: 1,
-              marginTop: 6,
-              height: 35,
-            }}>
-            <Text
+        <View style={{marginTop: 25}}>
+          <View style={{}}>
+            <TCLabel
+              style={{marginTop: 12}}
+              title={strings.duedate.toUpperCase()}
+              required={true}
+            />
+            <TouchableOpacity
+              onPress={() => setDueDateVisible(true)}
               style={{
-                textAlign: 'center',
+                marginHorizontal: 15,
+                flexDirection: 'row',
+                alignSelf: 'stretch',
+                alignItems: 'center',
+                backgroundColor: colors.textFieldBackground,
+                borderRadius: 4,
                 flex: 1,
-                fontFamily: fonts.RRegular,
-                fontSize: 16,
-                paddingHorizontal: 10,
-                color: selectedDueDate
-                  ? colors.lightBlackColor
-                  : colors.magnifyIconColor,
+                marginTop: 6,
+                height: 35,
               }}>
-              {selectedDueDate
-                ? moment(selectedDueDate).format('LLL')
-                : strings.select}
-            </Text>
-          </TouchableOpacity>
+              <Text
+                style={{
+                  textAlign: 'center',
+                  flex: 1,
+                  fontFamily: fonts.RRegular,
+                  fontSize: 16,
+                  paddingHorizontal: 10,
+                  color: selectedDueDate
+                    ? colors.lightBlackColor
+                    : colors.magnifyIconColor,
+                }}>
+                {selectedDueDate
+                  ? moment(selectedDueDate).format(Verbs.DATE_FORMAT)
+                  : strings.select}
+              </Text>
+            </TouchableOpacity>
+          </View>
+          {/* Code for Timezone */}
+          <View style={styles.linkButton}>
+            <Text style={styles.timeZoneText}> {` ${strings.timeZone}  `}</Text>
+            <TouchableOpacity
+              onPress={() => {
+                Alert.alert(
+                  Platform.OS === 'android' ? '' : strings.datetimesetting,
+                  Platform.OS === 'android' ? strings.datetimesetting : '',
+                  [
+                    {
+                      text: strings.okTitleText,
+                    },
+                  ],
+                );
+              }}>
+              <Text style={styles.timeZoneUnderlineText}>
+                {Intl.DateTimeFormat()
+                  ?.resolvedOptions()
+                  .timeZone.split('/')
+                  .pop()}
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
-        {/* Code for Timezone */}
-        <View style={styles.linkButton}>
-          <Text style={styles.timeZoneText}>Time zone </Text>
-          <TouchableOpacity
-            onPress={() => {
-              Alert.alert(
-                Platform.OS === 'android' ? '' : strings.datetimesetting,
-                Platform.OS === 'android' ? strings.datetimesetting : '',
-                [
-                  {
-                    text: strings.okTitleText,
-                    onPress: () => console.log('no'),
-                  },
-                ],
-              );
-            }}>
-            <Text style={styles.timeZoneUnderlineText}>
-              {Intl.DateTimeFormat()
-                ?.resolvedOptions()
-                .timeZone.split('/')
-                .pop()}
-            </Text>
-          </TouchableOpacity>
-        </View>
+
         {/* Code for Description */}
-        <View style={{height: 132}}>
+        <View style={{height: 132, marginTop: 25}}>
           <TCLabel
             style={{marginTop: 9}}
             title={strings.descriptionText.toUpperCase()}
@@ -401,6 +417,7 @@ const SendNewInvoiceModal = ({
             style={styles.descriptionTxt}
             multiline
             textAlignVertical="top"
+            placeholder={strings.enterDescription}
             onChangeText={(text) => setDescription(text)}
             value={description}></TextInput>
         </View>
@@ -424,7 +441,7 @@ const SendNewInvoiceModal = ({
               }}>
               {strings.recipients.toUpperCase()}
             </Text>
-            {selectedRecipients.length > 0 && (
+            {/* {selectedRecipients.length > 0 && (
               <Text
                 style={{
                   color: colors.orangeColorCard,
@@ -437,7 +454,7 @@ const SendNewInvoiceModal = ({
                 {selectedRecipients.length}
                 {')'}
               </Text>
-            )}
+            )} */}
             <Text style={{marginTop: 4, color: 'red'}}> {strings.star}</Text>
           </View>
           <TouchableOpacity onPress={() => showRecipientsClicked()}>
@@ -465,7 +482,7 @@ const SendNewInvoiceModal = ({
           ItemSeparatorComponent={() => <View style={styles.dividerLine} />}
           renderItem={renderRecipient}
           ListEmptyComponent={listEmptyComponent}
-          ListFooterComponent={() => <View style={{marginBottom: 20}} />}
+          ListFooterComponent={() => <View style={{marginBottom: 100}} />}
         />
         {/* Code for DueDate Model */}
         <DateTimePickerView
@@ -579,6 +596,7 @@ const SendNewInvoiceModal = ({
           recipientTeams={recipientTeamData}
           selectedRecipients={selectedRecipients}
           invoiceType={invoiceType}
+          modalTitle={strings.addRecipientText}
         />
       </ScrollView>
     </CustomModalWrapper>
@@ -602,10 +620,11 @@ const styles = StyleSheet.create({
   },
   linkButtonText: {
     fontSize: 14,
-    lineHeight: 23,
+    lineHeight: 21,
     color: colors.lightBlackColor,
     fontFamily: fonts.RLight,
     textDecorationLine: 'underline',
+    marginTop: 5,
   },
   timeZoneText: {
     marginTop: 3,
@@ -634,7 +653,7 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
   },
   nextArrow: {
-    tintColor: colors.lightBlackColor,
+    tintColor: colors.orangeColor,
     alignSelf: 'center',
     height: 15,
     width: 15,

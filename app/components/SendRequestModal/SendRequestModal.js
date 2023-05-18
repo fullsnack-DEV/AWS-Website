@@ -173,39 +173,48 @@ export default function SendRequestModal({
           <View>
             <View
               style={{
-                // marginTop: 272,
                 marginLeft: 31,
                 marginRight: 12,
               }}>
-              <Text
-                style={{
-                  lineHeight: 24,
-                  fontSize: 16,
-                  fontFamily: fonts.RRegular,
-                  color: colors.lightBlackColor,
-                }}>
-                {textstring1}
-              </Text>
-              <Text
-                style={{
-                  lineHeight: 24,
-                  fontSize: 16,
-                  fontFamily: fonts.RRegular,
-                  color: colors.lightBlackColor,
-                  marginTop: 25,
-                }}>
-                {textstring2}
-              </Text>
-              <Text
-                style={{
-                  lineHeight: 24,
-                  fontSize: 16,
-                  fontFamily: fonts.RRegular,
-                  color: colors.lightBlackColor,
-                  marginTop: 25,
-                }}>
-                {textstring3}
-              </Text>
+              <View style={styles.rowstyles}>
+                <View style={styles.dotstyle} />
+                <Text
+                  style={{
+                    lineHeight: 24,
+                    fontSize: 16,
+                    fontFamily: fonts.RRegular,
+                    color: colors.lightBlackColor,
+                  }}>
+                  {textstring1}
+                </Text>
+              </View>
+              <View style={styles.rowstyles}>
+                <View style={[styles.dotstyle, {marginTop: 37}]} />
+
+                <Text
+                  style={{
+                    lineHeight: 24,
+                    fontSize: 16,
+                    fontFamily: fonts.RRegular,
+                    color: colors.lightBlackColor,
+                    marginTop: 25,
+                  }}>
+                  {textstring2}
+                </Text>
+              </View>
+              <View style={styles.rowstyles}>
+                <View style={[styles.dotstyle, {marginTop: 37}]} />
+                <Text
+                  style={{
+                    lineHeight: 24,
+                    fontSize: 16,
+                    fontFamily: fonts.RRegular,
+                    color: colors.lightBlackColor,
+                    marginTop: 25,
+                  }}>
+                  {textstring3}
+                </Text>
+              </View>
             </View>
           </View>
 
@@ -251,5 +260,18 @@ const styles = StyleSheet.create({
     height: 13,
     marginLeft: 20,
     resizeMode: 'contain',
+  },
+  rowstyles: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  dotstyle: {
+    width: 5,
+    height: 5,
+    backgroundColor: colors.blackColor,
+    borderRadius: 50,
+    marginRight: 5,
+    alignSelf: 'flex-start',
+    marginTop: 11,
   },
 });

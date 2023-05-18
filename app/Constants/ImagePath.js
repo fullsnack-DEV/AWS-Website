@@ -52,6 +52,8 @@ const images = {
   calNextArrow: require('../assets/images/cal_next.png'),
   calPrevArrow: require('../assets/images/cal_prev.png'),
   newinvoiceIcon: require('../assets/images/InvoiceNewIcon.png'),
+  invoiceDarkDownArrow: require('../assets/images/InvoiceDarkDownArrow.png'),
+  invoiceLightDownArrow: require('../assets/images/InvoiceLightdownarrow.png'),
 
   backArrow: require('../assets/images/ic_back_arrow.png'),
   menu: require('../assets/images/menu.png'),
@@ -494,6 +496,10 @@ const images = {
   starProfile: require('../assets/images/star_profile.png'),
   recruitingMemberYesImg: require('../assets/images/recruitingMemberYesImg.png'),
   recruitingMemberNoImg: require('../assets/images/recruitingMemberNoImg.png'),
+  tickImage: require('../assets/images/image-tick.png'),
+  arrows: require('../assets/images/arrows.png'),
+  recruitingMemberClubNoImg: require('../assets/images/recruitingMemberClubNo.png'),
+  recruitingMemberClubYesImg: require('../assets/images/recruitingMemberClubYes.png'),
 };
 
 export default images;

@@ -48,6 +48,17 @@ const MatchFeeModal = ({
     <View>
       <Text style={styles.title}>{getTitle()}</Text>
 
+      <Text
+        style={{
+          fontSize: 12,
+          fontFamily: fonts.RRegular,
+          lineHeight: 18,
+          color: colors.googleColor,
+          marginBottom: 25,
+        }}>
+        {strings.matchFeeModalInfo}
+      </Text>
+
       <View
         style={[
           styles.greyContainer,
@@ -66,7 +77,8 @@ const MatchFeeModal = ({
           }}
           keyboardType="decimal-pad"
         />
-        <Text style={styles.label}>{`${currency}/${strings.match}`}</Text>
+        <Text
+          style={styles.label}>{`${currency}/${strings.matchCapText}`}</Text>
       </View>
 
       <TouchableOpacity
@@ -74,6 +86,106 @@ const MatchFeeModal = ({
         onPress={() => setShowCurrencyModal(true)}>
         <Text style={styles.linkButtonText}>{strings.changeCurrency}</Text>
       </TouchableOpacity>
+
+      {/* Match fee text */}
+      <View
+        style={{
+          marginTop: 50,
+          marginLeft: 20,
+        }}>
+        <Text
+          style={{
+            fontSize: 16,
+            fontFamily: fonts.RBold,
+            lineHeight: 24,
+            color: colors.googleColor,
+          }}>
+          {strings.whatMatchHostDo}
+        </Text>
+        <Text
+          style={{
+            fontSize: 16,
+            fontFamily: fonts.RRegular,
+            lineHeight: 24,
+            color: colors.googleColor,
+            marginTop: 5,
+          }}>
+          {strings.matchFeeModalInfo2}
+        </Text>
+        <View
+          style={{
+            marginTop: -10,
+          }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}>
+            <View
+              style={{
+                height: 5,
+                width: 5,
+                backgroundColor: colors.googleColor,
+                borderRadius: 50,
+                marginRight: 10,
+              }}
+            />
+            <Text
+              style={{
+                fontSize: 16,
+                fontFamily: fonts.RRegular,
+                lineHeight: 24,
+                color: colors.googleColor,
+              }}>{`${strings.venue}`}</Text>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              marginTop: 5,
+            }}>
+            <View
+              style={{
+                height: 5,
+                width: 5,
+                backgroundColor: colors.googleColor,
+                borderRadius: 50,
+                marginRight: 10,
+              }}
+            />
+            <Text
+              style={{
+                fontSize: 16,
+                fontFamily: fonts.RRegular,
+                lineHeight: 24,
+                color: colors.googleColor,
+              }}>{`${strings.refereesTitle}`}</Text>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              marginTop: 5,
+            }}>
+            <View
+              style={{
+                height: 5,
+                width: 5,
+                backgroundColor: colors.googleColor,
+                borderRadius: 50,
+                marginRight: 10,
+              }}
+            />
+            <Text
+              style={{
+                fontSize: 16,
+                fontFamily: fonts.RRegular,
+                lineHeight: 24,
+                color: colors.googleColor,
+              }}>{`${strings.scorekeeperTitle}`}</Text>
+          </View>
+        </View>
+      </View>
 
       <Modal visible={showCurrencyModal} transparent animationType="slide">
         <View

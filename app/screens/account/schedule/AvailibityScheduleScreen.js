@@ -20,7 +20,7 @@ import images from '../../../Constants/ImagePath';
 import WeeklyCalender from './CustomWeeklyCalender';
 import AuthContext from '../../../auth/context';
 // import {editSlots} from '../../../api/Schedule';
-// import Verbs from '../../../Constants/Verbs';
+import Verbs from '../../../Constants/Verbs';
 import colors from '../../../Constants/Colors';
 import ChallengeAvailability from './ChallengeAvailability';
 import * as Utility from '../../../utils/index';
@@ -59,7 +59,7 @@ export default function AvailibilityScheduleScreen({
     setAllData(allSlots);
     setWeeklyCalender(true)
     setLoading(false)
-  }, []);
+  }, [allSlots]);
 
 
   useEffect(() => {
@@ -71,9 +71,7 @@ export default function AvailibilityScheduleScreen({
     tempSlot.forEach((obj) => {
       const start = Utility.getJSDate(obj.start_datetime);
       start.setHours(0, 0, 0, 0);
-      const startSlotTime = Utility.getTCDate(start);
-      const endSlotTime = startSlotTime + 24 * 60 * 60;
-      if (obj.start_datetime >= startSlotTime && obj.end_datetime <= endSlotTime) {
+      if (obj.allDay) {
         blocked.push(moment.unix(obj.start_datetime).format('YYYY-MM-DD'));
       }
     });
@@ -91,8 +89,8 @@ export default function AvailibilityScheduleScreen({
 
 
   const generateTimestampRanges = (startTimestamp, endTimestamp) => {
-    const startDate = startTimestamp * 1000;
-    const endDate = endTimestamp * 1000;
+    const startDate = startTimestamp * Verbs.THOUSAND_SECOND;
+    const endDate = endTimestamp * Verbs.THOUSAND_SECOND;
     const ranges = [];
     let startOfCurrentRange = startDate;
   
@@ -124,9 +122,9 @@ export default function AvailibilityScheduleScreen({
       if (timestampRange.length > 1) {
         return timestampRange.map(({ start, end }) => ({
           ...plan,
-          start_datetime: start / 1000,
-          end_datetime: end / 1000,
-          actual_enddatetime: end / 1000,
+          start_datetime: start / Verbs.THOUSAND_SECOND,
+          end_datetime: end / Verbs.THOUSAND_SECOND,
+          actual_enddatetime: end / Verbs.THOUSAND_SECOND,
         }));
       } 
       return plan;
@@ -387,23 +385,26 @@ export default function AvailibilityScheduleScreen({
   };
 
 
+  useEffect(() => {
+  },[allData]);
+
+
   const deleteOrCreateSlotData = async (payload) => {
-
-    const tempSlot = [...allSlots];
-
-    if(payload.deleteSlotsIds) {
+    const tempSlot = [...allData];
+    if(payload.deleteSlotsIds.length > 0) {
       payload.deleteSlotsIds.forEach((cal_id) => {
         const index = allSlots.findIndex((item) => item.cal_id === cal_id);
         tempSlot.splice(index, 1);
       });
     }
 
-    if(payload.newSlots) {
+    if(payload.newSlots.length > 0) {
       payload.newSlots.forEach((item) => {
         tempSlot.push(item);
       });
     }
-    setAllData(tempSlot);
+
+    setAllData([...tempSlot]);
   };
 
 
@@ -465,29 +466,29 @@ export default function AvailibilityScheduleScreen({
       let backgroundColorWrapper;
       let background_color;
       let text_color;
-      let fontWeightVal = '400'
+      let font = fonts.RMedium
 
       if (
-        moment(selectedDate).format('YYYY-MM-DD') ===
-        moment(new Date(day.clone())).format('YYYY-MM-DD')
+        moment(selectedDate).format(Verbs.AVAILABILITY_DATE_FORMATE) ===
+        moment(new Date(day.clone())).format(Verbs.AVAILABILITY_DATE_FORMATE)
       ) {
         backgroundColorWrapper = colors.themeColor;
         background_color = colors.themeColor;
         text_color = colors.whiteColor;
-        fontWeightVal = '700'
+        font = fonts.RBold
       } else if (
-        blocked.includes(moment(day.clone()).format('YYYY-MM-DD'))
+        blocked.includes(moment(day.clone()).format(Verbs.AVAILABILITY_DATE_FORMATE))
       ) {
         backgroundColorWrapper = colors.lightGrey;
         background_color = colors.lightGrey;
         text_color = colors.grayColor;
       } else if (
-        moment(new Date()).format('YYYY-MM-DD') ===
-        moment(new Date(day.clone())).format('YYYY-MM-DD')
+        moment(new Date()).format(Verbs.AVAILABILITY_DATE_FORMATE) ===
+        moment(new Date(day.clone())).format(Verbs.AVAILABILITY_DATE_FORMATE)
       ) {
         if (
-          moment(new Date()).format('YYYY-MM-DD') !==
-          moment(selectedDate).format('YYYY-MM-DD')
+          moment(new Date()).format(Verbs.AVAILABILITY_DATE_FORMATE) !==
+          moment(selectedDate).format(Verbs.AVAILABILITY_DATE_FORMATE)
         ) {
           backgroundColorWrapper = colors.whiteColor;
         } else {
@@ -519,7 +520,7 @@ export default function AvailibilityScheduleScreen({
         },
         textStyle: {
           color: text_color,
-          fontWeight: fontWeightVal
+          fontFamily: font
         },
       });
 
@@ -537,19 +538,31 @@ export default function AvailibilityScheduleScreen({
         <View
           style={{
             width: 100,
-            height: 30,
+            height: 27,
             backgroundColor: colors.grayBackgroundColor,
             borderRadius: 5,
-            marginTop: 7,
+            marginTop: 5,
             justifyContent: 'flex-end',
             alignSelf: 'flex-end'
           }}>
           <TouchableOpacity
-            onPress={() => setListView(!listView)}>
-            <Image
-              source={images.toggleCal}
-              style={{width: 80, height: 30, alignSelf: 'center'}}
-            />
+            onPress={() => setListView(!listView)}
+          >
+            <View style={{
+              flexDirection: 'row', 
+              justifyContent: 'space-around', 
+              padding: 5,
+              alignItems: 'center'
+            }}>
+              <Image
+                source={images.arrows}
+                style={{width: 10, height:10, alignSelf: 'center'}}
+              />
+              <Text style={{
+                fontSize: 12, 
+                fontFamily: fonts.RRegular,
+              }}>{strings.calender}</Text>
+            </View>
           </TouchableOpacity>
         </View>
       </View>
@@ -611,7 +624,6 @@ export default function AvailibilityScheduleScreen({
               <View
                 style={{
                   marginBottom: 10,
-
                 }}>
                 <View
                   style={{
@@ -622,8 +634,8 @@ export default function AvailibilityScheduleScreen({
                   <View
                     style={{
                       width: 75,
-                      height: 30,
-                      backgroundColor: '#f5f5f5',
+                      height: 27,
+                      backgroundColor: colors.grayBackgroundColor,
                       borderRadius: 5,
                       position: 'absolute',
                       right: 25,
@@ -631,11 +643,23 @@ export default function AvailibilityScheduleScreen({
                       zIndex: 9999,
                     }}>
                     <TouchableOpacity
-                      onPress={() => setListView(!listView)}>
-                      <Image
-                        source={images.toggleList}
-                        style={{width: 65, height: 30, marginLeft: 5}}
-                      />
+                      onPress={() => setListView(!listView)}
+                    >
+                      <View style={{
+                        flexDirection: 'row', 
+                        justifyContent: 'space-around', 
+                        padding: 5,
+                        alignItems: 'center',
+                      }}>
+                        <Image
+                          source={images.arrows}
+                          style={{width: 10, height:10, alignSelf: 'center'}}
+                        />
+                        <Text style={{
+                          fontSize: 12, 
+                          fontFamily: fonts.RRegular,
+                        }}>{strings.list}</Text>
+                      </View>
                     </TouchableOpacity>
                   </View>
                   {weeklyCalender ? (
@@ -703,10 +727,20 @@ export default function AvailibilityScheduleScreen({
                 style={styles.toggleStyle}
                 onPress = {() => setWeeklyCalender(!weeklyCalender)}
                 >
+                  <View>
                    <Image
                       source={images.calenderToggle}
-                      style={{width: 20, height: 12, alignSelf: 'center', marginTop: 10}}
+                      style={{
+                        width: 20, 
+                        height: 12, 
+                        alignSelf: 'center', 
+                        marginTop: 10,
+                        transform: [
+                          {rotateX: weeklyCalender ? '180deg' : '0deg'},
+                        ]
+                      }}
                     />
+                  </View>
                 </TouchableOpacity>
               </View>
               

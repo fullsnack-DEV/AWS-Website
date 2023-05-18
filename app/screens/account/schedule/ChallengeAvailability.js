@@ -56,7 +56,18 @@ export default function ChallengeAvailability({
 }) {
 
   const authContext = useContext(AuthContext);
-  const [challengeAvailable, setChallengeAvailable] = useState([]);
+  const [challengeAvailable, setChallengeAvailable] = useState([
+    {
+      id: 0,
+      isBlock: true,
+      allDay: false,
+      start_datetime: getRoundedDate(5),
+      end_datetime: moment(getRoundedDate(5)).add(5, 'm').toDate(),
+      previous_start_datetime: getRoundedDate(5),
+      previous_end_datetime: moment(getRoundedDate(5)).add(5, 'm').toDate(),
+      is_recurring: false,
+    },
+  ]);
   const [oneTimeAvailability, setOneTimeAvailability] = useState([
     {
       id: 0,
@@ -64,6 +75,8 @@ export default function ChallengeAvailability({
       allDay: false,
       start_datetime: getRoundedDate(5),
       end_datetime: moment(getRoundedDate(5)).add(5, 'm').toDate(),
+      previous_start_datetime: getRoundedDate(5),
+      previous_end_datetime: moment(getRoundedDate(5)).add(5, 'm').toDate(),
       is_recurring: false,
     },
   ]);
@@ -74,6 +87,8 @@ export default function ChallengeAvailability({
       allDay: false,
       start_datetime: getRoundedDate(5),
       end_datetime: moment(getRoundedDate(5)).add(5, 'm').toDate(),
+      previous_start_datetime: getRoundedDate(5),
+      previous_end_datetime: moment(getRoundedDate(5)).add(5, 'm').toDate(),
       is_recurring: true,
     },
   ]);
@@ -85,29 +100,48 @@ export default function ChallengeAvailability({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [oneTime, setOneTime] = useState(true);
   const [overlappedItems, setOverlappedItems] = useState([]);
+  const [showAddTimeButton, setShowAddTimeButton] = useState(true);
 
 
   useEffect(() => {
     if(slots.length > 0){
       const editableSlots = [];
       const recurringSlots = [];
+      const currentTime = getTCDate(new Date());
       slots.forEach((item , index) => {
+          let startDateTime = item.start_datetime;
+          const endDateTime = item.end_datetime;
+          if(startDateTime < currentTime && endDateTime < currentTime) {
+            return;
+          }
+
+          if(startDateTime < currentTime) {
+            startDateTime = currentTime;
+          }
           const temp = {
             id : index,
             isBlock : item.blocked,
             allDay: false,
-            start_datetime : getJSDate(item.start_datetime),
+            start_datetime : getJSDate(startDateTime),
             end_datetime : getJSDate(item.end_datetime),
+            previous_start_datetime : getJSDate(startDateTime),
+            previous_end_datetime : getJSDate(item.end_datetime),
             is_recurring : false
           }
           editableSlots.push(temp);
       });
+      let startDateTime = slots[0]?.start_datetime;
+      if(startDateTime < currentTime) {
+        startDateTime = currentTime;
+      }
       const tempRecrr = {
         id : 0,
         isBlock : true,
         allDay: false,
-        start_datetime : getJSDate(slots[0]?.start_datetime),
+        start_datetime : getJSDate(startDateTime),
         end_datetime : getJSDate(slots[0]?.end_datetime),
+        previous_start_datetime : getJSDate(startDateTime),
+        previous_end_datetime : getJSDate(slots[0]?.end_datetime),
         is_recurring : true
       }
       recurringSlots.push(tempRecrr)
@@ -413,16 +447,25 @@ export default function ChallengeAvailability({
                     style={{
                       textDecorationLine: 'underline',
                       textDecorationStyle: 'solid',
-                      textDecorationColor: '#000'
+                      textDecorationColor: colors.darkGrey
                     }} 
-                    >{strings.vancouver}</Text>
+                    >{Intl.DateTimeFormat()?.resolvedOptions().timeZone.split('/').pop()}</Text>
                 </TouchableOpacity>
               </View>
               <FlatList
                 data={challengeAvailable}
                 showsHorizontalScrollIndicator={false}
                 renderItem={({item: data, index}) => {
-                  const background = challengeAvailable[index].isBlock ? colors.grayBackgroundColor : colors.availabilitySlotsBackground;
+                  const challengeItems    = [...challengeAvailable];
+                  const background        = challengeAvailable[index].isBlock ? colors.grayBackgroundColor : colors.availabilitySlotsBackground;
+                  const itemStartDateTime   = new Date(challengeItems[index].start_datetime);
+                  itemStartDateTime.setHours(0, 0, 0, 0);
+                  const itemStartBeginingTime = getTCDate(itemStartDateTime);
+                  const currentStartDateTime  = getTCDate(new Date());
+                  let blockAllDay = false;
+                  if(currentStartDateTime > itemStartBeginingTime) {
+                    blockAllDay = true;
+                  }
                   return (
                   <View style={{
                     marginTop: 10, 
@@ -432,13 +475,35 @@ export default function ChallengeAvailability({
                     borderColor: overlappedItems.includes(index) ? colors.redColor : background
                   }}>
                     <View style={styles.toggleViewStyle}>
-                      <View style={{flexDirection: 'row'}}>
+                      <View 
+                      style={{
+                        flexDirection: 'row',
+                      }}
+                      >
                         <TouchableOpacity
                           style={styles.checkbox}
                           onPress={() => {
                             const tempChallenge = [...challengeAvailable];
-                            tempChallenge[index].allDay =
-                              !tempChallenge[index].allDay;
+                            tempChallenge[index].allDay = !tempChallenge[index].allDay;
+                            if(!tempChallenge[index].is_recurring){
+                              if(tempChallenge[index].allDay) {
+                                const start = new Date(tempChallenge[index].start_datetime);
+                                const tempStart = new Date(tempChallenge[index].start_datetime);
+                                start.setHours(0, 0, 0, 0);
+                                const startSlotTime = getTCDate(start);
+                                const endSlotTime = startSlotTime + 24 * 60 * 60;
+                                tempChallenge[index].start_datetime = getJSDate(startSlotTime)
+                                tempChallenge[index].end_datetime = getJSDate(endSlotTime)
+                                if(blockAllDay) {
+                                  tempChallenge[index].start_datetime = new Date(tempStart)
+                                }
+                                setShowAddTimeButton(false)
+                              }else{
+                                tempChallenge[index].start_datetime = tempChallenge[index].previous_start_datetime
+                                tempChallenge[index].end_datetime = tempChallenge[index].previous_end_datetime
+                                setShowAddTimeButton(true)
+                              }
+                            }
                             setChallengeAvailable(tempChallenge);
                           }}>
                           <Image
@@ -616,64 +681,11 @@ export default function ChallengeAvailability({
                       }
                       />
                     )}
-                    <DateTimePickerView
-                      title={
-                        challengeAvailable[currentIndex].allDay
-                          ? strings.choosedateText
-                          : strings.chooseDateTimeText
-                      }
-                      visible={startDateVisible}
-                      onDone={(date) => {
-                        onStartDateChange(date, currentIndex)
-                      }}
-                      onCancel={handleCancelPress}
-                      onHide={handleCancelPress}
-                      minimumDate={getRoundedDate(5)}
-                      mode={
-                        challengeAvailable[currentIndex].allDay ? 'date' : 'datetime'
-                      }
-                      date={challengeAvailable[currentIndex].start_datetime}
-                      minutesGap={5}
-                    />
-                    <DateTimePickerView
-                      title={
-                        challengeAvailable[currentIndex].allDay
-                          ? strings.choosedateText
-                          : strings.chooseDateTimeText
-                      }
-                      visible={endDateVisible}
-                      onDone={(date) => {
-                        onEndDateChange(date,currentIndex)
-                      }}
-                      onCancel={handleCancelPress}
-                      onHide={handleCancelPress}
-                      minimumDate={moment(challengeAvailable[currentIndex].start_datetime).add(5, 'm').toDate()}
-                      mode={challengeAvailable[currentIndex].allDay ? 'date' : 'datetime'}
-                      date={challengeAvailable[currentIndex].end_datetime}
-                      minutesGap={5}
-                    />
-                    <DateTimePickerView
-                      visible={untilDateVisible}
-                      onDone={(date) => {
-                        onUntilDateChange(date, currentIndex)
-                      }}
-                      onCancel={handleCancelPress}
-                      onHide={handleCancelPress}
-                      minimumDate={
-                        moment(challengeAvailable[currentIndex].end_datetime)
-                            .add(5, 'm')
-                            .toDate()
-                      }
-                      minutesGap={5}
-                      mode={
-                        challengeAvailable[currentIndex].allDay ? 'date' : 'datetime'
-                      }
-                      date={challengeAvailable[currentIndex].untilDate}
-                    />
+                    
                   </View>
                 )}}
                 ListFooterComponent={() => (
-                  oneTime && showAddMore ?  (                 
+                  oneTime && showAddMore && showAddTimeButton ?  (                 
                   <AddTimeItem
                     addTimeText={strings.addTime}
                     source={images.plus}
@@ -685,6 +697,8 @@ export default function ChallengeAvailability({
                         is_recurring: false,
                         start_datetime: getRoundedDate(5),
                         end_datetime: moment(getRoundedDate(5)).add(5, 'm').toDate(),
+                        previous_start_datetime: getRoundedDate(5),
+                        previous_end_datetime: moment(getRoundedDate(5)).add(5, 'm').toDate(),
                       };
                       setChallengeAvailable([...challengeAvailable, obj]);
                     }}
@@ -694,6 +708,60 @@ export default function ChallengeAvailability({
                 ListFooterComponentStyle={{marginTop: 20}}
                 ItemSeparatorComponent={() => <View style={{height: wp('3%')}} />}
                 keyExtractor={(itemValue, index) => index.toString()}
+              />
+              <DateTimePickerView
+                title={
+                  challengeAvailable[currentIndex]?.allDay
+                    ? strings.choosedateText
+                    : strings.chooseDateTimeText
+                }
+                visible={startDateVisible}
+                onDone={(date) => {
+                  onStartDateChange(date, currentIndex)
+                }}
+                onCancel={handleCancelPress}
+                onHide={handleCancelPress}
+                minimumDate={getRoundedDate(5)}
+                mode={
+                  challengeAvailable[currentIndex]?.allDay ? 'date' : 'datetime'
+                }
+                date={challengeAvailable[currentIndex]?.start_datetime}
+                minutesGap={5}
+              />
+              <DateTimePickerView
+                title={
+                  challengeAvailable[currentIndex]?.allDay
+                    ? strings.choosedateText
+                    : strings.chooseDateTimeText
+                }
+                visible={endDateVisible}
+                onDone={(date) => {
+                  onEndDateChange(date,currentIndex)
+                }}
+                onCancel={handleCancelPress}
+                onHide={handleCancelPress}
+                minimumDate={moment(challengeAvailable[currentIndex]?.start_datetime).add(5, 'm').toDate()}
+                mode={challengeAvailable[currentIndex]?.allDay ? 'date' : 'datetime'}
+                date={challengeAvailable[currentIndex]?.end_datetime}
+                minutesGap={5}
+              />
+              <DateTimePickerView
+                visible={untilDateVisible}
+                onDone={(date) => {
+                  onUntilDateChange(date, currentIndex)
+                }}
+                onCancel={handleCancelPress}
+                onHide={handleCancelPress}
+                minimumDate={
+                  moment(challengeAvailable[currentIndex]?.end_datetime)
+                      .add(5, 'm')
+                      .toDate()
+                }
+                minutesGap={5}
+                mode={
+                  challengeAvailable[currentIndex]?.allDay ? 'date' : 'datetime'
+                }
+                date={challengeAvailable[currentIndex]?.untilDate}
               />
             </View>
           </SafeAreaView>

@@ -16,6 +16,7 @@ import {
   Image,
   TouchableOpacity,
   Platform,
+  TouchableWithoutFeedback,
 } from 'react-native';
 
 import ActionSheet from 'react-native-actionsheet';
@@ -133,15 +134,7 @@ export default function CreateMemberProfileForm1({navigation, route}) {
                       email,
                       home_city: homeCity,
                     };
-                    // if (entity.role === Verbs.entityTypeTeam) {
-                    //   navigation.navigate('CreateMemberProfileTeamForm3', {
-                    //     form1: form1Object,
-                    //   });
-                    // } else if (entity.role === Verbs.entityTypeClub) {
-                    //   navigation.navigate('CreateMemberProfileForm2', {
-                    //     form1: form1Object,
-                    //   });
-                    // }
+
                     navigation.navigate('CreateMemberProfileForm2', {
                       form1: form1Object,
                     });
@@ -162,6 +155,12 @@ export default function CreateMemberProfileForm1({navigation, route}) {
           }}>
           {strings.next}
         </Text>
+      ),
+
+      headerLeft: () => (
+        <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
+          <Image source={images.backArrow} style={styles.backArrowStyle} />
+        </TouchableWithoutFeedback>
       ),
     });
   }, [
@@ -470,5 +469,11 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     color: colors.userPostTimeColor,
     margin: 15,
+  },
+  backArrowStyle: {
+    height: 20,
+    marginLeft: 15,
+    resizeMode: 'contain',
+    tintColor: colors.blackColor,
   },
 });

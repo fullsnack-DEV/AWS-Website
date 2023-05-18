@@ -38,6 +38,8 @@ const AddRecipientsModal = ({
   recipientAttendees = [],
   selectedRecipients = [],
   invoiceType = InvoiceType.Invoice,
+  modalTitle = '',
+  rightbuttonText = '',
 }) => {
   const authContext = useContext(AuthContext);
   const isShowTabs = authContext.entity.role === Verbs.entityTypeClub;
@@ -115,15 +117,15 @@ const AddRecipientsModal = ({
       if (selectedPeoples.length > 0) {
         returnStr =
           selectedPeoples.length === 1
-            ? `1 ${strings.person}`
-            : `${selectedPeoples.length} ${strings.people}`;
+            ? `1 ${strings.Person}`
+            : `${selectedPeoples.length} ${strings.PeopleText}`;
       }
 
       if (selectedTeams.length > 0) {
         const str =
           selectedTeams.length === 1
-            ? `1 ${strings.group}`
-            : `${selectedTeams.length} ${strings.groups}`;
+            ? `1 ${strings.team}`
+            : `${selectedTeams.length} ${strings.teams}`;
         if (returnStr.length > 0) {
           returnStr = `${returnStr} & ${str} ${strings.selected}`;
         } else {
@@ -201,7 +203,8 @@ const AddRecipientsModal = ({
     if (invoiceType === InvoiceType.Invoice) {
       if (
         selectedPeoples.length + selectedTeams.length >
-        Verbs.MAXIMUM_RECIPIENT_INVOICE - 1
+          Verbs.MAXIMUM_RECIPIENT_INVOICE - 1 &&
+        !item.isChecked
       ) {
         Alert.alert(strings.maximuminvoicerecipientvalidation);
         return;
@@ -370,9 +373,9 @@ const AddRecipientsModal = ({
       isVisible={isVisible}
       closeModal={() => onCloseThisModal()}
       modalType={ModalTypes.style1}
-      title={strings.newRecipents}
-      containerStyle={{padding: 0}}
-      headerRightButtonText={strings.addText}
+      title={modalTitle || strings.newRecipents}
+      containerStyle={{padding: 0, width: '100%', height: '100%'}}
+      headerRightButtonText={rightbuttonText || strings.done}
       onRightButtonPress={() => onAddRecipients()}
       Top={75}>
       {/* Code for Search Field */}
@@ -407,7 +410,7 @@ const AddRecipientsModal = ({
           </Text>
         </View>
       </TouchableOpacity>
-      {/* show the tabs is club is sending the invoice */}
+      {/* show the tabs if club is sending the invoice */}
       {isShowTabs && invoiceType === InvoiceType.Invoice && (
         <View style={{backgroundColor: '#FFFFFF'}}>
           <TCScrollableProfileTabs
@@ -438,7 +441,7 @@ const AddRecipientsModal = ({
           ItemSeparatorComponent={() => <View style={styles.dividerLine} />}
           renderItem={renderRecipient}
           ListEmptyComponent={listEmptyComponent}
-          ListFooterComponent={() => <View style={{marginBottom: 10}} />}
+          ListFooterComponent={() => <View style={{marginBottom: 100}} />}
         />
       )}
 

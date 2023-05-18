@@ -19,6 +19,7 @@ const TCProfileButton = ({
   rightImage = images.arrowGraterthan,
   imageStyle,
   textStyle,
+  tickImage=false
 }) => (
   <TouchableWithoutFeedback onPress={onPressProfile}>
     <View style={[styles.buttonView, style]}>
@@ -28,6 +29,11 @@ const TCProfileButton = ({
       {showArrow && (
         <Image source={rightImage} style={[styles.arrowImage, imageStyle]} />
       )}
+      {
+      tickImage && (
+        <Image source={images.tickImage} style={styles.tickImage} />
+      )
+      }
     </View>
   </TouchableWithoutFeedback>
 );
@@ -60,6 +66,15 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     width: 5,
     marginLeft: 8,
+    tintColor: colors.lightBlackColor,
+  },
+  tickImage: {
+    alignSelf: 'center',
+    height: 10,
+    resizeMode: 'contain',
+    width: 10,
+    marginLeft: 4,
+    marginTop: 2,
     tintColor: colors.lightBlackColor,
   },
 });

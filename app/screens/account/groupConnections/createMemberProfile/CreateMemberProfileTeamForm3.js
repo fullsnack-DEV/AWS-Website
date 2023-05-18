@@ -6,6 +6,7 @@ import {
   Image,
   TouchableOpacity,
   FlatList,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import {format} from 'react-string-format';
 import {createMemberProfile} from '../../../../api/Groups';
@@ -51,6 +52,11 @@ export default function CreateMemberProfileTeamForm3({navigation, route}) {
         <Text style={styles.nextButtonStyle} onPress={() => createMember()}>
           {strings.done}
         </Text>
+      ),
+      headerLeft: () => (
+        <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
+          <Image source={images.backArrow} style={styles.backArrowStyle} />
+        </TouchableWithoutFeedback>
       ),
     });
   }, [navigation, groupMemberDetail, positions]);
@@ -435,5 +441,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.lightBlackColor,
     marginLeft: 10,
+  },
+  backArrowStyle: {
+    height: 20,
+    marginLeft: 15,
+    resizeMode: 'contain',
+    tintColor: colors.blackColor,
   },
 });

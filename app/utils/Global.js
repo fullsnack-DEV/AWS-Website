@@ -148,7 +148,7 @@ const globalApiCall = async ({
       console.log('ERROR RESPONSE ::', response.data);
       throw response.data.messages || response;
     }
-    console.log('RESPONSE ::', options, '\n', response.data);
+    // console.log('RESPONSE ::', options, '\n', response.data);
     return response.data;
   } catch (e) {
     const error = {

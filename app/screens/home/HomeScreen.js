@@ -21,11 +21,7 @@ import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 
 import AuthContext from '../../auth/context';
-import {
-  getUserDetails,
-  sendInvitationInGroup,
-  userActivate,
-} from '../../api/Users';
+import {getUserDetails, sendInvitationInGroup} from '../../api/Users';
 import {strings} from '../../../Localization/translation';
 import {getGroupIndex} from '../../api/elasticSearch';
 import Verbs from '../../Constants/Verbs';
@@ -37,20 +33,18 @@ import {
   getGroupDetails,
   getGroupMembers,
   getTeamsOfClub,
-  groupUnpaused,
 } from '../../api/Groups';
 import GroupHomeScreen from './GroupHomeScreen';
 import TCAccountDeactivate from '../../components/TCAccountDeactivate';
-import {setAuthContextData} from '../../utils';
 import CongratulationsModal from '../account/registerPlayer/modals/CongratulationsModal';
 import * as Utility from '../../utils';
+import SwitchAccountModal from '../../components/account/SwitchAccountModal';
 
 const HomeScreen = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
 
-  const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
-  const [pointEvent, setPointEvent] = useState('auto');
+  const [pointEvent] = useState('auto');
   const [isAdmin, setIsAdmin] = useState(false);
   const [currentUserData, setCurrentUserData] = useState({});
   const [moreOptions, setMoreOptions] = useState([]);
@@ -60,24 +54,13 @@ const HomeScreen = ({navigation, route}) => {
   const [listLoading, setListLoading] = useState(false);
 
   const [settingObject, setSettingObject] = useState();
+  const [showSwitchAccountModal, setShowSwitchAccountModal] = useState(false);
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: false,
     });
   }, [navigation]);
-
-  useEffect(() => {
-    setIsAccountDeactivated(false);
-    setPointEvent('auto');
-    if (
-      isFocused &&
-      (authContext.entity.obj.is_pause || authContext.entity.obj.is_deactivate)
-    ) {
-      setIsAccountDeactivated(true);
-      setPointEvent('none');
-    }
-  }, [authContext.entity, pointEvent, isAccountDeactivated, isFocused]);
 
   const getUserData = useCallback(
     (uid, admin) => {
@@ -152,16 +135,13 @@ const HomeScreen = ({navigation, route}) => {
 
   useEffect(() => {
     const loginEntity = authContext.entity;
-
     const uid = route.params.uid ?? loginEntity.uid;
 
-    let admin = false;
-    if (loginEntity.uid === uid) {
-      admin = true;
-      setIsAdmin(true);
-    }
-
+    const admin = loginEntity.uid === uid;
     const role = route.params.role ?? '';
+
+    setIsAdmin(loginEntity.uid === uid);
+
     if (role === Verbs.entityTypePlayer || role === Verbs.entityTypeUser) {
       getUserData(uid, admin);
     }
@@ -194,11 +174,19 @@ const HomeScreen = ({navigation, route}) => {
 
   const handleMoreOptions = (option) => {
     setShowMoreOptionsModal(false);
+
     switch (option) {
       case strings.sportActivity:
         navigation.navigate('SportActivitiesScreen', {
           isAdmin,
           uid: route.params?.uid ?? authContext.uid,
+        });
+        break;
+
+      case strings.recruitingMembers:
+        navigation.navigate('GroupMembersScreen', {
+          groupID: route.params.uid,
+          groupObj: currentUserData,
         });
         break;
 
@@ -209,39 +197,6 @@ const HomeScreen = ({navigation, route}) => {
       default:
         break;
     }
-  };
-
-  const unPauseGroup = () => {
-    setLoading(true);
-    groupUnpaused(authContext)
-      .then(async (response) => {
-        setLoading(false);
-        setIsAccountDeactivated(false);
-        await setAuthContextData(response.payload, authContext);
-      })
-      .catch((e) => {
-        setLoading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
-  };
-
-  const reActivateUser = () => {
-    setLoading(true);
-    userActivate(authContext)
-      .then(async (response) => {
-        setLoading(false);
-        setIsAccountDeactivated(false);
-        await setAuthContextData(response.payload, authContext);
-        navigation.pop(2);
-      })
-      .catch((e) => {
-        setLoading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
   };
 
   const getShimmer = () => {
@@ -270,7 +225,7 @@ const HomeScreen = ({navigation, route}) => {
           userID={route.params.uid ?? authContext.entity.uid}
           isAdmin={isAdmin}
           pointEvent={pointEvent}
-          isAccountDeactivated={isAccountDeactivated}
+          isAccountDeactivated={authContext.isAccountDeactivated}
           userData={currentUserData}
         />
       );
@@ -287,7 +242,7 @@ const HomeScreen = ({navigation, route}) => {
           groupId={route.params.uid ?? authContext.entity.uid}
           isAdmin={isAdmin}
           pointEvent={pointEvent}
-          isAccountDeactivated={isAccountDeactivated}
+          isAccountDeactivated={authContext.isAccountDeactivated}
           groupData={currentUserData}
         />
       );
@@ -332,6 +287,39 @@ const HomeScreen = ({navigation, route}) => {
       });
   };
 
+  const setKebabButtonOptions = () => {
+    if (
+      route.params.role === Verbs.entityTypePlayer ||
+      route.params.role === Verbs.entityTypeUser
+    ) {
+      setShowMoreOptionsModal(true);
+      if (isAdmin) {
+        setMoreOptions([strings.sportActivity]);
+      } else {
+        setMoreOptions([
+          strings.sportActivity,
+          strings.reportThisAccount,
+          strings.blockThisAccount,
+        ]);
+      }
+    } else if (
+      route.params.role === Verbs.entityTypeClub ||
+      route.params.role === Verbs.entityTypeTeam
+    ) {
+      setShowMoreOptionsModal(true);
+      if (isAdmin) {
+        setMoreOptions([strings.recruitingMembers]);
+      } else {
+        setMoreOptions([strings.reportThisAccount, strings.blockThisAccount]);
+      }
+    } else {
+      setShowMoreOptionsModal(true);
+      if (!isAdmin) {
+        setMoreOptions([strings.reportThisAccount, strings.blockThisAccount]);
+      }
+    }
+  };
+
   return (
     <SafeAreaView style={styles.mainContainer}>
       <View style={styles.headerRow}>
@@ -354,7 +342,9 @@ const HomeScreen = ({navigation, route}) => {
               {currentUserData.full_name ?? currentUserData.group_name}
             </Text>
           </View>
-          <Pressable style={styles.dropDownImage}>
+          <Pressable
+            style={styles.dropDownImage}
+            onPress={() => setShowSwitchAccountModal(true)}>
             <Image source={images.path} style={styles.image} />
           </Pressable>
         </View>
@@ -377,74 +367,13 @@ const HomeScreen = ({navigation, route}) => {
           <Pressable
             style={styles.imageContainer}
             onPress={() => {
-              if (
-                route.params.role === Verbs.entityTypePlayer ||
-                route.params.role === Verbs.entityTypeUser
-              ) {
-                setShowMoreOptionsModal(true);
-                if (isAdmin) {
-                  setMoreOptions([strings.sportActivity]);
-                } else {
-                  setMoreOptions([
-                    strings.sportActivity,
-                    strings.reportThisAccount,
-                    strings.blockThisAccount,
-                  ]);
-                }
-              } else {
-                setShowMoreOptionsModal(true);
-                if (!isAdmin) {
-                  setMoreOptions([
-                    strings.reportThisAccount,
-                    strings.blockThisAccount,
-                  ]);
-                }
-              }
+              setKebabButtonOptions();
             }}>
             <Image source={images.chat3Dot} style={styles.image} />
           </Pressable>
         </View>
       </View>
-      {isAccountDeactivated && (
-        <TCAccountDeactivate
-          type={
-            authContext.entity.obj.is_pause
-              ? Verbs.pauseVerb
-              : Verbs.deactivateVerb
-          }
-          onPress={() => {
-            Alert.alert(
-              format(
-                strings.pauseUnpauseAccountText,
-                authContext.entity.obj.is_pause
-                  ? Verbs.unpauseVerb
-                  : Verbs.reactivateVerb,
-              ),
-              '',
-              [
-                {
-                  text: strings.cancel,
-                  style: 'cancel',
-                },
-                {
-                  text: authContext.entity.obj.is_pause
-                    ? Verbs.unpauseVerb
-                    : Verbs.reactivateVerb,
-                  style: 'destructive',
-                  onPress: () => {
-                    if (authContext.entity.obj.is_pause) {
-                      unPauseGroup();
-                    } else {
-                      reActivateUser();
-                    }
-                  },
-                },
-              ],
-              {cancelable: false},
-            );
-          }}
-        />
-      )}
+      {authContext.isAccountDeactivated && <TCAccountDeactivate />}
       {getShimmer()}
       {renderScreen()}
 
@@ -486,8 +415,8 @@ const HomeScreen = ({navigation, route}) => {
             }
             sportType={
               authContext.entity.role === Verbs.entityTypeTeam
-                ? Verbs.sportTypeTeam
-                : Verbs.sportTypeSingle
+                ? route.params.entityObj?.setting?.sport
+                : route.params.entityObj?.sports?.[0]?.sport
             }
             searchTeam={(filters) => {
               navigation.navigate('LookingForChallengeScreen', {
@@ -516,6 +445,17 @@ const HomeScreen = ({navigation, route}) => {
           />
         </>
       ) : null}
+
+      <SwitchAccountModal
+        isVisible={showSwitchAccountModal}
+        closeModal={() => {
+          setShowSwitchAccountModal(false);
+          navigation.navigate('AccountScreen');
+        }}
+        onCreate={(option) => {
+          console.log({option});
+        }}
+      />
     </SafeAreaView>
   );
 };

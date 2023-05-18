@@ -1,51 +1,26 @@
 // @flow
 import React, {useEffect, useState} from 'react';
-import {View, Text, Image} from 'react-native';
-import {format} from 'react-string-format';
+import {View, Text, Image, Pressable} from 'react-native';
 import {strings} from '../../../Localization/translation';
 import fonts from '../../Constants/Fonts';
 import Verbs from '../../Constants/Verbs';
 import {displayLocation} from '../../utils';
-import {getSportName} from '../../utils/sportsActivityUtils';
+import {getGroupSportName} from '../../utils/sportsActivityUtils';
 import GroupIcon from '../GroupIcon';
 import LevelBars from '../LevelBars';
 import styles from './GroupHomeHeaderStyles';
 
-const GroupHomeHeader = ({groupData = {}, sportList = [], isAdmin = false}) => {
+const GroupHomeHeader = ({
+  groupData = {},
+  sportList = [],
+  isAdmin = false,
+  onClickMembers = () => {},
+  onClickFollowers = () => {},
+}) => {
   const [sporName, setSportName] = useState('');
 
   useEffect(() => {
-    if (groupData.entity_type === Verbs.entityTypeClub) {
-      if (groupData.sports?.length > 0) {
-        let name = '';
-        groupData.sports.forEach((item, index) => {
-          const sportname = getSportName(
-            item.sport,
-            item.sport_type,
-            sportList,
-          );
-          if (index < 4) {
-            name += index !== 0 ? `, ${sportname}` : sportname;
-          }
-        });
-        if (groupData.sports.length > 4) {
-          name += ` ${format(
-            strings.andMoreText,
-            groupData.sports.length - 4,
-          )}`;
-        }
-        setSportName(name);
-      } else {
-        setSportName('');
-      }
-    } else {
-      const name = getSportName(
-        groupData.sport,
-        groupData.sport_type,
-        sportList,
-      );
-      setSportName(name);
-    }
+    setSportName(getGroupSportName(groupData, sportList, 4));
   }, [groupData, sportList]);
 
   return (
@@ -72,7 +47,7 @@ const GroupHomeHeader = ({groupData = {}, sportList = [], isAdmin = false}) => {
           <GroupIcon
             imageUrl={groupData.thumbnail}
             groupName={groupData.group_name}
-            containerStyle={{marginRight: 7, padding: 5}}
+            containerStyle={{marginRight: 7}}
             entityType={groupData.entity_type}
           />
         </View>
@@ -106,25 +81,28 @@ const GroupHomeHeader = ({groupData = {}, sportList = [], isAdmin = false}) => {
                 <Text style={styles.newTeamText}>
                   {groupData.level > 0
                     ? `Lv.${groupData.level}`
-                    : strings.newTeamText}
+                    : strings.newTextTitleCase}
                 </Text>
               </View>
             </View>
           )}
 
           <View style={[styles.row, {flex: 1, justifyContent: 'flex-end'}]}>
-            <View
+            <Pressable
               style={[
                 styles.row,
                 {justifyContent: 'flex-end', marginRight: 10},
-              ]}>
+              ]}
+              onPress={onClickMembers}>
               <Text style={styles.count}>{groupData.member_count}</Text>
               <Text style={styles.label}>{strings.membersTitle}</Text>
-            </View>
-            <View style={[styles.row, {justifyContent: 'flex-end'}]}>
+            </Pressable>
+            <Pressable
+              style={[styles.row, {justifyContent: 'flex-end'}]}
+              onPress={onClickFollowers}>
               <Text style={styles.count}>{groupData.follower_count}</Text>
               <Text style={styles.label}>{strings.followerTitleText}</Text>
-            </View>
+            </Pressable>
           </View>
         </View>
       </View>
@@ -159,13 +137,13 @@ const GroupHomeHeader = ({groupData = {}, sportList = [], isAdmin = false}) => {
           </View>
         ) : null}
 
-        {groupData.description ? (
+        {groupData.bio ? (
           <Text
             style={[
               styles.label,
               groupData.hiringPlayers ? {marginTop: 10} : {marginTop: 15},
             ]}>
-            {groupData.description}
+            {groupData.bio}
           </Text>
         ) : null}
       </View>

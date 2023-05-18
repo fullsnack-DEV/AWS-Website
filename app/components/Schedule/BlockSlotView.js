@@ -98,7 +98,7 @@ export default function BlockSlotView({
             </Text>
             {
               (slots.length - 1) === index && (
-              <Text style={[styles.blockFieldValue, {fontSize: 10, marginTop: -2}]}> +1day</Text>
+              <Text style={[styles.blockFieldValue, {fontSize: 10, marginTop: -2}]}> {strings.plusDayOne}</Text>
             )}
           </View>
         </TouchableOpacity>
@@ -134,7 +134,7 @@ export default function BlockSlotView({
             </Text>
             {
               (slots.length - 1) === index && (
-              <Text style={[styles.fieldValue, {fontSize: 10, marginTop: -2}]}> +1day</Text>
+              <Text style={[styles.fieldValue, {fontSize: 10, marginTop: -2}]}> {strings.plusDayOne}</Text>
             )}
           </View>
         </TouchableOpacity>

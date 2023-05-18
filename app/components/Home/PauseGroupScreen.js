@@ -19,6 +19,7 @@ import {groupPaused, groupUnpaused} from '../../api/Groups';
 import {setAuthContextData} from '../../utils';
 import ScreenHeader from '../ScreenHeader';
 import Verbs from '../../Constants/Verbs';
+import {getUnreadNotificationCount} from '../../utils/accountUtils';
 
 export default function PauseGroupScreen({navigation}) {
   const authContext = useContext(AuthContext);
@@ -34,6 +35,7 @@ export default function PauseGroupScreen({navigation}) {
     setloading(true);
     groupPaused(authContext)
       .then(async (response) => {
+        getUnreadNotificationCount(authContext);
         await setAuthContextData(response.payload, authContext);
         setloading(false);
         navigation.navigate('AccountScreen');

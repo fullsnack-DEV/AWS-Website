@@ -6,6 +6,10 @@ import AuthContext from '../../auth/context';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import ScoreboardSportsScreen from './ScoreboardSportsScreen';
 import {getScroreboardGameDetails} from '../../api/Games';
+import ScreenHeader from '../../components/ScreenHeader';
+import {strings} from '../../../Localization/translation';
+import images from '../../Constants/ImagePath';
+import ScoreboardContentScreen from './SportActivity/contentScreens/ScoreboardContentScreen';
 // import { useIsFocused } from '@react-navigation/native';
 
 // const entity = {};
@@ -14,6 +18,7 @@ export default function EntityScoreboardScreen({navigation, route}) {
   const [isAdmin] = useState(route?.params?.isAdmin);
 
   const authContext = useContext(AuthContext);
+  const [userData, setCurrentUserData] = useState({});
   const [loading, setLoading] = useState(false);
   const [scoreboardSearchText, setScoreboardSearchText] = useState([]);
   const [scoreboardGameData, setScoreboardGameData] = useState([]);
@@ -50,9 +55,24 @@ export default function EntityScoreboardScreen({navigation, route}) {
 
   return (
     <SafeAreaView style={{flex: 1}}>
+      <ScreenHeader
+        title={strings.scoreboard}
+        leftIcon={images.backArrow}
+        leftIconPress={() => navigation.goBack()}
+        rightIcon2={images.searchUser}
+        containerStyle={{
+          paddingHorizontal: 10,
+          paddingTop: 6,
+          paddingBottom: 14,
+        }}
+      />
       <ActivityLoader visible={loading} />
       <View style={{flex: 1}}>
-        <ScoreboardSportsScreen
+        <ScoreboardContentScreen
+          userData={route.params.groupData}
+          entityType={route.params.entityType}
+        />
+        {/* <ScoreboardSportsScreen
           sportsData={
             scoreboardSearchText.length > 0
               ? filterScoreboardGameData
@@ -63,7 +83,7 @@ export default function EntityScoreboardScreen({navigation, route}) {
             setRefereeMatchModalVisible(false);
             setRefereesInModalVisible(false);
           }}
-        />
+        /> */}
       </View>
     </SafeAreaView>
   );

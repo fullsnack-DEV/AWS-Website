@@ -317,21 +317,34 @@ export default function EditGroupProfileScreen({navigation}) {
               position: 'absolute',
               alignSelf: 'center',
             }}
-            profileImageStyle={{
-              height: 40,
-              width: 40,
-              marginTop: 10,
-            }}
+            bgImageStyle={{resizeMode: 'cover'}}
+            profileImageStyle={
+              groupProfile.thumbnail
+                ? {
+                    height: 60,
+                    width: 60,
+                    resizeMode: 'contain',
+                  }
+                : {
+                    height: 40,
+                    width: 40,
+                    resizeMode: 'center',
+                  }
+            }
             profileCameraButtonStyle={{
               alignSelf: 'flex-start',
-              justifyContent: 'center',
-              height: 25,
-              width: 25,
+              resizeMode: 'cover',
+              height: 15,
+              width: 15,
               borderRadius: 50,
               elevation: 0,
+              backgroundColor: 'yellow',
             }}
             profileImageButtonStyle={{
               alignSelf: 'center',
+              height: 25,
+              width: 25,
+              resizeMode: 'cover',
             }}
             profileImageContainerStyle={{
               marginLeft: 15,

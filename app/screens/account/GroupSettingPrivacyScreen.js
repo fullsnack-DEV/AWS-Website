@@ -9,7 +9,6 @@ import {
   Alert,
   TouchableOpacity,
 } from 'react-native';
-import {useIsFocused} from '@react-navigation/native';
 import AuthContext from '../../auth/context';
 import images from '../../Constants/ImagePath';
 import fonts from '../../Constants/Fonts';
@@ -20,10 +19,6 @@ import ScreenHeader from '../../components/ScreenHeader';
 
 export default function GroupSettingPrivacyScreen({navigation}) {
   const authContext = useContext(AuthContext);
-  const isFocused = useIsFocused();
-
-  const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
-  const [pointEvent, setPointEvent] = useState('auto');
   const [groupSettings, setGroupSettings] = useState([]);
 
   useLayoutEffect(() => {
@@ -31,20 +26,6 @@ export default function GroupSettingPrivacyScreen({navigation}) {
       headerShown: false,
     });
   }, [navigation]);
-
-  useEffect(() => {
-    setIsAccountDeactivated(false);
-    setPointEvent('auto');
-
-    if (
-      isFocused &&
-      (authContext.entity.obj?.is_pause === true ||
-        authContext.entity.obj?.is_deactivate === true)
-    ) {
-      setIsAccountDeactivated(true);
-      setPointEvent('none');
-    }
-  }, [authContext.entity.obj, isFocused]);
 
   useEffect(() => {
     const options =
@@ -125,9 +106,12 @@ export default function GroupSettingPrivacyScreen({navigation}) {
       <TouchableOpacity
         style={[
           styles.listContainer,
-          {opacity: isAccountDeactivated && index <= 1 ? 0.5 : 1},
+          {opacity: authContext.isAccountDeactivated && index <= 4 ? 0.5 : 4},
         ]}
-        pointerEvents={isAccountDeactivated && index <= 1 ? pointEvent : 'auto'}
+        pointerEvents={
+          authContext.isAccountDeactivated && index <= 4 ? 'none' : 'auto'
+        }
+        disabled={authContext.isAccountDeactivated && index <= 4}
         onPress={() => {
           handleOptions(item);
         }}>

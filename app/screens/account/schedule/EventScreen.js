@@ -3,7 +3,6 @@ import React, {
   useState,
   useContext,
   useEffect,
-  useLayoutEffect,
 } from 'react';
 import {
   View,
@@ -54,6 +53,7 @@ import {
  } from '../../../utils';
  import{getUserFollowerFollowing} from '../../../api/Users';
  import{getGroupMembers} from '../../../api/Groups';
+ import ScreenHeader from '../../../components/ScreenHeader';
 
 export default function EventScreen({navigation, route}) { 
   const actionSheet = useRef();
@@ -176,30 +176,7 @@ export default function EventScreen({navigation, route}) {
     }
   }
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        <TouchableOpacity
-          onPress={() => {
-            navigation.goBack()
-          }}>
-          <Image source={images.backArrow} style={styles.backImageStyle} />
-        </TouchableOpacity>
-      ),
-      headerRight: () => (
-        <TouchableOpacity
-          style={{padding: 2, marginRight: 15}}
-          onPress={() => isOrganizer ? actionSheet.current.show() : userActionSheet.current.show()}>
-            <Image
-              source={images.vertical3Dot}
-              style={styles.threeDotImageStyle}
-            />
-        </TouchableOpacity> 
-      ),
-    });
-  }, [navigation, isOrganizer]);
-
-
+  
   useEffect(() => {
     if (isFocused) {
       if(route?.params?.event) {
@@ -211,6 +188,7 @@ export default function EventScreen({navigation, route}) {
 
   useEffect(() => {
     const goingData = eventData.going ?? [];
+    
     const getUserDetailQuery = {
       size: 1000,
       from: 0,
@@ -264,17 +242,17 @@ export default function EventScreen({navigation, route}) {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
-
-      getUserIndex(getUserGoingQuery)
-      .then((res) => {
-        setGoing(res);
-      })
-      .catch((e) => {
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
     }
+
+    getUserIndex(getUserGoingQuery)
+    .then((res) => {
+      setGoing(res);
+    })
+    .catch((e) => {
+      setTimeout(() => {
+        Alert.alert(strings.alertmessagetitle, e.message);
+      }, 10);
+    });
 
 
     getUserFollowerFollowing(
@@ -359,29 +337,20 @@ export default function EventScreen({navigation, route}) {
       return false;
     }
 
-    if(eventData?.who_can_invite?.value === 0) {
-      return true;
-    }
-
-    if(eventData?.who_can_invite?.value === 1){
-      if(myFollowers.includes(authContext.entity.auth.user_id)) {
-        return true;
-      }
-    }
-
     if(['user', 'player'].includes(authContext.entity.role)) {
+      if(eventData?.who_can_invite?.value === 0) {
+        const tempArr = [];
+        going.forEach((item) => {
+          tempArr.push(item.user_id);
+        });
+        if(tempArr.includes(authContext.entity.auth.user_id)) {
+          return true;
+        }
+      }
       if(eventData?.owner_id === authContext.entity.auth.user_id) {
         return true;
       }
-    }
-
-    if(eventData?.who_can_invite?.value === 3) {
-      if(myMembers.includes(authContext.entity.auth.user_id)) {
-        return true;
-      }
-    }
-
-    if(!['user', 'player'].includes(authContext.entity.role)) {
+    }else{
       return true;
     }
 
@@ -546,7 +515,7 @@ export default function EventScreen({navigation, route}) {
           onBackdropPress={() => {
             setInfoModal(false);
           }}
-          backdropOpacity={0}>
+          backdropOpacity={0.7}>
           <SafeAreaView style={styles.modalMainViewStyle}>
             <View style={{padding: 20}}>
               <View style={styles.sepratorStyle}/>
@@ -565,6 +534,25 @@ export default function EventScreen({navigation, route}) {
             </View>
           </SafeAreaView>
         </Modal>
+        <ScreenHeader
+          title={strings.event}
+          leftIcon={images.backArrow}
+          leftIconPress={() => {
+            navigation.goBack()
+          }}
+          rightIcon2={images.vertical3Dot}
+          rightIcon2Press={() => 
+            isOrganizer ? actionSheet.current.show() : userActionSheet.current.show()
+          }
+          loading={loading}
+          containerStyle={{
+            paddingLeft: 10,
+            paddingRight: 17,
+            paddingTop: 8,
+            paddingBottom: 13,
+            borderBottomWidth: 0,
+          }}
+        />
         {/* Modal Style 3 */}
         <ActivityLoader visible={loading} />
         <View style={styles.sperateLine} />
@@ -573,27 +561,36 @@ export default function EventScreen({navigation, route}) {
         // style={{paddingHorizontal:10}}
         >
           <View style={styles.EventBackgroundPhoto}>
-          <EventBackgroundPhoto
-            isEdit={!!eventData?.background_thumbnail}
-            isPreview={true}
-            isImage={!!eventData?.background_thumbnail}
-            imageURL={
-              eventData?.background_thumbnail
-                ? {uri: eventData?.background_thumbnail}
-                : images.backgroudPlaceholder
-            }
-    
-          />
+            <EventBackgroundPhoto
+              isEdit={!!eventData?.background_thumbnail}
+              isPreview={true}
+              isImage={!!eventData?.background_thumbnail}
+              imageURL={
+                eventData?.background_thumbnail
+                  ? {uri: eventData?.background_thumbnail}
+                  : images.backgroudPlaceholder
+              }
+            />
           </View>
 
           <Text style={styles.eventTitleStyle}>
             {titleValue} 
           </Text>
-          <Text style={styles.sportTitleStyle}>
-            {' '} 
-            {eventData?.selected_sport && eventData?.selected_sport?.sport_name} 
-          </Text>
-     
+
+          <View 
+          style={{
+            flexDirection: 'row', 
+            alignItems: 'center', 
+          }}>
+            <Text style={styles.sportTitleStyle}>
+              {' '} 
+              {eventData?.selected_sport && eventData?.selected_sport?.sport_name} 
+            </Text>
+            {!eventData.is_Offline && (
+              <Text style={[styles.onlineText, {marginLeft: 10, marginTop: 3}]}>{strings.onlineText}</Text>
+            )}
+          </View>
+
           <EventTimeItem
             from={strings.from}
             fromTime={moment(startTime).format('MMM DD, YYYY')}
@@ -603,6 +600,7 @@ export default function EventScreen({navigation, route}) {
             repeatTime={repeatString}
             location={eventData?.location?.location_name}
             eventOnlineUrl={eventData?.online_url}
+            is_Offline = {eventData?.is_Offline}
           />
 
           {/* Join and Invite button wrapper */}
@@ -634,6 +632,9 @@ export default function EventScreen({navigation, route}) {
                 [styles.firstButtonStyle,{width: checkIsInvite() ? '48%' : '100%', backgroundColor : colors.themeColor}] 
               }
               showArrow={false}
+              tickImage={eventData?.going?.filter(
+                (entity) => entity === authContext.entity.uid,
+              ).length > 0}
               imageStyle={styles.checkMarkStyle}
               textStyle={
                 eventData?.going?.filter(
@@ -676,7 +677,11 @@ export default function EventScreen({navigation, route}) {
           )}
           </View>
 
-          <View style={{ marginBottom: 20, backgroundColor: colors.whiteColor, marginTop:0}}> 
+          <View style={{ 
+            marginBottom: 20, 
+            backgroundColor: colors.whiteColor, 
+            marginTop:0
+          }}> 
             <View 
             style={{
               flexDirection: 'row',
@@ -774,7 +779,7 @@ export default function EventScreen({navigation, route}) {
               >
                 <Text
                   style={styles.headerTextStyle}
-                >{`${strings.goingTitle} (${eventData?.going?.length})`}
+                >{`${strings.goingTitle} (${going?.length})`}
                 </Text>
 
                 <Text
@@ -807,7 +812,7 @@ export default function EventScreen({navigation, route}) {
             )}
 
             <EventItemRender title={strings.place} >
-              {eventData?.location?.location_name ? (
+              {eventData?.is_Offline ? (
               <>
                 <Text style={[styles.textValueStyle, {fontFamily: fonts.RBold}]}>
                   {eventData?.location?.venue_name} 
@@ -883,7 +888,7 @@ export default function EventScreen({navigation, route}) {
                         textDecorationStyle: 'solid',
                         textDecorationColor: '#000'
                       }} 
-                      >{strings.vancouver}</Text>
+                      >{Intl.DateTimeFormat()?.resolvedOptions().timeZone.split('/').pop()}</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -1024,6 +1029,10 @@ export default function EventScreen({navigation, route}) {
 }
 
 const styles = StyleSheet.create({
+  onlineText:{
+    color: colors.themeColor,
+    fontWeight: '500'
+  },
   mainContainerStyle: {
     flex: 1,
   },
@@ -1037,13 +1046,6 @@ const styles = StyleSheet.create({
     display:'flex',
     justifyContent:'center',
     flexDirection:'row'
-  },
-
-  threeDotImageStyle: {
-    height: 25,
-    width: 25,
-    // tintColor: colors.blackColor,
-    resizeMode: 'contain',
   },
 
   sepratorViewStyle: {
@@ -1142,13 +1144,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RRegular,
     color: '#0093FF',
-  },
-  backImageStyle: {
-    height: 20,
-    width: 15,
-    tintColor: colors.lightBlackColor,
-    resizeMode: 'contain',
-    marginLeft: 15,
   },
   moreLessText: {
     fontSize: 12,

@@ -12,7 +12,11 @@ const AvailabilityContentScreen = ({userData}) => {
     },[]);
 
     const getSlotData = () => {
-        Utility.getEventsSlots(authContext?.entity?.uid, Utility.getTCDate(new Date()), 'future', 0)
+        let nextThreeMonth = new Date()
+        nextThreeMonth = nextThreeMonth.setMonth(nextThreeMonth.getMonth() + 3);
+        const startDateUnixTime = Utility.getTCDate(new Date());
+        const endDateUnixTime = Utility.getTCDate(new Date(nextThreeMonth));
+        Utility.getEventsSlots([authContext?.entity?.uid], startDateUnixTime, endDateUnixTime)
         .then((response) => {
             let resCalenders = [];
             resCalenders = response.filter((obj) => {     

@@ -32,7 +32,6 @@ import Modal from 'react-native-modal';
 import Carousel from 'react-native-snap-carousel';
 import FastImage from 'react-native-fast-image';
 import {useIsFocused} from '@react-navigation/native';
-import {format} from 'react-string-format';
 import AuthContext from '../../auth/context';
 import LocationContext from '../../context/LocationContext';
 import images from '../../Constants/ImagePath';
@@ -59,7 +58,7 @@ import TCGameCardPlaceholder from '../../components/TCGameCardPlaceholder';
 import TCTeamsCardPlaceholder from '../../components/TCTeamsCardPlaceholder';
 import TCEntityListPlaceholder from '../../components/TCEntityListPlaceholder';
 import LocalHomeScreenShimmer from '../../components/shimmer/localHome/LocalHomeScreenShimmer';
-import {getUserSettings, userActivate} from '../../api/Users';
+import {getUserSettings} from '../../api/Users';
 import TCUpcomingMatchCard from '../../components/TCUpcomingMatchCard';
 import {getGameHomeScreen} from '../../utils/gameUtils';
 import TCShortsPlaceholder from '../../components/TCShortsPlaceholder';
@@ -68,9 +67,7 @@ import {ImageUploadContext} from '../../context/ImageUploadContext';
 import {createPost} from '../../api/NewsFeeds';
 import ImageProgress from '../../components/newsFeed/ImageProgress';
 import Header from '../../components/Home/Header';
-import {groupUnpaused} from '../../api/Groups';
 import ActivityLoader from '../../components/loader/ActivityLoader';
-import {getQBAccountType, QBupdateUser} from '../../utils/QuickBlox';
 import Verbs from '../../Constants/Verbs';
 import {getGeocoordinatesWithPlaceName} from '../../utils/location';
 import LocationModal from '../../components/LocationModal/LocationModal';
@@ -90,8 +87,6 @@ export default function LocalHomeScreen({navigation, route}) {
   const [sports, setSports] = useState([]);
 
   const [customSports, setCustomSports] = useState([]);
-  // eslint-disable-next-line no-unused-vars
-  const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
 
   const [locationPopup, setLocationPopup] = useState(false);
   const [selectedLocationOption, setSelectedLocationOption] = useState();
@@ -112,7 +107,7 @@ export default function LocalHomeScreen({navigation, route}) {
   const [scorekeepers, setScorekeepers] = useState([]);
   const [image_base_url, setImageBaseUrl] = useState();
   const [visibleLocationModal, setVisibleLocationModal] = useState(false);
-  const [pointEvent, setPointEvent] = useState('auto');
+  const [pointEvent] = useState('auto');
   const [locationSelectedViaModal, setLocationSelectedViaModal] =
     useState(false);
   const [filters, setFilters] = useState({
@@ -120,27 +115,6 @@ export default function LocalHomeScreen({navigation, route}) {
     sport_type: sportType,
     location,
   });
-  useEffect(() => {
-    setIsAccountDeactivated(false);
-    setPointEvent('auto');
-    if (isFocused) {
-      if (authContext?.entity?.obj?.is_pause === true) {
-        setIsAccountDeactivated(true);
-        setPointEvent('none');
-      }
-      if (authContext?.entity?.obj?.is_deactivate === true) {
-        setIsAccountDeactivated(true);
-        setPointEvent('none');
-      }
-    }
-  }, [
-    authContext.entity?.obj.entity_type,
-    authContext.entity?.obj?.is_deactivate,
-    authContext.entity?.obj?.is_pause,
-    authContext.entity.role,
-    isFocused,
-    pointEvent,
-  ]);
 
   useEffect(() => {
     if (isFocused) {
@@ -1238,65 +1212,6 @@ export default function LocalHomeScreen({navigation, route}) {
     setSettingPopup(true);
   };
 
-  const unPauseGroup = () => {
-    setloading(true);
-    groupUnpaused(authContext)
-      .then((response) => {
-        setIsAccountDeactivated(false);
-        console.log('deactivate account ', response);
-
-        const accountType = getQBAccountType(response?.payload?.entity_type);
-        QBupdateUser(
-          response?.payload?.user_id,
-          response?.payload,
-          accountType,
-          response.payload,
-          authContext,
-        )
-          .then(() => {
-            setloading(false);
-          })
-          .catch((error) => {
-            console.log('QB error : ', error);
-            setloading(false);
-          });
-      })
-      .catch((e) => {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
-  };
-
-  const reActivateUser = () => {
-    setloading(true);
-    userActivate(authContext)
-      .then((response) => {
-        const accountType = getQBAccountType(response?.payload?.entity_type);
-        QBupdateUser(
-          response?.payload?.user_id,
-          response?.payload,
-          accountType,
-          response.payload,
-          authContext,
-        )
-          .then(() => {
-            setloading(false);
-          })
-          .catch((error) => {
-            console.log('QB error : ', error);
-            setloading(false);
-          });
-      })
-      .catch((e) => {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
-  };
-
   const handleSetLocationOptions = (locations) => {
     if ('address' in locations) {
       setLocation(locations?.address);
@@ -1383,7 +1298,7 @@ export default function LocalHomeScreen({navigation, route}) {
       <ActivityLoader visible={loading} />
       <View
         pointerEvents={pointEvent}
-        style={{opacity: isAccountDeactivated ? 0.5 : 1}}>
+        style={{opacity: authContext.isAccountDeactivated ? 0.5 : 1}}>
         <Header
           leftComponent={
             <View>
@@ -1481,55 +1396,16 @@ export default function LocalHomeScreen({navigation, route}) {
         </View>
       </View>
 
-      {isAccountDeactivated && (
-        <TCAccountDeactivate
-          type={
-            authContext?.entity?.obj?.is_pause === true
-              ? 'pause'
-              : authContext?.entity?.obj?.under_terminate === true
-              ? 'terminate'
-              : 'deactivate'
-          }
-          onPress={() => {
-            Alert.alert(
-              format(
-                strings.pauseUnpauseAccountText,
-                authContext?.entity?.obj?.is_pause === true
-                  ? strings.unpausesmall
-                  : strings.reactivatesmall,
-              ),
-              '',
-              [
-                {
-                  text: strings.cancel,
-                  style: 'cancel',
-                },
-                {
-                  text:
-                    authContext?.entity?.obj?.is_pause === true
-                      ? strings.unpause
-                      : strings.reactivate,
-                  style: 'destructive',
-                  onPress: () => {
-                    if (authContext?.entity?.obj?.is_pause === true) {
-                      unPauseGroup();
-                    } else {
-                      reActivateUser();
-                    }
-                  },
-                },
-              ],
-              {cancelable: false},
-            );
-          }}
-        />
-      )}
+      {authContext.isAccountDeactivated && <TCAccountDeactivate />}
       {loading ? (
         <LocalHomeScreenShimmer />
       ) : (
         <View
           pointerEvents={pointEvent}
-          style={{flex: 1, opacity: isAccountDeactivated ? 0.8 : 1}}>
+          style={{
+            flex: 1,
+            opacity: authContext.isAccountDeactivated ? 0.8 : 1,
+          }}>
           <ScrollView>
             <View>
               <TCTitleWithArrow

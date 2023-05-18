@@ -138,17 +138,21 @@ const MemberListModal = ({
             style={{
               alignSelf: 'center',
               marginTop: 15,
-              marginBottom: 10,
             }}>
             <TCSearchBox
               onChangeText={(text) => searchFilterFunction(text)}
-              placeholderText={strings.searchText}
+              placeholderText={strings.searchForTeamPartener}
               style={{
                 height: 40,
               }}
             />
           </View>
-          <View style={{flex: 1, marginBottom: 75}}>
+          <View
+            style={{
+              flex: 1,
+              marginBottom: 75,
+              marginTop: 10,
+            }}>
             <FlatList
               showsVerticalScrollIndicator={false}
               extraData={players}
@@ -176,15 +180,15 @@ const styles = StyleSheet.create({
     backgroundColor: colors.grayBackgroundColor,
   },
   container: {
-    paddingVertical: 20,
+    marginTop: 22,
     flex: 1,
   },
   title: {
     fontSize: 20,
     lineHeight: 30,
     fontFamily: fonts.RMedium,
-    marginBottom: 7,
-    marginLeft: 30,
+
+    marginHorizontal: 15,
   },
 
   listItem: {
@@ -192,7 +196,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: 20,
-    paddingHorizontal: 10,
   },
 
   checkboxImg: {

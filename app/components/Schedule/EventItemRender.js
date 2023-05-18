@@ -43,8 +43,6 @@ const styles = StyleSheet.create({
   headerTextStyle: {
     fontSize: 20,
     fontFamily: fonts.RBold,
-    // marginVertical: 3,
-    // color: colors.lightBlackColor,
     marginBottom: 10
   },
 });

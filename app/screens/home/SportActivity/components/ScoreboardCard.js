@@ -1,13 +1,13 @@
 // @flow
 import moment from 'moment';
 import React from 'react';
-import {View, StyleSheet, Image, Text} from 'react-native';
+import {View, StyleSheet, Image, Text, Pressable} from 'react-native';
 import colors from '../../../../Constants/Colors';
 import fonts from '../../../../Constants/Fonts';
 import GameStatus from '../../../../Constants/GameStatus';
 import images from '../../../../Constants/ImagePath';
 
-const ScoreboardCard = ({item = {}, style = {}}) => {
+const ScoreboardCard = ({item = {}, style = {}, onCardPress = () => {}}) => {
   const getWinCount = () => {
     let homeTeamWinCount = 0;
     let awayTeamWinCount = 0;
@@ -42,7 +42,7 @@ const ScoreboardCard = ({item = {}, style = {}}) => {
     );
   };
   return (
-    <View style={[styles.card, style]}>
+    <Pressable style={[styles.card, style]} onPress={() => onCardPress(item)}>
       <View style={styles.imageContainer}>
         <Image
           source={images.scoreBoardBackgroundImage}
@@ -114,7 +114,7 @@ const ScoreboardCard = ({item = {}, style = {}}) => {
           </View>
         </View>
       </View>
-    </View>
+    </Pressable>
   );
 };
 
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
     shadowRadius: 15,
   },
   imageContainer: {
-    width: 303,
+    width: '100%',
     height: 100,
     alignItems: 'center',
     justifyContent: 'center',
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: '100%',
-    resizeMode: 'contain',
+    resizeMode: 'cover',
   },
   bottomContainer: {
     paddingHorizontal: 15,

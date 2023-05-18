@@ -85,9 +85,9 @@ export default function UserConnections({navigation, route}) {
     });
 
     Promise.all(list)
-      .then(([following, follower]) => {
+      .then(([follower, following]) => {
         const newData = {};
-
+        console.log({follower, following});
         newData.following = {
           count: following.payload.length ?? 0,
           data: following.payload.length > 0 ? [...following.payload] : [],
@@ -125,10 +125,6 @@ export default function UserConnections({navigation, route}) {
   };
 
   const renderList = (option) => {
-    if (option === strings.following && data.following.count > 0) {
-      return null;
-    }
-
     let list = [];
     if (option === strings.followerTitleText && data.follower.count > 0) {
       list = [...data.follower.data];
@@ -145,7 +141,14 @@ export default function UserConnections({navigation, route}) {
           renderItem={({item}) => (
             <>
               <View style={[styles.row, {justifyContent: 'space-between'}]}>
-                <View style={styles.row}>
+                <TouchableOpacity
+                  style={styles.row}
+                  onPress={() => {
+                    navigation.navigate('HomeScreen', {
+                      uid: item.user_id ?? item.group_id,
+                      role: item.entity_type,
+                    });
+                  }}>
                   <GroupIcon
                     imageUrl={item.full_image}
                     entityType={Verbs.entityTypePlayer}
@@ -159,7 +162,7 @@ export default function UserConnections({navigation, route}) {
                       {displayLocation(item)}
                     </Text>
                   </View>
-                </View>
+                </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.buttonContainer}
                   onPress={() => {
@@ -182,7 +185,7 @@ export default function UserConnections({navigation, route}) {
                       styles.buttonText,
                       item.is_following ? {color: colors.lightBlackColor} : {},
                     ]}>
-                    {strings.following}
+                    {item.is_following ? strings.following : strings.follow}
                   </Text>
                 </TouchableOpacity>
               </View>

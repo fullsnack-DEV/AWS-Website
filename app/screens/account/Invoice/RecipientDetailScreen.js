@@ -20,7 +20,7 @@ import {
   Alert,
   ScrollView,
 } from 'react-native';
-
+import moment from 'moment';
 import {useIsFocused} from '@react-navigation/native';
 import {format} from 'react-string-format';
 import ActionSheet from 'react-native-actionsheet';
@@ -41,6 +41,7 @@ import {MonthData} from '../../../Constants/GeneralConstants';
 import ScreenHeader from '../../../components/ScreenHeader';
 import {getSenderInvoices} from '../../../api/Invoice';
 import AuthContext from '../../../auth/context';
+import DateFilterModal from './DatefilterModal';
 
 export default function RecipientDetailScreen({navigation, route}) {
   const defaultRecords = [
@@ -63,7 +64,7 @@ export default function RecipientDetailScreen({navigation, route}) {
     route.params.currency,
   );
   const [startDateTime, setStartDateTime] = useState(route.params.startDate);
-  const [endDateTime, setEndDateTime] = useState(route.params.endDate);
+  const [endDateTime, setEndDateTime] = useState();
   const [loading, setLoading] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState(MonthData[1]);
   const [tabNumber, setTabNumber] = useState(0);
@@ -77,13 +78,14 @@ export default function RecipientDetailScreen({navigation, route}) {
   const [visiblemonthModal, setVisibleMonthModal] = useState();
   const actionSheet = useRef();
   const [visibleCurrencySheet, setVisibleCurrencySheet] = useState();
+  const [showDateModal, setShowDateModal] = useState(false);
   const isFocused = useIsFocused();
 
   const getRecipientDetail = () => {
     const startDate = getTCDate(startDateTime);
-    const endDate = getTCDate(endDateTime);
+
     setLoading(true);
-    getSenderInvoices(authContext, startDate, endDate, receiverId)
+    getSenderInvoices(authContext, startDate, endDateTime, receiverId)
       .then((response) => {
         let records = defaultRecords;
         if (response.payload.length > 0) {
@@ -132,7 +134,6 @@ export default function RecipientDetailScreen({navigation, route}) {
 
   const getDates = (optionsState) => {
     const startDate = new Date();
-    const endDate = new Date();
 
     if (optionsState === strings.past90DaysText) {
       startDate.setDate(startDate.getDate() - 90);
@@ -145,7 +146,6 @@ export default function RecipientDetailScreen({navigation, route}) {
     }
 
     setStartDateTime(startDate);
-    setEndDateTime(endDate);
   };
 
   useEffect(() => {
@@ -172,10 +172,11 @@ export default function RecipientDetailScreen({navigation, route}) {
     <RecipientInvoiceView
       invoice={item}
       onPressCard={() => {
+        const invoice = item;
+        invoice.thumbnail = receiver.thumbnail;
         navigation.navigate('InvoiceDetailScreen', {
           from,
-          invoice: item,
-          thumbnail: receiver.thumbnail,
+          invoice,
         });
       }}
     />
@@ -286,6 +287,13 @@ export default function RecipientDetailScreen({navigation, route}) {
               closeModal={() => setVisibleMonthModal(false)}
               optionList={MonthData}
               onSelect={(option) => {
+                if (option === strings.pickaDate) {
+                  setVisibleMonthModal(false);
+                  setShowDateModal(true);
+
+                  return;
+                }
+                setEndDateTime();
                 setSelectedMonth(option);
                 setVisibleMonthModal(false);
                 getDates(option);
@@ -320,10 +328,10 @@ export default function RecipientDetailScreen({navigation, route}) {
                   {selectedMonth}
                 </Text>
                 <Image
-                  source={images.dropDownArrow2}
+                  source={images.invoiceLightDownArrow}
                   style={{
-                    height: 15,
-                    width: 15,
+                    height: 10,
+                    width: 16,
                     marginRight: 15,
                     tintColor: colors.userPostTimeColor,
                     alignSelf: 'center',
@@ -356,10 +364,19 @@ export default function RecipientDetailScreen({navigation, route}) {
                   }}>
                   {selectedCurrency === strings.all
                     ? strings.allInvoiceText
-                    : `${strings.invoicesIn} ${currentRecordSet.currency_type}`}
+                    : `${strings.invoicesIn}`}
+                  {selectedCurrency !== strings.all && (
+                    <Text
+                      style={{
+                        fontFamily: fonts.RBold,
+                      }}>
+                      {' '}
+                      {`${currentRecordSet.currency_type}`}
+                    </Text>
+                  )}
                 </Text>
                 <Image
-                  source={images.dropDownArrow}
+                  source={images.invoiceDarkDownArrow}
                   style={{
                     width: 14,
                     height: 26,
@@ -470,6 +487,24 @@ export default function RecipientDetailScreen({navigation, route}) {
                 receiverId: receiver.receiver_id,
               });
             }
+          }}
+        />
+
+        {/* Modal Date Picker */}
+
+        <DateFilterModal
+          isVisible={showDateModal}
+          closeList={() => setShowDateModal(false)}
+          onApplyPress={(startDate, endDate) => {
+            setShowDateModal(false);
+            setStartDateTime(startDate);
+            setEndDateTime(getTCDate(endDate));
+
+            setSelectedMonth(
+              `${moment(startDate).format(Verbs.DATE_MDY_FORMAT)} - ${moment(
+                endDate,
+              ).format(Verbs.DATE_MDY_FORMAT)}`,
+            );
           }}
         />
 

@@ -27,7 +27,7 @@ export default function CancelledInvoiceView({invoice, onPressCard, from}) {
     ) {
       return strings.pariallyPaid;
     }
-    return '';
+    return null;
   };
 
   return (
@@ -58,7 +58,7 @@ export default function CancelledInvoiceView({invoice, onPressCard, from}) {
             {invoice.full_name}
           </Text>
           <Text style={styles.secondaryTextStyle}>
-            {moment(getJSDate(invoice.created_date)).format('LLL')}
+            {moment(getJSDate(invoice.created_date)).format(Verbs.DATE_FORMAT)}
           </Text>
         </View>
 
@@ -78,16 +78,22 @@ export default function CancelledInvoiceView({invoice, onPressCard, from}) {
               ]}>
               {getStatus()}
             </Text>
-            <Text
-              style={[
-                styles.invoiceAmountTexStyle,
-                {
-                  color: colors.neonBlue,
-                  alignSelf: 'flex-end',
-                },
-              ]}>
-              {getPaidPartiallyPaidstatus()}
-            </Text>
+            <View
+              style={{
+                display:
+                  getPaidPartiallyPaidstatus() === null ? 'none' : 'flex',
+              }}>
+              <Text
+                style={[
+                  styles.invoiceAmountTexStyle,
+                  {
+                    color: colors.neonBlue,
+                    alignSelf: 'flex-end',
+                  },
+                ]}>
+                {getPaidPartiallyPaidstatus()}
+              </Text>
+            </View>
           </View>
         </View>
       </View>
