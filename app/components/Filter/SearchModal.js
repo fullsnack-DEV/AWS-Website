@@ -65,15 +65,27 @@ const SearchModal = ({
   const [showSportComponent, setShowSportComponent] = useState(false);
 
   useEffect(() => {
-    setFilterOptions([
-      strings.filterAntTime,
-      strings.filterToday,
-      strings.filterYesterday,
-      strings.filterLast7Day,
-      strings.filterThisMonth,
-      strings.filterLastMonth,
-      strings.filterPickaDate,
-    ]);
+    if (fType === filterType.UPCOMINGMATCHES) {
+      setFilterOptions([
+        strings.filterAntTime,
+        strings.filterToday,
+        strings.filterTomorrow,
+        strings.filterNext7Day,
+        strings.filterThisMonth,
+        strings.filterNextMonth,
+        strings.filterPickaDate,
+      ]);
+    } else {
+      setFilterOptions([
+        strings.filterAntTime,
+        strings.filterToday,
+        strings.filterYesterday,
+        strings.filterLast7Day,
+        strings.filterThisMonth,
+        strings.filterLastMonth,
+        strings.filterPickaDate,
+      ]);
+    }
   }, []);
   useEffect(() => {
     if (isVisible) {
@@ -155,9 +167,9 @@ const SearchModal = ({
       if (location1.hasOwnProperty('address')) {
         setFilters({
           ...filters,
-          location: location1.city,
+          location: location1.city ?? location1.address,
           isSearchPlaceholder: false,
-          searchCityLoc: location1.city,
+          searchCityLoc: location1.city ?? location1.address,
         });
       } else {
         setFilters({
@@ -400,6 +412,14 @@ const SearchModal = ({
             // For fee
             if (Number(filters.minFee) >= 0 && Number(filters.maxFee) > 0) {
               tempFilter.fee = `${tempFilter.minFee}-${tempFilter.maxFee}`;
+            }
+            // For date
+            if (filters.fromDateTime && filters.toDateTime) {
+              tempFilter.availableTime = `${moment(
+                getJSDate(filters.fromDateTime).getTime(),
+              ).format('MMM DD')}-${moment(
+                getJSDate(filters.toDateTime).getTime(),
+              ).format('MMM DD')}`;
             }
             onPressApply(tempFilter);
           }
@@ -793,30 +813,30 @@ const SearchModal = ({
                 )}
               </View>
               <View style={{flex: 1}} />
+              <TouchableOpacity
+                style={styles.resetButton}
+                onPress={() => {
+                  Alert.alert(
+                    strings.areYouSureRemoveFilterText,
+                    '',
+                    [
+                      {
+                        text: strings.cancel,
+                        onPress: () => console.log('Cancel Pressed'),
+                        style: 'cancel',
+                      },
+                      {
+                        text: strings.okTitleText,
+                        onPress: () => onPressReset(),
+                      },
+                    ],
+                    {cancelable: false},
+                  );
+                }}>
+                <Text style={styles.resetTitle}>{strings.resetTitleText}</Text>
+              </TouchableOpacity>
             </ScrollView>
           </KeyboardAvoidingView>
-          <TouchableOpacity
-            style={styles.resetButton}
-            onPress={() => {
-              Alert.alert(
-                strings.areYouSureRemoveFilterText,
-                '',
-                [
-                  {
-                    text: strings.cancel,
-                    onPress: () => console.log('Cancel Pressed'),
-                    style: 'cancel',
-                  },
-                  {
-                    text: strings.okTitleText,
-                    onPress: () => onPressReset(),
-                  },
-                ],
-                {cancelable: false},
-              );
-            }}>
-            <Text style={styles.resetTitle}>{strings.resetTitleText}</Text>
-          </TouchableOpacity>
         </View>
         <BottomSheet
           isVisible={showTimeActionSheet}
@@ -829,10 +849,21 @@ const SearchModal = ({
               setTag(0);
               // setFromDateTime('');
               // setToDateTime('');
-              setFilters({...filters, fromDateTime: '', toDateTime: ''});
+              const temp = {...filters};
+              temp.fromDateTime = '';
+              temp.toDateTime = '';
+              temp.availableTime = option;
+
+              // setFilters({...filters, fromDateTime: '', toDateTime: ''});
+              setFilters({...temp});
+            } else {
+              // setSelectedTime(option);
+              const temp = {...filters};
+              temp.availableTime = option;
+              // setFilters({...filters, availableTime: option});
+              setFilters({...temp});
             }
-            // setSelectedTime(option);
-            setFilters({...filters, availableTime: option});
+
             setShowTimeActionSheet(false);
           }}
         />
@@ -940,15 +971,14 @@ const styles = StyleSheet.create({
 
   resetButton: {
     alignSelf: 'center',
-    backgroundColor: colors.ligherGray,
+    backgroundColor: colors.lightGrey,
     borderRadius: 5,
     height: 25,
     width: 130,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    position: 'absolute',
-    bottom: 80,
+    marginTop: 10,
   },
   resetTitle: {
     fontSize: 12,
