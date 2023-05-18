@@ -86,7 +86,7 @@ const SearchModal = ({
         strings.filterPickaDate,
       ]);
     }
-  }, []);
+  }, [fType]);
   useEffect(() => {
     if (isVisible) {
       if (fType === filterType.RECRUIITINGMEMBERS) {
@@ -222,7 +222,6 @@ const SearchModal = ({
           justifyContent: 'space-between',
           alignContent: 'center',
           textAlignVertical: 'center',
-          // backgroundColor: colors.redColor,
           flex: 1,
           marginLeft: 10,
           marginRight: 10,
@@ -343,7 +342,6 @@ const SearchModal = ({
         }}
         modalType={ModalTypes.style1}
         title={strings.filter}
-        // containerStyle={styles.bottomPopupContainer}
         headerRightButtonText={strings.apply}
         onRightButtonPress={() => {
           if (fType === filterType.RECRUIITINGMEMBERS) {
@@ -428,7 +426,6 @@ const SearchModal = ({
           style={{
             flex: 1,
             position: 'absolute',
-            // backgroundColor: colors.redColor,
             right: 0,
             left: 0,
             height: Dimensions.get('window').height - 50,
@@ -749,7 +746,6 @@ const SearchModal = ({
                           style={styles.minFee}
                           placeholder={strings.minPlaceholder}
                           autoCorrect={false}
-                          // clearButtonMode={'always'}
                           keyboardType={'numeric'}
                           placeholderTextColor={colors.userPostTimeColor}
                         />
@@ -761,7 +757,6 @@ const SearchModal = ({
                           style={styles.minFee}
                           placeholder={strings.maxPlaceholder}
                           autoCorrect={false}
-                          // clearButtonMode={'always'}
                           keyboardType={'numeric'}
                           placeholderTextColor={colors.userPostTimeColor}
                         />
@@ -847,20 +842,15 @@ const SearchModal = ({
           onSelect={(option) => {
             if (option !== strings.filterPickaDate) {
               setTag(0);
-              // setFromDateTime('');
-              // setToDateTime('');
               const temp = {...filters};
               temp.fromDateTime = '';
               temp.toDateTime = '';
               temp.availableTime = option;
 
-              // setFilters({...filters, fromDateTime: '', toDateTime: ''});
               setFilters({...temp});
             } else {
-              // setSelectedTime(option);
               const temp = {...filters};
               temp.availableTime = option;
-              // setFilters({...filters, availableTime: option});
               setFilters({...temp});
             }
 
@@ -900,7 +890,6 @@ const SearchModal = ({
                       style={{
                         flex: 1,
                         flexDirection: 'column',
-                        // height: 80,
                         justifyContent: 'space-between',
                       }}>
                       <View
